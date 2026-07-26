@@ -1,0 +1,116 @@
+2026/01/19 10:37:24
+java.lang.NullPointerException
+
+2026/01/20 11:35:59
+java.lang.NullPointerException
+
+2026/01/20 11:50:56
+java.lang.NullPointerException
+
+2026/01/21 12:26:05
+java.lang.NullPointerException
+
+2026/01/21 12:27:40
+java.lang.NullPointerException
+
+2026/01/21 12:28:54
+java.lang.NullPointerException
+
+2026/01/21 12:42:37
+java.lang.NullPointerException
+
+2026/01/21 01:19:00
+java.lang.NullPointerException
+
+2026/01/21 02:03:20
+java.lang.NullPointerException
+
+2026/01/21 02:55:02
+java.lang.NullPointerException
+
+2026/01/21 03:22:11
+java.lang.NullPointerException
+
+2026/01/21 04:09:11
+java.lang.NullPointerException
+
+2026/01/21 04:39:04
+java.lang.NullPointerException
+
+2026/01/21 05:02:24
+java.lang.NullPointerException: Cannot invoke "real.Char.sendToNearPlayer(io.Message)" because "this.target" is null
+	at real.Monster.move(Monster.java:260)
+	at real.Monster.update(Monster.java:564)
+	at real.Map.update(Map.java:5737)
+	at real.Map.run(Map.java:39609)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+
+2026/01/21 05:02:51
+java.lang.NullPointerException: Cannot invoke "real.Char.sendMessage(io.Message)" because "this.target" is null
+	at real.Monster.move(Monster.java:259)
+	at real.Monster.update(Monster.java:564)
+	at real.Map.update(Map.java:5737)
+	at real.Map.run(Map.java:39609)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+
+2026/01/21 06:32:15
+java.lang.NullPointerException: Cannot invoke "real.Char.writeActorPos(io.Message, real.Actor)" because "this.target" is null
+	at real.Monster.move(Monster.java:264)
+	at real.Monster.update(Monster.java:564)
+	at real.Map.update(Map.java:5737)
+	at real.Map.run(Map.java:39609)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+
+2026/01/21 06:47:52
+java.lang.NullPointerException: Cannot read field "x" because "this.target" is null
+	at real.Monster.update(Monster.java:566)
+	at real.Map.update(Map.java:5737)
+	at real.Map.run(Map.java:39609)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+
+2026/01/21 08:38:04
+java.lang.NullPointerException
+
+2026/01/22 12:38:55
+java.lang.NullPointerException
+
+2026/01/22 01:57:30
+java.lang.NullPointerException
+
+2026/01/22 02:01:55
+java.lang.NullPointerException
+
+2026/01/22 04:34:35
+java.lang.NullPointerException
+
+2026/01/23 06:38:05
+java.lang.NullPointerException
+
+2026/01/23 06:46:08
+java.lang.NullPointerException: Cannot invoke "real.Char.sendMessage(io.Message)" because "this.target" is null
+	at real.Monster.move(Monster.java:265)
+	at real.Monster.update(Monster.java:564)
+	at real.Map.update(Map.java:5737)
+	at real.Map.run(Map.java:39609)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+
+2026/01/23 02:24:12
+java.lang.NullPointerException
+
+2026/01/30 01:25:50
+java.lang.NullPointerException: Cannot read field "x" because "this.target" is null
+	at real.Monster.update(Monster.java:566)
+	at real.Map.update(Map.java:5737)
+	at real.Map.run(Map.java:39607)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+
+2026/01/31 12:34:40
+java.lang.NullPointerException: Cannot read field "x" because "this.target" is null
+	at real.Monster.update(Monster.java:566)
+	at real.Map.update(Map.java:5737)
+	at real.Map.run(Map.java:39607)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+
+2026/01/31 12:34:58
+java.lang.NullPointerException
+
