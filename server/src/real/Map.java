@@ -24685,6 +24685,18 @@ public class Map implements Runnable {
                                     player.potions[115]--;
                                     anima.name = "Lân sư tử";
                                     anima.idImg = Animal.LAN;
+                                    break;
+                                case 10:
+                                    // Rong bang: trung la VAT PHAM 887 trong hanh trang, khong phai
+                                    // potion nhu 10 truong hop tren, nen tu ap roi return luon.
+                                    Item trungRongBang = getTrungRongBang(player);
+                                    if (trungRongBang == null) {
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có trứng linh thú", ""));
+                                        return;
+                                    }
+
+                                    this.doApTrungRongBang(player, trungRongBang);
+                                    return;
                             }
 
                             if (anima != null) {
@@ -24799,8 +24811,9 @@ public class Map implements Runnable {
                         }
                     } else {
                         String[] menu = new String[]{
-                            "Hắc ngưu", "Mãnh hổ", "Sói xám", "Tiên hạc", "Bạch mã", 
-                            "Phượng hoàng", "Phượng hoàng băng", "Bạch cốt", "Đương khang", "Lân sư tử"
+                            "Hắc ngưu", "Mãnh hổ", "Sói xám", "Tiên hạc", "Bạch mã",
+                            "Phượng hoàng", "Phượng hoàng băng", "Bạch cốt", "Đương khang", "Lân sư tử",
+                            "Rồng băng"
                         };
                         Message msg = MessageCreator.createMsgMenu(menu, idNpc, 1);
                         player.sendMessage(msg);
@@ -27131,7 +27144,55 @@ public class Map implements Runnable {
         }
     }
 
-   
+    // ==================== AP TRUNG RONG BANG ====================
+    // Trung rong bang (item 887) no ra linh thu Rong Bang. Hai duong vao dung chung ham nay:
+    // dung item truc tiep trong hanh trang, va NPC tao thu (menu -6, option "Rong bang").
+    // Thu no ra o level 1 voi thuoc tinh random, giong het 10 trung con lai o NPC tao thu
+    // (khac RONGBANG:<ngay> cua giftcode - cai do goi createRongLon nen ra thang level 4 max).
+    public boolean doApTrungRongBang(Char player, Item trung) {
+        try {
+            if (player == null || trung == null) {
+                return false;
+            }
+
+            Animal anima = new Animal();
+            anima.name = "Rồng Băng";
+            anima.idImg = Animal.RONG_LON;
+            anima.createAtt();
+            anima.level = 1;
+            anima.place = 0;
+            anima.ownerId = player.charDBID;
+            anima.id = player.getIDItem();
+            player.animal.add(anima);
+            player.iItems.remove(trung);
+            player.removeIDItem(trung.id);
+            Database.instance.saveAnimal(anima);
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
+            Database.instance
+                    .saveOrtherLog(
+                            "tob_log_other_animal", player.charname, "Ap trung rong bang | " + anima.getAttribute(), "crt"
+                    );
+            player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng. Bạn đã nở được linh thú " + anima.name, ""));
+            return true;
+        } catch (Exception var4) {
+            var4.printStackTrace();
+            return false;
+        }
+    }
+
+    // Tim trung rong bang dau tien trong hanh trang, null neu khong co.
+    public static Item getTrungRongBang(Char player) {
+        for (int i = 0; i < player.iItems.size(); i++) {
+            Item it = (Item) player.iItems.elementAt(i);
+            if (it.isTrungRongBang()) {
+                return it;
+            }
+        }
+
+        return null;
+    }
 
     private void doMenuSuKienMiniChucNu(Char player, int idNpc, int idMenu, int idOptionMenu) {
         if (idMenu == 0) {
@@ -36331,6 +36392,13 @@ public class Map implements Runnable {
                             }
                         }
 
+                        return;
+                    }
+
+                    // Phai chan TRUOC nhanh ho ve lenh: trung rong bang cung type 21 nen neu de
+                    // roi xuong duoi thi no mo menu trieu hoi ho ve chu khong no ra thu.
+                    if (item.isTrungRongBang()) {
+                        this.doApTrungRongBang(player, item);
                         return;
                     }
 

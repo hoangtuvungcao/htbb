@@ -239,9 +239,10 @@ Gồm những gì:
 ## Bốn điều phải biết trước khi phát mã này
 
 **1. `luong` và `lockLuong` trong `Char` là `int`, không phải `long`**
-([Char.java:101](../src/real/Char.java#L101)). Trần là 2.147.483.647. Nhận 1 tỉ **hai lần**
-là tràn thành số âm, mà `getLuong()` trả 0 khi âm → **mất sạch lượng**. Vì vậy mã trên đặt
-`limit_use = 1`. `xu` thì an toàn vì `Char.xu` là `long`.
+([Char.java:101](../src/real/Char.java#L101)). Trần là 2.147.483.647. Nhận 1 tỉ tới lần thứ
+**ba** là tràn thành số âm, và `getLuong()` không chỉ trả 0 — nó gọi
+`banChar(this, "amLuong")` ([Char.java:19741](../src/real/Char.java#L19741)) → **nhân vật bị
+ban**. Vì vậy mã trên đặt `limit_use = 1`. `xu` thì an toàn vì `Char.xu` là `long`.
 
 **2. Một entry sai làm mất toàn bộ phần còn lại.** Cả vòng lặp vật phẩm nằm trong một
 `try`; `Integer.parseInt` lỗi hoặc template không tồn tại là nhảy ra ngoài, các phần thưởng
@@ -257,6 +258,77 @@ trong mã: `VKTB` / `VKTBMAX` (thần binh) không cần id, mọi class đều 
 
 **4. Cũng không đưa `EGG` và `DH`** vì id trứng / id danh hiệu chưa kiểm chứng trên DB mới.
 `DH` còn có danh sách id cố định trong code, sai id là không nhận được gì.
+
+## Cho `admin` và `chienthan` nhập mã VÔ HẠN LẦN (đã áp dụng trên VPS)
+
+Có hai thứ chặn nhập lại, phải mở cả hai:
+
+| Chặn | Mở bằng |
+|---|---|
+| `giftcode.limit_use` — số lượt còn lại của mã, dùng chung cho mọi người | đặt `-1` (số âm không bao giờ bị trừ vì code chỉ trừ khi `limit >= 1`) |
+| `giftcode_log` — mỗi nhân vật một mã một lần | trigger đổi tên người nhận khi ghi log, nên câu kiểm của server không tìm ra |
+
+```sql
+UPDATE kpah_db.giftcode SET limit_use = -1
+ WHERE giftcode IN ('vip1','vip2','vip3','pet1','manh1','manh2','nlieu1','nlieu2','nlieu3');
+
+DELETE FROM kpah_db.giftcode_log WHERE player IN ('admin','chienthan');
+
+USE kpah_db;
+CREATE TRIGGER tg_giftcode_log_unlimited BEFORE INSERT ON giftcode_log FOR EACH ROW
+  SET NEW.player = IF(NEW.player IN ('admin','chienthan'), CONCAT(NEW.player, '~free'), NEW.player);
+```
+
+### Vì sao trigger này chạy được
+
+Server ghi log bằng `insert into giftcode_log set player = '<charname>' ...`
+([Database.java:2607](../src/data/Database.java#L2607)) rồi lần sau kiểm bằng
+`select * from giftcode_log where giftcode='X' AND player='<charname>'`
+([Database.java:2074](../src/data/Database.java#L2074)). Trigger ghi thành `admin~free`, nên
+câu `player='admin'` luôn ra 0 dòng → luôn nhận được. Người chơi khác vẫn ghi tên thật và
+vẫn chỉ nhận một lần. Vẫn còn dòng log để tra lịch sử (`WHERE player LIKE 'admin%'`).
+
+Đã kiểm thật trên DB: insert tên `admin` ra dòng `admin~free` (server đếm được 0), insert tên
+`nguoikhac` giữ nguyên (server đếm được 1).
+
+### Đã hạ `luong` của `vip1` xuống 1.000.000
+
+`vip1` đang là 1 tỉ lượng mở + 1 tỉ lượng khoá. Vô hạn lượt + số đó = **nhập lần thứ ba là
+tràn `int` thành âm và `getLuong()` tự ban nhân vật** (xem điều 1 ở trên). Nên đã đổi:
+
+```sql
+UPDATE kpah_db.giftcode SET luong = 1000000, luongLock = 1000000 WHERE giftcode = 'vip1';
+```
+
+Nhập 2147 lần mới tới trần, coi như an toàn. `xu` giữ 2 tỉ vì `Char.xu` là `long`.
+Muốn trả lại số cũ (chấp nhận chỉ nhập được **tối đa 2 lần**, lần 3 là bị ban):
+
+```sql
+UPDATE kpah_db.giftcode SET luong = 1000000000, luongLock = 1000000000 WHERE giftcode = 'vip1';
+```
+
+### Thêm / bớt nhân vật, hoặc tắt hẳn
+
+```sql
+-- thêm người: xoá rồi tạo lại trigger với danh sách mới
+DROP TRIGGER IF EXISTS kpah_db.tg_giftcode_log_unlimited;
+USE kpah_db;
+CREATE TRIGGER tg_giftcode_log_unlimited BEFORE INSERT ON giftcode_log FOR EACH ROW
+  SET NEW.player = IF(NEW.player IN ('admin','chienthan','tennhanvatmoi'), CONCAT(NEW.player, '~free'), NEW.player);
+
+-- tắt hẳn, quay về mỗi người một lần
+DROP TRIGGER IF EXISTS kpah_db.tg_giftcode_log_unlimited;
+
+-- và đóng lượt của mã
+UPDATE kpah_db.giftcode SET limit_use = 0 WHERE giftcode IN ('vip1','vip2','vip3');
+```
+
+Nhớ: **`limit_use = -1` là vô hạn cho TẤT CẢ người chơi**, không riêng hai nhân vật này —
+chỉ có phần "nhập lại nhiều lần" là riêng. Muốn mã chỉ hai người dùng được thì phải dùng
+`ngude_giftcode` (có cột `charname`) ở mục dưới.
+
+**Hành trang đầy vẫn là cái chặn thật.** Vô hạn lượt không giúp gì nếu `isFullInventory()`
+bỏ qua im lặng — dọn túi trước mỗi lần nhập `nlieu*` / `manh*` / `pet1`.
 
 ## Mã riêng theo nhân vật (`ngude_giftcode`)
 

@@ -3089,6 +3089,12 @@ public class Item extends Actor {
         return this.getTemplate().type == 26;
     }
 
+    // Trung rong bang. Template 887 la ban sao cua ho ve lenh (type 21) chi doi ten, nen phai
+    // nhan dien bang id chu khong dung duoc type nhu istrungPet.
+    public boolean isTrungRongBang() {
+        return this.tempateID == 887;
+    }
+
     public boolean isPet() {
         return this.getTemplate().type == 27;
     }
