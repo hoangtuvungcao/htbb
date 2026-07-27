@@ -716,6 +716,59 @@ systemctl start kpah-game
 > Nhưng nhớ là lần `update.sh` sau sẽ báo `KPAH2_patched.jar` bị sửa tay và dừng lại —
 > lúc đó chạy `sudo -u kpah git -C /opt/kpah checkout -- KPAH2_patched.jar` rồi update lại.
 
+### Deploy tự động: `git push` là VPS tự cập nhật
+
+Đã bật. Máy nhà chỉ cần:
+
+```powershell
+.\capnhat.bat            # BẮT BUỘC: KPAH2_patched.jar mới là file VPS chạy
+git add -A && git commit -m "..." && git push
+```
+
+Không phải SSH vào VPS nữa. [.github/workflows/deploy.yml](.github/workflows/deploy.yml) chạy
+sau mỗi push lên `main`, SSH vào VPS gọi [vps/deploy-auto.sh](vps/deploy-auto.sh).
+
+**Nó không restart bừa.** Script so danh sách file giữa commit cũ và mới:
+
+| Commit đổi gì | Hành động |
+|---|---|
+| `KPAH2_patched.jar`, `lib/`, `libs/`, `map/`, `cMap/`, `loginServer/` | báo trước 60s trong game → tắt → pull → bật |
+| còn lại (`.md`, `.sql`, `vps/*.sh`, `src/*.java`…) | chỉ `git pull`, **không ai bị kick** |
+
+`src/*.java` cố ý **không** nằm trong nhóm phải restart: server chạy jar, sửa `.java` mà chưa
+`capnhat.bat` thì restart cũng vô nghĩa — đúng cái bẫy ở [mục trên](#L104).
+
+**Báo trước bảo trì 60 giây** hoạt động qua cờ DB, không cần ai bấm nút:
+
+```sql
+UPDATE kpah_db.5h_systems SET status = 0 WHERE command = 'baotri_thongbao';
+```
+
+`BaoTriDaily` đọc cờ này mỗi 5 giây ([Database.baoTriThongBaoCMD](src/data/Database.java))
+rồi chạy marquee đếm ngược ở mốc 60s/30s/10s
+([BaoTriDaily.demNguocBaoTri](src/real/BaoTriDaily.java)). Cờ **chỉ báo, không tự tắt server**
+— việc tắt để cho `systemctl stop` (SIGTERM → shutdown hook lưu dữ liệu). Chạy câu SQL trên
+bất cứ lúc nào cũng được nếu muốn báo tay mà không deploy.
+
+**Khoá SSH bị giới hạn.** Khoá riêng `/root/.ssh/deploy_github` khai trong `authorized_keys`
+kèm `command="/opt/kpah/vps/deploy-auto.sh"` + `no-pty,no-port-forwarding`, nên nếu secret
+trên GitHub bị lộ thì kẻ lấy được cũng **chỉ chạy được đúng script deploy**, không mở được
+shell. Đặt secret: repo → Settings → Secrets and variables → Actions → `VPS_SSH_KEY` =
+nội dung `ssh root@180.93.57.30 "cat /root/.ssh/deploy_github"`.
+
+Xem chuyện gì đã xảy ra:
+
+```bash
+tail -n 40 /opt/kpah/log/autodeploy.log     # trên VPS
+```
+
+hoặc tab **Actions** trên GitHub — output của script được `tee` nên hiện luôn ở đó.
+Chạy tay lúc nào cũng được: `sudo /opt/kpah/vps/deploy-auto.sh` (không có commit mới thì
+nó không làm gì).
+
+Hai chỗ script tự bảo vệ: `flock` để hai push liên tiếp không deploy chồng nhau, và `trap`
+SIGHUP để SSH đứt giữa lúc server đang tắt thì nó bật lại chứ không để nằm im.
+
 ### Backup DB tự động
 
 ```bash
