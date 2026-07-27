@@ -6,7 +6,7 @@ package Constant;
 
 /**
  *
- * @author TOM
+ *
  */
 public class Checker {
 

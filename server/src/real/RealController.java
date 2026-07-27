@@ -5,7 +5,7 @@
 package real;
 
 import Constant.Logger2;
-import com.khanhdz.event.TichLuyOnline;
+import com.kpah.event.TichLuyOnline;
 import data.Animal;
 import data.CharInfo;
 import data.CreateItemTemplate;
@@ -63,7 +63,7 @@ import data.NewClan;
 
 /**
  *
- * @author TOM
+ *
  */
 public class RealController extends ServerController {
 

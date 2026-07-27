@@ -164,15 +164,13 @@ public class RequestNPCInfoHandler implements ICommandHandler {
 //                    msg = MessageCreator.createMsgMenu(menu, npcType, 0);
 //                    session.sendMessage(msg);
 //                }
+                // NPC nay chi admin thay (xem Char.updateActorPos + Map.NAME_NPC_AN).
+                // Cham vao -> mo bang setting. Nguoi choi thuong khong mo duoc gi.
                 p = CharManager.instance.getByUserID(session.userID);
-                if (p != null) {
-                    // "Hỗ Trợ" da chuyen sang npc tong tieu dau (npcType -50).
-                    menu = new String[]{"Đang Cập Nhật"};
-                    msg = MessageCreator.createMsgMenu(menu, npcType, 0);
-                    session.sendMessage(msg);
-                    return;
+                if (p != null && p.isAdmin) {
+                    real.AdminMenu.moMenu(p);
                 }
-                break;
+                return;
             }
             case -67: {
                 p = CharManager.instance.getByUserID(session.userID);

@@ -1,0 +1,117 @@
+#Tien Len TeaM Server
+sv.port=19129
+limit.ccu=20000
+db.host=localhost:3306
+db.name=kpah_db
+db.user=root
+db.password=
+db.maxco=100
+db.nameNap=kpah_db
+db.userNap=root
+db.pass=
+db.maxNap=30
+#
+db.host1=localhost:3306
+db.name1=kpah_db
+db.user1=root
+db.password1=
+db.maxco1=1
+#
+sv.portnap=19153
+sv.server=1
+sv.LG=3
+sv.range=0
+sv.pathLog=D:\\server\\nqsh\\log\\
+sv.createRace=2
+sv.tablerace=tob_race_257
+sv.dayrace=2013-07-11
+db.hour=-1
+db.run=D:\\nqsh30\\toolRestart.bat
+db.minute=2
+sv.lang=0
+sv.me=0
+sv.ph=chienthan
+sv.choi=snduca
+sv.iplogin=127.0.0.1
+sv.portlogin=8023
+api.sv=1
+api.url=https://domain.com
+// 1 la bat 2 la tat
+sv.expvantieu=1
+sv.Luckyexp=1
+sv.ExpQua=1
+sv.CodeTest=0
+sv.EnableAvtiveCheck=1
+# So nhan vat toi da moi tai khoan (1..3, client chi ve duoc 3 slot). Thieu dong nay = 3.
+sv.maxCharPerAccount=3
+# ==== TI LE DROP KHI TRAIN QUAI ====
+# Cac so la PHAN TRAM so voi ti le goc cua game: 100 = nhu ban goc, 50 = con mot nua,
+# 10 = con 1/10, 0 = tat han. Sua o day roi restart server la an, khong can build lai jar.
+# sv.tileXu        : ti le quai rot xu          (goc 8-9% moi con)
+# sv.tileLuong     : ti le ra luong mo/luong khoa (goc 25% moi con, moi loai)
+# sv.tileItemSuKien: banh, keo, bong, kem, trung pet... cua su kien
+# sv.tilePotion    : binh HP/MP, binh tang toc, hp/mp chien truong
+# sv.tileNgoc      : ngoc, ngoc tu binh
+# sv.tileItem      : do (trang bi) roi ra
+sv.tileXu=5
+sv.tileLuong=10
+sv.tileItemSuKien=10
+sv.tilePotion=15
+sv.tileNgoc=15
+sv.tileItem=10
+# So chia SO LUONG xu moi lan rot (khac voi ti le rot o tren). 10 = nhu ban goc,
+# 30 = so xu moi lan rot chi con 1/3. Tang so nay neu thay "rot it lan nhung moi lan qua nhieu xu".
+sv.chiaXuRoi=30
+# Trang chu server gui xuong client sau khi dang nhap (truoc day bi ghi cung my.teamobi.com).
+# De trong = client khong nhan link nao.
+sv.website=
+# Link tai game hien trong thong bao "co ban moi" (truoc day la dl.teamobi.com / wap.teamobi.com).
+sv.linkTaiGame=
+# ==== TEST FLAGS (mac dinh tat, dung de kiem thu local) ====
+# sv.EnableAvtiveCheck=0  -> tat kiem tra kich hoat tai khoan (login duoc ngay sau khi dang ky)
+# sv.testMode=1           -> bat che do test (kich hoat sv.testCode ben duoi)
+sv.testMode=0
+# sv.testCode=abc         -> khi testMode=1, go ma nay o o giftcode se nhan 100tr xu + 10k luong (co the dung lai). De trong = tat
+sv.testCode=
+# sv.adminAccounts=ten1,ten2 -> cap quyen admin/GM. LUU Y: so sanh voi TEN NHAN VAT (charname),
+# khong phai ten tai khoan. Khong phan biet chu hoa/thuong. Dung dau phay ngan cach. De trong = khong cap.
+sv.adminAccounts=admin,admin2
+# sv.reloginWaitSec: so giay phai cho truoc khi vao lai game sau khi thoat. 0 = vao ngay.
+sv.reloginWaitSec=0
+# ==== CHONG DoS (tang gia tri neu nguoi choi that bi chan, dat 0 de tat tung muc) ====
+# Ngat ket noi im lang qua N giay (chong slowloris). 0 = tat.
+sv.socketTimeout=0
+# So ket noi dong thoi toi da tu 1 IP (tang len neu nhieu clone/net chung IP). 0 = tat.
+sv.maxConnPerIp=50
+# So ket noi moi toi da tu 1 IP trong 1 cua so; vuot se bi ban tam.
+sv.connRateMax=60
+# Do dai cua so dem (giay).
+sv.connRateWindow=0
+# Thoi gian ban tam mot IP flood (giay).
+sv.dosBanSec=300
+sv.isSuKien83=0
+sv.isSuKienTrungThul2016=1
+sv.isSuKienTet2017=0
+sv.isSuKienGioTo2016=0
+sv.isSuKienNoel2023=0
+sv.isSuKienTetduonglich2024=0
+
+# ==== GIO CHIEM THANH ====
+# sv.gioChiemThanh = -1  -> theo lich chuan: 21h thu 3 + thu 7.
+# sv.gioChiemThanh = 21, sv.phutChiemThanh = 0 -> chiem thanh 21h00.
+# sv.ngayChiemThanh: de trong = ap dung moi ngay; "2026-07-28" = dung ngay do;
+#                    "Tue"/"Sat"... = thu trong tuan. Phien luon keo dai 1 tieng.
+# Sua o day (roi nap lai / restart) hoac sua trong game o bang setting deu duoc:
+# bang setting ghi thang vao file nay nen hai ben luon khop.
+sv.gioChiemThanh=12
+sv.phutChiemThanh=0
+sv.ngayChiemThanh=2026-07-27
+# Mo shop skin thu nuoi cho nguoi choi: 1 = mo, 0 = dong (chi admin test duoc).
+sv.moShopSkin=0
+
+# ==== LENH CHAT ADMIN ====
+# setting : mo bang setting (o nhap, dieu khien bang ban phim). "setting menu" = menu danh sach.
+#           Trong o nhap: 8 = nap lai server.ini sau khi sua tay file.
+# stown 1 <giờ> <phút> [2026-07-27] : set thời gian chiếm thành
+# stown 0 hoặc ktct	: Trả về lịch chuẩn 21h thứ 3 + thứ 7
+# tgct : xem giờ chiếm thành đang đặt

@@ -1,10 +1,10 @@
-package com.khanhdz.runtime;
+package com.kpah.runtime;
 
-import com.khanhdz.event.TichLuyOnline;
+import com.kpah.event.TichLuyOnline;
 
 /**
  *
- * @author TOM
+ *
  */
 public class runtimeCharProperties {
 

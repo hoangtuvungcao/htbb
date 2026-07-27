@@ -4,9 +4,9 @@ package real;
 import Constant.Checker;
 import Constant.Logger2;
 import ThanKhi.ThanKhiCraftState;
-import com.khanhdz.ManagerGame;
-import com.khanhdz.event.TichLuyOnline;
-import com.khanhdz.runtime.runtimeCharProperties;
+import com.kpah.ManagerGame;
+import com.kpah.event.TichLuyOnline;
+import com.kpah.runtime.runtimeCharProperties;
 import java.io.DataInputStream;
 import java.util.Set;
 import data.Xoso;
@@ -2089,6 +2089,17 @@ public class Char extends LiveActor {
     private void checkWearing() {
     }
 
+    /**
+     * Engine goc cap quyen admin + chi so cheat (thu 100000, bo qua kiem tra diem
+     * tiem nang) cho nhan vat CHI DUA VAO TEN "chienthan". Ten nay gio ai cung tao
+     * duoc, nen dac quyen do chi con hieu luc khi chinh chu liet ke "chienthan"
+     * trong sv.adminAccounts. Nguoi choi tinh co dat ten nay chi la nhan vat thuong.
+     */
+    public static boolean laChienThanCoQuyen(final String ten) {
+        return ten != null && ten.trim().equalsIgnoreCase("chienthan")
+                && TeamServer.adminAccounts.contains("chienthan");
+    }
+
     public void calculateAttrib() {
         this.checkWearing();
         this.resetNguHanh();
@@ -2150,6 +2161,10 @@ public class Char extends LiveActor {
         this.calculateAccurate();
         this.calculateDodge();
         this.calculateCritical();
+        // Chi so cong thang tu skin thu nuoi (HP/MP/chinh xac/tiem nang/thu).
+        // BAT BUOC goi o CUOI HAM, sau ca 6 ham calculate*: accurate/dodge/attack
+        // duoc GAN LAI (=) trong cac ham do, nen cong truoc chung se bi xoa sach.
+        SkinThuNuoi.apDungChiSo(this);
     }
 
     public void updateSkillBuffPassive() {
@@ -3042,7 +3057,7 @@ public class Char extends LiveActor {
         this.defend_physic += atkTubinh;
         this.defendMaPlayer += defThumaP + defendMa * upmP / 100 + atkTubinh + defendMa * upThuTbChar / 1000;
         this.defendVatPlayer += defThuvatP + defendVat * upvP / 100 + atkTubinh + defendVat * upThuTbChar / 1000;
-        if (this.charname.equals("chienthan")) {
+        if (laChienThanCoQuyen(this.charname)) {
             this.defend_magic = 100000;
             this.defend_physic = 100000;
             this.defendMaPlayer = 100000;
@@ -3467,6 +3482,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return dam;
         }
         int finalDam = dam;
+        // Skin thu nuoi: hap thu thuong truc + thu kich hoat buff bi dong khi bi danh
+        finalDam = SkinThuNuoi.khiNhanSatThuong(this, finalDam, actor);
         // RỒNG LỚN: tích mọi lúc
         if (finalDam > 0 && this.rlAccumulateAlways) {
             long s = (long) this.damageAccumulated + finalDam;
@@ -3746,7 +3763,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     @Override
     public int getAttack() {
-        return super.getAttack() + this.getValueLua(2) * this.attack / 100;
+        int atk = super.getAttack() + this.getValueLua(2) * this.attack / 100;
+        // Skin thu nuoi: Xich Duong no +50% tan cong khi HP < 30%
+        final int pcSkin = SkinThuNuoi.pcTangSatThuong(this);
+        if (pcSkin > 0) {
+            atk += atk * pcSkin / 100;
+        }
+        return atk;
     }
 
     @Override
@@ -4156,6 +4179,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     final int tkXt = this.getTkXuyenThu(this.isCharMagic());
                     if (tkXt > 0 && def > 0) {
                         def -= (int) ((long) def * tkXt / 1000L);
+                        if (def < 0) {
+                            def = 0;
+                        }
+                    }
+                    // ---- SKIN THU NUOI: xuyen giap (Xich Duong) ----
+                    // Cung cho nay nen ap dung cho ca PvP (actor.cat == 0) va PvE.
+                    final int skXg = SkinThuNuoi.pcXuyenGiap(this);
+                    if (skXg > 0 && def > 0) {
+                        def -= def * skXg / 100;
                         if (def < 0) {
                             def = 0;
                         }
@@ -8729,7 +8761,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 String[] tachItem = listItem.trim().split(",");
                 for (int i = 0; i < tachItem.length; i++) {
                     String[] tachTime = tachItem[i].trim().split(":");
-                    if (tachTime[0].equals("DB")) {
+                    // SKIN:<0-4> -> tang skin thu nuoi (chi co qua su kien/giftcode)
+                    if (tachTime[0].equals("SKIN")) {
+                        SkinThuNuoi.tangSkin(this, Integer.parseInt(tachTime[1]));
+                    } else if (tachTime[0].equals("DB")) {
                         for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                             GiftCode.AddItem(this, Integer.parseInt(tachTime[1]), 0, 0, Integer.parseInt(tachTime[3]));
                         }
@@ -9211,7 +9246,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 String[] tachItem = listItem.trim().split(",");
                 for (int i = 0; i < tachItem.length; i++) {
                     String[] tachTime = tachItem[i].trim().split(":");
-                    if (tachTime[0].equals("DB")) {
+                    // SKIN:<0-4> -> tang skin thu nuoi (chi co qua su kien/giftcode)
+                    if (tachTime[0].equals("SKIN")) {
+                        SkinThuNuoi.tangSkin(this, Integer.parseInt(tachTime[1]));
+                    } else if (tachTime[0].equals("DB")) {
                         for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                             GiftCode.AddItem(this, Integer.parseInt(tachTime[1]), 0, 0, Integer.parseInt(tachTime[3]));
                         }
@@ -9406,6 +9444,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
             for (int i = 0; i < Map.npcVilage.size(); ++i) {
                 if (!TeamServer.isServerIndo()) {
                     final Char aa = Map.npcVilage.get(i);
+                    // NPC "admin": nguoi choi thuong khong thay. Rieng admin van thay de
+                    // cham vao mo bang setting - mo tu NPC thi khong con o che do chat
+                    // nen dieu khien bang phim mui tren binh thuong.
+                    if (aa.charname != null && aa.charname.equals(Map.NAME_NPC_AN) && !this.isAdmin) {
+                        continue;
+                    }
                     int xx = 0;
                     int yy = 0;
                     if (aa.posNPCInVilage != null) {
@@ -12251,7 +12295,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             } catch (final Exception ex2) {
             }
             
-            if (!this.charname.equals("chienthan") && !TeamServer.adminAccounts.contains(this.charname.toLowerCase()) && this.isAdmin)  this.isAdmin = false;  // hủy admin nếu k phải chienthan / adminAccounts test
+            if (!this.charname.equals("admin") && !TeamServer.adminAccounts.contains(this.charname.toLowerCase()) && this.isAdmin)  this.isAdmin = false;  // hủy admin nếu k phải chienthan / adminAccounts test
             
             try {
                 this.config(this.typeConfig = Byte.parseByte(data[17]));
@@ -12563,7 +12607,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
             if (this.isAdmin && Map.isAcountAdmin(this.getSession().username)) {
                 this.isAdmin = false;
             }
-            if (this.charname.toLowerCase().equals("chienthan")) {
+            // "chienthan" khong con tu dong len admin: ten nay nguoi choi tao duoc
+            // (xem laChienThanCoQuyen + Database.laTenDanhRieng). Muon dung lai ten
+            // nay lam GM thi them "chienthan" vao sv.adminAccounts.
+            if (laChienThanCoQuyen(this.charname)) {
                 this.isAdmin = true;
                 this.luot_van_tieu = 3;
             }
@@ -13366,7 +13413,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 this.basepoint = (short) Map.abs(Short.parseShort(data3[5]));
                 this.skillpoint = (short) Map.abs(Short.parseShort(data3[6]));
             }
-            if (!this.charname.toLowerCase().equals("chienthan")) {
+            // Kiem tra diem tiem nang (chong sua chi so): chi bo qua cho GM thuc su.
+            if (!laChienThanCoQuyen(this.charname)) {
                 final int allBasicPoint = this.lvDetail.getBasicPoint(this.lastLV) + (this.lastLV - 1) * 5;
                 final int tempSt = this.strength - Database.basicPoint[this.charClass][0];
                 final int tempAgitity = this.agitity - Database.basicPoint[this.charClass][1];
@@ -19710,6 +19758,91 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     public void addLuongLock(final int luong) {
         this.lockLuong += luong;
+    }
+
+    // ==================== HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI ====================
+    // Moi nhan vat, moi ngay: toi da MAX_LUONG_TRAIN_NGAY luong mo va MAX_LUONG_TRAIN_NGAY
+    // luong khoa. Khong phu thuoc so luong dang co trong nguoi. Han muc luu trong bang
+    // tob_train_luong kem ngay, nen bao tri / restart server khong lam reset.
+    // ===== Skin thu nuoi theo ngu hanh (xem real.SkinThuNuoi) =====
+    /** -1 = khong mang skin; 0..4 = Phuc Thu / Gau Truc / Tien Loc / Xich Duong / Chien Lang */
+    public int idSkinThuNuoi = SkinThuNuoi.KHONG_CO;
+    /**
+     * Cac skin nhan vat DA SO HUU, dang co bit: bit 0 = Phuc Thu ... bit 4 = Chien Lang.
+     * Chi nhan duoc qua su kien / giftcode (khong ban trong shop), xem SkinThuNuoi.
+     */
+    public int skinDaSoHuu = 0;
+    /** Moc thoi gian buff bi dong cua skin het hieu luc (ms) */
+    public long timeHetBuffSkinThuNuoi = 0L;
+    /** Moc thoi gian het cooldown buff bi dong (ms) */
+    public long timeCdSkinThuNuoi = 0L;
+    public boolean daLoadSkinThuNuoi = false;
+
+    public static final int MAX_LUONG_TRAIN_NGAY = 200000;
+
+    public String ngayTrainLuong = "";
+    public int luongMoTrainNgay = 0;
+    public int luongKhoaTrainNgay = 0;
+    public boolean daLoadTrainLuong = false;
+    public boolean trainLuongDirty = false;
+
+    /** Nap han muc tu DB (1 lan moi phien) va reset khi sang ngay moi. */
+    private void checkNgayTrainLuong() {
+        if (!this.daLoadTrainLuong) {
+            this.daLoadTrainLuong = true;
+            try {
+                Database.instance.loadTrainLuong(this);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+        final String homNay = getDayOpen(0L);
+        if (!homNay.equals(this.ngayTrainLuong)) {
+            this.ngayTrainLuong = homNay;
+            this.luongMoTrainNgay = 0;
+            this.luongKhoaTrainNgay = 0;
+            this.trainLuongDirty = true;
+        }
+    }
+
+    /** Con duoc nhan bao nhieu luong tu train quai trong hom nay. */
+    public int conLaiLuongTrainNgay(final boolean khoa) {
+        checkNgayTrainLuong();
+        final int daNhan = khoa ? this.luongKhoaTrainNgay : this.luongMoTrainNgay;
+        final int conLai = MAX_LUONG_TRAIN_NGAY - daNhan;
+        return (conLai > 0) ? conLai : 0;
+    }
+
+    /**
+     * Cong luong nhat duoc tu train quai, tu dong cat theo han muc con lai cua ngay.
+     *
+     * @param khoa true = luong khoa, false = luong mo
+     * @return so luong thuc su duoc cong (0 neu da het han muc)
+     */
+    public int addLuongTrainQuai(int soluong, final boolean khoa) {
+        if (soluong <= 0) {
+            return 0;
+        }
+        final int conLai = conLaiLuongTrainNgay(khoa);
+        if (conLai <= 0) {
+            return 0;
+        }
+        if (soluong > conLai) {
+            soluong = conLai;
+        }
+        if (khoa) {
+            this.addLuongLock(soluong);
+            this.luongKhoaTrainNgay += soluong;
+        } else {
+            this.addLuong(soluong);
+            this.luongMoTrainNgay += soluong;
+        }
+        this.trainLuongDirty = true;
+        try {
+            this.sendMessage(MessageCreator.createCharInventoryMessage(this, 0));
+        } catch (final Exception e) {
+        }
+        return soluong;
     }
 
     public void addXu(final long xu, final String vitri) {

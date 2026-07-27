@@ -142,7 +142,8 @@ public class LoginHandler implements ICommandHandler {
                 msgLoginSuccess.dos.writeByte(ItemQuest.ICON_IMAGE[i3]);
                 msgLoginSuccess.dos.writeUTF(ItemQuest.NAME_ITEM_QUEST[i3]);
             }  
-            msgLoginSuccess.dos.writeUTF("http://my.teamobi.com");
+            // Trang chu gui xuong client: lay tu server.ini (sv.website), khong con domain ben thu ba.
+            msgLoginSuccess.dos.writeUTF(TeamServer.website);
             if (vsTile == -1) {
                 msgLoginSuccess.dos.writeByte(2);
                 msgLoginSuccess.dos.writeShort(DataGame.imgTile[0].length);
@@ -401,12 +402,8 @@ public class LoginHandler implements ICommandHandler {
             if (MessageCreator.version.compareTo("1.8.6") < 0) {
                 final String pro = "0";
                 final String agenpro = "0";
-                String[] link = {"http://27.0.14.78/dl/i.php?type=jar&id=31&ver=6"};
-                if (!pro.equals("0")) {
-                    link = new String[]{"http://dl.teamobi.com/n/?g=kpah"};
-                } else if (s.firmWare == 1) {
-                    link = new String[]{"http://wap.teamobi.com/download/5"};
-                }
+                // Link tai game: lay tu server.ini (sv.linkTaiGame), khong con domain ben thu ba.
+                String[] link = {TeamServer.linkTaiGame};
                 final Message i = MessageCreator.createServerAlertMessage("Đã có phiên bản 1.8.6.", link[Map.r.nextInt(link.length)]);
                 s.sendMessage(i);
                 i.cleanup();
@@ -479,12 +476,8 @@ public class LoginHandler implements ICommandHandler {
                 } else {
                     agenpro = provider_agent[1];
                 }
-                String[] link = {"https://teamobi.com"};
-                if (!pro.equals("0")) {
-                    link = new String[]{"https://teamobi.com"};
-                } else if (s.firmWare == 1) {
-                    link = new String[]{"https://teamobi.com"};
-                }
+                // Link tai game: lay tu server.ini (sv.linkTaiGame), khong con domain ben thu ba.
+                String[] link = {TeamServer.linkTaiGame};
                 final Message i = MessageCreator.createServerAlertMessage("Vui lòng tải phiên mới để có đầy đủ chức năng tại trang chủ", link[Map.r.nextInt(link.length)]);
                 s.sendMessage(i);
                 i.cleanup();

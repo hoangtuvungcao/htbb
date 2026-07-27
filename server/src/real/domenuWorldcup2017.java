@@ -10,7 +10,7 @@ import static real.Map.r;
 
 /**
  *
- * @author TOM
+ *
  */
 public class domenuWorldcup2017 {
 

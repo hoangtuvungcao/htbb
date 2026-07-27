@@ -717,6 +717,30 @@ public class Monster extends LiveActor {
     public static int percentDrop = 100;
     public static int tileDrop = 1;
 
+    // ================= DIEU CHINH TI LE DROP KHI TRAIN QUAI =================
+    // Cac so duoi la PHAN TRAM so voi ti le goc cua game:
+    //   100 = giu nguyen nhu cu, 50 = con mot nua, 20 = con 1/5, 0 = tat han.
+    // Chi can sua o day, khong phai di sua tung ti le rai rac trong file.
+    // Luu y: chi ap dung cho quai thuong khi train. Boss, vat pham cua nhiem vu
+    // (item quest) va tieu (van tieu) khong bi anh huong.
+    public static int PC_TILE_XU = 10;          // ti le roi xu
+    public static int PC_TILE_LUONG = 20;       // ti le ra luong mo / luong khoa
+    public static int PC_TILE_ITEM_SUKIEN = 20; // banh, keo, bong, kem, trung pet... cua su kien
+    public static int PC_TILE_POTION = 30;      // binh HP/MP, binh tang toc, hp/mp chien truong
+    public static int PC_TILE_NGOC = 30;        // ngoc, ngoc tu binh
+    public static int PC_TILE_ITEM = 20;        // do (trang bi) roi ra
+
+    /** Nhan ti le goc voi phan tram dieu chinh o tren. */
+    public static int tile(final int tiLeGoc, final int pc) {
+        if (pc <= 0) {
+            return 0;
+        }
+        if (pc == 100) {
+            return tiLeGoc;
+        }
+        return (int) ((long) tiLeGoc * pc / 100L);
+    }
+
     @Override
     public Vector<Actor> onDropItem(final Map m, final Char p) {
         final Vector<Actor> droplist = new Vector<Actor>();
@@ -810,7 +834,7 @@ public class Monster extends LiveActor {
                     x2Player = 0;
                 }
                 Potion pt = null;
-                if (p.receiveXP() != 3 && (Map.randomMillion() < ((p.lvDetail.lv < 15) ? (90000 + 90000 * x2Drop / 100) : (80000 + 80000 * x2Drop / 100)) + p.luck * 100 || this.idTemplate == Map.idGhost)) {
+                if (p.receiveXP() != 3 && (Map.randomMillion() < tile(((p.lvDetail.lv < 15) ? (90000 + 90000 * x2Drop / 100) : (80000 + 80000 * x2Drop / 100)) + p.luck * 100, PC_TILE_XU) || this.idTemplate == Map.idGhost)) {
                     int totalQuantity;
                     int quantity = totalQuantity = Monster.r.nextInt() % 5 + this.getGoldRcv() / Map.getDivDropXu();
                     if (this.idTemplate == Map.idGhost) {
@@ -836,7 +860,7 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
-                if (p.receiveXP() != 3 && Map.randomMillion() < 500 + 500 * x2Drop / 100) {
+                if (p.receiveXP() != 3 && Map.randomMillion() < tile(500 + 500 * x2Drop / 100, PC_TILE_POTION)) {
                     final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                     if (deltalv <= Map.deltaLVAttackMons) {
                         final byte ptType = 7;
@@ -854,7 +878,7 @@ public class Monster extends LiveActor {
                     }
                 }
                 if (Char.isSuKienWordcup2017()) {
-                    if (Map.randomMillion() < 10000) { // Số quái chêt random drop
+                    if (Map.randomMillion() < tile(10000, PC_TILE_ITEM_SUKIEN)) { // Số quái chêt random drop
                         final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                         if (deltalv <= 5) {
                             final byte[] idpt = {(byte) 160}; // bóng bạc
@@ -876,7 +900,7 @@ public class Monster extends LiveActor {
                 }
 
                 if (Char.isSuKienHe2017()) {
-                    if (Map.randomMillion() < 1000) { // Số quái chêt random drop
+                    if (Map.randomMillion() < tile(1000, PC_TILE_ITEM_SUKIEN)) { // Số quái chêt random drop
                         final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                         if (deltalv <= 5) {
                             final byte[] idpt = {(byte) 146}; // kem
@@ -899,7 +923,7 @@ public class Monster extends LiveActor {
                     if (TeamServer.isServerLocal()) {
                         tl = 10000000;
                     }
-                    if (Map.r.nextInt(500_000) < tl && p.potions[104] > 0) { // phải có dây thừng và random < tl
+                    if (Map.r.nextInt(500_000) < tile(tl, PC_TILE_ITEM_SUKIEN) && p.potions[104] > 0) { // phải có dây thừng và random < tl
                         int deltalv2 = Map.abs(p.lvDetail.lv - this.level);
                         if (TeamServer.isServerLocal()) {
                             deltalv2 = 1;
@@ -944,28 +968,29 @@ public class Monster extends LiveActor {
 //                    } catch (final Exception ex2) {
 //                    }
 //                }
-                boolean DropLuongLock = true; //true là drop ph, false là dẹp nghĩ á.               
-                if ((UtilKPAH.getHour() % 3 == 0) && UtilKPAH.getHour() != hourLuong && LimitLock < 200000) {
-                    LimitLock = (TeamServer.maxCCU * 200);
-                    hourLuong = UtilKPAH.getHour();
-                    System.out.println("DA RESET LIMIT LUONG");
-//                    try {
-//                        Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Đã reset ngân khố lượng khoá toàn server, train tiếp nào mọi người ơi."));
-//                    } catch (final Exception ex2) {
-//                    }
-                }
-                if (DropLuongLock && Map.randomMillion() < 250000
-                        && p.getLuongLock() < 5000
-                        && p.getLevel() >= 35
-                        && LimitLock > 0) {
+                // ==================== TRAIN QUAI RA LUONG ====================
+                // Moi nhan vat moi ngay nhat toi da Char.MAX_LUONG_TRAIN_NGAY luong mo va
+                // ngan nay luong khoa. Khong con phu thuoc "luong khoa hien tai < 5000" va
+                // khong con ngan kho LimitLock chung toan server (ngan kho cu chi maxCCU*200
+                // moi 3 tieng nen han muc theo ngay se khong bao gio dat toi).
+                // Han muc duoc luu theo ngay trong bang tob_train_luong -> bao tri / restart
+                // khong lam reset. Xem Char.addLuongTrainQuai().
+                boolean DropLuong = true; // false = tat han viec train quai ra luong
+                if (DropLuong && p.getLevel() >= 35) {
                     final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                     if (deltalv <= 5) {
-                        int luongLock = Map.random(5);
-                        if (luongLock > LimitLock) {
-                            luongLock = LimitLock;
+                        if (Map.randomMillion() < tile(250000, PC_TILE_LUONG)) { // goc 25% moi con quai: luong khoa
+                            final int slKhoa = Map.r.nextInt(5); // 0..4
+                            if (slKhoa > 0) {
+                                p.addLuongTrainQuai(slKhoa, true);
+                            }
                         }
-                        LimitLock -= luongLock;
-                        p.addLuongLock(luongLock);
+                        if (Map.randomMillion() < tile(250000, PC_TILE_LUONG)) { // goc 25% moi con quai: luong mo
+                            final int slMo = Map.r.nextInt(5); // 0..4
+                            if (slMo > 0) {
+                                p.addLuongTrainQuai(slMo, false);
+                            }
+                        }
                     }
                 }
                 String limitTime = "2022-07-04 00:00:00";
@@ -1023,7 +1048,7 @@ public class Monster extends LiveActor {
                     }
                 }
                 if (Char.isSuKienTet2017()) {
-                    if (Map.randomMillion() < 50000 + 5000 * x2Drop / 100 && p.lvDetail.lv >= 60) {
+                    if (Map.randomMillion() < tile(50000 + 5000 * x2Drop / 100, PC_TILE_ITEM_SUKIEN) && p.lvDetail.lv >= 60) {
                         final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                         if (deltalv <= Map.deltaLVAttackMons && (Char.nauBanhChung.listCharCooking.get(p.charname) != null || Char.nauBanhTet.listCharCooking.get(p.charname) != null)) {
                             final short[] idpt2 = {148, 122, 149, 150};
@@ -1048,7 +1073,7 @@ public class Monster extends LiveActor {
                     if (p.getAnimalRide() == null || (p.getAnimalRide() != null && !p.getAnimalRide().isLan())) {
                         tyle = 0;
                     }
-                    if (Map.randomMillion() < tyle && p.lvDetail.lv >= 60) {
+                    if (Map.randomMillion() < tile(tyle, PC_TILE_POTION) && p.lvDetail.lv >= 60) {
                         final int deltalv2 = Map.abs(p.lvDetail.lv - this.level);
                         if (deltalv2 <= Map.deltaLVAttackMons) {
                             final short[] idpt3 = {153, 154};
@@ -1067,7 +1092,7 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
-                if (Char.isSuKienHaloween2016() && Map.randomMillion() < 200000) {
+                if (Char.isSuKienHaloween2016() && Map.randomMillion() < tile(200000, PC_TILE_ITEM_SUKIEN)) {
                     final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                     if (deltalv <= Map.deltaLVAttackMons) {
                         final short[] idpt2 = {137, 138};
@@ -1110,7 +1135,7 @@ public class Monster extends LiveActor {
                     }
                 }
                  */
-                if (Char.isSuKienNoel2023() && Map.randomMillion() < (1000 * p.lvDetail.lv) && p.lvDetail.lv >= 40) {
+                if (Char.isSuKienNoel2023() && Map.randomMillion() < tile(1000 * p.lvDetail.lv, PC_TILE_ITEM_SUKIEN) && p.lvDetail.lv >= 40) {
                     final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                     if (deltalv <= Map.deltaLVAttackMons) {
                         final short[] idpt2 = {145};
@@ -1128,7 +1153,7 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
-                if (Char.isSuKienMiniNuiChauBau() && Map.randomMillion() < 50000) {
+                if (Char.isSuKienMiniNuiChauBau() && Map.randomMillion() < tile(50000, PC_TILE_ITEM_SUKIEN)) {
                     final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                     if (deltalv <= Map.deltaLVAttackMons || (p.isAdmin && Map.adminTest)) {
                         p.setTimeCake();
@@ -1148,7 +1173,7 @@ public class Monster extends LiveActor {
                     }
                 }
                 if (Char.isSuKienTrungThul2016()) {
-                    if (Map.randomMillion() < 160000 && p.getLevel() >= 40) {
+                    if (Map.randomMillion() < tile(160000, PC_TILE_ITEM_SUKIEN) && p.getLevel() >= 40) {
                         final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                         if (deltalv <= Map.deltaLVAttackMons) {
                             final short[] idpt2 = {142, 121, 120};
@@ -1186,7 +1211,7 @@ public class Monster extends LiveActor {
 //                            }
 //                        }
 //                    }
-                    if (Map.randomMillion() < 160000 && p.getLevel() >= 40) {
+                    if (Map.randomMillion() < tile(160000, PC_TILE_ITEM_SUKIEN) && p.getLevel() >= 40) {
                         final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                         if (p.minuteSocola > 0 && deltalv <= Map.deltaLVAttackMons) {
                             final byte ptType = 122;
@@ -1204,7 +1229,7 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
-                if (p.receiveXP() != 3 && Map.randomMillion() < 100000 + 100000 * x2Drop / 100 + p.luck * 100) {
+                if (p.receiveXP() != 3 && Map.randomMillion() < tile(100000 + 100000 * x2Drop / 100 + p.luck * 100, PC_TILE_POTION)) {
                     byte ptType5;
                     if (this.getLevel() <= 10) {
                         ptType5 = 1;
@@ -1225,7 +1250,7 @@ public class Monster extends LiveActor {
                         p.idPotion.add(pt.id);
                     }
                 }
-                if (p.receiveXP() != 3 && Map.randomMillion() < 100000 + 100000 * x2Drop / 100 + p.luck * 100) {
+                if (p.receiveXP() != 3 && Map.randomMillion() < tile(100000 + 100000 * x2Drop / 100 + p.luck * 100, PC_TILE_POTION)) {
                     byte ptType5;
                     if (this.getLevel() <= 10) {
                         ptType5 = 4;
@@ -1265,7 +1290,7 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
-                if (p.receiveXP() != 3 && Map.randomMillion() < 500 + 500 * x2Drop / 100 + p.luck * 100) {
+                if (p.receiveXP() != 3 && Map.randomMillion() < tile(500 + 500 * x2Drop / 100 + p.luck * 100, PC_TILE_NGOC)) {
                     final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                     if (deltalv <= 15) {
                         final GemItem gem2 = new GemItem(60);
@@ -1282,7 +1307,7 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
-                if (p.receiveXP() != 3 && Map.randomMillion() < 200 + 200 * x2Drop / 100) {
+                if (p.receiveXP() != 3 && Map.randomMillion() < tile(200 + 200 * x2Drop / 100, PC_TILE_NGOC)) {
                     final GemItem gem3 = Map.dropGemTuBinh(this.level);
                     if (gem3 != null) {
                         gem3.x = this.x + 5 + droplist.size() * 5;
@@ -1297,7 +1322,7 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
-                if (p.receiveXP() != 3 && (Map.randomMillion() < 1000 + 1000 * x2Drop / 100 + p.luck * 10 || this.idTemplate == Map.idGhost)) {
+                if (p.receiveXP() != 3 && (Map.randomMillion() < tile(1000 + 1000 * x2Drop / 100 + p.luck * 10, PC_TILE_NGOC) || this.idTemplate == Map.idGhost)) {
                     final int deltalv = Map.abs(p.lvDetail.lv - this.level);
                     if (deltalv <= 5) {
                         GemItem gem2 = null;
@@ -1320,6 +1345,7 @@ public class Monster extends LiveActor {
                 }
                 int n = Map.getPcDropItem(Map.abs(this.level - p.lvDetail.lv), p.luck);
                 n += n * x2Drop / 100;
+                n = tile(n, PC_TILE_ITEM); // giam ti le roi trang bi khi train quai
                 if (p.receiveXP() != 3 && (Map.randomMillion() < n || this.idTemplate == Map.idGhost || this.isBoss)) {
                     if (this.isBossSonTinhThuyTinh() && Map.r.nextInt(100) < 30) {
                         final Item item3 = Map.dropItemByIdTemplate(this.inCountry, (Map.r.nextInt(100) < 50) ? 676 : 677);

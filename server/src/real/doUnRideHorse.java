@@ -5,7 +5,7 @@ import data.Database;
 
 /**
  *
- * @author TOM
+ *
  */
 public class doUnRideHorse {
 

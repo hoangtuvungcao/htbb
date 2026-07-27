@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.khanhdz;
+package com.kpah;
 
 import data.Database;
 import java.util.Hashtable;
@@ -14,7 +14,7 @@ import real.MessageCreator;
 
 /**
  *
- * @author TOM
+ *
  */
 public class ManagerGame {
 

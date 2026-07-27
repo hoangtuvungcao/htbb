@@ -16,7 +16,7 @@ import static real.Map.petTemplate;
 
 /**
  *
- * @author TOM
+ *
  */
 public class doBuySpecialItem {
 

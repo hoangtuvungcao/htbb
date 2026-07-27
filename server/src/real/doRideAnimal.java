@@ -11,7 +11,7 @@ import io.Message;
 
 /**
  *
- * @author TOM
+ *
  */
 public class doRideAnimal {
 

@@ -42,6 +42,12 @@ public class MapTown extends Map {
    public static boolean isChiemThanh;
    public static int TimeAdminCheat;
    public static int minuteAdminCheat;
+   // Thoi diem bat dau chiem thanh cua tung lanh tho + thoi luong 1 tieng.
+   public static long[] timeBatDauChiemThanh = new long[]{0L, 0L, 0L};
+   public static final long THOI_LUONG_CHIEM_THANH = 3600000L;
+   // Ngay chiem thanh do admin set. "" = ap dung moi ngay.
+   // Nhan 2 dang: "yyyy-MM-dd" (dung 1 ngay cu the) hoac "Mon".."Sun" (thu trong tuan).
+   public static String dayAdminCheat = "";
    public static int count_all_item_sell_per_day;
    public static boolean isSkipDayCheck = false;
 
@@ -71,8 +77,14 @@ public class MapTown extends Map {
       POS_TRU_RONG = new int[][]{{40, 16}, {22, 45}, {56, 45}};
       allBossTruRong = new Vector();
       isChiemThanh = false;
+      // ==== GIO CHIEM THANH ====
+      // -1 = theo lich chuan 21h thu 3 + thu 7. Gia tri that duoc doc tu server.ini
+      // (sv.gioChiemThanh / sv.phutChiemThanh / sv.ngayChiemThanh) luc khoi dong,
+      // xem server.CauHinh.apDungGioChiemThanh. Admin doi trong game se duoc ghi
+      // tra lai server.ini nen giu nguyen sau restart.
       TimeAdminCheat = -1;
-      minuteAdminCheat = 2;
+      minuteAdminCheat = -1;
+      dayAdminCheat = "";
       count_all_item_sell_per_day = 0;
    }
 
@@ -1305,7 +1317,17 @@ public class MapTown extends Map {
       Calendar cl = Calendar.getInstance();
       int iHour = cl.get(11);
       boolean is0114 = Char.getDayOpen(0L).equals("2017-01-14");
-      if ((iHour <= 21 || TimeAdminCheat != -1) && gameOverByAdmin != country && (!is0114 || iHour <= 15) && (TimeAdminCheat <= -1 || iHour <= TimeAdminCheat)) {
+      boolean chuaKetThuc;
+      if (TimeAdminCheat > -1) {
+         // Admin set gio: tinh theo thoi luong 1 tieng ke tu luc bat dau.
+         // Khong dung "iHour <= TimeAdminCheat" nhu truoc vi neu set gio 23 thi
+         // dieu kien luon dung -> chiem thanh khong bao gio ket thuc.
+         long batDau = timeBatDauChiemThanh[country];
+         chuaKetThuc = batDau == 0L || System.currentTimeMillis() - batDau < THOI_LUONG_CHIEM_THANH;
+      } else {
+         chuaKetThuc = iHour <= 21 && (!is0114 || iHour <= 15);
+      }
+      if (chuaKetThuc && gameOverByAdmin != country) {
          return false;
       } else {
          this.curday[country] = "";
@@ -1606,6 +1628,22 @@ public class MapTown extends Map {
       allBossTruRong.add(m);
    }
 
+   /**
+    * Hom nay co khop ngay chiem thanh ma admin da set khong.
+    * dayAdminCheat = "" -> moi ngay; "yyyy-MM-dd" -> dung ngay do; "Mon".."Sun" -> thu trong tuan.
+    * nt la ket qua new Date(...).toString(), vi du "Mon Jul 27 00:05:00 GMT+07:00 2026".
+    */
+   public static boolean matchDayAdminCheat(String nt) {
+      if (dayAdminCheat == null || dayAdminCheat.trim().isEmpty()) {
+         return true;
+      }
+      String d = dayAdminCheat.trim();
+      if (d.length() == 10) {
+         return Char.getDayOpen(0L).equals(d);
+      }
+      return nt.toLowerCase().startsWith(d.toLowerCase());
+   }
+
    public boolean checkTimeGetTown(int j) {
       if (TeamServer.isServerIndo()) {
          return false;
@@ -1620,16 +1658,17 @@ public class MapTown extends Map {
             int iMinute = cl.get(12);
             boolean is0114 = Char.getDayOpen(0L).equals("2017-01-14");
             
-            // Kiểm tra nếu là admin set time thì không check ngày
+            // Admin da set gio (va co the ca ngay) -> uu tien moc nay, bo qua lich thu 3/thu 7.
+            // Khong println o day: vong lap map chay lien tuc, se spam console.
             if (TimeAdminCheat > -1) {
-               System.out.println("DEBUG: iHour=" + iHour + ", iMinute=" + iMinute + ", TimeAdminCheat=" + TimeAdminCheat + ", minuteAdminCheat=" + minuteAdminCheat);
-               if (iHour == TimeAdminCheat && iMinute == minuteAdminCheat) {
-                  // Xử lý logic chiếm thành
+               if (matchDayAdminCheat(nt) && iHour == TimeAdminCheat && iMinute == minuteAdminCheat) {
+                  System.out.println("CHIEM THANH (admin set) " + TimeAdminCheat + "h" + minuteAdminCheat
+                        + (dayAdminCheat.isEmpty() ? " - moi ngay" : " - ngay " + dayAdminCheat));
                   return doGetTown(j, day, cl);
                }
             } else {
  //               Trường hợp bình thường - check cả ngày và giờ
-               boolean isDay = nt.startsWith("Wed") || nt.startsWith("Sun") || is0114;
+               boolean isDay = nt.startsWith("Tue") || nt.startsWith("Sat") || is0114; // thu 3 va thu 7 hang tuan
 //               boolean isDay = true; // set đánh cả tuần
                if (isDay) {
                   if (iHour == 21 && iMinute < 2 || is0114 && iHour == 15 && iMinute < 2) {
@@ -1648,6 +1687,7 @@ public class MapTown extends Map {
      
       System.out.println("BAT DAU CHIEM THANH " + j);
       this.curday[j] = day;
+      timeBatDauChiemThanh[j] = System.currentTimeMillis();
       getTown[j] = true;
       if (idClanTown[j] > -1) {
          try {

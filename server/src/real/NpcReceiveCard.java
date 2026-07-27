@@ -154,6 +154,8 @@ public class NpcReceiveCard {
                         NewClan.updateTown(this.idClan, 1, this.inCountry);
                         cinfo.updateNewClandata2DB();
                         Database.instance.saveLogClan(this.nameClan, "cgt", "đã chiếm thành " + Char.getDayTime(0L));
+                        // Thuong 10.000 luong + 50tr xu cho thanh vien bang, cua so nhan 1 gio
+                        ThuongChiemThanh.batDau(this.inCountry, this.idClan, this.nameClan);
                         isFinish[this.inCountry] = true;
                         Map.getTown[this.inCountry] = false;
                         Char pmaster = CharManager.instance.getCharByCharName(cinfo.master.toLowerCase());

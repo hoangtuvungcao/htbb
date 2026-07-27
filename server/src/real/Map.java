@@ -900,6 +900,8 @@ public class Map implements Runnable {
     static int[][] ID_ITEMTEPLATE_CREATE;
     public static byte teamtongkim;
     public static boolean openvantieu;
+    // Ten cua NPC bi an (khong gui cho client). NPC "admin" cu dung ten nay.
+    public static final String NAME_NPC_AN = "admin";
     static Vector<String> topHoa;
     static long timeGettopHoa;
     static String[] VIP;
@@ -3822,12 +3824,15 @@ public class Map implements Runnable {
         }
         Map m = new Map();
         Char bot = new Char(null);
-        bot.setInfoChar("admin", -2, 2, 0, m, 208, 160, -2000, 25, 51,  -1);
+        // NPC "admin" da bo, khong gui cho client nua (xem Char.updateActorPos / NAME_NPC_AN).
+        // Van tao va add vao npcVilage vi startSendInfoAdv tham chieu NPC theo chi so
+        // (npcVilage.get(0), get(1), get(3), get(6), get(8), get(9)) - xoa han se lech het.
+        bot.setInfoChar(NAME_NPC_AN, -2, 2, 0, m, 208, 160, -2000, 25, 51,  -1);
         bot.id = RealController.intance.idGen.getID(0, "Tao bot");
         bot.posNPCInVilage = new short[][]{{208, 160}, {208, 160}, {368, 192}};
         bot.setInfoModelCharBot(0, 741);
-       
-      
+
+
         Map.npcVilage.add(bot);
         CharManager.instance.put(bot);
 //        bot = new Char(null);
@@ -7004,9 +7009,12 @@ public class Map implements Runnable {
 
 
 
+    // So chia so xu moi lan quai rot ra. Cang lon thi xu cang it.
+    // Doc tu server.ini: sv.chiaXuRoi (mac dinh 10 = nhu cu).
+    public static int DIV_DROP_XU = 10;
+
     public static int getDivDropXu() {
-    // Quái rớt xu = maxHP / 10 thay vì /5 như trước
-    return 10;
+        return (DIV_DROP_XU > 0) ? DIV_DROP_XU : 1;
     }
 
 
@@ -14560,9 +14568,12 @@ public class Map implements Runnable {
             case 24:
                 this.doBuyItem(player, message);
                 break;
-//            case 27:
-//                this.doChat(player, message);
-//                break;
+            // Truoc day dong nay bi comment -> server khong xu ly chat (lenh 27) chut nao:
+            // nguoi choi khong chat duoc cho nhau (client chi tu hien lai cau minh vua go),
+            // va moi lenh admin go trong chat (stown, tgct, ktct...) deu vo tac dung.
+            case 27:
+                this.doChat(player, message);
+                break;
             case 28:
                 this.doSellItem(player, message);
                 break;
@@ -17357,17 +17368,8 @@ public class Map implements Runnable {
                     }
 
                     if (ok == 1) {
-                        String url = "http://27.0.14.41/PQ/transferPQ.php?gameid=9&fromuserid="
-                                + ch.getSession().userID
-                                + "&touserid="
-                                + player.getSession().userID
-                                + "&amount="
-                                + cReceive.soluong
-                                + "&fromaccountname="
-                                + ch.getSession().username
-                                + "&toaccountname="
-                                + player.getSession().username;
-                        // SECURITY: disabled external call to third-party (27.0.14.41) server.
+                        // SECURITY: da bo han chuc nang chuyen kim cuong qua server ben thu ba
+                        // (truoc day gui userID + ten tai khoan 2 ben sang 27.0.14.41 bang HTTP thuong).
                         player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng chuyển kim cương hiện không khả dụng.", ""));
                     } else {
                         ch.sendMessage(
@@ -18591,6 +18593,10 @@ public class Map implements Runnable {
             if (player.charname.equals("chienthan")) {
                 System.out.println("noi dung nhap: " + idActor + " " + player.id + " " + idMenu);
             }
+            // Bang setting cua admin: nhap gio chiem thanh / ti le drop
+            if (AdminMenu.xuLyNhapText(player, idMenu, text)) {
+                return;
+            }
             // XÓA PET
 
             if (idMenu == 99) {
@@ -19136,19 +19142,8 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    player.hoten = URLEncoder.encode(player.hoten, "UTF-8");
-                    String url = "http://27.0.14.41/PQ/laymaPQ.php?gameid=9&accountname="
-                            + player.getSession().username
-                            + "&userid="
-                            + player.userID
-                            + "&hoten="
-                            + player.hoten
-                            + "&diachi="
-                            + player.diachi
-                            + "&cmnd="
-                            + text;
-                    // SECURITY: disabled external call that sent full name / address / national ID (CMND)
-                    // in plaintext over HTTP to a third-party (27.0.14.41) server.
+                    // SECURITY: da bo han chuc nang nay. Truoc day no gui ho ten / dia chi / so CMND
+                    // cua nguoi choi bang HTTP thuong sang server ben thu ba (27.0.14.41).
                     player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng này hiện không khả dụng.", ""));
                 }
 
@@ -20448,6 +20443,13 @@ public class Map implements Runnable {
             Map oldMap = player.map;
             int[] var10000 = new int[]{21, 721, 722, 723, 724};
             int[][] mapstart = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
+            // Bang setting cua admin (npc ao -1000) va menu doi skin thu nuoi (npc ao -1001)
+            if (AdminMenu.xuLyChon(player, idNpc, idMenu, idOptionMenu)) {
+                return;
+            }
+            if (SkinThuNuoi.xuLyDoiSkin(player, idNpc, idOptionMenu)) {
+                return;
+            }
             if (this.isNpcThanh(idNpc) && this.mapId != 201 && !this.isMapLienDau()) {
                 return;
             }
@@ -22290,7 +22292,8 @@ public class Map implements Runnable {
                                    
                                     // Nếu isSkipDayCheck = true thì sẽ bỏ qua check ngày hoàn toàn
                                     if (!MapTown.isSkipDayCheck) {  // Chỉ check ngày khi isSkipDayCheck = false
-                                        boolean isDayx = nt.startsWith("Mon") || nt.startsWith("Fri") || nt.startsWith("Wed") || nt.startsWith("Sun");
+                                        // Mon/Fri: lien dau. Tue/Sat: chiem thanh.
+                                        boolean isDayx = nt.startsWith("Mon") || nt.startsWith("Fri") || nt.startsWith("Tue") || nt.startsWith("Sat");
                                         if (isDayx) {
                                             player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đăng ký trong ngày hôm nay.", ""));
                                             return;
@@ -22393,7 +22396,8 @@ public class Map implements Runnable {
                                     if (idOptionMenu == 2) {
                                         String ntx = new Date(System.currentTimeMillis()).toString();
                                         if (!MapTown.isSkipDayCheck) {  // Chỉ check ngày khi isSkipDayCheck = false
-                                            boolean isDayx = ntx.startsWith("Mon") || ntx.startsWith("Fri") || ntx.startsWith("Wed") || ntx.startsWith("Sun");
+                                            // Mon/Fri: lien dau. Tue/Sat: chiem thanh.
+                                            boolean isDayx = ntx.startsWith("Mon") || ntx.startsWith("Fri") || ntx.startsWith("Tue") || ntx.startsWith("Sat");
                                             if (isDayx) {
                                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đăng ký trong ngày hôm nay.", ""));
                                                 return;
@@ -36989,12 +36993,107 @@ public class Map implements Runnable {
                 Message m = new Message(27);
                 m.dos.writeShort(player.id);
                 String msgChat = message.dis.readUTF().trim();
-                
+
+                // Nguoi choi thuong chi chat, khong di qua chuoi lenh ben duoi.
+                // Ly do: rat nhieu lenh cu trong chuoi nay khong kiem tra quyen admin
+                // (dvip, ngoc, ruong, quayso, die, class, openboss...) nen neu de nguoi
+                // choi thuong cung chay qua thi ho co the tu cap do / trieu boss.
+                if (!player.isAdmin) {
+                    // Rieng "skinthu": doi qua lai giua cac skin thu nuoi DA SO HUU
+                    // (nhan tu su kien / giftcode). Khong the lay skin chua co.
+                    if (msgChat.equalsIgnoreCase("skinthu")) {
+                        SkinThuNuoi.moMenuDoiSkin(player);
+                        return;
+                    }
+                    this.doChatBinhThuong(player, m, msgChat);
+                    return;
+                }
+
+                // Admin cung dung duoc menu doi skin de kiem tra
+                if (msgChat.equalsIgnoreCase("skinthu")) {
+                    SkinThuNuoi.moMenuDoiSkin(player);
+                    return;
+                }
+
+                // Bang setting cho admin (popup nhieu cap): chiem thanh, skin thu nuoi, ti le drop.
+                if (msgChat.startsWith("setting")) {
+                    // "setting menu" = menu danh sach (chon bang chuot).
+                    // "setting"      = o nhap lenh, dieu khien 100% bang ban phim.
+                    if (msgChat.contains("menu")) {
+                        AdminMenu.moMenu(player);
+                    } else {
+                        AdminMenu.moONhapLenh(player);
+                    }
+                    return;
+                }
+
+                // giveskin <tên nhân vật> <0-4> : tang skin thu nuoi cho nguoi choi
+                // (dung khi tra thuong su kien). giveskin <tên> -1 = thu hoi het skin.
+                // Nguoi nhan phai dang online.
+                if (msgChat.startsWith("giveskin")) {
+                    try {
+                        String[] info = Char.split(msgChat, " ");
+                        String ten = info[1].trim();
+                        int idSkin = Integer.parseInt(info[2].trim());
+                        Char nhan = CharManager.instance.getCharByCharName(ten);
+                        if (nhan == null) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Không thấy nhân vật " + ten + " đang online.", ""));
+                        } else if (idSkin < 0) {
+                            SkinThuNuoi.thuHoiHetSkin(nhan);
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Đã thu hồi hết skin của " + nhan.charname + ".", ""));
+                        } else if (SkinThuNuoi.tangSkin(nhan, idSkin)) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Đã tặng " + SkinThuNuoi.moTa(idSkin) + " cho " + nhan.charname + ".", ""));
+                        } else {
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    nhan.charname + " đã có skin này rồi (hoặc id sai).", ""));
+                        }
+                    } catch (Exception exGive) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Cú pháp: giveskin <tên nhân vật> <0-4>, hoặc -1 để thu hồi hết.\n"
+                                + "0 " + SkinThuNuoi.moTa(0) + "\n1 " + SkinThuNuoi.moTa(1) + "\n2 " + SkinThuNuoi.moTa(2)
+                                + "\n3 " + SkinThuNuoi.moTa(3) + "\n4 " + SkinThuNuoi.moTa(4), ""));
+                    }
+                    return;
+                }
+
+                // setskin <0..4> = trang bi ngay skin do CHO CHINH ADMIN de kiem tra
+                // (khong can so huu). setskin -1 de bo skin.
+                if (msgChat.startsWith("setskin")) {
+                    try {
+                        String[] info = Char.split(msgChat, " ");
+                        SkinThuNuoi.datSkin(player, Integer.parseInt(info[1].trim()));
+                    } catch (Exception exSkin) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Cú pháp: setskin <0-4>, hoặc setskin -1 để bỏ.\n"
+                                + "0 " + SkinThuNuoi.moTa(0) + "\n1 " + SkinThuNuoi.moTa(1) + "\n2 " + SkinThuNuoi.moTa(2)
+                                + "\n3 " + SkinThuNuoi.moTa(3) + "\n4 " + SkinThuNuoi.moTa(4), ""));
+                    }
+                    return;
+                }
+
                 if (msgChat.startsWith("chiemthanh")) {
-                    String[] data = Char.split(msgChat, " ");
-                    MapTown.TimeAdminCheat = Integer.parseInt(data[1]);
-                    MapTown.minuteAdminCheat = Integer.parseInt(data[2]);
-                 
+                    // Chi admin moi duoc ep gio chiem thanh (truoc day nguoi choi thuong
+                    // chat "chiemthanh <gio> <phut>" cung set duoc).
+                    // chiemthanh <gio> <phut> [yyyy-MM-dd|Mon..Sun]
+                    if (player.isAdmin) {
+                        try {
+                            String[] data = Char.split(msgChat, " ");
+                            MapTown.TimeAdminCheat = Integer.parseInt(data[1]);
+                            MapTown.minuteAdminCheat = Integer.parseInt(data[2]);
+                            MapTown.dayAdminCheat = data.length > 3 ? data[3].trim() : "";
+                            server.CauHinh.luuGioChiemThanh();
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Đã set chiếm thành " + MapTown.TimeAdminCheat + "h" + MapTown.minuteAdminCheat
+                                            + (MapTown.dayAdminCheat.isEmpty() ? " mỗi ngày." : " ngày " + MapTown.dayAdminCheat + ".")
+                                            + "\n(đã lưu vào server.ini)", ""));
+                        } catch (Exception exCT) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Cú pháp: chiemthanh <giờ> <phút> [yyyy-MM-dd|Mon..Sun]", ""));
+                        }
+                    }
                     return;
                 }
                 if (msgChat.startsWith("adm")) {
@@ -37971,30 +38070,50 @@ public class Map implements Runnable {
                                                 player.cuop_tieu = Byte.parseByte(info[1]);
                                                 player.sendMessage(MessageCreator.createServerAlertMessage("Đã set cuộc tấn công cho " + player.cuop_tieu, ""));
                                             } else if (msgChat.startsWith("stown") && player.isAdmin) {
-                                                    String[] info = Char.split(msgChat, " ");
-                                                    int set = Integer.parseInt(info[1]);
-                                                    if (set == 0) {
-                                                        MapTown.TimeAdminCheat = -1;
-                                                        MapTown.minuteAdminCheat = -1;
-                                                   
-                                                    } else {
-                                                        MapTown.TimeAdminCheat = Integer.parseInt(info[2]);
-                                                        MapTown.minuteAdminCheat = Integer.parseInt(info[3]);
-                                                
+                                                    // stown 0                      -> tra ve lich chuan (thu 3 + thu 7, 21h)
+                                                    // stown 1 <gio> <phut>          -> chiem thanh moi ngay vao gio nay
+                                                    // stown 1 <gio> <phut> <ngay>   -> ngay = yyyy-MM-dd hoac Mon..Sun
+                                                    try {
+                                                        String[] info = Char.split(msgChat, " ");
+                                                        int set = Integer.parseInt(info[1]);
+                                                        if (set == 0) {
+                                                            MapTown.TimeAdminCheat = -1;
+                                                            MapTown.minuteAdminCheat = -1;
+                                                            MapTown.dayAdminCheat = "";
+                                                            server.CauHinh.luuGioChiemThanh();
+                                                            player.sendMessage(MessageCreator.createServerAlertMessage("Đã trả chiếm thành về lịch chuẩn: 21h thứ 3 và thứ 7.\n(đã lưu vào server.ini)", ""));
+                                                        } else {
+                                                            MapTown.TimeAdminCheat = Integer.parseInt(info[2]);
+                                                            MapTown.minuteAdminCheat = Integer.parseInt(info[3]);
+                                                            MapTown.dayAdminCheat = info.length > 4 ? info[4].trim() : "";
+                                                            server.CauHinh.luuGioChiemThanh();
+                                                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                                                    "Đã set chiếm thành " + MapTown.TimeAdminCheat + "h" + MapTown.minuteAdminCheat
+                                                                            + (MapTown.dayAdminCheat.isEmpty() ? " mỗi ngày." : " ngày " + MapTown.dayAdminCheat + ".")
+                                                                            + "\n(đã lưu vào server.ini)", ""));
+                                                        }
+                                                    } catch (Exception exStown) {
+                                                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                                                "Cú pháp: stown 1 <giờ> <phút> [yyyy-MM-dd|Mon..Sun] hoặc stown 0 để tắt.", ""));
                                                     }
-                                                  
                                                     return;
                                             } else if (msgChat.startsWith("ktct") && player.isAdmin) {
                                                     if (player.isAdmin) {
                                                         MapTown.TimeAdminCheat = -1;
                                                         MapTown.minuteAdminCheat = -1;
+                                                        MapTown.dayAdminCheat = "";
                                                         MapTown.gameOverByAdmin = -1;
+                                                        server.CauHinh.luuGioChiemThanh();
                                                     }
                                             } else if (msgChat.startsWith("tgct") && player.isAdmin) {
                                                     if (player.isAdmin) {
-                                                        player.sendMessage(MessageCreator.createServerAlertMessage("Thời gian chiếm thành " + MapTown.TimeAdminCheat + " giờ " + MapTown.minuteAdminCheat + " phút", ""));
+                                                        String thongtin = MapTown.TimeAdminCheat < 0
+                                                                ? "Chiếm thành đang theo lịch chuẩn: 21h thứ 3 và thứ 7."
+                                                                : "Thời gian chiếm thành " + MapTown.TimeAdminCheat + " giờ " + MapTown.minuteAdminCheat + " phút"
+                                                                        + (MapTown.dayAdminCheat.isEmpty() ? ", áp dụng mỗi ngày." : ", ngày " + MapTown.dayAdminCheat + ".");
+                                                        player.sendMessage(MessageCreator.createServerAlertMessage(thongtin, ""));
                                                     }
-                                                      
+
                                             } else if (msgChat.startsWith("over")) {
                                                 if (player.isAdmin) {
                                                     try {
@@ -38369,6 +38488,63 @@ public class Map implements Runnable {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Chat binh thuong cua nguoi choi (khong xu ly lenh admin).
+     * Giu nguyen logic o cuoi doChat: loc tu ngu xau, chong spam, gioi han do dai,
+     * chi lv >= 20 moi chat duoc, phat cho nguoi choi o gan.
+     */
+    private void doChatBinhThuong(Char player, Message m, String msgChat) throws IOException {
+        if (BadWord.checkBadWord(msgChat)) {
+            player.sendMessage(
+                    MessageCreator.createMsgChat(player.id, "Nội dung bạn trò chuyện không hợp lệ. Người chơi khác sẽ không thấy câu nói của bạn")
+            );
+            return;
+        }
+        msgChat = checkBadWord(msgChat);
+        msgChat = msgChat.replaceAll("\\s+", " ").trim();
+        msgChat = replaceStringWithSpace(msgChat);
+        msgChat = replaceExtendDomain(msgChat);
+        if (System.currentTimeMillis() - player.timecamchat < 0L) {
+            player.sendMessage(m);
+            return;
+        }
+        player.timecamchat = 0L;
+        long time = System.currentTimeMillis() - player.timeChat;
+        if (time <= 30000L && player.nMsgChat >= 5) {
+            return;
+        }
+        if (time > 30000L) {
+            player.timeChat = System.currentTimeMillis();
+            player.nMsgChat = 0;
+        }
+        player.nMsgChat++;
+        if (player.map.mapIDLoadMap == idMapTown && getTown[player.inCountry] || this.mapIDLoadMap == 17) {
+            player.nMsgChat = 0;
+            player.sendMessage(m);
+            return;
+        }
+        if (player.timeChat > 0L && System.currentTimeMillis() - player.timeChat <= 5000L) {
+            if (player.nMsgChat >= 5) {
+                player.timecamchat = System.currentTimeMillis() + 1800000L;
+                player.nMsgChat = 0;
+            }
+        } else if (System.currentTimeMillis() - player.timeChat > 5000L) {
+            player.timeChat = System.currentTimeMillis();
+            player.nMsgChat = 0;
+        }
+        msgChat = BadWord.checkBadWord2(msgChat);
+        if (player.lvDetail.lv >= 20 && msgChat.length() >= 2) {
+            byte maxChar = 50;
+            if (msgChat.length() > maxChar) {
+                msgChat = msgChat.substring(0, maxChar);
+            }
+            m.dos.writeUTF(msgChat);
+            player.sendToNearPlayer(m);
+            player.sendMessage(m);
+            m.cleanup();
         }
     }
 

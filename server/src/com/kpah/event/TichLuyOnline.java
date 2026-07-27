@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.khanhdz.event;
+package com.kpah.event;
 
-import com.khanhdz.runtime.runtimeCharProperties;
+import com.kpah.runtime.runtimeCharProperties;
 import java.sql.ResultSet;
 import data.Database;
 import java.sql.Timestamp;
@@ -21,7 +21,7 @@ import real.Char;
 
 /**
  *
- * @author TOM
+ *
  */
 public class TichLuyOnline {
 

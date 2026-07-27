@@ -6,7 +6,7 @@ import real.MessageCreator;
 
 /**
  *
- * @author 5hquocme
+ *
  */
 public class addNPC {
 

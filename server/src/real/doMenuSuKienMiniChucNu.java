@@ -13,7 +13,7 @@ import real.cmd.LoginHandler;
 
 /**
  *
- * @author TOM
+ *
  */
 public class doMenuSuKienMiniChucNu {
 

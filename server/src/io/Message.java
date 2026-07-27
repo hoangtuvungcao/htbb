@@ -12,7 +12,7 @@ import java.io.IOException;
 
 /**
  *
- * @author TOM
+ *
  */
 public class Message {
 

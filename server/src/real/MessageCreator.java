@@ -1104,10 +1104,16 @@ public class MessageCreator {
                 m.dos.writeByte(idIcon);
             }
             type = -1;
+            // Skin thu nuoi co the doi hinh con thu: doi id anh gui xuong client.
+            // -1 = khong doi (xem SkinThuNuoi.ID_IMG).
+            final int idImgSkin = SkinThuNuoi.idImgHienThi(p);
+            final int frameSkin = SkinThuNuoi.tongFrameHienThi(p);
             if (p.petUsing != null) {
                 type = p.petUsing.idImg;
                 if (p.petUsing.getType() == Pet.TYPE_PET_TOOL && charGet.getSession() != null && charGet.getSession().isVersion180()) {
                     type = p.petUsing.getIdEffPet();
+                } else if (idImgSkin >= 0) {
+                    type = idImgSkin;
                 }
             }
             m.dos.writeByte(type);
@@ -1120,9 +1126,9 @@ public class MessageCreator {
                 if (p.petUsing.getType() == Pet.TYPE_PET_TOOL && charGet.getSession() != null && charGet.getSession().isVersion180()) {
                     m.dos.writeByte(p.petUsing.getIdEffPet());
                 } else {
-                    m.dos.writeByte(p.petUsing.idImg);
+                    m.dos.writeByte((idImgSkin >= 0) ? idImgSkin : p.petUsing.idImg);
                 }
-                m.dos.writeByte(p.petUsing.getTotalFrame());
+                m.dos.writeByte((frameSkin > 0) ? frameSkin : p.petUsing.getTotalFrame());
                 m.dos.writeUTF(String.valueOf(p.petUsing.getName()) + "\n" + p.petUsing.getInfoSendUser());
                 m.dos.writeInt(p.petUsing.getTimeExpire());
             }

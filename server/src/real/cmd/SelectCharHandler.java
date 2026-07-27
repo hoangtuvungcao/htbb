@@ -4,7 +4,7 @@
 package real.cmd;
 
 import Constant.Checker;
-import com.khanhdz.event.TichLuyOnline;
+import com.kpah.event.TichLuyOnline;
 import java.io.IOException;
 import real.Item;
 import real.EffectBuff;
@@ -202,7 +202,8 @@ public class SelectCharHandler implements ICommandHandler {
             }
             p.setTimeOutBuff();
             p.id = RealController.intance.idGen.getID(0, "get char from db");
-            if (!p.charname.toLowerCase().equals("chienthan")) {
+            // Chi bo qua kiem tra/dat lai chi so cho GM thuc su (xem Char.laChienThanCoQuyen)
+            if (!Char.laChienThanCoQuyen(p.charname)) {
                 if (p.strength == 0 || p.agitity == 0) {
                     final int allBasicPoint = p.lvDetail.getBasicPoint(p.lastLV) + (p.lastLV - 1) * 5;
                     p.basepoint = (short) (allBasicPoint - (p.lastLV - 1) * 5);
@@ -459,6 +460,26 @@ public class SelectCharHandler implements ICommandHandler {
             }
 
             TichLuyOnline.Instance.onlineGame(p);
+
+            // Vao game trong 1 gio sau khi bang chiem thanh -> nhan thuong chiem thanh
+            try {
+                real.ThuongChiemThanh.kiemTraKhiVaoGame(p);
+            } catch (final Exception exThuong) {
+                exThuong.printStackTrace();
+            }
+
+            // Nap skin thu nuoi va tinh lai chi so
+            try {
+                if (!p.daLoadSkinThuNuoi) {
+                    Database.instance.loadSkinThuNuoi(p);
+                    if (real.SkinThuNuoi.hopLe(p.idSkinThuNuoi)) {
+                        p.calculateAttrib();
+                        p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+                    }
+                }
+            } catch (final Exception exSkin) {
+                exSkin.printStackTrace();
+            }
 
         } catch (final Exception e3) {
             e3.printStackTrace();

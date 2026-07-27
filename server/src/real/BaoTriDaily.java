@@ -20,7 +20,7 @@ import util.Net;
 
 /**
  *
- * @author phong
+ *
  */
 public class BaoTriDaily implements Runnable {
 

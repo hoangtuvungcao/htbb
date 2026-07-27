@@ -23,7 +23,7 @@ import server.TeamServer;
 
 /**
  *
- * @author 5hquocme
+ *
  */
 public class GiftCode {
 

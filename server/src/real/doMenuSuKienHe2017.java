@@ -12,7 +12,7 @@ import static real.Map.r;
 
 /**
  *
- * @author TOM
+ *
  */
 public class doMenuSuKienHe2017 {
 

@@ -8,7 +8,7 @@ import server.TeamServer;
 
 /**
  *
- * @author TOM
+ *
  */
 public class sendInfoNpc {
 

@@ -74,6 +74,9 @@ public class Database {
     public static String[] name_att_in;
     public static String[] nameServer;
     public static boolean ENABLE_ACTIVE_CHECK = true;  // bật tắt kích hoạt  //false đóng //true bật
+    // So nhan vat toi da moi tai khoan (client chi ve duoc 3 slot o man chon nhan vat).
+    // Doc tu server.ini: sv.maxCharPerAccount
+    public static int MAX_CHAR_PER_ACCOUNT = 3;
 
     static {
         Database.instance = new Database();
@@ -2341,7 +2344,10 @@ public class Database {
                     String[] tachItem = item.trim().split(",");
                     for (int i = 0; i < tachItem.length; i++) {
                         String[] tachTime = tachItem[i].trim().split(":");
-                        if (tachTime[0].equals("DB")) {
+                        // SKIN:<0-4> -> tang skin thu nuoi (chi co qua su kien/giftcode)
+                        if (tachTime[0].equals("SKIN")) {
+                            real.SkinThuNuoi.tangSkin(player, Integer.parseInt(tachTime[1]));
+                        } else if (tachTime[0].equals("DB")) {
                             for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                                 GiftCode.AddItem(player, Integer.parseInt(tachTime[1]), 0, 0, Integer.parseInt(tachTime[3]));
                             }
@@ -12770,6 +12776,14 @@ public void addCharXaiNapLuong(Char p, int type) {
             Database.connPool.free(conn);
         } catch (Exception ignored) {
         }
+        // Han muc luong nhat tu train quai trong ngay (chi ghi khi co thay doi)
+        try {
+            if (p.trainLuongDirty) {
+                this.saveTrainLuong(p);
+                p.trainLuongDirty = false;
+            }
+        } catch (Exception ignored) {
+        }
         ++TeamServer.update;
         return true;
     }
@@ -12967,6 +12981,14 @@ public void addCharXaiNapLuong(Char p, int type) {
         }
         try {
             Database.connPool.free(conn);
+        } catch (Exception ignored) {
+        }
+        // Han muc luong nhat tu train quai trong ngay (chi ghi khi co thay doi)
+        try {
+            if (p.trainLuongDirty) {
+                this.saveTrainLuong(p);
+                p.trainLuongDirty = false;
+            }
         } catch (Exception ignored) {
         }
         ++TeamServer.update;
@@ -14610,9 +14632,41 @@ public void addCharXaiNapLuong(Char p, int type) {
         }
     }
 
+    /**
+     * Ten khong duoc phep dat khi tao nhan vat:
+     *   - moi ten CO CHUA chu "admin" (admin, admin2, xxadminxx, ADMIN...): tranh
+     *     nguoi choi mao danh admin va tranh trung ten trong sv.adminAccounts.
+     *   - moi ten liet ke trong sv.adminAccounts (ke ca ten khong chua "admin").
+     * Cac nhan vat DA ton tai khong bi anh huong, day chi chan luc tao moi.
+     */
+    public static boolean laTenDanhRieng(final String charname) {
+        if (charname == null) {
+            return true;
+        }
+        final String ten = charname.trim().toLowerCase();
+        if (ten.isEmpty()) {
+            return true;
+        }
+        if (ten.contains("admin")) {
+            return true;
+        }
+        try {
+            return server.TeamServer.adminAccounts.contains(ten);
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
     public int addChar(Session s, String charname, int headStyle, int classID, int gender, int nation) {
         int userID = s.userID;
         if (gender + 1 < 1 || gender + 1 > 2) {
+            return -1;
+        }
+        // Ten danh rieng: khong cho nguoi choi tao. Ly do: engine goc cap quyen
+        // admin + chi so cheat cho nhan vat CHI DUA VAO TEN ("chienthan" -> isAdmin
+        // = true, thu 100000, bo qua nhieu kiem tra), va sv.adminAccounts cung
+        // khop theo charname. Ai dat trung mot trong cac ten nay se thanh admin.
+        if (laTenDanhRieng(charname)) {
             return -1;
         }
         int charId = -1;
@@ -14624,38 +14678,44 @@ public void addCharXaiNapLuong(Char p, int type) {
             String sql = "SELECT * FROM tob_char WHERE charname='" + charname + "'";
             if (stmt.execute(sql)) {
                 ResultSet rs = stmt.getResultSet();
-                if (rs.next()) {
-                    try {
-                        stmt.close();
-                    } catch (Exception ignored) {
-                    }
-                    try {
-                        rs.close();
-                    } catch (Exception ignored) {
-                    }
-                    try {
-                        Database.connPool.free(conn);
-                    } catch (Exception ignored) {
-                    }
-                    return -1;
-                }
+                boolean trungTen = rs.next();
                 try {
                     rs.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                if (trungTen) {
+                    // Khong tu dong dong stmt/conn o day, khoi finally ben duoi lo viec do.
+                    // Neu dong 2 lan, cung 1 connection se bi tra ve pool 2 lan.
+                    return -1;
+                }
             }
-            sql = "SELECT * FROM tob_char WHERE userId=" + userID;
-            boolean first = true;
+            // Chi dem nhan vat con song (del=1), khong bi ban va thuoc dung server dang choi,
+            // dung mot server khac cua cung tai khoan lam het slot.
+            sql = "SELECT COUNT(*) FROM tob_char WHERE userId=" + userID
+                    + " AND idserver=" + s.idServer + " AND ban=0 AND del=1";
             int countChar = 0;
             try {
                 ResultSet rs2 = stmt.executeQuery(sql);
-                while (rs2.next()) {
-                    first = false;
-                    countChar++;
+                if (rs2.next()) {
+                    countChar = rs2.getInt(1);
                 }
                 try {
                     rs2.close();
+                } catch (Exception ignored) {
+                }
+            } catch (Exception ignored) {
+            }
+            // "first" chi de tang xu cho nhan vat dau tien: dem het moi nhan vat tung tao
+            // (ke ca da xoa / server khac) de khong the xoa char roi tao lai de an xu.
+            boolean first = true;
+            try {
+                ResultSet rs3 = stmt.executeQuery("SELECT COUNT(*) FROM tob_char WHERE userId=" + userID);
+                if (rs3.next()) {
+                    first = rs3.getInt(1) == 0;
+                }
+                try {
+                    rs3.close();
                 } catch (Exception ignored) {
                 }
             } catch (Exception ignored) {
@@ -14677,7 +14737,7 @@ public void addCharXaiNapLuong(Char p, int type) {
                     xu = 100000L;
                 }
             }
-            if (countChar >= 1) { // tạo nhân vật
+            if (countChar >= MAX_CHAR_PER_ACCOUNT) { // tạo nhân vật
                 return -1;
             }
             potion = new StringBuilder(String.valueOf(xu));
@@ -14791,6 +14851,204 @@ public void addCharXaiNapLuong(Char p, int type) {
         } catch (Exception ignored) {
         }
         return charId;
+    }
+
+    // ==================== SKIN THU NUOI (real.SkinThuNuoi) ====================
+
+    /** Tao bang luu skin thu nuoi neu chua co. Goi 1 lan luc khoi dong server. */
+    public void createTableSkinThuNuoi() {
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = this.getConnection();
+            stmt = conn.createStatement();
+            stmt.execute("CREATE TABLE IF NOT EXISTS tob_skin_thu ("
+                    + "charDBID int(10) unsigned NOT NULL,"
+                    + "idskin tinyint(4) NOT NULL DEFAULT -1,"
+                    + "sohuu int(10) unsigned NOT NULL DEFAULT 0,"
+                    + "PRIMARY KEY (charDBID)) ENGINE=MyISAM DEFAULT CHARSET=utf8");
+            // Bang da ton tai tu ban truoc (chua co cot sohuu) thi them cot vao.
+            try {
+                stmt.execute("ALTER TABLE tob_skin_thu ADD COLUMN sohuu int(10) unsigned NOT NULL DEFAULT 0");
+                System.out.println("tob_skin_thu: da them cot sohuu");
+            } catch (Exception daCo) {
+                // Cot da co san -> MySQL bao loi, bo qua.
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    public void loadSkinThuNuoi(Char p) {
+        if (p == null || p.charDBID <= 0) {
+            return;
+        }
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getConnection();
+            pstmt = conn.prepareStatement("select idskin,sohuu from tob_skin_thu where charDBID=?");
+            pstmt.setInt(1, p.charDBID);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                p.idSkinThuNuoi = rs.getInt("idskin");
+                p.skinDaSoHuu = rs.getInt("sohuu");
+            }
+            p.daLoadSkinThuNuoi = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                pstmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    public void saveSkinThuNuoi(Char p) {
+        if (p == null || p.charDBID <= 0) {
+            return;
+        }
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            conn = this.getConnection();
+            pstmt = conn.prepareStatement("INSERT INTO tob_skin_thu(charDBID,idskin,sohuu) VALUES(?,?,?)"
+                    + " ON DUPLICATE KEY UPDATE idskin=?, sohuu=?");
+            pstmt.setInt(1, p.charDBID);
+            pstmt.setInt(2, p.idSkinThuNuoi);
+            pstmt.setInt(3, p.skinDaSoHuu);
+            pstmt.setInt(4, p.idSkinThuNuoi);
+            pstmt.setInt(5, p.skinDaSoHuu);
+            pstmt.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                pstmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    // ============ HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI (theo ngay, moi nhan vat) ============
+
+    /** Tao bang luu han muc neu chua co. Goi 1 lan luc khoi dong server. */
+    public void createTableTrainLuong() {
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = this.getConnection();
+            stmt = conn.createStatement();
+            stmt.execute("CREATE TABLE IF NOT EXISTS tob_train_luong ("
+                    + "charDBID int(10) unsigned NOT NULL,"
+                    + "ngay varchar(10) NOT NULL DEFAULT '',"
+                    + "luongmo int(10) unsigned NOT NULL DEFAULT 0,"
+                    + "luongkhoa int(10) unsigned NOT NULL DEFAULT 0,"
+                    + "PRIMARY KEY (charDBID)) ENGINE=MyISAM DEFAULT CHARSET=utf8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /** Nap han muc da nhan cua nhan vat. Neu ngay trong DB khac hom nay thi Char tu reset ve 0. */
+    public void loadTrainLuong(Char p) {
+        if (p == null || p.charDBID <= 0) {
+            return;
+        }
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getConnection();
+            pstmt = conn.prepareStatement("select ngay,luongmo,luongkhoa from tob_train_luong where charDBID=?");
+            pstmt.setInt(1, p.charDBID);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                p.ngayTrainLuong = rs.getString("ngay");
+                p.luongMoTrainNgay = rs.getInt("luongmo");
+                p.luongKhoaTrainNgay = rs.getInt("luongkhoa");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                pstmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /** Luu han muc da nhan. Duoc goi kem moi lan luu nhan vat (autosave / thoat game). */
+    public void saveTrainLuong(Char p) {
+        if (p == null || p.charDBID <= 0 || p.ngayTrainLuong == null || p.ngayTrainLuong.isEmpty()) {
+            return;
+        }
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            conn = this.getConnection();
+            pstmt = conn.prepareStatement("INSERT INTO tob_train_luong(charDBID,ngay,luongmo,luongkhoa) VALUES(?,?,?,?)"
+                    + " ON DUPLICATE KEY UPDATE ngay=?,luongmo=?,luongkhoa=?");
+            pstmt.setInt(1, p.charDBID);
+            pstmt.setString(2, p.ngayTrainLuong);
+            pstmt.setInt(3, p.luongMoTrainNgay);
+            pstmt.setInt(4, p.luongKhoaTrainNgay);
+            pstmt.setString(5, p.ngayTrainLuong);
+            pstmt.setInt(6, p.luongMoTrainNgay);
+            pstmt.setInt(7, p.luongKhoaTrainNgay);
+            pstmt.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                pstmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     public void delQuest(int charDBID) {

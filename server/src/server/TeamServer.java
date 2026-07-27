@@ -73,6 +73,16 @@ public class TeamServer {
     public static String ipLogin = null;
     public static int portLogin = 8023;
 
+    // Trang chu / link tai game cua server nay, doc tu server.ini (sv.website, sv.linkTaiGame).
+    // Truoc day cho cung cac domain teamobi -> nay do chu server tu dat.
+    public static String website = "";
+    public static String linkTaiGame = "";
+
+    // Ti le drop doc tu server.ini luc khoi dong, giu lai de bang setting cua admin
+    // co the "tra ve muc trong server.ini".
+    // [0]=xu [1]=luong [2]=itemSuKien [3]=potion [4]=ngoc [5]=item [6]=chiaXuRoi
+    public static int[] tileGoc = {10, 20, 20, 30, 30, 20, 10};
+
     public static boolean ExpVantieu;
     public static boolean ExpNhanSam;
     public static boolean LuckyExp;
@@ -157,6 +167,18 @@ public class TeamServer {
         if (open != null && open.decrementAndGet() <= 0) {
             IP_OPEN.remove(ip);
         }
+    }
+
+    /** Doc phan tram ti le drop tu server.ini, kep trong khoang 0..100. */
+    private static int tilePercent(String v, int def) {
+        int pc = parseIntDefault(v, def);
+        if (pc < 0) {
+            pc = 0;
+        }
+        if (pc > 100) {
+            pc = 100;
+        }
+        return pc;
     }
 
     private static int parseIntDefault(String v, int def) {
@@ -386,6 +408,44 @@ public class TeamServer {
             TeamServer.ExpQua = Byte.parseByte(p.getProperty("sv.ExpQua")) == 1;
             TeamServer.CodeTest = Byte.parseByte(p.getProperty("sv.CodeTest")) == 1;
             Database.ENABLE_ACTIVE_CHECK = Byte.parseByte(p.getProperty("sv.EnableAvtiveCheck")) == 1;
+            // ==== TI LE DROP KHI TRAIN QUAI (phan tram so voi ti le goc, 100 = nhu cu, 0 = tat) ====
+            real.Monster.PC_TILE_XU = tilePercent(p.getProperty("sv.tileXu"), 10);
+            real.Monster.PC_TILE_LUONG = tilePercent(p.getProperty("sv.tileLuong"), 20);
+            real.Monster.PC_TILE_ITEM_SUKIEN = tilePercent(p.getProperty("sv.tileItemSuKien"), 20);
+            real.Monster.PC_TILE_POTION = tilePercent(p.getProperty("sv.tilePotion"), 30);
+            real.Monster.PC_TILE_NGOC = tilePercent(p.getProperty("sv.tileNgoc"), 30);
+            real.Monster.PC_TILE_ITEM = tilePercent(p.getProperty("sv.tileItem"), 20);
+            Map.DIV_DROP_XU = Math.max(1, parseIntDefault(p.getProperty("sv.chiaXuRoi"), 10));
+            TeamServer.tileGoc = new int[]{real.Monster.PC_TILE_XU, real.Monster.PC_TILE_LUONG,
+                real.Monster.PC_TILE_ITEM_SUKIEN, real.Monster.PC_TILE_POTION,
+                real.Monster.PC_TILE_NGOC, real.Monster.PC_TILE_ITEM, Map.DIV_DROP_XU};
+            System.out.println("TI LE DROP TRAIN QUAI -> xu=" + real.Monster.PC_TILE_XU
+                    + "% luong=" + real.Monster.PC_TILE_LUONG
+                    + "% itemSuKien=" + real.Monster.PC_TILE_ITEM_SUKIEN
+                    + "% potion=" + real.Monster.PC_TILE_POTION
+                    + "% ngoc=" + real.Monster.PC_TILE_NGOC
+                    + "% item=" + real.Monster.PC_TILE_ITEM
+                    + "%, chia so xu roi ra=" + Map.DIV_DROP_XU);
+
+            // Gio chiem thanh: cung nguon voi bang setting trong game, admin sua
+            // trong game se duoc ghi tra lai server.ini (xem CauHinh).
+            CauHinh.apDungGioChiemThanh(p);
+            System.out.println("CHIEM THANH -> "
+                    + (real.MapTown.TimeAdminCheat < 0
+                            ? "lich chuan 21h thu 3 + thu 7"
+                            : real.MapTown.TimeAdminCheat + "h" + real.MapTown.minuteAdminCheat
+                            + (real.MapTown.dayAdminCheat.isEmpty() ? " moi ngay" : " ngay " + real.MapTown.dayAdminCheat)));
+
+            TeamServer.website = p.getProperty("sv.website", "").trim();
+            TeamServer.linkTaiGame = p.getProperty("sv.linkTaiGame", "").trim();
+            Database.MAX_CHAR_PER_ACCOUNT = parseIntDefault(p.getProperty("sv.maxCharPerAccount"), 3);
+            if (Database.MAX_CHAR_PER_ACCOUNT < 1) {
+                Database.MAX_CHAR_PER_ACCOUNT = 1;
+            }
+            if (Database.MAX_CHAR_PER_ACCOUNT > 3) {
+                Database.MAX_CHAR_PER_ACCOUNT = 3; // client chi ho tro 3 slot
+            }
+            System.out.println("MAX CHAR PER ACCOUNT = " + Database.MAX_CHAR_PER_ACCOUNT);
 
             // ==== TEST FLAGS (đọc an toàn, có giá trị mặc định nếu thiếu trong server.ini) ====
             TeamServer.testMode = "1".equals(p.getProperty("sv.testMode", "0").trim());
@@ -448,6 +508,8 @@ public class TeamServer {
             return;
         }
       
+        Database.instance.createTableTrainLuong(); // bang luu han muc luong train quai theo ngay
+        Database.instance.createTableSkinThuNuoi(); // bang luu skin thu nuoi cua tung nhan vat
         Database.startSaveChar();
         TeamServer.timeRemovePool = System.currentTimeMillis();
         System.out.println("Starting server...");

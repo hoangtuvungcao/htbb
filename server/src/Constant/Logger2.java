@@ -3,7 +3,7 @@ package Constant;
 
 /**
  *
- * @author TOM
+ *
  */
 public class Logger2 {
       public static void DebugLogic(String str) {
