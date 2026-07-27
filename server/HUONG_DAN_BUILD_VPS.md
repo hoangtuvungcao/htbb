@@ -886,6 +886,20 @@ thì vẫn xong, chỉ chậm.
 
 ## PHẦN J — Lỗi hay gặp
 
+**Thêm option vào menu NPC nhưng bấm vào không hiển thị gì, log cũng không có gì**
+→ Bẫy lớn nhất khi sửa menu: lệnh `-30` (chọn option menu) **không đi thẳng vào
+`Map.doMenu`**. Nó vào `RealController` trước ([RealController.java:1024](src/real/RealController.java#L1024)),
+ở đó có một `switch (idNpc)` với bản **copy** logic menu của một số NPC (-65, -800, -50,
+-51, -49, -8). NPC nào có case riêng ở đây và **không** set `defHandle = true` thì
+`Map.doMenu` vĩnh viễn không nhận được NPC đó — code viết trong `Map.doMenu` cho NPC ấy là
+**code chết, không lỗi, không log, im lặng hoàn toàn**. Chỉ NPC rơi vào `default` mới được
+`defHandle = true` và chuyển tiếp xuống `Map.processMessage` → `Map.doMenu`.
+Cách kiểm tra trước khi sửa: `grep -n "case -<id>:" src/real/RealController.java` trong vùng
+`case -30`. Có → sửa ở `RealController`; không có → sửa ở `Map.doMenu`.
+Ví dụ thực tế: mục "Hỗ Trợ" của NPC tổng tiêu đầu (-50) đặt sai chỗ nên bấm không ra gì
+(commit `67cf92d`). NPC ảo của menu con (-519, -1000, -1001) không có case nên vẫn chạy tốt
+ở `Map.doMenu`.
+
 **Không ai đăng nhập được, log login server im lặng**
 → Bạn cài MySQL 8 chứ không phải MariaDB. `PASSWORD()` không còn tồn tại.
 Kiểm tra: `mysql -u root -e "SELECT PASSWORD('abc');"` — báo lỗi hàm không tồn tại là đúng
