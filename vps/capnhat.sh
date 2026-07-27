@@ -30,9 +30,19 @@ if [ ! -f "$NEW" ]; then
 fi
 
 echo "== Kiem tra jar moi co hop le khong"
-if ! unzip -t "$NEW" >/dev/null 2>&1; then
-    echo "[LOI] $NEW hong (upload dut giua duong?). Huy cap nhat."
-    exit 1
+# Thieu lenh unzip thi "unzip -t" that bai -> ket luan oan la jar hong. Kiem tra truoc.
+if command -v unzip >/dev/null 2>&1; then
+    if ! unzip -t "$NEW" >/dev/null 2>&1; then
+        echo "[LOI] $NEW hong (upload dut giua duong?). Huy cap nhat."
+        exit 1
+    fi
+elif command -v jar >/dev/null 2>&1; then
+    if ! jar tf "$NEW" >/dev/null 2>&1; then
+        echo "[LOI] $NEW hong (upload dut giua duong?). Huy cap nhat."
+        exit 1
+    fi
+else
+    echo "   [CANH BAO] khong co 'unzip' -> bo qua buoc kiem tra jar (apt install -y unzip)"
 fi
 
 echo "== Tat $SV (cho toi da 180s de no luu du lieu)"

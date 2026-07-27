@@ -56,9 +56,21 @@ if ! sudo -u "$USER_SV" git -C "$DIR" pull --ff-only; then
 fi
 
 echo "== Kiem tra jar"
-if ! unzip -t "$DIR/KPAH2_patched.jar" >/dev/null 2>&1; then
-    echo "[LOI] KPAH2_patched.jar hong. Server VAN DANG TAT."
-    exit 1
+# Phai kiem tra co lenh unzip khong. Thieu unzip thi "unzip -t" that bai va script
+# se ket luan oan la jar hong.
+if command -v unzip >/dev/null 2>&1; then
+    if ! unzip -t "$DIR/KPAH2_patched.jar" >/dev/null 2>&1; then
+        echo "[LOI] KPAH2_patched.jar hong. Server VAN DANG TAT."
+        exit 1
+    fi
+elif command -v jar >/dev/null 2>&1; then
+    if ! jar tf "$DIR/KPAH2_patched.jar" >/dev/null 2>&1; then
+        echo "[LOI] KPAH2_patched.jar hong. Server VAN DANG TAT."
+        exit 1
+    fi
+else
+    echo "   [CANH BAO] khong co 'unzip' -> bo qua buoc kiem tra jar."
+    echo "              Cai cho lan sau:  apt install -y unzip"
 fi
 echo "   jar OK: $(sudo -u "$USER_SV" git -C "$DIR" log -1 --format='%h %s')"
 
