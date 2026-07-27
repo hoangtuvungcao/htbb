@@ -10,14 +10,23 @@ Group=kpah
 WorkingDirectory=/opt/kpah
 Environment=LANG=en_US.UTF-8
 
-# -Xmx theo RAM cua VPS:
-#     VPS 1 GB -> -Xmx512m   (mac dinh o day)
-#     VPS 2 GB -> -Xmx1g     va sua innodb_buffer_pool_size len 256M
+# QUAN TRONG - server nay tao MOT THREAD cho MOI REGION cua MOI MAP
+# (Region.<init> -> startSandVilage), tong len tren 2000 thread.
+#   TasksMax: mac dinh cua systemd tren Ubuntu chi ~2250 -> chet voi
+#             "OutOfMemoryError: unable to create new native thread".
+#   -Xss256k: mac dinh moi thread chiem 1 MB stack -> 2000 thread = 2 GB,
+#             vuot RAM. Ha xuong 256k -> ~500 MB.
+TasksMax=infinity
+LimitNPROC=infinity
+LimitNOFILE=65535
+
+# -Xmx theo RAM cua VPS (nho tru phan stack thread o tren):
+#     VPS 1 GB -> -Xmx384m
+#     VPS 2 GB -> -Xmx768m   (mac dinh o day)
 #     VPS 4 GB -> -Xmx2g
-# Dung dat -Xmx bang RAM: JVM con ton metaspace + stack thread + bo dem GC,
-# thuc te hon -Xmx khoang 200-300 MB, chua ke MariaDB va Apache.
+# Dung dat -Xmx sat RAM: JVM con ton metaspace + stack thread + bo dem GC.
 # -Djava.awt.headless=true: VPS khong co man hinh (AdminPanel tu bo qua).
-ExecStart=/usr/bin/java -Xms256m -Xmx512m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar KPAH2_patched.jar
+ExecStart=/usr/bin/java -Xms256m -Xmx768m -Xss256k -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar KPAH2_patched.jar
 
 # Tat = SIGTERM -> shutdown hook trong TeamServer luu char/clan/market roi moi thoat.
 # TimeoutStopSec phai du dai cho no luu xong, dung ha xuong duoi 60s.
