@@ -1,0 +1,40 @@
+name: Deploy len VPS
+
+# Moi push len main se ssh vao VPS goi /opt/kpah/vps/deploy-auto.sh.
+# Script tu quyet dinh co can restart server hay khong: commit chi doi tai lieu thi
+# no chi git pull, khong ai bi kick. Doi KPAH2_patched.jar / lib / map / cMap /
+# loginServer thi bao truoc 60 giay trong game roi moi tat bat.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Hai push lien tiep thi cho lan truoc xong, khong chay chong nhau.
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Cai khoa SSH
+        env:
+          KHOA: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          if [ -z "$KHOA" ]; then
+            echo "::error::Chua co secret VPS_SSH_KEY. Vao Settings > Secrets and variables > Actions de them."
+            exit 1
+          fi
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$KHOA" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H 180.93.57.30 >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Goi deploy tren VPS
+        # Khoa nay bi ep chay dung mot lenh (command="..." trong authorized_keys) nen
+        # du co lo cung khong mo duoc shell tren VPS. Output cua script hien ngay o day.
+        run: |
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 \
+              -o StrictHostKeyChecking=yes root@180.93.57.30 deploy

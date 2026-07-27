@@ -653,6 +653,65 @@ public class Database {
         }
     }
 
+    // ==================== CO BAO TRUOC BAO TRI ====================
+    // Deploy tu dong (vps/deploy-auto.sh, goi tu GitHub Actions) dat
+    // 5h_systems.status = 0 o dong command='baotri_thongbao' de bao truoc cho nguoi dang
+    // online. Khac 'restart': co nay CHI bao, khong tu tat server - script se goi
+    // systemctl stop sau do de shutdown hook luu du lieu dang hoang.
+    // Doc xong tra co ve 1 ngay, de khong bao lap lai moi 5 giay.
+    public boolean baoTriThongBaoCMD() {
+        Connection conn = null;
+        PreparedStatement pre = null;
+        ResultSet rs = null;
+        boolean co = false;
+        try {
+            conn = this.getConnection();
+            pre = conn.prepareStatement("SELECT * FROM 5h_systems WHERE command = ? and status = 0");
+            pre.setString(1, "baotri_thongbao");
+            rs = pre.executeQuery();
+            if (rs.next()) {
+                co = true;
+            }
+        } catch (Exception e) {
+            Logger.logError(e, "");
+        } finally {
+            try {
+                rs.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                pre.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+        if (co) {
+            conn = null;
+            pre = null;
+            try {
+                conn = this.getConnection();
+                pre = conn.prepareStatement("update 5h_systems set status=1 WHERE command = ?");
+                pre.setString(1, "baotri_thongbao");
+                pre.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    pre.close();
+                } catch (Exception ignored) {
+                }
+                try {
+                    Database.connPool.free(conn);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        return co;
+    }
+
     public boolean checkAddGiftEventOutGame(String charname) {
         Connection conn = null;
         PreparedStatement pre = null;

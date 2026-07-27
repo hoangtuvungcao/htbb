@@ -47,6 +47,30 @@ public class BaoTriDaily implements Runnable {
         System.out.println("Thời gian bảo trì được set: " + maintenanceHour + ":" + maintenanceMinute);
     }
 
+    // Dem nguoc bao tri cho nguoi dang online: chay marquee o moc 60s, 30s, 10s roi thoi.
+    // Chi gui thong bao, KHONG tat server - viec tat de cho systemctl stop (SIGTERM ->
+    // shutdown hook luu du lieu). Chay trong thread cua BaoTriDaily nen ngu o day khong
+    // anh huong gi ngoai viec hoan vong kiem tra bao tri lai vai chuc giay.
+    public static void demNguocBaoTri(final int giay) {
+        int conLai = giay;
+        try {
+            while (conLai > 0) {
+                RealController.maquee = "Hệ thống bảo trì sau " + conLai
+                        + " giây. Vui lòng thoát game để tránh mất mát dữ liệu.";
+                final Message m = MessageCreator.createServerInfoMessage();
+                for (int i = 0; i < CharManager.instance.vChars.size(); ++i) {
+                    CharManager.instance.vChars.elementAt(i).sendMessage(m);
+                }
+                m.cleanup();
+                System.out.println("BAO TRI SAU " + conLai + "s (" + CharManager.instance.vChars.size() + " nguoi online)");
+                final int buoc = (conLai > 30) ? 30 : ((conLai > 10) ? 10 : conLai);
+                Thread.sleep(buoc * 1000L);
+                conLai -= buoc;
+            }
+        } catch (final Exception ex) {
+        }
+    }
+
     @Override
     public synchronized void run() {
         try {
@@ -64,6 +88,11 @@ public class BaoTriDaily implements Runnable {
                 Date d = new Date();
                 if (d.getSeconds() % 5 == 0) {
                     BaoTriTay = Database.instance.baotriCMD();
+                    // Deploy tu dong bat co nay de bao truoc cho nguoi dang online. No CHI bao,
+                    // khong tu tat: vps/deploy-auto.sh goi systemctl stop sau khi het dem nguoc.
+                    if (Database.instance.baoTriThongBaoCMD()) {
+                        demNguocBaoTri(60);
+                    }
                 }
                 if (d.getSeconds() == 0) {
                     // SECURITY: disabled external heartbeat call that sent online count to a remote server (api.url).
