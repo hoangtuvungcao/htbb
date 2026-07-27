@@ -36404,13 +36404,12 @@ public class Map implements Runnable {
                     }
 
                     // Trung rong bang: bam Dung KHONG no ra thu - phai mang toi NPC tao thu,
-                    // giong moi loai trung linh thu khac. Nhung van phai chan o day, TRUOC
-                    // nhanh ho ve lenh: template 887 la type 21 nen neu de roi xuong duoi thi
-                    // no mo menu trieu hoi ho ve danh thue.
+                    // giong moi loai trung linh thu khac. Bao dung cau "Khong the su dung" nhu
+                    // cac trung dang potion (doUsePotion case 70/72/74/115) cho nhat quan.
+                    // Van phai chan o day, TRUOC nhanh ho ve lenh: template 887 la type 21 nen
+                    // neu de roi xuong duoi thi no mo menu trieu hoi ho ve danh thue.
                     if (item.isTrungRongBang()) {
-                        player.sendMessage(
-                                MessageCreator.createServerAlertMessage("Hãy tìm NPC Hạo Nguyệt, chọn \"Tạo thú\" để ấp trứng rồng băng.", "")
-                        );
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng", ""));
                         return;
                     }
 
