@@ -88,6 +88,14 @@ sv.testMode=0
 sv.testCode=
 # sv.adminAccounts so sanh voi TEN NHAN VAT (charname), khong phai ten tai khoan.
 sv.adminAccounts=admin,admin2
+# Moi ten CO CHUA chu "admin" deu bi chan khi tao nhan vat (chong mao danh GM).
+# Nhung the thi chinh ban cung khong tao duoc nhan vat ten "admin". Khi can:
+#   1. dat sv.choPhepTaoTenGM=1
+#   2. trong game go "setting" roi lenh 8 (nap lai) — khong can restart
+#   3. tao nhan vat ten "admin"
+#   4. dat lai =0 va nap lai lan nua
+# Chi mo cho dung cac ten liet ke o sv.adminAccounts.
+sv.choPhepTaoTenGM=0
 sv.reloginWaitSec=0
 
 # ==== CHONG DoS ====

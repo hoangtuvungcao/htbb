@@ -441,6 +441,11 @@ public class TeamServer {
             // Gio chiem thanh: cung nguon voi bang setting trong game, admin sua
             // trong game se duoc ghi tra lai server.ini (xem CauHinh).
             CauHinh.apDungGioChiemThanh(p);
+            Database.CHO_PHEP_TAO_TEN_GM = "1".equals(p.getProperty(CauHinh.K_TAO_TEN_GM, "0").trim());
+            if (Database.CHO_PHEP_TAO_TEN_GM) {
+                System.out.println("CANH BAO: sv.choPhepTaoTenGM=1 - dang cho phep tao nhan vat"
+                        + " mang ten GM trong sv.adminAccounts. Tat lai sau khi tao xong.");
+            }
             System.out.println("CHIEM THANH -> "
                     + (real.MapTown.TimeAdminCheat < 0
                             ? "lich chuan 21h thu 3 + thu 7"

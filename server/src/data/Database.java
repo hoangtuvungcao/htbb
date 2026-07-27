@@ -14633,6 +14633,19 @@ public void addCharXaiNapLuong(Char p, int type) {
     }
 
     /**
+     * Cho phep tao nhan vat mang dung ten GM trong sv.adminAccounts.
+     *
+     * Doc tu server.ini: sv.choPhepTaoTenGM=1. Mac dinh TAT.
+     * Dung khi chinh chu can tao lai nhan vat GM (vi du sau khi lam moi database):
+     * bat len -> tao nhan vat ten "admin" -> tat lai. Doi bang bang setting trong
+     * game (go "setting" roi lenh 8 de nap lai) nen khong can restart server.
+     *
+     * Chi mo dung cac ten co trong sv.adminAccounts, khong mo cho moi ten chua
+     * chu "admin" — de nguoi choi khong the dat ten kieu "adminvip" luc dang bat.
+     */
+    public static boolean CHO_PHEP_TAO_TEN_GM = false;
+
+    /**
      * Ten khong duoc phep dat khi tao nhan vat:
      *   - moi ten CO CHUA chu "admin" (admin, admin2, xxadminxx, ADMIN...): tranh
      *     nguoi choi mao danh admin va tranh trung ten trong sv.adminAccounts.
@@ -14646,6 +14659,15 @@ public void addCharXaiNapLuong(Char p, int type) {
         final String ten = charname.trim().toLowerCase();
         if (ten.isEmpty()) {
             return true;
+        }
+        // Cua ngo cho chinh chu tao lai nhan vat GM (xem CHO_PHEP_TAO_TEN_GM)
+        try {
+            if (CHO_PHEP_TAO_TEN_GM && server.TeamServer.adminAccounts.contains(ten)) {
+                System.out.println("[TAO NHAN VAT] Cho phep ten GM '" + ten
+                        + "' vi sv.choPhepTaoTenGM=1. NHO TAT LAI sau khi tao xong.");
+                return false;
+            }
+        } catch (final Exception ignored) {
         }
         if (ten.contains("admin")) {
             return true;

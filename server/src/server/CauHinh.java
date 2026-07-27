@@ -39,6 +39,7 @@ public final class CauHinh {
     public static final String K_TILE_NGOC = "sv.tileNgoc";
     public static final String K_TILE_ITEM = "sv.tileItem";
     public static final String K_CHIA_XU = "sv.chiaXuRoi";
+    public static final String K_TAO_TEN_GM = "sv.choPhepTaoTenGM";
 
     private CauHinh() {
     }
@@ -173,6 +174,7 @@ public final class CauHinh {
                 real.Monster.PC_TILE_NGOC, real.Monster.PC_TILE_ITEM, real.Map.DIV_DROP_XU};
 
             apDungGioChiemThanh(p);
+            data.Database.CHO_PHEP_TAO_TEN_GM = "1".equals(nhan(p.getProperty(K_TAO_TEN_GM), "0"));
 
             int max = so(p.getProperty("sv.maxCharPerAccount"), data.Database.MAX_CHAR_PER_ACCOUNT);
             if (max < 1) {

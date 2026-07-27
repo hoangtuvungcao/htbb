@@ -28,7 +28,7 @@
 --  với mật khẩu mặc định (đó là cách để bạn không quên).
 -- ############################################################################
 SET @admin_user = 'admin';
-SET @admin_pass = 'ijOwvrLkRzYcgmjP';
+SET @admin_pass = 'kpah2026admin';
 
 -- Phai chon database TRUOC khi tao procedure, neu khong MariaDB bao
 -- "ERROR 1046 (3D000): No database selected".
