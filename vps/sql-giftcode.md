@@ -381,6 +381,40 @@ Trần kế tiếp sau `MEDIUMTEXT` là `max_allowed_packet` (16 MB) và số m�
 inventory là `writeShort` ([MessageCreator.java:824](../src/real/MessageCreator.java#L824))
 = 32.767 món — thực tế không bao giờ tới.
 
+## Trứng rồng băng (item 887) — nở ở NPC, không phải bấm Dùng
+
+`data_item` 883-887 tên là "Trứng …" nhưng **`type = 21`, tức bản sao của hộ vệ lệnh 6x lv 3**
+— chỉ đổi tên và icon (`xstart`), còn server xử lý theo `type` nên bấm Dùng là ra menu *"Hộ vệ
+nam hệ kim / nữ hệ kim…"*. Icon thì mỗi id một hình riêng (887 → icon 840, hộ vệ lệnh 6x lv3 →
+icon 540), nên tên và hình là trứng mà hành vi là hộ vệ.
+
+Riêng **887 đã được sửa** thành trứng thật:
+
+| Việc | Ở đâu |
+|---|---|
+| Bấm Dùng → chỉ nhắc *"Hãy tìm NPC Hạo Nguyệt…"*, không nở, không ra menu hộ vệ | `doUseItem`, chặn trước nhánh `isTheBaiLinhDanhThue` |
+| NPC Hạo Nguyệt → **Tạo thú** → option **"Rồng băng"** (thứ 11) → nở | `Map` menu `-6`, `case 10` |
+| Nở ra **level 1** thuộc tính random, y như 10 trứng còn lại ở NPC đó | `Map.doApTrungRongBang` |
+| Yêu cầu cấp độ hạ về 1 | `UPDATE kpah_db.data_item SET level = 1 WHERE id = 887;` |
+
+**Luyện lên level 4 thì mạnh hơn con phát sẵn bằng `RONGBANG:0`**: trần level 4 là `att[0..2]`
+= 13 và HP/MP = 8000 (`pcBasic` lv4 + `addMoreSP[RONG_LON]` = 3), còn `createAttMax` của bản
+phát sẵn chỉ cho 10 và 5000. Chỗ duy nhất luyện không bù được là **số dòng đặc biệt**
+`att[9..13]`: nở từ trứng được 1 dòng, phát sẵn được 2 dòng.
+
+Phát trứng để test (vô hạn lượt):
+
+```sql
+INSERT INTO kpah_db.giftcode (giftcode,xu,luong,luongLock,item,expire,limit_use,type)
+VALUES ('trungrb',0,0,0,'DB:887:5:0',0,-1,0);
+```
+
+> Đổi `data_item.level` chỉ ăn vào **trứng tạo mới**. Trứng đang nằm trong hành trang lưu
+> `level` riêng trong chuỗi `inven` nên vẫn hiện *"Yêu cầu lv: 65"* — bỏ đi rồi nhập lại mã.
+>
+> Số linh thú gửi cho client ghi bằng **1 byte** ([MessageCreator.java:862](../src/real/MessageCreator.java#L862))
+> → quá **127 con** là hỏng gói tin. Mã trứng vô hạn nên đừng ấp hàng loạt.
+
 ## Mã riêng theo nhân vật (`ngude_giftcode`)
 
 ```sql

@@ -27145,8 +27145,9 @@ public class Map implements Runnable {
     }
 
     // ==================== AP TRUNG RONG BANG ====================
-    // Trung rong bang (item 887) no ra linh thu Rong Bang. Hai duong vao dung chung ham nay:
-    // dung item truc tiep trong hanh trang, va NPC tao thu (menu -6, option "Rong bang").
+    // Trung rong bang (item 887) no ra linh thu Rong Bang. CHI mot duong vao: NPC tao thu
+    // (menu -6, option "Rong bang") - giong moi loai trung linh thu khac. Bam Dung trong
+    // hanh trang chi nhac di gap NPC, xem doUseItem.
     //
     // No ra thu LEVEL 1 voi thuoc tinh random - giong het 10 trung con lai o NPC tao thu.
     // Co y khong dung createRongLon (level 4 + createAttMax) nhu giftcode RONGBANG:<ngay>:
@@ -36399,10 +36400,14 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    // Phai chan TRUOC nhanh ho ve lenh: trung rong bang cung type 21 nen neu de
-                    // roi xuong duoi thi no mo menu trieu hoi ho ve chu khong no ra thu.
+                    // Trung rong bang: bam Dung KHONG no ra thu - phai mang toi NPC tao thu,
+                    // giong moi loai trung linh thu khac. Nhung van phai chan o day, TRUOC
+                    // nhanh ho ve lenh: template 887 la type 21 nen neu de roi xuong duoi thi
+                    // no mo menu trieu hoi ho ve danh thue.
                     if (item.isTrungRongBang()) {
-                        this.doApTrungRongBang(player, item);
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage("Hãy tìm NPC Hạo Nguyệt, chọn \"Tạo thú\" để ấp trứng rồng băng.", "")
+                        );
                         return;
                     }
 
