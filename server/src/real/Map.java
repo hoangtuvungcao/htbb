@@ -27164,6 +27164,9 @@ public class Map implements Runnable {
             anima.name = "Rồng Băng";
             anima.idImg = Animal.RONG_LON;
             anima.createAtt();
+            // Mo o dong dac biet thu hai cho bang ban phat san bang giftcode RONGBANG:<ngay>
+            // (createBasePointMax bat 2 o trong att[9..13], createBasePoint chi bat 1).
+            anima.createOneMoreSpecialPoint();
             anima.level = 1;
             anima.place = 0;
             anima.ownerId = player.charDBID;

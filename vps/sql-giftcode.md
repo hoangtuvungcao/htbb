@@ -397,10 +397,22 @@ Riêng **887 đã được sửa** thành trứng thật:
 | Nở ra **level 1** thuộc tính random, y như 10 trứng còn lại ở NPC đó | `Map.doApTrungRongBang` |
 | Yêu cầu cấp độ hạ về 1 | `UPDATE kpah_db.data_item SET level = 1 WHERE id = 887;` |
 
-**Luyện lên level 4 thì mạnh hơn con phát sẵn bằng `RONGBANG:0`**: trần level 4 là `att[0..2]`
-= 13 và HP/MP = 8000 (`pcBasic` lv4 + `addMoreSP[RONG_LON]` = 3), còn `createAttMax` của bản
-phát sẵn chỉ cho 10 và 5000. Chỗ duy nhất luyện không bù được là **số dòng đặc biệt**
-`att[9..13]`: nở từ trứng được 1 dòng, phát sẵn được 2 dòng.
+**Luyện lên level 4 thì bằng hoặc cao hơn con phát sẵn bằng `RONGBANG:0`:**
+
+| | Phát sẵn (`createAttMax` + lv4) | Nở từ trứng, luyện tới lv4 |
+|---|---|---|
+| `att[0..2]` | 10 | **13** (`pcBasic[i][3]`=10 + `addMoreSP[13]`=3) |
+| HP / MP `att[3..4]` | 5000 | **~8018** (trần 8000, mỗi lần +1003) |
+| Tiềm năng `att[5..8]` | 20 × 4 ô | **25** × 4 ô (trần 23, mỗi lần +4 nên vượt lên 25) |
+| Đặc biệt `att[9..13]` | 2 ô ở 23/13/7/11/23 | **2 ô** ở 25/13/9/13/25 tuỳ ô |
+
+Ô thứ hai của nhóm đặc biệt do `Animal.createOneMoreSpecialPoint()` mở khi ấp — `createBasePoint`
+chỉ bật 1 ô mà `upLevel` không bao giờ mở thêm ô ở nhóm này, nên không có hàm đó thì con nở
+vĩnh viễn thiếu một dòng, luyện kiểu gì cũng không bù.
+
+Đổi lại: `upLevel` đòi **mọi ô đang có phải đạt trần của cấp hiện tại** (`isMaxAttOfLevel`) mới
+cho lên cấp, nên hai dòng đặc biệt = phải luyện nhiều hơn mới lên được level 4. Cấp nhân vật
+tối thiểu để lên cấp thú: `levelup = {0, 1, 20, 30, 35}`.
 
 Phát trứng để test (vô hạn lượt):
 

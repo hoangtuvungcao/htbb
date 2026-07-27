@@ -955,6 +955,43 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
 
     }
 
+    // Mo them MOT dong dac biet (att[9..13]) o muc khoi diem, dung cho thu no tu trung.
+    // createBasePoint chi bat 1 o trong nhom nay, con createBasePointMax (ban phat san bang
+    // giftcode) bat 2 o. upLevel chi mo them o ben att[5..8], khong bao gio mo o nhom nay,
+    // nen thieu ham nay thi con no tu trung VINH VIEN it hon mot dong so voi ban phat san -
+    // luyen kieu gi cung khong bu duoc. Gia tri khoi diem lay dung khoang cua createBasePoint
+    // de con lai de upAttribute(1) keo dan len tran cua tung o.
+    public void createOneMoreSpecialPoint() {
+        Vector<Integer> oTrong = new Vector();
+        for (int i = 9; i < 14; ++i) {
+            if (this.att[i] == 0) {
+                oTrong.add(i);
+            }
+        }
+
+        if (oTrong.isEmpty()) {
+            return;
+        }
+
+        int o = (Integer) oTrong.get(Map.r.nextInt(oTrong.size()));
+        switch (o) {
+            case 9:
+                this.att[9] = (short) (Map.r.nextInt(4) + 1);
+                break;
+            case 10:
+                this.att[10] = (short) (Map.r.nextInt(2) + 1);
+                break;
+            case 11:
+                this.att[11] = 1;
+                break;
+            case 12:
+                this.att[12] = 1;
+                break;
+            case 13:
+                this.att[13] = (short) (Map.r.nextInt(4) + 1);
+        }
+    }
+
     public void createBasePointMax() {
         switch (this.idImg) {
             case HEO_BANG:
