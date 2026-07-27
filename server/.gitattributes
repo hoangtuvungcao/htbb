@@ -3,6 +3,9 @@
 * text=auto
 
 *.sh   text eol=lf
+# File .bat chay tren Windows: PHAI CRLF, cmd.exe co the loi goto/label voi LF
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
 *.service text eol=lf
 *.md   text eol=lf
 *.java text eol=lf
