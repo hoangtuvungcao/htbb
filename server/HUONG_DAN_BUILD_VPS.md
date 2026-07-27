@@ -37,33 +37,43 @@ tổng khoảng 100 MB, vài phút là xong.
 
 ## PHẦN A — Chuẩn bị ở máy nhà (Windows)
 
-Code lấy từ **Git** (`github.com/hoanghoa0903/KPAH`, repo private). Database thì Git không
-chứa nên vẫn phải dump tay — đó là toàn bộ nội dung phần này.
+Code lấy từ **Git** (`github.com/hoanghoa0903/KPAH`, repo private).
 
-### A1. Tắt server để dump DB sạch
+Database thì **không cần dump gì cả** — server mới bắt đầu trắng tinh, và 2 file cần thiết
+đã nằm sẵn trong repo:
 
-Tắt game server (Admin Panel → **Bảo Trì**) và `loginServer`. MySQL vẫn để chạy.
+| File trong repo | Là gì |
+|---|---|
+| `gamedb7_clean.sql` | 84 bảng + **toàn bộ dữ liệu game** (904 item, 138 monster, 162 bình, 148 shop, 49 quest, 141 attribute, 147 từ khoá lọc), **không có** một nhân vật/tài khoản nào |
+| `loginServer/account.sql` | cấu trúc bảng `team_user` |
+| `vps/db_new_server.sql` | script dọn sạch + tạo tài khoản admin, mình vừa viết |
 
-### A2. Dump 2 database
+Nên PHẦN A gần như không có việc gì. Chỉ cần chắc mọi thứ đã push (bước A3).
 
-Mở PowerShell tại `C:\Users\ADMIN\Desktop\KPAH`:
+### A1. Nếu sau này muốn mang dữ liệu cũ sang (tuỳ chọn, KHÔNG cần cho server mới)
+
+Tắt game server (Admin Panel → **Bảo Trì**) và `loginServer`, rồi:
 
 ```powershell
 & "C:\xampp\mysql\bin\mysqldump.exe" -u root --single-transaction --routines --events kpah_db > kpah_db.sql
 & "C:\xampp\mysql\bin\mysqldump.exe" -u root --single-transaction --routines --events account > account.sql
+scp kpah_db.sql account.sql root@180.93.57.30:/root/
 ```
 
-Có mật khẩu MySQL thì thêm `-p` (nó sẽ hỏi). Kiểm tra file không rỗng:
+Import 2 file này thay cho bước C3, rồi vẫn chạy `vps/db_new_server.sql` nếu muốn xoá
+người chơi nhưng giữ mọi thiết lập khác.
 
-```powershell
-Get-Item kpah_db.sql, account.sql | Select-Object Name, Length
+### A2. Đặt mật khẩu admin cho server mới
+
+Mở [vps/db_new_server.sql](vps/db_new_server.sql), sửa 2 dòng đầu:
+
+```sql
+SET @admin_user = 'admin';
+SET @admin_pass = 'ijOwvrLkRzYcgmjP';
 ```
 
-`kpah_db.sql` phải cỡ vài chục MB. Nếu chỉ vài KB là dump lỗi, đọc lại thông báo.
-
-> Trong repo có `gamedb7_clean.sql` (cấu trúc + dữ liệu game, **không có** nhân vật) và
-> `loginServer/account.sql`. Chỉ dùng 2 file đó khi bạn muốn **server mới trắng dữ liệu**.
-> Muốn giữ nhân vật hiện tại thì phải dump như trên.
+Không sửa thì script **dừng ngay từ đầu và không xoá gì** — cố ý làm vậy để bạn không tạo
+ra tài khoản admin với mật khẩu mặc định.
 
 ### A3. Đảm bảo mọi thứ đã push lên Git
 
@@ -151,6 +161,9 @@ Bỏ qua bước này là chiếm thành nổ lệch 7 tiếng.
 
 ## PHẦN C — MariaDB
 
+> **Thứ tự chạy:** làm C1 + C2 trước, rồi **nhảy sang PHẦN D** để clone code, sau đó quay
+> lại C3 + C4. Lý do: 3 file SQL cần import đều nằm trong repo, phải clone xong mới có.
+
 ### C1. Cấu hình trước khi import
 
 ```bash
@@ -203,34 +216,86 @@ FLUSH PRIVILEGES;
 EXIT;
 ```
 
-### C3. Import
+### C3. Import (làm SAU khi đã clone code ở PHẦN D — 3 file đều nằm trong repo)
 
 ```bash
-cd /root
-mysql -u root kpah_db  < kpah_db.sql
-mysql -u root account  < account.sql
-
-# Kiem tra: phai ra 84 va 1
-mysql -u root -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='kpah_db';"
-mysql -u root -e "SELECT COUNT(*) FROM account.team_user;"
+cd /opt/kpah
+mysql -u root kpah_db < gamedb7_clean.sql
+mysql -u root account < loginServer/account.sql
+mysql -u root --default-character-set=utf8 -t < vps/db_new_server.sql
 ```
 
-Nếu import báo lỗi *Unknown collation* thì bản MariaDB 10.3 trên VPS cũ hơn 10.4 ở nhà —
-sửa nhanh: `sed -i 's/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g; s/utf8mb3/utf8/g' kpah_db.sql`
+Lệnh thứ ba in ra bảng kiểm tra. **Đọc kỹ bảng đó trước khi bật server** — cột `phai_la`
+nói rõ giá trị đúng:
+
+```
++-------------------------------+---------+-----------+
+| bang                          | so_dong | phai_la   |
++-------------------------------+---------+-----------+
+| tob_char (nhan vat)           |       0 | 0         |
+| tob_animal / tob_pet          |       0 | 0         |
+| tob_clan / tob_market         |       0 | 0         |
+| giftcode_log / board_created  |       0 | 0         |
+| --- du lieu game phai CON --- |         |           |
+| data_item                     |     904 | ~904      |
+| data_monster                  |     138 | 138       |
+| data_potion                   |     162 | 162       |
+| data_shop                     |     148 | 148       |
+| data_quest                    |      49 | 49        |
+| data_attribute                |     141 | 141       |
+| tob_tubinh (template)         |      16 | 16        |
+| bad_word                      |     147 | 147       |
+| --- tai khoan ---             |         |           |
+| account.team_user             |       1 | 1 (admin) |
+| 5h_active                     |       1 | 1         |
++-------------------------------+---------+-----------+
+```
+
+[vps/db_new_server.sql](vps/db_new_server.sql) làm 6 việc: chặn lại nếu bạn chưa đặt mật
+khẩu admin (chặn **trước khi** xoá bất cứ thứ gì), xoá sạch mọi bảng dữ liệu người chơi
+(đọc từ `information_schema` nên không sót bảng log xoay vòng theo tháng), giữ nguyên 16
+bảng dữ liệu game, **bù 2 thứ mà bản dump sạch bị thiếu** (xem dưới), xoá sạch tài khoản,
+rồi tạo 1 tài khoản admin đã kích hoạt sẵn. Chạy lại nhiều lần không hỏng gì.
+
+**Hai thứ bản dump sạch bị thiếu** — mình đối chiếu từng bảng giữa DB đang chạy và bản dump
+mới tìm ra, script đã bù sẵn:
+
+1. **`tob_tubinh` — template tứ bình 16 dòng** (Mai/Lan/Cúc/Trúc → Long/Lân/Quy/Phụng).
+   Tên bắt đầu bằng `tob_` nhưng đây là **dữ liệu game**, không phải của người chơi. Để
+   trống thì nhân vật lv ≥ 40 vào game sẽ ném `Duplicate entry ... for key PRIMARY` ở
+   `addCharTubinh` và `ArrayIndexOutOfBounds` ở `createMsgCharTuBinh`.
+2. **`history_win_xoso`** — [Database.java:1619](src/data/Database.java#L1619) `INSERT` vào
+   bảng này nhưng không có lệnh tạo bảng, dump cũng không có. Thiếu là ai thắng xổ số sẽ ăn
+   `Table doesn't exist`.
+
+Còn 2 bảng `tob_skin_thu` và `tob_train_luong` (skin thú nuôi + hạn mức lượng train/ngày)
+cũng không có trong dump nhưng **không cần làm gì** — server tự `CREATE TABLE IF NOT EXISTS`
+lúc khởi động.
+
+Nếu import báo lỗi *Unknown collation* thì bản MariaDB trên VPS cũ hơn ở nhà — sửa nhanh:
+`sed -i 's/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g; s/utf8mb3/utf8/g' gamedb7_clean.sql`
 rồi import lại.
 
-### C4. Kích hoạt tài khoản
+### C4. Tài khoản và nhân vật admin
 
-`sv.EnableAvtiveCheck=1` nên tài khoản nào không có dòng trong `kpah_db.5h_active` sẽ bị
-chặn ngay ở màn đăng nhập:
+Script ở C3 đã tạo tài khoản `admin` (mật khẩu bạn đặt) và thêm dòng kích hoạt vào
+`5h_active` nên đăng nhập được ngay — không cần sửa `sv.EnableAvtiveCheck`.
+
+**Việc còn lại phải làm trong game:** quyền admin xét theo **TÊN NHÂN VẬT**, không phải tên
+tài khoản (`server.ini` → `sv.adminAccounts=admin,admin2`). Nên sau khi vào game bằng tài
+khoản `admin`, tạo nhân vật đặt tên đúng **`admin`** thì mới có quyền. Người chơi thường
+không giành được tên này: mọi tên chứa chữ "admin" đã bị chặn ở
+[Database.java:14632](src/data/Database.java#L14632).
+
+Người chơi mới đăng ký qua web (PHẦN F): `config.php` để `AUTO_ACTIVATE = true` là đăng ký
+xong vào game được luôn. Nếu bạn tạo tài khoản bằng tay trong DB thì phải tự thêm dòng
+`5h_active`:
 
 ```sql
 INSERT INTO kpah_db.5h_active (userID, username, time_end)
 SELECT id, username, '-1' FROM account.team_user
 WHERE id NOT IN (SELECT userID FROM kpah_db.5h_active);
 ```
-
-Hoặc đặt `sv.EnableAvtiveCheck=0` trong `server.ini`.
 
 ---
 
@@ -315,6 +380,11 @@ cập nhật.
 Các file `.txt` vận tiêu (`cuoptieu`, `doitieu`, `nhantieu`, `thetieu`, `tratieu`,
 `matketinfo`) cũng bị `.gitignore` chặn nên clone ra không có — **không sao**, chúng chỉ là
 log server tự ghi thêm, sẽ tự tạo khi chạy.
+
+### D3b. Quay lại làm C3 + C4 (import database)
+
+Giờ đã có code, quay lên **PHẦN C3** import 3 file SQL rồi mới cài service. Bật server khi
+database còn rỗng thì nó sẽ chạy nhưng không ai đăng nhập được.
 
 ### D4. Cài 2 service
 
@@ -415,8 +485,22 @@ Test-NetConnection 180.93.57.30 -Port 19129
 
 ### G3. Vào game
 
-Chạy client, chọn Server 1, đăng nhập bằng tài khoản có trong `account.team_user`.
+Chạy client, chọn Server 1, đăng nhập bằng tài khoản `admin` + mật khẩu bạn đặt ở A2.
+Tạo nhân vật đặt tên **`admin`** để có quyền GM.
+
+Kiểm tra server mới đã sạch và đủ:
+
+| Thử | Đúng thì thấy |
+|---|---|
+| Bảng xếp hạng | trống trơn (chưa ai chơi) |
+| Vào shop NPC | có đủ hàng (`data_shop` 148 dòng) |
+| Đánh quái | quái ra đúng (`data_monster` 138 dòng) |
+| Gõ `setting` bằng nhân vật `admin` | ra ô nhập lệnh → quyền GM đã đúng |
+| Nhân vật lv ≥ 40 | mở tứ bình không lỗi (`tob_tubinh` 16 dòng) |
+
 Đăng nhập được nhưng vào game trắng màn hình → thiếu `map/` hoặc `cMap/`.
+Đăng nhập báo sai mật khẩu dù chắc chắn đúng → xem PHẦN J, gần như luôn là do cài MySQL 8
+thay vì MariaDB.
 
 ---
 

@@ -44,6 +44,13 @@ thetieu.txt
 tratieu.txt
 rUpdateleaf.txt
 
+### Ban dump DB thuc te - KHONG commit ###
+# Chua toan bo du lieu nguoi choi + hash mat khau tai khoan, va rat nang
+# (kpah_db.sql ~140 MB). Commit vao la nam vinh vien trong lich su git.
+/kpah_db.sql
+/account.sql
+/*.sql.gz
+
 ### Chi co tren VPS Linux (khong dua vao git) ###
 /log/
 /backup/
