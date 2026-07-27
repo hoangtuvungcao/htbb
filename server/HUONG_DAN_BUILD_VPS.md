@@ -75,7 +75,7 @@ Mở [vps/db_new_server.sql](vps/db_new_server.sql), sửa 2 dòng đầu:
 
 ```sql
 SET @admin_user = 'admin';
-SET @admin_pass = 'ijOwvrLkRzYcgmjP';
+SET @admin_pass = '';
 ```
 
 Không sửa thì script **dừng ngay từ đầu và không xoá gì** — cố ý làm vậy để bạn không tạo
@@ -126,6 +126,30 @@ apt update && apt upgrade -y
 apt install -y openjdk-8-jre-headless mariadb-server unzip ufw git
 ```
 
+**Kiểm tra thật sự cài được** — dòng `apt install` hay bị `unattended-upgrades` giữ khoá
+`dpkg` lúc VPS mới dựng và **thất bại im lặng**, sau đó bạn sẽ gặp
+`Directory '/etc/mysql/mariadb.conf.d' does not exist` (thiếu MariaDB) hoặc
+`Failed at step EXEC spawning /usr/bin/java: No such file or directory` (thiếu Java):
+
+```bash
+which java unzip ufw git
+mysqld --version
+```
+
+Thiếu cái nào thì `apt install -y <tên gói>` lại cái đó. Báo `Could not get lock
+/var/lib/dpkg/lock-frontend` thì chờ 2-3 phút rồi chạy lại.
+
+**Nếu VPS này từng chạy `frps`** theo [HUONG_DAN_VPS_FRP.md](HUONG_DAN_VPS_FRP.md) thì phải
+tắt, vì nó đang chiếm đúng cổng 19129 mà game server cần:
+
+```bash
+ss -lntp | grep 19129
+systemctl disable --now frps 2>/dev/null
+ss -lntp | grep 19129        # phai trong
+```
+
+Bỏ bước này thì game server không bind được cổng, mà systemd vẫn báo `active (running)`.
+
 Java 8 là đủ: jar server biên dịch ở class version 52 (Java 8), thư viện `NQSH_5h.jar` là
 version 50 (Java 6). Máy có Java 11/17 sẵn cũng chạy được, nhưng 8 là bản khớp nhất.
 Kiểm tra: `java -version`.
@@ -166,22 +190,15 @@ không phải để chạy thường xuyên: nếu heap của Java bị đẩy x
 giật/lag từng đợt — tệ hơn cả việc không có swap. Đặt 10 nghĩa là kernel chỉ dùng swap khi
 thực sự bí.
 
-### B2b. VPS 2 GB thì sửa 2 con số này
+### B2b. VPS 2 GB — KHÔNG làm gì ở đây, chỉ ghi nhớ 2 con số
 
-Hai file mặc định viết cho VPS 1 GB. Có 2 GB thì nới ra, không thì bạn trả tiền RAM mà
-không dùng:
+Hai chỗ cần nới cho VPS 2 GB **nằm ở bước sau**, đừng cố sửa lúc này (file service chưa
+tồn tại, repo mới clone ở PHẦN D — chạy `sed` bây giờ chỉ báo *No such file*):
 
-```bash
-# 1) Heap game server: 512m -> 1g
-nano /opt/kpah/vps/kpah-game.service
-#    ExecStart=... -Xms256m -Xmx1g -Djava.awt.headless=true ...
-
-# 2) Bộ đệm MariaDB: 128M -> 256M
-nano /etc/mysql/mariadb.conf.d/50-server.cnf
-#    innodb_buffer_pool_size = 256M
-```
-
-Sau đó `systemctl daemon-reload && systemctl restart mariadb kpah-game`.
+| Cần đổi | Từ → đến | Làm ở bước |
+|---|---|---|
+| `innodb_buffer_pool_size` | 128M → **256M** | **C1**, lúc sửa `50-server.cnf` (guide đã ghi sẵn 256M) |
+| `-Xmx` game server | 512m → **1g** | **D4**, ngay trước khi copy file service |
 
 **Đừng đặt `-Xmx` vượt 1 GB trên VPS 2 GB.** Ngoài heap, JVM còn ăn thêm metaspace, stack
 của từng thread, bộ đệm GC — thực tế tốn hơn `-Xmx` khoảng 200–300 MB. Cộng MariaDB ~250 MB
@@ -219,43 +236,106 @@ Bỏ qua bước này là chiếm thành nổ lệch 7 tiếng.
 
 ## PHẦN C — MariaDB
 
-> **Thứ tự chạy:** làm C1 + C2 trước, rồi **nhảy sang PHẦN D** để clone code, sau đó quay
+> **Thứ tự chạy:** làm C0 → C1 → C2, rồi **nhảy sang PHẦN D** để clone code, sau đó quay
 > lại C3 + C4. Lý do: 3 file SQL cần import đều nằm trong repo, phải clone xong mới có.
+
+### C0. Kiểm tra đã cài đúng MariaDB chưa
+
+Làm bước này trước, đừng bỏ qua. Nếu `nano` báo
+`[ Directory '/etc/mysql/mariadb.conf.d' does not exist ]` thì gần như chắc chắn MariaDB
+chưa cài, hoặc cài nhầm MySQL.
+
+```bash
+mysqld --version                      # phai co chu "MariaDB"
+systemctl status mariadb --no-pager | head -5
+dpkg -l | grep -E "mariadb-server|mysql-server" | awk '{print $1,$2,$3}'
+ls /etc/mysql/
+```
+
+Đọc kết quả theo bảng này:
+
+| Thấy gì | Nghĩa là | Làm gì |
+|---|---|---|
+| `mysqld: command not found`, `/etc/mysql/` không có | **Chưa cài gì** | `apt update && apt install -y mariadb-server` |
+| Có `/etc/mysql/mariadb.conf.d/` | Đúng MariaDB | đi tiếp C1 |
+| Có `/etc/mysql/mysql.conf.d/` và `mysqld --version` ghi `MySQL 8.x` | **Cài nhầm MySQL 8** — sẽ không ai đăng nhập được vì mất hàm `PASSWORD()` | xem khối lệnh dưới |
+| `ii mariadb-server` nhưng thiếu thư mục | Cài dở/lỗi giữa đường | `apt install --reinstall -y mariadb-server` |
+
+Gỡ MySQL 8 và cài MariaDB (chỉ chạy khi rơi vào trường hợp cài nhầm — **xoá luôn dữ liệu
+MySQL đang có**, lúc này chưa import gì nên không mất gì):
+
+```bash
+systemctl stop mysql
+apt purge -y "mysql-server*" "mysql-client*" "mysql-community*"
+apt autoremove -y
+rm -rf /var/lib/mysql /etc/mysql
+apt update && apt install -y mariadb-server
+mysqld --version                      # gio phai thay "MariaDB"
+```
+
+Vì sao phải là MariaDB: đọc lại mục "hai điều quyết định thành/bại" ở đầu file.
 
 ### C1. Cấu hình trước khi import
 
+**KHÔNG sửa `50-server.cnf`.** MariaDB đọc mọi file `.cnf` trong `mariadb.conf.d/`, file số
+lớn hơn thắng — nên tạo file riêng `99-kpah.cnf`. Hai cái lợi: không cần mở editor (dán một
+khối là xong, không sợ gõ lẫn vào file mặc định), và `apt upgrade` có thay `50-server.cnf`
+thì cấu hình của bạn vẫn còn nguyên.
+
+Dán **một dòng** này (dài nhưng là một dòng — dán xong Enter là chạy ngay):
+
 ```bash
-nano /etc/mysql/mariadb.conf.d/50-server.cnf
+printf '[mysqld]\nlower_case_table_names = 1\ncharacter-set-server = utf8mb4\ncollation-server = utf8mb4_general_ci\ninnodb_buffer_pool_size = 256M\nperformance_schema = OFF\nskip-name-resolve\nmax_connections = 200\n' > /etc/mysql/mariadb.conf.d/99-kpah.cnf
 ```
 
-Trong khối `[mysqld]`, thêm/sửa:
+> **Vì sao không dùng `cat > file <<'EOF'`.** Kiểu heredoc bắt shell chờ tới khi gặp dòng chỉ
+> có `EOF`; dán qua PuTTY dễ bị mất dòng cuối, lúc đó dấu nhắc đổi thành `>` và **mọi lệnh
+> bạn gõ tiếp đều bị ghi vào file thay vì chạy** — không có output nào, rất dễ tưởng là treo.
+> Thấy dấu nhắc `>` thì bấm `Ctrl+C` rồi làm lại. `printf` một dòng thì không có trạng thái
+> chờ đó.
 
-```ini
-# Linux phan biet hoa thuong ten bang, Windows thi khong. Bat cai nay de code
-# viet 'tob_char' hay 'TOB_CHAR' deu chay -> khoi loi "Table doesn't exist".
-# PHAI dat TRUOC khi import.
-lower_case_table_names = 1
+Ý nghĩa từng dòng vừa ghi:
 
-character-set-server = utf8mb4
-collation-server     = utf8mb4_general_ci
+| Thiết lập | Vì sao cần |
+|---|---|
+| `lower_case_table_names = 1` | Linux phân biệt hoa thường tên bảng, Windows thì không → tránh lỗi `Table doesn't exist`. **Phải đặt TRƯỚC khi import** |
+| `character-set-server = utf8mb4` | tên nhân vật tiếng Việt không thành `???` |
+| `innodb_buffer_pool_size` | 1 GB → 128M, **2 GB → 256M**, 4 GB → 512M; không để MariaDB ăn hết RAM của Java |
+| `performance_schema = OFF` | tiết kiệm ~80 MB RAM, server nhỏ không cần |
+| `skip-name-resolve` | không tra DNS ngược mỗi lần kết nối, đăng nhập nhanh hơn |
+| `max_connections = 200` | phải cao hơn tổng pool: 100 + 30 + 1 + login 8 + web |
 
-# Khong de MariaDB an het RAM cua Java.
-# VPS 1 GB -> 128M | VPS 2 GB -> 256M | VPS 4 GB -> 512M
-innodb_buffer_pool_size = 256M
-performance_schema      = OFF
-skip-name-resolve
+Xem lại nội dung file rồi mới khởi động lại:
 
-max_connections = 200
+```bash
+cat /etc/mysql/mariadb.conf.d/99-kpah.cnf
+systemctl enable mariadb
+systemctl restart mariadb
 ```
 
 `max_connections` phải cao hơn tổng pool trong `server.ini` (`db.maxco=100` + `db.maxNap=30`
 + `db.maxco1=1` + login server 8 + web) — thiếu là giờ đông người sẽ ăn lỗi
 *Too many connections*.
 
+**Kiểm tra cấu hình đã có tác dụng** (bước này đừng bỏ — sửa file mà server không đọc là
+lỗi rất khó thấy):
+
+Mỗi lệnh là **một dòng**, chạy xong dòng này mới sang dòng kế tiếp:
+
 ```bash
-systemctl restart mariadb
-systemctl enable mariadb
+mysql -u root -e "SHOW VARIABLES WHERE Variable_name IN ('lower_case_table_names','character_set_server','innodb_buffer_pool_size','max_connections');"
+mysql -u root -e "SELECT PASSWORD('abc');"
 ```
+
+> Dán lệnh `mysql -e "..."` bị **xuống dòng giữa hai dấu ngoặc kép** cũng làm shell chờ tiếp
+> và hiện dấu nhắc `>`. Cùng một cái bẫy như heredoc: `Ctrl+C` rồi dán lại thành một dòng.
+>
+> Đừng gõ mật khẩu thật vào `SELECT PASSWORD(...)` — nó vào `~/.bash_history`. Dùng `'abc'`
+> để thử là đủ, ta chỉ cần biết hàm đó còn tồn tại.
+
+Phải thấy `lower_case_table_names = 1`, `character_set_server = utf8mb4`,
+`max_connections = 200`, và lệnh cuối ra một chuỗi `*XXXX...`. Lệnh cuối là bài kiểm tra
+quan trọng nhất của cả phần database: có `PASSWORD()` thì login server mới xác thực được.
 
 ### C2. Tạo database + user
 
@@ -268,11 +348,39 @@ CREATE DATABASE kpah_db DEFAULT CHARSET utf8mb4;
 CREATE DATABASE account DEFAULT CHARSET utf8mb4;
 
 -- Mat khau: doi thanh chuoi cua ban, se dung o server.ini
-CREATE USER 'kpah'@'localhost' IDENTIFIED BY 'MAT_KHAU_MANH_CUA_BAN';
+CREATE USER 'kpah'@'localhost' IDENTIFIED BY '';
 GRANT ALL PRIVILEGES ON kpah_db.* TO 'kpah'@'localhost';
 GRANT ALL PRIVILEGES ON account.* TO 'kpah'@'localhost';
+
+-- BAT BUOC phai co ca 3 dong nay, xem giai thich ben duoi
+CREATE USER 'kpah'@'127.0.0.1' IDENTIFIED BY '';
+GRANT ALL PRIVILEGES ON kpah_db.* TO 'kpah'@'127.0.0.1';
+GRANT ALL PRIVILEGES ON account.* TO 'kpah'@'127.0.0.1';
+
 FLUSH PRIVILEGES;
 EXIT;
+```
+
+**Vì sao phải cấp quyền cho cả `localhost` và `127.0.0.1`.** `99-kpah.cnf` có
+`skip-name-resolve` nên MariaDB không phân giải tên host nữa. Lúc đó `localhost` chỉ khớp
+kết nối qua **unix socket**, còn kết nối **TCP** — đúng cái JDBC dùng
+(`jdbc:mysql://localhost:3306/...`) — bị coi là đến từ host `127.0.0.1`. Thiếu dòng
+`@'127.0.0.1'` thì:
+
+| Ai kết nối | Đường đi | Kết quả |
+|---|---|---|
+| `mysql -u kpah -p...` (CLI) | unix socket → khớp `@'localhost'` | **chạy tốt** → làm bạn tưởng đã đúng |
+| Game server / login server (Java) | TCP → cần `@'127.0.0.1'` | `Access denied`, pool DB rỗng |
+
+Pool rỗng thì server ném `java.util.NoSuchElementException` ở `ConnPool.getConFromPool`,
+rồi `ArrayIndexOutOfBoundsException: 0 >= 0` ở `loadAllTemplate`, và luồng `main` chết —
+nhưng systemd vẫn báo `active (running)` vì JVM còn sống. Rất dễ mất thời gian.
+
+Kiểm tra đúng đường mà Java đi — **phải có `-h 127.0.0.1`**, thiếu là nó lại chạy qua
+socket và bài test thành vô nghĩa:
+
+```bash
+mysql -u kpah -p'' -h 127.0.0.1 -e "SHOW DATABASES;"
 ```
 
 ### C3. Import (làm SAU khi đã clone code ở PHẦN D — 3 file đều nằm trong repo)
@@ -448,6 +556,10 @@ database còn rỗng thì nó sẽ chạy nhưng không ai đăng nhập đượ
 ### D4. Cài 2 service
 
 ```bash
+# VPS 2 GB: nang heap 512m -> 1g TRUOC khi copy (bo qua neu VPS 1 GB)
+sed -i 's/-Xmx1g/-Xmx1g/' /opt/kpah/vps/kpah-game.service
+grep Xmx /opt/kpah/vps/kpah-game.service        # kiem tra lai
+
 cp /opt/kpah/vps/kpah-login.service /etc/systemd/system/
 cp /opt/kpah/vps/kpah-game.service  /etc/systemd/system/
 systemctl daemon-reload
@@ -702,7 +814,13 @@ thì vẫn xong, chỉ chậm.
 **Không ai đăng nhập được, log login server im lặng**
 → Bạn cài MySQL 8 chứ không phải MariaDB. `PASSWORD()` không còn tồn tại.
 Kiểm tra: `mysql -u root -e "SELECT PASSWORD('abc');"` — báo lỗi hàm không tồn tại là đúng
-bệnh. Cài lại MariaDB.
+bệnh. Cài lại MariaDB theo bước C0.
+
+**`nano` báo `Directory '/etc/mysql/mariadb.conf.d' does not exist`**
+→ MariaDB chưa cài (hoặc `apt install` ở B1 lỗi giữa đường, hoặc cài nhầm MySQL).
+**Đừng `mkdir` thư mục đó** — tạo tay xong MariaDB vẫn không đọc file trong đó vì
+`/etc/mysql/my.cnf` chưa có dòng `!includedir`. Chạy bước C0 để xác định rồi
+`apt install -y mariadb-server`.
 
 **`Table 'kpah_db.tob_char' doesn't exist` mà rõ ràng bảng có**
 → Sai hoa thường. Đặt `lower_case_table_names = 1` rồi restart MariaDB. Đã import với chữ
@@ -737,6 +855,30 @@ server DB.
 
 **`systemctl stop` treo rất lâu**
 → Đúng, nó đang lưu toàn bộ nhân vật online. Chờ. Đừng `kill -9`.
+
+**`OutOfMemoryError: unable to create new native thread` ở `Region.startSandVilage`**
+→ Server tạo **một thread cho mỗi region của mỗi map** — đo thực tế trên VPS này là
+**2936 thread**. Hai thứ chặn nó, phải sửa cả hai (đã có sẵn trong
+[vps/kpah-game.service](vps/kpah-game.service)):
+`TasksMax=infinity` (systemd mặc định chỉ ~2250, đếm cả thread) và `-Xss256k` (mặc định
+mỗi thread 1 MB stack → 2936 thread cần ~2,9 GB, vượt RAM; 256k còn ~730 MB).
+Kiểm tra số thread thật: `ls /proc/$(pgrep -f KPAH2_patched.jar)/task | wc -l`
+
+**Cổng 19129 bị chiếm bởi `frps`**
+→ VPS còn chạy frp từ hướng dẫn cũ. `systemctl disable --now frps`. Nhận biết:
+`ss -lntp | grep 19129` ra `users:(("frps",...))` thay vì `java`.
+
+**`Exception in thread "AWT-EventQueue-0" java.awt.HeadlessException`**
+→ Vô hại, bỏ qua. Toàn bộ code AWT trong `src` đã được chặn bằng
+`GraphicsEnvironment.isHeadless()`, dòng này đến từ thư viện đóng `NQSH_5h.jar` (không có
+mã nguồn để sửa). Nó chỉ giết luồng AWT, server chạy bình thường.
+
+**`SQL ERROR=CREATE TABLE tob_log_use_luong_5_7_2026 LIKE tob_log_use_luong`**
+→ Vô hại. Đây là bảng log xoay vòng theo tuần/tháng; server tạo bằng `CREATE TABLE ... LIKE`
+**không có** `IF NOT EXISTS`, và [Database.java:5793](src/data/Database.java#L5793) chỉ in
+`SQL ERROR=` chứ không in lý do. Lần khởi động đầu tạo xong rồi, nên mọi lần restart sau
+trong cùng tuần/tháng đều in lại dòng này. Xác nhận bảng đã có:
+`mysql -u root -e "SHOW TABLES FROM kpah_db LIKE 'tob_log_use_luong%';"`
 
 **`bash: /opt/kpah/vps/update.sh: /bin/bash^M: bad interpreter`**
 → File `.sh` bị lưu kiểu CRLF của Windows. Repo đã có [.gitattributes](.gitattributes) ép
