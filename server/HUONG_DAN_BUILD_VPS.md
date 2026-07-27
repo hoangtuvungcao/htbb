@@ -745,10 +745,15 @@ UPDATE kpah_db.5h_systems SET status = 0 WHERE command = 'baotri_thongbao';
 ```
 
 `BaoTriDaily` đọc cờ này mỗi 5 giây ([Database.baoTriThongBaoCMD](src/data/Database.java))
-rồi chạy marquee đếm ngược ở mốc 60s/30s/10s
-([BaoTriDaily.demNguocBaoTri](src/real/BaoTriDaily.java)). Cờ **chỉ báo, không tự tắt server**
-— việc tắt để cho `systemctl stop` (SIGTERM → shutdown hook lưu dữ liệu). Chạy câu SQL trên
-bất cứ lúc nào cũng được nếu muốn báo tay mà không deploy.
+rồi chạy marquee **một lần** ([BaoTriDaily.baoTruocBaoTri](src/real/BaoTriDaily.java)). Cờ
+**chỉ báo, không tự tắt server** — việc tắt để cho `systemctl stop` (SIGTERM → shutdown hook
+lưu dữ liệu). Chạy câu SQL trên bất cứ lúc nào cũng được nếu muốn báo tay mà không deploy.
+
+> **Đừng đổi thành đếm ngược nhiều mốc.** Client nhét mỗi tin nhắn 38 vào hàng đợi **tĩnh**
+> `GameScr.serverInfo` rồi chạy ticker lần lượt, mỗi tin mất 15-20 giây mới trôi hết màn hình,
+> và hàng đợi **không bị xoá khi mất kết nối** ([GameScr.cs:4737](Client/GameScr.cs#L4737),
+> [Ticker.cs](Client/Ticker.cs)). Bản đầu gửi 4 mốc 60/30/20/10 nên người chơi vào lại *sau khi
+> bảo trì xong* vẫn thấy chữ "bảo trì sau … giây" chạy tiếp, tưởng sắp bảo trì lần nữa.
 
 **Khoá SSH bị giới hạn.** Khoá riêng `/root/.ssh/deploy_github` khai trong `authorized_keys`
 kèm `command="/opt/kpah/vps/deploy-auto.sh"` + `no-pty,no-port-forwarding`, nên nếu secret

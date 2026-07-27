@@ -47,26 +47,25 @@ public class BaoTriDaily implements Runnable {
         System.out.println("Thời gian bảo trì được set: " + maintenanceHour + ":" + maintenanceMinute);
     }
 
-    // Dem nguoc bao tri cho nguoi dang online: chay marquee o moc 60s, 30s, 10s roi thoi.
-    // Chi gui thong bao, KHONG tat server - viec tat de cho systemctl stop (SIGTERM ->
-    // shutdown hook luu du lieu). Chay trong thread cua BaoTriDaily nen ngu o day khong
-    // anh huong gi ngoai viec hoan vong kiem tra bao tri lai vai chuc giay.
-    public static void demNguocBaoTri(final int giay) {
-        int conLai = giay;
+    // Bao truoc bao tri cho nguoi dang online. Chi thong bao, KHONG tat server - viec tat
+    // de cho systemctl stop (SIGTERM -> shutdown hook luu du lieu), xem vps/deploy-auto.sh.
+    //
+    // CHI GUI DUNG MOT TIN, khong dem nguoc nhieu moc. Ly do: client nhet moi tin nhan 38
+    // vao hang doi TINH GameScr.serverInfo roi chay ticker lan luot, moi tin mat khoang
+    // 15-20 giay moi troi het man hinh, va hang doi khong bi xoa khi mat ket noi. Ban dau
+    // gui 4 moc (60/30/20/10) nen nguoi choi vao lai SAU khi bao tri xong VAN thay chu
+    // "bao tri sau ... giay" chay tiep - tuong la sap bao tri lan nua.
+    public static void baoTruocBaoTri(final int giay) {
         try {
-            while (conLai > 0) {
-                RealController.maquee = "Hệ thống bảo trì sau " + conLai
-                        + " giây. Vui lòng thoát game để tránh mất mát dữ liệu.";
-                final Message m = MessageCreator.createServerInfoMessage();
-                for (int i = 0; i < CharManager.instance.vChars.size(); ++i) {
-                    CharManager.instance.vChars.elementAt(i).sendMessage(m);
-                }
-                m.cleanup();
-                System.out.println("BAO TRI SAU " + conLai + "s (" + CharManager.instance.vChars.size() + " nguoi online)");
-                final int buoc = (conLai > 30) ? 30 : ((conLai > 10) ? 10 : conLai);
-                Thread.sleep(buoc * 1000L);
-                conLai -= buoc;
+            final String khiNao = (giay >= 60 && giay % 60 == 0) ? (giay / 60) + " phút" : giay + " giây";
+            RealController.maquee = "Hệ thống bảo trì sau " + khiNao
+                    + ", vui lòng thoát game để tránh mất mát dữ liệu.";
+            final Message m = MessageCreator.createServerInfoMessage();
+            for (int i = 0; i < CharManager.instance.vChars.size(); ++i) {
+                CharManager.instance.vChars.elementAt(i).sendMessage(m);
             }
+            m.cleanup();
+            System.out.println("BAO TRI SAU " + giay + "s (" + CharManager.instance.vChars.size() + " nguoi online)");
         } catch (final Exception ex) {
         }
     }
@@ -91,7 +90,7 @@ public class BaoTriDaily implements Runnable {
                     // Deploy tu dong bat co nay de bao truoc cho nguoi dang online. No CHI bao,
                     // khong tu tat: vps/deploy-auto.sh goi systemctl stop sau khi het dem nguoc.
                     if (Database.instance.baoTriThongBaoCMD()) {
-                        demNguocBaoTri(60);
+                        baoTruocBaoTri(60);
                     }
                 }
                 if (d.getSeconds() == 0) {

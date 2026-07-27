@@ -27148,25 +27148,37 @@ public class Map implements Runnable {
     // Trung rong bang (item 887) no ra linh thu Rong Bang. Hai duong vao dung chung ham nay:
     // dung item truc tiep trong hanh trang, va NPC tao thu (menu -6, option "Rong bang").
     //
-    // Goi thang Char.createRongLon nhu giftcode RONGBANG:<ngay> de chi so KHONG BAO GIO lech
-    // giua con no tu trung va con phat truc tiep - mot nguon su that duy nhat.
-    // Ban dau ham nay tu dung Animal voi createAtt()/level 1 cho giong 10 trung o NPC tao thu,
-    // nhung nhu vay yeu han: hp/mp 2000 thay vi 5000, att[0..2] random 1-2 thay vi 10/10/10,
-    // va thieu diem tiem nang max.
+    // No ra thu LEVEL 1 voi thuoc tinh random - giong het 10 trung con lai o NPC tao thu.
+    // Co y khong dung createRongLon (level 4 + createAttMax) nhu giftcode RONGBANG:<ngay>:
+    // trung la de nuoi. Luyen o NPC len level 4 thi tran con CAO HON ban phat san -
+    // pcBasic level 4 + addMoreSP[RONG_LON]=3 cho att[0..2] toi 13 (ban phat: 10) va
+    // hp/mp toi 8000 (ban phat: 5000). Xem Animal.upAttribute + pcBasic/pcTN/pcSP.
     public boolean doApTrungRongBang(Char player, Item trung) {
         try {
             if (player == null || trung == null) {
                 return false;
             }
 
-            if (!player.createRongLon(0L, true)) {
-                return false;
-            }
-
+            Animal anima = new Animal();
+            anima.name = "Rồng Băng";
+            anima.idImg = Animal.RONG_LON;
+            anima.createAtt();
+            anima.level = 1;
+            anima.place = 0;
+            anima.ownerId = player.charDBID;
+            anima.id = player.getIDItem();
+            player.animal.add(anima);
             player.iItems.remove(trung);
             player.removeIDItem(trung.id);
+            Database.instance.saveAnimal(anima);
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-            Database.instance.saveOrtherLog("tob_log_other_animal", player.charname, "ap trung rong bang", "crt");
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
+            Database.instance
+                    .saveOrtherLog(
+                            "tob_log_other_animal", player.charname, "ap trung rong bang | " + anima.getAttribute(), "crt"
+                    );
+            player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng. Bạn đã nở được linh thú " + anima.name, ""));
             return true;
         } catch (Exception var4) {
             var4.printStackTrace();
