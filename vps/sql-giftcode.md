@@ -330,6 +330,57 @@ chỉ có phần "nhập lại nhiều lần" là riêng. Muốn mã chỉ hai n
 **Hành trang đầy vẫn là cái chặn thật.** Vô hạn lượt không giúp gì nếu `isFullInventory()`
 bỏ qua im lặng — dọn túi trước mỗi lần nhập `nlieu*` / `manh*` / `pet1`.
 
+### CẠM BẪY ĐÃ NỔ MỘT LẦN: nhập nhiều lần → nhân vật **tự bị ban**
+
+Ngày 2026-07-28, nhân vật `admin` biến mất khỏi danh sách chọn nhân vật sau khi nhập các mã
+vô hạn nhiều lần. Nhân vật **không bị xoá** — nó bị `ban = 1`. Chuỗi nhân quả:
+
+1. Mỗi lần nhập `vip2`/`vip3` là thêm ~13 món vào hành trang. `isFullInventory()` không chặn
+   được vì `doDropModelClothe`, `createtemCoat`, `createHoVeLenhLan`, `doCreateVuKhiThoiTrang`…
+   đều không gọi nó.
+2. `saveChar` gộp cả hành trang thành **một chuỗi** rồi ghi vào cột `inven`. Một món tốn
+   ~475 byte (`getInfoSave()` xuất cả mảng `otherAtt`), mà `inven` lúc đó là `TEXT` =
+   **65.535 byte** → trần thật sự chỉ khoảng **140 món**.
+3. Vượt trần + MariaDB đang `STRICT_TRANS_TABLES` → `Data too long for column 'inven'`,
+   câu `UPDATE` **thất bại**.
+4. Chỗ `catch` của lần ghi đó **tự đặt `ban = 1`** ([Database.java:12689](../src/data/Database.java#L12689)).
+5. Câu lấy danh sách nhân vật lọc `AND ban=0 AND del=1` ([Database.java:14718](../src/data/Database.java#L14718))
+   → nhân vật mất khỏi màn hình chọn, tưởng như bị xoá.
+
+Cách nhận ra (log của server ghi rõ, không phải đoán):
+
+```sql
+SELECT charname, info, aclog, timelog FROM kpah_db.tob_log_all_item WHERE aclog = 'loiinvent';
+SELECT charname, ban, del, LENGTH(inven) AS len_inven,
+       LENGTH(inven) - LENGTH(REPLACE(inven,'>','')) + 1 AS so_mon
+  FROM kpah_db.tob_char;
+```
+
+Trong `/opt/kpah/log/game.out`: `LOI excute char ... Data too long for column 'inven'`.
+
+Cách cứu:
+
+```sql
+UPDATE kpah_db.tob_char SET ban = 0 WHERE charname = 'admin';
+```
+
+Và đã nới cột để không tái diễn (`MEDIUMTEXT` = 16 MB, ~35.000 món):
+
+```sql
+ALTER TABLE kpah_db.tob_char MODIFY inven MEDIUMTEXT;
+ALTER TABLE kpah_db.tob_char MODIFY bag MEDIUMTEXT;
+ALTER TABLE kpah_db.tob_char MODIFY tuido MEDIUMTEXT;
+ALTER TABLE kpah_db.tob_char MODIFY equip MEDIUMTEXT;
+```
+
+**Mất dữ liệu là thật, không tránh được:** mọi lần `saveChar` từ lúc vượt trần đến lúc sửa
+đều thất bại, nên nhân vật lùi về **bản lưu thành công cuối cùng**. Ban chỉ là hệ quả, không
+phải nguyên nhân — gỡ ban không lấy lại được phần đã mất.
+
+Trần kế tiếp sau `MEDIUMTEXT` là `max_allowed_packet` (16 MB) và số món ghi trong gói tin
+inventory là `writeShort` ([MessageCreator.java:824](../src/real/MessageCreator.java#L824))
+= 32.767 món — thực tế không bao giờ tới.
+
 ## Mã riêng theo nhân vật (`ngude_giftcode`)
 
 ```sql
