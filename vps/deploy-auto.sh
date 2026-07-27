@@ -30,7 +30,8 @@ GIAY_BAO_TRUOC=60
 CAN_RESTART_REGEX='^(KPAH2_patched\.jar|lib/|libs/|map/|cMap/|loginServer/)'
 
 mkdir -p "$DIR/log"
-exec >>"$LOG" 2>&1
+# Vua ghi log tren VPS vua tra ve stdout, de xem duoc ngay trong log cua GitHub Actions.
+exec > >(tee -a "$LOG") 2>&1
 echo
 echo "===== $(date '+%F %T') deploy tu dong"
 
