@@ -50,23 +50,24 @@ public class BaoTriDaily implements Runnable {
     // Bao truoc bao tri cho nguoi dang online. Chi thong bao, KHONG tat server - viec tat
     // de cho systemctl stop (SIGTERM -> shutdown hook luu du lieu), xem vps/deploy-auto.sh.
     //
-    // DUNG HOP THOAI (tin 37) chu TUYET DOI KHONG dung marquee (tin 38).
-    // Marquee bi client nhet vao hang doi TINH GameScr.serverInfo, va paintServerInfo chi
-    // chay khi nguoi choi dang o man hinh game: ai dang mo menu / o shop / dang loading thi
-    // ticker khong troi, tin nam im trong hang doi. Hang doi lai khong bi xoa khi mat ket
-    // noi, nen sau khi bao tri xong ho dang nhap lai, vua vao GameScr la hang doi moi bat
-    // dau chay -> "thong bao bao tri" hien ra dung luc bao tri DA XONG, gay hieu lam nang.
-    // Tin 37 thi client goi Canvas.startOKDlg ngay lap tuc (MessageHandler.cs case 37),
-    // khong qua hang doi nao, khong the ton lai sau khi dang nhap lai.
+    // Dong chay tren dinh man hinh, giong nut "Bao Tri" cua AdminPanel - cung dung
+    // MessageCreator.createthongbao (tin 38). KHONG dung createServerInfoMessage vi ham do
+    // doc RealController.maquee, ma maquee khac rong thi LoginHandler/SelectCharHandler gui
+    // lai cho MOI nguoi moi dang nhap -> thanh mot duong ton thong bao thu hai.
     //
-    // Cung khong dat RealController.maquee: LoginHandler/SelectCharHandler gui lai maquee
-    // cho nguoi moi vao neu no khac rong, lai thanh mot duong ton thong bao nua.
+    // CHI GUI DUNG MOT TIN, cang som cang tot (60 giay truoc khi tat).
+    // Ly do: client nhet tin 38 vao hang doi TINH GameScr.serverInfo va paintServerInfo chi
+    // chay khi nguoi choi dang o man hinh game, moi tin mat 15-20 giay moi troi het. Hang
+    // doi khong bi xoa khi mat ket noi, nen tin nao chua troi kip luc tat server se chay
+    // tiep NGAY SAU KHI ho dang nhap lai - hien "bao tri sau 1 phut" luc bao tri da xong.
+    // Ban dau gui 4 moc 60/30/20/10 nen moc 10s gan nhu chac chan con dong lai; mot tin gui
+    // truoc 60 giay thi troi xong tu luc con 40 giay.
     public static void baoTruocBaoTri(final int giay) {
         try {
             final String khiNao = (giay >= 60 && giay % 60 == 0) ? (giay / 60) + " phút" : giay + " giây";
-            final String noiDung = "Hệ thống bảo trì sau " + khiNao
-                    + ", vui lòng thoát game để tránh mất mát dữ liệu.";
-            final Message m = MessageCreator.createServerAlertMessage(noiDung, "");
+            final String noiDung = "Hệ thống sẽ bảo trì sau " + khiNao
+                    + ". Vui lòng thoát game để tránh mất dữ liệu!";
+            final Message m = MessageCreator.createthongbao(noiDung);
             for (int i = 0; i < CharManager.instance.vChars.size(); ++i) {
                 CharManager.instance.vChars.elementAt(i).sendMessage(m);
             }
