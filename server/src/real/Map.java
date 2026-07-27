@@ -24771,7 +24771,8 @@ public class Map implements Runnable {
                             break;
                             case 4:
                                 if (player.animalRide == null ||
-                                    (!player.animalRide.isPhuongHoangBang() && !player.animalRide.isPhuongHoangLua() && !player.animalRide.isLan()) ||
+                                    (!player.animalRide.isPhuongHoangBang() && !player.animalRide.isPhuongHoangLua()
+                                        && !player.animalRide.isLan() && !player.animalRide.isRongLon()) ||
                                     player.animalRide.level < 4 ||
                                     player.getLuong() < 200) {
                                     return;
@@ -24797,6 +24798,21 @@ public class Map implements Runnable {
                                     Database.instance.saveAnimal(player.animalRide);
                                     player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                                     Database.instance.saveOrtherLog("", player.charname, "them dong khang dong bang cho phl 200L", "kdongbang");
+                                } else if (player.animalRide.isRongLon()) {
+                                    // Rong bang mo CA HAI dong khang trong mot lan 200 luong: phan
+                                    // combat da viet san cho no o ca hai (Char.khamKhangBang,
+                                    // Char.java:6525 dong bang, Char.java:6601 bi chay) va bang mo ta
+                                    // cua thu cung hua ca hai. Truoc day khong co duong nao bat co,
+                                    // nen 95% hien tren bang chi so la con so vo nghia.
+                                    if (player.animalRide.KHANG_BI_CHAY > 0 && player.animalRide.KHANG_DONG_BANG > 0) return;
+                                    player.subLuong(200L);
+                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                                    player.animalRide.KHANG_BI_CHAY = 95;
+                                    player.animalRide.KHANG_DONG_BANG = 95;
+                                    player.sendMessage(MessageCreator.createServerAlertMessage("Linh thú Rồng Băng đã được thêm thuộc tính kháng bị cháy và kháng đóng băng", ""));
+                                    Database.instance.saveAnimal(player.animalRide);
+                                    player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
+                                    Database.instance.saveOrtherLog("", player.charname, "them dong khang cho rong bang 200L", "krongbang");
                                 } else if (player.animalRide.isLan()) {
                                     if (player.animalRide.KHANG_HOA_TUYET > 0) return;
                                     player.subLuong(200L);

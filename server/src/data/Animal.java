@@ -502,8 +502,16 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             info = info + "- Tích sát thương khi bị đánh 8 lần trong 8s miễn khống: \n";
             info = info + "- Xóa hiệu ứng bất lợi như đóng băng - băng lan của bản thân\n";
             info = info + "- Giảm kháng đóng băng - băng lan của kẻ thù trong 8s\n";
-            info = info + "Kháng bị cháy 95%\n";
-            info = info + "Kháng đóng băng 95%\n";
+            // Hai dong nay truoc day ghi cung nen thu nao cung hien 95% du KHANG_* van la 0,
+            // ma combat lai kiem KHANG_* > 0 (Char.khamKhangBang, Char.java:6525 va 6601) ->
+            // hien 95% nhung thuc te khong khang gi. Gio hien theo dung co, mo bang option
+            // "Nang cap khang(200l)" o NPC tao thu khi thu da level 4, giong phuong hoang.
+            if (this.KHANG_BI_CHAY > 0) {
+                info = info + "Kháng bị cháy 95%\n";
+            }
+            if (this.KHANG_DONG_BANG > 0) {
+                info = info + "Kháng đóng băng 95%\n";
+            }
             info = info + "Kết hợp hỏa kì lân:\n";
             info = info + "- Trả đũa :\n Giảm 50% sát thương nhận từ phản sát thương\n";
         }

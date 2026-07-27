@@ -414,6 +414,29 @@ vĩnh viễn thiếu một dòng, luyện kiểu gì cũng không bù.
 cho lên cấp, nên hai dòng đặc biệt = phải luyện nhiều hơn mới lên được level 4. Cấp nhân vật
 tối thiểu để lên cấp thú: `levelup = {0, 1, 20, 30, 35}`.
 
+### Level 4 rồi thì mở kháng ở NPC — 200 lượng, cả hai dòng
+
+Giống phượng hoàng: thú đạt **level 4** thì menu NPC tạo thú hiện thêm option
+**"Nâng cấp kháng(200l)"**, bấm vào là Rồng Băng được `KHANG_BI_CHAY = 95` **và**
+`KHANG_DONG_BANG = 95` trong một lần (phượng hoàng mỗi con chỉ có một dòng nên chỉ mở một).
+
+**Trước đây hai dòng kháng đó là số vô nghĩa.** Bảng chỉ số của Rồng Băng ghi cứng
+*"Kháng bị cháy 95%"* + *"Kháng đóng băng 95%"* cho mọi con, trong khi combat lại kiểm
+`KHANG_* > 0`:
+
+| Hiệu ứng | Chỗ kiểm |
+|---|---|
+| Khảm kháng băng trả 95% | `Char.khamKhangBang` ([Char.java:3153](../src/real/Char.java#L3153)) |
+| Chống bị đóng băng | [Char.java:6525](../src/real/Char.java#L6525) |
+| Chống bị cháy (tàn phế + giảm tốc) | [Char.java:6601](../src/real/Char.java#L6601) |
+
+Cả ba đều **đã liệt kê `isRongLon()`** từ trước, chỉ thiếu đường bật cờ — không có option nào
+đặt `KHANG_*` cho rồng băng, và `createAttBasicMax` cũng không (chỉ `HEO_BANG` và `SU_TU_BANG`
+được đặt sẵn). Nên con rồng băng nào cũng *hiện* 95% mà thực chiến không kháng gì.
+
+Giờ bảng chỉ số hiện theo đúng cờ. **Hệ quả:** rồng băng cũ sẽ **không còn hiện hai dòng đó**
+cho tới khi trả 200 lượng — nhưng đó chỉ là bỏ con số sai, sức mạnh thật không mất gì.
+
 Phát trứng để test (vô hạn lượt):
 
 ```sql
