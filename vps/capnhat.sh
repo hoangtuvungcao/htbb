@@ -2,7 +2,10 @@
 # ============================================================
 #  CAP NHAT SERVER KPAH TREN VPS  (ban Linux cua capnhat.bat)
 #
-#  Dung o VPS:  sudo /opt/kpah/capnhat.sh
+#  Dung o VPS:  sudo /opt/kpah/vps/capnhat.sh
+#
+#  Dung khi muon thu nhanh mot jar chua commit (scp truc tiep len VPS).
+#  Deploy binh thuong thi dung vps/update.sh (keo tu git).
 #
 #  Viec no lam, dung thu tu:
 #    1. Kiem tra co KPAH2_NEW.jar chua

@@ -1,0 +1,9 @@
+# Cau hinh login server tren VPS Linux.
+# loginServer/server.ini cung bi .gitignore chan -> tao tay MOT LAN:
+#     cp /opt/kpah/vps/loginServer.server.ini.example /opt/kpah/loginServer/server.ini
+#     nano /opt/kpah/loginServer/server.ini
+#     chown kpah:kpah /opt/kpah/loginServer/server.ini && chmod 640 /opt/kpah/loginServer/server.ini
+db.url=jdbc:mysql://localhost:3306/account
+db.user=kpah
+db.password=DOI_MAT_KHAU_DB
+port=8023

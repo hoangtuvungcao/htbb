@@ -32,6 +32,8 @@ bin/
 .svn
 /build/
 server.ini
+server.ini.bak
+server.ini.tmp
 loginServer/server.ini
 errorlog.txt
 cuoptieu.txt
@@ -41,3 +43,11 @@ nhantieu.txt
 thetieu.txt
 tratieu.txt
 rUpdateleaf.txt
+
+### Chi co tren VPS Linux (khong dua vao git) ###
+/log/
+/backup/
+/.ssh/
+*.out
+AdminChat*.txt
+!AdminChat.txt

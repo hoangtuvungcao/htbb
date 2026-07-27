@@ -37,6 +37,9 @@ tổng khoảng 100 MB, vài phút là xong.
 
 ## PHẦN A — Chuẩn bị ở máy nhà (Windows)
 
+Code lấy từ **Git** (`github.com/hoanghoa0903/KPAH`, repo private). Database thì Git không
+chứa nên vẫn phải dump tay — đó là toàn bộ nội dung phần này.
+
 ### A1. Tắt server để dump DB sạch
 
 Tắt game server (Admin Panel → **Bảo Trì**) và `loginServer`. MySQL vẫn để chạy.
@@ -62,33 +65,36 @@ Get-Item kpah_db.sql, account.sql | Select-Object Name, Length
 > `loginServer/account.sql`. Chỉ dùng 2 file đó khi bạn muốn **server mới trắng dữ liệu**.
 > Muốn giữ nhân vật hiện tại thì phải dump như trên.
 
-### A3. Gói file cần upload
+### A3. Đảm bảo mọi thứ đã push lên Git
 
-Windows 10 có sẵn `tar`:
+Jar đang chạy **có nằm trong Git** (`KPAH2_patched.jar`), nên VPS chỉ cần `git pull` là có
+jar mới — không phải `scp` từng lần. Quy trình mỗi lần sửa code:
 
 ```powershell
-tar -czf kpah-deploy.tar.gz KPAH2_patched.jar lib map cMap server.ini loginServer vps *.txt
+# 1. Build (đã làm) -> KPAH2_NEW.jar
+# 2. Chạy capnhat.bat  -> KPAH2_patched.jar thành bản mới, server ở nhà chạy luôn bản đó
+# 3. Đẩy lên Git
+git add -A
+git commit -m "mo ta thay doi"
+git push
 ```
 
-Danh sách này là **đủ và không thừa**:
-
-| Mục | Vì sao cần |
-|---|---|
-| `KPAH2_patched.jar` | server. Manifest trỏ `Class-Path: lib/...` **tương đối theo vị trí jar** → jar và `lib/` phải nằm cùng thư mục |
-| `lib/` | `NQSH_5h.jar` (thư viện đóng), driver MySQL, jxl |
-| `map/`, `cMap/` | ảnh + dữ liệu map server gửi xuống client. Thiếu là client vào game bị trắng/treo |
-| `server.ini` | cấu hình |
-| `*.txt` | dữ liệu vận tiêu (`cuoptieu`, `doitieu`, `nhantieu`, `thetieu`, `tratieu`, `matketinfo`, `updateleaf`) |
-| `loginServer/` | `CheckLoginSocket.jar` + `server.ini` của nó |
-| `vps/` | 2 file systemd + `capnhat.sh` + `backup_db.sh` mình đã viết sẵn |
-
-**Không** upload: `src/`, `build/`, `dist/`, `Client/`, `nbproject/`, `test/`, các file `.sql`
-(trừ 2 file dump ở A2).
-
-### A4. Đẩy lên VPS
+Kiểm tra đã push xong:
 
 ```powershell
-scp kpah-deploy.tar.gz kpah_db.sql account.sql root@180.93.57.30:/root/
+git status -sb          # phải là "## main...origin/main" không có ahead
+```
+
+**Bước 2 quan trọng.** VPS lấy `KPAH2_patched.jar` từ Git, nên file đó trong repo phải là
+bản mới nhất. Nếu chỉ commit `KPAH2_NEW.jar` mà quên chạy `capnhat.bat`, VPS pull về vẫn
+chạy jar cũ và bạn sẽ ngồi tìm xem code mới đi đâu mất.
+
+### A4. Đẩy DB lên VPS
+
+Database là thứ duy nhất phải `scp` (Git không chứa dữ liệu người chơi):
+
+```powershell
+scp kpah_db.sql account.sql root@180.93.57.30:/root/
 ```
 
 ---
@@ -101,7 +107,7 @@ Vào VPS: `ssh root@180.93.57.30` (Linux không có Remote Desktop, `mstsc` sẽ
 
 ```bash
 apt update && apt upgrade -y
-apt install -y openjdk-8-jre-headless mariadb-server unzip ufw
+apt install -y openjdk-8-jre-headless mariadb-server unzip ufw git
 ```
 
 Java 8 là đủ: jar server biên dịch ở class version 52 (Java 8), thư viện `NQSH_5h.jar` là
@@ -228,56 +234,87 @@ Hoặc đặt `sv.EnableAvtiveCheck=0` trong `server.ini`.
 
 ---
 
-## PHẦN D — Cài server
+## PHẦN D — Lấy source từ Git về VPS
 
-### D1. Bung file
+### D1. Tạo deploy key (khoá chỉ-đọc cho riêng VPS này)
+
+Đừng dán mật khẩu GitHub hay token cá nhân lên VPS. Deploy key là khoá SSH chỉ có quyền
+với **một repo**, và đặt được thành read-only — VPS bị chiếm cũng không sửa được repo.
+
+```bash
+sudo -u kpah mkdir -p /opt/kpah/.ssh
+sudo -u kpah ssh-keygen -t ed25519 -N "" -f /opt/kpah/.ssh/id_ed25519 -C "vps-180.93.57.30"
+cat /opt/kpah/.ssh/id_ed25519.pub
+```
+
+Copy dòng `ssh-ed25519 AAAA...` rồi vào
+**github.com/hoanghoa0903/KPAH → Settings → Deploy keys → Add deploy key**:
+Title `VPS 180.93.57.30`, dán key vào, **KHÔNG tích** *Allow write access*.
+
+Nhận diện host GitHub (làm một lần, tránh câu hỏi yes/no lúc clone):
+
+```bash
+sudo -u kpah bash -c 'ssh-keyscan github.com >> /opt/kpah/.ssh/known_hosts'
+sudo -u kpah ssh -T git@github.com          # "You've successfully authenticated" là xong
+```
+
+### D2. Clone vào `/opt/kpah`
+
+`/opt/kpah` đang là home của user `kpah` và đã có `.ssh` bên trong, nên không clone trực
+tiếp vào đó được (git đòi thư mục rỗng). Clone ra chỗ khác rồi chuyển vào:
+
+```bash
+sudo -u kpah git clone git@github.com:hoanghoa0903/KPAH.git /tmp/kpah-src
+sudo -u kpah cp -a /tmp/kpah-src/. /opt/kpah/
+rm -rf /tmp/kpah-src
+
+mkdir -p /opt/kpah/log /opt/kpah/backup
+chmod +x /opt/kpah/vps/*.sh
+chown -R kpah:kpah /opt/kpah
+```
+
+Kiểm tra:
 
 ```bash
 cd /opt/kpah
-tar -xzf /root/kpah-deploy.tar.gz
-cp vps/capnhat.sh vps/backup_db.sh /opt/kpah/
-chmod +x /opt/kpah/capnhat.sh /opt/kpah/backup_db.sh
-chown -R kpah:kpah /opt/kpah
-ls -la          # phai thay KPAH2_patched.jar, lib/, map/, cMap/, server.ini, loginServer/
+sudo -u kpah git log -1 --oneline      # phai ra commit moi nhat cua ban
+ls -la                                  # KPAH2_patched.jar, lib/, map/, cMap/, loginServer/, vps/
+du -sh map                              # ~16 MB
 ```
 
-Kiểm tra tên thư mục **`cMap`** đúng chữ M hoa — Linux phân biệt hoa thường, `cmap` là
-server không đọc được dữ liệu map.
+Tên thư mục **`cMap`** phải đúng chữ M hoa — Linux phân biệt hoa thường, `cmap` là server
+không đọc được dữ liệu map. Git giữ đúng tên nên chỉ cần đừng tự đổi.
 
-### D2. Sửa `server.ini` cho Linux
+### D3. Tạo 2 file cấu hình (Git không có sẵn)
+
+`server.ini` và `loginServer/server.ini` **nằm trong `.gitignore`** vì chứa mật khẩu DB.
+Clone ra sẽ **không có** hai file này, server chạy sẽ chết ngay ở dòng đọc `server.ini`.
+Trong repo đã có bản mẫu cho Linux, chỉ cần copy rồi sửa mật khẩu:
 
 ```bash
-nano /opt/kpah/server.ini
+cd /opt/kpah
+cp vps/server.ini.linux.example server.ini
+cp vps/loginServer.server.ini.example loginServer/server.ini
+
+# Doi DOI_MAT_KHAU_DB thanh mat khau tao o buoc C2 (4 cho trong server.ini, 1 cho o login)
+sed -i 's/DOI_MAT_KHAU_DB/MAT_KHAU_MANH_CUA_BAN/g' server.ini loginServer/server.ini
+
+chown kpah:kpah server.ini loginServer/server.ini
+chmod 640 server.ini loginServer/server.ini
+grep -n "password\|pathLog\|db.run" server.ini      # kiem tra lai
 ```
 
-Ba dòng **bắt buộc** đổi (đường dẫn Windows sẽ không tồn tại trên Linux):
+Bản mẫu [vps/server.ini.linux.example](vps/server.ini.linux.example) đã sửa sẵn cho Linux:
+`sv.pathLog=/opt/kpah/log/` (có dấu `/` cuối), `db.run=/opt/kpah/vps/update.sh`, user DB
+`kpah`, và giữ nguyên các tỉ lệ drop bạn đang dùng.
 
-```ini
-# Truoc: D:\\server\\nqsh\\log\\   — PHAI co dau / o cuoi
-sv.pathLog=/opt/kpah/log/
+**Điểm hay của cách này:** `git pull` không bao giờ đè lên `server.ini`. Cấu hình riêng của
+VPS — kể cả những gì bạn sửa bằng bảng setting trong game — được giữ nguyên qua mọi lần
+cập nhật.
 
-# Truoc: D:\\nqsh30\\toolRestart.bat
-db.run=/opt/kpah/capnhat.sh
-
-# Mat khau MariaDB vua tao o buoc C2
-db.password=MAT_KHAU_MANH_CUA_BAN
-db.pass=MAT_KHAU_MANH_CUA_BAN
-db.password1=MAT_KHAU_MANH_CUA_BAN
-```
-
-Và đổi user DB `root` → `kpah` ở cả 4 chỗ: `db.user`, `db.userNap`, `db.user1`.
-
-Giữ nguyên: `sv.port=19129`, `sv.server=1` (đặt 0 là bật chế độ local/test, tỉ lệ và boss
-sẽ khác), `sv.iplogin=127.0.0.1`, `sv.portlogin=8023`.
-
-### D3. Sửa `loginServer/server.ini`
-
-```ini
-db.url=jdbc:mysql://localhost:3306/account
-db.user=kpah
-db.password=MAT_KHAU_MANH_CUA_BAN
-port=8023
-```
+Các file `.txt` vận tiêu (`cuoptieu`, `doitieu`, `nhantieu`, `thetieu`, `tratieu`,
+`matketinfo`) cũng bị `.gitignore` chặn nên clone ra không có — **không sao**, chúng chỉ là
+log server tự ghi thêm, sẽ tự tạo khi chạy.
 
 ### D4. Cài 2 service
 
@@ -385,24 +422,44 @@ Chạy client, chọn Server 1, đăng nhập bằng tài khoản có trong `acc
 
 ## PHẦN H — Vận hành
 
-### Cập nhật jar mới
+### Cập nhật server (luồng Git)
 
-Ở máy nhà, build xong thì:
+**Máy nhà:**
 
 ```powershell
-scp KPAH2_NEW.jar kpah@180.93.57.30:/opt/kpah/
+# build -> KPAH2_NEW.jar, rồi:
+.\capnhat.bat            # KPAH2_patched.jar = bản mới, server nhà chạy luôn để test
+git add -A
+git commit -m "mo ta thay doi"
+git push
 ```
 
-Trên VPS:
+**VPS:**
 
 ```bash
-sudo /opt/kpah/capnhat.sh
+sudo /opt/kpah/vps/update.sh
 ```
 
-Script làm đúng thứ tự như `capnhat.bat` bên Windows: kiểm tra jar có hỏng không (`unzip -t`),
-tắt server có trật tự để lưu dữ liệu, backup jar cũ thành
-`KPAH2_patched_backup_truoc_capnhat.jar`, thay jar, bật lại, rồi in trạng thái + kiểm tra
-cổng 19129.
+[vps/update.sh](vps/update.sh) làm đúng thứ tự an toàn: kiểm tra repo trên VPS có bị sửa tay
+không (nếu có thì dừng và chỉ cách xử lý, chứ không pull nửa vời), tắt game server bằng
+SIGTERM để shutdown hook lưu dữ liệu, `git pull --ff-only`, kiểm tra jar vừa kéo về có hỏng
+không (`unzip -t`), `chown` lại, bật lại 2 service, in trạng thái + kiểm tra cổng 19129.
+Nếu pull hoặc jar lỗi, nó **để server tắt** và nói rõ — thà tắt còn hơn chạy bản hỏng.
+
+Đổi ý muốn quay lại bản trước:
+
+```bash
+cd /opt/kpah
+sudo -u kpah git log --oneline -5          # chọn commit cũ
+systemctl stop kpah-game
+sudo -u kpah git checkout <ma_commit> -- KPAH2_patched.jar
+systemctl start kpah-game
+```
+
+> **Cách 2 — không qua Git**, khi cần thử nhanh một bản jar chưa muốn commit:
+> `scp KPAH2_NEW.jar kpah@180.93.57.30:/opt/kpah/` rồi `sudo /opt/kpah/vps/capnhat.sh`.
+> Nhưng nhớ là lần `update.sh` sau sẽ báo `KPAH2_patched.jar` bị sửa tay và dừng lại —
+> lúc đó chạy `sudo -u kpah git -C /opt/kpah checkout -- KPAH2_patched.jar` rồi update lại.
 
 ### Backup DB tự động
 
@@ -415,7 +472,7 @@ crontab -e
 Thêm dòng:
 
 ```
-0 4 * * * /opt/kpah/backup_db.sh >> /opt/kpah/log/backup.log 2>&1
+0 4 * * * /opt/kpah/vps/backup_db.sh >> /opt/kpah/log/backup.log 2>&1
 ```
 
 4h sáng mỗi ngày, giữ 7 bản gần nhất trong `/opt/kpah/backup`. Tải về máy nhà:
@@ -446,13 +503,14 @@ nếu không thông báo trong game sẽ nói "CHƯA lưu được server.ini".
 
 ## PHẦN I — Build lại jar **trên VPS** (nếu muốn sửa code ngay trên VPS)
 
-Bình thường nên build ở máy nhà rồi `scp` lên. Nhưng nếu bạn muốn build trên VPS:
+Bình thường nên build ở máy nhà rồi push Git. Nhưng `src/` cũng nằm trong repo nên build
+ngay trên VPS được:
 
 ```bash
-apt install -y openjdk-8-jdk git
+apt install -y openjdk-8-jdk
 ```
 
-Đưa `src/` lên (`scp -r src kpah@180.93.57.30:/opt/kpah/`) rồi:
+`src/` đã có sẵn sau khi clone, chạy luôn:
 
 ```bash
 cd /opt/kpah
@@ -471,8 +529,13 @@ Dấu ngăn classpath trên Linux là **`:`**, không phải `;` như Windows.
 cp KPAH2_patched.jar KPAH2_NEW.jar
 jar uf KPAH2_NEW.jar -C out .
 unzip -t KPAH2_NEW.jar >/dev/null && echo "jar OK"
-sudo ./capnhat.sh
+sudo /opt/kpah/vps/capnhat.sh          # doi jar tai cho, KHONG qua git
 ```
+
+Build kiểu này làm `KPAH2_patched.jar` khác với bản trong Git → lần `update.sh` sau sẽ báo
+"có file bị sửa tay" và dừng. Xử lý: `sudo -u kpah git -C /opt/kpah checkout -- KPAH2_patched.jar`
+rồi `update.sh` lại. Vì vậy chỉ nên build trên VPS để **thử gấp**; sửa xong thì đưa code về
+máy nhà, build, commit, push cho hai bên khớp nhau.
 
 Lý do phải **chồng lớp mới lên jar cũ** thay vì đóng jar mới: trong jar có class
 `util/Common` **không có mã nguồn** trong `src/`. Đóng jar từ đầu chỉ bằng `src` sẽ làm
@@ -532,9 +595,54 @@ server DB.
 **`systemctl stop` treo rất lâu**
 → Đúng, nó đang lưu toàn bộ nhân vật online. Chờ. Đừng `kill -9`.
 
+**`bash: /opt/kpah/vps/update.sh: /bin/bash^M: bad interpreter`**
+→ File `.sh` bị lưu kiểu CRLF của Windows. Repo đã có [.gitattributes](.gitattributes) ép
+`*.sh eol=lf` nên không xảy ra nữa; nếu vẫn gặp (file cũ đã commit trước đó):
+`sed -i 's/\r$//' /opt/kpah/vps/*.sh`.
+
+**`Permission denied` khi chạy `update.sh`**
+→ Git trên Windows không lưu quyền thực thi. Đã set sẵn bit `+x` trong index cho 3 script,
+nếu vẫn thiếu: `chmod +x /opt/kpah/vps/*.sh`.
+
+**`git@github.com: Permission denied (publickey)`**
+→ Chưa thêm deploy key vào GitHub, hoặc chạy git bằng user khác (`root` không có key của
+`kpah`). Luôn chạy `sudo -u kpah git -C /opt/kpah ...`.
+
+**`error: Your local changes to the following files would be overwritten by merge`**
+→ Trên VPS có file bị sửa tay (thường là `KPAH2_patched.jar` do chạy `capnhat.sh` thủ công).
+Bỏ thay đổi đó: `sudo -u kpah git -C /opt/kpah checkout -- <file>`, hoặc lấy sạch theo Git:
+`sudo -u kpah git -C /opt/kpah fetch origin && sudo -u kpah git -C /opt/kpah reset --hard origin/main`
+(`server.ini` và `log/` không bị ảnh hưởng vì nằm trong `.gitignore`).
+
+**Server chạy được ở nhà nhưng trên VPS báo `server.ini (No such file or directory)`**
+→ Bình thường: `server.ini` bị `.gitignore` chặn. Làm bước D3.
+
+**`git pull` xong mà code mới không có tác dụng**
+→ Bạn quên chạy `capnhat.bat` ở nhà nên `KPAH2_patched.jar` trong Git vẫn là bản cũ.
+Kiểm tra trên VPS: `unzip -p KPAH2_patched.jar META-INF/MANIFEST.MF` và so ngày commit
+`git log -1 --format=%cd -- KPAH2_patched.jar`.
+
 ---
 
 ## Bảo mật
+
+### Repo phải giữ private
+
+Mình kiểm tra `api.github.com/repos/hoanghoa0903/KPAH` trả về 404 khi không đăng nhập →
+repo **đang private**, đúng như cần. Giữ nguyên như vậy, vì trong repo có:
+
+- `lib/NQSH_5h.jar` — thư viện đóng của người khác, không phải code của bạn để phát hành
+- `backup_account.sql` — có `INSERT INTO team_user` kèm **hash mật khẩu thật** của tài khoản
+  `admin` (dạng `*A4B61573...` của hàm `PASSWORD()`, băm yếu, dò được)
+- `backup_kpah_db_truoc_import.sql` — dữ liệu game
+
+Nếu định mở public sau này, xoá 2 file dump khỏi **toàn bộ lịch sử** (không phải chỉ commit
+mới nhất) bằng `git filter-repo`, và đổi mật khẩu tài khoản admin trước.
+
+Deploy key trên VPS để **read-only** (không tích *Allow write access*): VPS bị chiếm cũng
+không đẩy được code độc vào repo.
+
+### Còn lại
 
 - Chuyển SSH sang xác thực bằng key, đổi cổng 22 sang cổng khác, tắt `PermitRootLogin`.
 - MariaDB chỉ nghe `127.0.0.1` (mặc định của Ubuntu). Đừng mở 3306 ra ngoài.

@@ -1,0 +1,126 @@
+#Tien Len TeaM Server  —  BAN CHO VPS LINUX
+#
+# server.ini KHONG nam trong git (bi .gitignore chan, vi chua mat khau DB).
+# Vi vay tren VPS phai tao tay MOT LAN:
+#     cp /opt/kpah/vps/server.ini.linux.example /opt/kpah/server.ini
+#     nano /opt/kpah/server.ini        # sua DOI_MAT_KHAU_DB
+#     chown kpah:kpah /opt/kpah/server.ini && chmod 640 /opt/kpah/server.ini
+#
+# Sau do "git pull" khong bao gio de len file nay -> cau hinh rieng cua VPS
+# duoc giu nguyen, ke ca khi ban sua bang bang setting trong game.
+
+sv.port=19129
+limit.ccu=20000
+
+# ==== DATABASE (MariaDB tren cung VPS) ====
+# CHU Y: phai la MariaDB hoac MySQL 5.7. MySQL 8 da bo ham PASSWORD() ->
+# login server (CheckLoginSocket.jar) khong xac thuc duoc mat khau.
+db.host=localhost:3306
+db.name=kpah_db
+db.user=kpah
+db.password=DOI_MAT_KHAU_DB
+db.maxco=100
+db.nameNap=kpah_db
+db.userNap=kpah
+db.pass=DOI_MAT_KHAU_DB
+db.maxNap=30
+#
+db.host1=localhost:3306
+db.name1=kpah_db
+db.user1=kpah
+db.password1=DOI_MAT_KHAU_DB
+db.maxco1=1
+#
+sv.portnap=19153
+sv.server=1
+sv.LG=3
+sv.range=0
+
+# ==== DUONG DAN LINUX (khac han ban Windows) ====
+# PHAI co dau / o cuoi. Thu muc phai ton tai va user kpah ghi duoc:
+#     mkdir -p /opt/kpah/log && chown kpah:kpah /opt/kpah/log
+sv.pathLog=/opt/kpah/log/
+# Script cap nhat/restart (truoc day la D:\nqsh30\toolRestart.bat)
+db.run=/opt/kpah/vps/update.sh
+
+sv.createRace=2
+sv.tablerace=tob_race_257
+sv.dayrace=2013-07-11
+db.hour=-1
+db.minute=2
+sv.lang=0
+sv.me=0
+sv.ph=chienthan
+sv.choi=snduca
+
+# Login server chay noi bo tren cung VPS - KHONG mo cong 8023 ra internet
+sv.iplogin=127.0.0.1
+sv.portlogin=8023
+
+api.sv=1
+api.url=https://domain.com
+// 1 la bat 2 la tat
+sv.expvantieu=1
+sv.Luckyexp=1
+sv.ExpQua=1
+sv.CodeTest=0
+sv.EnableAvtiveCheck=1
+# So nhan vat toi da moi tai khoan (1..3, client chi ve duoc 3 slot). Thieu dong nay = 3.
+sv.maxCharPerAccount=3
+
+# ==== TI LE DROP KHI TRAIN QUAI ====
+# Cac so la PHAN TRAM so voi ti le goc: 100 = nhu ban goc, 10 = con 1/10, 0 = tat han.
+sv.tileXu=2
+sv.tileLuong=5
+sv.tileItemSuKien=5
+sv.tilePotion=7
+sv.tileNgoc=7
+sv.tileItem=5
+# So chia SO LUONG xu moi lan rot. 10 = nhu ban goc, 30 = chi con 1/3.
+sv.chiaXuRoi=30
+
+# Trang chu + link tai game gui xuong client sau khi dang nhap.
+sv.website=http://180.93.57.30/
+sv.linkTaiGame=http://180.93.57.30/
+
+# ==== TEST FLAGS ====
+sv.testMode=0
+sv.testCode=
+# sv.adminAccounts so sanh voi TEN NHAN VAT (charname), khong phai ten tai khoan.
+sv.adminAccounts=admin,admin2
+sv.reloginWaitSec=0
+
+# ==== CHONG DoS ====
+# Chay truc tiep tren VPS thi cac muc nay CO tac dung (khac voi chay qua frp,
+# luc do moi nguoi choi deu hien IP 127.0.0.1 nen chan theo IP vo nghia).
+sv.socketTimeout=0
+sv.maxConnPerIp=50
+sv.connRateMax=60
+sv.connRateWindow=0
+sv.dosBanSec=300
+
+sv.isSuKien83=0
+sv.isSuKienTrungThul2016=1
+sv.isSuKienTet2017=0
+sv.isSuKienGioTo2016=0
+sv.isSuKienNoel2023=0
+sv.isSuKienTetduonglich2024=0
+
+# ==== GIO CHIEM THANH ====
+# -1 = theo lich chuan 21h thu 3 + thu 7.
+# sv.ngayChiemThanh: de trong = moi ngay; "2026-07-28" = dung ngay do; "Tue"/"Sat" = thu.
+# Sua o day (roi go setting -> 8 de nap lai) hoac sua trong game deu duoc.
+sv.gioChiemThanh=-1
+sv.phutChiemThanh=-1
+sv.ngayChiemThanh=
+
+# ==== SKIN THU NUOI ====
+# Khong ban trong shop. Chi nhan qua giftcode ("SKIN:<0-4>" trong danh sach vat pham)
+# hoac admin go "giveskin <ten nhan vat> <0-4>". Nguoi choi go "skinthu" de doi skin.
+
+# ==== LENH CHAT ADMIN ====
+# setting : bang setting (o nhap, dieu khien ban phim). "setting menu" = menu danh sach.
+#           Trong o nhap: 8 = nap lai server.ini sau khi sua tay file.
+# stown 1 <gio> <phut> [2026-07-28] : set gio chiem thanh
+# stown 0 hoac ktct : tra ve lich chuan
+# tgct : xem gio chiem thanh dang dat
