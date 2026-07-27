@@ -901,7 +901,33 @@ public class Map implements Runnable {
     public static byte teamtongkim;
     public static boolean openvantieu;
     // Ten cua NPC bi an (khong gui cho client). NPC "admin" cu dung ten nay.
-    public static final String NAME_NPC_AN = "admin";
+    /**
+     * Ten cua NPC an chi admin thay.
+     *
+     * PHAI KHAC (phan biet hoa thuong) ten cua moi nhan vat that. Ly do:
+     * NPC nay duoc dang ky vao CharManager (CharManager.instance.put(bot)), ma
+     * CharManager.put() TU CHOI khi ten da ton tai trong Hashtable charName ->
+     * SelectCharHandler:246 goi session.disconnect(14). Ket qua: nhan vat trung
+     * ten voi NPC nay dang nhap duoc nhung bi ngat ngay luc chon nhan vat.
+     *
+     * Truoc day ten NPC la "admin" (chu thuong) nen KHONG AI dat duoc nhan vat
+     * ten "admin" - do la ly do ban goc dung ten GM la "ddsa"/"chienthan".
+     *
+     * Nay dat "ADMIN" chu HOA: Hashtable phan biet hoa thuong nen khong dung voi
+     * nhan vat that ten "admin" chu thuong. Nhung phai luu y:
+     *   - Char.updateActorPos so sanh bang equals() nen van an dung NPC nay.
+     *   - CharManager.getCharByCharName() luon .toLowerCase() truoc khi tra cuu,
+     *     nen NPC nay khong bao gio tim duoc theo ten (hien khong cho nao can).
+     *   - CharManager.remove() so sanh khong phan biet hoa thuong khi don vChars,
+     *     nen lan dau nhan vat "admin" thoat game se lam bot bi go khoi vChars
+     *     (bot van con trong npcVilage nen NPC hien thi va quang cao khong anh
+     *     huong).
+     *   - Neu co nhan vat ten dung "ADMIN" chu hoa thi loi disconnect(14) tro lai.
+     *     Hien khong the xay ra: cot charname co UNIQUE index kieu utf8mb4_general_ci
+     *     (khong phan biet hoa thuong) nen da co "admin" thi khong tao duoc "ADMIN",
+     *     va Database.laTenDanhRieng chan moi ten chua chu "admin".
+     */
+    public static final String NAME_NPC_AN = "ADMIN";
     static Vector<String> topHoa;
     static long timeGettopHoa;
     static String[] VIP;
