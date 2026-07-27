@@ -20481,6 +20481,7 @@ public class Map implements Runnable {
      */
     private void showMenuHoTro(Char player) {
         String[] menuHoTro = new String[]{"Xóa Pet (500L)", "Xóa Thú Cưỡi (500L)"};
+        System.out.println("MENU HO TRO -> " + player.charname);
         player.sendMessage(MessageCreator.createMsgMenu(menuHoTro, -519, 0));
     }
 
@@ -20494,6 +20495,12 @@ public class Map implements Runnable {
             Map oldMap = player.map;
             int[] var10000 = new int[]{21, 721, 722, 723, 724};
             int[][] mapstart = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
+            // Log chan doan cho npc tong tieu dau (-50) va menu con Ho Tro (-519).
+            // Chi hai npc nay nen luong log khong dang ke.
+            if (idNpc == -50 || idNpc == -519) {
+                System.out.println("MENU " + player.charname + " npc=" + idNpc + " idMenu=" + idMenu
+                        + " option=" + idOptionMenu + " map=" + this.mapId);
+            }
             // Bang setting cua admin (npc ao -1000) va menu doi skin thu nuoi (npc ao -1001)
             if (AdminMenu.xuLyChon(player, idNpc, idMenu, idOptionMenu)) {
                 return;
