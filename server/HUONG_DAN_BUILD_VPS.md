@@ -22,13 +22,19 @@ là Connector/J 5.0.8, không nói chuyện được với cơ chế xác thực
 MariaDB 10.3 trong repo Ubuntu 20.04 còn `PASSWORD()` và dùng `mysql_native_password` →
 chạy đúng. Máy nhà của bạn cũng đang là MariaDB 10.4 (XAMPP) nên bản dump khớp luôn.
 
-**2. VPS 1 GB RAM là chật.**
-Cần cùng lúc: game server (~400–500 MB heap), login server (~50 MB), MariaDB (~200 MB),
-Apache/PHP (~100 MB). Cộng lại là sát trần. Bắt buộc **tạo swap 2 GB** (bước B2) và giới
-hạn heap như trong file service. Với vài chục người chơi thì đủ; đông hơn nên nâng VPS
-lên 2 GB rồi sửa `-Xmx512m` thành `-Xmx1g`. Nói trước để bạn không mất buổi tối đi tìm
-nguyên nhân server tự chết — hết RAM thì kernel giết tiến trình Java, log chỉ ghi
-`Killed`.
+**2. RAM là thứ phải tính trước.**
+Cần cùng lúc: game server (heap + ~250 MB phụ trợ của JVM), login server (~50 MB),
+MariaDB (~250 MB), Apache/PHP (~100 MB), hệ điều hành (~150 MB).
+
+| RAM VPS | `-Xmx` game server | Swap | Đủ cho |
+|---|---|---|---|
+| 1 GB | 512m | 2 GB **bắt buộc** | ~20-30 người, khá sát trần |
+| **2 GB** | **1g** | 1 GB nên có | vài trăm người, thoải mái |
+| 4 GB | 2g | không cần | |
+
+Hết RAM thì kernel giết tiến trình Java, log chỉ ghi `Killed` — không có thông báo nào
+giải thích, nên nói trước để bạn không mất buổi tối đi tìm nguyên nhân. Chi tiết ở bước
+B2 và B2b.
 
 Ngoài ra: DB game của bạn đang **79 MB / 84 bảng**, thư mục `map/` **16 MB** → upload
 tổng khoảng 100 MB, vài phút là xong.
@@ -124,17 +130,69 @@ Java 8 là đủ: jar server biên dịch ở class version 52 (Java 8), thư vi
 version 50 (Java 6). Máy có Java 11/17 sẵn cũng chạy được, nhưng 8 là bản khớp nhất.
 Kiểm tra: `java -version`.
 
-### B2. Swap 2 GB (bắt buộc với VPS 1 GB)
+### B2. Swap
+
+**Kiểm tra trước** — nhiều nhà cung cấp đã tạo swap sẵn, tạo thêm là thừa:
 
 ```bash
-fallocate -l 2G /swapfile
+free -h
+swapon --show
+df -h /            # còn đủ dung lượng đĩa cho file swap không
+```
+
+Nếu dòng `Swap:` đã khác 0 thì bỏ qua bước này.
+
+| RAM VPS | Swap nên tạo | Vì sao |
+|---|---|---|
+| **1 GB** | **2 GB — bắt buộc** | Java + MariaDB + Apache cộng lại vượt 1 GB. Không có swap là kernel giết tiến trình Java giữa đêm |
+| **2 GB** | **1 GB — nên có** | Vừa đủ chạy, swap chỉ làm lưới an toàn cho lúc cao điểm / lúc `mysqldump` backup / lúc `javac` build trên VPS |
+| 4 GB+ | không cần | |
+
+Lệnh (đổi `1G` thành `2G` nếu VPS 1 GB):
+
+```bash
+fallocate -l 1G /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
 echo '/swapfile none swap sw 0 0' >> /etc/fstab
 sysctl -w vm.swappiness=10
 echo 'vm.swappiness=10' >> /etc/sysctl.conf
-free -h        # phải thấy dòng Swap: 2.0Gi
+free -h        # phải thấy dòng Swap khác 0
+```
+
+`vm.swappiness=10` là phần quan trọng, đừng bỏ. Swap ở đây để **chống bị kernel giết**, chứ
+không phải để chạy thường xuyên: nếu heap của Java bị đẩy xuống swap thì người chơi thấy
+giật/lag từng đợt — tệ hơn cả việc không có swap. Đặt 10 nghĩa là kernel chỉ dùng swap khi
+thực sự bí.
+
+### B2b. VPS 2 GB thì sửa 2 con số này
+
+Hai file mặc định viết cho VPS 1 GB. Có 2 GB thì nới ra, không thì bạn trả tiền RAM mà
+không dùng:
+
+```bash
+# 1) Heap game server: 512m -> 1g
+nano /opt/kpah/vps/kpah-game.service
+#    ExecStart=... -Xms256m -Xmx1g -Djava.awt.headless=true ...
+
+# 2) Bộ đệm MariaDB: 128M -> 256M
+nano /etc/mysql/mariadb.conf.d/50-server.cnf
+#    innodb_buffer_pool_size = 256M
+```
+
+Sau đó `systemctl daemon-reload && systemctl restart mariadb kpah-game`.
+
+**Đừng đặt `-Xmx` vượt 1 GB trên VPS 2 GB.** Ngoài heap, JVM còn ăn thêm metaspace, stack
+của từng thread, bộ đệm GC — thực tế tốn hơn `-Xmx` khoảng 200–300 MB. Cộng MariaDB ~250 MB
++ Apache ~100 MB + hệ điều hành ~150 MB là đã sát 2 GB.
+
+Sau khi chạy được một ngày, đo thật rồi điều chỉnh:
+
+```bash
+ps -o rss=,cmd= -C java | awk '{printf "%.0f MB  %s\n", $1/1024, $2}'
+free -h
+grep -i "killed process" /var/log/syslog        # trống = chưa từng bị OOM-kill
 ```
 
 ### B3. Tạo user riêng cho server
@@ -181,8 +239,9 @@ lower_case_table_names = 1
 character-set-server = utf8mb4
 collation-server     = utf8mb4_general_ci
 
-# VPS 1 GB: khong de MariaDB an het RAM cua Java
-innodb_buffer_pool_size = 128M
+# Khong de MariaDB an het RAM cua Java.
+# VPS 1 GB -> 128M | VPS 2 GB -> 256M | VPS 4 GB -> 512M
+innodb_buffer_pool_size = 256M
 performance_schema      = OFF
 skip-name-resolve
 

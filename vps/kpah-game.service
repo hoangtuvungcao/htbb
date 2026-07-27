@@ -10,8 +10,13 @@ Group=kpah
 WorkingDirectory=/opt/kpah
 Environment=LANG=en_US.UTF-8
 
-# -Xmx512m: VPS 1 GB con phai chia cho MariaDB. Nang len 1g neu VPS 2 GB.
-# -Djava.awt.headless=true: khong co man hinh tren VPS.
+# -Xmx theo RAM cua VPS:
+#     VPS 1 GB -> -Xmx512m   (mac dinh o day)
+#     VPS 2 GB -> -Xmx1g     va sua innodb_buffer_pool_size len 256M
+#     VPS 4 GB -> -Xmx2g
+# Dung dat -Xmx bang RAM: JVM con ton metaspace + stack thread + bo dem GC,
+# thuc te hon -Xmx khoang 200-300 MB, chua ke MariaDB va Apache.
+# -Djava.awt.headless=true: VPS khong co man hinh (AdminPanel tu bo qua).
 ExecStart=/usr/bin/java -Xms256m -Xmx512m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar KPAH2_patched.jar
 
 # Tat = SIGTERM -> shutdown hook trong TeamServer luu char/clan/market roi moi thoat.
