@@ -342,12 +342,23 @@ public class TeamServer {
 
         LogInController.Instance.run();
         
-        // Start AdminPanel
-        SwingUtilities.invokeLater(() -> {
-            AdminPanel panel = new AdminPanel();
-            panel.setVisible(true);
-
-        });
+        // Start AdminPanel — chi khi co man hinh.
+        // Tren VPS Linux khong co X server (hoac chay bang systemd), new JFrame()
+        // nem HeadlessException: server van chay nhung log day stack trace. Kiem tra
+        // truoc cho sach. Tren Windows khong doi gi, panel van hien nhu cu.
+        if (!java.awt.GraphicsEnvironment.isHeadless()) {
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    AdminPanel panel = new AdminPanel();
+                    panel.setVisible(true);
+                } catch (Throwable t) {
+                    System.out.println("[ADMIN PANEL] Khong mo duoc cua so: " + t);
+                }
+            });
+        } else {
+            System.out.println("[ADMIN PANEL] Che do khong man hinh (headless) - bo qua cua so admin."
+                    + " Dung lenh chat trong game, hoac 'systemctl stop kpah-game' de tat co trat tu.");
+        }
 
         // Luu du lieu khi JVM thoat (dong cua so console, Ctrl+C, taskkill /IM java.exe).
         // KHONG goi AdminHandler.stopServer() vi ham do co System.exit() -> treo shutdown hook.

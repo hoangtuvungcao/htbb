@@ -1,0 +1,28 @@
+[Unit]
+Description=KPAH game server
+After=network.target mariadb.service kpah-login.service
+Wants=mariadb.service kpah-login.service
+
+[Service]
+Type=simple
+User=kpah
+Group=kpah
+WorkingDirectory=/opt/kpah
+Environment=LANG=en_US.UTF-8
+
+# -Xmx512m: VPS 1 GB con phai chia cho MariaDB. Nang len 1g neu VPS 2 GB.
+# -Djava.awt.headless=true: khong co man hinh tren VPS.
+ExecStart=/usr/bin/java -Xms256m -Xmx512m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar KPAH2_patched.jar
+
+# Tat = SIGTERM -> shutdown hook trong TeamServer luu char/clan/market roi moi thoat.
+# TimeoutStopSec phai du dai cho no luu xong, dung ha xuong duoi 60s.
+KillSignal=SIGTERM
+TimeoutStopSec=180
+Restart=always
+RestartSec=10
+
+StandardOutput=append:/opt/kpah/log/game.out
+StandardError=append:/opt/kpah/log/game.out
+
+[Install]
+WantedBy=multi-user.target
