@@ -141,6 +141,123 @@ Thêm skin thú nuôi vào một mã đang có:
 UPDATE kpah_db.giftcode SET item = CONCAT(item, ',SKIN:2') WHERE giftcode = 'oke212';
 ```
 
+## Bộ 6 mã: đồ VĨNH VIỄN + nguyên liệu (không cần `ALTER`, mỗi mã dưới 255 ký tự)
+
+Xoá 3 mã cũ (dùng thời hạn ngày) trước khi tạo lại:
+
+```sql
+DELETE FROM kpah_db.giftcode WHERE giftcode IN ('vip1','vip2','vip3');
+```
+
+```sql
+INSERT INTO kpah_db.giftcode (giftcode,xu,luong,luongLock,item,expire,limit_use,type) VALUES
+('vip1',2000000000,1000000000,1000000000,'SKIN:0,SKIN:1,SKIN:2,SKIN:3,SKIN:4,PET:12:1:0,PET:19:1:0,PET:20:1:0,PET:22:1:0,PET:28:1:0,PETV:12,PHKT:0,PHTT:0,PHBT:0,HKL:0,CAITRANG:903:1:10,CAITRANG:904:1:10',0,1,0),
+('vip2',0,0,0,'VKTT:0:1:0,VKMAX:0:1:0,VKTB:0:1:0,VKTBMAX:0:1:0,VKTBLV:70:99:0,NLTMAX:0:1:0,PP8X:0:1:0,PPLUCK:593:1:1:1,PPLUCK:593:1:1:0,MNT:0,MNC:0,HOVELAN:882:5:0,BT:0:1:0',0,1,0),
+('vip3',0,0,0,'AOSHOP:725:1:0,AOSHOP:726:1:0,AOSHOP:741:1:0,TRANGPHUC:833:1:0,TRANGPHUC:834:1:0,TRANGPHUC:839:1:0,TRANGPHUC:791:1:0,TRANGPHUC:744:1:0,TRANGPHUC:736:1:0,TRANGPHUC:737:1:0,GEM:73:10000:1,GEM:108:10000:1,SUTU:1:0,TL:0',0,1,0),
+('nlieu1',0,0,0,'PT:9:10000,ITEM:714:10000,ITEM:720:100,ITEM:721:10000,ITEM:722:10000,ITEM:752:10000,ITEM:753:10000,ITEM:807:10000,ITEM:808:10000,ITEM:809:10000,ITEM:810:10000,ITEM:811:10000,ITEM:812:10000',0,1,0),
+('nlieu2',0,0,0,'ITEM:813:10000,ITEM:814:10000,ITEM:815:10000,ITEM:816:10000,ITEM:817:10000,ITEM:818:10000,ITEM:819:10000,ITEM:820:10000,ITEM:821:10000,ITEM:822:10000,ITEM:823:10000,ITEM:824:10000',0,1,0),
+('nlieu3',0,0,0,'ITEM:825:10000,ITEM:826:10000,ITEM:827:10000,ITEM:828:10000,ITEM:829:10000,ITEM:830:10000,ITEM:831:10000,ITEM:883:10,ITEM:884:10,ITEM:885:10,ITEM:886:10,ITEM:887:10',0,1,0);
+```
+
+### `time = 0` nghĩa là VĨNH VIỄN — đã kiểm trong code
+
+Mọi hàm tạo đồ đều ghi thời hạn vào `Item.minuteExist`, và mọi chỗ kiểm tra hết hạn đều
+lọc `minuteExist > 0`:
+
+```java
+if (item.getMinuteLoan(false) <= 0 && item.minuteExist > 0)   // Char.java:4501, 4521, 11721...
+```
+
+Nên `minuteExist = 0` là món đồ **không bao giờ hết hạn**. Ba chỗ đã đọc trực tiếp:
+
+| Hàm | Xử lý |
+|---|---|
+| `doDropModelClothe` (AOSHOP, TRANGPHUC) | `if (nday > 0) minuteExist = nday*24*60` → 0 = vĩnh viễn |
+| `createtemCoat` (PPLUCK, PPR, PPV) | `minuteExist = time; if (time > 0) timeLoan = now` |
+| `createPet` | `pet.totalMinute = time` → 0 giống hệt `createPetVinhVien` |
+
+Nếu món nào nhận về mà **hết hạn ngay hoặc không nhận được**, đổi số `0` cuối của riêng
+món đó thành `5256000` (10 năm tính bằng phút) hoặc `3650` (10 năm tính bằng ngày, cho
+`TRANGPHUC`/`AOSHOP`/`PPRK`).
+
+### `nlieu1..3` gồm gì
+
+| Id | Tên trong `data_item` | Số lượng |
+|---|---|---|
+| `PT:9` | **Nhân sâm** (đây là *potion*, nên dùng prefix `PT` chứ không phải `ITEM`) | 10.000 |
+| 714 | Tụ hồn đan | 10.000 |
+| **720** | **Huyết linh thảo** | **100** — ít hơn theo yêu cầu |
+| 721 | Huyết bồ đề | 10.000 |
+| 722 | Sách kỹ năng pet | 10.000 |
+| 752 / 753 | Rương nguyên liệu cao cấp / sơ cấp | 10.000 |
+| 807-816 | Tơ lụa, bạc, thuỷ tinh, gỗ sưa, da cứng — cấp 4 và cấp 5 | 10.000 |
+| 817-822 | Đá ngũ hợp tinh khiết lv 1→6 | 10.000 |
+| 823/824/825 | Đá tách nguyên liệu 5x / **6x** / 7x | 10.000 |
+| 826/827 | Đá thuộc tính thường / cao cấp | 10.000 |
+| 828/829 | **Xương cấp 6 / Ngọc huyền minh cấp 6** | 10.000 |
+| 830/831 | Đá tiến giai / Hoả thạch cấp 1 | 10.000 |
+| 883-887 | Trứng hoả kỳ lân, đương khang, lân, bạch cốt, rồng băng | 10 |
+
+**Không có item nào tên "nguyên liệu siêu cấp 6"** trong `data_item`. Cấp 6 chỉ có đúng hai
+món: `828 Xương cấp 6` và `829 Ngọc huyền minh cấp 6` (cả hai đã có trong `nlieu3`). Nguyên
+liệu ghép đồ thì cao nhất là **cấp 5** (807-816). Tự kiểm:
+`SELECT id,name FROM kpah_db.data_item WHERE name LIKE '%cấp 6%';`
+
+**Coi chừng hành trang đầy.** Ba mã nguyên liệu tạo hơn 30 loại đồ = hơn 30 ô hành trang.
+Nhiều hàm tạo đồ có kiểm `isFullInventory()` và **bỏ qua im lặng** khi đầy. Dọn hành trang
+trước, và nhận từng mã một rồi kiểm tra.
+
+## Mã tổng "tất cả trong một" (56 phần thưởng)
+
+Chuỗi `item` dài 787 ký tự mà cột đang là `varchar(255)` → **phải nới cột trước**, không thì
+MySQL cắt cụt ở 255 và phần sau mất im lặng:
+
+```sql
+ALTER TABLE kpah_db.giftcode MODIFY item TEXT;
+```
+
+Rồi tạo mã:
+
+```sql
+INSERT INTO kpah_db.giftcode (giftcode, xu, luong, luongLock, item, expire, limit_use, type) VALUES ('vipall', 2000000000, 1000000000, 1000000000, 'SKIN:0,SKIN:1,SKIN:2,SKIN:3,SKIN:4,PET:12:1:0,PET:19:1:0,PET:20:1:0,PET:22:1:0,PET:28:1:0,PETV:12,PHKT:30,PHTT:30,PHBT:30,HKL:30,CAITRANG:903:1:10,CAITRANG:904:1:10,VKTT:0:1:43200,VKMAX:0:1:43200,VKTB:0:1:43200,VKTBMAX:0:1:43200,VKTBLV:70:99:5000,NLTMAX:0:1:80000,PP8X:0:1:43200,PPLUCK:593:1:1:1,PPLUCK:593:1:1:0,AOSHOP:725:1:0,AOSHOP:726:1:0,AOSHOP:741:1:43200,TRANGPHUC:833:1:30,TRANGPHUC:834:1:30,TRANGPHUC:839:1:30,TRANGPHUC:791:1:30,TRANGPHUC:744:1:30,TRANGPHUC:736:1:30,TRANGPHUC:737:1:50,HOVELAN:882:5:43200,MNT:30,MNC:30,GEM:73:10000:1,GEM:108:10000:1,ITEM:848:30000:1,ITEM:849:1000:1,ITEM:850:10000:1,ITEM:851:1000:1,ITEM:852:1000:1,ITEM:853:1000:1,ITEM:854:1000:1,ITEM:855:1000:1,ITEM:856:1000:1,ITEM:857:1000:1,ITEM:858:1000:1,ITEM:859:1000:1,SUTU:1:300,TL:30,DN:500000:500000', 0, 1, 0);
+```
+
+Gồm những gì:
+
+| Nhóm | Chi tiết |
+|---|---|
+| Tiền | 2 tỉ xu, 1 tỉ lượng mở, 1 tỉ lượng khoá |
+| Skin thú nuôi | cả 5: Phúc Thú, Gấu Trúc, Tiên Lộc, Xích Dương, Chiến Lang |
+| Thú nuôi | pet 12, 19, 20, 22, 28 + 1 pet vĩnh viễn (id 12) |
+| Thú cưỡi | Phượng Hoàng Kim / Thổ / Băng (30 ngày), Hoả Kỳ Lân 30 ngày |
+| Cải trang | Bát Giới (903) + Sa Tăng (904), cộng 10 |
+| Vũ khí | VK thời trang thường + max, **thần binh** thường + max + thần binh lv70 |
+| Phi phong | PP 8x, 2 phi phong may mắn (id 593) |
+| Áo / trang phục | 3 áo shop + 7 trang phục |
+| Khác | hộ vệ lệnh lân x5, mặt nạ thỏ + cáo, 20000 ngọc (2 loại), 12 loại vật phẩm x nhiều, sư tử, TL, DN |
+
+## Bốn điều phải biết trước khi phát mã này
+
+**1. `luong` và `lockLuong` trong `Char` là `int`, không phải `long`**
+([Char.java:101](../src/real/Char.java#L101)). Trần là 2.147.483.647. Nhận 1 tỉ **hai lần**
+là tràn thành số âm, mà `getLuong()` trả 0 khi âm → **mất sạch lượng**. Vì vậy mã trên đặt
+`limit_use = 1`. `xu` thì an toàn vì `Char.xu` là `long`.
+
+**2. Một entry sai làm mất toàn bộ phần còn lại.** Cả vòng lặp vật phẩm nằm trong một
+`try`; `Integer.parseInt` lỗi hoặc template không tồn tại là nhảy ra ngoài, các phần thưởng
+sau **không được trao**, và dòng ghi vào `giftcode_log` cũng không chạy → người chơi gõ lại
+được. **Test trên một nhân vật phụ trước**, đừng phát ngay.
+
+**3. Cố ý KHÔNG đưa thần khí (`TK`/`TKMAX`) vào.** `createThanKhi` tra template bằng
+`itemTemplates.get(clazz).get(idThanKhi)` ([Char.java:18378](../src/real/Char.java#L18378))
+— id thần khí là **id vũ khí riêng của từng class**. Một mã dùng chung sẽ lỗi
+`NullPointerException` với class không có id đó và làm mất luôn phần thưởng phía sau (xem
+điều 2). Muốn phát thần khí thì làm **mã riêng cho từng class**. Thay thế an toàn đã có
+trong mã: `VKTB` / `VKTBMAX` (thần binh) không cần id, mọi class đều nhận được.
+
+**4. Cũng không đưa `EGG` và `DH`** vì id trứng / id danh hiệu chưa kiểm chứng trên DB mới.
+`DH` còn có danh sách id cố định trong code, sai id là không nhận được gì.
+
 ## Mã riêng theo nhân vật (`ngude_giftcode`)
 
 ```sql

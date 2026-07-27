@@ -43,8 +43,26 @@ Tạo khoá SSH trên Windows rồi đưa lên VPS — sau đó mọi file .bat 
 
 ```powershell
 ssh-keygen -t ed25519          # Enter hết, không cần passphrase
-type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh root@180.93.57.30 "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
 ```
+
+```powershell
+$key = (Get-Content $env:USERPROFILE\.ssh\id_ed25519.pub -Raw).Trim()
+```
+
+```powershell
+ssh root@180.93.57.30 "mkdir -p ~/.ssh && printf '%s\n' '$key' >> ~/.ssh/authorized_keys && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys && echo DA_THEM_XONG"
+```
+
+> **ĐỪNG dùng kiểu `type file.pub | ssh root@... "cat >> ..."`.** Pipe chiếm stdin nên
+> OpenSSH trên Windows **không mở được ô nhập mật khẩu** — bạn gõ mật khẩu mà nó không
+> nhận, tưởng sai mật khẩu. Cách trên đưa khoá vào biến `$key` nên `ssh` giữ được terminal
+> để hỏi mật khẩu bình thường.
+>
+> Lúc nhập mật khẩu, màn hình **không hiện gì cả** — không dấu sao, không con trỏ nhảy.
+> Cứ gõ rồi Enter.
+
+Ký tự `\r` của Windows lọt vào `authorized_keys` là OpenSSH coi khoá không hợp lệ và vẫn
+hỏi mật khẩu, dù file trông đúng. Vì vậy phải có `.Trim()` và `printf '%s\n'`.
 
 Thử lại: `ssh root@180.93.57.30 "echo OK"` — không hỏi mật khẩu là xong.
 
