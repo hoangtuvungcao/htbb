@@ -1096,6 +1096,17 @@ public class RealController extends ServerController {
                                             String[] ld;
                                             int win;
                                             int index;
+                                            // Muc "Ho Tro" (xoa pet / xoa thu cuoi) o npc tong tieu dau.
+                                            // PHAI xu ly ngay tai day: npc -50 co case rieng trong switch nay
+                                            // va khong bao gio set defHandle = true, nen Map.doMenu KHONG he
+                                            // nhan duoc npc -50 -> nhanh Ho Tro dat trong Map.doMenu la code chet
+                                            // (do la ly do bam Ho Tro khong hien thi gi).
+                                            // idMenu 10 = menu 6 muc (Ho Tro o vi tri 5),
+                                            // idMenu 0  = menu 7 muc khi con luot van tieu (Ho Tro o vi tri 6).
+                                            if ((idMenu == 10 && idOptionMenu == 5) || (idMenu == 0 && idOptionMenu == 6)) {
+                                                p.map.showMenuHoTro(p);
+                                                return;
+                                            }
                                             if (idMenu != 0) {
                                                 if (idMenu != 10) {
                                                     if (idMenu != 11) {
