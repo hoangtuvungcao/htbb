@@ -50,17 +50,23 @@ public class BaoTriDaily implements Runnable {
     // Bao truoc bao tri cho nguoi dang online. Chi thong bao, KHONG tat server - viec tat
     // de cho systemctl stop (SIGTERM -> shutdown hook luu du lieu), xem vps/deploy-auto.sh.
     //
-    // CHI GUI DUNG MOT TIN, khong dem nguoc nhieu moc. Ly do: client nhet moi tin nhan 38
-    // vao hang doi TINH GameScr.serverInfo roi chay ticker lan luot, moi tin mat khoang
-    // 15-20 giay moi troi het man hinh, va hang doi khong bi xoa khi mat ket noi. Ban dau
-    // gui 4 moc (60/30/20/10) nen nguoi choi vao lai SAU khi bao tri xong VAN thay chu
-    // "bao tri sau ... giay" chay tiep - tuong la sap bao tri lan nua.
+    // DUNG HOP THOAI (tin 37) chu TUYET DOI KHONG dung marquee (tin 38).
+    // Marquee bi client nhet vao hang doi TINH GameScr.serverInfo, va paintServerInfo chi
+    // chay khi nguoi choi dang o man hinh game: ai dang mo menu / o shop / dang loading thi
+    // ticker khong troi, tin nam im trong hang doi. Hang doi lai khong bi xoa khi mat ket
+    // noi, nen sau khi bao tri xong ho dang nhap lai, vua vao GameScr la hang doi moi bat
+    // dau chay -> "thong bao bao tri" hien ra dung luc bao tri DA XONG, gay hieu lam nang.
+    // Tin 37 thi client goi Canvas.startOKDlg ngay lap tuc (MessageHandler.cs case 37),
+    // khong qua hang doi nao, khong the ton lai sau khi dang nhap lai.
+    //
+    // Cung khong dat RealController.maquee: LoginHandler/SelectCharHandler gui lai maquee
+    // cho nguoi moi vao neu no khac rong, lai thanh mot duong ton thong bao nua.
     public static void baoTruocBaoTri(final int giay) {
         try {
             final String khiNao = (giay >= 60 && giay % 60 == 0) ? (giay / 60) + " phút" : giay + " giây";
-            RealController.maquee = "Hệ thống bảo trì sau " + khiNao
+            final String noiDung = "Hệ thống bảo trì sau " + khiNao
                     + ", vui lòng thoát game để tránh mất mát dữ liệu.";
-            final Message m = MessageCreator.createServerInfoMessage();
+            final Message m = MessageCreator.createServerAlertMessage(noiDung, "");
             for (int i = 0; i < CharManager.instance.vChars.size(); ++i) {
                 CharManager.instance.vChars.elementAt(i).sendMessage(m);
             }

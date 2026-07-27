@@ -745,15 +745,25 @@ UPDATE kpah_db.5h_systems SET status = 0 WHERE command = 'baotri_thongbao';
 ```
 
 `BaoTriDaily` đọc cờ này mỗi 5 giây ([Database.baoTriThongBaoCMD](src/data/Database.java))
-rồi chạy marquee **một lần** ([BaoTriDaily.baoTruocBaoTri](src/real/BaoTriDaily.java)). Cờ
-**chỉ báo, không tự tắt server** — việc tắt để cho `systemctl stop` (SIGTERM → shutdown hook
-lưu dữ liệu). Chạy câu SQL trên bất cứ lúc nào cũng được nếu muốn báo tay mà không deploy.
+rồi bật **hộp thoại** cho mọi người đang online
+([BaoTriDaily.baoTruocBaoTri](src/real/BaoTriDaily.java)). Cờ **chỉ báo, không tự tắt server**
+— việc tắt để cho `systemctl stop` (SIGTERM → shutdown hook lưu dữ liệu). Chạy câu SQL trên
+bất cứ lúc nào cũng được nếu muốn báo tay mà không deploy.
 
-> **Đừng đổi thành đếm ngược nhiều mốc.** Client nhét mỗi tin nhắn 38 vào hàng đợi **tĩnh**
-> `GameScr.serverInfo` rồi chạy ticker lần lượt, mỗi tin mất 15-20 giây mới trôi hết màn hình,
-> và hàng đợi **không bị xoá khi mất kết nối** ([GameScr.cs:4737](Client/GameScr.cs#L4737),
-> [Ticker.cs](Client/Ticker.cs)). Bản đầu gửi 4 mốc 60/30/20/10 nên người chơi vào lại *sau khi
-> bảo trì xong* vẫn thấy chữ "bảo trì sau … giây" chạy tiếp, tưởng sắp bảo trì lần nữa.
+> **Tuyệt đối không dùng marquee (tin 38) cho thông báo bảo trì.** Client nhét tin 38 vào
+> hàng đợi **tĩnh** `GameScr.serverInfo`, và `paintServerInfo` **chỉ chạy khi người chơi đang ở
+> màn hình game** ([GameScr.cs:4737](Client/GameScr.cs#L4737)) — ai đang mở menu / ở shop /
+> đang loading thì ticker không trôi, tin nằm im. Hàng đợi lại **không bị xoá khi mất kết
+> nối**, nên sau khi bảo trì xong họ đăng nhập lại, vừa vào màn hình game là hàng đợi mới bắt
+> đầu chạy → *"bảo trì sau 60 giây"* hiện ra đúng lúc bảo trì **đã xong**. Gửi 1 tin hay 4 tin
+> đều bị, vì vấn đề là hàng đợi chứ không phải số lượng.
+>
+> Tin **37** (`createServerAlertMessage`) thì client gọi `Canvas.startOKDlg` ngay lập tức
+> ([MessageHandler.cs:2065](Client/MessageHandler.cs#L2065)), không qua hàng đợi nào, nên không
+> thể tồn lại sau khi đăng nhập lại. Cũng đừng gán `RealController.maquee`:
+> `LoginHandler`/`SelectCharHandler` gửi lại maquee cho người mới vào nếu nó khác rỗng
+> ([LoginHandler.java:650](src/real/cmd/LoginHandler.java#L650)) — lại thành một đường tồn
+> thông báo nữa.
 
 **Khoá SSH bị giới hạn.** Khoá riêng `/root/.ssh/deploy_github` khai trong `authorized_keys`
 kèm `command="/opt/kpah/vps/deploy-auto.sh"` + `no-pty,no-port-forwarding`, nên nếu secret
