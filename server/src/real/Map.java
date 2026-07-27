@@ -16421,20 +16421,32 @@ public class Map implements Runnable {
             if (idpopup != 10 && idpopup != 11 && idpopup != 12 && idActor == player.id && ok == 0) {
                 return;
             }
-            if (idpopup == 119) 
+            if (idpopup == 119)
             {
-                try 
+                try
                 {
+                    // Bam "Khong" thi PHAI dung lai. Chot chung o tren chi return khi
+                    // idActor == player.id, ma popup nay gui idActor = id thu -> khong bao gio
+                    // khop, nen truoc day huy van xoa thu va van tru 500 luong.
+                    if (ok == 0) {
+                        player.idThuChoXoa = -1;
+                        return;
+                    }
+
                     if (!player.isCorrectPass && !player.passWord.equals("")) {
                         player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
                         return;
                     }
-                
+
                     if(player.getLuong() < 500L) {
                         player.sendMessage(MessageCreator.createMsgChat(player.id, "Không đủ lượng"));
                         return;
                     }
-                    int animalIdDB = idActor;
+                    int animalIdDB = player.idThuChoXoa;
+                    if (animalIdDB <= 0) {
+                        return;
+                    }
+                    player.idThuChoXoa = -1;
                     data.Animal targetAnimal = null;
                     if (player.animal != null && !player.animal.isEmpty()) {
                         for (data.Animal animal : player.animal) {
@@ -16477,10 +16489,20 @@ public class Map implements Runnable {
                 }
             }
             
-            if (idpopup == 120) 
+            if (idpopup == 120)
             {
                 try {
-                    int petIdDB = idActor;
+                    // Bam "Khong" thi PHAI dung lai - xem giai thich o popup 119.
+                    if (ok == 0) {
+                        player.idPetChoXoa = -1;
+                        return;
+                    }
+
+                    int petIdDB = player.idPetChoXoa;
+                    if (petIdDB <= 0) {
+                        return;
+                    }
+                    player.idPetChoXoa = -1;
                     data.Pet targetPet = null;
                     
                     if (player.pet != null && !player.pet.isEmpty()) {
@@ -18671,11 +18693,13 @@ public class Map implements Runnable {
             
                 // Tạo thông báo xác nhận
                 String confirmMessage = String.format(
-                    "Bạn có chắc chắn muốn xóa Pet %s không?\nChi phí: 5,000 lượng",
-                    targetPet.getName()
+                    "Bạn có chắc chắn muốn xóa Pet %s (ID: %d) không?\nChi phí: 500 lượng",
+                    targetPet.getName(),
+                    targetPet.idDB
                 );
-            
+
                 // Gửi thông báo popup
+                player.idPetChoXoa = id;
                 player.sendMessage(MessageCreator.createMsgPopUp(id, 120, confirmMessage));
             }
 
@@ -18726,12 +18750,13 @@ public class Map implements Runnable {
             
                 // Tạo thông báo xác nhận
                 String confirmMessage = String.format(
-                    "Bạn có chắc chắn muốn xóa Thú Cưỡi %s có ID %s không?\nChi phí: 5,000 lượng",
+                    "Bạn có chắc chắn muốn xóa Thú Cưỡi %s có ID %s không?\nChi phí: 500 lượng",
                     targetAnimal.getName(),
                     targetAnimal.dbid
                 );
-            
+
                 // Gửi thông báo popup
+                player.idThuChoXoa = id;
                 player.sendMessage(MessageCreator.createMsgPopUp(id, 119, confirmMessage));
             }
             if (idActor >= -32018 && idActor <= -32015) {

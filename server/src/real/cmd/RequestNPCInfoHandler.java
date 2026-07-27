@@ -279,17 +279,20 @@ public class RequestNPCInfoHandler implements ICommandHandler {
 //                    msg = MessageCreator.createMsgMenu(menu, npcType, 10);
 //                    session.sendMessage(msg);
 //                }
-                if (p != null && p.luot_van_tieu > 0) {
-                    if (p.myCountry == p.inCountry) {
-                        menu = new String[]{"Nhận tiêu cá nhân(" + p.luot_van_tieu + ")", "Xuống ngựa", "Đổi danh hiệu", "Đăng ký lôi đài", "Vào sảnh chờ", "Xem lôi đài", "Hỗ Trợ"};
-                        msg = MessageCreator.createMsgMenu(menu, npcType, 0);
-                        session.sendMessage(msg);
-                    }
+                if (p == null) {
+                    return;
+                }
+                // Truoc day nhanh "co luot van tieu" chi gui menu khi myCountry == inCountry,
+                // con lai KHONG gui gi -> nguoi choi co luot van tieu ma dang o lanh tho nuoc
+                // khac thi bam npc khong ra gi, mat luon ca muc Ho Tro.
+                if (p.luot_van_tieu > 0 && p.myCountry == p.inCountry) {
+                    menu = new String[]{"Nhận tiêu cá nhân(" + p.luot_van_tieu + ")", "Xuống ngựa", "Đổi danh hiệu", "Đăng ký lôi đài", "Vào sảnh chờ", "Xem lôi đài", "Hỗ Trợ"};
+                    msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                 } else {
                     menu = new String[]{"Xuống ngựa", "Đổi danh hiệu", "Đăng ký lôi đài", "Vào sảnh chờ", "Xem lôi đài", "Hỗ Trợ"};
                     msg = MessageCreator.createMsgMenu(menu, npcType, 10);
-                    session.sendMessage(msg);
                 }
+                session.sendMessage(msg);
                 return;
 
             }

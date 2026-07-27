@@ -274,6 +274,12 @@ public class Char extends LiveActor {
     public byte autoComeHome;
     public byte luot_van_tieu;
     public byte buy_luot_van_tieu;
+    // Id pet / thu cuoi dang cho xac nhan xoa o npc tong tieu dau (menu Ho Tro).
+    // Truoc day id duoc nhoi vao idActor cua goi popup, ma doPopup doc idActor bang
+    // readShort() -> id vuot 32767 la xac nhan sai doi tuong. Giu o day thi khong phu
+    // thuoc do rong cua goi tin. Chi song trong phien, khong luu DB.
+    public int idPetChoXoa = -1;
+    public int idThuChoXoa = -1;
     public byte cuop_tieu;
     public byte vip;
     private long timeHit;
