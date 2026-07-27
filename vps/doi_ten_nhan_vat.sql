@@ -1,11 +1,16 @@
 -- ============================================================================
 --  ĐỔI TÊN NHÂN VẬT (dùng khi cần đặt tên bị chặn, ví dụ tên GM "admin")
 --
---  Cách dùng trên VPS:
---    1. TẮT game server:      systemctl stop kpah-game
---    2. Sửa 2 dòng @ten_cu / @ten_moi bên dưới
---    3. mysql -u root --default-character-set=utf8 -t < /opt/kpah/vps/doi_ten_nhan_vat.sql
---    4. Bật lại:              systemctl start kpah-game
+--  Cách dùng trên VPS — chạy BẢN SAO trong /tmp để không sửa file trong repo
+--  (sửa trực tiếp là lần `update.sh` sau sẽ báo "file bị sửa tay" và dừng):
+--
+--    systemctl stop kpah-game
+--    sed -e "s/^SET @ten_cu .*/SET @ten_cu  = 'ten_hien_tai';/" \
+--        -e "s/^SET @ten_moi .*/SET @ten_moi = 'ten_muon_doi';/" \
+--        /opt/kpah/vps/doi_ten_nhan_vat.sql > /tmp/doiten.sql
+--    grep "@ten_cu\|@ten_moi" /tmp/doiten.sql | head -2      # kiem tra lai
+--    mysql -u root --default-character-set=utf8 -t < /tmp/doiten.sql
+--    systemctl start kpah-game
 --
 --  BẮT BUỘC tắt server trước: server giữ Char trong RAM, còn chạy là nó ghi đè
 --  lại tên cũ khi tự động lưu (mỗi vài phút), coi như công cốc.
