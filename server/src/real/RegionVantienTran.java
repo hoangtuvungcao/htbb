@@ -517,7 +517,8 @@ public class RegionVantienTran implements Runnable {
 
             damage += hphut;
             damage = c.checkHapthuSatThuong(damage, p);
-            damage = c.checkGiamSatThuong(damage);
+            // Truyen ke tan cong vao de "Hoa giai ky nang pet" bo duoc Pha trien.
+            damage = c.checkGiamSatThuong(damage, p);
             damage = c.checkPassAttack(p, damage);
             ahp = damage;
             if (damage < 0) {

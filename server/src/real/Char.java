@@ -3193,7 +3193,9 @@ public class Char extends LiveActor {
 
     public void buffSkillKham(final LiveActor actor) {
         try {
-            if (actor.isActiveTienKhi() || actor.isActive8sRongLon()) {
+            // Hoa giai ky nang pet xuyen qua Tien khi (ky nang pet), nhung KHONG xuyen
+            // qua Cam chiu 8s cua Rong Lon vi do la noi tai thu cuoi.
+            if ((actor.isActiveTienKhi() && !this.dangHoaGiaiKyNangPet()) || actor.isActive8sRongLon()) {
                 return;
             }
             int[] khang = new int[6];
@@ -3264,7 +3266,7 @@ public class Char extends LiveActor {
 
     public void buffAttackSkill(final int d, final LiveActor actor) {
         try {
-            if (actor.isActiveTienKhi() || actor.isActive8sRongLon()) {
+            if ((actor.isActiveTienKhi() && !this.dangHoaGiaiKyNangPet()) || actor.isActive8sRongLon()) {
                 return;
             }
             if (this.charClass == 4) {
@@ -3606,7 +3608,19 @@ public int applyRongLonReleaseTo(int baseDamage) {
      * @param dam
      * @return
      */
+    /**
+     * Ban co ke tan cong: neu don nay dang hoa giai ky nang pet thi Pha trien (ky nang
+     * pet, giam 50% sat thuong) khong duoc tinh cho rieng don do.
+     */
+    public int checkGiamSatThuong(final int dam, final Char attacker) {
+        return checkGiamSatThuong(dam, attacker != null && attacker.dangHoaGiaiKyNangPet());
+    }
+
     public int checkGiamSatThuong(final int dam) {
+        return checkGiamSatThuong(dam, false);
+    }
+
+    private int checkGiamSatThuong(final int dam, final boolean boQuaPhaTrien) {
         int finalDam = dam;
         Animal animalRide = this.animalRide;
         if (this.map != null && this.map.isMapChienTruongMoba()) {
@@ -3624,7 +3638,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             pcgiam = this.wModel.getPcGiamSatThuong();
         }
         final EffectBuff ef = this.hashEffBuff.get(EffectBuff.EFF_PHA_TRIEN);
-        if (ef != null) {
+        if (ef != null && !boQuaPhaTrien) {
             pcgiam += ef.dam;
         }
         finalDam -= (int) (finalDam * pcgiam / 100L);
@@ -3975,6 +3989,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     public int attackDam(final LiveActor actor, final int idSkill, final int level, final int bubbAttack) {
         actor.isCheckActiveBuffGiamSatThuong();
+        // Quay mot lan cho ca don danh nay. Cac diem kiem tra (ne tranh, tien khi, pha
+        // trien) deu doc lai ket qua nay chu khong quay lai, neu khong mot don se an
+        // toi ba lan 10% -> ti le thuc te cao hon con so ghi tren mat na.
+        this.rollHoaGiaiKyNangPet();
         Pet petUsing = this.petUsing;
         Animal animalRide = this.animalRide;
         if (this.map != null && this.map.isMapChienTruongMoba()) {
@@ -4345,7 +4363,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     if (petUsing != null && ((this.map.isMapChienTruongMoba() && c2.getNoiLuc() >= 5) || !this.map.isMapChienTruongMoba())) {
                         finalDame += petUsing.getSatThuong();
                     }
-                    if (Map.r.nextInt(1000) < actor.haveNeTranh()) {
+                    // Thien nhan (ne don) la ky nang pet -> bi hoa giai thi khong tinh
+                    // phan ne cua pet nua, chi con ne tranh goc + ne tranh than khi.
+                    int pcNeTranh = actor.haveNeTranh();
+                    if (this.dangHoaGiaiKyNangPet() && actor instanceof Char) {
+                        pcNeTranh = ((Char) actor).haveNeTranhBoQuaPet();
+                    }
+                    if (Map.r.nextInt(1000) < pcNeTranh) {
                         finalDame = 0;
                     }
                     if (actor.isNgu()) {
@@ -4964,20 +4988,45 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     /**
-     * "Hoa giai ky nang pet" cua mat na muc tieu: tra ve true neu don danh nay bi vo
-     * hieu ky nang pet cua ke tan cong. Trong PvP ky nang pet duy nhat cong thang vao
-     * mot don danh la Lien kich (Pet.ALL_SKILL[11] — tang % sat thuong chi mang), cac
-     * ky nang pet con lai deu la chi so cong san vao chu nhan.
+     * "Hoa giai ky nang pet" chi kich hoat khi deo mat na tho/cao VA cam Nguyet Linh
+     * Truong — dung cap do checkMatNaVaLan() da viet san nhung chua duoc goi o dau.
+     */
+    public boolean coDuDoHoaGiaiKyNangPet() {
+        return this.wModel != null
+                && (this.wModel.isMatNaTho() || this.wModel.isMatNaCao())
+                && this.wModel.isNguyetLinhTruong();
+    }
+
+    /** % hoa giai ghi tren mat na. Tra 0 neu chua du bo mat na + Nguyet Linh Truong. */
+    public int getPcHoaGiaiKyNangPet() {
+        if (this.wModel == null || this.wModel.matNa == null || !coDuDoHoaGiaiKyNangPet()) {
+            return 0;
+        }
+        return this.wModel.matNa.otherAtt[71];
+    }
+
+    /** Ket qua quay hoa giai cua don danh dang xu ly. Dat lai o dau moi attackDam. */
+    private boolean hoaGiaiPetHit = false;
+
+    public void rollHoaGiaiKyNangPet() {
+        final int pc = getPcHoaGiaiKyNangPet();
+        this.hoaGiaiPetHit = pc > 0 && Map.r.nextInt(100) < pc;
+    }
+
+    /** Don danh dang xu ly co dang hoa giai ky nang pet cua muc tieu khong. */
+    public boolean dangHoaGiaiKyNangPet() {
+        return this.hoaGiaiPetHit;
+    }
+
+    /**
+     * Ban tinh cho phia PHONG THU: mat na cua muc tieu hoa giai ky nang pet cua ke tan
+     * cong (Lien kich). Quay rieng vi day khong phai don danh cua chinh minh.
      */
     public static boolean hoaGiaiKyNangPet(final LiveActor target) {
         if (!(target instanceof Char)) {
             return false;
         }
-        final Char c = (Char) target;
-        if (c.wModel == null || c.wModel.matNa == null) {
-            return false;
-        }
-        final int pc = c.wModel.matNa.otherAtt[71];
+        final int pc = ((Char) target).getPcHoaGiaiKyNangPet();
         return pc > 0 && Map.r.nextInt(100) < pc;
     }
 
@@ -6332,7 +6381,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     public void checkNewEffectPet(final LiveActor beAttack) {
         boolean issend = false;
         beAttack.checkActiveSkillPet();
-        if (beAttack.isActiveTienKhi() || beAttack.isActive8sRongLon()) {
+        if ((beAttack.isActiveTienKhi() && !this.dangHoaGiaiKyNangPet()) || beAttack.isActive8sRongLon()) {
             return;
         }
         if (beAttack.isBossSonTinhThuyTinh()) {
@@ -7680,6 +7729,16 @@ public int applyRongLonReleaseTo(int baseDamage) {
             hphut += petUsing.getHpHutByHit();
         }
         return hphut;
+    }
+
+    /** Ne tranh sau khi da bo phan Thien nhan cua pet (bi hoa giai ky nang pet). */
+    public int haveNeTranhBoQuaPet() {
+        int ne = super.haveNeTranh();
+        ne += getTkNeTranh() * 10;
+        if (ne > 900) {
+            ne = 900;
+        }
+        return ne;
     }
 
     @Override
