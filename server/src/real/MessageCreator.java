@@ -1529,10 +1529,12 @@ public class MessageCreator {
                         idImgHorse = 20;
                     }
                     // Skin thang lai sau cung: no phai de len moi truong hop rieng o tren.
-                    // fly = 0 vi anh skin dung 3 frame di bo nhu thu chay dat.
+                    // fly = 1 vi preset 5 la bo cua thu BAY: gui fly = 0 voi preset nay thi client
+                    // ve thieu phan than tren nhan vat (mat dau), va chi chay 3 frame trong
+                    // khi anh co 4 frame moi huong.
                     if (idAnhSkin >= 0) {
                         idImgHorse = (byte) idAnhSkin;
-                        fly = 0;
+                        fly = 1;
                     }
                 }
                 m.dos.writeByte(fly);
@@ -1667,7 +1669,7 @@ public class MessageCreator {
                 idImgHorse = Animal.idImgPaint[ch.animalRide.idImg];
                 if (idAnhSkin2 >= 0) {
                     idImgHorse = (byte) idAnhSkin2;
-                    fly = 0;
+                    fly = 1;
                 }
             }
             m.dos.writeByte(fly);
@@ -1825,7 +1827,7 @@ public class MessageCreator {
                 // Skin de len tat ca truong hop rieng o tren.
                 if (idAnhSkin3 >= 0) {
                     idImgHorse = (byte) idAnhSkin3;
-                    fly = 0;
+                    fly = 1;
                 }
             }
 
