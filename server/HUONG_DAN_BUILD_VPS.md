@@ -921,18 +921,34 @@ Ví dụ thực tế: mục "Hỗ Trợ" của NPC tổng tiêu đầu (-50) đ�
    sáng rời rạc, đó chính là cảm giác "mất nét không rõ". Dùng `--nguong=-1` (chỉ lọc
    theo kênh trong suốt) rồi `--botrai=` để bỏ cột chữ nhãn.
 
-4. **Sửa sprite của một id đang dùng thì client hiện ra một khối vụn.** `GameData.listImgIcon`
-   giữ ảnh theo id, **không có số phiên bản**, và chỉ bị bỏ khi `!isLoad` + rảnh quá 120s
-   + bảng có hơn 100 phần tử ([GameScr.cs:1438](Client/GameScr.cs#L1438)) — đang cưỡi thú
-   thì `timeRemove` được làm mới mỗi lần vẽ nên **không bao giờ hết hạn**. Đăng nhập lại
-   chỉ làm mới phần **dữ liệu** frame (`ALL_DATA_EFF.put`, [MessageHandler.cs:1772](Client/MessageHandler.cs#L1772)),
-   ảnh vẫn là ảnh cũ → dữ liệu mới ghép ảnh cũ = khối vụn của nhiều frame. Vì vậy **mỗi
-   lần làm lại sprite phải đổi sang id khác**, đừng ghi đè id đang dùng (id mới thì client
-   chưa có gì trong bộ nhớ đệm nên buộc phải tải mới). Cách còn lại là bắt mọi người tắt
-   hẳn app rồi mở lại.
+4. **Sửa sprite của một id đang dùng thì client hiện ra một khối vụn** — thấy hai ba con
+   chồng nhau trong một khung chữ nhật. Client có **ba tầng đệm với ba luật xoá khác nhau**:
+
+   | tầng | nội dung | khi nào được làm mới |
+   |---|---|---|
+   | `DataSkillEff.ALL_DATA_EFF` | byte dữ liệu frame | ghi lại mỗi lần đăng nhập ([MessageHandler.cs:1772](Client/MessageHandler.cs#L1772)) → luôn mới |
+   | `Char.ALL_PART_EFF` | dữ liệu đã phân tích | rảnh quá **200s** ([Char.cs:1903](Client/Char.cs#L1903)) |
+   | `GameData.listImgIcon` | ảnh PNG | rảnh quá 120s **và** bảng phải có **hơn 100 mục** ([GameScr.cs:1438](Client/GameScr.cs#L1438)) |
+
+   Không tầng nào có số phiên bản. Client ít icon thì mục ảnh **không bao giờ hết hạn** —
+   sống tới lúc tắt hẳn app. Nên đăng nhập lại làm mới dữ liệu mà không làm mới ảnh, hoặc
+   ngược lại, và hai bên lệch nhau là ra khối vụn.
+
+   Đã chặn cả hai đường, **không phải bắt người chơi tắt app nữa**:
+   - **Ảnh**: `DataGame.taoGoiAnhDynamicEffect()` tạo gói `-51` rồi đẩy xuống lúc đăng nhập
+     và lúc đổi skin. Gói `-51` khi tới client chỉ làm một việc: `imageIcon.img = ảnh mới`.
+     An toàn khi client chưa có mục nào cho id đó (nó ném NullReference nhưng cả `onMessage`
+     nằm trong try/catch chỉ ghi log, rồi client tự xin ảnh như thường).
+   - **Dữ liệu**: `tools/TaoEffThuCuoi.java` xếp sprite trên **lưới cố định 4×4 ô 64×64**,
+     `dx = -32`, `dy = -64 + {10, 8, 4}` — toàn hằng số. Nhờ vậy file dữ liệu frame **giống
+     nhau từng byte** giữa cả 5 skin và giữa mọi lần làm lại sprite, nên dữ liệu cũ còn sót
+     cũng vô hại. Kiểm tra bằng `md5sum map/d_effect/159 197 198 199 212` — phải trùng hết.
+     Đổi `O`, `THO_XUONG` hay số ô là **phá vỡ tính chất này**, lúc đó lại phải tắt app.
+
    Danh sách `id_eff_tool_ngu_long` đang có **254 id** mà client đọc số lượng bằng
    `readUnsignedByte` → **trần là 255**, chỉ còn 1 chỗ. Hết chỗ thì phải bỏ id không dùng
-   ra khỏi danh sách trước khi thêm.
+   ra khỏi danh sách trước khi thêm. Cả 300 id `d_effect` đều đã có chủ nên **không còn id
+   trống** để né bộ đệm bằng cách đổi id nữa.
 
 Thêm hai giới hạn cứng: toạ độ ảnh con lưu bằng **byte không dấu** nên atlas tối đa
 **256×256** (Rồng Băng cũng 256×256) — 21 frame phải xếp vừa trong đó, vì vậy tool chỉ
