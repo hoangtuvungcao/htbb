@@ -71,6 +71,8 @@ public class TaoEffThuCuoi {
     private static final int SO_GOC = 5;
     /** Toa do anh con luu bang byte khong dau nen atlas toi da 256x256. */
     private static final int ATLAS = 256;
+    /** Ti le chieu cao ma con thu tho xuong duoi toa do nhan vat: xuong, len, ngang. */
+    private static final double[] TI_LE_THO_XUONG = {0.22, 0.19, 0.10};
 
     public static void main(final String[] args) throws Exception {
         if (args.length < 2) {
@@ -90,6 +92,9 @@ public class TaoEffThuCuoi {
         // trong mot hang dinh vao nhau (bong, trang tri cham nhau) nen do khe trong de
         // tach se ra sai so frame; chi dinh tay thi chia deu, chac an voi bang ke luoi.
         final int[] soCot = {0, 0, 0};
+        // Do dam vien: sprite goc trong game deu co vien toi nen doc ro o co nho, con
+        // anh AI thu nho thi vien mem, nhin nhoe. 0 = khong ve vien.
+        double damVien = 0.45;
         boolean lat = true;
         for (int i = 2; i < args.length; i++) {
             final String a = args[i];
@@ -103,6 +108,7 @@ public class TaoEffThuCuoi {
             else if (a.startsWith("--cotxuong=")) soCot[0] = Integer.parseInt(a.substring(11));
             else if (a.startsWith("--cotlen=")) soCot[1] = Integer.parseInt(a.substring(9));
             else if (a.startsWith("--cotngang=")) soCot[2] = Integer.parseInt(a.substring(11));
+            else if (a.startsWith("--vien=")) damVien = Double.parseDouble(a.substring(7));
             else if (a.equals("--khonglat")) lat = false;
         }
         if (hXuong < 0 || hLen < 0 || hNgang < 0) {
@@ -188,6 +194,7 @@ public class TaoEffThuCuoi {
                     // Anh goc nhin sang phai; client chi lat khi dir == RIGHT nen anh
                     // luu san phai nhin sang trai.
                     if (lat && nhom == 2) nho = latNgang(nho);
+                    if (damVien > 0) veVien(nho, damVien);
                     anh[nhom * SO_GOC + f] = nho;
                 }
             }
@@ -198,6 +205,13 @@ public class TaoEffThuCuoi {
                 System.out.println("Khong xep noi vao " + ATLAS + "x" + ATLAS);
                 return;
             }
+        }
+
+        int caoThuc = 0, rongThuc = 0;
+        for (final BufferedImage a : anh) {
+            if (a == null) continue;
+            caoThuc = Math.max(caoThuc, a.getHeight());
+            rongThuc = Math.max(rongThuc, a.getWidth());
         }
 
         final BufferedImage atlas = new BufferedImage(ATLAS, ATLAS, BufferedImage.TYPE_INT_ARGB);
@@ -233,7 +247,15 @@ public class TaoEffThuCuoi {
                 // client lat anh bang num = -(dx + w), chi dung -w/2 thi hai huong moi
                 // trung khop tuyet doi.
                 dos.writeShort(-anh[idAnh].getWidth() / 2);
-                dos.writeShort((int) Math.round((k[1] - mocY[nhom]) * tiLe));
+                // Day con thu phai THO XUONG DUOI toa do nhan vat, khong duoc dung ngay
+                // tai do. Client nang nhan vat len khi cuoi (dy_horse_tool, Rong Bang la
+                // -22 khi nhin truoc) nen duoi chan nhan vat phai con than va chan con
+                // thu, khong thi nhin nhu nguoi dung canh con thu chu khong phai ngoi
+                // tren. Do tren linh thu that: Rong Bang tho xuong +18 / +24 / +5 (nhin
+                // truoc / sau / ngang, tuc 27% / 28% / 7% chieu cao), heo bang +7 / +4 /
+                // +5 (17% / 10% / 14%). Lay khoang giua cua hai con.
+                dos.writeShort((int) Math.round((k[1] - mocY[nhom]) * tiLe)
+                        + (int) Math.round(TI_LE_THO_XUONG[nhom] * caoThuc));
                 dos.writeByte(idAnh);
                 dos.writeByte(0);   // flip: client tu lat khi di sang phai
                 dos.writeByte(0);   // onTop = 0 -> nam trong danh sach ve sau cung
@@ -252,16 +274,14 @@ public class TaoEffThuCuoi {
         try (FileOutputStream fo = new FileOutputStream(new File("map/d_effect/" + id))) {
             fo.write(bos.toByteArray());
         }
-        int caoThat = 0, rongThat = 0;
-        for (final BufferedImage a : anh) {
-            if (a == null) continue;
-            caoThat = Math.max(caoThat, a.getHeight());
-            rongThat = Math.max(rongThat, a.getWidth());
-        }
         System.out.println("Xong: d_effect/" + id + ".png (" + ATLAS + "x" + ATLAS + ", "
-                + anh.length + " anh con, to nhat " + rongThat + "x" + caoThat + ") + d_effect/"
+                + anh.length + " anh con, to nhat " + rongThuc + "x" + caoThuc + ") + d_effect/"
                 + id + " (" + bos.size() + " byte, 21 frame), ti le "
-                + String.format("%.3f", tiLe) + " -> id gui client = " + (8700 + id));
+                + String.format("%.3f", tiLe) + ", tho xuong "
+                + Math.round(TI_LE_THO_XUONG[0] * caoThuc) + "/"
+                + Math.round(TI_LE_THO_XUONG[1] * caoThuc) + "/"
+                + Math.round(TI_LE_THO_XUONG[2] * caoThuc)
+                + " -> id gui client = " + (8700 + id));
     }
 
     /**
@@ -341,6 +361,36 @@ public class TaoEffThuCuoi {
         return rieng;
     }
 
+    /**
+     * Lam toi cac diem nam o ria hinh de tao vien, khong lam hinh to ra.
+     *
+     * Sprite ve tay trong game (Rong Bang, heo bang...) deu co vien toi nen o co nho van
+     * doc ro hinh. Anh AI thu nho tu 150px xuong 56px thi ria nhat dan ra nen nhin bet
+     * vao nen. Chi lam toi diem dac nao co canh giap nen la du.
+     */
+    private static void veVien(final BufferedImage a, final double dam) {
+        final int w = a.getWidth(), h = a.getHeight();
+        final int[] goc = a.getRGB(0, 0, w, h, null, 0, w);
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                final int p = goc[y * w + x];
+                if (((p >>> 24) & 0xFF) < 200) continue;
+                boolean giapNen = false;
+                for (int k = 0; k < 4 && !giapNen; k++) {
+                    final int nx = x + (k == 0 ? -1 : k == 1 ? 1 : 0);
+                    final int ny = y + (k == 2 ? -1 : k == 3 ? 1 : 0);
+                    giapNen = nx < 0 || ny < 0 || nx >= w || ny >= h
+                            || ((goc[ny * w + nx] >>> 24) & 0xFF) < 40;
+                }
+                if (!giapNen) continue;
+                final int r = (int) (((p >> 16) & 0xFF) * dam);
+                final int g = (int) (((p >> 8) & 0xFF) * dam);
+                final int b = (int) ((p & 0xFF) * dam);
+                a.setRGB(x, y, (p & 0xFF000000) | (r << 16) | (g << 8) | b);
+            }
+        }
+    }
+
     /** Lat anh theo chieu ngang. */
     private static BufferedImage latNgang(final BufferedImage a) {
         final BufferedImage r = new BufferedImage(a.getWidth(), a.getHeight(),
@@ -396,11 +446,14 @@ public class TaoEffThuCuoi {
     }
 
     /**
-     * Xep cac anh vao atlas ATLAS x ATLAS theo kieu ke tang: cao xuong thap dan, moi
-     * tang cao bang anh dau tang. Tra ve {x, y, w, h} cua tung anh, null neu khong vua.
+     * Xep cac anh vao atlas ATLAS x ATLAS theo duong chan troi (skyline): moi cot giu
+     * do cao dang dung, dat anh vao cho nao ha thap nhat. Tra ve {x, y, w, h} cua tung
+     * anh, null neu khong vua.
      *
-     * Xep kieu nay thay cho luoi o deu nhau vi frame nhin ngang rong hon han frame
-     * nhin truoc; chia o deu nhau se bo trong rat nhieu cho, ep phai thu nho con thu.
+     * Khong dung luoi o deu vi frame nhin ngang rong hon han frame nhin truoc, chia deu
+     * se bo trong rat nhieu cho. Cung khong dung ke tang vi 15 anh gan bang chieu cao
+     * nhau thi chi ke duoc 4 tang, du duoi tang van con khoang trong. Xep kieu chan troi
+     * nhet duoc anh thap vao cho trong do -> con thu to hon dang ke voi cung mot atlas.
      */
     private static int[][] xepAtlas(final BufferedImage[] anh) {
         final Integer[] thuTu = new Integer[anh.length];
@@ -410,8 +463,8 @@ public class TaoEffThuCuoi {
             final int hb = anh[b] == null ? 0 : anh[b].getHeight();
             return hb - ha;
         });
+        final int[] chanTroi = new int[ATLAS];
         final int[][] o = new int[anh.length][];
-        int x = 0, y = 0, caoTang = 0;
         for (final int i : thuTu) {
             if (anh[i] == null) {
                 o[i] = new int[]{0, 0, 1, 1};
@@ -419,15 +472,18 @@ public class TaoEffThuCuoi {
             }
             final int w = anh[i].getWidth(), h = anh[i].getHeight();
             if (w > ATLAS) return null;
-            if (x + w > ATLAS) {
-                x = 0;
-                y += caoTang;
-                caoTang = 0;
+            int datX = -1, datY = Integer.MAX_VALUE;
+            for (int x = 0; x + w <= ATLAS; x++) {
+                int y = 0;
+                for (int k = x; k < x + w; k++) y = Math.max(y, chanTroi[k]);
+                if (y < datY) {
+                    datY = y;
+                    datX = x;
+                }
             }
-            if (y + h > ATLAS) return null;
-            o[i] = new int[]{x, y, w, h};
-            x += w;
-            caoTang = Math.max(caoTang, h);
+            if (datX < 0 || datY + h > ATLAS) return null;
+            o[i] = new int[]{datX, datY, w, h};
+            for (int k = datX; k < datX + w; k++) chanTroi[k] = datY + h;
         }
         return o;
     }
