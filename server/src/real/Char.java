@@ -17074,24 +17074,19 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return a;
         }
         
-        // Xử lý phi phong
+        // Xu ly phi phong.
+        //
+        // Dieu kien truoc day bi DAO: phi phong dac biet dang mac chi duoc ve trong nhanh
+        // else cua "!isTatPhiPhong()", tuc CHI HIEN KHI NGUOI CHOI DA TAT phi phong. Mac
+        // dinh isTatPhiPhong = false (dang bat) va cot isPP trong DB cung luu the, nen
+        // nguoi thuong mac Khong Tuoc / Huyen Vu / Bong Da / Tim thi khong hien gi ca, con
+        // nguoi VIP thi chi thay hao quang VIP. Nhan chu thich cu ("khi da tat phi phong
+        // VIP") thi nguoi viet hieu cong tac nay la tat rieng hao quang VIP, nhung thuc te
+        // no la cong tac tat/bat phi phong noi chung (menu bao "Da tat phi phong").
+        //
+        // Dung phai la: bat thi ve, tat thi khong ve gi. Phi phong dac biet dang mac uu
+        // tien hon hao quang VIP — no la do nguoi choi so huu.
         if (!this.isTatPhiPhong()) {
-            // Xử lý VIP phi phong
-            if (this.vip == 1) {
-                a[0] = EffectBuff.EFF_PHI_PHONG_VIP3;
-                a[2] = 1;
-                a[3] = 3;
-            } else if (this.vip == 2) {
-                a[0] = EffectBuff.EFF_PHI_PHONG_VIP2;
-                a[2] = 1;
-                a[3] = 3;
-            } else if (this.vip == 3) {
-                a[0] = EffectBuff.EFF_PHI_PHONG_VIP1;
-                a[2] = 1;
-                a[3] = 3;
-            }
-        } else {
-            // Xử lý các loại phi phong khác khi đã tắt phi phong VIP
             if (wItems[index] != null) {
                 if (wItems[index].isPhiPhongKhongTuoc()) {
                     a[0] = EffectBuff.EFF_PHI_PHONG_KHONG_TUOC;
@@ -17105,12 +17100,31 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     a[3] = 3;
                 } else if (wItems[index].isPhiPhongBongDa()) {
                     a[0] = EffectBuff.EFF_PHI_PHONG_BONG_DA;
-                    a[1] = Char.ID_BIG_AVT_PP_HUYEN_VU;
+                    // Truoc day dat ID_BIG_AVT_PP_HUYEN_VU (625) — chep sot tu nhanh tren.
+                    // Hang so ID_BIG_AVT_PP_BONG_DA (711) co san nhung khong cho nao doc,
+                    // nen ao bong da mac vao ra hinh phi phong Huyen Vu.
+                    a[1] = Char.ID_BIG_AVT_PP_BONG_DA;
                     a[2] = 1;
                     a[3] = 3;
                 } else if (wItems[index].isPhiPhongTim()) {
                     a[0] = 8937; // EFFECT
                     a[1] = 714; // AVATAR
+                    a[2] = 1;
+                    a[3] = 3;
+                }
+            }
+            // Khong mac phi phong dac biet nao thi moi den hao quang VIP.
+            if (a[0] == -1) {
+                if (this.vip == 1) {
+                    a[0] = EffectBuff.EFF_PHI_PHONG_VIP3;
+                    a[2] = 1;
+                    a[3] = 3;
+                } else if (this.vip == 2) {
+                    a[0] = EffectBuff.EFF_PHI_PHONG_VIP2;
+                    a[2] = 1;
+                    a[3] = 3;
+                } else if (this.vip == 3) {
+                    a[0] = EffectBuff.EFF_PHI_PHONG_VIP1;
                     a[2] = 1;
                     a[3] = 3;
                 }
