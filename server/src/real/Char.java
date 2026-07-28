@@ -2912,6 +2912,11 @@ public class Char extends LiveActor {
             this.khangdoclan += this.itemHoaKyLan.otherAtt[26];
             this.khanglualan += this.itemHoaKyLan.otherAtt[31];
         }
+        // Hut mau cua mat na. Vong lap tren chi duyet wItems (o trang bi) nen mat na —
+        // nam trong wModel — khong bao gio duoc cong, du tooltip van ghi "Hút máu: 10".
+        if (this.wModel != null && this.wModel.matNa != null) {
+            this.hutmau += this.wModel.matNa.otherAtt[16];
+        }
         int defThuma = 0;
         int defThuvat = 0;
         int defThumaP = 0;
@@ -3044,9 +3049,10 @@ public class Char extends LiveActor {
             upvP += this.wModel.getDefend() + upfullset + defPet;
             upmP += this.wModel.getDefend() + upfullset + defPet;
             this.baokich += (short) this.wModel.getbaoKich();
-            if (this.baokich > 0) {
-                this.baokich += (short) this.wModel.getbaoKichMatna();
-            }
+            // Truoc day dong duoi nam trong "if (this.baokich > 0)", nghia la bao kich cua
+            // mat na / canh chi duoc cong khi nhan vat DA co bao kich tu nguon khac. Ai chi
+            // deo moi mat na thi 3% ghi tren tooltip bi bo di. Bo chot do.
+            this.baokich += (short) this.wModel.getbaoKichMatna();
         } else {
             this.defend_magic += this.defend_magic * (upfullset + defPet) / 100;
             this.defend_physic += this.defend_physic * (upfullset + defPet) / 100;
@@ -4189,6 +4195,17 @@ public int applyRongLonReleaseTo(int baseDamage) {
                             def = 0;
                         }
                     }
+                    // ---- MAT NA: bo qua tc ma / bo qua tc vat ----
+                    // Cung y nghia voi "xuyen thu" cua than khi ngay tren, nen dung chung
+                    // cach chon loai giap: lop ma phap an dong "Bo qua tc ma" (mat na cao),
+                    // lop vat ly an dong "Bo qua tc vat" (mat na tho).
+                    final int mnBoQuaThu = this.getPcBoQuaThuMatNa();
+                    if (mnBoQuaThu > 0 && def > 0) {
+                        def -= def * mnBoQuaThu / 100;
+                        if (def < 0) {
+                            def = 0;
+                        }
+                    }
                     // ---- SKIN THU NUOI: xuyen giap (Xich Duong) ----
                     // Cung cho nay nen ap dung cho ca PvP (actor.cat == 0) va PvE.
                     final int skXg = SkinThuNuoi.pcXuyenGiap(this);
@@ -4928,6 +4945,63 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     /**
+     * "Bo qua tc ma" / "Bo qua tc vat" cua mat na, don vi phan tram giap muc tieu.
+     * Mat na cao ghi otherAtt[0] (tc ma), mat na tho ghi otherAtt[1] (tc vat).
+     */
+    public int getPcBoQuaThuMatNa() {
+        if (this.wModel == null || this.wModel.matNa == null) {
+            return 0;
+        }
+        return this.isCharMagic() ? this.wModel.matNa.otherAtt[0] : this.wModel.matNa.otherAtt[1];
+    }
+
+    /** "Chuyen sat thuong thanh hp" cua mat na, phan tram sat thuong gay ra. */
+    public int getPcChuyenStThanhHpMatNa() {
+        if (this.wModel == null || this.wModel.matNa == null) {
+            return 0;
+        }
+        return this.wModel.matNa.otherAtt[68];
+    }
+
+    /**
+     * "Hoa giai ky nang pet" cua mat na muc tieu: tra ve true neu don danh nay bi vo
+     * hieu ky nang pet cua ke tan cong. Trong PvP ky nang pet duy nhat cong thang vao
+     * mot don danh la Lien kich (Pet.ALL_SKILL[11] — tang % sat thuong chi mang), cac
+     * ky nang pet con lai deu la chi so cong san vao chu nhan.
+     */
+    public static boolean hoaGiaiKyNangPet(final LiveActor target) {
+        if (!(target instanceof Char)) {
+            return false;
+        }
+        final Char c = (Char) target;
+        if (c.wModel == null || c.wModel.matNa == null) {
+            return false;
+        }
+        final int pc = c.wModel.matNa.otherAtt[71];
+        return pc > 0 && Map.r.nextInt(100) < pc;
+    }
+
+    /** "Khang bao kich" cua mat na muc tieu, cung don vi phan nghin voi baokich. */
+    public int getKhangBaoKichMatNa() {
+        if (this.wModel == null || this.wModel.matNa == null) {
+            return 0;
+        }
+        return this.wModel.matNa.otherAtt[15];
+    }
+
+    /**
+     * Bao kich co tinh den "Khang bao kich" tren mat na cua muc tieu. Dung ban nay o
+     * cac duong danh nguoi; danh quai thi quai khong co mat na nen giu ban khong doi so.
+     */
+    public boolean haveBaoKich(final LiveActor target) {
+        int bk = this.baokich;
+        if (target instanceof Char) {
+            bk -= ((Char) target).getKhangBaoKichMatNa();
+        }
+        return bk > 0 && Map.r.nextInt(1000) < bk;
+    }
+
+    /**
      * Khang ngu hanh cua thu cuoi dang cuoi, doi ra PHAN NGHIN de cong chung don vi
      * voi khang he cua than khi (xem getTkKhangTheoClass va tkGiamSatThuong).
      */
@@ -5020,6 +5094,19 @@ public int applyRongLonReleaseTo(int baseDamage) {
             }
             if (finalDame < 0) {
                 finalDame = 0;
+            }
+
+            // ---------- MAT NA: chuyen sat thuong thanh hp ----------
+            // Khong nam trong khoi than khi ben duoi vi mat na doc lap voi than khi.
+            final int pcMauMatNa = getPcChuyenStThanhHpMatNa();
+            if (pcMauMatNa > 0 && finalDame > 0 && this.hp < this.maxhp) {
+                final int hoiMatNa = (int) ((long) finalDame * pcMauMatNa / 100L);
+                if (hoiMatNa > 0) {
+                    this.hp += hoiMatNa;
+                    if (this.hp > this.maxhp) {
+                        this.hp = this.maxhp;
+                    }
+                }
             }
 
             if (this.itemThanKhi != null) {

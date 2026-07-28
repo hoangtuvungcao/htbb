@@ -7287,14 +7287,16 @@ public class Map implements Runnable {
             damage = p.subDam(c, damage);
             damage *= CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
             boolean critSv = p.havecrit();
-            boolean baokich = p.haveBaoKich();
+            // Ban co tham so: tru "Khang bao kich" tren mat na cua muc tieu.
+            boolean baokich = p.haveBaoKich(c);
             if (baokich) {
                 damage = p.tkNhanChiMang(damage, 4);
                 effect = 4;
             } else if (critSv) {
                 damage = p.tkNhanChiMang(damage, 2);
                 effect = 2;
-                if (p.petUsing != null) {
+                // Mat na cua muc tieu co the hoa giai ky nang pet (lien kich) cua ke danh.
+                if (p.petUsing != null && !Char.hoaGiaiKyNangPet(c)) {
                     long pcLienKich = (long) p.petUsing.getLienKich();
                     damage = (int) ((long) damage + (long) damage * pcLienKich / 100L);
                 }
