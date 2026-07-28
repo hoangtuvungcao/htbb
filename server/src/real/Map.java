@@ -1225,9 +1225,7 @@ public class Map implements Runnable {
         HASH_ALL_CHAR_HS = new Hashtable();
         sendDynamicObj = true;
         hashCodeValue = 24;
-        // Tang moi lan doi bo anh thu cuoi. 70 da tung gui ra voi goi bi vo (do dai
-        // tran writeShort) nen nhay sang 71 de client nao con giu cache 70 cung tai lai.
-        versionPotion = 71;
+        versionPotion = 69;
         versionGem = 15;
         MAX_CLAN = 1342;
 
@@ -34610,11 +34608,6 @@ public class Map implements Runnable {
     private void doSendIconPotion(Char s, int hascode, int type) {
         try {
             if (type == 2) {
-                // Log chan doan skin thu cuoi. Day moi la duong client dung khi da vao
-                // game (OtherHandle.doSendIconPotion la duong truoc khi vao).
-                System.out.println("XIN ANH THU " + (s == null ? "?" : s.charname)
-                        + " ver_client=" + hascode + " ver_server=" + versionPotion
-                        + (versionPotion != hascode ? " -> GUI LAI" : " -> khong gui"));
                 if (versionPotion != hascode) {
                     Message msg = new Message(-8);
                     msg.dos.writeByte(2);

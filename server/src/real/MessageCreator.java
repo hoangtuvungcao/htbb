@@ -1498,12 +1498,6 @@ public class MessageCreator {
                     }
                 }
             
-                // Skin thu cuoi: anh skin dung theo preset hinh hoc 5 nen phai gui
-                // userHorse = 5, khong thi client lay sai toa do frame va ve be het.
-                final int idAnhSkin = SkinThuNuoi.idAnhThuCuoi(ch);
-                if (ch.animalRide != null && idAnhSkin >= 0) {
-                    userHorse = (byte) SkinThuNuoi.PRESET_HINH_HOC;
-                }
                 m.dos.writeByte(userHorse);
                 byte idImgHorse = ch.idImgHorse;
                 byte fly = 0;
@@ -1527,14 +1521,6 @@ public class MessageCreator {
                     } else if (ch.animalRide.isPhuongHoangTho()) {
                         fly = 1;
                         idImgHorse = 20;
-                    }
-                    // Skin thang lai sau cung: no phai de len moi truong hop rieng o tren.
-                    // fly = 1 vi preset 5 la bo cua thu BAY: gui fly = 0 voi preset nay thi client
-                    // ve thieu phan than tren nhan vat (mat dau), va chi chay 3 frame trong
-                    // khi anh co 4 frame moi huong.
-                    if (idAnhSkin >= 0) {
-                        idImgHorse = (byte) idAnhSkin;
-                        fly = 1;
                     }
                 }
                 m.dos.writeByte(fly);
@@ -1568,6 +1554,13 @@ public class MessageCreator {
             if (ch.animalRide != null && !ch.isMasterClanAndHaveTown()) {
                 idThutool = ch.animalRide.getIdImageTool();
                 indexdxy = ch.animalRide.getIndexDxy();
+                // Skin thu cuoi de len day: day chinh la duong dang ve Rong Bang,
+                // Poro, Lan... va hoa hinh. Xem SkinThuNuoi.idEffThuCuoi.
+                final int idEffSkin = SkinThuNuoi.idEffThuCuoi(ch);
+                if (idEffSkin > 0) {
+                    idThutool = idEffSkin;
+                    indexdxy = SkinThuNuoi.INDEX_DXY;
+                }
             }
             m.dos.writeShort(idThutool);
             m.dos.writeByte(indexdxy);
@@ -1658,19 +1651,12 @@ public class MessageCreator {
             m.dos.writeShort(Char.clampShort(ch.defend_magic + ch.getBuffDefCB(1, true)));
             m.dos.writeByte(ch.lvDetail.lv);
             m.dos.writeByte(ch.he);
-            // Skin thu cuoi: doi ca preset hinh hoc va anh, giong cho tren.
-            final int idAnhSkin2 = SkinThuNuoi.idAnhThuCuoi(ch);
-            m.dos.writeByte((ch.animalRide != null && idAnhSkin2 >= 0)
-                    ? (byte) SkinThuNuoi.PRESET_HINH_HOC : ch.rideHorse);
+            m.dos.writeByte(ch.rideHorse);
             byte idImgHorse = ch.idImgHorse;
             byte fly = 0;
             if (ch.animalRide != null) {
                 fly = Animal.typeAnimal[ch.animalRide.idImg];
                 idImgHorse = Animal.idImgPaint[ch.animalRide.idImg];
-                if (idAnhSkin2 >= 0) {
-                    idImgHorse = (byte) idAnhSkin2;
-                    fly = 1;
-                }
             }
             m.dos.writeByte(fly);
             m.dos.writeByte(idImgHorse);
@@ -1770,23 +1756,14 @@ public class MessageCreator {
         
             if (p.animalRide != null) 
             {
-                if (p.animalRide.idImg == Animal.PHUONG_HOANG_THO || p.animalRide.idImg == Animal.PHUONG_HOANG_MOC || p.animalRide.idImg == Animal.PHUONG_HOANG_7MAU || p.animalRide.idImg == Animal.PHUONG_HOANG_KIM)
+                if (p.animalRide.idImg == Animal.PHUONG_HOANG_THO || p.animalRide.idImg == Animal.PHUONG_HOANG_MOC || p.animalRide.idImg == Animal.PHUONG_HOANG_7MAU || p.animalRide.idImg == Animal.PHUONG_HOANG_KIM) 
                 {
                     userHorse = 6;
                 }
             }
-
-            // Skin thu cuoi. Day la goi thong tin nhan vat CUA CHINH MINH (message 3),
-            // client doc vao mainChar.useHorse / anmFly / idImgHorse — tuc chinh con thu
-            // minh dang cuoi tren ban do. Hai goi kia (createCharInfo, createCharInfoNpc)
-            // chi lo nguoi choi khac, nen thieu cho nay la tu minh khong thay skin.
-            final int idAnhSkin3 = SkinThuNuoi.idAnhThuCuoi(p);
-            if (p.animalRide != null && idAnhSkin3 >= 0) {
-                userHorse = SkinThuNuoi.PRESET_HINH_HOC;
-            }
-
+        
             m.dos.writeByte(userHorse);
-
+        
             byte idImgHorse = p.idImgHorse;
             byte fly = 0;
             if (p.animalRide != null) 
@@ -1819,25 +1796,13 @@ public class MessageCreator {
                     fly = 1;
                     idImgHorse = 19;
                 } 
-                else if (p.animalRide.isPhuongHoangTho())
+                else if (p.animalRide.isPhuongHoangTho()) 
                 {
                     fly = 1;
                     idImgHorse = 20;
                 }
-                // Skin de len tat ca truong hop rieng o tren.
-                if (idAnhSkin3 >= 0) {
-                    idImgHorse = (byte) idAnhSkin3;
-                    fly = 1;
-                }
             }
-
-            // Log chan doan skin thu cuoi.
-            if (p.isAdmin || SkinThuNuoi.hopLe(p.idSkinThuNuoi)) {
-                System.out.println("HORSE " + p.charname + " skin=" + p.idSkinThuNuoi
-                        + " userHorse=" + userHorse + " fly=" + fly
-                        + " idImgHorse=" + idImgHorse
-                        + " thu=" + (p.animalRide == null ? -1 : p.animalRide.idImg));
-            }
+        
             m.dos.writeByte(fly);
             m.dos.writeByte(idImgHorse);
         }
@@ -1870,10 +1835,16 @@ public class MessageCreator {
 
         int idThutool = -1;
         int indexdxy = -1;
-        if (p.animalRide != null && !p.isMasterClanAndHaveTown()) 
+        if (p.animalRide != null && !p.isMasterClanAndHaveTown())
         {
             idThutool = p.animalRide.getIdImageTool();
             indexdxy = p.animalRide.getIndexDxy();
+            // Skin thu cuoi — goi thong tin cua chinh nhan vat minh.
+            final int idEffSkin = SkinThuNuoi.idEffThuCuoi(p);
+            if (idEffSkin > 0) {
+                idThutool = idEffSkin;
+                indexdxy = SkinThuNuoi.INDEX_DXY;
+            }
         }
         m.dos.writeShort(idThutool);
         m.dos.writeByte(indexdxy);

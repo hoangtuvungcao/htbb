@@ -120,24 +120,25 @@ public class SkinThuNuoi {
     /** So frame cua sprite tuong ung. -1 = giu so frame goc cua thu cuoi. */
     public static final int[] TONG_FRAME = {5, 6, 5, 5, 8};
 
-    // ---- Anh con thu CHAY TREN BAN DO ----
-    // Client ve con thu chay tren map bang GameData.imgHorse[idImgHorse], danh sach do
-    // nap tu OtherHandle.loadImgHorse. Muc 0 co 4 palette nen chiem chi so 0..3, cac
-    // muc 1..18 moi muc mot anh -> chi so 4..21. Nam anh skin them vao o muc 19..23
-    // nen chiem chi so 22..26.
+    // ---- Anh con thu CHAY TREN BAN DO (duong dung) ----
+    // Rong Bang, Poro, Lan, Su Tu... va ca hoa hinh deu duoc ve bang he "thu cuoi
+    // tool": Animal.getIdImageTool() tra ve id 8700+N, server gui trong goi thong tin
+    // nhan vat, client goi Char.getPartEff(id) -> DataSkillEff. Du lieu frame da duoc
+    // gui san o goi login (message 26, danh sach id_eff_tool_ngu_long da co san
+    // 187..191) con anh thi client xin theo id luc can. Vi vay he nay KHONG phu thuoc
+    // bo anh cache — khac han duong imgHorse ben duoi.
     //
-    // Bang toa do frame nam o CLIENT (Char.fHorse/sizeHorse/hHorse, 8 preset) nen anh
-    // skin phai dung dung mot preset — tools/TaoThuCuoiSkin.java dung theo preset 5
-    // (cao 45, huong ngang 60px). Vi vay khi mang skin phai gui userHorse = 5.
-    public static final int PRESET_HINH_HOC = 5;
-    public static final int[] ID_ANH_THU_CUOI = {22, 23, 24, 25, 26};
+    // Sprite dung bang tools/TaoEffThuCuoi.java, ghi vao map/d_effect/187..191.
+    public static final int[] ID_EFF_THU_CUOI = {8887, 8888, 8889, 8890, 8891};
+    /** Bang do lech ve cua client; 4 la bo dung cho hoa hinh, vua voi sprite thay than. */
+    public static final int INDEX_DXY = 4;
 
-    /** Chi so anh thu cuoi cua skin dang mang, -1 = khong mang skin. */
-    public static int idAnhThuCuoi(final Char p) {
+    /** Id sprite thu cuoi cua skin dang mang, -1 = khong mang skin. */
+    public static int idEffThuCuoi(final Char p) {
         if (p == null || !hopLe(p.idSkinThuNuoi)) {
             return -1;
         }
-        return ID_ANH_THU_CUOI[p.idSkinThuNuoi];
+        return ID_EFF_THU_CUOI[p.idSkinThuNuoi];
     }
 
     /** Id anh can gui xuong client cho nhan vat nay, -1 = giu nguyen. */
