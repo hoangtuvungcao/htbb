@@ -51,7 +51,7 @@ public class CatSpriteSheet {
 
         String hang = "1";
         int cao = 32, boTrai = 0, boTren = 0, nguong = 48, kheTay = -1, soFrameTay = -1;
-        boolean chayThu = false, raPet = false;
+        boolean chayThu = false, raPet = false, raAvt = false;
         for (int i = 2; i < args.length; i++) {
             final String a = args[i];
             if (a.startsWith("--hang=")) hang = a.substring(7);
@@ -63,6 +63,7 @@ public class CatSpriteSheet {
             else if (a.startsWith("--soframe=")) soFrameTay = Integer.parseInt(a.substring(10));
             else if (a.equals("--thu")) chayThu = true;
             else if (a.equals("--pet")) raPet = true;
+            else if (a.equals("--avt")) raAvt = true;
         }
 
         final BufferedImage goc = ImageIO.read(sheet);
@@ -143,9 +144,9 @@ public class CatSpriteSheet {
         }
         g.dispose();
 
-        final File png = new File((raPet ? "map/pet/" : "map/d_effect/") + idDich + ".png");
+        final File png = new File((raAvt ? "map/avtathu/" : raPet ? "map/pet/" : "map/d_effect/") + idDich + ".png");
         ImageIO.write(dai, "png", png);
-        if (raPet) {
+        if (raPet || raAvt) {
             // Hinh pet KHONG can file data: client tu chia dai theo so frame
             // (AnimalMove.paint: hImg = anh.cao / sumFrame, ve can giua o day).
             System.out.println("Xong: " + png);

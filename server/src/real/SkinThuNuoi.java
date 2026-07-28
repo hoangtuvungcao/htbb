@@ -1,7 +1,7 @@
 package real;
 
 /**
- * SKIN THU NUOI THEO NGU HANH
+ * SKIN THU CUOI THEO NGU HANH (ten cu: skin thu nuoi)
  *
  * 5 skin, moi skin cho chu nhan mot bo chi so cong thang + mot buff bi dong
  * co ti le kich hoat va thoi gian hoi (cooldown):
@@ -98,31 +98,26 @@ public class SkinThuNuoi {
     // ============================================================
     //                    HINH ANH CUA SKIN
     // ============================================================
-    // Hinh con thu ma client ve duoc lay tu CHINH SERVER: client xin anh theo id,
-    // server tra ve tu mang imgDynamicEffect (nap tu thu muc map/d_effect/).
-    // Xem DataGame.sendByteImg: idImg 8700..8999 -> imgDynamicEffect[idImg - 8700]
-    // va DataGame nap tu "map/d_effect/<n>.png" (anh) + "map/d_effect/<n>" (data frame).
-    // => THEM SKIN MOI KHONG CAN SUA CLIENT, chi can:
-    //      1. Dat file anh   map/d_effect/<id moi>.png
-    //      2. Dat file data  map/d_effect/<id moi>        (data frame, cung format cac file co san)
-    //      3. Dien id do vao ID_IMG duoi day + so frame vao TONG_FRAME
+    // Skin doi hinh THU CUOI (thu dang cuoi), khong phai thu nuoi/pet.
+    // Client ve con thu cuoi hoan toan theo hai thu server gui trong
+    // MessageCreator.createAnimalWearingMessage: mot byte so frame + toan bo byte
+    // anh png. No khong dung id thu cuoi de tra cuu gi ca, nen chi can thay hai
+    // thu do la doi duoc hinh — khong phai sua client.
     //
-    // -1 = khong doi hinh (giu nguyen hinh pet dang dung). Mac dinh de -1 cho an toan:
-    // neu dien id chua co file hoac so frame sai thi client se ve sai / khong ve duoc.
     // Hinh cua 5 skin, cat tu bang sprite trong map/sprite_goc/ bang
-    // tools/CatSpriteSheet.java, dat o map/pet/21..25.png (id 0..19 la hinh pet
-    // goc cua game, id cao nhat dang dung la 19 nen 21..25 con trong).
+    // tools/CatSpriteSheet.java, dat o map/avtathu/21..25.png (0..20 la hinh thu
+    // cuoi goc cua game nen 21..25 con trong).
     //
-    //   0 Phuc Thu   -> pet/22.png, 5 frame
-    //   1 Gau Truc   -> pet/21.png, 6 frame
-    //   2 Tien Loc   -> pet/24.png, 5 frame
-    //   3 Xich Duong -> pet/25.png, 5 frame
-    //   4 Chien Lang -> pet/23.png, 8 frame
+    //   0 Phuc Thu   -> avtathu/21.png, 5 frame
+    //   1 Gau Truc   -> avtathu/22.png, 6 frame
+    //   2 Tien Loc   -> avtathu/23.png, 5 frame
+    //   3 Xich Duong -> avtathu/24.png, 5 frame
+    //   4 Chien Lang -> avtathu/25.png, 8 frame
     //
-    // Doi hinh pet phai di kem DataGame.nPet >= 26, khong thi server khong nap anh
-    // va client se khong ve duoc gi.
-    public static final int[] ID_IMG = {22, 21, 24, 25, 23};
-    /** So frame cua sprite tuong ung. -1 = giu so frame goc cua pet. */
+    // Phai di kem DataGame nap map/avtathu/0..25 (truoc day chi nap 0..20), khong
+    // thi imgAvtAnimal khong co phan tu 21..25 va server nem loi khi gui.
+    public static final int[] ID_IMG = {21, 22, 23, 24, 25};
+    /** So frame cua sprite tuong ung. -1 = giu so frame goc cua thu cuoi. */
     public static final int[] TONG_FRAME = {5, 6, 5, 5, 8};
 
     /** Id anh can gui xuong client cho nhan vat nay, -1 = giu nguyen. */
@@ -582,11 +577,11 @@ public class SkinThuNuoi {
             data.Database.instance.saveSkinThuNuoi(p);
             p.calculateAttrib();
             p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
-            // Hinh con thu nam trong goi "char wearing" chu khong phai main char info,
-            // nen doi skin ma chi gui main char info thi client van ve hinh pet cu cho
-            // toi khi thoat vao lai. Gui ca cho minh va nguoi xung quanh.
-            p.sendMessage(MessageCreator.createCharWearingMessage(p, p));
-            p.sendToNearPlayer(MessageCreator.createCharWearingMessage(p, p));
+            // Hinh con thu cuoi nam trong goi createAnimalWearingMessage chu khong
+            // phai main char info, nen doi skin ma chi gui main char info thi client
+            // van ve hinh cu cho toi khi thoat vao lai.
+            p.sendMessage(MessageCreator.createAnimalWearingMessage(p, p));
+            p.sendToNearPlayer(MessageCreator.createAnimalWearingMessage(p, p));
             p.sendMessage(MessageCreator.createServerAlertMessage(thongBao, ""));
         } catch (final Exception e) {
             e.printStackTrace();

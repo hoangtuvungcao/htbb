@@ -517,9 +517,10 @@ public class DataGame {
                 }
             }
 
-            imgAvtAnimal = new byte[21][];
+            // 0..20 la thu cuoi goc, 21..25 la hinh skin thu cuoi (SkinThuNuoi.ID_IMG).
+            imgAvtAnimal = new byte[26][];
 
-            for (j = 0; j < 21; ++j) {
+            for (j = 0; j < 26; ++j) {
                 try {
                     fis = new FileInputStream("map/avtathu/" + j + ".png");
                     dis = new DataInputStream(fis);
@@ -541,10 +542,7 @@ public class DataGame {
                 }
             }
 
-            // 0..19 la hinh pet goc cua game (pet idImg cao nhat dang dung la 19).
-            // Nang len 30 de nap them hinh skin thu nuoi dat o id 21..25,
-            // xem SkinThuNuoi.ID_IMG.
-            byte nPet = 30;
+            byte nPet = 20;
             imgPet = new byte[nPet][];
 
             for (j = 0; j < nPet; ++j) {
