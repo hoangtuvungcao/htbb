@@ -939,11 +939,22 @@ Ví dụ thực tế: mục "Hỗ Trợ" của NPC tổng tiêu đầu (-50) đ�
      và lúc đổi skin. Gói `-51` khi tới client chỉ làm một việc: `imageIcon.img = ảnh mới`.
      An toàn khi client chưa có mục nào cho id đó (nó ném NullReference nhưng cả `onMessage`
      nằm trong try/catch chỉ ghi log, rồi client tự xin ảnh như thường).
-   - **Dữ liệu**: `tools/TaoEffThuCuoi.java` xếp sprite trên **lưới cố định 4×4 ô 64×64**,
-     `dx = -32`, `dy = -64 + {10, 8, 4}` — toàn hằng số. Nhờ vậy file dữ liệu frame **giống
+   - **Dữ liệu**: `tools/TaoEffThuCuoi.java` xếp sprite trên **lưới cố định 4×4 ô 64×64**
+     (15 ô thân + ô thứ 16 là bóng đổ), mỗi frame 2 phần với `dx = -32`, `dy = -32` cho
+     bóng và `-64 + {10, 8, 4}` cho thân — toàn hằng số. Nhờ vậy file dữ liệu frame **giống
      nhau từng byte** giữa cả 5 skin và giữa mọi lần làm lại sprite, nên dữ liệu cũ còn sót
      cũng vô hại. Kiểm tra bằng `md5sum map/d_effect/159 197 198 199 212` — phải trùng hết.
-     Đổi `O`, `THO_XUONG` hay số ô là **phá vỡ tính chất này**, lúc đó lại phải tắt app.
+     Đổi `O`, `O_BONG`, `THO_XUONG`, số ô hay số phần mỗi frame là **phá vỡ tính chất này**,
+     lúc đó lại phải tắt app một lần.
+
+5. **Skin thú nhìn không giống linh thú thật dù hoạt ảnh đúng.** Hai chi tiết mà linh thú
+   vẽ tay nào cũng có, đọc ra từ `d_effect/234` (Rồng Băng) và `236` (heo băng):
+   - **Bóng đổ là một phần riêng**, đặt cố định ngay toạ độ nhân vật và **giữ nguyên suốt
+     21 frame** (Rồng Băng `img0` 27×14; heo băng `img0` ở `dy=-5` trong cả 21 frame).
+     Thiếu bóng thì con thú nhìn như dán lên chứ không đứng trên đất.
+   - **Thân nhún 1 điểm so le từng frame** — heo băng `dy = -35, -34, -35, -34, -35`. Đó là
+     toàn bộ "cách di chuyển" của nó. Bảng sprite AI nhiều khi vẽ các frame đúng một độ
+     cao, lúc đó phải tự thêm nhịp (tool tự đo sau khi thu nhỏ rồi bù).
 
    Danh sách `id_eff_tool_ngu_long` đang có **254 id** mà client đọc số lượng bằng
    `readUnsignedByte` → **trần là 255**, chỉ còn 1 chỗ. Hết chỗ thì phải bỏ id không dùng

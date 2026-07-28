@@ -71,9 +71,14 @@ public class TaoEffThuCuoi {
     private static final int SO_GOC = 5;
     /** Toa do anh con luu bang byte khong dau nen atlas toi da 256x256. */
     private static final int ATLAS = 256;
-    /** Canh mot o trong luoi co dinh, 4 cot x 4 dong = 256x256, du cho 15 anh. */
+    /**
+     * Canh mot o trong luoi co dinh, 4 cot x 4 dong = 256x256: 15 o cho than con thu,
+     * o thu 16 cho bong do.
+     */
     private static final int O = 64;
     private static final int SO_COT = ATLAS / O;
+    /** Chi so o chua bong do (o cuoi cung cua luoi). */
+    private static final int O_BONG = 15;
     /**
      * So diem con thu tho xuong duoi toa do nhan vat: xuong, len, ngang.
      *
@@ -144,6 +149,8 @@ public class TaoEffThuCuoi {
         final int[][][] khung = new int[3][SO_GOC][];
         final boolean[][][][] mat = new boolean[3][SO_GOC][][];
         final int[] mocY = new int[3];
+        /** true = hang khong co nhip nhun san, phai tu them. */
+        final boolean[] nhun = new boolean[3];
         int caoNhat = 0;
         for (int nhom = 0; nhom < 3; nhom++) {
             if (hang[nhom] >= hangs.size()) {
@@ -240,6 +247,22 @@ public class TaoEffThuCuoi {
         //
         // Gia phai tra: con thu bi gioi han trong 64x64, va client blit tron o nen phan
         // trong suot cung duoc ve — khong dang ke.
+        // Xem tung huong co nhip nhun san khong. PHAI do sau khi biet ti le: chenh lech
+        // do o anh goc con phai nhan voi ti le ~0.33 moi ra so diem that, nen 2 diem goc
+        // chi con 0.66 diem — chua thanh nhip.
+        for (int nhom = 0; nhom < 3; nhom++) {
+            int thap = Integer.MAX_VALUE, cao = -1;
+            for (int f = 0; f < SO_GOC; f++) {
+                if (khung[nhom][f] == null) continue;
+                final int v = (int) Math.round((mocY[nhom] - khung[nhom][f][3]) * tiLe);
+                thap = Math.min(thap, v);
+                cao = Math.max(cao, v);
+            }
+            nhun[nhom] = cao - thap < 1;
+            System.out.println("  huong " + nhom + (nhun[nhom] ? ": tu them nhip nhun"
+                    : ": co nhip nhun san " + (cao - thap) + " diem"));
+        }
+
         final BufferedImage atlas = new BufferedImage(ATLAS, ATLAS, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D g = atlas.createGraphics();
         for (int i = 0; i < anh.length; i++) {
@@ -248,17 +271,32 @@ public class TaoEffThuCuoi {
             final int ox = (i % SO_COT) * O, oy = (i / SO_COT) * O;
             // Can giua o theo be ngang. Theo chieu doc: vach dat cua hang nam dung o day
             // o, con tung frame giu nguyen do nhun len xuong tu nhien cua no.
-            final int caoTrenVach = (int) Math.round((mocY[nhom] - khung[nhom][f][3]) * tiLe);
+            int caoTrenVach = (int) Math.round((mocY[nhom] - khung[nhom][f][3]) * tiLe);
+            // Bao dam co nhip nhun: linh thu that nhun than 1 diem so le tung frame (heo
+            // bang dy = -35, -34, -35, -34, -35). Bang sprite AI nhieu khi ve cac frame
+            // dung y mot do cao, luc do con thu truot ngang nhu dan tren giay nen phai
+            // tu them nhip. Chi them khi ban than hang khong co nhip san.
+            if (nhun[nhom] && f % 2 == 1) {
+                caoTrenVach++;
+            }
             g.drawImage(anh[i], ox + (O - anh[i].getWidth()) / 2,
                     oy + O - caoTrenVach - anh[i].getHeight(), null);
         }
+        // Bong do o o cuoi: linh thu that con nao cung co, la mot phan RIENG dat co dinh
+        // ngay toa do nhan vat va giu nguyen suot 21 frame (Rong Bang img0 27x14, heo bang
+        // img0 dy=-5). Thieu bong thi con thu nhin nhu dan len chu khong dung tren dat.
+        final int rongBong = Math.max(8, (int) Math.round(rongThuc * 0.8));
+        final int caoBong = Math.max(4, (int) Math.round(rongBong * 0.30));
+        final int bx = (O_BONG % SO_COT) * O, by = (O_BONG / SO_COT) * O;
+        g.setPaint(new java.awt.Color(0, 0, 0, 80));
+        g.fillOval(bx + (O - rongBong) / 2, by + (O - caoBong) / 2, rongBong, caoBong);
         g.dispose();
         ImageIO.write(atlas, "png", new File("map/d_effect/" + id + ".png"));
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final DataOutputStream dos = new DataOutputStream(bos);
-        dos.writeByte(anh.length);
-        for (int i = 0; i < anh.length; i++) {
+        dos.writeByte(anh.length + 1);              // 15 o than + 1 o bong
+        for (int i = 0; i <= anh.length; i++) {
             dos.writeByte(i);
             dos.writeByte((i % SO_COT) * O);
             dos.writeByte((i / SO_COT) * O);
@@ -274,7 +312,17 @@ public class TaoEffThuCuoi {
                     dos.writeByte(0);
                     continue;
                 }
-                dos.writeByte(1);
+                dos.writeByte(2);
+                // Phan 1: bong do. Dat truoc than de nam DUOI than, va dung mot toa do
+                // cho ca 21 frame nen bong khong xe dich theo nhip nhun cua than.
+                // O bong duoc ve hinh bau duc dung giua o nen -O/2 dua tam bong ve
+                // dung toa do nhan vat.
+                dos.writeShort(-O / 2);
+                dos.writeShort(-O / 2);
+                dos.writeByte(O_BONG);
+                dos.writeByte(0);
+                dos.writeByte(0);
+                // Phan 2: than con thu.
                 // dx = -O/2: can giua o. Dung dung nua o thi client lat anh cho huong
                 // phai bang num = -(dx + w) cung ra -O/2, hai ben trung khop tuyet doi.
                 dos.writeShort(-O / 2);
