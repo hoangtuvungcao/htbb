@@ -88,7 +88,17 @@ public class EffectBuff {
    public byte idCountry;
    public static byte[] ODER_PAINT = new byte[]{0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0};
    public static byte[] stune = new byte[]{0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-   public static byte[] dyhore = new byte[83];
+   /**
+    * Do lech doc cua hieu ung khi nhan vat dang cuoi thu, tra cuu theo id hieu ung.
+    *
+    * PHAI du cho moi id d_effect (0..299). Truoc day dai 83 nen
+    * MessageCreator.createMsgNewEffectSkill5Long nem ArrayIndexOutOfBounds ngay o byte
+    * CUOI CUNG voi moi hieu ung thoi trang — mat na 100..104, ao 186..190 / 232 / 233.
+    * Loi do bi catch nuot mat, goi tin gui di thieu dung byte cuoi; client doc byte do
+    * trong try/catch rieng nen van chay nhung luon lay do lech = 0, tuc hao quang dat
+    * sai do cao khi dang cuoi thu.
+    */
+   public static byte[] dyhore = new byte[300];
    public int dam = 0;
 
    static {
