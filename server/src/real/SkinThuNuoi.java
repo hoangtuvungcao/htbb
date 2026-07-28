@@ -109,9 +109,21 @@ public class SkinThuNuoi {
     //
     // -1 = khong doi hinh (giu nguyen hinh pet dang dung). Mac dinh de -1 cho an toan:
     // neu dien id chua co file hoac so frame sai thi client se ve sai / khong ve duoc.
-    public static final int[] ID_IMG = {-1, -1, -1, -1, -1};
+    // Hinh cua 5 skin, cat tu bang sprite trong map/sprite_goc/ bang
+    // tools/CatSpriteSheet.java, dat o map/pet/21..25.png (id 0..19 la hinh pet
+    // goc cua game, id cao nhat dang dung la 19 nen 21..25 con trong).
+    //
+    //   0 Phuc Thu   -> pet/22.png, 5 frame
+    //   1 Gau Truc   -> pet/21.png, 6 frame
+    //   2 Tien Loc   -> pet/24.png, 5 frame
+    //   3 Xich Duong -> pet/25.png, 5 frame
+    //   4 Chien Lang -> pet/23.png, 8 frame
+    //
+    // Doi hinh pet phai di kem DataGame.nPet >= 26, khong thi server khong nap anh
+    // va client se khong ve duoc gi.
+    public static final int[] ID_IMG = {22, 21, 24, 25, 23};
     /** So frame cua sprite tuong ung. -1 = giu so frame goc cua pet. */
-    public static final int[] TONG_FRAME = {-1, -1, -1, -1, -1};
+    public static final int[] TONG_FRAME = {5, 6, 5, 5, 8};
 
     /** Id anh can gui xuong client cho nhan vat nay, -1 = giu nguyen. */
     public static int idImgHienThi(final Char p) {

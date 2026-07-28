@@ -541,7 +541,10 @@ public class DataGame {
                 }
             }
 
-            byte nPet = 20;
+            // 0..19 la hinh pet goc cua game (pet idImg cao nhat dang dung la 19).
+            // Nang len 30 de nap them hinh skin thu nuoi dat o id 21..25,
+            // xem SkinThuNuoi.ID_IMG.
+            byte nPet = 30;
             imgPet = new byte[nPet][];
 
             for (j = 0; j < nPet; ++j) {

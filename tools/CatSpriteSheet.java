@@ -7,7 +7,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 /**
- * Cat mot bang sprite (sprite sheet) thanh dai frame dung chuan map/d_effect/.
+* Cat mot bang sprite (sprite sheet) thanh dai frame cho game.
  *
  * Bang sprite ve tay hoac ve bang AI thuong co: nen den, chu ghi ten hang o cot
  * trai, moi hang la mot huong (Idle / Run / Left / Right / Up / Down), moi hang
@@ -51,7 +51,7 @@ public class CatSpriteSheet {
 
         String hang = "1";
         int cao = 32, boTrai = 0, boTren = 0, nguong = 48, kheTay = -1, soFrameTay = -1;
-        boolean chayThu = false;
+        boolean chayThu = false, raPet = false;
         for (int i = 2; i < args.length; i++) {
             final String a = args[i];
             if (a.startsWith("--hang=")) hang = a.substring(7);
@@ -62,6 +62,7 @@ public class CatSpriteSheet {
             else if (a.startsWith("--khe=")) kheTay = Integer.parseInt(a.substring(6));
             else if (a.startsWith("--soframe=")) soFrameTay = Integer.parseInt(a.substring(10));
             else if (a.equals("--thu")) chayThu = true;
+            else if (a.equals("--pet")) raPet = true;
         }
 
         final BufferedImage goc = ImageIO.read(sheet);
@@ -76,9 +77,12 @@ public class CatSpriteSheet {
         System.out.println("Tim thay " + hangs.size() + " hang:");
         for (int i = 0; i < hangs.size(); i++) {
             final int[] h = hangs.get(i);
+            final List<int[]> cot = timCot(coHinh, h[0], h[1], kheTay, soFrameTay);
+            final StringBuilder sb = new StringBuilder();
+            for (final int[] c : cot) sb.append(" [").append(c[0]).append("-").append(c[1]).append("]");
             System.out.println("  hang " + i + ": y " + h[0] + ".." + h[1]
                     + " (cao " + (h[1] - h[0] + 1) + "), "
-                    + timCot(coHinh, h[0], h[1], kheTay, soFrameTay).size() + " frame");
+                    + cot.size() + " frame:" + sb);
         }
 
         final List<Integer> chon = new ArrayList<>();
@@ -88,7 +92,8 @@ public class CatSpriteSheet {
             chon.add(Integer.parseInt(hang));
         }
 
-        final List<BufferedImage> frames = new ArrayList<>();
+        // Lay khung bao sat vien cua tung frame truoc, CHUA thu nho.
+        final List<int[]> khung = new ArrayList<>();
         for (final int idx : chon) {
             if (idx < 0 || idx >= hangs.size()) {
                 System.out.println("Khong co hang " + idx);
@@ -96,21 +101,30 @@ public class CatSpriteSheet {
             }
             final int[] h = hangs.get(idx);
             for (final int[] c : timCot(coHinh, h[0], h[1], kheTay, soFrameTay)) {
-                final BufferedImage f = catVaThuNho(goc, coHinh, c[0], c[1], h[0], h[1], cao);
-                if (f != null) frames.add(f);
+                final int[] k = khungBao(coHinh, c[0], c[1], h[0], h[1]);
+                if (k != null) khung.add(k);
             }
         }
-        if (frames.isEmpty()) {
+        if (khung.isEmpty()) {
             System.out.println("Khong cat duoc frame nao. Thu chinh --nguong / --botrai / --botren.");
             return;
         }
 
-        int rongMax = 0;
-        for (final BufferedImage f : frames) rongMax = Math.max(rongMax, f.getWidth());
-        System.out.println("Cat duoc " + frames.size() + " frame, moi frame toi da "
-                + rongMax + "x" + cao);
+        // Mot ti le thu nho DUY NHAT cho ca loat, lay theo frame cao nhat. Neu thu nho
+        // rieng tung frame ve cung chieu cao thi con thu se to nho phap phong theo tung
+        // khung — nhin nhu dang thoi phong len xep xuong.
+        int caoNhat = 0, rongNhat = 0;
+        for (final int[] k : khung) {
+            caoNhat = Math.max(caoNhat, k[3] - k[1] + 1);
+            rongNhat = Math.max(rongNhat, k[2] - k[0] + 1);
+        }
+        final double tiLe = (double) cao / caoNhat;
+        final int rongMax = Math.max(1, (int) Math.ceil(rongNhat * tiLe));
+        System.out.println("Cat duoc " + khung.size() + " frame, khung goc lon nhat "
+                + rongNhat + "x" + caoNhat + " -> o " + rongMax + "x" + cao
+                + " (ti le " + String.format("%.3f", tiLe) + ")");
         if (rongMax > 255 || cao > 255) {
-            System.out.println("CANH BAO: canh > 255 px, dinh dang data chi luu duoc 1 byte. Giam --cao.");
+            System.out.println("CANH BAO: canh > 255 px. Giam --cao.");
             return;
         }
         if (chayThu) {
@@ -118,21 +132,29 @@ public class CatSpriteSheet {
             return;
         }
 
-        final BufferedImage dai = new BufferedImage(rongMax, cao * frames.size(),
+        final BufferedImage dai = new BufferedImage(rongMax, cao * khung.size(),
                 BufferedImage.TYPE_INT_ARGB);
         final java.awt.Graphics2D g = dai.createGraphics();
-        for (int i = 0; i < frames.size(); i++) {
-            final BufferedImage f = frames.get(i);
-            g.drawImage(f, (rongMax - f.getWidth()) / 2, i * cao, null);
+        for (int i = 0; i < khung.size(); i++) {
+            final BufferedImage f = thuNho(goc, coHinh, khung.get(i), tiLe);
+            // Dat sat day o va can giua: client ve pet theo goc BOTTOM|HCENTER nen
+            // chan con thu phai nam dung day khung, khong thi no se lo lung.
+            g.drawImage(f, (rongMax - f.getWidth()) / 2, (i + 1) * cao - f.getHeight(), null);
         }
         g.dispose();
 
-        final File png = new File("map/d_effect/" + idDich + ".png");
+        final File png = new File((raPet ? "map/pet/" : "map/d_effect/") + idDich + ".png");
         ImageIO.write(dai, "png", png);
-        TaoDataSprite.ghiFileData(png, frames.size(), true);
-        System.out.println("Xong: " + png + " va map/d_effect/" + idDich);
+        if (raPet) {
+            // Hinh pet KHONG can file data: client tu chia dai theo so frame
+            // (AnimalMove.paint: hImg = anh.cao / sumFrame, ve can giua o day).
+            System.out.println("Xong: " + png);
+        } else {
+            TaoDataSprite.ghiFileData(png, khung.size(), true);
+            System.out.println("Xong: " + png + " va map/d_effect/" + idDich);
+        }
         System.out.println("  -> SkinThuNuoi.ID_IMG dien " + idDich
-                + ", TONG_FRAME dien " + frames.size());
+                + ", TONG_FRAME dien " + khung.size());
     }
 
     /** true = diem co hinh (khong phai nen den, khong trong suot). */
@@ -234,14 +256,9 @@ public class CatSpriteSheet {
         return ds;
     }
 
-    /**
-     * Cat mot frame ra khoi bang, xoa nen, cat sat vien roi thu nho ve chieu cao mong muon.
-     * Sau khi thu nho thi don lai kenh trong suot: duoi 40 cho hang trong suot han,
-     * tren 200 cho dac han — de vien khong bi mo nhoe kieu anh chup.
-     */
-    private static BufferedImage catVaThuNho(final BufferedImage goc, final boolean[][] m,
-                                             final int x1, final int x2, final int y1,
-                                             final int y2, final int caoDich) {
+    /** Khung bao sat vien cua mot frame: {x1, y1, x2, y2}. null neu qua nho. */
+    private static int[] khungBao(final boolean[][] m, final int x1, final int x2,
+                                  final int y1, final int y2) {
         int tx1 = x2, tx2 = x1, ty1 = y2, ty2 = y1;
         for (int y = y1; y <= y2; y++) {
             for (int x = x1; x <= x2; x++) {
@@ -252,19 +269,28 @@ public class CatSpriteSheet {
                 if (y > ty2) ty2 = y;
             }
         }
-        final int w = tx2 - tx1 + 1, h = ty2 - ty1 + 1;
-        if (w < TOI_THIEU || h < TOI_THIEU) return null;
+        if (tx2 - tx1 + 1 < TOI_THIEU || ty2 - ty1 + 1 < TOI_THIEU) return null;
+        return new int[]{tx1, ty1, tx2, ty2};
+    }
 
+    /**
+     * Cat khung ra khoi bang, bo nen, thu nho theo ti le chung.
+     * Sau khi thu nho thi don lai kenh trong suot: duoi 40 cho hang trong suot han,
+     * tren 200 cho dac han — de vien khong bi mo nhoe kieu anh chup.
+     */
+    private static BufferedImage thuNho(final BufferedImage goc, final boolean[][] m,
+                                        final int[] k, final double tiLe) {
+        final int w = k[2] - k[0] + 1, h = k[3] - k[1] + 1;
         final BufferedImage cat = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
-                if (m[ty1 + y][tx1 + x]) {
-                    cat.setRGB(x, y, goc.getRGB(tx1 + x, ty1 + y) | 0xFF000000);
+                if (m[k[1] + y][k[0] + x]) {
+                    cat.setRGB(x, y, goc.getRGB(k[0] + x, k[1] + y) | 0xFF000000);
                 }
             }
         }
-
-        final int rongDich = Math.max(1, w * caoDich / h);
+        final int rongDich = Math.max(1, (int) Math.round(w * tiLe));
+        final int caoDich = Math.max(1, (int) Math.round(h * tiLe));
         final BufferedImage nho = new BufferedImage(rongDich, caoDich, BufferedImage.TYPE_INT_ARGB);
         final java.awt.Graphics2D g = nho.createGraphics();
         g.drawImage(cat.getScaledInstance(rongDich, caoDich, Image.SCALE_AREA_AVERAGING), 0, 0, null);
