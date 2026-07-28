@@ -128,10 +128,16 @@ public class SkinThuNuoi {
     // 187..191) con anh thi client xin theo id luc can. Vi vay he nay KHONG phu thuoc
     // bo anh cache — khac han duong imgHorse ben duoi.
     //
-    // Sprite dung bang tools/TaoEffThuCuoi.java, ghi vao map/d_effect/187..191.
-    public static final int[] ID_EFF_THU_CUOI = {8887, 8888, 8889, 8890, 8891};
-    /** Bang do lech ve cua client; 4 la bo dung cho hoa hinh, vua voi sprite thay than. */
-    public static final int INDEX_DXY = 4;
+    // Sprite dung bang tools/TaoEffThuCuoi.java, ghi vao map/d_effect/159, 197, 198,
+    // 199, 212 — nam id nay von TRONG hoan toan (khong co file, khong nam trong
+    // id_eff_tool_ngu_long) nen khong de len anh hieu ung nao co san.
+    //
+    // Doi id moi khi lam lai sprite la viec BAT BUOC, khong phai cho gon: client giu
+    // anh trong GameData.listImgIcon theo id, khong he co so phien ban, va chi bo khi
+    // TAT HAN app (dang cuoi thu thi timeRemove lien tuc duoc lam moi nen khong bao gio
+    // het han). Dang nhap lai chi lam moi phan DU LIEU frame (ALL_DATA_EFF.put trong
+    // goi 26) — du lieu moi ghep vao anh cu thi ra mot khoi vun cua nhieu frame.
+    public static final int[] ID_EFF_THU_CUOI = {8859, 8897, 8898, 8899, 8912};
 
     /** Id sprite thu cuoi cua skin dang mang, -1 = khong mang skin. */
     public static int idEffThuCuoi(final Char p) {

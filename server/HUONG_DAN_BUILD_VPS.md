@@ -921,6 +921,19 @@ Ví dụ thực tế: mục "Hỗ Trợ" của NPC tổng tiêu đầu (-50) đ�
    sáng rời rạc, đó chính là cảm giác "mất nét không rõ". Dùng `--nguong=-1` (chỉ lọc
    theo kênh trong suốt) rồi `--botrai=` để bỏ cột chữ nhãn.
 
+4. **Sửa sprite của một id đang dùng thì client hiện ra một khối vụn.** `GameData.listImgIcon`
+   giữ ảnh theo id, **không có số phiên bản**, và chỉ bị bỏ khi `!isLoad` + rảnh quá 120s
+   + bảng có hơn 100 phần tử ([GameScr.cs:1438](Client/GameScr.cs#L1438)) — đang cưỡi thú
+   thì `timeRemove` được làm mới mỗi lần vẽ nên **không bao giờ hết hạn**. Đăng nhập lại
+   chỉ làm mới phần **dữ liệu** frame (`ALL_DATA_EFF.put`, [MessageHandler.cs:1772](Client/MessageHandler.cs#L1772)),
+   ảnh vẫn là ảnh cũ → dữ liệu mới ghép ảnh cũ = khối vụn của nhiều frame. Vì vậy **mỗi
+   lần làm lại sprite phải đổi sang id khác**, đừng ghi đè id đang dùng (id mới thì client
+   chưa có gì trong bộ nhớ đệm nên buộc phải tải mới). Cách còn lại là bắt mọi người tắt
+   hẳn app rồi mở lại.
+   Danh sách `id_eff_tool_ngu_long` đang có **254 id** mà client đọc số lượng bằng
+   `readUnsignedByte` → **trần là 255**, chỉ còn 1 chỗ. Hết chỗ thì phải bỏ id không dùng
+   ra khỏi danh sách trước khi thêm.
+
 Thêm hai giới hạn cứng: toạ độ ảnh con lưu bằng **byte không dấu** nên atlas tối đa
 **256×256** (Rồng Băng cũng 256×256) — 21 frame phải xếp vừa trong đó, vì vậy tool chỉ
 lưu 15 ảnh thật rồi cho slot 5, 6 dùng lại. Và `Char.dx_horse` / `dy_horse` bên client
