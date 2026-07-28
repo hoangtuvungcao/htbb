@@ -106,6 +106,11 @@ public class TaoEffThuCuoi {
         // trong mot hang dinh vao nhau (bong, trang tri cham nhau) nen do khe trong de
         // tach se ra sai so frame; chi dinh tay thi chia deu, chac an voi bang ke luoi.
         final int[] soCot = {0, 0, 0};
+        // Khoang o duoc dung trong hang, dang --oxuong=0-2. Can co vi bang sprite AI
+        // nhieu khi don HAI goc nhin vao cung mot hang (tien loc: hang "Down" thuc ra la
+        // 3 con nhin truoc roi 3 con nhin sau), lay ca hang thi frame chay bi mat mat.
+        final int[] oTu = {0, 0, 0};
+        final int[] oDen = {-1, -1, -1};
         // Do dam vien: sprite goc trong game deu co vien toi nen doc ro o co nho, con
         // anh AI thu nho thi vien mem, nhin nhoe. 0 = khong ve vien.
         double damVien = 0.45;
@@ -122,6 +127,9 @@ public class TaoEffThuCuoi {
             else if (a.startsWith("--cotxuong=")) soCot[0] = Integer.parseInt(a.substring(11));
             else if (a.startsWith("--cotlen=")) soCot[1] = Integer.parseInt(a.substring(9));
             else if (a.startsWith("--cotngang=")) soCot[2] = Integer.parseInt(a.substring(11));
+            else if (a.startsWith("--oxuong=")) docKhoang(a.substring(9), oTu, oDen, 0);
+            else if (a.startsWith("--olen=")) docKhoang(a.substring(7), oTu, oDen, 1);
+            else if (a.startsWith("--ongang=")) docKhoang(a.substring(9), oTu, oDen, 2);
             else if (a.startsWith("--vien=")) damVien = Double.parseDouble(a.substring(7));
             else if (a.equals("--khonglat")) lat = false;
         }
@@ -169,11 +177,20 @@ public class TaoEffThuCuoi {
             // thu dung dung cho ca hai ben. Moc DOC thi lay chung ca hang: moi frame
             // trong hang dung tren cung mot vach dat, nho vay giu duoc nhip nhun len
             // xuong tu nhien ma khong bi giat.
-            final int soO = cot.size();
+            final int tu = Math.max(0, oTu[nhom]);
+            final int den = oDen[nhom] < 0 ? cot.size() - 1 : Math.min(oDen[nhom], cot.size() - 1);
+            final int soO = den - tu + 1;
+            if (soO < 1) {
+                System.out.println("Khoang o cua nhom " + nhom + " rong");
+                return;
+            }
             int cy2 = -1;
             for (int f = 0; f < SO_GOC; f++) {
-                // Lay deu SO_GOC frame trong hang de khong cat mat cuoi vong lap.
-                final int[] c = cot.get(f * soO / SO_GOC);
+                // Lay SO_GOC frame LIEN TIEP roi lap lai vong tron neu khoang ngan hon.
+                // Lay lien tiep dung theo quy uoc cua linh thu that: heo bang dung 5 anh
+                // lien tiep, slot 0-1 la dung yen, slot 2-3-4 la chay. Neu khoang chi co
+                // 3 o thi thanh 0,1,2,0,1 — ba frame chay van khac nhau het.
+                final int[] c = cot.get(tu + f % soO);
                 final boolean[][] rieng = locConThu(coHinh, c[0], c[1], h[0], h[1]);
                 final int[] k = CatSpriteSheet.khungBao(rieng, c[0], c[1], h[0], h[1]);
                 if (k == null) continue;
@@ -187,8 +204,9 @@ public class TaoEffThuCuoi {
                 return;
             }
             mocY[nhom] = cy2;
-            System.out.println("  nhom " + nhom + " (hang " + hang[nhom] + "): "
-                    + soO + " frame nguon, vach dat y=" + cy2);
+            System.out.println("  nhom " + nhom + " (hang " + hang[nhom] + ", o " + tu + ".."
+                    + den + " trong " + cot.size() + "): " + soO + " frame nguon, vach dat y="
+                    + cy2);
         }
         if (caoNhat == 0) {
             System.out.println("Khong lay duoc frame nao");
@@ -355,6 +373,18 @@ public class TaoEffThuCuoi {
                 + caoThuc + ") + d_effect/" + id + " (" + bos.size()
                 + " byte, 21 frame), ti le " + String.format("%.3f", tiLe)
                 + " -> id gui client = " + (8700 + id));
+    }
+
+    /** Doc tham so dang "0-2" hoac "3" thanh khoang o. */
+    private static void docKhoang(final String s, final int[] tu, final int[] den, final int nhom) {
+        final int gach = s.indexOf('-');
+        if (gach < 0) {
+            tu[nhom] = Integer.parseInt(s.trim());
+            den[nhom] = tu[nhom];
+        } else {
+            tu[nhom] = Integer.parseInt(s.substring(0, gach).trim());
+            den[nhom] = Integer.parseInt(s.substring(gach + 1).trim());
+        }
     }
 
     /**
