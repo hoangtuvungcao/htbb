@@ -159,7 +159,7 @@ public class CatSpriteSheet {
     }
 
     /** true = diem co hinh (khong phai nen den, khong trong suot). */
-    private static boolean[][] locNen(final BufferedImage img, final int nguong,
+    public static boolean[][] locNen(final BufferedImage img, final int nguong,
                                       final int boTrai, final int boTren) {
         final boolean[][] m = new boolean[img.getHeight()][img.getWidth()];
         for (int y = boTren; y < img.getHeight(); y++) {
@@ -174,7 +174,7 @@ public class CatSpriteSheet {
     }
 
     /** Gom cac hang (hoac cot) lien tiep co hinh thanh tung dai. */
-    private static List<int[]> timDai(final boolean[][] m, final boolean theoHang) {
+    public static List<int[]> timDai(final boolean[][] m, final boolean theoHang) {
         final int n = theoHang ? m.length : m[0].length;
         final int k = theoHang ? m[0].length : m.length;
         final List<int[]> ds = new ArrayList<>();
@@ -201,7 +201,7 @@ public class CatSpriteSheet {
      * duoi, chan truoc...) nen neu cu thay khoang trong la cat thi mot con se ra
      * hai ba frame. Vi vay hai manh cach nhau qua gan thi coi la cung mot frame.
      */
-    private static List<int[]> timCot(final boolean[][] m, final int y1, final int y2,
+    public static List<int[]> timCot(final boolean[][] m, final int y1, final int y2,
                                       final int kheTay, final int soFrameTay) {
         final List<int[]> tho = new ArrayList<>();
         int dau = -1;
@@ -258,7 +258,7 @@ public class CatSpriteSheet {
     }
 
     /** Khung bao sat vien cua mot frame: {x1, y1, x2, y2}. null neu qua nho. */
-    private static int[] khungBao(final boolean[][] m, final int x1, final int x2,
+    public static int[] khungBao(final boolean[][] m, final int x1, final int x2,
                                   final int y1, final int y2) {
         int tx1 = x2, tx2 = x1, ty1 = y2, ty2 = y1;
         for (int y = y1; y <= y2; y++) {
@@ -279,7 +279,7 @@ public class CatSpriteSheet {
      * Sau khi thu nho thi don lai kenh trong suot: duoi 40 cho hang trong suot han,
      * tren 200 cho dac han — de vien khong bi mo nhoe kieu anh chup.
      */
-    private static BufferedImage thuNho(final BufferedImage goc, final boolean[][] m,
+    public static BufferedImage thuNho(final BufferedImage goc, final boolean[][] m,
                                         final int[] k, final double tiLe) {
         final int w = k[2] - k[0] + 1, h = k[3] - k[1] + 1;
         final BufferedImage cat = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);

@@ -22,7 +22,8 @@ public class OtherHandle implements ICommandHandler {
 
     static {
         year = cl.get(1);
-        MAX_ANIMAL = 19;
+        // 0..18 la thu cuoi goc; 19..23 la 5 anh skin thu cuoi trong map/skinthu.
+        MAX_ANIMAL = 24;
     }
 
     public void process(Session session, Message message) throws IOException {
@@ -187,6 +188,13 @@ public class OtherHandle implements ICommandHandler {
                 "map/ph/phvang/phuonghoang_data",
                 "map/ph/phtho/phuonghoang_data",
                 "map/ph/phtho/phuonghoang_data",// đương khang băng
+                // 19..23: anh skin thu cuoi (SkinThuNuoi). File _data de RONG,
+                // toan bo PNG nam trong file 0_header — client noi header + data.
+                "map/skinthu/phucthu_data",
+                "map/skinthu/gautruc_data",
+                "map/skinthu/tienloc_data",
+                "map/skinthu/xichduong_data",
+                "map/skinthu/chienlang_data",
             };
 
             dataHorse = new byte[MAX_ANIMAL][];
@@ -199,7 +207,8 @@ public class OtherHandle implements ICommandHandler {
                 dataHorse[i] = new byte[dis.available()];
                 dis.read(dataHorse[i], 0, dataHorse[i].length);
 
-                int[] nPalate = new int[]{4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1,1,1};
+                int[] nPalate = new int[]{4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1};
 
                 headerHorse[i] = new byte[nPalate[i]][];
 
@@ -233,6 +242,11 @@ public class OtherHandle implements ICommandHandler {
                     "map/ph/phvang/phuonghoang",
                     "map/ph/phtho/phuonghoang",
                     "map/ph/phtho/phuonghoang",//lợn băng
+                    "map/skinthu/phucthu",
+                    "map/skinthu/gautruc",
+                    "map/skinthu/tienloc",
+                    "map/skinthu/xichduong",
+                    "map/skinthu/chienlang",
                 };
 
                 for (int j = 0; j < headerHorse[i].length; ++j) {

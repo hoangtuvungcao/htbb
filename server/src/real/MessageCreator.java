@@ -1498,6 +1498,12 @@ public class MessageCreator {
                     }
                 }
             
+                // Skin thu cuoi: anh skin dung theo preset hinh hoc 5 nen phai gui
+                // userHorse = 5, khong thi client lay sai toa do frame va ve be het.
+                final int idAnhSkin = SkinThuNuoi.idAnhThuCuoi(ch);
+                if (ch.animalRide != null && idAnhSkin >= 0) {
+                    userHorse = (byte) SkinThuNuoi.PRESET_HINH_HOC;
+                }
                 m.dos.writeByte(userHorse);
                 byte idImgHorse = ch.idImgHorse;
                 byte fly = 0;
@@ -1521,6 +1527,12 @@ public class MessageCreator {
                     } else if (ch.animalRide.isPhuongHoangTho()) {
                         fly = 1;
                         idImgHorse = 20;
+                    }
+                    // Skin thang lai sau cung: no phai de len moi truong hop rieng o tren.
+                    // fly = 0 vi anh skin dung 3 frame di bo nhu thu chay dat.
+                    if (idAnhSkin >= 0) {
+                        idImgHorse = (byte) idAnhSkin;
+                        fly = 0;
                     }
                 }
                 m.dos.writeByte(fly);
@@ -1644,12 +1656,19 @@ public class MessageCreator {
             m.dos.writeShort(Char.clampShort(ch.defend_magic + ch.getBuffDefCB(1, true)));
             m.dos.writeByte(ch.lvDetail.lv);
             m.dos.writeByte(ch.he);
-            m.dos.writeByte(ch.rideHorse);
+            // Skin thu cuoi: doi ca preset hinh hoc va anh, giong cho tren.
+            final int idAnhSkin2 = SkinThuNuoi.idAnhThuCuoi(ch);
+            m.dos.writeByte((ch.animalRide != null && idAnhSkin2 >= 0)
+                    ? (byte) SkinThuNuoi.PRESET_HINH_HOC : ch.rideHorse);
             byte idImgHorse = ch.idImgHorse;
             byte fly = 0;
             if (ch.animalRide != null) {
                 fly = Animal.typeAnimal[ch.animalRide.idImg];
                 idImgHorse = Animal.idImgPaint[ch.animalRide.idImg];
+                if (idAnhSkin2 >= 0) {
+                    idImgHorse = (byte) idAnhSkin2;
+                    fly = 0;
+                }
             }
             m.dos.writeByte(fly);
             m.dos.writeByte(idImgHorse);

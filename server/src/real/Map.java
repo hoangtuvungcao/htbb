@@ -1225,7 +1225,7 @@ public class Map implements Runnable {
         HASH_ALL_CHAR_HS = new Hashtable();
         sendDynamicObj = true;
         hashCodeValue = 24;
-        versionPotion = 69;
+        versionPotion = 70; // tang len de client tai lai bo anh thu cuoi (them 5 anh skin)
         versionGem = 15;
         MAX_CLAN = 1342;
 
