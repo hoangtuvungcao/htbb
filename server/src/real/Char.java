@@ -4927,6 +4927,26 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return (int) ((long) dam - (long) dam * phanNghin / 1000L);
     }
 
+    /** Muc giam sat thuong phan don cua noi tai "Tra dua" (phan tram). */
+    public static final int PC_TRA_DUA_RONG_LON = 50;
+
+    /**
+     * Noi tai "Tra dua" ghi trong bang thong tin Rong Lon: dang cuoi Rong Lon VA
+     * dang mac Hoa Ky Lan thi chi con nhan mot nua sat thuong phan don. Dung chu
+     * "Ket hop hoa ki lan" nen bat buoc phai co ca hai, thieu mot cai la khong tinh.
+     */
+    public boolean isTraDuaRongLon() {
+        return this.itemHoaKyLan != null && this.animalRide != null && this.animalRide.isRongLon();
+    }
+
+    /** Ap noi tai "Tra dua" len mot don phan sat thuong sap tru vao chinh nguoi nay. */
+    public int giamSatThuongPhanDon(final int damPhan) {
+        if (damPhan <= 0 || !isTraDuaRongLon()) {
+            return damPhan;
+        }
+        return damPhan - damPhan * PC_TRA_DUA_RONG_LON / 100;
+    }
+
     /**
      * Goi o cuoi attackDam(). Gom toan bo hieu ung than khi phu thuoc vao sat
      * thuong da tinh xong: cong them theo muc tieu, tru theo khang cua muc
@@ -5031,6 +5051,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 final int pcPhan = bidanh.getTkPhanDon();
                 if (pcPhan > 0 && finalDame > 0) {
                     int damPhan = (int) ((long) finalDame * pcPhan / 100L);
+                    // Noi tai "Tra dua" cua nguoi DANH (this): cuoi Rong Lon + mac Hoa Ky Lan
+                    // thi chi an mot nua don phan don.
+                    damPhan = giamSatThuongPhanDon(damPhan);
                     if (damPhan > 0) {
                         if (damPhan > this.hp) {
                             damPhan = this.hp;

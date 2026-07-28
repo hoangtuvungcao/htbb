@@ -512,8 +512,11 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             if (this.KHANG_DONG_BANG > 0) {
                 info = info + "Kháng đóng băng 95%\n";
             }
+            // Dong nay truoc day chi la chu, khong he co code combat. Nay da lam that o
+            // Char.giamSatThuongPhanDon: chi giam khi VUA cuoi rong VUA mac Hoa Ky Lan,
+            // nen ghi ro dieu kien de nguoi choi khong hieu nham la co san.
             info = info + "Kết hợp hỏa kì lân:\n";
-            info = info + "- Trả đũa :\n Giảm 50% sát thương nhận từ phản sát thương\n";
+            info = info + "- Trả đũa (cần mặc Hoả Kỳ Lân):\n Giảm 50% sát thương nhận từ phản sát thương\n";
         }
 
         if (this.isHoaHinh == 1) {

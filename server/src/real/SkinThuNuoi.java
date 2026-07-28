@@ -325,6 +325,13 @@ public class SkinThuNuoi {
         }
         try {
             int damPhan = dam;
+            // Noi tai "Tra dua" cua Rong Lon + Hoa Ky Lan: ke bi phan don chi an mot nua.
+            if (actor instanceof Char) {
+                damPhan = ((Char) actor).giamSatThuongPhanDon(damPhan);
+                if (damPhan <= 0) {
+                    return;
+                }
+            }
             if (damPhan >= actor.hp) {
                 damPhan = actor.hp - 1;
             }
