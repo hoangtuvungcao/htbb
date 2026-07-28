@@ -6927,12 +6927,25 @@ public class Database {
                                 Item item = new Item();
                                 item.setTemplate(Integer.parseInt(data2[i]), Integer.parseInt(data2[i + 1]), Integer.parseInt(data2[i + 1]), Integer.parseInt(data2[i]));
                                 ch.item.add(item);
+                                // Man chon nhan vat truoc day chi biet HAI phi phong, nen ai
+                                // mang bong da hoac tim thi client thay idImgPP == -1 va
+                                // roi ve ao choang thuong (Res.getCharPartInfo(4, ...)) —
+                                // tuc hien sai phi phong. Bo sung cho du bon loai, lay dung
+                                // bo so cua Char.getIdBigPhiPhong().
                                 if (item.isPhiPhongKhongTuoc()) {
                                     ch.idBigAvtPP = Char.ID_BIG_AVT_PP_KHONG_TUOC;
                                     ch.indexXyPP = 0;
                                     ch.nFramePP = 3;
                                 } else if (item.isPhiPhongHuyenVu()) {
                                     ch.idBigAvtPP = Char.ID_BIG_AVT_PP_HUYEN_VU;
+                                    ch.indexXyPP = 1;
+                                    ch.nFramePP = 3;
+                                } else if (item.isPhiPhongBongDa()) {
+                                    ch.idBigAvtPP = Char.ID_BIG_AVT_PP_BONG_DA;
+                                    ch.indexXyPP = 1;
+                                    ch.nFramePP = 3;
+                                } else if (item.isPhiPhongTim()) {
+                                    ch.idBigAvtPP = 714;
                                     ch.indexXyPP = 1;
                                     ch.nFramePP = 3;
                                 }
