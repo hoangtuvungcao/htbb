@@ -3157,10 +3157,10 @@ public class Char extends LiveActor {
 
     @Override
     public int khamKhangBang() {
-        if (this.animalRide != null && 
-            (this.animalRide.isPhuongHoangLua() || this.animalRide.isRongLon()) && 
-            this.animalRide.KHANG_DONG_BANG > 0) {
-            return 95;
+        // Lay con so thuc cua thu (hien tai phuong hoang lua va rong bang deu la 95)
+        // thay vi ap cung 95, de bang thong tin va combat luon khop nhau.
+        if (this.animalRide != null && this.animalRide.KHANG_DONG_BANG > 0) {
+            return this.animalRide.KHANG_DONG_BANG;
         }
         return this.abilityKham[13];
     }
@@ -4927,6 +4927,17 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return (int) ((long) dam - (long) dam * phanNghin / 1000L);
     }
 
+    /**
+     * Khang ngu hanh cua thu cuoi dang cuoi, doi ra PHAN NGHIN de cong chung don vi
+     * voi khang he cua than khi (xem getTkKhangTheoClass va tkGiamSatThuong).
+     */
+    public int getKhangNguHanhThuCuoi(final int attackerClass) {
+        if (this.animalRide == null) {
+            return 0;
+        }
+        return this.animalRide.getKhangNguHanh(attackerClass) * 10;
+    }
+
     /** Muc giam sat thuong phan don cua noi tai "Tra dua" (phan tram). */
     public static final int PC_TRA_DUA_RONG_LON = 50;
 
@@ -4994,9 +5005,16 @@ public int applyRongLonReleaseTo(int baseDamage) {
             // o duong quai danh nguoi, xu ly trong subDamThanKhi().
             if (targetLaChar) {
                 final Char bidanh = (Char) actor;
+                int giam = 0;
                 if (bidanh.itemThanKhi != null) {
-                    int giam = bidanh.getTkGiamStPlayer();
+                    giam += bidanh.getTkGiamStPlayer();
                     giam += bidanh.getTkKhangTheoClass(this.charClass);
+                }
+                // Khang ngu hanh cua thu cuoi muc tieu — cung la khang theo mon phai nen
+                // cong chung mot ro voi khang he cua than khi, roi mot lan tkGiamSatThuong
+                // (da chan tran 80%) de hai nguon khong the cong nhau thanh bat tu.
+                giam += bidanh.getKhangNguHanhThuCuoi(this.charClass);
+                if (giam > 0) {
                     finalDame = tkGiamSatThuong(finalDame, giam);
                 }
             }
@@ -6551,8 +6569,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                 int khangdongbang = 0;
                                 if (cat == 0) {
                                     final Char c = (Char) actor;
-                                    if (c.animalRide != null && (c.animalRide.isPhuongHoangLua() || c.animalRide.isRongLon()) && c.animalRide.KHANG_DONG_BANG > 0) {
-                                        khangdongbang = 95 - (this.animalRide == null ? 0 : this.animalRide.getGiamKhangDongBang());
+                                    if (c.animalRide != null && c.animalRide.KHANG_DONG_BANG > 0) {
+                                        khangdongbang = c.animalRide.KHANG_DONG_BANG
+                                                - (this.animalRide == null ? 0 : this.animalRide.getGiamKhangDongBang());
                                     }
                                 }
                                 if (Map.r.nextInt(100) >= khangdongbang) {
@@ -6586,7 +6605,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                             if (actor.hp <= 0) {
                                 allactordie.add(actor);
                             } else if (actor.cat == 0) {
-                                if (actor.getAnimalRide() != null && actor.getAnimalRide().isHeo() && Map.r.nextInt(100) < 95) {
+                                // Ca Duong khang (heo) lan Duong khang Bang Gia (heo bang) deu ghi
+                                // "Khang choang lan 95%" tren bang thong tin, truoc day chi heo
+                                // thuong duoc tinh.
+                                if (actor.getAnimalRide() != null
+                                        && (actor.getAnimalRide().isHeo() || actor.getAnimalRide().isHeoBang())
+                                        && Map.r.nextInt(100) < 95) {
                                     if (this.addEffBuff(EffectBuff.CHOANG, System.currentTimeMillis() + 3000L, EffectBuff.BY_ACTOR, 0) != null) {
                                         this.sendEffToChar(this);
                                         this.sendEffToNearChar();
@@ -6625,11 +6649,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                     boolean issend = false;
                                     if (cat == 0) {
                                         final Char c = (Char) actor;
+                                        // Lay dung con so cua tung thu thay vi ap cung 95 va chi cho
+                                        // hai loai: bang thong tin ghi phuong hoang bang / rong bang
+                                        // 95% con su tu bang 50%, ma su tu bang truoc day khong lot
+                                        // vao dieu kien nen 50% chi la chu.
                                         int khangluachay = 0;
-                                        if (c.animalRide != null && 
-                                        (c.animalRide.isPhuongHoangBang() || c.animalRide.isRongLon()) && 
-                                        c.animalRide.KHANG_BI_CHAY > 0) {
-                                            khangluachay = 95;
+                                        if (c.animalRide != null && c.animalRide.KHANG_BI_CHAY > 0) {
+                                            khangluachay = c.animalRide.KHANG_BI_CHAY;
                                         }
                                         if (Map.r.nextInt(100) > khangluachay) {
                                             if (c.addEffBuff(EffectBuff.TAN_PHE, System.currentTimeMillis() + 3000L, EffectBuff.BY_ACTOR, 0) != null) {

@@ -287,6 +287,69 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
     public boolean isRongLon() {
         return this.idImg == RONG_LON;
     }
+
+    /**
+     * Khang ngu hanh cua thu cuoi, don vi phan tram, theo mon phai cua ke tan cong.
+     *
+     * Ngu hanh o server nay chinh la khang theo mon phai — lay dung bang anh xa cua
+     * than khi (Char.getTkKhangTheoClass, idTheoClass = {152,155,154,156,153}):
+     *   0 Kiem = Kim, 1 Dai dao = Hoa, 2 But = Thuy, 3 Bua = Tho, 4 Cung = Moc.
+     *
+     * Tinh thang tu idImg chu khong doc KHANG_KIM/HOA/... vi cac truong do truoc day
+     * chi duoc gan trong getInfo() (ham hien thi) — thu vua tao ma chu nhan chua mo
+     * bang thong tin thi van con 0. getInfo() nay cung lay so tu day nen chu hien ra
+     * va so combat dung luon la mot.
+     */
+    /**
+     * Cac dong khang ngu hanh de ghi vao bang thong tin, sinh tu getKhangNguHanh nen
+     * so hien ra luon dung bang so combat dung. Tien the ghi lai cac truong KHANG_*
+     * cho khop voi chuoi luu cu.
+     */
+    private String moTaKhangNguHanh() {
+        this.KHANG_KIM = (byte) getKhangNguHanh(0);
+        this.KHANG_HOA = (byte) getKhangNguHanh(1);
+        this.KHANG_THUY = (byte) getKhangNguHanh(2);
+        this.KHANG_THO = (byte) getKhangNguHanh(3);
+        this.KHANG_MOC = (byte) getKhangNguHanh(4);
+        String s = "";
+        if (this.KHANG_HOA > 0) {
+            s = s + "Kháng Hỏa " + this.KHANG_HOA + "% (giảm ST từ Đại đao)\n";
+        }
+        if (this.KHANG_THUY > 0) {
+            s = s + "Kháng Thủy " + this.KHANG_THUY + "% (giảm ST từ Bút)\n";
+        }
+        if (this.KHANG_KIM > 0) {
+            s = s + "Kháng Kim " + this.KHANG_KIM + "% (giảm ST từ Kiếm)\n";
+        }
+        if (this.KHANG_MOC > 0) {
+            s = s + "Kháng Mộc " + this.KHANG_MOC + "% (giảm ST từ Cung)\n";
+        }
+        if (this.KHANG_THO > 0) {
+            s = s + "Kháng Thổ " + this.KHANG_THO + "% (giảm ST từ Búa)\n";
+        }
+        return s;
+    }
+
+    public int getKhangNguHanh(final int attackerClass) {
+        switch (this.idImg) {
+            case PHUONG_HOANG_7MAU:
+            case SU_TU:
+                return (attackerClass == 1 || attackerClass == 2) ? 15 : 0;
+            case SU_TU_BANG:
+                if (attackerClass == 1) {
+                    return 30;
+                }
+                return attackerClass == 2 ? 15 : 0;
+            case PHUONG_HOANG_KIM:
+                return attackerClass == 0 ? 30 : 0;
+            case PHUONG_HOANG_MOC:
+                return attackerClass == 4 ? 30 : 0;
+            case PHUONG_HOANG_THO:
+                return attackerClass == 3 ? 30 : 0;
+            default:
+                return 0;
+        }
+    }
     // pet mới
     public boolean isSuTu() {
         return this.idImg == SU_TU;
@@ -399,32 +462,20 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             info = info + "Lửa lan tăng 100%\n";
             info = info + "Độc lan tăng 100%\n";
             info = info + "Sét lan tăng 100%\n";
-            info = info + "Kháng Hỏa 15%\n";
-            info = info + "Kháng Thủy 15%\n";
-
-            this.KHANG_HOA = 15;
-            this.KHANG_THUY = 15;
-
+            info = info + moTaKhangNguHanh();
         }
         if (this.idImg == SU_TU) {
             info = info + "Lửa lan tăng 100%\n";
             info = info + "Độc lan tăng 100%\n";
             info = info + "Sét lan tăng 100%\n";
-            info = info + "Kháng Hỏa 15%\n";
-            info = info + "Kháng Thủy 15%\n";
-
-            this.KHANG_HOA = 15;
-            this.KHANG_THUY = 15;
+            info = info + moTaKhangNguHanh();
         }
-        
-        if (this.idImg == SU_TU_BANG) {            
+
+        if (this.idImg == SU_TU_BANG) {
             info = info + "Độc lan tăng 100%\n";
             info = info + "Sét lan tăng 100%\n";
             info = info + "Băng lan tăng 100%\n";
-            info = info + "Kháng Hỏa 30%\n";
-            info = info + "Kháng Thủy 15%\n";
-            this.KHANG_HOA = 30;
-            this.KHANG_THUY = 15;
+            info = info + moTaKhangNguHanh();
             if (this.KHANG_HOA_TUYET > 0) {
                 info = info + "Không bị hoá tuyết 95%\n";
             }
@@ -437,25 +488,19 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             info = info + "Lửa lan tăng 100%\n";
             info = info + "Độc lan tăng 100%\n";
             info = info + "Sét lan tăng 100%\n";
-            info = info + "Kháng Kim 30%\n";
-            this.KHANG_KIM = 30;
-
+            info = info + moTaKhangNguHanh();
         }
         if (this.idImg == PHUONG_HOANG_MOC) {
             info = info + "Lửa lan tăng 100%\n";
             info = info + "Độc lan tăng 100%\n";
             info = info + "Sét lan tăng 100%\n";
-            info = info + "Kháng Mộc 30%\n";
-            this.KHANG_MOC = 30;
-
+            info = info + moTaKhangNguHanh();
         }
         if (this.idImg == PHUONG_HOANG_THO) {
             info = info + "Lửa lan tăng 100%\n";
             info = info + "Độc lan tăng 100%\n";
             info = info + "Sét lan tăng 100%\n";
-            info = info + "Kháng Thổ 30%\n";
-            this.KHANG_THO = 30;
-
+            info = info + moTaKhangNguHanh();
         }
 
         if (this.idImg == LAN) {
