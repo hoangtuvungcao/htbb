@@ -34610,6 +34610,11 @@ public class Map implements Runnable {
     private void doSendIconPotion(Char s, int hascode, int type) {
         try {
             if (type == 2) {
+                // Log chan doan skin thu cuoi. Day moi la duong client dung khi da vao
+                // game (OtherHandle.doSendIconPotion la duong truoc khi vao).
+                System.out.println("XIN ANH THU " + (s == null ? "?" : s.charname)
+                        + " ver_client=" + hascode + " ver_server=" + versionPotion
+                        + (versionPotion != hascode ? " -> GUI LAI" : " -> khong gui"));
                 if (versionPotion != hascode) {
                     Message msg = new Message(-8);
                     msg.dos.writeByte(2);
