@@ -582,6 +582,11 @@ public class SkinThuNuoi {
             data.Database.instance.saveSkinThuNuoi(p);
             p.calculateAttrib();
             p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+            // Hinh con thu nam trong goi "char wearing" chu khong phai main char info,
+            // nen doi skin ma chi gui main char info thi client van ve hinh pet cu cho
+            // toi khi thoat vao lai. Gui ca cho minh va nguoi xung quanh.
+            p.sendMessage(MessageCreator.createCharWearingMessage(p, p));
+            p.sendToNearPlayer(MessageCreator.createCharWearingMessage(p, p));
             p.sendMessage(MessageCreator.createServerAlertMessage(thongBao, ""));
         } catch (final Exception e) {
             e.printStackTrace();
