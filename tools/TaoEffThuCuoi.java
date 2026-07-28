@@ -71,14 +71,33 @@ public class TaoEffThuCuoi {
     private static final int SO_GOC = 5;
     /** Toa do anh con luu bang byte khong dau nen atlas toi da 256x256. */
     private static final int ATLAS = 256;
-    /**
-     * Canh mot o trong luoi co dinh, 4 cot x 4 dong = 256x256: 15 o cho than con thu,
-     * o thu 16 cho bong do.
-     */
-    private static final int O = 64;
-    private static final int SO_COT = ATLAS / O;
-    /** Chi so o chua bong do (o cuoi cung cua luoi). */
-    private static final int O_BONG = 15;
+    // ---- Bo cuc atlas: CO DINH, khong duoc doi neu khong muon moi nguoi tat app ----
+    /** Khung ao chua con thu: moi frame duoc dung vao khung nay truoc khi cat. */
+    private static final int WB = 64, HB = 64;
+    /** Duong cat khung ao thanh nua tren (dung chung) va nua duoi (rieng tung frame). */
+    private static final int CUT = 42;
+    /** Chieu cao o bong do. */
+    private static final int CAO_BONG = 24;
+    /** 3 o tinh + 15 o dong + 1 o bong. */
+    private static final int SO_ANH_CON = 3 + 3 * 5 + 1;
+    /** Chi so anh con cua bong do. */
+    private static final int ID_BONG = SO_ANH_CON - 1;
+
+    /** O chua nua tren dung chung cua mot huong: ba o xep ngang o dong dau. */
+    private static int[] oTinh(final int nhom) {
+        return new int[]{nhom * WB, 0};
+    }
+
+    /** O chua nua duoi cua mot frame: 4 o moi dong, xep ngay duoi ba o tinh. */
+    private static int[] oDong(final int nhom, final int f) {
+        final int j = nhom * 5 + f;
+        return new int[]{(j % 4) * WB, CUT + (j / 4) * (HB - CUT)};
+    }
+
+    /** O chua bong do: dat duoi cung. */
+    private static int[] oBong() {
+        return new int[]{0, CUT + 4 * (HB - CUT)};
+    }
     /**
      * So diem con thu tho xuong duoi toa do nhan vat: xuong, len, ngang.
      *
@@ -229,14 +248,14 @@ public class TaoEffThuCuoi {
                     // luu san phai nhin sang trai.
                     if (lat && nhom == 2) nho = latNgang(nho);
                     if (damVien > 0) veVien(nho, damVien);
-                    if (nho.getWidth() > O || nho.getHeight() > O) vuot++;
+                    if (nho.getWidth() > WB || nho.getHeight() > HB) vuot++;
                     anh[nhom * SO_GOC + f] = nho;
                 }
             }
             if (vuot == 0) break;
             tiLe *= 0.96;
             if (tiLe < 0.02) {
-                System.out.println("Khong nhet noi vao o " + O + "x" + O);
+                System.out.println("Khong nhet noi vao khung " + WB + "x" + HB);
                 return;
             }
         }
@@ -263,96 +282,93 @@ public class TaoEffThuCuoi {
         // moi khong khac gi nhau, tang dem do het gay hai vinh vien; con tang anh thi may
         // chu tu day xuong (DataGame.taoGoiAnhDynamicEffect).
         //
-        // Gia phai tra: con thu bi gioi han trong 64x64, va client blit tron o nen phan
-        // trong suot cung duoc ve — khong dang ke.
-        // Xem tung huong co nhip nhun san khong. PHAI do sau khi biet ti le: chenh lech
-        // do o anh goc con phai nhan voi ti le ~0.33 moi ra so diem that, nen 2 diem goc
-        // chi con 0.66 diem — chua thanh nhip.
-        for (int nhom = 0; nhom < 3; nhom++) {
-            int thap = Integer.MAX_VALUE, cao = -1;
-            for (int f = 0; f < SO_GOC; f++) {
-                if (khung[nhom][f] == null) continue;
-                final int v = (int) Math.round((mocY[nhom] - khung[nhom][f][3]) * tiLe);
-                thap = Math.min(thap, v);
-                cao = Math.max(cao, v);
-            }
-            nhun[nhom] = cao - thap < 1;
-            System.out.println("  huong " + nhom + (nhun[nhom] ? ": tu them nhip nhun"
-                    : ": co nhip nhun san " + (cao - thap) + " diem"));
-        }
-
+        // ================= TACH BO PHAN NHU RONG BANG =================
+        // Rong Bang khong luu ca con moi frame. Nhin ngang no luu DAU (anh 24, 28x38) mot
+        // lan roi dung o CA 7 frame, chi thay THAN (5 anh). Nhin truoc cung vay (anh 4),
+        // nhin sau cung vay (anh 14). Cong bong do (anh 0) dung o ca 21 frame. Do duoc:
+        // cach nay tiet kiem 54.5% dien tich atlas cua no.
+        //
+        // Quan trong hon tiet kiem cho: dau con rong GIU NGUYEN TUNG DIEM suot 7 frame,
+        // nen khi di chi co chan dong. Bang sprite AI thi ve lai ca con moi frame — do
+        // duoc nua tren doi 68%-87%, y het nua duoi — nen con thu rung toan than, nhin
+        // khong ra dang buoc. Vi vay o day cung tach: nua tren lay tu MOT frame roi dung
+        // cho ca 7 frame, chi nua duoi doi theo frame.
+        //
+        // Nhip nhun 1 diem so le van giu duoc ma khong bi ho duong cat, vi dy cua CA HAI
+        // phan cung xe dich mot luc (Rong Bang lam dung the: dy dau -48/-47 luan phien).
+        // Luat nhun la hang so theo chi so frame, khong phu thuoc anh, nen file du lieu
+        // van giong nhau tung byte giua cac skin va cac lan lam lai.
         final BufferedImage atlas = new BufferedImage(ATLAS, ATLAS, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D g = atlas.createGraphics();
-        for (int i = 0; i < anh.length; i++) {
-            if (anh[i] == null) continue;
-            final int nhom = i / SO_GOC, f = i % SO_GOC;
-            final int ox = (i % SO_COT) * O, oy = (i / SO_COT) * O;
-            // Can giua o theo be ngang. Theo chieu doc: vach dat cua hang nam dung o day
-            // o, con tung frame giu nguyen do nhun len xuong tu nhien cua no.
-            int caoTrenVach = (int) Math.round((mocY[nhom] - khung[nhom][f][3]) * tiLe);
-            // Bao dam co nhip nhun: linh thu that nhun than 1 diem so le tung frame (heo
-            // bang dy = -35, -34, -35, -34, -35). Bang sprite AI nhieu khi ve cac frame
-            // dung y mot do cao, luc do con thu truot ngang nhu dan tren giay nen phai
-            // tu them nhip. Chi them khi ban than hang khong co nhip san.
-            if (nhun[nhom] && f % 2 == 1) {
-                caoTrenVach++;
+        for (int nhom = 0; nhom < 3; nhom++) {
+            for (int f = 0; f < SO_GOC; f++) {
+                final BufferedImage a = anh[nhom * SO_GOC + f];
+                if (a == null) continue;
+                // Dung tat ca frame vao mot khung ao HB x WB, can giua va sat day khung.
+                // Bo qua do nhun tu nhien cua anh goc: nhip nhun nay chuyen sang dy de
+                // hai nua cung xe dich, khong thi duong cat bi ho.
+                final BufferedImage khungAo = new BufferedImage(WB, HB, BufferedImage.TYPE_INT_ARGB);
+                final Graphics2D gk = khungAo.createGraphics();
+                gk.drawImage(a, (WB - a.getWidth()) / 2, HB - a.getHeight(), null);
+                gk.dispose();
+                if (f == 0) {
+                    // Nua TREN cua frame 0 -> o tinh cua huong, dung cho ca 7 frame.
+                    final int[] o = oTinh(nhom);
+                    g.drawImage(khungAo.getSubimage(0, 0, WB, CUT), o[0], o[1], null);
+                }
+                final int[] o = oDong(nhom, f);
+                g.drawImage(khungAo.getSubimage(0, CUT, WB, HB - CUT), o[0], o[1], null);
             }
-            g.drawImage(anh[i], ox + (O - anh[i].getWidth()) / 2,
-                    oy + O - caoTrenVach - anh[i].getHeight(), null);
         }
-        // Bong do o o cuoi: linh thu that con nao cung co, la mot phan RIENG dat co dinh
-        // ngay toa do nhan vat va giu nguyen suot 21 frame (Rong Bang img0 27x14, heo bang
-        // img0 dy=-5). Thieu bong thi con thu nhin nhu dan len chu khong dung tren dat.
+        // Bong do: linh thu that con nao cung co, la mot phan RIENG dat co dinh ngay toa do
+        // nhan vat va giu nguyen suot 21 frame (Rong Bang anh0 27x14 dung 21 lan).
         final int rongBong = Math.max(8, (int) Math.round(rongThuc * 0.8));
         final int caoBong = Math.max(4, (int) Math.round(rongBong * 0.30));
-        final int bx = (O_BONG % SO_COT) * O, by = (O_BONG / SO_COT) * O;
+        final int[] ob = oBong();
         g.setPaint(new java.awt.Color(0, 0, 0, 80));
-        g.fillOval(bx + (O - rongBong) / 2, by + (O - caoBong) / 2, rongBong, caoBong);
+        g.fillOval(ob[0] + (WB - rongBong) / 2, ob[1] + (CAO_BONG - caoBong) / 2,
+                rongBong, caoBong);
         g.dispose();
         ImageIO.write(atlas, "png", new File("map/d_effect/" + id + ".png"));
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final DataOutputStream dos = new DataOutputStream(bos);
-        dos.writeByte(anh.length + 1);              // 15 o than + 1 o bong
-        for (int i = 0; i <= anh.length; i++) {
-            dos.writeByte(i);
-            dos.writeByte((i % SO_COT) * O);
-            dos.writeByte((i / SO_COT) * O);
-            dos.writeByte(O);
-            dos.writeByte(O);
+        dos.writeByte(SO_ANH_CON);
+        for (int nhom = 0; nhom < 3; nhom++) {          // 0..2  o tinh (nua tren)
+            final int[] o = oTinh(nhom);
+            ghiAnhCon(dos, nhom, o[0], o[1], WB, CUT);
         }
+        for (int nhom = 0; nhom < 3; nhom++) {          // 3..17 o dong (nua duoi)
+            for (int f = 0; f < SO_GOC; f++) {
+                final int[] o = oDong(nhom, f);
+                ghiAnhCon(dos, 3 + nhom * SO_GOC + f, o[0], o[1], WB, HB - CUT);
+            }
+        }
+        final int[] ob2 = oBong();                      // 18    o bong
+        ghiAnhCon(dos, ID_BONG, ob2[0], ob2[1], WB, CAO_BONG);
+
         dos.writeShort(3 * SO_SLOT);
         for (int nhom = 0; nhom < 3; nhom++) {
             for (int slot = 0; slot < SO_SLOT; slot++) {
                 final int f = slot < SO_GOC ? slot : slot - SO_GOC;
-                final int idAnh = nhom * SO_GOC + f;
-                if (khung[nhom][f] == null || anh[idAnh] == null) {
+                if (khung[nhom][f] == null || anh[nhom * SO_GOC + f] == null) {
                     dos.writeByte(0);
                     continue;
                 }
-                dos.writeByte(2);
-                // Phan 1: bong do. Dat truoc than de nam DUOI than, va dung mot toa do
-                // cho ca 21 frame nen bong khong xe dich theo nhip nhun cua than.
-                // O bong duoc ve hinh bau duc dung giua o nen -O/2 dua tam bong ve
-                // dung toa do nhan vat.
-                dos.writeShort(-O / 2);
-                dos.writeShort(-O / 2);
-                dos.writeByte(O_BONG);
-                dos.writeByte(0);
-                dos.writeByte(0);
-                // Phan 2: than con thu.
-                // dx = -O/2: can giua o. Dung dung nua o thi client lat anh cho huong
-                // phai bang num = -(dx + w) cung ra -O/2, hai ben trung khop tuyet doi.
-                dos.writeShort(-O / 2);
-                // Day o nam duoi toa do nhan vat THO_XUONG diem. Con thu phai tho xuong
-                // duoi chan nhan vat, khong duoc dung ngay tai do: client nang nhan vat
-                // len khi cuoi (dy_horse_tool, Rong Bang -22 khi nhin truoc) nen duoi chan
-                // phai con than va chan con thu, khong thi nhin nhu nguoi dung canh con
-                // thu chu khong phai ngoi tren.
-                dos.writeShort(-O + THO_XUONG[nhom]);
-                dos.writeByte(idAnh);
-                dos.writeByte(0);   // flip: client tu lat khi di sang phai
-                dos.writeByte(0);   // onTop = 0 -> nam trong danh sach ve sau cung
+                // Nhip nhun: nang ca con len 1 diem o frame le, y nhu Rong Bang.
+                final int nhunF = slot % 2 == 1 ? 1 : 0;
+                // Day khung ao nam duoi toa do nhan vat THO_XUONG diem. Con thu phai tho
+                // xuong duoi chan nhan vat, khong duoc dung ngay tai do: client nang nhan
+                // vat len khi cuoi (dy_horse_tool, Rong Bang -22 khi nhin truoc) nen duoi
+                // chan phai con than va chan con thu.
+                final int dayKhung = THO_XUONG[nhom] - nhunF;
+                dos.writeByte(3);
+                // Phan 1: bong do — ve truoc nen nam duoi, va KHONG nhun theo than.
+                ghiPhan(dos, -WB / 2, -CAO_BONG / 2, ID_BONG);
+                // Phan 2: nua tren (dau, than tren) — chung cho ca 7 frame cua huong.
+                ghiPhan(dos, -WB / 2, dayKhung - HB, nhom);
+                // Phan 3: nua duoi (than duoi, chan) — rieng tung frame.
+                ghiPhan(dos, -WB / 2, dayKhung - HB + CUT, 3 + nhom * SO_GOC + f);
             }
         }
         // Bo buoc sequence: bat chuoc Rong Bang, tro vao 3 frame chay cua huong ngang.
@@ -368,11 +384,31 @@ public class TaoEffThuCuoi {
         try (FileOutputStream fo = new FileOutputStream(new File("map/d_effect/" + id))) {
             fo.write(bos.toByteArray());
         }
-        System.out.println("Xong: d_effect/" + id + ".png (" + ATLAS + "x" + ATLAS + ", luoi "
-                + SO_COT + "x" + SO_COT + " o " + O + ", con thu to nhat " + rongThuc + "x"
-                + caoThuc + ") + d_effect/" + id + " (" + bos.size()
-                + " byte, 21 frame), ti le " + String.format("%.3f", tiLe)
-                + " -> id gui client = " + (8700 + id));
+        System.out.println("Xong: d_effect/" + id + ".png (" + ATLAS + "x" + ATLAS + ", "
+                + SO_ANH_CON + " anh con: 3 nua tren dung chung + 15 nua duoi + 1 bong"
+                + ", con thu to nhat " + rongThuc + "x" + caoThuc + ") + d_effect/" + id
+                + " (" + bos.size() + " byte, 21 frame), ti le "
+                + String.format("%.3f", tiLe) + " -> id gui client = " + (8700 + id));
+    }
+
+    /** Ghi mo ta mot anh con: 5 byte khong dau id, x, y, rong, cao. */
+    private static void ghiAnhCon(final DataOutputStream dos, final int id, final int x,
+                                   final int y, final int w, final int h) throws Exception {
+        dos.writeByte(id);
+        dos.writeByte(x);
+        dos.writeByte(y);
+        dos.writeByte(w);
+        dos.writeByte(h);
+    }
+
+    /** Ghi mot phan cua frame: short dx, short dy, byte idAnh, byte flip, byte onTop. */
+    private static void ghiPhan(final DataOutputStream dos, final int dx, final int dy,
+                                 final int idAnh) throws Exception {
+        dos.writeShort(dx);
+        dos.writeShort(dy);
+        dos.writeByte(idAnh);
+        dos.writeByte(0);   // flip: client tu lat khi di sang phai
+        dos.writeByte(0);   // onTop = 0 -> nam trong danh sach ve sau cung
     }
 
     /** Doc tham so dang "0-2" hoac "3" thanh khoang o. */
