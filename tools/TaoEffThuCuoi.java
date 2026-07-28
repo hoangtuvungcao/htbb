@@ -59,7 +59,7 @@ public class TaoEffThuCuoi {
         }
         final File sheet = new File(args[0]);
         final int id = Integer.parseInt(args[1]);
-        int hXuong = -1, hLen = -1, hNgang = -1, boTrai = 0, nguong = 48, o = 51;
+        int hXuong = -1, hLen = -1, hNgang = -1, boTrai = 0, nguong = 48, caoDich = 44;
         for (int i = 2; i < args.length; i++) {
             final String a = args[i];
             if (a.startsWith("--xuong=")) hXuong = Integer.parseInt(a.substring(8));
@@ -67,14 +67,10 @@ public class TaoEffThuCuoi {
             else if (a.startsWith("--ngang=")) hNgang = Integer.parseInt(a.substring(8));
             else if (a.startsWith("--botrai=")) boTrai = Integer.parseInt(a.substring(9));
             else if (a.startsWith("--nguong=")) nguong = Integer.parseInt(a.substring(9));
-            else if (a.startsWith("--o=")) o = Integer.parseInt(a.substring(4));
+            else if (a.startsWith("--cao=")) caoDich = Integer.parseInt(a.substring(6));
         }
         if (hXuong < 0 || hLen < 0 || hNgang < 0) {
             System.out.println("Thieu --xuong / --len / --ngang");
-            return;
-        }
-        if (o > 51) {
-            System.out.println("O qua lon: 5 cot x " + o + " > 255. Dung --o <= 51.");
             return;
         }
 
@@ -89,7 +85,7 @@ public class TaoEffThuCuoi {
         // Lay khung bao cua tung frame cua 3 hang, roi mot ti le CHUNG cho tat ca.
         final int[] hang = {hXuong, hLen, hNgang};
         final int[][][] khung = new int[3][SO_FRAME_HUONG][];
-        double tiLe = Double.MAX_VALUE;
+        int caoNhat = 0, rongNhat = 0;
         for (int nhom = 0; nhom < 3; nhom++) {
             if (hang[nhom] >= hangs.size()) {
                 System.out.println("Khong co hang " + hang[nhom] + " (bang chi co "
@@ -108,23 +104,32 @@ public class TaoEffThuCuoi {
                 final int[] k = CatSpriteSheet.khungBao(coHinh, c[0], c[1], h[0], h[1]);
                 if (k == null) continue;
                 khung[nhom][f] = k;
-                tiLe = Math.min(tiLe, Math.min((double) o / (k[3] - k[1] + 1),
-                        (double) o / (k[2] - k[0] + 1)));
+                caoNhat = Math.max(caoNhat, k[3] - k[1] + 1);
+                rongNhat = Math.max(rongNhat, k[2] - k[0] + 1);
             }
             System.out.println("  nhom " + nhom + " (hang " + hang[nhom] + "): "
                     + cot.size() + " frame nguon");
         }
-        if (tiLe == Double.MAX_VALUE) {
+        if (caoNhat == 0) {
             System.out.println("Khong lay duoc frame nao");
             return;
+        }
+        // MOT co chuan cho CA 5 skin: thu nho sao cho frame cao nhat dung bang --cao.
+        // Nho vay cac skin bang nhau, khong con con to con nho. Neu be ngang vuot o
+        // thi thu nho them cho vua, van giu nguyen ti le anh.
+        double tiLe = (double) caoDich / caoNhat;
+        if (rongNhat * tiLe > 63) {
+            tiLe = 63.0 / rongNhat;
         }
 
         // Atlas 4 cot x 5 hang o vuong canh o, phai nam gon trong 255x255 vi toa do
         // anh con luu bang byte khong dau.
-        // 18 frame phai nam gon trong 255x255: 5 cot x 4 dong, o toi da 51 (255/5).
-        final int cot = 5;
+        // 18 frame phai nam gon trong 255x255 vi toa do anh con luu bang byte khong dau.
+        // 4 cot x 5 dong -> o rong toi da 63, cao toi da 51. O rong hon o vuong vi con
+        // thu nhin ngang bao giờ cung be hon la cao.
+        final int cot = 4, oW = 63, oH = 51;
         final int dong = (18 + cot - 1) / cot;
-        final BufferedImage atlas = new BufferedImage(cot * o, dong * o,
+        final BufferedImage atlas = new BufferedImage(cot * oW, dong * oH,
                 BufferedImage.TYPE_INT_ARGB);
         final Graphics2D g = atlas.createGraphics();
         final int[][] oAnh = new int[18][]; // x, y, w, h cua tung frame trong atlas
@@ -137,10 +142,10 @@ public class TaoEffThuCuoi {
                 continue;
             }
             final BufferedImage nho = CatSpriteSheet.thuNho(goc, coHinh, k, tiLe);
-            final int ox = (i % cot) * o, oy = (i / cot) * o;
+            final int ox = (i % cot) * oW, oy = (i / cot) * oH;
             // Can giua o va sat day o.
-            final int dx = ox + (o - nho.getWidth()) / 2;
-            final int dy = oy + (o - nho.getHeight());
+            final int dx = ox + (oW - nho.getWidth()) / 2;
+            final int dy = oy + (oH - nho.getHeight());
             g.drawImage(nho, dx, dy, null);
             oAnh[i] = new int[]{dx, dy, nho.getWidth(), nho.getHeight()};
         }

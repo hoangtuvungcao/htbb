@@ -1554,12 +1554,13 @@ public class MessageCreator {
             if (ch.animalRide != null && !ch.isMasterClanAndHaveTown()) {
                 idThutool = ch.animalRide.getIdImageTool();
                 indexdxy = ch.animalRide.getIndexDxy();
-                // Skin thu cuoi de len day: day chinh la duong dang ve Rong Bang,
-                // Poro, Lan... va hoa hinh. Xem SkinThuNuoi.idEffThuCuoi.
+                // Skin thu cuoi de len day: day chinh la duong dang ve Rong Bang, Poro, Lan...
+                // va hoa hinh. GIU NGUYEN indexdxy cua con thu that: bang bu toa do ben client
+                // (Char.dx_horse/dy_horse) chi co DUNG MOT dong, gui index khac 0 la client
+                // nem loi giua luc ve -> mat chan/mat dau nhan vat.
                 final int idEffSkin = SkinThuNuoi.idEffThuCuoi(ch);
                 if (idEffSkin > 0) {
                     idThutool = idEffSkin;
-                    indexdxy = SkinThuNuoi.INDEX_DXY;
                 }
             }
             m.dos.writeShort(idThutool);
@@ -1843,7 +1844,6 @@ public class MessageCreator {
             final int idEffSkin = SkinThuNuoi.idEffThuCuoi(p);
             if (idEffSkin > 0) {
                 idThutool = idEffSkin;
-                indexdxy = SkinThuNuoi.INDEX_DXY;
             }
         }
         m.dos.writeShort(idThutool);
