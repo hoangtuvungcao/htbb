@@ -10407,11 +10407,22 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     private void handleModelEffects()
     {
-        if (this.hp <= 0 || this.getIdEffTool5l() <= -1 || System.currentTimeMillis() - this.timeSendEffTool5l < 0L) 
+        // KHONG duoc doi hoi getIdEffTool5l() > -1 o day. Ham nay tu chon id hieu ung theo
+        // tung mau ao ben duoi, khong dung ideff cua item, nen bat buoc item phai co ideff
+        // la vo ly — va da lam mat hieu ung that: Mieu quy toc (id 834) co nhanh
+        // effectId = 233 nhung ideff trong data_item la -1 nen ham thoat ngay tu dong dau,
+        // hao quang cua no chua bao gio chay. Dieu kien can va du chi la con song va da qua
+        // moc gui lai; chinh khoi "if (effectId != -1)" ben duoi da loc nguoi khong mang mau
+        // ao nao co hieu ung.
+        if (this.hp <= 0 || System.currentTimeMillis() - this.timeSendEffTool5l < 0L)
         {
             return;
         }
-    
+        if (this.wModel == null)
+        {
+            return;
+        }
+
         int effectId = -1;
     
         // Xác định effectId dựa trên model
