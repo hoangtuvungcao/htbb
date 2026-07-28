@@ -293,6 +293,10 @@ public class OtherHandle implements ICommandHandler {
             int type = message.dis.readByte();
             int hascode = message.dis.readByte();
             if (type == 2) {
+                // Log chan doan skin thu cuoi: xem client co xin tai lai bo anh khong.
+                System.out.println("XIN ANH type=" + type + " ver_client=" + hascode
+                        + " ver_server=" + Map.versionPotion
+                        + (Map.versionPotion != hascode ? " -> GUI LAI" : " -> khong gui"));
                 if (Map.versionPotion != hascode) {
                     Message msg = new Message(-8);
                     msg.dos.writeByte(type);

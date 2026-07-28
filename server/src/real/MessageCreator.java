@@ -1831,6 +1831,13 @@ public class MessageCreator {
                 }
             }
 
+            // Log chan doan skin thu cuoi.
+            if (p.isAdmin || SkinThuNuoi.hopLe(p.idSkinThuNuoi)) {
+                System.out.println("HORSE " + p.charname + " skin=" + p.idSkinThuNuoi
+                        + " userHorse=" + userHorse + " fly=" + fly
+                        + " idImgHorse=" + idImgHorse
+                        + " thu=" + (p.animalRide == null ? -1 : p.animalRide.idImg));
+            }
             m.dos.writeByte(fly);
             m.dos.writeByte(idImgHorse);
         }
