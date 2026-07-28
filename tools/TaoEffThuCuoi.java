@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -33,33 +36,61 @@ import javax.imageio.ImageIO;
  *   byte n1 + n1 byte  -> frameChar[1]
  *   byte n3 + n3 byte  -> frameChar[3]
  *
- * Client chon frame theo huong trong Char.getFrameBody():
- *   DOWN -> frame            (0..5)
- *   UP   -> 6 + frame        (6..11)
- *   LEFT/RIGHT -> 12 + frame (12..17), RIGHT duoc lat ngang
- * => can dung 18 frame: 6 xuong, 6 len, 6 ngang.
+ * BO CUC 21 FRAME — day la cho de lam sai nhat. Client KHONG dung 18 frame ma
+ * dung dung 21, chia 7 frame moi huong (Char.getFrameHorse()):
  *
- *   javac -d out tools/CatSpriteSheet.java tools/TaoEffThuCuoi.java
+ *   DOWN       -> Fhorse            (slot 0..6)
+ *   UP         -> Fhorse + 7        (slot 7..13)
+ *   LEFT/RIGHT -> Fhorse + 14       (slot 14..20)
+ *
+ * Trong moi huong, Fhorse chay theo hai bang cua Char:
+ *   dung yen : STANDFRAME -> Fhorse = 0, 1
+ *   di chuyen: horseMove {2,2,2,3,3,4,4,4} -> Fhorse = 2, 3, 4
+ * Slot 5 va 6 khong bao gio duoc dung khi di/dung nen ta cho tro lai anh cua slot
+ * 0 va 1 — Rong Bang lam dung y nhu vay. Neu chi ghi 18 frame thi huong ngang voi
+ * Fhorse = 4 se doi frame 18 khong ton tai, paintTopHorse return luon, con thu bien
+ * mat dung tick do -> NHAY LIEN TUC khi di chuyen.
+ *
+ * HUONG CUA ANH GOC: client lat ngang khi dir == RIGHT ((dir == RIGHT) ? 2 : 0),
+ * nghia la anh luu san phai nhin ve BEN TRAI. Rong Bang dung dung the. Cac bang
+ * sprite AI o day ve con thu nhin sang phai nen phai lat lai, khong thi con thu se
+ * di lui — nguoc huong voi nhan vat.
+ *
+ *   javac -d out tools/CatSpriteSheet.java tools/TaoDataSprite.java tools/TaoEffThuCuoi.java
  *   java -cp out TaoEffThuCuoi <bang.png> <id d_effect> --xuong=N --len=N --ngang=N
- *        [--botrai=0] [--nguong=48] [--o=60]
+ *        [--botrai=0] [--nguong=48] [--cao=60] [--lomdom=40] [--khonglat]
  *
  * Ghi ra map/d_effect/<id>.png + map/d_effect/<id>. Id phai nam trong
  * id_eff_tool_ngu_long va khong duoc trung id nao dang dung.
  */
 public class TaoEffThuCuoi {
 
-    /** So frame moi huong ma client mong doi. */
-    private static final int SO_FRAME_HUONG = 6;
+    /** So slot frame moi huong ma client mong doi. */
+    private static final int SO_SLOT = 7;
+    /** So anh that moi huong; slot 5, 6 dung lai anh cua slot 0, 1. */
+    private static final int SO_GOC = 5;
+    /** Toa do anh con luu bang byte khong dau nen atlas toi da 256x256. */
+    private static final int ATLAS = 256;
 
     public static void main(final String[] args) throws Exception {
         if (args.length < 2) {
             System.out.println("Dung: java TaoEffThuCuoi <bang.png> <id> --xuong=N --len=N "
-                    + "--ngang=N [--botrai=0] [--nguong=48] [--o=60]");
+                    + "--ngang=N [--botrai=0] [--nguong=48] [--cao=60] [--lomdom=40] [--khonglat]");
             return;
         }
         final File sheet = new File(args[0]);
         final int id = Integer.parseInt(args[1]);
-        int hXuong = -1, hLen = -1, hNgang = -1, boTrai = 0, nguong = 48, caoDich = 44;
+        // nguong = -1: chi lay theo kenh trong suot. Cac bang sprite o day co nen
+        // TRONG SUOT va con thu thi mau TOI, nen loc theo do sang (nguong 48) se cat
+        // mat 28%-53% than va vien con thu, chi con lai nhung mang sang roi rac —
+        // do la ly do skin nhin "mat net khong ro". Chi dat nguong duong khi bang
+        // sprite co nen den dac.
+        int hXuong = -1, hLen = -1, hNgang = -1, boTrai = 0, nguong = -1, caoDich = 60, lomDom = 40;
+        // So o that su cua tung hang. Khi lay du ca phan toi cua con thu thi cac frame
+        // trong mot hang dinh vao nhau (bong, trang tri cham nhau) nen do khe trong de
+        // tach se ra sai so frame; chi dinh tay thi chia deu, chac an voi bang ke luoi.
+        final int[] soCot = {0, 0, 0};
+        boolean lat = true;
         for (int i = 2; i < args.length; i++) {
             final String a = args[i];
             if (a.startsWith("--xuong=")) hXuong = Integer.parseInt(a.substring(8));
@@ -68,6 +99,11 @@ public class TaoEffThuCuoi {
             else if (a.startsWith("--botrai=")) boTrai = Integer.parseInt(a.substring(9));
             else if (a.startsWith("--nguong=")) nguong = Integer.parseInt(a.substring(9));
             else if (a.startsWith("--cao=")) caoDich = Integer.parseInt(a.substring(6));
+            else if (a.startsWith("--lomdom=")) lomDom = Integer.parseInt(a.substring(9));
+            else if (a.startsWith("--cotxuong=")) soCot[0] = Integer.parseInt(a.substring(11));
+            else if (a.startsWith("--cotlen=")) soCot[1] = Integer.parseInt(a.substring(9));
+            else if (a.startsWith("--cotngang=")) soCot[2] = Integer.parseInt(a.substring(11));
+            else if (a.equals("--khonglat")) lat = false;
         }
         if (hXuong < 0 || hLen < 0 || hNgang < 0) {
             System.out.println("Thieu --xuong / --len / --ngang");
@@ -80,12 +116,20 @@ public class TaoEffThuCuoi {
             return;
         }
         final boolean[][] coHinh = CatSpriteSheet.locNen(goc, nguong, boTrai, 0);
+        final int daXoa = boLomDom(coHinh, lomDom);
+        if (daXoa > 0) {
+            System.out.println("  xoa " + daXoa + " dom nhieu (< " + lomDom + " diem)");
+        }
         final List<int[]> hangs = CatSpriteSheet.timDai(coHinh, true);
 
-        // Lay khung bao cua tung frame cua 3 hang, roi mot ti le CHUNG cho tat ca.
+        // Lay khung bao cua 5 frame goc cho tung huong, kem khung bao CHUNG cua ca
+        // huong. Khung chung la moc: nho no ma tung frame giu nguyen do lech tu nhien
+        // trong bang goc, khong bi keo ve giua o -> khong rung lac giua cac frame.
         final int[] hang = {hXuong, hLen, hNgang};
-        final int[][][] khung = new int[3][SO_FRAME_HUONG][];
-        int caoNhat = 0, rongNhat = 0;
+        final int[][][] khung = new int[3][SO_GOC][];
+        final boolean[][][][] mat = new boolean[3][SO_GOC][][];
+        final int[] mocY = new int[3];
+        int caoNhat = 0;
         for (int nhom = 0; nhom < 3; nhom++) {
             if (hang[nhom] >= hangs.size()) {
                 System.out.println("Khong co hang " + hang[nhom] + " (bang chi co "
@@ -93,94 +137,112 @@ public class TaoEffThuCuoi {
                 return;
             }
             final int[] h = hangs.get(hang[nhom]);
-            final List<int[]> cot = CatSpriteSheet.timCot(coHinh, h[0], h[1], -1, -1);
+            final List<int[]> cot = CatSpriteSheet.timCot(coHinh, h[0], h[1], -1, soCot[nhom]);
             if (cot.isEmpty()) {
                 System.out.println("Hang " + hang[nhom] + " khong co frame");
                 return;
             }
-            for (int f = 0; f < SO_FRAME_HUONG; f++) {
-                // Thieu frame thi lap lai vong tron cho du 6.
-                final int[] c = cot.get(f % cot.size());
-                final int[] k = CatSpriteSheet.khungBao(coHinh, c[0], c[1], h[0], h[1]);
+            // Moc NGANG lay tam hinh cua tung frame — nhu vay dx = -w/2, dung y cong
+            // thuc client dung khi lat anh cho huong phai (num = -(dx + w)) nen con
+            // thu dung dung cho ca hai ben. Moc DOC thi lay chung ca hang: moi frame
+            // trong hang dung tren cung mot vach dat, nho vay giu duoc nhip nhun len
+            // xuong tu nhien ma khong bi giat.
+            final int soO = cot.size();
+            int cy2 = -1;
+            for (int f = 0; f < SO_GOC; f++) {
+                // Lay deu SO_GOC frame trong hang de khong cat mat cuoi vong lap.
+                final int[] c = cot.get(f * soO / SO_GOC);
+                final boolean[][] rieng = locConThu(coHinh, c[0], c[1], h[0], h[1]);
+                final int[] k = CatSpriteSheet.khungBao(rieng, c[0], c[1], h[0], h[1]);
                 if (k == null) continue;
                 khung[nhom][f] = k;
+                mat[nhom][f] = rieng;
+                cy2 = Math.max(cy2, k[3]);
                 caoNhat = Math.max(caoNhat, k[3] - k[1] + 1);
-                rongNhat = Math.max(rongNhat, k[2] - k[0] + 1);
             }
+            if (cy2 < 0) {
+                System.out.println("Hang " + hang[nhom] + " khong lay duoc frame nao");
+                return;
+            }
+            mocY[nhom] = cy2;
             System.out.println("  nhom " + nhom + " (hang " + hang[nhom] + "): "
-                    + cot.size() + " frame nguon");
+                    + soO + " frame nguon, vach dat y=" + cy2);
         }
         if (caoNhat == 0) {
             System.out.println("Khong lay duoc frame nao");
             return;
         }
+
         // MOT co chuan cho CA 5 skin: thu nho sao cho frame cao nhat dung bang --cao.
-        // Nho vay cac skin bang nhau, khong con con to con nho. Neu be ngang vuot o
-        // thi thu nho them cho vua, van giu nguyen ti le anh.
+        // Neu 15 anh khong xep vua 256x256 thi ha dan cho vua, va in ra de biet.
         double tiLe = (double) caoDich / caoNhat;
-        if (rongNhat * tiLe > 63) {
-            tiLe = 63.0 / rongNhat;
+        BufferedImage[] anh = null;
+        int[][] oAnh = null;
+        while (true) {
+            anh = new BufferedImage[3 * SO_GOC];
+            for (int nhom = 0; nhom < 3; nhom++) {
+                for (int f = 0; f < SO_GOC; f++) {
+                    final int[] k = khung[nhom][f];
+                    if (k == null) continue;
+                    BufferedImage nho = CatSpriteSheet.thuNho(goc, mat[nhom][f], k, tiLe);
+                    // Anh goc nhin sang phai; client chi lat khi dir == RIGHT nen anh
+                    // luu san phai nhin sang trai.
+                    if (lat && nhom == 2) nho = latNgang(nho);
+                    anh[nhom * SO_GOC + f] = nho;
+                }
+            }
+            oAnh = xepAtlas(anh);
+            if (oAnh != null) break;
+            tiLe *= 0.96;
+            if (tiLe < 0.02) {
+                System.out.println("Khong xep noi vao " + ATLAS + "x" + ATLAS);
+                return;
+            }
         }
 
-        // Atlas 4 cot x 5 hang o vuong canh o, phai nam gon trong 255x255 vi toa do
-        // anh con luu bang byte khong dau.
-        // 18 frame phai nam gon trong 255x255 vi toa do anh con luu bang byte khong dau.
-        // 4 cot x 5 dong -> o rong toi da 63, cao toi da 51. O rong hon o vuong vi con
-        // thu nhin ngang bao giờ cung be hon la cao.
-        final int cot = 4, oW = 63, oH = 51;
-        final int dong = (18 + cot - 1) / cot;
-        final BufferedImage atlas = new BufferedImage(cot * oW, dong * oH,
-                BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage atlas = new BufferedImage(ATLAS, ATLAS, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D g = atlas.createGraphics();
-        final int[][] oAnh = new int[18][]; // x, y, w, h cua tung frame trong atlas
-        for (int i = 0; i < 18; i++) {
-            final int nhom = i / SO_FRAME_HUONG;   // 0 xuong, 1 len, 2 ngang
-            final int f = i % SO_FRAME_HUONG;
-            final int[] k = khung[nhom][f];
-            if (k == null) {
-                oAnh[i] = new int[]{0, 0, 1, 1};
-                continue;
-            }
-            final BufferedImage nho = CatSpriteSheet.thuNho(goc, coHinh, k, tiLe);
-            final int ox = (i % cot) * oW, oy = (i / cot) * oH;
-            // Can giua o va sat day o.
-            final int dx = ox + (oW - nho.getWidth()) / 2;
-            final int dy = oy + (oH - nho.getHeight());
-            g.drawImage(nho, dx, dy, null);
-            oAnh[i] = new int[]{dx, dy, nho.getWidth(), nho.getHeight()};
+        for (int i = 0; i < anh.length; i++) {
+            if (anh[i] != null) g.drawImage(anh[i], oAnh[i][0], oAnh[i][1], null);
         }
         g.dispose();
-        if (atlas.getWidth() > 255 || atlas.getHeight() > 255) {
-            System.out.println("Atlas " + atlas.getWidth() + "x" + atlas.getHeight()
-                    + " vuot 255 — giam --o");
-            return;
-        }
-
-        final File png = new File("map/d_effect/" + id + ".png");
-        ImageIO.write(atlas, "png", png);
+        ImageIO.write(atlas, "png", new File("map/d_effect/" + id + ".png"));
 
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final DataOutputStream dos = new DataOutputStream(bos);
-        dos.writeByte(18);
-        for (int i = 0; i < 18; i++) {
+        dos.writeByte(anh.length);
+        for (int i = 0; i < anh.length; i++) {
             dos.writeByte(i);
             dos.writeByte(oAnh[i][0]);
             dos.writeByte(oAnh[i][1]);
             dos.writeByte(oAnh[i][2]);
             dos.writeByte(oAnh[i][3]);
         }
-        dos.writeShort(18);
-        for (int i = 0; i < 18; i++) {
-            dos.writeByte(1);                       // mot part
-            dos.writeShort(-oAnh[i][2] / 2);        // dx: can giua
-            dos.writeShort(-oAnh[i][3]);            // dy: ngoi tren mat dat
-            dos.writeByte(i);                       // id anh con
-            dos.writeByte(0);                       // flip
-            dos.writeByte(0);                       // onTop = 0 -> ve duoi nhan vat
+        dos.writeShort(3 * SO_SLOT);
+        for (int nhom = 0; nhom < 3; nhom++) {
+            for (int slot = 0; slot < SO_SLOT; slot++) {
+                final int f = slot < SO_GOC ? slot : slot - SO_GOC;
+                final int[] k = khung[nhom][f];
+                final int idAnh = nhom * SO_GOC + f;
+                if (k == null || anh[idAnh] == null) {
+                    dos.writeByte(0);
+                    continue;
+                }
+                dos.writeByte(1);
+                // Can giua theo be ngang anh da thu nho, khong tinh lai tu anh goc:
+                // client lat anh bang num = -(dx + w), chi dung -w/2 thi hai huong moi
+                // trung khop tuyet doi.
+                dos.writeShort(-anh[idAnh].getWidth() / 2);
+                dos.writeShort((int) Math.round((k[1] - mocY[nhom]) * tiLe));
+                dos.writeByte(idAnh);
+                dos.writeByte(0);   // flip: client tu lat khi di sang phai
+                dos.writeByte(0);   // onTop = 0 -> nam trong danh sach ve sau cung
+            }
         }
-        dos.writeByte(18);
-        for (int i = 0; i < 18; i++) {
-            dos.writeShort(i);
+        // Bo buoc sequence: bat chuoc Rong Bang, tro vao 3 frame chay cua huong ngang.
+        dos.writeByte(9);
+        for (final int b : new int[]{16, 16, 16, 17, 17, 17, 18, 18, 18}) {
+            dos.writeShort(b);
         }
         dos.writeByte(0);   // indexStartSkill
         dos.writeByte(0);   // frameChar[0] rong
@@ -190,9 +252,183 @@ public class TaoEffThuCuoi {
         try (FileOutputStream fo = new FileOutputStream(new File("map/d_effect/" + id))) {
             fo.write(bos.toByteArray());
         }
-        System.out.println("Xong: d_effect/" + id + ".png (" + atlas.getWidth() + "x"
-                + atlas.getHeight() + ") + d_effect/" + id + " (" + bos.size() + " byte)"
-                + ", ti le " + String.format("%.3f", tiLe) + " -> id gui client = "
-                + (8700 + id));
+        int caoThat = 0, rongThat = 0;
+        for (final BufferedImage a : anh) {
+            if (a == null) continue;
+            caoThat = Math.max(caoThat, a.getHeight());
+            rongThat = Math.max(rongThat, a.getWidth());
+        }
+        System.out.println("Xong: d_effect/" + id + ".png (" + ATLAS + "x" + ATLAS + ", "
+                + anh.length + " anh con, to nhat " + rongThat + "x" + caoThat + ") + d_effect/"
+                + id + " (" + bos.size() + " byte, 21 frame), ti le "
+                + String.format("%.3f", tiLe) + " -> id gui client = " + (8700 + id));
+    }
+
+    /**
+     * Trong mot o, chi giu lai con thu cua o do va bo cac manh cua con ben canh.
+     *
+     * Chia o deu nhau thi duong cat hay di ngang qua con ke tiep, de lai mot lat mong
+     * o ria frame — trong game thay nhu co manh rac bay theo. Cach loc: tim cac khoi
+     * diem lien nhau trong o, chon khoi to nhat co phu qua tim o (con thu bao gio cung
+     * nam giua o), roi giu them nhung khoi nam trong be ngang cua khoi chinh (tai,
+     * duoi, do trang tri bi tach roi). Con lai coi la cua con ben canh.
+     *
+     * Tra ve mat na rieng cua o, khong sua mat na goc de o ben canh con dung duoc.
+     */
+    private static boolean[][] locConThu(final boolean[][] m, final int x1, final int x2,
+                                          final int y1, final int y2) {
+        final boolean[][] rieng = new boolean[m.length][];
+        for (int y = 0; y < m.length; y++) rieng[y] = new boolean[m[y].length];
+        final boolean[][] daXet = new boolean[y2 - y1 + 1][x2 - x1 + 1];
+        final Deque<int[]> ngan = new ArrayDeque<>();
+        final List<List<int[]>> khoi = new ArrayList<>();
+        for (int y = y1; y <= y2; y++) {
+            for (int x = x1; x <= x2; x++) {
+                if (!m[y][x] || daXet[y - y1][x - x1]) continue;
+                final List<int[]> cum = new ArrayList<>();
+                ngan.push(new int[]{x, y});
+                daXet[y - y1][x - x1] = true;
+                while (!ngan.isEmpty()) {
+                    final int[] p = ngan.pop();
+                    cum.add(p);
+                    for (int dy = -1; dy <= 1; dy++) {
+                        for (int dx = -1; dx <= 1; dx++) {
+                            final int nx = p[0] + dx, ny = p[1] + dy;
+                            if (nx < x1 || nx > x2 || ny < y1 || ny > y2) continue;
+                            if (!m[ny][nx] || daXet[ny - y1][nx - x1]) continue;
+                            daXet[ny - y1][nx - x1] = true;
+                            ngan.push(new int[]{nx, ny});
+                        }
+                    }
+                }
+                khoi.add(cum);
+            }
+        }
+        if (khoi.isEmpty()) return rieng;
+
+        final int tim = (x1 + x2) / 2;
+        List<int[]> chinh = null;
+        for (final List<int[]> cum : khoi) {
+            int a = Integer.MAX_VALUE, b = -1;
+            for (final int[] p : cum) {
+                a = Math.min(a, p[0]);
+                b = Math.max(b, p[0]);
+            }
+            if (a > tim || b < tim) continue;
+            if (chinh == null || cum.size() > chinh.size()) chinh = cum;
+        }
+        if (chinh == null) {
+            for (final List<int[]> cum : khoi) {
+                if (chinh == null || cum.size() > chinh.size()) chinh = cum;
+            }
+        }
+        int cx1 = Integer.MAX_VALUE, cx2 = -1;
+        for (final int[] p : chinh) {
+            cx1 = Math.min(cx1, p[0]);
+            cx2 = Math.max(cx2, p[0]);
+        }
+        for (final List<int[]> cum : khoi) {
+            if (cum != chinh) {
+                int a = Integer.MAX_VALUE, b = -1;
+                for (final int[] p : cum) {
+                    a = Math.min(a, p[0]);
+                    b = Math.max(b, p[0]);
+                }
+                if (a < cx1 || b > cx2) continue;   // nam ngoai be ngang con thu
+            }
+            for (final int[] p : cum) rieng[p[1]][p[0]] = true;
+        }
+        return rieng;
+    }
+
+    /** Lat anh theo chieu ngang. */
+    private static BufferedImage latNgang(final BufferedImage a) {
+        final BufferedImage r = new BufferedImage(a.getWidth(), a.getHeight(),
+                BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < a.getHeight(); y++) {
+            for (int x = 0; x < a.getWidth(); x++) {
+                r.setRGB(a.getWidth() - 1 - x, y, a.getRGB(x, y));
+            }
+        }
+        return r;
+    }
+
+    /**
+     * Xoa cac dom rieng le nho hon toiThieu diem khoi mat na.
+     *
+     * Bang sprite AI ray rac day dom bui quanh con thu. Dom nay khong nhin thay o
+     * kich thuoc goc nhung khi thu nho xuong 60px thi thanh hat nhieu, va te hon la
+     * no phinh khung bao ra khien con thu bi thu nho hon can thiet roi lech tam.
+     */
+    private static int boLomDom(final boolean[][] m, final int toiThieu) {
+        if (toiThieu <= 1) return 0;
+        final int h = m.length, w = m[0].length;
+        final boolean[][] daXet = new boolean[h][w];
+        final Deque<int[]> ngan = new ArrayDeque<>();
+        final List<int[]> cum = new ArrayList<>();
+        int xoa = 0;
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                if (!m[y][x] || daXet[y][x]) continue;
+                cum.clear();
+                ngan.push(new int[]{x, y});
+                daXet[y][x] = true;
+                while (!ngan.isEmpty()) {
+                    final int[] p = ngan.pop();
+                    cum.add(p);
+                    for (int dy = -1; dy <= 1; dy++) {
+                        for (int dx = -1; dx <= 1; dx++) {
+                            final int nx = p[0] + dx, ny = p[1] + dy;
+                            if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+                            if (!m[ny][nx] || daXet[ny][nx]) continue;
+                            daXet[ny][nx] = true;
+                            ngan.push(new int[]{nx, ny});
+                        }
+                    }
+                }
+                if (cum.size() < toiThieu) {
+                    for (final int[] p : cum) m[p[1]][p[0]] = false;
+                    xoa++;
+                }
+            }
+        }
+        return xoa;
+    }
+
+    /**
+     * Xep cac anh vao atlas ATLAS x ATLAS theo kieu ke tang: cao xuong thap dan, moi
+     * tang cao bang anh dau tang. Tra ve {x, y, w, h} cua tung anh, null neu khong vua.
+     *
+     * Xep kieu nay thay cho luoi o deu nhau vi frame nhin ngang rong hon han frame
+     * nhin truoc; chia o deu nhau se bo trong rat nhieu cho, ep phai thu nho con thu.
+     */
+    private static int[][] xepAtlas(final BufferedImage[] anh) {
+        final Integer[] thuTu = new Integer[anh.length];
+        for (int i = 0; i < anh.length; i++) thuTu[i] = i;
+        java.util.Arrays.sort(thuTu, (a, b) -> {
+            final int ha = anh[a] == null ? 0 : anh[a].getHeight();
+            final int hb = anh[b] == null ? 0 : anh[b].getHeight();
+            return hb - ha;
+        });
+        final int[][] o = new int[anh.length][];
+        int x = 0, y = 0, caoTang = 0;
+        for (final int i : thuTu) {
+            if (anh[i] == null) {
+                o[i] = new int[]{0, 0, 1, 1};
+                continue;
+            }
+            final int w = anh[i].getWidth(), h = anh[i].getHeight();
+            if (w > ATLAS) return null;
+            if (x + w > ATLAS) {
+                x = 0;
+                y += caoTang;
+                caoTang = 0;
+            }
+            if (y + h > ATLAS) return null;
+            o[i] = new int[]{x, y, w, h};
+            x += w;
+            caoTang = Math.max(caoTang, h);
+        }
+        return o;
     }
 }

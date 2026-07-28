@@ -900,6 +900,33 @@ Ví dụ thực tế: mục "Hỗ Trợ" của NPC tổng tiêu đầu (-50) đ�
 (commit `67cf92d`). NPC ảo của menu con (-519, -1000, -1001) không có case nên vẫn chạy tốt
 ở `Map.doMenu`.
 
+**Làm sprite thú cưỡi (skin linh thú): con thú nháy liên tục, đi ngược hướng, mờ nhoè**
+→ Ba cái bẫy khác nhau, gặp đủ cả ba trong một lần làm 5 skin (`tools/TaoEffThuCuoi.java`):
+
+1. **Phải đúng 21 frame, không phải 18.** `Char.getFrameHorse()` tính
+   `DOWN → Fhorse`, `UP → Fhorse + 7`, `LEFT/RIGHT → Fhorse + 14` — tức **7 slot mỗi
+   hướng**. Trong đó `Fhorse` chỉ nhận: `0, 1` khi đứng (`STANDFRAME`) và `2, 3, 4` khi
+   đi (`horseMove = {2,2,2,3,3,4,4,4}`); slot 5, 6 không dùng nên cho trỏ lại ảnh của
+   slot 0, 1 (Rồng Băng `d_effect/234` làm đúng như vậy). Ghi 18 frame thì hướng ngang
+   lúc `Fhorse = 4` sẽ đòi frame 18 không tồn tại, `DataSkillEff.paintTopHorse` gặp
+   `Frame >= listFrame.size()` là `return` luôn → con thú **biến mất đúng tick đó, nhìn
+   như nháy liên tục** khi di chuyển.
+2. **Ảnh lưu sẵn phải nhìn sang TRÁI.** Client chỉ lật khi đi sang phải
+   (`(dir == RIGHT) ? 2 : 0`), nên hướng trái vẽ nguyên ảnh. Lưu ảnh nhìn sang phải là
+   con thú đi lùi, ngược hướng nhân vật. Các bảng sprite AI đều có hàng ghi nhãn
+   `Left:` / `Right:` — lấy hàng **Left**, đừng lật thêm.
+3. **Nền các bảng sprite là TRONG SUỐT, không phải nền đen.** `CatSpriteSheet.locNen`
+   giữ điểm sáng hơn `nguong`; để `nguong = 48` với bảng nền trong suốt thì nó cắt mất
+   toàn bộ phần tối của con thú — đo được **28%–53% nét vẽ bị xoá**, chỉ còn các mảng
+   sáng rời rạc, đó chính là cảm giác "mất nét không rõ". Dùng `--nguong=-1` (chỉ lọc
+   theo kênh trong suốt) rồi `--botrai=` để bỏ cột chữ nhãn.
+
+Thêm hai giới hạn cứng: toạ độ ảnh con lưu bằng **byte không dấu** nên atlas tối đa
+**256×256** (Rồng Băng cũng 256×256) — 21 frame phải xếp vừa trong đó, vì vậy tool chỉ
+lưu 15 ảnh thật rồi cho slot 5, 6 dùng lại. Và `Char.dx_horse` / `dy_horse` bên client
+chỉ có **đúng một dòng** (`new sbyte[1][]`), nên `indexDxy` gửi khác 0 là client nổ lỗi
+giữa lúc vẽ → mất chân, mất nửa dưới nhân vật. Luôn giữ `getIndexDxy()` của con thú thật.
+
 **Không ai đăng nhập được, log login server im lặng**
 → Bạn cài MySQL 8 chứ không phải MariaDB. `PASSWORD()` không còn tồn tại.
 Kiểm tra: `mysql -u root -e "SELECT PASSWORD('abc');"` — báo lỗi hàm không tồn tại là đúng
