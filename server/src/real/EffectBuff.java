@@ -63,7 +63,14 @@ public class EffectBuff {
    public static short EFF_NGUYET_ANH = 8798;
    public static short EFF_BUFF_NOI_LUC = 8805;
    public static short EFF_PHI_PHONG_HUYEN_VU = 8806;
-   public static short EFF_PHI_PHONG_BONG_DA = 8867;
+   // 8866 (d_effect/166) thay cho 8867 (d_effect/167). Sprite 167 mau XANH trong khi anh
+   // lon trong bang trang bi (map/icon/708.png) mau DO SAM — hai thu lech nhau, ma voi
+   // Huyen Vu thi chung cung bang mau (d_effect/106 va icon/625 deu xanh-vang). 166 co
+   // bang mau do/trang/xanh gan 708 hon, du 18 frame va da nam trong id_eff_tool_ngu_long,
+   // va chua item nao dung. Luu y: day la lua chon cua nguoi choi sau khi minh bao ro la
+   // KHONG kiem chung duoc bang du lieu (thuat toan do bang mau da truot bai kiem dinh:
+   // voi Huyen Vu no tra ve 118 thay vi 106).
+   public static short EFF_PHI_PHONG_BONG_DA = 8866;
    public static short EFF_AO_DAI_NAM = 8811;
    public static short EFF_AO_DAI_NU = 8814;
    public static short EFF_NON_AO_DAI_NAM = 8810;
