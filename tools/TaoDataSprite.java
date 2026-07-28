@@ -38,10 +38,13 @@ public class TaoDataSprite {
             System.out.println("Dung: java TaoDataSprite <duong dan png> <so frame> [doc|ngang]");
             return;
         }
-        final File pngFile = new File(args[0]);
-        final int soFrame = Integer.parseInt(args[1]);
-        final boolean xepDoc = args.length < 3 || !"ngang".equalsIgnoreCase(args[2]);
+        ghiFileData(new File(args[0]), Integer.parseInt(args[1]),
+                args.length < 3 || !"ngang".equalsIgnoreCase(args[2]));
+    }
 
+    /** Sinh file data di kem cho mot png dang dai nhieu frame. */
+    public static void ghiFileData(final File pngFile, final int soFrame, final boolean xepDoc)
+            throws Exception {
         final BufferedImage img = ImageIO.read(pngFile);
         if (img == null) {
             System.out.println("Khong doc duoc anh: " + pngFile);
