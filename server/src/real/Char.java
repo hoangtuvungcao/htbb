@@ -455,8 +455,6 @@ public class Char extends LiveActor {
     long timeForbitChat;
     long timeSendAllChar;
     long timeSendEffTool5l;
-    /** Moc gui lai hieu ung mat na. Rieng bien voi ao thoi trang de hai cai khong lan nhau. */
-    long timeSendEffMatNa;
     long timeBuffGiamSatThuong;
     byte countSendchat;
     int kkk;
@@ -10152,7 +10150,6 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return;
         }
         handleModelEffects();
-        guiHieuUngMatNa();
         if (this.hp > 0 && this.getIdEffTool5l() > -1) {
             if (this.wModel.isBachMi() || this.wModel.isThuyVuHongSam()) {
                 if (System.currentTimeMillis() - this.timeSendEffTool5l >= 0L && System.currentTimeMillis() - this.timeBuffGiamSatThuong <= 0L) {
@@ -10362,49 +10359,6 @@ public int applyRongLonReleaseTo(int baseDamage) {
     
     
    
-    /**
-     * Phat hieu ung hao quang cua mat na dang mang.
-     *
-     * Vi sao phai co ham rieng: trong sau o thoi trang cua ModelWearing thi ao (itemModel)
-     * co hieu ung qua handleModelEffects, vu khi/choi (wpModel) qua getInfoVukhiThoiTrang,
-     * canh (CanhModel) qua getIdBigPhiPhong — con MAT NA thi khong duong nao doc toi. Ma
-     * trong database mat na 745..749 (bi ngo, nga quy, nga khuyen, thi khien, da xoa) DA co
-     * san ideff 8800..8804, file map/d_effect/100..104 cung day du, va 100..104 da nam trong
-     * id_eff_tool_ngu_long nen client co san du lieu frame. Tuc la du lieu va anh co het,
-     * chi thieu doan code goi ra. Mat na tho (837) va cao (838) co ideff = -1 nen khong co
-     * hieu ung, dung y do.
-     *
-     * Khong gop vao handleModelEffects duoc vi ham do thoat ngay khi getIdEffTool5l() <= -1,
-     * tuc bat buoc phai dang mang ao thoi trang co hieu ung; nguoi chi mang mat na se khong
-     * duoc gi.
-     */
-    private void guiHieuUngMatNa() {
-        if (this.hp <= 0 || this.wModel == null || this.wModel.matNa == null) {
-            return;
-        }
-        if (System.currentTimeMillis() - this.timeSendEffMatNa < 0L) {
-            return;
-        }
-        final int idEff = this.wModel.matNa.getIdEff();
-        if (idEff <= 0) {
-            return;
-        }
-        final long duration = 5000L;
-        // addEffBuff tra ve null khi hieu ung con hieu luc — dua vao do de khong gui don.
-        if (this.addEffBuff(idEff, duration, EffectBuff.BY_ACTOR, 0) == null) {
-            return;
-        }
-        try {
-            final Message mef = MessageCreator.createMsgNewEffectSkill5Long(
-                    idEff, (int) duration, this.id, this.cat, true, false);
-            this.sendMessage(mef);
-            this.sendToNearPlayer(mef);
-            this.timeSendEffMatNa = System.currentTimeMillis() + 10000L;
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private void handleModelEffects()
     {
         // KHONG duoc doi hoi getIdEffTool5l() > -1 o day. Ham nay tu chon id hieu ung theo
