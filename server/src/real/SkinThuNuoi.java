@@ -120,52 +120,6 @@ public class SkinThuNuoi {
     /** So frame cua sprite tuong ung. -1 = giu so frame goc cua thu cuoi. */
     public static final int[] TONG_FRAME = {5, 6, 5, 5, 8};
 
-    // ---- Anh con thu CHAY TREN BAN DO (duong dung) ----
-    // Rong Bang, Poro, Lan, Su Tu... va ca hoa hinh deu duoc ve bang he "thu cuoi
-    // tool": Animal.getIdImageTool() tra ve id 8700+N, server gui trong goi thong tin
-    // nhan vat, client goi Char.getPartEff(id) -> DataSkillEff. Du lieu frame da duoc
-    // gui san o goi login (message 26, danh sach id_eff_tool_ngu_long da co san
-    // 187..191) con anh thi client xin theo id luc can. Vi vay he nay KHONG phu thuoc
-    // bo anh cache — khac han duong imgHorse ben duoi.
-    //
-    // Sprite dung bang tools/TaoEffThuCuoi.java, ghi vao map/d_effect/159, 197, 198,
-    // 199, 212 — nam id nay von TRONG hoan toan (khong co file, khong nam trong
-    // id_eff_tool_ngu_long) nen khong de len anh hieu ung nao co san.
-    //
-    // Doi id moi khi lam lai sprite la viec BAT BUOC, khong phai cho gon: client giu
-    // anh trong GameData.listImgIcon theo id, khong he co so phien ban, va chi bo khi
-    // TAT HAN app (dang cuoi thu thi timeRemove lien tuc duoc lam moi nen khong bao gio
-    // het han). Dang nhap lai chi lam moi phan DU LIEU frame (ALL_DATA_EFF.put trong
-    // goi 26) — du lieu moi ghep vao anh cu thi ra mot khoi vun cua nhieu frame.
-    public static final int[] ID_EFF_THU_CUOI = {8859, 8897, 8898, 8899, 8912};
-
-    /**
-     * Day anh sprite cua skin dang mang xuong client, khong cho client tu xin.
-     *
-     * Client giu anh theo id trong GameData.listImgIcon va khong co so phien ban; muc chi
-     * bi bo khi bang co hon 100 phan tu VA ranh qua 120s, nen thuc te no song den luc tat
-     * han app. Trong khi do du lieu frame lai duoc ghi lai moi lan dang nhap. Sua sprite
-     * cua id dang dung ma khong day anh moi thi client ghep du lieu moi voi anh cu ->
-     * hien ra mot khoi vun cua nhieu frame.
-     */
-    public static void guiLaiAnhSkin(final Char p) {
-        if (p == null || !hopLe(p.idSkinThuNuoi)) {
-            return;
-        }
-        final io.Message m = data.DataGame.taoGoiAnhDynamicEffect(ID_EFF_THU_CUOI[p.idSkinThuNuoi]);
-        if (m != null) {
-            p.sendMessage(m);
-        }
-    }
-
-    /** Id sprite thu cuoi cua skin dang mang, -1 = khong mang skin. */
-    public static int idEffThuCuoi(final Char p) {
-        if (p == null || !hopLe(p.idSkinThuNuoi)) {
-            return -1;
-        }
-        return ID_EFF_THU_CUOI[p.idSkinThuNuoi];
-    }
-
     /** Id anh can gui xuong client cho nhan vat nay, -1 = giu nguyen. */
     public static int idImgHienThi(final Char p) {
         if (p == null || !hopLe(p.idSkinThuNuoi)) {
@@ -622,9 +576,6 @@ public class SkinThuNuoi {
         try {
             data.Database.instance.saveSkinThuNuoi(p);
             p.calculateAttrib();
-            // Day anh truoc khi gui thong tin thu cuoi: neu client con giu anh cu cua
-            // id nay thi ghi de ngay, khong thi no ve bang anh cu.
-            guiLaiAnhSkin(p);
             p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
             // Hinh con thu cuoi nam trong goi createAnimalWearingMessage chu khong
             // phai main char info, nen doi skin ma chi gui main char info thi client

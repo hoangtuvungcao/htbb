@@ -474,10 +474,6 @@ public class SelectCharHandler implements ICommandHandler {
                     Database.instance.loadSkinThuNuoi(p);
                     if (real.SkinThuNuoi.hopLe(p.idSkinThuNuoi)) {
                         p.calculateAttrib();
-                        // Day anh sprite skin xuong ngay: client giu anh theo id va
-                        // khong co so phien ban nen sau khi doi sprite no van ve bang
-                        // anh cu cho tan khi tat han app.
-                        real.SkinThuNuoi.guiLaiAnhSkin(p);
                         p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
                         // Goi hinh thu cuoi da gui o tren (dong ~303) TRUOC khi biet
                         // nguoi choi mang skin gi, nen luc do van la hinh thu goc.
