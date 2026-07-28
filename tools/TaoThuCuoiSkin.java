@@ -89,9 +89,13 @@ public class TaoThuCuoiSkin {
         System.out.println("Bang " + goc.getWidth() + "x" + goc.getHeight()
                 + ", tim thay " + hangs.size() + " hang");
 
-        final BufferedImage dai = new BufferedImage(RONG_DAI, CAO, BufferedImage.TYPE_INT_ARGB);
-        final Graphics2D g = dai.createGraphics();
-
+        // ---- Vong 1: lay khung bao cua tat ca 16 frame roi tinh MOT ti le chung ----
+        // Truoc day tinh ti le rieng cho tung frame theo do rong o cua no, ma o huong
+        // len/xuong chi rong 30-48px con huong ngang 60px, nen con thu o huong len/xuong
+        // bi thu nho han -> nhin nhu doi size giua cac huong. Nay mot ti le cho tat ca:
+        // lay muc nho nhat de khong frame nao tran ra khoi o cua no.
+        final int[][][] khung = new int[4][4][];
+        double tiLe = Double.MAX_VALUE;
         for (int d = 0; d < 4; d++) {
             if (hang[d] >= hangs.size()) {
                 System.out.println("Khong co hang " + hang[d]);
@@ -103,32 +107,42 @@ public class TaoThuCuoiSkin {
                 System.out.println("Hang " + hang[d] + " khong co frame nao");
                 return;
             }
-            // Ti le chung cho ca huong, lay theo frame cao nhat, de con thu khong
-            // to nho phap phong giua cac frame.
-            int caoNhat = 0;
-            for (final int[] c : cot) {
-                final int[] k = CatSpriteSheet.khungBao(coHinh, c[0], c[1], h[0], h[1]);
-                if (k != null) caoNhat = Math.max(caoNhat, k[3] - k[1] + 1);
-            }
             for (int f = 0; f < 4; f++) {
                 // Frame thu 4 lap lai frame thu 2, dung dung cach cua bang preset.
                 final int nguon = (f == 3) ? 1 : f;
                 final int[] c = cot.get(Math.min(nguon, cot.size() - 1));
                 final int[] k = CatSpriteSheet.khungBao(coHinh, c[0], c[1], h[0], h[1]);
                 if (k == null) continue;
-                final int oW = W[d][f];
-                // Vua khung: khong duoc vuot ra ngoai o, neu khong se de len frame ben canh.
-                final double tiLe = Math.min((double) CAO / caoNhat,
-                        (double) oW / (k[2] - k[0] + 1));
-                final BufferedImage nho = CatSpriteSheet.thuNho(goc, coHinh, k, tiLe);
+                khung[d][f] = k;
+                tiLe = Math.min(tiLe, Math.min((double) CAO / (k[3] - k[1] + 1),
+                        (double) W[d][f] / (k[2] - k[0] + 1)));
+            }
+            System.out.println("  huong " + d + ": hang " + hang[d] + ", "
+                    + cot.size() + " frame nguon");
+        }
+        if (tiLe == Double.MAX_VALUE) {
+            System.out.println("Khong lay duoc frame nao");
+            return;
+        }
+
+        // ---- Vong 2: thu nho tat ca theo cung ti le roi dat vao dung o ----
+        final BufferedImage dai = new BufferedImage(RONG_DAI, CAO, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = dai.createGraphics();
+        int rongMax = 0, caoMax = 0;
+        for (int d = 0; d < 4; d++) {
+            for (int f = 0; f < 4; f++) {
+                if (khung[d][f] == null) continue;
+                final BufferedImage nho = CatSpriteSheet.thuNho(goc, coHinh, khung[d][f], tiLe);
+                rongMax = Math.max(rongMax, nho.getWidth());
+                caoMax = Math.max(caoMax, nho.getHeight());
                 // Can giua o va dat sat day: client ve theo goc BOTTOM.
-                g.drawImage(nho, X[d][f] + (oW - nho.getWidth()) / 2,
+                g.drawImage(nho, X[d][f] + (W[d][f] - nho.getWidth()) / 2,
                         CAO - nho.getHeight(), null);
             }
-            System.out.println("  huong " + d + ": hang " + hang[d] + ", " + cot.size()
-                    + " frame nguon, khung cao nhat " + caoNhat);
         }
         g.dispose();
+        System.out.println("Ti le chung " + String.format("%.3f", tiLe)
+                + ", frame lon nhat " + rongMax + "x" + caoMax);
 
         final File thuMuc = new File("map/skinthu");
         thuMuc.mkdirs();
@@ -136,16 +150,23 @@ public class TaoThuCuoiSkin {
         ImageIO.write(dai, "png", pngTam);
         final byte[] png = java.nio.file.Files.readAllBytes(pngTam.toPath());
 
-        // Ca PNG vao file header, file data de rong: client noi header + data nen
-        // ket qua van la dung file PNG do.
+        // Cat PNG lam hai phan. KHONG duoc de mot phan qua 32767 byte vi
+        // OtherHandle gui do dai bang writeShort (co dau) — vuot nguong la client
+        // doc ra so am roi vo ca goi anh, mat luon 5 anh skin.
+        final int nua = (png.length + 1) / 2;
+        if (png.length - nua > 32767 || nua > 32767) {
+            System.out.println("PNG " + png.length + " byte, cat doi van vuot 32767 —"
+                    + " phai giam kich thuoc anh.");
+            return;
+        }
         try (FileOutputStream fo = new FileOutputStream(new File(thuMuc, ten + "0_header"))) {
-            fo.write(png);
+            fo.write(png, 0, nua);
         }
         try (FileOutputStream fo = new FileOutputStream(new File(thuMuc, ten + "_data"))) {
-            // rong
+            fo.write(png, nua, png.length - nua);
         }
-        System.out.println("Xong: map/skinthu/" + ten + "0_header (" + png.length
-                + " byte) + " + ten + "_data (0 byte)");
+        System.out.println("Xong: " + ten + "0_header (" + nua + " byte) + "
+                + ten + "_data (" + (png.length - nua) + " byte), tong " + png.length);
         System.out.println("Xem thu anh dai o map/skinthu/" + ten + ".png");
     }
 }
