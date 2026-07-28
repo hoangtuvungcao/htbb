@@ -876,7 +876,11 @@ public class Char extends LiveActor {
         Char.ID_BIG_AVT_AO_TINH_QUAN = 615;
         Char.ID_BIG_AVT_PP_KHONG_TUOC = 614;
         Char.ID_BIG_AVT_PP_HUYEN_VU = 625;
-        Char.ID_BIG_AVT_PP_BONG_DA = 711;
+        // 708 chu khong phai 711. Anh lon phi phong phai la dai 3 frame xep doc, be ngang
+        // 65-86 (Khong Tuoc 614, Huyen Vu 625 co 65x186, tim 714 co 86x177). map/icon/708.png
+        // dung dang do: 81x180 = 3 frame 81x60. Con 711 chi la ICON 18x54 (3 frame 18x18)
+        // nen client cat ra mieng 18x18 -> hien khong ra hinh phi phong bong da.
+        Char.ID_BIG_AVT_PP_BONG_DA = 708;
         Char.ID_BIG_AVT_AO_DAI_NAM = 628;
         Char.ID_BIG_AVT_AO_DAI_NU = 629;
         Char.idRankGov = new byte[]{56, 54, 55, 53};

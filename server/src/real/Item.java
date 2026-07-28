@@ -377,16 +377,19 @@ public class Item extends Actor {
      *
      * @return
      */
-    public int getIdEff() 
+    public int getIdEff()
     {
-        if (isVuKhiThanBinhNangCap2()) 
+        // Dung isVuKhiThanBinhNangCap() (chi xet khoang id 773..787) chu KHONG dung
+        // isVuKhiThanBinhNangCap2(), vi ban 2 con doi hoi place == PLACE_WEARING. Vu khi
+        // THOI TRANG duoc gan bang "player.itemVukhiThoiTrang = item" ma khong he doi place,
+        // nen voi vu khi 7x trong khoang 773..787 thi dieu kien do luon sai va ham roi
+        // xuong nhanh cuoi, tra ideff THO (147, 142...) thieu +8700. Client goi
+        // getPartEff(147) khong tim thay du lieu nen ve sai/khong ve hinh vu khi thoi trang.
+        // Nhom 758..772 khong bi vi predicate cua no khong xet place.
+        if (isVuKhiThanBinhNangCap() || isVuKhiThanBinhNewUpdate09092024())
         {
             return this.getTemplate().idEff + 8700;
-        } 
-        else if (isVuKhiThanBinhNewUpdate09092024()) 
-        {
-            return this.getTemplate().idEff + 8700;
-        } 
+        }
         else if (isNguyetLinhTruong()) 
         {
             return this.getTemplate().idEff + 8700;
@@ -485,7 +488,9 @@ public class Item extends Actor {
         if (this.isVuKhiThanBinhNewUpdate09092024()) {
             return 0;
         }
-        if (this.isVuKhiThanBinhNangCap2()) {
+        // Khoang id, khong xet place — xem giai thich o getIdEff(). Vu khi thoi trang
+        // khong duoc dat place = PLACE_WEARING nen ban 2 luon sai, ham roi xuong tra -1.
+        if (this.isVuKhiThanBinhNangCap()) {
             return 0;
         }
         if (this.isQuatBaiTieu()) {
@@ -511,7 +516,8 @@ public class Item extends Actor {
         if (this.isVuKhiThanBinhNewUpdate09092024()) {
             return this.getTemplate().idBigImgAvatar;
         }
-        if (this.isVuKhiThanBinhNangCap2()) {
+        // Khoang id, khong xet place — xem giai thich o getIdEff().
+        if (this.isVuKhiThanBinhNangCap()) {
             return this.getTemplate().idBigImgAvatar;
         }
         if (this.isNguyetLinhTruong()) {
