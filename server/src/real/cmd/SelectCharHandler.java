@@ -475,6 +475,14 @@ public class SelectCharHandler implements ICommandHandler {
                     if (real.SkinThuNuoi.hopLe(p.idSkinThuNuoi)) {
                         p.calculateAttrib();
                         p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+                        // Goi hinh thu cuoi da gui o tren (dong ~303) TRUOC khi biet
+                        // nguoi choi mang skin gi, nen luc do van la hinh thu goc.
+                        // Gui lai sau khi nap skin, khong thi dang nhap vao la thay
+                        // hinh cu cho tan khi go "skinthu" doi qua doi lai.
+                        if (p.animalRide != null) {
+                            p.sendMessage(MessageCreator.createAnimalWearingMessage(p, p));
+                            p.sendToNearPlayer(MessageCreator.createAnimalWearingMessage(p, p));
+                        }
                     }
                 }
             } catch (final Exception exSkin) {
