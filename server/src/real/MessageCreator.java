@@ -1768,14 +1768,23 @@ public class MessageCreator {
         
             if (p.animalRide != null) 
             {
-                if (p.animalRide.idImg == Animal.PHUONG_HOANG_THO || p.animalRide.idImg == Animal.PHUONG_HOANG_MOC || p.animalRide.idImg == Animal.PHUONG_HOANG_7MAU || p.animalRide.idImg == Animal.PHUONG_HOANG_KIM) 
+                if (p.animalRide.idImg == Animal.PHUONG_HOANG_THO || p.animalRide.idImg == Animal.PHUONG_HOANG_MOC || p.animalRide.idImg == Animal.PHUONG_HOANG_7MAU || p.animalRide.idImg == Animal.PHUONG_HOANG_KIM)
                 {
                     userHorse = 6;
                 }
             }
-        
+
+            // Skin thu cuoi. Day la goi thong tin nhan vat CUA CHINH MINH (message 3),
+            // client doc vao mainChar.useHorse / anmFly / idImgHorse — tuc chinh con thu
+            // minh dang cuoi tren ban do. Hai goi kia (createCharInfo, createCharInfoNpc)
+            // chi lo nguoi choi khac, nen thieu cho nay la tu minh khong thay skin.
+            final int idAnhSkin3 = SkinThuNuoi.idAnhThuCuoi(p);
+            if (p.animalRide != null && idAnhSkin3 >= 0) {
+                userHorse = SkinThuNuoi.PRESET_HINH_HOC;
+            }
+
             m.dos.writeByte(userHorse);
-        
+
             byte idImgHorse = p.idImgHorse;
             byte fly = 0;
             if (p.animalRide != null) 
@@ -1808,13 +1817,18 @@ public class MessageCreator {
                     fly = 1;
                     idImgHorse = 19;
                 } 
-                else if (p.animalRide.isPhuongHoangTho()) 
+                else if (p.animalRide.isPhuongHoangTho())
                 {
                     fly = 1;
                     idImgHorse = 20;
                 }
+                // Skin de len tat ca truong hop rieng o tren.
+                if (idAnhSkin3 >= 0) {
+                    idImgHorse = (byte) idAnhSkin3;
+                    fly = 0;
+                }
             }
-        
+
             m.dos.writeByte(fly);
             m.dos.writeByte(idImgHorse);
         }
