@@ -409,7 +409,7 @@ nói rõ giá trị đúng:
 | data_potion                   |     162 | 162       |
 | data_shop                     |     148 | 148       |
 | data_quest                    |      49 | 49        |
-| data_attribute                |     141 | 141       |
+| data_attribute                |     187 | 187       |
 | tob_tubinh (template)         |      16 | 16        |
 | bad_word                      |     147 | 147       |
 | --- tai khoan ---             |         |           |
@@ -885,6 +885,20 @@ thì vẫn xong, chỉ chậm.
 ---
 
 ## PHẦN J — Lỗi hay gặp
+
+**Bấm vào Thần Khí là đơ client, server không ghi log gì**
+→ Bảng `data_attribute` thiếu id 141..186. Bản dump `gamedb7_clean.sql` chỉ có 141 dòng
+(id 0..140), trong khi module Thần Khí dùng tới id 186. Tên thuộc tính tra cứu **theo vị
+trí** trong danh sách nạp lúc khởi động (`otherAtt[i] -> ALL_NAME_ATTRIBUTE_ITEM.get(i+61)`,
+xem [Item.java:1031](src/real/Item.java#L1031) và [Map.java:15658](src/real/Map.java#L15658)),
+nên id phải liên tục. Gói đăng nhập cmd 25 chỉ gửi đúng số dòng đang có, client tra key
+"163" ra null rồi chết giữa lúc vẽ — nên **client đơ mà server im lặng**.
+Kiểm tra: `mysql -u root kpah_db -e "SELECT COUNT(*) FROM data_attribute;"` — phải là 187.
+Chưa đủ thì chạy [fix_thankhi_attribute.sql](fix_thankhi_attribute.sql) rồi **restart server**
+(`loadNameAttributeItem` chỉ chạy lúc khởi động). Server dựng mới bằng
+[vps/db_new_server.sql](vps/db_new_server.sql) đã tự nạp ở PHẦN 2C.
+Bẫy hay dính: máy Windows ở nhà đã vá tay từ trước nên test ở nhà thấy chạy tốt, lên VPS
+mới lại đơ.
 
 **Thêm option vào menu NPC nhưng bấm vào không hiển thị gì, log cũng không có gì**
 → Bẫy lớn nhất khi sửa menu: lệnh `-30` (chọn option menu) **không đi thẳng vào

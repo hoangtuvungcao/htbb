@@ -4955,6 +4955,30 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     /**
+     * Dong "Giam suc manh + phong thu cua ke dich" la dong DUY NHAT co thoi
+     * gian hieu luc doi theo cap trong bang thiet ke: cap 1..10 -> 3, 3, 4, 4,
+     * 5, 5, 6, 6, 7, 8 giay. Truoc day cam cung 3000ms nen tu cap 3 tro len la
+     * ngan hon mo ta.
+     */
+    private static final int[] TK_SUY_YEU_GIAY = { 3, 3, 4, 4, 5, 5, 6, 6, 7, 8 };
+
+    /**
+     * Thoi gian suy yeu (ms) suy nguoc tu gia tri tho. HIDDEN_STAT_TABLE[27] la
+     * 20 * cap nen cap = raw / 20; chan lai 1..10 phong khi dong nay bi sua tay
+     * trong DB thanh so ngoai bang.
+     */
+    public static long tkSuyYeuThoiGian(final int raw) {
+        int cap = raw / 20;
+        if (cap < 1) {
+            cap = 1;
+        }
+        if (cap > 10) {
+            cap = 10;
+        }
+        return TK_SUY_YEU_GIAY[cap - 1] * 1000L;
+    }
+
+    /**
      * Tran giam sat thuong. Bang so cua game cho toi 200 (tuc 20%) o moi dong
      * rieng le, nhung cong don khang he + khang tat ca + giam ST boss/nguoi
      * choi co the vuot 100% lam nhan vat bat tu. Chan lai o 80%.
@@ -5198,7 +5222,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 // def theo ef.dam phan tram, khop dung mo ta cua dong nay.
                 final int tkSuyYeu = getTkGiamSucManhDich();
                 if (tkSuyYeu > 0) {
-                    actor.addEffBuff(EffectBuff.SUY_YEU, System.currentTimeMillis() + 3000L,
+                    // Thoi gian doi theo cap (3..8 giay), khong con cam cung 3 giay.
+                    actor.addEffBuff(EffectBuff.SUY_YEU, System.currentTimeMillis() + tkSuyYeuThoiGian(tkSuyYeu),
                             EffectBuff.BY_ACTOR, tkSuyYeu / 10);
                 }
             }

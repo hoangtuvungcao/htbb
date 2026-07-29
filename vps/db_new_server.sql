@@ -121,6 +121,7 @@ UPDATE `tob_code_lixi` SET `nhan` = 0, `timeNhan` = NULL, `charnhan` = NULL;
 --
 --  Đã đối chiếu từng bảng giữa DB đang chạy và bản dump sạch: dump thiếu đúng
 --  2 thứ, cả 2 đều cần cho server mới.
+--  (Thứ ba là 46 dòng data_attribute của Thần Khí — nằm riêng ở PHẦN 2C.)
 --
 --  1) tob_tubinh — TEMPLATE tứ bình 16 dòng (Mai/Lan/Cúc/Trúc ... Long/Lân/Quy/
 --     Phụng). Bảng này nằm trong danh sách GIỮ ở phần 1 nên không bị xoá, nhưng
@@ -162,6 +163,88 @@ CREATE TABLE IF NOT EXISTS `history_win_xoso` (
   PRIMARY KEY (`id`),
   KEY `idx_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- ############################################################################
+--  PHẦN 2C — BÙ 46 DÒNG data_attribute CHO HỆ THỐNG THẦN KHÍ
+--
+--  gamedb7_clean.sql chỉ có data_attribute id 0..140 (141 dòng). Module Thần Khí
+--  (ThanKhi/ThoRenThanBi.java) dùng tới id 186:
+--      163..167 sát thương ngũ hành | 168 số dòng ẩn
+--      169..179 nguyên liệu nâng cấp | HIDDEN_STAT_IDS tới 186
+--
+--  Tên thuộc tính tra cứu THEO VỊ TRÍ trong danh sách nạp lúc khởi động
+--  (otherAtt[i] -> ALL_NAME_ATTRIBUTE_ITEM.get(i + 61), xem Item.java:1031 và
+--  Map.java:15658), nên id phải LIÊN TỤC, không được hở. Thiếu là bấm vào Thần
+--  Khí ĐƠ CLIENT — và đơ im lặng: server không ghi log, vì client mới là bên
+--  chết khi tra tên thuộc tính không có (cmd 25 chỉ gửi đúng số dòng đang có).
+--
+--  DB Windows ở nhà đã vá tay từ 25/07 nên test ở nhà thấy chạy bình thường;
+--  server mới dựng từ bản dump sạch thì không có -> vá luôn ở đây.
+--  Bản gốc của khối này: fix_thankhi_attribute.sql ở thư mục gốc repo. Sửa tên
+--  ở đây thì sửa luôn ở đó, và ngược lại.
+--
+--  QUY ƯỚC CỘT ispercent (đừng đổi nếu chưa đọc):
+--    0 -> in thẳng, không % (dòng cộng ĐIỂM) | 1 -> in thẳng kèm %
+--    2 -> in value/10 kèm % (Client/InfoAttributeItem.cs:37-40)
+--  Nên các dòng ispercent = 2 lưu số GẤP 10 trong HIDDEN_STAT_TABLE
+--  (ThoRenThanBi.java:44): ghi 15 thì trong game hiện "1.5%". Đổi ispercent là
+--  đổi luôn con số hiện ra gấp/giảm 10 lần.
+-- ############################################################################
+INSERT INTO `data_attribute` (`id`,`name`,`idcolor`,`ispercent`,`decript`,`namein`) VALUES
+-- 29 dòng ẩn của Thần Khí — tên lấy đúng theo bảng thiết kế (cột "Dòng ẩn")
+(158,'Tăng điểm sát thương vật lý',0,0,'',''),
+(159,'Tăng điểm sát thương ma pháp',0,0,'',''),
+(141,'Tăng sát thương chí mạng',0,2,'',''),
+(142,'Tăng sát thương theo % HP kẻ địch',0,2,'',''),
+(143,'Tăng sát thương theo % MP kẻ địch',0,2,'',''),
+(144,'Tăng % sát thương vật lý',0,1,'',''),
+(145,'Tăng % sát thương ma pháp',0,1,'',''),
+(146,'Tăng % Xuyên thủ ma',0,2,'',''),
+(147,'Tăng % Xuyên thủ vật',0,2,'',''),
+(148,'Tăng % sát thương lên boss/trụ',0,2,'',''),
+(149,'Tăng % sát thương lên quái',0,2,'',''),
+(150,'Giảm % sát thương nhận vào từ Boss',0,2,'',''),
+(180,'Giảm sát thương nhận vào từ người chơi',0,2,'',''),
+(151,'Tăng điểm phòng thủ cơ bản',0,0,'',''),
+(155,'Kháng Hỏa',0,1,'',''),
+(154,'Kháng Thủy',0,1,'',''),
+(153,'Kháng Mộc',0,1,'',''),
+(152,'Kháng Kim',0,1,'',''),
+(156,'Kháng Thổ',0,1,'',''),
+(186,'Kháng tất cả',0,2,'',''),
+(157,'Tăng điểm giáp khi đang ở trong tổ đội',0,0,'',''),
+(182,'Hút HP',0,1,'',''),
+(181,'Hút MP',0,1,'',''),
+(160,'Tăng tốc độ đánh',0,1,'',''),
+(161,'Tăng tốc độ di chuyển',0,0,'',''),
+(183,'Tăng % né tránh',0,1,'',''),
+(185,'Tăng % phản đòn',0,1,'',''),
+(184,'Giảm % sức mạnh và % phòng thủ của kẻ địch',0,2,'',''),
+(162,'Tăng % câm lặng của bản thân',0,1,'',''),
+-- Dòng hệ hiện trên món (item_attribute_ids 163..167)
+(163,'Sát thương hệ kim',0,1,'',''),
+(164,'Sát thương hệ mộc',0,1,'',''),
+(165,'Sát thương hệ thuỷ',0,1,'',''),
+(166,'Sát thương hệ hoả',0,1,'',''),
+(167,'Sát thương hệ thổ',0,1,'',''),
+-- Bộ đếm số dòng ẩn + 11 ô nguyên liệu nâng cấp (item_upgrade_material_ids)
+(168,'Số dòng ẩn',0,0,'',''),
+(169,'Vải',0,0,'',''),
+(170,'Sắt',0,0,'',''),
+(171,'Ngọc',0,0,'',''),
+(172,'Gỗ thường',0,0,'',''),
+(173,'Da mềm',0,0,'',''),
+(174,'Tơ lụa',0,0,'',''),
+(175,'Bạc',0,0,'',''),
+(176,'Thuỷ tinh',0,0,'',''),
+(177,'Gỗ sưa',0,0,'',''),
+(178,'Da cứng',0,0,'',''),
+(179,'Đá ngũ hợp',0,0,'','')
+ON DUPLICATE KEY UPDATE
+  `name`      = VALUES(`name`),
+  `idcolor`   = VALUES(`idcolor`),
+  `ispercent` = VALUES(`ispercent`);
 
 
 -- ############################################################################
@@ -224,7 +307,7 @@ UNION ALL SELECT 'data_monster',     COUNT(*), '138'    FROM kpah_db.data_monste
 UNION ALL SELECT 'data_potion',      COUNT(*), '162'    FROM kpah_db.data_potion
 UNION ALL SELECT 'data_shop',        COUNT(*), '148'    FROM kpah_db.data_shop
 UNION ALL SELECT 'data_quest',       COUNT(*), '49'     FROM kpah_db.data_quest
-UNION ALL SELECT 'data_attribute',   COUNT(*), '141'    FROM kpah_db.data_attribute
+UNION ALL SELECT 'data_attribute',   COUNT(*), '187'    FROM kpah_db.data_attribute
 UNION ALL SELECT 'tob_tubinh (template)', COUNT(*), '16' FROM kpah_db.tob_tubinh
 UNION ALL SELECT 'bad_word',         COUNT(*), '147'    FROM kpah_db.bad_word
 UNION ALL SELECT '--- tai khoan ---', NULL, NULL
