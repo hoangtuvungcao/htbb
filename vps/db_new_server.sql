@@ -280,6 +280,19 @@ ALTER TABLE `kpah_db`.`tob_gem_new`
 
 
 -- ############################################################################
+--  PHẦN 2E — VÁ MÀU CHỮ SAI CỦA DÒNG "Tăng lửa lan"
+--
+--  data_attribute id 90 "Tăng lửa lan" đang idcolor=2 (đỏ) trong khi 3 dòng anh
+--  em id 69/70/71 (Tăng sét lan/độc lan/băng lan) đều idcolor=0 (trắng) — lệch
+--  không lý do, hiện lên áo/mặt nạ/cánh/chổi bất kỳ có dòng "tăng lan" (xem
+--  Item.java:816-819 và Item.java:921-926, khối code dùng chung 4 id này).
+--  Bản gốc của khối này: fix_mau_tang_lua_lan.sql ở thư mục gốc repo.
+--  SAU KHI CHẠY PHẢI RESTART SERVER (loadNameAttributeItem chỉ chạy lúc khởi động).
+-- ############################################################################
+UPDATE `kpah_db`.`data_attribute` SET `idcolor` = 0 WHERE `id` = 90;
+
+
+-- ############################################################################
 --  PHẦN 3 — XOÁ SẠCH TÀI KHOẢN ĐĂNG NHẬP
 --
 --  account.team_user   = tài khoản đăng nhập thật (login server đọc DB này)
@@ -348,6 +361,8 @@ UNION ALL SELECT 'cot da la mediumtext', COUNT(*), '7'
  WHERE TABLE_SCHEMA = 'kpah_db' AND DATA_TYPE = 'mediumtext'
    AND ( (TABLE_NAME='tob_char'    AND COLUMN_NAME IN ('equip','inven','bag','tuido'))
       OR (TABLE_NAME='tob_gem_new' AND COLUMN_NAME IN ('listtemplate','soluong','slock')) )
+UNION ALL SELECT 'idcolor dong "Tang lua lan" (PHAN 2E)', idcolor, '0'
+  FROM kpah_db.data_attribute WHERE id = 90
 UNION ALL SELECT '--- tai khoan ---', NULL, NULL
 UNION ALL SELECT 'account.team_user', COUNT(*), '1 (admin)' FROM account.team_user
 UNION ALL SELECT '5h_active',        COUNT(*), '1'      FROM kpah_db.5h_active;

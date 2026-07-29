@@ -9952,6 +9952,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
             if (this.wModel.isMatNaPanda()) {
                 return Char.ID_MAT_NA_PANDA;
             }
+            if (this.wModel.isMatNaOngDia()) {
+                // TODO: chua biet so frame dxy rieng cua mat na ong dia (giong
+                // cach 837/838 dung 8700+223 / 8700+222 - la so hardcode rieng,
+                // KHONG doc tu ideff trong DB vi ideff cua 872 cung la -1).
+                // Tam thoi tra -1 (khong ve mat na) de khong hien nham hinh mat
+                // na khac. Dien dung so frame vao day khi co.
+                return -1;
+            }
         }
         
 
@@ -9995,14 +10003,21 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
         if (this.wModel.isAuCo()) {
             return 8700 + 116;
-        }  
+        }
+        // TAM THOI dung chung so voi Au Co (116) de test co che - CHUA CO SO
+        // sprite that cho Ba Thien Ho / Bong da, se hien NHAM hinh Au Co. Doi
+        // lai so dung khi co.
+        if (this.wModel.isBaThienHoNam() || this.wModel.isBaThienHoNu()
+                || this.wModel.isBongDaNam() || this.wModel.isBongDaNu()) {
+            return 8700 + 116;
+        }
         if (this.wModel.isAonoelNam2024()) {
             return 8700 + 262;
-        } 
+        }
         if (this.wModel.isAonoelNu2024()) {
             return 8700 + 259;
-        } 
-        
+        }
+
         return -1;
     }
 
@@ -10070,6 +10085,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return 8700 + 120;
         }
         if (this.wModel.isAuCo()) {
+            return 8700 + 117;
+        }
+        // TAM THOI dung chung so voi Au Co (117) de test co che - xem ghi chu
+        // o getIdHeadDynamic().
+        if (this.wModel.isBaThienHoNam() || this.wModel.isBaThienHoNu()
+                || this.wModel.isBongDaNam() || this.wModel.isBongDaNu()) {
             return 8700 + 117;
         }
          if (this.wModel.isAonoelNam2024()) {
@@ -10146,6 +10167,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return 8700 + 121;
         }
         if (this.wModel.isAuCo()) {
+            return 8700 + 118;
+        }
+        // TAM THOI dung chung so voi Au Co (118) de test co che - xem ghi chu
+        // o getIdHeadDynamic().
+        if (this.wModel.isBaThienHoNam() || this.wModel.isBaThienHoNu()
+                || this.wModel.isBongDaNam() || this.wModel.isBongDaNu()) {
             return 8700 + 118;
         }
         if (this.wModel.isAonoelNam2024()) {

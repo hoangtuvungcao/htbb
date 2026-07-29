@@ -251,10 +251,27 @@ public class ModelWearing {
         return this.itemModel != null && this.itemModel.getTemplate().id == 801;
     }
 
+    public boolean isBaThienHoNam() {
+        return this.itemModel != null && this.itemModel.getTemplate().id == 805;
+    }
+
+    public boolean isBaThienHoNu() {
+        return this.itemModel != null && this.itemModel.getTemplate().id == 806;
+    }
+
+    public boolean isBongDaNam() {
+        return this.itemModel != null && (this.itemModel.getTemplate().id == 788 || this.itemModel.getTemplate().id == 791);
+    }
+
+    public boolean isBongDaNu() {
+        return this.itemModel != null && (this.itemModel.getTemplate().id == 789 || this.itemModel.getTemplate().id == 792);
+    }
+
     public boolean isMatna() {
         return this.isMatNaBiNgo() || this.isMatNaPanda() || this.isMatNaQuy() || this.isMatNaSoi() || this.isMatNaZoombi()
                 || this.isMatNaTho()
-                || this.isMatNaCao();
+                || this.isMatNaCao()
+                || this.isMatNaOngDia();
     }
 
     public boolean isMatNaBiNgo() {
@@ -283,6 +300,10 @@ public class ModelWearing {
 
     public boolean isMatNaCao() {
         return this.matNa != null && this.matNa.getTemplate().id == 838;
+    }
+
+    public boolean isMatNaOngDia() {
+        return this.matNa != null && this.matNa.getTemplate().id == 872;
     }
 
     public boolean isGiapRong() {

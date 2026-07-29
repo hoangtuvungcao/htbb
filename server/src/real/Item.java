@@ -441,7 +441,8 @@ public class Item extends Actor {
                 || this.isMatNaSoi()
                 || this.isMatNaZoombi()
                 || this.isMatNaTho()
-                || this.isMatNaCao();
+                || this.isMatNaCao()
+                || this.isMatNaOngDia();
     }
 
     public boolean isMatNaBiNgo() {
@@ -470,6 +471,10 @@ public class Item extends Actor {
 
     public boolean isMatNaCao() {
         return this.getTemplate().id == 838;
+    }
+
+    public boolean isMatNaOngDia() {
+        return this.getTemplate().id == 872;
     }
     // TODO thêm AVATAR
     public int getIndexDxy() {
