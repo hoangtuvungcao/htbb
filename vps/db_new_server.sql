@@ -248,6 +248,38 @@ ON DUPLICATE KEY UPDATE
 
 
 -- ############################################################################
+--  PHẦN 2D — NỚI CÁC CỘT LƯU HÀNH TRANG (TEXT -> MEDIUMTEXT)
+--
+--  gamedb7_clean.sql khai `tob_char.equip/inven/bag/tuido` là TEXT = trần
+--  65.535 byte, và `tob_gem_new` là varchar(1000). Cả hành trang được serialize
+--  thành MỘT chuỗi rồi nhét vào `inven`, mỗi món ~470 byte kể từ khi otherAtt
+--  nới lên 126 ô cho Thần Khí (Item.java:615) -> chỉ ~139 món là tràn, trong khi
+--  túi chứa tới 42 * 5 = 210 ô.
+--
+--  Tràn thì tuỳ sql_mode:
+--    - có STRICT_TRANS_TABLES (mặc định MySQL 8 / nhiều bản MariaDB mới):
+--      UPDATE NÉM LỖI "Data too long for column 'inven'", Database.java chỉ
+--      printStackTrace rồi đi tiếp -> lần lưu đó KHÔNG lưu gì cả, nhân vật mất
+--      hết tiến trình từ lần lưu trước (mất luôn Thần Khí vừa tạo).
+--    - không strict: MySQL CẮT CỤT ÂM THẦM phần đuôi -> mất mấy chục món.
+--
+--  DB Windows ở nhà đã nới tay từ trước (nên ở nhà không thấy lỗi), server VPS
+--  dựng từ bản dump sạch thì chưa -> nới luôn ở đây.
+--  Bản gốc của khối này: fix_cot_du_lieu_tran.sql ở thư mục gốc repo.
+-- ############################################################################
+ALTER TABLE `kpah_db`.`tob_char`
+  MODIFY `equip` MEDIUMTEXT,
+  MODIFY `inven` MEDIUMTEXT,
+  MODIFY `bag`   MEDIUMTEXT,
+  MODIFY `tuido` MEDIUMTEXT;
+
+ALTER TABLE `kpah_db`.`tob_gem_new`
+  MODIFY `listtemplate` MEDIUMTEXT NOT NULL,
+  MODIFY `soluong`      MEDIUMTEXT NOT NULL,
+  MODIFY `slock`        MEDIUMTEXT NOT NULL;
+
+
+-- ############################################################################
 --  PHẦN 3 — XOÁ SẠCH TÀI KHOẢN ĐĂNG NHẬP
 --
 --  account.team_user   = tài khoản đăng nhập thật (login server đọc DB này)
@@ -310,6 +342,12 @@ UNION ALL SELECT 'data_quest',       COUNT(*), '49'     FROM kpah_db.data_quest
 UNION ALL SELECT 'data_attribute',   COUNT(*), '187'    FROM kpah_db.data_attribute
 UNION ALL SELECT 'tob_tubinh (template)', COUNT(*), '16' FROM kpah_db.tob_tubinh
 UNION ALL SELECT 'bad_word',         COUNT(*), '147'    FROM kpah_db.bad_word
+UNION ALL SELECT '--- cot luu hanh trang (PHAN 2D) ---', NULL, NULL
+UNION ALL SELECT 'cot da la mediumtext', COUNT(*), '7'
+  FROM information_schema.COLUMNS
+ WHERE TABLE_SCHEMA = 'kpah_db' AND DATA_TYPE = 'mediumtext'
+   AND ( (TABLE_NAME='tob_char'    AND COLUMN_NAME IN ('equip','inven','bag','tuido'))
+      OR (TABLE_NAME='tob_gem_new' AND COLUMN_NAME IN ('listtemplate','soluong','slock')) )
 UNION ALL SELECT '--- tai khoan ---', NULL, NULL
 UNION ALL SELECT 'account.team_user', COUNT(*), '1 (admin)' FROM account.team_user
 UNION ALL SELECT '5h_active',        COUNT(*), '1'      FROM kpah_db.5h_active;

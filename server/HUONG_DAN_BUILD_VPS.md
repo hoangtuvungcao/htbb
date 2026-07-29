@@ -412,6 +412,8 @@ nói rõ giá trị đúng:
 | data_attribute                |     187 | 187       |
 | tob_tubinh (template)         |      16 | 16        |
 | bad_word                      |     147 | 147       |
+| --- cot luu hanh trang ---    |         |           |
+| cot da la mediumtext          |       7 | 7         |
 | --- tai khoan ---             |         |           |
 | account.team_user             |       1 | 1 (admin) |
 | 5h_active                     |       1 | 1         |
@@ -424,7 +426,7 @@ khẩu admin (chặn **trước khi** xoá bất cứ thứ gì), xoá sạch m�
 bảng dữ liệu game, **bù 2 thứ mà bản dump sạch bị thiếu** (xem dưới), xoá sạch tài khoản,
 rồi tạo 1 tài khoản admin đã kích hoạt sẵn. Chạy lại nhiều lần không hỏng gì.
 
-**Hai thứ bản dump sạch bị thiếu** — mình đối chiếu từng bảng giữa DB đang chạy và bản dump
+**Ba thứ bản dump sạch bị thiếu** — mình đối chiếu từng bảng giữa DB đang chạy và bản dump
 mới tìm ra, script đã bù sẵn:
 
 1. **`tob_tubinh` — template tứ bình 16 dòng** (Mai/Lan/Cúc/Trúc → Long/Lân/Quy/Phụng).
@@ -434,6 +436,13 @@ mới tìm ra, script đã bù sẵn:
 2. **`history_win_xoso`** — [Database.java:1619](src/data/Database.java#L1619) `INSERT` vào
    bảng này nhưng không có lệnh tạo bảng, dump cũng không có. Thiếu là ai thắng xổ số sẽ ăn
    `Table doesn't exist`.
+3. **4 cột `tob_char.equip/inven/bag/tuido` còn là `TEXT`** (trần 65.535 byte) và 3 cột
+   `tob_gem_new` còn là `varchar(1000)` — PHẦN 2D nới hết sang `MEDIUMTEXT`. Cả hành trang
+   được nhét vào MỘT chuỗi trong `inven`, mỗi món ~470 byte kể từ khi `otherAtt` nới lên 126
+   ô cho Thần Khí, mà túi chứa tới 42 × 5 = 210 ô → chỉ ~139 món là tràn. Tràn thì hoặc
+   `UPDATE` ném `Data too long for column 'inven'` (sql_mode có `STRICT_TRANS_TABLES`) làm
+   **lần lưu đó không lưu gì cả**, hoặc MySQL **cắt cụt âm thầm** phần đuôi. Cả hai đều ra
+   triệu chứng "tạo món xong, logout vào lại là mất".
 
 Còn 2 bảng `tob_skin_thu` và `tob_train_luong` (skin thú nuôi + hạn mức lượng train/ngày)
 cũng không có trong dump nhưng **không cần làm gì** — server tự `CREATE TABLE IF NOT EXISTS`
@@ -899,6 +908,39 @@ Chưa đủ thì chạy [fix_thankhi_attribute.sql](fix_thankhi_attribute.sql) r
 [vps/db_new_server.sql](vps/db_new_server.sql) đã tự nạp ở PHẦN 2C.
 Bẫy hay dính: máy Windows ở nhà đã vá tay từ trước nên test ở nhà thấy chạy tốt, lên VPS
 mới lại đơ.
+
+**Tạo món (Thần Khí, đồ giftcode...) xong, logout vào lại là mất món đó**
+Ba nguyên nhân khác nhau, cùng một triệu chứng. Kiểm tra theo thứ tự:
+
+1. **Cột `inven` còn là `TEXT`** (trần 65.535 byte) — xem PHẦN 2D ở
+   [vps/db_new_server.sql](vps/db_new_server.sql). Món mới nằm ở cuối chuỗi nên chết đầu tiên.
+   ```bash
+   mysql -u root kpah_db -e "SELECT COLUMN_NAME, COLUMN_TYPE FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA='kpah_db' AND TABLE_NAME='tob_char'
+       AND COLUMN_NAME IN ('equip','inven','bag','tuido');"
+   ```
+   Còn `text` thì chạy [fix_cot_du_lieu_tran.sql](fix_cot_du_lieu_tran.sql). Xem ai đang sát
+   trần: `SELECT charname, LENGTH(inven) FROM tob_char ORDER BY LENGTH(inven) DESC LIMIT 5;`
+
+2. **Trần đọc lại 130 entry** trong `setitemInvenBag` —
+   [Char.java:12074](src/real/Char.java#L12074). Đã sửa: trần giờ là
+   `Char.MAX_ENTRY_INVEN_LOAD` = 42 × 5 + 16 = 226, đủ cho 210 ô túi + 3 ô đặc biệt + 6 món
+   model. Trước đó mọi entry từ vị trí 130 trở đi bị **xoá vĩnh viễn mỗi lần login** — mất
+   luôn phần model dính ở cuối chuỗi. Ai còn chạy jar cũ thì vẫn dính; kiểm tra:
+   ```bash
+   mysql -u root kpah_db -e "SELECT charname,
+     LENGTH(inven)-LENGTH(REPLACE(inven,'>',''))+1 AS so_entry FROM tob_char
+     ORDER BY so_entry DESC LIMIT 5;"
+   ```
+   Số nào > 130 là nhân vật đang bị cắt.
+
+3. **Món vẫn còn nhưng bị tháo ra khỏi ô trang bị.** Đây là *thiết kế hiện tại*, không phải
+   lỗi tràn: 3 ô đặc biệt `itemHoaKyLan` / `itemVukhiThoiTrang` / `itemThanKhi` được ghi vào
+   cột `inven` chung với hành trang ([Database.java:12685](src/data/Database.java#L12685))
+   nhưng lúc đọc lại thì mọi entry đều vào `iItems`
+   ([Char.java:12214](src/real/Char.java#L12214)) — không có cờ nào đánh dấu "đang đeo". Nên
+   sau mỗi lần login phải bấm đeo lại. Muốn giữ nguyên trạng thái đeo thì phải thêm một giá
+   trị `place` riêng cho từng ô (place 4 đang dành cho model) rồi khôi phục theo `place`.
 
 **Thêm option vào menu NPC nhưng bấm vào không hiển thị gì, log cũng không có gì**
 → Bẫy lớn nhất khi sửa menu: lệnh `-30` (chọn option menu) **không đi thẳng vào

@@ -12037,6 +12037,24 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
+    /**
+     * Tran so entry doc lai duoc tu cot `inven` / `bag`.
+     *
+     * Cot `inven` KHONG chi chua hanh trang: no chua 3 o dac biet ghi truoc
+     * (itemHoaKyLan, itemVukhiThoiTrang, itemThanKhi — xem
+     * Database.saveCharAuto), roi toan bo iItems, roi toi da 6 mon model dinh
+     * o cuoi (ModelWearing.getInfoModelWearing).
+     *
+     * Suc chua that cua hanh trang la MAX_INVENTORY * maxBag = 42 * 5 = 210 o
+     * (tu ngay nang MAX_BAG_LIMIT tu 3 len 5). Tran cu cam cung 130 nen moi lan
+     * login la XOA VINH VIEN cac entry tu vi tri 130 tro di — mon vua tao nam o
+     * cuoi iItems nen chet dau tien. Day chinh la ly do "tao Than Khi xong,
+     * logout vao lai la mat mon do", va cung lam mat luon phan model o cuoi
+     * chuoi. +16 la bien do cho 3 o dac biet, 6 mon model va vai duong them
+     * item khong kiem tra day tui (vd ThoRenThanBi.CreateThanKhi).
+     */
+    public static final int MAX_ENTRY_INVEN_LOAD = 42 * MAX_BAG_LIMIT + 16;
+
     public void setitemInvenBag(final int place) {
         String info = (place == 0) ? this.invent : this.bag;
         if (info == null) {
@@ -12053,8 +12071,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
         final String[] allitem = split(info, ">");
         int size = allitem.length;
-        if (size > 130) {
-            size = 130;
+        if (size > MAX_ENTRY_INVEN_LOAD) {
+            size = MAX_ENTRY_INVEN_LOAD;
         }
         for (int i = 0; i < size; ++i) {
             try {
