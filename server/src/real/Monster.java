@@ -461,9 +461,9 @@ public class Monster extends LiveActor {
         this.isDead = false;
         this.timeOutPoinson = 0L;
         this.poinson = 0;
-        this.maxhp = 1;
-        this.hp = this.maxhp;
         try {
+            this.maxhp = this.getMonsterTemplate().maxhp;
+            this.hp = this.maxhp;
             this.xp = this.getMonsterTemplate().rcvXp;
         } catch (final Exception e) {
             e.printStackTrace();
