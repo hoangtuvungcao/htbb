@@ -58,6 +58,10 @@ rUpdateleaf.txt
 *.out
 AdminChat*.txt
 !AdminChat.txt
+# File server tu sinh, dat ten theo IP ket noi (vd 42.119.73.152.txt) - khong phai
+# code, lam "git status" tren VPS bi dirty va chan deploy-auto.sh neu khong bo qua.
+# IP luon bat dau bang chu so nen loc theo dau ten file, chi ap dung o thu muc goc.
+/[0-9]*.txt
 
 ### Bi mat rieng cua tung may chu web (DB pass, tai khoan ngan hang, API key...) ###
 # Sua tay web/config.php truc tiep tren VPS se lam git status "dirty" va chan
