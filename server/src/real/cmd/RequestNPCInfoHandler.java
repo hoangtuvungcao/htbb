@@ -805,6 +805,15 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 }
                 return;
             }
+            case -90: {
+                p = CharManager.instance.getByUserID(session.userID);
+                if (p != null) {
+                    menu = new String[]{"Điểm hiện tại: " + p.diemDoiThuong + " điểm - Xem đổi thưởng"};
+                    msg = MessageCreator.createMsgMenu(menu, npcType, 0);
+                    session.sendMessage(msg);
+                }
+                return;
+            }
             case -11: {
                 p = CharManager.instance.getByUserID(session.userID);
                 msg = MessageCreator.createMsgMenu(new String[]{"Nguyên liệu thường", "Nguyên liệu khóa", "Ngọc huyền minh", "Ngọc huyền minh khoá", "Bột thường", "Bột khoá"}, npcType, 0);

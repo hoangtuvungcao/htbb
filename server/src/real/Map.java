@@ -3894,6 +3894,16 @@ public class Map implements Runnable {
         Map.npcVilage.add(bot);
         CharManager.instance.put(bot);
         bot = new Char(null);
+        // NPC doi thuong: dung diem tich tu van tieu/cuop tieu/danh quai de doi vat pham.
+        // Toa do dat lech ben canh "tong quan" ~40px moi huong - CHUA kiem chung truc quan
+        // trong game, can vao thu 3 lang xac nhan khong de chong len NPC khac roi chinh
+        // lai x,y neu can (xem ghi chu build.bat / thong bao cua Claude khi giao viec nay).
+        bot.setInfoChar("doi thuong", -90, 2, 0, m, 440, 480, -2090, 277, 301, 325);
+        bot.id = RealController.intance.idGen.getID(0, "Tao bot");
+        bot.posNPCInVilage = new short[][]{{456, 416}, {440, 480}, {776, 576}};
+        Map.npcVilage.add(bot);
+        CharManager.instance.put(bot);
+        bot = new Char(null);
         bot.setInfoChar("thohopthanhsocap", -11, 2, 0, m, 112, 448, -2010, 269, 293, 317);
         bot.id = RealController.intance.idGen.getID(0, "Tao bot");
         bot.posNPCInVilage = new short[][]{{112, 480}, {112, 448}, {192, 528}};
@@ -6936,6 +6946,10 @@ public class Map implements Runnable {
 
     public static void onMosterDie(Char p, LiveActor mt, byte skill, int ahp, byte effect, byte level) {
         try {
+            capNhatDiemGietQuai(p, mt);
+        } catch (Exception ignored) {
+        }
+        try {
             Message m = new Message(17);
             m.dos.writeShort(p.id);
             m.dos.writeShort(mt.id);
@@ -6950,6 +6964,31 @@ public class Map implements Runnable {
             p.sendToNearPlayer(m);
             m.cleanup();
         } catch (Exception var7) {
+        }
+    }
+
+    // Diem doi thuong tu giet quai: moi 10 con (quai trong khoang +-10 level nguoi choi)
+    // duoc 1 diem, tran 1000 diem/ngay tu nguon nay (khong tinh cham vao diemDoiThuong
+    // vinh vien da tich tu viec khac - chi chan phan tich luy THEM tu quai trong ngay).
+    // Luu y: onMosterDie khong duoc goi tu MOI nhanh giet quai trong engine (mot so nhanh
+    // tan cong dien hang loat tu ghi msg 17 rieng ma khong qua ham nay), nen day la
+    // nguon diem "hau het" chu khong tuyet doi day du - chap nhan duoc de tranh dung vao
+    // hang chuc diem code trung lap khac trong Map.java/MapTown.java/MapLienDau.java...
+    private static void capNhatDiemGietQuai(Char p, LiveActor mt) {
+        if (p == null || mt == null || mt.cat != 1) {
+            return; // chi tinh quai (cat==1), khong tinh PK giet nguoi
+        }
+        if (Math.abs(p.lvDetail.lv - mt.getLevel()) > 10) {
+            return;
+        }
+        if (p.diemQuaiHomNay >= 1000) {
+            return;
+        }
+        p.soQuaiHomNay++;
+        if (p.soQuaiHomNay >= 10) {
+            p.soQuaiHomNay -= 10;
+            p.diemQuaiHomNay++;
+            p.diemDoiThuong++;
         }
     }
 
@@ -20583,6 +20622,211 @@ public class Map implements Runnable {
         Database.instance.saveOrtherLog("", player.charname, "Nhan qua moc nap " + moc, "mocnap");
     }
 
+    // ===== NPC Doi Thuong (diem tich tu van tieu/cuop tieu/danh quai) =====
+    // 28 vat pham co dinh, 2 trang 14 muc. Ten hien thi dung "diem" (khong con "sao vang").
+    private static final String[] TEN_DOI_THUONG = {
+            "Phi phong Huyền Vũ ma pháp random kháng 7 ngày",
+            "Phi phong Huyền Vũ vật lý random kháng 7 ngày",
+            "Vũ khí thời trang random chỉ số 7 ngày",
+            "Hoả thạch cấp 2 x20",
+            "Phượng Hoàng Lửa 7 ngày",
+            "Giáp Rồng 7 ngày",
+            "Nghê Thường 7 ngày",
+            "Xích Cước 7 ngày",
+            "Nguyệt Linh Trượng random chỉ số 7 ngày",
+            "Cánh Hồng Vân bạo kích 7 ngày",
+            "Cánh Xích Vũ EXP 7 ngày",
+            "Cánh Tử ảnh thuộc tính lan 7 ngày",
+            "Cánh Lam Băng tăng công 7 ngày",
+            "Mặt nạ Bí Ngô 7 ngày",
+            "Mặt nạ Dạ Xoa 7 ngày",
+            "Mặt nạ Thi Khiển 7 ngày",
+            "Mặt nạ Ngạ Khuyển 7 ngày",
+            "Chổi Sét 7 ngày",
+            "Chổi Băng 7 ngày",
+            "Chổi Lửa 7 ngày",
+            "Chổi Độc 7 ngày",
+            "Phúc Thú (skin vĩnh viễn)",
+            "Gấu Trúc (skin vĩnh viễn)",
+            "Tiên Lộc (skin vĩnh viễn)",
+            "Xích Dương (skin vĩnh viễn)",
+            "Chiến Lang (skin vĩnh viễn)",
+            "Đầu Bí Ngô 7 ngày",
+            "Nón Phù Thủy 7 ngày",
+    };
+    private static final int[] GIA_DOI_THUONG = {
+            500, 500, 1200, 800, 1000, 1000, 1200, 1500, 1200, 800, 800, 1000, 1000,
+            800, 800, 800, 800, 500, 500, 500, 500, 1200, 1200, 1200, 1200, 1200, 800, 800,
+    };
+
+    public void showMenuDiemDoiThuong(Char player) {
+        if (player.diemDoiThuong <= 0 && !player.isAdmin) {
+            player.sendMessage(MessageCreator.createServerAlertMessage(
+                    "Bạn không đủ điểm để đổi thưởng. Hãy vận tiêu, cướp tiêu hoặc đánh quái để tích điểm.", ""));
+            return;
+        }
+        showTrangDoiThuong(player, 0);
+    }
+
+    private void showTrangDoiThuong(Char player, int trang) {
+        int tuVitri = trang * 14;
+        int denVitri = Math.min(tuVitri + 14, TEN_DOI_THUONG.length);
+        String[] menu = new String[denVitri - tuVitri + 1];
+        for (int i = tuVitri; i < denVitri; i++) {
+            menu[i - tuVitri] = TEN_DOI_THUONG[i] + " - " + GIA_DOI_THUONG[i] + " điểm";
+        }
+        menu[menu.length - 1] = (trang == 0) ? "Trang sau »" : "« Trang trước";
+        player.sendMessage(MessageCreator.createMsgMenu(menu, trang == 0 ? -91 : -92, 0));
+    }
+
+    public void doChonDoiThuong(Char player, int trang, int idOptionMenu) {
+        int tuVitri = trang * 14;
+        int viTriCuoiTrang = Math.min(tuVitri + 14, TEN_DOI_THUONG.length) - tuVitri;
+        if (idOptionMenu == viTriCuoiTrang) {
+            // dong dieu huong trang: trang 0 -> "Trang sau" mo trang 1, trang 1 -> "Trang truoc" mo trang 0
+            showTrangDoiThuong(player, trang == 0 ? 1 : 0);
+            return;
+        }
+        int idx = tuVitri + idOptionMenu;
+        if (idx < 0 || idx >= TEN_DOI_THUONG.length) {
+            return;
+        }
+        if (!player.isAdmin && player.diemDoiThuong < GIA_DOI_THUONG[idx]) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ điểm để đổi vật phẩm này.", ""));
+            return;
+        }
+        if (!traoVatPhamDoiThuong(player, idx)) {
+            return; // ham tra ve false da tu gui thong bao ly do (het cho/da co skin...)
+        }
+        if (!player.isAdmin) {
+            player.diemDoiThuong -= GIA_DOI_THUONG[idx];
+        }
+        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+        player.sendMessage(MessageCreator.createServerAlertMessage(
+                "Đổi thưởng thành công: " + TEN_DOI_THUONG[idx] + ". Còn lại " + player.diemDoiThuong + " điểm.", ""));
+        Database.instance.saveOrtherLog("", player.charname, "Doi thuong: " + TEN_DOI_THUONG[idx], "doithuong");
+    }
+
+    /** Tra ve false neu khong the trao (het cho/da so huu) - khong tru diem trong truong hop do. */
+    private boolean traoVatPhamDoiThuong(Char player, int idx) {
+        final int PHUT_7_NGAY = 10080;
+        boolean laSkin = idx >= 21 && idx <= 25;
+        if (!laSkin && player.isFullInventory()) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy, không nhận được quà.", ""));
+            return false;
+        }
+        switch (idx) {
+            case 0: // Phi phong Huyen Vu ma phap random khang 7 ngay
+                Char.createtemCoat(750, player, 0, false, PHUT_7_NGAY);
+                break;
+            case 1: // Phi phong Huyen Vu vat ly random khang 7 ngay
+                Char.createtemCoat(750, player, 1, false, PHUT_7_NGAY);
+                break;
+            case 2: // Vu khi thoi trang random chi so 7 ngay
+                Char.createVuKhiThoiTrang(player, Map.r.nextInt(2), PHUT_7_NGAY, null, false, true, 1, false);
+                break;
+            case 3: // Hoa thach cap 2 x20
+                player.doAddGemItem(GemTemplate.HOA_THACH_C2, 20, true);
+                break;
+            case 4: // Phuong Hoang Lua 7 ngay
+                player.createPhuongHoang(7, Animal.PHUONG_HOANG, true);
+                break;
+            case 5: // Giap Rong 7 ngay
+                Char.doDropModelClothe(player, 839, 7);
+                break;
+            case 6: // Nghe Thuong 7 ngay
+                Char.doDropModelClothe(player, 797, 7);
+                break;
+            case 7: // Xich Cuoc 7 ngay
+                Char.doDropModelClothe(player, 799, 7);
+                break;
+            case 8: // Nguyet Linh Truong random chi so 7 ngay
+                Char.createNguyetLinhTruong(player, Map.r.nextInt(2), PHUT_7_NGAY, null, false, true, 1, false);
+                break;
+            case 9: // Canh Hong Van bao kich 7 ngay
+                GiftCode.AddItem(player, 901, 0, 0, PHUT_7_NGAY);
+                break;
+            case 10: // Canh Xich Vu EXP 7 ngay
+                GiftCode.AddItem(player, 900, 0, 0, PHUT_7_NGAY);
+                break;
+            case 11: // Canh Tu anh thuoc tinh lan 7 ngay
+                GiftCode.AddItem(player, 902, 0, 0, PHUT_7_NGAY);
+                break;
+            case 12: // Canh Lam Bang tang cong 7 ngay
+                GiftCode.AddItem(player, 898, 0, 0, PHUT_7_NGAY);
+                break;
+            case 13: // Mat na Bi Ngo 7 ngay
+                Map.doCreateMatNa3(player, PHUT_7_NGAY, Char.ID_MAT_NA[0], 0, 5);
+                break;
+            case 14: // Mat na Da Xoa 7 ngay
+                Map.doCreateMatNa3(player, PHUT_7_NGAY, Char.ID_MAT_NA[4], 4, 50);
+                break;
+            case 15: // Mat na Thi Khien 7 ngay
+                Map.doCreateMatNa3(player, PHUT_7_NGAY, Char.ID_MAT_NA[3], 3, 30);
+                break;
+            case 16: // Mat na Nga Khuyen 7 ngay
+                Map.doCreateMatNa3(player, PHUT_7_NGAY, Char.ID_MAT_NA[2], 2, 10);
+                break;
+            case 17: // Choi Set 7 ngay
+                Char.createChoi(618, player, PHUT_7_NGAY, 1, false);
+                break;
+            case 18: // Choi Bang 7 ngay
+                Char.createChoi(617, player, PHUT_7_NGAY, 1, false);
+                break;
+            case 19: // Choi Lua 7 ngay
+                Char.createChoi(729, player, PHUT_7_NGAY, 1, false);
+                break;
+            case 20: // Choi Doc 7 ngay
+                Char.createChoi(619, player, PHUT_7_NGAY, 1, false);
+                break;
+            case 21: // Phuc Thu - skin thu cuoi, chi co ban vinh vien (khong ho tro het han)
+                if (SkinThuNuoi.daSoHuu(player, SkinThuNuoi.PHUC_THU)) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã có skin này rồi.", ""));
+                    return false;
+                }
+                SkinThuNuoi.tangSkin(player, SkinThuNuoi.PHUC_THU);
+                break;
+            case 22: // Gau Truc
+                if (SkinThuNuoi.daSoHuu(player, SkinThuNuoi.GAU_TRUC)) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã có skin này rồi.", ""));
+                    return false;
+                }
+                SkinThuNuoi.tangSkin(player, SkinThuNuoi.GAU_TRUC);
+                break;
+            case 23: // Tien Loc
+                if (SkinThuNuoi.daSoHuu(player, SkinThuNuoi.TIEN_LOC)) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã có skin này rồi.", ""));
+                    return false;
+                }
+                SkinThuNuoi.tangSkin(player, SkinThuNuoi.TIEN_LOC);
+                break;
+            case 24: // Xich Duong
+                if (SkinThuNuoi.daSoHuu(player, SkinThuNuoi.XICH_DUONG)) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã có skin này rồi.", ""));
+                    return false;
+                }
+                SkinThuNuoi.tangSkin(player, SkinThuNuoi.XICH_DUONG);
+                break;
+            case 25: // Chien Lang
+                if (SkinThuNuoi.daSoHuu(player, SkinThuNuoi.CHIEN_LANG)) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã có skin này rồi.", ""));
+                    return false;
+                }
+                SkinThuNuoi.tangSkin(player, SkinThuNuoi.CHIEN_LANG);
+                break;
+            case 26: // Dau Bi Ngo 7 ngay
+                Char.doDropModelClothe(player, 577, 7);
+                break;
+            case 27: // Non Phu Thuy 7 ngay
+                Char.doDropModelClothe(player, 578, 7);
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+
     protected void doMenu(Char player, Message message) {
         try {
             int rangeNpc = 5;
@@ -20639,6 +20883,20 @@ public class Map implements Runnable {
             }
             if (idNpc == -521) {
                 doChonPhuongHoangMocNap(player, idOptionMenu);
+                return;
+            }
+            // NPC Doi Thuong (-90): mo man "diem hien tai" (RequestNPCInfoHandler case -90)
+            // chi co 1 dong duy nhat, chon dong do (idMenu==0) moi thu mo trang do vat pham.
+            if (idNpc == -90 && idMenu == 0) {
+                showMenuDiemDoiThuong(player);
+                return;
+            }
+            if (idNpc == -91) {
+                doChonDoiThuong(player, 0, idOptionMenu);
+                return;
+            }
+            if (idNpc == -92) {
+                doChonDoiThuong(player, 1, idOptionMenu);
                 return;
             }
             if (idNpc == -518) {

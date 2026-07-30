@@ -31,6 +31,7 @@ $page = $page ?? '';
             <a href="index.php#news">Tin tức</a>
             <?php if ($u): ?>
                 <a href="naptien.php" class="btn-nav <?= $page === 'naptien' ? 'active' : '' ?>">Nạp tiền</a>
+                <a href="kichhoat.php" class="<?= $page === 'kichhoat' ? 'active' : '' ?>">Kích hoạt</a>
                 <a href="account.php" class="<?= $page === 'account' ? 'active' : '' ?>">Tài khoản</a>
                 <a href="logout.php" class="btn-nav ghost">Đăng xuất</a>
             <?php else: ?>

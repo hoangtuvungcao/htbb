@@ -593,6 +593,11 @@ public class Char extends LiveActor {
     public byte forbitChat;
     public byte married;
     public byte rcvGiftWedding;
+    // Diem doi thuong o NPC "doi thuong": diemDoiThuong la so du vinh vien (tru khi
+    // doi qua), diemQuaiHomNay/soQuaiHomNay reset moi ngay cung luc voi dayLogin.
+    public int diemDoiThuong;
+    public int diemQuaiHomNay;
+    public int soQuaiHomNay;
     public String dayLogin;
     public String dayCamChat;
     public byte receiveGiftEvent;
@@ -7414,6 +7419,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         final int n2 = colortieu;
                         ++finish_TIEU[n2];
                     }
+                    // Diem doi thuong: van tieu thanh cong +50, cuop tieu thanh cong +25.
+                    // Khong tinh diem cho tieu bang (typeTieu==CLAN, nhanh do khong vao day).
+                    pReceive.diemDoiThuong += isThief ? 25 : 50;
+                    pReceive.sendMessage(MessageCreator.createServerAlertMessage(
+                            "Bạn nhận được " + (isThief ? 25 : 50) + " điểm đổi thưởng (tổng: " + pReceive.diemDoiThuong + " điểm).", ""));
                 } else if (typeTieu != Char.CLAN) {
                 }
                 isSuKienHe2017();
@@ -10274,6 +10284,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.flower = 0;
             this.timeXP = 0;
             this.giveMoneyClan = 1;
+            this.diemQuaiHomNay = 0;
+            this.soQuaiHomNay = 0;
             if (this.pointActiveQuest > 300) {
                 this.pointActiveQuest = 300;
             }
@@ -11884,6 +11896,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
         pInfo = String.valueOf(pInfo) + "," + this.diemxaiVip;
         pInfo = String.valueOf(pInfo) + "," + (this.rcvInviteVip ? 1 : 0);
         pInfo = String.valueOf(pInfo) + "," + (this.isCaiTrang);
+        pInfo = String.valueOf(pInfo) + "," + this.diemDoiThuong;
+        pInfo = String.valueOf(pInfo) + "," + this.diemQuaiHomNay;
+        pInfo = String.valueOf(pInfo) + "," + this.soQuaiHomNay;
 
         return pInfo;
     }
@@ -12716,6 +12731,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     this.rcvInviteVip = (Integer.parseInt(data[110]) == 1);
                     this.isCaiTrang = (Integer.parseInt(data[111]));
                 } catch (final Exception ex8) {
+                }
+                try {
+                    this.diemDoiThuong = Integer.parseInt(data[112]);
+                    this.diemQuaiHomNay = Integer.parseInt(data[113]);
+                    this.soQuaiHomNay = Integer.parseInt(data[114]);
+                } catch (final Exception ex8b) {
                 }
                 try {
                     this.idAutoSkill = Byte.parseByte(data[30]);
