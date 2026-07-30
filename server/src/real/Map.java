@@ -20646,17 +20646,16 @@ public class Map implements Runnable {
             "Chổi Băng 7 ngày",
             "Chổi Lửa 7 ngày",
             "Chổi Độc 7 ngày",
-            "Phúc Thú (skin vĩnh viễn)",
-            "Gấu Trúc (skin vĩnh viễn)",
-            "Tiên Lộc (skin vĩnh viễn)",
-            "Xích Dương (skin vĩnh viễn)",
-            "Chiến Lang (skin vĩnh viễn)",
             "Đầu Bí Ngô 7 ngày",
             "Nón Phù Thủy 7 ngày",
     };
+    // Tam bo 5 skin thu cuoi (Phuc Thu/Gau Truc/Tien Loc/Xich Duong/Chien Lang) khoi danh
+    // sach doi thuong - chua co frame/sprite de hien thi. Them lai sau bang cach chen ten
+    // vao TEN_DOI_THUONG + gia vao GIA_DOI_THUONG (cuoi mang, truoc "Dau Bi Ngo"/"Non Phu
+    // Thuy" hoac bat cu dau) roi them lai case trong traoVatPhamDoiThuong + cap nhat "laSkin".
     private static final int[] GIA_DOI_THUONG = {
             500, 500, 1200, 800, 1000, 1000, 1200, 1500, 1200, 800, 800, 1000, 1000,
-            800, 800, 800, 800, 500, 500, 500, 500, 1200, 1200, 1200, 1200, 1200, 800, 800,
+            800, 800, 800, 800, 500, 500, 500, 500, 800, 800,
     };
 
     public void showMenuDiemDoiThuong(Char player) {
@@ -20711,8 +20710,7 @@ public class Map implements Runnable {
     /** Tra ve false neu khong the trao (het cho/da so huu) - khong tru diem trong truong hop do. */
     private boolean traoVatPhamDoiThuong(Char player, int idx) {
         final int PHUT_7_NGAY = 10080;
-        boolean laSkin = idx >= 21 && idx <= 25;
-        if (!laSkin && player.isFullInventory()) {
+        if (player.isFullInventory()) {
             player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy, không nhận được quà.", ""));
             return false;
         }
@@ -20780,45 +20778,10 @@ public class Map implements Runnable {
             case 20: // Choi Doc 7 ngay
                 Char.createChoi(619, player, PHUT_7_NGAY, 1, false);
                 break;
-            case 21: // Phuc Thu - skin thu cuoi, chi co ban vinh vien (khong ho tro het han)
-                if (SkinThuNuoi.daSoHuu(player, SkinThuNuoi.PHUC_THU)) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã có skin này rồi.", ""));
-                    return false;
-                }
-                SkinThuNuoi.tangSkin(player, SkinThuNuoi.PHUC_THU);
-                break;
-            case 22: // Gau Truc
-                if (SkinThuNuoi.daSoHuu(player, SkinThuNuoi.GAU_TRUC)) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã có skin này rồi.", ""));
-                    return false;
-                }
-                SkinThuNuoi.tangSkin(player, SkinThuNuoi.GAU_TRUC);
-                break;
-            case 23: // Tien Loc
-                if (SkinThuNuoi.daSoHuu(player, SkinThuNuoi.TIEN_LOC)) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã có skin này rồi.", ""));
-                    return false;
-                }
-                SkinThuNuoi.tangSkin(player, SkinThuNuoi.TIEN_LOC);
-                break;
-            case 24: // Xich Duong
-                if (SkinThuNuoi.daSoHuu(player, SkinThuNuoi.XICH_DUONG)) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã có skin này rồi.", ""));
-                    return false;
-                }
-                SkinThuNuoi.tangSkin(player, SkinThuNuoi.XICH_DUONG);
-                break;
-            case 25: // Chien Lang
-                if (SkinThuNuoi.daSoHuu(player, SkinThuNuoi.CHIEN_LANG)) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã có skin này rồi.", ""));
-                    return false;
-                }
-                SkinThuNuoi.tangSkin(player, SkinThuNuoi.CHIEN_LANG);
-                break;
-            case 26: // Dau Bi Ngo 7 ngay
+            case 21: // Dau Bi Ngo 7 ngay
                 Char.doDropModelClothe(player, 577, 7);
                 break;
-            case 27: // Non Phu Thuy 7 ngay
+            case 22: // Non Phu Thuy 7 ngay
                 Char.doDropModelClothe(player, 578, 7);
                 break;
             default:

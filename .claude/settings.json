@@ -35,7 +35,16 @@
       "Bash(javac --release 17 -d /tmp /tmp/T.java)",
       "Bash(echo \"EXIT17:$?\")",
       "Bash(javac --release 19 -encoding UTF-8 -nowarn -Xlint:none -cp 'libs/jxl-2.6.jar;libs/mysql-connector-java-5.1.49.jar;libs/NQSH_5h.jar' -sourcepath src -d build/ant-classes @build/sources.txt)",
-      "PowerShell(& \"C:\\\\Users\\\\ADMIN\\\\Desktop\\\\KPAH\\\\build.bat\")"
+      "PowerShell(& \"C:\\\\Users\\\\ADMIN\\\\Desktop\\\\KPAH\\\\build.bat\")",
+      "Bash(git commit -m ' *)",
+      "Bash(curl -s http://180.93.57.30/kpah/index.php)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://180.93.57.30/kpah/naptien.php)",
+      "Bash(awk 'NR==20586,NR==20620' src/real/Map.java)",
+      "Bash(awk 'NR==20586,NR==22200 && /^    \\(private|protected|public\\).*\\\\\\(/' src/real/Map.java)",
+      "Bash(grep -n \"^INSERT INTO \\\\`data_item\\\\`\" gamedb7_clean.sql)",
+      "Bash(awk 'NR<=36468 && /\\(private|protected|public\\).*\\\\\\(.*\\\\\\)\\\\s*\\(throws.*\\)?\\\\{?\\\\s*$/{line=NR; text=$0} END{print line\": \"text}' src/real/Map.java)",
+      "Bash(awk 'NR<=10261 && /\\(private|protected|public\\)[^=]*\\\\\\([^;]*$|\\(private|protected|public\\).*\\\\\\)\\\\s*\\\\{?\\\\s*$/{line=NR; text=$0} END{print line\": \"text}' src/real/Char.java)",
+      "Bash(javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp 'libs/jxl-2.6.jar;libs/mysql-connector-java-5.1.49.jar;libs/NQSH_5h.jar' -sourcepath src -d build/ant-classes @build/sources.txt)"
     ],
     "additionalDirectories": [
       "C:\\Users\\ADMIN\\Desktop\\KPAH"
