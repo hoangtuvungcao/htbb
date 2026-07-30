@@ -44,7 +44,12 @@
       "Bash(grep -n \"^INSERT INTO \\\\`data_item\\\\`\" gamedb7_clean.sql)",
       "Bash(awk 'NR<=36468 && /\\(private|protected|public\\).*\\\\\\(.*\\\\\\)\\\\s*\\(throws.*\\)?\\\\{?\\\\s*$/{line=NR; text=$0} END{print line\": \"text}' src/real/Map.java)",
       "Bash(awk 'NR<=10261 && /\\(private|protected|public\\)[^=]*\\\\\\([^;]*$|\\(private|protected|public\\).*\\\\\\)\\\\s*\\\\{?\\\\s*$/{line=NR; text=$0} END{print line\": \"text}' src/real/Char.java)",
-      "Bash(javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp 'libs/jxl-2.6.jar;libs/mysql-connector-java-5.1.49.jar;libs/NQSH_5h.jar' -sourcepath src -d build/ant-classes @build/sources.txt)"
+      "Bash(javac --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp 'libs/jxl-2.6.jar;libs/mysql-connector-java-5.1.49.jar;libs/NQSH_5h.jar' -sourcepath src -d build/ant-classes @build/sources.txt)",
+      "Bash(awk 'NR==779,NR==835' \"c:/Users/ADMIN/Desktop/KPAH/src/real/RealController.java\")",
+      "Bash(awk '/Map\\\\.namMap = new String/{flag=1; idx=-1} flag && /^            \\\\{/{idx++; if \\($0 ~ /Cánh Rừng Đông/\\) print \"index=\"idx\": \"$0} flag && /^        \\\\};/{flag=0}' \"c:/Users/ADMIN/Desktop/KPAH/src/real/RealController.java\")",
+      "Bash(awk '/static short\\\\[\\\\]\\\\[\\\\] mapID = new short/{flag=1; idx=-1} flag && /^        \\\\{/{idx++; print idx\": \"$0} flag && /\\\\};/{if\\(idx>=0\\){exit}}' \"c:/Users/ADMIN/Desktop/KPAH/src/real/Map.java\")",
+      "Bash(awk -F: '$1<780')",
+      "Bash(grep -i \"^map30$\\\\|^map30\\\\b\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\ADMIN\\Desktop\\KPAH"

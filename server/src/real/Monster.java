@@ -834,7 +834,11 @@ public class Monster extends LiveActor {
                     x2Player = 0;
                 }
                 Potion pt = null;
-                if (p.receiveXP() != 3 && (Map.randomMillion() < tile(((p.lvDetail.lv < 15) ? (90000 + 90000 * x2Drop / 100) : (80000 + 80000 * x2Drop / 100)) + p.luck * 100, PC_TILE_XU) || this.idTemplate == Map.idGhost)) {
+                // Quai thuong qua xa level nguoi choi (+-10) thi khong ra xu nua - dung dung
+                // Map.deltaLVAttackMons da dung san cho cac drop khac o duoi. Quai ma (idGhost)
+                // van giu nguyen luon ra (case dac biet co san tu truoc, khong dung vao).
+                final int deltalvXu = Map.abs(p.lvDetail.lv - this.level);
+                if (p.receiveXP() != 3 && ((deltalvXu <= Map.deltaLVAttackMons && Map.randomMillion() < tile(((p.lvDetail.lv < 15) ? (90000 + 90000 * x2Drop / 100) : (80000 + 80000 * x2Drop / 100)) + p.luck * 100, PC_TILE_XU)) || this.idTemplate == Map.idGhost)) {
                     int totalQuantity;
                     int quantity = totalQuantity = Monster.r.nextInt() % 5 + this.getGoldRcv() / Map.getDivDropXu();
                     if (this.idTemplate == Map.idGhost) {
@@ -1229,7 +1233,7 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
-                if (p.receiveXP() != 3 && Map.randomMillion() < tile(100000 + 100000 * x2Drop / 100 + p.luck * 100, PC_TILE_POTION)) {
+                if (p.receiveXP() != 3 && Map.abs(p.lvDetail.lv - this.level) <= Map.deltaLVAttackMons && Map.randomMillion() < tile(100000 + 100000 * x2Drop / 100 + p.luck * 100, PC_TILE_POTION)) {
                     byte ptType5;
                     if (this.getLevel() <= 10) {
                         ptType5 = 1;
@@ -1250,7 +1254,7 @@ public class Monster extends LiveActor {
                         p.idPotion.add(pt.id);
                     }
                 }
-                if (p.receiveXP() != 3 && Map.randomMillion() < tile(100000 + 100000 * x2Drop / 100 + p.luck * 100, PC_TILE_POTION)) {
+                if (p.receiveXP() != 3 && Map.abs(p.lvDetail.lv - this.level) <= Map.deltaLVAttackMons && Map.randomMillion() < tile(100000 + 100000 * x2Drop / 100 + p.luck * 100, PC_TILE_POTION)) {
                     byte ptType5;
                     if (this.getLevel() <= 10) {
                         ptType5 = 4;
@@ -1307,7 +1311,7 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
-                if (p.receiveXP() != 3 && Map.randomMillion() < tile(200 + 200 * x2Drop / 100, PC_TILE_NGOC)) {
+                if (p.receiveXP() != 3 && Map.abs(p.lvDetail.lv - this.level) <= Map.deltaLVAttackMons && Map.randomMillion() < tile(200 + 200 * x2Drop / 100, PC_TILE_NGOC)) {
                     final GemItem gem3 = Map.dropGemTuBinh(this.level);
                     if (gem3 != null) {
                         gem3.x = this.x + 5 + droplist.size() * 5;
@@ -1346,7 +1350,9 @@ public class Monster extends LiveActor {
                 int n = Map.getPcDropItem(Map.abs(this.level - p.lvDetail.lv), p.luck);
                 n += n * x2Drop / 100;
                 n = tile(n, PC_TILE_ITEM); // giam ti le roi trang bi khi train quai
-                if (p.receiveXP() != 3 && (Map.randomMillion() < n || this.idTemplate == Map.idGhost || this.isBoss)) {
+                // Chi ap gioi han +-10 level cho quai THUONG. Boss va quai ma (idGhost) van
+                // giu nguyen hanh vi cu (khong bi anh huong boi quy tac nay).
+                if (p.receiveXP() != 3 && ((Map.abs(p.lvDetail.lv - this.level) <= Map.deltaLVAttackMons && Map.randomMillion() < n) || this.idTemplate == Map.idGhost || this.isBoss)) {
                     if (this.isBossSonTinhThuyTinh() && Map.r.nextInt(100) < 30) {
                         final Item item3 = Map.dropItemByIdTemplate(this.inCountry, (Map.r.nextInt(100) < 50) ? 676 : 677);
                         if (item3 != null) {
