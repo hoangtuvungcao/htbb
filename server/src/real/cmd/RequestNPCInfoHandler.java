@@ -793,6 +793,13 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     if (TeamServer.isServerLienDau()) {
                         menu = new String[]{"Hợp đục", "Mở rộng hành trang(500L)", "Thử vận may", "Chuyển lãnh thổ(300l)", "Nhận quà Giftcode", "Vào chiến trường", "Kết quả"};
                     }
+                    // Nhan moc nap (49k/99k/299k): luon la muc cuoi menu, ghi nho vi tri
+                    // that su cua no vao Char de Map.doMenu nhan dung du menu dai/ngan khac nhau.
+                    String[] menuMocNap = new String[menu.length + 1];
+                    System.arraycopy(menu, 0, menuMocNap, 0, menu.length);
+                    menuMocNap[menu.length] = "Nhận mốc nạp";
+                    p.idxMocNapMenu = menu.length;
+                    menu = menuMocNap;
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }

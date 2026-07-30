@@ -1,0 +1,44 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/c/xampp/mysql/bin/mysql.exe -uroot --default-character-set=utf8 -e 'use kpah_db; SELECT * FROM data_monster WHERE id=43\\\\G')",
+      "Bash(/c/xampp/mysql/bin/mysql.exe -uroot --default-character-set=utf8 -e 'use kpah_db; SELECT id,name,maxhp,level FROM data_monster WHERE id=83;')",
+      "Bash(rm -rf /c/Users/ADMIN/AppData/Local/Temp/claude/c--Users-ADMIN-Desktop-KPAH/0d4b442b-2323-445c-82b0-e02f4355232d/scratchpad/out_tru)",
+      "Bash(mkdir -p /c/Users/ADMIN/AppData/Local/Temp/claude/c--Users-ADMIN-Desktop-KPAH/0d4b442b-2323-445c-82b0-e02f4355232d/scratchpad/out_tru)",
+      "Bash('/c/Program Files/Java/jdk-26.0.1/bin/javac.exe' --release 8 -encoding UTF-8 -nowarn -Xlint:-options -cp 'lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar' -d /c/Users/ADMIN/AppData/Local/Temp/claude/c--Users-ADMIN-Desktop-KPAH/0d4b442b-2323-445c-82b0-e02f4355232d/scratchpad/out_tru @/tmp/srcs_tru.txt)",
+      "Bash(/c/xampp/mysql/bin/mysql.exe -uroot -e 'use kpah_db; UPDATE data_monster SET maxhp = 50000000 WHERE id = 83;')",
+      "Bash(/c/xampp/mysql/bin/mysql.exe -uroot --default-character-set=utf8 -e 'use kpah_db; SELECT id,name,maxhp,level FROM data_monster WHERE id IN \\(43,83\\);')",
+      "Bash(/c/xampp/mysql/bin/mysql.exe -uroot -e 'use kpah_db; UPDATE data_monster SET maxhp = 100000000 WHERE id = 83; UPDATE data_monster SET maxhp = 50000000 WHERE id = 43;')",
+      "Bash(/c/xampp/mysql/bin/mysql.exe -uroot --default-character-set=utf8 -e 'use kpah_db; SELECT id,name,maxhp,level FROM data_monster WHERE id=120;')",
+      "Bash(/c/xampp/mysql/bin/mysql.exe -uroot -e 'use kpah_db; UPDATE data_monster SET maxhp = 20000000 WHERE id = 43; UPDATE data_monster SET maxhp = 50000000 WHERE id = 120;')",
+      "Bash(/c/xampp/mysql/bin/mysql.exe -uroot --default-character-set=utf8 -e 'use kpah_db; SELECT id,name,maxhp,level FROM data_monster WHERE id IN \\(43,83,120\\);')",
+      "Bash(rm -rf /c/Users/ADMIN/AppData/Local/Temp/claude/c--Users-ADMIN-Desktop-KPAH/0d4b442b-2323-445c-82b0-e02f4355232d/scratchpad/build_out2)",
+      "Bash(mkdir -p /c/Users/ADMIN/AppData/Local/Temp/claude/c--Users-ADMIN-Desktop-KPAH/0d4b442b-2323-445c-82b0-e02f4355232d/scratchpad/build_out2)",
+      "Bash('/c/Program Files/Java/jdk-26.0.1/bin/javac.exe' --release 8 -encoding UTF-8 -nowarn -Xlint:-options -cp 'lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar' -d /c/Users/ADMIN/AppData/Local/Temp/claude/c--Users-ADMIN-Desktop-KPAH/0d4b442b-2323-445c-82b0-e02f4355232d/scratchpad/build_out2 @/tmp/srcs_final2.txt)",
+      "Bash('/c/Program Files/Java/jdk-26.0.1/bin/jar.exe' tf KPAH2_patched.jar)",
+      "Bash(xargs grep -iln \"board_created\\\\|board_naptien\\\\|card\\\\|napthe\\\\|doithe\")",
+      "Bash(grep -n \"CREATE TABLE \\\\`data_item\\\\`\" -A 40 gamedb7_clean.sql)",
+      "Bash(grep -n \"team_user\\\\|5h_active\\\\|\\\\`5h_active\\\\`\" gamedb7_clean.sql account.sql backup_account.sql buff_ddsa.sql backup_kpah_db_truoc_import.sql kpah_db.sql)",
+      "Bash(grep -n \"CREATE TABLE \\\\`tob_char\\\\`\" -A 5 gamedb7_clean.sql)",
+      "Bash(awk 'NR<24042 && /public |void |private / {line=NR\": \"$0} END{}' /c/Users/ADMIN/Desktop/KPAH/src/real/Map.java)",
+      "Bash(awk -F: '$1<24042')",
+      "Bash(python3 -)",
+      "Bash(sort -t'-' -k2 -n -u)",
+      "Bash(mkdir -p /c/Users/ADMIN/Desktop/KPAH/sql && ls /c/Users/ADMIN/Desktop/KPAH/sql)",
+      "Bash(php -v)",
+      "Bash(gh --version)",
+      "Bash(javac -encoding UTF-8 -nowarn -Xlint:none -cp 'libs/jxl-2.6.jar;libs/mysql-connector-java-5.1.49.jar;libs/NQSH_5h.jar' -sourcepath src -d build/ant-classes @build/sources.txt)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(echo 'public class T{}')",
+      "Bash(javac --release 19 -d /tmp /tmp/T.java)",
+      "Bash(echo \"EXIT19:$?\")",
+      "Bash(javac --release 17 -d /tmp /tmp/T.java)",
+      "Bash(echo \"EXIT17:$?\")",
+      "Bash(javac --release 19 -encoding UTF-8 -nowarn -Xlint:none -cp 'libs/jxl-2.6.jar;libs/mysql-connector-java-5.1.49.jar;libs/NQSH_5h.jar' -sourcepath src -d build/ant-classes @build/sources.txt)",
+      "PowerShell(& \"C:\\\\Users\\\\ADMIN\\\\Desktop\\\\KPAH\\\\build.bat\")"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\ADMIN\\Desktop\\KPAH"
+    ]
+  }
+}

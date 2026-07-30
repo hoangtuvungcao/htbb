@@ -58,3 +58,9 @@ rUpdateleaf.txt
 *.out
 AdminChat*.txt
 !AdminChat.txt
+
+### Bi mat rieng cua tung may chu web (DB pass, tai khoan ngan hang, API key...) ###
+# Sua tay web/config.php truc tiep tren VPS se lam git status "dirty" va chan
+# deploy-auto.sh (no kiem tra "git status --porcelain" phai sach truoc khi pull).
+# Dung web/config.local.php thay vi sua config.php - xem web/config.local.php.example.
+web/config.local.php

@@ -12,11 +12,22 @@
  * ============================================================
  */
 
-// ---- Kết nối database ----
-const DB_HOST = '127.0.0.1';
-const DB_PORT = 3306;
-const DB_USER = 'root';
-const DB_PASS = '';               // mật khẩu MySQL, để trống nếu không có
+/**
+ * ---- Bí mật riêng của từng máy (DB pass, số TK ngân hàng, API key...) ----
+ * Các giá trị THẬT được đặt trong web/config.local.php (KHÔNG commit vào git,
+ * xem .gitignore + web/config.local.php.example). Sửa tay config.php trực tiếp
+ * trên VPS sẽ làm `git status` không sạch và chặn deploy-auto.sh lần sau
+ * (script đó từ chối "git pull" khi repo bị sửa tay). Luôn sửa config.local.php.
+ */
+if (file_exists(__DIR__ . '/config.local.php')) {
+    require __DIR__ . '/config.local.php';
+}
+
+// ---- Kết nối database (giá trị mặc định cho máy dev/XAMPP; VPS đặt thật trong config.local.php) ----
+if (!defined('DB_HOST')) define('DB_HOST', '127.0.0.1');
+if (!defined('DB_PORT')) define('DB_PORT', 3306);
+if (!defined('DB_USER')) define('DB_USER', 'root');
+if (!defined('DB_PASS')) define('DB_PASS', '');   // mật khẩu MySQL, để trống nếu không có
 
 const DB_ACCOUNT = 'account';     // DB chứa bảng team_user (đúng như loginServer/server.ini)
 const DB_GAME    = 'kpah_db';     // DB game (đúng như server.ini: db.name)
@@ -46,3 +57,30 @@ const PASSWORD_MAX = 20;
  * Lưu ý: chỉ có tác dụng khi game bật kiểm tra kích hoạt (sv.EnableAvtiveCheck=1).
  */
 const AUTO_ACTIVATE = true;
+
+/**
+ * ============================================================
+ *  NẠP TIỀN THEO MỐC (49k / 99k / 299k) - QR VietQR + TPBank
+ * ============================================================
+ *  - QR được tạo bằng dịch vụ ảnh công khai img.vietqr.io (không cần đăng ký),
+ *    tương thích quét bằng app TPBank / app ngân hàng bất kỳ hỗ trợ VietQR.
+ *  - TPBANK_BIN = mã ngân hàng theo chuẩn VietQR (napas), TPBank cố định là 970423.
+ *  - SỬA TPBANK_ACCOUNT_NO / TPBANK_ACCOUNT_NAME (đúng số TK + tên chủ TK, KHÔNG DẤU,
+ *    IN HOA) trong web/config.local.php trên VPS, KHÔNG sửa trực tiếp ở đây.
+ *
+ * SePay (https://sepay.vn) liên kết TPBank để BÁO TỰ ĐỘNG khi có tiền vào (webhook),
+ * không cần thao tác gì thêm. Cách bật:
+ *   1. Đăng ký SePay, thêm tài khoản ngân hàng TPBank của bạn vào SePay.
+ *   2. Vào SePay > Cấu hình > Webhooks, thêm Webhook trỏ tới:
+ *          https://ten-mien-cua-ban/webhook_sepay.php
+ *      Đặt API Key ở mục Webhook và dán y hệt vào SEPAY_WEBHOOK_APIKEY (config.local.php).
+ * Nếu để trống '', hệ thống KHÔNG xác nhận tự động - phải dùng trang
+ * admin_naptien.php để admin tự xác nhận thủ công sau khi kiểm tra TPBank.
+ */
+const TPBANK_BIN = '970423'; // mã ngân hàng theo chuẩn VietQR, TPBank luôn là 970423
+if (!defined('TPBANK_ACCOUNT_NO')) define('TPBANK_ACCOUNT_NO', '0000000000');
+if (!defined('TPBANK_ACCOUNT_NAME')) define('TPBANK_ACCOUNT_NAME', 'NGUYEN VAN A');
+if (!defined('SEPAY_WEBHOOK_APIKEY')) define('SEPAY_WEBHOOK_APIKEY', '');
+
+/** Mật khẩu trang xác nhận nạp tiền thủ công (admin_naptien.php). Đặt thật trong config.local.php! */
+if (!defined('ADMIN_NAPTIEN_PASSWORD')) define('ADMIN_NAPTIEN_PASSWORD', 'doi-mat-khau-nay');

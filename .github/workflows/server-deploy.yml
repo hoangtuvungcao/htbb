@@ -32,6 +32,25 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H 180.93.57.30 >> ~/.ssh/known_hosts 2>/dev/null
 
+          # Kiem tra khoa doc duoc TRUOC khi thu ssh that, de loi hien ro rang
+          # o day thay vi "Permission denied (publickey,password)" kho hieu o
+          # buoc sau. "error in libcrypto" / "invalid format" o day nghia la
+          # noi dung secret VPS_SSH_KEY bi hong (thuong do copy/paste lam mat
+          # xuong dong, hoac dan thieu dong -----BEGIN.../-----END...-----).
+          if ! ssh-keygen -y -f ~/.ssh/deploy_key -P "" > /dev/null 2>&1; then
+            echo "::error::Secret VPS_SSH_KEY khong doc duoc (dinh dang private key bi hong)."
+            echo "Cach sua: SSH vao VPS bang duong khac (console/mat khau), chay:"
+            echo "  cat /root/.ssh/deploy_github"
+            echo "roi copy TOAN BO noi dung (tu -----BEGIN den -----END-----, giu nguyen xuong dong)"
+            echo "dan lai vao GitHub: Settings > Secrets and variables > Actions > VPS_SSH_KEY."
+            echo "Neu khoa do cung mat/hong, tao khoa moi tren VPS:"
+            echo "  ssh-keygen -t ed25519 -N '' -f /root/.ssh/deploy_github -C github-actions-deploy"
+            echo "  cat /root/.ssh/deploy_github.pub   # them dong nay vao /root/.ssh/authorized_keys, giu nguyen phan command=\"...\" dang co"
+            echo "  cat /root/.ssh/deploy_github       # dan noi dung nay vao secret VPS_SSH_KEY"
+            exit 1
+          fi
+          echo "Khoa SSH doc duoc, tiep tuc deploy."
+
       - name: Goi deploy tren VPS
         # Khoa nay bi ep chay dung mot lenh (command="..." trong authorized_keys) nen
         # du co lo cung khong mo duoc shell tren VPS. Output cua script hien ngay o day.

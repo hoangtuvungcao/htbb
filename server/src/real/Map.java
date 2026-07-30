@@ -2,6 +2,7 @@ package real;
 
 
 import data.Animal;
+import real.plugins.GiftCode;
 import data.BossMatQuy;
 import data.CharClan;
 import data.CharCooking;
@@ -20490,6 +20491,98 @@ public class Map implements Runnable {
         player.sendMessage(MessageCreator.createMsgMenu(menuHoTro, -519, 0));
     }
 
+    // ===== Moc nap tan thu (49k/99k/299k) - nhan qua o NPC Tong Quan (-10) =====
+    private static final int[] MOC_NAP_GIA = {49000, 99000, 299000};
+
+    public void showMenuMocNap(Char player) {
+        int[] status = Database.instance.getMocNapStatus(player.userID);
+        String[] menuMoc = new String[3];
+        for (int i = 1; i <= 3; i++) {
+            String tinhTrang;
+            if (status[i] == 2) {
+                tinhTrang = "Đã nhận";
+            } else if (status[i] == 1) {
+                tinhTrang = "Nhận ngay";
+            } else {
+                tinhTrang = "Chưa đủ điều kiện";
+            }
+            menuMoc[i - 1] = "Mốc " + i + " (" + (MOC_NAP_GIA[i - 1] / 1000) + "k) - " + tinhTrang;
+        }
+        player.sendMessage(MessageCreator.createMsgMenu(menuMoc, -520, 0));
+    }
+
+    public void doChonMocNap(Char player, int idOptionMenu) {
+        int moc = idOptionMenu + 1;
+        if (moc < 1 || moc > 3) {
+            return;
+        }
+        int[] status = Database.instance.getMocNapStatus(player.userID);
+        if (status[moc] == 2) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã nhận mốc nạp này rồi.", ""));
+            return;
+        }
+        if (status[moc] != 1) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa nạp đủ mốc này hoặc giao dịch chưa được xác nhận.", ""));
+            return;
+        }
+        if (moc == 3) {
+            // Moc 3 duoc chon Phuong Hoang hoac Phuong Hoang Bang truoc khi trao qua.
+            player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Phượng Hoàng", "Phượng Hoàng Băng"}, -521, 0));
+            return;
+        }
+        if (player.isFullInventory()) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy, không nhận được quà.", ""));
+            return;
+        }
+        if (!Database.instance.claimMocNap(player.userID, moc)) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Mốc nạp đã được nhận hoặc không hợp lệ.", ""));
+            return;
+        }
+        grantMocNapReward(player, moc, -1);
+    }
+
+    public void doChonPhuongHoangMocNap(Char player, int idOptionMenu) {
+        int[] status = Database.instance.getMocNapStatus(player.userID);
+        if (status[3] != 1) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Mốc nạp không hợp lệ hoặc đã được nhận.", ""));
+            return;
+        }
+        if (player.isFullInventory()) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy, không nhận được quà.", ""));
+            return;
+        }
+        if (!Database.instance.claimMocNap(player.userID, 3)) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Mốc nạp đã được nhận hoặc không hợp lệ.", ""));
+            return;
+        }
+        grantMocNapReward(player, 3, idOptionMenu == 1 ? 1 : 0);
+    }
+
+    /**
+     * Trao qua cho 1 moc nap. phoenixChoice chi dung khi moc==3: 0 = Phuong Hoang,
+     * 1 = Phuong Hoang Bang, -1 = khong ap dung (moc 1/2).
+     */
+    private void grantMocNapReward(Char player, int moc, int phoenixChoice) {
+        player.addLuong(100000);
+        player.addLuongLock(200000);
+        if (moc == 2) {
+            GiftCode.AddItem(player, 686, 0, 0, -1); // Trứng Yêu Tinh
+            GiftCode.AddItem(player, 684, 0, 0, -1); // Trứng Cú
+            doCreateHuyetLinhThao(player, 0);
+            doCreateHuyetLinhThao(player, 0);
+        } else if (moc == 3) {
+            GiftCode.AddItem(player, 688, 0, 0, -1); // Trứng đại bàng
+            GiftCode.AddItem(player, 685, 0, 0, -1); // Trứng Rồng
+            doCreateHuyetLinhThao(player, 0);
+            doCreateHuyetLinhThao(player, 0);
+            player.createPhuongHoang(0, phoenixChoice == 1 ? Animal.PHUONG_HOANG_BANG : Animal.PHUONG_HOANG, true);
+            Char.createVuKhiThoiTrang(player, 0, 10080, null, true, true, 1, false);
+        }
+        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận quà Mốc nạp " + moc + " (" + (MOC_NAP_GIA[moc - 1] / 1000) + "k)!", ""));
+        Database.instance.saveOrtherLog("", player.charname, "Nhan qua moc nap " + moc, "mocnap");
+    }
+
     protected void doMenu(Char player, Message message) {
         try {
             int rangeNpc = 5;
@@ -20532,6 +20625,20 @@ public class Map implements Runnable {
                             break;
                     }
                 }
+                return;
+            }
+            // NPC Tong Quan (-10): muc "Nhan moc nap" luon la muc cuoi menu, vi tri that su
+            // duoc RequestNPCInfoHandler ghi lai vao player.idxMocNapMenu khi mo menu.
+            if (idNpc == -10 && player.idxMocNapMenu >= 0 && idMenu == player.idxMocNapMenu) {
+                showMenuMocNap(player);
+                return;
+            }
+            if (idNpc == -520) {
+                doChonMocNap(player, idOptionMenu);
+                return;
+            }
+            if (idNpc == -521) {
+                doChonPhuongHoangMocNap(player, idOptionMenu);
                 return;
             }
             if (idNpc == -518) {

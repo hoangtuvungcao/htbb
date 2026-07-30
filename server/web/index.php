@@ -53,6 +53,27 @@ require __DIR__ . '/inc/header.php';
     </div>
 </section>
 
+<section id="moc-nap" class="section">
+    <h2 class="section-title">3 Mốc Tân Thủ</h2>
+    <p class="muted" style="text-align:center;margin-bottom:26px;">
+        Nạp mốc bất kỳ, vào game gặp <strong>NPC Tổng Quản</strong> chọn <strong>"Nhận mốc nạp"</strong> để nhận quà.
+    </p>
+    <div class="moc-grid">
+        <?php foreach (mocNapList() as $moc => $info): ?>
+            <div class="card moc-card">
+                <h3 class="moc-title">Mốc <?= $moc ?></h3>
+                <div class="moc-gia"><?= number_format($info['gia']) ?>đ</div>
+                <ul class="moc-items">
+                    <?php foreach ($info['items'] as $it): ?>
+                        <li><?= e($it) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+                <a href="naptien.php" class="btn btn-primary btn-block">Nạp mốc <?= $moc ?></a>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</section>
+
 <section id="rank" class="section">
     <h2 class="section-title">Bảng xếp hạng</h2>
     <div class="rank-grid">

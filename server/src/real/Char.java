@@ -115,6 +115,10 @@ public class Char extends LiveActor {
     public short nMoonCake2Exp;
     public short ID_ITEM;
     public int userID;
+    // Vi tri (idMenu) cua muc "Nhan moc nap" trong menu NPC Tong Quan (npcType -10), duoc
+    // RequestNPCInfoHandler gan lai moi lan mo menu de Map.doMenu nhan dung click du menu
+    // co bao nhieu muc tuy theo co/khong co cac dong "Nhan qua top"/"Nhan qua" phia truoc.
+    public int idxMocNapMenu = -1;
     public short partyID;
     public int masterIDParty;
     public Vector<Short> idItem;

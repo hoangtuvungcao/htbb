@@ -92,3 +92,89 @@ function activateAccount(int $userId, string $username): bool
         return false;
     }
 }
+
+/**
+ * ============================================================
+ *  NẠP TIỀN THEO MỐC (dùng bảng tob_nap_moc trong kpah_db, xem sql/tob_nap_moc.sql)
+ * ============================================================
+ */
+
+/** Danh sách 3 mốc tân thủ: giá tiền (VNĐ) + phần thưởng hiển thị trên web. */
+function mocNapList(): array
+{
+    return [
+        1 => [
+            'gia' => 49000,
+            'items' => ['100.000 lượng mở', '200.000 lượng khóa'],
+        ],
+        2 => [
+            'gia' => 99000,
+            'items' => [
+                '1 Trứng Yêu Tinh', '1 Trứng Cú', '2 Huyết Linh Thảo',
+                '100.000 lượng mở', '200.000 lượng khóa',
+            ],
+        ],
+        3 => [
+            'gia' => 299000,
+            'items' => [
+                '1 Trứng Đại Bàng', '1 Trứng Rồng', '2 Huyết Linh Thảo',
+                'Phượng Hoàng HOẶC Phượng Hoàng Băng (chọn khi nhận tại NPC Tổng Quản)',
+                'Vũ khí thời trang max chỉ số (7 ngày)',
+                '100.000 lượng mở', '200.000 lượng khóa',
+            ],
+        ],
+    ];
+}
+
+/** Sinh mã đơn ngẫu nhiên dùng làm nội dung chuyển khoản, ví dụ KPX7F3AQ2. */
+function taoMaDon(): string
+{
+    $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // bỏ ký tự dễ nhầm (0/O, 1/I)
+    $code = '';
+    for ($i = 0; $i < 8; $i++) {
+        $code .= $chars[random_int(0, strlen($chars) - 1)];
+    }
+    return 'KP' . $code;
+}
+
+/** URL ảnh QR VietQR (tương thích quét bằng app TPBank) cho 1 số tiền + nội dung CK. */
+function vietQrUrl(int $amount, string $maDon): string
+{
+    $path = TPBANK_BIN . '-' . rawurlencode(TPBANK_ACCOUNT_NO) . '-compact2.png';
+    $query = http_build_query([
+        'amount' => $amount,
+        'addInfo' => $maDon,
+        'accountName' => TPBANK_ACCOUNT_NAME,
+    ]);
+    return 'https://img.vietqr.io/image/' . $path . '?' . $query;
+}
+
+/** Tạo 1 đơn nạp mốc mới (trạng thái chờ thanh toán) cho tài khoản đang đăng nhập. */
+function taoDonNapMoc(int $userID, int $moc): array
+{
+    $list = mocNapList();
+    if (!isset($list[$moc])) {
+        throw new InvalidArgumentException('Mốc không hợp lệ');
+    }
+    $amount = (int)$list[$moc]['gia'];
+
+    do {
+        $maDon = taoMaDon();
+        $chk = dbGame()->prepare('SELECT 1 FROM tob_nap_moc WHERE ma_don = ?');
+        $chk->execute([$maDon]);
+    } while ($chk->fetchColumn());
+
+    $ins = dbGame()->prepare('INSERT INTO tob_nap_moc (userID, moc, amount, ma_don) VALUES (?, ?, ?, ?)');
+    $ins->execute([$userID, $moc, $amount, $maDon]);
+
+    return ['ma_don' => $maDon, 'amount' => $amount, 'moc' => $moc];
+}
+
+/** Lấy 1 đơn nạp mốc theo mã đơn (để hiển thị QR / kiểm tra trạng thái). */
+function layDonNapMoc(string $maDon): ?array
+{
+    $st = dbGame()->prepare('SELECT * FROM tob_nap_moc WHERE ma_don = ? LIMIT 1');
+    $st->execute([$maDon]);
+    $row = $st->fetch();
+    return $row ?: null;
+}

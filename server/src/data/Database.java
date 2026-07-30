@@ -3289,6 +3289,74 @@ public class Database {
         }
     }
 
+    /**
+     * Trang thai 3 moc nap (chi so 1..3, chi so 0 khong dung) cho 1 tai khoan (userID):
+     *   0 = chua nap / chua thanh toan
+     *   1 = da thanh toan, cho nhan qua o NPC Tong Quan
+     *   2 = da nhan qua roi
+     * Neu 1 moc co nhieu don (vi du mua lai), uu tien trang thai cao nhat (da_nhan > da_thanh_toan).
+     */
+    public int[] getMocNapStatus(int userID) {
+        int[] status = new int[4];
+        Connection conn = null;
+        PreparedStatement pre = null;
+        ResultSet rs = null;
+        try {
+            conn = Database.connPoolNap.getConnection();
+            pre = conn.prepareStatement("SELECT moc, trang_thai FROM tob_nap_moc WHERE userID=? AND moc BETWEEN 1 AND 3");
+            pre.setInt(1, userID);
+            rs = pre.executeQuery();
+            while (rs.next()) {
+                int moc = rs.getInt("moc");
+                String tt = rs.getString("trang_thai");
+                int val = "da_nhan".equals(tt) ? 2 : ("da_thanh_toan".equals(tt) ? 1 : 0);
+                if (val > status[moc]) {
+                    status[moc] = val;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { rs.close(); } catch (Exception ignored) { }
+            try { pre.close(); } catch (Exception ignored) { }
+            try { Database.connPoolNap.free(conn); } catch (Exception ignored) { }
+        }
+        return status;
+    }
+
+    /**
+     * Danh dau 1 moc nap la da nhan qua (khong the nhan lai). Tra ve true neu that su
+     * co 1 dong 'da_thanh_toan' duoc chuyen thanh 'da_nhan' (chong bam nhan 2 lan/duplicate).
+     */
+    public boolean claimMocNap(int userID, int moc) {
+        Connection conn = null;
+        PreparedStatement pre = null;
+        ResultSet rs = null;
+        PreparedStatement update = null;
+        try {
+            conn = Database.connPoolNap.getConnection();
+            pre = conn.prepareStatement("SELECT id FROM tob_nap_moc WHERE userID=? AND moc=? AND trang_thai='da_thanh_toan' ORDER BY id ASC LIMIT 1");
+            pre.setInt(1, userID);
+            pre.setInt(2, moc);
+            rs = pre.executeQuery();
+            if (!rs.next()) {
+                return false;
+            }
+            int id = rs.getInt("id");
+            update = conn.prepareStatement("UPDATE tob_nap_moc SET trang_thai='da_nhan', claimed_at=NOW() WHERE id=? AND trang_thai='da_thanh_toan'");
+            update.setInt(1, id);
+            return update.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try { rs.close(); } catch (Exception ignored) { }
+            try { pre.close(); } catch (Exception ignored) { }
+            try { update.close(); } catch (Exception ignored) { }
+            try { Database.connPoolNap.free(conn); } catch (Exception ignored) { }
+        }
+    }
+
     public void saveAllChar(Char p) {
     }
 

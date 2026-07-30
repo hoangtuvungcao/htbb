@@ -26,9 +26,11 @@ $page = $page ?? '';
         <nav class="main-nav">
             <a href="index.php" class="<?= $page === 'home' ? 'active' : '' ?>">Trang chủ</a>
             <a href="index.php#download">Tải game</a>
+            <a href="index.php#moc-nap">Mốc tân thủ</a>
             <a href="index.php#rank">Xếp hạng</a>
             <a href="index.php#news">Tin tức</a>
             <?php if ($u): ?>
+                <a href="naptien.php" class="btn-nav <?= $page === 'naptien' ? 'active' : '' ?>">Nạp tiền</a>
                 <a href="account.php" class="<?= $page === 'account' ? 'active' : '' ?>">Tài khoản</a>
                 <a href="logout.php" class="btn-nav ghost">Đăng xuất</a>
             <?php else: ?>

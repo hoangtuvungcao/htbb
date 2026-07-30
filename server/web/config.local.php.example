@@ -1,0 +1,26 @@
+<?php
+/**
+ * ============================================================
+ *  BÍ MẬT RIÊNG CỦA MÁY NÀY - copy file này thành config.local.php rồi điền
+ *  giá trị THẬT (KHÔNG commit config.local.php, đã có trong .gitignore).
+ * ============================================================
+ *  Trên VPS:  cp web/config.local.php.example web/config.local.php
+ *             rồi sửa config.local.php (KHÔNG sửa config.php trực tiếp -
+ *             sửa config.php trên VPS sẽ làm git status "dirty" và chặn
+ *             deploy-auto.sh lần deploy kế tiếp).
+ * ============================================================
+ */
+
+// ---- Kết nối database ----
+define('DB_HOST', '127.0.0.1');
+define('DB_PORT', 3306);
+define('DB_USER', 'root');
+define('DB_PASS', '');                 // mật khẩu MySQL thật
+
+// ---- Nạp tiền theo mốc (TPBank + SePay) ----
+define('TPBANK_ACCOUNT_NO', '0000000000');       // số tài khoản TPBank thật
+define('TPBANK_ACCOUNT_NAME', 'NGUYEN VAN A');   // tên chủ tài khoản, KHÔNG DẤU, IN HOA
+define('SEPAY_WEBHOOK_APIKEY', '');              // API Key đặt trên SePay > Webhooks
+
+// ---- Trang xác nhận nạp tiền thủ công (admin_naptien.php) ----
+define('ADMIN_NAPTIEN_PASSWORD', 'doi-mat-khau-nay');

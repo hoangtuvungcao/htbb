@@ -41,6 +41,52 @@ dùng chung database với game server.
   Nếu sau này bạn nâng cấp cơ chế đăng nhập của server, hãy đổi cả hai nơi cho đồng bộ.
 - Để người ngoài truy cập: mở cổng 80 (Apache) và trỏ tên miền / IP public vào máy.
 
+## Bí mật riêng của từng máy — `config.local.php`
+
+`web/config.php` nằm trong git, còn DB password / số TK ngân hàng / API key / mật khẩu
+admin thì **KHÁC NHAU giữa máy dev và VPS thật** → không được để trong file đã commit.
+Chúng nằm ở `web/config.local.php` (đã thêm vào `.gitignore`, không commit):
+
+```bash
+cp web/config.local.php.example web/config.local.php
+# rồi sửa config.local.php với giá trị THẬT
+```
+
+`config.php` tự `require` file này nếu nó tồn tại. **Không bao giờ sửa tay
+`web/config.php` trực tiếp trên VPS** — `deploy-auto.sh` chạy `git status --porcelain`
+trước mỗi lần deploy và **từ chối `git pull` nếu repo bị sửa tay**, làm job
+"Goi deploy tren VPS" trên GitHub Actions báo lỗi đỏ ở mọi lần push sau đó.
+
+**Nếu VPS đang bị dính lỗi này** (đã lỡ sửa tay `config.php` trên VPS): SSH vào VPS,
+copy các giá trị thật đang có trong `config.php` sang `config.local.php` (theo mẫu
+`config.local.php.example`), rồi trả `config.php` về đúng bản gốc trong git:
+
+```bash
+sudo -u kpah git -C /opt/kpah checkout -- web/config.php
+sudo -u kpah git -C /opt/kpah status --porcelain   # phải ra rỗng
+```
+
+## Nạp tiền theo mốc (49k / 99k / 299k) + NPC Tổng Quản
+
+Tính năng "3 mốc tân thủ": người chơi vào `naptien.php` chọn mốc, quét mã QR VietQR
+chuyển khoản TPBank, sau khi thanh toán vào game gặp **NPC Tổng Quản** chọn
+**"Nhận mốc nạp"** để nhận quà (mốc 3 được chọn Phượng Hoàng hoặc Phượng Hoàng Băng).
+
+Cài đặt:
+
+1. Import `sql/tob_nap_moc.sql` vào database `kpah_db` (bảng theo dõi trạng thái mốc nạp).
+2. Mở `web/config.local.php` (xem mục "Bí mật riêng của từng máy" phía trên), điền đúng:
+   - `TPBANK_ACCOUNT_NO`, `TPBANK_ACCOUNT_NAME` (số tài khoản + tên chủ TK TPBank nhận tiền).
+   - `ADMIN_NAPTIEN_PASSWORD` (đổi mật khẩu mặc định trước khi public).
+3. **Xác nhận chuyển khoản** — 2 cách, có thể dùng song song:
+   - **Tự động (khuyến nghị)**: đăng ký [SePay](https://sepay.vn), liên kết tài khoản
+     TPBank, thêm Webhook trỏ tới `https://ten-mien/webhook_sepay.php`, đặt API Key
+     trên SePay và dán y hệt vào `SEPAY_WEBHOOK_APIKEY` trong `config.php`.
+   - **Thủ công**: để `SEPAY_WEBHOOK_APIKEY` trống, vào `admin_naptien.php`
+     (nhập `ADMIN_NAPTIEN_PASSWORD`) để tự kiểm tra TPBank rồi bấm xác nhận từng đơn.
+4. Phía server game (Java) đã có sẵn: NPC Tổng Quản (npcType `-10`) tự thêm mục
+   "Nhận mốc nạp" — không cần chỉnh gì thêm ở server, chỉ cần build lại và chạy.
+
 ## Danh sách file
 
 ```
@@ -51,6 +97,10 @@ web/
 ├── login.php           # Đăng nhập website
 ├── account.php         # Trang tài khoản + nút Kích hoạt
 ├── logout.php
+├── naptien.php          # Nạp tiền theo mốc + hiển thị QR VietQR
+├── order_status.php     # API polling trạng thái 1 đơn nạp mốc (JSON)
+├── webhook_sepay.php    # Webhook SePay xác nhận chuyển khoản tự động
+├── admin_naptien.php    # Trang admin xác nhận chuyển khoản thủ công
 ├── assets/style.css    # Giao diện tối võ hiệp
 └── inc/
     ├── db.php          # Kết nối PDO

@@ -131,6 +131,26 @@ a:hover { color: var(--gold-2); }
 .badge-ok { background: rgba(76,175,125,.15); color: #8fe0b6; border: 1px solid var(--ok); }
 .badge-warn { background: rgba(217,154,52,.15); color: #f0c778; border: 1px solid var(--warn); }
 
+/* Moc nap tan thu */
+.moc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.moc-card { display: flex; flex-direction: column; text-align: center; }
+.moc-title { margin: 0 0 4px; }
+.moc-gia { font-size: 1.6rem; font-weight: 700; color: var(--gold); margin-bottom: 14px; }
+.moc-items { list-style: none; padding: 0; margin: 0 0 18px; text-align: left; flex: 1; }
+.moc-items li { padding: 6px 0 6px 22px; border-bottom: 1px solid var(--border); position: relative; color: var(--text); font-size: .92rem; }
+.moc-items li:last-child { border-bottom: 0; }
+.moc-items li::before { content: "✦"; position: absolute; left: 0; color: var(--gold); }
+
+/* QR nap tien */
+.qr-wrap { display: flex; justify-content: center; }
+.qr-card { width: min(440px, 100%); text-align: center; }
+.qr-img { width: 260px; height: 260px; border-radius: 10px; border: 1px solid var(--border); background: #fff; padding: 8px; margin: 10px 0; }
+.qr-info { width: 100%; margin: 14px 0; border-collapse: collapse; }
+.qr-info td { padding: 6px 4px; border-bottom: 1px solid var(--border); text-align: left; }
+.qr-info td:last-child { text-align: right; }
+.ma-don { color: var(--gold-2); letter-spacing: 1px; }
+.warn-note { color: var(--warn); font-size: .88rem; }
+
 /* Footer */
 .site-footer { border-top: 1px solid var(--border); margin-top: 40px; padding: 24px 0; text-align: center; color: var(--muted); font-size: .9rem; }
 .site-footer p { margin: 4px 0; }
@@ -139,6 +159,7 @@ a:hover { color: var(--gold-2); }
 @media (max-width: 780px) {
     .download-grid { grid-template-columns: 1fr 1fr; }
     .rank-grid, .account-grid { grid-template-columns: 1fr; }
+    .moc-grid { grid-template-columns: 1fr; }
     .main-nav { gap: 2px; }
     .main-nav a { padding: 6px 8px; font-size: .88rem; }
 }
