@@ -70,8 +70,14 @@ if not exist build\sources.txt (
     exit /b 1
 )
 
-echo Dang bien dich (javac --release 19, khop dung JDK da tao KPAH2_patched.jar hien tai)...
-"%JAVAC%" --release 19 -encoding UTF-8 -nowarn -Xlint:none -cp "%LIBCP%" -sourcepath src -d "%OUT%" @build\sources.txt
+echo Dang bien dich (javac --release 8, khop dung Java 8 dang chay tren VPS)...
+REM QUAN TRONG: VPS chay Java 8 (openjdk-8-jre-headless, xem HUONG_DAN_BUILD_VPS.md
+REM phan B1: "jar server bien dich o class version 52 = Java 8"). Build bang
+REM --release cao hon (vi du 17, 19) tao class file VPS KHONG CHAY DUOC:
+REM "UnsupportedClassVersionError ... class file version 63.0, may nay chi doc
+REM duoc toi 52.0" -> server crash-loop, cong 19129 khong bao gio mo. DUNG doi so nay
+REM tru khi VPS da nang cap JDK va ban chac chan.
+"%JAVAC%" --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "%LIBCP%" -sourcepath src -d "%OUT%" @build\sources.txt
 if errorlevel 1 (
     echo.
     echo [LOI] Bien dich that bai. Xem loi phia tren. KHONG dong goi jar.
