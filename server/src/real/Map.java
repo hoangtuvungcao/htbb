@@ -8431,6 +8431,8 @@ public class Map implements Runnable {
                                 DataInputStream dis = message.dis;
                                 Monster mt = this.getMonster(dis.readShort(), p.inCountry, p.region);
                                 short skill = dis.readByte();
+                                // TAM THOI - debug xac dinh vi sao dao van bi da muc tieu, xoa sau khi xong.
+                                System.out.println("DEBUG_SINGLE map=" + this.mapId + " class=" + p.charClass + " skill=" + skill + " mt=" + (mt != null ? mt.id + "/" + mt.getName() : "null"));
                                 byte effect = 0;
                                 int ahp = p.attackDamage;
                                 int crit = 0;
