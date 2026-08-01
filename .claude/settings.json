@@ -62,7 +62,9 @@
       "Bash(\"/c/Program Files/Java/jdk-26.0.1/bin/javap.exe\" -p -classpath \"lib/NQSH_5h.jar\" data.CharTemplate)",
       "Bash(\"/c/Program Files/Java/jdk-26.0.1/bin/javap.exe\" -p -c -classpath \"lib/NQSH_5h.jar\" data.CharTemplate)",
       "Bash(mkdir -p /tmp/kpah_build_check)",
-      "Bash(javac -nowarn -Xlint:none -encoding UTF-8 -cp \"lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar\" -sourcepath src -d \"C:\\\\Users\\\\ADMIN\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ADMIN-Desktop-KPAH\\\\2e24e5c0-f410-4ced-85d5-50d531645f38\\\\scratchpad\\\\build_check\" src/data/Database.java src/real/Char.java)"
+      "Bash(javac -nowarn -Xlint:none -encoding UTF-8 -cp \"lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar\" -sourcepath src -d \"C:\\\\Users\\\\ADMIN\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ADMIN-Desktop-KPAH\\\\2e24e5c0-f410-4ced-85d5-50d531645f38\\\\scratchpad\\\\build_check\" src/data/Database.java src/real/Char.java)",
+      "Bash(grep -n \"CREATE TABLE \\\\`data_monster\\\\`\" -A 30 gamedb7_clean.sql)",
+      "Bash(javac -nowarn -Xlint:none -encoding UTF-8 -cp \"lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar\" -sourcepath src -d \"C:\\\\Users\\\\ADMIN\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ADMIN-Desktop-KPAH\\\\2e24e5c0-f410-4ced-85d5-50d531645f38\\\\scratchpad\\\\build_check\" src/real/Char.java)"
     ],
     "additionalDirectories": [
       "C:\\Users\\ADMIN\\Desktop\\KPAH"

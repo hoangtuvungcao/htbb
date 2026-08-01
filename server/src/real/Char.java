@@ -4165,15 +4165,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         isBossBaoCat = mt.isBossBaoCat();
                         if (!actor.isMonsterVantieu() && !((Monster) actor).isBoss && mt.idTemplate != 36 && mt.idTemplate != 37 && mt.idTemplate != 43 && mt.idTemplate != 46 && !this.map.isMapChienTruongMoba()) {
                             final int tempLv = actor.getLevel() - this.lvDetail.lv;
-                            if (tempLv > 0) {
+                            // Chi phat khi quai cao hon nhan vat tu 19 level tro len (truoc day
+                            // phat ngay tu 1 level chenh lech, qua nang voi quai dau game giap thap).
+                            if (tempLv >= 19) {
                                 def += tempLv * 100;
-                                if (Map.abs(tempLv) > 5 && Map.abs(tempLv) <= 10) {
-                                    att /= 2;
-                                } else if (Map.abs(tempLv) > 10 && Map.abs(tempLv) <= 15) {
-                                    att /= 3;
-                                } else if (Map.abs(tempLv) > 15) {
-                                    att /= 10;
-                                }
+                                att /= 10;
                             } else if (tempLv < 0) {
                                 att += Map.abs(20 * tempLv);
                             }
