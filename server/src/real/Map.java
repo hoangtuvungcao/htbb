@@ -7836,11 +7836,13 @@ public class Map implements Runnable {
     }
 
     public void doAttackMultiTarget(Char p, Message message) {
+        // TAM THOI - debug xac dinh vi sao dao van bi da muc tieu, xoa sau khi xong.
+        System.out.println("DEBUG_ENTRY_MULTI map=" + this.mapId + " mapIDLoadMap=" + this.mapIDLoadMap + " nRegion=" + this.nRegion);
         if (!p.cannotAttackWhenBienhinh()) {
             if (!p.isHoangSo() && !p.isHoangLoan()) {
                 if (this.mapIDLoadMap != 0 && this.mapIDLoadMap != 70 && this.mapIDLoadMap != 80) {
                     try {
-                      
+
                         if (this.nRegion > 0) {
                             ((Region) this.ALL_REGION.get(p.region)).doAttackMultiTarget(p, message);
                             return;
@@ -8407,6 +8409,8 @@ public class Map implements Runnable {
 
     /// TODO Đánh Quái
     protected void doAttackMonster(Char p, Message message) throws IOException {
+        // TAM THOI - debug xac dinh vi sao dao van bi da muc tieu, xoa sau khi xong.
+        System.out.println("DEBUG_ENTRY_SINGLE map=" + this.mapId + " mapIDLoadMap=" + this.mapIDLoadMap + " nRegion=" + this.nRegion);
         if (!p.cannotAttackWhenBienhinh()) {
             if (!p.isHoangSo() && !p.isHoangLoan()) {
                 if (this.mapIDLoadMap != 0 && this.mapIDLoadMap != 70 && this.mapIDLoadMap != 80) {
