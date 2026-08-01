@@ -49,7 +49,20 @@
       "Bash(awk '/Map\\\\.namMap = new String/{flag=1; idx=-1} flag && /^            \\\\{/{idx++; if \\($0 ~ /Cánh Rừng Đông/\\) print \"index=\"idx\": \"$0} flag && /^        \\\\};/{flag=0}' \"c:/Users/ADMIN/Desktop/KPAH/src/real/RealController.java\")",
       "Bash(awk '/static short\\\\[\\\\]\\\\[\\\\] mapID = new short/{flag=1; idx=-1} flag && /^        \\\\{/{idx++; print idx\": \"$0} flag && /\\\\};/{if\\(idx>=0\\){exit}}' \"c:/Users/ADMIN/Desktop/KPAH/src/real/Map.java\")",
       "Bash(awk -F: '$1<780')",
-      "Bash(grep -i \"^map30$\\\\|^map30\\\\b\")"
+      "Bash(grep -i \"^map30$\\\\|^map30\\\\b\")",
+      "Bash(javap -p -classpath lib/NQSH_5h.jar data.CharTemplate)",
+      "Bash(ls /c/Program*/Java*)",
+      "Read(//c//**)",
+      "Bash(command -v javac)",
+      "Bash(command -v java)",
+      "Bash(kill %1)",
+      "Bash(\"/c/Program Files/Common Files/Oracle/Java/javapath/java\" -version)",
+      "Bash(where.exe javac *)",
+      "Bash(where.exe javap *)",
+      "Bash(\"/c/Program Files/Java/jdk-26.0.1/bin/javap.exe\" -p -classpath \"lib/NQSH_5h.jar\" data.CharTemplate)",
+      "Bash(\"/c/Program Files/Java/jdk-26.0.1/bin/javap.exe\" -p -c -classpath \"lib/NQSH_5h.jar\" data.CharTemplate)",
+      "Bash(mkdir -p /tmp/kpah_build_check)",
+      "Bash(javac -nowarn -Xlint:none -encoding UTF-8 -cp \"lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar\" -sourcepath src -d \"C:\\\\Users\\\\ADMIN\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ADMIN-Desktop-KPAH\\\\2e24e5c0-f410-4ced-85d5-50d531645f38\\\\scratchpad\\\\build_check\" src/data/Database.java src/real/Char.java)"
     ],
     "additionalDirectories": [
       "C:\\Users\\ADMIN\\Desktop\\KPAH"

@@ -14980,7 +14980,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             // cong qua hang doi board_created (nhu Nhan moc nap), Char se nhan khi vao game lan dau
             // qua Database.getBoardCreated(), khong dung sua truc tiep pInfo (fragile, xem [[feedback-kpah-safe-npc-edits]]).
             if (first) {
-                stmt.execute("INSERT INTO board_created(xu,luong,luongK,username) VALUES(0,50000,250000,'" + userID + "')");
+                stmt.execute("INSERT INTO board_created(xu,luong,luongK,username) VALUES(50000000,50000,250000,'" + userID + "')");
             }
             sql = "SELECT * FROM tob_char WHERE charname='" + charname + "'";
             if (stmt.execute(sql)) {
