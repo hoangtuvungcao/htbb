@@ -880,7 +880,7 @@ public class Char extends LiveActor {
         Char.numberLucky = 5300;
         Char.numberRandom = 4067;
         Char.total_open = 0;
-        Char.idGif35 = new short[]{80, 101, 73, 136, 115, 108, 94, 129};
+        Char.idGif35 = new short[]{80, 101, 73, 136, 115, 108, 94, 129, 87, 122};
         Char.ID_BIG_AVT_AO_TIEN_NU = 613;
         Char.ID_BIG_AVT_AO_TINH_QUAN = 615;
         Char.ID_BIG_AVT_PP_KHONG_TUOC = 614;
@@ -16601,7 +16601,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void doReceiveGif35(final int magic) {
-        final byte[] soluong = {(byte) ((magic == 0) ? 0 : 4), (byte) (4 + ((magic == 0) ? 4 : 0)), 4, (byte) (2 + ((magic == 0) ? 2 : 0)), (byte) ((magic == 0) ? 0 : 2), 2, 0, 0};
+        final byte[] soluong = {(byte) ((magic == 0) ? 0 : 4), (byte) (4 + ((magic == 0) ? 4 : 0)), 4, (byte) (2 + ((magic == 0) ? 2 : 0)), (byte) ((magic == 0) ? 0 : 2), 2, 0, 0, 2, 2};
         switch (this.charClass) {
             case 0:
             case 1:
@@ -16625,11 +16625,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 break;
             }
         }
+        final int SO_LUONG_MOI_LOAI = 100;
         String info = "";
         for (byte i = 0; i < Char.idGif35.length; ++i) {
             if (soluong[i] > 0) {
-                info = String.valueOf(info) + soluong[i] + " " + Map.gemTemplate[Char.idGif35[i]].name + " ";
-                this.doAddGemItem(Char.idGif35[i], soluong[i], true);
+                info = String.valueOf(info) + SO_LUONG_MOI_LOAI + " " + Map.gemTemplate[Char.idGif35[i]].name + " ";
+                this.doAddGemItem(Char.idGif35[i], SO_LUONG_MOI_LOAI, true);
             }
         }
         this.gif35 = 1;
@@ -16639,7 +16640,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void doReceiveGif35Offline(final int magic) {
-        final byte[] soluong = {(byte) ((magic == 0) ? 0 : 4), (byte) (4 + ((magic == 0) ? 4 : 0)), 4, (byte) (2 + ((magic == 0) ? 2 : 0)), (byte) ((magic == 0) ? 0 : 2), 2, 0, 0};
+        final byte[] soluong = {(byte) ((magic == 0) ? 0 : 4), (byte) (4 + ((magic == 0) ? 4 : 0)), 4, (byte) (2 + ((magic == 0) ? 2 : 0)), (byte) ((magic == 0) ? 0 : 2), 2, 0, 0, 2, 2};
         switch (this.charClass) {
             case 0:
             case 1:

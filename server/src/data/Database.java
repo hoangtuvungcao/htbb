@@ -14976,6 +14976,12 @@ public void addCharXaiNapLuong(Char p, int type) {
             String infoTop = nation + "," + idAo + "," + classID + ",1,0," + quanB + "," + classID + ",1,0," + vukhi + "," + classID + ",1,0";
             sql = "INSERT INTO tob_char(charname,userId,headStyle,class,pInfo,potion,skill,basic,gender,infotop,gold,equip,idserver) VALUES('" + charname + "'," + userID + "," + headStyle + "," + classID + ",'" + pInfo + "','" + potion + "','" + skill + "','" + basic + "'," + (gender + 1) + ",'" + infoTop + "'," + xu + ",'" + equip + "'," + s.idServer + ")";
             stmt.execute(sql);
+            // Nhan vat dau tien va duy nhat cua tai khoan: tang 50000 luong mo + 250000 luong khoa,
+            // cong qua hang doi board_created (nhu Nhan moc nap), Char se nhan khi vao game lan dau
+            // qua Database.getBoardCreated(), khong dung sua truc tiep pInfo (fragile, xem [[feedback-kpah-safe-npc-edits]]).
+            if (first) {
+                stmt.execute("INSERT INTO board_created(xu,luong,luongK,username) VALUES(0,50000,250000,'" + userID + "')");
+            }
             sql = "SELECT * FROM tob_char WHERE charname='" + charname + "'";
             if (stmt.execute(sql)) {
                 ResultSet rs3 = stmt.getResultSet();
