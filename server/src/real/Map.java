@@ -8110,10 +8110,13 @@ public class Map implements Runnable {
                                     dxp = 1;
                                 }
 
-                                int[] downPercent = new int[]{1, 5, 10, dxp};
+                                // Truoc day phan tu cuoi la "dxp" (tu chia cho chinh no -> luon = 1
+                                // bat ke dxp ban dau la bao nhieu). Doi thanh so cu the, tiep noi
+                                // day tang dan cua tung mang (giong doAttackMonster).
+                                int[] downPercent = new int[]{1, 5, 10, 20};
                                 int targetLv = p.getLevel();
                                 if (targetLv < 40) {
-                                    downPercent = new int[]{1, 2, 3, dxp};
+                                    downPercent = new int[]{1, 2, 3, 4};
                                 }
 
                                 int delta = targetLv - mt.level;
@@ -8584,10 +8587,13 @@ public class Map implements Runnable {
                                                                                                     dxp = 1;
                                                                                                 }
 
-                                                                                                int[] downPercent = new int[]{1, 5, 10, dxp};
+                                                                                                // Truoc day phan tu cuoi la "dxp" (tu chia cho chinh no -> luon = 1
+                                                                                                // bat ke dxp ban dau la bao nhieu, khong phai giam ti le hop ly).
+                                                                                                // Doi thanh so cu the, tiep noi day tang dan cua tung mang.
+                                                                                                int[] downPercent = new int[]{1, 5, 10, 20};
                                                                                                 int targetLv = p.getLevel();
                                                                                                 if (targetLv < 40) {
-                                                                                                    downPercent = new int[]{1, 2, 3, dxp};
+                                                                                                    downPercent = new int[]{1, 2, 3, 4};
                                                                                                 }
 
                                                                                                 int delta = targetLv - mt.level;
@@ -8995,9 +9001,9 @@ public class Map implements Runnable {
                     div = 3;
                 }
 
-                currentXP += dxp / (long) div + (long) rand10(5);
+                currentXP += dxp / (long) div + (long) (1 + r.nextInt(5));
                 p.lvDetail.setExp(currentXP, p.oldLv, p.charname, "addxpcharevent map");
-                p.expRace = p.expRace + dxp + (long) rand10(5);
+                p.expRace = p.expRace + dxp + (long) (1 + r.nextInt(5));
                 int newlevel = p.lvDetail.lv;
                 byte[] var10000 = new byte[]{5, 5, 5, 5, 5, 5, 5};
                 if (newlevel >= currentLevel + 1) {
@@ -9116,10 +9122,10 @@ public class Map implements Runnable {
             if (isAdminBuff) {
                 currentXP += dxp;
             } else {
-                currentXP += dxp / (long) div + (long) rand10(5);
+                currentXP += dxp / (long) div + (long) (1 + r.nextInt(5));
             }
             p.lvDetail.setExp(currentXP, p.oldLv, p.charname, "addxpforchar map");
-            p.expRace = p.expRace + dxp + (long) rand10(5);
+            p.expRace = p.expRace + dxp + (long) (1 + r.nextInt(5));
             int newlevel = p.lvDetail.lv;
             byte[] var10000 = new byte[]{5, 5, 5, 5, 5, 5, 5};
             if (newlevel >= currentLevel + 1) {
