@@ -4165,9 +4165,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         isBossBaoCat = mt.isBossBaoCat();
                         if (!actor.isMonsterVantieu() && !((Monster) actor).isBoss && mt.idTemplate != 36 && mt.idTemplate != 37 && mt.idTemplate != 43 && mt.idTemplate != 46 && !this.map.isMapChienTruongMoba()) {
                             final int tempLv = actor.getLevel() - this.lvDetail.lv;
-                            // Chi phat khi quai cao hon nhan vat tu 19 level tro len (truoc day
+                            // Chi phat khi quai cao hon nhan vat tu 10 level tro len (truoc day
                             // phat ngay tu 1 level chenh lech, qua nang voi quai dau game giap thap).
-                            if (tempLv >= 19) {
+                            if (tempLv >= 10) {
                                 def += tempLv * 100;
                                 att /= 10;
                             } else if (tempLv < 0) {
@@ -6855,69 +6855,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
             }
         }
-        if (totalxp > 0)   // Exp Up lan
-        {
-            try 
-            {
-                final int newxp = Map.calculatorXpParty(this, totalxp);
-                if (newxp != totalxp) 
-                {
-                    int nUser = this.party.userParty.size();
-                    if (nUser > 1) 
-                    {
-                        nUser = 5;
-                    }
-                    
-                    int xpReceive = newxp * 80 / (100 * nUser);
-                    final int maxLv = this.lvDetail.lv;
-                    
-                    for (int j = 0; j < this.party.userParty.size(); ++j) 
-                    {
-                        final Char pp = this.party.userParty.get(j);
-                        if (pp.id != id && this.near(pp, 320) && pp.mapID == this.mapID && pp.inCountry == this.inCountry && pp.region == this.region) 
-                        {
-                            final int dlv = Map.abs(maxLv - pp.lvDetail.lv);
-                            int temp = 1;
-                            if (dlv <= 5) 
-                            {
-                                temp = xpReceive;
-                            } else if (dlv <= 10) {
-                                temp = xpReceive / 5;
-                            } else if (dlv <= 20) {
-                                temp = xpReceive / 10;
-                            } else if (dlv <= 30) {
-                                temp = xpReceive / 15;
-                            } else {
-                                temp = xpReceive / 20;
-                            }
-                            if (temp == 0) 
-                            {
-                                temp = 1;
-                            }
-                            
-                            if (pp.hp > 0) 
-                            {
-                                temp /= this.party.userParty.size(); // Chia theo số lượng người trong party
-                                temp *= Map.doubleALL;
-                                temp = pp.expReceive(temp);
-                                Map.addXPForChar(pp, temp + pp.getEffSkillClan(0) * temp / 100, false, "char checkNewEffectItem1");
-                            }
-                        }
-                    }
-                    xpReceive = newxp * 20 / 100 * Map.doubleALL;
-                    xpReceive = this.expReceive(xpReceive);
-                    Map.addXPForChar(this, xpReceive + this.getEffSkillClan(0) * xpReceive / 100, false, "char checkNewEffectItem2");
-                } 
-                else 
-                {
-                    totalxp *= Map.doubleALL;
-                    totalxp = this.expReceive(totalxp);
-                    Map.addXPForChar(this, totalxp + this.getEffSkillClan(0) * totalxp / 100, false, "char checkNewEffectItem3");
-                }
-            } catch (final Exception ex3) {
-            }
-        }
-        
+        // Sat thuong lan (lua/set/bang/doc) van gay sat thuong + giet quai binh thuong,
+        // nhung khong cong exp cho nguoi choi/party (truoc day co cong qua "Exp Up lan").
+
         final Message k = MessageCreator.createMsgNewEffect(this, allnewar, cat, id, dam, hpLeft, 2000);
         this.sendMessage(k);
         this.sendToNearPlayer(k);
