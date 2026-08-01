@@ -68,11 +68,18 @@ public class BaoTriDaily implements Runnable {
             final String noiDung = "Hệ thống sẽ bảo trì sau " + khiNao
                     + ". Vui lòng thoát game để tránh mất dữ liệu!";
             final Message m = MessageCreator.createthongbao(noiDung);
+            int soNguoiChoiThat = 0;
             for (int i = 0; i < CharManager.instance.vChars.size(); ++i) {
-                CharManager.instance.vChars.elementAt(i).sendMessage(m);
+                final Char c = CharManager.instance.vChars.elementAt(i);
+                c.sendMessage(m);
+                // vChars con chua ca NPC/bot/thu cuoi thue (isBot != -1), phai loc rieng
+                // nguoi choi that (isBot == -1) thi so moi dung, xem RealController.saveAllChar.
+                if (c.isBot == -1) {
+                    soNguoiChoiThat++;
+                }
             }
             m.cleanup();
-            System.out.println("BAO TRI SAU " + giay + "s (" + CharManager.instance.vChars.size() + " nguoi online)");
+            System.out.println("BAO TRI SAU " + giay + "s (" + soNguoiChoiThat + " nguoi online)");
         } catch (final Exception ex) {
         }
     }
