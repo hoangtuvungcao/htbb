@@ -69,7 +69,14 @@
       "Bash(awk -F\", \" '{print $1, $2, $3, $4, $5, $6, $7, $8}')",
       "Bash(\"/c/Program Files/Java/jdk-26.0.1/bin/javap.exe\" -p -classpath \"lib/NQSH_5h.jar\" real.Actor)",
       "Bash(\"/c/Program Files/Java/jdk-26.0.1/bin/javap.exe\" -p -c -classpath \"lib/NQSH_5h.jar\" real.Actor)",
-      "Bash(javac -nowarn -Xlint:none -encoding UTF-8 -cp \"lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar\" -sourcepath src -d \"C:\\\\Users\\\\ADMIN\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ADMIN-Desktop-KPAH\\\\2e24e5c0-f410-4ced-85d5-50d531645f38\\\\scratchpad\\\\build_check\" src/real/Map.java src/real/Char.java)"
+      "Bash(javac -nowarn -Xlint:none -encoding UTF-8 -cp \"lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar\" -sourcepath src -d \"C:\\\\Users\\\\ADMIN\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ADMIN-Desktop-KPAH\\\\2e24e5c0-f410-4ced-85d5-50d531645f38\\\\scratchpad\\\\build_check\" src/real/Map.java src/real/Char.java)",
+      "Bash(awk 'NR<=548 && /String\\\\[\\\\]\\\\[\\\\]\\\\[\\\\]|=\\\\s*new String/{print NR\": \"$0}' src/real/RealController.java)",
+      "Bash(mkdir -p \"C:/Users/ADMIN/AppData/Local/Temp/claude/c--Users-ADMIN-Desktop-KPAH/2e24e5c0-f410-4ced-85d5-50d531645f38/scratchpad/aoeout\")",
+      "Bash(javac -nowarn -Xlint:none -encoding UTF-8 -cp \"lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar\" -sourcepath src -d \"C:/Users/ADMIN/AppData/Local/Temp/claude/c--Users-ADMIN-Desktop-KPAH/2e24e5c0-f410-4ced-85d5-50d531645f38/scratchpad/aoeout\" src/real/MapTown.java src/real/MapLienDau.java src/real/RegionVantienTran.java)",
+      "Bash(javac -nowarn -Xlint:none -encoding UTF-8 -cp \"lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar\" -sourcepath src -d \"C:\\\\Users\\\\ADMIN\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ADMIN-Desktop-KPAH\\\\2e24e5c0-f410-4ced-85d5-50d531645f38\\\\scratchpad\\\\build_final\" src/real/Map.java src/real/Char.java src/real/MapTown.java src/real/MapLienDau.java src/real/RegionVantienTran.java)",
+      "Bash(awk 'NR<=824 && \\(/=\\\\s*new String\\\\[\\\\]\\\\[\\\\]/ || /String\\\\[\\\\]\\\\[\\\\].*=/\\){print NR\": \"$0}' src/real/RealController.java)",
+      "Bash(javac -nowarn -Xlint:none -encoding UTF-8 -cp \"lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar\" -sourcepath src -d \"C:\\\\Users\\\\ADMIN\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ADMIN-Desktop-KPAH\\\\2e24e5c0-f410-4ced-85d5-50d531645f38\\\\scratchpad\\\\build_map28\" src/real/RealController.java)",
+      "Bash(javac -nowarn -Xlint:none -encoding UTF-8 -cp \"lib/NQSH_5h.jar;lib/json-20250107.jar;lib/jxl-2.6.jar;lib/mysql-connector-java-5.1.49.jar\" -sourcepath src -d \"C:\\\\Users\\\\ADMIN\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-ADMIN-Desktop-KPAH\\\\2e24e5c0-f410-4ced-85d5-50d531645f38\\\\scratchpad\\\\build_debug\" src/real/Map.java)"
     ],
     "additionalDirectories": [
       "C:\\Users\\ADMIN\\Desktop\\KPAH"

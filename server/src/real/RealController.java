@@ -454,22 +454,23 @@ public class RealController extends ServerController {
         try {
 
             // todo xử lý thêm map
+            // Vi tri vao map (Canh Rung Dong) doi tu {40,50} sang {55,55} - gan dau map hon.
             mapList.put(new Integer(28), m = new Map(28, -1, 1, 28, nregion));
             all_map_train.add(m);
-            m.setPostRegion(new short[]{40, 50});
+            m.setPostRegion(new short[]{55, 55});
 
             mapList.put(new Integer(861), m = new Map(861, -1, 1, 28, nregion));
             all_map_train.add(m);
-            m.setPostRegion(new short[]{40, 50});
+            m.setPostRegion(new short[]{55, 55});
             mapList.put(new Integer(862), m = new Map(862, -1, 1, 28, nregion));
             all_map_train.add(m);
-            m.setPostRegion(new short[]{40, 50});
+            m.setPostRegion(new short[]{55, 55});
             mapList.put(new Integer(863), m = new Map(863, -1, 1, 28, nregion));
             all_map_train.add(m);
-            m.setPostRegion(new short[]{40, 50});
+            m.setPostRegion(new short[]{55, 55});
             mapList.put(new Integer(864), m = new Map(864, -1, 1, 28, nregion));
             all_map_train.add(m);
-            m.setPostRegion(new short[]{40, 50});
+            m.setPostRegion(new short[]{55, 55});
 
         } catch (Exception e) {
             e.printStackTrace();

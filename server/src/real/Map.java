@@ -8058,6 +8058,8 @@ public class Map implements Runnable {
                                 break;
                             }
                         }
+                        // TAM THOI - debug xac dinh vi sao dao van bi da muc tieu, xoa sau khi xong.
+                        System.out.println("DEBUG_AOE map=" + this.mapId + " class=" + p.charClass + " skill=" + skill + " nMonster=" + nMonster + " isAoeSkill=" + isAoeSkill);
 
                         while (i < nMonster) {
                             if (i > 0) {

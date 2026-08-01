@@ -579,11 +579,26 @@ public class MapTown extends Map {
 
          int damNguyetAnh = p.getPCDamNguyetAnh(skill);
          Vector<LiveActor> muctieu = new Vector();
+         // Chi cho phep danh nhieu muc tieu neu skill nay thuc su la skill dien
+         // rong (AOE) cua class nay (CharManager.SKILL_AEO). Client co the gui
+         // nham code da muc tieu cho skill don muc tieu; server phai tu kiem tra
+         // thay vi tin tuong client, neu khong quai dung gan se bi an theo.
+         boolean isAoeSkill = false;
+         for (final byte aeoSkill : CharManager.SKILL_AEO[p.charClass]) {
+            if (aeoSkill == skill) {
+               isAoeSkill = true;
+               break;
+            }
+         }
 
          while (i < nMonster) {
             if (i > 0) {
                idMonster = dis.readShort();
                mt = this.getMonster(idMonster, p.inCountry, p.region);
+               if (!isAoeSkill) {
+                  i++;
+                  continue;
+               }
             }
 
             if (mt != null) {

@@ -810,12 +810,27 @@ public class RegionVantienTran implements Runnable {
             byte[] var10000 = new byte[]{5, 5, 8, 10, 10, 10, 10, 10, 10, 10, 10, 10};
             Vector<Message> msgMonsterDie = new Vector();
             Vector<LiveActor> muctieu = new Vector();
+            // Chi cho phep danh nhieu muc tieu neu skill nay thuc su la skill dien
+            // rong (AOE) cua class nay (CharManager.SKILL_AEO). Client co the gui
+            // nham code da muc tieu cho skill don muc tieu; server phai tu kiem tra
+            // thay vi tin tuong client, neu khong quai dung gan se bi an theo.
+            boolean isAoeSkill = false;
+            for (final byte aeoSkill : CharManager.SKILL_AEO[p.charClass]) {
+                if (aeoSkill == skill) {
+                    isAoeSkill = true;
+                    break;
+                }
+            }
 
             for(int var54 = 0; var54 < nMonster; ++var54) {
                 if (var54 > 0) {
                     try {
                         mt = this.getMonster(dis.readShort(), p.inCountry);
                     } catch (Exception var42) {
+                    }
+
+                    if (!isAoeSkill) {
+                        continue;
                     }
                 }
 
