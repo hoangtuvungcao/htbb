@@ -175,6 +175,9 @@ public class doUsePotion {
                     case 6:
                         map.doUseMP(player, potionType, Map.potionTemplates2.get(6).getRecovered());
                         break;
+                    case Potion.TYPE_SACH_SKILL_PET:
+                        Map.doUseSachSkillPetPotion(player);
+                        break;
                     case 7:
                     case 8:
                     case 13:
@@ -270,7 +273,6 @@ public class doUsePotion {
                     case 108:
                     case 109:
                     case 110:
-                    case 111:
                     case 156:
                     case 157:
                     case 158:

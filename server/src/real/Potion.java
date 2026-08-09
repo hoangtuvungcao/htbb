@@ -100,6 +100,7 @@ public class Potion extends Actor
     public static final short TYPE_MANH_BAN_DO1 = 77;
     public static final short TYPE_MANH_BAN_DO2 = 105;
     public static final short TYPE_MANH_BAN_DO3 = 117;
+    public static final short TYPE_SACH_SKILL_PET = 111;
     public static final short TYPE_TRUNG_LAN_SU_TU = 115;
     public static final short TYPE_THIT = 120;
     public static final short TYPE_TRUNG = 121;

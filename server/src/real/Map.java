@@ -2967,17 +2967,16 @@ public class Map implements Runnable {
                 new GemTemplate(266, 92, "Ngọc 7 sao", "Vật phẩm sự kiện", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, 0, 1),
                 new GemTemplate(267, 93, "Bản đồ núi châu báu", "Vật phẩm sự kiện", 1, -1, 10, GemTemplate.TYPE_UNKNOW1, 0, 1),
                 new GemTemplate(268, 94, "Thuốc hóa hình", "Dùng để hóa hình thú cưỡi", 1, -1, 100, GemTemplate.TYPE_UNKNOW, NOT_SELL, 0),
-                // Ban NGUYEN LIEU cua sach ky nang pet — xep chong duoc, khong ton o hanh trang.
-                // Item 722 ban cu van hoat dong binh thuong, day la duong song song.
-                // type = TYPE_TU_BINH vi client CHI hien nut "Su dung" cho gem type 4
-                // (MenuWindows.cs:2874). doTuBinh() da co nhanh re rieng cho id nay.
-                // idImg 95 -> server tra ve map/images_gem/95.png (copy icon sach 580.png).
-                new GemTemplate(SACH_SKILL_PET_GEM, 95, "Sách kỹ năng pet", "Dùng để pet học kỹ năng", 1, -1, 100, GemTemplate.TYPE_TU_BINH, NOT_SELL, 0),
+                // DA NGHI HUU: sach ky nang pet gio la potion 111. Moi stack gem 269 da
+                // duoc doi sang potion, khong con cho nao phat hay dung gem nay nua.
+                // VAN GIU o day vi listGemitem duoc cap phat theo gemTemplate.length va
+                // cot tob_gem_new luu du 270 truong - bo di la lech dinh dang dang luu.
+                new GemTemplate(SACH_SKILL_PET_GEM, 95, "Sách kỹ năng pet (cũ)", "Vật phẩm đã ngừng dùng", 1, -1, 100, GemTemplate.TYPE_TU_BINH, NOT_SELL, 0),
             };
         }
     }
 
-    /** Id gem cua sach ky nang pet (ban xep chong). Item tuong duong la 722. */
+    /** Gem sach ky nang pet ban cu, da nghi huu - xem Potion.TYPE_SACH_SKILL_PET. */
     public static final short SACH_SKILL_PET_GEM = 269;
 
     public static void loadPetTemplate() {
@@ -15975,12 +15974,6 @@ public class Map implements Runnable {
         try {
             short idGem = message.dis.readShort();
             boolean lock = message.dis.readByte() == 1;
-            // Sach ky nang pet ban gem: muon nut "Su dung" cua he Tu Binh nhung
-            // re sang logic hoc ky nang, khong roi xuong phan ghep tranh.
-            if (idGem == SACH_SKILL_PET_GEM) {
-                doUseSachSkillPetGem(player, lock);
-                return;
-            }
             if (this.isGemTuBinh(idGem)) {
                 player.doAddManhTubinh(idGem, lock);
             } else {
@@ -15992,24 +15985,20 @@ public class Map implements Runnable {
     }
 
     /**
-     * Dung 1 quyen sach ky nang pet dang NGUYEN LIEU (gem 269).
-     * Logic hoc ky nang sao y ban dung item 722 o phan doUseItem.
+     * Dung 1 quyen sach ky nang pet (potion 111).
+     * doUsePotion da tru quyen sach TRUOC khi goi vao day, nen moi nhanh khong
+     * hoc duoc deu phai hoan lai, khong thi nguoi choi mat sach oan.
      */
-    public static void doUseSachSkillPetGem(Char player, boolean lock) {
+    public static void doUseSachSkillPetPotion(Char player) {
         try {
             if (player.petUsing == null) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải mang theo pet mới dùng được sách.", ""));
-                return;
-            }
-            if (!player.checkEnoughtGem(SACH_SKILL_PET_GEM, 1, lock ? 1 : 0)) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không có sách kỹ năng pet.", ""));
+                hoanLaiSachSkillPet(player, "Bạn phải mang theo pet mới dùng được sách.");
                 return;
             }
             if (!player.petUsing.canLearnSkill()) {
-                player.sendMessage(MessageCreator.createServerAlertMessage(player.petUsing.getName() + " không thể học thêm kỹ năng.", ""));
+                hoanLaiSachSkillPet(player, player.petUsing.getName() + " không thể học thêm kỹ năng.");
                 return;
             }
-            player.delGem(SACH_SKILL_PET_GEM, 1, lock);
             int idskill = player.petUsing.doLearSkill();
             String info;
             if (idskill == -1) {
@@ -16023,12 +16012,18 @@ public class Map implements Runnable {
                 } catch (Exception ignored) {
                 }
             }
-            player.sendMessage(MessageCreator.createCharGemItem(player));
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
             player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static void hoanLaiSachSkillPet(Char player, String alert) {
+        player.potions[Potion.TYPE_SACH_SKILL_PET]++;
+        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+        player.sendMessage(MessageCreator.createServerAlertMessage(alert, ""));
     }
 
     private void doFruit(Char player, Message m) {
@@ -27838,32 +27833,13 @@ public class Map implements Runnable {
         }
     }
 
+    // Sach ky nang pet la POTION 111, xep chong trong tui binh nen khong bao gio
+    // day tui va khong con phu thuoc so o hanh trang.
+    // Tham so "lock" giu lai cho 10 cho goi san; potion khong co khai niem khoa.
     public static boolean doCreateBookSkillPet(Char player, int lock) {
-        // Da co san 1 quyen trong hanh trang (quyen "dau doc") thi cong them vao
-        // kho NGUYEN LIEU cho xep chong, khoi moi lan che do lai chiem them 1 o.
-        // Chua co quyen nao thi tao item nhu cu de auto tool con thay ma dung.
-        for (int i = 0; i < player.iItems.size(); i++) {
-            if (player.iItems.get(i).isSachSkillPet()) {
-                player.doAddGemItem(SACH_SKILL_PET_GEM, 1, lock != 0);
-                player.sendMessage(MessageCreator.createCharGemItem(player));
-                return true;
-            }
-        }
-        if (!player.isFullInventory()) {
-            ItemTemplates template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(722);
-            Item newItem = null;
-            newItem = new Item(template, false, 0, 0, template.id);
-            newItem.id = player.getIDItem();
-            newItem.owner = player.charDBID;
-            newItem.level = newItem.getTemplate().level;
-            player.iItems.add(newItem);
-            newItem.identify = player.charDBID;
-            newItem.lock = (byte) lock;
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-            return true;
-        } else {
-            return false;
-        }
+        player.potions[Potion.TYPE_SACH_SKILL_PET]++;
+        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+        return true;
     }
 
     public static boolean doCreateHuyetBoDe(Char player, int lock) {
@@ -36550,51 +36526,6 @@ public class Map implements Runnable {
                         return;
                     }
                  
-                    if (item.isSachSkillPet()) 
-                    {
-                        if (player.petUsing.canLearnSkill())
-                        {
-                            int idskill = player.petUsing.doLearSkill();
-                            // Con sach dang NGUYEN LIEU thi tru gem va GIU LAI quyen trong
-                            // hanh trang lam "dau doc". Auto tool luon thay 1 quyen nen
-                            // chay lien tuc, con so luong that thi nam o kho nguyen lieu
-                            // (xep chong, chi ton 1 o). Het gem moi an vao quyen item.
-                            if (player.listGemitem[SACH_SKILL_PET_GEM] > 0) {
-                                player.delGem(SACH_SKILL_PET_GEM, 1, false);
-                                player.sendMessage(MessageCreator.createCharGemItem(player));
-                            } else if (player.listGemitemLock[SACH_SKILL_PET_GEM] > 0) {
-                                player.delGem(SACH_SKILL_PET_GEM, 1, true);
-                                player.sendMessage(MessageCreator.createCharGemItem(player));
-                            } else {
-                                player.iItems.remove(item);
-                                player.removeIDItem(item.id);
-                            }
-                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                            player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
-                            String info = "";
-                            if (idskill == -1) {
-                                Database.instance.saveOrtherLog("", player.charname, player.petUsing.getName() + " học kỹ năng thất bại", "hocskill");
-                                info = player.petUsing.getName() + " học kỹ năng thất bại";
-                            } else {
-                                Database.instance
-                                        .saveOrtherLog(
-                                                "", player.charname, "Chúc mừng " + player.petUsing.getName() + " học được kỹ năng " + Pet.ALL_SKILL[idskill].name, "hocskill"
-                                        );
-                                info = "Chúc mừng " + player.petUsing.getName() + " học được kỹ năng " + Pet.ALL_SKILL[idskill].name;
-
-                                try {
-                                    Database.instance.savePet(player.petUsing);
-                                } catch (Exception var13) {
-                                }
-                            }
-
-                            player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
-                        } else {
-                            player.sendMessage(MessageCreator.createServerAlertMessage(player.petUsing.getName() + " không thể học thêm kỹ năng.", ""));
-                        }
-
-                        return;
-                    }
 
                     if (item.isRuongNguyenLieu()) 
                     {

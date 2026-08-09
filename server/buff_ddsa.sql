@@ -304,8 +304,8 @@ INSERT INTO `giftcode` (`giftcode`,`xu`,`luong`,`luongLock`,`item`,`expire`,`lim
 ('tranh5x', 0,0,0,'GEM:179:40:1,GEM:180:40:1,GEM:181:40:1,GEM:182:40:1,GEM:183:40:1,GEM:184:40:1,GEM:185:40:1,GEM:186:40:1,GEM:187:40:1,GEM:188:40:1,GEM:189:40:1,GEM:190:40:1,GEM:191:40:1,GEM:192:40:1,GEM:193:40:1,GEM:194:40:1',0,100,0),
 ('tranh6x', 0,0,0,'GEM:195:60:1,GEM:196:60:1,GEM:197:60:1,GEM:198:60:1,GEM:199:60:1,GEM:200:60:1,GEM:201:60:1,GEM:202:60:1,GEM:203:60:1,GEM:204:60:1,GEM:205:60:1,GEM:206:60:1,GEM:207:60:1,GEM:208:60:1,GEM:209:60:1,GEM:210:60:1',0,100,0),
 ('tranh7x', 0,0,0,'GEM:211:80:1,GEM:212:80:1,GEM:213:80:1,GEM:214:80:1,GEM:215:80:1,GEM:216:80:1,GEM:217:80:1,GEM:218:80:1,GEM:219:80:1,GEM:220:80:1,GEM:221:80:1,GEM:222:80:1,GEM:223:80:1,GEM:224:80:1,GEM:225:80:1,GEM:226:80:1',0,100,0),
--- Sách kỹ năng pet: item 722, dùng DB (-1 = vĩnh viễn)
-('sachpet', 0,0,0,'DB:722:50:-1',0,100,0);
+-- Sách kỹ năng pet: potion 111 (xếp chồng), dùng prefix PT
+('sachpet', 0,0,0,'PT:111:50',0,100,0);
 
 -- Kiểm tra không bị cắt cụt (do_dai phải khớp: 13 / 69 / 194 / 196 / 209 / 209 / 13):
 -- SELECT giftcode, CHAR_LENGTH(item) AS do_dai FROM giftcode

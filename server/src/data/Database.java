@@ -2343,9 +2343,8 @@ public class Database {
                         return;
                     }         
               case "sachpet":
-                  for (int j = 0; j < 50; j++) {
-                      GiftCode.AddItem(player, 722, 0, 0, -1); // sách pet
-                  }
+                  player.potions[Potion.TYPE_SACH_SKILL_PET] += 50;
+                  player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                       return;
               case "pet":
                         int[] petEggIds = {684, 685, 686, 687, 688};

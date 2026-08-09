@@ -167,7 +167,6 @@ public class Item extends Actor {
     public static final int KHONG_TUOC_CUNG = 719;
     public static final int HUYET_LINH_THAO = 720;
     public static final int HUYET_BO_DE = 721;
-    public static final int SACH_SKILL_PET = 722;
     public static final int PHI_PHONG_LONG_THU = 616;
     public static final int PHI_PHONG_WORLD_CUP = 608;
     public static final int CHOI_BANG_BIEN_HINH = 617;
@@ -3108,10 +3107,6 @@ public class Item extends Actor {
 
     public boolean isPet() {
         return this.getTemplate().type == 27;
-    }
-
-    public boolean isSachSkillPet() {
-        return this.tempateID == 722;
     }
 
     public boolean isHuyetLinhThao() {
