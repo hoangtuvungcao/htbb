@@ -1,23 +1,27 @@
 #!/bin/bash
 # ============================================================
-#  CHUYEN "SACH KY NANG PET" SANG POTION 111
+#  DOI DU LIEU "SACH KY NANG PET" SANG POTION 111
 #
 #  Dung o VPS:  sudo bash /root/capnhat_sachpet.sh
 #
-#  Thu tu QUAN TRONG - doi du lieu TRUOC roi moi lay code moi:
-#    1. Tat game server (shutdown hook luu du lieu nhan vat xuong DB)
-#    2. Sao luu cac bang bi dong toi
-#    3. Doi du lieu: item 722 + gem 269  ->  potion 111
-#    4. Doi thanh cong moi git pull (jar moi)
-#    5. Bat lai server
+#  BOI CANH: code moi DA len VPS roi (GitHub Actions tu deploy khi push
+#  len main, va vi KPAH2_patched.jar doi nen no da restart server luc
+#  00:37). Nen o day KHONG git pull nua - chi con doi du lieu nguoi choi
+#  va bat lai server de client nhan ten/icon cua potion 111.
 #
-#  Neu buoc 3 that bai: script DUNG LAI truoc khi pull va bat lai server
-#  bang code CU, du lieu van nguyen ven.
+#  Thu tu:
+#    1. Tat game server  (SIGTERM -> shutdown hook luu du lieu xuong DB,
+#       nguoi dang online bi ngat nhung khong mat do)
+#    2. Sao luu cac bang bi dong toi
+#    3. Chay thu, roi doi that: item 722 + gem 269  ->  potion 111
+#    4. Bat lai server + kiem tra
+#
+#  Doi du lieu that bai thi script van bat lai server, va in san lenh
+#  phuc hoi tu ban sao luu.
 # ============================================================
 set -u
 
 DIR=/opt/kpah
-USER_SV=kpah
 SV_GAME=kpah-game
 MIGRATE=/root/migrate_sach_pet.php
 
@@ -25,27 +29,20 @@ if [ "$(id -u)" != "0" ]; then
     echo "[LOI] Phai chay bang root:  sudo bash $0"
     exit 1
 fi
-
 if [ ! -f "$MIGRATE" ]; then
     echo "[LOI] Khong thay $MIGRATE"
     exit 1
 fi
 
-echo "== Kiem tra repo tren VPS co sach khong (git pull se that bai neu ban)"
-DIRTY=$(sudo -u "$USER_SV" git -C "$DIR" status --porcelain)
-if [ -n "$DIRTY" ]; then
-    echo "$DIRTY"
-    echo "[DUNG LAI] Co file bi sua tay tren VPS. Xu ly xong roi chay lai."
-    exit 1
-fi
-
-echo
 echo "== B1. Tat $SV_GAME"
+echo "   (nguoi dang online se bi ngat, du lieu duoc luu truoc khi thoat)"
 systemctl stop "$SV_GAME"
-sleep 3
-echo "   trang thai: $(systemctl is-active $SV_GAME)"
-if [ "$(systemctl is-active $SV_GAME)" = "active" ]; then
-    echo "[DUNG LAI] Server chua tat han. Khong doi du lieu luc server con chay."
+sleep 5
+TT=$(systemctl is-active "$SV_GAME")
+echo "   trang thai: $TT"
+if [ "$TT" = "active" ]; then
+    echo "[DUNG LAI] Server chua tat han. Khong doi du lieu luc server con chay,"
+    echo "           vi server giu du lieu nhan vat trong RAM va se ghi de."
     exit 1
 fi
 
@@ -55,7 +52,7 @@ mkdir -p "$DIR/backup"
 BAK="$DIR/backup/truoc_sachpet_$(date +%Y%m%d_%H%M%S).sql"
 if ! mysqldump -u root --default-character-set=utf8mb4 --single-transaction \
         kpah_db tob_char tob_gem_new data_item data_potion giftcode > "$BAK"; then
-    echo "[DUNG LAI] Sao luu that bai. Bat lai server bang code cu."
+    echo "[DUNG LAI] Sao luu that bai. Bat lai server, khong doi gi ca."
     systemctl start "$SV_GAME"
     exit 1
 fi
@@ -64,47 +61,47 @@ echo "   $BAK.gz  ($(du -h "$BAK.gz" | cut -f1))"
 
 echo
 echo "== B3. Chay thu (khong ghi gi)"
-php "$MIGRATE" || { echo "[DUNG LAI] Chay thu bao loi."; systemctl start "$SV_GAME"; exit 1; }
+if ! php "$MIGRATE"; then
+    echo "[DUNG LAI] Chay thu bao loi. Bat lai server, khong doi gi ca."
+    systemctl start "$SV_GAME"
+    exit 1
+fi
 
 echo
 echo "== B4. Doi du lieu that"
-if ! php "$MIGRATE" --apply; then
+if php "$MIGRATE" --apply; then
+    KQ=0
+else
+    KQ=1
     echo
-    echo "[DUNG LAI] Doi du lieu that bai. CHUA pull code moi."
-    echo "  Phuc hoi:  gunzip -c $BAK.gz | mysql -u root kpah_db"
-    echo "  Roi bat lai: systemctl start $SV_GAME"
-    exit 1
+    echo "[LOI] Doi du lieu that bai hoac chi xong mot phan."
+    echo "      Phuc hoi:  gunzip -c $BAK.gz | mysql -u root kpah_db"
 fi
 
 echo
-echo "== B5. Lay code moi (jar da build san tren may nha)"
-if ! sudo -u "$USER_SV" git -C "$DIR" pull --ff-only; then
-    echo "[LOI] git pull that bai. Server VAN DANG TAT."
-    echo "      Du lieu DA doi xong - dung phuc hoi backup nua."
-    echo "      Sua git xong thi:  systemctl start $SV_GAME"
-    exit 1
-fi
-chown -R "$USER_SV":"$USER_SV" "$DIR"
-
-echo
-echo "== B6. Bat lai server"
+echo "== B5. Bat lai server"
 systemctl start "$SV_GAME"
 sleep 8
-systemctl --no-pager --lines=10 status "$SV_GAME" || true
-
+systemctl --no-pager --lines=8 status "$SV_GAME" || true
 echo
-echo "== Cong 19129 phai dang LISTEN:"
 ss -lntp | grep 19129 || echo "   [CANH BAO] chua thay cong 19129 - xem log: tail -f $DIR/log/game.out"
 
 echo
-echo "== Kiem tra lai du lieu"
+echo "== B6. Kiem tra lai"
 mysql -u root --default-character-set=utf8mb4 -t <<'SQL'
-SELECT id, idImage, isTrade, name, name2 FROM kpah_db.data_potion WHERE id=111;
-SELECT COUNT(*) AS con_item_722 FROM kpah_db.data_item WHERE id=722;
+SELECT id, idImage, delay, isTrade, name, name2 FROM kpah_db.data_potion WHERE id=111;
+SELECT COUNT(*) AS data_item_722_con_lai FROM kpah_db.data_item WHERE id=722;
 SELECT charname,
-       SUBSTRING_INDEX(SUBSTRING_INDEX(potion, ',', 112), ',', -1) AS so_sach
+       SUBSTRING_INDEX(SUBSTRING_INDEX(potion, ',', 112), ',', -1) AS so_sach_pet
   FROM kpah_db.tob_char ORDER BY id;
+SELECT giftcode, item FROM kpah_db.giftcode WHERE giftcode LIKE 'sachpet%';
 SQL
 
 echo
-echo "== XONG."
+if [ "$KQ" = "0" ]; then
+    echo "== XONG. Vao game kiem tra: sach nam o tui binh (khong phai hanh trang),"
+    echo "   xep chong, bam Su dung khi dang mang pet."
+else
+    echo "== KET THUC nhung CO LOI o buoc doi du lieu - xem lai phia tren."
+fi
+exit "$KQ"
