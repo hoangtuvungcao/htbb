@@ -23,7 +23,7 @@ set -u
 
 DIR=/opt/kpah
 SV_GAME=kpah-game
-MIGRATE=/root/migrate_sach_pet.php
+MIGRATE=/root/add_mo_ta_sach_pet.php
 
 if [ "$(id -u)" != "0" ]; then
     echo "[LOI] Phai chay bang root:  sudo bash $0"
