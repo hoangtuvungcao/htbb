@@ -72,31 +72,27 @@ public class TaoEffThuCuoi {
     /** Toa do anh con luu bang byte khong dau nen atlas toi da 256x256. */
     private static final int ATLAS = 256;
     // ---- Bo cuc atlas: CO DINH, khong duoc doi neu khong muon moi nguoi tat app ----
-    /** Khung ao chua con thu: moi frame duoc dung vao khung nay truoc khi cat. */
+    /** Khung ao chua con thu: moi frame duoc dung vao khung nay truoc khi xep vao atlas. */
     private static final int WB = 64, HB = 64;
-    /** Duong cat khung ao thanh nua tren (dung chung) va nua duoi (rieng tung frame). */
-    private static final int CUT = 42;
+    /** So o moi dong tren atlas: 256 / 64 = 4, luoi 4x4 lap day dung 256x256. */
+    private static final int O_MOI_DONG = ATLAS / WB;
     /** Chieu cao o bong do. */
     private static final int CAO_BONG = 24;
-    /** 3 o tinh + 15 o dong + 1 o bong. */
-    private static final int SO_ANH_CON = 3 + 3 * 5 + 1;
+    /** 15 o than (3 huong x 5 frame) + 1 o bong. */
+    private static final int SO_ANH_CON = 3 * 5 + 1;
     /** Chi so anh con cua bong do. */
     private static final int ID_BONG = SO_ANH_CON - 1;
 
-    /** O chua nua tren dung chung cua mot huong: ba o xep ngang o dong dau. */
-    private static int[] oTinh(final int nhom) {
-        return new int[]{nhom * WB, 0};
+    /** O chua NGUYEN con thu cua mot frame. */
+    private static int[] oThan(final int nhom, final int f) {
+        final int j = nhom * SO_GOC + f;
+        return new int[]{(j % O_MOI_DONG) * WB, (j / O_MOI_DONG) * HB};
     }
 
-    /** O chua nua duoi cua mot frame: 4 o moi dong, xep ngay duoi ba o tinh. */
-    private static int[] oDong(final int nhom, final int f) {
-        final int j = nhom * 5 + f;
-        return new int[]{(j % 4) * WB, CUT + (j / 4) * (HB - CUT)};
-    }
-
-    /** O chua bong do: dat duoi cung. */
+    /** O chua bong do: o thu 16, cho trong con lai cua luoi. */
     private static int[] oBong() {
-        return new int[]{0, CUT + 4 * (HB - CUT)};
+        final int j = 3 * SO_GOC;
+        return new int[]{(j % O_MOI_DONG) * WB, (j / O_MOI_DONG) * HB};
     }
     /**
      * So diem con thu tho xuong duoi toa do nhan vat: xuong, len, ngang.
@@ -226,6 +222,23 @@ public class TaoEffThuCuoi {
             System.out.println("  nhom " + nhom + " (hang " + hang[nhom] + ", o " + tu + ".."
                     + den + " trong " + cot.size() + "): " + soO + " frame nguon, vach dat y="
                     + cy2);
+            // Nam frame cua mot huong phai xap xi cao bang nhau. Bang sprite AI hay co mot
+            // o ve con thu nho han (phuc thu o 14: 17px trong khi bon o kia 28-34px); tool
+            // luu nguyen con nen o do se hien dung nhu vay -> con thu phong to thu nho theo
+            // nhip di. Khong tu sua duoc o day (thu nho/phong to lai la lam nhoe), phai doi
+            // frame khac trong --lay.
+            int caoMin = Integer.MAX_VALUE, caoMax = 0;
+            for (int f = 0; f < SO_GOC; f++) {
+                if (khung[nhom][f] == null) continue;
+                final int c = khung[nhom][f][3] - khung[nhom][f][1] + 1;
+                caoMin = Math.min(caoMin, c);
+                caoMax = Math.max(caoMax, c);
+            }
+            if (caoMax > 0 && caoMax - caoMin > caoMax * 0.25) {
+                System.out.println("  CANH BAO: nhom " + nhom + " lech co frame (" + caoMin
+                        + ".." + caoMax + " px = " + (100 * (caoMax - caoMin) / caoMax)
+                        + "%) -> con thu se phong to thu nho khi di. Doi frame trong --lay.");
+            }
         }
         if (caoNhat == 0) {
             System.out.println("Khong lay duoc frame nao");
@@ -234,7 +247,12 @@ public class TaoEffThuCuoi {
 
         // MOT co chuan cho CA 5 skin: thu nho sao cho frame cao nhat dung bang --cao.
         // Frame nao vuot o 64x64 thi ha ti le cho vua.
-        double tiLe = (double) caoDich / caoNhat;
+        //
+        // --cao=0: GIU NGUYEN kich thuoc (ti le 1.0). Dung khi anh nguon da la pixel-art
+        // o do phan giai that: moi ti le khac 1 (nhat la ti le le nhu 0.75) deu noi suy
+        // lai luoi pixel va lam vien nhoe — do la khac biet chinh giua sprite nhin "net"
+        // va sprite nhin "mo mo". Chi thu nho khi frame that su lon hon kich thuoc muon co.
+        double tiLe = (caoDich <= 0) ? 1.0 : (double) caoDich / caoNhat;
         BufferedImage[] anh;
         while (true) {
             anh = new BufferedImage[3 * SO_GOC];
@@ -282,42 +300,38 @@ public class TaoEffThuCuoi {
         // moi khong khac gi nhau, tang dem do het gay hai vinh vien; con tang anh thi may
         // chu tu day xuong (DataGame.taoGoiAnhDynamicEffect).
         //
-        // ================= TACH BO PHAN NHU RONG BANG =================
-        // Rong Bang khong luu ca con moi frame. Nhin ngang no luu DAU (anh 24, 28x38) mot
-        // lan roi dung o CA 7 frame, chi thay THAN (5 anh). Nhin truoc cung vay (anh 4),
-        // nhin sau cung vay (anh 14). Cong bong do (anh 0) dung o ca 21 frame. Do duoc:
-        // cach nay tiet kiem 54.5% dien tich atlas cua no.
+        // ================= MOI FRAME LUU NGUYEN CON =================
+        // Rong Bang tiet kiem cho bang cach luu DAU mot lan roi dung cho ca 7 frame, chi
+        // thay THAN. Ban dau tool cung lam vay: cat khung ao tai y = 42, nua tren lay tu
+        // frame 0 cua huong roi dung cho ca 7 frame. Cach do CHI DUNG khi bang sprite ve
+        // dung luat "dau dung yen, chi chan buoc" — Rong Bang ve dung the.
         //
-        // Quan trong hon tiet kiem cho: dau con rong GIU NGUYEN TUNG DIEM suot 7 frame,
-        // nen khi di chi co chan dong. Bang sprite AI thi ve lai ca con moi frame — do
-        // duoc nua tren doi 68%-87%, y het nua duoi — nen con thu rung toan than, nhin
-        // khong ra dang buoc. Vi vay o day cung tach: nua tren lay tu MOT frame roi dung
-        // cho ca 7 frame, chi nua duoi doi theo frame.
+        // Bang sprite o day thi khong: 5 frame trong mot hang ve lai ca con, chieu cao
+        // khung bao lech nhau toi 17 diem. Duong cat co dinh roi vao cho khac nhau tren
+        // tung con, do duoc tren 75 frame cua ca 5 skin:
+        //   - frame CAO HON frame 0: phan nho len tren duong cat bi thay bang nua tren cua
+        //     frame 0 -> mat han 1211/48659 diem (2.49%), cho te nhat cut 16 hang (gau truc
+        //     huong len, frame 4: mat 26.5% so diem cua frame do)
+        //   - frame THAP HON frame 0: dau cua chinh no nam duoi duong cat van hien, lai bi
+        //     dan them nua tren cua frame 0 -> HAI DAU, 4589 diem thua (9.43%); phuc thu
+        //     huong xuong frame 3 con ho han 5 hang trong, dau bay roi khoi than
+        //   - tong cong 28.75% so diem khac han bang goc
+        // Vi vay bo han kieu tach nua tren/nua duoi: moi frame luu NGUYEN CON trong mot o
+        // 64x64. Doi lai la mat hieu ung "dau dung yen", con thu se dong dung y nhu bang
+        // sprite ve — muon co lai hieu ung do thi phai sua BANG SPRITE cho 5 frame cung
+        // chieu cao va cung phan than tren, khong phai sua tool.
         //
-        // Nhip nhun 1 diem so le van giu duoc ma khong bi ho duong cat, vi dy cua CA HAI
-        // phan cung xe dich mot luc (Rong Bang lam dung the: dy dau -48/-47 luan phien).
-        // Luat nhun la hang so theo chi so frame, khong phu thuoc anh, nen file du lieu
-        // van giong nhau tung byte giua cac skin va cac lan lam lai.
+        // Nhip nhun 1 diem so le van giu nguyen (chuyen sang dy, xem THO_XUONG ben duoi).
         final BufferedImage atlas = new BufferedImage(ATLAS, ATLAS, BufferedImage.TYPE_INT_ARGB);
         final Graphics2D g = atlas.createGraphics();
         for (int nhom = 0; nhom < 3; nhom++) {
             for (int f = 0; f < SO_GOC; f++) {
                 final BufferedImage a = anh[nhom * SO_GOC + f];
                 if (a == null) continue;
-                // Dung tat ca frame vao mot khung ao HB x WB, can giua va sat day khung.
-                // Bo qua do nhun tu nhien cua anh goc: nhip nhun nay chuyen sang dy de
-                // hai nua cung xe dich, khong thi duong cat bi ho.
-                final BufferedImage khungAo = new BufferedImage(WB, HB, BufferedImage.TYPE_INT_ARGB);
-                final Graphics2D gk = khungAo.createGraphics();
-                gk.drawImage(a, (WB - a.getWidth()) / 2, HB - a.getHeight(), null);
-                gk.dispose();
-                if (f == 0) {
-                    // Nua TREN cua frame 0 -> o tinh cua huong, dung cho ca 7 frame.
-                    final int[] o = oTinh(nhom);
-                    g.drawImage(khungAo.getSubimage(0, 0, WB, CUT), o[0], o[1], null);
-                }
-                final int[] o = oDong(nhom, f);
-                g.drawImage(khungAo.getSubimage(0, CUT, WB, HB - CUT), o[0], o[1], null);
+                // Can giua ngang va SAT DAY o: nho sat day ma ca 5 frame dung tren cung mot
+                // vach dat, chi than nhun len xuong theo tu the — khong bi truot chan.
+                final int[] o = oThan(nhom, f);
+                g.drawImage(a, o[0] + (WB - a.getWidth()) / 2, o[1] + HB - a.getHeight(), null);
             }
         }
         // Bong do: linh thu that con nao cung co, la mot phan RIENG dat co dinh ngay toa do
@@ -334,17 +348,13 @@ public class TaoEffThuCuoi {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         final DataOutputStream dos = new DataOutputStream(bos);
         dos.writeByte(SO_ANH_CON);
-        for (int nhom = 0; nhom < 3; nhom++) {          // 0..2  o tinh (nua tren)
-            final int[] o = oTinh(nhom);
-            ghiAnhCon(dos, nhom, o[0], o[1], WB, CUT);
-        }
-        for (int nhom = 0; nhom < 3; nhom++) {          // 3..17 o dong (nua duoi)
+        for (int nhom = 0; nhom < 3; nhom++) {          // 0..14 o than, nguyen con
             for (int f = 0; f < SO_GOC; f++) {
-                final int[] o = oDong(nhom, f);
-                ghiAnhCon(dos, 3 + nhom * SO_GOC + f, o[0], o[1], WB, HB - CUT);
+                final int[] o = oThan(nhom, f);
+                ghiAnhCon(dos, nhom * SO_GOC + f, o[0], o[1], WB, HB);
             }
         }
-        final int[] ob2 = oBong();                      // 18    o bong
+        final int[] ob2 = oBong();                      // 15    o bong
         ghiAnhCon(dos, ID_BONG, ob2[0], ob2[1], WB, CAO_BONG);
 
         dos.writeShort(3 * SO_SLOT);
@@ -362,13 +372,11 @@ public class TaoEffThuCuoi {
                 // vat len khi cuoi (dy_horse_tool, Rong Bang -22 khi nhin truoc) nen duoi
                 // chan phai con than va chan con thu.
                 final int dayKhung = THO_XUONG[nhom] - nhunF;
-                dos.writeByte(3);
+                dos.writeByte(2);
                 // Phan 1: bong do — ve truoc nen nam duoi, va KHONG nhun theo than.
                 ghiPhan(dos, -WB / 2, -CAO_BONG / 2, ID_BONG);
-                // Phan 2: nua tren (dau, than tren) — chung cho ca 7 frame cua huong.
-                ghiPhan(dos, -WB / 2, dayKhung - HB, nhom);
-                // Phan 3: nua duoi (than duoi, chan) — rieng tung frame.
-                ghiPhan(dos, -WB / 2, dayKhung - HB + CUT, 3 + nhom * SO_GOC + f);
+                // Phan 2: nguyen con thu cua frame nay.
+                ghiPhan(dos, -WB / 2, dayKhung - HB, nhom * SO_GOC + f);
             }
         }
         // Bo buoc sequence: bat chuoc Rong Bang, tro vao 3 frame chay cua huong ngang.
@@ -385,7 +393,7 @@ public class TaoEffThuCuoi {
             fo.write(bos.toByteArray());
         }
         System.out.println("Xong: d_effect/" + id + ".png (" + ATLAS + "x" + ATLAS + ", "
-                + SO_ANH_CON + " anh con: 3 nua tren dung chung + 15 nua duoi + 1 bong"
+                + SO_ANH_CON + " anh con: 15 o than nguyen con + 1 bong"
                 + ", con thu to nhat " + rongThuc + "x" + caoThuc + ") + d_effect/" + id
                 + " (" + bos.size() + " byte, 21 frame), ti le "
                 + String.format("%.3f", tiLe) + " -> id gui client = " + (8700 + id));

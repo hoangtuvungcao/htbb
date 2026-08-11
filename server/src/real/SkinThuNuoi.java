@@ -159,6 +159,24 @@ public class SkinThuNuoi {
     public static final int[] ID_EFF_THU_CUOI = {8859, 8897, 8898, 8899, 8912};
 
     /**
+     * CONG TAT phan doi sprite con thu tren BAN DO. Dat false la tro lai y nguyen trang
+     * thai truoc khi co tinh nang: 5 id 159/197/198/199/212 khong duoc them vao
+     * MessageCreator.id_eff_tool_ngu_long va con thu cuoi ve lai hinh that. Cac phan con
+     * lai cua skin (anh trong bang Trang bi thu, icon, vat pham, chi so) van chay.
+     *
+     * De o day de doi mot dong roi build lai la xong, vi day la phan duy nhat cua skin
+     * co anh huong TOAN MAY CHU: 5 id do di trong goi 26 — goi dung chung cho moi nguoi
+     * choi, va la goi mang theo ca bang toa do ve nhan vat / vu khi / phi phong / thu
+     * cuoi. Sai o day la ca may chu ve sai, khong rieng ai. Xem PHAN J trong
+     * HUONG_DAN_BUILD_VPS.md.
+     *
+     * Luu y khi bat/tat: client giu ANH theo id trong GameData.listImgIcon toi luc tat
+     * han app, nen doi cong tat nay xong nguoi choi phai TAT HAN APP roi mo lai, khong
+     * thi con thu (hoac hieu ung mang id do) ve bang anh cu ghep du lieu moi.
+     */
+    public static final boolean SPRITE_BAN_DO = true;
+
+    /**
      * Day anh sprite cua skin dang mang xuong client, khong cho client tu xin.
      *
      * Client giu anh theo id trong GameData.listImgIcon va khong co so phien ban; muc chi
@@ -177,9 +195,9 @@ public class SkinThuNuoi {
         }
     }
 
-    /** Id sprite thu cuoi cua skin dang mang, -1 = khong mang skin. */
+    /** Id sprite thu cuoi cua skin dang mang, -1 = khong mang skin (hoac da tat cong tat). */
     public static int idEffThuCuoi(final Char p) {
-        if (p == null || !hopLe(p.idSkinThuNuoi)) {
+        if (!SPRITE_BAN_DO || p == null || !hopLe(p.idSkinThuNuoi)) {
             return -1;
         }
         return ID_EFF_THU_CUOI[p.idSkinThuNuoi];

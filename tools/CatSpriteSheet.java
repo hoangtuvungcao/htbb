@@ -292,6 +292,12 @@ public class CatSpriteSheet {
         }
         final int rongDich = Math.max(1, (int) Math.round(w * tiLe));
         final int caoDich = Math.max(1, (int) Math.round(h * tiLe));
+        // Ti le 1: TRA VE Y NGUYEN, khong cho di qua getScaledInstance. Bo loc AREA_AVERAGING
+        // vẫn lam mem vien du kich thuoc khong doi, ma sprite pixel-art thi vien mem la
+        // nhin "mo mo" ngay.
+        if (rongDich == w && caoDich == h) {
+            return cat;
+        }
         final BufferedImage nho = new BufferedImage(rongDich, caoDich, BufferedImage.TYPE_INT_ARGB);
         final java.awt.Graphics2D g = nho.createGraphics();
         g.drawImage(cat.getScaledInstance(rongDich, caoDich, Image.SCALE_AREA_AVERAGING), 0, 0, null);

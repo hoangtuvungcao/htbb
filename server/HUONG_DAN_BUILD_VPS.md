@@ -994,21 +994,44 @@ Ví dụ thực tế: mục "Hỗ Trợ" của NPC tổng tiêu đầu (-50) đ�
    - **Ảnh**: `DataGame.taoGoiAnhDynamicEffect()` tạo gói `-51` rồi đẩy xuống lúc đăng nhập
      và lúc đổi skin (`SkinThuNuoi.guiLaiAnhSkin`). Gói `-51` khi tới client chỉ làm một
      việc: `imageIcon.img = ảnh mới`.
-   - **Dữ liệu**: `tools/TaoEffThuCuoi.java` xếp sprite trên **bố cục ô cố định** — 3 ô
-     nửa trên (dùng chung cho 7 frame của một hướng) + 15 ô nửa dưới + 1 ô bóng đổ, mọi
+   - **Dữ liệu**: `tools/TaoEffThuCuoi.java` xếp sprite trên **bố cục ô cố định** — lưới
+     4×4 ô `64×64`: 15 ô chứa **nguyên con** (3 hướng × 5 frame) + 1 ô bóng đổ, mọi
      `dx`/`dy` là hằng số. Nhờ vậy file dữ liệu frame **giống nhau từng byte** giữa cả 5
      skin và giữa mọi lần làm lại sprite, nên dữ liệu cũ còn sót cũng vô hại. Kiểm tra
      bằng `md5sum map/d_effect/159 197 198 199 212` — phải trùng hết. Đổi `WB`, `HB`,
-     `CUT`, `CAO_BONG`, `THO_XUONG` hay số phần mỗi frame là **phá vỡ tính chất này**.
+     `CAO_BONG`, `THO_XUONG` hay số phần mỗi frame là **phá vỡ tính chất này**.
 
 5. **Skin nhìn không giống linh thú thật dù hoạt ảnh đúng.** Hai chi tiết mà linh thú
    vẽ tay nào cũng có, đọc ra từ `d_effect/234` (Rồng Băng) và `236` (heo băng):
    - **Bóng đổ là một phần riêng**, đặt cố định ngay toạ độ nhân vật và **giữ nguyên suốt
      21 frame**. Thiếu bóng thì con thú nhìn như dán lên chứ không đứng trên đất.
    - **Thân nhún 1 điểm so le từng frame** — heo băng `dy = -35, -34, -35, -34, -35`.
-   - **Chỉ phần thân dưới đổi theo frame, đầu giữ nguyên** (Rồng Băng lưu đầu một lần rồi
-     dùng cho cả 7 frame). Bảng sprite vẽ lại cả con mỗi frame thì con thú rung toàn thân,
-     không ra dáng bước — vì vậy tool cắt khung ảo `64×64` tại `CUT = 42`.
+   - **Chỉ phần thân dưới đổi theo frame, đầu giữ nguyên** — Rồng Băng lưu đầu một lần rồi
+     dùng cho cả 7 frame. **Đừng bắt chước chi tiết này nếu bảng sprite không vẽ đúng luật
+     đó**, xem mục 6.
+
+6. **Ép nửa trên dùng chung lên bảng sprite vẽ lại cả con = cụt đầu + hai đầu.** Đây là lỗi
+   thật đã gặp, không phải lý thuyết. Tool từng cắt khung ảo `64×64` tại `CUT = 42`, nửa
+   trên chỉ lấy từ **frame 0** rồi dùng cho cả 7 frame của hướng. Cách đó chỉ đúng khi 5
+   frame trong một hàng cùng chiều cao. Bảng sprite ở đây lệch nhau tới **17px**, đo trên
+   75 frame của cả 5 skin:
+
+   | hiện tượng | nguyên nhân | số đo |
+   |---|---|---|
+   | cụt đỉnh đầu / tai / mào | frame **cao hơn** frame 0 → phần nhô trên `y=42` bị nửa trên của frame 0 đè | **1211/48659 điểm (2,49%)** mất hẳn; tệ nhất gấu trúc hướng lên frame 4 mất 26,5%, cụt 16 hàng |
+   | **hai đầu**, đầu bay lơ lửng | frame **thấp hơn** frame 0 → đầu của chính nó vẫn hiện, lại bị dán thêm nửa trên của frame 0 | **4589 điểm thừa (9,43%)**; phúc thú hướng xuống frame 3 hở 5 hàng trống ở giữa |
+   | | tổng cộng khác bảng gốc | **28,75% số điểm** |
+
+   Đã bỏ hẳn kiểu tách nửa trên/nửa dưới: mỗi frame lưu **nguyên con** trong một ô `64×64`
+   (19 ảnh con → 16, file dữ liệu 583 → 421 byte). Đo lại sau khi sửa: **mất 0 điểm, thừa 0
+   điểm** trên cả 75 frame. Cái giá phải trả là mất hiệu ứng "đầu đứng yên" — muốn có lại
+   thì **sửa bảng sprite** cho 5 frame cùng chiều cao và cùng phần thân trên, đừng sửa tool.
+
+   Hệ quả kèm theo: 5 frame lệch chiều cao thì con thú **phóng to thu nhỏ theo nhịp đi**.
+   Tool nay tự cảnh báo khi lệch quá 25% (`CANH BAO: nhóm N lệch cỡ frame`) — hiện phúc thú
+   hướng xuống lệch 50% (ô 14 trong bảng chỉ cao 17px) và gấu trúc hướng ngang lệch 28%.
+   Sửa bằng cách đổi ô trong `--lay` của `tools/tao_skin_thu.sh`, **không** phóng to/thu nhỏ
+   frame cho bằng nhau (làm vậy là nội suy lại → nhoè, xem mục 5 phần cắt bảng sprite).
 
    Danh sách `id_eff_tool_ngu_long` đang có **254 id** mà client đọc số lượng bằng
    `readUnsignedByte` → **trần là 255**, chỉ còn 1 chỗ. Hết chỗ thì phải bỏ id không dùng
@@ -1016,7 +1039,8 @@ Ví dụ thực tế: mục "Hỗ Trợ" của NPC tổng tiêu đầu (-50) đ�
 
 Thêm hai giới hạn cứng: toạ độ ảnh con lưu bằng **byte không dấu** nên atlas tối đa
 **256×256** — 21 frame phải xếp vừa trong đó, vì vậy tool chỉ lưu 15 ảnh thật rồi cho
-slot 5, 6 dùng lại. Và `Char.dx_horse` / `dy_horse` bên client chỉ có **đúng một dòng**
+slot 5, 6 dùng lại (lưới 4×4 ô `64×64` lấp đúng kín `256×256`, toạ độ lớn nhất 192 < 255).
+Và `Char.dx_horse` / `dy_horse` bên client chỉ có **đúng một dòng**
 (`new sbyte[1][]`), nên `indexDxy` gửi khác 0 là client nổ lỗi giữa lúc vẽ → mất chân,
 mất nửa dưới nhân vật. Luôn giữ `getIndexDxy()` của con thú thật.
 
@@ -1040,6 +1064,20 @@ mất nửa dưới nhân vật. Luôn giữ `getIndexDxy()` của con thú th�
    báo `--lay=<xuống>|<lên>|<ngang>`, mỗi nhóm 5 frame. Nhận dạng: thấy mặt = xuống, thấy
    yên/lưng = lên, thân nằm ngang = ngang. Tham số đã dùng cho 5 skin nằm trong
    `tools/tao_skin_thu.sh`.
+5. **Đừng ép con thú về một chiều cao "cho bằng con khác" — đó chính là chỗ làm mờ.** Bảng
+   sprite là ảnh 4x của bản gốc nhỏ; kéo về 44px là tỉ lệ lẻ (132 → 44 còn được, nhưng
+   33 → 44 thì không), mọi lần resample lẻ đều trộn điểm ảnh làm nhoè viền. Vì vậy
+   `CAO=0` và `CAO_AVT=0` trong `tools/tao_skin_thu.sh` = **giữ nguyên lưới pixel gốc**
+   (`ChuanBiBangSprite.ve1x()` lấy màu đa số của từng khối 4×4 để dựng lại bản 1x). Kích
+   thước ra nhỏ hơn bản kéo-về-44 khoảng 7% nhưng **nằm đúng trong khoảng của chính game**:
+
+   | | 5 skin mới | linh thú/thú cưỡi có sẵn |
+   |---|---|---|
+   | `map/d_effect` — nội dung một frame | 51×34 (ô 64×42) | 45×41, 56×31, 48×45, 45×43, 59×35 |
+   | `map/avtathu` — chiều cao một frame | 31–35 | 21 → 83 (trung bình ~40) |
+
+   Muốn to hơn thật sự thì phải có **file ảnh gốc độ phân giải cao**, không phóng từ bảng
+   hiện có: phóng số lẻ là mờ lại, phóng nguyên lần (2x) thì vượt cả con to nhất trong game.
 
 **Nhân vật mất thân (chỉ còn cái đầu), hành trang và ô trang bị nhìn như rỗng**
 → Bảng `data_item` bị **lỗ id**. Client cấp phát mảng template theo **số lượng** nhưng ghi

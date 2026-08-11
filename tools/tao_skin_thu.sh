@@ -19,11 +19,13 @@ JAVA=${JAVA:-"/c/Program Files/Java/jdk-26.0.1/bin/java.exe"}
 JAVAC=${JAVAC:-"/c/Program Files/Java/jdk-26.0.1/bin/javac.exe"}
 OUT=${OUT:-out_tools}
 # Chieu cao con thu tren ban do (px). Rong Bang cao 44, giu bang no cho khoi lech.
-CAO=${CAO:-44}
+# 0 = giu nguyen kich thuoc pixel goc (khong resample -> khong nhoe vien).
+# Dat so duong chi khi frame that su to hon muc muon co.
+CAO=${CAO:-0}
 # Chieu cao mot frame trong bang Trang bi thu
-CAO_AVT=${CAO_AVT:-48}
+CAO_AVT=${CAO_AVT:-0}
 # Thu muc chua 5 bang sprite goc (anh PNG da tach nen, thuong da phong 4x)
-NGUON=${NGUON:-.}
+NGUON=${NGUON:-map/sprite_goc}
 
 "$JAVAC" -nowarn -d "$OUT" tools/CatSpriteSheet.java tools/TaoDataSprite.java \
     tools/TaoEffThuCuoi.java tools/ChuanBiBangSprite.java tools/TaoAvtThuTuBang.java \
@@ -34,11 +36,11 @@ NGUON=${NGUON:-.}
 B() { "$JAVA" -cp "$OUT" ChuanBiBangSprite "$NGUON/$1" "$2" --hang="$3" --socot="$4" \
         --lay="$5" --mongcot=3 --khe=1; }
 
-B 02.png phucthu   4 4,4,4,3      "7,12,13,14,12|0,1,3,4,8|2,5,6,9,10"
-B 04.png gautruc   3 5,5,5        "3,4,7,10,11|0,1,2,5,6|8,9,12,13,14"
-B 03.png tienloc   5 4,4,4,3,3    "1,4,9,10,13|2,7,12,15,16|0,3,5,6,8"
-B 05.png xichduong 3 6,6,6        "0,1,2,3,6|4,8,9,12,13|5,10,11,15,16"
-B 01.png chienlang 6 3,3,3,3,2,2  "2,3,7,8,2|0,1,4,5,9|10,12,13,14,15"
+B bang_phucthu.png phucthu   4 4,4,4,3      "7,12,13,14,12|0,1,3,4,8|2,5,6,9,10"
+B bang_gautruc.png gautruc   3 5,5,5        "3,4,7,10,11|0,1,2,5,6|8,9,12,13,14"
+B bang_tienloc.png tienloc   5 4,4,4,3,3    "1,4,9,10,13|2,7,12,15,16|0,3,5,6,8"
+B bang_xichduong.png xichduong 3 6,6,6        "0,1,2,3,6|4,8,9,12,13|5,10,11,15,16"
+B bang_chienlang.png chienlang 6 3,3,3,3,2,2  "2,3,7,8,2|0,1,4,5,9|10,12,13,14,15"
 
 # --- Buoc 2: sprite con thu chay tren ban do (map/d_effect) ---
 # --khonglat vi bang nay ve con thu nhin sang TRAI san (client tu lat khi di phai).

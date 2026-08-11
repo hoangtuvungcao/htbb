@@ -50,6 +50,10 @@ import javax.imageio.ImageIO;
  *   --khe       so cot trong lien tiep (o 1x) de tach hai frame
  *   --mongcot   cot (o 1x) co it hon bao nhieu diem thi coi la khe
  *   --bong      vung o bong do, toa do 1x; khong dat thi tu do tim
+ *   --giu4x     giu nguyen do phan giai anh nguon. MAC DINH la thu ve dung luoi pixel
+ *               1x bang MAU AP DAO cua tung khoi phong x phong (khong noi suy) — nho
+ *               vay vien pixel dut khoat, khong bi nhoe. Chi dat co nay khi anh nguon
+ *               that su la pixel-art o do phan giai that, khong phai ban phong to.
  *   --chiadeu   chia deu dai noi dung cua tung hang thanh --moihuong o, thay vi do khe.
  *               Dung khi frame nhin ngang rong hon frame nhin truoc: do khe phai xoa
  *               cot mong nen an mat chan va duoi con thu, con chia deu thi khong.
@@ -77,7 +81,7 @@ public class ChuanBiBangSprite {
         int[] soCot = null;
         int vunTiLe = 20;
         String lay = null;
-        boolean chayThu = false, chiaDeu = false;
+        boolean chayThu = false, chiaDeu = false, ve1x = true;
         for (int i = 2; i < args.length; i++) {
             final String a = args[i];
             if (a.startsWith("--ra=")) ra = a.substring(5);
@@ -90,6 +94,7 @@ public class ChuanBiBangSprite {
             else if (a.startsWith("--mongcot=")) mongCot = Integer.parseInt(a.substring(10));
             else if (a.equals("--thu")) chayThu = true;
             else if (a.equals("--chiadeu")) chiaDeu = true;
+            else if (a.equals("--giu4x")) ve1x = false;
             else if (a.startsWith("--socot=")) {
                 final String[] p = a.substring(8).split(",");
                 soCot = new int[p.length];
@@ -284,6 +289,9 @@ public class ChuanBiBangSprite {
         final List<BufferedImage> frame = new ArrayList<>();
         for (final int[] b : o) {
             BufferedImage f = catTheoKhung1x(sach, b, phong);
+            // Ve dung luoi pixel goc TRUOC khi don manh vun, de nguong "manh nho" tinh
+            // theo so diem that cua sprite chu khong theo so diem da phong to.
+            if (ve1x) f = ve1x(f, phong);
             if (vunTiLe > 0) f = boManhVun(f, vunTiLe);
             frame.add(f);
         }
@@ -452,6 +460,63 @@ public class ChuanBiBangSprite {
         }
         if (x2 < x1 || y2 < y1) return ra;
         return ra.getSubimage(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+    }
+
+    /**
+     * Thu anh ve dung LUOI PIXEL GOC (1x) bang cach lay MAU AP DAO cua tung khoi phong x
+     * phong, khong noi suy.
+     *
+     * Vi sao khong dung getScaledInstance/AREA_AVERAGING: bang sprite nay da bi phong 4x
+     * bang thuat toan lam muot, nen vien pixel bi nhoe san. Neu lai thu nho bang noi suy
+     * (va nhat la thu ve chieu cao le nhu 44px = 0.75x luoi goc) thi nhoe them mot lan
+     * nua — do la ly do con thu nhin "mo mo" so voi pixel-art goc. Lay mau ap dao cua
+     * moi khoi 4x4 tra ve gan dung mau pixel goc, vien lai dut khoat.
+     *
+     * Alpha: khoi nao co >= nua so diem dac thi coi la dac, con lai la trong. Sprite trong
+     * game khong co alpha trung gian nen khong duoc de lai vien mo.
+     */
+    private static BufferedImage ve1x(final BufferedImage f, final int phong) {
+        if (phong <= 1) {
+            return f;
+        }
+        final int w = Math.max(1, f.getWidth() / phong), h = Math.max(1, f.getHeight() / phong);
+        final BufferedImage ra = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        final java.util.HashMap<Integer, Integer> dem = new java.util.HashMap<Integer, Integer>();
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                dem.clear();
+                int soDac = 0, tong = 0;
+                for (int dy = 0; dy < phong; dy++) {
+                    for (int dx = 0; dx < phong; dx++) {
+                        final int sx = x * phong + dx, sy = y * phong + dy;
+                        if (sx >= f.getWidth() || sy >= f.getHeight()) {
+                            continue;
+                        }
+                        tong++;
+                        final int c = f.getRGB(sx, sy);
+                        if (((c >>> 24) & 0xFF) == 0) {
+                            continue;
+                        }
+                        soDac++;
+                        final int mau = c | 0xFF000000;
+                        final Integer cu = dem.get(mau);
+                        dem.put(mau, cu == null ? 1 : cu + 1);
+                    }
+                }
+                if (tong == 0 || soDac * 2 < tong || dem.isEmpty()) {
+                    continue;
+                }
+                int mauTot = 0, nhieuNhat = -1;
+                for (final java.util.Map.Entry<Integer, Integer> e : dem.entrySet()) {
+                    if (e.getValue() > nhieuNhat) {
+                        nhieuNhat = e.getValue();
+                        mauTot = e.getKey();
+                    }
+                }
+                ra.setRGB(x, y, mauTot);
+            }
+        }
+        return ra;
     }
 
     /** Cat vung 4x tuong ung khung 1x, roi bo sat vien theo alpha that. */

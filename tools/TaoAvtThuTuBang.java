@@ -61,19 +61,25 @@ public class TaoAvtThuTuBang {
             caoNhat = Math.max(caoNhat, f[i].getHeight());
             rongNhat = Math.max(rongNhat, f[i].getWidth());
         }
-        final double tiLe = (double) cao / caoNhat;
+        // cao <= 0: GIU NGUYEN kich thuoc pixel goc. Anh nguon la pixel-art nen moi lan
+        // resample (nhat la ti le le) deu lam mem vien -> con thu nhin "mo mo". Chi thu
+        // nho khi frame that su to hon muc muon co.
+        final int caoO = (cao <= 0) ? caoNhat : cao;
+        final double tiLe = (double) caoO / caoNhat;
         final int rong = Math.max(1, (int) Math.ceil(rongNhat * tiLe));
-        System.out.println("Frame goc lon nhat " + rongNhat + "x" + caoNhat + " -> o " + rong + "x" + cao);
+        System.out.println("Frame goc lon nhat " + rongNhat + "x" + caoNhat + " -> o " + rong + "x" + caoO
+                + (tiLe == 1.0 ? "  (giu nguyen, khong resample)" : ""));
 
-        final BufferedImage ra = new BufferedImage(rong, cao * 3, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage ra = new BufferedImage(rong, caoO * 3, BufferedImage.TYPE_INT_ARGB);
         final java.awt.Graphics2D g = ra.createGraphics();
         for (int i = 0; i < 3; i++) {
             final int w2 = Math.max(1, (int) Math.round(f[i].getWidth() * tiLe));
             final int h2 = Math.max(1, (int) Math.round(f[i].getHeight() * tiLe));
             // Client ve o nay theo goc giua o (drawRegion ... 3 = HCENTER|VCENTER) nen can
             // giua ca hai chieu, va dat sat day de con thu khong lo lung.
-            g.drawImage(f[i].getScaledInstance(w2, h2, Image.SCALE_AREA_AVERAGING),
-                    (rong - w2) / 2, (i + 1) * cao - h2, null);
+            final Image ve = (w2 == f[i].getWidth() && h2 == f[i].getHeight())
+                    ? f[i] : f[i].getScaledInstance(w2, h2, Image.SCALE_AREA_AVERAGING);
+            g.drawImage(ve, (rong - w2) / 2, (i + 1) * caoO - h2, null);
         }
         g.dispose();
         // Don kenh trong suot sau khi thu nho: duoi 40 cho trong han, tren 200 cho dac han
@@ -86,7 +92,7 @@ public class TaoAvtThuTuBang {
             }
         }
         ImageIO.write(ra, "png", dich);
-        System.out.println("Xong: " + dich + "  " + rong + "x" + (cao * 3) + " (3 frame)");
+        System.out.println("Xong: " + dich + "  " + rong + "x" + (caoO * 3) + " (3 frame)");
     }
 
     /** Dem so dai co hinh theo hang (true) hoac theo cot (false). */

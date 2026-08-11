@@ -98,7 +98,27 @@ public class MessageCreator {
         MessageCreator.id_eff_pet_tool = new int[]{35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 60};
 
         // todo Thêm Danh Hiệu thì vào đây
-        MessageCreator.id_eff_tool_ngu_long = new int[]{45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237,238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257,258,259,260,261,262,263,264, 265,266,267,268,269,270,271,272,273,276,274,275,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299};
+        MessageCreator.id_eff_tool_ngu_long = new int[]{45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237,238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257,258,259,260,261,262,263,264, 265,266,267,268,269,270,271,272,273,276,274,275,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299};
+
+        // 5 id sprite skin thu cuoi (map/d_effect/159, 197, 198, 199, 212) chi vao danh
+        // sach khi cong tat SkinThuNuoi.SPRITE_BAN_DO dang bat. Tach rieng ra day de tat
+        // duoc bang MOT dong ma khong phai sua tay danh sach 249 id ben tren.
+        //
+        // Day la phan duy nhat cua tinh nang skin co anh huong toan may chu: goi 26 la
+        // goi dung chung, mang theo ca bang toa do ve nhan vat / vu khi / phi phong /
+        // thu cuoi o cuoi goi. Truoc day thieu file map/d_effect/<id> la NPE lam cut ca
+        // goi -> moi nguoi choi rong hanh trang va trang bi (nay da chan, xem
+        // createMsgMonsterTemplate), nhung van nen tat duoc nhanh khi can.
+        if (SkinThuNuoi.SPRITE_BAN_DO) {
+            final int[] cu = MessageCreator.id_eff_tool_ngu_long;
+            final int[] moi = new int[cu.length + SkinThuNuoi.ID_EFF_THU_CUOI.length];
+            System.arraycopy(cu, 0, moi, 0, cu.length);
+            for (int i = 0; i < SkinThuNuoi.ID_EFF_THU_CUOI.length; i++) {
+                // ID_EFF_THU_CUOI luu dang id gui client (8700 + id file), o day can id file
+                moi[cu.length + i] = SkinThuNuoi.ID_EFF_THU_CUOI[i] - 8700;
+            }
+            MessageCreator.id_eff_tool_ngu_long = moi;
+        }
     }
 
     public static Message createMsgChat(final int id, final String msg) {
@@ -655,10 +675,61 @@ public class MessageCreator {
             for (int j = 0; j < 5; ++j) {
                 m.dos.writeByte(percent[j]);
             }
-            final int n = Map.itemTemplateCollection.get(5).size();
-            m.dos.writeShort(n);
+            // ---- Bang template vat pham ----
+            // PHAI GUI DU ID 0..MAX, KHONG DUOC GUI "CHI NHUNG DONG DANG CO".
+            // Client cap phat mang theo SO LUONG nhung ghi vao mang theo ID
+            // (Client/MessageHandler.cs:1647):
+            //     ItemTemplate[] array = new ItemTemplate[soLuong + 1];
+            //     ...  array[idDocDuoc] = new ItemTemplate();
+            // Nen id lon nhat phai <= so luong. Bang data_item thieu mot id o giua
+            // (vi du xoa dong 722 luc doi sach ky nang pet sang potion) la mang ngan
+            // di mot o -> template co id lon nhat bi nem IndexOutOfRange, ma client
+            // bat loi do roi BO QUA AM THAM (chi ghi log), hau qua rat kho lan:
+            //
+            //   Res.getItem(id) tra null
+            //   -> Char.setWearingInfo() nem NPE ngay giua vong lap, ma ham nay da
+            //      dat bodyStyle/legStyle/hatStyle/weaponStyle = -1 TRUOC vong lap
+            //      -> nhan vat mat than, chan, non, vu khi, CHI CON CAI DAU
+            //   -> paintItemIcon / ItemInInventory.paint nem NPE luc ve
+            //      -> o hanh trang va o trang bi nhin nhu RONG
+            //
+            // Vi vay dem theo ID: gui du 0..maxId, id nao khong co template thi gui
+            // mot o rong (type 24 = loai vat pham tro, doUseItem bo qua). Nho vay
+            // bang data_item co lo o dau cung khong lam hong client.
+            int maxIdTemplate = 0;
             for (final ItemTemplates it : Map.itemTemplateCollection.get(5)) {
-                m.dos.writeShort(it.id);
+                if (it != null && it.id > maxIdTemplate) {
+                    maxIdTemplate = it.id;
+                }
+            }
+            final ItemTemplates[] theoId = new ItemTemplates[maxIdTemplate + 1];
+            for (final ItemTemplates it : Map.itemTemplateCollection.get(5)) {
+                if (it != null && it.id >= 0 && it.id <= maxIdTemplate) {
+                    theoId[it.id] = it;
+                }
+            }
+            m.dos.writeShort(maxIdTemplate + 1);
+            for (int id = 0; id <= maxIdTemplate; ++id) {
+                final ItemTemplates it = theoId[id];
+                m.dos.writeShort(id);
+                if (it == null) {
+                    m.dos.writeUTF("");
+                    m.dos.writeByte(24);
+                    m.dos.writeByte(0);
+                    m.dos.writeByte(0);
+                    m.dos.writeByte(0);
+                    m.dos.writeByte(0);
+                    m.dos.writeShort(0);
+                    for (int k = 0; k < 10; ++k) {
+                        m.dos.writeShort(0);
+                    }
+                    m.dos.writeInt(0);
+                    m.dos.writeByte(-1);
+                    m.dos.writeByte(0);
+                    m.dos.writeShort(0);
+                    m.dos.writeShort(0);
+                    continue;
+                }
                 m.dos.writeUTF(it.name);
                 m.dos.writeByte(it.type);
                 m.dos.writeByte(it.style);
