@@ -17,6 +17,13 @@
 # File cau hinh doc boi ca Windows va Linux: giu LF cho chac
 *.ini  text eol=lf
 
+# File du lieu frame cua hieu ung / sprite: KHONG CO DUOI nen khong khop luat nao
+# ben duoi, ma "* text=auto" thi git tu do noi dung de doan. Hien tai cac file nay deu
+# co byte NUL nen git doan dung la binary, nhung dung dua vao do: file nao khong co NUL
+# se bi doi CRLF<->LF luc checkout -> du lieu frame sai do dai -> client doc lech goi 26.
+map/d_effect/**    binary
+map/sprite_goc/**  binary
+
 # Nhi phan - tuyet doi khong duoc chuyen doi xuong dong (se hong file)
 *.jar  binary
 *.png  binary

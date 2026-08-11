@@ -1041,6 +1041,43 @@ mất nửa dưới nhân vật. Luôn giữ `getIndexDxy()` của con thú th�
    yên/lưng = lên, thân nằm ngang = ngang. Tham số đã dùng cho 5 skin nằm trong
    `tools/tao_skin_thu.sh`.
 
+**Nhân vật mất thân (chỉ còn cái đầu), hành trang và ô trang bị nhìn như rỗng**
+→ Bảng `data_item` bị **lỗ id**. Client cấp phát mảng template theo **số lượng** nhưng ghi
+vào mảng theo **id** ([MessageHandler.cs:1647](Client/MessageHandler.cs#L1647)):
+
+    int soLuong = readShort();
+    ItemTemplate[] array = new ItemTemplate[soLuong + 1];
+    ...
+    array[readShort()] = new ItemTemplate();      // ghi theo ID
+
+nên **id lớn nhất phải ≤ số lượng**. Xoá một dòng ở giữa bảng (ví dụ
+`DELETE FROM data_item WHERE id=722` trong `sql/migrate_sach_pet_to_potion.php`) làm mảng
+ngắn đi một ô → template có id lớn nhất bị `IndexOutOfRange`, mà client **bắt lỗi rồi bỏ qua
+âm thầm**. Chuỗi hậu quả rất khó lần vì nó không giống lỗi vật phẩm:
+
+- `Res.getItem(id)` trả `null`
+- `Char.setWearingInfo()` ([Char.cs:2804](Client/Char.cs#L2804)) nổ NPE giữa vòng lặp — mà
+  hàm này đặt `bodyStyle`/`legStyle`/`hatStyle`/`weaponStyle` **= -1 trước vòng lặp** → mọi
+  style sau chỗ nổ giữ nguyên -1 → `paintAvatar` bỏ qua thân, chân, nón, vũ khí →
+  **nhân vật chỉ còn cái đầu**
+- `paintItemIcon` / `ItemInInventory.paint` nổ NPE lúc vẽ → **ô hành trang và ô trang bị
+  nhìn như rỗng**
+
+Thực tế đã gặp: bảng có id 1..904 (thiếu id 0) = 904 dòng, vừa khít. Xoá dòng 722 còn 903
+dòng → mất đúng template **904 = "Cải Trang Sa Tăng" (type 0 = áo)** → ai đang mặc hoặc giữ
+món đó là mất thân.
+
+Đã vá hai lớp: server gửi **đủ id 0..max**, id trống thì gửi ô rỗng (`MessageCreator`, khối
+"Bang template vat pham"), và `sql/fix_data_item_lo_id.sql` bù lại dòng đã xoá. Kiểm tra
+nhanh bất cứ lúc nào:
+
+```sql
+SELECT COUNT(*) AS so_dong, MAX(id) AS id_lon_nhat FROM data_item;  -- so_dong phai >= id_lon_nhat
+```
+
+Quy tắc rút ra: **không bao giờ DELETE một dòng ở giữa `data_item`** — muốn bỏ vật phẩm thì
+đổi nó thành loại trơ (type 24, không icon, không bán) và giữ dòng lại.
+
 **Cả server rỗng hành trang và trang bị sau khi thêm sprite thú cưỡi mới**
 → Thêm id vào `MessageCreator.id_eff_tool_ngu_long` mà **thiếu file `map/d_effect/<id>`**
 (file dữ liệu frame, không có đuôi). `DataGame` nạp file đó lúc khởi động và **bỏ qua lỗi
