@@ -8941,9 +8941,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 String[] tachItem = listItem.trim().split(",");
                 for (int i = 0; i < tachItem.length; i++) {
                     String[] tachTime = tachItem[i].trim().split(":");
-                    // SKIN:<0-4> -> tang skin thu nuoi (chi co qua su kien/giftcode)
+                    // SKIN:<0-4> -> phat VAT PHAM skin thu cuoi tuong ung (bang voi
+                    // "DB:<idTemplate>:1:0"). Truoc day dong nay bat co "da so huu skin"
+                    // trong tob_skin_thu, nhung skin gio do vat pham dang mac quyet dinh
+                    // nen bat co khong con tac dung — xem real.SkinThuNuoi.
                     if (tachTime[0].equals("SKIN")) {
-                        SkinThuNuoi.tangSkin(this, Integer.parseInt(tachTime[1]));
+                        final int idSkinTang = Integer.parseInt(tachTime[1]);
+                        if (SkinThuNuoi.hopLe(idSkinTang)) {
+                            GiftCode.AddItem(this, SkinThuNuoi.ID_ITEM[idSkinTang], 0, 0, 0);
+                        }
                     } else if (tachTime[0].equals("DB")) {
                         for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                             GiftCode.AddItem(this, Integer.parseInt(tachTime[1]), 0, 0, Integer.parseInt(tachTime[3]));
@@ -9426,9 +9432,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 String[] tachItem = listItem.trim().split(",");
                 for (int i = 0; i < tachItem.length; i++) {
                     String[] tachTime = tachItem[i].trim().split(":");
-                    // SKIN:<0-4> -> tang skin thu nuoi (chi co qua su kien/giftcode)
+                    // SKIN:<0-4> -> phat VAT PHAM skin thu cuoi tuong ung (bang voi
+                    // "DB:<idTemplate>:1:0"). Truoc day dong nay bat co "da so huu skin"
+                    // trong tob_skin_thu, nhung skin gio do vat pham dang mac quyet dinh
+                    // nen bat co khong con tac dung — xem real.SkinThuNuoi.
                     if (tachTime[0].equals("SKIN")) {
-                        SkinThuNuoi.tangSkin(this, Integer.parseInt(tachTime[1]));
+                        final int idSkinTang = Integer.parseInt(tachTime[1]);
+                        if (SkinThuNuoi.hopLe(idSkinTang)) {
+                            GiftCode.AddItem(this, SkinThuNuoi.ID_ITEM[idSkinTang], 0, 0, 0);
+                        }
                     } else if (tachTime[0].equals("DB")) {
                         for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                             GiftCode.AddItem(this, Integer.parseInt(tachTime[1]), 0, 0, Integer.parseInt(tachTime[3]));
@@ -14877,6 +14889,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
         byte non = 0;
         byte giap = 0;
         byte yen = 0;
+        byte skin = 0;
         boolean bInventory = false;
         final Vector<Item> itBackInventory = new Vector<Item>();
         if (this.animalRide != null) {
@@ -14925,6 +14938,21 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     if (it.getType() == 14) {
                         if (giap == 0) {
                             giap = 1;
+                            a.add(it);
+                        } else {
+                            it.place = 0;
+                            bInventory = true;
+                            itBackInventory.add(it);
+                        }
+                    }
+                    // Vat pham skin thu cuoi: type 19, ung voi O DAU TIEN BEN PHAI cua bang
+                    // Trang bi thu (client: idWearAnimal = {18,19,14,20,15,21,16,22,17,23}).
+                    // Loc theo ID TEMPLATE chu khong theo type, vi type 19 cung la phi phong
+                    // cua nhan vat — xem real.SkinThuNuoi.ID_ITEM.
+                    if (it.getType() == SkinThuNuoi.TYPE_ITEM
+                            && SkinThuNuoi.laItemSkin(it.getTemplate().id)) {
+                        if (skin == 0) {
+                            skin = 1;
                             a.add(it);
                         } else {
                             it.place = 0;

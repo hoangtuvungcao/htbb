@@ -1808,6 +1808,9 @@ public class Database {
                 ItemTemplates.ALL_NAME_ATTRIBUTE_ITEM.add(new NameAttributeItem(i, name, rs.getByte("ispercent"), rs.getByte("idcolor")));
                 ++i;
             }
+            // Vat pham skin thu cuoi tra dong mo ta theo THU TU DONG cua bang nay, khong
+            // phai theo cot id, nen phai tim lai chi so moi lan nap. Xem SkinThuNuoi.
+            real.SkinThuNuoi.ganChiSoDongMoTa();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -2402,9 +2405,14 @@ public class Database {
                     String[] tachItem = item.trim().split(",");
                     for (int i = 0; i < tachItem.length; i++) {
                         String[] tachTime = tachItem[i].trim().split(":");
-                        // SKIN:<0-4> -> tang skin thu nuoi (chi co qua su kien/giftcode)
+                        // SKIN:<0-4> -> phat VAT PHAM skin thu cuoi tuong ung (bang voi
+                        // "DB:<idTemplate>:1:0"). Skin gio do vat pham dang mac quyet dinh
+                        // nen bat co "da so huu" nhu truoc khong con tac dung.
                         if (tachTime[0].equals("SKIN")) {
-                            real.SkinThuNuoi.tangSkin(player, Integer.parseInt(tachTime[1]));
+                            final int idSkinTang = Integer.parseInt(tachTime[1]);
+                            if (real.SkinThuNuoi.hopLe(idSkinTang)) {
+                                GiftCode.AddItem(player, real.SkinThuNuoi.ID_ITEM[idSkinTang], 0, 0, 0);
+                            }
                         } else if (tachTime[0].equals("DB")) {
                             for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                                 GiftCode.AddItem(player, Integer.parseInt(tachTime[1]), 0, 0, Integer.parseInt(tachTime[3]));

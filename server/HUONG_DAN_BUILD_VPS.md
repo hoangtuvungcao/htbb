@@ -956,6 +956,119 @@ Ví dụ thực tế: mục "Hỗ Trợ" của NPC tổng tiêu đầu (-50) đ�
 (commit `67cf92d`). NPC ảo của menu con (-519, -1000, -1001) không có case nên vẫn chạy tốt
 ở `Map.doMenu`.
 
+**Skin thú cưỡi: làm sprite chạy trên bản đồ — con thú nháy liên tục, đi ngược hướng, mờ nhoè**
+→ Ba cái bẫy khác nhau, gặp đủ cả ba trong một lần làm 5 skin (`tools/TaoEffThuCuoi.java`):
+
+1. **Phải đúng 21 frame, không phải 18.** `Char.getFrameHorse()` tính
+   `DOWN → Fhorse`, `UP → Fhorse + 7`, `LEFT/RIGHT → Fhorse + 14` — tức **7 slot mỗi
+   hướng**. Trong đó `Fhorse` chỉ nhận: `0, 1` khi đứng (`STANDFRAME`) và `2, 3, 4` khi
+   đi (`horseMove = {2,2,2,3,3,4,4,4}`); slot 5, 6 không dùng nên cho trỏ lại ảnh của
+   slot 0, 1 (Rồng Băng `d_effect/234` làm đúng như vậy). Ghi 18 frame thì hướng ngang
+   lúc `Fhorse = 4` sẽ đòi frame 18 không tồn tại, `DataSkillEff.paintTopHorse` gặp
+   `Frame >= listFrame.size()` là `return` luôn → con thú **biến mất đúng tick đó, nhìn
+   như nháy liên tục** khi di chuyển.
+2. **Ảnh lưu sẵn phải nhìn sang TRÁI.** Client chỉ lật khi đi sang phải
+   (`(dir == RIGHT) ? 2 : 0`), nên hướng trái vẽ nguyên ảnh. Lưu ảnh nhìn sang phải là
+   con thú đi lùi, ngược hướng nhân vật. Bảng sprite nào vẽ nhìn phải thì bỏ `--khonglat`
+   để tool tự lật.
+3. **Xem nền của bảng sprite là gì trước khi cắt.** `CatSpriteSheet.locNen` giữ điểm sáng
+   hơn `nguong`; để `nguong = 48` với bảng nền **trong suốt** thì nó cắt mất toàn bộ phần
+   tối của con thú — đo được **28%–53% nét vẽ bị xoá**, chỉ còn các mảng sáng rời rạc, đó
+   chính là cảm giác "mất nét không rõ". Bảng có kênh trong suốt thì dùng `--nguong=-1`
+   (chỉ lọc theo alpha).
+
+4. **Sửa sprite của một id đang dùng thì client hiện ra một khối vụn** — thấy hai ba con
+   chồng nhau trong một khung chữ nhật. Client có **ba tầng đệm với ba luật xoá khác nhau**:
+
+   | tầng | nội dung | khi nào được làm mới |
+   |---|---|---|
+   | `DataSkillEff.ALL_DATA_EFF` | byte dữ liệu frame | ghi lại mỗi lần đăng nhập ([MessageHandler.cs:1772](Client/MessageHandler.cs#L1772)) → luôn mới |
+   | `Char.ALL_PART_EFF` | dữ liệu đã phân tích | rảnh quá **200s** ([Char.cs:1903](Client/Char.cs#L1903)) |
+   | `GameData.listImgIcon` | ảnh PNG | rảnh quá 120s **và** bảng phải có **hơn 100 mục** ([GameScr.cs:1438](Client/GameScr.cs#L1438)) |
+
+   Không tầng nào có số phiên bản. Client ít icon thì mục ảnh **không bao giờ hết hạn** —
+   sống tới lúc tắt hẳn app. Nên đăng nhập lại làm mới dữ liệu mà không làm mới ảnh, hoặc
+   ngược lại, và hai bên lệch nhau là ra khối vụn.
+
+   Đã chặn cả hai đường, **không phải bắt người chơi tắt app**:
+   - **Ảnh**: `DataGame.taoGoiAnhDynamicEffect()` tạo gói `-51` rồi đẩy xuống lúc đăng nhập
+     và lúc đổi skin (`SkinThuNuoi.guiLaiAnhSkin`). Gói `-51` khi tới client chỉ làm một
+     việc: `imageIcon.img = ảnh mới`.
+   - **Dữ liệu**: `tools/TaoEffThuCuoi.java` xếp sprite trên **bố cục ô cố định** — 3 ô
+     nửa trên (dùng chung cho 7 frame của một hướng) + 15 ô nửa dưới + 1 ô bóng đổ, mọi
+     `dx`/`dy` là hằng số. Nhờ vậy file dữ liệu frame **giống nhau từng byte** giữa cả 5
+     skin và giữa mọi lần làm lại sprite, nên dữ liệu cũ còn sót cũng vô hại. Kiểm tra
+     bằng `md5sum map/d_effect/159 197 198 199 212` — phải trùng hết. Đổi `WB`, `HB`,
+     `CUT`, `CAO_BONG`, `THO_XUONG` hay số phần mỗi frame là **phá vỡ tính chất này**.
+
+5. **Skin nhìn không giống linh thú thật dù hoạt ảnh đúng.** Hai chi tiết mà linh thú
+   vẽ tay nào cũng có, đọc ra từ `d_effect/234` (Rồng Băng) và `236` (heo băng):
+   - **Bóng đổ là một phần riêng**, đặt cố định ngay toạ độ nhân vật và **giữ nguyên suốt
+     21 frame**. Thiếu bóng thì con thú nhìn như dán lên chứ không đứng trên đất.
+   - **Thân nhún 1 điểm so le từng frame** — heo băng `dy = -35, -34, -35, -34, -35`.
+   - **Chỉ phần thân dưới đổi theo frame, đầu giữ nguyên** (Rồng Băng lưu đầu một lần rồi
+     dùng cho cả 7 frame). Bảng sprite vẽ lại cả con mỗi frame thì con thú rung toàn thân,
+     không ra dáng bước — vì vậy tool cắt khung ảo `64×64` tại `CUT = 42`.
+
+   Danh sách `id_eff_tool_ngu_long` đang có **254 id** mà client đọc số lượng bằng
+   `readUnsignedByte` → **trần là 255**, chỉ còn 1 chỗ. Hết chỗ thì phải bỏ id không dùng
+   ra khỏi danh sách trước khi thêm.
+
+Thêm hai giới hạn cứng: toạ độ ảnh con lưu bằng **byte không dấu** nên atlas tối đa
+**256×256** — 21 frame phải xếp vừa trong đó, vì vậy tool chỉ lưu 15 ảnh thật rồi cho
+slot 5, 6 dùng lại. Và `Char.dx_horse` / `dy_horse` bên client chỉ có **đúng một dòng**
+(`new sbyte[1][]`), nên `indexDxy` gửi khác 0 là client nổ lỗi giữa lúc vẽ → mất chân,
+mất nửa dưới nhân vật. Luôn giữ `getIndexDxy()` của con thú thật.
+
+**Skin thú cưỡi: cắt bảng sprite mới (ảnh tách nền, nhiều con dính nhau)**
+→ Chuỗi tool: `ChuanBiBangSprite` (cắt frame, xếp thành bảng chuẩn) → `TaoEffThuCuoi`
+(sprite chạy trên bản đồ) → `TaoAvtThuTuBang` (ảnh bảng Trang bị thú) → `TaoIconSkin`
+(icon hành trang). Bốn chỗ dễ sai:
+
+1. **Ảnh tách nền tự động để lại viền mềm.** Hàng chục nghìn điểm alpha 16..200; để nguyên
+   thì khung bao từng frame phình theo quầng và các ô dính vào nhau. `--alpha=96` cắt cứng
+   kênh trong suốt trước khi làm gì khác.
+2. **Bảng thường đã bị phóng to (4x).** Dò khe ở 4x thì mỗi cột khe chứa vài chục điểm
+   quầng → luôn ra "cả hàng là một ô". Vì vậy tool **dò khe trên mặt nạ 1x** rồi **cắt
+   pixel ở 4x** (`--phong=4`): ảnh đích cao 44px, thu từ 132px xuống đẹp hơn hẳn kéo 33px
+   lên 44px.
+3. **Các con thú trong bảng dính liền nhau, số ô mỗi hàng lại khác nhau.** Không dò tự
+   động được: 5 bảng đã làm có `--socot` lần lượt `4,4,4,3` / `5,5,5` / `4,4,4,3,3` /
+   `3,3,3,3,2,2` / `6,6,6`. Vạch cắt bắt đầu từ vị trí chia đều rồi **trượt về đáy khe gần
+   nhất** (cả biên hàng cũng vậy) — chia cứng sẽ chặt ngang thân con thú ở ô đầu mỗi hàng.
+4. **Ba hướng không nằm thành hàng riêng.** Đọc `<tên>_bang.png` (bảng có đánh số) rồi khai
+   báo `--lay=<xuống>|<lên>|<ngang>`, mỗi nhóm 5 frame. Nhận dạng: thấy mặt = xuống, thấy
+   yên/lưng = lên, thân nằm ngang = ngang. Tham số đã dùng cho 5 skin nằm trong
+   `tools/tao_skin_thu.sh`.
+
+**Skin thú cưỡi: ảnh trong bảng Trang bị thú đứng im**
+→ Client chạy hoạt ảnh ô đó bằng một bảng frame **cố định**
+([WindowInfoScr.cs:43](Client/WindowInfoScr.cs#L43), `MenuWindows.cs`, `ShopNew.cs` giống nhau):
+
+    arrFrame = { {0,1,2}, {0,1} }
+    idFrame  = arrFrame[(numFrame != 3) ? 1 : 0][countFrame]
+    nhịp     = (numFrame != 3) ? 6 : 3 tick
+
+Gửi 5, 6 hay 8 frame thì client **chỉ vẽ frame 0 và 1** với nhịp 6 tick — gần như đứng im.
+Phải gửi **đúng 3 frame** (`SkinThuNuoi.TONG_FRAME = 3`, ảnh cắt bằng
+`tools/TaoAvtThuTuBang.java`). Client là bản decompile không build được nên chỉ sửa được
+ở server.
+
+**Skin thú cưỡi: vật phẩm skin nằm ở ô nào, mô tả lấy từ đâu**
+→ Ô trong bảng Trang bị thú do client quy định sẵn:
+`idWearAnimal = {18, 19, 14, 20, 15, 21, 16, 22, 17, 23}` — ô chẵn là cột trái (yên 18,
+giáp 14, hộ uyển 15, nón 16, bàn đạp 17), ô lẻ là cột phải. **Ô đầu tiên bên phải = type 19**,
+nên vật phẩm skin dùng type 19 (`sql/skin_thu_item.sql`, id 950..954, icon `map/icon/815..819`).
+Type 19 cũng là Phi phong của nhân vật; hai bên không lẫn nhau vì server phân biệt bằng
+**id template** (`SkinThuNuoi.ID_ITEM`) ở `Map.exchangeItem` và `Char.getAnimalWearing`.
+
+Mô tả vật phẩm: type 19 chỉ hiện được `atb[1]` và `atb[6]`
+([Item.attribShowedForType](src/real/Item.java#L343)) nên không đủ để mô tả skin. Thay vào
+đó server gửi thẳng các dòng mô tả, tra **theo tên** trong `data_attribute`
+(`SkinThuNuoi.ganChiSoDongMoTa`). Phải tra theo tên vì client đánh số thuộc tính **theo thứ
+tự dòng** khi đọc `order by id`, thêm một dòng ở giữa là lệch hết — cùng lý do với mục
+"Bấm vào Thần Khí là đơ client" ở trên.
+
 **Không ai đăng nhập được, log login server im lặng**
 → Bạn cài MySQL 8 chứ không phải MariaDB. `PASSWORD()` không còn tồn tại.
 Kiểm tra: `mysql -u root -e "SELECT PASSWORD('abc');"` — báo lỗi hàm không tồn tại là đúng

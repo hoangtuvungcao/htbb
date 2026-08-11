@@ -20,10 +20,19 @@ package real;
  *   4 Chien Lang(he Tho)  : +20% thu (vat + ma)
  *                           +15% hap thu sat thuong (thuong truc, khong can kich hoat).
  *
- * CACH SO HUU: chi qua SU KIEN hoac GIFTCODE - khong ban trong shop.
- *   - Giftcode: them "SKIN:<idSkin>" vao danh sach vat pham cua code.
- *   - Su kien : admin go "giveskin <tên nhân vật> <0-4>", hoac goi tangSkin(...).
- *   - Nguoi choi go "skinthu" de doi qua lai giua cac skin da so huu.
+ * CACH MANG SKIN: mac VAT PHAM SKIN vao o dau tien ben phai bang "Trang bi thu"
+ * (5 vat pham type 19, id template trong ID_ITEM, tao bang sql/skin_thu_item.sql).
+ *   - Phai dang cuoi thu moi mac duoc: vat pham gan theo tung con thu cuoi (Item.idAnimal),
+ *     giong het cac trang bi thu khac.
+ *   - Thao ra / ban di / doi con thu / xuong thu -> mat skin, tu dong dong bo
+ *     (SkinThuNuoi.dongBoTheoTrangBi goi tu Map.doUseItem, doRideAnimal, doUnRideHorse,
+ *     SelectCharHandler).
+ *   - Nguoi choi go "skinthu" chi de xem dang mang skin gi.
+ *
+ * Cach phat vat pham: giftcode "DB:<idTemplate>:1:0" (950..954), NPC shop, hoac su kien.
+ * Duong cu (co "so huu skin" ghi bang bit trong tob_skin_thu, lenh "giveskin", menu doi
+ * skin) van con nhung chi de ADMIN kiem tra: dat skin bang tay se bi dong bo lai theo
+ * vat pham dang mac ngay lan mac do / doi thu / dang nhap sau.
  *
  * CACH DUNG (4 diem noi vao code goc):
  *   1) Char.calculateAttrib() - CUOI HAM (sau calculateCritical):
@@ -104,21 +113,281 @@ public class SkinThuNuoi {
     // anh png. No khong dung id thu cuoi de tra cuu gi ca, nen chi can thay hai
     // thu do la doi duoc hinh — khong phai sua client.
     //
-    // Hinh cua 5 skin, cat tu bang sprite trong map/sprite_goc/ bang
-    // tools/CatSpriteSheet.java, dat o map/avtathu/21..25.png (0..20 la hinh thu
-    // cuoi goc cua game nen 21..25 con trong).
+    // Hinh cua 5 skin cat tu 5 bang sprite goc map/sprite_goc/bang_*.png bang chuoi
+    // tool trong tools/tao_skin_thu.sh, dat o map/avtathu/21..25.png (0..20 la hinh
+    // thu cuoi goc cua game nen 21..25 con trong).
     //
-    //   0 Phuc Thu   -> avtathu/21.png, 5 frame
-    //   1 Gau Truc   -> avtathu/22.png, 6 frame
-    //   2 Tien Loc   -> avtathu/23.png, 5 frame
-    //   3 Xich Duong -> avtathu/24.png, 5 frame
-    //   4 Chien Lang -> avtathu/25.png, 8 frame
+    //   0 Phuc Thu -> avtathu/21.png   1 Gau Truc -> 22.png   2 Tien Loc -> 23.png
+    //   3 Xich Duong -> 24.png         4 Chien Lang -> 25.png
+    //
+    // MOI DAI PHAI DUNG 3 FRAME. Bang "Trang bi thu" ben client chay hoat anh bang
+    // mot bang frame co dinh (WindowInfoScr.cs:43, MenuWindows.cs, ShopNew.cs):
+    //     arrFrame = { {0,1,2}, {0,1} }
+    //     idFrame  = arrFrame[(numFrame != 3) ? 1 : 0][countFrame]
+    //     nhip     = (numFrame != 3) ? 6 : 3 tick
+    // Gui 5/6/8 frame (nhu ban dau) thi client CHI ve frame 0 va 1 voi nhip 6 tick —
+    // con thu gan nhu dung im, cac frame con lai khong bao gio duoc ve. Gui dung 3
+    // frame thi duoc ca ba tu the voi nhip nhanh gap doi. Cat lai dai bang
+    // tools/TaoAvtThuTuBang.java (chay qua tools/tao_skin_thu.sh). Client la ban
+    // decompile khong build duoc nen phai chinh o server.
     //
     // Phai di kem DataGame nap map/avtathu/0..25 (truoc day chi nap 0..20), khong
     // thi imgAvtAnimal khong co phan tu 21..25 va server nem loi khi gui.
     public static final int[] ID_IMG = {21, 22, 23, 24, 25};
     /** So frame cua sprite tuong ung. -1 = giu so frame goc cua thu cuoi. */
-    public static final int[] TONG_FRAME = {5, 6, 5, 5, 8};
+    public static final int[] TONG_FRAME = {3, 3, 3, 3, 3};
+
+    // ---- Anh con thu CHAY TREN BAN DO (duong dung) ----
+    // Rong Bang, Poro, Lan, Su Tu... va ca hoa hinh deu duoc ve bang he "thu cuoi
+    // tool": Animal.getIdImageTool() tra ve id 8700+N, server gui trong goi thong tin
+    // nhan vat, client goi Char.getPartEff(id) -> DataSkillEff. Du lieu frame da duoc
+    // gui san o goi login (message 26, danh sach MessageCreator.id_eff_tool_ngu_long)
+    // con anh thi client xin theo id luc can. Vi vay he nay KHONG phu thuoc bo anh
+    // cache — khac han duong imgAvtAnimal ben tren.
+    //
+    // Sprite dung bang tools/TaoEffThuCuoi.java (chay qua tools/tao_skin_thu.sh), ghi
+    // vao map/d_effect/159, 197, 198, 199, 212. Xem PHAN J trong HUONG_DAN_BUILD_VPS.md:
+    // co 5 cai bay o day (21 frame chu khong phai 18, anh phai nhin sang trai, nen bang
+    // sprite trong suot chu khong den, bo dem anh cua client, va bong do + nhip nhun).
+    //
+    // Doi id moi khi lam lai sprite la viec BAT BUOC, khong phai cho gon: client giu
+    // anh trong GameData.listImgIcon theo id, khong he co so phien ban, va chi bo khi
+    // TAT HAN app (dang cuoi thu thi timeRemove lien tuc duoc lam moi nen khong bao gio
+    // het han). Dang nhap lai chi lam moi phan DU LIEU frame (ALL_DATA_EFF.put trong
+    // goi 26) — du lieu moi ghep vao anh cu thi ra mot khoi vun cua nhieu frame. Vi vay
+    // moi co guiLaiAnhSkin() ben duoi.
+    public static final int[] ID_EFF_THU_CUOI = {8859, 8897, 8898, 8899, 8912};
+
+    /**
+     * Day anh sprite cua skin dang mang xuong client, khong cho client tu xin.
+     *
+     * Client giu anh theo id trong GameData.listImgIcon va khong co so phien ban; muc chi
+     * bi bo khi bang co hon 100 phan tu VA ranh qua 120s, nen thuc te no song den luc tat
+     * han app. Trong khi do du lieu frame lai duoc ghi lai moi lan dang nhap. Sua sprite
+     * cua id dang dung ma khong day anh moi thi client ghep du lieu moi voi anh cu ->
+     * hien ra mot khoi vun cua nhieu frame.
+     */
+    public static void guiLaiAnhSkin(final Char p) {
+        if (p == null || !hopLe(p.idSkinThuNuoi)) {
+            return;
+        }
+        final io.Message m = data.DataGame.taoGoiAnhDynamicEffect(ID_EFF_THU_CUOI[p.idSkinThuNuoi]);
+        if (m != null) {
+            p.sendMessage(m);
+        }
+    }
+
+    /** Id sprite thu cuoi cua skin dang mang, -1 = khong mang skin. */
+    public static int idEffThuCuoi(final Char p) {
+        if (p == null || !hopLe(p.idSkinThuNuoi)) {
+            return -1;
+        }
+        return ID_EFF_THU_CUOI[p.idSkinThuNuoi];
+    }
+
+    // ============================================================
+    //        VAT PHAM SKIN — O DAU TIEN BEN PHAI BANG TRANG BI THU
+    // ============================================================
+    // Bang "Trang bi thu" cua client co 10 o: 5 o BEN TRAI la trang bi thu that
+    // (yen 18, giap 14, ho uyen 15, non 16, ban dap 17) va 5 o BEN PHAI. Thu tu o do
+    // client quy dinh san trong idWearAnimal (WindowInfoScr.cs:361, MenuWindows.cs:229,
+    // ShopNew.cs:371, ba cho giong nhau):
+    //
+    //     idWearAnimal = {18, 19, 14, 20, 15, 21, 16, 22, 17, 23}
+    //      o chan (0,2,4,6,8) = cot trai   |   o le (1,3,5,7,9) = cot phai
+    //
+    // Nghia la O DAU TIEN BEN PHAI (selected = 1) ung voi type 19. Vi vay vat pham skin
+    // dung TYPE 19: chon o do trong bang thi client tim trong danh sach trang bi thu mot
+    // vat pham type 19 de hien mo ta (showInfoWearingAnimal).
+    //
+    // LUU Y type 19 cung la type cua "Phi phong" (do nhan vat). Hai ben khong lan nhau
+    // vi phan biet bang ID TEMPLATE, khong bang type:
+    //   - Map.exchangeItem: template nam trong ID_ITEM thi day sang duong trang bi thu
+    //     (awItems) chu khong vao o phi phong cua nhan vat.
+    //   - Char.getAnimalWearing: chi nhan type 19 neu template nam trong ID_ITEM.
+    //   - Phi phong that (template khac) van di duong cu, khong doi gi.
+    public static final int TYPE_ITEM = 19;
+
+    /**
+     * Id template cua 5 vat pham skin, theo dung thu tu skin 0..4.
+     * Tao bang sql/skin_thu_item.sql (id 950..954, cot xstart = id icon 815..819).
+     * Doi id trong SQL thi phai doi o day cho khop.
+     */
+    public static final int[] ID_ITEM = {950, 951, 952, 953, 954};
+
+    /** Template nay co phai vat pham skin khong? */
+    public static boolean laItemSkin(final int idTemplate) {
+        for (int i = 0; i < ID_ITEM.length; i++) {
+            if (ID_ITEM[i] == idTemplate) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Skin ma vat pham nay mang lai, KHONG_CO neu khong phai vat pham skin. */
+    public static int skinCuaItem(final int idTemplate) {
+        for (int i = 0; i < ID_ITEM.length; i++) {
+            if (ID_ITEM[i] == idTemplate) {
+                return i;
+            }
+        }
+        return KHONG_CO;
+    }
+
+    /**
+     * Dat lai idSkinThuNuoi theo VAT PHAM dang mac o o Trang bi thu. Tra ve true neu
+     * skin thay doi (luc do nguoi goi gui lai goi tin hinh anh + chi so).
+     *
+     * Vat pham skin la NGUON DUY NHAT quyet dinh skin dang mang: thao ra, ban di, doi
+     * thu cuoi khac hay dang nhap lai deu chay qua day. Cot idskin trong tob_skin_thu
+     * chi con la ban luu tam de khong phai doc lai vat pham o moi cho.
+     *
+     * KHONG gui goi tin va KHONG goi getAnimalWearing() trong ham nay: getAnimalWearing
+     * duoc goi tu createAnimalWearingMessage, ma nguoi goi ham nay lai gui chinh goi do
+     * -> goi lai nhau vong tron. Duyet thang p.awItems va tu doi chieu idAnimal.
+     */
+    public static boolean dongBoTheoTrangBi(final Char p) {
+        if (p == null) {
+            return false;
+        }
+        int moi = KHONG_CO;
+        if (p.animalRide != null && p.awItems != null) {
+            for (int i = 0; i < p.awItems.size(); i++) {
+                final Item it = p.awItems.get(i);
+                if (it == null || it.idAnimal != p.animalRide.dbid) {
+                    continue;
+                }
+                final int s = skinCuaItem(it.getTemplate().id);
+                if (hopLe(s)) {
+                    moi = s;
+                    break;
+                }
+            }
+        }
+        if (moi == p.idSkinThuNuoi) {
+            return false;
+        }
+        p.idSkinThuNuoi = moi;
+        p.timeHetBuffSkinThuNuoi = 0L;
+        p.timeCdSkinThuNuoi = 0L;
+        try {
+            data.Database.instance.saveSkinThuNuoi(p);
+        } catch (final Exception e) {
+        }
+        return true;
+    }
+
+    /**
+     * Dong bo skin theo trang bi roi gui lai moi thu client can de ve dung ngay:
+     * chi so, anh sprite thu cuoi, goi thong tin thu cuoi cho minh va cho nguoi ben canh.
+     * Goi sau khi mac/thao vat pham, khi cuoi thu, khi xuong thu.
+     */
+    public static void dongBoVaGui(final Char p) {
+        if (!dongBoTheoTrangBi(p)) {
+            return;
+        }
+        try {
+            p.calculateAttrib();
+            // Day anh truoc khi gui goi thong tin thu cuoi: client giu anh theo id va khong
+            // co so phien ban nen neu con anh cu cua id nay thi phai ghi de ngay.
+            guiLaiAnhSkin(p);
+            p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+            p.sendMessage(MessageCreator.createAnimalWearingMessage(p, p));
+            p.sendToNearPlayer(MessageCreator.createAnimalWearingMessage(p, p));
+            p.sendToNearPlayer(MessageCreator.createCharInfo(p));
+            p.sendMessage(MessageCreator.createServerAlertMessage(hopLe(p.idSkinThuNuoi)
+                    ? ("Đã trang bị skin " + moTa(p.idSkinThuNuoi))
+                    : "Đã bỏ skin thú cưỡi", ""));
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ============================================================
+    //            MO TA VAT PHAM SKIN (dong chi so trong tooltip)
+    // ============================================================
+    // Client ghep tung dong mo ta la "<ten>: <gia tri>[%]" (InfoAttributeItem.getName +
+    // getValue), trong do <ten> tra tu bang ten thuoc tinh nhan duoc luc dang nhap
+    // (goi 25). CHI SO DUNG DE TRA CUU KHONG PHAI cot id trong data_attribute ma la
+    // THU TU DONG khi doc "select * from data_attribute order by id"
+    // (Database.loadNameAttributeItem dem tang dan, client cung luu theo thu tu nhan).
+    //
+    // Vi vay khong hardcode duoc chi so: chi can them mot dong data_attribute o giua la
+    // moi thu lech. Thay vao do tim theo TEN, va tim TU CUOI LEN de neu ten bi trung voi
+    // dong san co cua game thi lay dong minh them (dong minh id lon hon nen nam sau).
+    // Khong tim thay thi dong do bi bo, vat pham chi mat mo ta chu khong loi.
+    //
+    // Cac ten nay PHAI trung tung chu voi sql/skin_thu_item.sql.
+    public static final String[][] TEN_DONG_MOTA = {
+        {"Sinh lực", "Nội lực", "Giảm sát thương khi bị đánh"},
+        {"Chính xác cộng thêm", "Phản sát thương"},
+        {"Tiềm năng cộng thêm", "Lá chắn chặn sát thương"},
+        {"Xuyên giáp cộng thêm", "Nộ khí tăng tấn công"},
+        {"Phòng thủ cộng thêm", "Hấp thụ sát thương"},
+    };
+    /** Gia tri hien o tung dong, khop 1-1 voi TEN_DONG_MOTA. */
+    public static final int[][] GIA_TRI_DONG_MOTA = {
+        {ADD_HP[0], ADD_MP[0], MUC_BUFF[0]},
+        {ADD_CHINH_XAC[1], MUC_BUFF[1]},
+        {PC_TIEM_NANG[2], MUC_BUFF[2]},
+        {PC_XUYEN_GIAP[3], MUC_BUFF[3]},
+        {PC_THU[4], PC_HAP_THU[4]},
+    };
+    /** Chi so dong trong bang ten thuoc tinh; -1 = chua tim thay. */
+    private static final int[][] chiSoDong = new int[TEN_DONG_MOTA.length][];
+
+    /**
+     * Tim chi so dong cho tung ten trong TEN_DONG_MOTA. Goi mot lan sau khi
+     * Database.loadNameAttributeItem() nap xong bang ten thuoc tinh.
+     */
+    public static void ganChiSoDongMoTa() {
+        final java.util.Vector<NameAttributeItem> bang = ItemTemplates.ALL_NAME_ATTRIBUTE_ITEM;
+        int thieu = 0;
+        for (int s = 0; s < TEN_DONG_MOTA.length; s++) {
+            chiSoDong[s] = new int[TEN_DONG_MOTA[s].length];
+            for (int d = 0; d < TEN_DONG_MOTA[s].length; d++) {
+                chiSoDong[s][d] = -1;
+                if (bang == null) {
+                    continue;
+                }
+                // Tim tu cuoi len: dong minh them co id lon hon nen nam sau dong san co
+                for (int i = bang.size() - 1; i >= 0; i--) {
+                    final NameAttributeItem n = bang.get(i);
+                    if (n != null && TEN_DONG_MOTA[s][d].equals(n.name)) {
+                        chiSoDong[s][d] = i;
+                        break;
+                    }
+                }
+                if (chiSoDong[s][d] < 0) {
+                    thieu++;
+                }
+            }
+        }
+        if (thieu > 0) {
+            System.out.println("SkinThuNuoi: thieu " + thieu + " dong ten thuoc tinh trong"
+                    + " data_attribute -> vat pham skin se thieu mo ta. Chay sql/skin_thu_item.sql.");
+        }
+    }
+
+    /**
+     * Cac dong mo ta gui xuong client cho vat pham skin. Goi tu Item.getInfoAtbItem va
+     * Item.getInfoAtbItemWearing: vat pham skin khong dung cot atb0..9 nao (cac dong nay
+     * la mo ta co dinh cua skin, khong phai chi so ngau nhien cua vat pham).
+     */
+    public static java.util.Vector<InfoItemAttribute> dongMoTaVatPham(final int idSkin) {
+        final java.util.Vector<InfoItemAttribute> ds = new java.util.Vector<InfoItemAttribute>();
+        if (!hopLe(idSkin) || chiSoDong[idSkin] == null) {
+            return ds;
+        }
+        for (int d = 0; d < chiSoDong[idSkin].length; d++) {
+            final int chiSo = chiSoDong[idSkin][d];
+            if (chiSo >= 0) {
+                ds.add(new InfoItemAttribute((short) chiSo, GIA_TRI_DONG_MOTA[idSkin][d]));
+            }
+        }
+        return ds;
+    }
 
     /** Id anh can gui xuong client cho nhan vat nay, -1 = giu nguyen. */
     public static int idImgHienThi(final Char p) {
@@ -576,6 +845,9 @@ public class SkinThuNuoi {
         try {
             data.Database.instance.saveSkinThuNuoi(p);
             p.calculateAttrib();
+            // Day anh truoc khi gui thong tin thu cuoi: neu client con giu anh cu cua
+            // id nay thi ghi de ngay, khong thi no ve bang anh cu.
+            guiLaiAnhSkin(p);
             p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
             // Hinh con thu cuoi nam trong goi createAnimalWearingMessage chu khong
             // phai main char info, nen doi skin ma chi gui main char info thi client

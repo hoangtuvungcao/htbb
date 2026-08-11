@@ -65,6 +65,9 @@ public class doUnRideHorse {
 
                 player.rideHorse = 0;
                 player.speed = 5;
+                // Xuong thu la mat skin: vat pham skin gan theo con thu cuoi nen khong con
+                // thu cuoi thi khong con skin. Bo truoc khi tinh lai chi so.
+                SkinThuNuoi.dongBoTheoTrangBi(player);
                 player.calculateAttrib();
 
                 try {

@@ -68,3 +68,6 @@ AdminChat*.txt
 # deploy-auto.sh (no kiem tra "git status --porcelain" phai sach truoc khi pull).
 # Dung web/config.local.php thay vi sua config.php - xem web/config.local.php.example.
 web/config.local.php
+
+### Tool build tam (tools/*.java bien dich ra day)
+out_tools/
