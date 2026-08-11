@@ -2976,6 +2976,33 @@ public class Map implements Runnable {
         }
     }
 
+    /**
+     * Doi chieu so dong bang data_potion voi so o thuoc cua nhan vat, in canh bao ngay
+     * luc khoi dong neu lech.
+     *
+     * Client cap phat o thuoc theo so dong bang nay (goi dang nhap gui
+     * potionTemplates2.size() -> Char.CHAR_POTION) roi tra cuu bang chi so ma khong
+     * kiem tra bien. Thieu dong la nguoi choi giu thuoc id cao se lam client rong
+     * TOAN BO hanh trang — xem Char.getAllPotion(). Bang phai co du id 0..161.
+     */
+    public static void kiemTraSoDongPotion() {
+        final int co = (potionTemplates2 == null) ? 0 : potionTemplates2.size();
+        if (co == Char.SO_O_THUOC) {
+            return;
+        }
+        System.out.println("=================================================================");
+        System.out.println(" CANH BAO data_potion: dang co " + co + " dong, can "
+                + Char.SO_O_THUOC + " dong (id 0.." + (Char.SO_O_THUOC - 1) + ").");
+        if (co < Char.SO_O_THUOC) {
+            System.out.println(" Nguoi choi giu thuoc id >= " + co + " se thay HANH TRANG RONG"
+                    + " (mat ca thuoc, nguyen lieu va vat pham) vi client tra cuu vuot mang.");
+            System.out.println(" Vi du: sach ky nang pet la thuoc id "
+                    + Potion.TYPE_SACH_SKILL_PET + ".");
+        }
+        System.out.println(" Sua: chay sql/fix_data_potion_du_dong.sql roi bat lai server.");
+        System.out.println("=================================================================");
+    }
+
     /** Gem sach ky nang pet ban cu, da nghi huu - xem Potion.TYPE_SACH_SKILL_PET. */
     public static final short SACH_SKILL_PET_GEM = 269;
 
@@ -3028,6 +3055,7 @@ public class Map implements Runnable {
         Map.npcReceiveCard.add(new Vector<>());
         Map.allWedding = Database.instance.loadWedding();
         Map.potionTemplates2 = Database.instance.loadPotionTemplate();
+        kiemTraSoDongPotion();
        loadShop();
         Map.loadGemTemplate();
         Map.loadPetTemplate();

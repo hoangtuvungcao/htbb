@@ -967,12 +967,53 @@ public class Char extends LiveActor {
         return 3;
     }
 
+    /**
+     * So o thuoc cua nhan vat. Bang so dong cua bang data_potion (id 0..161) va bang
+     * so truong CSV cua cot tob_char.potion. Doi so nay la phai doi ca hai cho.
+     */
+    public static final int SO_O_THUOC = 162;
+
+    /** Da canh bao thieu dong data_potion chua (chi ghi log mot lan cho do ram log). */
+    private static boolean daCanhBaoThieuPotion = false;
+
+    /**
+     * Danh sach thuoc dang co, gui trong goi hanh trang (MessageCreator, type 0).
+     *
+     * KHONG DUOC gui id thuoc >= so DONG cua bang data_potion. Client biet so o thuoc
+     * qua goi dang nhap (LoginHandler.createMsgLogin gui Map.potionTemplates2.size()
+     * -> Char.CHAR_POTION) roi cap phat MainChar.listPotion dung bang do, va khi doc
+     * goi hanh trang no gan thang listPotion[id] KHONG kiem tra bien. Gui id vuot tran:
+     *
+     *   1. client nem IndexOutOfRange giua luc doc goi 16
+     *   2. setInventory() khong chay -> mang potions cua client giu nguyen do dai
+     *      khoi tao (25)
+     *   3. vong dung danh sach tui do (WindowInfoScr.getInventori) cham potions[25]
+     *      va nem tiep — ma ca vong nay nam trong MOT try duy nhat, dung truoc phan
+     *      nguyen lieu / thu / vat pham
+     *   -> NGUOI CHOI THAY CA HANH TRANG RONG: khong thuoc, khong nguyen lieu, khong
+     *      vat pham. Trang bi cung trong theo vi cung tra cuu template item.
+     *
+     * Vi vay bo qua id vuot tran va ghi log de biet ma bo sung dong cho data_potion.
+     */
     public Vector<InfoCharPotion> getAllPotion() {
         final Vector<InfoCharPotion> all = new Vector<InfoCharPotion>();
-        for (int i = 1; i < 162; ++i) {
-            if (this.potions[i] > 0) {
-                all.add(new InfoCharPotion(i, this.potions[i]));
+        final int tranClient = Map.potionTemplates2.size();
+        for (int i = 1; i < this.potions.length; ++i) {
+            if (this.potions[i] <= 0) {
+                continue;
             }
+            if (tranClient > 0 && i >= tranClient) {
+                if (!daCanhBaoThieuPotion) {
+                    daCanhBaoThieuPotion = true;
+                    System.out.println("CANH BAO: bang data_potion chi co " + tranClient
+                            + " dong nhung nhan vat dang giu thuoc id " + i
+                            + ". Bo qua de client khong bi rong hanh trang."
+                            + " Bo sung dong cho data_potion (can du id 0.."
+                            + (this.potions.length - 1) + ") roi bat lai server.");
+                }
+                continue;
+            }
+            all.add(new InfoCharPotion(i, this.potions[i]));
         }
         return all;
     }
@@ -5569,9 +5610,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
         this.isMonster = false;
         this.idNgtuyet = -1;
         this.subCharname = "";
-        this.potions = new int[162];
+        // 162 o thuoc = so dong bang data_potion (id 0..161). Hai ben PHAI khop nhau:
+        // cot tob_char.potion luu dung 162 truong, va client cap phat o thuoc theo so
+        // dong data_potion — xem getAllPotion().
+        this.potions = new int[SO_O_THUOC];
         this.itemquest = new short[ItemQuest.NAME_ITEM_QUEST.length];
-        this.tPotions = new int[162];
+        this.tPotions = new int[SO_O_THUOC];
         this.rPotions = new int[162];
         this.posNPCInVilage = null;
         this.attackDamage = 10;

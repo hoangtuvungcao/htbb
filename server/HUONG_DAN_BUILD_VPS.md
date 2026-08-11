@@ -1041,6 +1041,39 @@ mất nửa dưới nhân vật. Luôn giữ `getIndexDxy()` của con thú th�
    yên/lưng = lên, thân nằm ngang = ngang. Tham số đã dùng cho 5 skin nằm trong
    `tools/tao_skin_thu.sh`.
 
+**Cả server rỗng hành trang và trang bị sau khi thêm sprite thú cưỡi mới**
+→ Thêm id vào `MessageCreator.id_eff_tool_ngu_long` mà **thiếu file `map/d_effect/<id>`**
+(file dữ liệu frame, không có đuôi). `DataGame` nạp file đó lúc khởi động và **bỏ qua lỗi
+nếu thiếu**, để lại `dataDynamicEffect[id] = null`. Gói `26` lúc đăng nhập ghi theo thứ tự:
+
+    monster → effDataLocal → id_eff_tool → id_eff_pet_tool → id_eff_tool_ngu_long
+    → dx_horse_tool → Dx_Dy_WP_tool → Dx_Dy_PP_tool → Dx_Dy_AVT_tool
+
+`writeShort(dataDynamicEffect[id].length)` với `null` là **NPE giữa lúc dựng gói**, cả khối
+`try` nhảy ra ngoài nên **bốn bảng toạ độ cuối không được ghi**. Client nhận gói cụt, đọc
+lệch rồi không vẽ được vật phẩm → **mọi người chơi thấy hành trang và bảng trang bị rỗng**,
+nhưng nhân vật vẫn chạy trên map bình thường nên rất dễ nghi oan sang chỗ khác. Hai dấu
+hiệu nhận ra ngay: lỗi xảy ra với **mọi nhân vật** (vì đây là gói dùng chung), và trong
+console server có dòng NPE ở `createMsgMonsterTemplate`.
+
+Từ 2026-08 ba khối này đã bỏ qua id thiếu dữ liệu và in cảnh báo `thieu map/d_effect/<id>`
+thay vì làm cụt gói. Nhưng vẫn phải nhớ: **sửa/thêm file trong `map/` thì phải bật lại
+server** (toàn bộ `map/` chỉ đọc một lần lúc khởi động), và khi deploy phải đẩy **cả file
+`.png` lẫn file dữ liệu không đuôi** cùng nhau.
+
+**Sách kỹ năng pet (potion 111) không có tên, không có icon**
+→ `data_potion` chỉ được đọc **một lần lúc khởi động** ([Map.java:3030](src/real/Map.java#L3030)),
+không phải "mỗi lần hiện túi bình". Sửa mô tả trong DB xong thì phải `loadpotion` (lệnh chat
+admin) **hoặc** bật lại server — và vì client nhận danh sách thuốc trong **gói đăng nhập**
+(`LoginHandler.createMsgLogin`), người chơi còn phải **đăng nhập lại** mới thấy tên/icon mới.
+Ảnh `map/images_potion/95.png` cũng chỉ nạp lúc khởi động.
+
+Thêm một ràng buộc dễ quên: nhân vật có **162 ô thuốc** (`Char.SO_O_THUOC`, cột
+`tob_char.potion` lưu 162 trường) nhưng client cấp phát ô thuốc theo **số dòng của
+`data_potion`**. Bảng thiếu dòng là người chơi giữ thuốc id cao (sách pet là **111**) sẽ làm
+client nổ giữa lúc đọc gói hành trang → rỗng sạch cả túi. `Char.getAllPotion()` đã chặn
+(bỏ qua id vượt trần + ghi log), và `sql/fix_data_potion_du_dong.sql` bù đủ dòng 0..161.
+
 **Skin thú cưỡi: ảnh trong bảng Trang bị thú đứng im**
 → Client chạy hoạt ảnh ô đó bằng một bảng frame **cố định**
 ([WindowInfoScr.cs:43](Client/WindowInfoScr.cs#L43), `MenuWindows.cs`, `ShopNew.cs` giống nhau):

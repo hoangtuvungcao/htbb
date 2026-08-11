@@ -345,29 +345,77 @@ public class MessageCreator {
                 msgMons.dos.write(DataGame.effDataLocal);
 
           
+                // Khoi nay danh so theo CHI SO VONG LAP (khong phai id trong id_eff_tool)
+                // — giu nguyen cach cu de khong lam lech thu tu client dang doc. Chi them
+                // chan null: thieu file la NPE lam cut ca goi 26 (xem hai khoi ben duoi).
                 msgMons.dos.writeByte(MessageCreator.id_eff_tool.length);
                 for (int i = 0; i < MessageCreator.id_eff_tool.length; ++i) {
-                    
-                    msgMons.dos.writeShort(DataGame.dataDynamicEffect[i].length);
-                    msgMons.dos.write(DataGame.dataDynamicEffect[i]);
+                    final byte[] duLieu = (DataGame.dataDynamicEffect != null
+                            && i < DataGame.dataDynamicEffect.length)
+                                    ? DataGame.dataDynamicEffect[i] : null;
+                    if (duLieu == null) {
+                        System.out.println("CANH BAO: thieu map/d_effect/" + i
+                                + " -> gui hieu ung rong cho o thu " + i + " cua id_eff_tool.");
+                        msgMons.dos.writeShort(0);
+                        continue;
+                    }
+                    msgMons.dos.writeShort(duLieu.length);
+                    msgMons.dos.write(duLieu);
                 }
 
                 
-                msgMons.dos.writeByte(MessageCreator.id_eff_pet_tool.length);
+                // Cung ly do nhu khoi id_eff_tool_ngu_long ben duoi: thieu file la NPE
+                // lam cut ca goi 26 -> ca may chu rong hanh trang.
+                final java.util.ArrayList<Integer> idPetCoDuLieu = new java.util.ArrayList<Integer>();
                 for (int i = 0; i < MessageCreator.id_eff_pet_tool.length; ++i) {
-                  
-                    msgMons.dos.writeShort(MessageCreator.id_eff_pet_tool[i]);
-                    msgMons.dos.writeShort(DataGame.dataDynamicEffect[MessageCreator.id_eff_pet_tool[i]].length);
-                    msgMons.dos.write(DataGame.dataDynamicEffect[MessageCreator.id_eff_pet_tool[i]]);
+                    final int idEff = MessageCreator.id_eff_pet_tool[i];
+                    if (idEff >= 0 && DataGame.dataDynamicEffect != null
+                            && idEff < DataGame.dataDynamicEffect.length
+                            && DataGame.dataDynamicEffect[idEff] != null) {
+                        idPetCoDuLieu.add(idEff);
+                    } else {
+                        System.out.println("CANH BAO: thieu map/d_effect/" + idEff
+                                + " -> bo qua id nay trong danh sach eff pet cua goi 26.");
+                    }
+                }
+                msgMons.dos.writeByte(idPetCoDuLieu.size());
+                for (int i = 0; i < idPetCoDuLieu.size(); ++i) {
+                    final int idEff = idPetCoDuLieu.get(i);
+                    msgMons.dos.writeShort(idEff);
+                    msgMons.dos.writeShort(DataGame.dataDynamicEffect[idEff].length);
+                    msgMons.dos.write(DataGame.dataDynamicEffect[idEff]);
                 }
 
                
                 
-                msgMons.dos.writeByte(MessageCreator.id_eff_tool_ngu_long.length);
+                // CHI GUI ID CO DU LIEU. map/d_effect/<id> thieu file thi
+                // DataGame.dataDynamicEffect[id] = null (loi luc nap bi bo qua), va ghi
+                // thang null.length o day la nem NPE giua luc dung goi -> ca khoi try
+                // nhay ra ngoai, TOAN BO phan phia duoi khong duoc ghi: bang toa do
+                // dx_horse_tool / Dx_Dy_WP_tool / Dx_Dy_PP_tool / Dx_Dy_AVT_tool. Client
+                // nhan goi cut, doc lech roi khong ve duoc vat pham -> NGUOI CHOI THAY
+                // HANH TRANG VA TRANG BI RONG, ca may chu chu khong rieng ai. Vi vay
+                // duyet truoc de dem id co du lieu, ghi dung so luong do, va bo qua id
+                // thieu (hieu ung do khong ve duoc thoi).
+                final java.util.ArrayList<Integer> idCoDuLieu = new java.util.ArrayList<Integer>();
                 for (int i = 0; i < MessageCreator.id_eff_tool_ngu_long.length; ++i) {
-                    msgMons.dos.writeShort(MessageCreator.id_eff_tool_ngu_long[i] + 8700);
-                    msgMons.dos.writeShort(DataGame.dataDynamicEffect[MessageCreator.id_eff_tool_ngu_long[i]].length);
-                    msgMons.dos.write(DataGame.dataDynamicEffect[MessageCreator.id_eff_tool_ngu_long[i]]);
+                    final int idEff = MessageCreator.id_eff_tool_ngu_long[i];
+                    if (idEff >= 0 && DataGame.dataDynamicEffect != null
+                            && idEff < DataGame.dataDynamicEffect.length
+                            && DataGame.dataDynamicEffect[idEff] != null) {
+                        idCoDuLieu.add(idEff);
+                    } else {
+                        System.out.println("CANH BAO: thieu map/d_effect/" + idEff
+                                + " -> bo qua id nay trong goi 26 (hieu ung se khong ve duoc)."
+                                + " Dat file vao roi bat lai server.");
+                    }
+                }
+                msgMons.dos.writeByte(idCoDuLieu.size());
+                for (int i = 0; i < idCoDuLieu.size(); ++i) {
+                    final int idEff = idCoDuLieu.get(i);
+                    msgMons.dos.writeShort(idEff + 8700);
+                    msgMons.dos.writeShort(DataGame.dataDynamicEffect[idEff].length);
+                    msgMons.dos.write(DataGame.dataDynamicEffect[idEff]);
                 }
                 int size = Char.dx_horse_tool.length;
                 msgMons.dos.writeByte(size);
