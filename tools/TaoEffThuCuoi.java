@@ -98,19 +98,23 @@ public class TaoEffThuCuoi {
      * So diem con thu tho xuong duoi toa do nhan vat: xuong, len, ngang.
      *
      * PHAI la hang so, khong duoc tinh theo chieu cao anh — xem giai thich o LUOI CO DINH.
-     * Ba so nay lay tu do dac linh thu that: Rong Bang tho xuong +18 / +24 / +5, heo bang
-     * +7 / +4 / +5.
+     * Mac dinh lay tu do dac linh thu THAT: Rong Bang tho xuong +18 / +24 / +5, heo bang
+     * +7 / +4 / +5. Tuy tung con thu ma ti le/tu the khac han (con nho, co canh, dang bay...)
+     * nen truyen tay bang --thoxuong=x,y,z khi con thu nhin "lung lo" phia tren nhan vat
+     * (giam so) hoac chim qua sau (tang so) so voi anh chup thuc te trong game.
      */
-    private static final int[] THO_XUONG = {10, 8, 4};
+    private static final int[] THO_XUONG_MAC_DINH = {10, 8, 4};
 
     public static void main(final String[] args) throws Exception {
         if (args.length < 2) {
             System.out.println("Dung: java TaoEffThuCuoi <bang.png> <id> --xuong=N --len=N "
-                    + "--ngang=N [--botrai=0] [--nguong=48] [--cao=60] [--lomdom=40] [--khonglat]");
+                    + "--ngang=N [--botrai=0] [--nguong=48] [--cao=60] [--lomdom=40] [--khonglat]"
+                    + " [--thoxuong=x,y,z]");
             return;
         }
         final File sheet = new File(args[0]);
         final int id = Integer.parseInt(args[1]);
+        final int[] thoXuong = THO_XUONG_MAC_DINH.clone();
         // nguong = -1: chi lay theo kenh trong suot. Cac bang sprite o day co nen
         // TRONG SUOT va con thu thi mau TOI, nen loc theo do sang (nguong 48) se cat
         // mat 28%-53% than va vien con thu, chi con lai nhung mang sang roi rac —
@@ -147,6 +151,10 @@ public class TaoEffThuCuoi {
             else if (a.startsWith("--ongang=")) docKhoang(a.substring(9), oTu, oDen, 2);
             else if (a.startsWith("--vien=")) damVien = Double.parseDouble(a.substring(7));
             else if (a.equals("--khonglat")) lat = false;
+            else if (a.startsWith("--thoxuong=")) {
+                final String[] p = a.substring(11).split(",");
+                for (int k = 0; k < 3 && k < p.length; k++) thoXuong[k] = Integer.parseInt(p[k].trim());
+            }
         }
         if (hXuong < 0 || hLen < 0 || hNgang < 0) {
             System.out.println("Thieu --xuong / --len / --ngang");
@@ -371,7 +379,7 @@ public class TaoEffThuCuoi {
                 // xuong duoi chan nhan vat, khong duoc dung ngay tai do: client nang nhan
                 // vat len khi cuoi (dy_horse_tool, Rong Bang -22 khi nhin truoc) nen duoi
                 // chan phai con than va chan con thu.
-                final int dayKhung = THO_XUONG[nhom] - nhunF;
+                final int dayKhung = thoXuong[nhom] - nhunF;
                 dos.writeByte(2);
                 // Phan 1: bong do — ve truoc nen nam duoi, va KHONG nhun theo than.
                 ghiPhan(dos, -WB / 2, -CAO_BONG / 2, ID_BONG);

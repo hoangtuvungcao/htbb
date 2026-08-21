@@ -45,11 +45,19 @@ B bang_chienlang.png chienlang 6 3,3,3,3,2,2  "2,3,7,8,2|0,1,4,5,9|10,12,13,14,1
 # --- Buoc 2: sprite con thu chay tren ban do (map/d_effect) ---
 # --khonglat vi bang nay ve con thu nhin sang TRAI san (client tu lat khi di phai).
 # Bang nao ve nhin phai thi bo --khonglat di.
-E() { "$JAVA" -cp "$OUT" TaoEffThuCuoi map/sprite_moi/$1.png "$2" \
+# Tham so thu 3 (tuy chon) = --thoxuong=x,y,z rieng cho con thu do; bo trong thi dung
+# mac dinh {10,8,4} cua TaoEffThuCuoi (do tu Rong Bang / heo bang, than to).
+E() { local thoxuong="$3"; "$JAVA" -cp "$OUT" TaoEffThuCuoi map/sprite_moi/$1.png "$2" \
         --xuong=0 --len=1 --ngang=2 --nguong=-1 --cao="$CAO" --khonglat \
-        --cotxuong=5 --cotlen=5 --cotngang=5; }
+        --cotxuong=5 --cotlen=5 --cotngang=5 ${thoxuong:+--thoxuong=$thoxuong}; }
 
-E phucthu   159
+# Phuc Thu: than chi cao ~34px (nho hon Rong Bang/heo bang nhieu) nen mac dinh {10,8,4}
+# lam nhan vat ngoi sat DINH con thu, gan nhu troi lung lo phia tren (than con thu bi
+# nhan vat che het). Do do tu anh d_effect/159 (top=30,bottom=63 trong o 64px) + muc
+# nang nhan vat khi cuoi (Char.dy_horse_tool, cot xuong/len/ngang) -> nhac nhan vat ngoi
+# ~65% sau vao than con thu. THU NGHIEM DAU TIEN, can anh xem lai trong game roi bao
+# lai de chinh tiep, khong the kiem chung tu day.
+E phucthu   159 -10,-2,-3
 E gautruc   197
 E tienloc   198
 E xichduong 199
@@ -78,11 +86,22 @@ I 24 818
 I 25 819
 
 echo ""
-echo "== File du lieu frame PHAI giong nhau tung byte giua ca 5 con =="
-echo "   (khac nhau la client con giu du lieu cu se ve ra khoi vun -> phai bat tat app)"
-md5sum map/d_effect/159 map/d_effect/197 map/d_effect/198 map/d_effect/199 map/d_effect/212
-if [ "$(md5sum map/d_effect/159 map/d_effect/197 map/d_effect/198 map/d_effect/199 map/d_effect/212 | awk '{print $1}' | sort -u | wc -l)" != "1" ]; then
-    echo "LOI: du lieu khong giong nhau. Xem PHAN J muc 4 trong HUONG_DAN_BUILD_VPS.md."
+echo "== Kich thuoc file du lieu frame (phai giong nhau: cung luoi 64x64, cung so o) =="
+# Truoc day ca 5 con dung chung THO_XUONG nen file du lieu giong nhau TUNG BYTE — do
+# la ly do PHAN J muc 4 (HUONG_DAN_BUILD_VPS.md) dung md5sum lam kiem tra nhanh. Tu khi
+# Phuc Thu (159) dung --thoxuong rieng (than qua nho, nhan vat ngoi troi len dinh con
+# thu) thi 159 KHONG con giong 4 con kia nua — do la CO Y, khong phai loi tao sprite.
+# Ly do an toan van giu duoc: hai lop chan khoi vun (goi anh -51 day lai luc doi skin,
+# va luoi o 64x64 CO DINH giu vi tri o khong doi) hoat dong THEO TUNG ID rieng, khong
+# phu thuoc 5 file co giong byte nhau hay khong. Nen chi con kiem tra CO CAU TRUC giu
+# nguyen (cung do dai file — WB/HB/CAO_BONG/so o KHONG doi), khong con doi bang byte.
+ls -l map/d_effect/159 map/d_effect/197 map/d_effect/198 map/d_effect/199 map/d_effect/212
+soDoDaiKhacNhau=$(for f in map/d_effect/159 map/d_effect/197 map/d_effect/198 map/d_effect/199 map/d_effect/212; do
+    wc -c < "$f"
+done | sort -u | wc -l)
+if [ "$soDoDaiKhacNhau" != "1" ]; then
+    echo "LOI: do dai file khac nhau -> co con dung so o/so anh con khac (WB/HB/CAO_BONG/so"
+    echo "phan moi frame bi doi). Xem PHAN J muc 4 trong HUONG_DAN_BUILD_VPS.md."
     exit 1
 fi
 echo "OK"
