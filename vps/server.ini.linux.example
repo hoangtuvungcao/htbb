@@ -122,10 +122,6 @@ sv.gioChiemThanh=-1
 sv.phutChiemThanh=-1
 sv.ngayChiemThanh=
 
-# ==== SKIN THU NUOI ====
-# Khong ban trong shop. Chi nhan qua giftcode ("SKIN:<0-4>" trong danh sach vat pham)
-# hoac admin go "giveskin <ten nhan vat> <0-4>". Nguoi choi go "skinthu" de doi skin.
-
 # ==== LENH CHAT ADMIN ====
 # setting : bang setting (o nhap, dieu khien ban phim). "setting menu" = menu danh sach.
 #           Trong o nhap: 8 = nap lai server.ini sau khi sua tay file.

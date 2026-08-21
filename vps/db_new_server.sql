@@ -294,42 +294,6 @@ UPDATE `kpah_db`.`data_attribute` SET `idcolor` = 0 WHERE `id` = 90;
 
 
 -- ############################################################################
---  PHẦN 2F — VẬT PHẨM SKIN THÚ CƯỠI (5 skin: Phúc Thú, Gấu Trúc, Tiên Lộc,
---  Xích Dương, Chiến Lang) — dump sạch không có, module SkinThuNuoi.java cần.
---
---  data_attribute 200..210 = tên các dòng mô tả (server tra theo TÊN, không theo
---  id — xem SkinThuNuoi.ganChiSoDongMoTa). data_item 950..954 type 19 = 5 vật
---  phẩm skin, xstart 815..819 = icon map/icon/815..819.png. Đổi id ở đây thì
---  phải đổi luôn real.SkinThuNuoi.ID_ITEM cho khớp.
---  Bản gốc của khối này: sql/skin_thu_item.sql (đã xoá vì trùng nội dung 100%).
---  SAU KHI CHẠY PHẢI RESTART SERVER (bảng tên thuộc tính + item template chỉ
---  đọc lúc khởi động).
--- ############################################################################
-INSERT INTO `kpah_db`.`data_attribute` (`id`, `name`, `idcolor`, `ispercent`, `decript`, `namein`) VALUES
-(200, 'Sinh lực',                     0, 0, 'skin thu cuoi: Phuc Thu +HP',            ''),
-(201, 'Nội lực',                      0, 0, 'skin thu cuoi: Phuc Thu +MP',            ''),
-(202, 'Giảm sát thương khi bị đánh',  0, 1, 'skin thu cuoi: Phuc Thu buff bi dong',   ''),
-(203, 'Chính xác cộng thêm',          0, 0, 'skin thu cuoi: Gau Truc +chinh xac',     ''),
-(204, 'Phản sát thương',              0, 1, 'skin thu cuoi: Gau Truc buff bi dong',   ''),
-(205, 'Tiềm năng cộng thêm',          0, 1, 'skin thu cuoi: Tien Loc +% tiem nang',   ''),
-(206, 'Lá chắn chặn sát thương',      0, 1, 'skin thu cuoi: Tien Loc buff bi dong',   ''),
-(207, 'Xuyên giáp cộng thêm',         0, 1, 'skin thu cuoi: Xich Duong +% xuyen giap',''),
-(208, 'Nộ khí tăng tấn công',         0, 1, 'skin thu cuoi: Xich Duong buff HP thap', ''),
-(209, 'Phòng thủ cộng thêm',          0, 1, 'skin thu cuoi: Chien Lang +% thu',       ''),
-(210, 'Hấp thụ sát thương',           0, 1, 'skin thu cuoi: Chien Lang hap thu',      '');
-
-INSERT INTO `kpah_db`.`data_item`
-(`id`, `name`, `type`, `style`, `he`, `gender`, `level`, `durable`,
- `atb0`,`atb1`,`atb2`,`atb3`,`atb4`,`atb5`,`atb6`,`atb7`,`atb8`,`atb9`,
- `price`, `clazz`, `xstart`, `ystart`, `colortype`, `nloan`, `idUpLevel`, `namein`, `ideff`, `pricecu`) VALUES
-(950, 'Skin Phúc Thú (hệ Kim)',   19, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0, 0, -1, 815, 0, -1, 0, -1, NULL, -1, 0),
-(951, 'Skin Gấu Trúc (hệ Mộc)',   19, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0, 0, -1, 816, 0, -1, 0, -1, NULL, -1, 0),
-(952, 'Skin Tiên Lộc (hệ Thủy)',  19, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0, 0, -1, 817, 0, -1, 0, -1, NULL, -1, 0),
-(953, 'Skin Xích Dương (hệ Hỏa)', 19, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0, 0, -1, 818, 0, -1, 0, -1, NULL, -1, 0),
-(954, 'Skin Chiến Lang (hệ Thổ)', 19, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0, 0, -1, 819, 0, -1, 0, -1, NULL, -1, 0);
-
-
--- ############################################################################
 --  PHẦN 2G — BÙ DÒNG data_item id=722 ("Sách kỹ năng pet (cũ)", nghỉ hưu)
 --
 --  Migrate sách pet -> potion (tháng 8) có xoá data_item id=722 trên DB sống.
@@ -484,9 +448,7 @@ UNION ALL SELECT 'cot da la mediumtext', COUNT(*), '7'
       OR (TABLE_NAME='tob_gem_new' AND COLUMN_NAME IN ('listtemplate','soluong','slock')) )
 UNION ALL SELECT 'idcolor dong "Tang lua lan" (PHAN 2E)', idcolor, '0'
   FROM kpah_db.data_attribute WHERE id = 90
-UNION ALL SELECT '--- skin thu cuoi + sach pet (PHAN 2F/2G/2H) ---', NULL, NULL
-UNION ALL SELECT 'data_item skin thu (950..954)', COUNT(*), '5'
-  FROM kpah_db.data_item WHERE id BETWEEN 950 AND 954
+UNION ALL SELECT '--- sach pet (PHAN 2G/2H) ---', NULL, NULL
 UNION ALL SELECT 'data_potion (0..161 lien tuc)', COUNT(*), '162'
   FROM kpah_db.data_potion
 UNION ALL SELECT 'data_potion id=111 ten', name, 'Sach ky nang pet...'
@@ -502,9 +464,9 @@ UNION ALL SELECT '5h_active',        COUNT(*), '1'      FROM kpah_db.5h_active;
 -- ============================================================================
 --  SAU KHI CHẠY — 2 VIỆC BẮT BUỘC
 --
---  1. Bảng tob_skin_thu và tob_train_luong KHÔNG có trong bản dump.
+--  1. Bảng tob_train_luong KHÔNG có trong bản dump.
 --     Không cần làm gì: server tự CREATE TABLE IF NOT EXISTS lúc khởi động
---     (TeamServer gọi createTableSkinThuNuoi + createTableTrainLuong).
+--     (TeamServer gọi createTableTrainLuong).
 --
 --  2. TẠO NHÂN VẬT ADMIN TRONG GAME.
 --     Quyền admin xét theo TÊN NHÂN VẬT, không phải tên tài khoản:

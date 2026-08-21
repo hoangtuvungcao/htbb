@@ -796,10 +796,6 @@ public class Item extends Actor {
     }
 
     public Vector<InfoItemAttribute> getInfoAtbItemWearing(final Char p) {
-        // Vat pham skin thu cuoi: mo ta la cac dong co dinh cua skin, khong lay tu atb0..9
-        if (SkinThuNuoi.laItemSkin(this.tempateID)) {
-            return SkinThuNuoi.dongMoTaVatPham(SkinThuNuoi.skinCuaItem(this.tempateID));
-        }
         final Vector<InfoItemAttribute> allAtb = new Vector<InfoItemAttribute>();
         if (Map.isModelClothes(this.getTemplate().atb[9])) {
             if (this.atb[0] > 0) {
@@ -906,10 +902,6 @@ public class Item extends Actor {
     }
 
     public Vector<InfoItemAttribute> getInfoAtbItem() {
-        // Vat pham skin thu cuoi: mo ta la cac dong co dinh cua skin, khong lay tu atb0..9
-        if (SkinThuNuoi.laItemSkin(this.tempateID)) {
-            return SkinThuNuoi.dongMoTaVatPham(SkinThuNuoi.skinCuaItem(this.tempateID));
-        }
         final Vector<InfoItemAttribute> allAtb = new Vector<InfoItemAttribute>();
         if (Map.isModelClothes(this.getTemplate().atb[9])) {
             if (this.atb[0] > 0) {

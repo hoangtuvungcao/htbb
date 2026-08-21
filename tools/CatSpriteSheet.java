@@ -31,7 +31,6 @@ import javax.imageio.ImageIO;
  *   --thu           chi in ra ket qua do tim, KHONG ghi file (chay thu truoc).
  *
  * Ket qua: map/d_effect/<id>.png + map/d_effect/<id>
- * Sau do dien id vao SkinThuNuoi.ID_IMG va so frame vao TONG_FRAME.
  *
  * Luu y id phai < 300, vi DataGame chi nap map/d_effect/0..299.
  */
@@ -154,8 +153,7 @@ public class CatSpriteSheet {
             TaoDataSprite.ghiFileData(png, khung.size(), true);
             System.out.println("Xong: " + png + " va map/d_effect/" + idDich);
         }
-        System.out.println("  -> SkinThuNuoi.ID_IMG dien " + idDich
-                + ", TONG_FRAME dien " + khung.size());
+        System.out.println("  -> so frame: " + khung.size());
     }
 
     /** true = diem co hinh (khong phai nen den, khong trong suot). */

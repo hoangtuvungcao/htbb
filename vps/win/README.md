@@ -17,7 +17,7 @@ Tất cả đi qua **SSH**, không cần mở thêm cổng nào trên VPS.
 vps-sql "SELECT id,charname,userId,ban FROM kpah_db.tob_char;"
 vps-sql "SELECT username,ban FROM account.team_user;"
 vps-sql "SELECT COUNT(*) FROM kpah_db.tob_char;"
-vps-sql "SHOW TABLES FROM kpah_db LIKE 'tob_skin%';"
+vps-sql "SHOW TABLES FROM kpah_db LIKE 'tob_%';"
 ```
 
 Câu SQL được đưa qua stdin nên không phải lo escape dấu nháy.

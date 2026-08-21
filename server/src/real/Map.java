@@ -20693,10 +20693,6 @@ public class Map implements Runnable {
             "Đầu Bí Ngô 7 ngày",
             "Nón Phù Thủy 7 ngày",
     };
-    // Tam bo 5 skin thu cuoi (Phuc Thu/Gau Truc/Tien Loc/Xich Duong/Chien Lang) khoi danh
-    // sach doi thuong - chua co frame/sprite de hien thi. Them lai sau bang cach chen ten
-    // vao TEN_DOI_THUONG + gia vao GIA_DOI_THUONG (cuoi mang, truoc "Dau Bi Ngo"/"Non Phu
-    // Thuy" hoac bat cu dau) roi them lai case trong traoVatPhamDoiThuong + cap nhat "laSkin".
     private static final int[] GIA_DOI_THUONG = {
             500, 500, 1200, 800, 1000, 1000, 1200, 1500, 1200, 800, 800, 1000, 1000,
             800, 800, 800, 800, 500, 500, 500, 500, 800, 800,
@@ -20739,7 +20735,7 @@ public class Map implements Runnable {
             return;
         }
         if (!traoVatPhamDoiThuong(player, idx)) {
-            return; // ham tra ve false da tu gui thong bao ly do (het cho/da co skin...)
+            return; // ham tra ve false da tu gui thong bao ly do (het cho hanh trang...)
         }
         if (!player.isAdmin) {
             player.diemDoiThuong -= GIA_DOI_THUONG[idx];
@@ -20751,7 +20747,7 @@ public class Map implements Runnable {
         Database.instance.saveOrtherLog("", player.charname, "Doi thuong: " + TEN_DOI_THUONG[idx], "doithuong");
     }
 
-    /** Tra ve false neu khong the trao (het cho/da so huu) - khong tru diem trong truong hop do. */
+    /** Tra ve false neu khong the trao (het cho hanh trang) - khong tru diem trong truong hop do. */
     private boolean traoVatPhamDoiThuong(Char player, int idx) {
         final int PHUT_7_NGAY = 10080;
         if (player.isFullInventory()) {
@@ -20844,11 +20840,8 @@ public class Map implements Runnable {
             Map oldMap = player.map;
             int[] var10000 = new int[]{21, 721, 722, 723, 724};
             int[][] mapstart = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
-            // Bang setting cua admin (npc ao -1000) va menu doi skin thu nuoi (npc ao -1001)
+            // Bang setting cua admin (npc ao -1000)
             if (AdminMenu.xuLyChon(player, idNpc, idMenu, idOptionMenu)) {
-                return;
-            }
-            if (SkinThuNuoi.xuLyDoiSkin(player, idNpc, idOptionMenu)) {
                 return;
             }
             if (this.isNpcThanh(idNpc) && this.mapId != 201 && !this.isMapLienDau()) {
@@ -36515,12 +36508,7 @@ public class Map implements Runnable {
                     }
 
                     int t = item.getTemplate().type;
-                    // Vat pham skin thu cuoi mang type 19 (o dau tien ben phai bang Trang
-                    // bi thu) nen isWearingAnimal() khong nhan ra. Coi no la trang bi thu
-                    // o day de bo qua cac kiem tra danh cho do nhan vat (dung class, dung
-                    // gioi tinh, isArmor) va de gui lai goi thong tin thu cuoi o duoi.
-                    isItemAnimal = isWearingAnimal(item.getTemplate().type)
-                            || SkinThuNuoi.laItemSkin(item.getTemplate().id);
+                    isItemAnimal = isWearingAnimal(item.getTemplate().type);
                     if (t == 24) {
                         return;
                     }
@@ -36882,29 +36870,13 @@ public class Map implements Runnable {
                         }
                     }
 
-                    // Vua doi trang bi thu: neu o skin thay doi thi cap nhat skin dang mang
-                    // TRUOC khi tinh lai chi so, vi chi so cua skin cong trong calculateAttrib.
-                    final boolean doiSkin = isItemAnimal && SkinThuNuoi.dongBoTheoTrangBi(player);
                     player.calculateAttrib();
-                    if (doiSkin) {
-                        // Client giu anh sprite theo id va khong co so phien ban nen phai day
-                        // anh xuong truoc khi gui goi thong tin thu cuoi.
-                        SkinThuNuoi.guiLaiAnhSkin(player);
-                    }
                     Message m = MessageCreator.createMainCharInfoMessage(player);
                     player.sendMessage(m);
                     m = MessageCreator.createCharWearingMessage(player, player);
                     player.sendMessage(m);
                     if (isItemAnimal) {
                         player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
-                        if (doiSkin) {
-                            // Nguoi ben canh cung phai ve lai con thu cuoi theo skin moi
-                            player.sendToNearPlayer(MessageCreator.createAnimalWearingMessage(player, player));
-                            player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    SkinThuNuoi.hopLe(player.idSkinThuNuoi)
-                                            ? ("Đã trang bị skin " + SkinThuNuoi.moTa(player.idSkinThuNuoi))
-                                            : "Đã bỏ skin thú cưỡi", ""));
-                        }
                     }
 
                     m = MessageCreator.createCharInventoryMessage(player, 1);
@@ -36947,17 +36919,6 @@ public class Map implements Runnable {
     }
 
     private void exchangeItem(Char player, Item iItem, int slot) {
-        // Vat pham skin thu cuoi: type 19 giong phi phong nen phai chan o day, khong thi
-        // no roi xuong nhanh do nhan vat va chiem o phi phong. Phan biet bang ID TEMPLATE.
-        if (SkinThuNuoi.laItemSkin(iItem.getTemplate().id)) {
-            if (player.animalRide == null) {
-                player.sendMessage(MessageCreator.createServerAlertMessage(
-                        "Phải cưỡi thú mới trang bị được skin thú.", ""));
-                return;
-            }
-            this.exchangeItemAnimal(player, iItem, slot);
-            return;
-        }
         if (isWearingAnimal(iItem.getTemplate().type)) {
             if (player.animalRide != null) {
                 this.exchangeItemAnimal(player, iItem, slot);
@@ -37491,29 +37452,11 @@ public class Map implements Runnable {
                 // (dvip, ngoc, ruong, quayso, die, class, openboss...) nen neu de nguoi
                 // choi thuong cung chay qua thi ho co the tu cap do / trieu boss.
                 if (!player.isAdmin) {
-                    // "skinthu": skin gio la VAT PHAM mac o o dau tien ben phai bang Trang
-                    // bi thu, khong con doi bang menu nua. Neu van mo menu doi skin cho
-                    // nguoi choi thi ho chon xong se thay skin do bien mat ngay lan mac do,
-                    // doi thu cuoi hoac dang nhap sau — vi luc do server dong bo lai theo
-                    // vat pham dang mac (SkinThuNuoi.dongBoTheoTrangBi).
-                    if (msgChat.equalsIgnoreCase("skinthu")) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage(
-                                "Skin thú cưỡi lấy từ vật phẩm skin.\nCưỡi thú rồi mặc vật phẩm skin vào"
-                                + " ô đầu tiên bên phải bảng Trang bị thú.\n---\nĐang mang: "
-                                + SkinThuNuoi.moTa(player.idSkinThuNuoi), ""));
-                        return;
-                    }
                     this.doChatBinhThuong(player, m, msgChat);
                     return;
                 }
 
-                // Admin cung dung duoc menu doi skin de kiem tra
-                if (msgChat.equalsIgnoreCase("skinthu")) {
-                    SkinThuNuoi.moMenuDoiSkin(player);
-                    return;
-                }
-
-                // Bang setting cho admin (popup nhieu cap): chiem thanh, skin thu nuoi, ti le drop.
+                // Bang setting cho admin (popup nhieu cap): chiem thanh, ti le drop.
                 if (msgChat.startsWith("setting")) {
                     // "setting menu" = menu danh sach (chon bang chuot).
                     // "setting"      = o nhap lenh, dieu khien 100% bang ban phim.
@@ -37521,53 +37464,6 @@ public class Map implements Runnable {
                         AdminMenu.moMenu(player);
                     } else {
                         AdminMenu.moONhapLenh(player);
-                    }
-                    return;
-                }
-
-                // giveskin <tên nhân vật> <0-4> : tang skin thu nuoi cho nguoi choi
-                // (dung khi tra thuong su kien). giveskin <tên> -1 = thu hoi het skin.
-                // Nguoi nhan phai dang online.
-                if (msgChat.startsWith("giveskin")) {
-                    try {
-                        String[] info = Char.split(msgChat, " ");
-                        String ten = info[1].trim();
-                        int idSkin = Integer.parseInt(info[2].trim());
-                        Char nhan = CharManager.instance.getCharByCharName(ten);
-                        if (nhan == null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    "Không thấy nhân vật " + ten + " đang online.", ""));
-                        } else if (idSkin < 0) {
-                            SkinThuNuoi.thuHoiHetSkin(nhan);
-                            player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    "Đã thu hồi hết skin của " + nhan.charname + ".", ""));
-                        } else if (SkinThuNuoi.tangSkin(nhan, idSkin)) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    "Đã tặng " + SkinThuNuoi.moTa(idSkin) + " cho " + nhan.charname + ".", ""));
-                        } else {
-                            player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    nhan.charname + " đã có skin này rồi (hoặc id sai).", ""));
-                        }
-                    } catch (Exception exGive) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage(
-                                "Cú pháp: giveskin <tên nhân vật> <0-4>, hoặc -1 để thu hồi hết.\n"
-                                + "0 " + SkinThuNuoi.moTa(0) + "\n1 " + SkinThuNuoi.moTa(1) + "\n2 " + SkinThuNuoi.moTa(2)
-                                + "\n3 " + SkinThuNuoi.moTa(3) + "\n4 " + SkinThuNuoi.moTa(4), ""));
-                    }
-                    return;
-                }
-
-                // setskin <0..4> = trang bi ngay skin do CHO CHINH ADMIN de kiem tra
-                // (khong can so huu). setskin -1 de bo skin.
-                if (msgChat.startsWith("setskin")) {
-                    try {
-                        String[] info = Char.split(msgChat, " ");
-                        SkinThuNuoi.datSkin(player, Integer.parseInt(info[1].trim()));
-                    } catch (Exception exSkin) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage(
-                                "Cú pháp: setskin <0-4>, hoặc setskin -1 để bỏ.\n"
-                                + "0 " + SkinThuNuoi.moTa(0) + "\n1 " + SkinThuNuoi.moTa(1) + "\n2 " + SkinThuNuoi.moTa(2)
-                                + "\n3 " + SkinThuNuoi.moTa(3) + "\n4 " + SkinThuNuoi.moTa(4), ""));
                     }
                     return;
                 }

@@ -99,26 +99,6 @@ public class MessageCreator {
 
         // todo Thêm Danh Hiệu thì vào đây
         MessageCreator.id_eff_tool_ngu_long = new int[]{45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237,238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257,258,259,260,261,262,263,264, 265,266,267,268,269,270,271,272,273,276,274,275,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299};
-
-        // 5 id sprite skin thu cuoi (map/d_effect/159, 197, 198, 199, 212) chi vao danh
-        // sach khi cong tat SkinThuNuoi.SPRITE_BAN_DO dang bat. Tach rieng ra day de tat
-        // duoc bang MOT dong ma khong phai sua tay danh sach 249 id ben tren.
-        //
-        // Day la phan duy nhat cua tinh nang skin co anh huong toan may chu: goi 26 la
-        // goi dung chung, mang theo ca bang toa do ve nhan vat / vu khi / phi phong /
-        // thu cuoi o cuoi goi. Truoc day thieu file map/d_effect/<id> la NPE lam cut ca
-        // goi -> moi nguoi choi rong hanh trang va trang bi (nay da chan, xem
-        // createMsgMonsterTemplate), nhung van nen tat duoc nhanh khi can.
-        if (SkinThuNuoi.SPRITE_BAN_DO) {
-            final int[] cu = MessageCreator.id_eff_tool_ngu_long;
-            final int[] moi = new int[cu.length + SkinThuNuoi.ID_EFF_THU_CUOI.length];
-            System.arraycopy(cu, 0, moi, 0, cu.length);
-            for (int i = 0; i < SkinThuNuoi.ID_EFF_THU_CUOI.length; i++) {
-                // ID_EFF_THU_CUOI luu dang id gui client (8700 + id file), o day can id file
-                moi[cu.length + i] = SkinThuNuoi.ID_EFF_THU_CUOI[i] - 8700;
-            }
-            MessageCreator.id_eff_tool_ngu_long = moi;
-        }
     }
 
     public static Message createMsgChat(final int id, final String msg) {
@@ -1110,16 +1090,7 @@ public class MessageCreator {
             }
             final byte[] fr = Animal.fr;
             if (p.animalRide != null) {
-                // Skin thu cuoi: doi han hinh con thu dang cuoi. Client ve hoan toan
-                // theo hai thu gui o day (so frame + byte anh) nen chi can thay o day
-                // la du, khong dung toi id thu cuoi that.
-                final int idImgSkin = SkinThuNuoi.idImgHienThi(p);
-                final int frameSkin = SkinThuNuoi.tongFrameHienThi(p);
-                if (idImgSkin >= 0 && frameSkin > 0 && idImgSkin < DataGame.imgAvtAnimal.length
-                        && DataGame.imgAvtAnimal[idImgSkin] != null) {
-                    m.dos.writeByte(frameSkin);
-                    m.dos.write(DataGame.imgAvtAnimal[idImgSkin]);
-                } else if (p.rankGov == 0) {
+                if (p.rankGov == 0) {
                     m.dos.writeByte(fr[6]);
                     m.dos.write(DataGame.imgAvtAnimal[6]);
                 } else {
@@ -1673,14 +1644,6 @@ public class MessageCreator {
             if (ch.animalRide != null && !ch.isMasterClanAndHaveTown()) {
                 idThutool = ch.animalRide.getIdImageTool();
                 indexdxy = ch.animalRide.getIndexDxy();
-                // Skin thu cuoi de len day: day chinh la duong dang ve Rong Bang, Poro, Lan...
-                // va hoa hinh. GIU NGUYEN indexdxy cua con thu that: bang bu toa do ben client
-                // (Char.dx_horse/dy_horse) chi co DUNG MOT dong, gui index khac 0 la client
-                // nem loi giua luc ve -> mat chan/mat dau nhan vat.
-                final int idEffSkin = SkinThuNuoi.idEffThuCuoi(ch);
-                if (idEffSkin > 0) {
-                    idThutool = idEffSkin;
-                }
             }
             m.dos.writeShort(idThutool);
             m.dos.writeByte(indexdxy);
@@ -1959,11 +1922,6 @@ public class MessageCreator {
         {
             idThutool = p.animalRide.getIdImageTool();
             indexdxy = p.animalRide.getIndexDxy();
-            // Skin thu cuoi — goi thong tin cua chinh nhan vat minh.
-            final int idEffSkin = SkinThuNuoi.idEffThuCuoi(p);
-            if (idEffSkin > 0) {
-                idThutool = idEffSkin;
-            }
         }
         m.dos.writeShort(idThutool);
         m.dos.writeByte(indexdxy);

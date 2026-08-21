@@ -1808,9 +1808,6 @@ public class Database {
                 ItemTemplates.ALL_NAME_ATTRIBUTE_ITEM.add(new NameAttributeItem(i, name, rs.getByte("ispercent"), rs.getByte("idcolor")));
                 ++i;
             }
-            // Vat pham skin thu cuoi tra dong mo ta theo THU TU DONG cua bang nay, khong
-            // phai theo cot id, nen phai tim lai chi so moi lan nap. Xem SkinThuNuoi.
-            real.SkinThuNuoi.ganChiSoDongMoTa();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -2405,15 +2402,7 @@ public class Database {
                     String[] tachItem = item.trim().split(",");
                     for (int i = 0; i < tachItem.length; i++) {
                         String[] tachTime = tachItem[i].trim().split(":");
-                        // SKIN:<0-4> -> phat VAT PHAM skin thu cuoi tuong ung (bang voi
-                        // "DB:<idTemplate>:1:0"). Skin gio do vat pham dang mac quyet dinh
-                        // nen bat co "da so huu" nhu truoc khong con tac dung.
-                        if (tachTime[0].equals("SKIN")) {
-                            final int idSkinTang = Integer.parseInt(tachTime[1]);
-                            if (real.SkinThuNuoi.hopLe(idSkinTang)) {
-                                GiftCode.AddItem(player, real.SkinThuNuoi.ID_ITEM[idSkinTang], 0, 0, 0);
-                            }
-                        } else if (tachTime[0].equals("DB")) {
+                        if (tachTime[0].equals("DB")) {
                             for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                                 GiftCode.AddItem(player, Integer.parseInt(tachTime[1]), 0, 0, Integer.parseInt(tachTime[3]));
                             }
@@ -15026,106 +15015,6 @@ public void addCharXaiNapLuong(Char p, int type) {
         } catch (Exception ignored) {
         }
         return charId;
-    }
-
-    // ==================== SKIN THU NUOI (real.SkinThuNuoi) ====================
-
-    /** Tao bang luu skin thu nuoi neu chua co. Goi 1 lan luc khoi dong server. */
-    public void createTableSkinThuNuoi() {
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            conn = this.getConnection();
-            stmt = conn.createStatement();
-            stmt.execute("CREATE TABLE IF NOT EXISTS tob_skin_thu ("
-                    + "charDBID int(10) unsigned NOT NULL,"
-                    + "idskin tinyint(4) NOT NULL DEFAULT -1,"
-                    + "sohuu int(10) unsigned NOT NULL DEFAULT 0,"
-                    + "PRIMARY KEY (charDBID)) ENGINE=MyISAM DEFAULT CHARSET=utf8");
-            // Bang da ton tai tu ban truoc (chua co cot sohuu) thi them cot vao.
-            try {
-                stmt.execute("ALTER TABLE tob_skin_thu ADD COLUMN sohuu int(10) unsigned NOT NULL DEFAULT 0");
-                System.out.println("tob_skin_thu: da them cot sohuu");
-            } catch (Exception daCo) {
-                // Cot da co san -> MySQL bao loi, bo qua.
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                stmt.close();
-            } catch (Exception ignored) {
-            }
-            try {
-                Database.connPool.free(conn);
-            } catch (Exception ignored) {
-            }
-        }
-    }
-
-    public void loadSkinThuNuoi(Char p) {
-        if (p == null || p.charDBID <= 0) {
-            return;
-        }
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        try {
-            conn = this.getConnection();
-            pstmt = conn.prepareStatement("select idskin,sohuu from tob_skin_thu where charDBID=?");
-            pstmt.setInt(1, p.charDBID);
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                p.idSkinThuNuoi = rs.getInt("idskin");
-                p.skinDaSoHuu = rs.getInt("sohuu");
-            }
-            p.daLoadSkinThuNuoi = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                rs.close();
-            } catch (Exception ignored) {
-            }
-            try {
-                pstmt.close();
-            } catch (Exception ignored) {
-            }
-            try {
-                Database.connPool.free(conn);
-            } catch (Exception ignored) {
-            }
-        }
-    }
-
-    public void saveSkinThuNuoi(Char p) {
-        if (p == null || p.charDBID <= 0) {
-            return;
-        }
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        try {
-            conn = this.getConnection();
-            pstmt = conn.prepareStatement("INSERT INTO tob_skin_thu(charDBID,idskin,sohuu) VALUES(?,?,?)"
-                    + " ON DUPLICATE KEY UPDATE idskin=?, sohuu=?");
-            pstmt.setInt(1, p.charDBID);
-            pstmt.setInt(2, p.idSkinThuNuoi);
-            pstmt.setInt(3, p.skinDaSoHuu);
-            pstmt.setInt(4, p.idSkinThuNuoi);
-            pstmt.setInt(5, p.skinDaSoHuu);
-            pstmt.execute();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                pstmt.close();
-            } catch (Exception ignored) {
-            }
-            try {
-                Database.connPool.free(conn);
-            } catch (Exception ignored) {
-            }
-        }
     }
 
     // ============ HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI (theo ngay, moi nhan vat) ============

@@ -77,7 +77,7 @@ DELETE FROM kpah_db.giftcode_log WHERE giftcode = 'oke212' AND player = 'admin';
 Tạo mã mới (`id` là AUTO_INCREMENT nên không cần điền):
 
 ```sql
-INSERT INTO kpah_db.giftcode (giftcode, xu, luong, luongLock, item, expire, limit_use, type) VALUES ('tanthu2026', 1000000, 500, 0, 'SKIN:2', 0, 100, 0);
+INSERT INTO kpah_db.giftcode (giftcode, xu, luong, luongLock, item, expire, limit_use, type) VALUES ('tanthu2026', 1000000, 500, 0, 'DB:1234:1:0', 0, 100, 0);
 ```
 
 Tắt một mã ngay:
@@ -118,7 +118,6 @@ Nhiều phần thưởng ngăn nhau bằng dấu phẩy, mỗi phần thưởng 
 
 | Loại | Ý nghĩa | Ví dụ |
 |---|---|---|
-| `SKIN:<0-4>` | skin thú nuôi | `SKIN:2` = Tiên Lộc |
 | `DB:<id>:<sl>:<time>` | vật phẩm theo id template | `DB:1234:1:0` |
 | `PET:<id>:<sl>:<time>` | thú nuôi | `PET:5:1:0` |
 | `PETV:<id>` | thú nuôi vĩnh viễn | `PETV:5` |
@@ -135,10 +134,10 @@ oke212   -> 1000 lượng khoá + 12 loại item     (limit_use 2154)
 123      -> DN:500000:500000                   (limit_use 5)
 ```
 
-Thêm skin thú nuôi vào một mã đang có:
+Thêm phần thưởng vào một mã đang có:
 
 ```sql
-UPDATE kpah_db.giftcode SET item = CONCAT(item, ',SKIN:2') WHERE giftcode = 'oke212';
+UPDATE kpah_db.giftcode SET item = CONCAT(item, ',PET:5:1:0') WHERE giftcode = 'oke212';
 ```
 
 ## Bộ 6 mã: đồ VĨNH VIỄN + nguyên liệu (không cần `ALTER`, mỗi mã dưới 255 ký tự)
@@ -151,7 +150,7 @@ DELETE FROM kpah_db.giftcode WHERE giftcode IN ('vip1','vip2','vip3');
 
 ```sql
 INSERT INTO kpah_db.giftcode (giftcode,xu,luong,luongLock,item,expire,limit_use,type) VALUES
-('vip1',2000000000,1000000000,1000000000,'SKIN:0,SKIN:1,SKIN:2,SKIN:3,SKIN:4,PET:12:1:0,PET:19:1:0,PET:20:1:0,PET:22:1:0,PET:28:1:0,PETV:12,PHKT:0,PHTT:0,PHBT:0,HKL:0,CAITRANG:903:1:10,CAITRANG:904:1:10',0,1,0),
+('vip1',2000000000,1000000000,1000000000,'PET:12:1:0,PET:19:1:0,PET:20:1:0,PET:22:1:0,PET:28:1:0,PETV:12,PHKT:0,PHTT:0,PHBT:0,HKL:0,CAITRANG:903:1:10,CAITRANG:904:1:10',0,1,0),
 ('vip2',0,0,0,'VKTT:0:1:0,VKMAX:0:1:0,VKTB:0:1:0,VKTBMAX:0:1:0,VKTBLV:70:99:0,NLTMAX:0:1:0,PP8X:0:1:0,PPLUCK:593:1:1:1,PPLUCK:593:1:1:0,MNT:0,MNC:0,HOVELAN:882:5:0,BT:0:1:0',0,1,0),
 ('vip3',0,0,0,'AOSHOP:725:1:0,AOSHOP:726:1:0,AOSHOP:741:1:0,TRANGPHUC:833:1:0,TRANGPHUC:834:1:0,TRANGPHUC:839:1:0,TRANGPHUC:791:1:0,TRANGPHUC:744:1:0,TRANGPHUC:736:1:0,TRANGPHUC:737:1:0,GEM:73:10000:1,GEM:108:10000:1,SUTU:1:0,TL:0',0,1,0),
 ('nlieu1',0,0,0,'PT:9:10000,ITEM:714:10000,ITEM:720:100,ITEM:721:10000,PT:111:10000,ITEM:752:10000,ITEM:753:10000,ITEM:807:10000,ITEM:808:10000,ITEM:809:10000,ITEM:810:10000,ITEM:811:10000,ITEM:812:10000',0,1,0),
@@ -219,7 +218,7 @@ ALTER TABLE kpah_db.giftcode MODIFY item TEXT;
 Rồi tạo mã:
 
 ```sql
-INSERT INTO kpah_db.giftcode (giftcode, xu, luong, luongLock, item, expire, limit_use, type) VALUES ('vipall', 2000000000, 1000000000, 1000000000, 'SKIN:0,SKIN:1,SKIN:2,SKIN:3,SKIN:4,PET:12:1:0,PET:19:1:0,PET:20:1:0,PET:22:1:0,PET:28:1:0,PETV:12,PHKT:30,PHTT:30,PHBT:30,HKL:30,CAITRANG:903:1:10,CAITRANG:904:1:10,VKTT:0:1:43200,VKMAX:0:1:43200,VKTB:0:1:43200,VKTBMAX:0:1:43200,VKTBLV:70:99:5000,NLTMAX:0:1:80000,PP8X:0:1:43200,PPLUCK:593:1:1:1,PPLUCK:593:1:1:0,AOSHOP:725:1:0,AOSHOP:726:1:0,AOSHOP:741:1:43200,TRANGPHUC:833:1:30,TRANGPHUC:834:1:30,TRANGPHUC:839:1:30,TRANGPHUC:791:1:30,TRANGPHUC:744:1:30,TRANGPHUC:736:1:30,TRANGPHUC:737:1:50,HOVELAN:882:5:43200,MNT:30,MNC:30,GEM:73:10000:1,GEM:108:10000:1,ITEM:848:30000:1,ITEM:849:1000:1,ITEM:850:10000:1,ITEM:851:1000:1,ITEM:852:1000:1,ITEM:853:1000:1,ITEM:854:1000:1,ITEM:855:1000:1,ITEM:856:1000:1,ITEM:857:1000:1,ITEM:858:1000:1,ITEM:859:1000:1,SUTU:1:300,TL:30,DN:500000:500000', 0, 1, 0);
+INSERT INTO kpah_db.giftcode (giftcode, xu, luong, luongLock, item, expire, limit_use, type) VALUES ('vipall', 2000000000, 1000000000, 1000000000, 'PET:12:1:0,PET:19:1:0,PET:20:1:0,PET:22:1:0,PET:28:1:0,PETV:12,PHKT:30,PHTT:30,PHBT:30,HKL:30,CAITRANG:903:1:10,CAITRANG:904:1:10,VKTT:0:1:43200,VKMAX:0:1:43200,VKTB:0:1:43200,VKTBMAX:0:1:43200,VKTBLV:70:99:5000,NLTMAX:0:1:80000,PP8X:0:1:43200,PPLUCK:593:1:1:1,PPLUCK:593:1:1:0,AOSHOP:725:1:0,AOSHOP:726:1:0,AOSHOP:741:1:43200,TRANGPHUC:833:1:30,TRANGPHUC:834:1:30,TRANGPHUC:839:1:30,TRANGPHUC:791:1:30,TRANGPHUC:744:1:30,TRANGPHUC:736:1:30,TRANGPHUC:737:1:50,HOVELAN:882:5:43200,MNT:30,MNC:30,GEM:73:10000:1,GEM:108:10000:1,ITEM:848:30000:1,ITEM:849:1000:1,ITEM:850:10000:1,ITEM:851:1000:1,ITEM:852:1000:1,ITEM:853:1000:1,ITEM:854:1000:1,ITEM:855:1000:1,ITEM:856:1000:1,ITEM:857:1000:1,ITEM:858:1000:1,ITEM:859:1000:1,SUTU:1:300,TL:30,DN:500000:500000', 0, 1, 0);
 ```
 
 Gồm những gì:
@@ -227,7 +226,6 @@ Gồm những gì:
 | Nhóm | Chi tiết |
 |---|---|
 | Tiền | 2 tỉ xu, 1 tỉ lượng mở, 1 tỉ lượng khoá |
-| Skin thú nuôi | cả 5: Phúc Thú, Gấu Trúc, Tiên Lộc, Xích Dương, Chiến Lang |
 | Thú nuôi | pet 12, 19, 20, 22, 28 + 1 pet vĩnh viễn (id 12) |
 | Thú cưỡi | Phượng Hoàng Kim / Thổ / Băng (30 ngày), Hoả Kỳ Lân 30 ngày |
 | Cải trang | Bát Giới (903) + Sa Tăng (904), cộng 10 |

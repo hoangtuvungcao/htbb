@@ -467,37 +467,6 @@ public class SelectCharHandler implements ICommandHandler {
             } catch (final Exception exThuong) {
                 exThuong.printStackTrace();
             }
-
-            // Nap skin thu nuoi va tinh lai chi so
-            try {
-                if (!p.daLoadSkinThuNuoi) {
-                    Database.instance.loadSkinThuNuoi(p);
-                    // Skin do VAT PHAM trong o Trang bi thu quyet dinh, khong phai cot
-                    // idskin trong DB: nguoi choi co the da thao/ban item o phien truoc,
-                    // hoac nhan item luc offline. Dong bo lai theo item dang mac roi moi
-                    // tinh chi so, khong thi chi so va hinh anh lech nhau.
-                    real.SkinThuNuoi.dongBoTheoTrangBi(p);
-                    if (real.SkinThuNuoi.hopLe(p.idSkinThuNuoi)) {
-                        p.calculateAttrib();
-                        // Day anh sprite skin xuong ngay: client giu anh theo id va
-                        // khong co so phien ban nen sau khi doi sprite no van ve bang
-                        // anh cu cho tan khi tat han app.
-                        real.SkinThuNuoi.guiLaiAnhSkin(p);
-                        p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
-                        // Goi hinh thu cuoi da gui o tren (dong ~303) TRUOC khi biet
-                        // nguoi choi mang skin gi, nen luc do van la hinh thu goc.
-                        // Gui lai sau khi nap skin, khong thi dang nhap vao la thay
-                        // hinh cu cho tan khi go "skinthu" doi qua doi lai.
-                        if (p.animalRide != null) {
-                            p.sendMessage(MessageCreator.createAnimalWearingMessage(p, p));
-                            p.sendToNearPlayer(MessageCreator.createAnimalWearingMessage(p, p));
-                        }
-                    }
-                }
-            } catch (final Exception exSkin) {
-                exSkin.printStackTrace();
-            }
-
         } catch (final Exception e3) {
             e3.printStackTrace();
         }

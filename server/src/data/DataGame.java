@@ -517,10 +517,9 @@ public class DataGame {
                 }
             }
 
-            // 0..20 la thu cuoi goc, 21..25 la hinh skin thu cuoi (SkinThuNuoi.ID_IMG).
-            imgAvtAnimal = new byte[26][];
+            imgAvtAnimal = new byte[21][];
 
-            for (j = 0; j < 26; ++j) {
+            for (j = 0; j < 21; ++j) {
                 try {
                     fis = new FileInputStream("map/avtathu/" + j + ".png");
                     dis = new DataInputStream(fis);
@@ -782,37 +781,6 @@ public class DataGame {
 //            var4.printStackTrace();
         }
 
-    }
-
-    /**
-     * Goi -51 chua anh cua mot id trong khoang 8700..8999 (map/d_effect), de gui cho
-     * client MA KHONG CAN client xin.
-     *
-     * Ly do phai co: client giu anh trong GameData.listImgIcon theo id va khong he co so
-     * phien ban. Muc chi bi bo khi bang co HON 100 phan tu va muc do ranh qua 120s
-     * (GameScr.setRemoveIconImg) — client it icon thi muc do song mai den luc tat han
-     * app. Vi vay sua sprite cua mot id dang dung thi client van ve bang anh cu, ghep voi
-     * du lieu frame moi (ALL_DATA_EFF duoc ghi lai moi lan dang nhap) thanh mot khoi vun.
-     *
-     * Goi -51 thi client lam dung mot viec: imageIcon.img = anh moi. Neu client chua co
-     * muc nao cho id do thi no nem NullReference, nhung ca onMessage nam trong try/catch
-     * chi ghi log nen khong hong gi — va truong hop do client se tu xin anh nhu thuong.
-     */
-    public static Message taoGoiAnhDynamicEffect(final int idImg) {
-        try {
-            final int k = idImg - 8700;
-            if (k < 0 || imgDynamicEffect == null || k >= imgDynamicEffect.length
-                    || imgDynamicEffect[k] == null) {
-                return null;
-            }
-            final Message m = new Message(-51);
-            m.dos.writeShort(idImg);
-            m.dos.write(imgDynamicEffect[k]);
-            m.dos.flush();
-            return m;
-        } catch (final Exception e) {
-            return null;
-        }
     }
 
     public static void sendMsgGetDataEff(Session s, Message msg) {

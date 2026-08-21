@@ -2221,10 +2221,6 @@ public class Char extends LiveActor {
         this.calculateAccurate();
         this.calculateDodge();
         this.calculateCritical();
-        // Chi so cong thang tu skin thu nuoi (HP/MP/chinh xac/tiem nang/thu).
-        // BAT BUOC goi o CUOI HAM, sau ca 6 ham calculate*: accurate/dodge/attack
-        // duoc GAN LAI (=) trong cac ham do, nen cong truoc chung se bi xoa sach.
-        SkinThuNuoi.apDungChiSo(this);
     }
 
     public void updateSkillBuffPassive() {
@@ -3550,8 +3546,6 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return dam;
         }
         int finalDam = dam;
-        // Skin thu nuoi: hap thu thuong truc + thu kich hoat buff bi dong khi bi danh
-        finalDam = SkinThuNuoi.khiNhanSatThuong(this, finalDam, actor);
         // RỒNG LỚN: tích mọi lúc
         if (finalDam > 0 && this.rlAccumulateAlways) {
             long s = (long) this.damageAccumulated + finalDam;
@@ -3843,13 +3837,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     @Override
     public int getAttack() {
-        int atk = super.getAttack() + this.getValueLua(2) * this.attack / 100;
-        // Skin thu nuoi: Xich Duong no +50% tan cong khi HP < 30%
-        final int pcSkin = SkinThuNuoi.pcTangSatThuong(this);
-        if (pcSkin > 0) {
-            atk += atk * pcSkin / 100;
-        }
-        return atk;
+        return super.getAttack() + this.getValueLua(2) * this.attack / 100;
     }
 
     @Override
@@ -4270,15 +4258,6 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     final int mnBoQuaThu = this.getPcBoQuaThuMatNa();
                     if (mnBoQuaThu > 0 && def > 0) {
                         def -= def * mnBoQuaThu / 100;
-                        if (def < 0) {
-                            def = 0;
-                        }
-                    }
-                    // ---- SKIN THU NUOI: xuyen giap (Xich Duong) ----
-                    // Cung cho nay nen ap dung cho ca PvP (actor.cat == 0) va PvE.
-                    final int skXg = SkinThuNuoi.pcXuyenGiap(this);
-                    if (skXg > 0 && def > 0) {
-                        def -= def * skXg / 100;
                         if (def < 0) {
                             def = 0;
                         }
@@ -8985,16 +8964,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 String[] tachItem = listItem.trim().split(",");
                 for (int i = 0; i < tachItem.length; i++) {
                     String[] tachTime = tachItem[i].trim().split(":");
-                    // SKIN:<0-4> -> phat VAT PHAM skin thu cuoi tuong ung (bang voi
-                    // "DB:<idTemplate>:1:0"). Truoc day dong nay bat co "da so huu skin"
-                    // trong tob_skin_thu, nhung skin gio do vat pham dang mac quyet dinh
-                    // nen bat co khong con tac dung — xem real.SkinThuNuoi.
-                    if (tachTime[0].equals("SKIN")) {
-                        final int idSkinTang = Integer.parseInt(tachTime[1]);
-                        if (SkinThuNuoi.hopLe(idSkinTang)) {
-                            GiftCode.AddItem(this, SkinThuNuoi.ID_ITEM[idSkinTang], 0, 0, 0);
-                        }
-                    } else if (tachTime[0].equals("DB")) {
+                    if (tachTime[0].equals("DB")) {
                         for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                             GiftCode.AddItem(this, Integer.parseInt(tachTime[1]), 0, 0, Integer.parseInt(tachTime[3]));
                         }
@@ -9476,16 +9446,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 String[] tachItem = listItem.trim().split(",");
                 for (int i = 0; i < tachItem.length; i++) {
                     String[] tachTime = tachItem[i].trim().split(":");
-                    // SKIN:<0-4> -> phat VAT PHAM skin thu cuoi tuong ung (bang voi
-                    // "DB:<idTemplate>:1:0"). Truoc day dong nay bat co "da so huu skin"
-                    // trong tob_skin_thu, nhung skin gio do vat pham dang mac quyet dinh
-                    // nen bat co khong con tac dung — xem real.SkinThuNuoi.
-                    if (tachTime[0].equals("SKIN")) {
-                        final int idSkinTang = Integer.parseInt(tachTime[1]);
-                        if (SkinThuNuoi.hopLe(idSkinTang)) {
-                            GiftCode.AddItem(this, SkinThuNuoi.ID_ITEM[idSkinTang], 0, 0, 0);
-                        }
-                    } else if (tachTime[0].equals("DB")) {
+                    if (tachTime[0].equals("DB")) {
                         for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                             GiftCode.AddItem(this, Integer.parseInt(tachTime[1]), 0, 0, Integer.parseInt(tachTime[3]));
                         }
@@ -14933,7 +14894,6 @@ public int applyRongLonReleaseTo(int baseDamage) {
         byte non = 0;
         byte giap = 0;
         byte yen = 0;
-        byte skin = 0;
         boolean bInventory = false;
         final Vector<Item> itBackInventory = new Vector<Item>();
         if (this.animalRide != null) {
@@ -14982,21 +14942,6 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     if (it.getType() == 14) {
                         if (giap == 0) {
                             giap = 1;
-                            a.add(it);
-                        } else {
-                            it.place = 0;
-                            bInventory = true;
-                            itBackInventory.add(it);
-                        }
-                    }
-                    // Vat pham skin thu cuoi: type 19, ung voi O DAU TIEN BEN PHAI cua bang
-                    // Trang bi thu (client: idWearAnimal = {18,19,14,20,15,21,16,22,17,23}).
-                    // Loc theo ID TEMPLATE chu khong theo type, vi type 19 cung la phi phong
-                    // cua nhan vat — xem real.SkinThuNuoi.ID_ITEM.
-                    if (it.getType() == SkinThuNuoi.TYPE_ITEM
-                            && SkinThuNuoi.laItemSkin(it.getTemplate().id)) {
-                        if (skin == 0) {
-                            skin = 1;
                             a.add(it);
                         } else {
                             it.place = 0;
@@ -20100,20 +20045,6 @@ public int applyRongLonReleaseTo(int baseDamage) {
     // Moi nhan vat, moi ngay: toi da MAX_LUONG_TRAIN_NGAY luong mo va MAX_LUONG_TRAIN_NGAY
     // luong khoa. Khong phu thuoc so luong dang co trong nguoi. Han muc luu trong bang
     // tob_train_luong kem ngay, nen bao tri / restart server khong lam reset.
-    // ===== Skin thu nuoi theo ngu hanh (xem real.SkinThuNuoi) =====
-    /** -1 = khong mang skin; 0..4 = Phuc Thu / Gau Truc / Tien Loc / Xich Duong / Chien Lang */
-    public int idSkinThuNuoi = SkinThuNuoi.KHONG_CO;
-    /**
-     * Cac skin nhan vat DA SO HUU, dang co bit: bit 0 = Phuc Thu ... bit 4 = Chien Lang.
-     * Chi nhan duoc qua su kien / giftcode (khong ban trong shop), xem SkinThuNuoi.
-     */
-    public int skinDaSoHuu = 0;
-    /** Moc thoi gian buff bi dong cua skin het hieu luc (ms) */
-    public long timeHetBuffSkinThuNuoi = 0L;
-    /** Moc thoi gian het cooldown buff bi dong (ms) */
-    public long timeCdSkinThuNuoi = 0L;
-    public boolean daLoadSkinThuNuoi = false;
-
     public static final int MAX_LUONG_TRAIN_NGAY = 200000;
 
     public String ngayTrainLuong = "";

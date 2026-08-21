@@ -525,7 +525,6 @@ public class TeamServer {
         }
       
         Database.instance.createTableTrainLuong(); // bang luu han muc luong train quai theo ngay
-        Database.instance.createTableSkinThuNuoi(); // bang luu skin thu nuoi cua tung nhan vat
         Database.startSaveChar();
         TeamServer.timeRemovePool = System.currentTimeMillis();
         System.out.println("Starting server...");

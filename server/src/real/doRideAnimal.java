@@ -64,14 +64,7 @@ public class doRideAnimal {
                     }
                 }
 
-                // Vat pham skin duoc gan vao TUNG con thu cuoi (Item.idAnimal), nen doi con
-                // thu la doi luon skin dang co hieu luc: con moi co the chua mac skin nao.
-                // Dong bo truoc khi tinh chi so vi chi so skin cong trong calculateAttrib.
-                final boolean doiSkin = SkinThuNuoi.dongBoTheoTrangBi(player);
                 player.calculateAttrib();
-                if (doiSkin) {
-                    SkinThuNuoi.guiLaiAnhSkin(player);
-                }
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                 player.sendToNearPlayer(MessageCreator.createCharInfo(player));

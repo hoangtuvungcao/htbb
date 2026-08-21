@@ -6,7 +6,7 @@ import server.TeamServer;
  * BANG SETTING CHO ADMIN (popup trong game)
  *
  * Admin go trong chat: setting
- * -> hien popup menu nhieu cap: chiem thanh / skin thu nuoi / ti le drop / xem cau hinh.
+ * -> hien popup menu nhieu cap: chiem thanh / ti le drop / xem cau hinh.
  *
  * Cach noi vao code goc (da lam san):
  *   1) Map.doChat            : go "setting" -> AdminMenu.moMenu(player)
@@ -27,7 +27,6 @@ public class AdminMenu {
     // Cac cap menu
     private static final int MENU_GOC = 0;
     private static final int MENU_CHIEM_THANH = 1;
-    private static final int MENU_SKIN = 2;
     private static final int MENU_DROP = 3;
 
     /** Id o dialog nhap text (khong trung 0,1,2,98,99 dang dung). */
@@ -45,10 +44,8 @@ public class AdminMenu {
             + "1 = chiếm thành sau 2 phút\n"
             + "2 <giờ> <phút> [ngày] = đặt giờ chiếm thành\n"
             + "3 = trả về lịch chuẩn 21h T3+T7\n"
-            + "4 <0-4> = chọn skin thú (4 -1 để bỏ)\n"
             + "5 <xu> <lượng> <sựkiện> <bình> <ngọc> <đồ> <chiaXu>\n"
             + "6 = xem cấu hình hiện tại\n"
-            + "7 <tên nv> <0-4> = tặng skin thú nuôi (-1 = thu hồi)\n"
             + "8 = nạp lại server.ini (sau khi sửa tay)\n"
             + "(mọi thay đổi được ghi vào server.ini, còn sau restart)";
 
@@ -74,7 +71,6 @@ public class AdminMenu {
         }
         final String[] menu = {
             "Chiếm thành",
-            "Skin thú nuôi (buff nhân vật)",
             "Tỉ lệ drop train quái",
             "Xem cấu hình hiện tại"
         };
@@ -107,16 +103,6 @@ public class AdminMenu {
                             break;
                         case 1:
                             player.sendMessage(MessageCreator.createMsgMenu(new String[]{
-                                SkinThuNuoi.moTa(0) + " - +2000HP +3000MP",
-                                SkinThuNuoi.moTa(1) + " - +200 chính xác, phản đòn",
-                                SkinThuNuoi.moTa(2) + " - +20% tất cả chỉ số, lá chắn",
-                                SkinThuNuoi.moTa(3) + " - +5% xuyên giáp, nộ khi HP thấp",
-                                SkinThuNuoi.moTa(4) + " - +20% thủ, +15% hấp thụ",
-                                "Bỏ skin đang mang"
-                            }, ID_NPC, MENU_SKIN));
-                            break;
-                        case 2:
-                            player.sendMessage(MessageCreator.createMsgMenu(new String[]{
                                 "Giảm một nửa tất cả",
                                 "Tăng gấp đôi tất cả",
                                 "Về mức trong server.ini",
@@ -124,7 +110,7 @@ public class AdminMenu {
                                 "Nhập tay từng loại"
                             }, ID_NPC, MENU_DROP));
                             break;
-                        case 3:
+                        case 2:
                             player.sendMessage(MessageCreator.createServerAlertMessage(xemCauHinh(player), ""));
                             break;
                         default:
@@ -134,16 +120,6 @@ public class AdminMenu {
 
                 case MENU_CHIEM_THANH:
                     xuLyChiemThanh(player, idOptionMenu);
-                    return true;
-
-                case MENU_SKIN:
-                    // Admin thu skin cho chinh minh (khong can so huu). Tang skin cho
-                    // nguoi choi thi dung lenh chat "giveskin <ten> <0-4>".
-                    if (idOptionMenu >= 0 && idOptionMenu <= 4) {
-                        SkinThuNuoi.datSkin(player, idOptionMenu);
-                    } else {
-                        SkinThuNuoi.datSkin(player, SkinThuNuoi.KHONG_CO);
-                    }
                     return true;
 
                 case MENU_DROP:
@@ -316,12 +292,6 @@ public class AdminMenu {
                     MapTown.dayAdminCheat = "";
                     ketQua = moTaGioChiemThanh() + ghiFile(server.CauHinh.luuGioChiemThanh());
                     break;
-                case 4: {
-                    final int idSkin = Integer.parseInt(t[1]);
-                    SkinThuNuoi.datSkin(player, idSkin);
-                    ketQua = "Skin: " + SkinThuNuoi.moTa(player.idSkinThuNuoi);
-                    break;
-                }
                 case 5:
                     Monster.PC_TILE_XU = kep(Integer.parseInt(t[1]));
                     Monster.PC_TILE_LUONG = kep(Integer.parseInt(t[2]));
@@ -334,22 +304,6 @@ public class AdminMenu {
                     }
                     ketQua = moTaTiLeDrop() + ghiFile(server.CauHinh.luuTiLeDrop());
                     break;
-                case 7: {
-                    // 7 <tên nhân vật> <0-4> = tặng skin thú nuôi (sự kiện). -1 = thu hồi hết.
-                    final Char nhan = CharManager.instance.getCharByCharName(t[1].trim());
-                    final int idSkin = Integer.parseInt(t[2].trim());
-                    if (nhan == null) {
-                        ketQua = "Không thấy nhân vật " + t[1].trim() + " đang online.";
-                    } else if (idSkin < 0) {
-                        SkinThuNuoi.thuHoiHetSkin(nhan);
-                        ketQua = "Đã thu hồi hết skin của " + nhan.charname + ".";
-                    } else if (SkinThuNuoi.tangSkin(nhan, idSkin)) {
-                        ketQua = "Đã tặng " + SkinThuNuoi.moTa(idSkin) + " cho " + nhan.charname + ".";
-                    } else {
-                        ketQua = nhan.charname + " đã có skin này rồi (hoặc id sai).";
-                    }
-                    break;
-                }
                 case 8:
                     ketQua = server.CauHinh.napLai() + "\n---\n" + xemCauHinh(player);
                     break;
@@ -390,8 +344,6 @@ public class AdminMenu {
     private static String xemCauHinh(final Char player) {
         return moTaGioChiemThanh()
                 + "\n---\n" + moTaTiLeDrop()
-                + "\n---\nSkin đang mang: " + SkinThuNuoi.moTa(player.idSkinThuNuoi)
-                + "\nSkin chỉ nhận qua sự kiện/giftcode (SKIN:<0-4>), không bán."
                 + "\nHạn mức lượng train/ngày: " + Char.MAX_LUONG_TRAIN_NGAY
                 + " (mở đã nhận " + player.luongMoTrainNgay + ", khoá đã nhận " + player.luongKhoaTrainNgay + ")"
                 + "\nNhân vật tối đa/tài khoản: " + data.Database.MAX_CHAR_PER_ACCOUNT;
