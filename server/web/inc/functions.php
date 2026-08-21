@@ -95,7 +95,7 @@ function activateAccount(int $userId, string $username): bool
 
 /**
  * ============================================================
- *  NẠP TIỀN THEO MỐC (dùng bảng tob_nap_moc trong kpah_db, xem sql/tob_nap_moc.sql)
+ *  NẠP TIỀN THEO MỐC (dùng bảng tob_nap_moc trong kpah_db, xem vps/db_new_server.sql PHAN 2I)
  * ============================================================
  */
 

@@ -21,7 +21,7 @@ package real;
  *                           +15% hap thu sat thuong (thuong truc, khong can kich hoat).
  *
  * CACH MANG SKIN: mac VAT PHAM SKIN vao o dau tien ben phai bang "Trang bi thu"
- * (5 vat pham type 19, id template trong ID_ITEM, tao bang sql/skin_thu_item.sql).
+ * (5 vat pham type 19, id template trong ID_ITEM, tao bang vps/db_new_server.sql PHAN 2F).
  *   - Phai dang cuoi thu moi mac duoc: vat pham gan theo tung con thu cuoi (Item.idAnimal),
  *     giong het cac trang bi thu khac.
  *   - Thao ra / ban di / doi con thu / xuong thu -> mat skin, tu dong dong bo
@@ -228,7 +228,7 @@ public class SkinThuNuoi {
 
     /**
      * Id template cua 5 vat pham skin, theo dung thu tu skin 0..4.
-     * Tao bang sql/skin_thu_item.sql (id 950..954, cot xstart = id icon 815..819).
+     * Tao bang vps/db_new_server.sql PHAN 2F (id 950..954, cot xstart = id icon 815..819).
      * Doi id trong SQL thi phai doi o day cho khop.
      */
     public static final int[] ID_ITEM = {950, 951, 952, 953, 954};
@@ -336,7 +336,7 @@ public class SkinThuNuoi {
     // dong san co cua game thi lay dong minh them (dong minh id lon hon nen nam sau).
     // Khong tim thay thi dong do bi bo, vat pham chi mat mo ta chu khong loi.
     //
-    // Cac ten nay PHAI trung tung chu voi sql/skin_thu_item.sql.
+    // Cac ten nay PHAI trung tung chu voi vps/db_new_server.sql PHAN 2F.
     public static final String[][] TEN_DONG_MOTA = {
         {"Sinh lực", "Nội lực", "Giảm sát thương khi bị đánh"},
         {"Chính xác cộng thêm", "Phản sát thương"},
@@ -384,7 +384,7 @@ public class SkinThuNuoi {
         }
         if (thieu > 0) {
             System.out.println("SkinThuNuoi: thieu " + thieu + " dong ten thuoc tinh trong"
-                    + " data_attribute -> vat pham skin se thieu mo ta. Chay sql/skin_thu_item.sql.");
+                    + " data_attribute -> vat pham skin se thieu mo ta. Chay vps/db_new_server.sql PHAN 2F.");
         }
     }
 

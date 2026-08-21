@@ -5,7 +5,7 @@
 --      mysql -u root < /opt/kpah/vps/db_new_server.sql
 --
 --  CHẠY SAU KHI đã import 2 file:
---      mysql -u root kpah_db < /opt/kpah/gamedb7_clean.sql
+--      mysql -u root kpah_db < /opt/kpah/sql/gamedb7_clean.sql
 --      mysql -u root account < /opt/kpah/loginServer/account.sql
 --
 --  Script này làm 5 việc:
@@ -181,8 +181,8 @@ CREATE TABLE IF NOT EXISTS `history_win_xoso` (
 --
 --  DB Windows ở nhà đã vá tay từ 25/07 nên test ở nhà thấy chạy bình thường;
 --  server mới dựng từ bản dump sạch thì không có -> vá luôn ở đây.
---  Bản gốc của khối này: fix_thankhi_attribute.sql ở thư mục gốc repo. Sửa tên
---  ở đây thì sửa luôn ở đó, và ngược lại.
+--  Đây là NGUỒN DUY NHẤT cho khối này (file sql/fix_thankhi_attribute.sql cũ
+--  đã xoá vì trùng nội dung 100% với đây).
 --
 --  QUY ƯỚC CỘT ispercent (đừng đổi nếu chưa đọc):
 --    0 -> in thẳng, không % (dòng cộng ĐIỂM) | 1 -> in thẳng kèm %
@@ -265,7 +265,8 @@ ON DUPLICATE KEY UPDATE
 --
 --  DB Windows ở nhà đã nới tay từ trước (nên ở nhà không thấy lỗi), server VPS
 --  dựng từ bản dump sạch thì chưa -> nới luôn ở đây.
---  Bản gốc của khối này: fix_cot_du_lieu_tran.sql ở thư mục gốc repo.
+--  Đây là NGUỒN DUY NHẤT cho khối này (file sql/fix_cot_du_lieu_tran.sql cũ
+--  đã xoá vì trùng nội dung 100% với đây).
 -- ############################################################################
 ALTER TABLE `kpah_db`.`tob_char`
   MODIFY `equip` MEDIUMTEXT,
@@ -290,6 +291,126 @@ ALTER TABLE `kpah_db`.`tob_gem_new`
 --  SAU KHI CHẠY PHẢI RESTART SERVER (loadNameAttributeItem chỉ chạy lúc khởi động).
 -- ############################################################################
 UPDATE `kpah_db`.`data_attribute` SET `idcolor` = 0 WHERE `id` = 90;
+
+
+-- ############################################################################
+--  PHẦN 2F — VẬT PHẨM SKIN THÚ CƯỠI (5 skin: Phúc Thú, Gấu Trúc, Tiên Lộc,
+--  Xích Dương, Chiến Lang) — dump sạch không có, module SkinThuNuoi.java cần.
+--
+--  data_attribute 200..210 = tên các dòng mô tả (server tra theo TÊN, không theo
+--  id — xem SkinThuNuoi.ganChiSoDongMoTa). data_item 950..954 type 19 = 5 vật
+--  phẩm skin, xstart 815..819 = icon map/icon/815..819.png. Đổi id ở đây thì
+--  phải đổi luôn real.SkinThuNuoi.ID_ITEM cho khớp.
+--  Bản gốc của khối này: sql/skin_thu_item.sql (đã xoá vì trùng nội dung 100%).
+--  SAU KHI CHẠY PHẢI RESTART SERVER (bảng tên thuộc tính + item template chỉ
+--  đọc lúc khởi động).
+-- ############################################################################
+INSERT INTO `kpah_db`.`data_attribute` (`id`, `name`, `idcolor`, `ispercent`, `decript`, `namein`) VALUES
+(200, 'Sinh lực',                     0, 0, 'skin thu cuoi: Phuc Thu +HP',            ''),
+(201, 'Nội lực',                      0, 0, 'skin thu cuoi: Phuc Thu +MP',            ''),
+(202, 'Giảm sát thương khi bị đánh',  0, 1, 'skin thu cuoi: Phuc Thu buff bi dong',   ''),
+(203, 'Chính xác cộng thêm',          0, 0, 'skin thu cuoi: Gau Truc +chinh xac',     ''),
+(204, 'Phản sát thương',              0, 1, 'skin thu cuoi: Gau Truc buff bi dong',   ''),
+(205, 'Tiềm năng cộng thêm',          0, 1, 'skin thu cuoi: Tien Loc +% tiem nang',   ''),
+(206, 'Lá chắn chặn sát thương',      0, 1, 'skin thu cuoi: Tien Loc buff bi dong',   ''),
+(207, 'Xuyên giáp cộng thêm',         0, 1, 'skin thu cuoi: Xich Duong +% xuyen giap',''),
+(208, 'Nộ khí tăng tấn công',         0, 1, 'skin thu cuoi: Xich Duong buff HP thap', ''),
+(209, 'Phòng thủ cộng thêm',          0, 1, 'skin thu cuoi: Chien Lang +% thu',       ''),
+(210, 'Hấp thụ sát thương',           0, 1, 'skin thu cuoi: Chien Lang hap thu',      '');
+
+INSERT INTO `kpah_db`.`data_item`
+(`id`, `name`, `type`, `style`, `he`, `gender`, `level`, `durable`,
+ `atb0`,`atb1`,`atb2`,`atb3`,`atb4`,`atb5`,`atb6`,`atb7`,`atb8`,`atb9`,
+ `price`, `clazz`, `xstart`, `ystart`, `colortype`, `nloan`, `idUpLevel`, `namein`, `ideff`, `pricecu`) VALUES
+(950, 'Skin Phúc Thú (hệ Kim)',   19, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0, 0, -1, 815, 0, -1, 0, -1, NULL, -1, 0),
+(951, 'Skin Gấu Trúc (hệ Mộc)',   19, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0, 0, -1, 816, 0, -1, 0, -1, NULL, -1, 0),
+(952, 'Skin Tiên Lộc (hệ Thủy)',  19, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0, 0, -1, 817, 0, -1, 0, -1, NULL, -1, 0),
+(953, 'Skin Xích Dương (hệ Hỏa)', 19, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0, 0, -1, 818, 0, -1, 0, -1, NULL, -1, 0),
+(954, 'Skin Chiến Lang (hệ Thổ)', 19, 0, 0, 0, 0, 0, 0,0,0,0,0,0,0,0,0,0, 0, -1, 819, 0, -1, 0, -1, NULL, -1, 0);
+
+
+-- ############################################################################
+--  PHẦN 2G — BÙ DÒNG data_item id=722 ("Sách kỹ năng pet (cũ)", nghỉ hưu)
+--
+--  Migrate sách pet -> potion (tháng 8) có xoá data_item id=722 trên DB sống.
+--  Client cấp phát mảng template theo SỐ LƯỢNG dòng nhưng ghi theo ID, nên nếu
+--  bảng có id lớn nhất > số dòng thì lệch mảng (mất template cuối, nhân vật có
+--  thể "mất thân"). Dump sạch có thể chưa từng xoá dòng này nên INSERT này chỉ
+--  chạy khi thật sự thiếu, để bảng luôn liền mạch.
+--  Bản gốc của khối này: sql/fix_data_item_lo_id.sql (đã xoá vì trùng nội dung 100%).
+-- ############################################################################
+INSERT INTO `kpah_db`.`data_item`
+(id, name, type, style, he, gender, level, durable,
+ atb0, atb1, atb2, atb3, atb4, atb5, atb6, atb7, atb8, atb9,
+ price, clazz, xstart, ystart, colortype, nloan, idUpLevel, namein, ideff, pricecu)
+SELECT 722, 'Sách kỹ năng pet (cũ)', 24, 0, 0, 0, 1, 0,
+       0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+       0, -1, 580, 0, -1, 0, -1, NULL, -1, 0
+WHERE NOT EXISTS (SELECT 1 FROM (SELECT id FROM `kpah_db`.`data_item` WHERE id = 722) t);
+
+
+-- ############################################################################
+--  PHẦN 2H — BÙ ĐỦ DÒNG data_potion (0..161) + THIẾT LẬP POTION 111 "SÁCH KỸ
+--  NĂNG PET"
+--
+--  Nhân vật có đúng 162 ô thuốc (Char.SO_O_THUOC); client cấp phát mảng theo
+--  SỐ DÒNG của data_potion nhưng gán thẳng theo id không kiểm tra biên — thiếu
+--  dòng ở id cao (như 111) làm client vẽ hành trang lỗi giữa vòng lặp, nạn nhân
+--  là NGUYÊN CẢ HÀNH TRANG (vòng lặp potion nằm trước nguyên liệu/thú/vật phẩm
+--  trong cùng một try). Bù đủ dòng còn thiếu 0..161 (giữ nguyên dòng đã có).
+--  Tên potion 111 dùng bản mô tả đầy đủ nhất (đã gộp từ
+--  sql/add_mo_ta_sach_pet.php — 2 file phụ này đã xoá vì đã gộp hết vào đây).
+--  SAU KHI CHẠY PHẢI RESTART SERVER (bảng potion chỉ đọc lúc khởi động).
+-- ############################################################################
+DROP TEMPORARY TABLE IF EXISTS tmp_so_potion;
+CREATE TEMPORARY TABLE tmp_so_potion (n INT PRIMARY KEY);
+INSERT INTO tmp_so_potion (n)
+SELECT a.i + b.i * 10 + c.i * 100 AS n
+FROM      (SELECT 0 i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+           UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) a
+CROSS JOIN (SELECT 0 i UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+           UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) b
+CROSS JOIN (SELECT 0 i UNION SELECT 1) c
+WHERE a.i + b.i * 10 + c.i * 100 <= 161;
+
+INSERT INTO `kpah_db`.`data_potion` (id, idImage, delay, isTrade, name, name2, price, recovered)
+SELECT s.n, 0, 0, 0, '', '', 0, 0
+FROM tmp_so_potion s
+LEFT JOIN `kpah_db`.`data_potion` p ON p.id = s.n
+WHERE p.id IS NULL;
+
+DROP TEMPORARY TABLE IF EXISTS tmp_so_potion;
+
+UPDATE `kpah_db`.`data_potion`
+   SET idImage = 95, delay = 0, isTrade = 1,
+       name = 'Sách kỹ năng pet\nDùng để pet học kỹ năng.',
+       name2 = 'sachkynangpet', price = 0, recovered = 0
+ WHERE id = 111;
+
+
+-- ############################################################################
+--  PHẦN 2I — TẠO BẢNG tob_nap_moc (mốc nạp tân thủ 49k/99k/299k)
+--
+--  Luồng: web/naptien.php tạo dòng 'cho_thanh_toan' -> webhook_sepay.php hoặc
+--  admin_naptien.php xác nhận -> 'da_thanh_toan' -> NPC Tổng Quản trong game
+--  trao quà, chuyển 'da_nhan'.
+--  Bản gốc của khối này: sql/tob_nap_moc.sql (đã xoá vì trùng nội dung 100%).
+-- ############################################################################
+CREATE TABLE IF NOT EXISTS `kpah_db`.`tob_nap_moc` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `userID` int(11) NOT NULL COMMENT 'team_user.id / player.userID',
+  `moc` tinyint(3) unsigned NOT NULL COMMENT '1 = 49k, 2 = 99k, 3 = 299k',
+  `amount` int(10) unsigned NOT NULL COMMENT 'so tien VND',
+  `ma_don` varchar(20) NOT NULL COMMENT 'noi dung chuyen khoan, dung de doi chieu voi SePay',
+  `phuong_hoang` tinyint(4) NOT NULL DEFAULT -1 COMMENT 'moc 3 only: 0=Phuong Hoang, 1=Phuong Hoang Bang, -1=chua chon',
+  `trang_thai` enum('cho_thanh_toan','da_thanh_toan','da_nhan') NOT NULL DEFAULT 'cho_thanh_toan',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `paid_at` datetime NULL DEFAULT NULL,
+  `claimed_at` datetime NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_ma_don` (`ma_don`),
+  KEY `idx_user_moc` (`userID`, `moc`, `trang_thai`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 -- ############################################################################
@@ -352,7 +473,7 @@ UNION ALL SELECT 'data_monster',     COUNT(*), '138'    FROM kpah_db.data_monste
 UNION ALL SELECT 'data_potion',      COUNT(*), '162'    FROM kpah_db.data_potion
 UNION ALL SELECT 'data_shop',        COUNT(*), '148'    FROM kpah_db.data_shop
 UNION ALL SELECT 'data_quest',       COUNT(*), '49'     FROM kpah_db.data_quest
-UNION ALL SELECT 'data_attribute',   COUNT(*), '187'    FROM kpah_db.data_attribute
+UNION ALL SELECT 'data_attribute',   COUNT(*), '198'    FROM kpah_db.data_attribute
 UNION ALL SELECT 'tob_tubinh (template)', COUNT(*), '16' FROM kpah_db.tob_tubinh
 UNION ALL SELECT 'bad_word',         COUNT(*), '147'    FROM kpah_db.bad_word
 UNION ALL SELECT '--- cot luu hanh trang (PHAN 2D) ---', NULL, NULL
@@ -363,6 +484,17 @@ UNION ALL SELECT 'cot da la mediumtext', COUNT(*), '7'
       OR (TABLE_NAME='tob_gem_new' AND COLUMN_NAME IN ('listtemplate','soluong','slock')) )
 UNION ALL SELECT 'idcolor dong "Tang lua lan" (PHAN 2E)', idcolor, '0'
   FROM kpah_db.data_attribute WHERE id = 90
+UNION ALL SELECT '--- skin thu cuoi + sach pet (PHAN 2F/2G/2H) ---', NULL, NULL
+UNION ALL SELECT 'data_item skin thu (950..954)', COUNT(*), '5'
+  FROM kpah_db.data_item WHERE id BETWEEN 950 AND 954
+UNION ALL SELECT 'data_potion (0..161 lien tuc)', COUNT(*), '162'
+  FROM kpah_db.data_potion
+UNION ALL SELECT 'data_potion id=111 ten', name, 'Sach ky nang pet...'
+  FROM kpah_db.data_potion WHERE id = 111
+UNION ALL SELECT '--- moc nap (PHAN 2I) ---', NULL, NULL
+UNION ALL SELECT 'bang tob_nap_moc ton tai', COUNT(*), '1 (bang, khong can co dong)'
+  FROM information_schema.TABLES
+ WHERE TABLE_SCHEMA = 'kpah_db' AND TABLE_NAME = 'tob_nap_moc'
 UNION ALL SELECT '--- tai khoan ---', NULL, NULL
 UNION ALL SELECT 'account.team_user', COUNT(*), '1 (admin)' FROM account.team_user
 UNION ALL SELECT '5h_active',        COUNT(*), '1'      FROM kpah_db.5h_active;
@@ -382,5 +514,5 @@ UNION ALL SELECT '5h_active',        COUNT(*), '1'      FROM kpah_db.5h_active;
 --     thường nên không ai giành được tên này trước bạn.
 --
 --  Muốn thêm mã giftcode buff của bạn (tb8x, linhthu1, hoakylan, lkhoa1ty...):
---      mysql -u root kpah_db < /opt/kpah/buff_ddsa.sql
+--      mysql -u root kpah_db < /opt/kpah/sql/buff_ddsa.sql
 -- ============================================================================

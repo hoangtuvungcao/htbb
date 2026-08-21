@@ -7,8 +7,8 @@
 --    1. TẮT SERVER HẲN (đóng KPAH2_patched.jar và cả loginServer).
 --       Server giữ Char trong RAM, còn chạy là nó ghi đè lại sau khi bạn xoá.
 --    2. BACKUP:
---         mysqldump -u root kpah_db  > backup_kpah_db.sql
---         mysqldump -u root account  > backup_account.sql
+--         mysqldump -u root kpah_db  > sql/backup_kpah_db.sql
+--         mysqldump -u root account  > sql/backup_account.sql
 --    3. Chạy PHẦN 1 (hoặc PHẦN 2) bên dưới.
 --    4. Đọc mục "SAU KHI WIPE" ở cuối, có 2 việc bắt buộc phải làm.
 --

@@ -68,7 +68,7 @@ A chienlang 25
 
 # --- Buoc 4: icon vat pham trong hanh trang (map/icon) ---
 # Id icon phai con trong va < 855; 815..819 la 5 id trong da chon, khop cot xstart
-# trong sql/skin_thu_item.sql.
+# trong vps/db_new_server.sql PHAN 2F.
 I() { "$JAVA" -cp "$OUT" TaoIconSkin map/avtathu/$1.png "$2" --frame=3; }
 
 I 21 815

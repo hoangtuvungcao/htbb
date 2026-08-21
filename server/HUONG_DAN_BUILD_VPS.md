@@ -50,7 +50,7 @@ Database thì **không cần dump gì cả** — server mới bắt đầu trắ
 
 | File trong repo | Là gì |
 |---|---|
-| `gamedb7_clean.sql` | 84 bảng + **toàn bộ dữ liệu game** (904 item, 138 monster, 162 bình, 148 shop, 49 quest, 141 attribute, 147 từ khoá lọc), **không có** một nhân vật/tài khoản nào |
+| `sql/gamedb7_clean.sql` | 84 bảng + **toàn bộ dữ liệu game** (904 item, 138 monster, 162 bình, 148 shop, 49 quest, 141 attribute, 147 từ khoá lọc), **không có** một nhân vật/tài khoản nào |
 | `loginServer/account.sql` | cấu trúc bảng `team_user` |
 | `vps/db_new_server.sql` | script dọn sạch + tạo tài khoản admin, mình vừa viết |
 
@@ -387,7 +387,7 @@ mysql -u kpah -p'' -h 127.0.0.1 -e "SHOW DATABASES;"
 
 ```bash
 cd /opt/kpah
-mysql -u root kpah_db < gamedb7_clean.sql
+mysql -u root kpah_db < sql/gamedb7_clean.sql
 mysql -u root account < loginServer/account.sql
 mysql -u root --default-character-set=utf8 -t < vps/db_new_server.sql
 ```
@@ -449,7 +449,7 @@ cũng không có trong dump nhưng **không cần làm gì** — server tự `CR
 lúc khởi động.
 
 Nếu import báo lỗi *Unknown collation* thì bản MariaDB trên VPS cũ hơn ở nhà — sửa nhanh:
-`sed -i 's/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g; s/utf8mb3/utf8/g' gamedb7_clean.sql`
+`sed -i 's/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g; s/utf8mb3/utf8/g' sql/gamedb7_clean.sql`
 rồi import lại.
 
 ### C4. Tài khoản và nhân vật admin
@@ -896,14 +896,14 @@ thì vẫn xong, chỉ chậm.
 ## PHẦN J — Lỗi hay gặp
 
 **Bấm vào Thần Khí là đơ client, server không ghi log gì**
-→ Bảng `data_attribute` thiếu id 141..186. Bản dump `gamedb7_clean.sql` chỉ có 141 dòng
+→ Bảng `data_attribute` thiếu id 141..186. Bản dump `sql/gamedb7_clean.sql` chỉ có 141 dòng
 (id 0..140), trong khi module Thần Khí dùng tới id 186. Tên thuộc tính tra cứu **theo vị
 trí** trong danh sách nạp lúc khởi động (`otherAtt[i] -> ALL_NAME_ATTRIBUTE_ITEM.get(i+61)`,
 xem [Item.java:1031](src/real/Item.java#L1031) và [Map.java:15658](src/real/Map.java#L15658)),
 nên id phải liên tục. Gói đăng nhập cmd 25 chỉ gửi đúng số dòng đang có, client tra key
 "163" ra null rồi chết giữa lúc vẽ — nên **client đơ mà server im lặng**.
 Kiểm tra: `mysql -u root kpah_db -e "SELECT COUNT(*) FROM data_attribute;"` — phải là 187.
-Chưa đủ thì chạy [fix_thankhi_attribute.sql](fix_thankhi_attribute.sql) rồi **restart server**
+Chưa đủ thì chạy khối PHẦN 2C trong [vps/db_new_server.sql](vps/db_new_server.sql) rồi **restart server**
 (`loadNameAttributeItem` chỉ chạy lúc khởi động). Server dựng mới bằng
 [vps/db_new_server.sql](vps/db_new_server.sql) đã tự nạp ở PHẦN 2C.
 Bẫy hay dính: máy Windows ở nhà đã vá tay từ trước nên test ở nhà thấy chạy tốt, lên VPS
@@ -919,7 +919,7 @@ Ba nguyên nhân khác nhau, cùng một triệu chứng. Kiểm tra theo thứ 
      WHERE TABLE_SCHEMA='kpah_db' AND TABLE_NAME='tob_char'
        AND COLUMN_NAME IN ('equip','inven','bag','tuido');"
    ```
-   Còn `text` thì chạy [fix_cot_du_lieu_tran.sql](fix_cot_du_lieu_tran.sql). Xem ai đang sát
+   Còn `text` thì chạy khối PHẦN 2D trong [vps/db_new_server.sql](vps/db_new_server.sql). Xem ai đang sát
    trần: `SELECT charname, LENGTH(inven) FROM tob_char ORDER BY LENGTH(inven) DESC LIMIT 5;`
 
 2. **Trần đọc lại 130 entry** trong `setitemInvenBag` —
@@ -1089,7 +1089,8 @@ vào mảng theo **id** ([MessageHandler.cs:1647](Client/MessageHandler.cs#L1647
     array[readShort()] = new ItemTemplate();      // ghi theo ID
 
 nên **id lớn nhất phải ≤ số lượng**. Xoá một dòng ở giữa bảng (ví dụ
-`DELETE FROM data_item WHERE id=722` trong `sql/migrate_sach_pet_to_potion.php`) làm mảng
+`DELETE FROM data_item WHERE id=722` trong migration sách pet → potion, đã chạy xong và xoá)
+làm mảng
 ngắn đi một ô → template có id lớn nhất bị `IndexOutOfRange`, mà client **bắt lỗi rồi bỏ qua
 âm thầm**. Chuỗi hậu quả rất khó lần vì nó không giống lỗi vật phẩm:
 
@@ -1106,7 +1107,8 @@ dòng → mất đúng template **904 = "Cải Trang Sa Tăng" (type 0 = áo)** 
 món đó là mất thân.
 
 Đã vá hai lớp: server gửi **đủ id 0..max**, id trống thì gửi ô rỗng (`MessageCreator`, khối
-"Bang template vat pham"), và `sql/fix_data_item_lo_id.sql` bù lại dòng đã xoá. Kiểm tra
+"Bang template vat pham"), và PHẦN 2G trong [vps/db_new_server.sql](vps/db_new_server.sql)
+bù lại dòng đã xoá. Kiểm tra
 nhanh bất cứ lúc nào:
 
 ```sql
@@ -1147,7 +1149,8 @@ Thêm một ràng buộc dễ quên: nhân vật có **162 ô thuốc** (`Char.S
 `tob_char.potion` lưu 162 trường) nhưng client cấp phát ô thuốc theo **số dòng của
 `data_potion`**. Bảng thiếu dòng là người chơi giữ thuốc id cao (sách pet là **111**) sẽ làm
 client nổ giữa lúc đọc gói hành trang → rỗng sạch cả túi. `Char.getAllPotion()` đã chặn
-(bỏ qua id vượt trần + ghi log), và `sql/fix_data_potion_du_dong.sql` bù đủ dòng 0..161.
+(bỏ qua id vượt trần + ghi log), và PHẦN 2H trong [vps/db_new_server.sql](vps/db_new_server.sql)
+bù đủ dòng 0..161.
 
 **Skin thú cưỡi: ảnh trong bảng Trang bị thú đứng im**
 → Client chạy hoạt ảnh ô đó bằng một bảng frame **cố định**
@@ -1166,7 +1169,8 @@ Phải gửi **đúng 3 frame** (`SkinThuNuoi.TONG_FRAME = 3`, ảnh cắt bằn
 → Ô trong bảng Trang bị thú do client quy định sẵn:
 `idWearAnimal = {18, 19, 14, 20, 15, 21, 16, 22, 17, 23}` — ô chẵn là cột trái (yên 18,
 giáp 14, hộ uyển 15, nón 16, bàn đạp 17), ô lẻ là cột phải. **Ô đầu tiên bên phải = type 19**,
-nên vật phẩm skin dùng type 19 (`sql/skin_thu_item.sql`, id 950..954, icon `map/icon/815..819`).
+nên vật phẩm skin dùng type 19 (PHẦN 2F trong `vps/db_new_server.sql`, id 950..954,
+icon `map/icon/815..819`).
 Type 19 cũng là Phi phong của nhân vật; hai bên không lẫn nhau vì server phân biệt bằng
 **id template** (`SkinThuNuoi.ID_ITEM`) ở `Map.exchangeItem` và `Char.getAnimalWearing`.
 
@@ -1283,9 +1287,9 @@ Mình kiểm tra `api.github.com/repos/hoanghoa0903/KPAH` trả về 404 khi kh�
 repo **đang private**, đúng như cần. Giữ nguyên như vậy, vì trong repo có:
 
 - `lib/NQSH_5h.jar` — thư viện đóng của người khác, không phải code của bạn để phát hành
-- `backup_account.sql` — có `INSERT INTO team_user` kèm **hash mật khẩu thật** của tài khoản
-  `admin` (dạng `*A4B61573...` của hàm `PASSWORD()`, băm yếu, dò được)
-- `backup_kpah_db_truoc_import.sql` — dữ liệu game
+- (đã xoá khỏi repo) `backup_account.sql` — từng có `INSERT INTO team_user` kèm **hash mật
+  khẩu thật** của tài khoản `admin` (dạng `*A4B61573...` của hàm `PASSWORD()`, băm yếu, dò
+  được). Nội dung cũ vẫn còn trong lịch sử git — vẫn phải giữ repo private.
 
 Nếu định mở public sau này, xoá 2 file dump khỏi **toàn bộ lịch sử** (không phải chỉ commit
 mới nhất) bằng `git filter-repo`, và đổi mật khẩu tài khoản admin trước.

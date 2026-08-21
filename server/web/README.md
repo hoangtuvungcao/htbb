@@ -16,7 +16,7 @@ dùng chung database với game server.
 1. Cài **XAMPP** (hoặc dùng MySQL/MariaDB sẵn có). Bật **Apache** + **MySQL**.
 2. Import 2 database (nếu chưa có) qua phpMyAdmin:
    - Tạo DB `account`, import `loginServer/account.sql`.
-   - Tạo DB `kpah_db`, import `gamedb7_clean.sql` (bản dump đã lọc sạch dữ liệu
+   - Tạo DB `kpah_db`, import `sql/gamedb7_clean.sql` (bản dump đã lọc sạch dữ liệu
      người chơi, giữ nguyên cấu trúc 84 bảng + toàn bộ dữ liệu game). Đọc phần
      đầu file đó: sau khi import có 3 việc bắt buộc phải làm.
 3. Chép **cả thư mục `web/`** vào `C:\xampp\htdocs\` (ví dụ `htdocs/kpah`).
@@ -74,7 +74,10 @@ chuyển khoản TPBank, sau khi thanh toán vào game gặp **NPC Tổng Quản
 
 Cài đặt:
 
-1. Import `sql/tob_nap_moc.sql` vào database `kpah_db` (bảng theo dõi trạng thái mốc nạp).
+1. Bảng `tob_nap_moc` (theo dõi trạng thái mốc nạp) đã được tạo sẵn trong PHẦN 2I của
+   [vps/db_new_server.sql](../vps/db_new_server.sql) khi dựng database `kpah_db`. Nếu server
+   đã chạy từ trước lúc chưa có bảng này, chạy riêng khối `CREATE TABLE IF NOT EXISTS
+   tob_nap_moc` ở đó vào `kpah_db`.
 2. Mở `web/config.local.php` (xem mục "Bí mật riêng của từng máy" phía trên), điền đúng:
    - `TPBANK_ACCOUNT_NO`, `TPBANK_ACCOUNT_NAME` (số tài khoản + tên chủ TK TPBank nhận tiền).
    - `ADMIN_NAPTIEN_PASSWORD` (đổi mật khẩu mặc định trước khi public).
