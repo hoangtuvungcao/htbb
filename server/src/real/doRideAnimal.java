@@ -65,6 +65,12 @@ public class doRideAnimal {
                 }
 
                 player.calculateAttrib();
+                // Skin gan theo NHAN VAT nen doi con thu van giu skin cu. Van phai goi
+                // dong bo o day: luc chua cuoi thu thi getAnimalWearing khong chay nen
+                // vat pham skin chua duoc doc, va SkinLinhThu.dangMang doi phai co
+                // animalRide. Goi truoc khi dung cac goi tin ben duoi vi ca ba goi deu
+                // mang hinh con thu.
+                SkinLinhThu.dongBoTheoTrangBi(player);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                 player.sendToNearPlayer(MessageCreator.createCharInfo(player));

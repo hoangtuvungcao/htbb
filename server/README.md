@@ -34,6 +34,10 @@ không phải trùng lặp thừa.
 - Hướng dẫn VPS qua FRP: [HUONG_DAN_VPS_FRP.md](HUONG_DAN_VPS_FRP.md)
 - Setup website: [web/README.md](web/README.md)
 
+## Tính năng
+
+- Skin linh thú (đổi hình thú cưỡi, giữ nguyên chỉ số): [docs/skin-linh-thu.md](docs/skin-linh-thu.md)
+
 **Lưu ý quan trọng**: mỗi lần push lên nhánh `main` sẽ tự động deploy lên VPS sản
 xuất (`.github/workflows/deploy.yml`). Đổi `KPAH2_patched.jar`, `lib/`, `libs/`,
 `map/`, `cMap/`, hoặc `loginServer/` sẽ khiến server live tự restart (có cảnh báo

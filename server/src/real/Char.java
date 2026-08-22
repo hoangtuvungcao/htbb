@@ -12429,7 +12429,19 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                 final int ring2 = 0;
                                 item.id = this.getIDItem();
                                 final int t = item.getTemplate().type;
-                                if (!Map.isWearingAnimal(t)) {
+                                // Vat pham SKIN LINH THU phai di nhanh trang bi thu.
+                                //
+                                // Ca do nhan vat lan trang bi thu deu duoc luu vao CUNG
+                                // MOT cot equip (Database.getInfoCharSave noi getCharWearing
+                                // roi noi tiep awItems), nen luc nap lai chi con type de
+                                // phan luong. Skin mang type 19 = type cua Phi phong, ma
+                                // isWearingAnimal chi nhan 14..18, nen neu khong chan o day
+                                // thi no roi vao nhanh do nhan vat va chiem O PHI PHONG
+                                // (POS_WEARING_CHAR 19 -> index 11): dang nhap lai la mat
+                                // skin, con nhan vat thi moc them cai ao choang.
+                                // Nang hon nua, luc do khong go ra duoc: doUseItem chi quet
+                                // iItems, con lenh "boskin" chi quet awItems.
+                                if (!Map.isWearingAnimal(t) && !SkinLinhThu.laItemSkin(item.getTemplate().id)) {
                                     boolean vk2 = false;
                                     if (t == 6 || t == 7 || t == 4 || t == 5 || t == 3) {
                                         vk2 = true;
@@ -12475,7 +12487,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                         final Item item3 = item;
                                         item3.idAnimal += 12607;
                                     }
-                                    if (this.checkExistAnimal(item.idAnimal)) {
+                                    // Skin linh thu gan theo NHAN VAT chu khong theo tung
+                                    // con thu, nen khong xet checkExistAnimal: nguoi choi
+                                    // ban con thu ma skin dang buoc vao van phai giu duoc
+                                    // skin. getAnimalWearing se buoc lai idAnimal vao con
+                                    // dang cuoi o lan hien thi ke tiep.
+                                    if (SkinLinhThu.laItemSkin(item.getTemplate().id)
+                                            || this.checkExistAnimal(item.idAnimal)) {
                                         this.awItems.add(item);
                                     } else {
                                         item.place = 0;
@@ -13880,7 +13898,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                         }
                                         item.id = this.getIDItem();
                                         final int t = item.getTemplate().type;
-                                        if (Map.isWearingAnimal(t)) {
+                                        // Skin linh thu (type 19) cung phai vao awItems —
+                                        // xem chu thich dai o setItemWearing. Day la nhanh
+                                        // nap kieu cu (doc bang tob_item theo place), chi
+                                        // chay khi cot equip rong, nhung van phai vá cho
+                                        // dong bo, khong thi hai duong nap ra hai ket qua.
+                                        if (Map.isWearingAnimal(t)
+                                                || SkinLinhThu.laItemSkin(item.getTemplate().id)) {
                                             this.awItems.add(item);
                                             break;
                                         }
@@ -14894,11 +14918,32 @@ public int applyRongLonReleaseTo(int baseDamage) {
         byte non = 0;
         byte giap = 0;
         byte yen = 0;
+        byte skin = 0;
         boolean bInventory = false;
         final Vector<Item> itBackInventory = new Vector<Item>();
         if (this.animalRide != null) {
             for (int i = 0; i < this.awItems.size(); ++i) {
                 final Item it = this.awItems.get(i);
+                // Vat pham SKIN LINH THU khong gan theo tung con thu: nguoi choi chon
+                // skin theo NHAN VAT, doi con thu nao cung giu nguyen skin do. Nen o
+                // day nhan no bat ke idAnimal, roi buoc lai vao con dang cuoi de lan
+                // luu tiep theo va cac cho khac (exchangeItemAnimal) van khop.
+                //
+                // Loc theo ID TEMPLATE chu khong theo type: type 19 cung la type cua
+                // phi phong nhan vat — xem real.SkinLinhThu.ID_ITEM.
+                if (it.getTemplate() != null && SkinLinhThu.laItemSkin(it.getTemplate().id)) {
+                    if (skin == 0) {
+                        skin = 1;
+                        it.idAnimal = this.animalRide.dbid;
+                        a.add(it);
+                    } else {
+                        it.place = 0;
+                        it.idAnimal = -1;
+                        bInventory = true;
+                        itBackInventory.add(it);
+                    }
+                    continue;
+                }
                 if (it.idAnimal == this.animalRide.dbid) {
                     if (it.getType() == 17) {
                         if (bandap == 0) {
@@ -20040,6 +20085,17 @@ public int applyRongLonReleaseTo(int baseDamage) {
     public void addLuongLock(final int luong) {
         this.lockLuong += luong;
     }
+
+    // ==================== SKIN LINH THU (xem real.SkinLinhThu) ====================
+    /**
+     * -1 = khong mang skin; 0..4 = Phuc Thu / Gau Truc / Tien Loc / Xich Duong / Chien Lang.
+     *
+     * KHONG luu rieng xuong DB: skin do vat pham dang mac o bang Trang bi thu quyet dinh,
+     * ma vat pham thi da nam san trong awItems (duoc luu qua getAllItemInfoSave). Moi lan
+     * dang nhap / mac do / cuoi thu deu goi SkinLinhThu.dongBoTheoTrangBi de tinh lai, nen
+     * truong nay chi la ban dem tam, khong bao gio lech voi vat pham.
+     */
+    public int idSkinLinhThu = SkinLinhThu.KHONG_CO;
 
     // ==================== HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI ====================
     // Moi nhan vat, moi ngay: toi da MAX_LUONG_TRAIN_NGAY luong mo va MAX_LUONG_TRAIN_NGAY
