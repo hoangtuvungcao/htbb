@@ -43,8 +43,22 @@ import javax.imageio.ImageIO;
  * Nen file PHAI co it nhat 21 frame, chia ba khoi 7 frame. Trong moi khoi, Fhorse chay
  * theo hai bang cua Char:
  *
- *     dung yen  : Fhorse = 0..3           (Char.paint, nhanh state 0)
- *     di chuyen : Fhorse = 2, 3, 4        (Char.horseMove = {2,2,2,3,3,4,4,4})
+ *     dung yen  : Fhorse = 0, 1           (STANDFRAME = {0 x8, 1 x4})
+ *     di chuyen : Fhorse = 2, 3, 4        (horseMove = {2,2,2,3,3,4,4,4})
+ *
+ * HAI TAP NAY KHONG GIAO NHAU, va do chinh la y nghia cua 5 o:
+ *
+ *     o 0, 1     = hai tu the DUNG YEN. Phai chon hai tu the GIONG NHAU gan het, chi
+ *                  khac chut it (kieu con thu dang tho). Hai tu the khac xa nhau thi
+ *                  con thu dung im ma cu giat qua giat lai.
+ *     o 2, 3, 4  = ba tu the DI, xep theo dung THU TU BUOC CHAN. Client chay vong
+ *                  2 -> 3 -> 4 -> 2 lien tuc, moi tick mot buoc, nen xep lung tung la
+ *                  dang di nhin giat cuc.
+ *
+ * (Truoc day cho nay ghi nham "dung yen: Fhorse = 0..3", dan den xep 5 o theo thu tu
+ * trong bang ma khong tach tu the dung khoi tu the di — ket qua la ca hai hoat anh deu
+ * khong lien mach. Ba nhanh quyet dinh Fhorse nam o Client/Char.cs:2108-2137 va
+ * :2154-2241, doc lai o do neu con nghi ngo.)
  *
  * Vay moi khoi can 5 anh that o slot 0..4. Slot 5 va 6 khong bao gio duoc dung nhung
  * PHAI ton tai, vi paintTopHorse/paintBottomHorse thoat ngay khi Frame >= listFrame
@@ -106,8 +120,10 @@ import javax.imageio.ImageIO;
  * Tham so:
  *   --gop=N           gop them: hai manh cach nhau <= N px nua thi coi la cung mot con.
  *                     Tang len khi mot con bi tach lam nhieu o, giam khi hai con bi dinh.
- *   --xuong/--len/--ngang   nam chi so o (0-based, dem theo thu tu in ra o buoc 1)
- *                     cho ba huong. Bat buoc dung 5 o moi huong.
+ *   --xuong/--len/--ngang   DANH SACH UNG VIEN cua ba huong (chi so o 0-based, dem theo
+ *                     thu tu in ra o buoc 1). Khong phai thu tu frame: cu liet ke het
+ *                     cac o thuoc huong do, cang nhieu cang tot, tool tu chon ra 5 va
+ *                     tu xep vao dung slot (xem chonTuThe).
  *   --lat             bang sprite ve con thu nhin sang PHAI, lat lai thanh nhin trai.
  *   --alpha=32        nguong kenh trong suot de coi la co hinh (0..255).
  *
@@ -135,6 +151,11 @@ public class SkinThu {
     private static final int[] CAO_DICH = {39, 40, 42};
     /** Day con thu tho xuong duoi chan nhan vat bao nhieu px, tung huong. */
     private static final int[] THO_XUONG = {7, 7, 7};
+
+    /** Hai tu the dung yen lech hon muc nay thi thoi, dung mot tu the lap lai. */
+    private static final double NGUONG_DUNG = 0.12;
+    /** Bo ba tu the di lech hon muc nay thi rut ve hai tu the A-B-A. */
+    private static final double NGUONG_DI = 0.28;
 
     /** Khoang cach toi da (px) tu than de mot manh roi van duoc coi la cua con thu. */
     private static final int GAN_THAN = 4;
@@ -200,9 +221,8 @@ public class SkinThu {
         final int n = Integer.parseInt(args[2]);
         final int idIcon = Integer.parseInt(args[3]);
         for (int h = 0; h < SO_HUONG; h++) {
-            if (chon[h] == null || chon[h].length != ANH_MOI_HUONG) {
-                System.out.println("--" + TEN_HUONG[h] + " phai co dung " + ANH_MOI_HUONG
-                        + " chi so o (dang co " + (chon[h] == null ? 0 : chon[h].length) + ").");
+            if (chon[h] == null || chon[h].length < 1) {
+                System.out.println("--" + TEN_HUONG[h] + " phai co it nhat mot chi so o.");
                 return;
             }
             for (final int idx : chon[h]) {
@@ -465,15 +485,21 @@ public class SkinThu {
         final BufferedImage[] than = new BufferedImage[SO_ANH_THAN];
         for (int h = 0; h < SO_HUONG; h++) {
             final int caoDich = Math.max(4, CAO_DICH[h] * pcCao / 100);
+            // Cat het ung vien cua huong nay ra truoc, roi moi chon 5 cai hop nhau nhat.
+            final BufferedImage[] ungVien = new BufferedImage[chon[h].length];
             final StringBuilder co = new StringBuilder();
-            for (int f = 0; f < ANH_MOI_HUONG; f++) {
-                final int[] k = o.get(chon[h][f]);
-                BufferedImage im = cat(goc, coHinh, k, caoDich);
+            for (int f = 0; f < chon[h].length; f++) {
+                BufferedImage im = cat(goc, coHinh, o.get(chon[h][f]), caoDich);
                 if (lat) im = latNgang(im);
-                than[h * ANH_MOI_HUONG + f] = im;
-                co.append(String.format(" o%d %dx%d", chon[h][f], im.getWidth(), im.getHeight()));
+                ungVien[f] = im;
+                co.append(String.format(" o%d(%dx%d)", chon[h][f], im.getWidth(), im.getHeight()));
             }
-            System.out.printf("  huong %-5s -> cao %2dpx:%s%n", TEN_HUONG[h], caoDich, co);
+            System.out.printf("  huong %-5s cao %2dpx, %d ung vien:%s%n",
+                    TEN_HUONG[h], caoDich, ungVien.length, co);
+            final int[] xep = chonTuThe(ungVien, TEN_HUONG[h]);
+            for (int f = 0; f < ANH_MOI_HUONG; f++) {
+                than[h * ANH_MOI_HUONG + f] = ungVien[xep[f]];
+            }
         }
 
         final BufferedImage bong = veBong();
@@ -497,7 +523,18 @@ public class SkinThu {
         final File dir = new File("map/skinthu");
         dir.mkdirs();
         ImageIO.write(atlas, "png", new File(dir, n + ".png"));
-        ghiDuLieuFrame(new File(dir, String.valueOf(n)), vung, than, bong);
+        // Canh cho nam frame cua moi huong chong khit nhau, tinh rieng tung huong.
+        final int[] dxTheoAnh = new int[SO_ANH_THAN];
+        for (int h = 0; h < SO_HUONG; h++) {
+            final BufferedImage[] nhom = new BufferedImage[ANH_MOI_HUONG];
+            System.arraycopy(than, h * ANH_MOI_HUONG, nhom, 0, ANH_MOI_HUONG);
+            final int[] dx = canhChongKhit(nhom);
+            System.arraycopy(dx, 0, dxTheoAnh, h * ANH_MOI_HUONG, ANH_MOI_HUONG);
+            final StringBuilder s = new StringBuilder();
+            for (final int v : dx) s.append(String.format(" %4d", v));
+            System.out.printf("  dx %-5s:%s%n", TEN_HUONG[h], s);
+        }
+        ghiDuLieuFrame(new File(dir, String.valueOf(n)), vung, than, bong, dxTheoAnh);
 
         ghiAvatar(new File(dir, "avt" + n + ".png"), than);
         ghiIcon(new File("map/icon/" + idIcon + ".png"), than[0]);
@@ -790,7 +827,8 @@ public class SkinThu {
      * khong dung (con Poro trong game cung de trong).
      */
     private static void ghiDuLieuFrame(final File ra, final int[][] vung,
-                                       final BufferedImage[] than, final BufferedImage bong)
+                                       final BufferedImage[] than, final BufferedImage bong,
+                                       final int[] dxTheoAnh)
             throws Exception {
         final ByteArrayOutputStream bo = new ByteArrayOutputStream();
         final DataOutputStream out = new DataOutputStream(bo);
@@ -821,7 +859,7 @@ public class SkinThu {
                 final int f = (slot < ANH_MOI_HUONG) ? slot : slot - ANH_MOI_HUONG;
                 final int idAnh = h * ANH_MOI_HUONG + f;
                 final BufferedImage im = than[idAnh];
-                final int dxThan = -(im.getWidth() / 2);
+                final int dxThan = dxTheoAnh[idAnh];
                 final int dyThan = -(im.getHeight() - THO_XUONG[h]);
 
                 out.writeByte(2);                                  // 2 part: bong + than
@@ -850,6 +888,225 @@ public class SkinThu {
         try (FileOutputStream f = new FileOutputStream(ra)) {
             f.write(bo.toByteArray());
         }
+    }
+
+    /**
+     * Chon va xep 5 tu the cho MOT huong tu mot danh sach ung vien.
+     *
+     * Day la cho quyet dinh hoat anh nhin muot hay giat, hon ca chuyen canh toa do.
+     *
+     * Cac bang sprite nay khong phai bo frame cua mot hoat anh — chung la nam buc ve
+     * roi rac, moi buc mot co, mot dang. Do thu: cac tu the trong cung mot nhom lech
+     * hinh nhau 14% den 48%, be ngang chenh nhau toi 48%. Cu lay theo thu tu trong bang
+     * thi con thu doi ca kich thuoc lan hinh dang moi khi doi frame — do la cai "khong
+     * lien mach" ma nguoi choi thay.
+     *
+     * Nen o day khong lay theo thu tu nua ma CHON THEO DO GIONG NHAU:
+     *
+     *   dung yen (o 0, 1)  hai tu the giong nhau nhat. Neu doi giong nhat van lech qua
+     *                      NGUONG_DUNG thi dung MOT tu the lap lai hai lan — con thu
+     *                      dung im hoan toan con hon dung im ma cu giat.
+     *   di       (o 2,3,4) bo ba co do lech lon nhat nho nhat. Client chay vong
+     *                      2->3->4->2 nen tong ba canh khong doi du xep kieu gi, chi
+     *                      can chon dung bo ba. Neu bo ba tot nhat van lech qua
+     *                      NGUONG_DI thi rut ve hai tu the (A, B, A) — buoc di hai
+     *                      nhip gon gang hon ba nhip so le.
+     *
+     * Tra ve 5 chi so (tro vao {@code ungVien}), co the trung nhau.
+     */
+    private static int[] chonTuThe(final BufferedImage[] ungVien, final String tenHuong) {
+        final int n = ungVien.length;
+        final double[][] d = new double[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                d[i][j] = d[j][i] = khacNhau(ungVien[i], ungVien[j]);
+            }
+        }
+
+        // --- hai o dung yen ---
+        int a = 0, b = 0;
+        double tot = Double.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (d[i][j] < tot) {
+                    tot = d[i][j];
+                    a = i;
+                    b = j;
+                }
+            }
+        }
+        if (n < 2 || tot > NGUONG_DUNG) {
+            a = b = medoid(d);   // lap lai mot tu the: dung im han
+            tot = 0;
+        }
+
+        // --- ba o di ---
+        int p = -1, q = -1, r = -1;
+        double totDi = Double.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    final double xau = Math.max(d[i][j], Math.max(d[j][k], d[i][k]));
+                    if (xau < totDi) {
+                        totDi = xau;
+                        p = i;
+                        q = j;
+                        r = k;
+                    }
+                }
+            }
+        }
+        String kieuDi = "3 tu the";
+        if (p < 0 || totDi > NGUONG_DI) {
+            // Rut ve hai tu the giong nhau nhat, chay A - B - A.
+            int x = 0, y = 0;
+            double t2 = Double.MAX_VALUE;
+            for (int i = 0; i < n; i++) {
+                for (int j = i + 1; j < n; j++) {
+                    if (d[i][j] < t2) {
+                        t2 = d[i][j];
+                        x = i;
+                        y = j;
+                    }
+                }
+            }
+            if (n < 2) {
+                x = y = 0;
+            }
+            p = x;
+            q = y;
+            r = x;
+            totDi = t2;
+            kieuDi = "2 tu the (A-B-A)";
+        }
+
+        System.out.printf("  chon %-5s: dung [%d,%d] lech %.0f%%  |  di [%d,%d,%d] lech %.0f%% (%s)%n",
+                tenHuong, a, b, tot * 100, p, q, r, totDi * 100, kieuDi);
+        return new int[]{a, b, p, q, r};
+    }
+
+    /** Tu the "trung tam" nhat: tong do lech toi cac tu the khac nho nhat. */
+    private static int medoid(final double[][] d) {
+        int tot = 0;
+        double nhoNhat = Double.MAX_VALUE;
+        for (int i = 0; i < d.length; i++) {
+            double s = 0;
+            for (int j = 0; j < d.length; j++) s += d[i][j];
+            if (s < nhoNhat) {
+                nhoNhat = s;
+                tot = i;
+            }
+        }
+        return tot;
+    }
+
+    /**
+     * Ti le diem anh KHONG trung nhau giua hai tu the, sau khi da canh chong khit nhat.
+     * 0 = trung khit, 1 = khong dinh nhau ti nao.
+     */
+    private static double khacNhau(final BufferedImage x, final BufferedImage y) {
+        final int d = doLechTot(x, y);
+        final boolean[][] a = mask(x), b = mask(y);
+        int giao = 0, hop = 0;
+        final int h = Math.max(a.length, b.length);
+        for (int yy = 0; yy < h; yy++) {
+            for (int xx = -y.getWidth(); xx < x.getWidth() + y.getWidth(); xx++) {
+                final boolean pa = lay(a, xx, yy);
+                final boolean pb = lay(b, xx - d, yy);
+                if (pa && pb) giao++;
+                if (pa || pb) hop++;
+            }
+        }
+        return hop == 0 ? 0 : 1.0 - (double) giao / hop;
+    }
+
+    private static boolean lay(final boolean[][] m, final int x, final int y) {
+        return y >= 0 && y < m.length && x >= 0 && x < m[0].length && m[y][x];
+    }
+
+    /**
+     * Tinh dx cho tung frame cua MOT huong, sao cho ca nam frame chong khit len nhau
+     * nhat. Tra ve mang dx dung thu tu frame.
+     *
+     * Day la cho quyet dinh hoat anh co lien mach hay khong.
+     *
+     * Cach hien nhien — canh giua theo khung bao, dx = -rong/2 — thi SAI: khung bao doi
+     * theo cai duoi, cai tai, cai canh tho ra o tung tu the, nen moi frame lech tam mot
+     * chut, do duoc 4 den 6 px giua hai frame lien tiep. Client chay vong 2->3->4->2 moi
+     * tick nen con thu truot ngang qua lai lien tuc, nhin nhu bi giat.
+     *
+     * Canh theo trong tam vung chan cung khong an: cac tu the trong bang khac nhau qua
+     * nhieu (co tu the chum chan, co tu the nhay) nen vung chan moi frame moi khac, do
+     * lai con lech hon ca cach cu (11 px).
+     *
+     * Cach dung o day la do thang cai can do: thu tung do lech, chon do lech lam frame
+     * chong khit voi frame mau nhat (dem so diem ca hai cung dac). Phan than to nhat
+     * quyet dinh ket qua nen than dung yen, chi cho chan va duoi dong day — dung y nghia
+     * "buoc di". Khong can doan dau la chan, dau la duoi.
+     *
+     * Frame mau la frame co nhieu diem dac nhat (tu the day du nhat), khong phai frame
+     * dau: frame dau co the la mot tu the khuyet, keo ca loat lech theo.
+     */
+    private static int[] canhChongKhit(final BufferedImage[] anh) {
+        int mau = 0;
+        for (int i = 1; i < anh.length; i++) {
+            if (soDiemDac(anh[i]) > soDiemDac(anh[mau])) {
+                mau = i;
+            }
+        }
+        final int dxMau = -(anh[mau].getWidth() / 2);
+        final int[] dx = new int[anh.length];
+        for (int i = 0; i < anh.length; i++) {
+            dx[i] = (i == mau) ? dxMau : dxMau + doLechTot(anh[mau], anh[i]);
+        }
+        return dx;
+    }
+
+    private static int soDiemDac(final BufferedImage im) {
+        int n = 0;
+        for (int y = 0; y < im.getHeight(); y++) {
+            for (int x = 0; x < im.getWidth(); x++) {
+                if (((im.getRGB(x, y) >>> 24) & 0xFF) >= 128) n++;
+            }
+        }
+        return n;
+    }
+
+    /**
+     * Do lech ngang lam {@code im} chong khit voi {@code mau} nhat. Hai anh da cung
+     * chieu cao va cung can day nen chi phai do mot chieu.
+     */
+    private static int doLechTot(final BufferedImage mau, final BufferedImage im) {
+        final int h = mau.getHeight();
+        final boolean[][] a = mask(mau), b = mask(im);
+        final int wa = mau.getWidth(), wb = im.getWidth();
+        int tot = 0;
+        long diemTot = -1;
+        for (int d = -wb; d <= wa; d++) {
+            long diem = 0;
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < wb; x++) {
+                    final int xa = x + d;
+                    if (xa >= 0 && xa < wa && b[y][x] && a[y][xa]) diem++;
+                }
+            }
+            // Hoa thi lay do lech nho hon: giu con thu gan cho cu, khoi bi keo lech han.
+            if (diem > diemTot || (diem == diemTot && Math.abs(d) < Math.abs(tot))) {
+                diemTot = diem;
+                tot = d;
+            }
+        }
+        return tot;
+    }
+
+    private static boolean[][] mask(final BufferedImage im) {
+        final boolean[][] m = new boolean[im.getHeight()][im.getWidth()];
+        for (int y = 0; y < im.getHeight(); y++) {
+            for (int x = 0; x < im.getWidth(); x++) {
+                m[y][x] = ((im.getRGB(x, y) >>> 24) & 0xFF) >= 128;
+            }
+        }
+        return m;
     }
 
     // ================================================================================

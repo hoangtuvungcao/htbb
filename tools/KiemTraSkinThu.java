@@ -39,9 +39,21 @@ public class KiemTraSkinThu {
     /** Char.getFrameHorse: DOWN + 0, UP + 7, LEFT/RIGHT + 14. */
     private static final int[] GOC_HUONG = {0, 7, 14};
     private static final String[] TEN_HUONG = {"xuong", "len", "ngang"};
-    /** Char.paint nhanh state 0: Fhorse = frame, frame bi chan ve 0..3. */
-    private static final int[] DUNG_YEN = {0, 1, 2, 3};
-    /** Char.horseMove = {2,2,2,3,3,4,4,4} -> cac gia tri Fhorse khac nhau khi di. */
+    /**
+     * Fhorse luc DUNG YEN.
+     *
+     * Char.paint state 0: vi thu cuoi tool lam useHorse = -1 nen no vao nhanh
+     * "getHorse() == -1" -> frame = STANDFRAME[p1], ma STANDFRAME = {0 x8, 1 x4}.
+     * Nen dung yen CHI dung slot 0 va 1, nhip 8 tick / 4 tick.
+     */
+    private static final int[] DUNG_YEN = {0, 1};
+    /**
+     * Fhorse luc DI CHUYEN.
+     *
+     * Char.paint state 1, nhanh "if (idhorse != -1)": Fhorse = horseMove[fh] voi
+     * horseMove = {2,2,2,3,3,4,4,4}, fh tang MOI tick. Nen di chuyen CHI dung slot
+     * 2, 3, 4 — khong dung chung slot nao voi luc dung yen.
+     */
     private static final int[] DI_CHUYEN = {2, 3, 4};
     /** Char.dy_horse_tool[0] = {-20,-15,-15,-15}: muc nhac nguoi ngoi, theo huong. */
     private static final int[] DY_NGUOI = {-20, -15, -15};
@@ -175,7 +187,91 @@ public class KiemTraSkinThu {
         out.getParentFile().mkdirs();
         ImageIO.write(ra, "png", out);
         System.out.println("  -> " + out);
+        loi += chongFrame(n, atlas, anhCon, frame);
         return loi;
+    }
+
+    /**
+     * Chong cac frame cua tung huong len nhau (onion skin) va do do lech.
+     *
+     * Day la cach nhin ra "hoat anh khong lien mach" nhanh nhat: neu than con thu dung
+     * yen va chi chan voi duoi nhoe ra thi buoc di muot; neu ca con thu nhoe thanh hai
+     * ba lop lech han nhau thi no dang truot ngang moi khi doi frame.
+     *
+     * Kem theo mot so do duoc: do lech cua TAM KHOI cac diem anh giua cac frame trong
+     * cung mot nhom. Duoi 2 px thi mat thuong khong thay, tren 4 px la thay ro.
+     */
+    private static int chongFrame(final int n, final BufferedImage atlas, final int[][] anhCon,
+                                  final List<List<int[]>> frame) throws Exception {
+        final int oW = 150, oH = 110;
+        final BufferedImage ra = new BufferedImage(2 * oW, 3 * oH + 16, BufferedImage.TYPE_INT_RGB);
+        final Graphics2D g = ra.createGraphics();
+        g.setColor(new Color(0x20, 0x20, 0x28));
+        g.fillRect(0, 0, ra.getWidth(), ra.getHeight());
+        g.setColor(Color.YELLOW);
+        g.drawString("DUNG YEN (slot 0,1)", 8, 12);
+        g.drawString("DI (slot 2,3,4)", oW + 8, 12);
+        int loi = 0;
+        for (int h = 0; h < 3; h++) {
+            for (int nhom = 0; nhom < 2; nhom++) {
+                final int[] slots = (nhom == 0) ? DUNG_YEN : DI_CHUYEN;
+                final int ox = nhom * oW, oy = 16 + h * oH;
+                final int cx = ox + oW / 2, cy = oy + oH - 26;
+                final List<double[]> tam = new ArrayList<>();
+                for (final int s : slots) {
+                    final int idx = GOC_HUONG[h] + s;
+                    if (idx >= frame.size()) continue;
+                    for (final int[] p : frame.get(idx)) {
+                        if (p[4] == 0) continue;                    // bo qua bong do
+                        final int[] a = anhCon[p[2]];
+                        final BufferedImage con = atlas.getSubimage(a[0], a[1], a[2], a[3]);
+                        veMo(g, con, cx + p[0], cy + p[1]);
+                        tam.add(tamKhoi(con, cx + p[0], cy + p[1]));
+                    }
+                }
+                double lech = 0;
+                for (int i = 1; i < tam.size(); i++) {
+                    lech = Math.max(lech, Math.abs(tam.get(i)[0] - tam.get(0)[0]));
+                }
+                g.setColor(lech > 4 ? new Color(0xFF, 0x60, 0x60) : new Color(0x80, 0xE0, 0x80));
+                g.drawString(String.format("%s lech %.1fpx", TEN_HUONG[h], lech), ox + 6, oy + 14);
+                g.setColor(new Color(0x3A, 0x3A, 0x46));
+                g.drawRect(ox, oy, oW - 1, oH - 1);
+                if (lech > 4) {
+                    System.out.printf("  CANH BAO: huong %s, nhom %s lech %.1f px -> nhin se giat.%n",
+                            TEN_HUONG[h], nhom == 0 ? "dung yen" : "di", lech);
+                }
+            }
+        }
+        g.dispose();
+        final File out = new File("map/skinthu_goc/" + n + "_chongframe.png");
+        ImageIO.write(ra, "png", out);
+        System.out.println("  -> " + out);
+        return loi;
+    }
+
+    /** Ve mo mo de chong nhieu frame len nhau van con nhin ra tung lop. */
+    private static void veMo(final Graphics2D g, final BufferedImage im, final int x, final int y) {
+        final java.awt.Composite cu = g.getComposite();
+        g.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.45f));
+        g.drawImage(im, x, y, null);
+        g.setComposite(cu);
+    }
+
+    /** Tam khoi cac diem dac cua anh, quy ve toa do man hinh. */
+    private static double[] tamKhoi(final BufferedImage im, final int x0, final int y0) {
+        long sx = 0, sy = 0;
+        int n = 0;
+        for (int y = 0; y < im.getHeight(); y++) {
+            for (int x = 0; x < im.getWidth(); x++) {
+                if (((im.getRGB(x, y) >>> 24) & 0xFF) >= 128) {
+                    sx += x;
+                    sy += y;
+                    n++;
+                }
+            }
+        }
+        return n == 0 ? new double[]{x0, y0} : new double[]{x0 + (double) sx / n, y0 + (double) sy / n};
     }
 
     /**

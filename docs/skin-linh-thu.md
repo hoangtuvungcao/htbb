@@ -158,14 +158,44 @@ Xem kết quả ở `map/skinthu_goc/`:
 | `<tên>_roi.png` | Từng ô cắt rời — để nhận hướng (xuống / lên / ngang) |
 | `<n>_kiemtra.png` | 21 frame đã dựng, mỗi hướng một hàng |
 | `<n>_nhutrongame.png` | **Chạy lại đúng thuật toán vẽ của client** — hình người xanh là chỗ nhân vật ngồi, vạch đỏ là mặt đất |
+| `<n>_chongframe.png` | Chồng các frame lên nhau (onion skin) + số đo độ trôi — thân phải đứng yên, chỉ chân/đuôi nhoè ra |
+
+### Chọn tư thế: để tool làm, đừng chọn tay
+
+`--xuong` / `--len` / `--ngang` là **danh sách ứng viên**, không phải thứ tự frame. Cứ
+liệt kê hết các ô thuộc hướng đó rồi tool tự chọn 5 và tự xếp:
+
+- hai tư thế **giống nhau nhất** → lúc đứng yên
+- bộ ba **ít lệch nhau nhất** → lúc di chuyển
+- không tìm được bộ nào đủ giống thì tự rút xuống lặp lại tư thế (`A-B-A`, hoặc đứng im
+  hoàn toàn), và in ra để biết
+
+Lý do phải làm vậy: các bảng này **không phải bộ frame của một hoạt ảnh**, mà là nhiều
+bức vẽ rời rạc, mỗi bức một cỡ. Lấy theo thứ tự trong bảng thì các tư thế lệch nhau
+14–48% về hình dáng và tới 48% về bề ngang — con thú đổi cả kích thước lẫn hình dáng mỗi
+khi đổi frame, nhìn rất giật. Cho tool chọn theo độ giống nhau thì còn 0–25%.
+
+Toạ độ `dx` của từng frame cũng không lấy theo tâm khung bao (khung bao đổi theo đuôi/tai
+thò ra) mà tính bằng cách **thử các độ lệch, chọn cái làm frame chồng khít với frame mẫu
+nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứng yên.
 
 ### Ba cái bẫy khi làm sprite
 
 1. **Phải đúng 21 frame** (bội của 21). Client không đọc số frame từ file, nó tính chỉ số
-   bằng công thức cố định `Char.getFrameHorse`: xuống `+0`, lên `+7`, ngang `+14`. Trong
-   mỗi khối 7, `Fhorse` chạy 0..3 lúc đứng yên và 2,3,4 lúc di chuyển (`Char.horseMove`),
-   nên cần 5 ảnh thật ở slot 0..4; slot 5, 6 không dùng nhưng **phải tồn tại**, thiếu là
-   `paintTopHorse` thoát sớm và con thú biến mất đúng tick đó — nhìn như nhảy giật.
+   bằng công thức cố định `Char.getFrameHorse`: xuống `+0`, lên `+7`, ngang `+14`. Slot 5,
+   6 không dùng nhưng **phải tồn tại**, thiếu là `paintTopHorse` thoát sớm và con thú biến
+   mất đúng tick đó — nhìn như nhảy giật.
+
+   Trong mỗi khối 7, **`Fhorse` chỉ nhận hai tập rời nhau**:
+
+   | Trạng thái | Nhánh trong `Char.paint` | `Fhorse` |
+   |---|---|---|
+   | Đứng yên | thú cưỡi tool làm `useHorse = -1` → `frame = STANDFRAME[p1]`, `STANDFRAME = {0×8, 1×4}` | **0, 1** |
+   | Di chuyển | `if (idhorse != -1)` → `Fhorse = horseMove[fh]`, `horseMove = {2,2,2,3,3,4,4,4}` | **2, 3, 4** |
+
+   Nên slot 0–1 là *tư thế đứng*, slot 2–3–4 là *tư thế đi*, không dùng chung slot nào.
+   Chu kỳ đi là vòng `2→3→4→2` nên thứ tự trong bộ ba không ảnh hưởng độ mượt (tổng ba
+   cạnh của vòng không đổi), chỉ việc **chọn đúng bộ ba** mới ảnh hưởng.
 
 2. **`onTop` bị đảo.** `Client/FrameEff` có hàm tạo bị đảo tên tham số: part có `onTop==0`
    lại rơi vào `listPartTop`. Kết quả thực tế: `onTop = 0` vẽ trước (bóng đổ), `onTop = 1`
