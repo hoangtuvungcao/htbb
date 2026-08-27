@@ -3,145 +3,141 @@ setlocal enabledelayedexpansion
 title Build KPAH2_NEW.jar tu source
 cd /d "%~dp0"
 
+REM ============================================================
+REM  Build KPAH2_NEW.jar tu src\  (jar SACH, dung tu dau)
+REM
+REM  Chay sau khi sua bat ky file .java nao trong src\.
+REM  Xong thi chay capnhat.bat de thay vao KPAH2_patched.jar.
+REM
+REM  Ghi chu lich su: ban cu chong class moi len jar cu ("jar uf") vi so
+REM  mat util/Common.class va real/SkinThuNuoi.class - hai class khong co
+REM  ma nguon trong src\. Da kiem tra bytecode toan bo 139 class trong jar:
+REM  KHONG class nao tham chieu toi hai class do, ke ca dang Class.forName.
+REM  Chung la rac mo coi. Ba entry .txt trong jar cung vo dung vi source
+REM  khong he goi getResource/getResourceAsStream lan nao - moi file deu
+REM  doc bang new File(...) theo thu muc lam viec.
+REM  => dung jar sach duoc, va nho vay class xoa di trong src\ khong con bi
+REM     ket lai vinh vien trong jar nua.
+REM ============================================================
+
 echo ============================================================
 echo   BUILD KPAH2_NEW.jar TU SOURCE (src\)
 echo ============================================================
 echo.
-echo   Chay sau khi ban sua bat ky file .java nao trong src\.
-echo   Sau khi build xong, chay capnhat.bat de thay vao KPAH2_patched.jar
-echo   (co backup tu dong) va khoi dong lai server.
-echo.
 
-REM ---- Tim javac.exe + jar.exe (cung mot JDK) ----
-set "JAVAC="
-set "JARTOOL="
+REM ---- Tim mot JDK co DU ca javac.exe lan jar.exe ----
+REM javac tren PATH thuong la shim cua Oracle (Common Files\Oracle\Java\javapath)
+REM chi co java/javac/javaw/jshell, KHONG co jar.exe -> phai do tim JDK that.
+set "JDKBIN="
 for /f "delims=" %%J in ('where javac 2^>nul') do (
-    if not defined JAVAC set "JAVAC=%%J"
+    if not defined JDKBIN (
+        for %%D in ("%%~dpJ") do (
+            if exist "%%~fD\jar.exe" set "JDKBIN=%%~fD"
+        )
+    )
 )
-if not defined JAVAC (
-    echo [LOI] Khong tim thay javac trong PATH. Can cai JDK ^(khuyen nghi JDK 17-21^)
-    echo       va them vao PATH, hoac cai lai Java.
-    pause
-    exit /b 1
-)
-for %%J in ("%JAVAC%") do set "JDK_BIN=%%~dpJ"
-if exist "%JDK_BIN%jar.exe" set "JARTOOL=%JDK_BIN%jar.exe"
-
-REM javac tren PATH doi khi la shim khong co jar.exe cung thu muc (vi du
-REM Common Files\Oracle\Java\javapath cua Java 8 cu) -> do tim trong
-REM cac thu muc JDK pho bien tren Windows.
-if not defined JARTOOL (
+if not defined JDKBIN (
     for /d %%D in ("C:\Program Files\Java\jdk*") do (
-        if exist "%%D\bin\jar.exe" set "JARTOOL=%%D\bin\jar.exe"
+        if exist "%%D\bin\jar.exe" set "JDKBIN=%%D\bin"
     )
 )
-if not defined JARTOOL (
+if not defined JDKBIN (
     for /d %%D in ("C:\Program Files\Eclipse Adoptium\jdk*") do (
-        if exist "%%D\bin\jar.exe" set "JARTOOL=%%D\bin\jar.exe"
+        if exist "%%D\bin\jar.exe" set "JDKBIN=%%D\bin"
     )
 )
-if not defined JARTOOL (
-    echo [LOI] Tim thay javac tai:
-    echo         %JAVAC%
-    echo       nhung khong thay jar.exe cung thu muc, va khong tu do duoc trong
-    echo       C:\Program Files\Java\jdk* hay C:\Program Files\Eclipse Adoptium\jdk*.
-    echo       Mo thu muc "bin" cua JDK ban dang cai, kiem tra co jar.exe khong,
-    echo       roi sua bien JARTOOL trong file build.bat nay tro thang toi do.
+if not defined JDKBIN (
+    for /d %%D in ("C:\Program Files\Microsoft\jdk*") do (
+        if exist "%%D\bin\jar.exe" set "JDKBIN=%%D\bin"
+    )
+)
+if not defined JDKBIN (
+    echo [LOI] Khong tim thay JDK co ca javac.exe lan jar.exe.
+    echo       Cai JDK ^(khuyen nghi 17-21^) roi thu lai, hoac dat bien
+    echo       JDKBIN trong file nay tro thang toi thu muc "bin" cua JDK.
     pause
     exit /b 1
 )
-
-echo   javac: %JAVAC%
-echo   jar:   %JARTOOL%
+echo   JDK: %JDKBIN%
 echo.
 
-set "OUT=build\ant-classes"
-set "MANIFEST=build\manifest.mf"
+set "OUT=build\classes"
+set "MF=build\manifest.mf"
 set "LIBCP=lib\jxl-2.6.jar;lib\mysql-connector-java-5.1.49.jar;lib\NQSH_5h.jar"
+set "MAINCLASS=server.TeamServer"
 
+if not exist build mkdir build
 if exist "%OUT%" rmdir /s /q "%OUT%"
 mkdir "%OUT%"
 
-echo Dang liet ke file .java...
+echo [1/4] Liet ke file .java...
 dir /s /b src\*.java > build\sources.txt
-if not exist build\sources.txt (
-    echo [LOI] Khong liet ke duoc file .java.
-    pause
-    exit /b 1
-)
+for /f %%C in ('type build\sources.txt ^| find /c /v ""') do set SOCFILE=%%C
+echo       %SOCFILE% file.
 
-echo Dang bien dich (javac --release 8, khop dung Java 8 dang chay tren VPS)...
-REM QUAN TRONG: VPS chay Java 8 (openjdk-8-jre-headless, xem HUONG_DAN_BUILD_VPS.md
-REM phan B1: "jar server bien dich o class version 52 = Java 8"). Build bang
-REM --release cao hon (vi du 17, 19) tao class file VPS KHONG CHAY DUOC:
-REM "UnsupportedClassVersionError ... class file version 63.0, may nay chi doc
-REM duoc toi 52.0" -> server crash-loop, cong 19129 khong bao gio mo. DUNG doi so nay
-REM tru khi VPS da nang cap JDK va ban chac chan.
-"%JAVAC%" --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "%LIBCP%" -sourcepath src -d "%OUT%" @build\sources.txt
+echo [2/4] Bien dich (javac --release 8)...
+REM QUAN TRONG: VPS chay Java 8 (class version 52). Build bang --release cao hon
+REM tao class file VPS KHONG CHAY DUOC ("UnsupportedClassVersionError ... class
+REM file version 63.0, may nay chi doc duoc toi 52.0") -> server crash-loop,
+REM cong 19129 khong bao gio mo. DUNG doi so 8 nay tru khi VPS da nang JDK.
+"%JDKBIN%\javac.exe" --release 8 -encoding UTF-8 -nowarn -Xlint:none -cp "%LIBCP%" -sourcepath src -d "%OUT%" @build\sources.txt
 if errorlevel 1 (
     echo.
     echo [LOI] Bien dich that bai. Xem loi phia tren. KHONG dong goi jar.
     pause
     exit /b 1
 )
-echo   Bien dich xong, khong loi.
+for /f %%C in ('dir /s /b "%OUT%\*.class" ^| find /c /v ""') do set SOCLASS=%%C
+echo       OK - %SOCLASS% class.
 
-echo.
-echo Dang copy file tai nguyen (khong phai .java/.form)...
-robocopy src "%OUT%" /S /XF *.java *.form /NFL /NDL /NJH /NJS /NP >nul
+echo [3/4] Dong goi KPAH2_NEW.jar...
+REM Class-Path tro toi lib\ - la duong dan TUONG DOI so voi cho dat jar, tuc
+REM /opt/kpah/lib tren VPS (WorkingDirectory=/opt/kpah). Doi ten thu muc lib
+REM la server chet ngay luc khoi dong vi khong thay driver MySQL.
+> "%MF%" echo Manifest-Version: 1.0
+>> "%MF%" echo Main-Class: %MAINCLASS%
+>> "%MF%" echo Class-Path: lib/jxl-2.6.jar lib/mysql-connector-java-5.1.49.jar lib/NQSH_5h.jar
+>> "%MF%" echo.
 
-echo.
-echo Dang dong goi KPAH2_NEW.jar...
-REM QUAN TRONG: KHONG tao jar moi hoan toan tu %OUT%. Trong KPAH2_patched.jar
-REM hien tai co class util/Common.class KHONG CO MA NGUON trong src/ (xem
-REM HUONG_DAN_BUILD_VPS.md PHAN I) - dong jar moi tu dau se lam mat class do
-REM va server crash luc chay toi cho dung no. Phai CHONG lop moi len jar cu
-REM (jar uf = update, giu lai entry cu khong bi ghi de).
-if not exist KPAH2_patched.jar (
-    echo [LOI] Khong thay KPAH2_patched.jar de chong len. Dung lai de khong lam mat class cu.
-    pause
-    exit /b 1
-)
 if exist KPAH2_NEW.jar del /f /q KPAH2_NEW.jar
-copy /Y KPAH2_patched.jar KPAH2_NEW.jar >nul
-"%JARTOOL%" uf KPAH2_NEW.jar -C "%OUT%" .
+"%JDKBIN%\jar.exe" cfm KPAH2_NEW.jar "%MF%" -C "%OUT%" .
 if errorlevel 1 (
-    echo [LOI] Cap nhat jar that bai.
+    echo [LOI] Dong goi jar that bai.
     pause
     exit /b 1
 )
 
-echo Dang kiem tra jar khong bi mat class nao so voi ban cu...
-"%JARTOOL%" tf KPAH2_patched.jar | findstr /e ".class" > build\classes_cu.txt
-"%JARTOOL%" tf KPAH2_NEW.jar | findstr /e ".class" > build\classes_moi.txt
-
-if exist build\check_classes.ps1 del /f /q build\check_classes.ps1
-echo $cu = Get-Content 'build\classes_cu.txt' >> build\check_classes.ps1
-echo $moi = Get-Content 'build\classes_moi.txt' >> build\check_classes.ps1
-echo $mat = $cu ^| Where-Object { $_ -notin $moi } >> build\check_classes.ps1
-echo if ($mat) { >> build\check_classes.ps1
-echo Write-Host "  [CANH BAO] Cac class sau bi MAT so voi jar cu:" >> build\check_classes.ps1
-echo $mat ^| ForEach-Object { Write-Host "    $_" } >> build\check_classes.ps1
-echo exit 1 >> build\check_classes.ps1
-echo } else { >> build\check_classes.ps1
-echo Write-Host "  OK: khong mat class nao so voi jar cu." >> build\check_classes.ps1
-echo exit 0 >> build\check_classes.ps1
-echo } >> build\check_classes.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File build\check_classes.ps1
+echo [4/4] Kiem tra jar...
+REM Ba kiem tra toi thieu truoc khi cho phep dem len server that.
+"%JDKBIN%\jar.exe" tf KPAH2_NEW.jar > build\entries.txt
 if errorlevel 1 (
-    echo   [DUNG LAI] Co class bi mat, KPAH2_NEW.jar co the lam server crash. Kiem tra lai truoc khi dung.
+    echo   [LOI] Jar khong doc duoc.
     pause
     exit /b 1
 )
+set "MAINPATH=%MAINCLASS:.=/%.class"
+findstr /x /c:"%MAINPATH%" build\entries.txt >nul
+if errorlevel 1 (
+    echo   [LOI] Khong thay Main-Class %MAINCLASS% trong jar. Server se khong khoi dong duoc.
+    pause
+    exit /b 1
+)
+for /f %%C in ('findstr /e ".class" build\entries.txt ^| find /c /v ""') do set SOJAR=%%C
+if not "%SOJAR%"=="%SOCLASS%" (
+    echo   [LOI] Jar co %SOJAR% class nhung bien dich ra %SOCLASS%. Khong khop.
+    pause
+    exit /b 1
+)
+echo       OK - %SOJAR% class, Main-Class %MAINCLASS% co mat.
 
 echo.
 echo ============================================================
-echo   XONG: da tao KPAH2_NEW.jar
+echo   XONG: da tao KPAH2_NEW.jar (%SOJAR% class)
 echo   Buoc tiep theo:
-echo     1. Chay capnhat.bat  -^> thay vao KPAH2_patched.jar (co backup) + khoi dong lai
+echo     1. capnhat.bat  -^> thay vao KPAH2_patched.jar (co backup) + chay lai
 echo     2. Test server chay on tren may ban
 echo     3. git add KPAH2_patched.jar ^&^& git commit ^&^& git push
-echo        (day la buoc BAT BUOC de VPS nhan duoc ban build moi - deploy-auto.sh
-echo         tren VPS CHI pull file .jar co san, KHONG tu bien dich .java)
+echo        (BAT BUOC - deploy-auto.sh tren VPS chi pull file .jar co san,
+echo         no KHONG tu bien dich .java)
 echo ============================================================
 pause
