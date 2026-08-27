@@ -29,6 +29,7 @@ Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 3 phần ch
 ```
 build.bat      # biên dịch src/ -> KPAH2_NEW.jar (jar sạch, dựng từ đầu)
 capnhat.bat    # thay KPAH2_NEW.jar vào KPAH2_patched.jar (có backup) + chạy lại
+test.bat       # chạy bộ kiểm thử (mã thoát 0 = đạt) — không đụng jar deploy
 ```
 
 Sau đó **bắt buộc** `git add KPAH2_patched.jar && git commit && git push` — VPS chỉ
