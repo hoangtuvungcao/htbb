@@ -57,7 +57,7 @@ echo.
 
 set "OUT=build\ant-classes"
 set "MANIFEST=build\manifest.mf"
-set "LIBCP=libs\jxl-2.6.jar;libs\mysql-connector-java-5.1.49.jar;libs\NQSH_5h.jar"
+set "LIBCP=lib\jxl-2.6.jar;lib\mysql-connector-java-5.1.49.jar;lib\NQSH_5h.jar"
 
 if exist "%OUT%" rmdir /s /q "%OUT%"
 mkdir "%OUT%"

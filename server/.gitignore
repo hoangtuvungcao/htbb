@@ -71,3 +71,29 @@ web/config.local.php
 
 ### Tool build tam (tools/*.java bien dich ra day)
 out_tools/
+
+### San pham build trung gian ###
+# build.bat tao ra, capnhat.bat tieu thu - deu sinh ra tu KPAH2_patched.jar + src/,
+# khong phai ma nguon. Truoc day bi commit nham, lam repo phinh ~4.5 MB jar trung lap.
+/KPAH2_NEW.jar
+/KPAH2_patched_backup_truoc_capnhat.jar
+
+### Cache cua Unity - thu muc rong, khong lien quan server Java ###
+/Library/
+
+### File runtime server tu ghi ra thu muc goc khi chay ###
+/errorAnima.txt
+/hack.txt
+/hackdo.txt
+/errorSellITem.txt
+/errorquayso.txt
+/savechar.txt
+/saitenchar4.txt
+/offline.txt
+/top.txt
+/trangan.txt
+/longden.txt
+/longdenchar.txt
+/longdendaylog.txt
+/logtopluong.txt
+/update.txt
