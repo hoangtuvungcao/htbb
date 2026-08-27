@@ -70,7 +70,9 @@ Muốn đổi tên package thật sự thì phải gỡ phụ thuộc `NQSH_5h.j
 thừa của `jxl` và `mysql-connector` đã có sẵn trong `lib/`).
 
 
-## Cấu trúc `real/Map.java`
+## Cấu trúc ba file lớn
+
+### `real/Map.java` — 41.541 → 22.434 dòng (−45%)
 
 `Map.java` từng là 41.541 dòng. Đã tách còn 22.434 dòng (−45%) bằng **hai kỹ
 thuật, cả hai đều không đổi API nên `lib/NQSH_5h.jar` vẫn gọi được**:
@@ -118,6 +120,41 @@ diff. Mọi chữ ký biến mất phải là `private`; mất bất kỳ thành
 `public`/`protected`/package-private nào nghĩa là đã phá API mà jar đang gọi.
 Với uỷ nhiệm thì so thêm **từng dòng** thân method với bản gốc (chuẩn hoá
 `this`→`map`, bỏ tiền tố `Map.`/`map.` ở cả hai phía) — phải khác 0 dòng.
+
+
+### `real/Char.java` — 21.888 → 16.274 dòng (−25%)
+
+Chỉ có 35 method `private` trên tổng 679 method, nên gần như toàn bộ phải
+dùng **uỷ nhiệm**.
+
+| File | Nội dung |
+|---|---|
+| `CharNapDuLieu.java` | `initInfoFromDB`, `initPinfo` — nạp nhân vật từ CSDL |
+| `CharChiSo.java` | `attackDam`, `calculateDefend/Attack/MaxHPMP`, `applyThanKhiOnHit` |
+| `CharTrangBi.java` | `checkNewEffectItem`, `setItemWearing`, `setitemInvenBag` |
+| `CharSuKien.java` | quà tích luỹ, vòng quay, quà offline, 8/3 |
+| `CharCapNhat.java` | `subUpdate`, `updateNearChar`, `doPlayerMove`, buff, pet |
+
+**Không đụng vào** `Char.update` (613 dòng), `startThreadXoso`,
+`startThreadXosoLow` — thân chúng có **lớp ẩn danh**, mà lớp ẩn danh bắt `this`
+ngầm nên chuyển sang ngữ cảnh `static` là hỏng.
+
+### `data/Database.java` — 16.423 → 13.305 dòng (−18%)
+
+Chỉ 6 method `private` trên 335.
+
+| File | Nội dung |
+|---|---|
+| `DatabaseNhanVat.java` | `getChar`, `saveChar`, `saveCharAuto`, `addChar`, `saveCharLienDau`, `saveCharBackup`, `getCharList` |
+| `DatabaseGiftCode.java` | `newDoGetGiftCode`, `doAddNewColumInfoPart`, `loadEvent`, `getCheckQua` |
+
+### Hai bẫy nữa (ngoài ba bẫy đã ghi ở trên)
+
+4. Method vốn là **`static`** thì không có `this` — thêm tham số `self` rồi
+   sinh lời gọi `X.foo(this)` sẽ hỏng. javac bắt được ngay, nhưng phải nhớ
+   rà trước (`loadAllItemLucky` là ca duy nhất trong 14 method).
+5. Symbol thiếu có thể là **thành viên instance** chứ không phải `static` —
+   khi đó phải thêm tiền tố tham số (`self.`), không phải tên lớp (`Char.`).
 
 ## Tính năng
 
