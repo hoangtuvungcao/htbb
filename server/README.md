@@ -72,9 +72,9 @@ thừa của `jxl` và `mysql-connector` đã có sẵn trong `lib/`).
 
 ## Cấu trúc ba file lớn
 
-### `real/Map.java` — 41.541 → 22.434 dòng (−45%)
+### `real/Map.java` — 41.541 → 17.997 dòng (−57%)
 
-`Map.java` từng là 41.541 dòng. Đã tách còn 22.434 dòng (−45%) bằng **hai kỹ
+`Map.java` từng là 41.541 dòng. Đã tách còn 17.997 dòng (−57%) bằng **hai kỹ
 thuật, cả hai đều không đổi API nên `lib/NQSH_5h.jar` vẫn gọi được**:
 
 1. **Chuyển hẳn method `private`** sang class mới cùng package. An toàn vì
@@ -104,6 +104,9 @@ thuật, cả hai đều không đổi API nên `lib/NQSH_5h.jar` vẫn gọi đ
 | `MapEpNgoc.java` | ép ngọc, khảm ngọc |
 | `MapDungThuoc.java` | dùng bình thuốc |
 | `MapXaHoi.java` | tổ đội, bạn bè, thách đấu |
+| `MapXuLyLenh.java` | `processMessage`, `doChangeMap`, `doDotDen`, `doNapSMS`, xếp hạng |
+| `MapNapTaiNguyen.java` | nạp bảng ngọc, NPC, bản đồ, tile map, boss |
+| `MapVongLap.java` | `update`, `updateWind`, `updateSand`, lặp gửi thông tin |
 
 **Ba cái bẫy khi tách tiếp** (đều đã cắn một lần, javac không bắt được cái 2 và 3):
 
@@ -121,6 +124,27 @@ diff. Mọi chữ ký biến mất phải là `private`; mất bất kỳ thành
 Với uỷ nhiệm thì so thêm **từng dòng** thân method với bản gốc (chuẩn hoá
 `this`→`map`, bỏ tiền tố `Map.`/`map.` ở cả hai phía) — phải khác 0 dòng.
 
+
+
+### Cái giá phải trả: mất tính đóng gói
+
+Uỷ nhiệm không đổi API công khai, nhưng để class mới gọi được thì nhiều thành
+viên `private` phải nới thành package-private. Đo trên `real.Map` bằng `javap`:
+
+| | |
+|---|---|
+| `private` trong bản gốc | 224 |
+| chuyển hẳn sang file khác | 120 |
+| **vẫn ở `Map` nhưng đã nới quyền** | **63** |
+| còn nguyên `private` | 41 |
+
+Nới quyền **không bao giờ phá được gì** (chỉ thêm khả năng truy cập, không bỏ
+đi cái gì), nhưng 63 là nhiều — `Map` mất dần tính đóng gói. Đây là cái giá
+bắt buộc khi tách một lớp 41k dòng mà **không được** đổi API, vì
+`lib/NQSH_5h.jar` gọi thẳng vào nó.
+
+Nếu sau này gỡ được phụ thuộc `NQSH_5h.jar` thì có thể gộp mỗi nhóm method
+với dữ liệu của nó thành lớp thực sự độc lập, và trả lại `private`.
 
 ### `real/Char.java` — 21.888 → 16.274 dòng (−25%)
 
