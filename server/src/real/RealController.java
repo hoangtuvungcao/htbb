@@ -1009,18 +1009,12 @@ public class RealController extends ServerController {
                                     doRideAnimal.doRideAnimal(p, message);
 
                                     break;
-                                case 66:
-                                    doTrade.doTrade(p, message, 0);
-                                    break;
                                 case 85:
                                     doBuySpecialItem.doBuySpecialItem(p, message);
                                     break;
                                 case 22:
 
                                     doUsePotion.doUsePotion(p, message);
-                                    break;
-                                case -76:
-                                    this.doBuyItemShopNew(p, message);
                                     break;
                                 case -30:// doMenu(player, message);
                                     int idNpc = message.dis.readShort();
@@ -1633,159 +1627,6 @@ public class RealController extends ServerController {
         }
     }
 
-    private void doBuyItemShopNew(Char player, Message message) {
-        try {
-            if (!player.isCorrectPass && !player.passWord.equals("")) {
-                player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
-                return;
-            }
-
-            if (player.vip <= 0) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Cần Vip 1 Trở lên để thực hiện tính năng này.", ""));
-                return;
-            }
-
-            int type = message.dis.readShort();
-            if (type == -10000) {
-                String[] menu = new String[]{"Mở Túi Đồ", "Bỏ đồ vào túi", "Mở Kho", "Shop Đặc Biệt", "Bật lời mời"};
-                if (player.vip > 0) {
-                    if (player.rcvInviteVip) {
-                        menu[4] = "Tắt lời mời";
-                    }
-                } else {
-                    menu = new String[]{"Mở Túi Đồ", "Bỏ Đồ Vào Túi", "Mở Kho", "Shop Đặc Biệt"};
-                }
-
-                player.sendMessage(MessageCreator.createMsgMenu((String[]) menu, -516, 0));
-            } else {
-                int iditem = message.dis.readUnsignedByte();
-                Item it;
-                if (type == TYPE_SHOP_NEW_CUA_HANG_VIP) {
-                    if (iditem < 0 || iditem >= all_item_shop_special.size()) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không còn bán. Hãy mở lại shop.", ""));
-                        return;
-                    }
-                    it = (Item) all_item_shop_special.get(iditem);
-                    int xu = it.getXuSell();
-                    int luong = it.getLuongSell();
-                    if (player.getxu() < (long) xu) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
-                        return;
-                    }
-
-                    if (player.getLuong() < luong) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
-                        return;
-                    }
-
-                    String money = "xu";
-                    if (luong > 0) {
-                        money = "luong";
-                        player.subLuong((long) luong);
-                    }
-
-                    if (xu > 0) {
-                        money = "xu";
-                        player.subXu((long) xu, false, "doBuyItemShopNew");
-                    }
-
-                    if (it.isPhuPhuThe()) {
-                        int[] var10000 = player.potions;
-                        var10000[98] += it.getSoluong();
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Đã mua " + it.getSoluong() + " " + it.getName(), ""));
-                        Database.instance.saveOrtherLog("", player.charname, " mua: " + it.getName() + " _ voi gia " + xu + " xu, " + luong + " luong. tien sau mua " + player.getxu() + " xu, " + player.getLuong() + " luong", "shopvip");
-                        Database.instance.saveLogThongKeChiTieu(it.getName(), 0, it.getSoluong(), (long) (xu > 0 ? xu : (luong > 0 ? luong : 0)), money);
-                    } else if (it.isRuongNguyenLieu()) {
-                        if (player.vip <= 0) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Cần Vip 1 Trở lên để thực hiện tính năng này.", ""));
-                            return;
-                        }
-
-                        CharInfo cinfo = (CharInfo) ALL_CHAR_BUY_RUONG.get(player.charname);
-                        if (cinfo == null) {
-                            cinfo = new CharInfo();
-                            cinfo.name = player.charname;
-                            ALL_CHAR_BUY_RUONG.put(player.charname, cinfo);
-                            Database.instance.doAddCharBuyRuong(cinfo);
-                        } else if (cinfo.luong >= player.vip) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chỉ có thể mua tối đa " + player.vip + " rương trong 1 ngày.", ""));
-                            return;
-                        }
-
-                        ++cinfo.luong;
-                        Database.instance.doUpdateCharBuyRuong(cinfo);
-                        int hour = 24 - UtilKPAH.getHour();
-                        int minute = UtilKPAH.getMinute();
-                        int value = hour * 60 - minute;
-                        ItemTemplates template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(it.tempateID);
-                        Item newItem = null;
-                        newItem = new Item(template, false, template.clazz, template.clazz, template.id);
-                        newItem.id = player.getIDItem();
-                        newItem.owner = player.charDBID;
-                        newItem.level = 1;
-                        newItem.identify = player.charDBID;
-                        newItem.timeLoan = System.currentTimeMillis();
-                        newItem.minuteExist = value;
-                        newItem.dateCreate = Char.getDayTime(0L);
-                        player.iItems.add(newItem);
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                        Database.instance.saveOrtherLog("", player.charname, ID_RUONG_MAY_MAN_TRUNG + " mua ruong may man " + newItem.id_dongxu_trung + " " + ALL_RUONG_MAY_MAN, "buyruong");
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Đã mua 1 rương nguyên liệu", ""));
-                        Database.instance.saveOrtherLog("", player.charname, " mua: " + it.getName() + " _ voi gia " + xu + " xu, " + luong + " luong. tien sau mua " + player.getxu() + " xu, " + player.getLuong() + " luong", "shopvip");
-                        Database.instance.saveLogThongKeChiTieu(it.getName(), 0, it.getSoluong(), (long) (xu > 0 ? xu : (luong > 0 ? luong : 0)), money);
-                    } else if (it.isAoDai2021() || it.isTieuLongNu() || it.isDuongQua()) {
-                        if (player.vip <= 0) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Cần Vip 1 Trở lên để thực hiện tính năng này.", ""));
-                            return;
-                        }
-
-                        ItemTemplates template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(it.tempateID);
-                        Item newItem = null;
-                        newItem = new Item(template, false, template.clazz, template.clazz, template.id);
-                        newItem.id = player.getIDItem();
-                        newItem.owner = player.charDBID;
-                        newItem.level = 1;
-                        newItem.identify = player.charDBID;
-                        newItem.timeLoan = System.currentTimeMillis();
-                        newItem.minuteExist = it.getTimeExpire();
-                        newItem.dateCreate = Char.getDayTime(0L);
-                        player.iItems.add(newItem);
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                        Database.instance.saveOrtherLog("", player.charname, "mua " + newItem.getName() + "_" + newItem.getInfoSave(), "buyshopdb");
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Đã mua 1 " + newItem.getName(), ""));
-                        Database.instance.saveLogThongKeChiTieu(it.getName(), 0, it.getSoluong(), (long) (xu > 0 ? xu : (luong > 0 ? luong : 0)), money);
-                    }
-
-                    Database.instance.saveChar(player, false);
-                } else if (type == TYPE_SHOP_NEW_BO_ITEM_VAO_TUI) {
-                    if (player.bagItems.size() >= 42) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Túi đồ đã đầy", ""));
-                        return;
-                    }
-
-                    it = (Item) player.iItems.remove(iditem);
-                    player.bagItems.add(it);
-                    player.sendMessage(MessageCreator.createMessageShopNew(player, player.iItems, "Bỏ vào", "Hành trang", TYPE_SHOP_NEW_BO_ITEM_VAO_TUI));
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                    Database.instance.saveOrtherLog("", player.charname, "bo " + it.getName() + "_" + it.getInfoSave() + " vao tui do", "inven2tui");
-                    Database.instance.saveChar(player, false);
-                } else if (type == TYPE_SHOP_NEW_TUI_DO) {
-                    it = (Item) player.bagItems.remove(iditem);
-                    player.iItems.add(it);
-                    player.sendMessage(MessageCreator.createMessageShopNew(player, player.bagItems, "Lấy ra", "Túi Đồ", TYPE_SHOP_NEW_TUI_DO));
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                    Database.instance.saveOrtherLog("", player.charname, "lay " + it.getName() + "_" + it.getInfoSave() + " vao hanh trang", "tui2inven");
-                    Database.instance.saveChar(player, false);
-                }
-            }
-        } catch (Exception var15) {
-            var15.printStackTrace();
-        }
-
-    }
  
 
     public boolean privateMessage(byte cmd) {
