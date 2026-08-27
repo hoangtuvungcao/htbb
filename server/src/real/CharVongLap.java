@@ -443,7 +443,7 @@ class CharVongLap {
                 return;
             }
             if (self.mapID != 204) {
-                if (!MessageCreator.isVersion162() && self.timedie > 0L && System.currentTimeMillis() - self.timedie >= 1000L) {
+                if (!MessageCreator.isVersion162(self) && self.timedie > 0L && System.currentTimeMillis() - self.timedie >= 1000L) {
                     if (self.myCountry > -1 && !Map.idMapMONSTER.get(self.myCountry).contains(self.map.mapId)) {
                         final int[] cost = {1000, 2000, 3000, 4000, 5000, 10000, 15000, 20000, 30000, 60000, 70000, 500000, 1000000, 1300000, 1500000, 2000000, 2500000, 3000000, 4500000};
                         int cp = cost[self.lvDetail.lv / 5];

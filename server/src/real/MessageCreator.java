@@ -113,17 +113,48 @@ public class MessageCreator {
 
 
 
-    public static boolean isVersion162() {
-        try {
-            String[] parts = MessageCreator.version.split("\\.");
-            int major = Integer.parseInt(parts[0]);
-            int minor = Integer.parseInt(parts[1]); 
-            
-            // So sánh version major.minor với 1.62
-            return (major > 1) || (major == 1 && minor >= 62);
-        } catch (Exception e) {
+    /**
+     * Phien ban client co tu 1.62 tro len khong - doc theo PHIEN cua rieng nguoi
+     * choi nay, khong dung bien toan cuc.
+     *
+     * Vi sao can ban nay: MessageCreator.version la bien STATIC, bi LoginHandler
+     * ghi de moi lan CO NGUOI dang nhap. Khi may chu phuc vu lan hai loai client
+     * (vd 2.3.2 cu va 2.7.6 moi), ai dang nhap sau cung se quyet dinh gia tri do
+     * cho TAT CA nguoi choi - hanh vi nhay lung tung. Doc tu session thi moi
+     * nguoi choi mot gia tri, dung cua ai nay.
+     */
+    public static boolean isVersion162(final Char p) {
+        if (p == null) {
             return false;
         }
+        final io.Session s = p.getSession();
+        return s != null && isVersionAtLeast162(s.version);
+    }
+
+    /** So sanh mot chuoi phien ban voi 1.62. Chuoi hong -> false. */
+    public static boolean isVersionAtLeast162(final String ver) {
+        if (ver == null) {
+            return false;
+        }
+        try {
+            final String[] parts = ver.split("[.]");
+            final int major = Integer.parseInt(parts[0]);
+            final int minor = Integer.parseInt(parts[1]);
+            return major > 1 || (major == 1 && minor >= 62);
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * @deprecated Doc bien STATIC toan cuc nen tra ve phien ban cua NGUOI DANG
+     * NHAP GAN NHAT, khong phai cua nguoi choi dang xet. Dung isVersion162(Char)
+     * o cho nao co doi tuong Char. Giu lai vi LoginHandler goi ngay sau khi vua
+     * gan bien do (luc do gia tri dung).
+     */
+    @Deprecated
+    public static boolean isVersion162() {
+        return isVersionAtLeast162(MessageCreator.version);
     }
 
 
