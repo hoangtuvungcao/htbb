@@ -69,6 +69,56 @@ Muốn đổi tên package thật sự thì phải gỡ phụ thuộc `NQSH_5h.j
 (dịch ngược ~233 class game trong đó về `src/`; 642 class còn lại chỉ là bản sao
 thừa của `jxl` và `mysql-connector` đã có sẵn trong `lib/`).
 
+
+## Cấu trúc `real/Map.java`
+
+`Map.java` từng là 41.541 dòng. Đã tách còn 22.434 dòng (−45%) bằng **hai kỹ
+thuật, cả hai đều không đổi API nên `lib/NQSH_5h.jar` vẫn gọi được**:
+
+1. **Chuyển hẳn method `private`** sang class mới cùng package. An toàn vì
+   bytecode ngoài không thể gọi tới `private`.
+2. **Uỷ nhiệm** với method `public`/`protected` (jar gọi trực tiếp, không được
+   chuyển đi): giữ nguyên method và chữ ký, chỉ chuyển *thân* sang class khác:
+
+   ```java
+   protected void doMenu(Char player, Message message) {
+       MapDoMenu.doMenu(this, player, message);
+   }
+   ```
+
+| File | Nội dung |
+|---|---|
+| `MapDoMenu.java` | thân `Map.doMenu` — chọn mục trong menu NPC |
+| `MapChat.java` | thân `Map.doChat` — chat + lệnh admin |
+| `MapNhapText.java` | thân `Map.doProcessInputText` — ô nhập liệu |
+| `MapDanhNhau.java` | thân `doAttackPlayer` / `doAttackMonster` / `doAttackMultiTarget` |
+| `MapDungThuoc.java` | thân `Map.doUsePotion` |
+| `MapSuKien.java` | NPC sự kiện theo mùa (Tết, Noel, Trung Thu, Giỗ Tổ, Vu Lan) |
+| `MapMenuNpc.java` | menu NPC riêng lẻ (Hằng Nga, Vua Hùng, Dracula…) |
+| `MapBangHoi.java` | quản lý bang hội |
+| `MapQuaTang.java` | hộp quà, vòng quay, phần thưởng |
+| `MapMuaBan.java` | mua bán, giao dịch |
+| `MapCheTao.java` | chế tạo / sửa chữa vật phẩm |
+| `MapEpNgoc.java` | ép ngọc, khảm ngọc |
+| `MapDungThuoc.java` | dùng bình thuốc |
+| `MapXaHoi.java` | tổ đội, bạn bè, thách đấu |
+
+**Ba cái bẫy khi tách tiếp** (đều đã cắn một lần, javac không bắt được cái 2 và 3):
+
+1. Method `private synchronized` khoá trên chính đối tượng `Map`. Chuyển sang
+   `static` là **mất khoá** → phải bọc lại `synchronized (map) { … }`.
+2. Biến cục bộ trùng tên `map` che mất tham số mới thêm. Nguy hiểm hơn: nếu
+   **trong khối đó** bản gốc có dùng `this`, phép đổi `this`→`map` sẽ trỏ nhầm
+   vào biến cục bộ. **Luôn kiểm bản gốc có `this` trong khối trước khi đổi tên.**
+3. `import static real.Map.x` **không dùng được cho phép gán** (`x = 5`).
+   Dùng tiền tố tường minh `Map.x` — luôn đúng cả khi đọc lẫn ghi.
+
+**Cách kiểm chứng bắt buộc sau mỗi lần tách**: dump `javap -p` trước/sau rồi
+diff. Mọi chữ ký biến mất phải là `private`; mất bất kỳ thành viên
+`public`/`protected`/package-private nào nghĩa là đã phá API mà jar đang gọi.
+Với uỷ nhiệm thì so thêm **từng dòng** thân method với bản gốc (chuẩn hoá
+`this`→`map`, bỏ tiền tố `Map.`/`map.` ở cả hai phía) — phải khác 0 dòng.
+
 ## Tính năng
 
 - Skin linh thú (đổi hình thú cưỡi, giữ nguyên chỉ số): [docs/skin-linh-thu.md](docs/skin-linh-thu.md)
