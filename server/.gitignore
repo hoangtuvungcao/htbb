@@ -97,3 +97,7 @@ out_tools/
 /longdendaylog.txt
 /logtopluong.txt
 /update.txt
+
+### Thu muc bien dich tam cua test.bat ###
+/build/test-classes/
+/build/test-classes-src/
