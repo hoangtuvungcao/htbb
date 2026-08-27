@@ -1,0 +1,2123 @@
+package real;
+
+
+import data.Animal;
+import real.plugins.GiftCode;
+import data.BossMatQuy;
+import data.CharClan;
+import data.CharCooking;
+import data.CharInboxMessage;
+import data.CharInfo;
+import data.CharWeaponData;
+import data.Cooking;
+import data.CreateItemTemplate;
+import data.DataGame;
+import data.Database;
+import data.EventGame;
+import data.GameCanvas;
+import data.GemItem;
+import data.Goverment;
+import data.InfoCharLienDau;
+import data.InfoItemCreate;
+import data.InfoQuestTemplate;
+import data.ItemChangeColor;
+import data.ItemInfo;
+import data.ItemLuckyDraw;
+import data.ItemQuest;
+import data.MapLocation;
+import data.Net;
+import data.NewClan;
+import data.OtherHandle;
+import data.Pet;
+import data.PetTemplate;
+import data.SeedItem;
+import data.SeedTemplate;
+import data.Text;
+import data.ThungGo;
+import data.Weather;
+import data.Xoso;
+import io.Message;
+import io.SessionManager;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Random;
+import java.util.Vector;
+import real.cmd.CreateCharHandler;
+import real.cmd.LoginHandler;
+import real.cmd.RequestNPCInfoHandler;
+import server.TeamServer;
+import util.Logger;
+import data.NewClan;
+import ThanKhi.ThoRenThanBi;
+
+/**
+ * Than cac method xu ly lenh va dieu huong cua Map: dinh tuyen goi tin tu
+ * client, chuyen ban do, nhat vat pham, dot den, nap SMS, bang xep hang,
+ * thong tin chi tiet nhan vat, chap nhan thach dau to doi, cong kinh nghiem,
+ * mua trang phuc.
+ *
+ * Tach tu real/Map.java. Cac method VAN CON trong Map, giu NGUYEN chu ky cu,
+ * chi than chuyen sang day. Tham so "Map map" thay cho "this" truoc day
+ * (tru method von la static thi khong co tham so nay).
+ */
+class MapXuLyLenh {
+
+    static void addXpCharEvent(Char p, long dxp, boolean isNhansam, String pos) {
+        try {
+            synchronized (p.lvDetail) {
+                
+                if (Map.checkRcvXP) {
+                    if (p.receiveXP() == 3) {
+                        return;
+                    }
+
+                    dxp /= (long) p.receiveXP();
+                }
+
+                int currentLevel = p.lvDetail.lv;
+                long currentXP = p.lvDetail.getExp();
+                if (dxp == 0L) {
+                    dxp = 1L;
+                }
+
+                int div = 1;
+                if (currentLevel >= 60 && !isNhansam) {
+                    div = 3;
+                }
+
+                currentXP += dxp / (long) div + (long) (1 + Map.r.nextInt(5));
+                p.lvDetail.setExp(currentXP, p.oldLv, p.charname, "addxpcharevent map");
+                p.expRace = p.expRace + dxp + (long) (1 + Map.r.nextInt(5));
+                int newlevel = p.lvDetail.lv;
+                byte[] var10000 = new byte[]{5, 5, 5, 5, 5, 5, 5};
+                if (newlevel >= currentLevel + 1) {
+                    if (Char.isDemTrungThu() && p.lvDetail.lv >= 20 && p.nBinhTra == 0) {
+                        p.nBinhTra = 1;
+                        p.potions[125]++;
+                        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được hộp quà trung thu"));
+                        Database.instance.saveOrtherLog("", p.charname, "nhan qua trung thu khi len 20", "nhanhopquatt");
+                    }
+
+                    Database.instance
+                            .saveOrtherLog(
+                                    "",
+                                    p.charname,
+                                    currentLevel
+                                    + "_"
+                                    + newlevel
+                                    + " len lv:  xp cu: "
+                                    + currentXP
+                                    + " >> xpmoi: "
+                                    + currentXP
+                                    + " >> expadd: "
+                                    + dxp
+                                    + " > vi tri set: "
+                                    + pos,
+                                    "lenlevel"
+                            );
+                    if (p.getSession().bigProvider.equals("1") && !p.getSession().username.equals("") && p.getSession().privateProvider.equals("1")) {
+                        TeamServer.addQueue(p.getSession().username + "/LEVELUP/" + newlevel + "/" + p.charname);
+                    }
+
+                    Message m = new Message(33);
+                    m.dos.writeShort(p.id);
+                    m.dos.writeByte(newlevel);
+                    m.dos.writeInt(p.maxhp);
+                    m.dos.writeInt(p.maxmp);
+                    p.hp = p.maxhp;
+                    p.mp = p.maxmp;
+                    p.sendMessage(m);
+                    p.sendToNearPlayer(m);
+                    m.cleanup();
+                    if (newlevel > p.lastLV) {
+                        p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
+                        p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
+                        p.agitity = (short) (p.agitity + 1 * (newlevel - p.lastLV));
+                        p.spirit = (short) (p.spirit + 1 * (newlevel - p.lastLV));
+                        p.health = (short) (p.health + 1 * (newlevel - p.lastLV));
+                        p.luck = (short) (p.luck + 1 * (newlevel - p.lastLV));
+                        p.skillpoint = (short) (p.skillpoint + 1 * (newlevel - p.lastLV));
+                        p.lastLV = (short) newlevel;
+                        m = new Message(32);
+                        m.dos.writeShort(p.id);
+                        m.dos.writeByte(2);
+                        m.dos.writeUTF("bp");
+                        m.dos.writeInt(p.basepoint);
+                        m.dos.writeUTF("sp");
+                        m.dos.writeInt(p.skillpoint);
+                        m.dos.writeByte(p.lvDetail.lv);
+                        m.dos.writeShort(p.lvDetail.percent);
+                        p.sendMessage(m);
+                        m.cleanup();
+                        p.calculateAttrib();
+                        p.hp = p.maxhp;
+                        p.mp = p.maxmp;
+                        p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+                    } else {
+                        m = new Message(32);
+                        m.dos.writeShort(p.id);
+                        m.dos.writeByte(2);
+                        m.dos.writeUTF("bp");
+                        m.dos.writeInt(p.basepoint);
+                        m.dos.writeUTF("sp");
+                        m.dos.writeInt(p.skillpoint);
+                        m.dos.writeByte(p.lvDetail.lv);
+                        m.dos.writeShort(p.lvDetail.percent);
+                        p.sendMessage(m);
+                        m.cleanup();
+                        p.calculateAttrib();
+                        p.hp = p.maxhp;
+                        p.mp = p.maxmp;
+                        p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+                    }
+                }
+
+                Message m = MessageCreator.createXPMessage(p, dxp);
+                p.sendMessage(m);
+                m.cleanup();
+            }
+        } catch (Exception var16) {
+        }
+    }
+
+    static void addXPForChar(Char p, long dxp, boolean isNhansam, String pos) throws IOException {
+        synchronized (p.lvDetail) {
+            boolean isAdminBuff = pos != null && pos.contains("adminpanel");
+            if (!isAdminBuff && Map.checkRcvXP) {
+                if (p.receiveXP() == 3) {
+                    return;
+                }
+                dxp /= (long) p.receiveXP();
+            }
+
+            int currentLevel = p.lvDetail.lv;
+            long currentXP = p.lvDetail.getExp();
+            if (dxp == 0L) {
+                dxp = 1L;
+            }
+
+            int div = 1;
+            if (currentLevel >= 60 && !isNhansam && !isAdminBuff) {
+                div = 3;
+            }
+
+            // Nếu là admin buff thì không chia, không random
+            if (isAdminBuff) {
+                currentXP += dxp;
+            } else {
+                currentXP += dxp / (long) div + (long) (1 + Map.r.nextInt(5));
+            }
+            p.lvDetail.setExp(currentXP, p.oldLv, p.charname, "addxpforchar map");
+            p.expRace = p.expRace + dxp + (long) (1 + Map.r.nextInt(5));
+            int newlevel = p.lvDetail.lv;
+            byte[] var10000 = new byte[]{5, 5, 5, 5, 5, 5, 5};
+            if (newlevel >= currentLevel + 1) {
+                if (Char.isDemTrungThu() && p.lvDetail.lv >= 20 && p.nBinhTra == 0) {
+                    p.nBinhTra = 1;
+                    p.potions[125]++;
+                    p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+                    p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được hộp quà trung thu"));
+                    Database.instance.saveOrtherLog("", p.charname, "nhan qua trung thu khi len 20", "nhanhopquatt");
+                }
+
+                Database.instance
+                        .saveOrtherLog(
+                                "",
+                                p.charname,
+                                currentLevel + "_" + newlevel + " len lv:  xp cu: " + currentXP + " >> xpmoi: " + currentXP + " >> expadd: " + dxp + " > vi tri: " + pos,
+                                "lenlevel"
+                        );
+                if (p.getSession().bigProvider.equals("1") && !p.getSession().username.equals("") && p.getSession().privateProvider.equals("1")) {
+                    TeamServer.addQueue(p.getSession().username + "/LEVELUP/" + newlevel + "/" + p.charname);
+                }
+
+                Message m = new Message(33);
+                m.dos.writeShort(p.id);
+                m.dos.writeByte(newlevel);
+                m.dos.writeInt(p.maxhp);
+                m.dos.writeInt(p.maxmp);
+                p.hp = p.maxhp;
+                p.mp = p.maxmp;
+                p.sendMessage(m);
+                p.sendToNearPlayer(m);
+                m.cleanup();
+                if (newlevel > p.lastLV) {
+                    p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
+                    p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
+                    p.agitity = (short) (p.agitity + 1 * (newlevel - p.lastLV));
+                    p.spirit = (short) (p.spirit + 1 * (newlevel - p.lastLV));
+                    p.health = (short) (p.health + 1 * (newlevel - p.lastLV));
+                    p.luck = (short) (p.luck + 1 * (newlevel - p.lastLV));
+                    p.skillpoint = (short) (p.skillpoint + 1 * (newlevel - p.lastLV));
+                    p.lastLV = (short) newlevel;
+                    m = new Message(32);
+                    m.dos.writeShort(p.id);
+                    m.dos.writeByte(2);
+                    m.dos.writeUTF("bp");
+                    m.dos.writeInt(p.basepoint);
+                    m.dos.writeUTF("sp");
+                    m.dos.writeInt(p.skillpoint);
+                    m.dos.writeByte(p.lvDetail.lv);
+                    m.dos.writeShort(p.lvDetail.percent);
+                    p.sendMessage(m);
+                    m.cleanup();
+                    p.calculateAttrib();
+                    p.hp = p.maxhp;
+                    p.mp = p.maxmp;
+                    p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+                } else {
+                    m = new Message(32);
+                    m.dos.writeShort(p.id);
+                    m.dos.writeByte(2);
+                    m.dos.writeUTF("bp");
+                    m.dos.writeInt(p.basepoint);
+                    m.dos.writeUTF("sp");
+                    m.dos.writeInt(p.skillpoint);
+                    m.dos.writeByte(p.lvDetail.lv);
+                    m.dos.writeShort(p.lvDetail.percent);
+                    p.sendMessage(m);
+                    m.cleanup();
+                    p.calculateAttrib();
+                    p.hp = p.maxhp;
+                    p.mp = p.maxmp;
+                    p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+                }
+            }
+
+            Message m = MessageCreator.createXPMessage(p, dxp);
+            p.sendMessage(m);
+            m.cleanup();
+        }
+    }
+
+    static void doGetItem(Map map, Char player, short id) {
+        try {
+            if (player == null) {
+                return;
+            }
+    
+            if (player.isFullInventory() && !player.isAutoBan && !player.isNghienAuto) {
+                player.sendMessage(MessageCreator.createMsgChat(player.id, "Hành trang đã đầy"));
+                return;
+            }
+    
+            Item item = map.getItem(id, player.inCountry);
+            if (item == null) {
+                Message m = new Message(20);
+                m.dos.writeByte(3);
+                m.dos.writeShort(id);
+                player.sendMessage(m);
+                m.cleanup();
+                return;
+            }
+    
+            if (item.istrungPet() || (item.belongUser != player.charDBID && item.belongUser != 0)) {
+                return;
+            }
+    
+            map.removeItem(item, player.inCountry);
+            item.owner = player.charDBID;
+            short oldid = item.id;
+            item.id = player.getIDItem();
+            item.identify = player.charDBID;
+            item.isItemDrop = 1;
+    
+            Message m = new Message(18);
+            m.dos.writeShort(player.id);
+            m.dos.writeByte(item.clazz);
+            m.dos.writeShort(oldid);
+            m.dos.writeShort(item.id);
+            m.dos.writeShort(item.getTemplate().id);
+            m.dos.writeByte(item.plus);
+            m.dos.writeByte(item.level);
+            m.dos.writeShort(item.durable);
+            m.dos.writeShort(item.mDurable);
+            player.sendMessage(m);
+            player.sendToNearPlayer(m);
+            m.cleanup();
+    
+            if (player.isNghienAuto && !Map.isWearingAnimal(item.getTemplate().type) && 
+                item.isItemDrop != 0 && Map.isItemChar(item.getTemplate().type)) {
+                
+                int sl = item.colorName == Item.COLOR_BLUE ? Map.r.nextInt(2) + 2 :
+                        item.colorName == Item.COLOR_RED ? Map.r.nextInt(4) + 2 :
+                        item.colorName == Item.COLOR_GREEN ? Map.r.nextInt(6) + 2 : 1;
+                        
+                player.doAddGemItem(246, sl, item.lock == 1);
+                Database.instance.deleteItem(item.dbid);
+                player.subXu(2000L, true, "offline map 9");
+                player.sendMessage(MessageCreator.createCharGemItem(player));
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                player.sendMessage(MessageCreator.createMsgChat(player.id, "Đã nghiền được " + item.getName() + " nhận được " + sl + " " + "bột thường"));
+                return;
+            }
+    
+            if (player.isAutoBan) {
+                int price = Map.itemTemplates.get(5).get(item.getTemplate().id).price;
+                int xuban = price / 5;
+                player.addXu(xuban, "map 6");
+                player.sendMessage(MessageCreator.createCharGemItem(player));
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                player.sendMessage(MessageCreator.createMsgChat(player.id, "Đã bán được " + item.getName() + " nhận được " + xuban + " " + "xu"));
+                return;
+            }
+    
+            if (player.isFullInventory()) {
+                player.sendMessage(MessageCreator.createMsgChat(player.id, "Hành trang đã đầy"));
+                return;
+            }
+            player.iItems.add(item);
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+
+    
+        } catch (Exception e) {
+            System.out.println("Error in doGetItem: " + e.getMessage());
+        }
+    }
+
+    static void processMessage(Map map, Char player, Message message) throws IOException {
+        
+        switch (message.command) {
+            case -76:
+                map.doBuyItemShopNew(player, message);
+            case -75:
+            case -74:
+            case -73:
+            case -72:
+            case -64:
+            case -60:
+            case -58:
+            case -56:
+            case -55:
+            case -51:
+            case -50:
+            case -49:
+            case -48:
+            case -47:
+            case -44:
+            case -43:
+            case -42:
+            case -40:
+            case -39:
+            case -38:
+            case -29:
+            case -26:
+            case -4:
+            case -1:
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 5:
+            case 8:
+            case 10:
+            case 11:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 20:
+            case 23:
+            case 25:
+            case 26:
+            case 30:
+            case 32:
+            case 33:
+            case 35:
+            case 37:
+            case 38:
+            case 39:
+            case 40:
+            case 41:
+            case 42:
+            case 43:
+            case 44:
+            case 45:
+            case 46:
+            case 47:
+            case 54:
+            case 56:
+            case 57:
+            case 58:
+            case 59:
+            case 60:
+            case 63:
+            case 64:
+            case 65:
+            case 73:
+            case 80:
+            case 83:
+            case 84:
+            case 89:
+            case 90:
+            case 91:
+            case 93:
+            case 96:
+            case 97:
+            case 98:
+            case 99:
+            case 103:
+            case 105:
+            default:
+                break;
+            case -71:
+                map.doSetTaxTown(player, message);
+                break;
+            case -70:
+                MapBangHoi.doInfoClanQuest(map, player, message);
+                break;
+            case -69:
+                MapEpNgoc.doAutoImbue(map, player, message);
+                break;
+            case -68:
+                byte type = message.dis.readByte();
+                if (type == 0) {
+                    MapEpNgoc.doTachNguyenLieu(map, player, message.dis.readShort(), 2);
+                } else if (type == 1) {
+                    map.doAddNewAttribute(player, message.dis.readShort(), message.dis.readShort(), message.dis.readByte());
+                } else if (type == 2) {
+                    map.doLockItemAnimal(player, message.dis.readShort(), message.dis.readShort(), message.dis.readByte());
+                } else if (type == 3) {
+                    map.doLockItemChar(player, message.dis.readShort(), message.dis.readShort(), message.dis.readByte());
+                } else if (type == 4) {
+                    map.doNghienBot(player, message);
+                } else if (type == 5) {
+                    MapCheTao.doAddNewAttBot(map, player, message);
+                }
+                break;
+            case -67:
+                map.doTuBinh(player, message);
+                break;
+            case -66:
+                map.doFruit(player, message);
+                break;
+            case -65:
+                map.doGetItemQuest(player, message);
+                break;
+            case -63:
+                map.doBuyXoso(player, message);
+                break;
+            case -62:
+                MapQuaTang.doOpenLuckyBox(map, player, message);
+                break;
+            case -61:
+                map.doProcessItemAnimal(player, message);
+                break;
+            case -59:
+                map.doPlant(player, message);
+                break;
+            case -57:
+                map.doMsgCharMonster(player, message);
+                break;
+            case -54:
+                map.doChangTypeItem(player, message);
+                break;
+            case -53:
+                NewClan.getTopMemberClan(player, message.dis.readShort());
+                break;
+            case -52:
+                MapCheTao.doUserCreateItem(map, player, message);
+                break;
+            case -46:
+                player.sendMessage(MessageCreator.createMsgSound(1));
+                break;
+            case -45:
+                map.doRideAnimal(player, message);
+                break;
+            case -41:
+                map.doGetGemItem(player, message);
+                break;
+            case -37:
+                MapBangHoi.doQuestClan(map, player, message);
+                break;
+            case -36:
+                MapEpNgoc.doFinishEpNgoc(map, player, message.dis.readByte(), message);
+                break;
+            case -35:
+                MapEpNgoc.doFinishKhamItem(map, player, message.dis.readByte());
+                break;
+            case -34:
+                MapEpNgoc.doKhamItem(map, player, message.dis.readByte());
+                break;
+            case -33:
+                map.doMove2Warp(player, message);
+                break;
+            case -32:
+                map.doPopup(player, message);
+                break;
+            case -31:
+                map.doProcessInputText(player, message);
+                break;
+            case -30:
+                map.doMenu(player, message);
+                break;
+            case -28:
+                map.doConfirmCapcha(player, message);
+                break;
+            case -27:
+                map.doSendWeaponeData(player, message);
+                break;
+            case -25:
+                map.doGiveCardTown(player, message);
+                break;
+            case -24:
+                map.doSendStringInfo(player, message);
+                break;
+            case -23:
+                MapEpNgoc.doGiveSpecialGem2Ground(map, player, message);
+                break;
+            case -22:
+                doSendDetailChar(map, player, message);
+                break;
+            case -21:
+                map.doGivePotion2Ground(player, message);
+                break;
+            case -20:
+                MapBangHoi.doGiveMoneyClan(map, player, message);
+                break;
+            case -19:
+                doSendTop(map, player, message);
+                break;
+            case -18:
+                MapBangHoi.doChatClan(map, player, message);
+                break;
+            case -17:
+                MapBangHoi.doSendMessage2Clan(map, player, message);
+                break;
+            case -16:
+                MapBangHoi.doSetSloganClan(map, player, message);
+                break;
+            case -15:
+                MapBangHoi.doUserOutClan(map, player);
+                break;
+            case -14:
+                MapBangHoi.doDelClan(map, player);
+                break;
+            case -13:
+                MapBangHoi.doKickMemberOutClan(map, player, message);
+                break;
+            case -12:
+                MapBangHoi.doSendInfoClan(map, player, message);
+                break;
+            case -11:
+                MapBangHoi.doInviteChar2Clan(map, player, message);
+                break;
+            case -10:
+                MapBangHoi.doCreateClan(map, player, message);
+                break;
+            case -9:
+                MapBangHoi.doRequestCreateClan(map, player);
+                break;
+            case -8:
+                MapBangHoi.doSendImgIconClan(map, player, message);
+                break;
+            case -7:
+                MapBangHoi.doSendListMemberClan(map, player, message);
+                break;
+            case -6:
+                map.delFriend(player, message.dis.readUTF());
+                break;
+            case -5:
+                MapXaHoi.doSendMessage(map, player, message);
+                break;
+            case -3:
+                map.doSendWearingInfo(player, message.dis.readByte(), message.dis.readShort());
+                break;
+            case -2:
+                map.doSendMainInfo(player, message.dis.readByte(), message.dis.readShort());
+                break;
+            case 4:
+                map.doPlayerMove(player, message);
+                break;
+            case 6:
+                map.doAttackPlayer(player, message);
+                break;
+            case 7:
+                map.doRequestMonterInfo(player, message);
+                break;
+            case 9:
+                map.doAttackMonster(player, message);
+                break;
+            case 12:
+                doChangeMap(map, player, message);
+                break;
+            case 18:
+                map.doGetItem(player, message);
+                System.err.println("ok");
+                break;
+            case 19:
+                map.doGetPotion(player, message);
+                break;
+            case 21:
+                MapCheTao.doRequestItemInfo(map, player, message);
+                break;
+            case 22:
+                map.doUsePotion(player, message);
+                break;
+            case 24:
+                map.doBuyItem(player, message);
+                break;
+            // Truoc day dong nay bi comment -> server khong xu ly chat (lenh 27) chut nao:
+            // nguoi choi khong chat duoc cho nhau (client chi tu hien lai cau minh vua go),
+            // va moi lenh admin go trong chat (stown, tgct, ktct...) deu vo tac dung.
+            case 27:
+                map.doChat(player, message);
+                break;
+            case 28:
+                map.doSellItem(player, message);
+                break;
+            case 29:
+                map.doUseItem(player, message);
+                break;
+            case 31:
+                map.doComeHomeWhenDie(player);
+                break;
+            case 34:
+                map.doAddBasePoint(player, message);
+                break;
+            case 36:
+                map.doAddSkillPoint(player, message);
+                break;
+            case 48:
+                player.createParty();
+                break;
+            case 49:
+                MapXaHoi.doParty(map, player, message);
+                break;
+            case 50:
+                map.doKickParty(player, message);
+                break;
+            case 51:
+                map.doUserBuff(player, message);
+                break;
+            case 52:
+                player.receiveQuest(message);
+                break;
+            case 53:
+                player.talkWithNpc(message.dis.readByte(), message.dis.readByte(), message.dis.readShort());
+                break;
+            case 55:
+                player.talkWithNpcResponse(message.dis.readByte(), message.dis.readByte(), message.dis.readShort());
+                break;
+            case 61:
+                map.doGiveItemToGround(player, message);
+                break;
+            case 62:
+                map.doRequestSellItemMarket(player, message);
+                break;
+            case 66:
+                MapMuaBan.doTrade(map, player, message, 0);
+                break;
+            case 67:
+                map.doSendKiller(player);
+                break;
+            case 68:
+                map.doPutItem2Bag(player, message.dis.readShort());
+                break;
+            case 69:
+                map.doGetItemFromBag(player, message.dis.readShort());
+                break;
+            case 70:
+                player.isPutItem2Bag = false;
+                break;
+            case 71:
+                MapEpNgoc.doImbue(map, player, message.dis.readByte());
+                break;
+            case 72:
+                map.doRepair(player, message.dis.readByte());
+                break;
+            case 74:
+                map.doBuyGemItem(player, message);
+                break;
+            case 75:
+                MapEpNgoc.doAddItemImbue(map, player, message.dis.readShort());
+                break;
+            case 76:
+                MapEpNgoc.doAddGemItemImbue(map, player, message.dis.readShort(), message);
+                break;
+            case 77:
+                MapEpNgoc.doFinishImbue(map, player, message.dis.readByte());
+                break;
+            case 78:
+                map.doSellGemItem(player, message);
+                break;
+            case 79:
+                map.doMove2Map(player, message.dis.readByte(), message.dis.readShort());
+                break;
+            case 81:
+                map.doBuyTicket(player);
+                break;
+            case 82:
+                map.doUp2Board(player);
+                break;
+            case 85:
+                MapMuaBan.doBuySpecialItem(map, player, message);
+                break;
+            case 86:
+                MapMuaBan.doUseSpecialITem(map, player, message);
+                break;
+            case 87:
+                map.doLuckyDraw(player, message);
+                break;
+            case 88:
+                map.doRequestMainCharInfo(player);
+                break;
+            case 92:
+                map.doUserSellItem(player, message);
+                break;
+            case 94:
+                map.proccessDepositeItem(player, message);
+                break;
+            case 95:
+                map.doBuyItemOfUser(player, message);
+                break;
+            case 100:
+                map.doSendMonsterTemplate(player, 0);
+                break;
+            case 101:
+                MapXaHoi.doAddFriend(map, player, message);
+                break;
+            case 102:
+                map.doGetDetailChar(player, message);
+                break;
+            case 104:
+                player.config(message.dis.readByte());
+                break;
+            case 106:
+                map.doAttackMultiTarget(player, message);
+                break;
+            case 107:
+                map.doNapSMS(player, message);
+                break;
+            case 108:
+                map.doUnRideHorse(player, message);
+                break;
+            case 109:
+                map.doLearnSkil(player, message);
+                break;
+            case 110:
+                map.doReadMessage(player, message);
+        }
+
+        try {
+            message.cleanup();
+        } catch (Exception var4) {
+        }
+    }
+
+    static void doAcceptChallengeParty(Map map, Char player, int ok) {
+        try {
+            Char p = CharManager.instance.getCharByCharName(player.nameCompetitor);
+            if (p != null) {
+                if (ok == 0) {
+                    p.nameCompetitor = "";
+                    p.moneyThachdau = 0;
+                    p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " không chấp nhận lời thách đấu của bạn", ""));
+                    return;
+                }
+
+                for (int i = 0; i < p.party.userParty.size(); i++) {
+                    ((Char) p.party.userParty.get(i))
+                            .sendMessage(
+                                    MessageCreator.createServerAlertMessage(
+                                            player.charname
+                                            + " đã chấp nhận lời thách đấu nhóm của bạn. Trận đấu của nhóm bạn và nhóm "
+                                            + player.nameCompetitor
+                                            + " sẽ diễn ra sau 30s nữa.",
+                                            ""
+                                    )
+                            );
+                }
+
+                for (int i = 0; i < player.party.userParty.size(); i++) {
+                    ((Char) player.party.userParty.get(i))
+                            .sendMessage(
+                                    MessageCreator.createServerAlertMessage(
+                                            "Bạn đã chấp nhận lời thách đấu của nhóm "
+                                            + p.charname
+                                            + ". Trận đấu của nhóm bạn và nhóm "
+                                            + p.nameCompetitor
+                                            + " sẽ diễn ra sau 30s nữa.",
+                                            ""
+                                    )
+                            );
+                }
+
+                TeamArena team1 = new TeamArena(TeamArena.genIDTeam());
+                TeamArena team2 = new TeamArena(TeamArena.genIDTeam());
+                ArenaMap mm = (ArenaMap) RealController.mapList.get(205);
+                ArenaData arena = new ArenaData();
+                arena.addTeam(team1);
+                arena.addTeam(team2);
+                arena.idArena = Map.IDARENA;
+                arena.typeArena = 4;
+                arena.start();
+                mm.doAddArena(arena);
+                p.idArena = Map.IDARENA;
+                player.idArena = Map.IDARENA;
+                arena.moneyThachdau = p.moneyThachdau * 2;
+                arena.moneyThachdau = arena.moneyThachdau - arena.moneyThachdau / 5;
+                p.subXu((long) p.moneyThachdau, false, "map 32");
+                player.subXu((long) p.moneyThachdau, false, "map 33");
+                team1.addMember(p);
+                team2.addMember(player);
+                Message m = null;
+                m = new Message(65);
+                m.dos.writeShort(p.id);
+                p.pk = 14;
+                m.dos.writeByte(1);
+                m.dos.writeByte(14);
+                p.timeUsePK = System.currentTimeMillis();
+                p.sendMessage(m);
+                p.sendToNearPlayer(m);
+
+                for (int i = 0; i < p.party.userParty.size(); i++) {
+                    Char pp = (Char) p.party.userParty.get(i);
+                    if (pp.id != p.id) {
+                        m = new Message(65);
+                        m.dos.writeShort(pp.id);
+                        pp.pk = 14;
+                        m.dos.writeByte(1);
+                        m.dos.writeByte(14);
+                        pp.timeUsePK = System.currentTimeMillis();
+                        pp.sendMessage(m);
+                        pp.sendToNearPlayer(m);
+                        pp.idArena = Map.IDARENA;
+                        team1.addMember(pp);
+                    }
+                }
+
+                for (int ix = 0; ix < player.party.userParty.size(); ix++) {
+                    Char pp = (Char) player.party.userParty.get(ix);
+                    if (pp.id != player.id) {
+                        m = new Message(65);
+                        m.dos.writeShort(pp.id);
+                        pp.pk = 15;
+                        m.dos.writeByte(1);
+                        m.dos.writeByte(15);
+                        pp.timeUsePK = System.currentTimeMillis();
+                        pp.sendMessage(m);
+                        pp.sendToNearPlayer(m);
+                        pp.idArena = Map.IDARENA;
+                        team2.addMember(pp);
+                    }
+                }
+
+                m = new Message(65);
+                m.dos.writeShort(player.id);
+                player.pk = 15;
+                m.dos.writeByte(1);
+                m.dos.writeByte(15);
+                player.timeUsePK = System.currentTimeMillis();
+                player.sendMessage(m);
+                player.sendToNearPlayer(m);
+                arena.sendInfoMatch = true;
+                arena.timeWaitFight = System.currentTimeMillis() + 30000L;
+                Map.IDARENA = (Map.IDARENA + 1) % 2000000000;
+                player.nameCompetitor = "";
+                p.nameCompetitor = "";
+                p.moneyThachdau = 0;
+                player.moneyThachdau = 0;
+            } else {
+                player.sendMessage(MessageCreator.createServerAlertMessage(player.nameCompetitor + " đã thoát khỏi game", ""));
+            }
+        } catch (Exception var11) {
+            var11.printStackTrace();
+        }
+    }
+
+    static void doDotDen(Map map, Char player, int type_dotden) {
+        if (!Char.isFinishAllSuKienTrungThul2016()) {
+            if (type_dotden <= 2) {
+                if (player.potions[136] >= 1) {
+                    if (type_dotden != 1 || player.getLuong() >= 4) {
+                        if (type_dotden != 2 || player.getxu() >= 5000000L) {
+                            addXpCharEvent(player, 100000L, false, "doDotDen");
+                            int[] per = new int[]{
+                                5000,
+                                5000,
+                                5000,
+                                300,
+                                100,
+                                100,
+                                50,
+                                3000,
+                                3000,
+                                100,
+                                100,
+                                100,
+                                100,
+                                100,
+                                100,
+                                5000,
+                                5000,
+                                5000,
+                                5000,
+                                5000,
+                                500,
+                                500,
+                                500,
+                                500,
+                                500,
+                                200,
+                                0,
+                                50,
+                                5000,
+                                5000,
+                                5000,
+                                50,
+                                50,
+                                100,
+                                100
+                            };
+                            int[] idgift = new int[]{
+                                93,
+                                95,
+                                117,
+                                35,
+                                75,
+                                84,
+                                100,
+                                GemTemplate.BOT_TRANG,
+                                GemTemplate.BOT_XANH,
+                                GemTemplate.BOT_DO,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -1,
+                                -2,
+                                -3,
+                                GemTemplate.BOT_XANH_LA,
+                                114,
+                                112,
+                                113,
+                                119,
+                                -4,
+                                -5,
+                                -6
+                            };
+                            int[] typegift = new int[]{
+                                4, 4, 4, 4, 4, 4, 4, 6, 6, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -3, 6, 4, 4, 4, 4, -4, -5, -6
+                            };
+                            int[] soluongmax = new int[]{
+                                100,
+                                100,
+                                3,
+                                1,
+                                1,
+                                1,
+                                1,
+                                3,
+                                3,
+                                3,
+                                10000,
+                                20000,
+                                30000,
+                                40000,
+                                50000,
+                                100,
+                                200,
+                                300,
+                                400,
+                                500,
+                                50,
+                                60,
+                                70,
+                                80,
+                                90,
+                                1,
+                                1,
+                                3,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1
+                            };
+                            int[] soluongmin = new int[]{
+                                50,
+                                50,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                10000,
+                                20000,
+                                30000,
+                                40000,
+                                50000,
+                                100,
+                                200,
+                                300,
+                                400,
+                                500,
+                                50,
+                                60,
+                                70,
+                                80,
+                                90,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1,
+                                1
+                            };
+                            String info = "Chúc mừng bạn nhận được ";
+                            int index = Char.getIndexRandom(per);
+                            if (typegift[index] == -2) {
+                                if (!player.isFullInventory()) {
+                                    int[] minute = new int[]{1440, 4320, 7200, 10080};
+                                    Item newItem = ItemLuckyDraw.createItemCoat(player, Map.r.nextInt(2), false, minute[Map.r.nextInt(minute.length)]);
+                                    player.iItems.add(newItem);
+                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                                    info = info + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút";
+                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                                } else {
+                                    player.addXu((long) (100 + Map.r.nextInt(100)), "map 58");
+                                    info = info + soluongmax[index] + " xu";
+                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                                }
+                            } else if (typegift[index] == -3) {
+                                if (!player.isFullInventory()) {
+                                    int[] minute = new int[]{1440, 4320, 7200, 10080};
+                                    Item newItem = ItemLuckyDraw.createItemCoat(player, Map.r.nextInt(2), false, minute[Map.r.nextInt(minute.length)]);
+                                    player.iItems.add(newItem);
+                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                                    info = info + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút";
+                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                                } else {
+                                    player.addXu((long) (100 + Map.r.nextInt(100)), "map 55");
+                                    info = info + soluongmax[index] + " xu";
+                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                                }
+                            } else if (typegift[index] == -5) {
+                                if (!player.isFullInventory()) {
+                                    int[] minute = new int[]{1440, 4320, 7200, 10080};
+                                    Item newItem = ItemLuckyDraw.createtemCoat(742, player, Map.r.nextInt(2), true, minute[Map.r.nextInt(minute.length)]);
+                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                                    info = info + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút";
+                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                                } else {
+                                    player.addXu((long) (100 + Map.r.nextInt(100)), "map 55");
+                                    info = info + soluongmax[index] + " xu";
+                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                                }
+                            } else if (typegift[index] == -4) {
+                                int soluong = soluongmin[index];
+                                if (soluongmin[index] < soluongmax[index]) {
+                                    soluong += Map.r.nextInt(soluongmax[index] - soluongmin[index] + 1);
+                                }
+
+                                boolean lock = false;
+                                int idgem = Map.ID_GEM_TU_BINH[2 + Map.r.nextInt(2)][Map.r.nextInt(Map.ID_GEM_TU_BINH[0].length)];
+                                player.doAddGemItem(idgem, soluong, lock);
+                                info = info + soluong + " " + Map.gemTemplate[idgem].name + (lock ? " khoá" : "");
+                                player.sendMessage(MessageCreator.createCharGemItem(player));
+                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                            } else if (typegift[index] == -6) {
+                                int time = Map.r.nextInt(3) + 3;
+                                player.createPoro((long) time, false);
+                                info = info + " đại bạch thử";
+                            } else if (typegift[index] == -1) {
+                                player.addXu((long) soluongmax[index], "map 56");
+                                info = info + soluongmax[index] + " xu";
+                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                            } else if (typegift[index] == 4) {
+                                int soluong = soluongmin[index];
+                                if (soluongmin[index] < soluongmax[index]) {
+                                    soluong += Map.r.nextInt(soluongmax[index] - soluongmin[index] + 1);
+                                }
+
+                                player.potions[idgift[index]] = player.potions[idgift[index]] + soluong;
+                                info = info + soluong + " " + LoginHandler.PORTION_NAME[idgift[index]];
+                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                            } else if (typegift[index] == 6) {
+                                int soluong = soluongmin[index];
+                                if (soluongmin[index] < soluongmax[index]) {
+                                    soluong += Map.r.nextInt(soluongmax[index] - soluongmin[index] + 1);
+                                }
+
+                                boolean lock = Map.r.nextInt(2) == 1;
+                                player.doAddGemItem(idgift[index], soluong, lock);
+                                info = info + soluong + " " + Map.gemTemplate[idgift[index]].name + (lock ? " khoá" : "");
+                                player.sendMessage(MessageCreator.createCharGemItem(player));
+                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                                if (idgift[index] == GemTemplate.LKD_35 || idgift[index] == GemTemplate.LKD_40) {
+                                    try {
+                                        Map.sendAllCharServer(
+                                                -1,
+                                                MessageCreator.createServerAlertAutoOffMessage(
+                                                        player.charname + " đã nhận được " + Map.gemTemplate[idgift[index]].name + " đốt đèn"
+                                                )
+                                        );
+                                    } catch (IOException var13) {
+                                    }
+                                }
+                            }
+
+                            player.potions[136]--;
+                            if (player.potions[136] < 0) {
+                                player.potions[136] = 0;
+                            }
+
+                            Database.instance
+                                    .saveOrtherLog("", player.charname, info + " " + (type_dotden == 1 ? "dung luong " : (type_dotden == 2 ? "dung xu" : "")), "dotden");
+                            if (type_dotden != 0) {
+                                EffectBuff ef = new EffectBuff(EffectBuff.THA_DEN, System.currentTimeMillis() + 3000L);
+                                ef.type = EffectBuff.BY_ACTOR;
+                                ef.damFly = 0;
+                                if (Char.isSuKienTrungThul2016()) {
+                                    player.banphaohoa++;
+                                    Database.instance.addCharEventTrungthu(player);
+                                }
+
+                                player.sendMessage(
+                                        MessageCreator.createMsgAddDynamicNewEffect(
+                                                ef.idEff, ef.timeExist, ef.type, player.id, player.x / 16, player.y / 16, player.cat, EffectBuff.ODER_PAINT[ef.idEff], ef.damFly
+                                        )
+                                );
+                                player.sendToNearPlayer(
+                                        MessageCreator.createMsgAddDynamicNewEffect(
+                                                ef.idEff, ef.timeExist, ef.type, player.id, player.x / 16, player.y / 16, player.cat, EffectBuff.ODER_PAINT[ef.idEff], ef.damFly
+                                        )
+                                );
+                            }
+
+                            if (type_dotden == 1) {
+                                player.subLuong(4L);
+                                Database.instance.saveLogThongKeChiTieu("tha den luong", 0, 1, 4L, "luong");
+                            } else if (type_dotden == 2) {
+                                player.subXu(5000000L, false, "");
+                                Database.instance.saveLogThongKeChiTieu("tha den xu", 0, 1, 5000000L, "xu");
+                            }
+
+                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    static void doNapSMS(Map map, Char player, int type, String cardID, String cardCode) {
+        try {
+            // SECURITY: disabled external card top-up that sent card ID/code + account info to third-party (teamobi).
+            player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng nạp thẻ hiện không khả dụng.", ""));
+            if (true) {
+                return;
+            }
+            if (!Map.onSMS) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng hiện đang tạm khoá.", ""));
+                return;
+            }
+
+            if (Map.openLog && System.currentTimeMillis() - player.getSession().timeNapMoney < 30000L) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Có lỗi xảy ra. Xin thử lại sau", ""));
+                return;
+            }
+
+            player.getSession().timeNapMoney = System.currentTimeMillis();
+            String url = "";
+            url = Net.url[4][0];
+            url = url
+                    + player.charname
+                    + "&cardid="
+                    + cardID
+                    + "&cardcode="
+                    + cardCode
+                    + "&provider="
+                    + player.getSession().clientProvider
+                    + "&game=9&moneytype="
+                    + (type == 0 ? "luong" : "xu")
+                    + "&server="
+                    + TeamServer.server
+                    + "&agent="
+                    + player.getSession().agentProvider
+                    + "&account="
+                    + player.getAccountName();
+            String noidug = Net.getHttp(url);
+            if (noidug.indexOf("http") > -1 || noidug.indexOf("www") > -1) {
+                noidug = "Có lỗi xảy ra. Lỗi 42";
+            }
+
+            Database.instance.saveLogNapMoney(player.charname, cardID + "|" + cardCode + "_" + noidug);
+            player.sendMessage(MessageCreator.createServerAlertMessage(noidug, ""));
+        } catch (Exception var7) {
+        }
+    }
+
+    static void doSendDetailChar(Map map, Char player, Message msg) {
+        try {
+            Char p = CharManager.instance.getByCharID(msg.dis.readShort());
+            if (p == null) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không tìm thấy thông tin", ""));
+                return;
+            }
+
+            byte typeView = 0;
+
+            try {
+                typeView = msg.dis.readByte();
+            } catch (Exception var11) {
+            }
+
+            Message m = new Message(-22);
+            m.dos.writeByte(typeView);
+            if (typeView == 0) {
+                if (p.isCharCopy()) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage(p.getinfoCharCopy(), ""));
+                    return;
+                }
+
+                m.dos.writeUTF(p.charname);
+                m.dos.writeByte(p.headStyle);
+                m.dos.writeByte(p.lvDetail.lv);
+                Vector<Item> charWearing = p.changePosRing(p.getCharWearing());
+                m.dos.writeByte(charWearing.size());
+
+                for (int i = 0; i < charWearing.size(); i++) {
+                    Item item = (Item) charWearing.get(i);
+                    m.dos.writeByte(item.clazz);
+                    m.dos.writeShort(item.getTemplate().id);
+                    m.dos.writeByte(item.level);
+                    m.dos.writeByte(item.plus);
+                    m.dos.writeShort(item.id);
+                    m.dos.writeByte(item.colorName);
+
+                    for (int j = 0; j < 5; j++) {
+                        m.dos.writeShort(item.atb[j + 28]);
+                    }
+
+                    m.dos.writeByte(item.heItem);
+                    m.dos.writeByte(item.beKick);
+                    m.dos.writeByte(item.hangItem);
+                    m.dos.writeByte(item.magic_physic);
+                    m.dos.writeByte(item.lock);
+                    m.dos.writeUTF(item.charSeal);
+                    m.dos.write(item.newAtb);
+                    m.dos.write(item.lockAtb);
+                    m.dos.write(item.addMoreLevelSkill);
+                }
+
+                m.dos.writeShort(p.idClan);
+                m.dos.writeByte(p.wModel.idModel);
+                short[] idModel = p.getIDModel();
+
+                for (int i = 0; i < idModel.length; i++) {
+                    m.dos.writeShort(idModel[i]);
+                }
+
+                int type = -1;
+                if (p.animalRide != null) {
+                    type = p.animalRide.idImg;
+                }
+
+                m.dos.writeByte(type);
+                if (type != -1) {
+                    String info = p.animalRide.name + " lv " + p.animalRide.level + "\n" + p.animalRide.getInfoSendUser();
+                    m.dos.writeUTF(info);
+                    int idIcon = Animal.idImgIcon[p.animalRide.idImg];
+                    if (p.rankGov == 0) {
+                        idIcon = 13;
+                    }
+
+                    m.dos.writeByte(idIcon);
+                }
+            } else {
+                Vector<Item> awItems = p.getAnimalWearing();
+                byte len = (byte) (p.animalRide != null ? awItems.size() : -1);
+                m.dos.writeByte(len);
+
+                for (int i = 0; i < len; i++) {
+                    Item item = (Item) awItems.get(i);
+                    m.dos.writeByte(item.clazz);
+                    m.dos.writeShort(item.id);
+                    m.dos.writeShort(item.getTemplate().id);
+                    m.dos.writeByte(item.plus);
+                    m.dos.writeByte(item.level);
+                    m.dos.writeShort(item.mDurable);
+                    m.dos.writeShort(item.durable);
+                    m.dos.writeByte(item.colorName);
+
+                    for (int j = 0; j < 5; j++) {
+                        m.dos.writeShort(item.atb[j + 28]);
+                    }
+
+                    m.dos.writeByte(item.heItem);
+                    m.dos.writeByte(item.beKick);
+                    m.dos.writeByte(item.hangItem);
+                    m.dos.writeByte(item.magic_physic);
+                    m.dos.writeByte(item.lock);
+                    m.dos.writeUTF(item.charSeal);
+                    m.dos.write(item.newAtb);
+                    m.dos.write(item.lockAtb);
+                    m.dos.write(item.addMoreLevelSkill);
+                }
+
+                byte[] fr = Animal.fr;
+                if (p.animalRide != null) {
+                    // Skin linh thu: nguoi khac mo bang "Trang bi thu" cua minh cung
+                    // phai thay hinh skin, khong thi minh thay mot dang nguoi khac thay
+                    // mot dang. Cung logic voi createAnimalWearingMessage.
+                    if (SkinLinhThu.ghiAnhTrangBiThu(m, p)) {
+                        // da ghi hinh skin
+                    } else if (p.rankGov == 0) {
+                        m.dos.writeByte(fr[6]);
+                        m.dos.write(DataGame.imgAvtAnimal[6]);
+                    } else {
+                        m.dos.writeByte(fr[p.animalRide.idImg]);
+                        m.dos.write(DataGame.imgAvtAnimal[p.animalRide.idImg]);
+                    }
+                }
+            }
+
+            player.sendMessage(m);
+        } catch (Exception var12) {
+            var12.printStackTrace();
+        }
+    }
+
+    static void doBuyModelClothe(Char player, ShopTemplate item, int nday) {
+        ItemTemplates template = null;
+        Item newItem = null;
+        switch (item.id) {
+            case 50:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(0)).get(new Integer(267));
+                newItem = new Item(template, false, 0, 0, 267);
+                break;
+            case 51:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(0)).get(new Integer(265));
+                newItem = new Item(template, false, 0, 0, 265);
+                break;
+            case 52:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(0)).get(new Integer(579));
+                newItem = new Item(template, false, -1, 0, 579);
+                break;
+            case 53:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(0)).get(new Integer(508));
+                newItem = new Item(template, false, -1, 0, 508);
+                break;
+            case 54:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(0)).get(new Integer(266));
+                newItem = new Item(template, false, 0, 0, 266);
+                break;
+            case 55:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(0)).get(new Integer(264));
+                newItem = new Item(template, false, -1, 0, 264);
+                break;
+            case 56:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(0)).get(new Integer(507));
+                newItem = new Item(template, false, -1, 0, 507);
+                break;
+            case 57:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(0)).get(new Integer(580));
+                newItem = new Item(template, false, -1, 0, 580);
+                break;
+            case 58:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(0)).get(new Integer(581));
+                newItem = new Item(template, false, -1, 0, 581);
+                break;
+            case 86:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(573));
+                newItem = new Item(template, false, -1, 0, 573);
+                break;
+            case 87:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(574));
+                newItem = new Item(template, false, -1, 0, 574);
+                break;
+            case 88:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(575));
+                newItem = new Item(template, false, -1, 0, 575);
+                break;
+            case 89:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(576));
+                newItem = new Item(template, false, -1, 0, 576);
+                break;
+            case 90:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(577));
+                newItem = new Item(template, false, -1, 0, 577);
+                break;
+            case 91:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(578));
+                newItem = new Item(template, false, -1, 0, 578);
+                break;
+            case 105:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(582));
+                newItem = new Item(template, false, -1, 0, 582);
+                break;
+            case 106:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(583));
+                newItem = new Item(template, false, -1, 0, 583);
+                break;
+            case 113:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(609));
+                newItem = new Item(template, false, -1, 0, 609);
+                break;
+            case 114:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(610));
+                newItem = new Item(template, false, -1, 0, 610);
+                break;
+            case 137:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(620));
+                newItem = new Item(template, false, -1, 0, 620);
+                break;
+            case 138:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(621));
+                newItem = new Item(template, false, -1, 0, 621);
+                break;
+            case 139:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(622));
+                newItem = new Item(template, false, -1, 0, 622);
+                break;
+            case 140:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(623));
+                newItem = new Item(template, false, -1, 0, 623);
+                break;
+            case 142:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(671));
+                newItem = new Item(template, false, -1, 0, 671);
+                break;
+            case 143:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(672));
+                newItem = new Item(template, false, -1, 0, 672);
+                break;
+            case 144:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(673));
+                newItem = new Item(template, false, -1, 0, 673);
+                break;
+            case 145:
+                template = (ItemTemplates) ((Hashtable) Map.itemTemplates.get(5)).get(new Integer(674));
+                newItem = new Item(template, false, -1, 0, 674);
+            case 723:
+            case 724:
+        }
+
+        if (newItem != null) {
+            newItem.id = player.getIDItem();
+            newItem.owner = player.charDBID;
+            newItem.level = newItem.getTemplate().level;
+            player.iItems.add(newItem);
+            newItem.clazz = 0;
+            newItem.identify = player.charDBID;
+            if (nday > 0) {
+                newItem.minuteExist = nday * 24 * 60;
+                newItem.timeLoan = System.currentTimeMillis();
+            }
+
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+            Database.instance.saveLogBuyItemShop(player.charname, newItem.getTemplate().name, 0, item.getPrice(Map.isSale), player.getxu() + "_" + player.getLuong());
+            Database.instance.saveItem(newItem);
+        }
+    }
+
+    static void doSendTop(Map map, Char player, Message msg) {
+        try {
+            Message m = new Message(-19);
+            byte type = msg.dis.readByte();
+            byte page = msg.dis.readByte();
+            m.dos.writeByte(type);
+            int start = page * 10;
+            int end = page * 10 + 10;
+            switch (type) {
+                case 3:
+                    m.dos.writeUTF("TOP ĐẠI GIA");
+                    if (start >= Map.topRich.size()) {
+                        start = Map.topRich.size();
+                    }
+
+                    if (end >= Map.topRich.size()) {
+                        end = Map.topRich.size();
+                    }
+
+                    m.dos.writeShort(end - start);
+
+                    for (int i = start; i < end; i++) {
+                        CharInfo charinfo = (CharInfo) Map.topRich.get(i);
+                        String online = " - off";
+                        if (CharManager.instance.getCharByCharName(charinfo.name) != null) {
+                            online = " - on";
+                        }
+
+                        m.dos.writeUTF(charinfo.name + online);
+                        m.dos.writeByte(charinfo.headStyle);
+                        m.dos.writeByte(charinfo.level);
+                        m.dos.writeByte(charinfo.wearingItem.size());
+
+                        for (int j = 0; j < charinfo.wearingItem.size(); j++) {
+                            ItemInfo item = (ItemInfo) charinfo.wearingItem.get(j);
+                            m.dos.writeByte(item.charClass);
+                            m.dos.writeShort(item.idTemplate);
+                            m.dos.writeByte(item.level);
+                            m.dos.writeByte(item.plus);
+                        }
+
+                        m.dos.writeShort(charinfo.idClan);
+                        m.dos.writeByte(charinfo.titlesClan);
+                        m.dos.writeLong(charinfo.money);
+                        m.dos.writeInt(charinfo.luong);
+                        m.dos.writeByte(charinfo.country);
+                    }
+                    break;
+                case 4:
+                    m.dos.writeUTF("TOP CAO THỦ");
+                    if (start >= Map.topLv.size()) {
+                        start = Map.topLv.size();
+                    }
+
+                    if (end >= Map.topLv.size()) {
+                        end = Map.topLv.size();
+                    }
+
+                    m.dos.writeShort(end - start);
+
+                    for (int i = start; i < end; i++) {
+                        CharInfo charinfo = (CharInfo) Map.topLv.get(i);
+                        String online = " - off";
+                        if (CharManager.instance.getCharByCharName(charinfo.name) != null) {
+                            online = " - on";
+                        }
+
+                        m.dos.writeUTF(charinfo.name + online);
+                        m.dos.writeByte(charinfo.headStyle);
+                        m.dos.writeByte(charinfo.level);
+                        m.dos.writeByte(charinfo.wearingItem.size());
+
+                        for (int j = 0; j < charinfo.wearingItem.size(); j++) {
+                            ItemInfo item = (ItemInfo) charinfo.wearingItem.get(j);
+                            m.dos.writeByte(item.charClass);
+                            m.dos.writeShort(item.idTemplate);
+                            m.dos.writeByte(item.level);
+                            m.dos.writeByte(item.plus);
+                        }
+
+                        m.dos.writeShort(charinfo.idClan);
+                        m.dos.writeByte(charinfo.titlesClan);
+                        m.dos.writeLong(charinfo.money);
+                        m.dos.writeInt(charinfo.luong);
+                        m.dos.writeByte(charinfo.country);
+                    }
+                    break;
+                case 5:
+                    m.dos.writeUTF("TOP BANG HỘI");
+                    if (start >= Map.topClan.size()) {
+                        start = Map.topClan.size();
+                    }
+
+                    if (end >= Map.topClan.size()) {
+                        end = Map.topClan.size();
+                    }
+
+                    m.dos.writeShort(end - start);
+
+                    for (int i = start; i < end; i++) {
+                        NewClan clan = (NewClan) Map.topClan.get(i);
+                        m.dos.writeShort(clan.id);
+                        m.dos.writeUTF(clan.name);
+                        m.dos.writeUTF(clan.master);
+                        m.dos.writeByte(clan.level);
+                        m.dos.writeShort(clan.getAllMember().size());
+                        m.dos.writeLong(clan.money);
+                        m.dos.writeByte(clan.country);
+                    }
+                case 6:
+                default:
+                    break;
+                case 7:
+                    player.sendMessage(
+                            MessageCreator.createMsgMenu(
+                                    new String[]{
+                                        "Top cao thủ Thanh long",
+                                        "Top cao thủ Hắc hổ",
+                                        "Top cao thủ Huyền vũ",
+                                        "Top công trạng Thanh long",
+                                        "Top công trạng Hắc hổ",
+                                        "Top công trạng Huyền vũ",
+                                        "Top liên trảm Thanh long",
+                                        "Top liên trảm Hắc hổ",
+                                        "Top liên trảm Huyền vũ",
+                                        "Danh sách cừu nhân"
+                                    },
+                                    -504,
+                                    0
+                            )
+                    );
+                    return;
+                case 8:
+                    m.dos.writeUTF("TOP NHÓM ĐUA");
+                    int len = Map.topRich.size();
+                    if (len > 10) {
+                        len = 10;
+                    }
+
+                    m.dos.writeShort(len);
+
+                    for (int i = start; i < end; i++) {
+                        CharInfo charinfo = (CharInfo) Map.topRich.get(i);
+                        String online = " - off";
+                        if (CharManager.instance.getCharByCharName(charinfo.name) != null) {
+                            online = " - on";
+                        }
+
+                        m.dos.writeUTF(charinfo.name + online);
+                        m.dos.writeByte(charinfo.headStyle);
+                        m.dos.writeByte(-1);
+                        m.dos.writeByte(charinfo.wearingItem.size());
+
+                        for (int j = 0; j < charinfo.wearingItem.size(); j++) {
+                            ItemInfo item = (ItemInfo) charinfo.wearingItem.get(j);
+                            m.dos.writeByte(item.charClass);
+                            m.dos.writeShort(item.idTemplate);
+                            m.dos.writeByte(item.level);
+                            m.dos.writeByte(item.plus);
+                        }
+
+                        m.dos.writeShort(charinfo.idClan);
+                        m.dos.writeByte(charinfo.titlesClan);
+                        m.dos.writeLong(charinfo.money);
+                        m.dos.writeInt(charinfo.luong);
+                        m.dos.writeByte(charinfo.country);
+                    }
+            }
+
+            player.sendMessage(m);
+        } catch (Exception var14) {
+        }
+    }
+
+    static void doChangeMap(Map map, Char player, Message message) {
+        try {
+            int toMapID = message.dis.readShort();
+            if (toMapID == player.mapID || player.mapID == 118 && player.monster != null && player.mapID == player.monster.map.mapId) {
+                Map toMap = (Map) RealController.mapList.get(player.mapID);
+                Message m = MessageCreator.createMapMessage(player);
+                player.sendMessage(m);
+                map.doSendDynamicObj(player);
+                player.map.sendInfoNpc(player);
+                player.map.sendDynamicEff(player);
+                player.checkCreateThangBe(toMapID);
+                if (player.isNguoiTuyet()) {
+                    MessageCreator.createMsgCharMonster(player, player);
+                }
+
+                player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
+
+                try {
+                    if (player.mapID == Map.mapIDFarm) {
+                        map.doSendFarm(player);
+                    }
+
+                    if (toMap != null) {
+                        for (int i = 0; i < Map.bossLocation.size(); i++) {
+                            if (((BossLocaltion) Map.bossLocation.get(i)).mapID == toMapID) {
+                                BossLocaltion b = (BossLocaltion) Map.bossLocation.get(i);
+                                player.sendMessage(MessageCreator.createGate(b.type, b.x, b.y, b.mapID));
+                                break;
+                            }
+                        }
+
+                        if (toMap != null
+                                && (toMap.mapIDLoadMap == 80
+                                || toMap.mapIDLoadMap == 70
+                                || toMap.mapIDLoadMap == 0
+                                || toMap.mapIDLoadMap == 1
+                                || toMap.mapIDLoadMap == 2
+                                || toMap.mapIDLoadMap == 12
+                                || toMap.mapIDLoadMap == 106)) {
+                            player.sendMessage(MessageCreator.createMessageLocation(player.inCountry));
+                        }
+
+                        return;
+                    }
+                } catch (Exception var38) {
+                }
+            } else if (toMapID == -500) {
+                player.calculateAttrib();
+                player.isCrazyChangeMap(player.isCrazy);
+                player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
+                if (player.map.isMapChienTruongMoba()) {
+                    player.sendInfoChienTruong(Char.ID_ALL_KHU_CHIEN_TRUONG_MOBA, 0);
+                    player.sendInfoChienTruong(Char.ID_NOI_LUC, 0);
+                    player.map.getRegionMoba(player.region).sendInfoPlayer(player);
+                    CharChienTruong c = MapChienTruongMoba.getCharChienTruong(player.charname);
+                    if (c.getTimeBuffNoiLuc() > 1L) {
+                        Message msg = MessageCreator.createMsgNewEffectSkill5Long(
+                                EffectBuff.EFF_BUFF_NOI_LUC, (int) c.getTimeBuffNoiLuc() * 1000, player.id, player.cat, true, false
+                        );
+                        player.sendMessage(msg);
+                    }
+                }
+
+                player.sendInfoNuiChauBau();
+                player.isDoChangeMap = false;
+                map.doJoinMapOk(player);
+            } else if (player.mapID == Map.idMapChanNui) {
+                map.doReturnVillage(player);
+            } else if (map.isMapOffline && player.mapID_the_mua_ban > -1) {
+                map.playerExit(player);
+                player.region = player.region_the_mua_ban;
+                map.move2Map(player, player.x_the_mua_ban, player.y_the_mua_ban, player.mapID_the_mua_ban, player.inCountry);
+                player.mapID_the_mua_ban = -1;
+            } else {
+                boolean checklocation = true;
+                player.isDoChangeMap = true;
+                map.vx = 0;
+                player.idItem.removeAllElements();
+                player.idItemQuest.removeAllElements();
+                player.idPotion.removeAllElements();
+                if (Map.getTown[player.inCountry] && Map.giveCardFail(player)) {
+                    map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage(player.charname + " giao thẻ thất bại"), player.inCountry);
+                    map.sendAllPlayer(MessageCreator.createMsgStartGetTown(player.inCountry), player.inCountry);
+                }
+
+                if (toMapID == 17) {
+                    toMapID = player.mapID;
+                }
+
+                int toTX = message.dis.readShort();
+                int toTY = message.dis.readShort();
+                if (toMapID != 9 && toMapID != 481 && toMapID != 482 && toMapID != 483 && toMapID != 484) {
+                    if (toMapID == 201) {
+                        if (map.mapIDLoadMap == 9 && (toTX != 39 || toTY != 90 || player.y / 16 > 10 && player.idClan > -1)) {
+                            toMapID = player.mapID;
+                            toTX = player.x / 16;
+                            toTY = player.y / 16;
+                            CharManager.instance.kickPlayer(player, "map 3");
+                            Database.instance.saveOrtherLog("", player.charname, "hack chuyen map 9", "hcm");
+                        }
+                    } else if (toMapID == player.mapID) {
+                        toMapID = player.mapID;
+                        toTX = player.x / 16;
+                        toTY = player.y / 16;
+                        CharManager.instance.kickPlayer(player, "map 4");
+                        Database.instance.saveOrtherLog("", player.charname, "hack chuyen map cung map " + player.mapID, "hcm");
+                    }
+                } else if (map.mapIDLoadMap == 8) {
+                    if (toTX != 28 || toTY != 98) {
+                        toMapID = player.mapID;
+                        toTX = player.x / 16;
+                        toTY = player.y / 16;
+                        CharManager.instance.kickPlayer(player, "map 1");
+                        Database.instance.saveOrtherLog("", player.charname, "hack chuyen map 8", "hcm");
+                    }
+                } else if (map.mapIDLoadMap == 201 && (toTX != 33 || toTY != 1)) {
+                    toMapID = player.mapID;
+                    toTX = player.x / 16;
+                    toTY = player.y / 16;
+                    CharManager.instance.kickPlayer(player, "map 2");
+                    Database.instance.saveOrtherLog("", player.charname, "hack chuyen map 201 ", "hcm");
+                }
+
+                if (toMapID == 111 && !Char.isSuKienHe2017()) {
+                    toMapID = player.mapID;
+                    toTX = player.x / 16;
+                    toTY = player.y / 16;
+                    checklocation = false;
+                }
+
+                if (player.myCountry == -1) {
+                    int[] mapstart = new int[]{117, 117, 117, 117, 117};
+                    toTX = 39 + Database.r.nextInt() % 3;
+                    toTY = 32 + Database.r.nextInt() % 5;
+                    toMapID = mapstart[Map.r.nextInt(MessageCreator.nclone)];
+                    checklocation = false;
+                } else if (toMapID == 206) {
+                    if (player.idClan == -1) {
+                        toMapID = player.mapID;
+                        toTX = player.x / 16;
+                        toTY = player.y / 16;
+                        checklocation = false;
+                    }
+                } else if (player.mapID == 105) {
+                    int[][] mapstart = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
+                    int[][] pos = new int[][]{{10, 23, 14, 38, 30, 35, 21, 49}, {22, 41, 27, 32, 8, 30, 18, 11}, {10, 23, 14, 38, 30, 35, 21, 49}};
+                    int index = Map.r.nextInt(4);
+                    toTX = pos[player.myCountry][index * 2] + Map.r.nextInt() % 3;
+                    toTY = pos[player.myCountry][index * 2 + 1] + Map.r.nextInt() % 3;
+                    player.inCountry = player.myCountry;
+                    toMapID = mapstart[player.myCountry][Map.r.nextInt(mapstart[player.myCountry].length)];
+                    checklocation = false;
+                } else if ((player.myCountry != player.inCountry && Map.getTown[player.inCountry]
+                        || Map.nwar[player.inCountry] && player.myCountry != player.inCountry && Map.nationBeAttack[player.inCountry] != player.myCountry
+                        || player.inCountry != player.myCountry && MapTown.addDragon[player.inCountry])
+                        && toMapID == Map.idMapTown) {
+                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Không thể tham gia sự kiện tại quốc gia khác."));
+                    int[] mapstart = new int[]{9, 481, 482, 483, 484};
+                    toTX = 16 + Database.r.nextInt() % 5;
+                    toTY = 84;
+                    toMapID = mapstart[Map.r.nextInt(MessageCreator.nclone)];
+                    checklocation = false;
+                } else if (player.idClan == -1 && Map.getTown[player.myCountry] && toMapID == Map.idMapTown) {
+                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn không thể vào thành trong thơi gian này do chưa tham gia bang hội."));
+                    int[] mapstart = new int[]{9, 481, 482, 483, 484};
+                    toTX = 16 + Database.r.nextInt() % 5;
+                    toTY = 84;
+                    toMapID = mapstart[Map.r.nextInt(MessageCreator.nclone)];
+                    checklocation = false;
+                } else if (player.lvDetail.lv < 50 && Map.getTown[player.inCountry] && toMapID == Map.idMapTown) {
+                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn phải đạt cấp độ 50 trở lên mới có thể vào thành trong thời gian này."));
+                    int[] mapstart = new int[]{9, 481, 482, 483, 484};
+                    toTX = 16 + Database.r.nextInt() % 5;
+                    toTY = 84;
+                    toMapID = mapstart[Map.r.nextInt(MessageCreator.nclone)];
+                    checklocation = false;
+                } else if (RealController.mapList.get(toMapID) != null) {
+                    boolean onPos = false;
+                    boolean contentMap = false;
+                    Vector<LocationMap> a = (Vector<LocationMap>) Map.ALL_LOCALTION_MAP.get(Integer.valueOf(map.getMapLoad(map.mapId)));
+                    if (a != null) {
+                        for (int k = 0; k < a.size(); k++) {
+                            if (((LocationMap) a.get(k)).mapout == ((Map) RealController.mapList.get(toMapID)).getMapLoad(toMapID)) {
+                                contentMap = true;
+                            }
+
+                            if (((LocationMap) a.get(k))
+                                    .checkCanChangeMap(player.x, player.y, toTX, toTY, ((Map) RealController.mapList.get(toMapID)).getMapLoad(toMapID))) {
+                                onPos = true;
+                            }
+                        }
+
+                        if (!onPos && contentMap) {
+                            if (toMapID != player.mapID) {
+                                toMapID = player.mapID;
+                                toTX = player.x / 16;
+                                toTY = player.y / 16;
+                                CharManager.instance.kickPlayer(player, "map 6");
+                                Database.instance.saveOrtherLog("", player.charname, "hack chuyen map " + map.getMapLoad(map.mapId) + " to " + toMapID, "hcm");
+                                return;
+                            }
+
+                            toMapID = player.mapID;
+                            toTX = player.x / 16;
+                            toTY = player.y / 16;
+                            CharManager.instance.kickPlayer(player, "map 5");
+                            Database.instance.saveOrtherLog("", player.charname, "hack chuyen map cung map " + player.mapID, "hcm");
+                            return;
+                        }
+                    }
+                }
+
+                Map toMap = (Map) RealController.mapList.get(toMapID);
+                if (toMap == null && (player.map.mapIDLoadMap == Map.idMapTown && Map.getTown[player.inCountry] || map.isMapLienDau())) {
+                    toMapID = player.mapID;
+                    toTX = player.x / 16;
+                    toTY = player.y / 16;
+                    checklocation = false;
+                    toMap = (Map) RealController.mapList.get(toMapID);
+                }
+
+                Map oldMap = player.map;
+                boolean onMapMonster = false;
+                if (toMap != null) {
+                    boolean except = false;
+                    if ((player.map.mapIDLoadMap == 1 || player.map.mapIDLoadMap == 2 || player.map.mapIDLoadMap == 106 || player.map.mapIDLoadMap == 12)
+                            && (toMap.mapIDLoadMap == 0 || toMap.mapIDLoadMap == 70 || toMap.mapIDLoadMap == 80)) {
+                        except = true;
+                    }
+
+                    boolean canchange = false;
+                    if (!map.isMapOffline) {
+                        Map tempMap = (Map) RealController.mapList.get(Integer.valueOf(map.getMapLoad(map.mapId)));
+                        if (!map.checkChangeMap(player, 0, 0, toMapID, toTX, toTY) && checklocation && !except) {
+                            toMapID = player.mapID;
+                            toTX = player.x / 16;
+                            toTY = player.y / 16;
+                            toMap = (Map) RealController.mapList.get(Integer.valueOf(map.getMapLoad(toMapID)));
+                        }
+
+                        if (tempMap == null) {
+                            canchange = true;
+                        } else {
+                            short[] tempmapid = (short[]) Map.mapChange.get(map.getMapLoad((short) map.mapId));
+                            if (tempMap != null) {
+                                int mapcheck = toMap.getMapLoad(toMap.mapId);
+
+                                for (int ix = 0; ix < tempmapid.length; ix++) {
+                                    if (mapcheck == tempmapid[ix]) {
+                                        canchange = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else if (map.isMapOffline) {
+                        Map offlineMap = (Map) RealController.mapList.get(-1);
+                        if (!map.checkChangeMap(player, 0, 0, toMapID, toTX, toTY) && checklocation) {
+                            System.out.print(" " + player.charname + " hack cmn offline ");
+                            toMapID = player.mapID;
+                            toTX = player.x / 16;
+                            toTY = player.y / 16;
+                            toMap = (Map) RealController.mapList.get(Integer.valueOf(map.getMapLoad(toMapID)));
+                        }
+
+                        if (player.mapID < 200) {
+                            if (toMap.mapIDLoadMap != 0 && toMap.mapIDLoadMap != 70 && toMap.mapIDLoadMap != 80) {
+                                canchange = false;
+                            } else {
+                                canchange = true;
+                            }
+                        } else if (toMap.mapIDLoadMap == 201) {
+                            canchange = true;
+                        } else {
+                            canchange = false;
+                        }
+                    }
+
+                    if (!canchange) {
+                        return;
+                    }
+
+                    try {
+                        if (player.monster != null
+                                && player.map.mapId == player.monster.map.mapId
+                                && player.monster.region == player.region
+                                && Map.inRangeActor(player, player.monster, 120)
+                                && (toMap.mapId == toMap.mapIDLoadMap && toMap.mapId < 301 || Map.isMapLang(toMap))) {
+                            onMapMonster = true;
+                        }
+                    } catch (Exception var39) {
+                    }
+
+                    if (player.map != null) {
+                        if (!Map.isMapLang(player.map) && player.map.mapId != player.map.mapIDLoadMap) {
+                            onMapMonster = false;
+                        }
+
+                        map.playerExit(player);
+                    }
+
+                    toMap.playerJoin(player);
+                } else {
+                    if (player.map != null) {
+                        map.playerExit(player);
+                    }
+
+                    Map offlineMapx = (Map) RealController.mapList.get(-1);
+                    if (toMapID < 200) {
+                        if (map.mapIDLoadMap != 0 && map.mapIDLoadMap != 70 && map.mapIDLoadMap != 80) {
+                            return;
+                        }
+
+                        offlineMapx.playerJoin(player);
+                    } else {
+                        if (map.mapIDLoadMap != 201) {
+                            return;
+                        }
+
+                        offlineMapx.playerJoin(player);
+                    }
+                }
+
+                player.nearChars.removeAllElements();
+                player.nearMons.removeAllElements();
+                player.mapID = toMapID;
+                player.x = toTX * 16 + 8;
+                player.y = toTY * 16 + 8;
+                player.doChangeMapMonster(onMapMonster, oldMap);
+                if (player.x / 16 <= 1) {
+                    player.x += 32;
+                }
+
+                if (player.y / 16 <= 1) {
+                    player.y += 32;
+                }
+
+                player.moved = false;
+                player.doFinishAutoInbue();
+                Message m = MessageCreator.createMapMessage(player);
+                player.sendMessage(m);
+                map.doSendDynamicObj(player);
+                player.map.sendInfoNpc(player);
+                player.map.sendDynamicEff(player);
+                player.checkCreateThangBe(toMapID);
+                if (player.isNguoiTuyet()) {
+                    MessageCreator.createMsgCharMonster(player, player);
+                }
+
+                player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
+
+                try {
+                    if (player.mapID == Map.mapIDFarm) {
+                        map.doSendFarm(player);
+                    }
+
+                    if (toMap != null) {
+                        for (int ixx = 0; ixx < Map.bossLocation.size(); ixx++) {
+                            if (((BossLocaltion) Map.bossLocation.get(ixx)).mapID == toMapID) {
+                                BossLocaltion b = (BossLocaltion) Map.bossLocation.get(ixx);
+                                player.sendMessage(MessageCreator.createGate(b.type, b.x, b.y, b.mapID));
+                                break;
+                            }
+                        }
+
+                        if (toMap != null
+                                && (toMap.mapIDLoadMap == 80
+                                || toMap.mapIDLoadMap == 70
+                                || toMap.mapIDLoadMap == 0
+                                || toMap.mapIDLoadMap == 1
+                                || toMap.mapIDLoadMap == 2
+                                || toMap.mapIDLoadMap == 12
+                                || toMap.mapIDLoadMap == 106)) {
+                            player.sendMessage(MessageCreator.createMessageLocation(player.inCountry));
+                        }
+                    }
+                } catch (Exception var37) {
+                }
+            }
+        } catch (Exception var40) {
+            System.out.print(" " + player.charname + " ");
+        } finally {
+            try {
+                player.isDoChangeMap = false;
+            } catch (Exception var36) {
+            }
+        }
+    }
+
+}

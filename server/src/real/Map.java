@@ -5085,233 +5085,14 @@ public class Map implements Runnable {
         return xp;
     }
 
+    // Than method (118 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     public static void addXpCharEvent(Char p, long dxp, boolean isNhansam, String pos) {
-        try {
-            synchronized (p.lvDetail) {
-                
-                if (checkRcvXP) {
-                    if (p.receiveXP() == 3) {
-                        return;
-                    }
-
-                    dxp /= (long) p.receiveXP();
-                }
-
-                int currentLevel = p.lvDetail.lv;
-                long currentXP = p.lvDetail.getExp();
-                if (dxp == 0L) {
-                    dxp = 1L;
-                }
-
-                int div = 1;
-                if (currentLevel >= 60 && !isNhansam) {
-                    div = 3;
-                }
-
-                currentXP += dxp / (long) div + (long) (1 + r.nextInt(5));
-                p.lvDetail.setExp(currentXP, p.oldLv, p.charname, "addxpcharevent map");
-                p.expRace = p.expRace + dxp + (long) (1 + r.nextInt(5));
-                int newlevel = p.lvDetail.lv;
-                byte[] var10000 = new byte[]{5, 5, 5, 5, 5, 5, 5};
-                if (newlevel >= currentLevel + 1) {
-                    if (Char.isDemTrungThu() && p.lvDetail.lv >= 20 && p.nBinhTra == 0) {
-                        p.nBinhTra = 1;
-                        p.potions[125]++;
-                        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được hộp quà trung thu"));
-                        Database.instance.saveOrtherLog("", p.charname, "nhan qua trung thu khi len 20", "nhanhopquatt");
-                    }
-
-                    Database.instance
-                            .saveOrtherLog(
-                                    "",
-                                    p.charname,
-                                    currentLevel
-                                    + "_"
-                                    + newlevel
-                                    + " len lv:  xp cu: "
-                                    + currentXP
-                                    + " >> xpmoi: "
-                                    + currentXP
-                                    + " >> expadd: "
-                                    + dxp
-                                    + " > vi tri set: "
-                                    + pos,
-                                    "lenlevel"
-                            );
-                    if (p.getSession().bigProvider.equals("1") && !p.getSession().username.equals("") && p.getSession().privateProvider.equals("1")) {
-                        TeamServer.addQueue(p.getSession().username + "/LEVELUP/" + newlevel + "/" + p.charname);
-                    }
-
-                    Message m = new Message(33);
-                    m.dos.writeShort(p.id);
-                    m.dos.writeByte(newlevel);
-                    m.dos.writeInt(p.maxhp);
-                    m.dos.writeInt(p.maxmp);
-                    p.hp = p.maxhp;
-                    p.mp = p.maxmp;
-                    p.sendMessage(m);
-                    p.sendToNearPlayer(m);
-                    m.cleanup();
-                    if (newlevel > p.lastLV) {
-                        p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
-                        p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
-                        p.agitity = (short) (p.agitity + 1 * (newlevel - p.lastLV));
-                        p.spirit = (short) (p.spirit + 1 * (newlevel - p.lastLV));
-                        p.health = (short) (p.health + 1 * (newlevel - p.lastLV));
-                        p.luck = (short) (p.luck + 1 * (newlevel - p.lastLV));
-                        p.skillpoint = (short) (p.skillpoint + 1 * (newlevel - p.lastLV));
-                        p.lastLV = (short) newlevel;
-                        m = new Message(32);
-                        m.dos.writeShort(p.id);
-                        m.dos.writeByte(2);
-                        m.dos.writeUTF("bp");
-                        m.dos.writeInt(p.basepoint);
-                        m.dos.writeUTF("sp");
-                        m.dos.writeInt(p.skillpoint);
-                        m.dos.writeByte(p.lvDetail.lv);
-                        m.dos.writeShort(p.lvDetail.percent);
-                        p.sendMessage(m);
-                        m.cleanup();
-                        p.calculateAttrib();
-                        p.hp = p.maxhp;
-                        p.mp = p.maxmp;
-                        p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
-                    } else {
-                        m = new Message(32);
-                        m.dos.writeShort(p.id);
-                        m.dos.writeByte(2);
-                        m.dos.writeUTF("bp");
-                        m.dos.writeInt(p.basepoint);
-                        m.dos.writeUTF("sp");
-                        m.dos.writeInt(p.skillpoint);
-                        m.dos.writeByte(p.lvDetail.lv);
-                        m.dos.writeShort(p.lvDetail.percent);
-                        p.sendMessage(m);
-                        m.cleanup();
-                        p.calculateAttrib();
-                        p.hp = p.maxhp;
-                        p.mp = p.maxmp;
-                        p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
-                    }
-                }
-
-                Message m = MessageCreator.createXPMessage(p, dxp);
-                p.sendMessage(m);
-                m.cleanup();
-            }
-        } catch (Exception var16) {
-        }
+        MapXuLyLenh.addXpCharEvent(p,dxp,isNhansam,pos);
     }
 
+    // Than method (109 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     public static void addXPForChar(Char p, long dxp, boolean isNhansam, String pos) throws IOException {
-        synchronized (p.lvDetail) {
-            boolean isAdminBuff = pos != null && pos.contains("adminpanel");
-            if (!isAdminBuff && checkRcvXP) {
-                if (p.receiveXP() == 3) {
-                    return;
-                }
-                dxp /= (long) p.receiveXP();
-            }
-
-            int currentLevel = p.lvDetail.lv;
-            long currentXP = p.lvDetail.getExp();
-            if (dxp == 0L) {
-                dxp = 1L;
-            }
-
-            int div = 1;
-            if (currentLevel >= 60 && !isNhansam && !isAdminBuff) {
-                div = 3;
-            }
-
-            // Nếu là admin buff thì không chia, không random
-            if (isAdminBuff) {
-                currentXP += dxp;
-            } else {
-                currentXP += dxp / (long) div + (long) (1 + r.nextInt(5));
-            }
-            p.lvDetail.setExp(currentXP, p.oldLv, p.charname, "addxpforchar map");
-            p.expRace = p.expRace + dxp + (long) (1 + r.nextInt(5));
-            int newlevel = p.lvDetail.lv;
-            byte[] var10000 = new byte[]{5, 5, 5, 5, 5, 5, 5};
-            if (newlevel >= currentLevel + 1) {
-                if (Char.isDemTrungThu() && p.lvDetail.lv >= 20 && p.nBinhTra == 0) {
-                    p.nBinhTra = 1;
-                    p.potions[125]++;
-                    p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                    p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được hộp quà trung thu"));
-                    Database.instance.saveOrtherLog("", p.charname, "nhan qua trung thu khi len 20", "nhanhopquatt");
-                }
-
-                Database.instance
-                        .saveOrtherLog(
-                                "",
-                                p.charname,
-                                currentLevel + "_" + newlevel + " len lv:  xp cu: " + currentXP + " >> xpmoi: " + currentXP + " >> expadd: " + dxp + " > vi tri: " + pos,
-                                "lenlevel"
-                        );
-                if (p.getSession().bigProvider.equals("1") && !p.getSession().username.equals("") && p.getSession().privateProvider.equals("1")) {
-                    TeamServer.addQueue(p.getSession().username + "/LEVELUP/" + newlevel + "/" + p.charname);
-                }
-
-                Message m = new Message(33);
-                m.dos.writeShort(p.id);
-                m.dos.writeByte(newlevel);
-                m.dos.writeInt(p.maxhp);
-                m.dos.writeInt(p.maxmp);
-                p.hp = p.maxhp;
-                p.mp = p.maxmp;
-                p.sendMessage(m);
-                p.sendToNearPlayer(m);
-                m.cleanup();
-                if (newlevel > p.lastLV) {
-                    p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
-                    p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
-                    p.agitity = (short) (p.agitity + 1 * (newlevel - p.lastLV));
-                    p.spirit = (short) (p.spirit + 1 * (newlevel - p.lastLV));
-                    p.health = (short) (p.health + 1 * (newlevel - p.lastLV));
-                    p.luck = (short) (p.luck + 1 * (newlevel - p.lastLV));
-                    p.skillpoint = (short) (p.skillpoint + 1 * (newlevel - p.lastLV));
-                    p.lastLV = (short) newlevel;
-                    m = new Message(32);
-                    m.dos.writeShort(p.id);
-                    m.dos.writeByte(2);
-                    m.dos.writeUTF("bp");
-                    m.dos.writeInt(p.basepoint);
-                    m.dos.writeUTF("sp");
-                    m.dos.writeInt(p.skillpoint);
-                    m.dos.writeByte(p.lvDetail.lv);
-                    m.dos.writeShort(p.lvDetail.percent);
-                    p.sendMessage(m);
-                    m.cleanup();
-                    p.calculateAttrib();
-                    p.hp = p.maxhp;
-                    p.mp = p.maxmp;
-                    p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
-                } else {
-                    m = new Message(32);
-                    m.dos.writeShort(p.id);
-                    m.dos.writeByte(2);
-                    m.dos.writeUTF("bp");
-                    m.dos.writeInt(p.basepoint);
-                    m.dos.writeUTF("sp");
-                    m.dos.writeInt(p.skillpoint);
-                    m.dos.writeByte(p.lvDetail.lv);
-                    m.dos.writeShort(p.lvDetail.percent);
-                    p.sendMessage(m);
-                    m.cleanup();
-                    p.calculateAttrib();
-                    p.hp = p.maxhp;
-                    p.mp = p.maxmp;
-                    p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
-                }
-            }
-
-            Message m = MessageCreator.createXPMessage(p, dxp);
-            p.sendMessage(m);
-            m.cleanup();
-        }
+        MapXuLyLenh.addXPForChar(p,dxp,isNhansam,pos);
     }
 
     public static int randomMillion() {
@@ -5437,92 +5218,9 @@ public class Map implements Runnable {
         }
     }
 
+    // Than method (87 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     public void doGetItem(Char player, short id) {
-        try {
-            if (player == null) {
-                return;
-            }
-    
-            if (player.isFullInventory() && !player.isAutoBan && !player.isNghienAuto) {
-                player.sendMessage(MessageCreator.createMsgChat(player.id, "Hành trang đã đầy"));
-                return;
-            }
-    
-            Item item = this.getItem(id, player.inCountry);
-            if (item == null) {
-                Message m = new Message(20);
-                m.dos.writeByte(3);
-                m.dos.writeShort(id);
-                player.sendMessage(m);
-                m.cleanup();
-                return;
-            }
-    
-            if (item.istrungPet() || (item.belongUser != player.charDBID && item.belongUser != 0)) {
-                return;
-            }
-    
-            this.removeItem(item, player.inCountry);
-            item.owner = player.charDBID;
-            short oldid = item.id;
-            item.id = player.getIDItem();
-            item.identify = player.charDBID;
-            item.isItemDrop = 1;
-    
-            Message m = new Message(18);
-            m.dos.writeShort(player.id);
-            m.dos.writeByte(item.clazz);
-            m.dos.writeShort(oldid);
-            m.dos.writeShort(item.id);
-            m.dos.writeShort(item.getTemplate().id);
-            m.dos.writeByte(item.plus);
-            m.dos.writeByte(item.level);
-            m.dos.writeShort(item.durable);
-            m.dos.writeShort(item.mDurable);
-            player.sendMessage(m);
-            player.sendToNearPlayer(m);
-            m.cleanup();
-    
-            if (player.isNghienAuto && !isWearingAnimal(item.getTemplate().type) && 
-                item.isItemDrop != 0 && isItemChar(item.getTemplate().type)) {
-                
-                int sl = item.colorName == Item.COLOR_BLUE ? r.nextInt(2) + 2 :
-                        item.colorName == Item.COLOR_RED ? r.nextInt(4) + 2 :
-                        item.colorName == Item.COLOR_GREEN ? r.nextInt(6) + 2 : 1;
-                        
-                player.doAddGemItem(246, sl, item.lock == 1);
-                Database.instance.deleteItem(item.dbid);
-                player.subXu(2000L, true, "offline map 9");
-                player.sendMessage(MessageCreator.createCharGemItem(player));
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                player.sendMessage(MessageCreator.createMsgChat(player.id, "Đã nghiền được " + item.getName() + " nhận được " + sl + " " + "bột thường"));
-                return;
-            }
-    
-            if (player.isAutoBan) {
-                int price = itemTemplates.get(5).get(item.getTemplate().id).price;
-                int xuban = price / 5;
-                player.addXu(xuban, "map 6");
-                player.sendMessage(MessageCreator.createCharGemItem(player));
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                player.sendMessage(MessageCreator.createMsgChat(player.id, "Đã bán được " + item.getName() + " nhận được " + xuban + " " + "xu"));
-                return;
-            }
-    
-            if (player.isFullInventory()) {
-                player.sendMessage(MessageCreator.createMsgChat(player.id, "Hành trang đã đầy"));
-                return;
-            }
-            player.iItems.add(item);
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-
-    
-        } catch (Exception e) {
-            System.out.println("Error in doGetItem: " + e.getMessage());
-        }
+        MapXuLyLenh.doGetItem(this, player,id);
     }
 
     public static synchronized void addGetTrungPet() {
@@ -5816,7 +5514,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doGetItemQuest(Char player, Message message) throws IOException {
+    void doGetItemQuest(Char player, Message message) throws IOException {
         DataInputStream dis = message.dis;
         short id = dis.readShort();
         ItemQuest pt = this.getItemQuest(id, player.inCountry);
@@ -7984,435 +7682,9 @@ public class Map implements Runnable {
         }
     }
 
+    // Than method (430 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     public void processMessage(Char player, Message message) throws IOException {
-        
-        switch (message.command) {
-            case -76:
-                this.doBuyItemShopNew(player, message);
-            case -75:
-            case -74:
-            case -73:
-            case -72:
-            case -64:
-            case -60:
-            case -58:
-            case -56:
-            case -55:
-            case -51:
-            case -50:
-            case -49:
-            case -48:
-            case -47:
-            case -44:
-            case -43:
-            case -42:
-            case -40:
-            case -39:
-            case -38:
-            case -29:
-            case -26:
-            case -4:
-            case -1:
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 5:
-            case 8:
-            case 10:
-            case 11:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-            case 17:
-            case 20:
-            case 23:
-            case 25:
-            case 26:
-            case 30:
-            case 32:
-            case 33:
-            case 35:
-            case 37:
-            case 38:
-            case 39:
-            case 40:
-            case 41:
-            case 42:
-            case 43:
-            case 44:
-            case 45:
-            case 46:
-            case 47:
-            case 54:
-            case 56:
-            case 57:
-            case 58:
-            case 59:
-            case 60:
-            case 63:
-            case 64:
-            case 65:
-            case 73:
-            case 80:
-            case 83:
-            case 84:
-            case 89:
-            case 90:
-            case 91:
-            case 93:
-            case 96:
-            case 97:
-            case 98:
-            case 99:
-            case 103:
-            case 105:
-            default:
-                break;
-            case -71:
-                this.doSetTaxTown(player, message);
-                break;
-            case -70:
-                MapBangHoi.doInfoClanQuest(this, player, message);
-                break;
-            case -69:
-                MapEpNgoc.doAutoImbue(this, player, message);
-                break;
-            case -68:
-                byte type = message.dis.readByte();
-                if (type == 0) {
-                    MapEpNgoc.doTachNguyenLieu(this, player, message.dis.readShort(), 2);
-                } else if (type == 1) {
-                    this.doAddNewAttribute(player, message.dis.readShort(), message.dis.readShort(), message.dis.readByte());
-                } else if (type == 2) {
-                    this.doLockItemAnimal(player, message.dis.readShort(), message.dis.readShort(), message.dis.readByte());
-                } else if (type == 3) {
-                    this.doLockItemChar(player, message.dis.readShort(), message.dis.readShort(), message.dis.readByte());
-                } else if (type == 4) {
-                    this.doNghienBot(player, message);
-                } else if (type == 5) {
-                    MapCheTao.doAddNewAttBot(this, player, message);
-                }
-                break;
-            case -67:
-                this.doTuBinh(player, message);
-                break;
-            case -66:
-                this.doFruit(player, message);
-                break;
-            case -65:
-                this.doGetItemQuest(player, message);
-                break;
-            case -63:
-                this.doBuyXoso(player, message);
-                break;
-            case -62:
-                MapQuaTang.doOpenLuckyBox(this, player, message);
-                break;
-            case -61:
-                this.doProcessItemAnimal(player, message);
-                break;
-            case -59:
-                this.doPlant(player, message);
-                break;
-            case -57:
-                this.doMsgCharMonster(player, message);
-                break;
-            case -54:
-                this.doChangTypeItem(player, message);
-                break;
-            case -53:
-                NewClan.getTopMemberClan(player, message.dis.readShort());
-                break;
-            case -52:
-                MapCheTao.doUserCreateItem(this, player, message);
-                break;
-            case -46:
-                player.sendMessage(MessageCreator.createMsgSound(1));
-                break;
-            case -45:
-                this.doRideAnimal(player, message);
-                break;
-            case -41:
-                this.doGetGemItem(player, message);
-                break;
-            case -37:
-                MapBangHoi.doQuestClan(this, player, message);
-                break;
-            case -36:
-                MapEpNgoc.doFinishEpNgoc(this, player, message.dis.readByte(), message);
-                break;
-            case -35:
-                MapEpNgoc.doFinishKhamItem(this, player, message.dis.readByte());
-                break;
-            case -34:
-                MapEpNgoc.doKhamItem(this, player, message.dis.readByte());
-                break;
-            case -33:
-                this.doMove2Warp(player, message);
-                break;
-            case -32:
-                this.doPopup(player, message);
-                break;
-            case -31:
-                this.doProcessInputText(player, message);
-                break;
-            case -30:
-                this.doMenu(player, message);
-                break;
-            case -28:
-                this.doConfirmCapcha(player, message);
-                break;
-            case -27:
-                this.doSendWeaponeData(player, message);
-                break;
-            case -25:
-                this.doGiveCardTown(player, message);
-                break;
-            case -24:
-                this.doSendStringInfo(player, message);
-                break;
-            case -23:
-                MapEpNgoc.doGiveSpecialGem2Ground(this, player, message);
-                break;
-            case -22:
-                this.doSendDetailChar(player, message);
-                break;
-            case -21:
-                this.doGivePotion2Ground(player, message);
-                break;
-            case -20:
-                MapBangHoi.doGiveMoneyClan(this, player, message);
-                break;
-            case -19:
-                this.doSendTop(player, message);
-                break;
-            case -18:
-                MapBangHoi.doChatClan(this, player, message);
-                break;
-            case -17:
-                MapBangHoi.doSendMessage2Clan(this, player, message);
-                break;
-            case -16:
-                MapBangHoi.doSetSloganClan(this, player, message);
-                break;
-            case -15:
-                MapBangHoi.doUserOutClan(this, player);
-                break;
-            case -14:
-                MapBangHoi.doDelClan(this, player);
-                break;
-            case -13:
-                MapBangHoi.doKickMemberOutClan(this, player, message);
-                break;
-            case -12:
-                MapBangHoi.doSendInfoClan(this, player, message);
-                break;
-            case -11:
-                MapBangHoi.doInviteChar2Clan(this, player, message);
-                break;
-            case -10:
-                MapBangHoi.doCreateClan(this, player, message);
-                break;
-            case -9:
-                MapBangHoi.doRequestCreateClan(this, player);
-                break;
-            case -8:
-                MapBangHoi.doSendImgIconClan(this, player, message);
-                break;
-            case -7:
-                MapBangHoi.doSendListMemberClan(this, player, message);
-                break;
-            case -6:
-                this.delFriend(player, message.dis.readUTF());
-                break;
-            case -5:
-                MapXaHoi.doSendMessage(this, player, message);
-                break;
-            case -3:
-                this.doSendWearingInfo(player, message.dis.readByte(), message.dis.readShort());
-                break;
-            case -2:
-                this.doSendMainInfo(player, message.dis.readByte(), message.dis.readShort());
-                break;
-            case 4:
-                this.doPlayerMove(player, message);
-                break;
-            case 6:
-                this.doAttackPlayer(player, message);
-                break;
-            case 7:
-                this.doRequestMonterInfo(player, message);
-                break;
-            case 9:
-                this.doAttackMonster(player, message);
-                break;
-            case 12:
-                this.doChangeMap(player, message);
-                break;
-            case 18:
-                this.doGetItem(player, message);
-                System.err.println("ok");
-                break;
-            case 19:
-                this.doGetPotion(player, message);
-                break;
-            case 21:
-                MapCheTao.doRequestItemInfo(this, player, message);
-                break;
-            case 22:
-                this.doUsePotion(player, message);
-                break;
-            case 24:
-                this.doBuyItem(player, message);
-                break;
-            // Truoc day dong nay bi comment -> server khong xu ly chat (lenh 27) chut nao:
-            // nguoi choi khong chat duoc cho nhau (client chi tu hien lai cau minh vua go),
-            // va moi lenh admin go trong chat (stown, tgct, ktct...) deu vo tac dung.
-            case 27:
-                this.doChat(player, message);
-                break;
-            case 28:
-                this.doSellItem(player, message);
-                break;
-            case 29:
-                this.doUseItem(player, message);
-                break;
-            case 31:
-                this.doComeHomeWhenDie(player);
-                break;
-            case 34:
-                this.doAddBasePoint(player, message);
-                break;
-            case 36:
-                this.doAddSkillPoint(player, message);
-                break;
-            case 48:
-                player.createParty();
-                break;
-            case 49:
-                MapXaHoi.doParty(this, player, message);
-                break;
-            case 50:
-                this.doKickParty(player, message);
-                break;
-            case 51:
-                this.doUserBuff(player, message);
-                break;
-            case 52:
-                player.receiveQuest(message);
-                break;
-            case 53:
-                player.talkWithNpc(message.dis.readByte(), message.dis.readByte(), message.dis.readShort());
-                break;
-            case 55:
-                player.talkWithNpcResponse(message.dis.readByte(), message.dis.readByte(), message.dis.readShort());
-                break;
-            case 61:
-                this.doGiveItemToGround(player, message);
-                break;
-            case 62:
-                this.doRequestSellItemMarket(player, message);
-                break;
-            case 66:
-                MapMuaBan.doTrade(this, player, message, 0);
-                break;
-            case 67:
-                this.doSendKiller(player);
-                break;
-            case 68:
-                this.doPutItem2Bag(player, message.dis.readShort());
-                break;
-            case 69:
-                this.doGetItemFromBag(player, message.dis.readShort());
-                break;
-            case 70:
-                player.isPutItem2Bag = false;
-                break;
-            case 71:
-                MapEpNgoc.doImbue(this, player, message.dis.readByte());
-                break;
-            case 72:
-                this.doRepair(player, message.dis.readByte());
-                break;
-            case 74:
-                this.doBuyGemItem(player, message);
-                break;
-            case 75:
-                MapEpNgoc.doAddItemImbue(this, player, message.dis.readShort());
-                break;
-            case 76:
-                MapEpNgoc.doAddGemItemImbue(this, player, message.dis.readShort(), message);
-                break;
-            case 77:
-                MapEpNgoc.doFinishImbue(this, player, message.dis.readByte());
-                break;
-            case 78:
-                this.doSellGemItem(player, message);
-                break;
-            case 79:
-                this.doMove2Map(player, message.dis.readByte(), message.dis.readShort());
-                break;
-            case 81:
-                this.doBuyTicket(player);
-                break;
-            case 82:
-                this.doUp2Board(player);
-                break;
-            case 85:
-                MapMuaBan.doBuySpecialItem(this, player, message);
-                break;
-            case 86:
-                MapMuaBan.doUseSpecialITem(this, player, message);
-                break;
-            case 87:
-                this.doLuckyDraw(player, message);
-                break;
-            case 88:
-                this.doRequestMainCharInfo(player);
-                break;
-            case 92:
-                this.doUserSellItem(player, message);
-                break;
-            case 94:
-                this.proccessDepositeItem(player, message);
-                break;
-            case 95:
-                this.doBuyItemOfUser(player, message);
-                break;
-            case 100:
-                this.doSendMonsterTemplate(player, 0);
-                break;
-            case 101:
-                MapXaHoi.doAddFriend(this, player, message);
-                break;
-            case 102:
-                this.doGetDetailChar(player, message);
-                break;
-            case 104:
-                player.config(message.dis.readByte());
-                break;
-            case 106:
-                this.doAttackMultiTarget(player, message);
-                break;
-            case 107:
-                this.doNapSMS(player, message);
-                break;
-            case 108:
-                this.doUnRideHorse(player, message);
-                break;
-            case 109:
-                this.doLearnSkil(player, message);
-                break;
-            case 110:
-                this.doReadMessage(player, message);
-        }
-
-        try {
-            message.cleanup();
-        } catch (Exception var4) {
-        }
+        MapXuLyLenh.processMessage(this, player,message);
     }
     // cải tạo cải trang
     public void  showCaiTaoMaterialList (Char player) {
@@ -8553,7 +7825,7 @@ public class Map implements Runnable {
 
   
 
-    private void doBuyItemShopNew(Char player, Message message) 
+    void doBuyItemShopNew(Char player, Message message) 
     {
         try 
         {
@@ -9298,7 +8570,7 @@ public class Map implements Runnable {
         return id >= 246 && id <= 249;
     }
 
-    private void doAddNewAttribute(Char player, short idItem, short idMaterial, byte lock) {
+    void doAddNewAttribute(Char player, short idItem, short idMaterial, byte lock) {
         if (player.map.isMapOffline) {
             if (!player.isCorrectPass && !player.passWord.equals("")) {
                 player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
@@ -9367,7 +8639,7 @@ public class Map implements Runnable {
         return idGem >= 159 && idGem <= 174 || idGem >= 179 && idGem <= 226;
     }
 
-    private void doTuBinh(Char player, Message message) {
+    void doTuBinh(Char player, Message message) {
         try {
             short idGem = message.dis.readShort();
             boolean lock = message.dis.readByte() == 1;
@@ -9423,7 +8695,7 @@ public class Map implements Runnable {
         player.sendMessage(MessageCreator.createServerAlertMessage(alert, ""));
     }
 
-    private void doFruit(Char player, Message m) {
+    void doFruit(Char player, Message m) {
         try {
             byte type = m.dis.readByte();
             int index = m.dis.readByte();
@@ -9469,7 +8741,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doLuckyDraw(Char player, Message message) {
+    void doLuckyDraw(Char player, Message message) {
         try {
             byte type = message.dis.readByte();
             player.doStartLuckDraw(type);
@@ -9477,7 +8749,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doBuyXoso(Char player, Message message) {
+    void doBuyXoso(Char player, Message message) {
         if (!player.isCorrectPass && !player.passWord.equals("")) {
             player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
         } else {
@@ -9540,7 +8812,7 @@ public class Map implements Runnable {
         }
     }
    // con lon di theo
-    private void doMsgCharMonster(Char player, Message message) {
+    void doMsgCharMonster(Char player, Message message) {
         try {
             if (player.myCountry == -1) {
                 return;
@@ -9570,7 +8842,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doChangTypeItem(Char player, Message message) {
+    void doChangTypeItem(Char player, Message message) {
         try {
             byte magic_physic = message.dis.readByte();
             short itemid = message.dis.readShort();
@@ -9781,7 +9053,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doConfirmCapcha(Char player, Message message) {
+    void doConfirmCapcha(Char player, Message message) {
         String st = "";
 
         try {
@@ -9792,7 +9064,7 @@ public class Map implements Runnable {
         player.confirmCapcha(st);
     }
 
-    private void doMove2Warp(Char player, Message message) {
+    void doMove2Warp(Char player, Message message) {
         try {
             if (player.monster != null) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
@@ -9815,7 +9087,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doPopup(Char player, Message message) 
+    void doPopup(Char player, Message message) 
     {
         try {
            
@@ -11408,125 +10680,9 @@ public class Map implements Runnable {
     protected void doPopUpMapTown(Char p, int idpopup, int idActor, boolean ok) {
     }
 
+    // Than method (120 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     public void doAcceptChallengeParty(Char player, int ok) {
-        try {
-            Char p = CharManager.instance.getCharByCharName(player.nameCompetitor);
-            if (p != null) {
-                if (ok == 0) {
-                    p.nameCompetitor = "";
-                    p.moneyThachdau = 0;
-                    p.sendMessage(MessageCreator.createServerAlertMessage(player.charname + " không chấp nhận lời thách đấu của bạn", ""));
-                    return;
-                }
-
-                for (int i = 0; i < p.party.userParty.size(); i++) {
-                    ((Char) p.party.userParty.get(i))
-                            .sendMessage(
-                                    MessageCreator.createServerAlertMessage(
-                                            player.charname
-                                            + " đã chấp nhận lời thách đấu nhóm của bạn. Trận đấu của nhóm bạn và nhóm "
-                                            + player.nameCompetitor
-                                            + " sẽ diễn ra sau 30s nữa.",
-                                            ""
-                                    )
-                            );
-                }
-
-                for (int i = 0; i < player.party.userParty.size(); i++) {
-                    ((Char) player.party.userParty.get(i))
-                            .sendMessage(
-                                    MessageCreator.createServerAlertMessage(
-                                            "Bạn đã chấp nhận lời thách đấu của nhóm "
-                                            + p.charname
-                                            + ". Trận đấu của nhóm bạn và nhóm "
-                                            + p.nameCompetitor
-                                            + " sẽ diễn ra sau 30s nữa.",
-                                            ""
-                                    )
-                            );
-                }
-
-                TeamArena team1 = new TeamArena(TeamArena.genIDTeam());
-                TeamArena team2 = new TeamArena(TeamArena.genIDTeam());
-                ArenaMap mm = (ArenaMap) RealController.mapList.get(205);
-                ArenaData arena = new ArenaData();
-                arena.addTeam(team1);
-                arena.addTeam(team2);
-                arena.idArena = IDARENA;
-                arena.typeArena = 4;
-                arena.start();
-                mm.doAddArena(arena);
-                p.idArena = IDARENA;
-                player.idArena = IDARENA;
-                arena.moneyThachdau = p.moneyThachdau * 2;
-                arena.moneyThachdau = arena.moneyThachdau - arena.moneyThachdau / 5;
-                p.subXu((long) p.moneyThachdau, false, "map 32");
-                player.subXu((long) p.moneyThachdau, false, "map 33");
-                team1.addMember(p);
-                team2.addMember(player);
-                Message m = null;
-                m = new Message(65);
-                m.dos.writeShort(p.id);
-                p.pk = 14;
-                m.dos.writeByte(1);
-                m.dos.writeByte(14);
-                p.timeUsePK = System.currentTimeMillis();
-                p.sendMessage(m);
-                p.sendToNearPlayer(m);
-
-                for (int i = 0; i < p.party.userParty.size(); i++) {
-                    Char pp = (Char) p.party.userParty.get(i);
-                    if (pp.id != p.id) {
-                        m = new Message(65);
-                        m.dos.writeShort(pp.id);
-                        pp.pk = 14;
-                        m.dos.writeByte(1);
-                        m.dos.writeByte(14);
-                        pp.timeUsePK = System.currentTimeMillis();
-                        pp.sendMessage(m);
-                        pp.sendToNearPlayer(m);
-                        pp.idArena = IDARENA;
-                        team1.addMember(pp);
-                    }
-                }
-
-                for (int ix = 0; ix < player.party.userParty.size(); ix++) {
-                    Char pp = (Char) player.party.userParty.get(ix);
-                    if (pp.id != player.id) {
-                        m = new Message(65);
-                        m.dos.writeShort(pp.id);
-                        pp.pk = 15;
-                        m.dos.writeByte(1);
-                        m.dos.writeByte(15);
-                        pp.timeUsePK = System.currentTimeMillis();
-                        pp.sendMessage(m);
-                        pp.sendToNearPlayer(m);
-                        pp.idArena = IDARENA;
-                        team2.addMember(pp);
-                    }
-                }
-
-                m = new Message(65);
-                m.dos.writeShort(player.id);
-                player.pk = 15;
-                m.dos.writeByte(1);
-                m.dos.writeByte(15);
-                player.timeUsePK = System.currentTimeMillis();
-                player.sendMessage(m);
-                player.sendToNearPlayer(m);
-                arena.sendInfoMatch = true;
-                arena.timeWaitFight = System.currentTimeMillis() + 30000L;
-                IDARENA = (IDARENA + 1) % 2000000000;
-                player.nameCompetitor = "";
-                p.nameCompetitor = "";
-                p.moneyThachdau = 0;
-                player.moneyThachdau = 0;
-            } else {
-                player.sendMessage(MessageCreator.createServerAlertMessage(player.nameCompetitor + " đã thoát khỏi game", ""));
-            }
-        } catch (Exception var11) {
-            var11.printStackTrace();
-        }
+        MapXuLyLenh.doAcceptChallengeParty(this, player,ok);
     }
 
 
@@ -13517,308 +12673,9 @@ public class Map implements Runnable {
         }
     }
 
+    // Than method (303 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     public void doDotDen(Char player, int type_dotden) {
-        if (!Char.isFinishAllSuKienTrungThul2016()) {
-            if (type_dotden <= 2) {
-                if (player.potions[136] >= 1) {
-                    if (type_dotden != 1 || player.getLuong() >= 4) {
-                        if (type_dotden != 2 || player.getxu() >= 5000000L) {
-                            addXpCharEvent(player, 100000L, false, "doDotDen");
-                            int[] per = new int[]{
-                                5000,
-                                5000,
-                                5000,
-                                300,
-                                100,
-                                100,
-                                50,
-                                3000,
-                                3000,
-                                100,
-                                100,
-                                100,
-                                100,
-                                100,
-                                100,
-                                5000,
-                                5000,
-                                5000,
-                                5000,
-                                5000,
-                                500,
-                                500,
-                                500,
-                                500,
-                                500,
-                                200,
-                                0,
-                                50,
-                                5000,
-                                5000,
-                                5000,
-                                50,
-                                50,
-                                100,
-                                100
-                            };
-                            int[] idgift = new int[]{
-                                93,
-                                95,
-                                117,
-                                35,
-                                75,
-                                84,
-                                100,
-                                GemTemplate.BOT_TRANG,
-                                GemTemplate.BOT_XANH,
-                                GemTemplate.BOT_DO,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -1,
-                                -2,
-                                -3,
-                                GemTemplate.BOT_XANH_LA,
-                                114,
-                                112,
-                                113,
-                                119,
-                                -4,
-                                -5,
-                                -6
-                            };
-                            int[] typegift = new int[]{
-                                4, 4, 4, 4, 4, 4, 4, 6, 6, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -3, 6, 4, 4, 4, 4, -4, -5, -6
-                            };
-                            int[] soluongmax = new int[]{
-                                100,
-                                100,
-                                3,
-                                1,
-                                1,
-                                1,
-                                1,
-                                3,
-                                3,
-                                3,
-                                10000,
-                                20000,
-                                30000,
-                                40000,
-                                50000,
-                                100,
-                                200,
-                                300,
-                                400,
-                                500,
-                                50,
-                                60,
-                                70,
-                                80,
-                                90,
-                                1,
-                                1,
-                                3,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1
-                            };
-                            int[] soluongmin = new int[]{
-                                50,
-                                50,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                10000,
-                                20000,
-                                30000,
-                                40000,
-                                50000,
-                                100,
-                                200,
-                                300,
-                                400,
-                                500,
-                                50,
-                                60,
-                                70,
-                                80,
-                                90,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1,
-                                1
-                            };
-                            String info = "Chúc mừng bạn nhận được ";
-                            int index = Char.getIndexRandom(per);
-                            if (typegift[index] == -2) {
-                                if (!player.isFullInventory()) {
-                                    int[] minute = new int[]{1440, 4320, 7200, 10080};
-                                    Item newItem = ItemLuckyDraw.createItemCoat(player, r.nextInt(2), false, minute[r.nextInt(minute.length)]);
-                                    player.iItems.add(newItem);
-                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                                    info = info + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút";
-                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-                                } else {
-                                    player.addXu((long) (100 + r.nextInt(100)), "map 58");
-                                    info = info + soluongmax[index] + " xu";
-                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                }
-                            } else if (typegift[index] == -3) {
-                                if (!player.isFullInventory()) {
-                                    int[] minute = new int[]{1440, 4320, 7200, 10080};
-                                    Item newItem = ItemLuckyDraw.createItemCoat(player, r.nextInt(2), false, minute[r.nextInt(minute.length)]);
-                                    player.iItems.add(newItem);
-                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                                    info = info + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút";
-                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-                                } else {
-                                    player.addXu((long) (100 + r.nextInt(100)), "map 55");
-                                    info = info + soluongmax[index] + " xu";
-                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                }
-                            } else if (typegift[index] == -5) {
-                                if (!player.isFullInventory()) {
-                                    int[] minute = new int[]{1440, 4320, 7200, 10080};
-                                    Item newItem = ItemLuckyDraw.createtemCoat(742, player, r.nextInt(2), true, minute[r.nextInt(minute.length)]);
-                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                                    info = info + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút";
-                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-                                } else {
-                                    player.addXu((long) (100 + r.nextInt(100)), "map 55");
-                                    info = info + soluongmax[index] + " xu";
-                                    player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                }
-                            } else if (typegift[index] == -4) {
-                                int soluong = soluongmin[index];
-                                if (soluongmin[index] < soluongmax[index]) {
-                                    soluong += r.nextInt(soluongmax[index] - soluongmin[index] + 1);
-                                }
-
-                                boolean lock = false;
-                                int idgem = ID_GEM_TU_BINH[2 + r.nextInt(2)][r.nextInt(ID_GEM_TU_BINH[0].length)];
-                                player.doAddGemItem(idgem, soluong, lock);
-                                info = info + soluong + " " + gemTemplate[idgem].name + (lock ? " khoá" : "");
-                                player.sendMessage(MessageCreator.createCharGemItem(player));
-                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-                            } else if (typegift[index] == -6) {
-                                int time = r.nextInt(3) + 3;
-                                player.createPoro((long) time, false);
-                                info = info + " đại bạch thử";
-                            } else if (typegift[index] == -1) {
-                                player.addXu((long) soluongmax[index], "map 56");
-                                info = info + soluongmax[index] + " xu";
-                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-                                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                            } else if (typegift[index] == 4) {
-                                int soluong = soluongmin[index];
-                                if (soluongmin[index] < soluongmax[index]) {
-                                    soluong += r.nextInt(soluongmax[index] - soluongmin[index] + 1);
-                                }
-
-                                player.potions[idgift[index]] = player.potions[idgift[index]] + soluong;
-                                info = info + soluong + " " + LoginHandler.PORTION_NAME[idgift[index]];
-                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-                                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                            } else if (typegift[index] == 6) {
-                                int soluong = soluongmin[index];
-                                if (soluongmin[index] < soluongmax[index]) {
-                                    soluong += r.nextInt(soluongmax[index] - soluongmin[index] + 1);
-                                }
-
-                                boolean lock = r.nextInt(2) == 1;
-                                player.doAddGemItem(idgift[index], soluong, lock);
-                                info = info + soluong + " " + gemTemplate[idgift[index]].name + (lock ? " khoá" : "");
-                                player.sendMessage(MessageCreator.createCharGemItem(player));
-                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-                                if (idgift[index] == GemTemplate.LKD_35 || idgift[index] == GemTemplate.LKD_40) {
-                                    try {
-                                        sendAllCharServer(
-                                                -1,
-                                                MessageCreator.createServerAlertAutoOffMessage(
-                                                        player.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " đốt đèn"
-                                                )
-                                        );
-                                    } catch (IOException var13) {
-                                    }
-                                }
-                            }
-
-                            player.potions[136]--;
-                            if (player.potions[136] < 0) {
-                                player.potions[136] = 0;
-                            }
-
-                            Database.instance
-                                    .saveOrtherLog("", player.charname, info + " " + (type_dotden == 1 ? "dung luong " : (type_dotden == 2 ? "dung xu" : "")), "dotden");
-                            if (type_dotden != 0) {
-                                EffectBuff ef = new EffectBuff(EffectBuff.THA_DEN, System.currentTimeMillis() + 3000L);
-                                ef.type = EffectBuff.BY_ACTOR;
-                                ef.damFly = 0;
-                                if (Char.isSuKienTrungThul2016()) {
-                                    player.banphaohoa++;
-                                    Database.instance.addCharEventTrungthu(player);
-                                }
-
-                                player.sendMessage(
-                                        MessageCreator.createMsgAddDynamicNewEffect(
-                                                ef.idEff, ef.timeExist, ef.type, player.id, player.x / 16, player.y / 16, player.cat, EffectBuff.ODER_PAINT[ef.idEff], ef.damFly
-                                        )
-                                );
-                                player.sendToNearPlayer(
-                                        MessageCreator.createMsgAddDynamicNewEffect(
-                                                ef.idEff, ef.timeExist, ef.type, player.id, player.x / 16, player.y / 16, player.cat, EffectBuff.ODER_PAINT[ef.idEff], ef.damFly
-                                        )
-                                );
-                            }
-
-                            if (type_dotden == 1) {
-                                player.subLuong(4L);
-                                Database.instance.saveLogThongKeChiTieu("tha den luong", 0, 1, 4L, "luong");
-                            } else if (type_dotden == 2) {
-                                player.subXu(5000000L, false, "");
-                                Database.instance.saveLogThongKeChiTieu("tha den xu", 0, 1, 5000000L, "xu");
-                            }
-
-                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        }
-                    }
-                }
-            }
-        }
+        MapXuLyLenh.doDotDen(this, player,type_dotden);
     }
 
     public void doGiftQuestChucNu(Char player) {
@@ -14665,7 +13522,7 @@ public class Map implements Runnable {
         return null;
     }
 
-    private void doSendWeaponeData(Char player, Message message) {
+    void doSendWeaponeData(Char player, Message message) {
         try {
             int type = message.dis.readByte();
             int typeItem = message.dis.readByte();
@@ -14686,7 +13543,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doSendStringInfo(Char player, Message msg) {
+    void doSendStringInfo(Char player, Message msg) {
         try {
             int type = msg.dis.readByte();
             if (type == 0) {
@@ -14696,51 +13553,9 @@ public class Map implements Runnable {
         }
     }
 
+    // Than method (46 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     public void doNapSMS(Char player, int type, String cardID, String cardCode) {
-        try {
-            // SECURITY: disabled external card top-up that sent card ID/code + account info to third-party (teamobi).
-            player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng nạp thẻ hiện không khả dụng.", ""));
-            if (true) {
-                return;
-            }
-            if (!onSMS) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng hiện đang tạm khoá.", ""));
-                return;
-            }
-
-            if (openLog && System.currentTimeMillis() - player.getSession().timeNapMoney < 30000L) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Có lỗi xảy ra. Xin thử lại sau", ""));
-                return;
-            }
-
-            player.getSession().timeNapMoney = System.currentTimeMillis();
-            String url = "";
-            url = Net.url[4][0];
-            url = url
-                    + player.charname
-                    + "&cardid="
-                    + cardID
-                    + "&cardcode="
-                    + cardCode
-                    + "&provider="
-                    + player.getSession().clientProvider
-                    + "&game=9&moneytype="
-                    + (type == 0 ? "luong" : "xu")
-                    + "&server="
-                    + TeamServer.server
-                    + "&agent="
-                    + player.getSession().agentProvider
-                    + "&account="
-                    + player.getAccountName();
-            String noidug = Net.getHttp(url);
-            if (noidug.indexOf("http") > -1 || noidug.indexOf("www") > -1) {
-                noidug = "Có lỗi xảy ra. Lỗi 42";
-            }
-
-            Database.instance.saveLogNapMoney(player.charname, cardID + "|" + cardCode + "_" + noidug);
-            player.sendMessage(MessageCreator.createServerAlertMessage(noidug, ""));
-        } catch (Exception var7) {
-        }
+        MapXuLyLenh.doNapSMS(this, player,type,cardID,cardCode);
     }
 
     public void doNapSMS(Char player, Message msg) {
@@ -14999,138 +13814,12 @@ public class Map implements Runnable {
         }
     }
 
+    // Than method (130 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     private void doSendDetailChar(Char player, Message msg) {
-        try {
-            Char p = CharManager.instance.getByCharID(msg.dis.readShort());
-            if (p == null) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không tìm thấy thông tin", ""));
-                return;
-            }
-
-            byte typeView = 0;
-
-            try {
-                typeView = msg.dis.readByte();
-            } catch (Exception var11) {
-            }
-
-            Message m = new Message(-22);
-            m.dos.writeByte(typeView);
-            if (typeView == 0) {
-                if (p.isCharCopy()) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage(p.getinfoCharCopy(), ""));
-                    return;
-                }
-
-                m.dos.writeUTF(p.charname);
-                m.dos.writeByte(p.headStyle);
-                m.dos.writeByte(p.lvDetail.lv);
-                Vector<Item> charWearing = p.changePosRing(p.getCharWearing());
-                m.dos.writeByte(charWearing.size());
-
-                for (int i = 0; i < charWearing.size(); i++) {
-                    Item item = (Item) charWearing.get(i);
-                    m.dos.writeByte(item.clazz);
-                    m.dos.writeShort(item.getTemplate().id);
-                    m.dos.writeByte(item.level);
-                    m.dos.writeByte(item.plus);
-                    m.dos.writeShort(item.id);
-                    m.dos.writeByte(item.colorName);
-
-                    for (int j = 0; j < 5; j++) {
-                        m.dos.writeShort(item.atb[j + 28]);
-                    }
-
-                    m.dos.writeByte(item.heItem);
-                    m.dos.writeByte(item.beKick);
-                    m.dos.writeByte(item.hangItem);
-                    m.dos.writeByte(item.magic_physic);
-                    m.dos.writeByte(item.lock);
-                    m.dos.writeUTF(item.charSeal);
-                    m.dos.write(item.newAtb);
-                    m.dos.write(item.lockAtb);
-                    m.dos.write(item.addMoreLevelSkill);
-                }
-
-                m.dos.writeShort(p.idClan);
-                m.dos.writeByte(p.wModel.idModel);
-                short[] idModel = p.getIDModel();
-
-                for (int i = 0; i < idModel.length; i++) {
-                    m.dos.writeShort(idModel[i]);
-                }
-
-                int type = -1;
-                if (p.animalRide != null) {
-                    type = p.animalRide.idImg;
-                }
-
-                m.dos.writeByte(type);
-                if (type != -1) {
-                    String info = p.animalRide.name + " lv " + p.animalRide.level + "\n" + p.animalRide.getInfoSendUser();
-                    m.dos.writeUTF(info);
-                    int idIcon = Animal.idImgIcon[p.animalRide.idImg];
-                    if (p.rankGov == 0) {
-                        idIcon = 13;
-                    }
-
-                    m.dos.writeByte(idIcon);
-                }
-            } else {
-                Vector<Item> awItems = p.getAnimalWearing();
-                byte len = (byte) (p.animalRide != null ? awItems.size() : -1);
-                m.dos.writeByte(len);
-
-                for (int i = 0; i < len; i++) {
-                    Item item = (Item) awItems.get(i);
-                    m.dos.writeByte(item.clazz);
-                    m.dos.writeShort(item.id);
-                    m.dos.writeShort(item.getTemplate().id);
-                    m.dos.writeByte(item.plus);
-                    m.dos.writeByte(item.level);
-                    m.dos.writeShort(item.mDurable);
-                    m.dos.writeShort(item.durable);
-                    m.dos.writeByte(item.colorName);
-
-                    for (int j = 0; j < 5; j++) {
-                        m.dos.writeShort(item.atb[j + 28]);
-                    }
-
-                    m.dos.writeByte(item.heItem);
-                    m.dos.writeByte(item.beKick);
-                    m.dos.writeByte(item.hangItem);
-                    m.dos.writeByte(item.magic_physic);
-                    m.dos.writeByte(item.lock);
-                    m.dos.writeUTF(item.charSeal);
-                    m.dos.write(item.newAtb);
-                    m.dos.write(item.lockAtb);
-                    m.dos.write(item.addMoreLevelSkill);
-                }
-
-                byte[] fr = Animal.fr;
-                if (p.animalRide != null) {
-                    // Skin linh thu: nguoi khac mo bang "Trang bi thu" cua minh cung
-                    // phai thay hinh skin, khong thi minh thay mot dang nguoi khac thay
-                    // mot dang. Cung logic voi createAnimalWearingMessage.
-                    if (SkinLinhThu.ghiAnhTrangBiThu(m, p)) {
-                        // da ghi hinh skin
-                    } else if (p.rankGov == 0) {
-                        m.dos.writeByte(fr[6]);
-                        m.dos.write(DataGame.imgAvtAnimal[6]);
-                    } else {
-                        m.dos.writeByte(fr[p.animalRide.idImg]);
-                        m.dos.write(DataGame.imgAvtAnimal[p.animalRide.idImg]);
-                    }
-                }
-            }
-
-            player.sendMessage(m);
-        } catch (Exception var12) {
-            var12.printStackTrace();
-        }
+        MapXuLyLenh.doSendDetailChar(this, player,msg);
     }
 
-    private void doGetDetailChar(Char player, Message msg) {
+    void doGetDetailChar(Char player, Message msg) {
         try {
             byte get = msg.dis.readByte();
             if (get == 1) {
@@ -15380,7 +14069,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doMove2Map(Char player, int index, int mapID) {
+    void doMove2Map(Char player, int index, int mapID) {
         try {
             if (Char.isSuKienMiniChucNu() && player.charCopy != null && player.map.mapId == player.charCopy.map.mapId) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể sử dụng khi đang làm nhiệm vụ tìm Chức Nữ", ""));
@@ -15405,7 +14094,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doUp2Board(Char player) {
+    void doUp2Board(Char player) {
         try {
             if (player.lvDetail.lv < 15) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải đạt được cấp độ 15 mới được ra đảo", ""));
@@ -15431,7 +14120,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doBuyTicket(Char player) {
+    void doBuyTicket(Char player) {
         if (!player.isCorrectPass && !player.passWord.equals("")) {
             player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
         } else if (!this.checkTrade(player)) {
@@ -15538,138 +14227,9 @@ public class Map implements Runnable {
     }
 
 
+    // Than method (133 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     public static void doBuyModelClothe(Char player, ShopTemplate item, int nday) {
-        ItemTemplates template = null;
-        Item newItem = null;
-        switch (item.id) {
-            case 50:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(0)).get(new Integer(267));
-                newItem = new Item(template, false, 0, 0, 267);
-                break;
-            case 51:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(0)).get(new Integer(265));
-                newItem = new Item(template, false, 0, 0, 265);
-                break;
-            case 52:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(0)).get(new Integer(579));
-                newItem = new Item(template, false, -1, 0, 579);
-                break;
-            case 53:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(0)).get(new Integer(508));
-                newItem = new Item(template, false, -1, 0, 508);
-                break;
-            case 54:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(0)).get(new Integer(266));
-                newItem = new Item(template, false, 0, 0, 266);
-                break;
-            case 55:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(0)).get(new Integer(264));
-                newItem = new Item(template, false, -1, 0, 264);
-                break;
-            case 56:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(0)).get(new Integer(507));
-                newItem = new Item(template, false, -1, 0, 507);
-                break;
-            case 57:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(0)).get(new Integer(580));
-                newItem = new Item(template, false, -1, 0, 580);
-                break;
-            case 58:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(0)).get(new Integer(581));
-                newItem = new Item(template, false, -1, 0, 581);
-                break;
-            case 86:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(573));
-                newItem = new Item(template, false, -1, 0, 573);
-                break;
-            case 87:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(574));
-                newItem = new Item(template, false, -1, 0, 574);
-                break;
-            case 88:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(575));
-                newItem = new Item(template, false, -1, 0, 575);
-                break;
-            case 89:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(576));
-                newItem = new Item(template, false, -1, 0, 576);
-                break;
-            case 90:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(577));
-                newItem = new Item(template, false, -1, 0, 577);
-                break;
-            case 91:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(578));
-                newItem = new Item(template, false, -1, 0, 578);
-                break;
-            case 105:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(582));
-                newItem = new Item(template, false, -1, 0, 582);
-                break;
-            case 106:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(583));
-                newItem = new Item(template, false, -1, 0, 583);
-                break;
-            case 113:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(609));
-                newItem = new Item(template, false, -1, 0, 609);
-                break;
-            case 114:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(610));
-                newItem = new Item(template, false, -1, 0, 610);
-                break;
-            case 137:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(620));
-                newItem = new Item(template, false, -1, 0, 620);
-                break;
-            case 138:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(621));
-                newItem = new Item(template, false, -1, 0, 621);
-                break;
-            case 139:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(622));
-                newItem = new Item(template, false, -1, 0, 622);
-                break;
-            case 140:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(623));
-                newItem = new Item(template, false, -1, 0, 623);
-                break;
-            case 142:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(671));
-                newItem = new Item(template, false, -1, 0, 671);
-                break;
-            case 143:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(672));
-                newItem = new Item(template, false, -1, 0, 672);
-                break;
-            case 144:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(673));
-                newItem = new Item(template, false, -1, 0, 673);
-                break;
-            case 145:
-                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(674));
-                newItem = new Item(template, false, -1, 0, 674);
-            case 723:
-            case 724:
-        }
-
-        if (newItem != null) {
-            newItem.id = player.getIDItem();
-            newItem.owner = player.charDBID;
-            newItem.level = newItem.getTemplate().level;
-            player.iItems.add(newItem);
-            newItem.clazz = 0;
-            newItem.identify = player.charDBID;
-            if (nday > 0) {
-                newItem.minuteExist = nday * 24 * 60;
-                newItem.timeLoan = System.currentTimeMillis();
-            }
-
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-            Database.instance.saveLogBuyItemShop(player.charname, newItem.getTemplate().name, 0, item.getPrice(isSale), player.getxu() + "_" + player.getLuong());
-            Database.instance.saveItem(newItem);
-        }
+        MapXuLyLenh.doBuyModelClothe(player,item,nday);
     }
 
     public static Item doBuyModelClothe(Char player, int idItemtemplate, int nday, int lock) {
@@ -15961,7 +14521,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doSendMainInfo(Char player, int me, int id) {
+    void doSendMainInfo(Char player, int me, int id) {
         if (me == 1) {
             try {
                 Message m = MessageCreator.createMainCharInfoMessage(player);
@@ -16072,7 +14632,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doUserBuff(Char player, Message m) {
+    void doUserBuff(Char player, Message m) {
         if (!this.checkTrade(player)) {
             try {
                 byte use = m.dis.readByte();
@@ -16087,7 +14647,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doKickParty(Char player, Message m) {
+    void doKickParty(Char player, Message m) {
         try {
             byte value = m.dis.readByte();
             if (value == 0) {
@@ -16108,7 +14668,7 @@ public class Map implements Runnable {
     }
 
 
-    private void doSetTaxTown(Char player, Message message) {
+    void doSetTaxTown(Char player, Message message) {
         try {
             if (player.myCountry == -1) {
                 return;
@@ -16253,178 +14813,9 @@ public class Map implements Runnable {
         }
     }
 
+    // Than method (173 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     private void doSendTop(Char player, Message msg) {
-        try {
-            Message m = new Message(-19);
-            byte type = msg.dis.readByte();
-            byte page = msg.dis.readByte();
-            m.dos.writeByte(type);
-            int start = page * 10;
-            int end = page * 10 + 10;
-            switch (type) {
-                case 3:
-                    m.dos.writeUTF("TOP ĐẠI GIA");
-                    if (start >= topRich.size()) {
-                        start = topRich.size();
-                    }
-
-                    if (end >= topRich.size()) {
-                        end = topRich.size();
-                    }
-
-                    m.dos.writeShort(end - start);
-
-                    for (int i = start; i < end; i++) {
-                        CharInfo charinfo = (CharInfo) topRich.get(i);
-                        String online = " - off";
-                        if (CharManager.instance.getCharByCharName(charinfo.name) != null) {
-                            online = " - on";
-                        }
-
-                        m.dos.writeUTF(charinfo.name + online);
-                        m.dos.writeByte(charinfo.headStyle);
-                        m.dos.writeByte(charinfo.level);
-                        m.dos.writeByte(charinfo.wearingItem.size());
-
-                        for (int j = 0; j < charinfo.wearingItem.size(); j++) {
-                            ItemInfo item = (ItemInfo) charinfo.wearingItem.get(j);
-                            m.dos.writeByte(item.charClass);
-                            m.dos.writeShort(item.idTemplate);
-                            m.dos.writeByte(item.level);
-                            m.dos.writeByte(item.plus);
-                        }
-
-                        m.dos.writeShort(charinfo.idClan);
-                        m.dos.writeByte(charinfo.titlesClan);
-                        m.dos.writeLong(charinfo.money);
-                        m.dos.writeInt(charinfo.luong);
-                        m.dos.writeByte(charinfo.country);
-                    }
-                    break;
-                case 4:
-                    m.dos.writeUTF("TOP CAO THỦ");
-                    if (start >= topLv.size()) {
-                        start = topLv.size();
-                    }
-
-                    if (end >= topLv.size()) {
-                        end = topLv.size();
-                    }
-
-                    m.dos.writeShort(end - start);
-
-                    for (int i = start; i < end; i++) {
-                        CharInfo charinfo = (CharInfo) topLv.get(i);
-                        String online = " - off";
-                        if (CharManager.instance.getCharByCharName(charinfo.name) != null) {
-                            online = " - on";
-                        }
-
-                        m.dos.writeUTF(charinfo.name + online);
-                        m.dos.writeByte(charinfo.headStyle);
-                        m.dos.writeByte(charinfo.level);
-                        m.dos.writeByte(charinfo.wearingItem.size());
-
-                        for (int j = 0; j < charinfo.wearingItem.size(); j++) {
-                            ItemInfo item = (ItemInfo) charinfo.wearingItem.get(j);
-                            m.dos.writeByte(item.charClass);
-                            m.dos.writeShort(item.idTemplate);
-                            m.dos.writeByte(item.level);
-                            m.dos.writeByte(item.plus);
-                        }
-
-                        m.dos.writeShort(charinfo.idClan);
-                        m.dos.writeByte(charinfo.titlesClan);
-                        m.dos.writeLong(charinfo.money);
-                        m.dos.writeInt(charinfo.luong);
-                        m.dos.writeByte(charinfo.country);
-                    }
-                    break;
-                case 5:
-                    m.dos.writeUTF("TOP BANG HỘI");
-                    if (start >= topClan.size()) {
-                        start = topClan.size();
-                    }
-
-                    if (end >= topClan.size()) {
-                        end = topClan.size();
-                    }
-
-                    m.dos.writeShort(end - start);
-
-                    for (int i = start; i < end; i++) {
-                        NewClan clan = (NewClan) topClan.get(i);
-                        m.dos.writeShort(clan.id);
-                        m.dos.writeUTF(clan.name);
-                        m.dos.writeUTF(clan.master);
-                        m.dos.writeByte(clan.level);
-                        m.dos.writeShort(clan.getAllMember().size());
-                        m.dos.writeLong(clan.money);
-                        m.dos.writeByte(clan.country);
-                    }
-                case 6:
-                default:
-                    break;
-                case 7:
-                    player.sendMessage(
-                            MessageCreator.createMsgMenu(
-                                    new String[]{
-                                        "Top cao thủ Thanh long",
-                                        "Top cao thủ Hắc hổ",
-                                        "Top cao thủ Huyền vũ",
-                                        "Top công trạng Thanh long",
-                                        "Top công trạng Hắc hổ",
-                                        "Top công trạng Huyền vũ",
-                                        "Top liên trảm Thanh long",
-                                        "Top liên trảm Hắc hổ",
-                                        "Top liên trảm Huyền vũ",
-                                        "Danh sách cừu nhân"
-                                    },
-                                    -504,
-                                    0
-                            )
-                    );
-                    return;
-                case 8:
-                    m.dos.writeUTF("TOP NHÓM ĐUA");
-                    int len = topRich.size();
-                    if (len > 10) {
-                        len = 10;
-                    }
-
-                    m.dos.writeShort(len);
-
-                    for (int i = start; i < end; i++) {
-                        CharInfo charinfo = (CharInfo) topRich.get(i);
-                        String online = " - off";
-                        if (CharManager.instance.getCharByCharName(charinfo.name) != null) {
-                            online = " - on";
-                        }
-
-                        m.dos.writeUTF(charinfo.name + online);
-                        m.dos.writeByte(charinfo.headStyle);
-                        m.dos.writeByte(-1);
-                        m.dos.writeByte(charinfo.wearingItem.size());
-
-                        for (int j = 0; j < charinfo.wearingItem.size(); j++) {
-                            ItemInfo item = (ItemInfo) charinfo.wearingItem.get(j);
-                            m.dos.writeByte(item.charClass);
-                            m.dos.writeShort(item.idTemplate);
-                            m.dos.writeByte(item.level);
-                            m.dos.writeByte(item.plus);
-                        }
-
-                        m.dos.writeShort(charinfo.idClan);
-                        m.dos.writeByte(charinfo.titlesClan);
-                        m.dos.writeLong(charinfo.money);
-                        m.dos.writeInt(charinfo.luong);
-                        m.dos.writeByte(charinfo.country);
-                    }
-            }
-
-            player.sendMessage(m);
-        } catch (Exception var14) {
-        }
+        MapXuLyLenh.doSendTop(this, player,msg);
     }
 
     public void doSendTopNation(Char player, int idoption) {
@@ -16561,7 +14952,7 @@ public class Map implements Runnable {
 
 
 
-    private void delFriend(Char player, String fName) {
+    void delFriend(Char player, String fName) {
         try {
             if (player.friendListID.size() == 0) {
                 Database.instance.getFriendlist(player);
@@ -16584,7 +14975,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doReadMessage(Char player, Message msg) {
+    void doReadMessage(Char player, Message msg) {
         try {
             int index = msg.dis.readByte();
             CharInboxMessage ib = (CharInboxMessage) player.inbox.get(index);
@@ -16595,7 +14986,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doLearnSkil(Char player, Message msg) {
+    void doLearnSkil(Char player, Message msg) {
         try {
             int charclass = msg.dis.readByte();
             int skillSelectIndex = msg.dis.readByte();
@@ -16631,7 +15022,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doAddSkillPoint(Char player, Message message) throws IOException {
+    void doAddSkillPoint(Char player, Message message) throws IOException {
         if (player.skill[0] == 0) {
             player.sendMessage(MessageCreator.createServerAlertMessage("Chưa học kỹ năng chiến đấu từ Lâm tướng quân", ""));
         } else {
@@ -16665,7 +15056,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doAddBasePoint(Char player, Message message) throws IOException {
+    void doAddBasePoint(Char player, Message message) throws IOException {
         byte toPoint = message.dis.readByte();
         short value = message.dis.readShort();
         if (value < 0) {
@@ -16706,7 +15097,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doGivePotion2Ground(Char player, Message msg) {
+    void doGivePotion2Ground(Char player, Message msg) {
         if (!player.isCorrectPass && !player.passWord.equals("")) {
             player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -16741,7 +15132,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doGiveItemToGround(Char player, Message msg) throws IOException {
+    void doGiveItemToGround(Char player, Message msg) throws IOException {
         if (!player.isCorrectPass && !player.passWord.equals("")) {
             player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
         } else if (!this.checkTrade(player)) {
@@ -16961,7 +15352,7 @@ public class Map implements Runnable {
         return type == 22;
     }
 
-    private void doUseItem(Char player, Message message) throws IOException 
+    void doUseItem(Char player, Message message) throws IOException 
     {
         if (!this.checkTrade(player)) 
         {
@@ -17782,7 +16173,7 @@ public class Map implements Runnable {
         }
     }
 
-    private void doSendMonsterTemplate(Char player, int template) {
+    void doSendMonsterTemplate(Char player, int template) {
     }
 
     public void move2Map(Char player, int x, int y, int mapID, int country) {
@@ -18095,393 +16486,9 @@ public class Map implements Runnable {
     public void doJoinMapOk(Char p) {
     }
 
+    // Than method (388 dong) da chuyen sang MapXuLyLenh.java. Chu ky GIU NGUYEN.
     protected void doChangeMap(Char player, Message message) {
-        try {
-            int toMapID = message.dis.readShort();
-            if (toMapID == player.mapID || player.mapID == 118 && player.monster != null && player.mapID == player.monster.map.mapId) {
-                Map toMap = (Map) RealController.mapList.get(player.mapID);
-                Message m = MessageCreator.createMapMessage(player);
-                player.sendMessage(m);
-                this.doSendDynamicObj(player);
-                player.map.sendInfoNpc(player);
-                player.map.sendDynamicEff(player);
-                player.checkCreateThangBe(toMapID);
-                if (player.isNguoiTuyet()) {
-                    MessageCreator.createMsgCharMonster(player, player);
-                }
-
-                player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
-
-                try {
-                    if (player.mapID == mapIDFarm) {
-                        this.doSendFarm(player);
-                    }
-
-                    if (toMap != null) {
-                        for (int i = 0; i < bossLocation.size(); i++) {
-                            if (((BossLocaltion) bossLocation.get(i)).mapID == toMapID) {
-                                BossLocaltion b = (BossLocaltion) bossLocation.get(i);
-                                player.sendMessage(MessageCreator.createGate(b.type, b.x, b.y, b.mapID));
-                                break;
-                            }
-                        }
-
-                        if (toMap != null
-                                && (toMap.mapIDLoadMap == 80
-                                || toMap.mapIDLoadMap == 70
-                                || toMap.mapIDLoadMap == 0
-                                || toMap.mapIDLoadMap == 1
-                                || toMap.mapIDLoadMap == 2
-                                || toMap.mapIDLoadMap == 12
-                                || toMap.mapIDLoadMap == 106)) {
-                            player.sendMessage(MessageCreator.createMessageLocation(player.inCountry));
-                        }
-
-                        return;
-                    }
-                } catch (Exception var38) {
-                }
-            } else if (toMapID == -500) {
-                player.calculateAttrib();
-                player.isCrazyChangeMap(player.isCrazy);
-                player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
-                if (player.map.isMapChienTruongMoba()) {
-                    player.sendInfoChienTruong(Char.ID_ALL_KHU_CHIEN_TRUONG_MOBA, 0);
-                    player.sendInfoChienTruong(Char.ID_NOI_LUC, 0);
-                    player.map.getRegionMoba(player.region).sendInfoPlayer(player);
-                    CharChienTruong c = MapChienTruongMoba.getCharChienTruong(player.charname);
-                    if (c.getTimeBuffNoiLuc() > 1L) {
-                        Message msg = MessageCreator.createMsgNewEffectSkill5Long(
-                                EffectBuff.EFF_BUFF_NOI_LUC, (int) c.getTimeBuffNoiLuc() * 1000, player.id, player.cat, true, false
-                        );
-                        player.sendMessage(msg);
-                    }
-                }
-
-                player.sendInfoNuiChauBau();
-                player.isDoChangeMap = false;
-                this.doJoinMapOk(player);
-            } else if (player.mapID == idMapChanNui) {
-                this.doReturnVillage(player);
-            } else if (this.isMapOffline && player.mapID_the_mua_ban > -1) {
-                this.playerExit(player);
-                player.region = player.region_the_mua_ban;
-                this.move2Map(player, player.x_the_mua_ban, player.y_the_mua_ban, player.mapID_the_mua_ban, player.inCountry);
-                player.mapID_the_mua_ban = -1;
-            } else {
-                boolean checklocation = true;
-                player.isDoChangeMap = true;
-                this.vx = 0;
-                player.idItem.removeAllElements();
-                player.idItemQuest.removeAllElements();
-                player.idPotion.removeAllElements();
-                if (getTown[player.inCountry] && giveCardFail(player)) {
-                    this.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage(player.charname + " giao thẻ thất bại"), player.inCountry);
-                    this.sendAllPlayer(MessageCreator.createMsgStartGetTown(player.inCountry), player.inCountry);
-                }
-
-                if (toMapID == 17) {
-                    toMapID = player.mapID;
-                }
-
-                int toTX = message.dis.readShort();
-                int toTY = message.dis.readShort();
-                if (toMapID != 9 && toMapID != 481 && toMapID != 482 && toMapID != 483 && toMapID != 484) {
-                    if (toMapID == 201) {
-                        if (this.mapIDLoadMap == 9 && (toTX != 39 || toTY != 90 || player.y / 16 > 10 && player.idClan > -1)) {
-                            toMapID = player.mapID;
-                            toTX = player.x / 16;
-                            toTY = player.y / 16;
-                            CharManager.instance.kickPlayer(player, "map 3");
-                            Database.instance.saveOrtherLog("", player.charname, "hack chuyen map 9", "hcm");
-                        }
-                    } else if (toMapID == player.mapID) {
-                        toMapID = player.mapID;
-                        toTX = player.x / 16;
-                        toTY = player.y / 16;
-                        CharManager.instance.kickPlayer(player, "map 4");
-                        Database.instance.saveOrtherLog("", player.charname, "hack chuyen map cung map " + player.mapID, "hcm");
-                    }
-                } else if (this.mapIDLoadMap == 8) {
-                    if (toTX != 28 || toTY != 98) {
-                        toMapID = player.mapID;
-                        toTX = player.x / 16;
-                        toTY = player.y / 16;
-                        CharManager.instance.kickPlayer(player, "map 1");
-                        Database.instance.saveOrtherLog("", player.charname, "hack chuyen map 8", "hcm");
-                    }
-                } else if (this.mapIDLoadMap == 201 && (toTX != 33 || toTY != 1)) {
-                    toMapID = player.mapID;
-                    toTX = player.x / 16;
-                    toTY = player.y / 16;
-                    CharManager.instance.kickPlayer(player, "map 2");
-                    Database.instance.saveOrtherLog("", player.charname, "hack chuyen map 201 ", "hcm");
-                }
-
-                if (toMapID == 111 && !Char.isSuKienHe2017()) {
-                    toMapID = player.mapID;
-                    toTX = player.x / 16;
-                    toTY = player.y / 16;
-                    checklocation = false;
-                }
-
-                if (player.myCountry == -1) {
-                    int[] mapstart = new int[]{117, 117, 117, 117, 117};
-                    toTX = 39 + Database.r.nextInt() % 3;
-                    toTY = 32 + Database.r.nextInt() % 5;
-                    toMapID = mapstart[r.nextInt(MessageCreator.nclone)];
-                    checklocation = false;
-                } else if (toMapID == 206) {
-                    if (player.idClan == -1) {
-                        toMapID = player.mapID;
-                        toTX = player.x / 16;
-                        toTY = player.y / 16;
-                        checklocation = false;
-                    }
-                } else if (player.mapID == 105) {
-                    int[][] mapstart = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
-                    int[][] pos = new int[][]{{10, 23, 14, 38, 30, 35, 21, 49}, {22, 41, 27, 32, 8, 30, 18, 11}, {10, 23, 14, 38, 30, 35, 21, 49}};
-                    int index = r.nextInt(4);
-                    toTX = pos[player.myCountry][index * 2] + r.nextInt() % 3;
-                    toTY = pos[player.myCountry][index * 2 + 1] + r.nextInt() % 3;
-                    player.inCountry = player.myCountry;
-                    toMapID = mapstart[player.myCountry][r.nextInt(mapstart[player.myCountry].length)];
-                    checklocation = false;
-                } else if ((player.myCountry != player.inCountry && getTown[player.inCountry]
-                        || nwar[player.inCountry] && player.myCountry != player.inCountry && nationBeAttack[player.inCountry] != player.myCountry
-                        || player.inCountry != player.myCountry && MapTown.addDragon[player.inCountry])
-                        && toMapID == idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Không thể tham gia sự kiện tại quốc gia khác."));
-                    int[] mapstart = new int[]{9, 481, 482, 483, 484};
-                    toTX = 16 + Database.r.nextInt() % 5;
-                    toTY = 84;
-                    toMapID = mapstart[r.nextInt(MessageCreator.nclone)];
-                    checklocation = false;
-                } else if (player.idClan == -1 && getTown[player.myCountry] && toMapID == idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn không thể vào thành trong thơi gian này do chưa tham gia bang hội."));
-                    int[] mapstart = new int[]{9, 481, 482, 483, 484};
-                    toTX = 16 + Database.r.nextInt() % 5;
-                    toTY = 84;
-                    toMapID = mapstart[r.nextInt(MessageCreator.nclone)];
-                    checklocation = false;
-                } else if (player.lvDetail.lv < 50 && getTown[player.inCountry] && toMapID == idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn phải đạt cấp độ 50 trở lên mới có thể vào thành trong thời gian này."));
-                    int[] mapstart = new int[]{9, 481, 482, 483, 484};
-                    toTX = 16 + Database.r.nextInt() % 5;
-                    toTY = 84;
-                    toMapID = mapstart[r.nextInt(MessageCreator.nclone)];
-                    checklocation = false;
-                } else if (RealController.mapList.get(toMapID) != null) {
-                    boolean onPos = false;
-                    boolean contentMap = false;
-                    Vector<LocationMap> a = (Vector<LocationMap>) ALL_LOCALTION_MAP.get(Integer.valueOf(this.getMapLoad(this.mapId)));
-                    if (a != null) {
-                        for (int k = 0; k < a.size(); k++) {
-                            if (((LocationMap) a.get(k)).mapout == ((Map) RealController.mapList.get(toMapID)).getMapLoad(toMapID)) {
-                                contentMap = true;
-                            }
-
-                            if (((LocationMap) a.get(k))
-                                    .checkCanChangeMap(player.x, player.y, toTX, toTY, ((Map) RealController.mapList.get(toMapID)).getMapLoad(toMapID))) {
-                                onPos = true;
-                            }
-                        }
-
-                        if (!onPos && contentMap) {
-                            if (toMapID != player.mapID) {
-                                toMapID = player.mapID;
-                                toTX = player.x / 16;
-                                toTY = player.y / 16;
-                                CharManager.instance.kickPlayer(player, "map 6");
-                                Database.instance.saveOrtherLog("", player.charname, "hack chuyen map " + this.getMapLoad(this.mapId) + " to " + toMapID, "hcm");
-                                return;
-                            }
-
-                            toMapID = player.mapID;
-                            toTX = player.x / 16;
-                            toTY = player.y / 16;
-                            CharManager.instance.kickPlayer(player, "map 5");
-                            Database.instance.saveOrtherLog("", player.charname, "hack chuyen map cung map " + player.mapID, "hcm");
-                            return;
-                        }
-                    }
-                }
-
-                Map toMap = (Map) RealController.mapList.get(toMapID);
-                if (toMap == null && (player.map.mapIDLoadMap == idMapTown && getTown[player.inCountry] || this.isMapLienDau())) {
-                    toMapID = player.mapID;
-                    toTX = player.x / 16;
-                    toTY = player.y / 16;
-                    checklocation = false;
-                    toMap = (Map) RealController.mapList.get(toMapID);
-                }
-
-                Map oldMap = player.map;
-                boolean onMapMonster = false;
-                if (toMap != null) {
-                    boolean except = false;
-                    if ((player.map.mapIDLoadMap == 1 || player.map.mapIDLoadMap == 2 || player.map.mapIDLoadMap == 106 || player.map.mapIDLoadMap == 12)
-                            && (toMap.mapIDLoadMap == 0 || toMap.mapIDLoadMap == 70 || toMap.mapIDLoadMap == 80)) {
-                        except = true;
-                    }
-
-                    boolean canchange = false;
-                    if (!this.isMapOffline) {
-                        Map tempMap = (Map) RealController.mapList.get(Integer.valueOf(this.getMapLoad(this.mapId)));
-                        if (!this.checkChangeMap(player, 0, 0, toMapID, toTX, toTY) && checklocation && !except) {
-                            toMapID = player.mapID;
-                            toTX = player.x / 16;
-                            toTY = player.y / 16;
-                            toMap = (Map) RealController.mapList.get(Integer.valueOf(this.getMapLoad(toMapID)));
-                        }
-
-                        if (tempMap == null) {
-                            canchange = true;
-                        } else {
-                            short[] tempmapid = (short[]) mapChange.get(this.getMapLoad((short) this.mapId));
-                            if (tempMap != null) {
-                                int mapcheck = toMap.getMapLoad(toMap.mapId);
-
-                                for (int ix = 0; ix < tempmapid.length; ix++) {
-                                    if (mapcheck == tempmapid[ix]) {
-                                        canchange = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    } else if (this.isMapOffline) {
-                        Map offlineMap = (Map) RealController.mapList.get(-1);
-                        if (!this.checkChangeMap(player, 0, 0, toMapID, toTX, toTY) && checklocation) {
-                            System.out.print(" " + player.charname + " hack cmn offline ");
-                            toMapID = player.mapID;
-                            toTX = player.x / 16;
-                            toTY = player.y / 16;
-                            toMap = (Map) RealController.mapList.get(Integer.valueOf(this.getMapLoad(toMapID)));
-                        }
-
-                        if (player.mapID < 200) {
-                            if (toMap.mapIDLoadMap != 0 && toMap.mapIDLoadMap != 70 && toMap.mapIDLoadMap != 80) {
-                                canchange = false;
-                            } else {
-                                canchange = true;
-                            }
-                        } else if (toMap.mapIDLoadMap == 201) {
-                            canchange = true;
-                        } else {
-                            canchange = false;
-                        }
-                    }
-
-                    if (!canchange) {
-                        return;
-                    }
-
-                    try {
-                        if (player.monster != null
-                                && player.map.mapId == player.monster.map.mapId
-                                && player.monster.region == player.region
-                                && inRangeActor(player, player.monster, 120)
-                                && (toMap.mapId == toMap.mapIDLoadMap && toMap.mapId < 301 || isMapLang(toMap))) {
-                            onMapMonster = true;
-                        }
-                    } catch (Exception var39) {
-                    }
-
-                    if (player.map != null) {
-                        if (!isMapLang(player.map) && player.map.mapId != player.map.mapIDLoadMap) {
-                            onMapMonster = false;
-                        }
-
-                        this.playerExit(player);
-                    }
-
-                    toMap.playerJoin(player);
-                } else {
-                    if (player.map != null) {
-                        this.playerExit(player);
-                    }
-
-                    Map offlineMapx = (Map) RealController.mapList.get(-1);
-                    if (toMapID < 200) {
-                        if (this.mapIDLoadMap != 0 && this.mapIDLoadMap != 70 && this.mapIDLoadMap != 80) {
-                            return;
-                        }
-
-                        offlineMapx.playerJoin(player);
-                    } else {
-                        if (this.mapIDLoadMap != 201) {
-                            return;
-                        }
-
-                        offlineMapx.playerJoin(player);
-                    }
-                }
-
-                player.nearChars.removeAllElements();
-                player.nearMons.removeAllElements();
-                player.mapID = toMapID;
-                player.x = toTX * 16 + 8;
-                player.y = toTY * 16 + 8;
-                player.doChangeMapMonster(onMapMonster, oldMap);
-                if (player.x / 16 <= 1) {
-                    player.x += 32;
-                }
-
-                if (player.y / 16 <= 1) {
-                    player.y += 32;
-                }
-
-                player.moved = false;
-                player.doFinishAutoInbue();
-                Message m = MessageCreator.createMapMessage(player);
-                player.sendMessage(m);
-                this.doSendDynamicObj(player);
-                player.map.sendInfoNpc(player);
-                player.map.sendDynamicEff(player);
-                player.checkCreateThangBe(toMapID);
-                if (player.isNguoiTuyet()) {
-                    MessageCreator.createMsgCharMonster(player, player);
-                }
-
-                player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
-
-                try {
-                    if (player.mapID == mapIDFarm) {
-                        this.doSendFarm(player);
-                    }
-
-                    if (toMap != null) {
-                        for (int ixx = 0; ixx < bossLocation.size(); ixx++) {
-                            if (((BossLocaltion) bossLocation.get(ixx)).mapID == toMapID) {
-                                BossLocaltion b = (BossLocaltion) bossLocation.get(ixx);
-                                player.sendMessage(MessageCreator.createGate(b.type, b.x, b.y, b.mapID));
-                                break;
-                            }
-                        }
-
-                        if (toMap != null
-                                && (toMap.mapIDLoadMap == 80
-                                || toMap.mapIDLoadMap == 70
-                                || toMap.mapIDLoadMap == 0
-                                || toMap.mapIDLoadMap == 1
-                                || toMap.mapIDLoadMap == 2
-                                || toMap.mapIDLoadMap == 12
-                                || toMap.mapIDLoadMap == 106)) {
-                            player.sendMessage(MessageCreator.createMessageLocation(player.inCountry));
-                        }
-                    }
-                } catch (Exception var37) {
-                }
-            }
-        } catch (Exception var40) {
-            System.out.print(" " + player.charname + " ");
-        } finally {
-            try {
-                player.isDoChangeMap = false;
-            } catch (Exception var36) {
-            }
-        }
+        MapXuLyLenh.doChangeMap(this, player,message);
     }
 
     public void kickCharToVilage(Char player) {
