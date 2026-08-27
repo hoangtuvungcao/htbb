@@ -101,3 +101,7 @@ out_tools/
 ### Thu muc bien dich tam cua test.bat ###
 /build/test-classes/
 /build/test-classes-src/
+
+### Nguon giai ma tu NQSH_5h.jar (tools/giai-ma-nqsh.bat sinh ra, chi de doc) ###
+/build/nqsh-src/
+/build/cfr.jar

@@ -20,6 +20,7 @@ Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 3 phần ch
 | `map/`, `cMap/` | Tài nguyên bản đồ, sprite |
 | `loginServer/` | Server đăng nhập riêng |
 | `tools/` | Tool dev rời (cắt sprite, tạo icon, xem sprite...) |
+| `test/` | Bộ kiểm thử (không phụ thuộc thư viện ngoài) — chạy bằng `test.bat` |
 | `docs/` | Tài liệu (hướng dẫn build/VPS, bảng id thuộc tính...) |
 | `build/` | Thư mục tạm khi build — không commit |
 
@@ -204,13 +205,90 @@ vì `lib/NQSH_5h.jar` truy cập trực tiếp.
 
 Ba việc còn lại đáng làm hơn là tách tiếp:
 
-1. **Gộp 9 handler trùng lặp** (`doBuySpecialItem`, `doUsePotion`, `doTrade`…):
-   mỗi cái tồn tại hai bản đã trôi lệch — `RealController` gọi bản này,
-   `Map` gọi bản kia. Đây là rủi ro đúng/sai thật sự, không phải chuyện gọn gàng.
-2. **Gỡ phụ thuộc `NQSH_5h.jar`** — mở khoá cho việc đổi tên package và trả lại
-   `private` cho 63 thành viên đã nới.
-3. **Viết test** cho vài đường đi chính. Hiện repo không có test nào, nên mọi
-   thay đổi chỉ verify được về cấu trúc, không verify được hành vi.
+1. ~~**Gộp 9 handler trùng lặp**~~ — đã làm, xem mục dưới. Xoá được 2 cái chết,
+   7 cái còn lại không gộp được vì cả hai bản đều sống qua hai lối vào khác nhau.
+
+2. **Gỡ phụ thuộc `NQSH_5h.jar`** — đã khảo sát đầy đủ, xem mục dưới. Làm được
+   nhưng chưa nên làm trước khi có test phủ các đường đi chính.
+3. ~~**Viết test**~~ — đã có `test/` + `test.bat` (62 kiểm tra). Nhưng mới phủ được
+   hàm thuần; các đường đi chính vẫn chưa có test.
+
+
+### Gỡ phụ thuộc `NQSH_5h.jar` — đã khảo sát xong, **chưa nên làm**
+
+Chạy `tools/giai-ma-nqsh.bat` để đọc được mã nguồn trong jar (kết quả ra
+`build/nqsh-src/`, không commit). Đây là số liệu đo thật:
+
+| | |
+|---|---|
+| Tổng class trong jar | 878 |
+| `jxl` — **trùng khít 484/484** với `lib/jxl-2.6.jar` | 484 |
+| `com/mysql` — trùng 132/158 với connector riêng | 158 |
+| **Code game thật** (`real` 141, `data` 73, `io` 8, `server` 4, …) | **236** |
+| File `.java` cần thêm vào `src/` (đã trừ 15 class `src/` đã có) | **175** |
+| — dịch ngược **sạch, biên dịch được ngay** | **163** |
+| — **phải viết lại luồng điều khiển bằng tay** | **12** |
+
+12 file hỏng: `BossThuThanh`, `ArenaData`, `ArenaMap`, `BossWedding`,
+`DungeonMap`, `MapTongKim`, `PrivateDataMap`, `PrivateMap`, `RegionLoiDai`,
+`RegionMapMoba`, `RegionNuiChauBau`, `TongKimData`. CFR sinh ra `** GOTO lbl183`
+và `while (true) lbl-1000:` — chỗ luồng nhảy trong bytecode **không diễn đạt
+được bằng Java**, phải đọc `javap -c` rồi dựng lại vòng lặp bằng tay.
+
+**Vì sao chưa nên làm ngay** — khác hẳn mọi việc đã làm từ đầu đến giờ:
+
+Toàn bộ refactor trước đây **chứng minh được là không đổi hành vi**: thân method
+giống bản gốc từng dòng, `javap` xác nhận API không đổi. Việc này thì ngược lại —
+nó **thay 236 class bytecode đang chạy tốt bằng code dịch ngược rồi biên dịch
+lại**. CFR *thường* đúng, nhưng "thường" trên 236 class là rủi ro thật, và 12 file
+kia thì luồng điều khiển do người viết lại chứ không phải máy sinh.
+
+Cộng thêm: bộ test hiện chỉ phủ được hàm thuần, **không phủ một dòng nào** trong
+236 class đó. Nên nếu có sai, không có gì bắt được trước khi người chơi gặp.
+
+**Đề xuất thứ tự**: viết test phủ các đường đi chính trước → rồi mới đổi, làm
+từng nhóm nhỏ, mỗi nhóm build + chạy thử trên máy riêng trước khi đẩy lên server.
+
+Cái được nếu làm xong: đổi được tên package sang `com.kpah.*`, trả lại `private`
+cho 63 thành viên đã nới, và bỏ được mối nguy trộn hai phiên bản MySQL connector
+(26 class `com/mysql` chỉ có trong NQSH là inner class của bản cũ hơn — ở đó
+`Connection` là *class*, còn 5.1.49 là *interface*).
+
+
+### 9 handler trùng lặp — đã xử lý 2, còn 7 **không gộp được**
+
+`RealController.processMessage` có một `switch` nằm trong
+`if (privateMessage(command))`. Bảng `privateCmd` nạp **một lần duy nhất** trong
+khối `static` từ mảng `pCmd` (96 lệnh) — đã grep toàn bộ `src/`: chỉ ghi ở một
+chỗ, không nơi nào sửa lúc chạy. Nên tập lệnh là **cố định**, đối chiếu được.
+
+**Đã xoá** (chứng minh được là chết, và `NQSH_5h.jar` không tham chiếu):
+
+| Thứ | Vì sao chết |
+|---|---|
+| `real/doTrade.java` + `case 66` | lệnh 66 **không** có trong `pCmd` → case không bao giờ chạy |
+| `case -76` + `RealController.doBuyItemShopNew` (153 dòng) | lệnh −76 **không** có trong `pCmd` |
+| `real/sendInfoNpc.java` | 0 lời gọi trong toàn bộ `src/` |
+
+**Không gộp được — cả hai bản đều sống, qua hai lối vào khác nhau:**
+
+| Handler | Lối vào 1 (class tách rời) | Lối vào 2 (bản trong `Map`) |
+|---|---|---|
+| `doRideAnimal` | lệnh −45 | menu NPC → `MapDoMenu` |
+| `doUnRideHorse` | menu `case -50` | menu NPC → `MapDoMenu` |
+| `doMenuSuKienHe2017` | menu `case -49` | menu NPC → `MapDoMenu` |
+| `doMenuSuKienMiniChucNu` | menu `case -49` | menu NPC → `MapDoMenu` |
+| `domenuWorldcup2017` | menu `case -49` | menu NPC → `MapDoMenu` |
+
+Hai bản **đã trôi lệch** (bản trong `Map` được dọn tay, bản kia còn thô từ trình
+dịch ngược). Gộp nghĩa là chọn một bản làm chuẩn cho **cả hai** lối vào — đó là
+quyết định về *hành vi game*, không phải phép biến đổi máy móc. Ai biết luật chơi
+mới quyết được, nên tôi để nguyên.
+
+Riêng `doBuySpecialItem` (lệnh 85) và `doUsePotion` (lệnh 22): bản trong `Map`
+chỉ tới được qua `Map.processMessage`, mà hai lệnh này **có** trong `pCmd` nên
+không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` là `protected` và
+`NQSH_5h.jar` có class nhắc tới `doUsePotion`, nên **không xoá** — chỉ ghi lại.
 
 ## Tính năng
 
