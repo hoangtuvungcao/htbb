@@ -3074,14 +3074,6 @@ public class Map implements Runnable {
         return null;
     }
 
-    private Vector<GemItem> dropGemMaterial() {
-        int[] id = new int[]{71, 78, 85, 92, 99};
-        Vector<GemItem> gem = new Vector();
-        gem.add(new GemItem(id[r.nextInt(id.length)]));
-        id = new int[]{63, 64};
-        gem.add(new GemItem(id[r.nextInt(id.length)]));
-        return gem;
-    }
 
     public static GemItem dropGemTuBinh(int level) {
         if (level < 40) {
@@ -9256,7 +9248,7 @@ public class Map implements Runnable {
             }
 
             if (cat == 6) {
-                GemItem gem = this.getGem(id, player.inCountry);
+                GemItem gem = getGem(id, player.inCountry);
                 if (gem != null) {
                     if (player.isFullInventory() && !player.hadGemItem(gem.idGemTemplate)) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy", ""));
@@ -9317,7 +9309,7 @@ public class Map implements Runnable {
     public void doGetGemItem(Char player, int cat, short id) {
         try {
             if (cat == 6) {
-                GemItem gem = this.getGem(id, player.inCountry);
+                GemItem gem = getGem(id, player.inCountry);
                 if (gem != null) {
                     if (player.isFullInventory() && !player.hadGemItem(gem.idGemTemplate)) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy", ""));
@@ -12247,9 +12239,6 @@ public class Map implements Runnable {
         }
     }
 
-    private GemItem createGemItem(int idTemplate) {
-        return new GemItem(idTemplate);
-    }
 
     private void openBox(Char player, int type) {
         short[] idGem = new short[]{105, 112, 119, 126, 133};
@@ -12259,10 +12248,10 @@ public class Map implements Runnable {
         int soluong = 0;
         if (type == 0) {
             if (percent <= 0) {
-                gem = this.createGemItem(66);
+                gem = MapEpNgoc.createGemItem(this, 66);
                 soluong = 1;
             } else if (percent <= 50) {
-                gem = this.createGemItem(idGem[r.nextInt(idGem.length)]);
+                gem = MapEpNgoc.createGemItem(this, idGem[r.nextInt(idGem.length)]);
                 soluong = 5 + r.nextInt(6);
             } else if (percent < 500) {
                 if (r.nextInt(2) == 0) {
@@ -12286,10 +12275,10 @@ public class Map implements Runnable {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + soluong + " xu", ""));
             }
         } else if (percent <= 1) {
-            gem = this.createGemItem(11);
+            gem = MapEpNgoc.createGemItem(this, 11);
             soluong = 1;
         } else if (percent <= 50) {
-            gem = this.createGemItem(idGem[r.nextInt(idGem.length)]);
+            gem = MapEpNgoc.createGemItem(this, idGem[r.nextInt(idGem.length)]);
             soluong = 3 + r.nextInt(3);
         } else if (percent < 500) {
             if (r.nextInt(2) == 0) {
@@ -12543,7 +12532,7 @@ public class Map implements Runnable {
             item.lock = 1;
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
             player.sendMessage(MessageCreator.createServerAlertMessage("Khoá thành công.", ""));
-            String gemUse = deleteGemItem(
+            String gemUse = MapEpNgoc.deleteGemItem(this, 
                     player, CreateItemTemplate.getIDMAterial(item.getType(), item.magic_physic, 3), material, player.infoItemCreate.materialUse
             );
             Database.instance
@@ -12623,7 +12612,7 @@ public class Map implements Runnable {
                 item.charSeal = player.charname;
                 player.sendMessage(MessageCreator.createServerAlertMessage("Thay đổi thành công", ""));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                String gemUse = deleteGemItem(
+                String gemUse = MapEpNgoc.deleteGemItem(this, 
                         player, CreateItemTemplate.getIDMAterial(item.getType(), item.magic_physic, 5), material, player.infoItemCreate.materialUse
                 );
                 Database.instance
@@ -12704,7 +12693,7 @@ public class Map implements Runnable {
                 item.initAtt(material[1]);
                 player.sendMessage(MessageCreator.createServerAlertMessage("Thay đổi thành công", ""));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                String gemUse = deleteGemItem(
+                String gemUse = MapEpNgoc.deleteGemItem(this, 
                         player, CreateItemTemplate.getIDMAterial(item.getType(), item.magic_physic, 4), material, player.infoItemCreate.materialUse
                 );
                 Database.instance
@@ -13090,7 +13079,7 @@ public class Map implements Runnable {
                     }
 
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                    String gemUse = deleteGemItem(player, id, material, player.infoItemCreate.materialUse);
+                    String gemUse = MapEpNgoc.deleteGemItem(this, player, id, material, player.infoItemCreate.materialUse);
                     Database.instance.saveItem(item);
                     Database.instance
                             .saveOrtherLog(
@@ -13151,107 +13140,6 @@ public class Map implements Runnable {
         return item;
     }
 
-    private static String deleteGemItem(Char player, byte[] startID, int[][] material, int materialUse) {
-        String gemUse = "ngL " + materialUse;
-
-        try {
-            if (material[0] != null) {
-                for (int m = 0; m < material[0].length; m++) {
-                    int aa = CreateItemTemplate.startIDMaterial[startID[0]] + m;
-                    if (materialUse == 0) {
-                        player.listGemitem[aa] = player.listGemitem[aa] - material[0][m];
-                        player.allGemUse[aa] = player.allGemUse[aa] + material[0][m];
-                    } else if (materialUse == 1) {
-                        player.listGemitemLock[aa] = player.listGemitemLock[aa] - material[0][m];
-                        player.allGemUseLock[aa] = player.allGemUseLock[aa] + material[0][m];
-                    } else {
-                        int n = material[0][m];
-                        if (player.listGemitemLock[aa] > 0) {
-                            if (player.listGemitemLock[aa] >= n) {
-                                player.listGemitemLock[aa] = player.listGemitemLock[aa] - n;
-                                player.allGemUseLock[aa] = player.allGemUseLock[aa] + n;
-                            } else {
-                                n -= player.listGemitemLock[aa];
-                                player.allGemUseLock[aa] = player.allGemUseLock[aa] + player.listGemitemLock[aa];
-                                player.listGemitemLock[aa] = 0;
-                                player.listGemitem[aa] = player.listGemitem[aa] - n;
-                                player.allGemUse[aa] = player.allGemUse[aa] + n;
-                            }
-                        } else {
-                            player.listGemitem[aa] = player.listGemitem[aa] - n;
-                            player.allGemUse[aa] = player.allGemUse[aa] + n;
-                        }
-                    }
-
-                    gemUse = gemUse + " " + (CreateItemTemplate.startIDMaterial[startID[0]] + m) + "_" + material[0][m];
-
-                    try {
-                        if (player.listGemitem[aa] <= 0 && player.listGemitemLock[aa] <= 0) {
-                            for (int i = 0; i < player.gemItem.size(); i++) {
-                                GemItem g = (GemItem) player.gemItem.get(i);
-                                if (g.idGemTemplate == aa) {
-                                    player.removeItemOutVector(g.realId, player.gemItem);
-                                    break;
-                                }
-                            }
-                        }
-                    } catch (Exception var10) {
-                    }
-                }
-            }
-
-            gemUse = gemUse + "|";
-            if (material[1] != null) {
-                for (int m = 0; m < material[1].length; m++) {
-                    int aa = CreateItemTemplate.startIDMaterial[startID[startID.length < 2 ? 0 : 1]] + m;
-                    if (materialUse == 0) {
-                        player.listGemitem[aa] = player.listGemitem[aa] - material[1][m];
-                        player.allGemUse[aa] = player.allGemUse[aa] + material[1][m];
-                    } else if (materialUse == 1) {
-                        player.listGemitemLock[aa] = player.listGemitemLock[aa] - material[1][m];
-                        player.allGemUseLock[aa] = player.allGemUseLock[aa] + material[1][m];
-                    } else {
-                        int n = material[1][m];
-                        if (player.listGemitemLock[aa] > 0) {
-                            if (player.listGemitemLock[aa] >= n) {
-                                player.listGemitemLock[aa] = player.listGemitemLock[aa] - n;
-                                player.allGemUseLock[aa] = player.allGemUseLock[aa] + n;
-                                int var17 = 0;
-                            } else {
-                                n -= player.listGemitemLock[aa];
-                                player.allGemUseLock[aa] = player.allGemUseLock[aa] + player.listGemitemLock[aa];
-                                player.listGemitemLock[aa] = 0;
-                                player.listGemitem[aa] = player.listGemitem[aa] - n;
-                                player.allGemUse[aa] = player.allGemUse[aa] + n;
-                            }
-                        } else {
-                            player.listGemitem[aa] = player.listGemitem[aa] - n;
-                            player.allGemUse[aa] = player.allGemUse[aa] + n;
-                        }
-                    }
-
-                    try {
-                        if (player.listGemitem[aa] <= 0 && player.listGemitemLock[aa] <= 0) {
-                            for (int ix = 0; ix < player.gemItem.size(); ix++) {
-                                GemItem g = (GemItem) player.gemItem.get(ix);
-                                if (g.idGemTemplate == aa) {
-                                    player.removeItemOutVector(g.realId, player.gemItem);
-                                    break;
-                                }
-                            }
-                        }
-                    } catch (Exception var9) {
-                    }
-
-                    gemUse = gemUse + " " + (CreateItemTemplate.startIDMaterial[startID[startID.length < 2 ? 0 : 1]] + m) + "_" + material[1][m];
-                }
-            }
-        } catch (Exception var11) {
-            var11.printStackTrace();
-        }
-
-        return gemUse;
-    }
 
     private Item getItem(Char player, Message message) {
         try {
@@ -13340,7 +13228,7 @@ public class Map implements Runnable {
             item.changLevelSkill();
             player.sendMessage(MessageCreator.createServerAlertMessage("Thay đổi thành công", ""));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-            String gemUse = deleteGemItem(
+            String gemUse = MapEpNgoc.deleteGemItem(this, 
                     player, CreateItemTemplate.getIDMAterial(item.getType(), item.magic_physic, 6), material, player.infoItemCreate.materialUse
             );
             Database.instance
@@ -14009,12 +13897,12 @@ public class Map implements Runnable {
                 MapBangHoi.doInfoClanQuest(this, player, message);
                 break;
             case -69:
-                this.doAutoImbue(player, message);
+                MapEpNgoc.doAutoImbue(this, player, message);
                 break;
             case -68:
                 byte type = message.dis.readByte();
                 if (type == 0) {
-                    this.doTachNguyenLieu(player, message.dis.readShort(), 2);
+                    MapEpNgoc.doTachNguyenLieu(this, player, message.dis.readShort(), 2);
                 } else if (type == 1) {
                     this.doAddNewAttribute(player, message.dis.readShort(), message.dis.readShort(), message.dis.readByte());
                 } else if (type == 2) {
@@ -14073,13 +13961,13 @@ public class Map implements Runnable {
                 MapBangHoi.doQuestClan(this, player, message);
                 break;
             case -36:
-                this.doFinishEpNgoc(player, message.dis.readByte(), message);
+                MapEpNgoc.doFinishEpNgoc(this, player, message.dis.readByte(), message);
                 break;
             case -35:
-                this.doFinishKhamItem(player, message.dis.readByte());
+                MapEpNgoc.doFinishKhamItem(this, player, message.dis.readByte());
                 break;
             case -34:
-                this.doKhamItem(player, message.dis.readByte());
+                MapEpNgoc.doKhamItem(this, player, message.dis.readByte());
                 break;
             case -33:
                 this.doMove2Warp(player, message);
@@ -14106,7 +13994,7 @@ public class Map implements Runnable {
                 this.doSendStringInfo(player, message);
                 break;
             case -23:
-                this.doGiveSpecialGem2Ground(player, message);
+                MapEpNgoc.doGiveSpecialGem2Ground(this, player, message);
                 break;
             case -22:
                 this.doSendDetailChar(player, message);
@@ -14263,7 +14151,7 @@ public class Map implements Runnable {
                 player.isPutItem2Bag = false;
                 break;
             case 71:
-                this.doImbue(player, message.dis.readByte());
+                MapEpNgoc.doImbue(this, player, message.dis.readByte());
                 break;
             case 72:
                 this.doRepair(player, message.dis.readByte());
@@ -14272,13 +14160,13 @@ public class Map implements Runnable {
                 this.doBuyGemItem(player, message);
                 break;
             case 75:
-                this.doAddItemImbue(player, message.dis.readShort());
+                MapEpNgoc.doAddItemImbue(this, player, message.dis.readShort());
                 break;
             case 76:
-                this.doAddGemItemImbue(player, message.dis.readShort(), message);
+                MapEpNgoc.doAddGemItemImbue(this, player, message.dis.readShort(), message);
                 break;
             case 77:
-                this.doFinishImbue(player, message.dis.readByte());
+                MapEpNgoc.doFinishImbue(this, player, message.dis.readByte());
                 break;
             case 78:
                 this.doSellGemItem(player, message);
@@ -15377,136 +15265,6 @@ public class Map implements Runnable {
         }
     }
 
-    private void doTachNguyenLieu(Char player, short idItem, int typeStone) {
-        if (!player.isCorrectPass && !player.passWord.equals("")) {
-            player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
-        } else {
-            try {
-                Item item = player.getItemFormVector(player.iItems, idItem);
-                if (item == null) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không tìm thấy vật phẩm", ""));
-                } else {
-                    if (item.level >= 80 || isWearingAnimal(item.getTemplate().type)) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm cấp độ này chưa tách được nguyên liệu.", ""));
-                        return;
-                    }
-
-                    if (item.isHoanMy() && item.level >= 50) {
-                        if (typeStone == 2) {
-                            if (player.listGemitem[178] > 0 || player.listGemitemLock[178] > 0) {
-                                player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Đá thường", "Đá đặc biệt"}, -510, 0));
-                                player.idItemTach = item.id;
-                                return;
-                            }
-
-                            typeStone = 0;
-                        }
-
-                        int[] idDa = new int[]{175, 176, 177, 178};
-                        int idg = 0;
-                        if (typeStone == 0) {
-                            if (item.isWeapone()) {
-                                idg = idDa[(item.level - 51) / 10];
-                            } else {
-                                idg = idDa[(item.level - 50) / 10];
-                            }
-                        } else if (typeStone == 1) {
-                            idg = 178;
-                        }
-
-                        if (player.listGemitem[idg] <= 0 && player.listGemitemLock[idg] <= 0) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ đá tách nguyên liệu", ""));
-                            return;
-                        }
-
-                        int[] idstart = item.getIDMaterialGetBack();
-                        int total = item.getTotalMaterial(typeStone == 1);
-                        int[] soluong = (int[]) null;
-                        String info = "Nhận được ";
-                        if (item.hangItem == 1) {
-                            soluong = new int[2];
-                            int[] idtem = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1};
-
-                            for (int i = 0; i < total; i++) {
-                                soluong[idtem[r.nextInt(idtem.length)]]++;
-                            }
-
-                            for (int i = 0; i < soluong.length; i++) {
-                                if (soluong[i] > 0) {
-                                    int idgem = idstart[r.nextInt(2)];
-                                    player.doAddGemItem(idgem + 4 + i, soluong[i], true);
-                                    info = info + soluong[i] + " " + gemTemplate[idgem + 4 + i].name + " ";
-                                }
-                            }
-                        } else if (item.hangItem == 2) {
-                            soluong = new int[2];
-                            int[] idtem = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1};
-
-                            for (int ix = 0; ix < total; ix++) {
-                                soluong[idtem[r.nextInt(idtem.length)]]++;
-                            }
-
-                            for (int ix = 0; ix < soluong.length; ix++) {
-                                if (soluong[ix] > 0) {
-                                    int idgem = idstart[r.nextInt(2)];
-                                    player.doAddGemItem(idgem + 3 + ix, soluong[ix], true);
-                                    info = info + soluong[ix] + " " + gemTemplate[idgem + 3 + ix].name + " ";
-                                }
-                            }
-                        } else {
-                            soluong = new int[3];
-                            int[] idtem = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2};
-
-                            for (int ixx = 0; ixx < total; ixx++) {
-                                soluong[idtem[r.nextInt(idtem.length)]]++;
-                            }
-
-                            for (int ixx = 0; ixx < soluong.length; ixx++) {
-                                if (soluong[ixx] > 0) {
-                                    int idgem = idstart[r.nextInt(2)];
-                                    player.doAddGemItem(idgem + ixx, soluong[ixx], true);
-                                    info = info + soluong[ixx] + " " + gemTemplate[idgem + ixx].name + " ";
-                                }
-                            }
-                        }
-
-                        if (player.listGemitemLock[idg] > 0) {
-                            player.delGem(idg, 1, true);
-                        } else {
-                            player.delGem(idg, 1, false);
-                        }
-
-                        player.iItems.remove(item);
-                        player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
-                        player.sendMessage(MessageCreator.createCharGemItem(player));
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                        Database.instance
-                                .saveOrtherLog(
-                                        "",
-                                        player.charname,
-                                        item.getName()
-                                        + "_"
-                                        + item.hangItem
-                                        + "_"
-                                        + item.colorName
-                                        + "_"
-                                        + gemTemplate[idg].name
-                                        + "> "
-                                        + info
-                                        + " | "
-                                        + item.getAttribute()
-                                        + "|"
-                                        + item.getDBInfo(),
-                                        "tach"
-                                );
-                    } else {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có vật phẩm hoàn mỹ cấp 50 trở lên mới có thể tách nguyên liệu", ""));
-                    }
-                }
-            } catch (Exception var14) {
-            }
-        }
-    }
 
     public boolean isGemTuBinh(short idGem) {
         return idGem >= 159 && idGem <= 174 || idGem >= 179 && idGem <= 226;
@@ -20887,7 +20645,7 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    this.doTachNguyenLieu(player, player.idItemTach, idOptionMenu);
+                    MapEpNgoc.doTachNguyenLieu(this, player, player.idItemTach, idOptionMenu);
                     player.idItemTach = 32100;
                 case -509:
                 case -508:
@@ -29149,42 +28907,6 @@ public class Map implements Runnable {
         }
     }
 
-    private void doAddItemImbue(Char player, short id) {
-        this.checkTrade(player);
-        if (!isItemSelled(player, id, null)) {
-            try {
-                Item it = player.getItemFormVector(player.iItems, id);
-                if (it != null && it.getTemplate().ndayLoan > 0) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể luyện.", ""));
-                    return;
-                }
-
-                if (isItemThanThu(it.getTemplate().type)) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể luyện.", ""));
-                    return;
-                }
-
-                if (it.isManhSuuTap() || it.isTBSuuTap() || it.isCanh() || it.isCaiTrangSuuTap()) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể cường hoá mảnh", ""));
-                    return;
-                }
-
-                if (!isItemCanImbue(it.getTemplate().type)) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể cường hoá trang bị này", ""));
-                    return;
-                }
-
-                if (player.itemImbue == 40000) {
-                    player.itemImbue = id;
-                } else if (player.itemImbue != id) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể luyện 2 vật phẩm cùng lúc", ""));
-                } else if (player.itemImbue == id) {
-                    player.itemImbue = 40000;
-                }
-            } catch (Exception var4) {
-            }
-        }
-    }
 
     public int getToTalGem(int idGemtemplate, Char p) {
         int count = 0;
@@ -29199,71 +28921,12 @@ public class Map implements Runnable {
         return count;
     }
 
-    private void doAddGemItemImbue(Char player, short id, Message msg) {
-        try {
-            if (!player.map.isMapOffline) {
-                return;
-            }
-
-            if (player.gemItemImbue.size() >= 8) {
-                return;
-            }
-
-            int type = 0;
-
-            try {
-                type = msg.dis.readByte();
-            } catch (Exception var8) {
-            }
-
-            int idGem = player.isExistInvector(id, player.gemItem);
-            if (idGem != -1) {
-                if (type == 1) {
-                    for (int i = 0; i < player.gemItemImbue.size(); i++) {
-                        if (((GemItem) player.gemItemImbue.get(i)).realId == id) {
-                            player.gemItemImbue.remove(i);
-                            return;
-                        }
-                    }
-
-                    return;
-                }
-
-                GemItem gem = player.getItemFormVector(id, player.gemItem);
-                if (gem != null) {
-                    if (gem.isSelling && player.typeGemImbue == 0) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thêm vì bạn đang bán loại ngọc này", ""));
-                        return;
-                    }
-
-                    int totalgem = this.getToTalGem(gem.idGemTemplate, player);
-                    if (player.typeGemImbue == 0 && player.listGemitem[gem.idGemTemplate] - totalgem <= 0
-                            || player.typeGemImbue == 1 && player.listGemitemLock[gem.idGemTemplate] - totalgem <= 0
-                            || player.typeGemImbue == 2 && player.listGemitemLock[gem.idGemTemplate] + player.listGemitem[gem.idGemTemplate] - totalgem <= 0) {
-                        return;
-                    }
-
-                    if (player.countBaoHiem() >= 1 && gem.idGemTemplate < 5) {
-                        return;
-                    }
-
-                    if (player.countLKD() < 1 || gem.idGemTemplate < 8 || gem.idGemTemplate == 155 || gem.idGemTemplate == 156) {
-                        player.gemItemImbue.add(gem);
-                    }
-                }
-            } else {
-                player.removeItemOutVector(id, player.gemItemImbue);
-            }
-        } catch (Exception var9) {
-            var9.printStackTrace();
-        }
-    }
 
     public static boolean isSpesialLkd(int id) {
         return id == GemTemplate.LKD_30 || id == GemTemplate.LKD_35 || id == GemTemplate.LKD_40;
     }
 
-    private int calculatePercenUp(Char player, int percent) {
+    int calculatePercenUp(Char player, int percent) {
         int pc = 0;
 
         for (int i = 0; i < player.gemItemImbue.size(); i++) {
@@ -29293,20 +28956,6 @@ public class Map implements Runnable {
         return pc;
     }
 
-    private boolean haveGem(Char player) {
-        for (int i = 0; i < player.gemItemImbue.size(); i++) {
-            GemItem gem = (GemItem) player.gemItemImbue.elementAt(i);
-            if (gem.idGemTemplate > 7 && gem.idGemTemplate < 12
-                    || gem.idGemTemplate == GemTemplate.LKD_35
-                    || gem.idGemTemplate == GemTemplate.LKD_40
-                    || gem.idGemTemplate == 157
-                    || gem.idGemTemplate == 158) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     private String getLKD(Char player) {
         for (int i = 0; i < player.gemItemImbue.size(); i++) {
@@ -29319,234 +28968,9 @@ public class Map implements Runnable {
         return "";
     }
 
-    private int getGem(Char player) {
-        for (int i = 0; i < player.gemItemImbue.size(); i++) {
-            GemItem gem = (GemItem) player.gemItemImbue.elementAt(i);
-            if (gem.idGemTemplate > 7 && gem.idGemTemplate < 12 || gem.idGemTemplate == GemTemplate.LKD_35 || gem.idGemTemplate == GemTemplate.LKD_40) {
-                return gem.idGemTemplate;
-            }
-        }
 
-        return -1;
-    }
 
-    private GemItem haveGemKham(Char player) {
-        for (int i = 0; i < player.gemItemImbue.size(); i++) {
-            GemItem gem = (GemItem) player.gemItemImbue.elementAt(i);
-            if (gem.idGemTemplate > 11) {
-                return gem;
-            }
-        }
 
-        return null;
-    }
-
-    private void doAutoImbue(Char player, Message msg) {
-        if (!player.isCorrectPass && !player.passWord.equals("")) {
-            player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
-        } else if (!player.startAutoImbue) {
-            try {
-                if (player.lvDetail.lv < 10) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Hãy đi luyện đến cấp 10 trở lên để sử dụng chức năng này.", ""));
-                    return;
-                }
-
-                if (player.getxu() < 5000L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có tối thiểu 5000 xu mới có thể sử dụng chức năng này", ""));
-                    return;
-                }
-
-                short id = msg.dis.readShort();
-                byte plus = msg.dis.readByte();
-                byte size = msg.dis.readByte();
-                if (size > 3) {
-                    return;
-                }
-
-                short[] idGemtemplate = new short[size];
-                byte[] lock = new byte[size];
-
-                for (int i = 0; i < size; i++) {
-                    idGemtemplate[i] = msg.dis.readShort();
-                    lock[i] = msg.dis.readByte();
-                }
-
-                player.doSetAutoImbue(id, idGemtemplate, plus, lock);
-            } catch (Exception var9) {
-                var9.printStackTrace();
-            }
-        }
-    }
-
-    private void doFinishImbue(Char player, int ok) {
-        if (player.map.isMapOffline) {
-            int prizeImbue = 5000;
-            if (ok == -1) {
-                player.itemImbue = 40000;
-                player.gemItemImbue.removeAllElements();
-            } else if (player.getxu() < (long) prizeImbue) {
-                try {
-                    player.itemImbue = 40000;
-                    player.gemItemImbue.removeAllElements();
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Hết tiền", ""));
-                } catch (Exception var13) {
-                    var13.printStackTrace();
-                    System.out.println("LOI ROI NE");
-                }
-
-                System.out.println("KHONG DU TIEN de imbue");
-            } else {
-                if (player.itemImbue != 40000) {
-                    int[] percent = new int[]{100, 90, 85, 80, 70, 30, 15, 10, 7, 4, 3, 2, 1, 1, 0};
-                    Item item = player.getItemFormVector(player.iItems, (short) player.itemImbue);
-
-                    try {
-                        if (isItemSelled(player, item.id, item)) {
-                            return;
-                        }
-                    } catch (Exception var18) {
-                    }
-
-                    try {
-                        if (item.isManhSuuTap() || item.isTBSuuTap() || item.isCanh() || item.isCaiTrangSuuTap()) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể cường hoá mảnh", ""));
-                            return;
-                        }
-                        if (!isItemCanImbue(item.getTemplate().type)) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể cường hoá trang bị này", ""));
-                            return;
-                        }
-                    } catch (Exception var17) {
-                    }
-
-                    player.subXu((long) prizeImbue, true, "map 72");
-                    if (item != null) {
-                        if (!this.haveGem(player)) {
-                            try {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chưa có luyện kim dược", ""));
-                            } catch (Exception var14) {
-                            }
-
-                            return;
-                        }
-
-                        if (item.plus < 15) {
-                            int pcInsu = random(100);
-                            int bh = getPercentInSu(player);
-                            int pc = random(100);
-                            int up = this.calculatePercenUp(player, percent[item.plus]);
-                            if (pc <= percent[item.plus] + up) {
-                                item.plus++;
-                                int[] plus = new int[]{4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 10};
-
-                                for (int i = 0; i < 10; i++) {
-                                    item.atb[i] = (short) (item.atb[i] + (i > 0 ? 1 : plus[item.plus]));
-                                }
-
-                                Message m = new Message(77);
-
-                                try {
-                                    m.dos.writeUTF("Chúc mừng bạn, vật phẩm đã được luyện lên +" + item.plus);
-                                    player.sendMessage(m);
-                                    m.cleanup();
-                                    String sub = item.getTemplate().name + "_" + item.plus + "|" + item.getAttribute() + "|" + item.getDBInfo();
-                                    Database.instance
-                                            .saveOrtherLog("tob_log_other_kham", player.charname, this.getGem(player) + " imbue" + sub + " > " + player.typeGemImbue, "ibok");
-                                } catch (Exception var16) {
-                                }
-                            } else {
-                                Message m = new Message(77);
-
-                                try {
-                                    if (pcInsu > bh) {
-                                        item.plus--;
-                                        if (item.plus > 0) {
-                                            int[] plus = new int[]{4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 10};
-
-                                            for (int i = 0; i < 10; i++) {
-                                                item.atb[i] = (short) (item.atb[i] - (i > 0 ? 1 : plus[item.plus + 1]));
-                                                if (item.atb[i] < 0) {
-                                                    item.atb[i] = 0;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    m.dos.writeUTF(pcInsu <= bh ? "Thất bại" : "Thất bại. Vật phẩm đã bị hỏng và bị giảm 1 điểm cộng.");
-                                    String sub = item.getTemplate().name + "_" + item.plus + "|" + item.getAttribute() + "|" + item.getDBInfo();
-                                    Database.instance
-                                            .saveOrtherLog("tob_log_other_kham", player.charname, this.getGem(player) + " imbue" + sub, pcInsu <= bh ? "fib" : "fibd");
-                                    player.sendMessage(m);
-                                    m.cleanup();
-                                } catch (Exception var19) {
-                                    var19.printStackTrace();
-                                }
-                            }
-
-                            boolean isLock = false;
-
-                            for (int ix = 0; ix < player.gemItemImbue.size(); ix++) {
-                                GemItem gem = (GemItem) player.gemItemImbue.elementAt(ix);
-                                if (player.typeGemImbue == 0) {
-                                    if (player.listGemitem[gem.idGemTemplate] > 0) {
-                                        player.listGemitem[gem.idGemTemplate]--;
-                                    }
-
-                                    player.allGemUse[gem.idGemTemplate]++;
-                                } else if (player.typeGemImbue == 1) {
-                                    if (player.listGemitemLock[gem.idGemTemplate] > 0) {
-                                        player.listGemitemLock[gem.idGemTemplate]--;
-                                    }
-
-                                    if (isSpesialLkd(gem.idGemTemplate)) {
-                                        isLock = true;
-                                    }
-
-                                    player.allGemUseLock[gem.idGemTemplate]++;
-                                } else if (player.typeGemImbue == 2) {
-                                    if (player.listGemitemLock[gem.idGemTemplate] > 0) {
-                                        player.listGemitemLock[gem.idGemTemplate]--;
-                                        if (isSpesialLkd(gem.idGemTemplate)) {
-                                            isLock = true;
-                                        }
-
-                                        player.allGemUseLock[gem.idGemTemplate]++;
-                                    } else if (player.listGemitem[gem.idGemTemplate] > 0) {
-                                        player.listGemitem[gem.idGemTemplate]--;
-                                        player.allGemUse[gem.idGemTemplate]++;
-                                    }
-                                }
-
-                                if (player.listGemitem[gem.idGemTemplate] <= 0 && player.listGemitemLock[gem.idGemTemplate] <= 0) {
-                                    player.removeItemOutVector(gem.realId, player.gemItem);
-                                }
-                            }
-
-                            if (isLock) {
-                                item.lock = 1;
-                                Database.instance
-                                        .saveOrtherLog(
-                                                "", player.charname, "khoa item khi ch dung lkd tim khoa " + item.getName() + " > " + item.getInfoSave(), "khoaitemch"
-                                        );
-                            }
-
-                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                            player.sendMessage(MessageCreator.createMsgItemInfo(item));
-                            player.gemItemImbue.removeAllElements();
-                            player.sendMessage(MessageCreator.createCharGemItem(player));
-                        }
-
-                        try {
-                            if (r.nextInt(10000) < 5) {
-                                doCreateBookSkillPet(player, 0);
-                            }
-                        } catch (Exception var15) {
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     public static void addGoldTimeTicket(Char player, int n) {
         ShopTemplate item = getShopTemplate(0);
@@ -30671,319 +30095,9 @@ public class Map implements Runnable {
         }
     }
 
-    private void doKhamItem(Char player, int type) {
-        int prizeImbue = 10000;
 
-        try {
-            if (player.lvDetail.lv < 10) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Hãy đi luyện đến cấp 10 trở lên để sử dụng chức năng này.", ""));
-                return;
-            }
 
-            player.isImbue = type == 0;
-            if (player.isImbue) {
-                player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Nguyên liệu thường", "Nguyên liệu khóa"}, -506, 0));
-            }
-        } catch (Exception var5) {
-        }
-    }
 
-    private void doFinishEpNgoc(Char player, int ok, Message message) {
-        try {
-            short prize = 5000;
-            if (ok == 0) {
-                Message m = new Message(-36);
-                m.dos.writeByte(0);
-                m.dos.writeShort(prize);
-                player.sendMessage(m);
-            } else if (ok == 1) {
-                int len = message.dis.readByte();
-                Vector<GemItem> gem = new Vector();
-                if (player.getxu() < (long) prize) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
-                    player.sendMessage(MessageCreator.createCharGemItem(player));
-                    return;
-                }
-
-                if (len < 3) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu", ""));
-                    player.sendMessage(MessageCreator.createCharGemItem(player));
-                    return;
-                }
-
-                for (int i = 0; i < len; i++) {
-                    GemItem g = player.getItemFormVector(message.dis.readShort(), player.gemItem);
-                    if (g != null) {
-                        if (player.listGemitem[g.idGemTemplate] - player.listGemitemSell[g.idGemTemplate] <= 0
-                                || player.listGemitem[g.idGemTemplate] - player.listGemitemSell[g.idGemTemplate] < len) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu", ""));
-                            player.sendMessage(MessageCreator.createCharGemItem(player));
-                            return;
-                        }
-
-                        if (g.idGemTemplate < 60 || g.idGemTemplate == 65) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Loại nguyên liệu này không thể hợp thành", ""));
-                            player.sendMessage(MessageCreator.createCharGemItem(player));
-                            return;
-                        }
-
-                        for (int j = 0; j < gem.size(); j++) {
-                            if (g.idGemTemplate != ((GemItem) gem.get(j)).idGemTemplate) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dùng 2 nguyên liệu khác loại", ""));
-                                player.sendMessage(MessageCreator.createCharGemItem(player));
-                                return;
-                            }
-                        }
-
-                        gem.add(g);
-                    }
-                }
-
-                if (gem.size() < 3) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể ép ít nhất 3 nguyên liệu trở lên", ""));
-                    player.sendMessage(MessageCreator.createCharGemItem(player));
-                    return;
-                }
-
-                byte[] percent = new byte[]{10, 20, 100};
-                if (r.nextInt(100) <= percent[gem.size() - 3]) {
-                    int gtemplate = ((GemItem) gem.get(0)).idGemTemplate;
-
-                    for (int ix = 0; ix < gem.size(); ix++) {
-                        GemItem g = (GemItem) gem.get(ix);
-                        if (player.listGemitem[g.idGemTemplate] > 0) {
-                            player.listGemitem[g.idGemTemplate]--;
-                        }
-
-                        if (player.listGemitem[g.idGemTemplate] <= 0) {
-                            player.removeItemOutVector(g.realId, player.gemItem);
-                        }
-
-                        player.allGemUse[g.idGemTemplate]++;
-                    }
-
-                    if (player.listGemitem[gtemplate + 1] == 0 && player.listGemitemLock[gtemplate + 1] == 0) {
-                        GemItem ge = new GemItem(gtemplate + 1);
-                        ge.ownerId = player.charDBID;
-                        ge.realId = player.getIDItem();
-                        player.gemItem.add(ge);
-                    }
-
-                    player.listGemitem[gtemplate + 1]++;
-                    player.allGemGet[gtemplate + 1]++;
-                    Database.instance.saveOrtherLog("tob_log_other_kham", player.charname, gemTemplate[gtemplate + 1].name, "epG");
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Hợp thành thành công", ""));
-                    Message m = new Message(-36);
-                    m.dos.writeByte(0);
-                    m.dos.writeShort(prize);
-                    player.sendMessage(m);
-                } else {
-                    int gtemplate1 = ((GemItem) gem.get(0)).idGemTemplate;
-
-                    for (int ix = 0; ix < gem.size(); ix++) {
-                        GemItem gx = (GemItem) gem.get(ix);
-                        if (player.listGemitem[gx.idGemTemplate] > 0) {
-                            player.listGemitem[gx.idGemTemplate]--;
-                        }
-
-                        if (player.listGemitem[gx.idGemTemplate] <= 0) {
-                            player.removeItemOutVector(gx.realId, player.gemItem);
-                        }
-
-                        player.allGemUse[gx.idGemTemplate]++;
-                    }
-
-                    Database.instance.saveOrtherLog("tob_log_other_kham", player.charname, gemTemplate[gtemplate1].name, "epGF");
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Hợp thành thất bại", ""));
-                    Message m = new Message(-36);
-                    m.dos.writeByte(0);
-                    m.dos.writeShort(prize);
-                    player.sendMessage(m);
-                }
-
-                player.subXu((long) prize, true, "map 76");
-                player.sendMessage(MessageCreator.createCharGemItem(player));
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-            }
-        } catch (Exception var11) {
-        }
-    }
-
-    private void doFinishKhamItem(Char player, int ok) {
-        int prizeImbue = 20000;
-        if (ok == -1) {
-            player.itemImbue = 40000;
-            player.gemItemImbue.removeAllElements();
-        } else if (player.getxu() < (long) prizeImbue) {
-            try {
-                player.itemImbue = 40000;
-                player.gemItemImbue.removeAllElements();
-                player.sendMessage(MessageCreator.createServerAlertMessage("Hết tiền", ""));
-            } catch (Exception var8) {
-                var8.printStackTrace();
-                System.out.println("LOI ROI NE");
-            }
-        } else {
-            if (player.itemImbue != 40000) {
-                Item item = player.getItemFormVector(player.iItems, (short) player.itemImbue);
-
-                try {
-                    if (isItemSelled(player, item.id, item)) {
-                        return;
-                    }
-                } catch (Exception var17) {
-                }
-
-                player.subXu((long) prizeImbue, true, "map 75");
-                if (item != null) {
-                    GemItem gem = this.haveGemKham(player);
-                    if (gem == null) {
-                        try {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Chưa đặt ngọc.", ""));
-                        } catch (Exception var9) {
-                        }
-
-                        return;
-                    }
-
-                    if (gem.idGemTemplate >= 60 && item.nSocAdd >= 6) {
-                        try {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tạo thêm", ""));
-                            player.sendMessage(MessageCreator.createCharGemItem(player));
-                        } catch (Exception var10) {
-                        }
-
-                        return;
-                    }
-
-                    if (item.nSocAdd <= 0 && gem.idGemTemplate < 60) {
-                        try {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không có chỗ để khảm vào.", ""));
-                            player.sendMessage(MessageCreator.createCharGemItem(player));
-                        } catch (Exception var11) {
-                        }
-
-                        return;
-                    }
-
-                    if (item.nSocAdd < 6 && gem.idGemTemplate >= 60) {
-                        int tempsoc = gem.idGemTemplate - 60;
-                        if (tempsoc != item.nSocAdd) {
-                            try {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải dùng đục cấp " + (item.nSocAdd + 1), ""));
-                                player.sendMessage(MessageCreator.createCharGemItem(player));
-                            } catch (Exception var12) {
-                            }
-
-                            return;
-                        }
-                    }
-
-                    if (item.nhadSock >= item.nSocAdd && gem.idGemTemplate < 60) {
-                        try {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không còn chỗ để khảm vào.", ""));
-                            player.sendMessage(MessageCreator.createCharGemItem(player));
-                        } catch (Exception var13) {
-                        }
-
-                        return;
-                    }
-
-                    if (gem.idGemTemplate < 60 && !gem.getTemplate().belongItem(item.getTemplate().type)) {
-                        try {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể khảm vào vật phẩm này.", ""));
-                        } catch (Exception var14) {
-                        }
-
-                        return;
-                    }
-
-                    if (gem.idGemTemplate < 60) {
-                        item.nhadSock++;
-                        gem.getTemplate().khamItem(item);
-                        Message m = new Message(-35);
-
-                        try {
-                            m.dos.writeUTF("Khảm thành công");
-                            player.sendMessage(m);
-                            m.cleanup();
-                            String sub = item.getTemplate().name + "_" + item.plus + "_" + item.nhadSock + "|" + item.getAttribute() + "|" + item.getDBInfo();
-                            Database.instance.saveOrtherLog("tob_log_other_kham", player.charname, "kham " + sub + " >> " + player.typeGemKham, "kok");
-                        } catch (Exception var16) {
-                        }
-                    } else {
-                        item.nSocAdd++;
-                        Message m = new Message(-35);
-
-                        try {
-                            m.dos.writeUTF("Vật phẩm hiện có " + item.nSocAdd + " lỗ");
-                            player.sendMessage(m);
-                            m.cleanup();
-                            String sub = item.getTemplate().name + "_" + item.plus + "_" + item.nhadSock + "|" + item.getAttribute() + "|" + item.getDBInfo();
-                            Database.instance.saveOrtherLog("tob_log_other_kham", player.charname, "kham " + sub + " ", "sock");
-                        } catch (Exception var15) {
-                            var15.printStackTrace();
-                        }
-                    }
-                }
-
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-
-                for (int i = 0; i < player.gemItemImbue.size(); i++) {
-                    GemItem gemx = (GemItem) player.gemItemImbue.elementAt(i);
-                    if (player.typeGemKham == 0) {
-                        if (player.listGemitem[gemx.idGemTemplate] > 0) {
-                            player.listGemitem[gemx.idGemTemplate]--;
-                        }
-
-                        player.allGemUse[gemx.idGemTemplate]++;
-                    } else {
-                        if (player.listGemitemLock[gemx.idGemTemplate] > 0) {
-                            player.listGemitemLock[gemx.idGemTemplate]--;
-                        }
-
-                        player.allGemUseLock[gemx.idGemTemplate]++;
-                    }
-
-                    if (player.listGemitem[gemx.idGemTemplate] <= 0 && player.listGemitemLock[gemx.idGemTemplate] <= 0) {
-                        player.removeItemOutVector(gemx.realId, player.gemItem);
-                    }
-                }
-
-                player.gemItemImbue.removeAllElements();
-                Message m = MessageCreator.createCharGemItem(player);
-                player.sendMessage(m);
-                m.cleanup();
-            }
-        }
-    }
-
-    private void doImbue(Char player, int type) {
-        if (player.startAutoImbue) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi đang trong chế độ đập cộng tự động", ""));
-        } else {
-            int prizeImbue = 5000;
-
-            try {
-                if (getTown[player.inCountry]) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện giao dịch trong thời gian chiếm thành", ""));
-                    return;
-                }
-
-                if (player.lvDetail.lv < 10) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Hãy đi luyện đến cấp 10 trở lên để sử dụng chức năng này.", ""));
-                    return;
-                }
-
-                player.isImbue = type == 0;
-                if (player.isImbue) {
-                    player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Nguyên liệu thường", "Nguyên liệu khóa", "Nguyên liệu tổng hợp."}, -505, 0));
-                }
-            } catch (Exception var5) {
-            }
-        }
-    }
 
     protected void doPutItem2Bag(Char player, short itemID) {
         if (player.isVip()) {
@@ -32399,81 +31513,6 @@ public class Map implements Runnable {
     public void doSellItem(Char player, Message message) throws IOException {
     }
 
-    private void doGiveSpecialGem2Ground(Char player, Message message) {
-        if (!player.isCorrectPass && !player.passWord.equals("")) {
-            player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
-        } else {
-            try {
-                int type = message.dis.readByte();
-                int id = message.dis.readShort();
-                String info = "";
-                if (type == 0) {
-                    byte typeMaterial = message.dis.readByte();
-                    if (typeMaterial == 1) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bỏ vật phẩm khóa ra đất", ""));
-                        return;
-                    }
-
-                    int i = 0;
-                    int n = 0;
-
-                    while (i < player.gemItem.size()) {
-                        GemItem gem = (GemItem) player.gemItem.get(i);
-                        i++;
-                        if (gem.idGemTemplate == id) {
-                            if (player.listGemitemSell[gem.idGemTemplate] > 0 && typeMaterial == 0) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bỏ khi đang bán", ""));
-                                return;
-                            }
-
-                            int var13 = 0;
-                            if (typeMaterial == 0) {
-                                n = player.listGemitem[gem.idGemTemplate];
-                                player.listGemitem[gem.idGemTemplate] = 0;
-                                player.allGemUse[gem.idGemTemplate] = player.allGemUse[gem.idGemTemplate] + n;
-                            } else {
-                                n = player.listGemitemLock[gem.idGemTemplate];
-                                player.listGemitemLock[gem.idGemTemplate] = 0;
-                                player.allGemUseLock[gem.idGemTemplate] = player.allGemUseLock[gem.idGemTemplate] + n;
-                            }
-
-                            if (player.listGemitem[gem.idGemTemplate] <= 0 && player.listGemitemLock[gem.idGemTemplate] <= 0) {
-                                player.listGemitem[gem.idGemTemplate] = 0;
-                                player.listGemitemLock[gem.idGemTemplate] = 0;
-                                player.gemItem.remove(gem);
-                                player.removeIDItem(gem.realId);
-                            }
-
-                            info = n + " " + gem.getTemplate().name + "_" + typeMaterial;
-                            break;
-                        }
-                    }
-
-                    player.sendMessage(MessageCreator.createCharGemItem(player));
-                } else if (type == 1) {
-                    int i = 0;
-
-                    while (i < player.specialItem.size()) {
-                        ShopTemplate shop = (ShopTemplate) player.specialItem.get(i);
-                        i++;
-                        if (shop.id == id) {
-                            i = 0;
-                            player.specialItem.remove(shop);
-                            player.removeIDItem(shop.realId);
-                            Database.instance.deleteGemItem(shop.dbid);
-                            info = i + " " + shop.name;
-                        }
-                    }
-
-                    player.sendMessage(MessageCreator.createCharSpecialItem(player));
-                }
-
-                Database.instance.saveOrtherLog("tob_log_other_gem", player.charname, "Bỏ " + info + " ra đất", "delSP");
-            } catch (Exception var10) {
-                var10.printStackTrace();
-            }
-        }
-    }
 
     private void doUseSpecialITem(Char player, Message msg) {
         if (!this.checkTrade(player)) {
