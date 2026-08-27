@@ -72,9 +72,9 @@ thừa của `jxl` và `mysql-connector` đã có sẵn trong `lib/`).
 
 ## Cấu trúc ba file lớn
 
-### `real/Map.java` — 41.541 → 17.997 dòng (−57%)
+### `real/Map.java` — 41.541 → 17.525 dòng (−58%)
 
-`Map.java` từng là 41.541 dòng. Đã tách còn 17.997 dòng (−57%) bằng **hai kỹ
+`Map.java` từng là 41.541 dòng. Đã tách còn 17.525 dòng (−58%) bằng **hai kỹ
 thuật, cả hai đều không đổi API nên `lib/NQSH_5h.jar` vẫn gọi được**:
 
 1. **Chuyển hẳn method `private`** sang class mới cùng package. An toàn vì
@@ -107,6 +107,7 @@ thuật, cả hai đều không đổi API nên `lib/NQSH_5h.jar` vẫn gọi đ
 | `MapXuLyLenh.java` | `processMessage`, `doChangeMap`, `doDotDen`, `doNapSMS`, xếp hạng |
 | `MapNapTaiNguyen.java` | nạp bảng ngọc, NPC, bản đồ, tile map, boss |
 | `MapVongLap.java` | `update`, `updateWind`, `updateSand`, lặp gửi thông tin |
+| `MapKhoiTao.java` | thân constructor `Map` (476 dòng) |
 
 **Ba cái bẫy khi tách tiếp** (đều đã cắn một lần, javac không bắt được cái 2 và 3):
 
@@ -146,7 +147,7 @@ bắt buộc khi tách một lớp 41k dòng mà **không được** đổi API,
 Nếu sau này gỡ được phụ thuộc `NQSH_5h.jar` thì có thể gộp mỗi nhóm method
 với dữ liệu của nó thành lớp thực sự độc lập, và trả lại `private`.
 
-### `real/Char.java` — 21.888 → 16.274 dòng (−25%)
+### `real/Char.java` — 21.888 → 14.307 dòng (−35%)
 
 Chỉ có 35 method `private` trên tổng 679 method, nên gần như toàn bộ phải
 dùng **uỷ nhiệm**.
@@ -158,12 +159,14 @@ dùng **uỷ nhiệm**.
 | `CharTrangBi.java` | `checkNewEffectItem`, `setItemWearing`, `setitemInvenBag` |
 | `CharSuKien.java` | quà tích luỹ, vòng quay, quà offline, 8/3 |
 | `CharCapNhat.java` | `subUpdate`, `updateNearChar`, `doPlayerMove`, buff, pet |
+| `CharVongLap.java` | `update` (613 dòng), `sendItem`, `getDBInfo`, xổ số, quà Noel |
+| `CharKhoiTao.java` | thân constructor `Char` (413 dòng) — `super()` ở lại trong `Char` |
 
-**Không đụng vào** `Char.update` (613 dòng), `startThreadXoso`,
-`startThreadXosoLow` — thân chúng có **lớp ẩn danh**, mà lớp ẩn danh bắt `this`
-ngầm nên chuyển sang ngữ cảnh `static` là hỏng.
+**Ghi chú**: `Char.update` và `startThreadXoso` có lớp ẩn danh nhưng **vẫn tách được** —
+lớp ẩn danh chỉ thành vấn đề khi nó **bắt `this` ngầm**; ở đây chúng chỉ dùng biến
+cục bộ. Phải mở ra đọc mới biết, không thể kết luận từ việc "có lớp ẩn danh".
 
-### `data/Database.java` — 16.423 → 13.305 dòng (−18%)
+### `data/Database.java` — 16.423 → 12.398 dòng (−25%)
 
 Chỉ 6 method `private` trên 335.
 
@@ -171,6 +174,7 @@ Chỉ 6 method `private` trên 335.
 |---|---|
 | `DatabaseNhanVat.java` | `getChar`, `saveChar`, `saveCharAuto`, `addChar`, `saveCharLienDau`, `saveCharBackup`, `getCharList` |
 | `DatabaseGiftCode.java` | `newDoGetGiftCode`, `doAddNewColumInfoPart`, `loadEvent`, `getCheckQua` |
+| `DatabaseXepHang.java` | `getTopLV`, `getTopRich`, `getTopNapLuong`, nạp bảng nhiệm vụ/vật phẩm |
 
 ### Hai bẫy nữa (ngoài ba bẫy đã ghi ở trên)
 
@@ -179,6 +183,34 @@ Chỉ 6 method `private` trên 335.
    rà trước (`loadAllItemLucky` là ca duy nhất trong 14 method).
 5. Symbol thiếu có thể là **thành viên instance** chứ không phải `static` —
    khi đó phải thêm tiền tố tham số (`self.`), không phải tên lớp (`Char.`).
+
+
+### Kỹ thuật này đã gần chạm trần
+
+Đo phần còn tách được (tính đến commit 20):
+
+| File | Tổng dòng | Thân method | Field + khối `static` + import<br>(**không** tách được) | Method ≥80 dòng còn lại |
+|---|---|---|---|---|
+| `Map.java` | 17.525 | 11.001 | **6.524** | 23 method / 2.457 dòng |
+| `Char.java` | 14.307 | 11.535 | 2.772 | 12 method / 1.046 dòng |
+| `Database.java` | 12.398 | 11.598 | 800 | 4 method / 587 dòng |
+
+Còn ~4.000 dòng tách được, rải trên ~39 method. Mỗi lần tách giờ phải nới thêm
+quyền và sinh thêm file nhỏ, nên **lợi ích trên mỗi lần tách đã thấp hơn cái giá**.
+
+Riêng `Map.java` còn **6.524 dòng khai báo field + khối `static`** — đây mới là
+phần lớn nhất còn lại, và nó **không thể** tách: field phải ở nguyên trong `Map`
+vì `lib/NQSH_5h.jar` truy cập trực tiếp.
+
+Ba việc còn lại đáng làm hơn là tách tiếp:
+
+1. **Gộp 9 handler trùng lặp** (`doBuySpecialItem`, `doUsePotion`, `doTrade`…):
+   mỗi cái tồn tại hai bản đã trôi lệch — `RealController` gọi bản này,
+   `Map` gọi bản kia. Đây là rủi ro đúng/sai thật sự, không phải chuyện gọn gàng.
+2. **Gỡ phụ thuộc `NQSH_5h.jar`** — mở khoá cho việc đổi tên package và trả lại
+   `private` cho 63 thành viên đã nới.
+3. **Viết test** cho vài đường đi chính. Hiện repo không có test nào, nên mọi
+   thay đổi chỉ verify được về cấu trúc, không verify được hành vi.
 
 ## Tính năng
 
