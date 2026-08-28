@@ -125,20 +125,6 @@ class MapChat {
                 m.dos.writeShort(player.id);
                 String msgChat = message.dis.readUTF().trim();
 
-                // "boskin": thao skin linh thu ra, tra vat pham ve hanh trang.
-                //
-                // Phai lam bang lenh chat vi bang "Trang bi thu" ben client KHONG co nut
-                // thao do: doUseItem chi tim vat pham trong hanh trang (player.iItems)
-                // nen bam vao mon dang mac khong goi duoc gi, cach doi trang bi thu duy
-                // nhat cua game la mac de len mon khac. Khong co lenh nay thi nguoi choi
-                // lo mac skin vao la khong bao gio tro lai hinh thu that duoc.
-                //
-                // De TRUOC cho chan lenh admin vi day la lenh danh cho moi nguoi choi.
-                if (msgChat.equalsIgnoreCase("boskin")) {
-                    SkinLinhThu.thaoSkin(player);
-                    return;
-                }
-
                 // Nguoi choi thuong chi chat, khong di qua chuoi lenh ben duoi.
                 // Ly do: rat nhieu lenh cu trong chuoi nay khong kiem tra quyen admin
                 // (dvip, ngoc, ruong, quayso, die, class, openboss...) nen neu de nguoi
@@ -156,43 +142,6 @@ class MapChat {
                         AdminMenu.moMenu(player);
                     } else {
                         AdminMenu.moONhapLenh(player);
-                    }
-                    return;
-                }
-
-                // tangskin <tên nhân vật> <0-4> : trao vat pham skin linh thu cho nguoi
-                // choi dang online. Dung de tra thuong dua top / su kien — game khong co
-                // he thong tra thuong top dung chung nen lam bang tay o day. Cach khac
-                // tuong duong: giftcode "DB:<idTemplate>:1:0" voi idTemplate 905..909.
-                if (msgChat.startsWith("tangskin")) {
-                    try {
-                        final String[] info = Char.split(msgChat, " ");
-                        final String ten = info[1].trim();
-                        final int idSkin = Integer.parseInt(info[2].trim());
-                        final Char nhan = CharManager.instance.getCharByCharName(ten);
-                        if (nhan == null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    "Không thấy nhân vật " + ten + " đang online.", ""));
-                        } else if (!SkinLinhThu.hopLe(idSkin)) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    "Id skin phải từ 0 đến " + (SkinLinhThu.SO_SKIN - 1) + ".", ""));
-                        } else if (nhan.isFullInventory()) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    nhan.charname + " đang đầy hành trang.", ""));
-                        } else {
-                            GiftCode.AddItem(nhan, SkinLinhThu.ID_ITEM[idSkin], 0, 0, 0);
-                            player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    "Đã tặng skin " + SkinLinhThu.moTa(idSkin) + " cho " + nhan.charname + ".", ""));
-                            Database.instance.saveOrtherLog("", player.charname,
-                                    "tang skin " + idSkin + " cho " + nhan.charname, "tangskin");
-                        }
-                    } catch (Exception exTangSkin) {
-                        final StringBuilder sb = new StringBuilder("Cú pháp: tangskin <tên nhân vật> <0-"
-                                + (SkinLinhThu.SO_SKIN - 1) + ">");
-                        for (int i = 0; i < SkinLinhThu.SO_SKIN; i++) {
-                            sb.append("\n").append(i).append(" ").append(SkinLinhThu.moTa(i));
-                        }
-                        player.sendMessage(MessageCreator.createServerAlertMessage(sb.toString(), ""));
                     }
                     return;
                 }

@@ -775,19 +775,7 @@ class CharTrangBi {
                                 final int ring2 = 0;
                                 item.id = self.getIDItem();
                                 final int t = item.getTemplate().type;
-                                // Vat pham SKIN LINH THU phai di nhanh trang bi thu.
-                                //
-                                // Ca do nhan vat lan trang bi thu deu duoc luu vao CUNG
-                                // MOT cot equip (Database.getInfoCharSave noi getCharWearing
-                                // roi noi tiep awItems), nen luc nap lai chi con type de
-                                // phan luong. Skin mang type 19 = type cua Phi phong, ma
-                                // isWearingAnimal chi nhan 14..18, nen neu khong chan o day
-                                // thi no roi vao nhanh do nhan vat va chiem O PHI PHONG
-                                // (POS_WEARING_CHAR 19 -> index 11): dang nhap lai la mat
-                                // skin, con nhan vat thi moc them cai ao choang.
-                                // Nang hon nua, luc do khong go ra duoc: doUseItem chi quet
-                                // iItems, con lenh "boskin" chi quet awItems.
-                                if (!Map.isWearingAnimal(t) && !SkinLinhThu.laItemSkin(item.getTemplate().id)) {
+                                if (!Map.isWearingAnimal(t)) {
                                     boolean vk2 = false;
                                     if (t == 6 || t == 7 || t == 4 || t == 5 || t == 3) {
                                         vk2 = true;
@@ -833,13 +821,7 @@ class CharTrangBi {
                                         final Item item3 = item;
                                         item3.idAnimal += 12607;
                                     }
-                                    // Skin linh thu gan theo NHAN VAT chu khong theo tung
-                                    // con thu, nen khong xet checkExistAnimal: nguoi choi
-                                    // ban con thu ma skin dang buoc vao van phai giu duoc
-                                    // skin. getAnimalWearing se buoc lai idAnimal vao con
-                                    // dang cuoi o lan hien thi ke tiep.
-                                    if (SkinLinhThu.laItemSkin(item.getTemplate().id)
-                                            || self.checkExistAnimal(item.idAnimal)) {
+                                    if (self.checkExistAnimal(item.idAnimal)) {
                                         self.awItems.add(item);
                                     } else {
                                         item.place = 0;

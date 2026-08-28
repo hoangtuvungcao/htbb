@@ -1434,13 +1434,7 @@ class CharNapDuLieu {
                                         }
                                         item.id = self.getIDItem();
                                         final int t = item.getTemplate().type;
-                                        // Skin linh thu (type 19) cung phai vao awItems —
-                                        // xem chu thich dai o setItemWearing. Day la nhanh
-                                        // nap kieu cu (doc bang tob_item theo place), chi
-                                        // chay khi cot equip rong, nhung van phai vá cho
-                                        // dong bo, khong thi hai duong nap ra hai ket qua.
-                                        if (Map.isWearingAnimal(t)
-                                                || SkinLinhThu.laItemSkin(item.getTemplate().id)) {
+                                        if (Map.isWearingAnimal(t)) {
                                             self.awItems.add(item);
                                             break;
                                         }

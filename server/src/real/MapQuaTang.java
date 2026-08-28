@@ -987,15 +987,6 @@ class MapQuaTang {
             case 22: // Non Phu Thuy 7 ngay
                 Char.doDropModelClothe(player, 578, 7);
                 break;
-            case 23: // Skin linh thu Phuc Thu
-            case 24: // Skin linh thu Gau Truc
-            case 25: // Skin linh thu Tien Loc
-            case 26: // Skin linh thu Xich Duong
-            case 27: // Skin linh thu Chien Lang
-                // Thoi han 0 = vinh vien. Vat pham skin la trang bi thu (type 19), mac
-                // vao o dau tien ben phai bang Trang bi thu.
-                GiftCode.AddItem(player, SkinLinhThu.ID_ITEM[idx - 23], 0, 0, 0);
-                break;
             default:
                 return false;
         }

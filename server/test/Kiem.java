@@ -66,7 +66,6 @@ public final class Kiem {
 
         KiemChuoi.chay();
         KiemVatPham.chay();
-        KiemSkinLinhThu.chay();
         KiemPhienBan.chay();
         KiemGoi26Test.chay();
         KiemGoi3Test.chay();

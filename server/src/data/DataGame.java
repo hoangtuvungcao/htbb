@@ -45,17 +45,10 @@ public class DataGame {
     public static byte[][] imgEffectSkill;
     public static byte[][] imgEffectArrow;
     public static byte[][] dataBoss;
-    /** Atlas con thu tren ban do cua skin linh thu (map/skinthu/&lt;n&gt;.png). */
-    public static byte[][] imgSkinThu;
-    /** Du lieu frame di kem atlas tren (map/skinthu/&lt;n&gt;). */
-    public static byte[][] dataSkinThu;
-    /** Dai 3 frame cho bang "Trang bi thu" (map/skinthu/avt&lt;n&gt;.png). */
-    public static byte[][] imgAvtSkinThu;
-    // 855..859 la icon 5 vat pham skin linh thu (them moi, khong ghi de icon nao).
-    // Nang vua du 860, KHONG nang du: id nao < nIconItem ma khong co file thi allImg[id]
+    // Nang vua du, KHONG nang du: id nao < nIconItem ma khong co file thi allImg[id]
     // la null, va sendByteImg se nem NPE roi bo qua ca lenh gui -> client hoi mai khong
     // bao gio duoc tra loi. Nang du la tu tao them may id "ho den" nhu vay.
-    static short nIconItem = 860; // update item moi
+    static short nIconItem = 855; // update item moi
 //    static short nIconItem = 632;
     public static byte version = 1;
 
@@ -574,7 +567,6 @@ public class DataGame {
                 }
             }
 
-            napSkinThu();
 
             try {
                 byte nIconQuest = (byte) ItemQuest.NAME_ITEM_QUEST.length;
@@ -805,15 +797,6 @@ public class DataGame {
                 m.dos.write(iconClanImg[idImg - 11000]);
             } else if (idImg >= 12000 && idImg < 12100) {
                 m.dos.write(imgThanThu[idImg - 12000]);
-            } else if (idImg >= real.SkinLinhThu.ID_ANH_BAN_DO
-                    && idImg < real.SkinLinhThu.ID_ANH_BAN_DO + real.SkinLinhThu.SO_SKIN) {
-                // Skin linh thu. Dai id nay chua tung duoc dung (dai cu cao nhat het o
-                // 12099) nen khong client nao co san anh cu cua id nay trong bo dem —
-                // do la ly do chon dai moi thay vi dung lai id d_effect nao do.
-                final byte[] anh = anhBanDoSkinThu(idImg - real.SkinLinhThu.ID_ANH_BAN_DO);
-                if (anh != null) {
-                    m.dos.write(anh);
-                }
             } else {
                 // Id khong khop DAI NAO: goi tin gui di chi co id, KHONG co anh.
                 // Client nhan anh rong -> ve sai ma khong bao gi. Ghi log de thay.
@@ -828,64 +811,6 @@ public class DataGame {
             var4.printStackTrace();
         }
 
-    }
-
-    /**
-     * Nap bo anh skin linh thu tu thu muc RIENG map/skinthu/.
-     *
-     * De rieng chu khong chen vao map/d_effect/ vi thu muc do da kin cho: DataGame chi
-     * nap 0..299 (dai id 8700..8999 cua sendByteImg) va ca 300 id deu da co file. Thu
-     * muc rieng + dai id rieng thi them bao nhieu skin cung duoc, va khong dung den mot
-     * file anh cu nao.
-     *
-     * Thieu file thi skin do bi TAT HAN (SkinLinhThu.coDuAnh tra false), con thu ve lai
-     * hinh that. Phai tat han chu khong the tat mot nua: bat skin la tat duong ve "ngua
-     * co dien" (userHorse = 0), ma thieu du lieu frame thi duong "thu cuoi tool" cung
-     * khong ve duoc gi — nguoi choi se cuoi hu khong.
-     */
-    private static void napSkinThu() {
-        final int n = real.SkinLinhThu.SO_SKIN;
-        imgSkinThu = new byte[n][];
-        dataSkinThu = new byte[n][];
-        imgAvtSkinThu = new byte[n][];
-        for (int i = 0; i < n; i++) {
-            imgSkinThu[i] = docFile("map/skinthu/" + i + ".png");
-            dataSkinThu[i] = docFile("map/skinthu/" + i);
-            imgAvtSkinThu[i] = docFile("map/skinthu/avt" + i + ".png");
-            if (imgSkinThu[i] == null || dataSkinThu[i] == null || imgAvtSkinThu[i] == null) {
-                System.out.println("CANH BAO: thieu file skin linh thu " + i
-                        + " (can du map/skinthu/" + i + ".png, " + i + ", avt" + i + ".png)"
-                        + " -> TAT skin nay, ai dang mac se thay con thu that."
-                        + " Dat du ca ba file roi bat lai server.");
-            }
-        }
-    }
-
-    /** Doc ca file thanh mang byte, null neu khong co file hoac loi doc. */
-    private static byte[] docFile(final String duong) {
-        try (FileInputStream fis = new FileInputStream(duong);
-             DataInputStream dis = new DataInputStream(fis)) {
-            final byte[] b = new byte[dis.available()];
-            dis.readFully(b);
-            return b;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /** Du lieu frame cua skin thu n, null neu khong co. */
-    public static byte[] duLieuSkinThu(final int n) {
-        return (dataSkinThu != null && n >= 0 && n < dataSkinThu.length) ? dataSkinThu[n] : null;
-    }
-
-    /** Atlas con thu tren ban do cua skin thu n, null neu khong co. */
-    public static byte[] anhBanDoSkinThu(final int n) {
-        return (imgSkinThu != null && n >= 0 && n < imgSkinThu.length) ? imgSkinThu[n] : null;
-    }
-
-    /** Dai 3 frame cua skin thu n cho bang Trang bi thu, null neu khong co. */
-    public static byte[] anhAvtSkinThu(final int n) {
-        return (imgAvtSkinThu != null && n >= 0 && n < imgAvtSkinThu.length) ? imgAvtSkinThu[n] : null;
     }
 
     public static void sendMsgGetDataEff(Session s, Message msg) {
