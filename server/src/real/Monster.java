@@ -1516,6 +1516,15 @@ public class Monster extends LiveActor {
                             thuocHoaHinh.cat = 6;
                             listGem.add(thuocHoaHinh);
                         }
+                        // Luyen kim duoc 30% (gem 11): 3% moi boss, dung ti le cu cua
+                        // boss than lan. Da go hai lan roll rieng trong BossThanLan de
+                        // khong bi cong don thanh ~5.9%.
+                        if (Map.r.nextInt(100) < 3) {
+                            final GemItem lkd = new GemItem(11);
+                            lkd.isBoss = true;
+                            lkd.cat = 6;
+                            listGem.add(lkd);
+                        }
                     }
                     if (gem4 != null) {
                         listGem.add(gem4);

@@ -600,9 +600,6 @@ public class BossThanLan extends Boss {
 
             GemItem g = new GemItem(178);
             gem.add(g);
-            if (Map.r.nextInt(100) < 3) {
-                gem.add(new GemItem(11));
-            }
         } else if (this.idTemplate == 39) {
             int[] id = new int[]{156, 157};
             int k = Map.r.nextInt(2);
@@ -613,9 +610,6 @@ public class BossThanLan extends Boss {
             }
 
 
-            if (Map.r.nextInt(100) < 3) {
-                gem.add(new GemItem(11));
-            }
         }
 
         int soluong = Map.r.nextInt(3) + 1;
@@ -635,6 +629,11 @@ public class BossThanLan extends Boss {
 
     public Vector<Potion> dropPotion(Char p) {
         Vector<Potion> pt = new Vector();
+        // Nhan sam (potion 9) roi them voi ti le 1%, tinh rieng - khong dinh gi
+        // toi bo random co san ben duoi.
+        if (Map.r.nextInt(100) < 1) {
+            pt.add(new Potion((short) 9, 1, this.map));
+        }
         if (this.idTemplate == 39) {
             byte[] id = new byte[]{9, 10, 11, 7, 13};
             int[] sl = new int[]{1, 1, 1, 6, 2};
