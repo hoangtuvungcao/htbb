@@ -705,12 +705,14 @@ class CharVongLap {
                 return Char.ID_MAT_NA_PANDA;
             }
             if (self.wModel.isMatNaOngDia()) {
-                // TODO: chua biet so frame dxy rieng cua mat na ong dia (giong
-                // cach 837/838 dung 8700+223 / 8700+222 - la so hardcode rieng,
-                // KHONG doc tu ideff trong DB vi ideff cua 872 cung la -1).
-                // Tam thoi tra -1 (khong ve mat na) de khong hien nham hinh mat
-                // na khac. Dien dung so frame vao day khi co.
-                return -1;
+                // So hardcode rieng nhu 837/838 (8700+223 / 8700+222), KHONG doc tu
+                // ideff trong DB vi ideff cua 872 la -1.
+                // map/d_effect/244 da co san trong repo tu 09/2024 va co cung cau truc
+                // voi 222/223: nSmallImage=3, nframe=18, tongPart=18. Anh 244.png la
+                // ba khung mat ong dia (truoc / sau gay / nghieng), bang mau trung
+                // 14/14 voi icon 807. 244 cung da nam san trong id_eff_tool_ngu_long
+                // nen goi 26 luc dang nhap da gui khung hinh di roi.
+                return 8700 + 244;
             }
         }
         
