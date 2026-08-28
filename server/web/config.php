@@ -84,3 +84,22 @@ if (!defined('SEPAY_WEBHOOK_APIKEY')) define('SEPAY_WEBHOOK_APIKEY', '');
 
 /** Mật khẩu trang xác nhận nạp tiền thủ công (admin_naptien.php). Đặt thật trong config.local.php! */
 if (!defined('ADMIN_NAPTIEN_PASSWORD')) define('ADMIN_NAPTIEN_PASSWORD', 'doi-mat-khau-nay');
+
+/**
+ * ============================================================
+ *  TRANG QUẢN TRỊ (web/admin/)
+ * ============================================================
+ *  Danh sách TÊN TÀI KHOẢN ĐĂNG NHẬP (cột account.team_user.username, KHÔNG phải
+ *  tên nhân vật) được phép vào khu quản trị: xem thống kê, khoá tài khoản, tạo
+ *  giftcode, đọc log. Ngăn nhau bằng dấu phẩy.
+ *
+ *      define('ADMIN_ACCOUNTS', 'hoahv,admin');
+ *
+ *  Người vào vẫn phải gõ đúng mật khẩu tài khoản game của mình — danh sách này
+ *  chỉ quyết định AI ĐƯỢC PHÉP, không thay cho mật khẩu.
+ *
+ *  Để TRỐNG là đóng cửa với tất cả mọi người. Đó là mặc định có chủ ý: quên cấu
+ *  hình thì trang tự khoá lại, chứ không mở toang cho bất kỳ ai có tài khoản.
+ *  Đặt giá trị thật trong web/config.local.php, đừng sửa ở đây.
+ */
+if (!defined('ADMIN_ACCOUNTS')) define('ADMIN_ACCOUNTS', '');

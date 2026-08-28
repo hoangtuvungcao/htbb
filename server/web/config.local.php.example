@@ -24,3 +24,9 @@ define('SEPAY_WEBHOOK_APIKEY', '');              // API Key đặt trên SePay >
 
 // ---- Trang xác nhận nạp tiền thủ công (admin_naptien.php) ----
 define('ADMIN_NAPTIEN_PASSWORD', 'doi-mat-khau-nay');
+
+// ---- Trang quản trị (web/admin/) ----
+// Tên TÀI KHOẢN ĐĂNG NHẬP (team_user.username), KHÔNG phải tên nhân vật.
+// Nhiều người thì ngăn bằng dấu phẩy. Để trống = không ai vào được.
+// Người vào vẫn phải gõ đúng mật khẩu tài khoản game của mình.
+define('ADMIN_ACCOUNTS', 'hoahv');
