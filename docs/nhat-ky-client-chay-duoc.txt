@@ -1,0 +1,44 @@
+    109 java.io.EOFException
+     37 java.lang.NumberFormatException: For input string: "%"
+     35 java.lang.NullPointerException: Cannot invoke "java.io.ByteArrayInputStream.close()" because "by" is null
+     17 java.lang.NullPointerException: Cannot invoke "java.io.DataInputStream.close()" because "is" is null
+     17 java.lang.NullPointerException: Cannot invoke "java.io.ByteArrayInputStream.close()" because "bt" is null
+     16 java.lang.NullPointerException: Cannot invoke "java.io.InputStream.read(byte[], int, int)" because "this.in" is null
+     16 java.lang.NullPointerException: Cannot invoke "java.io.InputStream.close()" because "this.in" is null
+     15 java.lang.NumberFormatException: For input string: "ISS"
+      8 java.lang.NumberFormatException: For input string: "n"
+      7 java.lang.NumberFormatException: For input string: "o"
+      7 java.lang.NumberFormatException: For input string: "i"
+      7 java.lang.NumberFormatException: For input string: "?"
+      6 java.lang.NumberFormatException: For input string: "ô"
+      6 java.lang.NumberFormatException: For input string: "h"
+      6 java.lang.NumberFormatException: For input string: "c"
+      3 java.lang.NumberFormatException: For input string: "x"
+      3 java.lang.NumberFormatException: For input string: "p"
+      3 java.lang.NumberFormatException: For input string: "g"
+      3 java.lang.NullPointerException: Cannot invoke "javax.microedition.lcdui.Image.getWidth()" because "src" is null
+      3 java.io.IOException: /t_thanh.png could not be found.
+      2 java.lang.NumberFormatException: For input string: "u"
+      2 java.lang.NumberFormatException: For input string: "t"
+      1 javax.microedition.rms.RecordStoreNotFoundException: t_hang
+      1 javax.microedition.rms.RecordStoreNotFoundException: numbersupport
+      1 javax.microedition.rms.RecordStoreNotFoundException: nqshlogin
+      1 javax.microedition.rms.RecordStoreNotFoundException: nqshQuickSlot
+      1 javax.microedition.rms.RecordStoreNotFoundException: nqshImgPotionNew
+      1 javax.microedition.rms.RecordStoreNotFoundException: nqshImgPotion
+      1 javax.microedition.rms.RecordStoreNotFoundException: loadClearRMS
+      1 javax.microedition.rms.RecordStoreNotFoundException: ipnqsh
+      1 javax.microedition.rms.RecordStoreNotFoundException: gemItem
+      1 java.lang.NumberFormatException: For input string: "á"
+      1 java.lang.NumberFormatException: For input string: "y"
+      1 java.lang.NumberFormatException: For input string: "a"
+      1 java.lang.NumberFormatException: For input string: "HI MANG"
+      1 java.lang.NumberFormatException: For input string: "3xp"
+      1 java.lang.NumberFormatException: For input string: ")"
+      1 java.lang.NumberFormatException: For input string: " "
+      1 java.lang.NullPointerException: Cannot invoke "network.Message.reader()" because "msg" is null
+      1 java.lang.NullPointerException: Cannot invoke "java.io.DataInputStream.close()" because "data" is null
+      1 java.lang.ArrayIndexOutOfBoundsException: Index 6 out of bounds for length 5
+      1 java.lang.ArrayIndexOutOfBoundsException: Index 150 out of bounds for length 150
+      1 java.lang.ArrayIndexOutOfBoundsException
+      1 java.io.IOException: /newEf/42.png could not be found.
