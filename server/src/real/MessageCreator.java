@@ -552,6 +552,18 @@ public class MessageCreator {
             }
         } catch (final Exception ex) {
         }
+        // Tu doc lai goi vua dung bang DUNG trinh tu cua client 2.7.6 va in mot dong
+        // ket luan. Ben client moi khoi cua goi 26 boc trong try/catch RONG nen lech
+        // byte khong he bao loi - chi thay thu cuoi khong hien. Day la cach duy nhat
+        // biet duoc hai ben co khop hay khong ma khong phai doan.
+        // toByteArray() co nho ket qua (this.bytes) nen goi som o day khong lam hong
+        // luc gui that.
+        if (msgMons != null) {
+            try {
+                KiemGoi26.kiem(msgMons.toByteArray(), clientVersion);
+            } catch (final Exception ex) {
+            }
+        }
         return msgMons;
     }
 
