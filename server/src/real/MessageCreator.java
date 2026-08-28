@@ -2188,11 +2188,11 @@ public class MessageCreator {
         m.dos.writeByte(a[2]);
         // Tu doc lai goi vua dung bang dung trinh tu client 2.7.6 va so id thu cuoi
         // client thuc su lay duoc voi id minh vua ghi. Chi lam khi dang cuoi thu.
-        if (p.animalRide != null) {
-            try {
-                KiemGoi3.kiem(m.toByteArray(), p.charname, idThutoolDaGui, indexdxyDaGui);
-            } catch (final Exception ex) {
-            }
+        // KHONG chan theo animalRide: goi mang idThutool = -1 chinh la goi XOA con
+        // thu, va do la thu can nhin thay nhat. Chan lai la tu bit mat no.
+        try {
+            KiemGoi3.kiem(m.toByteArray(), p.charname, idThutoolDaGui, indexdxyDaGui);
+        } catch (final Exception ex) {
         }
         return m;
     }

@@ -39,7 +39,7 @@ public final class KiemGoi3 {
      */
     public static void kiem(final byte[] khung, final String tenChar,
             final int idMongDoi, final int dxyMongDoi) {
-        if (!daKiem.add(tenChar)) {
+        if (!daKiem.add(tenChar + "/" + idMongDoi + "/" + dxyMongDoi)) {
             return;
         }
         System.out.println("[GOI3] " + tenChar + " " + phanTich(khung, idMongDoi, dxyMongDoi));
