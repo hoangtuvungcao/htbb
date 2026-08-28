@@ -60,12 +60,12 @@ INSERT INTO `data_item`
    `price`, `clazz`, `xstart`, `ystart`, `colortype`, `nloan`, `idUpLevel`,
    `namein`, `ideff`, `pricecu`)
 VALUES
-  (905, 'Phi phong vô hình', 19, 16, 0, 0, 0, 480,
+  (910, 'Phi phong vô hình', 19, 16, 0, 0, 0, 480,
    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
    0, -1, 829, 0, -1, 0, -1, '', -1, 0);
 
 -- Kiem tra lai.
-SELECT id, name, type, style, level, xstart, nloan FROM data_item WHERE id = 905;
+SELECT id, name, type, style, level, xstart, nloan FROM data_item WHERE id = 910;
 
 -- Doi chieu voi mot phi phong that de thay khac nhau o dau.
-SELECT id, name, type, style, level, xstart FROM data_item WHERE id IN (584, 905);
+SELECT id, name, type, style, level, xstart FROM data_item WHERE id IN (584, 910);
