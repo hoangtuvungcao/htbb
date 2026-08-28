@@ -32,6 +32,16 @@ public final class KiemPhienBan {
         Kiem.sai("\"1.x\" -> false", real.MessageCreator.isVersionAtLeast162("1.x"));
 
         // isVersion162(Char) voi null phai an toan, khong nem ngoai le
+        Kiem.nhom("MessageCreator - nguong 2.7 (goi 26 doi byte -> short)");
+        Kiem.sai("2.0.9 (Ngu De) < 2.7 -> ghi BYTE", real.MessageCreator.isVersionAtLeast27("2.0.9"));
+        Kiem.sai("2.3.2 (client C#) < 2.7 -> ghi BYTE", real.MessageCreator.isVersionAtLeast27("2.3.2"));
+        Kiem.dung("2.7.6 >= 2.7 -> ghi SHORT", real.MessageCreator.isVersionAtLeast27("2.7.6"));
+        Kiem.dung("2.7.0 >= 2.7 -> ghi SHORT", real.MessageCreator.isVersionAtLeast27("2.7.0"));
+        Kiem.sai("2.6.9 < 2.7 -> ghi BYTE", real.MessageCreator.isVersionAtLeast27("2.6.9"));
+        Kiem.dung("3.0.0 >= 2.7 -> ghi SHORT", real.MessageCreator.isVersionAtLeast27("3.0.0"));
+        Kiem.sai("null -> ghi BYTE (an toan, giu dinh dang cu)", real.MessageCreator.isVersionAtLeast27(null));
+        Kiem.sai("\"0\" mac dinh -> ghi BYTE", real.MessageCreator.isVersionAtLeast27("0"));
+
         Kiem.sai("isVersion162(null) -> false", real.MessageCreator.isVersion162((real.Char) null));
     }
 

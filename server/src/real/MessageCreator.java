@@ -132,6 +132,30 @@ public class MessageCreator {
     }
 
     /** So sanh mot chuoi phien ban voi 1.62. Chuoi hong -> false. */
+    /**
+     * Client tu 2.7 tro len doc so luong hieu ung "ngu long" trong goi 26 bang
+     * SHORT, ban cu doc bang BYTE. Danh sach id_eff_tool_ngu_long da co 249 phan
+     * tu - sat tran 255 cua mot byte - nen ban client moi noi truong dem ra short.
+     *
+     * Ghi sai kieu o day la lech 1 byte, va TAT CA du lieu phia sau truot theo:
+     * client doc so luong sai roi doc lech toan bo bang frame cua thu cuoi tool
+     * -> Duong Khang, Rong Bang, Phuong Hoang... ve sai. Khong ben nao bao loi vi
+     * client nuot ngoai le, con server ghi dung theo dinh dang cu cua no.
+     */
+    public static boolean isVersionAtLeast27(final String ver) {
+        if (ver == null) {
+            return false;
+        }
+        try {
+            final String[] parts = ver.split("[.]");
+            final int major = Integer.parseInt(parts[0]);
+            final int minor = Integer.parseInt(parts[1]);
+            return major > 2 || (major == 2 && minor >= 7);
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
     public static boolean isVersionAtLeast162(final String ver) {
         if (ver == null) {
             return false;
@@ -363,7 +387,18 @@ public class MessageCreator {
         return m;
     }
 
+    /** Giu nguyen cho cho nao chua truyen duoc phien ban: ghi theo dinh dang CU (byte). */
     public static Message createMsgMonsterTemplate() {
+        return createMsgMonsterTemplate(null);
+    }
+
+    /**
+     * @param clientVersion phien ban client cua NGUOI NHAN goi nay. Tu 2.7 tro len
+     *                      thi truong dem hieu ung "ngu long" ghi bang short.
+     *                      null / khong doc duoc -> ghi byte nhu ban cu.
+     */
+    public static Message createMsgMonsterTemplate(final String clientVersion) {
+        final boolean demBangShort = isVersionAtLeast27(clientVersion);
         Message msgMons = null;
         try {
             if (msgMons == null) {
@@ -472,7 +507,18 @@ public class MessageCreator {
                     idCoDuLieu.remove(idCoDuLieu.size() - 1);
                     duLieuEff.remove(duLieuEff.size() - 1);
                 }
-                msgMons.dos.writeByte(idCoDuLieu.size());
+                // Client >= 2.7 doc truong nay bang short; ban cu doc bang byte.
+                if (demBangShort) {
+                    msgMons.dos.writeShort(idCoDuLieu.size());
+                } else {
+                    // Ban cu chi doc 1 byte. Neu danh sach vuot 255 thi so luong bi
+                    // cat cut -> client cu doc lech y het loi dang sua o day.
+                    if (idCoDuLieu.size() > 255) {
+                        System.out.println("[GOI26] CANH BAO: " + idCoDuLieu.size()
+                                + " hieu ung ngu long, vuot 255 - client cu (<2.7) se doc lech.");
+                    }
+                    msgMons.dos.writeByte(idCoDuLieu.size());
+                }
                 for (int i = 0; i < idCoDuLieu.size(); ++i) {
                     msgMons.dos.writeShort(idCoDuLieu.get(i)[0]);
                     msgMons.dos.writeShort(duLieuEff.get(i).length);

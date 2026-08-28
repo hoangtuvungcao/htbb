@@ -355,7 +355,7 @@ public class LoginHandler implements ICommandHandler {
         session.sendMessage(i);
         i.cleanup();
         session.sendMessage(MessageCreator.createMsgLogin(session));
-        session.sendMessage(MessageCreator.createMsgMonsterTemplate());
+        session.sendMessage(MessageCreator.createMsgMonsterTemplate(session.version));
         session.sendMessage(createMsgLogin(session.vsTile));
         session.sendMessage(MessageCreator.createXaphu());
         try {
@@ -415,7 +415,7 @@ public class LoginHandler implements ICommandHandler {
             s.sendMessage(m);
             m.cleanup();
             s.sendMessage(MessageCreator.createMsgLogin(s));
-            s.sendMessage(MessageCreator.createMsgMonsterTemplate());
+            s.sendMessage(MessageCreator.createMsgMonsterTemplate(s.version));
             s.sendMessage(createMsgLogin(s.vsTile));
             s.sendMessage(MessageCreator.createXaphu());
         } catch (final Exception e) {
@@ -506,7 +506,7 @@ public class LoginHandler implements ICommandHandler {
             s.sendMessage(m);
             m.cleanup();
             s.sendMessage(MessageCreator.createMsgLogin(s));
-            s.sendMessage(MessageCreator.createMsgMonsterTemplate());
+            s.sendMessage(MessageCreator.createMsgMonsterTemplate(s.version));
             s.sendMessage(createMsgLogin(s.vsTile));
             s.sendMessage(MessageCreator.createXaphu());
         } catch (final Exception e) {
@@ -517,7 +517,7 @@ public class LoginHandler implements ICommandHandler {
     public void doLoginByAdmin(final String charname, final Session session) {
         try {
             session.sendMessage(MessageCreator.createMsgLogin(session));
-            session.sendMessage(MessageCreator.createMsgMonsterTemplate());
+            session.sendMessage(MessageCreator.createMsgMonsterTemplate(session.version));
             session.sendMessage(createMsgLogin(session.vsTile));
             session.sendMessage(MessageCreator.createXaphu());
             final Char p = new Char(session);
