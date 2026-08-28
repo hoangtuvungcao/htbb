@@ -10181,7 +10181,44 @@ public int applyRongLonReleaseTo(int baseDamage) {
             a[1] = 3;
             a[2] = 2;
         }
-        
+        // Ba Thien Ho: anh avatar nam 727 (ao xanh) / nu 728 (vay vang-do), deu 48x148
+        // = 2 khung 48x74. Chi so 14 trong Dx_Dy_AVT_tool cho dx=-22, dy=-75 - vua khung.
+        // Thieu khoi nay thi o xem truoc trong cua so Trang bi ve nhan vat tran, vi
+        // Char.paintAvatar ben client chi doc idModel (atb5..atb8, item nay = 0) hoac
+        // idImgAVT, KHONG doc lop phu head/body/leg.
+        else if (this.wModel.isBaThienHoNam()) {
+            a[0] = 727;
+            a[1] = 14;
+            a[2] = 2;
+        }
+        else if (this.wModel.isBaThienHoNu()) {
+            a[0] = 728;
+            a[1] = 14;
+            a[2] = 2;
+        }
+        // Bon bo Bong da, cung ly do. Anh avatar 31-35 x 138 = 2 khung cao 69,
+        // chi so 4 cho dx=-18, dy=-70. Mau ao tren avatar khop mau icon cua tung item.
+        else if (this.wModel.isBongDaNamAoDo()) {
+            a[0] = 697;
+            a[1] = 4;
+            a[2] = 2;
+        }
+        else if (this.wModel.isBongDaNuAoTrang()) {
+            a[0] = 696;
+            a[1] = 4;
+            a[2] = 2;
+        }
+        else if (this.wModel.isBongDaNamAoCam()) {
+            a[0] = 701;
+            a[1] = 4;
+            a[2] = 2;
+        }
+        else if (this.wModel.isBongDaNuAoSoc()) {
+            a[0] = 703;
+            a[1] = 4;
+            a[2] = 2;
+        }
+
         return a;
     }
 
