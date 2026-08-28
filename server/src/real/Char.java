@@ -529,6 +529,9 @@ public class Char extends LiveActor {
     static short[] idGif35;
     public static int ID_BIG_AVT_AO_TIEN_NU;
     public static int ID_BIG_AVT_AO_TINH_QUAN;
+    // Anh dau tien trong nam dai anh avatar cua canh (map/icon/855..859), theo
+    // thu tu vat pham 898..902. Xem getIdBigPhiPhong().
+    public static final int ID_BIG_AVT_CANH_DAU = 855;
     public static int ID_BIG_AVT_PP_KHONG_TUOC;
     public static int ID_BIG_AVT_PP_HUYEN_VU;
     public static int ID_BIG_AVT_PP_BONG_DA;
@@ -762,7 +765,16 @@ public class Char extends LiveActor {
             {-75, -71, -60, -40, -52, -100, -75, -90, -85, -70,-48,-60}
         };
 
-        Char.Dx_Dy_PP_tool = new byte[][]{{-26, -32,60}, {-58, -58,-58}};
+        // Do lech ve anh phi phong / canh o o xem truoc cua so Trang bi. Client doc
+        // thanh Char.Dx_Dy_PP roi ve o (x + hang0[i], y + hang1[i]) voi i la so
+        // getIdBigPhiPhong() tra ve o a[2].
+        //   0 = Khong Tuoc (anh 53 rong -> -26 la giua)
+        //   1 = Huyen Vu / Bong da / phi phong tim (anh 65 rong -> -32)
+        //   2 = CANH. Truoc day la (60,-58), mot cap so khong ai dung: khong nhanh
+        //       nao trong getIdBigPhiPhong() tra a[2] = 2, va dx duong 60 thi ve
+        //       han ra ngoai nguoi. Nay dung cho nam bo canh, anh 96x66 moi khung
+        //       nen -47 la giua, -71 dat canh vao sau than.
+        Char.Dx_Dy_PP_tool = new byte[][]{{-26, -32, -47}, {-58, -58, -71}};
 
         Char.Dx_Dy_AVT_tool = new byte[][]{
             {-44, -18, -44, -18, -18, -44, -44, -25, -20, -21, -20, -26, -28, -28,-22,-32},
@@ -10322,7 +10334,18 @@ public int applyRongLonReleaseTo(int baseDamage) {
         // Kiểm tra cánh trước
         if (this.wModel.CanhModel != null && this.wModel.CanhModel.isCanh() && !this.isTatCanh()) {
             a[0] = this.wModel.CanhModel.getIdEff();
-            a[2] = 1;
+            // a[1] TRUOC DAY BO TRONG (-1) nen canh khong bao gio hien o o xem truoc
+            // cua so Trang bi - moi phi phong dac biet ben duoi deu dat a[1]. Nay tro
+            // vao dai anh rieng cua tung bo canh, map/icon/855..859, dung tu chinh
+            // hieu ung tren ban do (d_effect 270..274) nen nhin giong het.
+            // Vat pham 898..902 = Lam Bang, Bach Linh, Xich Vu, Hong Van, Tu Anh.
+            final int idCanh = this.wModel.CanhModel.getTemplate().id;
+            if (idCanh >= 898 && idCanh <= 902) {
+                a[1] = Char.ID_BIG_AVT_CANH_DAU + (idCanh - 898);
+            }
+            // So 2 = o rieng cua canh trong Dx_Dy_PP_tool, khac 1 cua phi phong vi
+            // anh canh rong 96 chu khong phai 65.
+            a[2] = 2;
             a[3] = 3;
             return a;
         }

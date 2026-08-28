@@ -47,7 +47,10 @@ public class DataGame {
     // Nang vua du, KHONG nang du: id nao < nIconItem ma khong co file thi allImg[id]
     // la null, va sendByteImg se nem NPE roi bo qua ca lenh gui -> client hoi mai khong
     // bao gio duoc tra loi. Nang du la tu tao them may id "ho den" nhu vay.
-    static short nIconItem = 855; // update item moi
+    // 855 -> 860: them nam anh avatar cua canh, map/icon/855..859.png. Chung khong
+    // phai icon vat pham ma la dai 3 khung ve o o xem truoc cua so Trang bi, giong
+    // cach anh phi phong 614/625/708/714 dang lam. Xem Char.getIdBigPhiPhong().
+    static short nIconItem = 860; // update item moi
 //    static short nIconItem = 632;
     public static byte version = 1;
 
