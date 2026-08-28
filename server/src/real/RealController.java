@@ -1720,6 +1720,15 @@ public class RealController extends ServerController {
                             player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                             player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                             player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
+                            // Nut nay doi ca Char.getIdHatMatNa(), tuc doi ca so non
+                            // trong getIDModel(). Ma goi 3 (createMainCharInfoMessage)
+                            // chi mang lop phu tren ban do - getIdHeadDynamic/Body/Leg -
+                            // KHONG mang idModel. Thieu goi 15 nay thi ban do an mat na
+                            // roi ma o xem truoc cua so Trang bi van giu mat na cu, mai
+                            // toi luc co viec khac day lai goi 15 moi khop.
+                            // Cac nut ben canh (phi phong, canh) khong can vi chung chi
+                            // doi getIdBigPhiPhong, thu von da nam trong goi 3.
+                            player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                             MessageCreator.createMsgCharMonster(player, player);
                         } catch (Exception var7) {
                             var7.printStackTrace();
