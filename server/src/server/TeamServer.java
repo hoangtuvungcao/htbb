@@ -78,6 +78,21 @@ public class TeamServer {
     public static String website = "";
     public static String linkTaiGame = "";
 
+    /**
+     * CHAN DOAN linh thu: ten nhan vat duoc gui kem id anh thu cuoi qua duong DANH
+     * HIEU, ngoai duong thu cuoi binh thuong. Rong = tat (mac dinh).
+     *
+     * Dat trong server.ini: sv.thuNghiemThuCuoi=tenNhanVat
+     *
+     * De lam gi: log da chung minh duong danh hieu VE DUOC (client xin anh 8788 qua
+     * duong do), con duong thu cuoi thi khong xin gi. Neu gui cung mot id qua duong
+     * danh hieu ma con thu HIEN ra (dat sai cho, khong theo huong - khong sao), thi
+     * du lieu khung ben client la du va loi nam dung o nhanh paintMount. Con neu van
+     * khong hien thi ALL_DATA_EFF ben client thieu id do, du goi 26 co gui.
+     * Chi anh huong dung nhan vat duoc dat ten, va chi la hinh ve.
+     */
+    public static String thuNghiemThuCuoi = "";
+
     // Ti le drop doc tu server.ini luc khoi dong, giu lai de bang setting cua admin
     // co the "tra ve muc trong server.ini".
     // [0]=xu [1]=luong [2]=itemSuKien [3]=potion [4]=ngoc [5]=item [6]=chiaXuRoi
@@ -427,6 +442,14 @@ public class TeamServer {
             real.Monster.PC_TILE_NGOC = tilePercent(p.getProperty("sv.tileNgoc"), 30);
             real.Monster.PC_TILE_ITEM = tilePercent(p.getProperty("sv.tileItem"), 20);
             Map.DIV_DROP_XU = Math.max(1, parseIntDefault(p.getProperty("sv.chiaXuRoi"), 10));
+            // Khoa tuy chon - khong co trong server.ini thi tat. Xem chu thich o
+            // khai bao TeamServer.thuNghiemThuCuoi.
+            final String tenThuNghiem = p.getProperty("sv.thuNghiemThuCuoi");
+            TeamServer.thuNghiemThuCuoi = (tenThuNghiem == null) ? "" : tenThuNghiem.trim().toLowerCase();
+            if (!TeamServer.thuNghiemThuCuoi.isEmpty()) {
+                System.out.println("[THUNGHIEM] gui kem id thu cuoi qua duong danh hieu cho: "
+                        + TeamServer.thuNghiemThuCuoi);
+            }
             TeamServer.tileGoc = new int[]{real.Monster.PC_TILE_XU, real.Monster.PC_TILE_LUONG,
                 real.Monster.PC_TILE_ITEM_SUKIEN, real.Monster.PC_TILE_POTION,
                 real.Monster.PC_TILE_NGOC, real.Monster.PC_TILE_ITEM, Map.DIV_DROP_XU};

@@ -2152,11 +2152,23 @@ public class MessageCreator {
         m.dos.writeShort(p.getIdBodyDynamic());
         m.dos.writeShort(p.getIdLegDynamic());
         final int[][] alleff = p.getInfoDanhHieu();
-        m.dos.writeByte(alleff[0].length);
-        for (int j = 0; j < alleff[0].length; ++j) 
+        // CHAN DOAN (tat mac dinh, bat bang sv.thuNghiemThuCuoi trong server.ini):
+        // gui kem id anh thu cuoi qua duong DANH HIEU. Duong nay da chung minh la ve
+        // duoc, con duong thu cuoi thi khong. Hien ra = du lieu du, loi o paintMount.
+        final boolean themThuCuoi = idThutoolDaGui > -1
+                && !TeamServer.thuNghiemThuCuoi.isEmpty()
+                && TeamServer.thuNghiemThuCuoi.equals(String.valueOf(p.charname).toLowerCase());
+        m.dos.writeByte(alleff[0].length + (themThuCuoi ? 1 : 0));
+        for (int j = 0; j < alleff[0].length; ++j)
         {
             m.dos.writeShort(alleff[0][j]);
             m.dos.writeByte(alleff[1][j]);
+        }
+        if (themThuCuoi) {
+            m.dos.writeShort(idThutoolDaGui);
+            m.dos.writeByte(0);
+            System.out.println("[THUNGHIEM] " + p.charname + ": gui kem id " + idThutoolDaGui
+                    + " qua duong danh hieu");
         }
         m.dos.writeUTF(p.getInfoServer());
         int[] a = p.getIdBigPhiPhong();
