@@ -6378,10 +6378,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (this.wModel.isAuCo()) {
             return 8700 + 117;
         }
-        // TAM THOI dung chung so voi Au Co (117) de test co che - xem ghi chu
-        // o getIdHeadDynamic().
-        if (this.wModel.isBaThienHoNam() || this.wModel.isBaThienHoNu()
-                || this.wModel.isBongDaNam() || this.wModel.isBongDaNu()) {
+        // Ba Thien Ho: than ao. Nam xanh-vang (195), nu do-vang (192).
+        if (this.wModel.isBaThienHoNam()) {
+            return 8700 + 195;
+        }
+        if (this.wModel.isBaThienHoNu()) {
+            return 8700 + 192;
+        }
+        // TAM THOI dung chung so voi Au Co (117) - xem ghi chu o getIdHeadDynamic().
+        if (this.wModel.isBongDaNam() || this.wModel.isBongDaNu()) {
             return 8700 + 117;
         }
          if (this.wModel.isAonoelNam2024()) {
@@ -6460,10 +6465,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (this.wModel.isAuCo()) {
             return 8700 + 118;
         }
-        // TAM THOI dung chung so voi Au Co (118) de test co che - xem ghi chu
-        // o getIdHeadDynamic().
-        if (this.wModel.isBaThienHoNam() || this.wModel.isBaThienHoNu()
-                || this.wModel.isBongDaNam() || this.wModel.isBongDaNu()) {
+        // Ba Thien Ho: vay/chan. Nam xanh-vang (196), nu do-vang (193).
+        if (this.wModel.isBaThienHoNam()) {
+            return 8700 + 196;
+        }
+        if (this.wModel.isBaThienHoNu()) {
+            return 8700 + 193;
+        }
+        // TAM THOI dung chung so voi Au Co (118) - xem ghi chu o getIdHeadDynamic().
+        if (this.wModel.isBongDaNam() || this.wModel.isBongDaNu()) {
             return 8700 + 118;
         }
         if (this.wModel.isAonoelNam2024()) {

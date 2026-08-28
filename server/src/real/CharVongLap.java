@@ -758,11 +758,19 @@ class CharVongLap {
         if (self.wModel.isAuCo()) {
             return 8700 + 116;
         }
-        // TAM THOI dung chung so voi Au Co (116) de test co che - CHUA CO SO
-        // sprite that cho Ba Thien Ho / Bong da, se hien NHAM hinh Au Co. Doi
-        // lai so dung khi co.
-        if (self.wModel.isBaThienHoNam() || self.wModel.isBaThienHoNu()
-                || self.wModel.isBongDaNam() || self.wModel.isBongDaNu()) {
+        // Ba Thien Ho: mu dau ho. Nam mau xanh-vang (194), nu mau do-vang (191).
+        // Sprite da co san trong map/d_effect va da nam trong id_eff_tool_ngu_long.
+        if (self.wModel.isBaThienHoNam()) {
+            return 8700 + 194;
+        }
+        if (self.wModel.isBaThienHoNu()) {
+            return 8700 + 191;
+        }
+        // TAM THOI dung chung so voi Au Co (116) - CHUA CO SPRITE that cho bo Bong
+        // da (item 788/789/791/792), se hien NHAM hinh Au Co. Da tim ca hai project
+        // bang cach doi chieu bang mau cua icon 699/700/702/704: khong co file nao
+        // khop. Doi lai so dung khi co anh.
+        if (self.wModel.isBongDaNam() || self.wModel.isBongDaNu()) {
             return 8700 + 116;
         }
         if (self.wModel.isAonoelNam2024()) {
