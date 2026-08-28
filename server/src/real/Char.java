@@ -10395,7 +10395,18 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
             }
         }
-        if (this.wModel.headModel != null) {
+        // Do thoi trang DOI DAU va mat na deu ve len dau nen deo ca hai la chong
+        // len nhau. Rieng "Dau bi ngo" (vat pham 577, bo phan dau 26) la mot cai
+        // dau DAC chu khong phai toc, nen phan thoi ra ngoai mat na nhin rat xau.
+        // Chon: van deo ca hai de an chi so, nhung chi HIEN mat na.
+        // Day chi la bo phan HINH - chi so cua mon do lay tu thuoc tinh vat pham,
+        // khong di qua ham nay, nen khong mat gi.
+        // Chi bo do DOI DAU (headModel). Dau di kem bo do (itemModel.atb5) van giu,
+        // vi do la toc/mu cua bo do, mat na chi che phan mat nen nhin van hop.
+        final boolean matNaThayDoDoiDau = this.wModel.matNa != null
+                && this.wModel.hatModel == null
+                && this.getIdHatMatNa() != -2;
+        if (this.wModel.headModel != null && !matNaThayDoDoiDau) {
             id[0] = this.wModel.headModel.getTemplate().atb[5];
         }
         if (this.wModel.hatModel != null) {
