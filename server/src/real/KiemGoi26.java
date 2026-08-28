@@ -96,14 +96,25 @@ public final class KiemGoi26 {
                 return ket(sb, "so hieu ung am -> client bo qua CA khoi, ALL_DATA_EFF rong,"
                         + " KHONG ve duoc thu cuoi tool");
             }
+            final java.util.Map<Integer, Integer> khungCuaThuCuoi =
+                    new java.util.TreeMap<Integer, Integer>();
             final java.util.Set<Integer> idDaGui = new java.util.HashSet<Integer>();
             for (int i = 0; i < n5; ++i) {
-                idDaGui.add(Integer.valueOf(d.readShort()));
+                final int id = d.readShort();
+                idDaGui.add(Integer.valueOf(id));
                 final int len = d.readShort();
                 if (len < 0) {
                     return ket(sb, "hieu ung o thu " + i + " do dai am -> client dut o day");
                 }
-                d.skipBytes(len);
+                if (laThuCuoiTool(id)) {
+                    // Giai ma luon de biet du lieu co dung dinh dang khung khong -
+                    // file hong tren VPS van lot qua phep dem id o tren.
+                    final byte[] duLieu = new byte[len];
+                    d.readFully(duLieu);
+                    khungCuaThuCuoi.put(Integer.valueOf(id), Integer.valueOf(soKhung(duLieu)));
+                } else {
+                    d.skipBytes(len);
+                }
             }
             final StringBuilder thieu = new StringBuilder();
             for (int i = 0; i < ID_THU_CUOI_TOOL.length; ++i) {
@@ -112,6 +123,10 @@ public final class KiemGoi26 {
                 }
             }
             sb.append(" thucuoi=").append(thieu.length() == 0 ? "du" : ("THIEU " + thieu));
+            // So khung tung con: client tinh Frame2 = Fhorse + 0/7/14 (+ frameThuCuoi*21),
+            // toi da 18, va bo qua khong ve neu Frame2 >= soKhung. Duoi 19 khung la co
+            // huong khong ve duoc; 0 khung hoac -1 (hong) la khong ve duoc gi ca.
+            sb.append(" khung=").append(khungCuaThuCuoi);
 
             final int soHang = d.readByte();
             sb.append(" dxhorse=").append(soHang);
@@ -141,6 +156,55 @@ public final class KiemGoi26 {
             return ket(sb, "khop het, khong thua byte nao");
         } catch (final Exception e) {
             return ket(sb, "DOC DUT GIUA CHUNG: " + e);
+        }
+    }
+
+    private static boolean laThuCuoiTool(final int id) {
+        for (int i = 0; i < ID_THU_CUOI_TOOL.length; ++i) {
+            if (ID_THU_CUOI_TOOL[i] == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Dem so khung trong mot khoi du lieu hieu ung, giai ma y het
+     * DataSkillEff.loadData cua client. Tra -1 neu du lieu khong dung dinh dang
+     * (client se nem ngoai le trong loadData va bo lai listFrame do dang).
+     */
+    public static int soKhung(final byte[] duLieu) {
+        try {
+            final DataInputStream d = new DataInputStream(new ByteArrayInputStream(duLieu));
+            final int soAnhNho = d.readByte();
+            if (soAnhNho < 0) {
+                return -1;
+            }
+            d.skipBytes(soAnhNho * 5);
+            final int nframe = d.readShort();
+            if (nframe < 0) {
+                return -1;
+            }
+            for (int i = 0; i < nframe; ++i) {
+                final int npart = d.readByte();
+                if (npart < 0 || d.skipBytes(npart * 7) != npart * 7) {
+                    return -1;
+                }
+            }
+            // Doc not phan duoi de chac chan khong bi cut giua chung.
+            final int lenChuoi = d.readUnsignedByte();
+            d.skipBytes(lenChuoi * 2);
+            d.readByte();
+            for (int i = 0; i < 3; ++i) {
+                final int len = d.readByte();
+                if (len < 0) {
+                    return -1;
+                }
+                d.skipBytes(len);
+            }
+            return nframe;
+        } catch (final Exception e) {
+            return -1;
         }
     }
 
