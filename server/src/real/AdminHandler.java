@@ -6,8 +6,6 @@ package real;
 import real.cmd.LoginHandler;
 import util.Logger;
 import server.TeamServer;
-import data.CharInfo;
-import java.util.Vector;
 import data.Logdata;
 import data.Database;
 import data.NewClan;

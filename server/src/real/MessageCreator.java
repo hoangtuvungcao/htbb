@@ -4,7 +4,6 @@
 package real;
 
 import Constant.Checker;
-import data.TuBinhTemplate;
 import data.FruitTemplate;
 import data.InfoQuestTemplate;
 import server.TeamServer;
@@ -18,9 +17,7 @@ import data.Pet;
 import data.Animal;
 import data.InfoCharPotion;
 import data.GemItem;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Collection;
 import data.CharWeaponData;
 import data.CharData;
 import data.Database;

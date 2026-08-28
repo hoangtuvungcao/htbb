@@ -9,14 +9,12 @@ import data.Database;
 import data.Logdata;
 import data.NewClan;
 import io.Message;
-import io.SessionManager;
 import java.awt.Desktop;
 import java.io.File;
 import java.util.Date;
 import java.util.Random;
 import server.TeamServer;
 import util.Logger;
-import util.Net;
 
 /**
  *

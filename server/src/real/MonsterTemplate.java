@@ -1,6 +1,5 @@
 package real;
 
-import java.util.Arrays;
 
 public class MonsterTemplate {
 

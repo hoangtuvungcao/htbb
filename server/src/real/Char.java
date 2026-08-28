@@ -1,13 +1,10 @@
 
 package real;
 
-import Constant.Checker;
 import Constant.Logger2;
 import ThanKhi.ThanKhiCraftState;
-import com.kpah.ManagerGame;
 import com.kpah.event.TichLuyOnline;
 import com.kpah.runtime.runtimeCharProperties;
-import java.io.DataInputStream;
 import java.util.Set;
 import data.Xoso;
 import data.UserLogger;
@@ -19,7 +16,6 @@ import util.Logger;
 import data.Logdata;
 import io.ThreadPool;
 import java.util.Date;
-import data.ItemQuest;
 import data.Text;
 import server.TeamServer;
 import java.util.Random;
@@ -29,7 +25,6 @@ import java.util.Iterator;
 import io.Message;
 import data.NewClan;
 import java.io.IOException;
-import java.security.PublicKey;
 
 import data.InfoCharPotion;
 import data.DanhHieu;

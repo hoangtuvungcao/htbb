@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Set;
 import real.Char;
 import real.Map;
-import real.MessageCreator;
 import server.TeamServer;
 
 public class DataGame {

@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.sql.ResultSet;
 import java.util.HashSet;
 import java.util.Set;
-import data.Animal;
 import io.Message;
 import io.SessionManager;
 import real.AdminHandler;
@@ -25,10 +24,7 @@ import real.MessageCreator;
 import real.cmd.LoginHandler;
 import real.Char;
 import data.Database;
-import real.Item;
-import javax.swing.table.JTableHeader;
 import real.Map;
-import real.LevelDetail;
 import server.Panel.*;
 
 

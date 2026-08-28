@@ -11,9 +11,6 @@ import data.Database;
 import java.util.Calendar;
 import data.NewClan;
 import real.MapChienTruongMoba;
-import data.Logdata;
-import data.AdvInfo;
-import real.LiveActor;
 import real.Map;
 import data.CharCooking;
 import real.MessageCreator;
@@ -26,7 +23,6 @@ import static real.Char.ID_MAT_NA;
 import static real.Char.getDayTime;
 import real.GemTemplate;
 
-import real.plugins.GiftCode;
 
 public class RequestNPCInfoHandler implements ICommandHandler {
 

@@ -5,9 +5,7 @@
 package real;
 
 import Constant.Logger2;
-import com.kpah.event.TichLuyOnline;
 import data.Animal;
-import data.CharInfo;
 import data.CreateItemTemplate;
 import data.DataGame;
 import data.Database;
@@ -27,20 +25,13 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Vector;
-import static real.Map.ALL_CHAR_BUY_RUONG;
 import static real.Map.ALL_CHAR_VIP;
-import static real.Map.ALL_RUONG_MAY_MAN;
 import static real.Map.ID_GEM_TU_BINH;
-import static real.Map.ID_RUONG_MAY_MAN_TRUNG;
 import static real.Map.ID_THE_MUA_BAN;
 import static real.Map.MAX_VIP1;
 import static real.Map.MAX_VIP2;
-import static real.Map.TYPE_SHOP_NEW_BO_ITEM_VAO_TUI;
-import static real.Map.TYPE_SHOP_NEW_CUA_HANG_VIP;
-import static real.Map.TYPE_SHOP_NEW_TUI_DO;
 import static real.Map.VIP;
 import static real.Map.addXpCharEvent;
-import static real.Map.all_item_shop_special;
 import static real.Map.gemTemplate;
 import static real.Map.idMapSend2Client;
 import static real.Map.itemTemplates;
@@ -59,7 +50,6 @@ import real.cmd.SelectCharHandler;
 import server.ServerController;
 import server.TeamServer;
 import util.Logger;
-import data.NewClan;
 
 /**
  *

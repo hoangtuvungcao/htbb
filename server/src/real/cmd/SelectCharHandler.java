@@ -3,12 +3,10 @@
 // 
 package real.cmd;
 
-import Constant.Checker;
 import com.kpah.event.TichLuyOnline;
 import java.io.IOException;
 import real.Item;
 import real.EffectBuff;
-import real.RegisterAttack;
 import data.Net;
 import real.RealController;
 import real.Map;
@@ -24,7 +22,6 @@ import server.InfoClientConnect;
 import io.Message;
 import io.Session;
 import io.SessionManager;
-import java.io.InputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import static real.cmd.LoginHandler.createMsgLogin;

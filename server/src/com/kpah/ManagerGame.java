@@ -5,7 +5,6 @@
 package com.kpah;
 
 import data.Database;
-import java.util.Hashtable;
 import real.Char;
 import real.Item;
 import real.ItemTemplates;
