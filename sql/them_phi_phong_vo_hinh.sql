@@ -1,5 +1,5 @@
 -- ============================================================================
--- Them vat pham "Phi phong vo hinh" (id 905) de CANH hien duoc o cua so Trang bi
+-- Them vat pham "Phi phong vo hinh" (id 910) de CANH hien duoc o cua so Trang bi
 -- ma khong phai mac mot cai phi phong that.
 --
 -- VI SAO CAN: o xem truoc trong cua so Trang bi ve bang Char.paintAvatar cua
@@ -34,12 +34,12 @@
 -- KHONG CAN SUA JAVA. Nhanh canh trong Char.getIdBigPhiPhong() da tra san anh
 -- canh (map/icon/855..859) tu ban truoc.
 --
--- Chay tren VPS sau khi da day map/ len. Sau do phat vat pham 905 cho nguoi choi
+-- Chay tren VPS sau khi da day map/ len. Sau do phat vat pham 910 cho nguoi choi
 -- (qua Admin Panel hoac cho vao shop).
 -- ============================================================================
 
--- Kiem tra truoc: phai thay 905 CHUA co, va 829 chua vat pham nao dung lam icon.
-SELECT id, name FROM data_item WHERE id = 905;
+-- Kiem tra truoc: phai thay 910 CHUA co, va 829 chua vat pham nao dung lam icon.
+SELECT id, name FROM data_item WHERE id = 910;
 SELECT id, name, xstart FROM data_item WHERE xstart = 829;
 
 -- Cot theo dung thu tu cua bang: id, name, type, style, he, gender, level,

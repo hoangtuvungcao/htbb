@@ -4706,7 +4706,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
         this.charHire = new CharCopy((Session) null);
         final byte[][] idquanao = {{2, 28, 54}, {1, 27, 53}};
         final int gd = gender;
-        this.charHire.setInfoChar(String.valueOf(this.charname) + (this.lvlinh == 64 ? " lan su vu" : " ho ve"), -1, gd + 1, cclass, this.map, 1088, 1008, -100000 + -1 * this.userID, idquanao[gd][0], idquanao[gd][1], -1);
+        // Doc capdo chu KHONG doc this.lvlinh: this.lvlinh chi duoc gan o cuoi ham
+        // nay, nen luc dat ten no van dang giu gia tri cua lan trieu truoc. Lan dau
+        // trieu ho ve lan (capdo 64) thi ten ra "ho ve" thay vi "lan su vu"; phai
+        // dang xuat vao lai moi dung, vi luc do checkCreateCharHire goi lai voi
+        // lvlinh da luu.
+        this.charHire.setInfoChar(String.valueOf(this.charname) + (capdo == 64 ? " lan su vu" : " ho ve"), -1, gd + 1, cclass, this.map, 1088, 1008, -100000 + -1 * this.userID, idquanao[gd][0], idquanao[gd][1], -1);
 
         final int[] idWeapone = {599, 601, 603, 605, 607};
         this.charHire.wItems[0][getIndexItemWearing(3, 0)] = this.genItem(idWeapone[cclass], 0);

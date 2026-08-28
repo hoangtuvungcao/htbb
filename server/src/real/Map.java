@@ -10180,6 +10180,19 @@ public class Map implements Runnable {
                     Database.instance.saveOrtherLog("", player.charname, player.itemLinhDanhThue.getInfoSave(), "hove");
                     player.itemLinhDanhThue = null;
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                    // Ho ve lan (the bai co level 64, tuc "Ho ve lan su tu 6x lv 3")
+                    // cong chi so cho CHINH NGUOI CHOI qua Char.isLinhThueLan():
+                    //   +5% tan cong   LiveActor.getAttack()
+                    //   +5 lua lan     CharChiSo.calculateDefend()
+                    //   +2% sat thuong gay ra / hap thu 3% sat thuong nhan
+                    // Hai muc sau tinh ngay luc danh nen van an. Nhung +5 lua lan
+                    // chi duoc cong khi chay lai calculateDefend, con so tan cong
+                    // hien cho nguoi choi thi di trong goi 3 (MessageCreator ghi
+                    // p.getAttack()). Truoc day cho nay chi gui lai tui do, nen
+                    // trieu ho ve xong nguoi choi khong thay tan cong nhuc nhich
+                    // va cung chua thuc su duoc +5 lua lan.
+                    player.calculateAttrib();
+                    player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                 }
                 else if (idpopup == 121)
                 {
