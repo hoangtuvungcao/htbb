@@ -1155,10 +1155,10 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             p.animalRide.isHoaHinh = 1;
             p.animalRide.timeHoaHinh = System.currentTimeMillis() + (15L * 24L * 60L * 60000L); // 15 days
             Database.instance.saveAnimal(p.animalRide);
-            p.sendMessage(MessageCreator.createServerAlertMessage("Hóa hình thành công ! Vui lòng thoát game vào lại để Hóa hình", ""));
-            
+            p.sendMessage(MessageCreator.createServerAlertMessage("Hóa hình thành công !", ""));
+
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-            p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));
+            veLaiHinhAnhThuCuoi(p);
         } else {
             p.sendMessage(MessageCreator.createServerAlertMessage("Hóa hình thất bại!", ""));
         }
@@ -1172,6 +1172,34 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
     
         p.sendMessage(MessageCreator.createCharGemItem(p));
         Database.instance.saveOrtherLog("", p.charname, "Hoa hinh thu", "hoahinh");
+    }
+
+    /**
+     * Ve lai nhan vat ngay tai cho sau khi hoa hinh, thay vi bat nguoi choi thoat
+     * game vao lai.
+     *
+     * Hinh anh thu cuoi nam trong goi 3 (chinh minh) va goi 5 (nguoi xung quanh):
+     * khi isHoaHinh == 1 thi getIdImageTool() tra 8965/8966 va getIndexDxy() tra 4.
+     * Khung hinh cua hai id do da duoc gui san trong goi 26 luc dang nhap
+     * (map/d_effect/265 va 266 deu nam trong id_eff_tool_ngu_long) nen client ve
+     * duoc ngay, khong can nap them du lieu.
+     *
+     * Bo goi duoi day copy y nguyen tu doRideAnimal - duong da chay tot khi len
+     * xuong linh thu giua game. Dung tu che bo khac.
+     */
+    private static void veLaiHinhAnhThuCuoi(final Char p) {
+        try {
+            p.calculateAttrib();
+            p.sendMessage(MessageCreator.createCharInventoryMessage(p, 2));
+            p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+            p.sendToNearPlayer(MessageCreator.createCharInfo(p));
+            p.sendMessage(MessageCreator.createCharWearingMessage(p, p));
+            p.sendMessage(MessageCreator.createAnimalWearingMessage(p, p));
+            p.sendToNearPlayer(MessageCreator.createAnimalWearingMessage(p, p));
+            MessageCreator.createMsgCharMonster(p, p);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     
