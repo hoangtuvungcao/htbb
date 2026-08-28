@@ -69,3 +69,29 @@ SELECT id, name, type, style, level, xstart, nloan FROM data_item WHERE id = 910
 
 -- Doi chieu voi mot phi phong that de thay khac nhau o dau.
 SELECT id, name, type, style, level, xstart FROM data_item WHERE id IN (584, 910);
+
+-- ============================================================================
+-- PHAT VAT PHAM CHO NGUOI CHOI
+--
+-- Vat pham 910 la do TRANG BI THAT (atb9 = 0), khong phai do thoi trang, nen
+-- nguoi choi mac no nhu mac mot cai phi phong binh thuong: mo Hanh trang, bam
+-- vao mon do, chon "Mac". No vao dung o phi phong.
+--
+-- Cach phat: dung giftcode. Chuoi "ITEM:910:1" chay qua
+-- Char.createItemSoLuong(910, 1, player) (DatabaseGiftCode.java:473), ham nay
+-- tra template tu Map.itemTemplates.get(5) - la ro chua TAT CA vat pham
+-- (DatabaseXepHang.java:577 itemBasic.put cho moi dong) nen id 910 tim thay duoc.
+--
+-- limit_use = so luot con dung duoc. expire = 0 la khong het han.
+-- Doi ten ma 'canhvohinh' thanh gi tuy y truoc khi chay.
+-- ============================================================================
+
+-- Kiem tra truoc: ma nay chua ton tai, va lay id lon nhat dang co.
+SELECT id, giftcode, item, limit_use FROM giftcode WHERE giftcode = 'canhvohinh';
+SELECT MAX(id) AS id_lon_nhat FROM giftcode;
+
+INSERT INTO `giftcode` (`id`, `giftcode`, `xu`, `luong`, `luongLock`, `item`, `expire`, `limit_use`, `type`)
+VALUES (16, 'canhvohinh', 0, 0, 0, 'ITEM:910:1', 0, 99999, 0);
+
+-- Kiem tra lai.
+SELECT id, giftcode, item, limit_use FROM giftcode WHERE giftcode = 'canhvohinh';
