@@ -14,7 +14,7 @@ Chỉ một file: `game/render/screen/ServerListScr.class`. Danh sách server:
 | Cổ Loa | `27.0.12.112` | *(giữ nguyên)* | 19130 |
 | **Thăng Long** | `103.77.167.209` | **`127.0.0.1`** | 19129 |
 | **Hoa Lư** | `103.77.167.209` | **`127.0.0.1`** | 19129 |
-| Kinh Môn → Tiên La | `112.213.94.124` | *(giữ nguyên)* | 19129 |
+| **Kinh Môn → Tiên La** | `112.213.94.124` | **`180.93.37.32`** | 19129 |
 
 → Chọn **Vạn Xuân(mới)** để nối vào VPS thật, **Thăng Long** để thử server chạy
 trên chính máy bạn.
@@ -65,3 +65,46 @@ client 2.7.6 phân tích không nổi, và là chỗ bắt đầu tìm.
 
 Xem thêm [migration-client-276.md](migration-client-276.md) để biết đã kiểm
 chứng được gì và còn gì chưa chắc.
+
+---
+
+## Cập nhật: có HAI server, đó là nguyên nhân "tài khoản bị khoá"
+
+Bản `KPAH_276_TEST.jar` đầu tiên chỉ trỏ về `180.93.57.30` (lấy từ
+`.github/workflows/deploy.yml`), và đăng nhập báo **"Tài khoản của bạn hiện đang
+bị khoá"**.
+
+Truy ra: client **PK Ngũ Đế** đang chơi được nối vào một server **khác** —
+`180.93.37.32`, tên hiển thị "Hùng Vương" (tìm thấy trong `qF.java` của
+`KPAH_PK-ngude.jar`, lớp danh sách server đã bị làm rối tên).
+
+Hai client gửi gói đăng nhập **giống hệt nhau** — đã đối chiếu từng trường:
+
+```
+username, pass, version, platform, client_Provider="0", provider="0",
+agent="0", byte 0, short w, byte vsTile, byte serverIndex
+```
+
+Cả hai đều có `agent.txt` = `0` và `provider.txt` = `0`. Khác biệt duy nhất là
+chuỗi phiên bản: `2.0.9` (Ngũ Đế) vs `2.7.6` — mà không nhánh nào trong
+`LoginHandler` phân biệt hai giá trị đó (cả hai đều vượt mốc `1.8.8` và `2.0.0`).
+
+Nên **không phải lỗi giao thức**: tài khoản có `ban = 1` trên `180.93.57.30`
+nhưng `ban = 0` trên `180.93.37.32`. Hai server, hai CSDL `account` riêng.
+
+### File mới: `KPAH_276_TEST_v2.jar`
+
+| Mục trong game | Trỏ tới | Dùng khi |
+|---|---|---|
+| **Vạn Xuân(mới)** | `180.93.57.30:19129` | server trong `deploy.yml` |
+| **Thăng Long** / **Hoa Lư** | `127.0.0.1:19129` | chạy thử cục bộ |
+| **Kinh Môn → Tiên La** | `180.93.37.32:19129` | **server bạn đang chơi** |
+
+Chọn **Kinh Môn** để thử client 2.7.6 trên đúng server mà tài khoản của bạn
+đang hoạt động.
+
+### Câu hỏi còn bỏ ngỏ
+
+`deploy.yml` đẩy bản build lên `180.93.57.30`, nhưng bạn chơi ở `180.93.37.32`.
+Nếu `180.93.37.32` mới là server thật thì **mọi bản build từ repo này đang được
+đẩy lên sai máy** — cần kiểm tra lại.
