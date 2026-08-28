@@ -650,7 +650,6 @@ public class BossBachXa extends Boss {
             GemItem g = new GemItem(157);
             gem.add(g);
         }
-        gem.add(new GemItem(268));
 
         return gem;
     }

@@ -597,7 +597,6 @@ public class BossThanLan extends Boss {
                 gem.add(g);
             }
 
-            gem.add(new GemItem(268));
 
             GemItem g = new GemItem(178);
             gem.add(g);
@@ -613,7 +612,6 @@ public class BossThanLan extends Boss {
                 gem.add(g);
             }
 
-            gem.add(new GemItem(268));
 
             if (Map.r.nextInt(100) < 3) {
                 gem.add(new GemItem(11));

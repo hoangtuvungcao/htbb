@@ -724,10 +724,6 @@ public class BossSkelonton extends Boss {
             }
     
             gem.add(new GemItem(66));
-            // Thêm item 268 cho boss 94
-            if (this.idTemplate == 94) {
-                gem.add(new GemItem(268));
-            }
         } else {
             for(int i = 0; i < soluong; ++i) {
                 GemItem g = new GemItem(GemTemplate.ID_MATERIAL_LOW[5][Map.r.nextInt(GemTemplate.ID_MATERIAL_LOW[5].length)]);
@@ -736,12 +732,10 @@ public class BossSkelonton extends Boss {
     
             if (this.idTemplate == 113) {
                 gem.add(new GemItem(11));
-                gem.add(new GemItem(268)); // Thêm item 268 cho boss 113
             } else {
                 GemItem gg = new GemItem(GemTemplate.LKD_40);
                 gg.islock = true;
                 gem.add(gg);
-                gem.add(new GemItem(268)); // Thêm item 268 cho boss 115
             }
     
             if (this.idTemplate == 115) {

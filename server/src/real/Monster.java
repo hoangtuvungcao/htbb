@@ -1501,7 +1501,22 @@ public class Monster extends LiveActor {
                         }
                     }
                     GemItem gem4 = null;
-                    final Vector<GemItem> listGem = this.dropListGemItem();
+                    Vector<GemItem> listGem = this.dropListGemItem();
+                    // Moi boss deu roi ngau nhien 1-5 Thuoc hoa hinh (gem 268).
+                    // Dat o day de ap dung chung cho tat ca boss, thay vi khai bao rieng
+                    // trong tung lop BossXxx.
+                    if (this.isBoss) {
+                        if (listGem == null) {
+                            listGem = new Vector<GemItem>();
+                        }
+                        final int soThuocHoaHinh = Map.r.nextInt(5) + 1;
+                        for (int iHH = 0; iHH < soThuocHoaHinh; ++iHH) {
+                            final GemItem thuocHoaHinh = new GemItem(268);
+                            thuocHoaHinh.isBoss = true;
+                            thuocHoaHinh.cat = 6;
+                            listGem.add(thuocHoaHinh);
+                        }
+                    }
                     if (gem4 != null) {
                         listGem.add(gem4);
                     }

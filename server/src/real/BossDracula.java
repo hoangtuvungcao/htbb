@@ -603,10 +603,6 @@ public class BossDracula extends Boss {
            
             gem.add(new GemItem(66));
             
-            // Add guaranteed drop for bosses 116 and 117
-            if (this.idTemplate == 116 || this.idTemplate == 117) {
-                gem.add(new GemItem(268));
-            }
         } else {
             for(int i = 0; i < soluong; ++i) {
                 GemItem g = new GemItem(GemTemplate.ID_MATERIAL_LOW[5][Map.r.nextInt(GemTemplate.ID_MATERIAL_LOW[5].length)]);

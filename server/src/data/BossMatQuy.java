@@ -614,11 +614,6 @@ public class BossMatQuy extends Boss {
         Vector<GemItem> gem = new Vector();
         int soluong = Map.r.nextInt(3) + 1;
     
-        // Add guaranteed drop of item 268
-        GemItem guaranteedItem = new GemItem(268);
-        guaranteedItem.isBoss = true; // Set as boss item like other boss drops
-        guaranteedItem.cat = 6; // Set category like other boss drops
-        gem.add(guaranteedItem);
     
         // Original random drops
         for(int i = 0; i < soluong; ++i) {
