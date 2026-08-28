@@ -10414,11 +10414,67 @@ public int applyRongLonReleaseTo(int baseDamage) {
             id[0] = this.headModel;
         }
         if (this.wModel.matNa != null && this.wModel.hatModel == null) {
-            id[1] = -2;
+            // Truoc day cho -2 = "khong ve non". Nay tro vao mot bo phan non that
+            // (map/c/hat/67..74): tren ban do no trong suot nen khong doi gi, con
+            // o o xem truoc cua so Trang bi thi hien dung hinh mat na. Xem
+            // getIdHatMatNa() de biet vi sao phai lam vong nay.
+            id[1] = (short) this.getIdHatMatNa();
         }
 
 //        Logger2.DebugLogic("id: " + Arrays.toString(id));
         return id;
+    }
+
+    /**
+     * Tra ve so bo phan "non" dung cho mat na dang deo.
+     *
+     * VI SAO CAN: o xem truoc trong cua so Trang bi ve nguoi bang Char.paintAvatar
+     * cua client, ma ham do CHI doc chan / than / dau / non (atb5..atb8) hoac anh
+     * avatar phang. Mat na lai khong nam trong nhom do - no la lop phu dong
+     * (getIdHeadDynamic -> map/d_effect/<n>) va lop phu chi duoc ve boi paintHair,
+     * la ham dung toa do TREN BAN DO. Vi vay mat na chua bao gio hien trong cua so
+     * Trang bi.
+     *
+     * CACH LAM: moi mat na duoc cap mot file bo phan non rieng trong map/c/hat.
+     * File do co hai phan: khung avatar la hinh mat na 18x18 (lay tu chinh icon
+     * cua vat pham), con bon khung theo huong deu tro vao mot o 1x1 TRONG SUOT.
+     * Nho vay tren ban do khong ve them gi (lop phu d_effect van lo hinh mat na
+     * nhu cu), ma trong cua so Trang bi thi paintAvatar ve duoc mat na len mat.
+     *
+     * Tra -2 (nghia cu: khong ve non) neu gap mat na chua co anh.
+     */
+    public int getIdHatMatNa() {
+        if (this.wModel == null || this.wModel.matNa == null) {
+            return -2;
+        }
+        if (this.isTatMatNa()) {
+            return -2;
+        }
+        if (this.wModel.isMatNaBiNgo()) {
+            return 67;
+        }
+        if (this.wModel.isMatNaQuy()) {
+            return 68;
+        }
+        if (this.wModel.isMatNaSoi()) {
+            return 69;
+        }
+        if (this.wModel.isMatNaZoombi()) {
+            return 70;
+        }
+        if (this.wModel.isMatNaPanda()) {
+            return 71;
+        }
+        if (this.wModel.isMatNaCao()) {
+            return 72;
+        }
+        if (this.wModel.isMatNaTho()) {
+            return 73;
+        }
+        if (this.wModel.isMatNaOngDia()) {
+            return 74;
+        }
+        return -2;
     }
 
     public void addKing(final Char p, final int country) {
