@@ -731,17 +731,27 @@ public class DataGame {
 
     }
 
+    /** Id anh da ghi vao log roi - chi de chan doan, moi id ghi mot lan. */
+    private static final java.util.Set<Integer> daXinAnh =
+            java.util.Collections.synchronizedSet(new java.util.HashSet<Integer>());
+
     public static void sendByteImg(Session s, Message msg) {
         short idImg = -1;   // khai bao NGOAI try de catch ben duoi doc duoc
         try {
             idImg = msg.dis.readShort();
 
-            // CHAN DOAN linh thu tool: ghi lai MOI yeu cau anh trong dai thu
-            // cuoi tool (8700-8999) va dai skin (13000+). Log truoc do chi ghi
-            // khi CO LOI nen khong phan biet duoc "khong ai xin" voi "xin va
-            // tra binh thuong" - dung cho can biet nhat.
-            if (idImg >= 8700) {
-                System.out.println("[ANH] client xin anh id " + idImg);
+            // CHAN DOAN linh thu tool: ghi lai MOI id anh client tung xin, moi id
+            // MOT lan (dedupe de khong lam day log - client xin lai lien tuc).
+            //
+            // Truoc do chi ghi dai >= 8700 va thay TRONG TRON, ke ca anh vu khi thoi
+            // trang / toc / ao / phi phong - tat ca deu di chung duong DataSkillEff
+            // .paintTopHorse -> getImgIcon nhu thu cuoi. "Khong xin gi trong dai do"
+            // la mot manh moi manh hon "khong xin 8764": no noi vong ve cac bo phan
+            // dong CHUA BAO GIO chay, chu khong rieng con thu. Ghi ca dai duoi de doi
+            // chieu: client co xin anh nao khong, hay im lang hoan toan.
+            if (daXinAnh.add(Integer.valueOf(idImg))) {
+                System.out.println("[ANH] client xin anh id " + idImg
+                        + (idImg >= 8700 && idImg < 9000 ? "  <= dai bo phan dong (tool)" : ""));
             }
          
         

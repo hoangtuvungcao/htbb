@@ -64,7 +64,15 @@ public final class KiemGoi3Test {
         d.writeBoolean(true);           // ve mu
         d.writeShort(ID_THU);
         d.writeByte(DXY);
-        d.write(new byte[16]);          // phan duoi (vu khi, phi phong...)
+        // Phan duoi, theo dung thu tu server ghi.
+        d.writeShort(8954); d.writeByte(1); d.writeShort(800);   // vu khi thoi trang
+        d.writeShort(8801); d.writeShort(8802); d.writeShort(8803); // toc, ao, quan
+        d.writeByte(2); d.write(new byte[2 * 3]);                // danh hieu
+        d.writeUTF("mayChu");
+        d.writeShort(8810);                                      // phi phong
+        d.writeByte(0); d.writeShort(0);
+        d.writeByte(3); d.writeByte(3);
+        d.writeByte(0); d.writeShort(0); d.writeByte(3);          // ao thoi trang
         d.flush();
         final byte[] than = bos.toByteArray();
 
@@ -80,8 +88,11 @@ public final class KiemGoi3Test {
     public static void chay() {
         Kiem.nhom("KiemGoi3 - may do goi 3");
         try {
-            Kiem.dung("khong co bang -> khop",
-                    KiemGoi3.phanTich(dungGoi(-1, 0, false), ID_THU, DXY).contains("KHOP"));
+            final String khongBang = KiemGoi3.phanTich(dungGoi(-1, 0, false), ID_THU, DXY);
+            Kiem.dung("khong co bang -> khop het, khong thua byte",
+                    khongBang.contains("KHOP het, khong thua byte nao"));
+            Kiem.dung("... va doc dung id vu khi thoi trang", khongBang.contains("vukhi=8954"));
+            Kiem.dung("... va doc dung id phi phong", khongBang.contains("phiphong=8810"));
 
             Kiem.dung("la bang chu (rank 0 + isDel) -> khop",
                     KiemGoi3.phanTich(dungGoi(12, 0, true), ID_THU, DXY).contains("KHOP"));

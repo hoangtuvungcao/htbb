@@ -119,10 +119,39 @@ public final class KiemGoi3 {
               .append(" typehorse=").append(typehorse)
               .append(" (server gui ").append(idMongDoi).append("/").append(dxyMongDoi).append(")");
 
-            if (idhorse == idMongDoi && typehorse == dxyMongDoi) {
-                sb.append(" | KHOP");
-            } else {
+            // Doc not phan duoi. Cac id nay deu di CHUNG duong ve voi thu cuoi
+            // (DataSkillEff -> getImgIcon), nen doi chieu voi log [ANH] se biet duong
+            // do co chay khong, hay chet ca cum chu khong rieng con thu.
+            final int idVuKhi = d.readShort();
+            d.readByte();                        // index toa do vu khi
+            d.readShort();                       // anh lon vu khi
+            final int idToc = d.readShort();
+            final int idAo = d.readShort();
+            final int idQuan = d.readShort();
+            final int soDanhHieu = d.readByte();
+            d.skipBytes(soDanhHieu * 3);
+            d.readUTF();                         // thong tin may chu
+            final int idPhiPhong = d.readShort();
+            d.readByte(); d.readShort();         // index + anh lon phi phong
+            d.readByte(); d.readByte();          // so khung vu khi / phi phong
+            d.readByte(); d.readShort(); d.readByte();  // ao thoi trang
+            sb.append(" vukhi=").append(idVuKhi)
+              .append(" toc=").append(idToc)
+              .append(" ao=").append(idAo)
+              .append(" quan=").append(idQuan)
+              .append(" phiphong=").append(idPhiPhong);
+
+            final int con = d.available();
+            if (con != 0) {
+                sb.append(" thua=").append(con).append("B");
+            }
+
+            if (idhorse != idMongDoi || typehorse != dxyMongDoi) {
                 sb.append(" | LECH - client KHONG ve duoc linh thu");
+            } else if (con != 0) {
+                sb.append(" | id thu cuoi dung nhung doc xong con thua byte");
+            } else {
+                sb.append(" | KHOP het, khong thua byte nao");
             }
             return sb.toString();
         } catch (final Exception e) {
