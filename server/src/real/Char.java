@@ -772,9 +772,16 @@ public class Char extends LiveActor {
         //   1 = Huyen Vu / Bong da / phi phong tim (anh 65 rong -> -32)
         //   2 = CANH. Truoc day la (60,-58), mot cap so khong ai dung: khong nhanh
         //       nao trong getIdBigPhiPhong() tra a[2] = 2, va dx duong 60 thi ve
-        //       han ra ngoai nguoi. Nay dung cho nam bo canh, anh 96x66 moi khung
-        //       nen -47 la giua, -71 dat canh vao sau than.
-        Char.Dx_Dy_PP_tool = new byte[][]{{-26, -32, -47}, {-58, -58, -71}};
+        //       han ra ngoai nguoi. Nay dung cho nam bo canh, anh 66x50 moi khung
+        //       nen -32 la giua, -63 dat canh vao sau than.
+        //       BE NGANG 66 KHONG PHAI CHON BUA. Khung cua so Trang bi ve DE LEN
+        //       nhan vat (WindowInfoScr.paintCharWearing ve nguoi truoc roi moi
+        //       drawImage(Res.imgInfoWindow[0])), va lo trong suot cua khung do -
+        //       file inv_0.png 117x104 trong /main.sh, giai ma XOR khoa
+        //       "NguyenVanMinh" - chi trong suot tu x 25 den x 91. Nguoi ve o
+        //       x = 58 nen canh chi duoc rong 67 diem. Ban dau lam anh 96 rong
+        //       thi khung an mat khoang 20 diem dau canh moi ben.
+        Char.Dx_Dy_PP_tool = new byte[][]{{-26, -32, -32}, {-58, -58, -63}};
 
         Char.Dx_Dy_AVT_tool = new byte[][]{
             {-44, -18, -44, -18, -18, -44, -44, -25, -20, -21, -20, -26, -28, -28,-22,-32},
