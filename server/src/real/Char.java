@@ -10418,7 +10418,19 @@ public int applyRongLonReleaseTo(int baseDamage) {
             // (map/c/hat/67..74): tren ban do no trong suot nen khong doi gi, con
             // o o xem truoc cua so Trang bi thi hien dung hinh mat na. Xem
             // getIdHatMatNa() de biet vi sao phai lam vong nay.
-            id[1] = (short) this.getIdHatMatNa();
+            final int idNonMatNa = this.getIdHatMatNa();
+            id[1] = (short) idNonMatNa;
+            if (idNonMatNa != -2) {
+                // UU TIEN MAT NA hon dau thoi trang.
+                // Vi du "Dau bi ngo" (vat pham 577) la bo phan dau 26: khung avatar
+                // 22x20 dat o (-11,-62), trong khi mat na la 24x24 o (-11,-68).
+                // Lech 6 diem nen phan duoi cua dau bi ngo thoi ra khoi mat na o
+                // cua so Trang bi. Bo dau thoi trang di thi con dau goc, ma dau goc
+                // co day mat nam quanh -44 nen mat na trum vua khit.
+                // Tren ban do khong anh huong: lop phu mat na (~20x20) von da che
+                // kin bo phan dau (~15x16) roi.
+                id[0] = -1;
+            }
         }
 
 //        Logger2.DebugLogic("id: " + Arrays.toString(id));
