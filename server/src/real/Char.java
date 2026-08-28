@@ -10218,6 +10218,41 @@ public int applyRongLonReleaseTo(int baseDamage) {
             a[1] = 4;
             a[2] = 2;
         }
+        // Nhom Nghe Thuong. Anh avatar 717-721 da co san trong map/icon, chua ai dung.
+        // Ghep bang cach doi chieu voi sprite d_effect cua tung bo (KHONG dung icon
+        // 18x18 - icon ve bang palette khac nen doi chieu ra sai):
+        //   797 Nghe Thuong -> 718  vay hong canh sen, toc cam cai hoa hong
+        //   798 Ngoc Nu     -> 719  ao xanh ngoc, toc vang kim
+        //   799 Xich Cuoc   -> 720  giap vang kim vien navy, toc do dung nhu lua
+        //   800 Kim Dong    -> 721  ao xanh duong, toc DEN + vuong mien bac
+        //   801 Loi Cong    -> 717  CO TRAN (than mau da), quan trang-tim vien vang
+        // Cac muc isCaiTaoSonTinh/isCaiTaoMiNuong o tren van thang khi CaiTao > 0,
+        // nen ban cai tao giu avatar rieng 831/833 - dung nhu truoc.
+        else if (this.wModel.isNgheThuong()) {
+            a[0] = 718;
+            a[1] = 14;   // dx=-22 dy=-75, khung 43x74
+            a[2] = 3;
+        }
+        else if (this.wModel.isNgocNu()) {
+            a[0] = 719;
+            a[1] = 7;    // dx=-25 dy=-69, khung 45x68
+            a[2] = 3;
+        }
+        else if (this.wModel.isXichCuoc()) {
+            a[0] = 720;
+            a[1] = 11;   // dx=-26 dy=-69, khung 49x72
+            a[2] = 2;
+        }
+        else if (this.wModel.isKimDong()) {
+            a[0] = 721;
+            a[1] = 14;   // dx=-22 dy=-75, khung 52x76
+            a[2] = 2;
+        }
+        else if (this.wModel.isLoiCong()) {
+            a[0] = 717;
+            a[1] = 7;    // dx=-25 dy=-69, khung 45x67
+            a[2] = 3;
+        }
 
         return a;
     }
