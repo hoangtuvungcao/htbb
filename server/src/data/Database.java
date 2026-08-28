@@ -147,7 +147,7 @@ public class Database {
             e.printStackTrace();
         } finally {
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -186,7 +186,7 @@ public class Database {
             e.printStackTrace();
         } finally {
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -282,7 +282,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -321,7 +321,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -380,7 +380,7 @@ public class Database {
             e.printStackTrace();
         } finally {
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -509,7 +509,7 @@ public class Database {
             e.printStackTrace();
         } finally {
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -786,7 +786,7 @@ public class Database {
             e.printStackTrace();
         } finally {
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -869,7 +869,7 @@ public class Database {
             e.printStackTrace();
         } finally {
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -909,7 +909,7 @@ public class Database {
             e.printStackTrace();
         } finally {
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -1270,7 +1270,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -1310,7 +1310,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -1351,7 +1351,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -1390,7 +1390,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -1489,7 +1489,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -1529,7 +1529,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -1571,7 +1571,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -1610,7 +1610,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -1649,7 +1649,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -3954,7 +3954,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -3992,7 +3992,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -5040,7 +5040,7 @@ public class Database {
                 } catch (Exception ignored) {
                 }
                 try {
-                    rs.close();
+                    if (rs != null) { rs.close(); }
                 } catch (Exception ignored) {
                 }
             }
@@ -5505,7 +5505,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
         }
@@ -6344,7 +6344,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -7171,7 +7171,7 @@ public class Database {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -8663,7 +8663,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -8703,7 +8703,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -8749,7 +8749,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -8970,7 +8970,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9071,7 +9071,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9204,7 +9204,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9232,7 +9232,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9260,7 +9260,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9330,7 +9330,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9369,7 +9369,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9495,7 +9495,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9542,7 +9542,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9589,7 +9589,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9628,7 +9628,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9667,7 +9667,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9706,7 +9706,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9748,7 +9748,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9790,7 +9790,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9832,7 +9832,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -9886,7 +9886,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -10521,7 +10521,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -11738,7 +11738,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {
@@ -11810,7 +11810,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
         }
@@ -11850,7 +11850,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
         }
@@ -12357,7 +12357,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             } catch (Exception ignored) {
             }
             try {
-                rs.close();
+                if (rs != null) { rs.close(); }
             } catch (Exception ignored) {
             }
             try {

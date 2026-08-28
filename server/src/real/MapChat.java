@@ -16,7 +16,6 @@ import java.util.Vector;
 import real.cmd.LoginHandler;
 import server.TeamServer;
 import util.Logger;
-import data.NewClan;
 
 /**
  * Than cua Map.doChat - xu ly tin nhan chat cua nguoi choi, gom ca cac lenh
@@ -45,7 +44,6 @@ import static real.Map.event;
 import static real.Map.getLogVantieu;
 import static real.Map.giveSpecialItem;
 import static real.Map.hourGiveLixi;
-import static real.Map.idClanTown;
 import static real.Map.indexPet;
 import static real.Map.isItemThanThu;
 import static real.Map.isThamDinh;
@@ -59,11 +57,8 @@ import static real.Map.monsterTemplates;
 import static real.Map.nPhuongHoang;
 import static real.Map.okChedo;
 import static real.Map.onOffSound;
-import static real.Map.openLog;
 import static real.Map.openvantieu;
-import static real.Map.r;
 import static real.Map.resetShield;
-import static real.Map.sendAllCharServer;
 import static real.Map.testMove;
 import static real.Map.timeEventMonster;
 import static real.Map.timeWait;

@@ -9,7 +9,6 @@ import real.CharManager;
 import java.io.IOException;
 import java.io.DataInputStream;
 import java.util.Date;
-import data.Net;
 import io.LogInController;
 import server.InfoClientConnect;
 import real.MessageCreator;

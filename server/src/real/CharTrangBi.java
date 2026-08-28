@@ -8,8 +8,6 @@ import io.Message;
 import data.ItemLuckyDraw;
 import data.ModelWearing;
 import java.util.Vector;
-import static real.Map.itemTemplates;
-import real.plugins.*;
 
 /**
  * Than cac method quan ly trang bi va hanh trang cua Char: mac/thao trang bi,

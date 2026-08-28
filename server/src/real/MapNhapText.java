@@ -11,7 +11,6 @@ import java.util.Vector;
 import real.cmd.CreateCharHandler;
 import real.cmd.LoginHandler;
 import server.TeamServer;
-import data.NewClan;
 
 /**
  * Than cua Map.doProcessInputText - xu ly chuoi nguoi choi go vao o nhap

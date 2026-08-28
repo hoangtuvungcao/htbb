@@ -12,7 +12,6 @@ import java.io.IOException;
 import data.CharInfo;
 import data.Pet;
 import java.util.Vector;
-import real.plugins.*;
 
 /**
  * Than cac method cap nhat trang thai va di chuyen cua Char: vong cap nhat

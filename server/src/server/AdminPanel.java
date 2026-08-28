@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.sql.ResultSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +23,6 @@ import real.MessageCreator;
 import real.cmd.LoginHandler;
 import real.Char;
 import data.Database;
-import real.Map;
 import server.Panel.*;
 
 

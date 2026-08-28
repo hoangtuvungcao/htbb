@@ -6,7 +6,6 @@ import real.Map;
 import real.*;
 import server.TeamServer;
 import util.Logger;
-import java.io.*;
 import java.sql.*;
 
 import java.util.Date;
@@ -113,7 +112,7 @@ class DatabaseNhanVat {
                 }
             }
             try {
-                rsItem.close();
+                if (rsItem != null) { rsItem.close(); }
             } catch (Exception ignored) {
             }
             try {

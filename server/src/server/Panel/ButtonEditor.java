@@ -13,7 +13,6 @@ import io.Message;
 import real.Map;
 import real.cmd.LoginHandler;
 import data.Animal;
-import data.Pet;
 import real.Item;
 import javax.swing.table.JTableHeader;
 import data.Database;

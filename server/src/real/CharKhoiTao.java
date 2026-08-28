@@ -18,7 +18,6 @@ import data.Animal;
 import io.Session;
 import data.Veso;
 import java.util.Vector;
-import real.plugins.*;
 
 /**
  * Than constructor cua Char (413 dong): khoi tao toan bo truong cua nhan vat

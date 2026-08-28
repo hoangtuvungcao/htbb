@@ -3,7 +3,6 @@ package real;
 
 import Constant.Checker;
 import data.InfoQuestTemplate;
-import util.Logger;
 import java.util.Date;
 import server.TeamServer;
 import data.Database;
@@ -14,11 +13,8 @@ import java.io.IOException;
 import data.TuBinhTemplate;
 import data.FruitTemplate;
 import data.ModelWearing;
-import data.CharThanthu;
 import data.Animal;
 import java.util.Vector;
-import static real.Map.itemTemplates;
-import real.plugins.*;
 
 /**
  * Than cua Char.initInfoFromDB va Char.initPinfo - nap toan bo du lieu nhan

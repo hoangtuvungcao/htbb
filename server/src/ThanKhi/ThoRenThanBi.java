@@ -11,7 +11,6 @@ import real.Char;
 import real.Item;
 import real.ItemTemplates;
 import real.Map;
-import static real.Map.TYPE_NANG_CAP_THAN_KHI;
 import static real.Map.itemTemplates;
 import real.MessageCreator;
 

@@ -8,7 +8,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Vector;
 import server.TeamServer;
-import data.NewClan;
 
 /**
  * Than cua ba method danh nhau cua Map: doAttackPlayer (danh nguoi choi),

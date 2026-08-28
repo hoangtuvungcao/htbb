@@ -15,7 +15,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 import real.cmd.LoginHandler;
 import server.TeamServer;
-import data.NewClan;
 
 /**
  * Than cac method xu ly lenh va dieu huong cua Map: dinh tuyen goi tin tu

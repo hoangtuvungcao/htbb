@@ -5,7 +5,6 @@ import data.CharCooking;
 import data.CharInfo;
 import data.Database;
 import data.ItemLuckyDraw;
-import data.Pet;
 import io.Message;
 import java.io.IOException;
 import java.util.Hashtable;

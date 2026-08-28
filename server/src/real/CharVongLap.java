@@ -1,7 +1,6 @@
 package real;
 
 
-import java.util.Set;
 import io.ThreadPool;
 import java.util.Date;
 import data.Text;
@@ -17,8 +16,6 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import data.Animal;
 import java.util.Vector;
-import static real.Map.itemTemplates;
-import real.plugins.*;
 
 /**
  * Than cac method nang cua Char: vong cap nhat chinh (update), thong tin hien

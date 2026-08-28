@@ -44,8 +44,6 @@ import java.util.Vector;
 import real.cmd.LoginHandler;
 import real.cmd.RequestNPCInfoHandler;
 import server.TeamServer;
-import util.Logger;
-import data.NewClan;
 import ThanKhi.ThoRenThanBi;
 
 

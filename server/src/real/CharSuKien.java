@@ -2,7 +2,6 @@ package real;
 
 
 import com.kpah.ManagerGame;
-import java.util.Set;
 import util.Logger;
 import server.TeamServer;
 import data.Database;
@@ -13,7 +12,6 @@ import java.io.IOException;
 import data.ItemLuckyDraw;
 import java.util.Hashtable;
 import data.Animal;
-import static real.Map.itemTemplates;
 import real.plugins.*;
 
 /**

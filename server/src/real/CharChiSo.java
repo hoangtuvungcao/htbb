@@ -9,7 +9,6 @@ import data.TuBinhTemplate;
 import data.Pet;
 import data.Animal;
 import java.util.Vector;
-import real.plugins.*;
 
 /**
  * Than cac method tinh chi so chien dau cua Char: sat thuong, phong thu,

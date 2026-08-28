@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Vector;
 import real.cmd.CreateCharHandler;
-import data.NewClan;
 
 
 /**
