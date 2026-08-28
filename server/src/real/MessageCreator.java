@@ -499,7 +499,11 @@ public class MessageCreator {
                 // 255. Vuot qua la so bi cat cut, client doc lech va ca goi hong ->
                 // moi nguoi choi thay hanh trang rong. Cat bot va bao thay vi de hong.
                 // Cat tu CUOI, ma skin da xep len dau nen skin khong bao gio bi cat.
-                while (idCoDuLieu.size() > 255) {
+                // Chi client CU (<2.7) moi doc truong dem bang byte nen bi tran 255.
+
+                // Client 2.7+ doc bang short -> gui du, khong cat.
+
+                while (!demBangShort && idCoDuLieu.size() > 255) {
                     System.out.println("CANH BAO: goi 26 co " + idCoDuLieu.size()
                             + " hieu ung, vuot tran 255. Bo bot id "
                             + idCoDuLieu.get(idCoDuLieu.size() - 1)[0]
