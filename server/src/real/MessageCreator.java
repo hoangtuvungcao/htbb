@@ -2096,6 +2096,9 @@ public class MessageCreator {
         }
         m.dos.writeShort(idThutool);
         m.dos.writeByte(indexdxy);
+        // Giu lai de doi chieu o cuoi ham: indexdxy bi dung lai cho phi phong o duoi.
+        final int idThutoolDaGui = idThutool;
+        final int indexdxyDaGui = indexdxy;
 
         final int[] infovktt = p.getInfoVukhiThoiTrang();
         
@@ -2158,6 +2161,14 @@ public class MessageCreator {
         m.dos.writeByte(indexdxy);
         m.dos.writeShort(idBig);
         m.dos.writeByte(a[2]);
+        // Tu doc lai goi vua dung bang dung trinh tu client 2.7.6 va so id thu cuoi
+        // client thuc su lay duoc voi id minh vua ghi. Chi lam khi dang cuoi thu.
+        if (p.animalRide != null) {
+            try {
+                KiemGoi3.kiem(m.toByteArray(), p.charname, idThutoolDaGui, indexdxyDaGui);
+            } catch (final Exception ex) {
+            }
+        }
         return m;
     }
 
