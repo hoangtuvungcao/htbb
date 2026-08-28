@@ -732,8 +732,9 @@ public class DataGame {
     }
 
     public static void sendByteImg(Session s, Message msg) {
+        short idImg = -1;   // khai bao NGOAI try de catch ben duoi doc duoc
         try {
-            short idImg = msg.dis.readShort();
+            idImg = msg.dis.readShort();
          
         
             Message m = new Message(-51);
@@ -795,11 +796,18 @@ public class DataGame {
                 if (anh != null) {
                     m.dos.write(anh);
                 }
+            } else {
+                // Id khong khop DAI NAO: goi tin gui di chi co id, KHONG co anh.
+                // Client nhan anh rong -> ve sai ma khong bao gi. Ghi log de thay.
+                System.out.println("[ANH] id " + idImg + " khong thuoc dai nao - gui goi RONG");
             }
 
             s.sendMessage(m);
         } catch (Exception var4) {
-//            var4.printStackTrace();
+            // Truoc day dong nay bi comment nen MOI loi phuc vu anh deu im lang -
+            // khong the chan doan duoc gi. Bat lai, in kem id de biet anh nao hong.
+            System.out.println("[ANH] LOI phuc vu anh id " + idImg + ": " + var4);
+            var4.printStackTrace();
         }
 
     }
