@@ -267,6 +267,25 @@ public class ModelWearing {
         return this.itemModel != null && (this.itemModel.getTemplate().id == 789 || this.itemModel.getTemplate().id == 792);
     }
 
+    // Bon bo bong da co BON bo sprite khac nhau (ao do / trang / cam / do-trang
+    // soc), nen phai tach tung id. Hai ham gop ben tren khong phan biet duoc
+    // 788 voi 791, 789 voi 792.
+    public boolean isBongDaNamAoDo() {
+        return this.itemModel != null && this.itemModel.getTemplate().id == 788;
+    }
+
+    public boolean isBongDaNuAoTrang() {
+        return this.itemModel != null && this.itemModel.getTemplate().id == 789;
+    }
+
+    public boolean isBongDaNamAoCam() {
+        return this.itemModel != null && this.itemModel.getTemplate().id == 791;
+    }
+
+    public boolean isBongDaNuAoSoc() {
+        return this.itemModel != null && this.itemModel.getTemplate().id == 792;
+    }
+
     public boolean isMatna() {
         return this.isMatNaBiNgo() || this.isMatNaPanda() || this.isMatNaQuy() || this.isMatNaSoi() || this.isMatNaZoombi()
                 || this.isMatNaTho()

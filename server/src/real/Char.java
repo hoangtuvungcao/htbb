@@ -6385,9 +6385,18 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (this.wModel.isBaThienHoNu()) {
             return 8700 + 192;
         }
-        // TAM THOI dung chung so voi Au Co (117) - xem ghi chu o getIdHeadDynamic().
-        if (this.wModel.isBongDaNam() || this.wModel.isBongDaNu()) {
-            return 8700 + 117;
+        // Bon bo bong da - than ao. Xem bang o getIdHeadDynamic().
+        if (this.wModel.isBongDaNamAoDo()) {
+            return 8700 + 154;
+        }
+        if (this.wModel.isBongDaNuAoTrang()) {
+            return 8700 + 157;
+        }
+        if (this.wModel.isBongDaNamAoCam()) {
+            return 8700 + 161;
+        }
+        if (this.wModel.isBongDaNuAoSoc()) {
+            return 8700 + 164;
         }
          if (this.wModel.isAonoelNam2024()) {
             return 8700 + 263;
@@ -6472,9 +6481,18 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (this.wModel.isBaThienHoNu()) {
             return 8700 + 193;
         }
-        // TAM THOI dung chung so voi Au Co (118) - xem ghi chu o getIdHeadDynamic().
-        if (this.wModel.isBongDaNam() || this.wModel.isBongDaNu()) {
-            return 8700 + 118;
+        // Bon bo bong da - quan. Xem bang o getIdHeadDynamic().
+        if (this.wModel.isBongDaNamAoDo()) {
+            return 8700 + 155;
+        }
+        if (this.wModel.isBongDaNuAoTrang()) {
+            return 8700 + 158;
+        }
+        if (this.wModel.isBongDaNamAoCam()) {
+            return 8700 + 162;
+        }
+        if (this.wModel.isBongDaNuAoSoc()) {
+            return 8700 + 165;
         }
         if (this.wModel.isAonoelNam2024()) {
             return 8700 + 261;

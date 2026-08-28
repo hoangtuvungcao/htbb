@@ -766,12 +766,23 @@ class CharVongLap {
         if (self.wModel.isBaThienHoNu()) {
             return 8700 + 191;
         }
-        // TAM THOI dung chung so voi Au Co (116) - CHUA CO SPRITE that cho bo Bong
-        // da (item 788/789/791/792), se hien NHAM hinh Au Co. Da tim ca hai project
-        // bang cach doi chieu bang mau cua icon 699/700/702/704: khong co file nao
-        // khop. Doi lai so dung khi co anh.
-        if (self.wModel.isBongDaNam() || self.wModel.isBongDaNu()) {
-            return 8700 + 116;
+        // Bon bo bong da, moi bo mot bo sprite rieng, ba so lien nhau theo thu tu
+        // head / body / leg:
+        //   788 nam ao do          153 / 154 / 155
+        //   789 nu  ao trang       156 / 157 / 158
+        //   791 nam ao cam         160 / 161 / 162
+        //   792 nu  ao do-trang soc 163 / 164 / 165
+        if (self.wModel.isBongDaNamAoDo()) {
+            return 8700 + 153;
+        }
+        if (self.wModel.isBongDaNuAoTrang()) {
+            return 8700 + 156;
+        }
+        if (self.wModel.isBongDaNamAoCam()) {
+            return 8700 + 160;
+        }
+        if (self.wModel.isBongDaNuAoSoc()) {
+            return 8700 + 163;
         }
         if (self.wModel.isAonoelNam2024()) {
             return 8700 + 262;
