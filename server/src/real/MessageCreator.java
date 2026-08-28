@@ -1663,6 +1663,8 @@ public class MessageCreator {
 
      public static Message createCharInfo(final Char ch) {
         final Message m = new Message(5);
+        int idThutoolDaGui = -1;
+        int indexdxyDaGui = -1;
         try {
             m.dos.writeShort(ch.id);
             final String name = ch.getName();
@@ -1795,6 +1797,9 @@ public class MessageCreator {
             }
             m.dos.writeShort(idThutool);
             m.dos.writeByte(indexdxy);
+            // Giu lai de doi chieu o cuoi ham: indexdxy bi dung lai cho phi phong o duoi.
+            idThutoolDaGui = idThutool;
+            indexdxyDaGui = indexdxy;
             final int[] infovktt = ch.getInfoVukhiThoiTrang();
             int idVKTool = infovktt[0]; // Khởi tạo giá trị mặc định
             indexdxy = infovktt[1];
@@ -1849,6 +1854,14 @@ public class MessageCreator {
             e.printStackTrace();
             Logger.logError(e);
             m.cleanup();
+        }
+        // Tu doc lai goi vua dung bang trinh tu client 2.7.6. Goi nay la duong duy
+        // nhat con lai co the ghi de idhorse sau khi goi 3 da dat dung.
+        if (ch.animalRide != null) {
+            try {
+                KiemGoi5.kiem(m.toByteArray(), ch.charname, idThutoolDaGui, indexdxyDaGui);
+            } catch (final Exception ex) {
+            }
         }
         return m;
     }

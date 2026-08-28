@@ -119,6 +119,12 @@ public final class KiemGoi3 {
               .append(" typehorse=").append(typehorse)
               .append(" (server gui ").append(idMongDoi).append("/").append(dxyMongDoi).append(")");
 
+            // Ket luan ve con thu phai duoc gan NGAY, truoc khi doc phan duoi - phan
+            // duoi cung se dut neu da lech, va khi do van phai noi duoc la lech.
+            final boolean thuCuoiDung = (idhorse == idMongDoi && typehorse == dxyMongDoi);
+            if (!thuCuoiDung) {
+                sb.append(" | LECH - client KHONG ve duoc linh thu");
+            }
             // Doc not phan duoi. Cac id nay deu di CHUNG duong ve voi thu cuoi
             // (DataSkillEff -> getImgIcon), nen doi chieu voi log [ANH] se biet duong
             // do co chay khong, hay chet ca cum chu khong rieng con thu.
@@ -144,13 +150,10 @@ public final class KiemGoi3 {
             final int con = d.available();
             if (con != 0) {
                 sb.append(" thua=").append(con).append("B");
-            }
-
-            if (idhorse != idMongDoi || typehorse != dxyMongDoi) {
-                sb.append(" | LECH - client KHONG ve duoc linh thu");
-            } else if (con != 0) {
-                sb.append(" | id thu cuoi dung nhung doc xong con thua byte");
-            } else {
+                if (thuCuoiDung) {
+                    sb.append(" | id thu cuoi dung nhung doc xong con thua byte");
+                }
+            } else if (thuCuoiDung) {
                 sb.append(" | KHOP het, khong thua byte nao");
             }
             return sb.toString();
