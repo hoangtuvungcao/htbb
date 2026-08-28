@@ -735,6 +735,14 @@ public class DataGame {
         short idImg = -1;   // khai bao NGOAI try de catch ben duoi doc duoc
         try {
             idImg = msg.dis.readShort();
+
+            // CHAN DOAN linh thu tool: ghi lai MOI yeu cau anh trong dai thu
+            // cuoi tool (8700-8999) va dai skin (13000+). Log truoc do chi ghi
+            // khi CO LOI nen khong phan biet duoc "khong ai xin" voi "xin va
+            // tra binh thuong" - dung cho can biet nhat.
+            if (idImg >= 8700) {
+                System.out.println("[ANH] client xin anh id " + idImg);
+            }
          
         
             Message m = new Message(-51);

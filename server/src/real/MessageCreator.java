@@ -2076,6 +2076,12 @@ public class MessageCreator {
                 indexdxy = SkinLinhThu.INDEX_DXY;
             }
         }
+        // CHAN DOAN linh thu: ghi lai server bao client ve anh nao. Doi chieu voi
+        // dong "[ANH] client xin anh id ..." de biet client co di xin anh do khong.
+        if (p.animalRide != null) {
+            System.out.println("[THU] " + p.charname + " cuoi idImg=" + p.animalRide.idImg
+                    + " -> idThutool=" + idThutool + " indexdxy=" + indexdxy);
+        }
         m.dos.writeShort(idThutool);
         m.dos.writeByte(indexdxy);
 
