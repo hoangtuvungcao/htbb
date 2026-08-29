@@ -259,12 +259,16 @@ public final class KiemClientUnity {
         Kiem.dung("ham dung goi coChuTheoId, khong dat cung mot hang so",
                 font.contains("coChu = coChuTheoId(id)"));
 
-        // Mau chu trang: font mac dinh cua Unity khu rang cua nen trang tinh bi choi mat
-        // tren nen ban do nhieu mau. Dung mot hang co ten de doi mot cho la doi ca game.
-        Kiem.dung("co hang mau trang diu", font.contains("public static Color TRANG_DIU"));
-        Kiem.sai("KHONG con dung thang Color.white cho mau chu",
-                font.contains("Color.white"));
-        // Con dung nguyen Color.black / Color.red ... la binh thuong: chi mau trang bi choi.
+        // Mau chu trang phai di qua MOT hang co ten, de doi mot lan la doi ca game.
+        // Da thu mau nga vang cho do choi nhung nhin kho hon tren nen ban do, nen quay
+        // lai trang tinh - gia tri thi doi duoc, cho dat thi phai giu mot cho.
+        Kiem.dung("co hang mau trang", font.contains("public static Color MAU_TRANG"));
+        Kiem.bang("Color.white chi xuat hien dung mot lan, o dong dinh nghia hang",
+                1, dem(font, "Color.white"));
+        Kiem.dung("dong duy nhat do chinh la dinh nghia hang",
+                font.contains("MAU_TRANG = Color.white"));
+        // Con dung nguyen Color.black / Color.red ... la binh thuong: chi mau trang moi
+        // duoc gom ve mot cho vi no la mau duy nhat phai chinh di chinh lai.
         Kiem.dung("cac mau khac van giu nguyen", font.contains("Color.black"));
 
         // DIEM MAU CHOT: ve mot co ma DO mot co khac thi moi phep can le va ngat dong
