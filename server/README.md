@@ -86,47 +86,78 @@ giữa lúc chơi nếu có đoạn nào gọi tới.
 
 `Net.cs` còn dùng `WWW` (đã lỗi thời nhưng vẫn chạy) — để nguyên cho đỡ rủi ro.
 
-### Tài nguyên game: còn thiếu 62 mục
+### Tài nguyên game: 93/108, còn thiếu 15
 
-`tools/ChuyenTaiNguyen.java` dựng `Assets/Resources/res/` từ client J2ME. Nó xử lý hai
+`tools/ChuyenTaiNguyen.java` dựng `Assets/Resources/res/` từ client J2ME. Nó xử lý ba
 khác biệt về đóng gói:
 
 - Unity chỉ nhận file làm `TextAsset` khi đuôi là `.bytes`, và tra cứu bằng đường dẫn
   **không có đuôi** → `res/logo` phải là `Assets/Resources/res/logo.bytes`.
-- Nhiều ảnh Unity nạp lẻ (ví dụ `res/bar`) lại nằm **bên trong** gói `.sh` của bản J2ME
+- Nhiều ảnh Unity nạp lẻ (ví dụ `res/bar`) lại nằm **bên trong** gói của bản J2ME
   (định dạng `FilePack`, XOR với khoá `NguyenVanMinh`) → công cụ giải gói để lấy ra.
+- Bản Unity nạp vài gói (`other`, `items`) mà bản J2ME không có → công cụ **tự dựng**
+  gói thay thế, xem phần dưới.
 
-Kết quả thật: **46/108** tài nguyên khôi phục được, **62 thiếu** — chủ yếu `newEf/42..72`
-(31 file hiệu ứng), `c/hat/`, `c/coat/`, các gói `items`/`other`/`body`/`head`/`leg`.
-Lý do: bản Unity dùng bộ tài nguyên **mới hơn** bản J2ME 2.7.6.
+Bản Unity dùng bộ tài nguyên **mới hơn** bản J2ME 2.7.6, nên 15 mục vẫn thiếu hẳn —
+chủ yếu `c/hat/`, `c/coat/`, `body`/`head`/`leg`/`hat`.
 
-#### ⛔ Hệ quả: build ra được, nhưng **chưa chạy được**
-
-Đây là kết quả đo thật, không phải suy đoán. Chạy bản `.exe` với
-`-batchmode -nographics` rồi đọc nhật ký:
-
-```
-Thieu tai nguyen: res/other
-NullReferenceException  at Res.loadRes ()   <- Res.cs:423
-```
-
-[Res.cs:423](ClientUnity/Assets/Scripts/Game/Res.cs#L423) gọi `imgBgPopup.getWidth()`
-ngay sau khi nạp gói `other`. Gói thiếu → ảnh `null` → ngoại lệ. Và vì `loadRes()` được
-gọi từ `Main.FixedUpdate()` nên lỗi lặp lại **30 lần mỗi giây** (đo được 1475 lần trong
-30 giây).
-
-**Gói `other` và `items` là bắt buộc.** Chặn null từng chỗ chỉ đẩy lỗi sang chỗ kế tiếp —
-hàng chục chỗ trong `loadRes()` cùng kiểu. Cách duy nhất là có đúng bộ tài nguyên:
-xin `Assets/Resources/res/` của **dự án Unity gốc**. Không có đường vòng.
-
-Đã sửa hai chỗ để lỗi *nhìn thấy được* thay vì mù (không phải để khắc phục):
-`DataInputStream.moNeuCo()` báo rõ `Thieu tai nguyen: <tên>` thay vì ném ngoại lệ trong
-hàm dựng, và `FilePack.getImg()` kiểm `instance` null. Nhờ đó `FilePack` chạy được đúng
-nhánh `if (file == null)` mà **chính tác giả gốc đã viết sẵn** nhưng không bao giờ tới được.
+> **Khoá `NguyenVanMinh`** là khoá XOR 13 byte của định dạng `FilePack` — tên người viết
+> công cụ đóng gói gốc. Trong mã C# nó bị giấu thành mảng số (`78, 103, 117, ...`) nên
+> `grep` không thấy. Nó lại **hiện nguyên chữ** bên trong các tệp `.sh`: chỗ nào dữ liệu
+> gốc có 13 byte 0 liên tiếp thì `0 XOR khoá = khoá`. Đây là che mắt, không phải mã hoá —
+> XOR lặp 13 byte thì đảo ngược trong vài dòng.
 
 ⚠️ Công cụ **không** dò tài nguyên theo tên cuối trên khắp cây thư mục. Bản J2ME có cả
 `c/body/42` lẫn `c/leg/42`, nên `newEf/42` sẽ nhận nhầm ảnh thân nhân vật — **sai âm thầm**,
 tệ hơn là thiếu. Chỉ chấp nhận file ở gốc hoặc ảnh trong gói.
+
+#### Kết quả chạy thử thật (bản Windows)
+
+Chạy `KhiPhachAnhHung.exe -batchmode -nographics -logfile <tệp>` rồi đọc nhật ký:
+
+| | Ngoại lệ | Dừng ở |
+|---|---|---|
+| Lúc đầu | **1475** | `Res.loadRes()` — thiếu gói `other` |
+| Sau khi dựng gói thay thế | 1482 | `Res.GetWPSplashInfo()` |
+| Sau khi sửa sót đuôi `.wp` | 1 | `GameScr.setDataForButton()` |
+| Sau khi đặt ảnh giữ chỗ | 1 | `Tilemap.loadMap()` tràn ngăn xếp |
+| **Hiện tại** | **0** | — chạy hết chuỗi khởi động |
+
+Nhật ký hiện tại đi hết: `Init Scale GUI` → `Ban: -- khi phach anh hung` →
+`init Session_ME` (lớp mạng sẵn sàng).
+
+Bốn thứ đã sửa để tới được đây:
+
+1. **Sót đuôi tệp** — `tools/ChuyenTaiNguyen.java` chỉ cắt `.png .sh .type .txt`,
+   bỏ sót `.wp` và `.wps` (10 tệp). `wpsplash/0.wp` bị ghi thành `wpsplash/0.wp.bytes`
+   trong khi mã tìm `wpsplash/0`. Tài nguyên **có thật mà coi như mất**.
+
+2. **Dựng gói thay thế** cho `other` và `items`. Công cụ đọc từ mã nguồn xem gói nào
+   được nạp và tên ảnh nào được lấy ra, rồi đóng gói đúng định dạng `FilePack`. Ảnh
+   thật nếu tìm được, không thì ảnh trong suốt 1×1. Dựng xong **giải lại ngay và đối
+   chiếu** — lệch một byte ở phần đầu là client đọc ra rác mà không báo lỗi gì.
+
+3. **Ảnh giữ chỗ** cho 45 ảnh nạp lẻ còn thiếu. Nhiều chỗ dùng thẳng kết quả không
+   kiểm null (`Res.imgNewBt[4].getWidth()`). Nhưng có **49 chỗ rẽ nhánh theo
+   `ảnh == null`** — `imgHorse == null` nghĩa là "không có ngựa thì khỏi vẽ". Nên quy
+   tắc: tên trường nào có xuất hiện trong phép so `== null` ở bất cứ đâu thì **không**
+   đặt ảnh giữ chỗ (bỏ qua 7 ảnh). Thừa còn hơn thiếu: bỏ sót một ảnh chỉ là thiếu ảnh,
+   đặt nhầm vào chỗ có nhánh null là đổi logic.
+
+4. **`Tilemap.loadMap` tự gọi mình mãi** — lỗi thật trong client, không liên quan tài
+   nguyên. Khối `catch` gọi `loadMap(0, null)` **vô điều kiện**, kể cả khi `level` đã
+   là 0 → đệ quy vô hạn → `StackOverflowException`. Nay chỉ lùi về bản đồ 0 khi đang ở
+   bản đồ khác.
+
+#### ⚠️ Vẫn chưa phải bản hoàn chỉnh
+
+Client **khởi động sạch**, nhưng 45 ảnh là **trong suốt 1×1**, không phải hình thật.
+Giao diện sẽ thiếu nhiều nút và khung. Còn 5 ảnh thiếu hẳn (`b3`, `bar1`, `inv3`,
+`skill_da`, `skill_ice`) — đều là ảnh có nhánh rẽ theo null nên cố ý để nguyên.
+
+Muốn đầy đủ thì vẫn phải xin `Assets/Resources/res/` của **dự án Unity gốc**. Không có
+đường vòng — ảnh giữ chỗ chỉ để chạy thử, không thay thế được tài nguyên thật.
+
 
 ### Liên hệ với việc cấm theo thiết bị
 
