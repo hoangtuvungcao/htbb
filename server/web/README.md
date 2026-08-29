@@ -218,6 +218,7 @@ Khu riêng để **xem thống kê người chơi, khoá tài khoản, tạo gif
 |---|---|
 | Lỗi Java | `errorlog.txt` (`util.Logger.logError`) và `log/game.out` (systemd hứng stdout/stderr) |
 | Lỗi server ghi vào DB | `tob_log_all_item` / `tob_log_all_gem`, cột `aclog`: `loiinvent`, `hackc`, `hackR`, `hackbitem`, `hackchonchar`, `black`, `ffbug`, `timeout` |
+| Mất vật phẩm | `tob_log_all_item`, `aclog = 'matdo'` — nghiền đồ, bán tự động, admin xoá tay, server xoá lúc nạp nhân vật. Các đường **chuyển nhượng** có mã riêng: `sitems` (bán cho NPC), và bảng `tob_log_buy_store` (bán ở gian hàng người chơi) |
 | Dữ liệu lệch | không ai báo — trang tự đi soi (xem danh sách dưới) |
 | Lỗi trang web | `web_admin_log` với `hanh_dong = 'loi_web'` |
 

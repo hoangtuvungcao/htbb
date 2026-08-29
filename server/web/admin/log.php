@@ -16,7 +16,9 @@ requireAdmin();
 $BANG = [
     'tob_log_all_item' => [
         'ten'  => 'Vật phẩm',
-        'mota' => 'Mọi thứ liên quan tới vật phẩm: nhặt, tạo, mất, lỗi lưu hành trang.',
+        'mota' => 'Mọi thứ liên quan tới vật phẩm: nhặt, tạo, mất, lỗi lưu hành trang. '
+                . 'Truy vì sao mất đồ: lọc Loại = matdo (nghiền, bán tự động, admin xoá, '
+                . 'server xoá lúc nạp) hoặc sitems (bán cho NPC).',
         'cot'  => ['id' => 'ID', 'charname' => 'Nhân vật', 'aclog' => 'Loại',
                    'info' => 'Chi tiết', 'charname2' => 'Liên quan', 'timelog' => 'Lúc'],
         'loc'  => 'charname', 'loc2' => 'aclog', 'sap' => 'id DESC',

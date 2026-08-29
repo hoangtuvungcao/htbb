@@ -312,6 +312,11 @@ class MapXuLyLenh {
                         
                 player.doAddGemItem(246, sl, item.lock == 1);
                 Database.instance.deleteItem(item.dbid);
+                // Mon do bien mat o day. Ghi ro "vua nhat len" de nguoi tra cuu khong
+                // hieu nham la do trong tui: nhanh nay chi cham vao vat pham vua duoc
+                // nhat tu duoi dat, do da nam trong hanh trang khong di qua day.
+                Database.instance.saveLogMatVatPham(player, item,
+                        "nghien do tu dong (do vua nhat len) nhan " + sl + " bot thuong");
                 player.subXu(2000L, true, "offline map 9");
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -324,6 +329,9 @@ class MapXuLyLenh {
                 int price = Map.itemTemplates.get(5).get(item.getTemplate().id).price;
                 int xuban = price / 5;
                 player.addXu(xuban, "map 6");
+                // Cung nhu nhanh nghien: chi ban mon VUA NHAT LEN, khong dung toi tui do.
+                Database.instance.saveLogMatVatPham(player, item,
+                        "ban tu dong (do vua nhat len) duoc " + xuban + " xu");
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));

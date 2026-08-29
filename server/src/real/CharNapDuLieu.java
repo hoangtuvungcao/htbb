@@ -1361,6 +1361,13 @@ class CharNapDuLieu {
                                 }
                             }
                             if (nAnimalItemDel > 0 && Map.isWearingAnimal(item.getTemplate().type) && item.dateCreate.equals("2013-04-16") && item.colorName != 1) {
+                                // SERVER TU XOA DO NGAY LUC NAP NHAN VAT — truoc day khong
+                                // ghi lai gi. Nguoi choi chi thay mat mon do sau khi dang
+                                // nhap, khong the truy ra vi sao. Day la duong mat do kho
+                                // lan nhat trong tat ca, vi no khong do thao tac nao cua ho.
+                                Database.instance.saveLogMatVatPham(self, item,
+                                        "server xoa luc nap nhan vat (thu cuoi ngay 2013-04-16, con lai "
+                                      + (nAnimalItemDel - 1) + " luot xoa)");
                                 Database.instance.deleteItem(item.dbid);
                                 --nAnimalItemDel;
                             } else {

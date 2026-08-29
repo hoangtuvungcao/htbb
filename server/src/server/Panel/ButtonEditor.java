@@ -1075,6 +1075,11 @@ public class ButtonEditor extends DefaultCellEditor {
                          .append(" - Số lượng: ").append(oldQuantity).append(" → ").append(newQuantity);
 
                 if (newQuantity == 0) {
+                    // Dat so luong ve 0 la XOA HAN mon do khoi hanh trang. Truoc day khong
+                    // ghi lai gi: nguoi choi keu mat do, ma khong cach nao biet duoc la do
+                    // admin lam. Ghi truoc khi remove, vi sau do khong con doi tuong de doc.
+                    data.Database.instance.saveLogMatVatPham(player, item,
+                            "admin xoa tay tu bang dieu khien (so luong " + oldQuantity + " -> 0)");
                     player.iItems.remove(itemIndex);
                     model.removeRow(row);
                 } else {

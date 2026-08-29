@@ -4366,6 +4366,68 @@ public class Database {
         }
     }
 
+    /**
+     * GHI LAI MOT VAT PHAM ROI KHOI TAY NGUOI CHOI — de sau con truy nguyen nhan mat do.
+     *
+     * Cac duong CHUYEN NHUONG deu da co log rieng tu truoc:
+     *   ban trong gian hang  -> saveLogSellItem
+     *   ban cho NPC          -> saveLogItemSellShop  (aclog 'sitems')
+     *   trao doi voi nguoi   -> saveLogTradeItem
+     * Ham nay danh cho cac duong lam vat pham BIEN MAT ma truoc day khong ghi gi:
+     * nghien do, ban tu dong luc nhat, admin xoa tay, va server tu xoa luc nap nhan vat.
+     *
+     * Tat ca dung chung aclog 'matdo' de tim mot lan ra het:
+     *   SELECT * FROM tob_log_all_item WHERE aclog='matdo' AND charname='...' ORDER BY id DESC;
+     *
+     * Ghi ca getInfoSave() (dbInfo + thuoc tinh) chu khong chi ten: hai mon cung ten
+     * co the khac han nhau ve cong dam, ngu hanh, tinh luyen — muon den bu dung mon da
+     * mat thi phai co du chi so, khong the dung lai o "mot cai kiem".
+     *
+     * KHONG dung deleteItem() lam cho ghi log duoc: than ham do RONG (khong co bang
+     * tob_item tren may chu nay, vat pham nam trong 3 cot cua tob_char), nen 20 loi goi
+     * toi no deu khong lam gi ca.
+     */
+    /**
+     * Lam sach mot manh chuoi truoc khi ghep vao cau INSERT ghi log.
+     *
+     * VI SAO CAN: cac cau log duoc GHEP CHUOI roi day vao Logdata.query, va Logdata
+     * chay ca lo mot luot. Mot dau nhay don lot vao la hong CA LO chu khong rieng dong
+     * do — mat luon nhung dong log khac cua cung nhip.
+     *
+     * Bo ca dau "\": trong MySQL no la ky tu thoat, nen chuoi ket thuc bang "\" se nuot
+     * dau nhay dong chuoi va lam lech toan bo phan con lai cau lenh. Ten vat pham lay tu
+     * bang data_item do admin nhap tay nen khong the tin la sach.
+     *
+     * Bo xuong dong de moi su kien nam gon mot dong khi doc log.
+     */
+    public static String lamSachChoLog(final String s) {
+        if (s == null) {
+            return "";
+        }
+        return s.replace("\\", " ").replace("'", " ").replace("\r", " ").replace("\n", " ");
+    }
+
+    public void saveLogMatVatPham(Char p, Item item, String lyDo) {
+        try {
+            if (p == null || item == null) {
+                return;
+            }
+            String ten = "";
+            try {
+                ten = item.getTemplate().name;
+            } catch (Exception ignored) {
+            }
+            String info = lyDo + " | " + ten + " +" + item.plus + " | " + item.getInfoSave();
+            info = BadWord.removeAccent(info);
+            String sql = "insert into tob_log_all_item (idchar,charname,info,timelog,aclog) values ("
+                    + p.charDBID + ",'" + lamSachChoLog(p.charname) + "','" + lamSachChoLog(info)
+                    + "',Now(),'matdo')";
+            Logdata.query.add(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void saveLogItemSellShop(String seller, int charID, String info) {
         try {
             info = BadWord.removeAccent(info);
