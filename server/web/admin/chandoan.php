@@ -132,6 +132,83 @@ function doiFile(string $duongDan, int $soByte = 64000): ?array
     ];
 }
 
+/**
+ * Chia log thành từng MỤC, để đảo ngược được mà không băm nát vết gọi Java.
+ *
+ * Đảo từng dòng một là hỏng: một vết gọi ngoại lệ dài chục dòng sẽ bị lộn ngược,
+ * đọc không ra gì. Phải đảo theo mục.
+ *
+ * Hai cách nhận ra ranh giới mục, chọn theo nội dung thật của file:
+ *
+ *   1. File có dấu thời gian đầu dòng (errorlog.txt, hack.txt, matketinfo.txt...):
+ *      mỗi dấu thời gian mở một mục mới. Đây là cách chính xác nhất.
+ *
+ *   2. File không có dấu thời gian nào — `log/game.out` là stdout thô, không có
+ *      dòng giờ nào cả. Khi đó dựa vào THỤT LỀ: quy ước của Java là mọi dòng
+ *      trong vết gọi đều bắt đầu bằng tab (`\tat ...`, `\t... 3 more`). Dòng
+ *      không thụt lề mở mục mới, dòng thụt lề dính vào mục đang mở.
+ *
+ * Nhờ cách 2 mà `game.out` vẫn đảo được: nó gồm ~80% vết gọi ngoại lệ.
+ */
+function chiaMuc(string $noiDung): array
+{
+    if ($noiDung === '') {
+        return [];
+    }
+    $dong = preg_split("/\r\n|\n|\r/", $noiDung);
+    // Ký tự xuống dòng cuối file sinh ra một phần tử rỗng thừa. Để nguyên thì nó
+    // dính vào mục cuối, và sau khi đảo mục đó nhảy lên đầu mang theo một dòng
+    // trống — mỗi lần đảo lại thừa thêm một dòng.
+    if (count($dong) > 1 && end($dong) === '') {
+        array_pop($dong);
+    }
+
+    // Có ít nhất 2 dòng mở đầu bằng dấu thời gian thì mới coi là file có mốc giờ.
+    // Một dòng thì có thể chỉ là trùng hợp trong nội dung log.
+    $mocGio = '/^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}[ T]\d{1,2}:\d{2}:\d{2}/';
+    $soMoc = 0;
+    foreach ($dong as $d) {
+        if (preg_match($mocGio, $d)) {
+            $soMoc++;
+            if ($soMoc >= 2) {
+                break;
+            }
+        }
+    }
+    $theoGio = $soMoc >= 2;
+
+    $muc = [];
+    $dangGom = null;
+    foreach ($dong as $d) {
+        $moMucMoi = $theoGio
+            ? (bool)preg_match($mocGio, $d)
+            : ($d !== '' && $d[0] !== ' ' && $d[0] !== "\t");
+
+        if ($moMucMoi || $dangGom === null) {
+            if ($dangGom !== null) {
+                $muc[] = $dangGom;
+            }
+            $dangGom = $d;
+        } else {
+            $dangGom .= "\n" . $d;
+        }
+    }
+    if ($dangGom !== null) {
+        $muc[] = $dangGom;
+    }
+    return $muc;
+}
+
+/** Mới nhất lên đầu, vết gọi trong từng mục vẫn giữ đúng thứ tự. */
+function daoThuTu(string $noiDung): string
+{
+    $muc = chiaMuc($noiDung);
+    if (count($muc) < 2) {
+        return $noiDung;
+    }
+    return implode("\n", array_reverse($muc));
+}
+
 // ---------------------------------------------------------------------------
 //  Chạy các phép kiểm tra
 // ---------------------------------------------------------------------------
@@ -607,6 +684,13 @@ if ($xemFile !== '' && (array_key_exists($xemFile, fileLog()) || array_key_exist
     $xemFile = '';
 }
 
+// Mặc định MỚI NHẤT LÊN ĐẦU. Đọc log là để xem vừa có chuyện gì, không ai muốn
+// cuộn xuống đáy mới thấy. ?thutu=cu để xem theo đúng thứ tự trong file.
+$thuTuMoiTruoc = g('thutu') !== 'cu';
+if ($noiDungFile !== null && $thuTuMoiTruoc) {
+    $noiDungFile['noi_dung'] = daoThuTu($noiDungFile['noi_dung']);
+}
+
 $demMuc = ['loi' => 0, 'canhbao' => 0, 'ok' => 0, 'khong_kiem_duoc' => 0];
 foreach ($kiemTra as $k) {
     $demMuc[$k['muc']] = ($demMuc[$k['muc']] ?? 0) + 1;
@@ -762,6 +846,16 @@ usort($kiemTra, static fn($a, $b) => $thuTu[$a['muc']] <=> $thuTu[$b['muc']]);
         <p class="muted small" style="margin-top:0;">
             Cỡ <?= e(so($noiDungFile['co'])) ?> byte · sửa lần cuối <?= e(date('Y-m-d H:i:s', $noiDungFile['sua_luc'])) ?>
             <?= $noiDungFile['cat'] ? ' · chỉ hiện khoảng 64 KB cuối' : '' ?>
+            · <strong><?= $thuTuMoiTruoc ? 'mới nhất ở trên' : 'theo đúng thứ tự trong file' ?></strong>
+        </p>
+        <p style="margin-top:0;">
+            <?php if ($thuTuMoiTruoc): ?>
+                <a class="btn btn-xam btn-nho"
+                   href="chandoan.php?file=<?= e(urlencode($xemFile)) ?>&amp;thutu=cu#xemfile">Xem theo thứ tự gốc</a>
+            <?php else: ?>
+                <a class="btn btn-xam btn-nho"
+                   href="chandoan.php?file=<?= e(urlencode($xemFile)) ?>#xemfile">Xem mới nhất trước</a>
+            <?php endif; ?>
         </p>
         <pre class="ma-sql" style="max-height:520px;"><?= e($noiDungFile['noi_dung']) ?></pre>
     </div>

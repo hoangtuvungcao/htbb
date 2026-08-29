@@ -47,18 +47,20 @@ if ($nguon === false) {
     fwrite(STDERR, "Khong doc duoc chandoan.php\n");
     exit(1);
 }
-$dau = strpos($nguon, 'function doiFile(');
-if ($dau === false) {
-    fwrite(STDERR, "Khong tim thay ham doiFile() trong chandoan.php\n");
-    exit(1);
+foreach (['doiFile(', 'chiaMuc(', 'daoThuTu('] as $ham) {
+    $dau = strpos($nguon, 'function ' . $ham);
+    if ($dau === false) {
+        fwrite(STDERR, "Khong tim thay ham $ham trong chandoan.php\n");
+        exit(1);
+    }
+    // Cắt tới dấu } ở đầu dòng — quy ước thụt lề của file này
+    $cuoi = strpos($nguon, "\n}\n", $dau);
+    if ($cuoi === false) {
+        fwrite(STDERR, "Khong tim thay diem ket thuc cua $ham\n");
+        exit(1);
+    }
+    eval(substr($nguon, $dau, $cuoi - $dau + 3));
 }
-// Cắt tới dấu } ở đầu dòng — quy ước thụt lề của file này
-$cuoi = strpos($nguon, "\n}\n", $dau);
-if ($cuoi === false) {
-    fwrite(STDERR, "Khong tim thay diem ket thuc cua doiFile()\n");
-    exit(1);
-}
-eval(substr($nguon, $dau, $cuoi - $dau + 3));
 
 echo "== 1. File NHO hon nguong: doc het ==\n";
 $nho = tempnam(sys_get_temp_dir(), 'kpahlog');
@@ -143,6 +145,69 @@ kt('thu muc -> null', doiFile(sys_get_temp_dir()), null);
 
 $r = doiFile($lon, 1000);
 dung('nguong nho hon van ton trong', strlen($r['noi_dung']) <= 1000);
+
+echo "\n== 5. Dao thu tu: moi nhat len dau ==\n";
+//
+// Phep kiem quan trong o day KHONG phai "co dao khong" ma la "dao xong con doc
+// duoc khong". Dao tung dong mot se lon nguoc ca vet goi Java thanh rac.
+
+// (a) File co dau thoi gian dau dong - errorlog.txt, hack.txt...
+$coGio = "2026-08-29 10:00:00 | A | 1.1.1.1 | hackc | su kien CU\n"
+       . "2026-08-29 11:00:00 | B | 2.2.2.2 | hackR | su kien GIUA\n"
+       . "2026-08-29 12:00:00 | C | 3.3.3.3 | ffbug | su kien MOI";
+$muc = chiaMuc($coGio);
+kt('3 dong co gio -> 3 muc', count($muc), 3);
+$dao = daoThuTu($coGio);
+dung('su kien MOI len dau', strpos($dao, 'su kien MOI') < strpos($dao, 'su kien GIUA'));
+dung('su kien CU xuong cuoi', strpos($dao, 'su kien CU') > strpos($dao, 'su kien GIUA'));
+dung('dong dau tien la cua su kien moi nhat',
+    strpos($dao, '2026-08-29 12:00:00') === 0);
+
+// (b) Vet goi Java NHIEU DONG - day la cho de hong nhat
+$vetGoi = "2026/07/30 08:12:33\n"
+        . "java.lang.NullPointerException\n"
+        . "\tat real.RealController.processMessage(RealController.java:981)\n"
+        . "\tat io.Session.run(Session.java:172)\n"
+        . "\n"
+        . "2026/07/30 09:00:00\n"
+        . "java.lang.ArrayIndexOutOfBoundsException: -1\n"
+        . "\tat data.Pet.doChangeThongThao(Pet.java:384)\n";
+$muc = chiaMuc($vetGoi);
+kt('2 vet goi -> 2 muc', count($muc), 2);
+$dao = daoThuTu($vetGoi);
+dung('vet goi MOI (Pet) len truoc', strpos($dao, 'Pet.java:384') < strpos($dao, 'RealController.java:981'));
+dung('vet goi CU van con nguyen thu tu ben trong',
+    strpos($dao, 'RealController.java:981') < strpos($dao, 'Session.java:172'));
+dung('dong "java.lang.NullPointerException" van dung truoc vet goi cua no',
+    strpos($dao, 'java.lang.NullPointerException') < strpos($dao, 'RealController.java:981'));
+
+// (c) File KHONG co dau thoi gian nao - game.out la stdout tho.
+//     Phai dua vao thut le moi giu duoc vet goi.
+$khongGio = "java.lang.ArrayIndexOutOfBoundsException: 0\n"
+          . "\tat java.util.Vector.get(Vector.java:753)\n"
+          . "\tat real.Map.deletePotionAndItemOnGround(Map.java:3586)\n"
+          . "LOI TRONG HAM RUN MAP loi thu NHAT\n"
+          . "java.lang.NullPointerException\n"
+          . "\tat real.Region.run(Region.java:186)\n"
+          . "LOI TRONG HAM RUN MAP loi thu HAI\n";
+$muc = chiaMuc($khongGio);
+kt('khong co gio -> chia theo thut le, duoc 4 muc', count($muc), 4);
+$dao = daoThuTu($khongGio);
+dung('loi thu HAI len truoc loi thu NHAT',
+    strpos($dao, 'loi thu HAI') < strpos($dao, 'loi thu NHAT'));
+dung('vet goi Vector.get van dinh voi dong ngoai le cua no',
+    strpos($dao, 'ArrayIndexOutOfBounds') < strpos($dao, 'Vector.java:753'));
+dung('vet goi Region van dinh voi NullPointerException cua no',
+    strpos($dao, 'java.lang.NullPointerException') < strpos($dao, 'Region.java:186'));
+
+// (d) Khong duoc lam mat dong nao
+$soDongTruoc = count(preg_split("/\n/", trim($khongGio)));
+$soDongSau   = count(preg_split("/\n/", trim($dao)));
+kt('dao xong khong mat dong nao', $soDongSau, $soDongTruoc);
+
+// (e) Truong hop bien
+kt('chuoi rong -> 0 muc', count(chiaMuc('')), 0);
+kt('mot muc duy nhat thi giu nguyen', daoThuTu("chi mot dong"), "chi mot dong");
 
 unlink($nho);
 unlink($lon);
