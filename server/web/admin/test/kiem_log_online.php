@@ -153,6 +153,18 @@ echo "\n== Cac truong hop bien\n";
 dung('co nhanh cho truong hop chua co bang', strpos($php, '$onCoBang') !== false);
 dung('bang thieu thi noi ro chu khong de bieu do trong',
     strpos($php, 'Chưa có bảng') !== false);
+
+// BA trang thai khac nhau, moi cai can mot loi huong dan khac han:
+//   chua co bang        -> tao bang / khoi dong server
+//   co bang, 0 dong     -> jar chua duoc build lai  (day la cho da lam nguoi dung roi)
+//   co du lieu          -> ve bieu do
+dung('phan biet duoc "co bang nhung 0 dong" voi "chua co bang"',
+    strpos($php, '$onSoMau') !== false && strpos($php, '(int)$onSoMau === 0') !== false);
+dung('truong hop 0 dong co chi ro nguyen nhan la jar chua build lai',
+    strpos($php, 'build lại') !== false && strpos($php, 'KPAH2_patched.jar') !== false);
+dung('va co dua ra lenh tu kiem tra jar',
+    strpos($php, 'jar tf') !== false);
+dung('chi cach tao bang bang tay', strpos($php, 'them_bang_tob_log_online.sql') !== false);
 dung('mau cu thi KHONG hien so cu nhu so hien tai',
     (bool)preg_match("/\\\$onCu\)\s*\{\s*\/\/.*?\n.*?theSo\('Đang online', '—'/s", $php));
 dung('mau cu duoc to mau canh bao', strpos($php, "'nguy-hiem'") !== false);

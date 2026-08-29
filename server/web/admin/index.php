@@ -217,7 +217,10 @@ $gcLuotTong = dem($game, 'SELECT COUNT(*) FROM giftcode_log');
 // Bảng tob_log_online do chính server game ghi, 5 phút một mẫu (data/GhiSoOnline.java).
 // Bảng tự tạo lúc server khởi động, nên trước lần khởi động đầu tiên sau bản cập nhật
 // này thì chưa có bảng — mọi truy vấn dưới đây trả null/[] và phần hiển thị sẽ nói rõ.
-$onCoBang = dem($game, 'SELECT COUNT(*) FROM tob_log_online') !== null;
+// null = chưa có bảng; 0 = có bảng nhưng server chưa ghi mẫu nào. Hai tình huống này
+// cần hai lời hướng dẫn khác hẳn nhau nên phải phân biệt được.
+$onSoMau  = dem($game, 'SELECT COUNT(*) FROM tob_log_online');
+$onCoBang = $onSoMau !== null;
 
 $onMoiNhat = dsach($game, 'SELECT thoi_gian, ket_noi, nhan_vat,
                                   TIMESTAMPDIFF(MINUTE, thoi_gian, NOW()) AS phut_truoc
@@ -333,6 +336,23 @@ adminHead('tongquan', 'Tổng quan');
         <p class="muted small" style="margin:6px 0 0;">
             Server game tự tạo bảng này lúc khởi động (<code>data/GhiSoOnline.java</code>).
             Khởi động lại server một lần là bắt đầu ghi, 5 phút một mẫu, và giữ lại 30 ngày.
+            Muốn có bảng ngay thì chạy <code>sql/them_bang_tob_log_online.sql</code>.
+        </p>
+    </div>
+<?php elseif ((int)$onSoMau === 0): ?>
+    <div class="card">
+        <p><strong>Đã có bảng <code>tob_log_online</code> nhưng chưa có một dòng nào.</strong>
+           Nghĩa là bảng được tạo bằng tay, còn server game thì chưa hề ghi mẫu.</p>
+        <p class="muted small" style="margin:6px 0 0;">
+            Bộ lấy mẫu nằm trong <code>data/GhiSoOnline.java</code> — nó chỉ chạy khi
+            <code>KPAH2_patched.jar</code> đã được build lại từ mã nguồn hiện tại và server
+            đã khởi động lại. Sửa file <code>.java</code> thôi thì server đang chạy vẫn dùng
+            jar cũ và không có gì thay đổi.
+        </p>
+        <p class="muted small" style="margin:6px 0 0;">
+            Kiểm tra nhanh xem jar đã có lớp đó chưa:
+            <code>jar tf KPAH2_patched.jar | grep GhiSoOnline</code> — không ra dòng nào
+            tức là chưa build lại.
         </p>
     </div>
 <?php else: ?>
