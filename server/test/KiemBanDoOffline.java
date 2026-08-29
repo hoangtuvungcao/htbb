@@ -109,6 +109,62 @@ public final class KiemBanDoOffline {
 
         Kiem.bang("SO_NUOC = 3 (chi so 0..2; MAX_COUNTRY=2 la CHI SO lon nhat)",
                 3, real.Map.SO_NUOC);
+
+        kiemKhoQuai();
+    }
+
+    /**
+     * Ho kho thu hai: quai va nguoi choi.
+     *
+     * Day la cho bi bo sot o lan va DAU TIEN. Va xong loi cu thi lo ra ngay loi thu hai
+     * cung goc, o MapVongLap.updateSand:857 — `map.tempMonster.get(0)`. No chi nem khi CO
+     * nguoi dung tren ban do (dong 856 la `if (playersx.size() > 0 ...)`) nen truoc do bi
+     * che khuat sau loi kia. Log cu co 1.012 lan cua no.
+     */
+    private static void kiemKhoQuai() {
+        Kiem.nhom("Kho quai va nguoi choi - chay that");
+
+        final real.Map m = new real.Map();
+
+        // allPlayerMessages / monsters / temp_monsters KHONG public. Khong noi quyen truy
+        // cap cua chung chi de chieu bai kiem — chung duoc doi chieu o phan doc ma nguon
+        // ben duoi. Ba truong public con lai da du de bat dung loi that (dong 857 doc
+        // tempMonster).
+        Kiem.bang("moi tao: allPlayers rong", 0, m.allPlayers.size());
+        Kiem.bang("moi tao: tempMonster rong", 0, m.tempMonster.size());
+        Kiem.bang("moi tao: tempRemoveMonster rong", 0, m.tempRemoveMonster.size());
+
+        // Chinh la phep truy cap o MapVongLap.java:857.
+        Kiem.dung("chua khoi tao -> tempMonster.get(0) nem ngoai le (loi that o dong 857)",
+                nemKhiLayTempMonster(m));
+
+        m.initKhoQuaiVaNguoi();
+
+        Kiem.bang("sau khoi tao: allPlayers", real.Map.SO_NUOC, m.allPlayers.size());
+        Kiem.bang("sau khoi tao: tempMonster", real.Map.SO_NUOC, m.tempMonster.size());
+        Kiem.bang("sau khoi tao: tempRemoveMonster", real.Map.SO_NUOC, m.tempRemoveMonster.size());
+
+        Kiem.sai("sau khoi tao -> tempMonster.get(0) KHONG con nem nua",
+                nemKhiLayTempMonster(m));
+
+        // initAllPlayer/initAllMonsTer truoc day cong don mu quang. Ba lop con khac
+        // (MapChauBau, MapChienTruongMoba, MapLienDau) co goi initAllMonsTer() rieng, nen
+        // chung PHAI khong cong don, khong thi so ngan thanh 6.
+        m.initKhoQuaiVaNguoi();
+        m.initAllPlayer();
+        m.initAllMonsTer();
+        Kiem.bang("initAllPlayer goi them khong cong don", real.Map.SO_NUOC, m.allPlayers.size());
+        Kiem.bang("tempMonster van dung so ngan", real.Map.SO_NUOC, m.tempMonster.size());
+        Kiem.bang("tempRemoveMonster van dung so ngan",
+                real.Map.SO_NUOC, m.tempRemoveMonster.size());
+    }
+
+    private static boolean nemKhiLayTempMonster(final real.Map m) {
+        try {
+            return m.tempMonster.get(0) == null && false;
+        } catch (final Throwable ex) {
+            return true;
+        }
     }
 
     /** Goi ham gay loi va cho biet no co nem ngoai le hay khong. */
@@ -136,8 +192,26 @@ public final class KiemBanDoOffline {
 
         Kiem.dung("MapKhoiTao.init goi initVatTheDuoiDat()",
                 khoiTao.contains("initVatTheDuoiDat()"));
-        Kiem.dung("OfflineMap goi initVatTheDuoiDat()",
-                offline.contains("initVatTheDuoiDat()"));
+        Kiem.dung("MapKhoiTao van chi do kho quai khi nregion == 0 (ban do co Region "
+                        + "thi Region tu giu quai)",
+                khoiTao.contains("nregion == 0") && khoiTao.contains("initKhoQuaiVaNguoi()"));
+
+        // OfflineMap KHONG duoc tu do tay gi nua: mot noi giu trach nhiem thi moi khong
+        // lech duoc. Chinh cho do tay thieu la nguon goc ca hai loi.
+        Kiem.sai("OfflineMap khong con tu goi initAllPlayer()",
+                offline.contains("initAllPlayer()"));
+        Kiem.sai("OfflineMap khong con tu do tay allPlayerMessages",
+                offline.contains("allPlayerMessages.add("));
+
+        // initKhoQuaiVaNguoi phai cham du SAU kho, ke ca ba kho khong public.
+        final String maMapDayDu = boChuThich(doc(F_MAP));
+        final int viTriHam = maMapDayDu.indexOf("public void initKhoQuaiVaNguoi()");
+        final String thanKhoQuai = viTriHam < 0 ? ""
+                : maMapDayDu.substring(viTriHam, Math.min(maMapDayDu.length(), viTriHam + 900));
+        for (final String kho : new String[] {"initAllPlayer", "initAllMonsTer",
+                "allPlayerMessages", "temp_monsters", "tempMonster", "tempRemoveMonster"}) {
+            Kiem.dung("initKhoQuaiVaNguoi co do day " + kho, thanKhoQuai.contains(kho));
+        }
 
         // Ham dung Map(int id) mo mot thread chay run() -> update(). Thread do bat dau
         // chay ngay khi ham dung ket thuc, tuc la TRUOC khi than ham dung cua lop con
@@ -147,20 +221,13 @@ public final class KiemBanDoOffline {
         final String thanHamDung = viTriHamDung < 0 ? ""
                 : maMap.substring(viTriHamDung,
                         Math.min(maMap.length(), viTriHamDung + 800));
-        Kiem.dung("Map(int id) tu goi initVatTheDuoiDat()",
-                thanHamDung.contains("initVatTheDuoiDat()"));
-        Kiem.dung("... va goi TRUOC new Thread(this).start()",
-                thanHamDung.indexOf("initVatTheDuoiDat()") >= 0
-                        && thanHamDung.indexOf("new Thread(this).start()") >= 0
-                        && thanHamDung.indexOf("initVatTheDuoiDat()")
-                                < thanHamDung.indexOf("new Thread(this).start()"));
-
-        // Thu tu la quan trong: startSandVilage() mo mot thread cham vao potions ngay
-        // nhip dau tien. Goi khoi tao SAU no la van thua loi trong khoang giua.
-        final int viTriKhoiTao = offline.indexOf("initVatTheDuoiDat()");
-        final int viTriSand = offline.indexOf("startSandVilage()");
-        Kiem.dung("OfflineMap goi khoi tao TRUOC startSandVilage()",
-                viTriKhoiTao >= 0 && viTriSand >= 0 && viTriKhoiTao < viTriSand);
+        final int viTriStart = thanHamDung.indexOf("new Thread(this).start()");
+        for (final String ham : new String[] {"initVatTheDuoiDat()", "initKhoQuaiVaNguoi()"}) {
+            final int viTri = thanHamDung.indexOf(ham);
+            Kiem.dung("Map(int id) tu goi " + ham, viTri >= 0);
+            Kiem.dung("... va goi TRUOC new Thread(this).start()",
+                    viTri >= 0 && viTriStart >= 0 && viTri < viTriStart);
+        }
 
         // Khong con hai noi cung do tay nam kho nay nua.
         Kiem.sai("MapKhoiTao khong con tu do tay potions",

@@ -4,7 +4,6 @@ package real;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.util.Hashtable;
-import java.util.Vector;
 import server.TeamServer;
 
 /**
@@ -30,24 +29,9 @@ class MapKhoiTao {
         // vi OfflineMap khong di qua ham dung nay va bi bo sot -> xem chu thich o do.
         map.initVatTheDuoiDat();
         if (nregion == 0) {
-            map.allPlayers.add(new Vector());
-            map.allPlayers.add(new Vector());
-            map.allPlayers.add(new Vector());
-            map.allPlayerMessages.add(new Vector());
-            map.allPlayerMessages.add(new Vector());
-            map.allPlayerMessages.add(new Vector());
-            map.monsters.add(new Hashtable());
-            map.monsters.add(new Hashtable());
-            map.monsters.add(new Hashtable());
-            map.temp_monsters.add(new Hashtable());
-            map.temp_monsters.add(new Hashtable());
-            map.temp_monsters.add(new Hashtable());
-            map.tempMonster.add(new Vector());
-            map.tempMonster.add(new Vector());
-            map.tempMonster.add(new Vector());
-            map.tempRemoveMonster.add(new Vector());
-            map.tempRemoveMonster.add(new Vector());
-            map.tempRemoveMonster.add(new Vector());
+            // Truoc day 18 dong add() nam thang o day. GIU NGUYEN dieu kien nregion == 0:
+            // ban do co Region thi Region tu giu quai cua no, do day o day la doi hanh vi.
+            map.initKhoQuaiVaNguoi();
         } else {
             for (int i = 0; i < nregion; i++) {
                 map.ALL_REGION.add(new Region(map, i));

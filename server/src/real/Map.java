@@ -3105,7 +3105,11 @@ public class Map implements Runnable {
         // va no bat dau chay NGAY khi ham dung nay ket thuc — tuc la truoc khi than ham
         // dung cua lop con (OfflineMap) chay xong. Khoi tao o lop con thi van con mot khe
         // hep ma thread da doc trong khi cac kho con rong.
+        //
+        // Ham dung MOT THAM SO nay chi co DUY NHAT OfflineMap dung (qua super(id)), nen
+        // do day ca hai ho kho o day la khep kin, khong dong toi cac loai ban do khac.
         this.initVatTheDuoiDat();
+        this.initKhoQuaiVaNguoi();
         this.mapId = id;
         if (this.mapId != -1) {
             this.loadMap("map/map" + id, 0);
@@ -17163,10 +17167,11 @@ public class Map implements Runnable {
         }
     }
 
+    /** Bu cho du SO_NUOC ngan. Goi lai nhieu lan khong cong don. */
     public void initAllPlayer() {
-        this.allPlayers.add(new Vector());
-        this.allPlayers.add(new Vector());
-        this.allPlayers.add(new Vector());
+        while (this.allPlayers.size() < SO_NUOC) {
+            this.allPlayers.add(new Vector());
+        }
     }
 
     /** Ba nuoc, chi so 0..2. MAX_COUNTRY la CHI SO lon nhat (=2), khong phai so luong. */
@@ -17214,10 +17219,42 @@ public class Map implements Runnable {
         }
     }
 
+    /** Bu cho du SO_NUOC ngan. Goi lai nhieu lan khong cong don. */
     public void initAllMonsTer() {
-        this.monsters.add(new Hashtable());
-        this.monsters.add(new Hashtable());
-        this.monsters.add(new Hashtable());
+        while (this.monsters.size() < SO_NUOC) {
+            this.monsters.add(new Hashtable());
+        }
+    }
+
+    /**
+     * Khoi tao cac kho QUAI VA NGUOI CHOI theo nuoc.
+     *
+     * Cung ho voi initVatTheDuoiDat(). MapKhoiTao chi do day chung khi nregion == 0
+     * (ban do co Region thi Region tu giu quai cua no), con OfflineMap thi khong di qua
+     * MapKhoiTao nen bo trong het.
+     *
+     * Hau qua da thay that: MapVongLap.updateSand:857 doc map.tempMonster.get(0) va nem
+     * ArrayIndexOutOfBounds. No chi nem khi CO nguoi dung tren ban do do — dong 856 la
+     * `if (playersx.size() > 0 ...)` — nen truoc day no bi che khuat sau mot loi khac
+     * xay ra thuong xuyen hon o cuoi cung ham. Log cu co 1.012 lan cua no.
+     *
+     * Bu cho du, khong cong don, nen goi chung voi initAllPlayer()/initAllMonsTer() deu duoc.
+     */
+    public void initKhoQuaiVaNguoi() {
+        this.initAllPlayer();
+        this.initAllMonsTer();
+        while (this.allPlayerMessages.size() < SO_NUOC) {
+            this.allPlayerMessages.add(new Vector());
+        }
+        while (this.temp_monsters.size() < SO_NUOC) {
+            this.temp_monsters.add(new Hashtable());
+        }
+        while (this.tempMonster.size() < SO_NUOC) {
+            this.tempMonster.add(new Vector());
+        }
+        while (this.tempRemoveMonster.size() < SO_NUOC) {
+            this.tempRemoveMonster.add(new Vector());
+        }
     }
 
     public Vector<LiveActor> getAllNearActor(Char from, int cat, int sl, LiveActor attacker) {
