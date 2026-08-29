@@ -16,6 +16,7 @@ function adminHead(string $trang, string $tieuDe): void
         'nhanvat'  => ['nhanvat.php',   'Nhân vật'],
         'giftcode' => ['giftcode.php',  'Giftcode'],
         'log'      => ['log.php',       'Log game'],
+        'chandoan' => ['chandoan.php',  'Chẩn đoán'],
         'nhatky'   => ['nhatky.php',    'Nhật ký admin'],
     ];
     ?>

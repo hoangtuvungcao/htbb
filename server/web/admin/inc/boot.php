@@ -31,6 +31,16 @@ require_once __DIR__ . '/../../inc/functions.php';
 set_exception_handler(static function (Throwable $ex): void {
     error_log('[kpah-admin] ' . get_class($ex) . ': ' . $ex->getMessage()
         . ' @ ' . $ex->getFile() . ':' . $ex->getLine());
+
+    // Ghi luôn vào nhật ký để trang Chẩn đoán nhìn thấy. Bọc try/catch vì lỗi
+    // hay gặp nhất chính là mất kết nối database — lúc đó việc ghi cũng hỏng
+    // nốt, và một lỗi ném ra từ trong trình xử lý lỗi là lỗi nghiêm trọng thật.
+    try {
+        ghiNhatKy('loi_web', basename($ex->getFile()) . ':' . $ex->getLine(),
+            get_class($ex) . ': ' . $ex->getMessage());
+    } catch (Throwable $boQua) {
+    }
+
     if (!headers_sent()) {
         http_response_code(500);
         header('Content-Type: text/html; charset=utf-8');

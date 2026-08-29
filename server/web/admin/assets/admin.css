@@ -138,3 +138,21 @@ form.inline { display: inline; margin: 0; }
 .dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: .9rem; margin: 0; }
 .dl dt { color: var(--muted); }
 .dl dd { margin: 0; color: var(--text); word-break: break-word; }
+
+/* ---- Khối mã / nội dung file log ---- */
+.ma-sql {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 0;
+    overflow: auto;
+    max-height: 340px;
+    font-family: ui-monospace, Consolas, "Courier New", monospace;
+    font-size: .82rem;
+    line-height: 1.5;
+    color: var(--text);
+    white-space: pre;
+    tab-size: 4;
+}

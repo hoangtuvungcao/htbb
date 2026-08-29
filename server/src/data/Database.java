@@ -420,7 +420,7 @@ public class Database {
                 return rs.getByte("typeQua");
             }
         } catch (Exception e) {
-            Logger.logError(e, "");
+            Logger.logError(e, "errorlog.txt");
         } finally {
             try {
                 rs.close();
@@ -465,7 +465,7 @@ public class Database {
                 return true;
             }
         } catch (Exception e) {
-            Logger.logError(e, "");
+            Logger.logError(e, "errorlog.txt");
         } finally {
             try {
                 rs.close();
@@ -555,7 +555,7 @@ public class Database {
                 co = true;
             }
         } catch (Exception e) {
-            Logger.logError(e, "");
+            Logger.logError(e, "errorlog.txt");
         } finally {
             try {
                 rs.close();
@@ -608,7 +608,7 @@ public class Database {
                 return true;
             }
         } catch (Exception e) {
-            Logger.logError(e, "");
+            Logger.logError(e, "errorlog.txt");
         } finally {
             try {
                 rs.close();

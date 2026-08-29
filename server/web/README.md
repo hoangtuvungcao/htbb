@@ -130,7 +130,37 @@ Khu riêng để **xem thống kê người chơi, khoá tài khoản, tạo gif
 | **Nhân vật** | Tìm theo tên hoặc ID tài khoản · **khoá – mở khoá từng nhân vật** · xem cấp, lượng, xu, lần vào cuối, bang hội, cờ nghi vấn |
 | **Giftcode** | Tạo / sửa / tắt / xoá mã · **kiểm tra cú pháp phần thưởng trước khi lưu** · xem ai đã nhận mã nào · cho một nhân vật nhận lại |
 | **Log game** | 8 bảng log server tự ghi (vật phẩm, ngọc, mua shop, mua kho, bang hội, tiêu lượng, nạp/xài lượng, xổ số), lọc theo nhân vật |
+| **Chẩn đoán & Lỗi** | 13 phép kiểm tra sức khoẻ, thống kê lỗi server ghi vào DB, xem cuối các file log của server, lỗi của chính trang web — xem mục dưới |
 | **Nhật ký admin** | Mọi thao tác trên trang quản trị. Không xoá được từ giao diện |
+
+### Trang Chẩn đoán gom bốn nguồn lỗi
+
+| Nguồn | Ở đâu |
+|---|---|
+| Lỗi Java | `errorlog.txt` (`util.Logger.logError`) và `log/game.out` (systemd hứng stdout/stderr) |
+| Lỗi server ghi vào DB | `tob_log_all_item` / `tob_log_all_gem`, cột `aclog`: `loiinvent`, `hackc`, `hackR`, `hackbitem`, `hackchonchar`, `black`, `ffbug`, `timeout` |
+| Dữ liệu lệch | không ai báo — trang tự đi soi (xem danh sách dưới) |
+| Lỗi trang web | `web_admin_log` với `hanh_dong = 'loi_web'` |
+
+13 phép kiểm tra, xếp mức nặng lên trước, mỗi phép kèm câu SQL sửa:
+
+1. **Sức chứa cột hành trang** — `inven`/`bag`/`tuido`/`equip` còn là `TEXT` (trần 65.535 byte ≈ 140 món) hay đã nới `MEDIUMTEXT`. Đây chính là cái bẫy đã nổ ngày 28/07/2026: lưu hỏng → server *tự* đặt `ban = 1` → nhân vật biến mất khỏi màn chọn.
+2. **Nhân vật sắp đầy hành trang** — ai đã dùng quá 80% sức chứa, tức lần lưu kế tiếp có thể hỏng.
+3. **Lỗi lưu hành trang** — nhân vật nào từng có dòng `loiinvent`.
+4. **Nhân vật đang bị khoá** — nhắc rằng không phải cái nào cũng do admin khoá.
+5. **Giftcode trùng tên** — server dùng `LIMIT 1` nên dòng sau vĩnh viễn chết.
+6. **Cú pháp phần thưởng của các mã đang có** — chạy bộ kiểm tra lên *dữ liệu thật*.
+7. **`5h_active` trùng dòng** · 8. **kích hoạt mồ côi** · 9. **nhân vật mồ côi tài khoản**.
+10. **Giá trị `ban` lạ** — giá trị ngoài 0/1/3 rơi vào nhánh cuối của login server và được coi như *bình thường*: đặt nhầm là tưởng đã khoá mà thật ra chưa.
+11. **Bảng phụ có đủ chưa** · 12. **cờ nghi vấn `nhack`/`blacklist`** · 13. **đọc được file log của server không**.
+
+Đọc file log lấy khoảng **64 KB cuối** bằng `fseek` chứ không nạp cả file — `game.out` có thể vài trăm MB. Thư mục lấy từ hằng `SERVER_DIR`, mặc định là thư mục cha của `web/` (đúng cho VPS vì server chạy với `WorkingDirectory=/opt/kpah` còn web ở `/opt/kpah/web`). Chạy thử trên máy khác cây thư mục thì đặt lại trong `config.local.php`:
+
+```php
+define('SERVER_DIR', 'C:/Users/ADMIN/Desktop/KPAH');
+```
+
+Trang **chỉ đọc**, và chỉ đọc đúng 10 tên file viết sẵn trong mã nguồn — tên file không bao giờ lấy từ đường dẫn, nên `?file=../config.local.php` không lần ra mật khẩu database được.
 
 ### Khoá tài khoản khác gì khoá nhân vật
 
@@ -184,6 +214,7 @@ web/
     ├── nhanvat.php     # Khoá / mở khoá nhân vật
     ├── giftcode.php    # Tạo & quản lý mã quà, xem ai đã nhận
     ├── log.php         # Xem 8 bảng log của game server
+    ├── chandoan.php    # Chẩn đoán & lỗi: 13 phép kiểm tra + đọc file log server
     ├── nhatky.php      # Nhật ký thao tác của admin
     ├── dangxuat.php
     ├── assets/admin.css
@@ -193,7 +224,8 @@ web/
     │   └── thuong.php  # Bảng 60 loại phần thưởng + kiểm tra cú pháp giftcode
     └── test/           # Kiểm thử, không cần MySQL
         ├── kiem_giftcode.php
-        └── kiem_schema.php
+        ├── kiem_schema.php
+        └── kiem_duong_dan.php
 ```
 
 ### Kiểm thử (không cần MySQL chạy)
@@ -201,6 +233,7 @@ web/
 ```bash
 php web/admin/test/kiem_giftcode.php   # bộ kiểm tra cú pháp phần thưởng
 php web/admin/test/kiem_schema.php     # đối chiếu mọi câu SQL với cấu trúc bảng thật
+php web/admin/test/kiem_duong_dan.php  # chốt chặn đọc file của trang Chẩn đoán
 ```
 
 - `kiem_giftcode.php` chạy lại **14 mã giftcode thật đang có trong bản dump** để
@@ -211,3 +244,15 @@ php web/admin/test/kiem_schema.php     # đối chiếu mọi câu SQL với c�
   soi từng câu SQL trong `web/admin/` xem có bảng/cột nào gõ nhầm không. Lưu ý
   `kpah_db` **cũng** có một bảng tên `team_user` nhưng khác hẳn bảng
   `account.team_user` — test này biết chuyện đó và luôn dùng bảng ở DB `account`.
+- `kiem_duong_dan.php` lấy **chính** danh sách file cho phép trong `chandoan.php`
+  (không chép lại) rồi ném vào 24 đường dẫn độc — `../config.local.php`,
+  `php://filter/...`, byte null, `%2F`… — khẳng định không cái nào lọt, và mọi
+  file hợp lệ đều nằm trong `SERVER_DIR`.
+
+### Một lỗi sửa ở phía server Java
+
+`src/data/Database.java` có 4 chỗ bắt lỗi gọi `Logger.logError(e, "")` — tên file
+**rỗng**. `new FileWriter("")` ném `IOException` ngay, nên vết gọi không bao giờ
+tới `errorlog.txt`; nó rơi ra stdout và chỉ còn thấy được trong `log/game.out`.
+Đã đổi thành `Logger.logError(e, "errorlog.txt")` để trang Chẩn đoán nhìn thấy.
+**Cần build lại jar và cập nhật server thì thay đổi này mới có tác dụng.**

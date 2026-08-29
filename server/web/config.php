@@ -103,3 +103,21 @@ if (!defined('ADMIN_NAPTIEN_PASSWORD')) define('ADMIN_NAPTIEN_PASSWORD', 'doi-ma
  *  Đặt giá trị thật trong web/config.local.php, đừng sửa ở đây.
  */
 if (!defined('ADMIN_ACCOUNTS')) define('ADMIN_ACCOUNTS', '');
+
+/**
+ * Thư mục gốc của game server — nơi nó ghi errorlog.txt, hack.txt, log/game.out...
+ *
+ * Server chạy với WorkingDirectory=/opt/kpah (vps/kpah-game.service) nên mọi file
+ * .txt nó ghi ra đều nằm thẳng ở đó, còn stdout/stderr thì vào log/game.out.
+ * Website nằm ở /opt/kpah/web, nên thư mục cha của config.php chính là chỗ cần
+ * tìm — mặc định dưới đây đúng cho VPS mà không phải khai báo gì.
+ *
+ * Chỉ cần đặt lại trong config.local.php khi web KHÔNG nằm cùng máy / cùng cây
+ * thư mục với server (ví dụ chép web/ sang C:\xampp\htdocs khi chạy thử):
+ *
+ *     define('SERVER_DIR', 'C:/Users/ADMIN/Desktop/KPAH');
+ *
+ * Trang admin chỉ ĐỌC, và chỉ đọc đúng danh sách tên file viết sẵn trong
+ * chandoan.php — không nhận tên file từ người dùng.
+ */
+if (!defined('SERVER_DIR')) define('SERVER_DIR', dirname(__DIR__));

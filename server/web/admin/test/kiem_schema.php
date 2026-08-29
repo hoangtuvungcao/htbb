@@ -57,12 +57,12 @@ $TU_KHOA = array_flip(explode(' ', strtolower(
   . 'then else end asc desc left right join on inner outer union all exists like '
   . 'date date_sub date_add now curdate interval second minute hour day week month year '
   . 'password concat replace length if ifnull coalesce true false between '
-  . 'information_schema tables table_schema table_name'
+  . 'information_schema tables columns table_schema table_name column_name data_type character_maximum_length'
 )));
 
 $loi = 0;
 $soCau = 0;
-$FILE = ['index.php', 'taikhoan.php', 'nhanvat.php', 'giftcode.php', 'log.php', 'nhatky.php', 'inc/boot.php'];
+$FILE = ['index.php', 'taikhoan.php', 'nhanvat.php', 'giftcode.php', 'log.php', 'nhatky.php', 'chandoan.php', 'inc/boot.php'];
 
 foreach ($FILE as $f) {
     $php = file_get_contents($GOC . 'web/admin/' . $f);
@@ -72,6 +72,15 @@ foreach ($FILE as $f) {
     foreach ($m as $k) {
         $s = $k[1] !== '' ? $k[1] : ($k[2] ?? '');
         if (!preg_match('/\b(SELECT|UPDATE|INSERT INTO|DELETE FROM)\b/i', $s)) {
+            continue;
+        }
+        // Cau SQL that o day deu thuan ASCII. Chuoi co dau tieng Viet la van xuoi
+        // giai thich cho nguoi doc, vo tinh chua chu "UPDATE" hay "SELECT".
+        if (preg_match('/[^\x00-\x7F]/', $s)) {
+            continue;
+        }
+        // Bang he thong cua MySQL, khong co trong ban dump schema.
+        if (stripos($s, 'information_schema') !== false) {
             continue;
         }
         $soCau++;
