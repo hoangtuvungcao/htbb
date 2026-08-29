@@ -9144,21 +9144,33 @@ public class Map implements Runnable {
                     player.subLuong(1);
                     player.subXu(3000000, false, "tinh luyen");
         
-                    // Tỷ lệ thành công TĂNG dần theo mốc: mốc càng gần 0% thì càng khó,
-                    // càng gần 100% thì càng dễ.
+                    // Tỷ lệ thành công TĂNG dần theo mốc: càng gần 0% càng khó, càng gần
+                    // 100% càng dễ. Đường cong BẬC HAI nên đoạn đầu rất chậm rồi mới bứt
+                    // lên ở đoạn cuối:
                     //
-                    //    mốc 0  -> 11%      mốc 50 -> 36%      mốc 98 -> 60%
-                    //    cứ 2 mốc thì tăng 1%, chặn trần ở 60%
-                    //    mốc 99 -> 100% (xử lý riêng ngay bên dưới)
+                    //    mốc   0 :  5%      mốc  30 : 10%      mốc  80 : 42%
+                    //    mốc  10 :  6%      mốc  50 : 19%      mốc  98 : 60%
+                    //    mốc  20 :  7%                         mốc  99 : 100%
                     //
-                    // Trước đây công thức ngược lại: 60% ở mốc 0 rồi giảm dần xuống 11%.
-                    // Chi phí kỳ vọng đi từ 0 lên 100 gần như không đổi giữa hai đường
-                    // cong (342 lần đánh so với 350), chỉ đổi chỗ khó: nay nặng ở đoạn
-                    // đầu thay vì đoạn cuối.
-                    final int TI_LE_THAP_NHAT = 11; // ở mốc 0
-                    final int TI_LE_CAO_NHAT = 60;  // chạm trần ở mốc 98
-                    int successRate = Math.min(TI_LE_CAO_NHAT,
-                            TI_LE_THAP_NHAT + player.itemVukhiThoiTrang.TinhLuyen / 2);
+                    // Kỳ vọng cả chặng 0 -> 100 là ~771 lần đánh (~2,31 tỉ xu, 771 lượng,
+                    // 771 nguyên liệu), trong đó riêng đoạn 0 -> 30 đã chiếm ~478 lần.
+                    //
+                    // Tính bằng SỐ NGUYÊN, không dùng số thực:
+                    //     tỉ lệ = 5 + làm_tròn( 55 * mốc^2 / 98^2 )
+                    // 9604 = 98^2, cộng 4802 (một nửa) trước khi chia là để làm tròn thay
+                    // vì cắt cụt. Mốc 98 cho đúng 5 + 55 = 60.
+                    final int TI_LE_GOC = 5;    // ở mốc 0
+                    final int TI_LE_THEM = 55;  // cộng dồn tới mốc 98 -> 60%
+                    final int MOC_TRAN = 98;
+                    int moc = player.itemVukhiThoiTrang.TinhLuyen;
+                    if (moc < 0) {
+                        moc = 0;
+                    } else if (moc > MOC_TRAN) {
+                        moc = MOC_TRAN;
+                    }
+                    int successRate = TI_LE_GOC
+                            + (TI_LE_THEM * moc * moc + (MOC_TRAN * MOC_TRAN) / 2)
+                              / (MOC_TRAN * MOC_TRAN);
 
                     // ✅ Nếu là Thần Binh và đang ở % tinh luyện là 99%
                     if (player.checkVuKhiThanBinh() && player.itemVukhiThoiTrang.TinhLuyen == 99) {
