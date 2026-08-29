@@ -301,30 +301,91 @@ public final class KiemSkinLinhThu {
     }
 
     /**
-     * Cho ngoi cua skin: bang bu phai co du 5 muc va phai duoc CONG vao dy_horse.
+     * Cho nguoi ngoi phai CHOT TRONG DU LIEU, khong co duong tinh chinh rieng nao.
      *
-     * Client ve con thu ngay tai chan nhan vat roi nhac rieng nhan vat len bang mot bang
-     * CO DINH (Char.dy_horse), khong theo con thu. Bo sprite skin thap hon con thu chuan
-     * nen chan nguoi cao hon lung thu. Khong nhac con thu len duoc (nhac bao nhieu thi
-     * chan no roi mat dat bay nhieu), nen phai ha nguoi ngoi xuong.
+     * Client ve con thu tai CHAN nhan vat roi nhac RIENG nhan vat len bang dy_horse — mot
+     * bang co dinh chi co MOT dong, o ca ban Unity lan ban JAR. Nen cho ngoi chi can duoc
+     * bang cach doi toa do cac khung cua con thu (tools/CanChoNgoiSkinThu), va lam vay thi
+     * chay tren moi client.
      *
-     * Dau CONG la quan trong: dy_horse am la nhac len, cong so duong vao la bot nhac ->
-     * ngoi thap xuong. Tru di la nguoi bay cao hon nua, ho to gap doi.
+     * TRUOC DAY con them mang Char.BU_NGOI_SKIN + phim P de do tay so bu ngay trong game.
+     * Da bo han: mang do luon bang 0 sau khi da can trong du lieu, ma de lai thi phim P
+     * van cong don duoc tung pixel — bam nham la nguoi lun vao than thu, nhin nhu mat nua
+     * nguoi. Hai kiem tra dau chan dung viec do quay lai.
+     *
+     * Kiem tra thu ba do do "lut" (chan nguoi lun vao than thu) roi doi chieu voi CHINH
+     * CAC CON THU TOOL CUA GAME — Poro (map/d_effect/56), Lan (62), Heo (64) — chu khong
+     * chot mot con so tu nghi ra. Ra ngoai khoang do la bo sprite da bi keo lech.
      */
     private static void kiemChoNgoiSkin() {
         Kiem.nhom("Skin linh thu - cho nguoi ngoi");
 
         final String ma = doc("ClientUnity/Assets/Scripts/Game/Char.cs");
         Kiem.dung("doc duoc Char.cs", ma.length() > 0);
-        Kiem.dung("co bang bu cho ngoi", ma.contains("public static int[] BU_NGOI_SKIN = new int[5]"));
-        Kiem.dung("moc dai id skin khop voi server",
-                ma.contains("ID_ANH_SKIN_DAU = " + real.SkinLinhThu.ID_ANH_BAN_DO));
-        Kiem.dung("bu duoc CONG vao dy_horse, khong phai tru",
-                ma.contains("return dy_horse[typehorse][dir] + ((n >= 0) ? BU_NGOI_SKIN[n] : 0);"));
+        Kiem.dung("nhac nguoi lay THANG tu dy_horse, khong cong them gi",
+                ma.contains("return dy_horse[typehorse][dir];"));
+        Kiem.sai("KHONG con mang bu cho ngoi rieng cho ban Unity",
+                ma.contains("int[] BU_NGOI_SKIN"));
 
         final String gs = doc("ClientUnity/Assets/Scripts/Game/GameScr.cs");
-        Kiem.dung("co phim do cho ngoi ngay trong game", gs.contains("doChinhChoNgoiSkin()"));
-        Kiem.dung("so dang do duoc ve len man hinh", gs.contains("veSoBuNgoiSkin(g)"));
+        Kiem.dung("doc duoc GameScr.cs", gs.length() > 0);
+        Kiem.sai("KHONG con phim do cho ngoi trong ban phat hanh",
+                gs.contains("doChinhChoNgoiSkin"));
+
+        // Khoang binh thuong lay tu chinh cac con thu tool cua game.
+        int thap = Integer.MAX_VALUE;
+        int cao = Integer.MIN_VALUE;
+        for (final String mocThu : new String[] { "56", "62", "64" }) {
+            final int l = lutHuongXuong(new java.io.File("map/d_effect/" + mocThu));
+            if (l == Integer.MIN_VALUE) {
+                continue;
+            }
+            thap = Math.min(thap, l);
+            cao = Math.max(cao, l);
+        }
+        if (thap == Integer.MAX_VALUE) {
+            System.out.println("    (bo qua doi chieu: khong doc duoc map/d_effect/56,62,64)");
+            return;
+        }
+        final int bien = 2;
+        System.out.println("    thu tool cua game lut " + thap + ".." + cao
+                + "px, cho phep " + (thap - bien) + ".." + (cao + bien));
+        for (int n = 0; n < real.SkinLinhThu.SO_SKIN; n++) {
+            final int l = lutHuongXuong(new java.io.File("map/skinthu/" + n));
+            Kiem.dung("skin " + n + " lut " + l + "px, nam trong khoang thu tool cua game",
+                    l != Integer.MIN_VALUE && l >= thap - bien && l <= cao + bien);
+        }
+    }
+
+    /**
+     * Do "lut": chan nhan vat lun vao than con thu bao nhieu pixel, huong XUONG.
+     *
+     * = Char.dy_horse[0][DOWN] tru di dinh cao nhat cua con thu o khoi khung huong xuong.
+     * Tra Integer.MIN_VALUE neu khong doc duoc tep.
+     */
+    private static int lutHuongXuong(final java.io.File tep) {
+        try {
+            final byte[] b = java.nio.file.Files.readAllBytes(tep.toPath());
+            final int soAnh = b[0] & 0xFF;
+            int vt = 1 + soAnh * 5;
+            final int soKhung = ((b[vt] & 0xFF) << 8) | (b[vt + 1] & 0xFF);
+            vt += 2;
+            int tren = Integer.MAX_VALUE;
+            for (int f = 0; f < soKhung; f++) {
+                final int soManh = b[vt] & 0xFF;
+                vt++;
+                for (int k = 0; k < soManh; k++) {
+                    if (f < 7) {                       // khoi huong xuong = khung 0..6
+                        // dy nam o vt+2..vt+3; vt..vt+1 la dx.
+                        tren = Math.min(tren, (short) (((b[vt + 2] & 0xFF) << 8) | (b[vt + 3] & 0xFF)));
+                    }
+                    vt += 7;
+                }
+            }
+            return (tren == Integer.MAX_VALUE) ? Integer.MIN_VALUE : -20 - tren;
+        } catch (final Exception e) {
+            return Integer.MIN_VALUE;
+        }
     }
 
     private static String doc(final String duongDan) {

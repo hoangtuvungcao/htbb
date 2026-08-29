@@ -2334,45 +2334,25 @@ public class Char : LiveActor
 	// ====================================================================================
 	//
 	// Client ve con thu cuoi ngay tai CHAN nhan vat, roi nhac RIENG nhan vat len bang
-	// dy_horse[typehorse][dir]. Bang do co dinh, khong theo con thu — nen con thu cang
-	// thap thi chan nguoi cang gan dinh lung no, va ho ra mot khoang trang.
+	// dy_horse[typehorse][dir]. Bang do CO DINH, khong theo con thu, va chi co MOT dong
+	// {-20,-15,-15,-15} — o ca ban Unity lan ban JAR. Nen khong co cach nao bao client
+	// cho nguoi ngoi cao hay thap hon tu phia server.
 	//
-	// Bo sprite skin dang dung thap hon con thu chuan. Do bang tools/XemSkinNhuTrongGame
-	// (do "lut" cua chan nguoi vao than thu, huong xuong): Poro 12px, Lan 15px, con bo
-	// skin chi 6..12px.
+	// Cho ngoi cua skin da duoc can ngay trong DU LIEU bang tools/CanChoNgoiSkinThu (doi
+	// toa do cac khung cua con thu), va cach do chay tren MOI client. Do lai bang
+	// tools/XemSkinNhuTrongGame: do "lut" cua chan nguoi vao than thu huong xuong hien la
+	// 11..14px, so voi Poro 12px va Lan 19px cua chinh game — tuc nam trong khoang binh
+	// thuong, khong can bu them gi.
 	//
-	// KHONG chua duoc bang cach nhac con thu len: nhac len bao nhieu thi chan no roi mat
-	// dat bay nhieu. Nen o day ha NGUOI NGOI xuong: cong them mot so DUONG vao dy_horse
-	// (dy_horse am la nhac len, cong vao la bot nhac -> ngoi thap xuong).
-	//
-	// Chinh duoc ngay trong game bang phim P khi dang cuoi skin, de do cho vua mat roi
-	// chep so vao day cho co dinh. Xem GameScr.doChinhChoNgoiSkin.
-	public const int ID_ANH_SKIN_DAU = 13000;
-
-	/// <summary>
-	/// So pixel ha nguoi ngoi xuong cho tung skin. Cang lon = ngoi cang thap.
-	///
-	/// DE 0 HET LA CO Y. Cho ngoi da duoc can ngay trong DU LIEU bang
-	/// tools/CanChoNgoiSkinThu (nang con thu len cho chan nguoi lut sau vao than no), va
-	/// cach do chay tren MOI client — ke ca ban JAR cu khong build lai duoc. Bang nay chi
-	/// con la duong tinh chinh rieng cho ban Unity; dat khac 0 la CONG THEM vao phan da
-	/// can trong du lieu, tuc chinh chong hai lan.
-	/// </summary>
-	public static int[] BU_NGOI_SKIN = new int[5] { 0, 0, 0, 0, 0 };
-
-	/// <summary>Skin thu may dang cuoi, -1 neu khong phai skin linh thu.</summary>
-	public int soHieuSkinDangCuoi()
-	{
-		int n = idhorse - ID_ANH_SKIN_DAU;
-		return (n >= 0 && n < BU_NGOI_SKIN.Length) ? n : -1;
-	}
-
+	// TRUOC DAY o day co them mang BU_NGOI_SKIN va phim P de do tay so bu. Da BO: cho
+	// ngoi chot trong du lieu roi nen mang do luon bang 0, ma de lai thi phim P van cong
+	// don duoc tung pixel — bam nham la nguoi lun vao than thu, nhin nhu mat nua nguoi.
+	// Mot duong tinh chinh chi rieng ban Unity cung lam lech hai ban client.
 	public int getdyParHorse()
 	{
 		if (typehorse != -1)
 		{
-			int n = soHieuSkinDangCuoi();
-			return dy_horse[typehorse][dir] + ((n >= 0) ? BU_NGOI_SKIN[n] : 0);
+			return dy_horse[typehorse][dir];
 		}
 		return 0;
 	}

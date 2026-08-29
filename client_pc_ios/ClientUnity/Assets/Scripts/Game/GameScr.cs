@@ -2333,11 +2333,6 @@ public class GameScr : MyScreen
 					xSlot = Res.wKhung;
 					return;
 				}
-				if (Canvas.isKeyPressed(KeyConst.P))
-				{
-					doChinhChoNgoiSkin();
-					return;
-				}
 			}
 			if (autoFight)
 			{
@@ -4360,7 +4355,6 @@ public class GameScr : MyScreen
 				paintFocusActorInfo(g);
 			}
 			paintMainCharInfo(g);
-			veSoBuNgoiSkin(g);
 		}
 		catch (Exception)
 		{
@@ -4840,57 +4834,6 @@ public class GameScr : MyScreen
 			MFont.borderFont.drawString(g, "Ðóng", 5, Canvas.h - MyScreen.deltaY, 0);
 			MFont.borderFont.drawString(g, "Xóa", Canvas.w - 5, Canvas.h - MyScreen.deltaY, 1);
 		}
-	}
-
-	/// <summary>
-	/// Phim P: ha nguoi ngoi xuong tung pixel mot khi dang cuoi skin linh thu, de do cho
-	/// vua mat.
-	///
-	/// VI SAO CAN: client ve con thu ngay tai CHAN nhan vat roi nhac RIENG nhan vat len
-	/// bang mot bang CO DINH (Char.dy_horse), khong theo con thu. Bo sprite skin thap hon
-	/// con thu chuan nen chan nguoi cao hon lung thu, ho ra mot khoang. So bu dung bao
-	/// nhieu thi phai NHIN moi biet — moi con mot khac, va con tuy trang phuc nhan vat.
-	///
-	/// Do xong thi chep so hien tren man hinh vao Char.BU_NGOI_SKIN cho co dinh.
-	/// Chi chay khi dang cuoi skin, nen khong dam vao phim tat nao cua nguoi choi thuong.
-	/// </summary>
-	private void doChinhChoNgoiSkin()
-	{
-		int n = mainChar.soHieuSkinDangCuoi();
-		if (n < 0)
-		{
-			return;
-		}
-		Char.BU_NGOI_SKIN[n]++;
-		if (Char.BU_NGOI_SKIN[n] > 12)
-		{
-			Char.BU_NGOI_SKIN[n] = 0;
-		}
-		// Hien so ngay tren man hinh chu khong mo hop thoai: dang do thi phai bam P lien
-		// tuc, moi lan mot hop thoai la khong nhin duoc con thu doi cho nao.
-		demHienBuNgoi = 120;
-	}
-
-	/// <summary>Con bao nhieu tick nua thi thoi hien so bu cho ngoi. Xem doChinhChoNgoiSkin.</summary>
-	private int demHienBuNgoi;
-
-	/// <summary>Ve so bu cho ngoi dang do, chi hien mot lat sau moi lan bam P.</summary>
-	private void veSoBuNgoiSkin(MyGraphics g)
-	{
-		if (demHienBuNgoi <= 0)
-		{
-			return;
-		}
-		demHienBuNgoi--;
-		int n = mainChar.soHieuSkinDangCuoi();
-		if (n < 0)
-		{
-			demHienBuNgoi = 0;
-			return;
-		}
-		Canvas.resetTrans(g);
-		MFont.borderFont.drawString(g, "skin " + n + " - ha nguoi ngoi " + Char.BU_NGOI_SKIN[n]
-			+ "px  (P de doi)", Canvas.hw, 40, MFont.CENTER);
 	}
 
 	private void paintMainCharInfo(MyGraphics g)
