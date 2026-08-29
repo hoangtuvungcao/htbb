@@ -216,6 +216,25 @@ class MapEpNgoc {
                         int total = item.getTotalMaterial(typeStone == 1);
                         int[] soluong = (int[]) null;
                         String info = "Nhận được ";
+
+                        // TRA GIA TRUOC, NHAN THUONG SAU.
+                        //
+                        // Truoc day thu tu nguoc lai: ba vong ben duoi cong nguyen lieu
+                        // vao tui (doAddGemItem) roi moi tru vien da tach va go trang bi
+                        // ra khoi hanh trang. Bat ky ngoai le nao roi vao khoang giua -
+                        // ma ca ham nam trong mot khoi try nuot loi (dong 177) - la nguoi
+                        // choi giu duoc CA nguyen lieu LAN trang bi. Dung khuon loi da gap
+                        // that o Huyet Bo De (Map.doUseItem + Pet.doChangeThongThao).
+                        //
+                        // Doc item.getIDMaterialGetBack()/getTotalMaterial() o tren truoc
+                        // roi moi go item ra khoi Vector - go khoi Vector khong xoa doi
+                        // tuong nen phan ghi nhat ky ben duoi van doc duoc ten va thuoc tinh.
+                        if (player.listGemitemLock[idg] > 0) {
+                            player.delGem(idg, 1, true);
+                        } else {
+                            player.delGem(idg, 1, false);
+                        }
+                        player.iItems.remove(item);
                         if (item.hangItem == 1) {
                             soluong = new int[2];
                             int[] idtem = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1};
@@ -263,13 +282,6 @@ class MapEpNgoc {
                             }
                         }
 
-                        if (player.listGemitemLock[idg] > 0) {
-                            player.delGem(idg, 1, true);
-                        } else {
-                            player.delGem(idg, 1, false);
-                        }
-
-                        player.iItems.remove(item);
                         player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
                         player.sendMessage(MessageCreator.createCharGemItem(player));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
@@ -372,6 +384,16 @@ class MapEpNgoc {
                 if (gem != null) {
                     if (gem.isSelling && player.typeGemImbue == 0) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thêm vì bạn đang bán loại ngọc này", ""));
+                        return;
+                    }
+
+                    // Che do nguyen lieu phai la 0, 1 hoac 2. Ba dieu kien duoi day khong
+                    // co nhanh mac dinh, nen mot gia tri thu tu se lot qua het ma khong
+                    // he kiem ton kho. Chan o day la lop thu hai; lop dau o cho gan
+                    // (MapDoMenu case -505).
+                    if (player.typeGemImbue < 0 || player.typeGemImbue > 2) {
+                        data.NghiVanGianLan.ghiVatPham(player, "hackepngoc",
+                                "che do nguyen lieu ep ngoc khong hop le luc them ngoc: " + player.typeGemImbue);
                         return;
                     }
 
@@ -597,7 +619,10 @@ class MapEpNgoc {
                                     }
 
                                     player.allGemUseLock[gem.idGemTemplate]++;
-                                } else if (player.typeGemImbue == 2) {
+                                } else {
+                                    // Bao gom ca typeGemImbue == 2 VA moi gia tri la khac.
+                                    // Truoc day day la "else if (== 2)" khong co nhanh mac
+                                    // dinh: gia tri la thi khong tru vien nao -> ep mien phi.
                                     if (player.listGemitemLock[gem.idGemTemplate] > 0) {
                                         player.listGemitemLock[gem.idGemTemplate]--;
                                         if (isSpesialLkd(gem.idGemTemplate)) {
@@ -676,8 +701,12 @@ class MapEpNgoc {
                     return;
                 }
 
-                if (len < 3) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu", ""));
+                // len doc tu goi tin (readByte) va chi bi chan can DUOI. Ben duoi dung
+                // "percent[gem.size() - 3]" ma percent chi co 3 phan tu, nen gui tu 6
+                // vien tro len la vuot mang - ngoai le bi khoi catch cuoi ham nuot,
+                // nguoi choi khong mat gi nhung cung khong nhan gi.
+                if (len < 3 || len > 5) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể hợp thành từ 3 đến 5 nguyên liệu", ""));
                     player.sendMessage(MessageCreator.createCharGemItem(player));
                     return;
                 }
@@ -692,7 +721,20 @@ class MapEpNgoc {
                             return;
                         }
 
-                        if (g.idGemTemplate < 60 || g.idGemTemplate == 65) {
+                        // Dung dung truong GemTemplate.ep - truong sinh ra CHINH DE danh dau
+                        // "vien nay hop thanh len tang tren duoc" (GemTemplate.java:222, 262).
+                        //
+                        // Truoc day o day loc bang dai so cung "id >= 60 va != 65", rong hon
+                        // ep rat nhieu. Hai nhom lot qua:
+                        //   - Tang DINH cua moi ho da (73, 80, 87, 94, 101, 108, 115, 122,
+                        //     129, 135) co ep = 0 dung de chan. Hop thanh ra "gtemplate + 1"
+                        //     tuc la tang DAY cua ho KE TIEP -> nhay ho, leo dan len.
+                        //   - Toan bo id tu 136 tro len, gom ca vat pham nap luong.
+                        // ep cung la thu server GUI CHO CLIENT (MessageCreator.java:842) nen
+                        // dung no o day thi hai ben khop nhau.
+                        if (g.idGemTemplate < 0 || g.idGemTemplate >= gemTemplate.length
+                                || gemTemplate[g.idGemTemplate] == null
+                                || gemTemplate[g.idGemTemplate].ep != 1) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Loại nguyên liệu này không thể hợp thành", ""));
                             player.sendMessage(MessageCreator.createCharGemItem(player));
                             return;

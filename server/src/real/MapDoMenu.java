@@ -643,6 +643,13 @@ class MapDoMenu {
                         return;
                     }
 
+                    // idOptionMenu tu goi tin, dung lam chi so vao mang 5 phan tu.
+                    if (idOptionMenu < 0 || idOptionMenu >= GemTemplate.ID_MATERIAL_LOW[5].length) {
+                        data.NghiVanGianLan.ghiVatPham(player, "hackruong",
+                                "gui chi so nguyen lieu ruong Dracula ngoai bien: " + idOptionMenu);
+                        return;
+                    }
+
                     int sl = player.idNglieuDoi;
                     boolean lock = r.nextInt(2) == 1;
                     player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl, lock);
@@ -708,6 +715,14 @@ class MapDoMenu {
                         return;
                     }
 
+                    // idOptionMenu doc thang tu goi tin (dis.readByte) nen client gui
+                    // gia tri nao cung duoc. Chi co 3 che do nguyen lieu hop le.
+                    if (idOptionMenu < 0 || idOptionMenu > 2) {
+                        data.NghiVanGianLan.ghiVatPham(player, "hackkham",
+                                "gui che do nguyen lieu kham khong hop le: " + idOptionMenu);
+                        return;
+                    }
+
                     int priceKham = 10000;
                     Message m1 = new Message(-34);
                     m1.dos.writeShort(priceKham);
@@ -717,6 +732,19 @@ class MapDoMenu {
                     break;
                 case -505:
                     if (!map.isMapOffline) {
+                        return;
+                    }
+
+                    // BAT BUOC chan bien. typeGemImbue quyet dinh CA phep kiem ton kho
+                    // (MapEpNgoc.java:379-381) LAN phep tru ngoc (MapEpNgoc.java:584-612),
+                    // va ca hai deu la chuoi "if 0 / else if 1 / else if 2" KHONG CO ELSE.
+                    // Gui gia tri thu tu (vi du 3) thi: phep kiem khong dieu kien nao dung
+                    // -> cho qua ma khong kiem ton kho, va phep tru cung khong nhanh nao
+                    // chay -> khong tru vien ngoc nao. Tuc la EP NGOC MIEN PHI, khong can
+                    // co ngoc trong tui.
+                    if (idOptionMenu < 0 || idOptionMenu > 2) {
+                        data.NghiVanGianLan.ghiVatPham(player, "hackepngoc",
+                                "gui che do nguyen lieu ep ngoc khong hop le: " + idOptionMenu);
                         return;
                     }
 
