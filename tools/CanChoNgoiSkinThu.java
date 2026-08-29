@@ -48,22 +48,72 @@ public final class CanChoNgoiSkinThu {
     public static void main(final String[] thamSo) throws Exception {
         if (thamSo.length < 4) {
             System.out.println("Dung: java CanChoNgoiSkinThu <thu-muc> <so-skin>"
-                    + " <lut-muon> <day-toi-thieu>");
+                    + " <lut-muon | mau:<tep>> <day-toi-thieu>");
+            System.out.println("  vd: java CanChoNgoiSkinThu map/skinthu 5 12 2");
+            System.out.println("  vd: java CanChoNgoiSkinThu map/skinthu 5 mau:map/d_effect/56 2");
             System.exit(2);
         }
         final File thuMuc = new File(thamSo[0]);
         final int soSkin = Integer.parseInt(thamSo[1]);
-        final int lutMuon = Integer.parseInt(thamSo[2]);
         final int dayToiThieu = Integer.parseInt(thamSo[3]);
 
-        System.out.println("Muon chan nguoi lut " + lutMuon + "px vao than thu,"
-                + " day con thu khong duoc cao hon " + dayToiThieu + "px duoi vach chan.");
+        // Muc tieu co the dat rieng cho tung khoi. Lay theo MOT CON THU TOOL CO SAN cua
+        // game thi dung hon la tu nghi ra so: moi huong mot khac, va con thu that thi da
+        // duoc can san cho khop voi cach client ve nguoi cuoi.
+        final int[] lutMuon = new int[KHOI.length];
+        if (thamSo[2].startsWith("mau:")) {
+            final File mau = new File(thamSo[2].substring(4));
+            if (!mau.isFile()) {
+                System.out.println("Khong thay tep mau " + mau);
+                System.exit(2);
+            }
+            final int[] cuaMau = doLut(mau);
+            System.arraycopy(cuaMau, 0, lutMuon, 0, KHOI.length);
+            System.out.print("Can theo mau " + mau + ", lut cua no:");
+            for (int k = 0; k < KHOI.length; k++) {
+                System.out.print("  " + TEN_KHOI[k].trim() + " " + lutMuon[k] + "px");
+            }
+            System.out.println();
+        } else {
+            final int mot = Integer.parseInt(thamSo[2]);
+            java.util.Arrays.fill(lutMuon, mot);
+            System.out.println("Muon chan nguoi lut " + mot + "px vao than thu o ca ba huong.");
+        }
+        System.out.println("Day con thu khong duoc cao hon " + dayToiThieu + "px duoi vach chan.");
         for (int n = 0; n < soSkin; n++) {
             can(new File(thuMuc, String.valueOf(n)), n, lutMuon, dayToiThieu);
         }
     }
 
-    private static void can(final File tep, final int soHieu, final int lutMuon,
+    /** Do do "lut" cua tung khoi trong mot tep du lieu thu cuoi. */
+    private static int[] doLut(final File tep) throws Exception {
+        final byte[] b = Files.readAllBytes(tep.toPath());
+        final int soAnh = b[0] & 0xFF;
+        int vt = 1 + soAnh * 5;
+        final int soKhung = ((b[vt] & 0xFF) << 8) | (b[vt + 1] & 0xFF);
+        vt += 2;
+        final int[] tren = new int[KHOI.length];
+        java.util.Arrays.fill(tren, Integer.MAX_VALUE);
+        for (int f = 0; f < soKhung; f++) {
+            final int soManh = b[vt] & 0xFF;
+            vt++;
+            for (int k = 0; k < soManh; k++) {
+                for (int kh = 0; kh < KHOI.length; kh++) {
+                    if (f >= KHOI[kh] && f < KHOI[kh] + KHUNG_MOI_KHOI) {
+                        tren[kh] = Math.min(tren[kh], doc16(b, vt + 2));
+                    }
+                }
+                vt += 7;
+            }
+        }
+        final int[] ra = new int[KHOI.length];
+        for (int kh = 0; kh < KHOI.length; kh++) {
+            ra[kh] = (tren[kh] == Integer.MAX_VALUE) ? 0 : NHAC_THEO_KHOI[kh] - tren[kh];
+        }
+        return ra;
+    }
+
+    private static void can(final File tep, final int soHieu, final int[] lutMuon,
                             final int dayToiThieu) throws Exception {
         if (!tep.isFile()) {
             System.out.println("  skin " + soHieu + ": khong thay " + tep);
@@ -116,7 +166,7 @@ public final class CanChoNgoiSkinThu {
                 continue;
             }
             final int lutHienTai = NHAC_THEO_KHOI[khoi] - tren;
-            int nang = lutMuon - lutHienTai;          // duong = nang thu len, am = ha xuong
+            int nang = lutMuon[khoi] - lutHienTai;          // duong = nang thu len, am = ha xuong
             if (nang == 0) {
                 bao.append("  ").append(TEN_KHOI[khoi]).append(" dung roi (lut ")
                         .append(lutHienTai).append(")");
