@@ -92,7 +92,18 @@ function fileLuuNhanVatHong(): array
     return $ra;
 }
 
-/** Đọc phần CUỐI của một file, không nạp cả file vào bộ nhớ (game.out có thể vài trăm MB). */
+/**
+ * Đọc phần CUỐI của một file, không nạp cả file vào bộ nhớ (game.out vài trăm MB).
+ *
+ * PHẢI truyền độ dài cho `fread`. `stream_get_contents($fh)` không giới hạn độ
+ * dài trông thì đúng — nó *trả về* đúng phần sau con trỏ — nhưng bên trong PHP
+ * cấp phát bộ đệm theo **cỡ CẢ FILE**, không theo phần còn lại sau `fseek`.
+ * Với `game.out` 146 MB thì nó xin 146 MB trong khi `memory_limit` của Apache
+ * là 128M: PHP Fatal error, trình duyệt nhận HTTP 500 và trang trắng.
+ *
+ * Chạy dưới CLI thì lỗi này ẨN, vì `memory_limit` của CLI là -1: nó cấp phát
+ * đủ 146 MB rồi vẫn trả về đúng 64 KB, nên nhìn kết quả tưởng là ổn.
+ */
 function doiFile(string $duongDan, int $soByte = 64000): ?array
 {
     if (!is_file($duongDan) || !is_readable($duongDan)) {
@@ -107,7 +118,7 @@ function doiFile(string $duongDan, int $soByte = 64000): ?array
         fseek($fh, -$soByte, SEEK_END);
         fgets($fh); // bỏ dòng đầu vì gần chắc chắn bị cắt giữa chừng
     }
-    $noiDung = stream_get_contents($fh);
+    $noiDung = fread($fh, $soByte);
     fclose($fh);
     return [
         'noi_dung' => $noiDung === false ? '' : $noiDung,
