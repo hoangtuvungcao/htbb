@@ -741,11 +741,12 @@ class CharTrangBi {
                                 // Ca do nhan vat lan trang bi thu deu duoc luu vao CUNG
                                 // MOT cot equip (Database.getInfoCharSave noi getCharWearing
                                 // roi noi tiep awItems), nen luc nap lai chi con type de
-                                // phan luong. Skin mang type 19 = type cua Phi phong, ma
-                                // isWearingAnimal chi nhan 14..18, nen neu khong chan o day
-                                // thi no roi vao nhanh do nhan vat va chiem O PHI PHONG
-                                // (POS_WEARING_CHAR 19 -> index 11): dang nhap lai la mat
-                                // skin, con nhan vat thi moc them cai ao choang.
+                                // phan luong. Skin mang type 30, ma isWearingAnimal chi nhan
+                                // 14..18, nen neu khong chan o day thi no roi vao nhanh do nhan
+                                // vat. Luc do POS_WEARING_CHAR khong co o 30 -> get() tra null
+                                // va getIndexItemWearing nem NullPointerException giua luc nap.
+                                // (Ban dau skin mang type 19 = type Phi phong: khi do khong nem
+                                // loi ma am tham chiem O PHI PHONG, con te hon.)
                                 // Nang hon nua, luc do khong go ra duoc: doUseItem chi quet
                                 // iItems, con lenh "boskin" chi quet awItems.
                                 if (!Map.isWearingAnimal(t) && !SkinLinhThu.laItemSkin(item.getTemplate().id)) {

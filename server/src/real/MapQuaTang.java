@@ -947,7 +947,7 @@ class MapQuaTang {
             case 25: // Skin linh thu Tien Loc
             case 26: // Skin linh thu Xich Duong
             case 27: // Skin linh thu Chien Lang
-                // Thoi han 0 = vinh vien. Vat pham skin la trang bi thu (type 19), mac
+                // Thoi han 0 = vinh vien. Vat pham skin la trang bi thu (type 30), mac
                 // vao o dau tien ben phai bang Trang bi thu.
                 GiftCode.AddItem(player, SkinLinhThu.ID_ITEM[idx - 23], 0, 0, 0);
                 break;

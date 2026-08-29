@@ -368,7 +368,7 @@ public class ShopNew : MyScreen
 
 	private static sbyte[] idWearChar = new sbyte[10] { 12, -1, 0, 9, 2, 8, 1, 8, 10, 11 };
 
-	private static sbyte[] idWearAnimal = new sbyte[10] { 18, 19, 14, 20, 15, 21, 16, 22, 17, 23 };
+	private static sbyte[] idWearAnimal = new sbyte[10] { 18, 30, 14, 31, 15, 32, 16, 33, 17, 34 };
 
 	private static sbyte[][] posWearChar = new sbyte[10][]
 	{
@@ -5102,13 +5102,19 @@ public class ShopNew : MyScreen
 	/// <summary>
 	/// Ve icon mot mon trang bi thu vao DUNG o cua no trong bang "Trang bi thu".
 	///
-	/// KHONG dung posPaintWearingX/Y[type] nhu truoc nua. Mang do la cua bang NHAN VAT va
-	/// chi dai 20 phan tu, nen dung chung cho bang thu la sai hai kieu:
-	///   - type 19 (o dau tien ben phai bang thu) tra ra o Phi phong cua bang nhan vat,
-	///     nen icon skin linh thu roi xuong khoang giua hai cot o goc duoi;
-	///   - type 20..23 (bon o phai con lai) vuot bien mang, nem IndexOutOfRange giua vong
-	///     ve - ma vong ve khong co try/catch nen hong ca bang.
-	/// Lay thang tu idWearAnimal thi ca 10 o deu dung, va khong con cho nao vuot bien.
+	/// KHONG dung posPaintWearingX/Y[type]. Mang do la cua bang NHAN VAT, chi dai 20 phan
+	/// tu, trong khi cot phai bang thu mang type 30..34 - tra thang vao mang la vuot bien,
+	/// nem IndexOutOfRange giua vong ve, ma vong ve khong co try/catch nen hong ca bang.
+	///
+	/// Ban JAR khong vuong loi nay vi mang cua no dai 36 va co san o 30..34
+	/// (build/c276/game/render/screen/WindowInfoScr.java:168-169). Ban Unity duoc port tu
+	/// mot ban jar CU HON, luc do cot phai con danh so 19..23 va mang moi dai 20; port giu
+	/// nguyen cai cu nen hai ban lech nhau. Da dua idWearAnimal ve dung cach danh so cua
+	/// ban JAR, con toa do thi lay thang tu idWearAnimal de khoi phai noi dai mang.
+	///
+	/// Vi sao khong dung lai 19: type 19 la PHI PHONG cua nhan vat (real.Map.isPhiPhong),
+	/// va posPaintWearing[19] chinh la o phi phong o bang nhan vat - dung chung mot so cho
+	/// hai thu khac nhau la nguon goc cua ca lo bug nay.
 	/// </summary>
 	private void paintIconTrangBiThu(MyGraphics g, ItemInInventory item, int type)
 	{

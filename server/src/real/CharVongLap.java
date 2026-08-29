@@ -1164,8 +1164,8 @@ class CharVongLap {
                 // day nhan no bat ke idAnimal, roi buoc lai vao con dang cuoi de lan
                 // luu tiep theo va cac cho khac (exchangeItemAnimal) van khop.
                 //
-                // Loc theo ID TEMPLATE chu khong theo type: type 19 cung la type cua
-                // phi phong nhan vat — xem real.SkinLinhThu.ID_ITEM.
+                // Loc theo ID TEMPLATE chu khong theo type: type 30 khong nam trong
+                // dai isWearingAnimal (14..18) — xem real.SkinLinhThu.ID_ITEM.
                 if (it.getTemplate() != null && SkinLinhThu.laItemSkin(it.getTemplate().id)) {
                     if (skin == 0) {
                         skin = 1;

@@ -119,7 +119,15 @@ public class ItemInInventory
 
 	public sbyte viTriVe;
 
-	public static bool[][] attribShowedForType = new bool[20][]
+	// Dong nao trong 10 chi so cua vat pham duoc hien o bang mo ta, tra theo TYPE.
+	//
+	// Da noi tu 20 len 36 hang cho khop cot phai bang "Trang bi thu" (type 30..34, xem
+	// real.SkinLinhThu.TYPE_ITEM). Truoc do mang chi dai 20 nen getTemplateDescription
+	// nem IndexOutOfRange ngay giua luc dung chuoi mo ta — try/catch o ngoai nuot mat loi
+	// nen khong thay bao gi, chi thay mo ta bi cut ngang. Muoi sau hang moi de trong
+	// (toan false) = khong hien dong chi so nao, dung y cho skin: skin khong cong chi so,
+	// hien "Thu: 0" chi lam nhieu.
+	public static bool[][] attribShowedForType = new bool[36][]
 	{
 		new bool[10] { false, true, true, true, false, false, true, false, false, false },
 		new bool[10] { false, true, true, true, false, false, true, false, false, false },
@@ -140,7 +148,23 @@ public class ItemInInventory
 		new bool[10] { false, true, false, false, false, false, true, false, false, false },
 		new bool[10] { true, false, false, false, true, false, false, false, false, false },
 		new bool[10] { false, true, false, false, false, false, true, false, false, false },
-		new bool[10] { false, true, false, false, false, false, true, false, false, false }
+		new bool[10] { false, true, false, false, false, false, true, false, false, false },
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10],
+		new bool[10]
 	};
 
 	public short[] otherAtt;

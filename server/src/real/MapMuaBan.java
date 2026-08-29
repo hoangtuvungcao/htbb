@@ -1170,8 +1170,8 @@ class MapMuaBan {
     }
 
     static void exchangeItem(Map map, Char player, Item iItem, int slot) {
-        // Vat pham skin linh thu mang type 19 giong phi phong nen phai chan ngay o day,
-        // khong thi no roi xuong nhanh do nhan vat va chiem mat o phi phong. Phan biet
+        // Vat pham skin linh thu mang type 30, isWearingAnimal (14..18) khong nhan ra,
+        // nen phai chan ngay o day keo no roi xuong nhanh do nhan vat. Phan biet
         // bang ID TEMPLATE, khong bang type — xem real.SkinLinhThu.ID_ITEM.
         if (SkinLinhThu.laItemSkin(iItem.getTemplate().id)) {
             if (player.animalRide == null) {

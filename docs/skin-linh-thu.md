@@ -117,10 +117,13 @@ Cả đồ nhân vật lẫn trang bị thú đều được lưu vào **cùng m
 lại chỉ còn **type** để phân luồng — `Char.setItemWearing()` dùng
 `Map.isWearingAnimal(type)` = 14..18.
 
-Vật phẩm skin mang type 19 nên nếu không chặn, nó rơi vào nhánh đồ nhân vật và **chiếm ô
-Phi phong** (`POS_WEARING_CHAR[19] = 11`): đăng nhập lại là mất skin, nhân vật lại mọc
-thêm áo choàng, và không gỡ ra được (`doUseItem` chỉ quét `iItems`, `boskin` chỉ quét
-`awItems`). Vì vậy `Char.setItemWearing()` và nhánh nạp legacy đều lọc thêm
+Vật phẩm skin mang type 30, không nằm trong dải 14..18, nên nếu không chặn nó rơi vào
+nhánh đồ nhân vật — và ở đó `POS_WEARING_CHAR` không có ô 30, `get(30)` trả `null` nên
+`getIndexItemWearing` ném `NullPointerException` giữa lúc nạp nhân vật.
+
+(Bản đầu tiên đặt type 19 = type Phi phong: khi đó **không** ném lỗi mà âm thầm **chiếm ô
+Phi phong** — `POS_WEARING_CHAR[19] = 11` — đăng nhập lại là mất skin, nhân vật lại mọc
+thêm áo choàng, và không gỡ ra được. Xem mục 5.7 về việc đổi sang type 30.) Vì vậy `Char.setItemWearing()` và nhánh nạp legacy đều lọc thêm
 `SkinLinhThu.laItemSkin`, và cho skin vào `awItems` **bỏ qua `checkExistAnimal`** — skin
 gắn theo nhân vật nên bán con thú đi vẫn phải giữ được.
 
@@ -132,20 +135,48 @@ nhưng `listFrame` rỗng nên `paintTopHorse`/`paintBottomHorse` thoát ngay) �
 cưỡi hư không**. Nên `SkinLinhThu.dangMang` kiểm đủ cả hai file
 (`SkinLinhThu.coDuAnh`) trước khi bật.
 
-### 5.7 Vật phẩm dùng type 19
+### 5.7 Vật phẩm dùng type 30 — và vì sao không phải 19
 
-Bảng "Trang bị thú" của client có 10 ô, thứ tự type do client quy định sẵn
-(`WindowInfoScr.cs:361`, `MenuWindows.cs:229`, `ShopNew.cs:371` — ba chỗ giống hệt nhau):
+Bảng "Trang bị thú" của client có 10 ô, thứ tự type do client quy định sẵn trong
+`idWearAnimal`. **Hai bản client đánh số cột phải khác nhau:**
 
 ```
-idWearAnimal = {18, 19, 14, 20, 15, 21, 16, 22, 17, 23}
+bản JAR   : idWearAnimal = {18, 30, 14, 31, 15, 32, 16, 33, 17, 34}   mảng pos dài 36
+bản Unity : idWearAnimal = {18, 19, 14, 20, 15, 21, 16, 22, 17, 23}   mảng pos dài 20
  ô chẵn (0,2,4,6,8) = cột trái   |   ô lẻ (1,3,5,7,9) = cột phải
 ```
 
-Ô đầu tiên bên phải ứng với **type 19**. Type 19 cũng là type của Phi phong (đồ nhân vật),
-nhưng hai bên không lẫn nhau vì mọi chỗ đều phân biệt bằng **id template** chứ không bằng
-type: `Map.exchangeItem`, `Map.doUseItem`, `Char.getAnimalWearing` đều gọi
-`SkinLinhThu.laItemSkin`.
+Bản Unity được port từ một bản jar cũ hơn nên còn giữ cách đánh số cũ. Bản đầu tiên đặt
+type 19 theo bản Unity — **bản Unity vẽ đúng, bản JAR vẽ sai**: nó tra
+`posPaintWearing[19]` = `(34, 92)`, mà đó là **ô Phi phong của bảng nhân vật**, nên icon
+skin rơi xuống khoảng trống giữa hai cột ở góc dưới.
+
+Đã thống nhất theo cách đánh số của **bản JAR (type 30)**, vì ba lý do:
+
+1. **Bản JAR chạy đúng ngay, không phải đóng gói lại jar client.** Server gửi cột `type`
+   của từng template xuống client trong `createMsgLogin` (`MessageCreator.java:834`), nạp
+   mới mỗi lần đăng nhập, không cache, không cổng phiên bản — nên đổi `data_item` là tới
+   được người chơi ngay sau khi khởi động lại server.
+2. **Type 19 vốn là type của Phi phong nhân vật** (`Map.isPhiPhong`). Dùng chung một số
+   cho hai thứ khác nhau chính là gốc của cả loạt lỗi ở mục 5.5.
+3. **Type 30 không đụng đồ mặc nào.** Trong `data_item` chỉ có đúng dòng `id=30` "ếch
+   quỷ" — đó là bản ghi **loài thú**, không phải vật phẩm mặc được. Trang bị thú thật của
+   server chỉ có type 14–18 (Giáp, Hộ uyển, Nón, Bàn đạp, Yên cương), đúng bằng
+   `Map.isWearingAnimal`; cột phải xưa nay bỏ trống.
+
+Bản Unity đã sửa `idWearAnimal` cho khớp bản JAR ở cả ba màn hình (`WindowInfoScr.cs:361`,
+`MenuWindows.cs:229`, `ShopNew.cs:371`).
+
+Vẫn giữ lọc theo **id template** (`SkinLinhThu.laItemSkin`) ở mọi chỗ —
+`Map.exchangeItem`, `Map.doUseItem`, `Char.getAnimalWearing` — vì type 30 cũng không nằm
+trong dải `isWearingAnimal` (14..18), và `POS_WEARING_CHAR` không có ô 30 nên nếu skin lọt
+vào nhánh đồ nhân vật thì `getIndexItemWearing` sẽ ném `NullPointerException`.
+
+Bốn nơi phải khớp số này — `SkinLinhThu.TYPE_ITEM`, cột `type` trong sql, `idWearAnimal`
+của ba màn hình Unity, `idWearAnimal` của bản JAR — được `test/KiemSkinLinhThu.java`
+(`kiemSoTypeTrangBiThu`) chốt lại.
+
+Máy đã chạy bản sql cũ thì chạy thêm `sql/sua_type_skin_linh_thu.sql`.
 
 ---
 
@@ -262,15 +293,16 @@ phóng to lên — không thì phần *thân* bị bóp nhỏ và người ngồ
 
 ## 8. Giới hạn đã biết
 
-- ~~**Icon skin vẽ sai vị trí trong bảng "Trang bị thú"**~~ — **đã sửa.** Client vẽ icon
-  trang bị thú bằng `posPaintWearingX/Y[type]`, là mảng của bảng **nhân vật** và chỉ dài
-  20 phần tử: ô của type 19 trong mảng đó là ô Phi phong `(58, 184)` nên icon skin rơi
-  xuống góc dưới trái, còn type 20–23 thì vượt biên mảng.
-  Bản đầu tiên ghi là "không sửa được" vì client khi đó là bản decompile không build lại
-  được. Nay dự án tự dựng được client nên tiền đề đó không còn đúng: cả ba màn hình
-  (`MenuWindows`, `WindowInfoScr`, `ShopNew`) lấy vị trí ô thẳng từ `idWearAnimal` bằng
-  `paintIconTrangBiThu`, đúng cả 10 ô và không còn chỗ nào vượt biên.
-  **Chỉ áp dụng cho client Unity**; ai chạy bản J2ME cũ vẫn thấy icon lệch.
+- ~~**Icon skin vẽ sai vị trí trong bảng "Trang bị thú"**~~ — **đã sửa, cả hai bản client.**
+  Gốc lỗi không phải ở cách vẽ mà ở **số type**: bản JAR đánh số cột phải là 30–34 còn bản
+  Unity (port từ jar cũ hơn) đánh 19–23. Đặt type 19 thì bản Unity vẽ đúng, còn bản JAR tra
+  `posPaintWearing[19]` = `(34, 92)` — ô **Phi phong của bảng nhân vật** — nên icon rơi
+  xuống góc dưới. Đã thống nhất theo bản JAR: server gửi type **30**, bản Unity sửa
+  `idWearAnimal` cho khớp. Xem mục 5.7.
+  Bản JAR **không phải đóng gói lại**: server gửi `type` của từng template xuống client mỗi
+  lần đăng nhập, nên chỉ cần chạy `sql/sua_type_skin_linh_thu.sql` rồi khởi động lại server.
+  Bản Unity vẫn giữ `paintIconTrangBiThu` lấy vị trí ô thẳng từ `idWearAnimal`, vì mảng
+  `posPaintWearing` bên đó mới dài 20 phần tử, chưa có ô 30–34.
 - **Bộ sprite này thấp hơn con thú chuẩn, nên người ngồi hơi cao.** Client vẽ con thú ở
   **chân** nhân vật rồi nhấc riêng nhân vật lên bằng `Char.dy_horse[0]` = `{-20,-15,-15,-15}`
   — một bảng **cố định**, không theo con thú. Nên con thú càng thấp thì chân người càng

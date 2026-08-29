@@ -49,6 +49,7 @@ public final class KiemSkinLinhThu {
         Kiem.bang("moTa(5)", "không có", real.SkinLinhThu.moTa(5));
 
         kiemBoAnh();
+        kiemSoTypeTrangBiThu();
         kiemDaiIcon();
         kiemLenhChat();
         kiemOGiuaVeThuThat();
@@ -103,12 +104,12 @@ public final class KiemSkinLinhThu {
     /**
      * Icon trang bi thu phai lay o theo idWearAnimal, KHONG theo posPaintWearing.
      *
-     * posPaintWearing la mang cua bang NHAN VAT va chi dai 20 phan tu: type 19 (o dau tien
-     * ben phai bang thu) tra ra o Phi phong cua bang nhan vat nen icon skin roi xuong goc
-     * duoi trai, con type 20..23 thi vuot bien mang - nem IndexOutOfRange giua vong ve ma
-     * vong ve khong co try/catch.
+     * posPaintWearing la mang cua bang NHAN VAT va o ban Unity chi dai 20 phan tu, trong
+     * khi cot phai bang thu mang type 30..34 — tra thang vao mang la vuot bien, nem
+     * IndexOutOfRange giua vong ve ma vong ve khong co try/catch.
      *
-     * Chi sua duoc o client Unity; ban J2ME cu khong build lai duoc nen van lech.
+     * Ban JAR khong can sua: mang cua no dai 36 va co san o 30..34. Xem
+     * kiemSoTypeTrangBiThu de biet vi sao hai ban lech nhau.
      */
     private static void kiemViTriIconTrangBiThu() {
         Kiem.nhom("Skin linh thu - vi tri icon trong bang Trang bi thu");
@@ -147,6 +148,108 @@ public final class KiemSkinLinhThu {
         } catch (final Exception e) {
             return -1;
         }
+    }
+
+    /**
+     * SO TYPE cua vat pham skin phai dong bo o BON noi.
+     *
+     * Bang "Trang bi thu" co 10 o; client tra thu tu o trong mang idWearAnimal, va HAI BAN
+     * CLIENT DANH SO COT PHAI KHAC NHAU:
+     *
+     *     ban JAR   : {18, 30, 14, 31, 15, 32, 16, 33, 17, 34}   mang pos dai 36
+     *     ban Unity : {18, 19, 14, 20, 15, 21, 16, 22, 17, 23}   mang pos dai 20  (ban cu)
+     *
+     * Ban Unity duoc port tu mot ban jar cu hon nen giu cach danh so cu. Dat type 19 thi
+     * ban Unity ve dung con ban JAR tra posPaintWearing[19] = (34, 92) — o PHI PHONG cua
+     * bang NHAN VAT — nen icon skin roi xuong goc duoi. Da thong nhat theo ban JAR (30),
+     * vi nhu vay ban JAR chay dung ma KHONG phai dong goi lai jar client.
+     *
+     * Bon noi phai khop: SkinLinhThu.TYPE_ITEM, cot type trong sql, idWearAnimal cua ba
+     * man hinh Unity, va idWearAnimal cua ban JAR. Lech mot cai la icon lai nhay cho.
+     */
+    private static void kiemSoTypeTrangBiThu() {
+        Kiem.nhom("Skin linh thu - so type dong bo giua server, sql va hai client");
+
+        final int TYPE = 30;
+        final String MANG = "{ 18, 30, 14, 31, 15, 32, 16, 33, 17, 34 }";
+
+        Kiem.bang("SkinLinhThu.TYPE_ITEM", TYPE, real.SkinLinhThu.TYPE_ITEM);
+        Kiem.sai("TYPE_ITEM khong duoc trung type Phi phong (Map.isPhiPhong = 19)",
+                real.SkinLinhThu.TYPE_ITEM == 19);
+        Kiem.sai("TYPE_ITEM khong duoc nam trong dai isWearingAnimal (14..18)",
+                real.SkinLinhThu.TYPE_ITEM >= 14 && real.SkinLinhThu.TYPE_ITEM <= 18);
+
+        // sql: ca 5 dong INSERT phai mang dung so type do.
+        final String sql = doc("sql/skin_linh_thu.sql");
+        Kiem.dung("doc duoc sql/skin_linh_thu.sql", sql.length() > 0);
+        int soDong = 0;
+        for (final String dong : sql.split("\n")) {
+            if (!dong.contains("'Skin linh thú")) {
+                continue;
+            }
+            soDong++;
+            // cot type la so dau tien sau ten trong ngoac nhay
+            final String sau = dong.substring(dong.lastIndexOf('\'') + 1).trim();
+            final String so = sau.startsWith(",") ? sau.substring(1).trim().split(",")[0].trim() : "?";
+            Kiem.bang("sql dong " + soDong + " co type " + TYPE, String.valueOf(TYPE), so);
+        }
+        Kiem.bang("sql co du 5 dong INSERT", real.SkinLinhThu.SO_SKIN, soDong);
+
+        // Phai co san file chuyen doi cho may da chay ban sql cu.
+        final String vaSql = doc("sql/sua_type_skin_linh_thu.sql");
+        Kiem.dung("co sql/sua_type_skin_linh_thu.sql", vaSql.length() > 0);
+        Kiem.dung("file chuyen doi dat type ve " + TYPE,
+                vaSql.contains("SET `type` = " + TYPE));
+
+        // Ba man hinh Unity phai dung cach danh so cua ban JAR.
+        for (final String ten : new String[] { "MenuWindows", "WindowInfoScr", "ShopNew" }) {
+            final String ma = doc("ClientUnity/Assets/Scripts/Game/" + ten + ".cs");
+            Kiem.dung(ten + ".cs dung idWearAnimal theo ban JAR",
+                    ma.contains("idWearAnimal = new sbyte[10] " + MANG));
+            Kiem.sai(ten + ".cs khong con cach danh so cu 19..23",
+                    ma.contains("{ 18, 19, 14, 20, 15, 21, 16, 22, 17, 23 }"));
+        }
+
+        // Doi chieu voi chinh nguon ban JAR neu co san (build/c276 khong nam trong git).
+        final java.io.File jar = new java.io.File("build/c276/game/render/screen/WindowInfoScr.java");
+        if (jar.isFile()) {
+            final String ma = doc(jar.getPath());
+            Kiem.dung("ban JAR van danh so cot phai la 30..34",
+                    ma.contains("idWearAnimal = new byte[]{18, 30, 14, 31, 15, 32, 16, 33, 17, 34}"));
+            // O thu TYPE trong mang toa do phai la cot phai (x = 107) hang dau (y = 11).
+            final int[] x = mangSo(ma, "posPaintWearingX = new int[]{");
+            final int[] y = mangSo(ma, "posPaintWearingY = new int[]{");
+            Kiem.dung("ban JAR co o " + TYPE + " trong posPaintWearing",
+                    x.length > TYPE && y.length > TYPE);
+            if (x.length > TYPE && y.length > TYPE) {
+                Kiem.bang("ban JAR: x cua o " + TYPE + " la cot phai", 107, x[TYPE]);
+                Kiem.bang("ban JAR: y cua o " + TYPE + " la hang dau", 11, y[TYPE]);
+            }
+        } else {
+            System.out.println("    (bo qua doi chieu ban JAR: khong co " + jar.getPath() + ")");
+        }
+    }
+
+    /** Doc mot mang so nguyen viet lien trong nguon Java, vd "new int[]{1, 2, 3}". */
+    private static int[] mangSo(final String ma, final String moc) {
+        final int vt = ma.indexOf(moc);
+        if (vt < 0) {
+            return new int[0];
+        }
+        final int het = ma.indexOf('}', vt);
+        if (het < 0) {
+            return new int[0];
+        }
+        final String[] phan = ma.substring(vt + moc.length(), het).split(",");
+        final int[] ra = new int[phan.length];
+        for (int i = 0; i < phan.length; i++) {
+            try {
+                ra[i] = Integer.parseInt(phan[i].trim());
+            } catch (final NumberFormatException e) {
+                return new int[0];
+            }
+        }
+        return ra;
     }
 
     /**

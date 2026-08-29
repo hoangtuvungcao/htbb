@@ -79,25 +79,39 @@ public final class SkinLinhThu {
     public static final int[] ID_ITEM = {905, 906, 907, 908, 909};
 
     /**
-     * Vat pham skin mang type 19.
+     * Vat pham skin mang type 30.
      *
      * Bang "Trang bi thu" cua client co 10 o, thu tu type do client quy dinh san trong
-     * idWearAnimal (WindowInfoScr.cs:361, MenuWindows.cs:229, ShopNew.cs:371 — ba cho
-     * giong het nhau):
+     * idWearAnimal:
      *
-     *     idWearAnimal = {18, 19, 14, 20, 15, 21, 16, 22, 17, 23}
+     *     idWearAnimal = {18, 30, 14, 31, 15, 32, 16, 33, 17, 34}
      *      o chan (0,2,4,6,8) = cot trai   |   o le (1,3,5,7,9) = cot phai
      *
-     * O DAU TIEN BEN PHAI ung voi type 19, nen vat pham skin phai mang type 19.
+     * O DAU TIEN BEN PHAI ung voi type 30, nen vat pham skin phai mang type 30.
      *
-     * Type 19 cung la type cua "Phi phong" (do nhan vat). Hai ben khong lan nhau vi moi
-     * cho deu phan biet bang ID TEMPLATE chu khong bang type:
-     *   - Map.exchangeItem   : template nam trong ID_ITEM thi day sang duong trang bi
-     *                          thu, khong roi vao o phi phong cua nhan vat.
-     *   - Char.getAnimalWearing : chi nhan type 19 neu template nam trong ID_ITEM.
-     * Phi phong that (template khac) van di duong cu, khong doi gi.
+     * VI SAO KHONG PHAI 19 (ban dau dat nham): hai client danh so cot phai KHAC NHAU.
+     *   - ban JAR  (build/c276/.../WindowInfoScr.java:181): cot phai = 30..34, va mang
+     *     posPaintWearing cua no dai 36 nen co san o 30..34 tai x=107.
+     *   - ban Unity: port tu mot ban jar cu hon, cot phai con la 19..23, mang dai 20.
+     * Gui type 19 thi ban Unity ve dung nhung ban JAR tra posPaintWearing[19] = (34, 92)
+     * — tuc o PHI PHONG cua bang nhan vat — nen icon skin roi xuong goc duoi giua hai cot.
+     * Da thong nhat ve cach danh so cua ban JAR: server gui 30, ban Unity sua idWearAnimal
+     * cho khop. Nho vay ban JAR chay dung ma KHONG phai dong goi lai jar client.
+     *
+     * Loi thu hai duoc go luon: type 19 cung la type cua "Phi phong" nhan vat
+     * (Map.isPhiPhong). Dung chung mot so cho hai thu khac nhau khien moi cho phai phan
+     * biet bang ID TEMPLATE. Type 30 khong dung voi bat ky do mac nao: trong data_item
+     * chi co dong id=30 "ech quy" — do la ban ghi LOAI THU, khong phai vat pham mac duoc.
+     *
+     * Van giu loc theo ID TEMPLATE (SkinLinhThu.laItemSkin) o moi cho, vi do la thu chac
+     * chan nhat va da chay on:
+     *   - Map.exchangeItem       : day sang duong trang bi thu.
+     *   - CharVongLap.getAnimalWearing : nhan skin bat ke idAnimal.
+     *   - CharTrangBi (nap lai)  : chan skin roi vao nhanh do nhan vat.
+     *
+     * Doi so nay phai doi kem trong data_item — xem sql/sua_type_skin_linh_thu.sql.
      */
-    public static final int TYPE_ITEM = 19;
+    public static final int TYPE_ITEM = 30;
 
     /**
      * Dong bang bu toa do nguoi ngoi (Char.dx_horse_tool / dy_horse_tool), gui kem

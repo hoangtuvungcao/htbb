@@ -14996,7 +14996,7 @@ public class Map implements Runnable {
                     }
 
                     int t = item.getTemplate().type;
-                    // Vat pham skin linh thu mang type 19 nen isWearingAnimal (14..18)
+                    // Vat pham skin linh thu mang type 30 nen isWearingAnimal (14..18)
                     // khong nhan ra. Coi no la trang bi thu ngay tu day de bo qua cac
                     // kiem tra danh cho do nhan vat (dung mon phai, dung gioi tinh,
                     // isArmor...) va de gui lai goi thong tin thu cuoi o duoi.
