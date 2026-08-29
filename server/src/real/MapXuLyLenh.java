@@ -1366,12 +1366,14 @@ class MapXuLyLenh {
 
                 byte[] fr = Animal.fr;
                 if (p.animalRide != null) {
-                    // Skin linh thu: nguoi khac mo bang "Trang bi thu" cua minh cung
-                    // phai thay hinh skin, khong thi minh thay mot dang nguoi khac thay
-                    // mot dang. Cung logic voi createAnimalWearingMessage.
-                    if (SkinLinhThu.ghiAnhTrangBiThu(m, p)) {
-                        // da ghi hinh skin
-                    } else if (p.rankGov == 0) {
+                    // O giua bang "Trang bi thu" ve CON THU THAT, khong phai skin.
+                    //
+                    // Ban skin dau tien ghi de cho nay bang dai 3 khung cua skin. Nhung o do la cho
+                    // xem con linh thu CUA MINH - con dang mang chi so, dang len cap. Skin chi la mon
+                    // do khoac ngoai, no da co o rieng trong bang roi (o dau tien ben phai), nen de no
+                    // chiem luon cho xem con thu la mat thong tin chu khong them duoc gi.
+                    // Hinh skin van hien binh thuong tren ban do, do la duong idThutool khac han.
+                    if (p.rankGov == 0) {
                         m.dos.writeByte(fr[6]);
                         m.dos.write(DataGame.imgAvtAnimal[6]);
                     } else {

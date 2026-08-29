@@ -100,18 +100,6 @@ public final class SkinLinhThu {
     public static final int TYPE_ITEM = 19;
 
     /**
-     * So frame cua dai anh trong bang "Trang bi thu". PHAI DUNG 3.
-     *
-     * Client chay hoat anh bang mot bang frame co dinh:
-     *     arrFrame = { {0,1,2}, {0,1} }
-     *     idFrame  = arrFrame[(numFrame != 3) ? 1 : 0][countFrame]
-     *     nhip     = (numFrame != 3) ? 6 : 3 tick
-     * Gui so khac 3 thi client CHI ve frame 0 va 1 voi nhip cham gap doi — con thu gan
-     * nhu dung im. tools/SkinThu.java luon xuat dung 3 frame.
-     */
-    public static final int SO_FRAME_AVT = 3;
-
-    /**
      * Dong bang bu toa do nguoi ngoi (Char.dx_horse_tool / dy_horse_tool), gui kem
      * idThutool. Dong 0 = {0,0,7,-7} / {-20,-15,-15,-15}, dung dong ma con Poro dang
      * dung: cac skin deu la thu bon chan co xap xi Poro nen ngoi vua.
@@ -176,12 +164,16 @@ public final class SkinLinhThu {
                 && coDuAnh(p.idSkinLinhThu);
     }
 
-    /** Da nap du ca ba file cua skin nay chua (atlas + du lieu frame + dai 3 frame). */
+    /**
+     * Da nap du ca hai file cua skin nay chua (atlas ban do + du lieu frame).
+     *
+     * Truoc day con doi file thu ba la dai 3 frame cho bang "Trang bi thu". Bang do nay
+     * ve CON THU THAT chu khong ve skin nua, nen dai do khong con duoc gui di dau ca.
+     */
     public static boolean coDuAnh(final int skin) {
         return hopLe(skin)
                 && DataGame.duLieuSkinThu(skin) != null
-                && DataGame.anhBanDoSkinThu(skin) != null
-                && DataGame.anhAvtSkinThu(skin) != null;
+                && DataGame.anhBanDoSkinThu(skin) != null;
     }
 
     /** Id anh con thu tren ban do, -1 = khong mang skin. */
@@ -192,27 +184,6 @@ public final class SkinLinhThu {
     /** Byte "fly" cua skin dang mang, -1 = khong mang skin. */
     public static int bay(final Char p) {
         return dangMang(p) ? BAY[p.idSkinLinhThu] : -1;
-    }
-
-    /**
-     * Ghi de doan "so frame + byte anh" cua bang Trang bi thu neu dang mang skin.
-     * Tra ve true neu da ghi, false thi nguoi goi ghi hinh con thu that nhu cu.
-     */
-    public static boolean ghiAnhTrangBiThu(final io.Message m, final Char p) {
-        if (!dangMang(p)) {
-            return false;
-        }
-        final byte[] anh = DataGame.anhAvtSkinThu(p.idSkinLinhThu);
-        if (anh == null) {
-            return false;
-        }
-        try {
-            m.dos.writeByte(SO_FRAME_AVT);
-            m.dos.write(anh);
-            return true;
-        } catch (final Exception e) {
-            return false;
-        }
     }
 
     // ====================================================================================

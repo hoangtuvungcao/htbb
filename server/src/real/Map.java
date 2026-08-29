@@ -14971,7 +14971,22 @@ public class Map implements Runnable {
             short itemID = message.dis.readShort();
             boolean isItemAnimal = false;
 
-            for (int i = 0; i < player.iItems.size(); i++) 
+            // Bam vao mon DANG MAC trong bang "Trang bi thu" = thao no ra.
+            //
+            // Game goc khong co duong nao thao trang bi thu ca: client khong gui gi khi
+            // bam vao mon dang mac, va vong lap duoi day chi tim trong hanh trang
+            // (player.iItems) nen co gui cung khong thay. Cach duy nhat la mac mon khac
+            // de len. Voi skin linh thu thi dieu do nghia la mac vao roi khong bao gio
+            // tro lai hinh thu that duoc, nen truoc day phai lam mot lenh chat rieng.
+            //
+            // Nay client co gui goi 29 voi id cua mon dang mac (xem paintAnimalWearing
+            // ben ClientUnity), va cho nay xu ly. Dung cho MOI trang bi thu chu khong
+            // rieng skin - lo hong nay von co san cho ca nam loai kia.
+            if (thaoTrangBiThu(player, itemID)) {
+                return;
+            }
+
+            for (int i = 0; i < player.iItems.size(); i++)
             {
                 Item item = (Item) player.iItems.elementAt(i);
                 if (item.id == itemID) {
@@ -15396,6 +15411,51 @@ public class Map implements Runnable {
                 }
             }
         }
+    }
+
+    /**
+     * Thao mot mon trang bi thu dang mac, tra ve hanh trang.
+     *
+     * Tra ve true neu itemID dung la mot mon dang mac (da xu ly xong, nguoi goi thoat),
+     * false neu khong phai - luc do doUseItem chay tiep nhu cu de tim trong hanh trang.
+     *
+     * Cach go giong het doan go mon cu trong exchangeItemAnimal: place ve 0, idAnimal ve
+     * -1. Giu giong nhau la co y - hai duong cung dan den mot trang thai, lech nhau la
+     * sinh ra mon "nua mac nua khong".
+     */
+    boolean thaoTrangBiThu(Char player, short itemID) {
+        if (player.awItems == null) {
+            return false;
+        }
+        Item mon = null;
+        for (int i = 0; i < player.awItems.size(); i++) {
+            final Item it = (Item) player.awItems.elementAt(i);
+            if (it != null && it.id == itemID) {
+                mon = it;
+                break;
+            }
+        }
+        if (mon == null) {
+            return false;
+        }
+        if (player.isFullInventory()) {
+            player.sendMessage(MessageCreator.createServerAlertMessage(
+                    "Hành trang đầy, không tháo ra được.", ""));
+            return true;
+        }
+        final String sub = mon.getTemplate().name + "_" + mon.plus + "|" + mon.getAttribute()
+                + "|" + mon.getDBInfo();
+        player.awItems.remove(mon);
+        player.iItems.add(mon);
+        mon.place = 0;
+        mon.idAnimal = -1;
+        Database.instance.saveOrtherLog("tob_log_other_item", player.charname, "Thao " + sub, "change");
+
+        // Gui lai dung nhung goi ma duong MAC gui, khong thi bang van hien mon vua thao.
+        player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
+        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+        SkinLinhThu.dongBoVaGui(player);
+        return true;
     }
 
     void exchangeItemAnimal(Char player, Item iItem, int slot) {

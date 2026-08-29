@@ -4,7 +4,7 @@ Trang bị vật phẩm skin → **con linh thú (thú cưỡi) đang cưỡi đ
 đổi cách di chuyển**. Chỉ số của con linh thú giữ nguyên tuyệt đối.
 
 Code: [`src/real/SkinLinhThu.java`](../src/real/SkinLinhThu.java) —
-tool sinh ảnh đại diện + icon: [`tools/TaoAvtSkinThu.java`](../tools/TaoAvtSkinThu.java) —
+tool sinh icon: [`tools/TaoIconSkinThu.java`](../tools/TaoIconSkinThu.java) —
 SQL: [`sql/skin_linh_thu.sql`](../sql/skin_linh_thu.sql)
 
 ---
@@ -30,7 +30,7 @@ build.bat
 |---|---|
 | Trang bị | Cưỡi linh thú → mở **Trang bị thú** → mặc vật phẩm skin vào **ô đầu tiên bên phải** |
 | Đổi skin | Mặc skin khác đè lên, skin cũ tự về hành trang |
-| Tháo skin | Gõ `boskin` trong chat |
+| Tháo skin | Chọn ô skin trong bảng Trang bị thú rồi bấm **Tháo** (phím trái), hoặc gõ `boskin` trong chat |
 | Xem đang mang gì | Mở bảng Trang bị thú, hoặc gõ `boskin` khi không mang skin sẽ báo |
 
 Xuống thú thì skin tự ẩn (không có con thú thì không có gì để đổi hình); cưỡi lại là hiện
@@ -129,7 +129,7 @@ gắn theo nhân vật nên bán con thú đi vẫn phải giữ được.
 Bật skin là **tắt** đường ngựa cổ điển (`userHorse = 0`). Nếu lúc đó dữ liệu frame không
 nạp được thì đường thú cưỡi tool cũng không vẽ được gì (client vẫn tạo `DataSkillEff`
 nhưng `listFrame` rỗng nên `paintTopHorse`/`paintBottomHorse` thoát ngay) → **người chơi
-cưỡi hư không**. Nên `SkinLinhThu.dangMang` kiểm đủ cả ba file
+cưỡi hư không**. Nên `SkinLinhThu.dangMang` kiểm đủ cả hai file
 (`SkinLinhThu.coDuAnh`) trước khi bật.
 
 ### 5.7 Vật phẩm dùng type 19
@@ -152,25 +152,30 @@ type: `Map.exchangeItem`, `Map.doUseItem`, `Char.getAnimalWearing` đều gọi
 ## 6. Thay bộ ảnh khác
 
 Bản này dùng bộ sprite dựng sẵn, **không** dựng từ bảng vẽ gốc như bản đầu tiên. Mỗi skin
-cần đúng ba tệp trong `map/skinthu/`:
+cần đúng hai tệp trong `map/skinthu/`:
 
 | Tệp | Là gì | Ở đâu ra |
 |---|---|---|
 | `<n>.png` | atlas con thú trên bản đồ | có sẵn trong bộ sprite |
 | `<n>` | dữ liệu 21 frame đi kèm atlas | có sẵn trong bộ sprite |
-| `avt<n>.png` | dải dọc 3 frame cho bảng "Trang bị thú" | **sinh ra** bằng lệnh dưới |
 
-Chép hai tệp đầu vào `map/skinthu/` theo số thứ tự 0..4, rồi sinh nốt tệp thứ ba và icon:
+Chép hai tệp đó vào `map/skinthu/` theo số thứ tự 0..4, rồi sinh icon vật phẩm:
 
 ```bash
-javac --release 8 -encoding UTF-8 -d build/tools-classes tools/TaoAvtSkinThu.java
-java -cp build/tools-classes TaoAvtSkinThu map/skinthu 5 860 map/icon
+javac --release 8 -encoding UTF-8 -d build/tools-classes tools/TaoIconSkinThu.java
+java -cp build/tools-classes TaoIconSkinThu map/skinthu 5 860 map/icon
 ```
 
 Lệnh này đọc thẳng atlas + dữ liệu frame, ghép lại đúng cách client ghép (mảnh `onTop = 0`
-vẽ trước, `onTop = 1` vẽ sau), rồi ghi `avt<n>.png` và `map/icon/860+n.png`.
+vẽ trước, `onTop = 1` vẽ sau), rồi ghi `map/icon/860+n.png`.
 
-Thiếu `avt<n>.png` thì `DataGame.napSkinThu` **tắt hẳn skin đó** — xem mục 5.6.
+Thiếu một trong hai tệp thì `DataGame.napSkinThu` **tắt hẳn skin đó** — xem mục 5.6.
+
+Muốn soi hình học trước khi dùng (con thú so với chỗ người ngồi):
+
+```bash
+java -cp build/tools-classes XemSkinNhuTrongGame xem.png map/d_effect/56 map/skinthu/0
+```
 
 ### Kiểm bộ ảnh trước khi dùng
 
@@ -257,15 +262,35 @@ phóng to lên — không thì phần *thân* bị bóp nhỏ và người ngồ
 
 ## 8. Giới hạn đã biết
 
-- **Icon skin vẽ sai vị trí trong bảng "Trang bị thú"** (chỉ hình thức, không ảnh hưởng
-  chức năng). Client vẽ icon trang bị thú bằng `posPaintWearingX/Y[type]` — mảng dùng
-  chung với bảng nhân vật, và ô của type 19 trong mảng đó là **ô Phi phong của bảng nhân
-  vật** `(58, 180)`, không phải ô đầu tiên bên phải của bảng thú `(165, 11)`. Nên icon
-  hiện lệch sang khoảng giữa hai cột. Chọn ô, xem mô tả, mặc/tháo đều đúng (client so
-  theo type, không theo toạ độ).
-  Không sửa được: mảng chỉ dài 20 phần tử nên dùng type 20–23 (bốn ô phải còn lại) sẽ ném
-  `IndexOutOfRange` giữa lúc vẽ, mà vòng vẽ **không có try/catch** — hỏng cả bảng. Cả ba
-  màn hình (`WindowInfoScr`, `MenuWindows`, `ShopNew`) đều như nhau.
+- ~~**Icon skin vẽ sai vị trí trong bảng "Trang bị thú"**~~ — **đã sửa.** Client vẽ icon
+  trang bị thú bằng `posPaintWearingX/Y[type]`, là mảng của bảng **nhân vật** và chỉ dài
+  20 phần tử: ô của type 19 trong mảng đó là ô Phi phong `(58, 184)` nên icon skin rơi
+  xuống góc dưới trái, còn type 20–23 thì vượt biên mảng.
+  Bản đầu tiên ghi là "không sửa được" vì client khi đó là bản decompile không build lại
+  được. Nay dự án tự dựng được client nên tiền đề đó không còn đúng: cả ba màn hình
+  (`MenuWindows`, `WindowInfoScr`, `ShopNew`) lấy vị trí ô thẳng từ `idWearAnimal` bằng
+  `paintIconTrangBiThu`, đúng cả 10 ô và không còn chỗ nào vượt biên.
+  **Chỉ áp dụng cho client Unity**; ai chạy bản J2ME cũ vẫn thấy icon lệch.
+- **Bộ sprite này thấp hơn con thú chuẩn, nên người ngồi hơi cao.** Client vẽ con thú ở
+  **chân** nhân vật rồi nhấc riêng nhân vật lên bằng `Char.dy_horse[0]` = `{-20,-15,-15,-15}`
+  — một bảng **cố định**, không theo con thú. Nên con thú càng thấp thì chân người càng
+  gần đỉnh lưng nó. Đo bằng `tools/XemSkinNhuTrongGame.java` (độ "lụt" của chân người vào
+  thân thú, hướng xuống / lên / ngang):
+
+  | | xuống | lên | ngang |
+  |---|---|---|---|
+  | Poro (`d_effect/56`, mốc chuẩn) | 12 | 18 | 20 |
+  | Lân (`d_effect/64`) | 15 | 20 | 17 |
+  | 0 Phúc Thú | **6** | 19 | **12** |
+  | 1 Gấu Trúc | **9** | 21 | **12** |
+  | 2 Tiên Lộc | 12 | 18 | 18 |
+  | 3 Xích Dương | 10 | 17 | 14 |
+  | 4 Chiến Lang | 11 | 16 | 13 |
+
+  Tiên Lộc khớp mốc chuẩn; Phúc Thú và Gấu Trúc hụt nhiều nhất. **Không chữa được bằng
+  cách dời** toạ độ: dời con thú lên cho khớp chỗ ngồi thì chân nó rời mặt đất đúng bấy
+  nhiêu. Muốn hết hẳn thì phải **phóng to sprite** về đúng cỡ con Poro (cao 39/40/42),
+  đúng như công cụ của bản đầu tiên vẫn làm — đổi lại ảnh bị nội suy.
 - **Icon con thú nhỏ cạnh tên nhân vật vẫn là của linh thú thật** (`Animal.idImgIcon`).
   Cố ý: nó cho biết con linh thú thật là con gì, đúng tinh thần "chỉ số vẫn là của nó".
   Tên và chỉ số trong bảng thông tin cũng vậy.

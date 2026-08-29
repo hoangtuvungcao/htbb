@@ -48,8 +48,6 @@ public class DataGame {
     public static byte[][] imgSkinThu;
     /** Du lieu frame di kem atlas tren (map/skinthu/&lt;n&gt;). */
     public static byte[][] dataSkinThu;
-    /** Dai 3 frame cho bang "Trang bi thu" (map/skinthu/avt&lt;n&gt;.png). */
-    public static byte[][] imgAvtSkinThu;
     // Nang vua du, KHONG nang du: id nao < nIconItem ma khong co file thi allImg[id]
     // la null, va sendByteImg se nem NPE roi bo qua ca lenh gui -> client hoi mai khong
     // bao gio duoc tra loi. Nang du la tu tao them may id "ho den" nhu vay.
@@ -858,16 +856,14 @@ public class DataGame {
         final int n = real.SkinLinhThu.SO_SKIN;
         imgSkinThu = new byte[n][];
         dataSkinThu = new byte[n][];
-        imgAvtSkinThu = new byte[n][];
         for (int i = 0; i < n; i++) {
             imgSkinThu[i] = docFile("map/skinthu/" + i + ".png");
             dataSkinThu[i] = docFile("map/skinthu/" + i);
-            imgAvtSkinThu[i] = docFile("map/skinthu/avt" + i + ".png");
-            if (imgSkinThu[i] == null || dataSkinThu[i] == null || imgAvtSkinThu[i] == null) {
+            if (imgSkinThu[i] == null || dataSkinThu[i] == null) {
                 System.out.println("CANH BAO: thieu file skin linh thu " + i
-                        + " (can du map/skinthu/" + i + ".png, " + i + ", avt" + i + ".png)"
+                        + " (can du map/skinthu/" + i + ".png va " + i + ")"
                         + " -> TAT skin nay, ai dang mac se thay con thu that."
-                        + " Dat du ca ba file roi bat lai server.");
+                        + " Dat du ca hai file roi bat lai server.");
             }
         }
     }
@@ -892,11 +888,6 @@ public class DataGame {
     /** Atlas con thu tren ban do cua skin thu n, null neu khong co. */
     public static byte[] anhBanDoSkinThu(final int n) {
         return (imgSkinThu != null && n >= 0 && n < imgSkinThu.length) ? imgSkinThu[n] : null;
-    }
-
-    /** Dai 3 frame cua skin thu n cho bang Trang bi thu, null neu khong co. */
-    public static byte[] anhAvtSkinThu(final int n) {
-        return (imgAvtSkinThu != null && n >= 0 && n < imgAvtSkinThu.length) ? imgAvtSkinThu[n] : null;
     }
 
     public static void sendMsgGetDataEff(Session s, Message msg) {

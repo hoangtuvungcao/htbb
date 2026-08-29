@@ -5087,9 +5087,42 @@ public class ShopNew : MyScreen
 				itemTemplate = Res.getItem(itemInInventory.charClazz, itemInInventory.idTemplate);
 				if (itemTemplate != null)
 				{
-					paintItemIcon(g, itemInInventory, posPaintWearingX[itemTemplate.type], posPaintWearingY[itemTemplate.type]);
+					paintIconTrangBiThu(g, itemInInventory, itemTemplate.type);
 				}
 			}
+		}
+	}
+
+	// Toa do icon cua 10 o bang "Trang bi thu", xep dung theo idWearAnimal: o chan la cot
+	// trai (x 15), o le la cot phai (x 165), hang = chi so / 2. Nam moc y duoi day chinh
+	// la gia tri posPaintWearing dang dung cho type 18/14/15/16/17, nen nam o cot trai ve
+	// y het nhu truoc.
+	private static readonly int[] Y_O_TRANG_BI_THU = new int[5] { 11, 51, 91, 135, 175 };
+
+	/// <summary>
+	/// Ve icon mot mon trang bi thu vao DUNG o cua no trong bang "Trang bi thu".
+	///
+	/// KHONG dung posPaintWearingX/Y[type] nhu truoc nua. Mang do la cua bang NHAN VAT va
+	/// chi dai 20 phan tu, nen dung chung cho bang thu la sai hai kieu:
+	///   - type 19 (o dau tien ben phai bang thu) tra ra o Phi phong cua bang nhan vat,
+	///     nen icon skin linh thu roi xuong khoang giua hai cot o goc duoi;
+	///   - type 20..23 (bon o phai con lai) vuot bien mang, nem IndexOutOfRange giua vong
+	///     ve - ma vong ve khong co try/catch nen hong ca bang.
+	/// Lay thang tu idWearAnimal thi ca 10 o deu dung, va khong con cho nao vuot bien.
+	/// </summary>
+	private void paintIconTrangBiThu(MyGraphics g, ItemInInventory item, int type)
+	{
+		for (int i = 0; i < idWearAnimal.Length; i++)
+		{
+			if (idWearAnimal[i] == type)
+			{
+				paintItemIcon(g, item, ((i % 2 == 0) ? 15 : 165) + xTr, Y_O_TRANG_BI_THU[i / 2] + yTr);
+				return;
+			}
+		}
+		if (type >= 0 && type < posPaintWearingX.Length)
+		{
+			paintItemIcon(g, item, posPaintWearingX[type], posPaintWearingY[type]);
 		}
 	}
 

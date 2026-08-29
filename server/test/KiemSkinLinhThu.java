@@ -51,12 +51,14 @@ public final class KiemSkinLinhThu {
         kiemBoAnh();
         kiemDaiIcon();
         kiemLenhChat();
+        kiemOGiuaVeThuThat();
+        kiemViTriIconTrangBiThu();
     }
 
     /**
      * Bo anh phai DU va DUNG DINH DANG.
      *
-     * Thieu mot trong ba tep la DataGame.napSkinThu tat han skin do — im lang, khong loi.
+     * Thieu mot trong hai tep la DataGame.napSkinThu tat han skin do — im lang, khong loi.
      * Va so khung phai DUNG 21: client khong doc so khung tu tep ma tinh chi so bang cong
      * thuc co dinh (Char.getFrameHorse: xuong +0, len +7, ngang +14), nen it hon 21 la
      * paintTopHorse thoat som va con thu bien mat dung tick do.
@@ -67,12 +69,64 @@ public final class KiemSkinLinhThu {
         for (int i = 0; i < real.SkinLinhThu.SO_SKIN; i++) {
             final java.io.File du = new java.io.File("map/skinthu/" + i);
             final java.io.File atlas = new java.io.File("map/skinthu/" + i + ".png");
-            final java.io.File avt = new java.io.File("map/skinthu/avt" + i + ".png");
             Kiem.dung("co map/skinthu/" + i, du.isFile());
             Kiem.dung("co map/skinthu/" + i + ".png", atlas.isFile());
-            Kiem.dung("co map/skinthu/avt" + i + ".png", avt.isFile());
             Kiem.bang("skin " + i + " co dung 21 khung", Integer.valueOf(21),
                     Integer.valueOf(soKhung(du)));
+        }
+    }
+
+    /**
+     * O giua bang "Trang bi thu" phai ve CON THU THAT, khong phai skin.
+     *
+     * Ban skin dau tien ghi de cho do bang dai 3 khung cua skin, nen nguoi choi mo bang ra
+     * chi thay con skin va mat luon cho xem con linh thu cua minh. Neu ai do dat lai cho
+     * ghi de nay thi bai kiem duoi day hong.
+     */
+    private static void kiemOGiuaVeThuThat() {
+        Kiem.nhom("Skin linh thu - o giua ve con thu that");
+
+        for (final String tep : new String[] {
+                "src/real/MessageCreator.java", "src/real/MapXuLyLenh.java" }) {
+            final String ma = doc(tep);
+            Kiem.dung("doc duoc " + tep, ma.length() > 0);
+            Kiem.sai("KHONG ghi de anh bang Trang bi thu bang skin (" + tep + ")",
+                    ma.contains("ghiAnhTrangBiThu"));
+            Kiem.dung("van ghi anh con thu that (" + tep + ")",
+                    ma.contains("DataGame.imgAvtAnimal[p.animalRide.idImg]"));
+        }
+        Kiem.sai("SkinLinhThu khong con ham ghi de do",
+                doc("src/real/SkinLinhThu.java").contains("ghiAnhTrangBiThu"));
+    }
+
+    /**
+     * Icon trang bi thu phai lay o theo idWearAnimal, KHONG theo posPaintWearing.
+     *
+     * posPaintWearing la mang cua bang NHAN VAT va chi dai 20 phan tu: type 19 (o dau tien
+     * ben phai bang thu) tra ra o Phi phong cua bang nhan vat nen icon skin roi xuong goc
+     * duoi trai, con type 20..23 thi vuot bien mang - nem IndexOutOfRange giua vong ve ma
+     * vong ve khong co try/catch.
+     *
+     * Chi sua duoc o client Unity; ban J2ME cu khong build lai duoc nen van lech.
+     */
+    private static void kiemViTriIconTrangBiThu() {
+        Kiem.nhom("Skin linh thu - vi tri icon trong bang Trang bi thu");
+
+        for (final String ten : new String[] { "MenuWindows", "WindowInfoScr", "ShopNew" }) {
+            final String tep = "ClientUnity/Assets/Scripts/Game/" + ten + ".cs";
+            final String ma = doc(tep);
+            Kiem.dung("doc duoc " + ten + ".cs", ma.length() > 0);
+            Kiem.dung(ten + " co ham dat icon theo o trang bi thu",
+                    ma.contains("private void paintIconTrangBiThu(MyGraphics g, ItemInInventory item, int type)"));
+            Kiem.dung(ten + " tra o bang idWearAnimal", ma.contains("if (idWearAnimal[i] == type)"));
+            // Vong ve trang bi thu phai goi ham moi, khong goi thang mang cu nua.
+            final int vt = ma.indexOf("private void paintAnimalWearing(MyGraphics g)");
+            final int het = (vt < 0) ? -1 : ma.indexOf("\n\tprivate void paintItemIcon", vt);
+            final String than = (vt < 0 || het < 0) ? "" : ma.substring(vt, het);
+            Kiem.dung(ten + ".paintAnimalWearing goi paintIconTrangBiThu",
+                    than.contains("paintIconTrangBiThu(g, itemInInventory, itemTemplate.type)"));
+            Kiem.sai(ten + ".paintAnimalWearing KHONG con dung posPaintWearing truc tiep",
+                    than.contains("posPaintWearingX[itemTemplate.type]"));
         }
     }
 
