@@ -345,9 +345,35 @@ public class Pet extends Actor {
         return this.itemPet != null ? this.itemPet.otherAtt[4] + this.getTangKich() : percent[this.idTemplate][6];
     }
 
+    /**
+     * Ten pham chat, an toan voi moi gia tri.
+     *
+     * phamchat = -1 la gia tri MAC DINH cua moi thu nuoi chua tung doi pham chat
+     * (xem khai bao o dau lop), va getInfo() cung in no ra thanh dau "?". Tra
+     * cuu thang NAME_PHAM_CHAT[-1] la ArrayIndexOutOfBoundsException.
+     */
+    private static String tenPhamChat(final int pc) {
+        if (pc < 0) {
+            return "chua co";
+        }
+        if (pc >= NAME_PHAM_CHAT.length) {
+            return "khong ro (" + pc + ")";
+        }
+        return NAME_PHAM_CHAT[pc];
+    }
+
     public void doChangeThongThao(Char p) {
         int pc = Map.r.nextInt(1000);
         int oldPhamChat = this.phamchat;
+
+        // Bang ti le chi co 4 dong. max_pham_chat doc tu chuoi luu trong database
+        // (dong "Byte.parseByte(data[12])" o initFromDB) va chi duoc chan can duoi
+        // <0, khong chan can tren - du lieu hong la vuot mang ngay dong duoi.
+        if (this.max_pham_chat < 0) {
+            this.max_pham_chat = 0;
+        } else if (this.max_pham_chat >= pc_chang_thong_thao.length) {
+            this.max_pham_chat = (byte) (pc_chang_thong_thao.length - 1);
+        }
         int old_skill1 = this.id_skill1;
         int old_skill2 = this.id_skill2;
         int old_maxskill = this.maxSkill;
@@ -381,8 +407,8 @@ public class Pet extends Actor {
         }
 
         p.sendMessage(MessageCreator.createCharWearingMessage(p, p));
-        p.sendMessage(MessageCreator.createServerAlertMessage("Thay đổi phẩm chất từ " + NAME_PHAM_CHAT[oldPhamChat] + " qua " + NAME_PHAM_CHAT[this.phamchat], ""));
-        Database.instance.saveOrtherLog("", p.charname, "pham chat " + oldPhamChat + "_" + this.phamchat + ", maxskill " + old_maxskill + "_" + this.maxSkill + ",skill1 " + old_skill1 + ", skill2 " + old_skill2 + ". Thay đổi phẩm chất từ " + NAME_PHAM_CHAT[oldPhamChat] + " qua " + NAME_PHAM_CHAT[this.phamchat] + " " + this.itemPet.level + " >> " + this.itemPet.getInfoSave(), "doiphamchat");
+        p.sendMessage(MessageCreator.createServerAlertMessage("Thay đổi phẩm chất từ " + tenPhamChat(oldPhamChat) + " qua " + tenPhamChat(this.phamchat), ""));
+        Database.instance.saveOrtherLog("", p.charname, "pham chat " + oldPhamChat + "_" + this.phamchat + ", maxskill " + old_maxskill + "_" + this.maxSkill + ",skill1 " + old_skill1 + ", skill2 " + old_skill2 + ". Thay đổi phẩm chất từ " + tenPhamChat(oldPhamChat) + " qua " + tenPhamChat(this.phamchat) + " " + this.itemPet.level + " >> " + this.itemPet.getInfoSave(), "doiphamchat");
     }
 
     public boolean doTienHoa(Char p) {
@@ -664,7 +690,7 @@ public class Pet extends Actor {
             if (!this.isPetBachThu()) {
                 info = info + "- Sức ăn : " + this.powerEat + "/" + MAX_POWER_EAT;
                 info = info + "\n- Trạng thái: " + (this.itemPet.level + 1) + "/3";
-                info = info + "\n- Phẩm chất: " + (this.phamchat == -1 ? "?" : NAME_PHAM_CHAT[this.phamchat]);
+                info = info + "\n- Phẩm chất: " + (this.phamchat == -1 ? "?" : tenPhamChat(this.phamchat));
                 info = info + "\n- Tiến hoá: " + this.lvDetail.lv + "+" + this.lvDetail.percent / 10 + "." + this.lvDetail.percent % 10 + "%";
                 info = info + "\n- Kỹ năng có thể học: " + (this.phamchat > -1 ? this.maxSkill : 0);
                 if (this.id_skill1 > -1) {

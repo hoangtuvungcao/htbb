@@ -15032,10 +15032,18 @@ public class Map implements Runnable {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Thú nuôi của bạn không thể sử dụng vật phẩm này", ""));
                             }
                         } else {
-                            player.petUsing.doChangeThongThao(player);
+                            // TRU VAT PHAM TRUOC. Truoc day tru sau, va do la mot
+                            // lo hong that: doChangeThongThao DA doi pham chat cua
+                            // thu nuoi o nhung dong dau, roi moi nem ngoai le o dong
+                            // in thong bao (NAME_PHAM_CHAT[-1], vi phamchat = -1 la
+                            // gia tri MAC DINH cua thu nuoi chua tung doi pham chat).
+                            // Ngoai le lam ba dong duoi day khong chay -> Huyet Bo De
+                            // KHONG bi tru, nhung pham chat thi da doi roi.
+                            // Ngoai le do co that trong errorlog.txt cua VPS.
                             player.iItems.remove(item);
                             player.removeIDItem(item.id);
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                            player.petUsing.doChangeThongThao(player);
                         }
 
                         return;
