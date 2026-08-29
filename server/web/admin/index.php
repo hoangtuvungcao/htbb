@@ -87,8 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser()) {
 if (!adminUser()) {
     adminHead('tongquan', 'Đăng nhập quản trị');
     ?>
-    <section class="auth-wrap">
         <div class="auth-card">
+            <div class="auth-mark">🛡️</div>
             <h1 class="auth-title">Khu quản trị</h1>
             <p class="auth-sub">Đăng nhập bằng tài khoản game có quyền admin.</p>
 
@@ -116,7 +116,6 @@ if (!adminUser()) {
                 <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
             </form>
         </div>
-    </section>
     <?php
     adminFoot();
     exit;

@@ -1,24 +1,93 @@
 <?php
 /**
- * Khung trang cho khu quản trị. Không dùng chung inc/header.php của trang công
- * khai vì header đó trỏ "assets/style.css" theo đường dẫn tương đối — nằm trong
- * thư mục con web/admin/ là hỏng — và vì menu ở đây hoàn toàn khác.
+ * Khung trang cho khu quản trị.
+ *
+ * Không dùng chung inc/header.php của trang công khai, và cũng KHÔNG nạp
+ * assets/style.css của trang đó nữa: bảng màu vàng–nâu bên kia sinh ra để quảng
+ * bá game, đọc bảng số liệu thì tương phản kém. Khu này có bộ giao diện riêng,
+ * tự đủ, ở assets/admin.css.
+ *
+ * Bố cục: cột điều hướng dính bên trái + thanh trên mỏng chỉ đường + vùng nội
+ * dung. Toàn bộ bằng CSS, không một dòng JavaScript — trang quản trị phải mở
+ * được cả khi máy chủ không ra được Internet và khi trình duyệt chặn script.
  */
 require_once __DIR__ . '/boot.php';
 
+/**
+ * Menu bên trái, chia nhóm.
+ *
+ * Khoá của từng mục phải khớp tham số $trang mà mỗi trang truyền cho adminHead().
+ *
+ * @return array<string, array<string, array{0:string,1:string,2:string}>>
+ */
+function adminMenu(): array
+{
+    return [
+        'Theo dõi' => [
+            'tongquan' => ['index.php', 'Tổng quan', 'bang'],
+        ],
+        'Người chơi' => [
+            'taikhoan' => ['taikhoan.php', 'Tài khoản', 'nguoi'],
+            'nhanvat'  => ['nhanvat.php',  'Nhân vật',  'khien'],
+        ],
+        'Vận hành' => [
+            'giftcode' => ['giftcode.php', 'Giftcode', 'qua'],
+        ],
+        'Ghi chép' => [
+            'log'      => ['log.php',      'Log game',      'danhsach'],
+            'chandoan' => ['chandoan.php', 'Chẩn đoán',     'nhip'],
+            'nhatky'   => ['nhatky.php',   'Nhật ký admin', 'dongho'],
+        ],
+    ];
+}
+
+/**
+ * Biểu tượng 16px dạng nét, nhúng thẳng vào HTML.
+ *
+ * Không dùng font biểu tượng hay ảnh ngoài: máy chủ game có thể không ra được
+ * Internet, và một biểu tượng không tải được sẽ để lại ô vuông trống.
+ */
+function bieuTuong(string $ten): string
+{
+    $hinh = [
+        'bang'     => '<rect x="2" y="2" width="5" height="5" rx="1.2"/><rect x="9" y="2" width="5" height="5" rx="1.2"/>'
+                    . '<rect x="2" y="9" width="5" height="5" rx="1.2"/><rect x="9" y="9" width="5" height="5" rx="1.2"/>',
+        'nguoi'    => '<circle cx="8" cy="5.2" r="2.6"/><path d="M2.7 14c.5-2.8 2.6-4.3 5.3-4.3s4.8 1.5 5.3 4.3"/>',
+        'khien'    => '<path d="M8 1.7l5.2 2v4c0 3.2-2.1 6-5.2 6.9C4.9 13.7 2.8 10.9 2.8 7.7v-4l5.2-2z"/>',
+        'qua'      => '<rect x="2.2" y="6.6" width="11.6" height="7.4" rx="1.1"/><rect x="1.3" y="3.9" width="13.4" height="2.7" rx=".9"/>'
+                    . '<path d="M8 3.9V14"/><path d="M8 3.9S7 1.6 5.6 1.6a1.5 1.5 0 100 2.3"/><path d="M8 3.9s1-2.3 2.4-2.3a1.5 1.5 0 010 2.3"/>',
+        'danhsach' => '<path d="M6 4h8M6 8h8M6 12h8"/><circle cx="2.9" cy="4" r=".95" fill="currentColor" stroke="none"/>'
+                    . '<circle cx="2.9" cy="8" r=".95" fill="currentColor" stroke="none"/>'
+                    . '<circle cx="2.9" cy="12" r=".95" fill="currentColor" stroke="none"/>',
+        'nhip'     => '<path d="M1.4 8h3.1l1.9-4.6L9 12.6l1.9-4.6h3.7"/>',
+        'dongho'   => '<circle cx="8" cy="8" r="6.2"/><path d="M8 4.5V8l2.4 1.5"/>',
+        'nha'      => '<path d="M2.4 7.3L8 2.7l5.6 4.6"/><path d="M3.9 8.4v5h8.2v-5"/>',
+        'ra'       => '<path d="M6.4 2.7H3.3a1.2 1.2 0 00-1.2 1.2v8.2a1.2 1.2 0 001.2 1.2h3.1"/>'
+                    . '<path d="M10.6 11.2L13.8 8l-3.2-3.2"/><path d="M13.8 8H6.4"/>',
+    ];
+    if (!isset($hinh[$ten])) {
+        return '';
+    }
+    return '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"'
+         . ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $hinh[$ten] . '</svg>';
+}
+
+/** Tên nhóm chứa trang đang mở — dùng cho dòng chỉ đường ở thanh trên. */
+function nhomCuaTrang(string $trang): string
+{
+    foreach (adminMenu() as $tenNhom => $muc) {
+        if (isset($muc[$trang])) {
+            return $tenNhom;
+        }
+    }
+    return '';
+}
+
 function adminHead(string $trang, string $tieuDe): void
 {
-    $u = adminUser();
+    $u     = adminUser();
     $flash = takeFlash();
-    $menu = [
-        'tongquan' => ['index.php',     'Tổng quan'],
-        'taikhoan' => ['taikhoan.php',  'Tài khoản'],
-        'nhanvat'  => ['nhanvat.php',   'Nhân vật'],
-        'giftcode' => ['giftcode.php',  'Giftcode'],
-        'log'      => ['log.php',       'Log game'],
-        'chandoan' => ['chandoan.php',  'Chẩn đoán'],
-        'nhatky'   => ['nhatky.php',    'Nhật ký admin'],
-    ];
+    $nhom  = nhomCuaTrang($trang);
     ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -26,33 +95,62 @@ function adminHead(string $trang, string $tieuDe): void
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="color-scheme" content="dark">
     <title><?= e($tieuDe) ?> · Quản trị KPAH</title>
-    <link rel="stylesheet" href="../assets/style.css">
     <link rel="stylesheet" href="assets/admin.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
 </head>
-<body class="admin-body">
-<header class="site-header">
-    <div class="wrap header-inner">
-        <a class="brand" href="index.php">
-            <span class="brand-mark">🛡️</span>
-            <span class="brand-text">
-                <strong>QUẢN TRỊ</strong>
+<body class="admin-body<?= $u ? '' : ' admin-body--auth' ?>">
+<?php if ($u): ?>
+<div class="admin-shell">
+
+    <aside class="side">
+        <a class="side-brand" href="index.php">
+            <span class="side-mark">🛡️</span>
+            <span>
+                <strong>Quản trị</strong>
                 <small><?= e(SITE_NAME) ?></small>
             </span>
         </a>
-        <?php if ($u): ?>
-        <nav class="main-nav">
-            <?php foreach ($menu as $key => [$href, $nhan]): ?>
-                <a href="<?= e($href) ?>" class="<?= $trang === $key ? 'active' : '' ?>"><?= e($nhan) ?></a>
+
+        <nav class="side-nav">
+            <?php foreach (adminMenu() as $tenNhom => $muc): ?>
+                <div class="side-group"><?= e($tenNhom) ?></div>
+                <?php foreach ($muc as $key => $m): ?>
+                    <a href="<?= e($m[0]) ?>" class="side-link<?= $trang === $key ? ' active' : '' ?>"
+                       <?= $trang === $key ? 'aria-current="page"' : '' ?>>
+                        <?= bieuTuong($m[2]) ?><span><?= e($m[1]) ?></span>
+                    </a>
+                <?php endforeach; ?>
             <?php endforeach; ?>
-            <a href="../index.php" class="btn-nav ghost">Ra trang chủ</a>
-            <a href="dangxuat.php" class="btn-nav">Thoát (<?= e($u['username']) ?>)</a>
         </nav>
-        <?php endif; ?>
-    </div>
-</header>
-<main class="wrap admin-main">
+
+        <div class="side-foot">
+            <a class="side-link" href="../index.php"><?= bieuTuong('nha') ?><span>Ra trang chủ</span></a>
+            <a class="side-link" href="dangxuat.php"><?= bieuTuong('ra') ?><span>Thoát</span></a>
+            <div class="side-user"><span class="side-cham"></span><?= e($u['username']) ?></div>
+        </div>
+    </aside>
+
+    <div class="admin-col">
+        <header class="topbar">
+            <div class="duongdan">
+                <?php if ($nhom !== ''): ?>
+                    <span class="duongdan-nhom"><?= e($nhom) ?></span><span>/</span>
+                <?php endif; ?>
+                <b><?= e($tieuDe) ?></b>
+            </div>
+            <div class="topbar-phai">
+                <a class="btn btn-xam btn-nho" href="../index.php">Trang chủ</a>
+                <a class="btn btn-xam btn-nho" href="dangxuat.php">Thoát</a>
+            </div>
+        </header>
+
+        <main class="admin-main">
+<?php else: ?>
+    <main class="auth-wrap">
+<?php endif; ?>
+
 <?php if ($flash): ?>
     <div class="flash flash-<?= e($flash['type']) ?>"><?= e($flash['msg']) ?></div>
 <?php endif; ?>
@@ -68,25 +166,38 @@ function adminHead(string $trang, string $tieuDe): void
 
 function adminFoot(): void
 {
+    if (adminUser()) {
+        ?>
+        </main>
+        <footer class="admin-foot">
+            Khu quản trị · mọi thao tác đều được ghi lại kèm tên người thực hiện và địa chỉ IP.
+        </footer>
+    </div><!-- /.admin-col -->
+</div><!-- /.admin-shell -->
+        <?php
+    } else {
+        ?>
+    </main>
+        <?php
+    }
     ?>
-</main>
-<footer class="site-footer">
-    <div class="wrap">
-        <p class="muted small">Khu quản trị · mọi thao tác đều được ghi lại kèm tên người thực hiện và địa chỉ IP.</p>
-    </div>
-</footer>
 </body>
 </html>
 <?php
 }
 
-/** Thẻ số liệu cho trang tổng quan. */
+/**
+ * Thẻ số liệu cho trang tổng quan.
+ *
+ * Nhãn đứng TRƯỚC con số: đọc "Tài khoản" rồi mới tới "1.284" thì mắt không phải
+ * quay ngược lên để biết con số vừa đọc là của cái gì.
+ */
 function theSo(string $nhan, string $giaTri, string $ghiChu = '', string $mau = ''): void
 {
     ?>
     <div class="stat <?= e($mau) ?>">
-        <div class="stat-so"><?= e($giaTri) ?></div>
         <div class="stat-nhan"><?= e($nhan) ?></div>
+        <div class="stat-so"><?= e($giaTri) ?></div>
         <?php if ($ghiChu !== ''): ?><div class="stat-ghi"><?= e($ghiChu) ?></div><?php endif; ?>
     </div>
     <?php
@@ -140,10 +251,10 @@ function thanhNgang(array $duLieu): void
     foreach ($duLieu as $d) {
         $rong = max(1, (int)round((int)$d['gt'] * 100 / $max));
         printf(
-            '<div class="bar-row"><span class="bar-nhan">%s</span>'
+            '<div class="bar-row"><span class="bar-nhan" title="%s">%s</span>'
             . '<span class="bar-track"><span class="bar-fill" style="width:%d%%"></span></span>'
             . '<span class="bar-gt">%s</span></div>',
-            e($d['nhan']), $rong, e(so($d['gt']))
+            e($d['nhan']), e($d['nhan']), $rong, e(so($d['gt']))
         );
     }
     echo '</div>';

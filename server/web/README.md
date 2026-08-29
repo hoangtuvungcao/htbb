@@ -212,6 +212,26 @@ Khu riêng để **xem thống kê người chơi, khoá tài khoản, tạo gif
 | **Chẩn đoán & Lỗi** | 13 phép kiểm tra sức khoẻ, thống kê lỗi server ghi vào DB, xem cuối các file log của server, lỗi của chính trang web — xem mục dưới |
 | **Nhật ký admin** | Mọi thao tác trên trang quản trị. Không xoá được từ giao diện |
 
+### Giao diện
+
+Khu quản trị **không dùng `assets/style.css` của trang giới thiệu**. Bảng màu vàng–nâu
+bên đó sinh ra để quảng bá game (nền đỏ loang, nút gradient, chữ nâu nhạt trên nền nâu);
+đọc bảng số liệu thì tương phản kém và mọi thứ cùng một sức nặng. Toàn bộ giao diện nằm
+gọn trong `web/admin/assets/admin.css`, tự đủ.
+
+Nguyên tắc: **màu chỉ dùng khi nó mang nghĩa** — xanh lam = bấm được / đang chọn,
+xanh lá = bình thường, hổ phách = nên xem, đỏ = cần xử lý. Ngoài bốn thứ đó là thang xám.
+
+Bố cục: menu dọc bên trái chia nhóm, thanh trên mỏng chỉ đường, khung nội dung rộng
+1360px (khung cũ 1080px làm bảng bảy cột phải cuộn ngang ngay trên màn hình lớn), tiêu đề
+bảng dính lại khi cuộn, số căn phải bằng chữ số đều nhau. **Không một dòng JavaScript và
+không tải gì từ Internet** — biểu tượng là SVG nhúng thẳng, biểu đồ thuần CSS — vì máy chủ
+game có thể không ra được mạng.
+
+Đổi giao diện thì chạy `php web/admin/test/kiem_giao_dien.php`: nó quét mọi `class="..."`
+trong các trang rồi đối chiếu với admin.css. Một lớp bị bỏ sót **không gây lỗi nào cả**,
+chỗ đó chỉ lặng lẽ mất định dạng — nên không có bộ kiểm này thì không ai biết.
+
 ### Vật phẩm của nhân vật nằm ở đâu
 
 Ở **trang chi tiết một nhân vật** (`admin/nhanvat.php?id=…`), không phải ở bảng liệt kê.
@@ -313,10 +333,10 @@ web/
     ├── chandoan.php    # Chẩn đoán & lỗi: 13 phép kiểm tra + đọc file log server
     ├── nhatky.php      # Nhật ký thao tác của admin
     ├── dangxuat.php
-    ├── assets/admin.css
+    ├── assets/admin.css  # Toàn bộ giao diện khu quản trị — tự đủ, không dùng style.css
     ├── inc/
     │   ├── boot.php    # Đăng nhập, phân quyền, ghi nhật ký, chặn dò mật khẩu
-    │   ├── layout.php  # Khung trang + biểu đồ thuần CSS
+    │   ├── layout.php  # Khung trang (menu trái + thanh trên) + biểu đồ thuần CSS
     │   └── thuong.php  # Bảng 60 loại phần thưởng + kiểm tra cú pháp giftcode
     └── test/           # Kiểm thử, không cần MySQL
         ├── kiem_giftcode.php
@@ -326,6 +346,7 @@ web/
         ├── kiem_chan_spam.php
         ├── kiem_log_online.php
         ├── kiem_vatpham.php
+        ├── kiem_giao_dien.php
         └── chan_doan_ket_noi.php
 ```
 
@@ -340,6 +361,7 @@ php web/admin/test/kiem_chan_spam.php  # bộ đếm chặn làm hàng loạt
 php web/admin/test/kiem_doc_log.php    # hàm đọc phần cuối file log
 php web/admin/test/kiem_log_online.php # log số người online: đối chiếu cột Java <-> PHP
 php web/admin/test/kiem_vatpham.php    # bộ đọc vật phẩm: đối chiếu vị trí trường với Item.java
+php web/admin/test/kiem_giao_dien.php  # mọi lớp CSS các trang dùng đều phải có định nghĩa
 
 # Chẩn đoán lỗi kết nối database — chạy TRÊN MÁY CHỦ, chỉ bằng dòng lệnh
 sudo -u www-data php web/admin/test/chan_doan_ket_noi.php
