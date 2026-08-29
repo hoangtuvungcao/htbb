@@ -46,6 +46,31 @@ class MapEpNgoc {
     static String deleteGemItem(Map map, Char player, byte[] startID, int[][] material, int materialUse) {
         String gemUse = "ngL " + materialUse;
 
+        // Mang "material" den THANG tu goi tin cua client: 12 byte co dau doc bang
+        // message.dis.readByte() (Map.java:6465, 6469, 6849; MapCheTao.java:197,
+        // 278, 359). Ben duoi tru bang phep tru THO "listGemitem[aa] - material[..]"
+        // nen mot so AM se CONG ngoc thay vi tru - nhan doi nguyen lieu vo han.
+        //
+        // enoughMaterial() khong chan duoc: no kiem "listGemitem[..] < material[i]",
+        // ma voi material[i] am thi phep so sanh do luon sai -> luon cho qua.
+        //
+        // Chan o day vi day la cho DUY NHAT moi duong che tao deu di qua.
+        if (material != null) {
+            for (int hang = 0; hang < material.length; hang++) {
+                if (material[hang] == null) {
+                    continue;
+                }
+                for (int cot = 0; cot < material[hang].length; cot++) {
+                    if (material[hang][cot] < 0) {
+                        data.NghiVanGianLan.ghiVatPham(player, "hackngl",
+                                "gui so luong nguyen lieu AM khi che tao: material[" + hang + "][" + cot
+                              + "]=" + material[hang][cot] + ", che do nguyen lieu " + materialUse);
+                        return gemUse + " | TU CHOI: so luong am";
+                    }
+                }
+            }
+        }
+
         try {
             if (material[0] != null) {
                 for (int m = 0; m < material[0].length; m++) {
