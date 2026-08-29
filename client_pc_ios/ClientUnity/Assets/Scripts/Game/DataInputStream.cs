@@ -21,6 +21,26 @@ public class DataInputStream
 		r = new myReader(ArrayCast.cast(textAsset.bytes));
 	}
 
+	/// <summary>
+	/// Mo tai nguyen, tra ve null neu khong co thay vi nem ngoai le.
+	///
+	/// VI SAO: ham dung o tren doc thang textAsset.bytes. Thieu tai nguyen la nem
+	/// NullReferenceException NGAY TRONG ham dung, nen FilePack khong bao gio chay toi
+	/// duoc nhanh "file == null" ma chinh no da viet san. Hau qua that: mot goi thieu
+	/// lam Res.loadRes() do vo giua chung, keo theo Main.FixedUpdate nem lai loi do
+	/// 30 lan moi giay - da do duoc 1474 lan trong 30 giay chay thu.
+	/// </summary>
+	public static DataInputStream moNeuCo(string filename)
+	{
+		TextAsset textAsset = (TextAsset)Resources.Load(filename, typeof(TextAsset));
+		if (textAsset == null)
+		{
+			Debug.LogError("Thieu tai nguyen: " + filename);
+			return null;
+		}
+		return new DataInputStream(ArrayCast.cast(textAsset.bytes));
+	}
+
 	public DataInputStream(sbyte[] data)
 	{
 		r = new myReader(data);

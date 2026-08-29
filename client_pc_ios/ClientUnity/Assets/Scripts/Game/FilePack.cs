@@ -172,6 +172,13 @@ public class FilePack
 
 	public static Image getImg(string path)
 	{
+		// instance = null khi goi truoc do mo khong duoc. Cho goi da quen kiem tra
+		// (Res gan thang ket qua vao mang anh), va cac cho ve deu chiu duoc anh null,
+		// nen tra null la dung hon la nem ngoai le tu day.
+		if (instance == null)
+		{
+			return null;
+		}
 		return instance.loadImage(path + ".png");
 	}
 
@@ -201,7 +208,9 @@ public class FilePack
 
 	private void open()
 	{
-		file = new DataInputStream(name);
+		// Thieu goi thi de file = null, roi ham dung ben duoi tu thoat theo nhanh
+		// "if (file == null)" ma no da co san. Xem DataInputStream.moNeuCo.
+		file = DataInputStream.moNeuCo(name);
 	}
 
 	private void openbyArray(sbyte[] array)

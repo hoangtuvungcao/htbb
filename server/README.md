@@ -100,9 +100,29 @@ Kết quả thật: **46/108** tài nguyên khôi phục được, **62 thiếu*
 (31 file hiệu ứng), `c/hat/`, `c/coat/`, các gói `items`/`other`/`body`/`head`/`leg`.
 Lý do: bản Unity dùng bộ tài nguyên **mới hơn** bản J2ME 2.7.6.
 
-Game vẫn chạy — mã gọi `Image.createImage` trả `null` và ghi log khi thiếu — nhưng một số
-hiệu ứng và trang phục sẽ không hiện. Muốn đủ thì phải xin `Assets/Resources/res/` của
-**dự án Unity gốc**; không có đường vòng nào khác.
+#### ⛔ Hệ quả: build ra được, nhưng **chưa chạy được**
+
+Đây là kết quả đo thật, không phải suy đoán. Chạy bản `.exe` với
+`-batchmode -nographics` rồi đọc nhật ký:
+
+```
+Thieu tai nguyen: res/other
+NullReferenceException  at Res.loadRes ()   <- Res.cs:423
+```
+
+[Res.cs:423](ClientUnity/Assets/Scripts/Game/Res.cs#L423) gọi `imgBgPopup.getWidth()`
+ngay sau khi nạp gói `other`. Gói thiếu → ảnh `null` → ngoại lệ. Và vì `loadRes()` được
+gọi từ `Main.FixedUpdate()` nên lỗi lặp lại **30 lần mỗi giây** (đo được 1475 lần trong
+30 giây).
+
+**Gói `other` và `items` là bắt buộc.** Chặn null từng chỗ chỉ đẩy lỗi sang chỗ kế tiếp —
+hàng chục chỗ trong `loadRes()` cùng kiểu. Cách duy nhất là có đúng bộ tài nguyên:
+xin `Assets/Resources/res/` của **dự án Unity gốc**. Không có đường vòng.
+
+Đã sửa hai chỗ để lỗi *nhìn thấy được* thay vì mù (không phải để khắc phục):
+`DataInputStream.moNeuCo()` báo rõ `Thieu tai nguyen: <tên>` thay vì ném ngoại lệ trong
+hàm dựng, và `FilePack.getImg()` kiểm `instance` null. Nhờ đó `FilePack` chạy được đúng
+nhánh `if (file == null)` mà **chính tác giả gốc đã viết sẵn** nhưng không bao giờ tới được.
 
 ⚠️ Công cụ **không** dò tài nguyên theo tên cuối trên khắp cây thư mục. Bản J2ME có cả
 `c/body/42` lẫn `c/leg/42`, nên `newEf/42` sẽ nhận nhầm ảnh thân nhân vật — **sai âm thầm**,

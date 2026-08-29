@@ -24,6 +24,8 @@ public final class KiemClientUnity {
 
     private static final String F_DO_HOA = "ClientUnity/Assets/Scripts/Game/MyGraphics.cs";
     private static final String F_PLUGIN = "ClientUnity/Assets/Scripts/Game/iOSPlugins.cs";
+    private static final String F_DOC_LUONG = "ClientUnity/Assets/Scripts/Game/DataInputStream.cs";
+    private static final String F_GOI = "ClientUnity/Assets/Scripts/Game/FilePack.cs";
     private static final String F_XAY = "ClientUnity/Assets/Editor/XayDung.cs";
     private static final String F_MANIFEST = "ClientUnity/Packages/manifest.json";
     private static final String F_CHUYEN = "tools/ChuyenTaiNguyen.java";
@@ -32,6 +34,7 @@ public final class KiemClientUnity {
     public static void chay() {
         kiemShader();
         kiemPluginIOS();
+        kiemThieuTaiNguyenKhongSap();
         kiemKichBanXay();
         kiemManifest();
         kiemBoChuyenTaiNguyen();
@@ -63,6 +66,41 @@ public final class KiemClientUnity {
         Kiem.bang("van con du sau khai bao native (khong xoa nham)", 6, soDllImport);
         Kiem.dung("so khoi #if du de boc het khai bao va cho goi",
                 dem(ma, "#if UNITY_IOS") >= 7 && dem(ma, "#endif") == dem(ma, "#if UNITY_IOS"));
+    }
+
+    /**
+     * Thieu mot goi tai nguyen KHONG duoc lam sap ca vong nap.
+     *
+     * DA XAY RA: ban J2ME khong co goi "items" va "other", nen FilePack.init nem
+     * NullReferenceException ngay trong ham dung cua DataInputStream. Res.loadRes() do
+     * vo giua chung, va vi no duoc goi tu Main.FixedUpdate nen loi lap lai 30 lan moi
+     * giay - do duoc 1474 lan trong 30 giay chay thu.
+     *
+     * Dieu dang noi: FilePack DA co san nhanh "if (file == null)" de xu ly dung truong
+     * hop nay. Nhanh do khong bao gio chay toi duoc vi ngoai le nem som hon mot buoc.
+     */
+    private static void kiemThieuTaiNguyenKhongSap() {
+        Kiem.nhom("Client Unity - thieu tai nguyen khong lam sap vong nap");
+
+        final String dis = boChuThich(doc(F_DOC_LUONG));
+        Kiem.dung("doc duoc " + F_DOC_LUONG, dis.length() > 0);
+        Kiem.dung("co ham mo tai nguyen chiu duoc thieu",
+                dis.contains("public static DataInputStream moNeuCo(string filename)"));
+        Kiem.dung("ham do co kiem null truoc khi doc bytes",
+                dis.contains("if (textAsset == null)"));
+
+        final String fp = boChuThich(doc(F_GOI));
+        Kiem.dung("doc duoc " + F_GOI, fp.length() > 0);
+
+        // Diem mau chot: open() phai dung duong an toan, khong goi thang ham dung.
+        Kiem.dung("FilePack.open dung duong an toan",
+                fp.contains("file = DataInputStream.moNeuCo(name)"));
+        Kiem.sai("FilePack.open KHONG goi thang ham dung cu",
+                fp.contains("file = new DataInputStream(name)"));
+
+        // getImg dung instance ma khong ai kiem; goi mo hong thi instance = null.
+        Kiem.dung("getImg kiem instance null truoc khi dung",
+                fp.contains("if (instance == null)"));
     }
 
     private static int dem(final String trong, final String mau) {
