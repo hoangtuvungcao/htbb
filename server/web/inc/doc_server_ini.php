@@ -45,6 +45,42 @@ if (!function_exists('kpahDocIni')) {
     }
 }
 
+if (!function_exists('kpahGoiYLoiKetNoi')) {
+    /**
+     * Đoán vì sao kết nối database hỏng, để thông báo lỗi nói được điều gì đó
+     * hữu ích thay vì chỉ ném ra mã 1045.
+     *
+     * Trường hợp hay gặp nhất, và cũng khó đoán nhất: server.ini CÓ ở đó nhưng
+     * PHP không có quyền đọc (file là chmod 640 chown kpah:kpah, còn PHP chạy
+     * dưới www-data). Lúc đó config.php lặng lẽ rơi xuống mặc định root / mật
+     * khẩu rỗng, và MySQL trả về "Access denied for user 'root'" — một thông
+     * báo chẳng liên quan gì tới nguyên nhân thật.
+     *
+     * @return string chuỗi rỗng nếu không đoán được gì
+     */
+    function kpahGoiYLoiKetNoi(): string
+    {
+        if (!defined('SERVER_DIR')) {
+            return '';
+        }
+        $f = rtrim(SERVER_DIR, "/\\") . '/server.ini';
+
+        if (is_file($f) && !is_readable($f)) {
+            return 'Có file ' . $f . ' nhưng PHP không có quyền đọc, nên đang dùng '
+                 . 'thông tin mặc định. Cho người chạy PHP đọc được file đó '
+                 . '(usermod -a -G kpah www-data rồi khởi động lại php-fpm), '
+                 . 'hoặc khai DB_USER/DB_PASS thẳng trong web/config.local.php.';
+        }
+        if (!is_file($f) && defined('DB_USER') && DB_USER === 'root'
+            && defined('DB_PASS') && DB_PASS === '') {
+            return 'Không thấy ' . $f . ' và config.local.php cũng không khai '
+                 . 'DB_USER/DB_PASS, nên đang dùng mặc định root với mật khẩu rỗng. '
+                 . 'Khai thông tin thật trong web/config.local.php.';
+        }
+        return '';
+    }
+}
+
 if (!function_exists('kpahCauHinhDb')) {
     /**
      * Rút thông tin kết nối từ hai file ini.

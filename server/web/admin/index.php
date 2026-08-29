@@ -66,8 +66,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser()) {
                 // nhầm hướng. Giờ ghi nguyên văn ra log lỗi PHP và nói rõ chỗ để xem.
                 error_log('[kpah-admin] dang nhap that bai: ' . get_class($ex) . ': ' . $ex->getMessage());
                 $maLoi = ($ex instanceof PDOException && $ex->getCode() !== '') ? ' [' . $ex->getCode() . ']' : '';
-                $loi[] = 'Cơ sở dữ liệu báo lỗi' . $maLoi . '. Nguyên văn đã ghi vào log lỗi của PHP. '
-                       . 'Xem nhanh bằng: php -r \'require "web/inc/db.php"; dbAccount();\'';
+                $loi[] = 'Cơ sở dữ liệu báo lỗi' . $maLoi . ' với '
+                       . DB_USER . '@' . DB_HOST . ' (mật khẩu ' . strlen(DB_PASS) . ' ký tự).';
+                // Mã 1045 "Access denied for user 'root'" gần như không bao giờ là
+                // nguyên nhân thật — nó chỉ là hệ quả của việc không đọc được
+                // server.ini rồi rơi xuống mặc định. Nói thẳng điều đó ra.
+                $goiY = function_exists('kpahGoiYLoiKetNoi') ? kpahGoiYLoiKetNoi() : '';
+                if ($goiY !== '') {
+                    $loi[] = $goiY;
+                }
+                $loi[] = 'Soi kỹ bằng: sudo -u www-data php web/admin/test/chan_doan_ket_noi.php';
             }
         }
     }
