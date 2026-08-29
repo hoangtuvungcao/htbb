@@ -62,7 +62,7 @@ public class MFont
 
 	private int wO;
 
-	public Color color1 = Color.white;
+	public Color color1 = TRANG_DIU;
 
 	public Color color2 = Color.gray;
 
@@ -90,9 +90,17 @@ public class MFont
 	public static int CO_THUONG = 12;
 	public static int CO_TO = 16;
 
-	/// <summary>Do dam. Chu mac dinh cua Unity o co nho khá manh, dat Bold cho de doc
-	/// tren nen ban do nhieu chi tiet.</summary>
-	public static FontStyle NET_CHU = FontStyle.Bold;
+	/// <summary>Do dam cua chu.</summary>
+	public static FontStyle NET_CHU = FontStyle.Normal;
+
+	/// <summary>
+	/// Trang diu, dung thay cho mau trang tinh cua Unity.
+	///
+	/// Font mac dinh cua Unity khu rang cua, nen mau trang tinh (255,255,255) tren nen
+	/// ban do nhieu mau bi choi mat. Nga mot chut ve phia am cho de nhin ma van doc ra
+	/// la mau trang. Doi mot cho nay la doi toan bo chu trang trong game.
+	/// </summary>
+	public static Color TRANG_DIU = new Color(0.91f, 0.91f, 0.85f);
 
 	private int coChu = CO_THUONG;
 
@@ -128,24 +136,24 @@ public class MFont
 
 	private static Color[] Color1 = new Color[18]
 	{
-		Color.white,
+		TRANG_DIU,
 		Color.green,
 		Color.red,
 		setColor(1573115),
 		new Color(0.5f, 0f, 0.5f),
-		Color.white,
-		Color.white,
+		TRANG_DIU,
+		TRANG_DIU,
 		Color.yellow,
 		Color.green,
 		setColor(1573115),
 		Color.red,
-		Color.white,
-		Color.white,
+		TRANG_DIU,
+		TRANG_DIU,
 		Color.black,
 		Color.black,
 		Color.yellow,
 		new Color(0.6523438f, 0.9960938f, 127f / 128f),
-		Color.white
+		TRANG_DIU
 	};
 
 	public MFont(string charList, sbyte[] charWidth, int charHeight, string fontFile, int type, int charSpace)
@@ -240,8 +248,8 @@ public class MFont
 			color1 = Color.black;
 			color2 = Color.black;
 			_drawString(g, st, x, y + 1, align);
-			color1 = Color.white;
-			color2 = Color.white;
+			color1 = TRANG_DIU;
+			color2 = TRANG_DIU;
 			_drawString(g, st, x, y, align);
 			break;
 		case 1:
@@ -288,8 +296,8 @@ public class MFont
 			color1 = Color.black;
 			color2 = Color.black;
 			_drawString(g, st, x, y + 1, align);
-			color1 = Color.white;
-			color2 = Color.white;
+			color1 = TRANG_DIU;
+			color2 = TRANG_DIU;
 			_drawString(g, st, x, y, align);
 			break;
 		case 7:
@@ -377,7 +385,7 @@ public class MFont
 		switch (id)
 		{
 		case 0:
-			return Color.white;
+			return TRANG_DIU;
 		case 1:
 			return Color.red;
 		case 2:
@@ -391,13 +399,13 @@ public class MFont
 		case 6:
 			return setColor(16776960);
 		case 7:
-			return Color.white;
+			return TRANG_DIU;
 		case 8:
 			return Color.black;
 		case 9:
 			return setColor(65535);
 		case 10:
-			return Color.white;
+			return TRANG_DIU;
 		case 11:
 			return Color.yellow;
 		case 12:
@@ -431,7 +439,7 @@ public class MFont
 		case 100:
 			return setColor(16770348);
 		default:
-			return Color.white;
+			return TRANG_DIU;
 		}
 	}
 
