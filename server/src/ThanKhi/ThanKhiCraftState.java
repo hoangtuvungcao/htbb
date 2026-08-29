@@ -44,6 +44,23 @@ public class ThanKhiCraftState
         }
     }
 
+    /**
+     * Xoá lựa chọn đã chọn ở menu, buộc phải đi lại menu Thợ Rèn cho lần tạo sau.
+     *
+     * BẮT BUỘC gọi sau mỗi lần tạo Thần Khí thành công. Trước đây không xoá, mà
+     * lệnh tạo là một gói popup riêng (idpopup = 121, Map.java:10207) — client
+     * chỉ cần đi menu ĐÚNG MỘT LẦN rồi gửi lại gói popup đó bao nhiêu lần tuỳ ý,
+     * mỗi lần ra một món Thần Khí mới. CreateThanKhi có kiểm trạng thái ở đầu
+     * hàm nhưng trạng thái đó không bao giờ hết hạn nên phép kiểm luôn qua.
+     */
+    public void datLai()
+    {
+        this.itemType = -1;
+        this.materialMode = -1;
+        this.materialLevel = 0;
+        this.randomMaterials = new short[0];
+    }
+
     public byte getItemType() {
         return itemType;
     }

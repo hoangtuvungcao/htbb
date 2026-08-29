@@ -340,73 +340,89 @@ public class ThoRenThanBi
             }
             
             int required = amountMaterial[baseIdx];
-           
+
             int materialMode = player.thanKhiCraftState.getMaterialMode();
             int lockHave = player.listGemitemLock[matId];
             int normalHave = player.listGemitem[matId];
 
-            switch (materialMode) 
+            // VÒNG NÀY CHỈ KIỂM TRA, KHÔNG ĐƯỢC TRỪ GÌ.
+            // Phải kiểm đủ CẢ 5 nguyên liệu trước rồi mới trừ ở vòng 2 — trừ xen
+            // giữa lúc kiểm thì nguyên liệu thứ 4 thiếu là ba nguyên liệu đầu đã
+            // bị trừ mất mà người chơi không nhận được gì.
+            switch (materialMode)
             {
                 case 0: // chỉ dùng thường
-                    if (normalHave < required) 
+                    if (normalHave < required)
                     {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Ngươi không đủ nguyên liệu: cần " + required + " " + Map.gemTemplate[matId].name, ""));
                         return;
                     }
-                    // đủ -> trừ thường
-                    player.listGemitem[matId] = normalHave - required;
                     break;
                 case 1: // chỉ dùng khóa
-                    if (lockHave < required) 
+                    if (lockHave < required)
                     {
                         player.sendMessage(MessageCreator.createServerAlertMessage( "Ngươi không đủ nguyên liệu: cần " + required + " " + Map.gemTemplate[matId].name + " (Khóa)", ""));
                         return;
                     }
-                    // đủ -> trừ khóa
-                    player.listGemitemLock[matId] = lockHave - required;
                     break;
 
                 case 2: // hỗn hợp, ưu tiên khóa
-                    int totalHave = lockHave + normalHave;
-                    if (totalHave < required) 
+                    if (lockHave + normalHave < required)
                     {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Ngươi không đủ nguyên liệu: cần " + required + " " + Map.gemTemplate[matId].name + " (ưu tiên dùng Khóa)", ""));
                         return;
                     }
-                    // trừ ưu tiên khóa trước, thiếu mới trừ thường
-                    int useLock = Math.min(lockHave, required);
-                    int remain = required - useLock;
-                    player.listGemitemLock[matId] = lockHave - useLock;
-                    if (remain > 0) 
-                    {
-                        player.listGemitem[matId] = normalHave - remain;
-                    }
                 break;
             }
-            player.listGemitem[matId] = normalHave - required;
-            break;
         }
 
-        
+
         // 2) Trừ nguyên liệu theo đúng SỐ LƯỢNG
-        for (short matId : player.thanKhiCraftState.getRandomMaterials()) 
+        //
+        // Dùng player.delGem() chứ không ghi thẳng vào listGemitem[]: delGem còn
+        // cộng allGemUse và gỡ viên đá khỏi Vector gemItem khi về 0. Ghi thẳng
+        // vào mảng thì Vector còn sót viên đá đã hết, hiện sai trong túi.
+        for (short matId : player.thanKhiCraftState.getRandomMaterials())
         {
             int offset = player.thanKhiCraftState.getMaterialLevel() - 1;
             int baseIdx = -1;
-            for (int j = 0; j < startIDMaterial.length; j++) 
+            for (int j = 0; j < startIDMaterial.length; j++)
             {
-                if ((short) (startIDMaterial[j] + offset) == matId) 
+                if ((short) (startIDMaterial[j] + offset) == matId)
                 {
                     baseIdx = j;
                     break;
                 }
             }
-            int required = amountMaterial[baseIdx];
-            
-            if (player.listGemitemLock[matId] >= required) 
+            if (baseIdx < 0)
             {
-                player.delGem(matId, required, player.thanKhiCraftState.getMaterialMode() != 0);
-            } 
+                continue;
+            }
+            int required = amountMaterial[baseIdx];
+            int materialMode = player.thanKhiCraftState.getMaterialMode();
+
+            if (materialMode == 0)
+            {
+                player.delGem(matId, required, false);
+            }
+            else if (materialMode == 1)
+            {
+                player.delGem(matId, required, true);
+            }
+            else
+            {
+                // hỗn hợp: ưu tiên tiêu kho khóa trước, thiếu bao nhiêu lấy nốt kho thường
+                int useLock = Math.min(player.listGemitemLock[matId], required);
+                if (useLock > 0)
+                {
+                    player.delGem(matId, useLock, true);
+                }
+                int remain = required - useLock;
+                if (remain > 0)
+                {
+                    player.delGem(matId, remain, false);
+                }
+            }
         }
         
         short[] idthankhi = new short[] { 890, 891, 892 };
@@ -478,6 +494,14 @@ public class ThoRenThanBi
         player.iItems.add(newItem);
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
         player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng! Ngươi đã tạo thành công " + template.name, ""));
+
+        data.Database.instance.saveOrtherLog("", player.charname,
+                "tao than khi " + template.name
+              + " (cap nguyen lieu " + player.thanKhiCraftState.getMaterialLevel()
+              + ", che do " + player.thanKhiCraftState.getMaterialMode() + ")", "taothankhi");
+
+        // Xoá lựa chọn: một lần đi menu chỉ tạo được MỘT món. Xem ThanKhiCraftState.datLai().
+        player.thanKhiCraftState.datLai();
     }
     
     

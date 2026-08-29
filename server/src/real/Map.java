@@ -8213,6 +8213,16 @@ public class Map implements Runnable {
         try {
             byte type = m.dis.readByte();
             int index = m.dis.readByte();
+            // index doc THANG tu goi tin nen client gui gi cung duoc (-128..127),
+            // trong khi player.fruit chi co FruitTemplate.MAX_FRUIT o. Truoc day
+            // vuot mang thi ArrayIndexOutOfBoundsException bi khoi catch cuoi ham
+            // nuot im lang: khong hong gi nhung cung khong ai biet co ke dang do.
+            if (player.fruit == null || index < 0 || index >= player.fruit.length) {
+                data.NghiVanGianLan.ghiVatPham(player, "hackcaythan",
+                        "gui chi so o cay than = " + index + " (chi co "
+                      + (player.fruit == null ? 0 : player.fruit.length) + " o), lenh " + type);
+                return;
+            }
             if (player.fruit[index] == null) {
                 return;
             }
