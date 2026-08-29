@@ -1,12 +1,13 @@
 # Dọn log định kỳ
 
-Giữ 30 ngày gần nhất, mọi thứ cũ hơn thì bỏ. Hai phần rời nhau vì hai loại log
-cần hai cách khác nhau:
+Giữ N ngày gần nhất, mọi thứ cũ hơn thì bỏ (`GIU_NGAY` ở đầu
+[don-log.sh](don-log.sh)). Hai phần rời nhau vì hai loại log cần hai cách khác
+nhau:
 
 | Loại | Ai dọn | File |
 |---|---|---|
-| `game.out`, `login.out`, `*.log`, các file `.txt` server tự ghi | logrotate (đã có sẵn `logrotate.timer` chạy 00:00 mỗi ngày) | [kpah-logrotate.conf](kpah-logrotate.conf) |
-| Bảng nhật ký trong database, file `<ip>.txt`, bản backup quá hạn | cron 03:20 mỗi đêm | [don-log.sh](don-log.sh) |
+| `game.out`, `login.out`, `*.log`, các file `.txt` server tự ghi | logrotate — `logrotate.timer` của hệ thống 00:00 mỗi ngày, **cộng thêm** một lần kiểm mỗi giờ | [kpah-logrotate.conf](kpah-logrotate.conf) |
+| Bảng nhật ký trong database, file `.txt` lẻ đặt tên động, bản backup quá hạn | cron 03:20 mỗi đêm | [don-log.sh](don-log.sh) |
 
 ## Cài
 
@@ -19,8 +20,13 @@ sudo tee /etc/cron.d/kpah-don-log >/dev/null <<'EOF'
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 20 3 * * * root /opt/kpah/vps/don-log.sh >/dev/null 2>&1
+17 * * * * root /usr/sbin/logrotate /etc/logrotate.d/kpah >/dev/null 2>&1
 EOF
 ```
+
+Dòng thứ hai **không** thừa — xem bẫy số 5 bên dưới. Nó cố ý không đặt `--state`
+để dùng chung `/var/lib/logrotate/status` với lần chạy hằng ngày của hệ thống,
+nhờ vậy hai bên không xoay vòng tranh phần nhau.
 
 Chạy tay:
 
@@ -29,7 +35,8 @@ sudo /opt/kpah/vps/don-log.sh --thu    # chỉ báo sẽ xoá bao nhiêu, không
 sudo /opt/kpah/vps/don-log.sh          # xoá thật
 ```
 
-Đổi số ngày giữ lại cho một lần chạy: `sudo GIU_NGAY=7 /opt/kpah/vps/don-log.sh`.
+Số ngày giữ lại là biến `GIU_NGAY` ở đầu [don-log.sh](don-log.sh). Đổi cho một
+lần chạy: `sudo GIU_NGAY=7 /opt/kpah/vps/don-log.sh`.
 
 Nhật ký của chính việc dọn: `/opt/kpah/log/don-log.log`.
 
@@ -75,6 +82,17 @@ sẽ hỏng. Đã gỡ cả hai khỏi git và cho vào `.gitignore`; bản nộ
 
 Thêm file nào vào `kpah-logrotate.conf` thì kiểm luôn `git ls-files <tên>` —
 phải **rỗng**.
+
+**5. `maxsize` chỉ có tác dụng lúc logrotate CHẠY.** `Region.java:186-188` nằm
+trong vòng lặp chạy của **mỗi map** và in cả stack trace ra stdout, còn
+`Map.DELAY_UPDATE_MAP = 300ms`. Một map dính lỗi lặp lại (ví dụ NPE cố định) bơm
+vài chục dòng mỗi giây — hàng triệu dòng một ngày. `CharVongLap.java:622` và
+`MapVongLap.java:458` cũng cùng dạng.
+
+`maxsize 20M` không chặn được trong ngày, mà `logrotate.timer` của hệ thống chỉ
+chạy 00:00, nên giữa hai lần chạy `game.out` có thể phình lên hàng GB — đĩa chỉ
+còn 6 GB. Vì vậy có thêm dòng cron mỗi giờ ở phần Cài: nó giới hạn thiệt hại
+xuống một giờ thay vì một ngày.
 
 ## Vì sao xoá theo lô chứ không một lệnh DELETE
 
@@ -124,6 +142,17 @@ Sáu cách, làm hết chứ đừng dùng mỗi một cách:
 
 Cách 1 tìm ra tên file, nhưng **không** chứng minh file đó bao giờ được ghi. Phải
 kiểm thêm: hàm chứa lệnh ghi có ai gọi không.
+
+Và cách 1 **cũng không đủ**: có những sink mà tên file nằm *trong jar*, không có
+trong `src/`. Phải đọc cả `build/nqsh-src/data/Logger.java` (khác
+`util/Logger.java`) — nó hard-code bốn tên:
+
+| Hàm | File | Có ai gọi trong `src/`? |
+|---|---|---|
+| `logError` | `errorlog.txt` | có |
+| `logErrorPet` | `errorlogPet.txt` | có — `Pet.java:1208` |
+| `logHack` | `hacklog.txt` | **không** |
+| `writeToFile` | `serverlog/<yyyyMMdd>.txt` | **không** |
 
 ## `hack.txt` và `hackdo.txt` là code chết
 

@@ -47,6 +47,7 @@ function fileLog(): array
         'log/autodeploy.log' => 'Nhật ký deploy tự động (vps/deploy-auto.sh)',
         'log/don-log.log'   => 'Nhật ký dọn log định kỳ (vps/don-log.sh)',
         'errorAnima.txt'    => 'Lỗi khi LƯU thú nuôi (chỉ đường lưu, không có đường nạp)',
+        'errorlogPet.txt'   => 'Nạp dữ liệu thú nuôi hỏng (Pet.java:1208) — chuỗi lưu thú sai định dạng',
         'errorSellITem.txt' => 'Đếm số lần bán vật phẩm hỏng — chỉ ghi chuỗi cố định, không có giờ / tên / vết gọi',
         'errorquayso.txt'   => 'Lỗi thủ tục sự kiện theo ngày (vòng quay và cả sự kiện khác)',
         'savechar.txt'      => 'Lỗi lưu nhân vật — CHỈ đường lưu tự động; đường lưu chính ghi ra <tên nhân vật>.txt',

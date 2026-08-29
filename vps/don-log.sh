@@ -25,7 +25,7 @@ set -u
 # ---------- Cau hinh ----------
 
 # So ngay giu lai. Dong nao cu hon moc nay thi xoa.
-GIU_NGAY=${GIU_NGAY:-30}
+GIU_NGAY=${GIU_NGAY:-15}
 
 # Xoa theo lot, moi lot bao nhieu dong.
 #
@@ -217,7 +217,7 @@ BAO_VE="trangan.txt offline.txt top.txt hack.txt hackdo.txt"
 
 # (b) logrotate da lo roi (xem vps/kpah-logrotate.conf) - de no tu xoay vong,
 #     dung o day xoa tranh phan.
-LOGROTATE_LO="errorlog.txt errorAnima.txt errorSellITem.txt errorquayso.txt
+LOGROTATE_LO="errorlog.txt errorlogPet.txt errorAnima.txt errorSellITem.txt errorquayso.txt
 savechar.txt saitenchar4.txt update.txt updateleaf.txt rUpdateleaf.txt
 matketinfo.txt nhantieu.txt doitieu.txt thetieu.txt tratieu.txt cuoptieu.txt
 longden.txt longdenchar.txt longdendaylog.txt datra4.txt charWedding.txt
