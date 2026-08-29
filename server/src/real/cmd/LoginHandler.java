@@ -226,6 +226,11 @@ public class LoginHandler implements ICommandHandler {
             session.w = dis.readShort();
             session.vsTile = dis.readByte();
             session.idServer = dis.readByte();
+            // MA MAY — PHAI la truong CUOI CUNG, va PHAI nam trong khoi try nay.
+            // Client cu khong gui truong nay: readUTF() nem EOFException, bi catch ben
+            // duoi nuot, va session.IMEI giu nguyen "". Nho vay doi server truoc, doi
+            // client sau deu duoc — khong ep ai phai cap nhat cung luc.
+            session.IMEI = data.CamTheoMay.lamSach(dis.readUTF());
         } catch (final Exception ex3) {
         }
         if (!Map.openLog && TeamServer.server != 1) {
@@ -326,8 +331,25 @@ public class LoginHandler implements ICommandHandler {
             session.sendMessage(MessageCreator.createServerAlertMessage("Có lỗi xảy ra. Mã lỗi 123", ""));
             return;
         }
+        // CAM THEO MA MAY — kiem o day, tuc SAU khi mat khau da dung, vi hai le:
+        //   1. Khong lo cho nguoi la biet "may nay bi cam" khi ho chua co tai khoan dung.
+        //   2. Mot tran do mat khau khong keo theo tra cuu nao: sai mat khau la da return
+        //      o tren truoc khi cham toi day.
+        if (data.CamTheoMay.biCam(session.IMEI)) {
+            final Message iCamMay = new Message(2);
+            iCamMay.dos.writeUTF(TeamServer.isServerIndo()
+                    ? "This device has been blocked."
+                    : "Thiết bị này đã bị khoá.");
+            session.sendMessage(iCamMay);
+            iCamMay.cleanup();
+            message.cleanup();
+            return;
+        }
         session.userID = userID;
         session.username = uname;
+        // Ghi nhan may nao dung tai khoan nao. Moi loi bi nuot ben trong: day chi la ghi
+        // chep, khong duoc phep lam hong duong dang nhap.
+        data.CamTheoMay.ghiNhanDangNhap(session.IMEI, uname, session.ip);
         try {
             if (Map.openLog && (session.clientProvider.trim().equals("-1") || session.agentProvider.trim().equals("-1"))) {
                 final String[] provider_agent = Database.instance.getProviderFromTeamUser(session.userID, session.clientProvider, session.agentProvider);
