@@ -19,14 +19,15 @@ public class OfflineMap extends Map {
    public Hashtable<Integer, Vector<CMLocation>> ALL_LOCATION_OFFLINE = new Hashtable();
 
    public OfflineMap(int id) {
+      // super(id) goi Map(int id) — ham dung NGAN, khong di qua MapKhoiTao.init() nen
+      // khong mot kho vat the nao duoc khoi tao. Phai tu goi initVatTheDuoiDat(), va
+      // phai goi TRUOC startSandVilage(): vong lap do cham vao potions ngay nhip dau.
       super(id);
       this.initAllPlayer();
       this.allPlayerMessages.add(new Vector());
       this.allPlayerMessages.add(new Vector());
       this.allPlayerMessages.add(new Vector());
-      this.ALL_EFFECT_INMAP.add(new Vector());
-      this.ALL_EFFECT_INMAP.add(new Vector());
-      this.ALL_EFFECT_INMAP.add(new Vector());
+      this.initVatTheDuoiDat();   // gom ca ba dong ALL_EFFECT_INMAP truoc day nam o day
       this.startSandVilage();
       this.startWindVilage();
       this.startLeafVilage();

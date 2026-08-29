@@ -3101,6 +3101,11 @@ public class Map implements Runnable {
     }
 
     public Map(int id) {
+        // PHAI khoi tao TRUOC new Thread(this).start(). Thread do chay run() -> update(),
+        // va no bat dau chay NGAY khi ham dung nay ket thuc — tuc la truoc khi than ham
+        // dung cua lop con (OfflineMap) chay xong. Khoi tao o lop con thi van con mot khe
+        // hep ma thread da doc trong khi cac kho con rong.
+        this.initVatTheDuoiDat();
         this.mapId = id;
         if (this.mapId != -1) {
             this.loadMap("map/map" + id, 0);
@@ -3888,7 +3893,10 @@ public class Map implements Runnable {
     }
 
     protected ItemQuest getItemQuest(short id, int country) {
-        if (country > this.potions.size()) {
+        // Hai loi trong dieu kien cu `country > this.potions.size()`:
+        //   1. do nham kho khac (potions) trong khi lay tren itemquests
+        //   2. lech mot don vi: country == size() van lot qua roi nem ArrayIndexOutOfBounds
+        if (country < 0 || country >= this.itemquests.size()) {
             return null;
         } else {
             Vector<ItemQuest> potions = (Vector<ItemQuest>) this.itemquests.get(country);
@@ -3908,7 +3916,8 @@ public class Map implements Runnable {
     }
 
     protected Potion getPotion(short id, int country) {
-        if (country > this.potions.size()) {
+        // `>` la lech mot don vi: country == size() van lot qua roi nem ArrayIndexOutOfBounds.
+        if (country < 0 || country >= this.potions.size()) {
             return null;
         } else {
             Vector<Potion> potions = (Vector<Potion>) this.potions.get(country);
@@ -17158,6 +17167,51 @@ public class Map implements Runnable {
         this.allPlayers.add(new Vector());
         this.allPlayers.add(new Vector());
         this.allPlayers.add(new Vector());
+    }
+
+    /** Ba nuoc, chi so 0..2. MAX_COUNTRY la CHI SO lon nhat (=2), khong phai so luong. */
+    public static final int SO_NUOC = 3;
+
+    /**
+     * Khoi tao cac kho chua VAT THE NAM DUOI DAT: moi loai mot ngan rieng cho tung nuoc.
+     *
+     * VI SAO PHAI GOM THANH HAM RIENG
+     * --------------------------------
+     * Truoc day chi MapKhoiTao.init() lam viec nay. Nhung OfflineMap goi super(id) ->
+     * Map(int id), va ham dung ay KHONG di qua MapKhoiTao. Nghia la moi ban do offline
+     * chay voi nam Vector RONG, trong khi co 22 cho trong Map.java lay .get(country) tren
+     * chung. Tat ca deu nem ArrayIndexOutOfBoundsException:
+     *
+     *   - addPotion / addItemMap / addGemItem / addItemQuest  -> do roi xuong dat MAT HAN
+     *   - removePotion / removeItem / ...                      -> nem loi
+     *   - getPotion / getItemQuest / getGemItem                -> nem loi
+     *   - deletePotionAndItemOnGround                          -> nem MOI NHIP vong lap
+     *
+     * Cai cuoi la thu duy nhat lo ra: vong lap sand goi no lien tuc nen server sinh
+     * 124 MB log moi ngay va an 22% CPU du chi co mot nguoi choi. Ba cai tren im lang.
+     *
+     * Da co nguoi vap phai dung ho loi nay roi va vao tay tung cho trong constructor cua
+     * OfflineMap (allPlayerMessages, ALL_EFFECT_INMAP) — nhung bo sot bon kho con lai.
+     * Do la ly do gom vao mot cho: de khong con HAI noi phai nho giong nhau.
+     *
+     * Goi lai nhieu lan khong sao: chi bu cho du, khong bao gio them chong len.
+     */
+    public void initVatTheDuoiDat() {
+        while (this.potions.size() < SO_NUOC) {
+            this.potions.add(new Vector());
+        }
+        while (this.items.size() < SO_NUOC) {
+            this.items.add(new Vector());
+        }
+        while (this.itemquests.size() < SO_NUOC) {
+            this.itemquests.add(new Vector());
+        }
+        while (this.gemItem.size() < SO_NUOC) {
+            this.gemItem.add(new Vector());
+        }
+        while (this.ALL_EFFECT_INMAP.size() < SO_NUOC) {
+            this.ALL_EFFECT_INMAP.add(new Vector());
+        }
     }
 
     public void initAllMonsTer() {

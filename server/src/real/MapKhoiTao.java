@@ -26,21 +26,9 @@ class MapKhoiTao {
         }
 
         Map.setTimeCake();
-        map.potions.add(new Vector());
-        map.potions.add(new Vector());
-        map.potions.add(new Vector());
-        map.ALL_EFFECT_INMAP.add(new Vector());
-        map.ALL_EFFECT_INMAP.add(new Vector());
-        map.ALL_EFFECT_INMAP.add(new Vector());
-        map.itemquests.add(new Vector());
-        map.itemquests.add(new Vector());
-        map.itemquests.add(new Vector());
-        map.items.add(new Vector());
-        map.items.add(new Vector());
-        map.items.add(new Vector());
-        map.gemItem.add(new Vector());
-        map.gemItem.add(new Vector());
-        map.gemItem.add(new Vector());
+        // Truoc day 15 dong add() nam thang o day. Da chuyen vao Map.initVatTheDuoiDat()
+        // vi OfflineMap khong di qua ham dung nay va bi bo sot -> xem chu thich o do.
+        map.initVatTheDuoiDat();
         if (nregion == 0) {
             map.allPlayers.add(new Vector());
             map.allPlayers.add(new Vector());
