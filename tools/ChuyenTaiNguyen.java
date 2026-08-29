@@ -241,11 +241,25 @@ public final class ChuyenTaiNguyen {
             }
         }
 
+        final Map<String, byte[]> veSan = veNutPC();
         int soDat = 0;
         int soBoQua = 0;
+        int soVe = 0;
         for (final Map.Entry<String, String> e : anhVaTruong.entrySet()) {
             final Path dich = ra.resolve(e.getKey() + ".bytes");
+            final byte[] ve = veSan.get(e.getKey());
             if (Files.exists(dich)) {
+                // Chi ghi de khi tep dang co DUNG LA anh giu cho 1x1 do chinh cong cu
+                // nay tung dat. Khong bao gio de len mot anh that lay tu ban J2ME.
+                if (ve != null && laAnhGiuCho(Files.readAllBytes(dich))) {
+                    ghi(dich, ve);
+                    soVe++;
+                }
+                continue;
+            }
+            if (ve != null) {
+                ghi(dich, ve);
+                soVe++;
                 continue;
             }
             if (coNhanhNull.contains(e.getValue())) {
@@ -255,11 +269,11 @@ public final class ChuyenTaiNguyen {
             ghi(dich, anhTrongSuot());
             soDat++;
         }
-        if (soDat > 0 || soBoQua > 0) {
-            System.out.println("  anh giu cho: dat " + soDat + ", bo qua " + soBoQua
-                    + " (truong co nhanh re theo null)");
+        if (soDat > 0 || soBoQua > 0 || soVe > 0) {
+            System.out.println("  anh le: giu cho " + soDat + ", bieu tuong ve tay " + soVe
+                    + ", bo qua " + soBoQua + " (truong co nhanh re theo null)");
         }
-        return soDat;
+        return soDat + soVe;
     }
 
     /**
@@ -314,14 +328,13 @@ public final class ChuyenTaiNguyen {
             return 0;
         }
 
+        final Map<String, byte[]> veSan = veNutPC();
         int soDung = 0;
         for (final String goi : goiCanNap) {
             final Path dich = ra.resolve(goi + ".bytes");
-            if (Files.exists(dich)) {
-                continue;
-            }
             final Map<String, byte[]> muc = new LinkedHashMap<String, byte[]>();
             int soThat = 0;
+            int soVe = 0;
             for (final String ten : tenAnh) {
                 byte[] anh = trongGoi.get(ten);
                 if (anh == null) {
@@ -329,10 +342,16 @@ public final class ChuyenTaiNguyen {
                 }
                 if (anh != null) {
                     soThat++;
+                } else if (veSan.containsKey(ten)) {
+                    anh = veSan.get(ten);
+                    soVe++;
                 } else {
                     anh = anhTrongSuot();
                 }
                 muc.put(ten + ".png", anh);
+            }
+            if (Files.exists(dich) && !laGoiCuaTa(dich, muc.keySet())) {
+                continue;
             }
             final byte[] goiMoi = dongGoi(muc);
 
@@ -353,9 +372,24 @@ public final class ChuyenTaiNguyen {
             ghi(dich, goiMoi);
             soDung++;
             System.out.println("  dung goi thay the: " + goi + " (" + muc.size() + " muc, "
-                    + soThat + " anh that, " + (muc.size() - soThat) + " anh trong suot)");
+                    + soThat + " anh that, " + soVe + " bieu tuong ve tay, "
+                    + (muc.size() - soThat - soVe) + " anh trong suot)");
         }
         return soDung;
+    }
+
+    /**
+     * Goi nay co phai do chinh cong cu nay dung ra khong?
+     *
+     * Dau hieu: giai lai duoc VA danh sach ten ben trong dung bang danh sach sap ghi.
+     * Goi that cua ban J2ME khong bao gio trung khop nhu vay (no chua anh cua rieng no,
+     * khong phai dung tap ten ma C# hoi xin). Co phep thu nay thi lan chay sau moi nang
+     * cap duoc goi cu - vi du thay anh giu cho 1x1 bang bieu tuong ve tay - ma van
+     * khong bao gio de len mot goi that.
+     */
+    private static boolean laGoiCuaTa(final Path dich, final Set<String> ten) throws IOException {
+        final Map<String, byte[]> cu = giaiGoi(Files.readAllBytes(dich));
+        return !cu.isEmpty() && cu.keySet().equals(ten);
     }
 
     /** Doi FilePack.main hoac Main.res + "/other" thanh duong dan trong res/. */
@@ -566,6 +600,156 @@ public final class ChuyenTaiNguyen {
     private static void thoat(final String thongDiep) {
         System.out.println("LOI: " + thongDiep);
         System.exit(2);
+    }
+
+    // ------------------------------------------------------------------
+    /**
+     * Ve san mot so bieu tuong nut CHI CO o ban PC (Unity), ban J2ME khong he co.
+     *
+     * CHI DUNG KHI KHONG CO BAN UNITY GOC. Neu chay taonguon voi thu muc co ca
+     * KPAH_276_Data thi buoc rut tai nguyen goc da dat anh THAT vao roi, va ham nay
+     * khong dong den (no chi ghi de dung mot loai tep: anh giu cho 1x1 do chinh no dat).
+     *
+     * VI SAO VAN GIU: nam nut o cot trai trong game va nut chat goc phai deu lay anh tu
+     * nhung ten nay. Khong co anh that thi truoc day chung nhan anh giu cho 1x1: nut
+     * hoan toan vo hinh, va vi ma ve chu goi y phim tai "x + anh.getWidth() + 2" nen
+     * ca nam chu O/Y/U/F2/I don ve sat le trai man hinh. Nguoi choi thay nam chu cai
+     * lo lung khong hieu de lam gi.
+     *
+     * VI SAO KHONG DUNG ANH TRONG SUOT NHU CHO KHAC: quy tac "thieu thi de trong suot"
+     * dung khi cai thieu la DU LIEU (anh vat pham, hieu ung) - dat bua vao la sai ma
+     * khong ai nhin ra. O day cai thieu la BIEU TUONG DIEU KHIEN: nguoi choi phai bam
+     * duoc thi nut moi co nghia, va anh ve tay khong the bi nham voi du lieu that.
+     *
+     * Kich thuoc 24x24 chon theo bo cuc trong GameScr.setDataForButton: cac nut xep
+     * chong len nhau theo chieu cao anh, 24px thi ca nam nut nam gon trong man 600px.
+     */
+    private static Map<String, byte[]> veNutPC() throws IOException {
+        final Map<String, byte[]> m = new LinkedHashMap<String, byte[]>();
+        m.put("selectfc", png(veMucTieu()));      // O  - chon muc tieu
+        m.put("imgChat", png(veBongChat()));      // Y  - chat (cot trai)
+        m.put("chat", png(veBongChat()));         //      chat (goc phai tren)
+        m.put("swapclothes", png(veAoQuan()));    // U  - an/hien trang phuc
+        m.put("fc", png(veConMat()));             // F2 - chuyen muc tieu
+        m.put("swap", png(veDoiCho()));           // I  - doi thanh ky nang
+        return m;
+    }
+
+    private static final int CO_NUT = 24;
+
+    private static java.awt.Graphics2D nenNut(final java.awt.image.BufferedImage img) {
+        final java.awt.Graphics2D g = img.createGraphics();
+        g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
+                java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(java.awt.RenderingHints.KEY_STROKE_CONTROL,
+                java.awt.RenderingHints.VALUE_STROKE_PURE);
+        g.setPaint(new java.awt.GradientPaint(0, 0, new java.awt.Color(0x3A, 0x40, 0x48, 0xE0),
+                0, CO_NUT, new java.awt.Color(0x24, 0x28, 0x2E, 0xE0)));
+        g.fill(new java.awt.geom.RoundRectangle2D.Float(1, 1, CO_NUT - 2, CO_NUT - 2, 7, 7));
+        g.setColor(new java.awt.Color(0xE8, 0xCE, 0x8A));
+        g.setStroke(new java.awt.BasicStroke(1.6f));
+        g.draw(new java.awt.geom.RoundRectangle2D.Float(1.2f, 1.2f, CO_NUT - 2.4f, CO_NUT - 2.4f, 7, 7));
+        g.setColor(java.awt.Color.WHITE);
+        g.setStroke(new java.awt.BasicStroke(1.8f, java.awt.BasicStroke.CAP_ROUND,
+                java.awt.BasicStroke.JOIN_ROUND));
+        return g;
+    }
+
+    private static java.awt.image.BufferedImage anhNut() {
+        return new java.awt.image.BufferedImage(CO_NUT, CO_NUT,
+                java.awt.image.BufferedImage.TYPE_INT_ARGB);
+    }
+
+    /** Vong ngam: vong tron va bon vach - "chon muc tieu". */
+    private static java.awt.image.BufferedImage veMucTieu() {
+        final java.awt.image.BufferedImage i = anhNut();
+        final java.awt.Graphics2D g = nenNut(i);
+        g.draw(new java.awt.geom.Ellipse2D.Float(7, 7, 10, 10));
+        g.draw(new java.awt.geom.Line2D.Float(12, 4, 12, 7.5f));
+        g.draw(new java.awt.geom.Line2D.Float(12, 16.5f, 12, 20));
+        g.draw(new java.awt.geom.Line2D.Float(4, 12, 7.5f, 12));
+        g.draw(new java.awt.geom.Line2D.Float(16.5f, 12, 20, 12));
+        g.fill(new java.awt.geom.Ellipse2D.Float(10.5f, 10.5f, 3, 3));
+        g.dispose();
+        return i;
+    }
+
+    /** Bong thoai co duoi va hai dong chu - "chat". */
+    private static java.awt.image.BufferedImage veBongChat() {
+        final java.awt.image.BufferedImage i = anhNut();
+        final java.awt.Graphics2D g = nenNut(i);
+        g.draw(new java.awt.geom.RoundRectangle2D.Float(5, 6, 14, 10, 4, 4));
+        g.fill(new java.awt.Polygon(new int[] { 8, 12, 8 }, new int[] { 15, 19, 17 }, 3));
+        g.setStroke(new java.awt.BasicStroke(1.5f, java.awt.BasicStroke.CAP_ROUND,
+                java.awt.BasicStroke.JOIN_ROUND));
+        g.draw(new java.awt.geom.Line2D.Float(8, 9.5f, 16, 9.5f));
+        g.draw(new java.awt.geom.Line2D.Float(8, 12.5f, 13, 12.5f));
+        g.dispose();
+        return i;
+    }
+
+    /** Cai ao - "an/hien trang phuc". */
+    private static java.awt.image.BufferedImage veAoQuan() {
+        final java.awt.image.BufferedImage i = anhNut();
+        final java.awt.Graphics2D g = nenNut(i);
+        final java.awt.geom.Path2D.Float p = new java.awt.geom.Path2D.Float();
+        p.moveTo(8, 5);
+        p.lineTo(10.5f, 5);
+        p.curveTo(11.5f, 7.5f, 12.5f, 7.5f, 13.5f, 5);
+        p.lineTo(16, 5);
+        p.lineTo(19.5f, 8);
+        p.lineTo(17, 11);
+        p.lineTo(16, 10);
+        p.lineTo(16, 19);
+        p.lineTo(8, 19);
+        p.lineTo(8, 10);
+        p.lineTo(7, 11);
+        p.lineTo(4.5f, 8);
+        p.closePath();
+        g.draw(p);
+        g.dispose();
+        return i;
+    }
+
+    /** Con mat - "chuyen muc tieu dang nhin". */
+    private static java.awt.image.BufferedImage veConMat() {
+        final java.awt.image.BufferedImage i = anhNut();
+        final java.awt.Graphics2D g = nenNut(i);
+        final java.awt.geom.Path2D.Float p = new java.awt.geom.Path2D.Float();
+        p.moveTo(4, 12);
+        p.quadTo(12, 4.5f, 20, 12);
+        p.quadTo(12, 19.5f, 4, 12);
+        p.closePath();
+        g.draw(p);
+        g.fill(new java.awt.geom.Ellipse2D.Float(9.5f, 9.5f, 5, 5));
+        g.dispose();
+        return i;
+    }
+
+    /** Hai mui ten nguoc chieu - "doi thanh ky nang". */
+    private static java.awt.image.BufferedImage veDoiCho() {
+        final java.awt.image.BufferedImage i = anhNut();
+        final java.awt.Graphics2D g = nenNut(i);
+        g.draw(new java.awt.geom.Line2D.Float(9, 7, 9, 17));
+        g.fill(new java.awt.Polygon(new int[] { 6, 12, 9 }, new int[] { 9, 9, 5 }, 3));
+        g.draw(new java.awt.geom.Line2D.Float(15, 7, 15, 17));
+        g.fill(new java.awt.Polygon(new int[] { 12, 18, 15 }, new int[] { 15, 15, 19 }, 3));
+        g.dispose();
+        return i;
+    }
+
+    private static byte[] png(final java.awt.image.BufferedImage img) throws IOException {
+        final java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+        javax.imageio.ImageIO.write(img, "png", bos);
+        return bos.toByteArray();
+    }
+
+    /** Anh giu cho 1x1, nho lai de nhan ra tep nao la do chinh cong cu nay dat. */
+    private static byte[] giuCho;
+
+    private static boolean laAnhGiuCho(final byte[] du) throws IOException {
+        if (giuCho == null) { giuCho = anhTrongSuot(); }
+        return java.util.Arrays.equals(du, giuCho);
     }
 
     private ChuyenTaiNguyen() {

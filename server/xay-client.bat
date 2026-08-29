@@ -4,7 +4,8 @@ rem ===================================================================
 rem  Xay client Unity cho tung nen tang.
 rem
 rem  Dung:
-rem    xay-client.bat taonguon   - tao tai nguyen tu ban client J2ME
+rem    xay-client.bat taonguon   - tao tai nguyen: uu tien ban Unity goc, thieu thi
+rem                                lap bang ban J2ME
 rem    xay-client.bat chuanbi    - tao canh + dat cau hinh du an
 rem    xay-client.bat windows    - xuat file .exe
 rem    xay-client.bat webgl      - xuat ban chay trong trinh duyet
@@ -43,21 +44,44 @@ goto :huongdan
 rem -------------------------------------------------------------------
 :taonguon
 if "%~2"=="" (
-    echo LOI: thieu duong dan toi thu muc client J2ME da giai nen.
-    echo Vi du: xay-client.bat taonguon C:\Users\ADMIN\Downloads\KPAH_276-1
+    echo LOI: thieu duong dan toi thu muc client.
+    echo Nen tro toi thu muc co CA ban Unity goc ^(KPAH_276_Data^) lan cac tep J2ME roi.
+    echo Vi du: xay-client.bat taonguon C:\Users\ADMIN\Downloads\KPAH_276
     exit /b 2
 )
 if not exist "%~2" (
     echo LOI: khong thay thu muc "%~2"
     exit /b 2
 )
-echo [1/2] Bien dich cong cu chuyen tai nguyen...
+echo [1/3] Bien dich hai cong cu tai nguyen...
 if not exist "%GOC%\build\tools-classes" mkdir "%GOC%\build\tools-classes"
 "%JAVA_BIN%\javac.exe" --release 8 -encoding UTF-8 -nowarn ^
-    -d "%GOC%\build\tools-classes" "%GOC%\tools\ChuyenTaiNguyen.java"
+    -d "%GOC%\build\tools-classes" "%GOC%\tools\ChuyenTaiNguyen.java" ^
+    "%GOC%\tools\RutTaiNguyenUnity.java"
 if errorlevel 1 exit /b 1
 
-echo [2/2] Chuyen tai nguyen...
+rem --- Buoc 2 chi chay khi thu muc dua vao co ca ban Unity da dung san.
+rem
+rem     Thu tu nay QUAN TRONG: bo goc phai vao TRUOC, vi hai bo co nhung anh CUNG TEN
+rem     ma KHAC KICH THUOC. Vi du khung "info": ban goc 114x60, ban J2ME 96x34; ma nguon
+rem     ve phan mau da mat o y 23 va 32, dung cho ban 114x60. Lay nham ban J2ME thi hai
+rem     vet den roi han xuong duoi khung. Tuong tu "inv_1" (190x208 so voi 125x116) lam
+rem     cac so tiem nang lech khoi ten thuoc tinh.
+rem
+rem     Buoc 3 chay sau va KHONG ghi de tep da co, nen no chi lap cho ban goc thieu.
+set "DULIEU=%~2\KPAH_276_Data"
+if not exist "%DULIEU%\resources.assets" set "DULIEU=%~2"
+if exist "%DULIEU%\resources.assets" (
+    echo [2/3] Rut tai nguyen that tu ban Unity goc...
+    "%JAVA_BIN%\java.exe" -cp "%GOC%\build\tools-classes" RutTaiNguyenUnity ^
+        "%DULIEU%" "%DUAN%\Assets\Resources" "%DUAN%\Assets\Scripts\Game"
+    if errorlevel 1 exit /b 1
+) else (
+    echo [2/3] Khong thay resources.assets - bo qua buoc rut tai nguyen goc.
+    echo       Chi dung duoc bo J2ME, se thieu mot so anh chi ban Unity moi co.
+)
+
+echo [3/3] Lap cho con thieu tu ban J2ME...
 "%JAVA_BIN%\java.exe" -cp "%GOC%\build\tools-classes" ChuyenTaiNguyen ^
     "%~2" "%DUAN%\Assets\Scripts\Game" "%DUAN%\Assets\Resources\res"
 exit /b %errorlevel%

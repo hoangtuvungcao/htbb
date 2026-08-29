@@ -35,6 +35,8 @@ public final class KiemClientUnity {
     private static final String F_XAY = "ClientUnity/Assets/Editor/XayDung.cs";
     private static final String F_MANIFEST = "ClientUnity/Packages/manifest.json";
     private static final String F_CHUYEN = "tools/ChuyenTaiNguyen.java";
+    private static final String F_RUT = "tools/RutTaiNguyenUnity.java";
+    private static final String F_XAY_BAT = "xay-client.bat";
     private static final String F_BO_QUA = ".gitignore";
 
     public static void chay() {
@@ -48,6 +50,7 @@ public final class KiemClientUnity {
         kiemKichBanXay();
         kiemManifest();
         kiemBoChuyenTaiNguyen();
+        kiemRutTaiNguyenGoc();
         kiemBoQua();
         kiemCauTruc();
     }
@@ -111,6 +114,108 @@ public final class KiemClientUnity {
         // getImg dung instance ma khong ai kiem; goi mo hong thi instance = null.
         Kiem.dung("getImg kiem instance null truoc khi dung",
                 fp.contains("if (instance == null)"));
+    }
+
+    /**
+     * Bo rut tai nguyen tu ban Unity goc (KPAH_276_Data), va thu tu ghep hai bo.
+     *
+     * VI SAO CA NHOM NAY TON TAI: rat lau ta tuong nhieu loi giao dien la loi BO CUC
+     * trong ma nguon, va da di sua tay cac moc toa do. Su that la ma nguon dung, chi co
+     * ANH la sai bo: ban goc dung mot bo tai nguyen rieng, ta lai lay tam bo J2ME. Hai
+     * bo co anh CUNG TEN ma KHAC KICH THUOC:
+     *
+     *   info   : goc 114x60, J2ME 96x34  -> hai vet den "mau da mat" roi xuong bai co
+     *   inv_1  : goc 190x208, J2ME 125x116 -> so tiem nang lech khoi ten thuoc tinh,
+     *            va bam vao hang "May man" lai cong diem vao "Suc khoe"
+     *
+     * Nen dieu duy nhat that su phai canh o day la: BO GOC PHAI VAO TRUOC, bo J2ME chi
+     * duoc lap cho con thieu. Dao thu tu la ca hai loi tren quay lai nguyen ven.
+     */
+    private static void kiemRutTaiNguyenGoc() {
+        Kiem.nhom("Client Unity - rut tai nguyen tu ban goc");
+
+        final String ma = boChuThich(doc(F_RUT));
+        Kiem.dung("doc duoc " + F_RUT, ma.length() > 0);
+
+        // LOI DA TUNG XAY RA: o SerializedFile phien ban duoi 16, truong sau doDai CHINH
+        // LA classID chu khong phai chi so vao bang kieu, va sau no con uint16 classID +
+        // uint16 "da huy" + 1 byte "bi luoc". Doc thieu ba truong do thi ca 384 doi tuong
+        // deu ra lop rac va rut duoc DUNG 0 tai nguyen - ma khong nem ngoai le nao.
+        Kiem.dung("bo qua du 5 byte sau classID cua moi doi tuong", ma.contains("t.vt += 5;"));
+        Kiem.dung("chi doc phien ban 15", ma.contains("phienBan != 15"));
+
+        // Khong co bang duong dan cua ResourceManager thi 366 tai nguyen phai dung ten
+        // tran, ma ten tran dung nhau rat nhieu (hang chuc tep ten "0", "1", "2" o cac
+        // thu muc khac nhau) - ghi ra chi con 150 tep, sai 216 cai ma van "chay xong".
+        Kiem.dung("co doc ResourceManager", ma.contains("LOP_QUAN_LY_TAI_NGUYEN = 147"));
+        Kiem.dung("khong co bang duong dan thi DUNG LAI, khong ghi bua",
+                ma.contains("khong tim thay bang duong dan"));
+
+        // ResourceManager ha het duong dan ve chu thuong. Giu nguyen thi tren Windows
+        // van chay (he tep khong phan biet hoa thuong) nhung Linux/WebGL mat sach 31 anh
+        // hieu ung res/newEf/*. Cach viet phai lay tu chinh ma C#, khong duoc viet cung.
+        Kiem.dung("lay cach viet hoa thuong tu ma C#", ma.contains("Main\\\\.res"));
+        Kiem.dung("co ham doi ten ve dung cach viet cua ma", ma.contains("theoCachVietCuaMa"));
+
+        // --- Thu tu ghep hai bo, doc tu chinh kich ban xay ---
+        final String xay = doc(F_XAY_BAT);
+        Kiem.dung("doc duoc " + F_XAY_BAT, xay.length() > 0);
+        final int viTriGoc = xay.indexOf("RutTaiNguyenUnity ^");
+        final int viTriJ2me = xay.indexOf("ChuyenTaiNguyen ^");
+        Kiem.dung("kich ban co goi ca hai cong cu", viTriGoc > 0 && viTriJ2me > 0);
+        Kiem.dung("BO GOC CHAY TRUOC, bo J2ME lap cho sau", viTriGoc < viTriJ2me);
+
+        // Bo J2ME chi duoc lap cho: no PHAI khong ghi de tep da co, neu khong thi anh
+        // J2ME sai kich thuoc se de len anh goc va moi thu hong lai y nhu cu.
+        final String chuyen = boChuThich(doc(F_CHUYEN));
+        Kiem.dung("buoc guong tep roi khong ghi de", chuyen.contains(
+                "final Path dich = ra.resolve(catDuoi(khoa) + \".bytes\");"));
+        Kiem.dung("anh trong goi chi ghi khi chua co",
+                chuyen.contains("if (!Files.exists(dich)) { ghi(dich, e.getValue()); soGhi++; }"));
+
+        // --- Doi chieu voi ANH THAT, neu da tao tai nguyen ---
+        // Day moi la phep thu co rang: hai so duoi day chi dung khi bo GOC thang. Neu ai
+        // do dao thu tu hai buoc, hoac tro taonguon vao thu muc chi co tep J2ME, thi
+        // inv_1 se la 125x116 va bai kiem nay hong ngay.
+        final File invGoc = new File("ClientUnity/Assets/Resources/res/inv_1.bytes");
+        if (invGoc.isFile()) {
+            final int[] co = doCoPng(invGoc);
+            Kiem.bang("inv_1 la ban GOC 190 rong", 190, co[0]);
+            Kiem.bang("inv_1 la ban GOC 208 cao", 208, co[1]);
+        } else {
+            System.out.println("    (chua tao tai nguyen nen bo qua phep do anh that)");
+        }
+    }
+
+    /** Doc rong/cao tu phan IHDR cua tep PNG. Tra {-1,-1} neu khong phai PNG. */
+    private static int[] doCoPng(final File tep) {
+        try {
+            final byte[] d = new byte[33];
+            final FileInputStream in = new FileInputStream(tep);
+            try {
+                int da = 0;
+                while (da < d.length) {
+                    final int n = in.read(d, da, d.length - da);
+                    if (n < 0) {
+                        return new int[] { -1, -1 };
+                    }
+                    da += n;
+                }
+            } finally {
+                in.close();
+            }
+            if ((d[0] & 0xFF) != 0x89 || d[1] != 'P' || d[2] != 'N' || d[3] != 'G') {
+                return new int[] { -1, -1 };
+            }
+            return new int[] { doI32(d, 16), doI32(d, 20) };
+        } catch (final Exception e) {
+            return new int[] { -1, -1 };
+        }
+    }
+
+    private static int doI32(final byte[] d, final int i) {
+        return ((d[i] & 0xFF) << 24) | ((d[i + 1] & 0xFF) << 16)
+                | ((d[i + 2] & 0xFF) << 8) | (d[i + 3] & 0xFF);
     }
 
     private static int dem(final String trong, final String mau) {
