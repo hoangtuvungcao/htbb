@@ -239,6 +239,47 @@ public final class KiemClientUnity {
         Kiem.dung("doc duoc " + F_CHU, font.length() > 0);
         Kiem.dung("do be rong du phong tinh tre khi wO chua co",
                 font.contains("if (wO <= 0)"));
+
+        // Co chu: ba font asset goc (normalFont0/1/2) khong ton tai, va truoc day khong
+        // cho nao dat gUIStyle.fontSize - ca 18 font ve y het nhau, mat sach phan cap.
+        Kiem.dung("co bang co chu ba bac", font.contains("CO_NHO")
+                && font.contains("CO_THUONG") && font.contains("CO_TO"));
+        Kiem.dung("co chu chon theo dung nhom id cua ban goc",
+                font.contains("if ((id >= 6 && id <= 10) || id == 16)")
+                        && font.contains("if (id == 12)"));
+
+        // Hai chan duoi day trong nhu thua nhung KHONG thua: bo chung ra thi xoa han
+        // "gUIStyle.fontSize = coChu" hoac thay "coChuTheoId(id)" bang mot hang so deu
+        // KHONG bi bat - da thu that, ca hai phep pha deu lot.
+        final int vtAp = font.indexOf("private void apCoChu(GUIStyle gUIStyle)");
+        final int hetAp = (vtAp < 0) ? -1 : font.indexOf("\n\t}", vtAp);
+        final String thanAp = (vtAp < 0 || hetAp < 0) ? "" : font.substring(vtAp, hetAp);
+        Kiem.dung("apCoChu that su dat fontSize", thanAp.contains("gUIStyle.fontSize = coChu"));
+        Kiem.dung("apCoChu that su dat fontStyle", thanAp.contains("gUIStyle.fontStyle = NET_CHU"));
+        Kiem.dung("ham dung goi coChuTheoId, khong dat cung mot hang so",
+                font.contains("coChu = coChuTheoId(id)"));
+
+        // DIEM MAU CHOT: ve mot co ma DO mot co khac thi moi phep can le va ngat dong
+        // deu sai. Phai ap co chu o CA BON cho: mot cho ve va ba cho do.
+        Kiem.bang("ap co chu du ca bon cho (1 ve + 3 do)", 4, dem(font, "apCoChu(gUIStyle)"));
+
+        // Phai tim theo CHU KY day du, khong duoc tim theo "ten + (": ten ham con xuat
+        // hien o cac LOI GOI nam truoc dinh nghia (vi du wO = getWidthExactOf("o") trong
+        // ham dung), nen se cat nham mot doan than ham khac. Da bi dinh dung loi nay.
+        final String[] chuKy = {
+            "public void _drawString(MyGraphics g, string st, int x0, int y0, int align)",
+            "public int getWidthExactOf(string s)",
+            "public int getWidthNotExactOf(string s)",
+            "public int getHeight()",
+        };
+        for (final String ky : chuKy) {
+            final int vt = font.indexOf(ky);
+            final int het = (vt < 0) ? -1 : font.indexOf("\n\t}", vt);
+            final String than = (vt < 0 || het < 0) ? "" : font.substring(vt, het);
+            final String ten = ky.substring(ky.indexOf(' ', ky.indexOf(' ') + 1) + 1,
+                    ky.indexOf('('));
+            Kiem.dung(ten + " co ap co chu", than.contains("apCoChu(gUIStyle)"));
+        }
         Kiem.sai("KHONG con tra ve thang s.Length * wO khi wO bang 0",
                 font.contains("public int getWidthNotExactOf(string s)\n\t{\n\t\treturn s.Length * wO;"));
     }

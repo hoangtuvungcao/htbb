@@ -74,6 +74,48 @@ public class MFont
 
 	public string st2000 = "\u00b8µ¶·¹\u00a8¾»¼½Æ©ÊÇÈÉËÐÌÎÏÑªÕÒÓÔÖÝ×ØÜÞãßáâä«èåæçé¬íêëìîóïñòô\u00adøõö÷ùýúûüþ®\u00b8µ¶·¹¡¾»¼½Æ¢ÊÇÈÉËÐÌÎÏÑ£ÕÒÓÔÖÝ×ØÜÞãßáâä¤èåæçé¥íêëìîóïñòô¦øõö÷ùýúûüþ§";
 
+	// ------------------------------------------------------------------
+	// CO CHU. Ba muc nay tuong ung dung ba font asset ma ban goc dinh dung:
+	//   normalFont1 (id 6-10, 16)                    -> chu nho
+	//   normalFont2 (id 12)                          -> chu to
+	//   con lai (id 0-5, 11, 13, 14, 17, 100)        -> chu thuong
+	// Ba asset do KHONG co trong du an nen Resources.Load tra ve null, va truoc day
+	// KHONG cho nao dat gUIStyle.fontSize - ket qua la ca 18 font ve y het nhau: cung
+	// ho, cung co, cung net, chi khac mau. Mat sach phan cap chu.
+	//
+	// Doi ba so nay la doi co chu toan game. Chung duoc dung o CA hai noi - luc ve
+	// (_drawString) va luc DO (getWidthExactOf, getHeight) - vi neu ve mot co ma do mot
+	// co khac thi moi phep can le va ngat dong deu sai.
+	public static int CO_NHO = 10;
+	public static int CO_THUONG = 12;
+	public static int CO_TO = 16;
+
+	/// <summary>Do dam. Chu mac dinh cua Unity o co nho khá manh, dat Bold cho de doc
+	/// tren nen ban do nhieu chi tiet.</summary>
+	public static FontStyle NET_CHU = FontStyle.Bold;
+
+	private int coChu = CO_THUONG;
+
+	private static int coChuTheoId(sbyte id)
+	{
+		if ((id >= 6 && id <= 10) || id == 16)
+		{
+			return CO_NHO;
+		}
+		if (id == 12)
+		{
+			return CO_TO;
+		}
+		return CO_THUONG;
+	}
+
+	/// <summary>Dat co chu va net chu cho mot GUIStyle. Dung o ca cho ve lan cho do.</summary>
+	private void apCoChu(GUIStyle gUIStyle)
+	{
+		gUIStyle.fontSize = coChu;
+		gUIStyle.fontStyle = NET_CHU;
+	}
+
 	private int typeBitMap;
 
 	private string charList;
@@ -141,6 +183,7 @@ public class MFont
 			path = "normalFont2";
 		}
 		this.id = id;
+		coChu = coChuTheoId(id);
 		myFont = (Font)Resources.Load(path);
 		color1 = setColorFont(id);
 		color2 = setColorFont(id);
@@ -494,6 +537,7 @@ public class MFont
 		{
 			GUIStyle gUIStyle = new GUIStyle();
 			gUIStyle.font = myFont;
+			apCoChu(gUIStyle);
 			return (int)gUIStyle.CalcSize(new GUIContent(s)).x;
 		}
 		catch (Exception ex)
@@ -517,6 +561,7 @@ public class MFont
 			{
 				GUIStyle gUIStyle = new GUIStyle();
 				gUIStyle.font = myFont;
+				apCoChu(gUIStyle);
 				wO = (int)gUIStyle.CalcSize(new GUIContent("o")).x;
 			}
 			catch (Exception)
@@ -540,6 +585,7 @@ public class MFont
 		}
 		GUIStyle gUIStyle = new GUIStyle();
 		gUIStyle.font = myFont;
+		apCoChu(gUIStyle);
 		try
 		{
 			height = (int)gUIStyle.CalcSize(new GUIContent("Adg")).y + 2;
@@ -587,6 +633,7 @@ public class MFont
 	{
 		GUIStyle gUIStyle = new GUIStyle(GUI.skin.label);
 		gUIStyle.font = myFont;
+		apCoChu(gUIStyle);
 		float num = 0f;
 		float num2 = 0f;
 		switch (align)
