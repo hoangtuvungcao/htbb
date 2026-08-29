@@ -482,9 +482,12 @@ public class Tilemap
 			}
 			imgMap.texture.Apply();
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
-			Out.println("LOAD TILE ERR " + level);
+			// Truoc day khoi nay bat `catch (Exception)` khong ten roi chi in so hieu ban
+			// do - vut han noi dung ngoai le. Cong voi viec Out.* deu rong, mot ban do
+			// khong nap duoc la hoan toan im lang.
+			Out.println("LOAD TILE ERR " + level + ": " + ex.Message + "\n" + ex.StackTrace);
 			Canvas.instance.init();
 			Session_ME.gI().close();
 			// Nap ban do nao hong thi lui ve ban do 0. Nhung neu chinh ban do 0 hong thi

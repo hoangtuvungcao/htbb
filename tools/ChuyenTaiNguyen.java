@@ -114,9 +114,40 @@ public final class ChuyenTaiNguyen {
         int soGhi = 0;
 
         // 4a. Guong toan bo cay tep roi (giu duong dan, doi duoi thanh .bytes).
-        for (final Map.Entry<String, Path> e : tepRoi.entrySet()) {
-            ghi(ra.resolve(catDuoi(e.getKey()) + ".bytes"), Files.readAllBytes(e.getValue()));
+        //
+        // CAN THAN VA CHAM TEN: cat duoi lam NHIEU tep goc doi ve CUNG mot ten dich.
+        // Ban J2ME co ca "0" (ban do, 4263 byte) lan "0.png" (anh, 258 byte); ca hai deu
+        // ra res/0.bytes. Truoc day cai sau de len cai truoc, nen ban do bi thay bang
+        // mot tep PNG: Tilemap doc hai byte dau cua PNG ra w=137 h=80, doi 10960 o trong
+        // mot tep 258 byte -> IndexOutOfRange -> ban do nen khong hien, va vi Out.* deu
+        // rong nen nhat ky van sach tinh. Tuong tu voi "t.png" va "t.type".
+        //
+        // Quy tac: tep KHONG CO DUOI duoc uu tien cao nhat (ten cua no da dung chinh xac
+        // ten ma Unity tra cuu, khong phai doan), roi den cac tep du lieu, cuoi cung moi
+        // den .png - vi anh thuong duoc ma xep trong thu muc con (pngtile/, png/) va se
+        // duoc buoc 4c dat vao dung cho. Tep den sau KHONG duoc de len tep da co.
+        final List<String> theoUuTien = new ArrayList<String>(tepRoi.keySet());
+        Collections.sort(theoUuTien, new java.util.Comparator<String>() {
+            public int compare(final String a, final String b) {
+                final int ua = uuTien(a);
+                final int ub = uuTien(b);
+                return (ua != ub) ? (ua - ub) : a.compareTo(b);
+            }
+        });
+        int soVaCham = 0;
+        for (final String khoa : theoUuTien) {
+            final Path dich = ra.resolve(catDuoi(khoa) + ".bytes");
+            if (Files.exists(dich)) {
+                soVaCham++;
+                System.out.println("  va cham ten: " + khoa + " -> " + catDuoi(khoa)
+                        + ".bytes da co, BO QUA (khong ghi de)");
+                continue;
+            }
+            ghi(dich, Files.readAllBytes(tepRoi.get(khoa)));
             soGhi++;
+        }
+        if (soVaCham > 0) {
+            System.out.println("  (" + soVaCham + " va cham ten - tep uu tien cao hon da duoc giu)");
         }
 
         // 4b. Anh lay tu trong goi, dat o goc res/ vi ma goi Image.createImage(res + "/bar").
@@ -486,6 +517,30 @@ public final class ChuyenTaiNguyen {
 
     private static void xor(final byte[] b) {
         for (int i = 0; i < b.length; i++) { b[i] ^= KHOA[i % KHOA.length]; }
+    }
+
+    /**
+     * Uu tien khi nhieu tep goc doi ve cung mot ten dich. So cang nho cang duoc giu.
+     *
+     * Khong duoi = 0: ten cua no DA la ten Unity tra cuu, khong phai suy ra tu viec cat
+     * duoi, nen chac chan nhat. Anh .png xep cuoi vi chung thuong thuoc ve thu muc con
+     * (pngtile/, png/) va se duoc buoc 4c dat dung cho.
+     */
+    private static int uuTien(final String duongDan) {
+        final String ten = duongDan.substring(duongDan.lastIndexOf('/') + 1);
+        if (ten.indexOf('.') < 0) {
+            return 0;
+        }
+        if (ten.endsWith(".type")) {
+            return 1;
+        }
+        if (laGoi(ten)) {
+            return 2;
+        }
+        if (ten.endsWith(".txt")) {
+            return 3;
+        }
+        return 4;   // .png
     }
 
     private static boolean laGoi(final String ten) {

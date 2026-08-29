@@ -31,6 +31,7 @@ public final class KiemClientUnity {
     private static final String F_LENH = "ClientUnity/Assets/Scripts/Game/MainJ2ME.cs";
     private static final String F_TAI_NGUYEN = "ClientUnity/Assets/Scripts/Game/Res.cs";
     private static final String F_CHU = "ClientUnity/Assets/Scripts/Game/MFont.cs";
+    private static final String F_NHAT_KY = "ClientUnity/Assets/Scripts/Game/Out.cs";
     private static final String F_XAY = "ClientUnity/Assets/Editor/XayDung.cs";
     private static final String F_MANIFEST = "ClientUnity/Packages/manifest.json";
     private static final String F_CHUYEN = "tools/ChuyenTaiNguyen.java";
@@ -43,6 +44,7 @@ public final class KiemClientUnity {
         kiemBanDoKhongTuGoiMai();
         kiemGiaoDien();
         kiemAnhNutVaDoChu();
+        kiemNenBanDo();
         kiemKichBanXay();
         kiemManifest();
         kiemBoChuyenTaiNguyen();
@@ -239,6 +241,50 @@ public final class KiemClientUnity {
                 font.contains("if (wO <= 0)"));
         Kiem.sai("KHONG con tra ve thang s.Length * wO khi wO bang 0",
                 font.contains("public int getWidthNotExactOf(string s)\n\t{\n\t\treturn s.Length * wO;"));
+    }
+
+    /**
+     * Ban do nen khong hien tren ban Windows, va truy ra HAI loi chong len nhau.
+     *
+     * 1. Lop Out co bon ham println/Log/LogError/LogWarning va CA BON DEU RONG. Moi loi
+     *    client tu bao deu bien mat. Tilemap.loadMap bat ngoai le roi bao bang
+     *    Out.println("LOAD TILE ERR"), nen ban do khong nap duoc ma Player.log van sach
+     *    tinh - nhin vao tuong khong co loi gi.
+     *
+     * 2. Bo chuyen tai nguyen cat duoi lam nhieu tep goc doi ve cung mot ten dich. Ban
+     *    J2ME co ca "0" (ban do, 4263 byte) lan "0.png" (anh, 258 byte), ca hai ra
+     *    res/0.bytes va cai sau de len cai truoc. Tilemap doc hai byte dau cua PNG ra
+     *    w=137 h=80, doi 10960 o trong mot tep 258 byte -> IndexOutOfRange.
+     *    Tuong tu voi "t.png" de len "t.type".
+     */
+    private static void kiemNenBanDo() {
+        Kiem.nhom("Client Unity - ban do nen va kenh ghi nhat ky");
+
+        final String out = boChuThich(doc(F_NHAT_KY));
+        Kiem.dung("doc duoc " + F_NHAT_KY, out.length() > 0);
+        Kiem.dung("Out thuc su ghi ra nhat ky, khong con rong",
+                dem(out, "Debug.Log") >= 4);
+        for (final String ham : new String[] { "println", "Log", "LogError", "LogWarning" }) {
+            final int vt = out.indexOf("public static void " + ham + "(string str)");
+            final String than = (vt < 0) ? "" : out.substring(vt,
+                    Math.min(out.length(), vt + 160));
+            Kiem.dung("Out." + ham + " co ghi ra that", than.contains("Debug.Log"));
+        }
+
+        final String banDo = boChuThich(doc(F_BAN_DO));
+        Kiem.dung("khoi bat loi cua loadMap co giu noi dung ngoai le",
+                banDo.contains("ex.Message") && banDo.contains("ex.StackTrace"));
+
+        // Bo chuyen: khong duoc de tep den sau ghi de tep da co.
+        final String chuyen = boChuThich(doc(F_CHUYEN));
+        Kiem.dung("co ham xep uu tien khi va cham ten",
+                chuyen.contains("private static int uuTien(final String duongDan)"));
+        Kiem.dung("tep khong co duoi duoc uu tien cao nhat",
+                chuyen.contains("if (ten.indexOf('.') < 0)"));
+        Kiem.dung("va cham thi BO QUA chu khong ghi de",
+                chuyen.contains("KHONG ghi de") || chuyen.contains("khong ghi de"));
+        Kiem.dung("va cham duoc bao ra man hinh, khong im lang",
+                chuyen.contains("va cham ten: "));
     }
 
     private static void kiemKichBanXay() {
