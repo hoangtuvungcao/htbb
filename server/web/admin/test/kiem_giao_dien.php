@@ -53,7 +53,8 @@ if (!is_file($fCss)) {
     echo "\nKhong doc duoc admin.css, dung o day.\n";
     exit(1);
 }
-$css = file_get_contents($fCss);
+$css    = file_get_contents($fCss);
+$layout = is_file($fLayout) ? file_get_contents($fLayout) : '';
 
 // ---------------------------------------------------------------------------
 //  1. Cú pháp CSS tối thiểu: ngoặc cân, không còn dấu ":" lạc chỗ
@@ -102,8 +103,24 @@ kt('khong trang admin nao con the <link> toi style.css', $conNap, []);
 
 // Và phải có ít nhất một nơi nạp admin.css, nếu không thì phép trên đúng một cách
 // vô nghĩa (không nạp gì cả cũng đạt).
-dung('layout co nap assets/admin.css',
-    (bool)preg_match('/<link[^>]*href="assets\/admin\.css"/', file_get_contents($fLayout)));
+dung('layout co nap assets/admin.css', strpos($layout, "tepTinh('assets/admin.css')") !== false);
+
+// Dau phien ban chong bo nho dem cu. Thieu no thi doi giao dien xong, nguoi dung
+// van nhan CSS cu tu bo nho dem trong khi HTML da la ban moi -> trang tran trui.
+echo "\n== Chong bo nho dem cu\n";
+
+dung('co ham tepTinh() gan dau phien ban', strpos($layout, 'function tepTinh(') !== false);
+dung('dau phien ban lay tu thoi diem sua tep', strpos($layout, 'filemtime(') !== false);
+dung('the <link> di qua tepTinh() chu khong ghi cung duong dan',
+    !preg_match('/<link[^>]*href="assets\/admin\.css"/', $layout));
+
+// Chay that: phai ra dung dang "assets/admin.css?v=<so>".
+$duong = tepTinh('assets/admin.css');
+dung('tepTinh tra ve co dau ?v=', (bool)preg_match('#^assets/admin\.css\?v=\d+$#', $duong));
+kt('dau phien ban dung bang mtime cua chinh tep do',
+    $duong, 'assets/admin.css?v=' . filemtime($fCss));
+kt('tep khong ton tai thi tra ve duong dan tran, khong vo',
+    tepTinh('assets/khong-co-tep-nay.css'), 'assets/khong-co-tep-nay.css');
 
 // admin.css phải tự khai báo biến màu, không mượn của nơi khác.
 foreach (['--bg', '--surface', '--line', '--text', '--accent', '--ok', '--warn', '--danger'] as $bien) {
@@ -176,9 +193,6 @@ kt('khong lop nao bi bo quen khi bo style.css', $thieu, []);
 // ---------------------------------------------------------------------------
 echo "\n== Bo cuc moi\n";
 
-
-$layout  = is_file($fLayout) ? file_get_contents($fLayout) : '';
-
 dung('layout dung khung cot trai + cot noi dung', strpos($layout, 'admin-shell') !== false);
 dung('menu chia nhom', strpos($layout, 'side-group') !== false);
 dung('moi muc menu co bieu tuong nhung thang (khong tai anh ngoai)',
@@ -219,6 +233,11 @@ foreach (adminMenu() as $muc) {
     }
 }
 dung('ten bieu tuong khong co thi tra ve rong chu khong vo', bieuTuong('khongcothat') === '');
+
+// Kích thước ghi thẳng vào thẻ <svg>, không chỉ trông vào CSS: một SVG không có
+// kích thước gốc sẽ phình ra bằng cả khung chứa nếu admin.css lỡ không nạp được.
+dung('bieu tuong co width/height ghi thang trong the',
+    (bool)preg_match('/<svg width="16" height="16"/', bieuTuong('bang')));
 
 // Số liệu phải hiện nhãn TRƯỚC con số.
 ob_start();

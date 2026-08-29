@@ -68,8 +68,33 @@ function bieuTuong(string $ten): string
     if (!isset($hinh[$ten])) {
         return '';
     }
-    return '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"'
-         . ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $hinh[$ten] . '</svg>';
+    // width/height ghi thẳng vào thẻ, KHÔNG chỉ dựa vào CSS: một tệp SVG không có
+    // kích thước gốc sẽ phình ra bằng cả khung chứa nếu vì lý do gì đó admin.css
+    // không nạp được — lúc đó trang không chỉ mất định dạng mà không còn đọc nổi.
+    return '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor"'
+         . ' stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+         . $hinh[$ten] . '</svg>';
+}
+
+/**
+ * Đường dẫn một tệp tĩnh, kèm dấu phiên bản lấy từ thời điểm sửa tệp.
+ *
+ * CẠM BẪY ĐÃ NỔ MỘT LẦN (29/08/2026): Apache trên VPS không gửi `Cache-Control`
+ * lẫn `Expires` cho tệp .css, chỉ có `Last-Modified`. Gặp vậy trình duyệt tự đoán
+ * thời hạn (thường ~10% tuổi của tệp) và DÙNG LẠI BẢN CŨ mà không hỏi lại máy chủ.
+ * Hôm đổi giao diện, người dùng nhận HTML mới nhưng vẫn xài admin.css cũ trong bộ
+ * nhớ đệm — mà bản cũ chỉ là phần bổ sung cho style.css, không có body, không có
+ * bố cục, không có màu liên kết. Kết quả: trang hiện ra trần trụi như chưa từng
+ * có CSS, và không có lỗi nào để lần.
+ *
+ * Gắn ?v=<mtime> làm đổi hẳn địa chỉ mỗi lần tệp đổi, nên bộ nhớ đệm không khớp
+ * được nữa. Không cần ai phải bấm Ctrl+F5.
+ */
+function tepTinh(string $duongDan): string
+{
+    $that = __DIR__ . '/../' . $duongDan;
+    $mtime = is_file($that) ? (int)filemtime($that) : 0;
+    return $duongDan . ($mtime > 0 ? '?v=' . $mtime : '');
 }
 
 /** Tên nhóm chứa trang đang mở — dùng cho dòng chỉ đường ở thanh trên. */
@@ -97,7 +122,7 @@ function adminHead(string $trang, string $tieuDe): void
     <meta name="robots" content="noindex, nofollow">
     <meta name="color-scheme" content="dark">
     <title><?= e($tieuDe) ?> · Quản trị KPAH</title>
-    <link rel="stylesheet" href="assets/admin.css">
+    <link rel="stylesheet" href="<?= e(tepTinh('assets/admin.css')) ?>">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
 </head>
 <body class="admin-body<?= $u ? '' : ' admin-body--auth' ?>">
