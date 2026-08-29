@@ -1,0 +1,142 @@
+# Dọn log định kỳ
+
+Giữ 30 ngày gần nhất, mọi thứ cũ hơn thì bỏ. Hai phần rời nhau vì hai loại log
+cần hai cách khác nhau:
+
+| Loại | Ai dọn | File |
+|---|---|---|
+| `game.out`, `login.out`, `*.log`, các file `.txt` server tự ghi | logrotate (đã có sẵn `logrotate.timer` chạy 00:00 mỗi ngày) | [kpah-logrotate.conf](kpah-logrotate.conf) |
+| Bảng nhật ký trong database, file `<ip>.txt`, bản backup quá hạn | cron 03:20 mỗi đêm | [don-log.sh](don-log.sh) |
+
+## Cài
+
+```bash
+sudo cp /opt/kpah/vps/kpah-logrotate.conf /etc/logrotate.d/kpah
+sudo chown root:root /etc/logrotate.d/kpah && sudo chmod 644 /etc/logrotate.d/kpah
+sudo logrotate -d /etc/logrotate.d/kpah          # chạy mô phỏng, không đổi gì
+
+sudo tee /etc/cron.d/kpah-don-log >/dev/null <<'EOF'
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+20 3 * * * root /opt/kpah/vps/don-log.sh >/dev/null 2>&1
+EOF
+```
+
+Chạy tay:
+
+```bash
+sudo /opt/kpah/vps/don-log.sh --thu    # chỉ báo sẽ xoá bao nhiêu, không xoá
+sudo /opt/kpah/vps/don-log.sh          # xoá thật
+```
+
+Đổi số ngày giữ lại cho một lần chạy: `sudo GIU_NGAY=7 /opt/kpah/vps/don-log.sh`.
+
+Nhật ký của chính việc dọn: `/opt/kpah/log/don-log.log`.
+
+## Vì sao 03:20
+
+`src/real/BaoTriDaily.java` tự tắt server (`System.exit(0)`) ở một mốc **ngẫu
+nhiên giữa 04:30 và 05:30** mỗi ngày, rồi systemd `Restart=always` bật lại. Dọn
+lúc 03:20 là để không đâm vào lúc server đang lưu dữ liệu ra database.
+
+## Ba cái bẫy mà cấu hình này né
+
+**1. `game.out` bắt buộc phải `copytruncate`.** `kpah-game.service` dùng
+`StandardOutput=append:/opt/kpah/log/game.out` — systemd **mở file một lần** lúc
+khởi động rồi giữ nguyên fd đó. Nếu logrotate đổi tên file (cách mặc định),
+systemd vẫn ghi tiếp vào file đã đổi tên: file mới mãi mãi rỗng, file cũ vẫn
+phình to. `copytruncate` chép nội dung ra rồi cắt file gốc về 0; fd mở bằng
+`O_APPEND` nên lần ghi kế tiếp tự quay về đầu file.
+
+**2. Các file `.txt` thì ngược lại — đổi tên hoàn toàn an toàn.**
+`util.Logger` (trong `lib/NQSH_5h.jar`) ghi bằng `new FileWriter(tên, true)`,
+tức **mở lại file mỗi lần ghi** rồi đóng ngay. Đổi tên file đi thì lần ghi sau
+tự tạo lại. Không cần `copytruncate`, và cũng không mất dòng nào.
+
+**3. Ba file `.txt` KHÔNG được đụng vào** vì server đọc ngược lại chúng như dữ
+liệu đầu vào, xoay vòng là mất dữ liệu:
+
+| File | Đọc ở |
+|---|---|
+| `trangan.txt` | `Database.java:5466` |
+| `offline.txt` | `Database.java:11715` |
+| `top.txt` | `MapChat.java:868` |
+
+Vì vậy `kpah-logrotate.conf` **liệt kê từng file một**, cố ý không dùng
+`/opt/kpah/*.txt`. Thêm file mới vào danh sách thì kiểm lại: nó chỉ được **ghi**,
+không được **đọc** ở bất kỳ đâu trong `src/`.
+
+**4. Log không được nằm trong git.** `AdminChat.txt` và `updateleaf.txt` trước
+đây bị theo dõi (`.gitignore` còn có hẳn dòng miễn trừ `!AdminChat.txt`). Xoay
+vòng một file đang được theo dõi là làm `git status` trên VPS **dirty**, mà
+`deploy-auto.sh` từ chối `git pull` khi cây làm việc bẩn — lần deploy kế tiếp
+sẽ hỏng. Đã gỡ cả hai khỏi git và cho vào `.gitignore`; bản nội dung cũ nằm ở
+`/root/kpah-backup/*.truoc-khi-go-git` trên VPS.
+
+Thêm file nào vào `kpah-logrotate.conf` thì kiểm luôn `git ls-files <tên>` —
+phải **rỗng**.
+
+## Vì sao xoá theo lô chứ không một lệnh DELETE
+
+`tob_log_all_item` là **MyISAM**, mà MyISAM **khoá cả bảng** khi xoá. Một lệnh
+`DELETE` quét 4 triệu dòng giữ khoá hàng phút; trong lúc đó mọi `INSERT` log của
+server xếp hàng chờ, hàng đợi `Logdata.query` phình to. Script chia 20.000 dòng
+một lô, nghỉ 0,4 giây giữa các lô, nên mỗi lô chỉ khoá dưới một giây.
+
+MyISAM xoá dòng xong cũng **không trả lại chỗ ổ đĩa** — nó để lại lỗ hổng trong
+`.MYD` cho lần insert sau lấp vào. Bảng vẫn insert đều thì lỗ hổng được tái sử
+dụng, nên script chỉ chạy `OPTIMIZE TABLE` khi chỗ trống vượt 200 MB (vì
+`OPTIMIZE` cũng khoá bảng, với bảng vài trăm MB có thể mất vài chục giây).
+
+## Bảng nào được dọn
+
+Chỉ dọn được bảng **có cột thời gian**. `giftcode_log` không có cột nào ghi thời
+điểm nên không lọc theo tuổi được (mà cũng chỉ vài trăm dòng).
+
+```
+tob_log_all_item   timelog        tob_log_clan      timeLog
+tob_log_all_gem    timelog        web_admin_log     thoi_gian
+tob_log_buy_shop   timeBuy        web_chan_spam     thoi_gian
+tob_log_buy_store  timeBuy        history_win_xoso  time_win
+tob_log_xoso       timelog
+```
+
+Riêng `tob_log_use_luong_<tuần>_<tháng>_<năm>`: `Database.saveLogThongKeChiTieu`
+tạo một **bảng mới mỗi tuần**, không ai xoá — sau một năm là 52 bảng rác. Chúng
+không có cột thời gian nên script dọn theo `UPDATE_TIME` mà MyISAM tự ghi lại, và
+chỉ đụng vào bảng **có hậu tố**, giữ nguyên bảng gốc `tob_log_use_luong`.
+
+## Cách tìm ra một nơi sinh log mới
+
+Sáu cách, làm hết chứ đừng dùng mỗi một cách:
+
+1. `grep -rn "logString\|logError\|logStringWithDate" src/` — đối số **thứ hai**
+   là tên file.
+2. Đọc `build/nqsh-src/util/Logger.java` (giải mã từ `NQSH_5h.jar` bằng
+   `tools/giai-ma-nqsh.bat`) để biết nó ghi kiểu gì.
+3. `grep -rn "new FileWriter\|new PrintWriter\|new FileOutputStream" src/`
+4. `grep -rn "insert into tob_log\|INSERT INTO tob_log" src/` cho phía database.
+5. Mục *"File runtime server tự ghi ra thư mục gốc khi chạy"* trong `.gitignore` —
+   danh sách đó là manh mối tốt, vì file nào làm `git status` bẩn thì đã bị chặn
+   ở đó rồi.
+6. Đối chiếu với thực tế trên VPS: `ls -la /opt/kpah/*.txt` và
+   `SELECT TABLE_NAME, TABLE_ROWS FROM information_schema.TABLES WHERE TABLE_NAME LIKE '%log%'`.
+
+Cách 1 tìm ra tên file, nhưng **không** chứng minh file đó bao giờ được ghi. Phải
+kiểm thêm: hàm chứa lệnh ghi có ai gọi không.
+
+## `hack.txt` và `hackdo.txt` là code chết
+
+Trang Chẩn đoán báo *"chưa có"* và sẽ mãi như vậy:
+
+- `hack.txt` chỉ được ghi ở `Database.banchar()` — **không nơi nào gọi hàm này**.
+- `hackdo.txt` không được ghi ở đâu cả, nó chỉ được **đọc** (`Database.java:3703`).
+
+Cả `banchar()` lẫn `bakupChar()` (hàm duy nhất đọc `hack.txt`) đều không có người
+gọi. Đây là tàn dư của một công cụ chống gian lận thủ công đời trước: admin tự
+liệt kê tên nhân vật vào `hackdo.txt`, chạy `banchar()` để mở khoá hàng loạt rồi
+`bakupChar()` để đặt lại chỉ số.
+
+Muốn thật sự có "nghi vấn gian lận" thì phải viết mới, không phải bật lại hai hàm
+này — chúng dựng SQL bằng cách nối chuỗi thẳng tên nhân vật, và `banchar()` đặt
+`ban=0` (mở khoá) chứ không phải khoá.

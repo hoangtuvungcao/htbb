@@ -56,8 +56,10 @@ rUpdateleaf.txt
 /backup/
 /.ssh/
 *.out
+# AdminChat.txt truoc day duoc theo doi (co dong "!AdminChat.txt" mien tru). Da bo:
+# server GHI TIEP vao file nay moi khi admin chat, nen no lam "git status" tren VPS
+# dirty va deploy-auto.sh TU CHOI git pull. Ban cu con o /root/kpah-backup tren VPS.
 AdminChat*.txt
-!AdminChat.txt
 # File server tu sinh, dat ten theo IP ket noi (vd 42.119.73.152.txt) - khong phai
 # code, lam "git status" tren VPS bi dirty va chan deploy-auto.sh neu khong bo qua.
 # IP luon bat dau bang chu so nen loc theo dau ten file, chi ap dung o thu muc goc.
@@ -102,6 +104,12 @@ out_tools/
 /longdendaylog.txt
 /logtopluong.txt
 /update.txt
+/updateleaf.txt
+/check_gem.txt
+# Luu nhan vat that bai o duong luu chinh -> DatabaseNhanVat.java:770 tao mot file
+# mang DUNG TEN NHAN VAT tai thu muc goc. Ten la du lieu chay nen khong liet ke
+# truoc duoc; vps/don-log.sh quet chung theo tuoi, con day chi lo phan git.
+# Khong dat "/*.txt" vi con map/help.txt, docs/*.txt... deu la file that su cua repo.
 
 ### Thu muc bien dich tam cua test.bat ###
 /build/test-classes/

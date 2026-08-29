@@ -26,21 +26,69 @@ $DB_ACC_TEN  = preg_replace('/[^A-Za-z0-9_]/', '', DB_ACCOUNT);
  * Danh sách file log của server mà trang này được phép đọc. CỐ ĐỊNH — tên file
  * không bao giờ lấy từ người dùng, chỉ lấy khoá của mảng này. Không có bước đó
  * thì `?file=../../config.local.php` sẽ đọc được mật khẩu database.
+ *
+ * Đường dẫn tương đối so với SERVER_DIR là đúng: util.Logger ghi bằng
+ * `new FileWriter(tên, true)` với đường dẫn tương đối, nên nó rơi vào thư mục
+ * làm việc của JVM — `WorkingDirectory=/opt/kpah` trong kpah-game.service.
+ *
+ * ĐÃ BỎ khỏi danh sách vì đối chiếu với src/ thì chúng KHÔNG BAO GIỜ sinh ra:
+ *   hack.txt       chỉ được ghi trong Database.banchar() — hàm này không ai gọi
+ *   hackdo.txt     không được ghi ở đâu cả, chỉ được ĐỌC (Database.java:3703)
+ *   offline.txt    cũng là file ĐẦU VÀO gõ tay (Database.java:11715), không
+ *                  liên quan gì tới "rớt kết nối"
+ *   saitenchar4.txt nằm trong giveGemItem() — cũng không ai gọi
  */
 function fileLog(): array
 {
     return [
-        'errorlog.txt'      => 'Vết gọi lỗi Java (util.Logger.logError)',
+        'errorlog.txt'      => 'Vết gọi lỗi Java + cảnh báo chặn lệnh admin trái phép (AdminHandler)',
         'log/game.out'      => 'Toàn bộ stdout/stderr của server (chỉ có trên VPS Linux)',
-        'hack.txt'          => 'Nghi vấn gian lận',
-        'hackdo.txt'        => 'Nghi vấn gian lận vật phẩm',
-        'errorAnima.txt'    => 'Lỗi khi lưu / nạp thú nuôi',
-        'errorSellITem.txt' => 'Lỗi khi bán vật phẩm',
-        'errorquayso.txt'   => 'Lỗi vòng quay',
-        'savechar.txt'      => 'Lỗi lưu nhân vật',
-        'saitenchar4.txt'   => 'Tên nhân vật sai quy tắc',
-        'offline.txt'       => 'Rớt kết nối',
+        'log/login.out'     => 'stdout/stderr của login server — đăng nhập hỏng thì xem đây',
+        'log/autodeploy.log' => 'Nhật ký deploy tự động (vps/deploy-auto.sh)',
+        'log/don-log.log'   => 'Nhật ký dọn log định kỳ (vps/don-log.sh)',
+        'errorAnima.txt'    => 'Lỗi khi LƯU thú nuôi (chỉ đường lưu, không có đường nạp)',
+        'errorSellITem.txt' => 'Đếm số lần bán vật phẩm hỏng — chỉ ghi chuỗi cố định, không có giờ / tên / vết gọi',
+        'errorquayso.txt'   => 'Lỗi thủ tục sự kiện theo ngày (vòng quay và cả sự kiện khác)',
+        'savechar.txt'      => 'Lỗi lưu nhân vật — CHỈ đường lưu tự động; đường lưu chính ghi ra <tên nhân vật>.txt',
+        'matketinfo.txt'    => 'Chốt số mặt kê mỗi ngày và mỗi lần tắt server',
+        'AdminChat.txt'     => 'Mọi câu chat của tài khoản admin — dấu vết lệnh GM',
+        'logtopluong.txt'   => 'Nhân vật nạp từ 10.000 lượng trở lên',
+        'updateleaf.txt'    => 'Lỗi vòng lặp AI quái (MapVongLap)',
+        'rUpdateleaf.txt'   => 'Lỗi vòng lặp AI quái (Region / RegionVantienTran)',
+        'nhantieu.txt'      => 'Sổ vận tiêu: nhận tiêu (ghi lúc sang ngày mới)',
+        'doitieu.txt'       => 'Sổ vận tiêu: đổi tiêu',
+        'thetieu.txt'       => 'Sổ vận tiêu: thế tiêu',
+        'tratieu.txt'       => 'Sổ vận tiêu: trả tiêu',
+        'cuoptieu.txt'      => 'Sổ vận tiêu: cướp tiêu',
     ];
+}
+
+/**
+ * Tìm các file `<tên nhân vật>.txt` do LƯU NHÂN VẬT THẤT BẠI sinh ra.
+ *
+ * `DatabaseNhanVat.java:770` ghi `Logger.logError(ex, p.charname + ".txt")` mỗi
+ * khi đường lưu chính hỏng — tên file là dữ liệu chạy nên không thể liệt kê
+ * trước trong fileLog(). Đây thường là vết duy nhất còn lại của sự cố "nhân vật
+ * mất đồ / tụt cấp sau khi thoát game".
+ *
+ * An toàn: glob() chỉ trả về tên có thật trong thư mục, không nhận gì từ người
+ * dùng. Lọc bỏ mọi tên đã biết để chỉ còn lại phần dư.
+ */
+function fileLuuNhanVatHong(): array
+{
+    $daBiet = array_keys(fileLog());
+    // Ba file server ĐỌC ngược lại như dữ liệu đầu vào, không phải log
+    $daBiet = array_merge($daBiet, ['trangan.txt', 'offline.txt', 'top.txt', 'hack.txt', 'hackdo.txt']);
+
+    $ra = [];
+    foreach (glob(rtrim(SERVER_DIR, "/\\") . '/*.txt') ?: [] as $duongDan) {
+        $ten = basename($duongDan);
+        if (!in_array($ten, $daBiet, true)) {
+            $ra[$ten] = filemtime($duongDan) ?: 0;
+        }
+    }
+    arsort($ra);
+    return $ra;
 }
 
 /** Đọc phần CUỐI của một file, không nạp cả file vào bộ nhớ (game.out có thể vài trăm MB). */
@@ -526,7 +574,11 @@ if (coBangNhatKy()) {
 // ---------------------------------------------------------------------------
 $xemFile = g('file');
 $noiDungFile = null;
-if ($xemFile !== '' && array_key_exists($xemFile, fileLog())) {
+$luuHong = fileLuuNhanVatHong();
+// Cho xem cả hai nhóm: danh sách cố định, và các file <tên nhân vật>.txt tìm
+// thấy thật trong thư mục. Cả hai đều KHÔNG lấy tên từ người dùng — tên phải
+// khớp một khoá có sẵn thì mới đọc, nên "../../config.local.php" không lọt.
+if ($xemFile !== '' && (array_key_exists($xemFile, fileLog()) || array_key_exists($xemFile, $luuHong))) {
     $noiDungFile = doiFile(rtrim(SERVER_DIR, '/\\') . '/' . $xemFile);
 } else {
     $xemFile = '';
@@ -649,6 +701,36 @@ usort($kiemTra, static fn($a, $b) => $thuTu[$a['muc']] <=> $thuTu[$b['muc']]);
         </tbody>
     </table>
     </div>
+
+    <?php if ($luuHong): ?>
+        <h3 style="margin-top:22px;">Vết lưu nhân vật thất bại</h3>
+        <p class="muted small" style="margin-top:0;">
+            Mỗi file dưới đây mang đúng <strong>tên một nhân vật</strong>. Server tạo nó khi
+            đường lưu chính của nhân vật đó ném lỗi (<code>DatabaseNhanVat.java:770</code>) —
+            thường là vết duy nhất còn lại của sự cố mất đồ / tụt cấp sau khi thoát game.
+            <code>savechar.txt</code> ở bảng trên <em>không</em> phủ đường lưu này.
+        </p>
+        <div class="tbl-wrap">
+        <table class="tbl">
+            <thead><tr><th>Nhân vật</th><th class="num">Cỡ</th><th>Sửa lần cuối</th><th></th></tr></thead>
+            <tbody>
+            <?php foreach ($luuHong as $ten => $suaLuc):
+                $dd = rtrim(SERVER_DIR, '/\\') . '/' . $ten; ?>
+                <tr>
+                    <td class="nowrap"><code><?= e($ten) ?></code></td>
+                    <td class="num"><?= e(so(filesize($dd) ?: 0)) ?></td>
+                    <td class="nowrap muted small"><?= e(date('Y-m-d H:i:s', $suaLuc)) ?></td>
+                    <td><?php if (is_readable($dd)): ?>
+                            <a class="btn btn-xam btn-nho" href="chandoan.php?file=<?= e(urlencode($ten)) ?>#xemfile">Xem cuối file</a>
+                        <?php else: ?>
+                            <span class="muted small">không có quyền đọc</span>
+                        <?php endif; ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php if ($noiDungFile !== null): ?>
