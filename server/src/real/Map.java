@@ -7297,44 +7297,67 @@ public class Map implements Runnable {
     }
         
      
-    public void showTinhLuyenMaterialList(Char player) {
-        // Tạo danh sách mới chỉ chứa các item phù hợp
-        Vector filteredItems = new Vector();
+    /** ID các nguyên liệu tinh luyện thần binh hợp lệ. */
+    private static final int[] ID_NGUYEN_LIEU_TINH_LUYEN = {
+        421, 408, 447, 434, 460,
+        422, 409, 448, 435, 461,
+        423, 410, 449, 436, 462,
+        424, 411, 450, 437, 463,
+        425, 412, 451, 438, 464,
+        893, 894, 895, 896, 897
+    };
+
+    /**
+     * Lọc nguyên liệu tinh luyện hợp lệ trong hành trang.
+     *
+     * PHẢI dùng chung giữa lúc HIỆN danh sách cho người chơi chọn
+     * (showTinhLuyenMaterialList) và lúc XỬ LÝ lựa chọn đó (popup 124), vì người
+     * chơi gửi về một CHỈ SỐ trong danh sách chứ không phải id vật phẩm.
+     *
+     * Trước đây hai chỗ tự lọc riêng và lệch nhau ở hai điểm:
+     *   - danh sách hiện cho người chơi thiếu 5 id 893-897
+     *   - ở mốc 99, chỗ xử lý đòi nguyên liệu phải CAO HƠN trang bị, còn chỗ hiển
+     *     thị vẫn cho cả hai chiều ±10 cấp
+     * Chỉ cần người chơi có một món 893-897 hợp lệ, hoặc đang ở mốc 99, là hai
+     * danh sách lệch nhau và chỉ số gửi về trỏ sang MÓN KHÁC - người chơi mất
+     * đúng món mình không chọn.
+     */
+    private Vector<Item> locNguyenLieuTinhLuyen(Char player) {
+        Vector<Item> ra = new Vector<>();
+        if (player.itemVukhiThoiTrang == null) {
+            return ra;
+        }
         int equipLevel = player.itemVukhiThoiTrang.level;
         int equipType = player.itemVukhiThoiTrang.getTemplate().type;
-        
-        // Valid material IDs từ CheckNguyenLieuTL
-        int[] validMaterialIDs = {
-            421,408,447,434,460,
-            422,409,448,435,461,
-            423,410,449,436,462,
-            424,411,450,437,463,
-            425,412,451,438,464
-        };
-       
-        // Lọc items từ rương người chơi
+        boolean mocCuoi = player.itemVukhiThoiTrang.TinhLuyen == 99;
+
         for (int i = 0; i < player.iItems.size(); i++) {
-            Item item = (Item)player.iItems.elementAt(i);
-            
-            // Kiểm tra ID có trong danh sách nguyên liệu hợp lệ
-            boolean isValidMaterial = false;
-            for (int materialID : validMaterialIDs) {
+            Item item = (Item) player.iItems.elementAt(i);
+            boolean hopLe = false;
+            for (int materialID : ID_NGUYEN_LIEU_TINH_LUYEN) {
                 if (item.tempateID == materialID) {
-                    isValidMaterial = true;
+                    hopLe = true;
                     break;
                 }
             }
-            
-            // Thêm item nếu thỏa mãn điều kiện
-            if (isValidMaterial && 
-                Math.abs(item.level - equipLevel) <= 10 &&
-                item.getTemplate().type == equipType) {
-                filteredItems.addElement(item);
+            if (!hopLe || item.getTemplate().type != equipType) {
+                continue;
+            }
+            if (mocCuoi) {
+                // Ở mốc 99 nguyên liệu phải cao hơn trang bị, tối đa 10 cấp
+                if (item.level > equipLevel && item.level - equipLevel <= 10) {
+                    ra.addElement(item);
+                }
+            } else if (Math.abs(item.level - equipLevel) <= 10) {
+                ra.addElement(item);
             }
         }
-    
-        // Hiển thị shop với danh sách đã lọc
-        player.sendMessage(MessageCreator.createMessageShopNew(player, filteredItems, "Chọn", "Nguyên liệu", 6));
+        return ra;
+    }
+
+    public void showTinhLuyenMaterialList(Char player) {
+        player.sendMessage(MessageCreator.createMessageShopNew(
+                player, locNguyenLieuTinhLuyen(player), "Chọn", "Nguyên liệu", 6));
     }
 
   
@@ -9094,51 +9117,23 @@ public class Map implements Runnable {
                         return;
                     }
         
-                    // Lấy thông tin trang bị cần tinh luyện
-                    Vector<Item> filteredItems = new Vector<>();
-                    int equipLevel = player.itemVukhiThoiTrang.level;
-                    int equipType = player.itemVukhiThoiTrang.getTemplate().type;
-                    
-                    // Danh sách ID các nguyên liệu hợp lệ
-                    int[] validMaterialIDs = {421,408,447,434,460,422,409,448,435,461,423,410,449,436,462,424,411,450,437,463,425,412,451,438,464,893,894,895,896,897};
-                    
-                    // Lọc danh sách nguyên liệu hợp lệ
-                    for (int i = 0; i < player.iItems.size(); i++) {
-                        Item item = (Item)player.iItems.elementAt(i);
-                        boolean isValidMaterial = false;
-                        
-                        // Kiểm tra ID nguyên liệu
-                        for (int materialID : validMaterialIDs) {
-                            if (item.tempateID == materialID) {
-                                isValidMaterial = true;
-                                break;
-                            }
-                        }
-                        
-                        // Kiểm tra điều kiện level và loại trang bị
-                        if (isValidMaterial) {
-                            if (player.itemVukhiThoiTrang.TinhLuyen == 99) {
-                                // Ở cấp 99, nguyên liệu phải cao hơn 0-10 level
-                                if (item.level > equipLevel && 
-                                    item.level - equipLevel <= 10 &&
-                                    item.getTemplate().type == equipType) {
-                                    filteredItems.addElement(item);
-                                }
-                            } else {
-                                // Các cấp khác cho phép ±10 level
-                                if (Math.abs(item.level - equipLevel) <= 10 &&
-                                    item.getTemplate().type == equipType) {
-                                    filteredItems.addElement(item);
-                                }
-                            }
-                        }
-                    }
-        
+                    // Dùng CHUNG một hàm với lúc hiển thị danh sách cho người chơi.
+                    // Xem chú thích ở locNguyenLieuTinhLuyen().
+                    Vector<Item> filteredItems = locNguyenLieuTinhLuyen(player);
+
                     if (filteredItems.isEmpty()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không tìm thấy nguyên liệu phù hợp", ""));
                         return;
                     }
-        
+
+                    // idActor là chỉ số người chơi chọn, đọc thẳng từ gói tin nên phải chặn biên.
+                    if (idActor < 0 || idActor >= filteredItems.size()) {
+                        data.NghiVanGianLan.ghiVatPham(player, "hacktinhluyen",
+                                "gui chi so nguyen lieu tinh luyen ngoai bien: " + idActor
+                              + " (danh sach co " + filteredItems.size() + " mon)");
+                        return;
+                    }
+
                     // Lấy item đã chọn
                     Item selectedItem = (Item)filteredItems.elementAt(idActor);
                     if (selectedItem == null) {
@@ -9149,11 +9144,22 @@ public class Map implements Runnable {
                     player.subLuong(1);
                     player.subXu(3000000, false, "tinh luyen");
         
-                    // Tính tỷ lệ thành công
-                    int baseRate = 60; // Tỷ lệ cơ bản 60%
-                    int levelPenalty = player.itemVukhiThoiTrang.TinhLuyen / 2; // Giảm 0.5% mỗi cấp
-                    int successRate = Math.max(5, baseRate - levelPenalty); // Tỷ lệ tối thiểu 5%
-                    
+                    // Tỷ lệ thành công TĂNG dần theo mốc: mốc càng gần 0% thì càng khó,
+                    // càng gần 100% thì càng dễ.
+                    //
+                    //    mốc 0  -> 11%      mốc 50 -> 36%      mốc 98 -> 60%
+                    //    cứ 2 mốc thì tăng 1%, chặn trần ở 60%
+                    //    mốc 99 -> 100% (xử lý riêng ngay bên dưới)
+                    //
+                    // Trước đây công thức ngược lại: 60% ở mốc 0 rồi giảm dần xuống 11%.
+                    // Chi phí kỳ vọng đi từ 0 lên 100 gần như không đổi giữa hai đường
+                    // cong (342 lần đánh so với 350), chỉ đổi chỗ khó: nay nặng ở đoạn
+                    // đầu thay vì đoạn cuối.
+                    final int TI_LE_THAP_NHAT = 11; // ở mốc 0
+                    final int TI_LE_CAO_NHAT = 60;  // chạm trần ở mốc 98
+                    int successRate = Math.min(TI_LE_CAO_NHAT,
+                            TI_LE_THAP_NHAT + player.itemVukhiThoiTrang.TinhLuyen / 2);
+
                     // ✅ Nếu là Thần Binh và đang ở % tinh luyện là 99%
                     if (player.checkVuKhiThanBinh() && player.itemVukhiThoiTrang.TinhLuyen == 99) {
                         successRate = 100;
