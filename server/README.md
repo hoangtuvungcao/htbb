@@ -5,6 +5,7 @@ Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 3 phần ch
 - **Java game server** — `src/`, build bằng `build.bat`. Jar deploy thật là
   `KPAH2_patched.jar` ở gốc repo.
 - **Client C#** — `Client/` (bản port từ client J2ME/MIDP gốc).
+  ⚠️ **Đây là mã DỊCH NGƯỢC, không build được** — xem mục "Thư mục" bên dưới.
 - **Web PHP** — `web/` (đăng nhập, nạp tiền, PDO + MySQL). Xem `web/README.md`.
 
 ## Thư mục
@@ -13,7 +14,7 @@ Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 3 phần ch
 |---|---|
 | `src/` | Source Java game server |
 | `lib/` | Thư viện `.jar` bên thứ ba (nằm trên `Class-Path` của jar deploy) |
-| `Client/` | Source client C# |
+| `Client/` | Mã client C# **dịch ngược** — chỉ để ĐỌC, **không build được** (xem dưới) |
 | `web/` | Website PHP (login, nạp tiền, admin) |
 | `sql/` | Script SQL: fix dữ liệu, migrate, dump mốc |
 | `vps/` | Script deploy & vận hành trên VPS (systemd service, backup DB, deploy-auto) |
@@ -23,6 +24,30 @@ Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 3 phần ch
 | `test/` | Bộ kiểm thử (không phụ thuộc thư viện ngoài) — chạy bằng `test.bat` |
 | `docs/` | Tài liệu (hướng dẫn build/VPS, bảng id thuộc tính...) |
 | `build/` | Thư mục tạm khi build — không commit |
+
+## `Client/` là gì — và vì sao sửa nó không có tác dụng
+
+**`Client/` KHÔNG phải dự án build được.** Nó là mã **dịch ngược** từ `Assembly-CSharp.dll`
+của client đã đóng gói. Bằng chứng:
+
+- Không có `Assets/`, `ProjectSettings/`, `Packages/` — tức không phải dự án Unity.
+- Không có `.sln`, `.csproj`, `.unity`, `.asmdef` — không mở bằng Visual Studio được.
+- `Client/Properties/AssemblyInfo.cs` chỉ có đúng `[assembly: AssemblyVersion("0.0.0.0")]`
+  — đó là thứ trình dịch ngược (ILSpy/dnSpy) sinh ra khi DLL không có thuộc tính nào khác.
+- Các file không có `namespace`, không có `using`, dùng `sbyte[]` thay cho `byte[]` của Java.
+
+**Hệ quả: sửa file trong `Client/` không tới được người chơi.** Nó chỉ có giá trị để
+*đọc* (tra xem client gửi gì, theo thứ tự nào) và để *ghi lại ý định* cho lần sửa client thật.
+
+Muốn đổi client thật thì có ba đường:
+
+1. **Tìm lại dự án Unity gốc** — đường sạch nhất. Hỏi người đã build client này.
+2. **Vá thẳng DLL** bằng dnSpy: rút `Assembly-CSharp.dll` từ APK
+   (`assets/bin/Data/Managed/`), sửa hàm, lưu lại, đóng gói và ký lại APK.
+   ⚠️ Chỉ được nếu client build bằng **Mono**. Build bằng **IL2CPP** thì không có
+   `Assembly-CSharp.dll` (đã biên dịch ra mã máy) và đường này đóng.
+3. **Biên dịch lại toàn bộ mã dịch ngược** thành DLL thay thế — thường không xuôi, vì
+   mã dịch ngược hiếm khi biên dịch sạch ngay.
 
 ## Build
 
