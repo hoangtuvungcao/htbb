@@ -252,32 +252,63 @@ class DatabaseXepHang {
             } catch (Exception ignored) {
             }
             if (rs.next()) {
-                int xu = rs.getInt("xu");
+                // Doc HET cac cot ra bien truoc da: stm.execute() ben duoi se dong rs
+                // (JDBC dong ResultSet dang mo cua mot Statement khi Statement do chay
+                // lenh moi), nen sau lenh DELETE khong con doc rs duoc nua.
+                final int idHang    = rs.getInt("id");
+                final int xu        = rs.getInt("xu");
+                final int luongGoc  = rs.getInt("luong");
+                final int khoaGoc   = rs.getInt("luongKhoa");
+                final int ve        = rs.getInt("ve");
+
+                // XOA HANG TRUOC KHI TRAO THUONG.
+                // Truoc day DELETE nam O CUOI, sau ca chuc lenh co the nem ngoai le
+                // (chia cho 0 khi TileNap=0, rs.getInt thieu cot, cac loi goi DB...).
+                // Ma ca khoi nam trong mot try/catch nuot loi, nen chi can mot ngoai le
+                // giua chung la: nguoi choi DA duoc cong xu o dong tren, con hang
+                // board_naptien thi KHONG BAO GIO bi xoa -> moi lan dang nhap lai duoc
+                // cong them mot lan nua. Do la lo nhan xu VO HAN.
+                // Xoa truoc thi truong hop xau nhat chi la mat mot lan nap (con nguyen
+                // ban ghi thanh toan de admin cap lai), thay vi nhan tien khong gioi han.
+                stm.execute("DELETE FROM `board_naptien` WHERE `id` ='" + idHang + "'");
+
+                // TileNap la he so admin nhap tay vao bang 5h_systems (command='tangnap'),
+                // khong he duoc kiem tra pham vi. Dat 0 la truoc day sinh ArithmeticException
+                // o cac phep chia ben duoi. Coi <= 0 la 1 (khong nhan them).
+                int tile = Database.TileNap;
+                if (tile <= 0) {
+                    System.out.println("CANH BAO 5h_systems: tangnap = " + Database.TileNap
+                            + " (phai > 0). Tam dung he so 1 cho lan nap nay.");
+                    tile = 1;
+                }
+                // Nhan bang long roi chan: `luongGoc * tile` tinh o 32-bit se tran ngay
+                // tai cho, TRUOC khi kip di qua chan tran cua addLuong.
+                final int luong     = Char.nhanChan(luongGoc, tile);
+                final int luongKhoa = Char.nhanChan(khoaGoc, tile);
+
                 player.addXu(xu, "getBoardNapTien db");
                 if (xu > 0) {
                     info = "SV Get xu: " + xu + " | ";
                 }
-                int luong = rs.getInt("luong") * Database.TileNap;
                 player.addLuong(luong);
-                int luongKhoa = rs.getInt("luongKhoa") * Database.TileNap;
                 if (luongKhoa > 0) {
                     player.addLuongLock(luongKhoa);
                 }
-                
-                player.vetangluong += rs.getInt("ve");
-                player.luongNap += (luong / Database.TileNap) / 2;
+
+                player.vetangluong += ve;
+                // Dung thang so goc trong DB thay vi `luong / tile`: vua khong con phep
+                // chia nao de chia cho 0, vua dung ca khi luong da bi chan o MAX_VALUE.
+                player.luongNap += luongGoc / 2;
 
                 Database.instance.updateLuongNap(luong, player);
-                player.diemNapVip += luong / Database.TileNap;
-                 Database.instance.addCharXaiNapLuong(player, 0);
+                player.diemNapVip += luongGoc;
+                Database.instance.addCharXaiNapLuong(player, 0);
                 if (luong > 0) {
                     info = info + "SV Get luong: " + luong;
                 }
-                if (rs.getInt("ve") > 0) {
-                    info = info + "| SV Get ve: " + rs.getInt("ve");
+                if (ve > 0) {
+                    info = info + "| SV Get ve: " + ve;
                 }
-                String sqlUpdate = "DELETE FROM `board_naptien` WHERE `id` ='" + rs.getInt("id") + "'";
-                stm.execute(sqlUpdate);
                 if (luong >= 10) {
                     Database.instance.saveLogThongKeChiTieu("nap luong", 0, 1, luong, "luong nap");
                 }

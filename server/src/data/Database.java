@@ -1895,21 +1895,55 @@ public class Database {
     }
 
 
+    // ==================== KIEM TRA KICH HOAT TAI KHOAN ====================
+    // KHONG DUOC dat Connection vao try-with-resources o ba ham duoi day.
+    //
+    // ConnPool (trong lib/NQSH_5h.jar) phat ra Connection THO tu DriverManager, khong he
+    // boc proxy. Nen conn.close() dong THAT cai socket chu khong tra ket noi ve pool:
+    // ket noi da bi removeFirst() ra khoi pool luc lay, va khong bao gio duoc
+    // addConToPool() tra lai -> POOL TEO VINH VIEN moi lan goi. Them nua, ConnPool chi
+    // giam countConnection trong free(), nen bo dem cung bi keo len mai mai.
+    //
+    // Ba ham nay nam ngay tren duong DANG NHAP (LoginHandler 293/379/436 va
+    // SelectCharHandler 166), tuc khoang 4 lan moi luot vao game — ro nhanh hon han
+    // ban Database.banChar cu. Pool chi duoc nap lai khi da can sach
+    // (ConnPool.getConFromPool goi initPool khi size()==0), gay burst tao lai maxco
+    // ket noi MySQL cung mot luc.
+    //
+    // Cach dung dung: PreparedStatement/ResultSet van de trong try-with-resources
+    // (dong chung la dung), rieng Connection thi tra ve pool bang connPool.free() o
+    // finally. Bat Exception chu khong chi SQLException vi getConFromPool() co the tra
+    // null (-> NPE) hoac nem NoSuchElementException khi pool rong.
+
+    /** Tra ket noi ve pool. free(null) van giam countConnection nen phai chan null. */
+    private static void traKetNoi(Connection conn) {
+        try {
+            if (conn != null) {
+                Database.connPool.free(conn);
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
     public static boolean check_active(String username) {
         if (!ENABLE_ACTIVE_CHECK) {
             return true; // Nếu tắt kiểm tra active thì luôn trả về true
         }
-        try (Connection conn = Database.instance.getConnection();
-            PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM 5h_active WHERE username = ? LIMIT 1")) {
-            
-            ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+        Connection conn = null;
+        try {
+            conn = Database.instance.getConnection();
+            try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM 5h_active WHERE username = ? LIMIT 1")) {
+                ps.setString(1, username);
+                try (ResultSet rs = ps.executeQuery()) {
+                    return rs.next();
+                }
             }
-        } catch (SQLException e) {
-            System.out.println("Lỗi khi kiểm tra trạng thái kích hoạt cho username: " + username); 
+        } catch (Exception e) {
+            System.out.println("Lỗi khi kiểm tra trạng thái kích hoạt cho username: " + username);
             e.printStackTrace();
             return true;
+        } finally {
+            traKetNoi(conn);
         }
     }
 
@@ -1917,34 +1951,40 @@ public class Database {
         if (!ENABLE_ACTIVE_CHECK) {
             return true; // Nếu tắt kiểm tra active thì luôn trả về true
         }
-        try (Connection conn = Database.instance.getConnection();
-            PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM 5h_active WHERE userID = ? LIMIT 1")) {
-            
-            ps.setInt(1, userID);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
+        Connection conn = null;
+        try {
+            conn = Database.instance.getConnection();
+            try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM 5h_active WHERE userID = ? LIMIT 1")) {
+                ps.setInt(1, userID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    return rs.next();
+                }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             System.out.println("Lỗi khi kiểm tra trạng thái kích hoạt cho userID: " + userID);
             e.printStackTrace();
             return true;
+        } finally {
+            traKetNoi(conn);
         }
     }
 
     public static boolean insert_active(int userID, String username) {
-        try (Connection conn = Database.instance.getConnection();
-             PreparedStatement ps = conn.prepareStatement(
-                     "INSERT INTO 5h_active (userID, username) VALUES (?, ?)")) {
-            
-            ps.setInt(1, userID);
-            ps.setString(2, username);
-            
-            return ps.executeUpdate() > 0;
-            
-        } catch (SQLException e) {
+        Connection conn = null;
+        try {
+            conn = Database.instance.getConnection();
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "INSERT INTO 5h_active (userID, username) VALUES (?, ?)")) {
+                ps.setInt(1, userID);
+                ps.setString(2, username);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
             System.out.println("Lỗi khi thêm bản ghi kích hoạt cho userID: " + userID);
             e.printStackTrace();
             return false;
+        } finally {
+            traKetNoi(conn);
         }
     }
 

@@ -13017,6 +13017,25 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     /**
+     * Nhan hai so int co chan tran: khong bao gio cuon vong sang so am.
+     *
+     * Dung cho cac cho nhan he so TRUOC khi dua vao addLuong — vi du
+     * DatabaseXepHang.getBoardNapTien lam `rs.getInt("luong") * Database.TileNap`, ca hai
+     * ve deu la int nen phep nhan tinh o 32-bit va tran NGAY TAI CHO, truoc khi gia tri
+     * kip di qua congChan cua addLuong.
+     */
+    public static int nhanChan(final int a, final int b) {
+        final long tich = (long) a * (long) b;
+        if (tich > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        if (tich < 0L) {
+            return 0;
+        }
+        return (int) tich;
+    }
+
+    /**
      * Tru mot so long ra khoi mot so int, chan duoi tai 0.
      *
      * Cac ham subLuong* truoc day lam `this.luong -= (int) l`. Ep long ve int truoc khi

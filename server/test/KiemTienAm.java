@@ -78,6 +78,32 @@ public final class KiemTienAm {
         Kiem.bang("so dang co am thi doc ra 0", Integer.valueOf(0),
                 Integer.valueOf(real.Char.truChan(-5, 0L)));
 
+        Kiem.nhom("real.Char - nhanChan (nhan int co chan tran)");
+
+        Kiem.bang("nhan binh thuong", Integer.valueOf(6000),
+                Integer.valueOf(real.Char.nhanChan(2000, 3)));
+        Kiem.bang("nhan voi 1 giu nguyen", Integer.valueOf(12345),
+                Integer.valueOf(real.Char.nhanChan(12345, 1)));
+        Kiem.bang("nhan voi 0 ra 0", Integer.valueOf(0),
+                Integer.valueOf(real.Char.nhanChan(999999, 0)));
+
+        // Ca that o DatabaseXepHang.getBoardNapTien: board_naptien.luong = 1.000.000 va
+        // admin dat 5h_systems tangnap = 3000.
+        //   ma cu : 1000000 * 3000 tinh o 32-bit = -1.294.967.296  (SO AM)
+        //   ma moi: chan o Integer.MAX_VALUE
+        Kiem.bang("1.000.000 x 3000 chan o MAX chu KHONG cuon vong am",
+                Integer.valueOf(Integer.MAX_VALUE),
+                Integer.valueOf(real.Char.nhanChan(1000000, 3000)));
+        Kiem.dung("va chac chan khong am",
+                real.Char.nhanChan(1000000, 3000) >= 0);
+        Kiem.dung("mo phong lai phep nhan 32-bit cu THUC SU ra so am",
+                (1000000 * 3000) < 0);
+
+        Kiem.bang("MAX x MAX van chan o MAX", Integer.valueOf(Integer.MAX_VALUE),
+                Integer.valueOf(real.Char.nhanChan(Integer.MAX_VALUE, Integer.MAX_VALUE)));
+        Kiem.bang("tich am thi chan ve 0", Integer.valueOf(0),
+                Integer.valueOf(real.Char.nhanChan(1000, -5)));
+
         Kiem.nhom("real.Char - congChanDai (cong long co chan tran)");
 
         Kiem.bang("cong binh thuong", Long.valueOf(3000000000L),
