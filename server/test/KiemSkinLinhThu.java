@@ -53,6 +53,7 @@ public final class KiemSkinLinhThu {
         kiemLenhChat();
         kiemOGiuaVeThuThat();
         kiemViTriIconTrangBiThu();
+        kiemChoNgoiSkin();
     }
 
     /**
@@ -194,6 +195,33 @@ public final class KiemSkinLinhThu {
         Kiem.dung("doc duoc src/real/MapChat.java", chat.length() > 0);
         Kiem.dung("con lenh boskin de thao skin", chat.contains("\"boskin\""));
         Kiem.sai("KHONG con lenh admin tangskin", chat.contains("tangskin"));
+    }
+
+    /**
+     * Cho ngoi cua skin: bang bu phai co du 5 muc va phai duoc CONG vao dy_horse.
+     *
+     * Client ve con thu ngay tai chan nhan vat roi nhac rieng nhan vat len bang mot bang
+     * CO DINH (Char.dy_horse), khong theo con thu. Bo sprite skin thap hon con thu chuan
+     * nen chan nguoi cao hon lung thu. Khong nhac con thu len duoc (nhac bao nhieu thi
+     * chan no roi mat dat bay nhieu), nen phai ha nguoi ngoi xuong.
+     *
+     * Dau CONG la quan trong: dy_horse am la nhac len, cong so duong vao la bot nhac ->
+     * ngoi thap xuong. Tru di la nguoi bay cao hon nua, ho to gap doi.
+     */
+    private static void kiemChoNgoiSkin() {
+        Kiem.nhom("Skin linh thu - cho nguoi ngoi");
+
+        final String ma = doc("ClientUnity/Assets/Scripts/Game/Char.cs");
+        Kiem.dung("doc duoc Char.cs", ma.length() > 0);
+        Kiem.dung("co bang bu cho ngoi", ma.contains("public static int[] BU_NGOI_SKIN = new int[5]"));
+        Kiem.dung("moc dai id skin khop voi server",
+                ma.contains("ID_ANH_SKIN_DAU = " + real.SkinLinhThu.ID_ANH_BAN_DO));
+        Kiem.dung("bu duoc CONG vao dy_horse, khong phai tru",
+                ma.contains("return dy_horse[typehorse][dir] + ((n >= 0) ? BU_NGOI_SKIN[n] : 0);"));
+
+        final String gs = doc("ClientUnity/Assets/Scripts/Game/GameScr.cs");
+        Kiem.dung("co phim do cho ngoi ngay trong game", gs.contains("doChinhChoNgoiSkin()"));
+        Kiem.dung("so dang do duoc ve len man hinh", gs.contains("veSoBuNgoiSkin(g)"));
     }
 
     private static String doc(final String duongDan) {
