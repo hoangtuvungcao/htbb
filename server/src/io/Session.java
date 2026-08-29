@@ -56,6 +56,9 @@ public class Session extends Thread {
     int loginday = 0;
     public short messCount = 0;
     public long lastCheck = System.currentTimeMillis();
+
+    /** Chan ngap goi tin. Logic + ly do nam trong io/BoDemGoiTin.java. */
+    private final BoDemGoiTin boDemGoiTin = new BoDemGoiTin(System.currentTimeMillis());
     int llll = 0;
     public boolean isCapNhatThongTin = false;
     public int timeXp = 0;
@@ -168,25 +171,13 @@ public class Session extends Thread {
                 Message message = this.readMessage(dis);
                 this.lastActiveTime = System.currentTimeMillis();
 
+                // Kiem TRUOC khi xu ly: dem sau thi tran ngap da duoc xu ly xong roi.
+                if (this.quaNhieuGoi(message.command)) {
+                    break;   // khoi finally ben duoi se disconnect(7)
+                }
+
                 try {
                     this.messageHandler.processMessage(this, message);
-                    if (message.command != -47 && message.command != -48 && message.command != -51 && message.command != -49) {
-                        ++this.messCount;
-                        if (this.messCount > 300) // tăng lên nếu muốn. (số tin tối đa trong 5s)
-                        {
-                            if (System.currentTimeMillis() - this.lastCheck < 5000L) 
-                            {
-                                System.out.println(this.username + "_" + this.clientProvider + "_" + this.agentProvider + " =========>SEND TOO MUCH " + this.messCount + "============= LAST CMD=" + message.command);
-                                
-//                                this.disconnect(7); /// bỏ nết mkn nhiều
-                                System.out.println(this.username + "_disconnect >>>>>>>>>>>");
-                                break;
-                            }
-
-                            this.lastCheck = System.currentTimeMillis();
-                            this.messCount = 0;
-                        }
-                    }
                 } catch (Exception var10) {
                 }
             }
@@ -195,6 +186,30 @@ public class Session extends Thread {
             this.disconnect(7);
         }
 
+    }
+
+    /**
+     * Ket noi nay co dang gui qua nhieu goi tin khong?
+     *
+     * Cua so truot that su: cu qua CUA_SO_DEM_MS thi bat dau dem lai tu dau.
+     * Lenh tai nguyen (-47 anh nhan vat, -48 quan ao, -49 hieu ung, -51 anh) duoc
+     * dem RIENG voi han muc rong hon, vi luc vao ban do moi chung tra ve hang loat
+     * mot cach hoan toan binh thuong — nhung khong con la khong gioi han nhu truoc.
+     *
+     * @return true = vuot nguong, nen cat ket noi
+     */
+    private boolean quaNhieuGoi(int command) {
+        if (!this.boDemGoiTin.vuotNguong(command, System.currentTimeMillis())) {
+            return false;
+        }
+        System.out.println("NGAP GOI TIN: cat ket noi " + this.username
+                + " ip=" + this.ip
+                + " (" + this.boDemGoiTin.demHienTai(command) + " goi "
+                + (BoDemGoiTin.laLenhTaiNguyen(command) ? "tai nguyen" : "thuong")
+                + " trong " + BoDemGoiTin.CUA_SO_MS + "ms, tran "
+                + this.boDemGoiTin.tranCua(command) + ")"
+                + " lenh cuoi=" + command);
+        return true;
     }
 
     private Message readMessage(DataInputStream dis) throws Exception {

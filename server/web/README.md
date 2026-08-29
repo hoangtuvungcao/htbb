@@ -306,7 +306,8 @@ web/
         ├── kiem_schema.php
         ├── kiem_duong_dan.php
         ├── kiem_doc_ini.php
-        └── kiem_chan_spam.php
+        ├── kiem_chan_spam.php
+        └── chan_doan_ket_noi.php
 ```
 
 ### Kiểm thử (không cần MySQL chạy)
@@ -317,6 +318,9 @@ php web/admin/test/kiem_schema.php     # đối chiếu mọi câu SQL với c�
 php web/admin/test/kiem_duong_dan.php  # chốt chặn đọc file của trang Chẩn đoán
 php web/admin/test/kiem_doc_ini.php    # đọc server.ini ra thông tin database
 php web/admin/test/kiem_chan_spam.php  # bộ đếm chặn làm hàng loạt
+
+# Chẩn đoán lỗi kết nối database — chạy TRÊN MÁY CHỦ, chỉ bằng dòng lệnh
+sudo -u www-data php web/admin/test/chan_doan_ket_noi.php
 ```
 
 - `kiem_giftcode.php` chạy lại **14 mã giftcode thật đang có trong bản dump** để
