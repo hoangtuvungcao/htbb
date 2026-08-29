@@ -198,35 +198,33 @@ public class SelectCharHandler implements ICommandHandler {
             }
             p.setTimeOutBuff();
             p.id = RealController.intance.idGen.getID(0, "get char from db");
-            // Chi bo qua kiem tra/dat lai chi so cho GM thuc su (xem Char.laChienThanCoQuyen)
-            if (!Char.laChienThanCoQuyen(p.charname)) {
-                if (p.strength == 0 || p.agitity == 0) {
-                    final int allBasicPoint = p.lvDetail.getBasicPoint(p.lastLV) + (p.lastLV - 1) * 5;
-                    p.basepoint = (short) (allBasicPoint - (p.lastLV - 1) * 5);
-                    p.skillpoint = (short) (p.lastLV - 1);
-                    p.hp = 100;
-                    p.mp = 100;
-                    p.strength = (short) (Database.basicPoint[p.charClass][0] + (p.lastLV - 1));
-                    p.agitity = (short) (Database.basicPoint[p.charClass][1] + (p.lastLV - 1));
-                    p.spirit = (short) (Database.basicPoint[p.charClass][2] + (p.lastLV - 1));
-                    p.health = (short) (Database.basicPoint[p.charClass][3] + (p.lastLV - 1));
-                    p.luck = (short) (Database.basicPoint[p.charClass][4] + (p.lastLV - 1));
-                    final int firstSkill = p.skill[0];
-                    for (int i = 0; i < p.skill.length; ++i) {
-                        if (p.skill[i] >= 0) {
-                            p.skill[i] = 0;
-                        }
-                    }
-                    if (firstSkill > 0 || p.lvDetail.lv >= 3) {
-                        p.skill[0] = 1;
+            // Dat lai chi so goc khi du lieu hong (strength/agitity = 0): moi nhan vat.
+            if (p.strength == 0 || p.agitity == 0) {
+                final int allBasicPoint = p.lvDetail.getBasicPoint(p.lastLV) + (p.lastLV - 1) * 5;
+                p.basepoint = (short) (allBasicPoint - (p.lastLV - 1) * 5);
+                p.skillpoint = (short) (p.lastLV - 1);
+                p.hp = 100;
+                p.mp = 100;
+                p.strength = (short) (Database.basicPoint[p.charClass][0] + (p.lastLV - 1));
+                p.agitity = (short) (Database.basicPoint[p.charClass][1] + (p.lastLV - 1));
+                p.spirit = (short) (Database.basicPoint[p.charClass][2] + (p.lastLV - 1));
+                p.health = (short) (Database.basicPoint[p.charClass][3] + (p.lastLV - 1));
+                p.luck = (short) (Database.basicPoint[p.charClass][4] + (p.lastLV - 1));
+                final int firstSkill = p.skill[0];
+                for (int i = 0; i < p.skill.length; ++i) {
+                    if (p.skill[i] >= 0) {
+                        p.skill[i] = 0;
                     }
                 }
-                if (p.skillpoint < 0) {
-                    p.skillpoint = 0;
+                if (firstSkill > 0 || p.lvDetail.lv >= 3) {
+                    p.skill[0] = 1;
                 }
-                if (p.basepoint < 0) {
-                    p.basepoint = 0;
-                }
+            }
+            if (p.skillpoint < 0) {
+                p.skillpoint = 0;
+            }
+            if (p.basepoint < 0) {
+                p.basepoint = 0;
             }
             p.calculateAttrib();
             if (!CharManager.instance.put(p)) {
@@ -393,9 +391,6 @@ public class SelectCharHandler implements ICommandHandler {
                 } else {
                     session.agentProvider = provider_agent[1];
                 }
-                if (p.charname.equals("chienthan") || p.charname.equals("chienthan@tl") || p.charname.equals("chienthan@ms")) {
-                    System.out.println("PROVIDER : " + session.clientProvider);
-                }
                 if (session.idServer == 1) {
                     provider_agent = Database.instance.getProviderFromTeamUser1(session.userID, session.clientProvider, session.agentProvider);
                     session.clientProvider = provider_agent[0];
@@ -403,9 +398,6 @@ public class SelectCharHandler implements ICommandHandler {
                         Database.instance.updateAgentTeamUser1(session.userID, session.agentProvider);
                     } else {
                         session.agentProvider = provider_agent[1];
-                    }
-                    if (p.charname.equals("chienthan") || p.charname.equals("chienthan@tl") || p.charname.equals("chienthan@ms")) {
-                        System.out.println("PROVIDER server1: " + session.clientProvider);
                     }
                 }
                 session.sendMessage(MessageCreator.createSMS(p, session.clientProvider, session.agentProvider, false));
@@ -442,9 +434,6 @@ public class SelectCharHandler implements ICommandHandler {
                     p.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã chơi được " + p.timeXP + " phút. Bạn không thể chơi tiếp trong ngày hôm nay.", ""));
                     Thread.sleep(5000L);
                     session.disconnect(1001);
-                }
-                if (p.charname.equals("chienthan")) {
-                    p.sendMessage(MessageCreator.createServerAlertMessage(" Thông báo:\n- Đang có " + SessionManager.instance.size() + " người chơi đang online.", ""));
                 }
                 if (p.petUsing != null && !p.petUsing.isPetTool() && p.petUsing.getIdEffPet() > -1 && p.addEffBuff(p.petUsing.getIdEffPet(), System.currentTimeMillis() + 320000000L, EffectBuff.BY_ACTOR, 0) != null) {
                     p.sendEffToChar(p);

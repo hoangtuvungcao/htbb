@@ -29,9 +29,6 @@ class MapNhapText {
             int n = 0;
             int m = 0;
             Char p = null;
-            if (player.charname.equals("chienthan")) {
-                System.out.println("noi dung nhap: " + idActor + " " + player.id + " " + idMenu);
-            }
             // Bang setting cua admin: nhap gio chiem thanh / ti le drop
             if (AdminMenu.xuLyNhapText(player, idMenu, text)) {
                 return;
@@ -1338,10 +1335,6 @@ class MapNhapText {
 
                     return;
                 } else if (idMenu == 4) {
-                    if (player.charname.equals("chienthan")) {
-                        System.out.println("noi dung mk ruong: " + text);
-                    }
-
                     if (player.isCorrectPass) {
                         return;
                     }
@@ -1357,10 +1350,6 @@ class MapNhapText {
 
                     player.sendMessage(MessageCreator.createServerAlertMessage("Mật khẩu hợp lệ.", ""));
                     player.isCorrectPass = true;
-                    if (player.charname.equals("chienthan")) {
-                        System.out.println("noi dung mk ruong ok: " + text);
-                    }
-
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));

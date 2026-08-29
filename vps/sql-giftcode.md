@@ -257,7 +257,7 @@ trong mã: `VKTB` / `VKTBMAX` (thần binh) không cần id, mọi class đều 
 **4. Cũng không đưa `EGG` và `DH`** vì id trứng / id danh hiệu chưa kiểm chứng trên DB mới.
 `DH` còn có danh sách id cố định trong code, sai id là không nhận được gì.
 
-## Cho `admin` và `chienthan` nhập mã VÔ HẠN LẦN (đã áp dụng trên VPS)
+## Cho `admin` nhập mã VÔ HẠN LẦN (đã áp dụng trên VPS)
 
 Có hai thứ chặn nhập lại, phải mở cả hai:
 
@@ -270,11 +270,11 @@ Có hai thứ chặn nhập lại, phải mở cả hai:
 UPDATE kpah_db.giftcode SET limit_use = -1
  WHERE giftcode IN ('vip1','vip2','vip3','pet1','manh1','manh2','nlieu1','nlieu2','nlieu3');
 
-DELETE FROM kpah_db.giftcode_log WHERE player IN ('admin','chienthan');
+DELETE FROM kpah_db.giftcode_log WHERE player = 'admin';
 
 USE kpah_db;
 CREATE TRIGGER tg_giftcode_log_unlimited BEFORE INSERT ON giftcode_log FOR EACH ROW
-  SET NEW.player = IF(NEW.player IN ('admin','chienthan'), CONCAT(NEW.player, '~free'), NEW.player);
+  SET NEW.player = IF(NEW.player = 'admin', CONCAT(NEW.player, '~free'), NEW.player);
 ```
 
 ### Vì sao trigger này chạy được
@@ -312,7 +312,7 @@ UPDATE kpah_db.giftcode SET luong = 1000000000, luongLock = 1000000000 WHERE gif
 DROP TRIGGER IF EXISTS kpah_db.tg_giftcode_log_unlimited;
 USE kpah_db;
 CREATE TRIGGER tg_giftcode_log_unlimited BEFORE INSERT ON giftcode_log FOR EACH ROW
-  SET NEW.player = IF(NEW.player IN ('admin','chienthan','tennhanvatmoi'), CONCAT(NEW.player, '~free'), NEW.player);
+  SET NEW.player = IF(NEW.player IN ('admin','tennhanvatmoi'), CONCAT(NEW.player, '~free'), NEW.player);
 
 -- tắt hẳn, quay về mỗi người một lần
 DROP TRIGGER IF EXISTS kpah_db.tg_giftcode_log_unlimited;

@@ -898,7 +898,7 @@ public class Map implements Runnable {
      * ten voi NPC nay dang nhap duoc nhung bi ngat ngay luc chon nhan vat.
      *
      * Truoc day ten NPC la "admin" (chu thuong) nen KHONG AI dat duoc nhan vat
-     * ten "admin" - do la ly do ban goc dung ten GM la "ddsa"/"chienthan".
+     * ten "admin" - do la ly do ban goc dat ten GM khac han ten NPC nay.
      *
      * Nay dat "ADMIN" chu HOA: Hashtable phan biet hoa thuong nen khong dung voi
      * nhan vat that ten "admin" chu thuong. Nhung phai luu y:

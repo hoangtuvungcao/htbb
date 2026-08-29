@@ -864,7 +864,7 @@ class MapChat {
                                         }
                                     }
                                 } else if (msgChat.startsWith("quayso")) {
-                                    if (player.charname.equals("chienthan") && Database.all_char_top.size() == 0) {
+                                    if (player.isAdmin && Database.all_char_top.size() == 0) {
                                         Database.readText("top.txt");
                                         player.sendMessage(MessageCreator.createMsgChat(player.id, "Tong so char tham gia quay la " + Database.all_char_top.size()));
                                     }

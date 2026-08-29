@@ -50,7 +50,7 @@ db.hour=-1
 db.minute=2
 sv.lang=0
 sv.me=0
-sv.ph=chienthan
+sv.ph=
 sv.choi=snduca
 
 # Login server chay noi bo tren cung VPS - KHONG mo cong 8023 ra internet

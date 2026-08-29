@@ -469,7 +469,6 @@ class CharCapNhat {
             }
             self.countSendchat = 0;
         }
-        self.charname.equals("chienthan");
         if (self.vip > 0 && Map.ALL_CHAR_VIP.get(self.charname) == null) {
             self.vip = 0;
             try {

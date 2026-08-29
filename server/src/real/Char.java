@@ -1083,9 +1083,6 @@ public class Char extends LiveActor {
             return;
         }
         if (!st.equals(this.stCapcha)) {
-            // if (this.charname.equals("chienthan")) {
-            //     return;
-            // }
             this.stCapcha = MessageCreator.createMsgCapcha(this);
         } else {
             this.timeStartHack = 0L;
@@ -2068,17 +2065,6 @@ public class Char extends LiveActor {
     }
 
     private void checkWearing() {
-    }
-
-    /**
-     * Engine goc cap quyen admin + chi so cheat (thu 100000, bo qua kiem tra diem
-     * tiem nang) cho nhan vat CHI DUA VAO TEN "chienthan". Ten nay gio ai cung tao
-     * duoc, nen dac quyen do chi con hieu luc khi chinh chu liet ke "chienthan"
-     * trong sv.adminAccounts. Nguoi choi tinh co dat ten nay chi la nhan vat thuong.
-     */
-    public static boolean laChienThanCoQuyen(final String ten) {
-        return ten != null && ten.trim().equalsIgnoreCase("chienthan")
-                && TeamServer.adminAccounts.contains("chienthan");
     }
 
     public void calculateAttrib() {

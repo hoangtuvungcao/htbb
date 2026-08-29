@@ -145,9 +145,6 @@ class CharSuKien {
     }
 
     static void doAddQuaTichLuy(Char self, int QuaTuan) {
-//        if (!self.charname.equals("chienthan")) {
-//            return;
-//        }
 
         if (Char.TYPE_QUA_TICH_LUY == false) {
             return;

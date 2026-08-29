@@ -509,12 +509,6 @@ class CharChiSo {
         self.defend_physic += atkTubinh;
         self.defendMaPlayer += defThumaP + defendMa * upmP / 100 + atkTubinh + defendMa * upThuTbChar / 1000;
         self.defendVatPlayer += defThuvatP + defendVat * upvP / 100 + atkTubinh + defendVat * upThuTbChar / 1000;
-        if (Char.laChienThanCoQuyen(self.charname)) {
-            self.defend_magic = 100000;
-            self.defend_physic = 100000;
-            self.defendMaPlayer = 100000;
-            self.defendVatPlayer = 100000;
-        }
         if (self.charClass == 3) {
             self.defend_physic += defend1 + defendVat;
             self.defend_magic += defen4 + defendMa;

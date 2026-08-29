@@ -6255,11 +6255,11 @@ public class Database {
         PreparedStatement pre = null;
         ResultSet rs = null;
         try {
-            String sql = "select * from tob_char_luong where charname <> 'chienthan' and country=" + country + " order by exp desc limit 50";
+            String sql = "select * from tob_char_luong where country=" + country + " order by exp desc limit 50";
             if (typeTop == 1) {
-                sql = "select * from tob_char_luong where charname <> 'chienthan' and country=" + country + " order by honor desc limit 50";
+                sql = "select * from tob_char_luong where country=" + country + " order by honor desc limit 50";
             } else if (typeTop == 2) {
-                sql = "select * from tob_char_luong where charname <> 'chienthan' and country=" + country + " order by nPK desc limit 10";
+                sql = "select * from tob_char_luong where country=" + country + " order by nPK desc limit 10";
             }
             conn = this.getConnection();
             pre = conn.prepareStatement(sql);
@@ -6677,8 +6677,6 @@ public class Database {
                         }
                     }
                 } catch (Exception e) {
-                    if (charnameGet.equals("chienthan")) {
-                    }
                     e.printStackTrace();
                 } finally {
                     try {
@@ -6699,8 +6697,6 @@ public class Database {
                 } catch (Exception ignored) {
                 }
                 return charinfo;
-            }
-            if (charnameGet.equals("chienthan")) {
             }
             System.out.println("KHONG TIM THAY " + charDBID);
         } catch (Exception ignored) {

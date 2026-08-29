@@ -141,7 +141,7 @@ adminHead('nhanvat', 'Nhân vật');
     <form method="get" action="nhanvat.php" class="ngang">
         <label class="o" style="min-width:240px;">
             <span>Tìm theo tên nhân vật, hoặc gõ số để tra theo ID tài khoản</span>
-            <input type="text" name="q" value="<?= e($q) ?>" placeholder="ví dụ: chienthan">
+            <input type="text" name="q" value="<?= e($q) ?>" placeholder="ví dụ: tennhanvat">
         </label>
         <button type="submit" class="btn btn-primary btn-nho">Tìm</button>
     </form>

@@ -88,7 +88,7 @@ class CharNapDuLieu {
             } catch (final Exception ex2) {
             }
             
-            if (!self.charname.equals("admin") && !TeamServer.adminAccounts.contains(self.charname.toLowerCase()) && self.isAdmin)  self.isAdmin = false;  // hủy admin nếu k phải chienthan / adminAccounts test
+            if (!self.charname.equals("admin") && !TeamServer.adminAccounts.contains(self.charname.toLowerCase()) && self.isAdmin)  self.isAdmin = false;  // huy admin neu ten khong nam trong sv.adminAccounts
             
             try {
                 self.config(self.typeConfig = Byte.parseByte(data[17]));
@@ -260,9 +260,6 @@ class CharNapDuLieu {
             String info = "";
             initPinfo(self);
             self.lastLog = Char.split(self.lastLog.trim(), ".")[0].trim();
-            if (self.charname.equals("chienthan")) {
-                System.out.println("LASTLOG=" + Char.split(self.lastLog.trim(), ".")[0].trim());
-            }
             try {
                 self.initOnlineReceiveGif(lastlog.get(0));
             } catch (final Exception ex) {
@@ -380,13 +377,6 @@ class CharNapDuLieu {
             }
             if (self.isAdmin && Map.isAcountAdmin(self.getSession().username)) {
                 self.isAdmin = false;
-            }
-            // "chienthan" khong con tu dong len admin: ten nay nguoi choi tao duoc
-            // (xem Char.laChienThanCoQuyen + Database.laTenDanhRieng). Muon dung lai ten
-            // nay lam GM thi them "chienthan" vao sv.adminAccounts.
-            if (Char.laChienThanCoQuyen(self.charname)) {
-                self.isAdmin = true;
-                self.luot_van_tieu = 3;
             }
             // TEST: cấp quyền admin cho các tài khoản cấu hình trong sv.adminAccounts
             if (TeamServer.adminAccounts.contains(self.charname.toLowerCase())) {
@@ -706,7 +696,6 @@ class CharNapDuLieu {
                 } catch (final Exception ex6) {
                 }
             }
-            self.charname.equals("chienthan");
             if (self.lastLog.compareTo("2016-10-27 16:15:00") < 0) {
                 self.potions[71] = 0;
                 self.potions[72] = 0;
@@ -1187,41 +1176,39 @@ class CharNapDuLieu {
                 self.basepoint = (short) Map.abs(Short.parseShort(data3[5]));
                 self.skillpoint = (short) Map.abs(Short.parseShort(data3[6]));
             }
-            // Kiem tra diem tiem nang (chong sua chi so): chi bo qua cho GM thuc su.
-            if (!Char.laChienThanCoQuyen(self.charname)) {
-                final int allBasicPoint = self.lvDetail.getBasicPoint(self.lastLV) + (self.lastLV - 1) * 5;
-                final int tempSt = self.strength - Database.basicPoint[self.charClass][0];
-                final int tempAgitity = self.agitity - Database.basicPoint[self.charClass][1];
-                final int tempSpirit = self.spirit - Database.basicPoint[self.charClass][2];
-                final int tempHealth = self.health - Database.basicPoint[self.charClass][3];
-                final int tempLuck = self.luck - Database.basicPoint[self.charClass][4];
-                final int tong = tempAgitity + tempHealth + tempLuck + tempSpirit + tempSt;
-                if (tong > allBasicPoint || self.basepoint > allBasicPoint) {
-                    self.basepoint = (short) (allBasicPoint - (self.lastLV - 1) * 5);
-                    self.skillpoint = (short) (self.lastLV - 1);
-                    self.hp = 100;
-                    self.mp = 100;
-                    self.strength = (short) (Database.basicPoint[self.charClass][0] + (self.lastLV - 1));
-                    self.agitity = (short) (Database.basicPoint[self.charClass][1] + (self.lastLV - 1));
-                    self.spirit = (short) (Database.basicPoint[self.charClass][2] + (self.lastLV - 1));
-                    self.health = (short) (Database.basicPoint[self.charClass][3] + (self.lastLV - 1));
-                    self.luck = (short) (Database.basicPoint[self.charClass][4] + (self.lastLV - 1));
-                    final int firstSkill = self.skill[0];
-                    for (int i2 = 0; i2 < self.skill.length; ++i2) {
-                        if (self.skill[i2] >= 0) {
-                            self.skill[i2] = 0;
-                        }
-                    }
-                    if (firstSkill > 0 || self.lvDetail.lv >= 3) {
-                        self.skill[0] = 1;
+            // Kiem tra diem tiem nang (chong sua chi so): ap dung cho moi nhan vat.
+            final int allBasicPoint = self.lvDetail.getBasicPoint(self.lastLV) + (self.lastLV - 1) * 5;
+            final int tempSt = self.strength - Database.basicPoint[self.charClass][0];
+            final int tempAgitity = self.agitity - Database.basicPoint[self.charClass][1];
+            final int tempSpirit = self.spirit - Database.basicPoint[self.charClass][2];
+            final int tempHealth = self.health - Database.basicPoint[self.charClass][3];
+            final int tempLuck = self.luck - Database.basicPoint[self.charClass][4];
+            final int tong = tempAgitity + tempHealth + tempLuck + tempSpirit + tempSt;
+            if (tong > allBasicPoint || self.basepoint > allBasicPoint) {
+                self.basepoint = (short) (allBasicPoint - (self.lastLV - 1) * 5);
+                self.skillpoint = (short) (self.lastLV - 1);
+                self.hp = 100;
+                self.mp = 100;
+                self.strength = (short) (Database.basicPoint[self.charClass][0] + (self.lastLV - 1));
+                self.agitity = (short) (Database.basicPoint[self.charClass][1] + (self.lastLV - 1));
+                self.spirit = (short) (Database.basicPoint[self.charClass][2] + (self.lastLV - 1));
+                self.health = (short) (Database.basicPoint[self.charClass][3] + (self.lastLV - 1));
+                self.luck = (short) (Database.basicPoint[self.charClass][4] + (self.lastLV - 1));
+                final int firstSkill = self.skill[0];
+                for (int i2 = 0; i2 < self.skill.length; ++i2) {
+                    if (self.skill[i2] >= 0) {
+                        self.skill[i2] = 0;
                     }
                 }
-                if (self.skillpoint < 0) {
-                    self.skillpoint = 0;
+                if (firstSkill > 0 || self.lvDetail.lv >= 3) {
+                    self.skill[0] = 1;
                 }
-                if (self.basepoint < 0) {
-                    self.basepoint = 0;
-                }
+            }
+            if (self.skillpoint < 0) {
+                self.skillpoint = 0;
+            }
+            if (self.basepoint < 0) {
+                self.basepoint = 0;
             }
             if (self.fullGoldTime != 0L) {
                 self.x2 = 2;

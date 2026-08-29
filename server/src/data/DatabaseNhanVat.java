@@ -1011,10 +1011,8 @@ class DatabaseNhanVat {
         if (gender + 1 < 1 || gender + 1 > 2) {
             return -1;
         }
-        // Ten danh rieng: khong cho nguoi choi tao. Ly do: engine goc cap quyen
-        // admin + chi so cheat cho nhan vat CHI DUA VAO TEN ("chienthan" -> isAdmin
-        // = true, thu 100000, bo qua nhieu kiem tra), va sv.adminAccounts cung
-        // khop theo charname. Ai dat trung mot trong cac ten nay se thanh admin.
+        // Ten danh rieng: khong cho nguoi choi tao. Ly do: sv.adminAccounts khop
+        // theo charname, nen ai dat trung mot trong cac ten do se thanh admin.
         if (Database.laTenDanhRieng(charname)) {
             return -1;
         }

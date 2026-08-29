@@ -618,7 +618,7 @@ class DatabaseXepHang {
         Statement stm = null;
         ResultSet rss = null;
         try {
-            String sql = "select charname,id,gold,lastLv,headStyle,idClan,luong,pInfo,infotop,xp from tob_char where charname <> 'chienthan' and ban=0 order by xp desc limit 100";
+            String sql = "select charname,id,gold,lastLv,headStyle,idClan,luong,pInfo,infotop,xp from tob_char where ban=0 order by xp desc limit 100";
             conn = db.getConnection();
             pre = conn.prepareStatement(sql);
             rs = pre.executeQuery();
@@ -745,7 +745,7 @@ class DatabaseXepHang {
         Statement stm = null;
         ResultSet rss = null;
         try {
-            String sql = "select charname,id,gold,lastLv,headStyle,idClan,luong,pInfo,infotop from tob_char where charname <> 'chienthan' and ban=0 order by gold desc limit 100";
+            String sql = "select charname,id,gold,lastLv,headStyle,idClan,luong,pInfo,infotop from tob_char where ban=0 order by gold desc limit 100";
             conn = db.getConnection();
             pre = conn.prepareStatement(sql);
             rs = pre.executeQuery();
