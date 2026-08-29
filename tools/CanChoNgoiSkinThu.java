@@ -4,19 +4,31 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Nang con thu skin len cho chan nhan vat lut sau vao than no, sua ngay TRONG DU LIEU.
+ * Chinh do "lut" cua chan nhan vat vao than con thu skin, sua ngay TRONG DU LIEU.
  *
  * VI SAO PHAI SUA O DU LIEU: client ve con thu ngay tai CHAN nhan vat roi nhac RIENG nhan
  * vat len bang Char.dy_horse — mot bang CO DINH, va ca ban Unity lan ban JAR deu chi co
- * DUNG MOT DONG {-20,-15,-15,-15}. Nen khong co cach nao bao client ngoi thap xuong tu
- * phia server. Cai duy nhat server quyet duoc la TOA DO CAC KHUNG cua con thu, va do
- * chinh la thu nay sua. Nho vay no chay tren MOI client, khong can dung ban nao.
+ * DUNG MOT DONG {-20,-15,-15,-15}. Nen khong co cach nao bao client cho nguoi ngoi cao
+ * hay thap hon tu phia server. Cai duy nhat server quyet duoc la TOA DO CAC KHUNG cua con
+ * thu, va do chinh la thu nay sua. Nho vay no chay tren MOI client, khong can dung ban
+ * nao, khong phai dong goi lai jar client.
  *
- * CAI GIA PHAI TRA: nang con thu len bao nhieu thi chan no roi mat dat bay nhieu. Nen co
- * tham so dayToiThieu chan lai: khong bao gio nang qua muc lam day con thu cao hon moc do.
- * De doi chieu: Poro co day +7, Lan +4 — tuc day tu +2 tro len van nhin binh thuong.
+ * HAI CHIEU: dat lutMuon lon hon hien tai thi NANG con thu len (nguoi lun sau vao than
+ * no, thay it nguoi hon); nho hon thi HA xuong (thay nhieu nguoi hon, nhung ha qua thi ho
+ * ra khoang trang duoi mong).
  *
- * DOI XUNG VOI tools/XemSkinNhuTrongGame.java: chay cai do truoc va sau de nhin ket qua.
+ * DAT MOC TUYET DOI, KHONG DICH TUONG DOI: chay xong thi ca ba khoi (xuong / len / ngang)
+ * deu ve dung lutMuon, ke ca khi truoc do chung khac nhau. Nen chay hai lan voi hai so
+ * khac nhau KHONG dua file ve nhu cu. Muon ve ban goc: git checkout -- map/skinthu
+ *
+ * CAI GIA PHAI TRA khi NANG: nang bao nhieu thi chan con thu roi mat dat bay nhieu. Tham
+ * so dayToiThieu chan lai, khong bao gio nang qua muc lam day con thu cao hon moc do.
+ * (Chi ap khi nang; ha xuong thi day cang sat dat, khong can chan.)
+ *
+ * DO TRUOC KHI SUA: chay tools/XemSkinNhuTrongGame de xem so lut hien tai, va de so voi
+ * chinh thu tool cua game — Poro (map/d_effect/56) lut 12px, Heo (64) 15px, Lan (62) 19px
+ * huong xuong. Nam skin dang o 11..14px, tuc trong khoang binh thuong.
+ * test/KiemSkinLinhThu.kiemChoNgoiSkin chot lai khoang nay.
  *
  * Cach dung:
  *   java CanChoNgoiSkinThu map/skinthu 5 12 2
@@ -104,20 +116,24 @@ public final class CanChoNgoiSkinThu {
                 continue;
             }
             final int lutHienTai = NHAC_THEO_KHOI[khoi] - tren;
-            int nang = lutMuon - lutHienTai;          // duong = phai nang con thu len
-            if (nang <= 0) {
-                bao.append("  ").append(TEN_KHOI[khoi]).append(" du (lut ").append(lutHienTai).append(")");
-                continue;
-            }
-            // Chan lai: nang qua thi day con thu cao hon moc cho phep.
-            final int nangToiDa = duoi - dayToiThieu;
-            if (nang > nangToiDa) {
-                nang = Math.max(0, nangToiDa);
-            }
+            int nang = lutMuon - lutHienTai;          // duong = nang thu len, am = ha xuong
             if (nang == 0) {
-                bao.append("  ").append(TEN_KHOI[khoi]).append(" khong nang duoc (day da o ")
-                        .append(duoi).append(")");
+                bao.append("  ").append(TEN_KHOI[khoi]).append(" dung roi (lut ")
+                        .append(lutHienTai).append(")");
                 continue;
+            }
+            // Chan lai: nang qua thi day con thu roi cao hon moc cho phep, nhin nhu bay.
+            // Chi ap khi NANG; ha xuong thi day cang thap cang sat dat, khong can chan.
+            if (nang > 0) {
+                final int nangToiDa = duoi - dayToiThieu;
+                if (nang > nangToiDa) {
+                    nang = Math.max(0, nangToiDa);
+                }
+                if (nang == 0) {
+                    bao.append("  ").append(TEN_KHOI[khoi]).append(" khong nang duoc (day da o ")
+                            .append(duoi).append(")");
+                    continue;
+                }
             }
             for (int f = KHOI[khoi]; f < KHOI[khoi] + KHUNG_MOI_KHOI && f < soKhung; f++) {
                 for (int k = 0; k < viTriDy[f].length; k++) {
@@ -125,7 +141,8 @@ public final class CanChoNgoiSkinThu {
                 }
             }
             coSua = true;
-            bao.append("  ").append(TEN_KHOI[khoi]).append(" nang ").append(nang)
+            bao.append("  ").append(TEN_KHOI[khoi]).append(nang > 0 ? " nang " : " ha ")
+                    .append(Math.abs(nang))
                     .append("px (lut ").append(lutHienTai).append("->").append(lutHienTai + nang)
                     .append(", day ").append(duoi).append("->").append(duoi - nang).append(")");
         }
