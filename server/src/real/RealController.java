@@ -1756,7 +1756,12 @@ public class RealController extends ServerController {
                         return;
                         case 8:
                         if (!player.checkVuKhiThanBinh()) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
+                            // Vu khi tinh luyen du 100% duoc dat minuteExist = 0, tuc vinh
+                            // vien - gia han khong con y nghia gi nua.
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    player.daTinhLuyenToiDa()
+                                            ? "Vũ khí thần binh này đã tinh luyện tối đa 100% nên vĩnh viễn, không cần gia hạn."
+                                            : "Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
                             return;
                         }
                         if (player.itemVukhiThoiTrang.GiaHan >= 100) {

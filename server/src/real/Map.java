@@ -7669,10 +7669,13 @@ public class Map implements Runnable {
                     
                     // Kiểm tra điều kiện cơ bản
                     if (!player.checkVuKhiThanBinh()) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                player.daTinhLuyenToiDa()
+                                        ? "Vũ khí thần binh này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
+                                        : "Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
                         return;
                     }
-            
+
                     if (player.itemVukhiThoiTrang.TinhLuyen >= 100) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Cấp độ tinh luyện đã đạt cấp tối đa", ""));
                         return;
@@ -9098,10 +9101,13 @@ public class Map implements Runnable {
                 try {
                     // Kiểm tra điều kiện cơ bản
                     if (!player.checkVuKhiThanBinh()) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                player.daTinhLuyenToiDa()
+                                        ? "Vũ khí thần binh này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
+                                        : "Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
                         return;
                     }
-        
+
                     if (player.itemVukhiThoiTrang.TinhLuyen >= 100) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Vũ khí đã đạt cấp tinh luyện tối đa", ""));
                         return;

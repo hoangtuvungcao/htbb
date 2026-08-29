@@ -2827,6 +2827,22 @@ public class Char extends LiveActor {
         return this.itemVukhiThoiTrang != null && this.itemVukhiThoiTrang.isVuKhiThanBinhNewUpdate09092024();
     }
 
+    /**
+     * Dang mac vu khi than binh DA tinh luyen xong 100% hay khong.
+     *
+     * Luc cham moc 100, Map.doPopup doi tempateID thanh oldId + 15, tuc nhay tu
+     * dai 758-772 (than binh chua nang cap) sang 773-787 (than binh da nang cap).
+     * Ke tu do checkVuKhiThanBinh() tra ve FALSE.
+     *
+     * Hau qua neu khong phan biet: nguoi choi mang vu khi da hoan thanh toi tinh
+     * luyen se nhan thong bao "Ban phai mac vu khi than binh moi co the tinh
+     * luyen" - trong khi ho DANG mac than binh. Con cau "da dat cap toi da" nam
+     * ngay duoi thi khong bao gio chay toi.
+     */
+    public boolean daTinhLuyenToiDa() {
+        return this.itemVukhiThoiTrang != null && this.itemVukhiThoiTrang.isVuKhiThanBinhNangCap();
+    }
+
     public boolean CheckNguyenLieuTL() {
         // Kiểm tra xem có đang mặc vũ khí thần binh không
         if (this.itemVukhiThoiTrang == null || !this.itemVukhiThoiTrang.isVuKhiThanTL()) {
