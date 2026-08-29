@@ -392,6 +392,14 @@ public class GameService : Cmd_message
 			message.writer().writeShort((short)Canvas.w);
 			message.writer().writeByte((sbyte)(Canvas.isLoadTileServer ? (-1) : 0));
 			message.writer().writeByte(getInDexServer(ServerListScr.index));
+			// MA MAY - PHAI la truong CUOI CUNG cua goi dang nhap.
+			// Server doc no o cuoi LoginHandler, ben trong khoi try san co: ban client cu
+			// khong gui thi readUTF() nem EOF, bi nuot, va bo qua. Nen may chu chay ban
+			// moi van phuc vu duoc ca client cu lan client moi.
+			// Dat them truong nao SAU dong nay la lech het thu tu doc ben server.
+			// "?? " chan null: writeUTF(null) se nem NullReference ngay trong khoi try nay
+			// va lam hong CA goi dang nhap - nguoi choi khong vao duoc game.
+			message.writer().writeUTF(Canvas.IMEI ?? "");
 			session.sendMessage(message);
 			message.cleanup();
 			Out.println((short)Canvas.w + ".w><><h ." + (short)Canvas.h);

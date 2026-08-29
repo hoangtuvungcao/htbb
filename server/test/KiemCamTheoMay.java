@@ -25,6 +25,7 @@ public final class KiemCamTheoMay {
         kiemLamSach();
         kiemKhongCanDatabase();
         kiemNoiVaoLoginHandler();
+        kiemHaiDauKhopNhau();
         kiemKhongGhepChuoiVaoSql();
     }
 
@@ -132,6 +133,69 @@ public final class KiemCamTheoMay {
         final int viTriGhi = ma.indexOf("data.CamTheoMay.ghiNhanDangNhap(session.IMEI");
         Kiem.dung("ghi nhan SAU khi gan session.userID",
                 viTriGhi > viTriGanUserId);
+    }
+
+    // -----------------------------------------------------------------------
+    //  Hai dau phai khop nhau: client ghi gi thi server doc dung thu tu do
+    // -----------------------------------------------------------------------
+    //
+    // Goi dang nhap la mot day nhi phan KHONG CO TEN TRUONG. Client ghi theo thu tu,
+    // server doc theo thu tu. Them mot truong o giua ben nao la lech het phia sau, va
+    // KHONG co loi nao bao ca — chi la moi gia tri deu sai. Nen phai canh o day.
+    private static void kiemHaiDauKhopNhau() {
+        Kiem.nhom("Cam theo may - client va server khop thu tu truong");
+
+        final String client = doc("Client/GameService.cs");
+        if (client.isEmpty()) {
+            Kiem.dung("doc duoc Client/GameService.cs", false);
+            return;
+        }
+
+        // Chi lay than ham login(), khong lay ca tep.
+        final int mo = client.indexOf("public void login(string username, string pass, string version)");
+        final int dong = (mo < 0) ? -1 : client.indexOf("session.sendMessage(message);", mo);
+        Kiem.dung("tim thay ham login() ben client", mo >= 0 && dong > mo);
+        if (mo < 0 || dong <= mo) {
+            return;
+        }
+        final String than = client.substring(mo, dong);
+
+        Kiem.dung("client CO gui ma may trong goi dang nhap",
+                than.contains("writeUTF(Canvas.IMEI"));
+        Kiem.dung("co chan null (writeUTF(null) se lam hong ca goi dang nhap)",
+                than.contains("Canvas.IMEI ?? \"\""));
+
+        // Ma may phai la lenh ghi CUOI CUNG.
+        // Lay lenh ghi cuoi cung roi xem no ghi gi — KHONG so vi tri cua
+        // "writeUTF(Canvas.IMEI" voi vi tri cua "writer().write", vi chuoi thu hai nam
+        // NGAY TRUOC chuoi thu nhat tren cung mot dong nen hai vi tri khong the bang nhau.
+        final int viTriGhiCuoi = than.lastIndexOf("writer().write");
+        final String ghiCuoi = (viTriGhiCuoi < 0) ? ""
+                : than.substring(viTriGhiCuoi, Math.min(than.length(), viTriGhiCuoi + 60));
+        Kiem.dung("ma may la lenh ghi CUOI CUNG cua goi", ghiCuoi.contains("Canvas.IMEI"));
+
+        // Dem so lenh ghi ben client va so lenh doc ben server — phai bang nhau.
+        final String server = boChuThich(doc(F_LOGIN));
+        final int moS = server.indexOf("String uname = dis.readUTF();");
+        final int dongS = (moS < 0) ? -1 : server.indexOf("session.IMEI = data.CamTheoMay.lamSach(dis.readUTF())", moS);
+        if (moS >= 0 && dongS > moS) {
+            final String thanS = server.substring(moS, dongS);
+            final int ghi = dem(than, "writer().write");
+            final int doc = dem(thanS, "dis.read") + 1;   // +1: chinh lenh doc ma may
+            Kiem.bang("so truong client ghi = so truong server doc", ghi, doc);
+        } else {
+            Kiem.dung("tim thay khoi doc goi dang nhap ben server", false);
+        }
+    }
+
+    private static int dem(final String trong, final String tim) {
+        int n = 0;
+        int i = trong.indexOf(tim);
+        while (i >= 0) {
+            n++;
+            i = trong.indexOf(tim, i + tim.length());
+        }
+        return n;
     }
 
     // -----------------------------------------------------------------------
