@@ -24,8 +24,13 @@ if (!$don && $_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') =
         $moc = (int)($_POST['moc'] ?? 0);
         if (!in_array($moc, [1, 2, 3], true)) {
             $errors[] = 'Mốc nạp không hợp lệ.';
+        } elseif (biChanSpam('tao_don_nap', 10, 3600)) {
+            // Mỗi lần bấm là một dòng mới trong tob_nap_moc. Người thật đổi ý
+            // vài lần là cùng; quá 10 đơn một giờ thì chỉ có thể là bấm tự động.
+            $errors[] = 'Bạn đã tạo quá nhiều đơn nạp. Hãy thanh toán đơn đang có, hoặc thử lại sau một giờ.';
         } else {
             $tao = taoDonNapMoc((int)$u['id'], $moc);
+            ghiLanLam('tao_don_nap');
             header('Location: naptien.php?ma_don=' . urlencode($tao['ma_don']));
             exit;
         }

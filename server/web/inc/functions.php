@@ -67,6 +67,105 @@ function takeFlash(): ?array
     return null;
 }
 
+/**
+ * ============================================================
+ *  CHẶN LÀM HÀNG LOẠT (bảng kpah_db.web_chan_spam)
+ * ============================================================
+ *  Token CSRF KHÔNG phải là giới hạn số lần: một script chỉ cần tải trang để
+ *  lấy token rồi gửi form, lặp lại bao nhiêu lần tuỳ thích. Đây mới là chỗ đếm.
+ *
+ *  Thiếu bảng thì lùi về đếm trong session — yếu hơn nhiều (xoá cookie là đếm
+ *  lại từ đầu) nhưng không bao giờ chặn người dùng thật vì lỗi kỹ thuật.
+ */
+
+function ipKhach(): string
+{
+    // Không tin X-Forwarded-For trừ khi thật sự có proxy phía trước và proxy đó
+    // ghi đè header. Tin nhầm = kẻ tấn công tự khai IP mới cho mỗi lần gửi.
+    return substr((string)($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45);
+}
+
+/** Bảng đếm đã được tạo chưa? Nhớ kết quả trong một lần chạy. */
+function coBangChanSpam(): bool
+{
+    static $co = null;
+    if ($co === null) {
+        try {
+            dbGame()->query('SELECT 1 FROM web_chan_spam LIMIT 1');
+            $co = true;
+        } catch (Throwable $ex) {
+            $co = false;
+        }
+    }
+    return $co;
+}
+
+/** Hạn giữ lịch sử trong session (giây). Dọn rác ở đây, không dọn lúc kiểm tra. */
+const CHAN_SPAM_HAN_GIU = 86400;
+
+/** Ghi nhận vừa làm một việc. */
+function ghiLanLam(string $hanhDong): void
+{
+    if (!coBangChanSpam()) {
+        // Dọn rác theo một hạn giữ CỐ ĐỊNH, không theo cửa sổ của phép kiểm tra:
+        // dọn theo cửa sổ sẽ xoá mất lịch sử mà một phép kiểm tra khác (cửa sổ
+        // dài hơn) trên cùng hành động vẫn còn cần.
+        $moc = time() - CHAN_SPAM_HAN_GIU;
+        $ds = array_values(array_filter(
+            $_SESSION['chan_spam'][$hanhDong] ?? [],
+            static fn($t) => $t > $moc
+        ));
+        $ds[] = time();
+        $_SESSION['chan_spam'][$hanhDong] = $ds;
+        return;
+    }
+    try {
+        $st = dbGame()->prepare('INSERT INTO web_chan_spam (ip, hanh_dong) VALUES (?, ?)');
+        $st->execute([ipKhach(), substr($hanhDong, 0, 30)]);
+    } catch (Throwable $ex) {
+    }
+}
+
+/**
+ * Đã làm việc này quá nhiều lần trong khoảng thời gian vừa qua chưa?
+ *
+ * @param int $soLanToiDa  số lần cho phép
+ * @param int $trongGiay   trong bao nhiêu giây gần nhất
+ * @return bool true = ĐANG BỊ CHẶN
+ */
+function biChanSpam(string $hanhDong, int $soLanToiDa, int $trongGiay): bool
+{
+    if (!coBangChanSpam()) {
+        // CHỈ ĐẾM, không sửa gì. Trước đây hàm này dọn luôn các mốc nằm ngoài cửa
+        // sổ, nên gọi kiểm tra với cửa sổ ngắn sẽ xoá mất lịch sử mà lần kiểm tra
+        // sau (cửa sổ dài hơn) còn cần — phép kiểm tra không được có tác dụng phụ.
+        $moc = time() - $trongGiay;
+        $n = 0;
+        foreach ($_SESSION['chan_spam'][$hanhDong] ?? [] as $t) {
+            if ($t > $moc) {
+                $n++;
+            }
+        }
+        return $n >= $soLanToiDa;
+    }
+    try {
+        // Khoảng thời gian ghép thẳng bằng số nguyên đã ép kiểu: PDO đang tắt
+        // giả lập prepare nên tham số gửi đi dạng chuỗi, mà MySQL không nhận
+        // `INTERVAL '3600' SECOND`.
+        $giay = (int)$trongGiay;
+        $st = dbGame()->prepare(
+            "SELECT COUNT(*) FROM web_chan_spam
+              WHERE ip = ? AND hanh_dong = ?
+                AND thoi_gian > DATE_SUB(NOW(), INTERVAL $giay SECOND)"
+        );
+        $st->execute([ipKhach(), $hanhDong]);
+        return (int)$st->fetchColumn() >= $soLanToiDa;
+    } catch (Throwable $ex) {
+        // Đếm hỏng thì cho qua: thà bỏ lọt còn hơn chặn oan người chơi thật.
+        return false;
+    }
+}
+
 /** Tài khoản đã kích hoạt (có trong 5h_active) chưa? */
 function isActivated(string $username): bool
 {

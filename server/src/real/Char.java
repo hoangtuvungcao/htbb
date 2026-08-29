@@ -249,6 +249,10 @@ public class Char extends LiveActor {
     public long timeChat;
     public long timeChatRieng;
     public long timeChatBang;
+    /** Lan cuoi dung loa. Loa phat toi TOAN may chu nen phai gian cach rieng. */
+    public long timeDungLoa;
+    /** Lan cuoi go ma qua tang. Moi lan go la vai cau truy van database. */
+    public long timeNhapGiftCode;
     public long fullGoldTime;
     public long halfGoldTime;
     public long timeOutGame;
@@ -690,6 +694,17 @@ public class Char extends LiveActor {
     public static final long    AUTOSAVE_FIRST_MS = 3L * 60L * 1000L;
     /** Khoang cach toi thieu giua 2 lan dung CUNG mot loai binh (ms). Chong spam. */
     public static final long POTION_COOLDOWN_MS = 250L;
+    /**
+     * Gian cach giua 2 lan dung loa (ms). Loa la thu duy nhat nguoi choi tu goi
+     * duoc ma phat toi TOAN BO may chu: mot goi tin gui len thanh N goi tin gui
+     * xuong, N la so nguoi dang online. Dat rong tay hon nhieu so voi binh.
+     */
+    public static final long LOA_COOLDOWN_MS = 3000L;
+    /**
+     * Gian cach giua 2 lan go ma qua tang (ms). Moi lan go la vai cau truy van
+     * database; khong chan thi vua dung de do ma vua lam nghen ket noi DB.
+     */
+    public static final long GIFTCODE_COOLDOWN_MS = 2000L;
     /** Moc thoi gian dung lan cuoi cua tung loai binh. */
     public long[] timeUsePotion = new long[200];
     /** So tui hanh trang toi da mo rong duoc (moi tui = MAX_INVENTORY o). */

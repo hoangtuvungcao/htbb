@@ -46,6 +46,33 @@ dùng chung database với game server.
   ⚠️ **MySQL 8.0 đã bỏ `PASSWORD()`** — nếu dùng MySQL 8 phải đổi cách băm cho khớp login server.
   Máy chủ của bạn đang dùng MariaDB 10.4 nên chạy bình thường.
 
+## Chặn làm hàng loạt (chống spam)
+
+Chạy một lần để bật:
+
+```bash
+mysql -u root kpah_db < sql/them_bang_web_chan_spam.sql
+```
+
+**Token CSRF không phải là giới hạn số lần.** Một script chỉ cần tải trang để lấy
+token rồi gửi form, lặp bao nhiêu lần tuỳ thích. Bảng `web_chan_spam` mới là chỗ đếm.
+
+| Việc | Hạn mức | Đếm cái gì |
+|---|---|---|
+| `register.php` | 5 tài khoản / IP / giờ | chỉ đếm lần tạo **thành công** — gõ trùng tên vài lần là chuyện bình thường |
+| `login.php` | 15 lần **sai** / IP / 15 phút | chỉ đếm lần sai, nên người đăng nhập đúng không bao giờ chạm hạn mức |
+| `naptien.php` | 10 đơn / IP / giờ | mỗi lần bấm là một dòng trong `tob_nap_moc` |
+| `admin/index.php` | 8 lần sai / IP / 15 phút | dùng bảng `web_admin_log` riêng |
+
+Thiếu bảng thì website **vẫn chạy bình thường**, chỉ lùi về đếm trong session —
+yếu hơn nhiều (xoá cookie là đếm lại từ đầu). Trang Chẩn đoán báo rõ đang ở chế độ
+nào. Đếm hỏng vì lỗi database thì **cho qua**: thà bỏ lọt còn hơn chặn oan người
+chơi thật.
+
+`biChanSpam()` chỉ đếm, không sửa gì. Việc dọn rác nằm ở `ghiLanLam()` theo một hạn
+giữ cố định 24 giờ — dọn theo cửa sổ của phép kiểm tra sẽ xoá mất lịch sử mà một
+phép kiểm tra khác (cửa sổ dài hơn) trên cùng hành động vẫn còn cần.
+
 ## Lưu ý bảo mật
 
 - Đã dùng **PDO prepared statement** (chống SQL injection) và **CSRF token** cho form.
@@ -278,7 +305,8 @@ web/
         ├── kiem_giftcode.php
         ├── kiem_schema.php
         ├── kiem_duong_dan.php
-        └── kiem_doc_ini.php
+        ├── kiem_doc_ini.php
+        └── kiem_chan_spam.php
 ```
 
 ### Kiểm thử (không cần MySQL chạy)
@@ -288,6 +316,7 @@ php web/admin/test/kiem_giftcode.php   # bộ kiểm tra cú pháp phần thư�
 php web/admin/test/kiem_schema.php     # đối chiếu mọi câu SQL với cấu trúc bảng thật
 php web/admin/test/kiem_duong_dan.php  # chốt chặn đọc file của trang Chẩn đoán
 php web/admin/test/kiem_doc_ini.php    # đọc server.ini ra thông tin database
+php web/admin/test/kiem_chan_spam.php  # bộ đếm chặn làm hàng loạt
 ```
 
 - `kiem_giftcode.php` chạy lại **14 mã giftcode thật đang có trong bản dump** để

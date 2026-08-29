@@ -360,6 +360,8 @@ thu('Các bảng phụ', function () {
         'web_admin_log' => 'nhật ký trang quản trị — thiếu thì không ghi lại được ai làm gì, '
                          . 'và việc chặn dò mật khẩu chỉ đếm trong session',
         'tob_nap_moc'   => 'theo dõi mốc nạp của naptien.php — thiếu thì trang nạp tiền hỏng',
+        'web_chan_spam' => 'đếm số lần đăng ký / đăng nhập sai / tạo đơn theo IP — thiếu thì '
+                         . 'chỉ đếm trong session, xoá cookie là đếm lại từ đầu',
     ];
     $thieu = [];
     foreach ($can as $bang => $viLy) {

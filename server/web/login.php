@@ -5,9 +5,17 @@ $page = 'login';
 $errors = [];
 $old = ['username' => ''];
 
+/** Số lần gõ SAI mật khẩu tối đa từ một địa chỉ IP, trong 15 phút. */
+const DANG_NHAP_SAI_TOI_DA = 15;
+const DANG_NHAP_TRONG_GIAY = 900;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrfCheck($_POST['csrf'] ?? null)) {
         $errors[] = 'Phiên làm việc hết hạn, vui lòng thử lại.';
+    } elseif (biChanSpam('dang_nhap_sai', DANG_NHAP_SAI_TOI_DA, DANG_NHAP_TRONG_GIAY)) {
+        // Chỉ đếm lần SAI, nên người đăng nhập đúng không bao giờ chạm hạn mức
+        // dù có vào ra bao nhiêu lần.
+        $errors[] = 'Bạn đã nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.';
     } else {
         $username = strtolower(trim($_POST['username'] ?? ''));
         $password = (string)($_POST['password'] ?? '');
@@ -23,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $st->execute([$username, $password]);
                 $row = $st->fetch();
                 if (!$row) {
+                    ghiLanLam('dang_nhap_sai');
                     $errors[] = 'Sai tên tài khoản hoặc mật khẩu.';
                 } elseif ((int)$row['ban'] === 1) {
                     $errors[] = 'Tài khoản của bạn đã bị khóa.';

@@ -5,9 +5,21 @@ $page = 'register';
 $errors = [];
 $old = ['username' => '', 'email' => ''];
 
+/**
+ * Số tài khoản một địa chỉ IP được tạo trong một giờ. Người thật hiếm khi cần
+ * quá vài cái (bạn bè chung nhà, chung quán net), còn script thì tạo hàng nghìn.
+ */
+const DANG_KY_TOI_DA   = 5;
+const DANG_KY_TRONG_GIAY = 3600;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrfCheck($_POST['csrf'] ?? null)) {
         $errors[] = 'Phiên làm việc hết hạn, vui lòng thử lại.';
+    } elseif (biChanSpam('dang_ky', DANG_KY_TOI_DA, DANG_KY_TRONG_GIAY)) {
+        // Token CSRF không chặn được việc này: script chỉ cần tải trang lấy token
+        // rồi gửi form, lặp bao nhiêu lần tuỳ thích. Mỗi lần là một dòng mới
+        // trong account.team_user.
+        $errors[] = 'Bạn đã tạo quá nhiều tài khoản từ địa chỉ này. Vui lòng thử lại sau một giờ.';
     } else {
         $username = strtolower(trim($_POST['username'] ?? ''));
         $password = (string)($_POST['password'] ?? '');
@@ -45,6 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     );
                     $ins->execute([$username, $password, ($email !== '' ? $email : null)]);
                     $userId = (int)$acc->lastInsertId();
+                    // Chỉ đếm khi tạo THÀNH CÔNG: gõ trùng tên vài lần là chuyện
+                    // bình thường của người dùng thật, không nên tính vào hạn mức.
+                    ghiLanLam('dang_ky');
 
                     if (AUTO_ACTIVATE) {
                         activateAccount($userId, $username);

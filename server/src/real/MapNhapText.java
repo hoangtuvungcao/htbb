@@ -1276,6 +1276,23 @@ class MapNhapText {
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     }
                 } else if (idMenu == 1) {
+                    // LOA — phat toi MOI nguoi choi dang online tren may chu.
+                    //
+                    // Truoc day khoi nay khong he kiem tra nguoi choi co loa hay
+                    // khong, va chi tru potions[100] SAU khi da phat. Nghia la bat
+                    // ky ai cung gui thang goi -31 (idMenu = 1) trong mot vong lap
+                    // duoc: mot goi tin gui len thanh N goi tin gui xuong, voi N la
+                    // so nguoi dang online. So loa con lai tut xuong AM khong day.
+                    // Day la cho tru binh DUY NHAT trong ca 116 cho ma khong kiem
+                    // tra so luong truoc.
+                    if (player.potions[100] <= 0) {
+                        return;
+                    }
+                    // Co loa that thi van phai gian cach, vi loa mua duoc hang loat.
+                    if (System.currentTimeMillis() - player.timeDungLoa < Char.LOA_COOLDOWN_MS) {
+                        return;
+                    }
+
                     if (text.length() > 50) {
                         text = text.substring(0, 50);
                     }
@@ -1284,11 +1301,15 @@ class MapNhapText {
                     text = text.trim().replaceAll("\\s+", " ");
                     text = Map.replaceStringWithSpace(text);
                     text = Map.replaceExtendDomain(text);
-                    if (text.length() > 0) {
-                        Map.sendAllCharServer(-1, MessageCreator.createMsgSpeaker(player.charname + ": " + text));
+                    // Loc xong con rong thi khong phat, va cung KHONG tru loa —
+                    // ban cu tru ca khi khong phat duoc gi, nguoi choi mat khong.
+                    if (text.length() == 0) {
+                        return;
                     }
 
+                    Map.sendAllCharServer(-1, MessageCreator.createMsgSpeaker(player.charname + ": " + text));
                     player.potions[100]--;
+                    player.timeDungLoa = System.currentTimeMillis();
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 } else if (idMenu == 2) {
                     if (!player.passWord.equals("")) {

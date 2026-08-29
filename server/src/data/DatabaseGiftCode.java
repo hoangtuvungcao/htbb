@@ -35,6 +35,17 @@ class DatabaseGiftCode {
             return;
         }
 
+        // Gian cach giua 2 lan go ma. Client goi thang duoc goi -31 (idMenuInputText = 7)
+        // nen truoc day mot vong lap se vua DO MA (ma chi la chu va so, doan duoc)
+        // vua bat moi lan doan la vai cau truy van xuong database — day chinh la
+        // ket noi ma ca may chu game dung chung, nghen la ca server cham theo.
+        // Im lang bo qua, khong tra loi gi: tra loi cung la mot goi tin, va con
+        // cho biet minh dang bi chan.
+        if (System.currentTimeMillis() - player.timeNhapGiftCode < Char.GIFTCODE_COOLDOWN_MS) {
+            return;
+        }
+        player.timeNhapGiftCode = System.currentTimeMillis();
+
         // TEST: mã giftcode test, chỉ hoạt động khi bật sv.testMode và khớp sv.testCode.
         // Tắt mặc định (testMode=0). Có ghi log, dùng lại được để tiện kiểm thử.
         if (TeamServer.testMode && !TeamServer.testCode.isEmpty() && text.equals(TeamServer.testCode)) {
