@@ -2349,8 +2349,16 @@ public class Char : LiveActor
 	// chep so vao day cho co dinh. Xem GameScr.doChinhChoNgoiSkin.
 	public const int ID_ANH_SKIN_DAU = 13000;
 
-	/// <summary>So pixel ha nguoi ngoi xuong cho tung skin. Cang lon = ngoi cang thap.</summary>
-	public static int[] BU_NGOI_SKIN = new int[5] { 6, 3, 0, 2, 1 };
+	/// <summary>
+	/// So pixel ha nguoi ngoi xuong cho tung skin. Cang lon = ngoi cang thap.
+	///
+	/// DE 0 HET LA CO Y. Cho ngoi da duoc can ngay trong DU LIEU bang
+	/// tools/CanChoNgoiSkinThu (nang con thu len cho chan nguoi lut sau vao than no), va
+	/// cach do chay tren MOI client — ke ca ban JAR cu khong build lai duoc. Bang nay chi
+	/// con la duong tinh chinh rieng cho ban Unity; dat khac 0 la CONG THEM vao phan da
+	/// can trong du lieu, tuc chinh chong hai lan.
+	/// </summary>
+	public static int[] BU_NGOI_SKIN = new int[5] { 0, 0, 0, 0, 0 };
 
 	/// <summary>Skin thu may dang cuoi, -1 neu khong phai skin linh thu.</summary>
 	public int soHieuSkinDangCuoi()
