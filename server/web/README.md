@@ -307,6 +307,7 @@ web/
         ├── kiem_duong_dan.php
         ├── kiem_doc_ini.php
         ├── kiem_chan_spam.php
+        ├── kiem_log_online.php
         └── chan_doan_ket_noi.php
 ```
 
@@ -318,6 +319,8 @@ php web/admin/test/kiem_schema.php     # đối chiếu mọi câu SQL với c�
 php web/admin/test/kiem_duong_dan.php  # chốt chặn đọc file của trang Chẩn đoán
 php web/admin/test/kiem_doc_ini.php    # đọc server.ini ra thông tin database
 php web/admin/test/kiem_chan_spam.php  # bộ đếm chặn làm hàng loạt
+php web/admin/test/kiem_doc_log.php    # hàm đọc phần cuối file log
+php web/admin/test/kiem_log_online.php # log số người online: đối chiếu cột Java <-> PHP
 
 # Chẩn đoán lỗi kết nối database — chạy TRÊN MÁY CHỦ, chỉ bằng dòng lệnh
 sudo -u www-data php web/admin/test/chan_doan_ket_noi.php

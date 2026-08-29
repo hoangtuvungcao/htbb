@@ -582,6 +582,9 @@ public class TeamServer {
         if (!real.BaoTriDaily.Running) {
             new Thread(new real.BaoTriDaily()).start();
         }
+        // Lay mau so nguoi online 5 phut/lan -> bang tob_log_online, cho trang Tong quan
+        // ve bieu do. Tu tao bang va tu don dong cu hon 30 ngay.
+        data.GhiSoOnline.batDau();
         String daycheck = Char.getDayTime(0L);
         if (daycheck.compareTo("2020-11-18 17:15:00") < 0) {
             Char.initINfoCheckTrungItemVV();

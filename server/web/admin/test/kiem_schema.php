@@ -39,6 +39,7 @@ foreach ([
     'sql/gamedb7_clean.sql',
     'sql/them_bang_web_admin_log.sql',
     'sql/them_bang_web_chan_spam.sql',
+    'sql/them_bang_tob_log_online.sql',  // server game tu tao luc khoi dong, file nay de doi chieu
     'vps/db_new_server.sql',      // tob_nap_moc dinh nghia o PHAN 2I trong file nay
 ] as $f) {
     $schema += docSchema(file_get_contents($GOC . $f));
@@ -59,7 +60,8 @@ $TU_KHOA = array_flip(explode(' ', strtolower(
     'select from where and or not in is null as order by group having limit offset '
   . 'insert into values update set delete distinct count max min sum avg case when '
   . 'then else end asc desc left right join on inner outer union all exists like '
-  . 'date date_sub date_add now curdate interval second minute hour day week month year '
+  . 'date date_sub date_add date_format timestampdiff round now curdate '
+  . 'interval second minute hour day week month year '
   . 'password concat replace length if ifnull coalesce true false between '
   . 'information_schema tables columns table_schema table_name column_name data_type character_maximum_length'
 )));

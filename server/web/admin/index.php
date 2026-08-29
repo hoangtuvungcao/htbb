@@ -213,6 +213,38 @@ $gcTong    = dem($game, 'SELECT COUNT(*) FROM giftcode');
 $gcConDung = dem($game, 'SELECT COUNT(*) FROM giftcode WHERE type = 0 AND limit_use <> 0');
 $gcLuotTong = dem($game, 'SELECT COUNT(*) FROM giftcode_log');
 
+// ---- Người chơi online ----
+// Bảng tob_log_online do chính server game ghi, 5 phút một mẫu (data/GhiSoOnline.java).
+// Bảng tự tạo lúc server khởi động, nên trước lần khởi động đầu tiên sau bản cập nhật
+// này thì chưa có bảng — mọi truy vấn dưới đây trả null/[] và phần hiển thị sẽ nói rõ.
+$onCoBang = dem($game, 'SELECT COUNT(*) FROM tob_log_online') !== null;
+
+$onMoiNhat = dsach($game, 'SELECT thoi_gian, ket_noi, nhan_vat,
+                                  TIMESTAMPDIFF(MINUTE, thoi_gian, NOW()) AS phut_truoc
+                             FROM tob_log_online ORDER BY id DESC LIMIT 1');
+$onGanNhat = $onMoiNhat[0] ?? null;
+
+// Mẫu cũ hơn 15 phút (3 chu kỳ) thì con số không còn là "đang online" nữa — nhiều khả
+// năng server đang tắt. Hiển thị phải nói ra điều đó chứ không đưa số cũ như số thật.
+$onCu = $onGanNhat !== null && (int)$onGanNhat['phut_truoc'] > 15;
+
+$onDinhHomNay = dem($game, 'SELECT MAX(nhan_vat) FROM tob_log_online WHERE thoi_gian >= CURDATE()');
+$onDinh7Ngay  = dem($game, 'SELECT MAX(nhan_vat) FROM tob_log_online
+                             WHERE thoi_gian >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)');
+$onTbHomNay   = dem($game, 'SELECT ROUND(AVG(nhan_vat)) FROM tob_log_online WHERE thoi_gian >= CURDATE()');
+
+// 24 giờ gần nhất, gom theo từng giờ và lấy ĐỈNH của giờ đó (không lấy trung bình:
+// đỉnh mới là con số dùng để tính tải máy chủ).
+$bdOnlineGio = [];
+foreach (dsach($game, "SELECT DATE_FORMAT(thoi_gian, '%Y-%m-%d %H') AS gio,
+                              DATE_FORMAT(thoi_gian, '%Hh')          AS nhan,
+                              MAX(nhan_vat)                          AS n
+                         FROM tob_log_online
+                        WHERE thoi_gian >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+                        GROUP BY gio, nhan ORDER BY gio") as $r) {
+    $bdOnlineGio[] = ['nhan' => (string)$r['nhan'], 'gt' => (int)$r['n']];
+}
+
 // ---- Biểu đồ 14 ngày ----
 function chuoi14Ngay(string $homNay, array $rows): array
 {
@@ -235,6 +267,12 @@ $bdDangKy = chuoi14Ngay($homNay, dsach($acc,
 $bdHoatDong = chuoi14Ngay($homNay, dsach($game,
     'SELECT DATE(lastLog) AS d, COUNT(*) AS n FROM tob_char
       WHERE lastLog >= DATE_SUB(CURDATE(), INTERVAL 13 DAY) GROUP BY d'));
+
+// Đỉnh online mỗi ngày, 14 ngày. Dùng lại chuoi14Ngay nên ngày không có mẫu ra 0
+// thay vì bị khuyết cột.
+$bdOnlineNgay = chuoi14Ngay($homNay, dsach($game,
+    'SELECT DATE(thoi_gian) AS d, MAX(nhan_vat) AS n FROM tob_log_online
+      WHERE thoi_gian >= DATE_SUB(CURDATE(), INTERVAL 13 DAY) GROUP BY d'));
 
 // ---- Phân bố nghề / cấp ----
 $phanBoNghe = [];
@@ -287,6 +325,57 @@ adminHead('tongquan', 'Tổng quan');
         <a href="giftcode.php" class="btn btn-primary btn-nho">Tạo giftcode</a>
     </div>
 </div>
+
+<h3 class="muted small" style="letter-spacing:1px;text-transform:uppercase;">Người chơi online</h3>
+<?php if (!$onCoBang): ?>
+    <div class="card">
+        <p>Chưa có bảng <code>tob_log_online</code>, nên chưa vẽ được gì.</p>
+        <p class="muted small" style="margin:6px 0 0;">
+            Server game tự tạo bảng này lúc khởi động (<code>data/GhiSoOnline.java</code>).
+            Khởi động lại server một lần là bắt đầu ghi, 5 phút một mẫu, và giữ lại 30 ngày.
+        </p>
+    </div>
+<?php else: ?>
+<div class="stat-grid">
+    <?php
+    if ($onGanNhat === null) {
+        theSo('Đang online', '—', 'chưa ghi được mẫu nào');
+    } elseif ($onCu) {
+        // Số cũ KHÔNG được trình bày như số hiện tại: mẫu ngừng lại gần như luôn có
+        // nghĩa là server game đã tắt.
+        theSo('Đang online', '—',
+            'mẫu gần nhất cách đây ' . so((int)$onGanNhat['phut_truoc']) . ' phút — server game có thể đang tắt',
+            'nguy-hiem');
+    } else {
+        theSo('Đang online', so((int)$onGanNhat['nhan_vat']),
+            so((int)$onGanNhat['ket_noi']) . ' kết nối · đo ' . so((int)$onGanNhat['phut_truoc']) . ' phút trước',
+            'tot');
+    }
+    theSo('Đỉnh hôm nay', hienSo($onDinhHomNay), 'lúc đông nhất kể từ 0h');
+    theSo('Đỉnh 7 ngày', hienSo($onDinh7Ngay));
+    theSo('Trung bình hôm nay', hienSo($onTbHomNay), 'bình quân các mẫu 5 phút');
+    ?>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <h3>Online · 24 giờ qua</h3>
+        <?php bieuDoCot($bdOnlineGio, 'người'); ?>
+        <p class="muted small" style="margin:10px 0 0;">
+            Mỗi cột là <em>đỉnh</em> của giờ đó, không phải trung bình — đỉnh mới là con số
+            quyết định tải máy chủ.
+        </p>
+    </div>
+    <div class="card">
+        <h3>Đỉnh online · 14 ngày</h3>
+        <?php bieuDoCot($bdOnlineNgay, 'người'); ?>
+        <p class="muted small" style="margin:10px 0 0;">
+            Đếm <em>nhân vật đang trong game</em>. Số kết nối luôn cao hơn vì tính cả người
+            còn ở màn hình đăng nhập hoặc chọn nhân vật.
+        </p>
+    </div>
+</div>
+<?php endif; ?>
 
 <h3 class="muted small" style="letter-spacing:1px;text-transform:uppercase;">Tài khoản</h3>
 <div class="stat-grid">
