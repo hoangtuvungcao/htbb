@@ -301,6 +301,12 @@ class CharCapNhat {
         for (int j = self.nearChars.size() - 1; j >= 0; --j) {
             try {
                 final Char c = self.map.getPlayerByID(self.nearChars.elementAt(j));
+                // Chan lop hai cho NPC "ADMIN": vong them nearChars ben duoi da khong cho
+                // no vao, nhung neu co duong nao khac ghi duoc vao thi cung khong lam moi
+                // vi tri de client ve no ra.
+                if (Map.laNpcAnCuaAdmin(c) && !self.isAdmin) {
+                    continue;
+                }
                 if (c != null) {
                     final boolean givcard = Char.givingCard(c.inCountry, c.id);
                     if (c.exit) {
@@ -338,7 +344,7 @@ class CharCapNhat {
                     // NPC "admin": nguoi choi thuong khong thay. Rieng admin van thay de
                     // cham vao mo bang setting - mo tu NPC thi khong con o che do chat
                     // nen dieu khien bang phim mui tren binh thuong.
-                    if (aa.charname != null && aa.charname.equals(Map.NAME_NPC_AN) && !self.isAdmin) {
+                    if (Map.laNpcAnCuaAdmin(aa) && !self.isAdmin) {
                         continue;
                     }
                     int xx = 0;
@@ -372,6 +378,16 @@ class CharCapNhat {
             for (int k = players.size() - 1; k >= 0; --k) {
                 try {
                     final Char p1 = players.get(k);
+                    // DAY LA CHO LAM LO NPC "ADMIN". No nam trong Map.npcVilage nhung
+                    // MapKhoiTao con addPlayer() no vao map.allPlayers, nen vong quet nay
+                    // cung nhat duoc no. Bo loc duy nhat o duoi la `!p1.isAdmin`, ma bot
+                    // nay khong bao gio duoc dat isAdmin (mac dinh false) -> lot qua het
+                    // va nguoi choi thuong nhin thay NPC dang le chi admin moi thay.
+                    // Bo qua han o day: khong gui, va cung khong ghi vao nearChars nen
+                    // vong lam moi vi tri ben tren cung khong co gi de gui lai.
+                    if (Map.laNpcAnCuaAdmin(p1) && !self.isAdmin) {
+                        continue;
+                    }
                     if (p1 != null) {
                         final boolean givcard2 = Char.givingCard(p1.inCountry, p1.id);
                         if (self != p1) {

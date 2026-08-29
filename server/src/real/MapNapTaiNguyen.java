@@ -869,7 +869,7 @@ class MapNapTaiNguyen {
         }
         Map m = new Map();
         Char bot = new Char(null);
-        // NPC "admin" da bo, khong gui cho client nua (xem Char.updateActorPos / Map.NAME_NPC_AN).
+        // NPC "admin" chi admin thay (xem CharCapNhat.updateNearChar / Map.laNpcAnCuaAdmin).
         // Van tao va add vao Map.npcVilage vi startSendInfoAdv tham chieu NPC theo chi so
         // (Map.npcVilage.get(0), get(1), get(3), get(6), get(8), get(9)) - xoa han se lech het.
         bot.setInfoChar(Map.NAME_NPC_AN, -2, 2, 0, m, 208, 160, -2000, 25, 51,  -1);

@@ -160,7 +160,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
 //                    msg = MessageCreator.createMsgMenu(menu, npcType, 0);
 //                    session.sendMessage(msg);
 //                }
-                // NPC nay chi admin thay (xem Char.updateActorPos + Map.NAME_NPC_AN).
+                // NPC nay chi admin thay (xem CharCapNhat.updateNearChar + Map.laNpcAnCuaAdmin).
                 // Cham vao -> mo bang setting. Nguoi choi thuong khong mo duoc gi.
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null && p.isAdmin) {

@@ -902,7 +902,7 @@ public class Map implements Runnable {
      *
      * Nay dat "ADMIN" chu HOA: Hashtable phan biet hoa thuong nen khong dung voi
      * nhan vat that ten "admin" chu thuong. Nhung phai luu y:
-     *   - Char.updateActorPos so sanh bang equals() nen van an dung NPC nay.
+     *   - CharCapNhat.updateNearChar loc bang Map.laNpcAnCuaAdmin (so sanh equals) nen an dung NPC nay.
      *   - CharManager.getCharByCharName() luon .toLowerCase() truoc khi tra cuu,
      *     nen NPC nay khong bao gio tim duoc theo ten (hien khong cho nao can).
      *   - CharManager.remove() so sanh khong phan biet hoa thuong khi don vChars,
@@ -915,6 +915,23 @@ public class Map implements Runnable {
      *     va Database.laTenDanhRieng chan moi ten chua chu "admin".
      */
     public static final String NAME_NPC_AN = "ADMIN";
+
+    /**
+     * NPC "ADMIN" co duoc giau khoi nguoi choi nay khong?
+     *
+     * VI SAO PHAI CO HAM RIENG: NPC nay nam trong Map.npcVilage, va MapKhoiTao con
+     * addPlayer() no vao map.allPlayers[0] va [1]. Nghia la no den client qua HAI duong
+     * khac nhau trong CharCapNhat.updateNearChar:
+     *   1) vong rieng duyet npcVilage
+     *   2) vong quet nguoi choi quanh day (getAllPlayerMap) — vong nay chi loc bang
+     *      `!p1.isAdmin`, ma isAdmin cua bot nay KHONG BAO GIO duoc dat (mac dinh false
+     *      tu CharKhoiTao), nen no lot qua het.
+     * Truoc day chi vong (1) duoc chan, nen nguoi choi thuong VAN THAY NPC nay.
+     * De quy tac o mot cho de ca hai duong dung chung va duong thu ba sau nay khoi quen.
+     */
+    public static boolean laNpcAnCuaAdmin(final Char c) {
+        return c != null && NAME_NPC_AN.equals(c.charname);
+    }
     static Vector<String> topHoa;
     static long timeGettopHoa;
     static String[] VIP;
