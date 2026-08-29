@@ -11,7 +11,15 @@ function db(string $name): PDO
         return $pool[$name];
     }
     $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', DB_HOST, DB_PORT, $name);
-    $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+
+    // Login server có file cấu hình riêng và CÓ THỂ dùng người dùng database khác
+    // với game server. config.php chỉ đặt DB_ACCOUNT_USER khi hai bên thật sự
+    // khác nhau; lúc đó database tài khoản phải dùng đúng cặp của login server,
+    // nếu không sẽ nhận "Access denied" dù mật khẩu game server hoàn toàn đúng.
+    $nguoiDung = ($name === DB_ACCOUNT && defined('DB_ACCOUNT_USER')) ? DB_ACCOUNT_USER : DB_USER;
+    $matKhau   = ($name === DB_ACCOUNT && defined('DB_ACCOUNT_USER')) ? DB_ACCOUNT_PASS : DB_PASS;
+
+    $pdo = new PDO($dsn, $nguoiDung, $matKhau, [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES   => false,

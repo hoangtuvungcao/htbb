@@ -399,6 +399,54 @@ thu('Cờ nghi vấn trên nhân vật', function () {
       . '— soi thêm ở Log game trước khi xử lý.', '', $bang);
 });
 
+// --- 13b. Thông tin database lấy từ đâu --------------------------------------
+thu('Nguồn thông tin database', function () {
+    $goc  = rtrim(SERVER_DIR, '/\\');
+    $fGame  = $goc . '/server.ini';
+    $fLogin = $goc . '/loginServer/server.ini';
+
+    $trangThai = static function (string $f): string {
+        if (!is_file($f))     return 'không có file';
+        if (!is_readable($f)) return 'CÓ nhưng PHP KHÔNG đọc được';
+        return 'đọc được';
+    };
+
+    $bang = [
+        ['Nguồn' => 'server.ini', 'Đường dẫn' => $fGame, 'Tình trạng' => $trangThai($fGame)],
+        ['Nguồn' => 'loginServer/server.ini', 'Đường dẫn' => $fLogin, 'Tình trạng' => $trangThai($fLogin)],
+    ];
+
+    // Giá trị đang thật sự dùng. KHÔNG in mật khẩu, chỉ in độ dài — vừa đủ để
+    // biết nó có rỗng hay không mà không phơi ra màn hình.
+    $bang[] = ['Nguồn' => 'ĐANG DÙNG', 'Đường dẫn' => DB_USER . '@' . DB_HOST . ':' . DB_PORT
+                   . ' · mật khẩu ' . strlen(DB_PASS) . ' ký tự',
+               'Tình trạng' => 'DB game: ' . DB_GAME . ' · DB tài khoản: ' . DB_ACCOUNT
+                   . (defined('DB_ACCOUNT_USER') ? ' (dùng riêng ' . DB_ACCOUNT_USER . ')' : '')];
+
+    $khongDoc = (is_file($fGame) && !is_readable($fGame))
+             || (is_file($fLogin) && !is_readable($fLogin));
+
+    if ($khongDoc) {
+        them('Nguồn thông tin database', 'canhbao',
+            'File cấu hình của game server CÓ ở đó nhưng PHP không có quyền đọc, nên web đang dùng giá trị '
+          . 'khai trong config.local.php (hoặc mặc định). Hai bên lệch nhau lúc nào không hay: đổi mật khẩu '
+          . 'database cho game server là website chết mà không rõ vì sao.',
+            "usermod -a -G kpah www-data\n"
+          . "chmod 640 " . SERVER_DIR . "/server.ini " . SERVER_DIR . "/loginServer/server.ini\n"
+          . "systemctl restart php*-fpm apache2", $bang);
+        return;
+    }
+    if (!is_file($fGame) && !is_file($fLogin)) {
+        them('Nguồn thông tin database', 'ok',
+            'Không thấy server.ini nào — website không nằm cùng cây thư mục với game server, nên nó dùng '
+          . 'giá trị khai trong config.local.php. Bình thường nếu đây là máy chạy thử.', '', $bang);
+        return;
+    }
+    them('Nguồn thông tin database', 'ok',
+        'Đọc được cấu hình của chính game server, nên web và server luôn dùng cùng một thông tin '
+      . 'database — đổi mật khẩu ở server.ini là web theo ngay, không phải sửa hai chỗ.', '', $bang);
+});
+
 // --- 13. Đọc được thư mục server không ---------------------------------------
 thu('Đọc file log của server', function () {
     $coFile = 0;

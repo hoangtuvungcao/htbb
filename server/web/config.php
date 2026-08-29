@@ -23,14 +23,70 @@ if (file_exists(__DIR__ . '/config.local.php')) {
     require __DIR__ . '/config.local.php';
 }
 
-// ---- Kết nối database (giá trị mặc định cho máy dev/XAMPP; VPS đặt thật trong config.local.php) ----
+/**
+ * Thư mục gốc của game server — nơi có server.ini, errorlog.txt, log/game.out...
+ * Server chạy với WorkingDirectory=/opt/kpah (vps/kpah-game.service) còn web nằm
+ * ở /opt/kpah/web, nên thư mục cha của file này chính là chỗ cần tìm. Chỉ phải
+ * đặt lại trong config.local.php khi web không nằm cùng cây thư mục với server.
+ */
+if (!defined('SERVER_DIR')) define('SERVER_DIR', dirname(__DIR__));
+
+/**
+ * ============================================================
+ *  KẾT NỐI DATABASE — ĐỌC THẲNG TỪ server.ini CỦA GAME SERVER
+ * ============================================================
+ *  Thông tin database đã nằm sẵn ở hai chỗ mà game server dùng hằng ngày:
+ *
+ *      /opt/kpah/server.ini              -> db.host, db.name, db.user, db.password
+ *      /opt/kpah/loginServer/server.ini  -> db.url (chứa tên DB account), db.user, db.password
+ *
+ *  Chép tay sang config.local.php chỉ tạo thêm một bản sao để lệch nhau: đổi mật
+ *  khẩu database là website chết mà không ai nhớ tại sao. Nên web đọc thẳng từ đó.
+ *
+ *  Thứ tự ưu tiên, cao xuống thấp:
+ *      1. config.local.php   — khai tay thì luôn thắng (dùng khi web ở máy khác)
+ *      2. server.ini         — nguồn thật, tự dò
+ *      3. mặc định bên dưới  — cho máy dev XAMPP (root, không mật khẩu)
+ *
+ *  Đọc KHÔNG được thì im lặng bỏ qua và rơi xuống mặc định — hai file ini đó
+ *  thường để chmod 640 chown kpah:kpah, mà PHP có thể chạy dưới người dùng khác
+ *  (www-data). Muốn dùng cách này thì cho người chạy PHP đọc được, ví dụ:
+ *      usermod -a -G kpah www-data && systemctl restart php*-fpm
+ *  Trang Chẩn đoán có một mục nói rõ đang đọc được hay không.
+ */
+require_once __DIR__ . '/inc/doc_server_ini.php';
+
+// Người dùng có tự khai DB_USER trong config.local.php không? Nếu có thì tôn
+// trọng cho CẢ HAI database — đừng lấy người dùng của login server đè lên nửa chừng.
+$kpahUserKhaiTay = defined('DB_USER');
+
+$kpahIni = kpahCauHinhDb(SERVER_DIR);
+
+if (!defined('DB_HOST') && $kpahIni['host'] !== null) define('DB_HOST', $kpahIni['host']);
+if (!defined('DB_PORT') && $kpahIni['port'] !== null) define('DB_PORT', $kpahIni['port']);
+if (!defined('DB_USER') && $kpahIni['user'] !== null) define('DB_USER', $kpahIni['user']);
+if (!defined('DB_PASS') && $kpahIni['pass'] !== null) define('DB_PASS', $kpahIni['pass']);
+if (!defined('DB_GAME') && $kpahIni['game'] !== null) define('DB_GAME', $kpahIni['game']);
+if (!defined('DB_ACCOUNT') && $kpahIni['account'] !== null) define('DB_ACCOUNT', $kpahIni['account']);
+
+// Login server CÓ THỂ dùng người dùng database khác game server. Chỉ khai riêng
+// khi thật sự khác, để inc/db.php dùng đúng cặp cho mỗi database.
+if (!defined('DB_ACCOUNT_USER') && !$kpahUserKhaiTay && $kpahIni['account_user'] !== null
+    && (!defined('DB_USER') || $kpahIni['account_user'] !== DB_USER)) {
+    define('DB_ACCOUNT_USER', $kpahIni['account_user']);
+    define('DB_ACCOUNT_PASS', (string)$kpahIni['account_pass']);
+}
+
+unset($kpahIni, $kpahUserKhaiTay);
+
+// ---- Mặc định cuối cùng: máy dev XAMPP, khi không có server.ini nào đọc được ----
 if (!defined('DB_HOST')) define('DB_HOST', '127.0.0.1');
 if (!defined('DB_PORT')) define('DB_PORT', 3306);
 if (!defined('DB_USER')) define('DB_USER', 'root');
 if (!defined('DB_PASS')) define('DB_PASS', '');   // mật khẩu MySQL, để trống nếu không có
 
-const DB_ACCOUNT = 'account';     // DB chứa bảng team_user (đúng như loginServer/server.ini)
-const DB_GAME    = 'kpah_db';     // DB game (đúng như server.ini: db.name)
+if (!defined('DB_ACCOUNT')) define('DB_ACCOUNT', 'account');  // DB chứa bảng team_user
+if (!defined('DB_GAME'))    define('DB_GAME', 'kpah_db');     // DB game
 
 // ---- Thiết lập website ----
 const SITE_NAME   = 'KPAH - Khí Phách Anh Hùng';
@@ -105,19 +161,12 @@ if (!defined('ADMIN_NAPTIEN_PASSWORD')) define('ADMIN_NAPTIEN_PASSWORD', 'doi-ma
 if (!defined('ADMIN_ACCOUNTS')) define('ADMIN_ACCOUNTS', '');
 
 /**
- * Thư mục gốc của game server — nơi nó ghi errorlog.txt, hack.txt, log/game.out...
+ * SERVER_DIR đã được đặt ở đầu file (phải có sớm để đọc server.ini). Nó cũng là
+ * thư mục mà trang Chẩn đoán tìm errorlog.txt, hack.txt, log/game.out — trang đó
+ * chỉ ĐỌC, và chỉ đọc đúng danh sách tên file viết sẵn trong chandoan.php.
  *
- * Server chạy với WorkingDirectory=/opt/kpah (vps/kpah-game.service) nên mọi file
- * .txt nó ghi ra đều nằm thẳng ở đó, còn stdout/stderr thì vào log/game.out.
- * Website nằm ở /opt/kpah/web, nên thư mục cha của config.php chính là chỗ cần
- * tìm — mặc định dưới đây đúng cho VPS mà không phải khai báo gì.
- *
- * Chỉ cần đặt lại trong config.local.php khi web KHÔNG nằm cùng máy / cùng cây
- * thư mục với server (ví dụ chép web/ sang C:\xampp\htdocs khi chạy thử):
+ * Chỉ cần đặt lại trong config.local.php khi web KHÔNG nằm cùng cây thư mục với
+ * server (ví dụ chép web/ sang C:\xampp\htdocs khi chạy thử):
  *
  *     define('SERVER_DIR', 'C:/Users/ADMIN/Desktop/KPAH');
- *
- * Trang admin chỉ ĐỌC, và chỉ đọc đúng danh sách tên file viết sẵn trong
- * chandoan.php — không nhận tên file từ người dùng.
  */
-if (!defined('SERVER_DIR')) define('SERVER_DIR', dirname(__DIR__));

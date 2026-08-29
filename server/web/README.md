@@ -20,11 +20,23 @@ dùng chung database với game server.
      người chơi, giữ nguyên cấu trúc 84 bảng + toàn bộ dữ liệu game). Đọc phần
      đầu file đó: sau khi import có 3 việc bắt buộc phải làm.
 3. Chép **cả thư mục `web/`** vào `C:\xampp\htdocs\` (ví dụ `htdocs/kpah`).
-4. Mở **`web/config.php`** và sửa cho đúng:
-   - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`
-   - `DB_ACCOUNT` (mặc định `account`), `DB_GAME` (mặc định `kpah_db`)
-   - Link tải game `LINK_ANDROID` / `LINK_PC` / `LINK_IOS` / `LINK_GROUP`
-   - `AUTO_ACTIVATE` (true = đăng ký xong vào game được luôn)
+4. Tạo **`web/config.local.php`** từ mẫu rồi điền giá trị thật:
+
+   ```bash
+   cp web/config.local.php.example web/config.local.php
+   ```
+
+   **Không sửa `web/config.php`** — nó nằm trong git, sửa tay trên VPS sẽ chặn
+   deploy lần sau (xem mục "Bí mật riêng của từng máy" bên dưới).
+
+   Thông tin database **thường không phải khai**: `config.php` tự đọc từ
+   `server.ini` của game server (xem mục "Thông tin database" bên dưới). Chỉ khai
+   `DB_*` khi chép riêng `web/` sang `htdocs` — lúc đó thêm cả `SERVER_DIR` trỏ về
+   thư mục dự án để trang Chẩn đoán đọc được file log.
+
+   Còn lại sửa trong `config.php` như bình thường (chúng không phải bí mật):
+   link tải game `LINK_ANDROID` / `LINK_PC` / `LINK_IOS` / `LINK_GROUP`, và
+   `AUTO_ACTIVATE` (true = đăng ký xong vào game được luôn).
 5. Truy cập: `http://localhost/kpah/` (hoặc IP máy bạn để người khác vào).
 
 ## Yêu cầu
@@ -40,6 +52,46 @@ dùng chung database với game server.
 - Hàm `PASSWORD()` của MySQL là băm yếu, nhưng **bắt buộc dùng** để khớp login server hiện tại.
   Nếu sau này bạn nâng cấp cơ chế đăng nhập của server, hãy đổi cả hai nơi cho đồng bộ.
 - Để người ngoài truy cập: mở cổng 80 (Apache) và trỏ tên miền / IP public vào máy.
+
+## Thông tin database: đọc thẳng từ `server.ini`
+
+Website **không** giữ bản sao thông tin database. `config.php` đọc thẳng từ hai file
+cấu hình mà game server dùng hằng ngày:
+
+| File | Lấy ra |
+|---|---|
+| `<SERVER_DIR>/server.ini` | `db.host`, `db.name`, `db.user`, `db.password` → DB game |
+| `<SERVER_DIR>/loginServer/server.ini` | `db.url` (chứa tên DB tài khoản), `db.user`, `db.password` → DB `account` |
+
+`SERVER_DIR` mặc định là thư mục cha của `web/`, đúng sẵn cho VPS: server chạy với
+`WorkingDirectory=/opt/kpah` còn web ở `/opt/kpah/web`.
+
+Nhờ vậy đổi mật khẩu database chỉ phải sửa **một chỗ**. Trước đây chép tay sang
+`config.local.php` là tạo bản sao thứ hai để lệch nhau — đổi mật khẩu cho server
+là website chết mà không ai nhớ tại sao.
+
+Thứ tự ưu tiên, cao xuống thấp:
+
+1. `config.local.php` — khai tay thì luôn thắng
+2. `server.ini` — nguồn thật, tự dò
+3. mặc định trong `config.php` — `root` / không mật khẩu, cho máy dev XAMPP
+
+Login server có thể dùng **người dùng database khác** game server; khi hai file ini
+khai khác nhau, `inc/db.php` tự dùng đúng cặp cho mỗi database.
+
+Đọc không được thì im lặng rơi xuống mặc định — hai file ini đó thường là
+`chmod 640 chown kpah:kpah`, mà PHP chạy dưới `www-data`. Cấp quyền đọc:
+
+```bash
+usermod -a -G kpah www-data && systemctl restart php8.2-fpm
+```
+
+Trang **Chẩn đoán** có mục *"Nguồn thông tin database"* nói rõ đang đọc được từ
+`server.ini` hay đang dùng giá trị khai tay, kèm đúng câu lệnh để sửa.
+
+Giữ nguyên chữ `localhost` chứ không đổi thành `127.0.0.1`: MySQL phân quyền theo
+máy khách, và `'kpah'@'localhost'` với `'kpah'@'127.0.0.1'` là **hai quyền khác
+nhau** — đổi đi là nhận `Access denied` dù mật khẩu hoàn toàn đúng.
 
 ## Bí mật riêng của từng máy — `config.local.php`
 
@@ -225,7 +277,8 @@ web/
     └── test/           # Kiểm thử, không cần MySQL
         ├── kiem_giftcode.php
         ├── kiem_schema.php
-        └── kiem_duong_dan.php
+        ├── kiem_duong_dan.php
+        └── kiem_doc_ini.php
 ```
 
 ### Kiểm thử (không cần MySQL chạy)
@@ -234,6 +287,7 @@ web/
 php web/admin/test/kiem_giftcode.php   # bộ kiểm tra cú pháp phần thưởng
 php web/admin/test/kiem_schema.php     # đối chiếu mọi câu SQL với cấu trúc bảng thật
 php web/admin/test/kiem_duong_dan.php  # chốt chặn đọc file của trang Chẩn đoán
+php web/admin/test/kiem_doc_ini.php    # đọc server.ini ra thông tin database
 ```
 
 - `kiem_giftcode.php` chạy lại **14 mã giftcode thật đang có trong bản dump** để
