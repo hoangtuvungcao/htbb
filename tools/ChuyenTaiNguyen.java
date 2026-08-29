@@ -40,11 +40,39 @@ public final class ChuyenTaiNguyen {
     /** Khoa xao tron cua dinh dang goi FilePack. Xem FilePack.encode(sbyte[]). */
     private static final byte[] KHOA = "NguyenVanMinh".getBytes(Charset.forName("US-ASCII"));
 
-    /** Duoi tep cua ban J2ME can cat bo khi doi sang ten ma Unity tra cuu. */
-    private static final String[] DUOI_CAT = { ".png", ".sh", ".type", ".txt" };
+    /**
+     * Duoi tep cua ban J2ME can cat bo khi doi sang ten ma Unity tra cuu.
+     *
+     * PHAI DAY DU. Bo sot mot duoi la tai nguyen do "bien mat" doi voi ban Unity du no
+     * co that: da tung sot ".wp", lam Res.GetWPSplashInfo nem NullReference vi no tim
+     * res/wpsplash/0 trong khi tep duoc ghi ra thanh res/wpsplash/0.wp.bytes.
+     * Toan bo duoi co mat trong ban J2ME: .png .sh .wps .wp .type .txt
+     */
+    private static final String[] DUOI_CAT = { ".png", ".sh", ".wps", ".wp", ".type", ".txt" };
+
+    /** Duoi tep la goi FilePack (co the giai ra nhieu anh ben trong). */
+    private static final String[] DUOI_GOI = { ".sh", ".wps", ".wp" };
 
     /** Bat chuoi dang: Main.res + "/ten/nao/do" */
     private static final Pattern MAU_CAN = Pattern.compile("Main\\.res\\s*\\+\\s*\"/([^\"]*)\"");
+
+    /** Bat hang duong dan goi trong FilePack: public static string main = Main.res + "/main"; */
+    private static final Pattern MAU_HANG =
+            Pattern.compile("public\\s+static\\s+string\\s+(\\w+)\\s*=\\s*Main\\.res\\s*\\+\\s*\"/([^\"]*)\"");
+
+    /** Bat cho nap goi: FilePack.init(FilePack.main) hoac FilePack.init(Main.res + "/other") */
+    private static final Pattern MAU_NAP = Pattern.compile("FilePack\\.init\\(([^;]*?)\\)\\s*;");
+
+    /** Bat ten anh viet thang: FilePack.getImg("bg_popup") */
+    private static final Pattern MAU_ANH = Pattern.compile("getImg\\(\"([^\"]+)\"\\)");
+
+    /** Bat: X.y = Image.createImage(Main.res + "/ten"); */
+    private static final Pattern MAU_ANH_LE = Pattern.compile(
+            "([A-Za-z0-9_.\\[\\]]+)\\s*=\\s*Image\\.createImage\\(Main\\.res\\s*\\+\\s*\"/([^\"]+)\"\\)");
+
+    /** Bat phep so: tenTruong == null (ke ca dang mang: imgX[0] == null) */
+    private static final Pattern MAU_SO_NULL =
+            Pattern.compile("(\\w+)\\s*(?:\\[[^\\]]*\\])?\\s*==\\s*null");
 
     public static void main(final String[] thamSo) throws Exception {
         if (thamSo.length < 3) {
@@ -70,7 +98,7 @@ public final class ChuyenTaiNguyen {
         final Map<String, byte[]> trongGoi = new LinkedHashMap<String, byte[]>();
         int soGoi = 0;
         for (final Map.Entry<String, Path> e : tepRoi.entrySet()) {
-            if (!e.getValue().getFileName().toString().endsWith(".sh")) { continue; }
+            if (!laGoi(e.getValue().getFileName().toString())) { continue; }
             final Map<String, byte[]> phan = giaiGoi(Files.readAllBytes(e.getValue()));
             if (phan.isEmpty()) { continue; }
             soGoi++;
@@ -111,6 +139,14 @@ public final class ChuyenTaiNguyen {
         System.out.println("Ghi " + soGhi + " tep .bytes (trong do " + soChep
                 + " tep chep sang thu muc con theo yeu cau cua ma).");
 
+        // 4d. Dung cac GOI ma nay nap nhung ban J2ME khong co.
+        //     Khong co goi la client CHET, khong phai chi xau: Res.loadRes goi thang
+        //     imgBgPopup.getWidth() ngay sau khi nap goi "other", nen anh null la nem
+        //     NullReferenceException, va vi loadRes chay tu FixedUpdate nen loi lap lai
+        //     30 lan moi giay. Dung goi thay the thi client khoi dong duoc de con thu.
+        final int soDung = dungGoiThieu(maCs, ra, trongGoi, tepRoi);
+        dungAnhThieu(maCs, ra);
+
         // 5. Bao cao thieu.
         final List<String> thieu = new ArrayList<String>();
         for (final String ten : can) {
@@ -137,6 +173,219 @@ public final class ChuyenTaiNguyen {
             }
             if (sb.length() > 2) { System.out.println(sb); }
         }
+    }
+
+    // ------------------------------------------------------------------
+    /**
+     * Dat anh giu cho (1x1 trong suot) cho cac anh NAP LE ma ban J2ME khong co.
+     *
+     * VI SAO CAN: nhieu cho dung thang ket qua ma khong kiem null, vi du
+     * GameScr.setDataForButton() goi Res.imgNewBt[4].getWidth(). Thieu anh la nem
+     * NullReferenceException va client dung o do.
+     *
+     * VI SAO PHAI THAN TRONG: co 49 cho trong ma re nhanh theo "anh == null" - vi du
+     * imgHorse == null nghia la "khong co ngua thi khoi ve". Dat anh giu cho vao nhung
+     * cho do la doi hanh vi. Nen quy tac o day la: neu ten truong co xuat hien trong mot
+     * phep so == null o BAT KY dau, thi KHONG dat anh giu cho, de nguyen null cho nhanh
+     * du phong chay dung. Quy tac nay thua con hon thieu: bo sot mot anh dang le dat
+     * duoc thi chi la thieu anh, con dat nham vao cho co nhanh null la doi logic.
+     */
+    private static int dungAnhThieu(final Path maCs, final Path ra) throws IOException {
+        final List<Path> tep = new ArrayList<Path>();
+        liet(maCs, tep, ".cs");
+
+        final Map<String, String> anhVaTruong = new LinkedHashMap<String, String>();
+        final Set<String> coNhanhNull = new TreeSet<String>();
+
+        for (final Path p : tep) {
+            final String noi = new String(Files.readAllBytes(p), Charset.forName("UTF-8"));
+            Matcher m = MAU_ANH_LE.matcher(noi);
+            while (m.find()) {
+                final String truong = m.group(1);
+                anhVaTruong.put(m.group(2), truong.substring(truong.lastIndexOf('.') + 1));
+            }
+            m = MAU_SO_NULL.matcher(noi);
+            while (m.find()) {
+                coNhanhNull.add(m.group(1));
+            }
+        }
+
+        int soDat = 0;
+        int soBoQua = 0;
+        for (final Map.Entry<String, String> e : anhVaTruong.entrySet()) {
+            final Path dich = ra.resolve(e.getKey() + ".bytes");
+            if (Files.exists(dich)) {
+                continue;
+            }
+            if (coNhanhNull.contains(e.getValue())) {
+                soBoQua++;
+                continue;
+            }
+            ghi(dich, anhTrongSuot());
+            soDat++;
+        }
+        if (soDat > 0 || soBoQua > 0) {
+            System.out.println("  anh giu cho: dat " + soDat + ", bo qua " + soBoQua
+                    + " (truong co nhanh re theo null)");
+        }
+        return soDat;
+    }
+
+    /**
+     * Dung cac goi tai nguyen ma ma nguon co nap nhung ban J2ME khong co.
+     *
+     * Cach lam: doc tu ma nguon xem co nhung goi nao duoc nap va nhung ten anh nao duoc
+     * lay ra tu goi, roi dung mot goi dung dinh dang FilePack chua tat ca cac ten do.
+     * Moi ten lay anh THAT neu tim duoc o dau do trong ban J2ME; khong tim duoc thi dat
+     * anh trong suot 1x1.
+     *
+     * Vi sao dung anh trong suot chu khong muon tam mot anh khac cho do trong: dat nham
+     * anh la du lieu SAI, ma sai thi khong ai nhin ra. Trong suot thi ro rang la thieu.
+     *
+     * Goi dung ra chi de client KHOI DONG DUOC ma thu. No KHONG thay the duoc bo tai
+     * nguyen that cua du an Unity goc.
+     */
+    private static int dungGoiThieu(final Path maCs, final Path ra,
+                                    final Map<String, byte[]> trongGoi,
+                                    final Map<String, Path> tepRoi) throws IOException {
+        final List<Path> tep = new ArrayList<Path>();
+        liet(maCs, tep, ".cs");
+
+        final Map<String, String> hang = new LinkedHashMap<String, String>();
+        final Set<String> tenAnh = new TreeSet<String>();
+        final Set<String> goiCanNap = new TreeSet<String>();
+
+        for (final Path p : tep) {
+            final String noi = new String(Files.readAllBytes(p), Charset.forName("UTF-8"));
+            Matcher m = MAU_HANG.matcher(noi);
+            while (m.find()) {
+                hang.put(m.group(1), catDauGach(m.group(2)));
+            }
+            m = MAU_ANH.matcher(noi);
+            while (m.find()) {
+                tenAnh.add(m.group(1));
+            }
+        }
+        for (final Path p : tep) {
+            final String noi = new String(Files.readAllBytes(p), Charset.forName("UTF-8"));
+            final Matcher m = MAU_NAP.matcher(noi);
+            while (m.find()) {
+                final String duong = giaiBieuThucGoi(m.group(1).trim(), hang);
+                if (duong != null) {
+                    goiCanNap.add(duong);
+                }
+            }
+        }
+
+        if (tenAnh.isEmpty() || tenAnh.size() > 255) {
+            System.out.println("Bo qua buoc dung goi: so ten anh = " + tenAnh.size()
+                    + " (dinh dang goi chi chua toi da 255 muc).");
+            return 0;
+        }
+
+        int soDung = 0;
+        for (final String goi : goiCanNap) {
+            final Path dich = ra.resolve(goi + ".bytes");
+            if (Files.exists(dich)) {
+                continue;
+            }
+            final Map<String, byte[]> muc = new LinkedHashMap<String, byte[]>();
+            int soThat = 0;
+            for (final String ten : tenAnh) {
+                byte[] anh = trongGoi.get(ten);
+                if (anh == null) {
+                    anh = timTheoTenCuoi(ten, tepRoi, trongGoi);
+                }
+                if (anh != null) {
+                    soThat++;
+                } else {
+                    anh = anhTrongSuot();
+                }
+                muc.put(ten + ".png", anh);
+            }
+            final byte[] goiMoi = dongGoi(muc);
+
+            // Tu kiem ngay tren du lieu that: giai lai goi vua dong va doi chieu.
+            // dongGoi la nghich dao viet tay cua giaiGoi; lech mot byte o phan dau la
+            // client doc ra rac ma KHONG bao loi gi - chi la moi anh deu sai.
+            final Map<String, byte[]> doc = giaiGoi(goiMoi);
+            if (!doc.keySet().equals(muc.keySet())) {
+                throw new IOException("Goi vua dong khong giai lai dung: " + goi
+                        + " (dong " + muc.size() + " muc, giai ra " + doc.size() + ")");
+            }
+            for (final Map.Entry<String, byte[]> e : muc.entrySet()) {
+                if (!java.util.Arrays.equals(e.getValue(), doc.get(e.getKey()))) {
+                    throw new IOException("Goi vua dong sai du lieu o muc: " + e.getKey());
+                }
+            }
+
+            ghi(dich, goiMoi);
+            soDung++;
+            System.out.println("  dung goi thay the: " + goi + " (" + muc.size() + " muc, "
+                    + soThat + " anh that, " + (muc.size() - soThat) + " anh trong suot)");
+        }
+        return soDung;
+    }
+
+    /** Doi FilePack.main hoac Main.res + "/other" thanh duong dan trong res/. */
+    private static String giaiBieuThucGoi(final String bieuThuc, final Map<String, String> hang) {
+        final Matcher m = MAU_CAN.matcher(bieuThuc);
+        if (m.find() && bieuThuc.indexOf('+', m.end()) < 0) {
+            return catDauGach(m.group(1));
+        }
+        if (bieuThuc.startsWith("FilePack.")) {
+            final String ten = bieuThuc.substring("FilePack.".length());
+            // Chi nhan ten hang tron. Bieu thuc ghep (vi du wps + array[i] + "/" + j)
+            // tro toi nhieu goi khac nhau, khong the dung san duoc.
+            if (ten.matches("\\w+")) {
+                return hang.get(ten);
+            }
+        }
+        return null;
+    }
+
+    private static String catDauGach(final String s) {
+        return s.startsWith("/") ? s.substring(1) : s;
+    }
+
+    /** Anh PNG 1x1 hoan toan trong suot. */
+    private static byte[] anhTrongSuot() throws IOException {
+        final java.awt.image.BufferedImage img =
+                new java.awt.image.BufferedImage(1, 1, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+        final java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+        javax.imageio.ImageIO.write(img, "png", bos);
+        return bos.toByteArray();
+    }
+
+    /** Nghich dao cua giaiGoi: dong cac muc thanh mot goi dung dinh dang FilePack. */
+    private static byte[] dongGoi(final Map<String, byte[]> muc) throws IOException {
+        final java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+        final java.io.DataOutputStream out = new java.io.DataOutputStream(bos);
+        out.writeByte(muc.size());
+        for (final Map.Entry<String, byte[]> e : muc.entrySet()) {
+            final byte[] ten = e.getKey().getBytes(Charset.forName("US-ASCII"));
+            if (ten.length > 120) {
+                throw new IOException("Ten qua dai: " + e.getKey());
+            }
+            if (e.getValue().length > 65535) {
+                throw new IOException("Anh qua lon: " + e.getKey());
+            }
+            out.writeByte(ten.length);
+            final byte[] tenXao = ten.clone();
+            xor(tenXao);                            // ten bi XOR, chi so tinh lai tu 0
+            out.write(tenXao);
+            out.writeShort(e.getValue().length);    // so nguyen KHONG bi xao tron
+        }
+        // Toan bo du lieu noi lien nhau, XOR mot lan voi chi so bat dau tu 0.
+        final java.io.ByteArrayOutputStream duLieu = new java.io.ByteArrayOutputStream();
+        for (final byte[] v : muc.values()) {
+            duLieu.write(v);
+        }
+        final byte[] tatCa = duLieu.toByteArray();
+        xor(tatCa);
+        out.write(tatCa);
+        out.flush();
+        return bos.toByteArray();
     }
 
     // ------------------------------------------------------------------
@@ -237,6 +486,13 @@ public final class ChuyenTaiNguyen {
 
     private static void xor(final byte[] b) {
         for (int i = 0; i < b.length; i++) { b[i] ^= KHOA[i % KHOA.length]; }
+    }
+
+    private static boolean laGoi(final String ten) {
+        for (final String d : DUOI_GOI) {
+            if (ten.endsWith(d)) { return true; }
+        }
+        return false;
     }
 
     private static String catDuoi(final String ten) {

@@ -26,6 +26,7 @@ public final class KiemClientUnity {
     private static final String F_PLUGIN = "ClientUnity/Assets/Scripts/Game/iOSPlugins.cs";
     private static final String F_DOC_LUONG = "ClientUnity/Assets/Scripts/Game/DataInputStream.cs";
     private static final String F_GOI = "ClientUnity/Assets/Scripts/Game/FilePack.cs";
+    private static final String F_BAN_DO = "ClientUnity/Assets/Scripts/Game/Tilemap.cs";
     private static final String F_XAY = "ClientUnity/Assets/Editor/XayDung.cs";
     private static final String F_MANIFEST = "ClientUnity/Packages/manifest.json";
     private static final String F_CHUYEN = "tools/ChuyenTaiNguyen.java";
@@ -35,6 +36,7 @@ public final class KiemClientUnity {
         kiemShader();
         kiemPluginIOS();
         kiemThieuTaiNguyenKhongSap();
+        kiemBanDoKhongTuGoiMai();
         kiemKichBanXay();
         kiemManifest();
         kiemBoChuyenTaiNguyen();
@@ -134,6 +136,33 @@ public final class KiemClientUnity {
         Kiem.dung("dat lai ZWrite (shader cu: ZWrite Off)", ma.contains("_ZWrite"));
     }
 
+    /**
+     * loadMap bat moi ngoai le roi lui ve ban do 0. Truoc day no goi loadMap(0, null)
+     * VO DIEU KIEN, ke ca khi level da la 0 - nen ban do 0 hong la ham tu goi minh mai
+     * cho den StackOverflowException. Do duoc that trong luc chay thu ban PC.
+     *
+     * Day la loi that trong client, khong lien quan den viec thieu tai nguyen: mot lan
+     * nap ban do 0 that bai vi bat ky ly do gi cung lam client chet han thay vi bao loi.
+     */
+    private static void kiemBanDoKhongTuGoiMai() {
+        Kiem.nhom("Client Unity - nap ban do khong tu goi minh mai");
+
+        final String ma = boChuThich(doc(F_BAN_DO));
+        Kiem.dung("doc duoc " + F_BAN_DO, ma.length() > 0);
+
+        Kiem.dung("chi lui ve ban do 0 khi dang o ban do khac",
+                ma.contains("if (level != 0)"));
+
+        // Chan chinh xac: trong khoi catch khong duoc co loi goi loadMap tran.
+        final int viTriCatch = ma.lastIndexOf("LOAD TILE ERR");
+        final String khoiCatch = (viTriCatch < 0) ? ""
+                : ma.substring(viTriCatch, Math.min(ma.length(), viTriCatch + 400));
+        Kiem.dung("tim thay khoi bat loi cua loadMap", viTriCatch >= 0);
+        Kiem.dung("loi goi lai nam trong dieu kien chan level 0",
+                khoiCatch.indexOf("if (level != 0)") >= 0
+                        && khoiCatch.indexOf("if (level != 0)") < khoiCatch.indexOf("loadMap(0, null)"));
+    }
+
     private static void kiemKichBanXay() {
         Kiem.nhom("Client Unity - kich ban xay");
 
@@ -203,6 +232,41 @@ public final class KiemClientUnity {
         // mot dang la bao cao thieu/du sai ma khong ai biet.
         Kiem.dung("doc danh sach tai nguyen tu chinh ma C#",
                 ma.contains("Main\\\\.res"));
+
+        // LOI DA TUNG XAY RA: sot duoi ".wp" nen wpsplash/0.wp bi ghi thanh
+        // wpsplash/0.wp.bytes, trong khi Res.GetWPSplashInfo tim wpsplash/0.
+        // Tai nguyen co that ma coi nhu mat. Ban J2ME chi co dung 6 duoi nay.
+        //
+        // Phai soi DUNG DONG khai bao DUOI_CAT, khong duoc tim chuoi tren ca tep:
+        // ".wp" con nam trong DUOI_GOI nua, nen kiem kieu do thi xoa han khoi DUOI_CAT
+        // ma bai kiem van xanh. Da thu: dung la no khong bat duoc.
+        final int viTri = ma.indexOf("DUOI_CAT = {");
+        final int het = (viTri < 0) ? -1 : ma.indexOf('}', viTri);
+        Kiem.dung("tim thay khai bao DUOI_CAT", viTri >= 0 && het > viTri);
+        final String dongDuoi = (viTri < 0 || het < 0) ? "" : ma.substring(viTri, het);
+        for (final String duoi : new String[] { ".png", ".sh", ".wps", ".wp", ".type", ".txt" }) {
+            Kiem.dung("DUOI_CAT co cat duoi " + duoi, dongDuoi.contains("\"" + duoi + "\""));
+        }
+
+        // Goi dung ra phai giai lai duoc: dongGoi la nghich dao viet tay cua giaiGoi,
+        // lech mot byte o phan dau la client doc ra rac ma khong bao loi gi.
+        Kiem.dung("tu kiem lai goi vua dong",
+                ma.contains("final Map<String, byte[]> doc = giaiGoi(goiMoi)"));
+        Kiem.dung("bao loi khi goi dong ra khong giai lai dung",
+                ma.contains("Goi vua dong khong giai lai dung"));
+
+        // Cho thieu anh phai dat anh TRONG SUOT, khong duoc muon anh khac cho do trong:
+        // dat nham la du lieu sai, ma sai thi khong ai nhin ra.
+        Kiem.dung("thieu anh thi dung anh trong suot", ma.contains("anhTrongSuot()"));
+        Kiem.dung("anh giu cho la 1x1 trong suot (TYPE_INT_ARGB)",
+                ma.contains("BufferedImage(1, 1, java.awt.image.BufferedImage.TYPE_INT_ARGB)"));
+
+        // Ma client co 49 cho re nhanh theo "anh == null" - vi du imgHorse == null nghia
+        // la "khong co ngua thi khoi ve". Dat anh giu cho vao nhung cho do la DOI HANH VI,
+        // nen phai bo qua chung. Quy tac thua con hon thieu.
+        Kiem.dung("co do cac cho re nhanh theo null", ma.contains("MAU_SO_NULL"));
+        Kiem.dung("bo qua anh co nhanh re theo null",
+                ma.contains("if (coNhanhNull.contains(e.getValue()))"));
     }
 
     private static void kiemBoQua() {

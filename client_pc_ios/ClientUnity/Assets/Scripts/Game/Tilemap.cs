@@ -487,7 +487,14 @@ public class Tilemap
 			Out.println("LOAD TILE ERR " + level);
 			Canvas.instance.init();
 			Session_ME.gI().close();
-			loadMap(0, null);
+			// Nap ban do nao hong thi lui ve ban do 0. Nhung neu chinh ban do 0 hong thi
+			// KHONG duoc goi lai: truoc day dong nay goi loadMap(0, null) vo dieu kien,
+			// nen ban do 0 hong la ham tu goi minh mai -> StackOverflowException, client
+			// chet han thay vi bao loi. Da do duoc that trong luc chay thu.
+			if (level != 0)
+			{
+				loadMap(0, null);
+			}
 			ServerListScr.gI().switchToMe();
 		}
 		if (Canvas.gameScr != null)
