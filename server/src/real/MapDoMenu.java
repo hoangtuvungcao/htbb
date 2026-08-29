@@ -87,6 +87,27 @@ import static real.Map.sendAllCharServer;
 
 class MapDoMenu {
 
+    /**
+     * NPC dau truong (-31): doi VI TRI HIEN THI tren menu ve VI TRI GOC trong ma.
+     *
+     * Menu da bo 4 muc (vi tri cu 2 "Dang ky chien truong", 3 "Nhan qua khu lien dau",
+     * 4 "Nhan qua Lien tram", 5 "Nhan qua top tru") — xem RequestNPCInfoHandler case -31.
+     *
+     * VI SAO KHONG DANH SO LAI CHUOI if/else O CASE -31: client gui ve vi tri NGUOI CHOI
+     * NHIN THAY, ma bo 4 muc o giua thi moi muc con lai deu tut len. De nguyen la chon
+     * "Nui chau bau" (gio nam o vi tri 2) se chay nham nhanh "Dang ky chien truong" —
+     * dung loai loi im lang, kho lan ra. Doi vi tri ngay tai cua vao thi toan bo logic
+     * ben duoi giu nguyen, va bat lai muc nao cung chi la sua hai cho: them lai chuoi
+     * vao menu, them lai vi tri goc vao bang nay, dung thu tu.
+     *
+     * Bang nay dong thoi la mot lop chan: chi cac vi tri co trong day moi duoc chap nhan,
+     * nen client cu hoac client sua gui thang so 3/4/5 cung khong goi lai duoc 4 chuc
+     * nang da go.
+     *
+     * Chi so trong mang = vi tri hien thi; gia tri = vi tri goc ma case -31 dang hieu.
+     */
+    private static final int[] VI_TRI_MENU_DAU_TRUONG = { 0, 1, 6, 7, 8, 9 };
+
     static void doMenu(Map map, Char player, Message message) {
         try {
             int rangeNpc = 5;
@@ -1354,6 +1375,15 @@ class MapDoMenu {
                 case -31:
                     if (player.map.mapIDLoadMap != 0 && player.map.mapIDLoadMap != 70 && player.map.mapIDLoadMap != 201) {
                         return;
+                    }
+
+                    // Menu goc (idMenu 0) da bo 4 muc: doi vi tri hien thi -> vi tri goc.
+                    // Cac menu con (idMenu 10/11/12) khong bi anh huong nen khong doi.
+                    if (idMenu == 0) {
+                        if (idOptionMenu < 0 || idOptionMenu >= VI_TRI_MENU_DAU_TRUONG.length) {
+                            return;
+                        }
+                        idOptionMenu = VI_TRI_MENU_DAU_TRUONG[idOptionMenu];
                     }
 
                     if (idMenu != 0) {

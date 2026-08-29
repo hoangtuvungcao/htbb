@@ -524,19 +524,27 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case -31: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
-                    menu = new String[]{"Thách đấu cá nhân", "Trấn yêu trận", "Đăng ký chiến trường", "Nhận quà khu liên đấu", "Nhận quà Liên trảm", "Nhận quà top trụ", "Núi châu báu"};
+                    // DA GO 4 MUC khoi menu dau truong:
+                    //   vi tri cu 2 "Dang ky chien truong"
+                    //   vi tri cu 3 "Nhan qua khu lien dau"
+                    //   vi tri cu 4 "Nhan qua Lien tram"
+                    //   vi tri cu 5 "Nhan qua top tru"
+                    // Phan xu ly cua chung o MapDoMenu case -31 GIU NGUYEN, khong danh so
+                    // lai — MapDoMenu.VI_TRI_MENU_DAU_TRUONG doi vi tri hien thi ve vi tri
+                    // goc. Muon bat lai muc nao: them lai chuoi vao day dung thu tu cu roi
+                    // them vi tri goc tuong ung vao bang do.
+                    menu = new String[]{"Thách đấu cá nhân", "Trấn yêu trận", "Núi châu báu"};
                     if (!Char.isFinishAllSuKienMini()) {
-                        menu = new String[]{"Thách đấu cá nhân", "Trấn yêu trận", "Đăng ký chiến trường", "Nhận quà khu liên đấu", "Nhận quà Liên trảm", "Nhận quà top trụ", "Núi châu báu", "Đổi đồ Bạch Mi", "Đổi đồ Thuý Vũ Hồng Sam", "Đổi quà đặc biệt"};
+                        // Nhanh nay hien khong bao gio chay: isFinishAllSuKienMini() la
+                        // getDayTime(0) > "2020-07-11" nen luon dung. Van cat 4 muc o day
+                        // cho khop, de neu ai doi moc thoi gian thi menu khong lech bang.
+                        menu = new String[]{"Thách đấu cá nhân", "Trấn yêu trận", "Núi châu báu", "Đổi đồ Bạch Mi", "Đổi đồ Thuý Vũ Hồng Sam", "Đổi quà đặc biệt"};
                     }
                     if (p.idArena > -1) {
                         menu[0] = "Vào lại đấu trường";
                     }
                     if (p.idTongKim > -1) {
                         menu[1] = "Vào lại chiến trường";
-                    }
-                    final CharChienTruong c2 = MapChienTruongMoba.getCharChienTruong(p.charname);
-                    if (c2 != null) {
-                        menu[2] = "Vào chiến trường";
                     }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
