@@ -86,25 +86,35 @@ $loiVatPham = '';
 $COT = 'id, charname, userId, lastLv, `class`, xp, gold, luong, luonglock, ban, del,
         lastLog, idserver, idClan, nhack, blacklist, tichluy, topNap';
 
+/**
+ * Nạp chi tiết một nhân vật, kèm ba cột vật phẩm.
+ *
+ * Trả về [$ct, $chuTk, $vpRow, $loiVatPham]; $ct = null nếu không có nhân vật đó.
+ * Tách thành hàm riêng vì có hai lối vào: mở thẳng bằng ?id=, và tìm ra đúng một
+ * nhân vật bằng ?q=.
+ */
+function docChiTiet(int $id, string $cot): array
+{
+    $st = dbGame()->prepare("SELECT $cot FROM tob_char WHERE id = ? LIMIT 1");
+    $st->execute([$id]);
+    $ct = $st->fetch() ?: null;
+    if (!$ct) {
+        return [null, '', [], ''];
+    }
+    // Ba cột này là TEXT dài (cả hành trang serialize vào đó) nên chỉ lấy ở trang chi
+    // tiết một nhân vật, KHÔNG thêm vào $COT — $COT còn dùng cho câu liệt kê 50 dòng.
+    try {
+        $stV = dbGame()->prepare('SELECT equip, inven, bag FROM tob_char WHERE id = ? LIMIT 1');
+        $stV->execute([$id]);
+        return [$ct, chuNhan((int)$ct['userId']), $stV->fetch() ?: [], ''];
+    } catch (Throwable $ex) {
+        return [$ct, chuNhan((int)$ct['userId']), [], $ex->getMessage()];
+    }
+}
+
 try {
     if ($xemId > 0) {
-        $st = dbGame()->prepare("SELECT $COT FROM tob_char WHERE id = ? LIMIT 1");
-        $st->execute([$xemId]);
-        $ct = $st->fetch() ?: null;
-        if ($ct) {
-            $chuTk = chuNhan((int)$ct['userId']);
-            // Ba cột này là TEXT dài (cả hành trang serialize vào đó) nên chỉ lấy ở
-            // trang chi tiết một nhân vật, KHÔNG thêm vào $COT — $COT còn dùng cho câu
-            // liệt kê 50 dòng.
-            try {
-                $stV = dbGame()->prepare('SELECT equip, inven, bag FROM tob_char WHERE id = ? LIMIT 1');
-                $stV->execute([$xemId]);
-                $vpRow = $stV->fetch() ?: [];
-            } catch (Throwable $ex) {
-                $vpRow = [];
-                $loiVatPham = $ex->getMessage();
-            }
-        }
+        list($ct, $chuTk, $vpRow, $loiVatPham) = docChiTiet($xemId, $COT);
     } elseif ($q !== '') {
         if (ctype_digit($q)) {
             // Số: hiểu là userId (xem hết nhân vật của một tài khoản) hoặc id nhân vật.
@@ -117,6 +127,13 @@ try {
             $st->execute(['%' . $q . '%']);
         }
         $ketQua = $st->fetchAll();
+
+        // Tìm ra đúng một nhân vật thì mở luôn trang chi tiết. Thiếu bước này thì bấm
+        // tên nhân vật ở trang Log (liên kết dạng ?q=ten) sẽ dừng lại ở một bảng đúng
+        // một dòng — không có phần vật phẩm — và người xem tưởng trang không hề có.
+        if (count($ketQua) === 1) {
+            list($ct, $chuTk, $vpRow, $loiVatPham) = docChiTiet((int)$ketQua[0]['id'], $COT);
+        }
     } else {
         $ketQua = dbGame()->query("SELECT $COT FROM tob_char ORDER BY lastLog DESC LIMIT 30")->fetchAll();
     }
@@ -320,6 +337,11 @@ adminHead('nhanvat', 'Nhân vật');
 
     <div class="card">
         <h3><?= $q === '' ? '30 nhân vật vào game gần nhất' : 'Kết quả cho “' . e($q) . '”' ?></h3>
+        <p class="muted small" style="margin:0 0 12px;">
+            Bấm <strong>tên nhân vật</strong> để mở trang chi tiết — ở đó mới có
+            <strong>đồ đang mặc, thời trang, hành trang và rương</strong> của nhân vật đó.
+            Bảng này chỉ liệt kê, không kèm vật phẩm.
+        </p>
         <div class="tbl-wrap">
         <table class="tbl">
             <thead><tr>

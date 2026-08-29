@@ -206,11 +206,27 @@ Khu riêng để **xem thống kê người chơi, khoá tài khoản, tạo gif
 |---|---|
 | **Tổng quan** | Tổng tài khoản / đăng ký hôm nay–7–30 ngày, số bị khoá, số chưa kích hoạt; nhân vật vào game 24h/7/30 ngày; biểu đồ 14 ngày (đăng ký + hoạt động); phân bố nghề và cấp độ; top cấp / top lượng / top nạp; tài khoản mới nhất; thao tác admin gần nhất |
 | **Tài khoản** | Tìm theo tên / email / SĐT / ID · **khoá – mở khoá đăng nhập** · kích hoạt – huỷ kích hoạt · đổi mật khẩu · xem mọi nhân vật của tài khoản |
-| **Nhân vật** | Tìm theo tên hoặc ID tài khoản · **khoá – mở khoá từng nhân vật** · xem cấp, lượng, xu, lần vào cuối, bang hội, cờ nghi vấn |
+| **Nhân vật** | Tìm theo tên hoặc ID tài khoản · **khoá – mở khoá từng nhân vật** · xem cấp, lượng, xu, lần vào cuối, bang hội, cờ nghi vấn · **danh sách vật phẩm**: đồ đang mặc, thời trang, hành trang, rương |
 | **Giftcode** | Tạo / sửa / tắt / xoá mã · **kiểm tra cú pháp phần thưởng trước khi lưu** · xem ai đã nhận mã nào · cho một nhân vật nhận lại |
 | **Log game** | 8 bảng log server tự ghi (vật phẩm, ngọc, mua shop, mua kho, bang hội, tiêu lượng, nạp/xài lượng, xổ số), lọc theo nhân vật |
 | **Chẩn đoán & Lỗi** | 13 phép kiểm tra sức khoẻ, thống kê lỗi server ghi vào DB, xem cuối các file log của server, lỗi của chính trang web — xem mục dưới |
 | **Nhật ký admin** | Mọi thao tác trên trang quản trị. Không xoá được từ giao diện |
+
+### Vật phẩm của nhân vật nằm ở đâu
+
+Ở **trang chi tiết một nhân vật** (`admin/nhanvat.php?id=…`), không phải ở bảng liệt kê.
+Bấm tên nhân vật để vào; tìm ra đúng một nhân vật thì trang tự mở thẳng chi tiết.
+
+Máy chủ này **không có bảng `tob_item`** — trang bị, hành trang và rương được serialize
+vào ba cột `equip`, `inven`, `bag` của `tob_char`, mỗi món một chuỗi 33 trường ngăn bằng
+dấu phẩy, các món nối nhau bằng `>`. Bộ đọc nằm ở `web/admin/inc/vatpham.php`; vị trí
+từng trường lấy theo `Item.getDBInfo()` trong `src/real/Item.java`, nên **đổi thứ tự
+trường bên Java là phải sửa cả hằng `VP_*` bên PHP** — `php web/admin/test/kiem_vatpham.php`
+canh đúng chỗ đó.
+
+Đây là **ảnh chụp lần lưu gần nhất**: người chơi đang online thì đồ thật nằm trong RAM
+của server, chỉ khớp sau khi họ thoát game hoặc server tự lưu. Đá quý và nguyên liệu ở
+bảng riêng nên không hiện ở đây.
 
 ### Trang Chẩn đoán gom bốn nguồn lỗi
 
