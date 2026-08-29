@@ -164,6 +164,42 @@ foreach (['admin/assets', 'admin/inc', 'admin/test', 'assets', 'inc'] as $thuMuc
     }
 }
 
+// ---------------------------------------------------------------------------
+//  Máy chủ KHÔNG cài mbstring — cấm mọi hàm mb_*
+// ---------------------------------------------------------------------------
+//
+// Kiểm ngày 29/08/2026 trên VPS: không có `/etc/php/7.4/mods-available/mbstring.ini`,
+// không có `mbstring.so`. Gọi `mb_strlen` / `mb_substr` / ... là lỗi nghiêm trọng
+// "Call to undefined function" — trang trắng, người dùng không thấy thông báo nào.
+//
+// Cả dự án vốn không nơi nào dùng `mb_*`, nên cái bẫy này chưa từng lộ ra. Chốt lại ở
+// đây để nó đừng lộ ra vào một ngày xấu trời.
+echo "\n== May chu khong co mbstring: cam moi ham mb_*\n";
+
+$dungMb = [];
+foreach (array_merge(
+    glob(dirname(__DIR__, 2) . '/*.php') ?: [],
+    glob(dirname(__DIR__, 2) . '/inc/*.php') ?: [],
+    glob(dirname(__DIR__) . '/*.php') ?: [],
+    glob(dirname(__DIR__) . '/inc/*.php') ?: []
+) as $f) {
+    $noiDung = file_get_contents($f);
+    // Bỏ chú thích trước khi soi: các file có nhắc tên mb_substr để giải thích vì sao
+    // không được dùng, và nhắc tên thì không phải là gọi.
+    $noiDung = preg_replace('!/\*.*?\*/!s', '', $noiDung);
+    $noiDung = preg_replace('!//[^\n]*!', '', $noiDung);
+    if (preg_match('/\bmb_[a-z_]+\s*\(/', $noiDung, $m)) {
+        $dungMb[] = basename($f) . ' -> ' . $m[0];
+    }
+}
+if ($dungMb) {
+    $hong++;
+    echo "  HONG co file goi ham mb_*: " . implode(', ', $dungMb) . "\n";
+} else {
+    $dat++;
+    echo "  OK   khong file nao goi ham mb_*\n";
+}
+
 echo "\n===================================\n";
 echo "DAT: $dat   HONG: $hong\n";
 exit($hong > 0 ? 1 : 0);

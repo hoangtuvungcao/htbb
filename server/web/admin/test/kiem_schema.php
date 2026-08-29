@@ -49,7 +49,8 @@ foreach ([
     'sql/gamedb7_clean.sql',
     'sql/them_bang_web_admin_log.sql',
     'sql/them_bang_web_chan_spam.sql',
-    'sql/them_bang_tob_log_online.sql',  // server game tu tao luc khoi dong, file nay de doi chieu
+    'sql/them_bang_tob_log_online.sql',
+    'sql/them_bang_cam_may.sql',         // cam theo ma may (tob_cam_may, tob_may_dang_nhap)
     'vps/db_new_server.sql',      // tob_nap_moc dinh nghia o PHAN 2I trong file nay
 ] as $f) {
     $schema += docSchema(file_get_contents($GOC . $f));
@@ -81,7 +82,8 @@ $soCau = 0;
 $FILE = [
     'web/admin/index.php', 'web/admin/taikhoan.php', 'web/admin/nhanvat.php',
     'web/admin/giftcode.php', 'web/admin/log.php', 'web/admin/nhatky.php',
-    'web/admin/chandoan.php', 'web/admin/inc/boot.php', 'web/admin/inc/vatpham.php',
+    'web/admin/chandoan.php', 'web/admin/cammay.php',
+    'web/admin/inc/boot.php', 'web/admin/inc/vatpham.php',
     'web/inc/functions.php', 'web/register.php', 'web/login.php', 'web/account.php',
 ];
 
@@ -106,8 +108,11 @@ foreach ($FILE as $f) {
         }
         $soCau++;
 
-        // Bang duoc nhac toi trong cau nay
-        preg_match_all('/\b(?:FROM|JOIN|UPDATE|INSERT INTO|DELETE FROM)\s+`?([A-Za-z0-9_]+)`?(?:\.`?([A-Za-z0-9_]+)`?)?/i', $s, $tb, PREG_SET_ORDER);
+        // Bang duoc nhac toi trong cau nay.
+        // `ON DUPLICATE KEY UPDATE` KHONG gioi thieu ten bang nao — phai bo di truoc khi
+        // rut, neu khong `ON DUPLICATE KEY UPDATE ly_do = ...` se bi doc thanh bang `ly_do`.
+        $sBang = preg_replace('/\bON\s+DUPLICATE\s+KEY\s+UPDATE\b/i', ' ', $s);
+        preg_match_all('/\b(?:FROM|JOIN|UPDATE|INSERT INTO|DELETE FROM)\s+`?([A-Za-z0-9_]+)`?(?:\.`?([A-Za-z0-9_]+)`?)?/i', $sBang, $tb, PREG_SET_ORDER);
         $bangCau = [];
         foreach ($tb as $t) {
             // dang db.bang -> lay ve phai

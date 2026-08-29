@@ -207,6 +207,7 @@ Khu riêng để **xem thống kê người chơi, khoá tài khoản, tạo gif
 | **Tổng quan** | Tổng tài khoản / đăng ký hôm nay–7–30 ngày, số bị khoá, số chưa kích hoạt; nhân vật vào game 24h/7/30 ngày; biểu đồ 14 ngày (đăng ký + hoạt động); phân bố nghề và cấp độ; top cấp / top lượng / top nạp; tài khoản mới nhất; thao tác admin gần nhất |
 | **Tài khoản** | Tìm theo tên / email / SĐT / ID · **khoá – mở khoá đăng nhập** · kích hoạt – huỷ kích hoạt · đổi mật khẩu · xem mọi nhân vật của tài khoản |
 | **Nhân vật** | Tìm theo tên hoặc ID tài khoản · **khoá – mở khoá từng nhân vật** · xem cấp, lượng, xu, lần vào cuối, bang hội, cờ nghi vấn · **danh sách vật phẩm**: đồ đang mặc, thời trang, hành trang, rương |
+| **Cấm theo máy** | Cấm đăng nhập theo **mã máy** thay vì theo tài khoản · xem một máy đã dùng những tài khoản nào (và ngược lại) · lọc ra máy dùng nhiều tài khoản bất thường |
 | **Giftcode** | Tạo / sửa / tắt / xoá mã · **kiểm tra cú pháp phần thưởng trước khi lưu** · xem ai đã nhận mã nào · cho một nhân vật nhận lại |
 | **Log game** | 8 bảng log server tự ghi (vật phẩm, ngọc, mua shop, mua kho, bang hội, tiêu lượng, nạp/xài lượng, xổ số), lọc theo nhân vật |
 | **Chẩn đoán & Lỗi** | 13 phép kiểm tra sức khoẻ, thống kê lỗi server ghi vào DB, xem cuối các file log của server, lỗi của chính trang web — xem mục dưới |
@@ -231,6 +232,34 @@ game có thể không ra được mạng.
 Đổi giao diện thì chạy `php web/admin/test/kiem_giao_dien.php`: nó quét mọi `class="..."`
 trong các trang rồi đối chiếu với admin.css. Một lớp bị bỏ sót **không gây lỗi nào cả**,
 chỗ đó chỉ lặng lẽ mất định dạng — nên không có bộ kiểm này thì không ai biết.
+
+### Cấm theo máy
+
+Cần chạy một lần: `mysql -u root kpah_db < sql/them_bang_cam_may.sql`, và máy chủ phải
+chạy bản jar có `data/CamTheoMay`.
+
+Mã máy do **client Unity** gửi (`SystemInfo.deviceUniqueIdentifier`, `Client/Canvas.cs:157`).
+**Không phải địa chỉ MAC** — từ Android 10 / iOS 7 ứng dụng không đọc được MAC thật nữa, và
+máy chủ thì không bao giờ nhìn thấy MAC của người kết nối: MAC bị ghi đè ở mỗi chặng router,
+nên máy chủ chỉ thấy MAC của cổng ra của chính nó.
+
+Server đọc mã máy ở **trường cuối cùng** của gói đăng nhập, **bên trong khối `try` sẵn có** —
+client cũ không gửi thì `readUTF()` ném EOF, bị nuốt, và bỏ qua. Nhờ vậy đẩy server trước rồi
+build client sau đều được.
+
+Lệnh cấm có hiệu lực **chậm nhất 60 giây**: server giữ danh sách trong RAM và làm mới mỗi
+phút. Cố ý — tra database mỗi lần ai đó đăng nhập thì một trận dò mật khẩu sẽ thành một trận
+dội database.
+
+Bảng `tob_may_dang_nhap` mới là thứ đáng giá: cấm tài khoản thì kẻ phá lập cái mới trong 30
+giây, còn bảng này cho thấy *một máy đã dùng những tài khoản nào*.
+
+**Giới hạn:** giá trị do client tự khai nên nằm trong tay người dùng — chặn được người phá
+lười, không chặn được người biết sửa client. Cài lại ứng dụng có thể sinh mã mới. Máy dùng
+chung thì cấm một người là chặn cả nhóm. Và hoàn toàn vô dụng với DDoS: kẻ tấn công không
+đăng nhập, chỉ mở socket.
+
+Máy nào từng đăng nhập tài khoản quản trị thì trang từ chối cấm — để bạn không tự khoá mình.
 
 ### Vật phẩm của nhân vật nằm ở đâu
 
@@ -328,6 +357,7 @@ web/
     ├── index.php       # Đăng nhập + bảng tổng quan / thống kê
     ├── taikhoan.php    # Khoá, kích hoạt, đổi mật khẩu tài khoản
     ├── nhanvat.php     # Khoá / mở khoá nhân vật
+    ├── cammay.php      # Cấm theo mã máy + tra cứu máy ↔ tài khoản
     ├── giftcode.php    # Tạo & quản lý mã quà, xem ai đã nhận
     ├── log.php         # Xem 8 bảng log của game server
     ├── chandoan.php    # Chẩn đoán & lỗi: 13 phép kiểm tra + đọc file log server

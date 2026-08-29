@@ -29,6 +29,7 @@ function adminMenu(): array
         'Người chơi' => [
             'taikhoan' => ['taikhoan.php', 'Tài khoản', 'nguoi'],
             'nhanvat'  => ['nhanvat.php',  'Nhân vật',  'khien'],
+            'cammay'   => ['cammay.php',   'Cấm theo máy', 'khoa'],
         ],
         'Vận hành' => [
             'giftcode' => ['giftcode.php', 'Giftcode', 'qua'],
@@ -59,6 +60,8 @@ function bieuTuong(string $ten): string
         'danhsach' => '<path d="M6 4h8M6 8h8M6 12h8"/><circle cx="2.9" cy="4" r=".95" fill="currentColor" stroke="none"/>'
                     . '<circle cx="2.9" cy="8" r=".95" fill="currentColor" stroke="none"/>'
                     . '<circle cx="2.9" cy="12" r=".95" fill="currentColor" stroke="none"/>',
+        'khoa'     => '<rect x="3" y="7" width="10" height="7.2" rx="1.4"/>'
+                    . '<path d="M5.4 7V4.9a2.6 2.6 0 015.2 0V7"/>',
         'nhip'     => '<path d="M1.4 8h3.1l1.9-4.6L9 12.6l1.9-4.6h3.7"/>',
         'dongho'   => '<circle cx="8" cy="8" r="6.2"/><path d="M8 4.5V8l2.4 1.5"/>',
         'nha'      => '<path d="M2.4 7.3L8 2.7l5.6 4.6"/><path d="M3.9 8.4v5h8.2v-5"/>',
