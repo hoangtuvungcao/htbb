@@ -58,7 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser()) {
                     exit;
                 }
             } catch (Throwable $ex) {
-                $loi[] = 'Không kết nối được cơ sở dữ liệu. Kiểm tra web/config.local.php và MySQL.';
+                // Khối này bắt CẢ hai loại lỗi, và chúng cần cách sửa khác hẳn nhau:
+                //   - không kết nối được  -> MySQL chưa chạy, hoặc sai DB_USER/DB_PASS
+                //   - kết nối được nhưng câu lệnh hỏng -> hay gặp nhất là máy chủ dùng
+                //     MySQL 8, nơi hàm PASSWORD() đã bị gỡ (login server cũng sẽ hỏng theo)
+                // Trước đây chỉ báo "không kết nối được" cho cả hai, làm người sửa đi
+                // nhầm hướng. Giờ ghi nguyên văn ra log lỗi PHP và nói rõ chỗ để xem.
+                error_log('[kpah-admin] dang nhap that bai: ' . get_class($ex) . ': ' . $ex->getMessage());
+                $maLoi = ($ex instanceof PDOException && $ex->getCode() !== '') ? ' [' . $ex->getCode() . ']' : '';
+                $loi[] = 'Cơ sở dữ liệu báo lỗi' . $maLoi . '. Nguyên văn đã ghi vào log lỗi của PHP. '
+                       . 'Xem nhanh bằng: php -r \'require "web/inc/db.php"; dbAccount();\'';
             }
         }
     }
