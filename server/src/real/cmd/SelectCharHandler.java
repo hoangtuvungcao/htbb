@@ -347,12 +347,14 @@ public class SelectCharHandler implements ICommandHandler {
             p.doAddQuaTichLuy(2);
             p.doAddQuaTichLuy(3);
             //p.setMocNap();
-            if (p.getLuong() < 0) {
-                Database.instance.banChar(p, "amLuong");
-                session.disconnect(11);
-            }
-            if (p.getLuongLock() < 0) {
-                Database.instance.banChar(p, "amLuongLock");
+            // MA CHET TRUOC DAY: getLuong()/getLuongLock() chan gia tri ve 0 truoc khi tra
+            // ve, nen "< 0" khong bao gio dung — nguoi choi am tien van vao game binh
+            // thuong. Gio hai ham do tu bao va ban dung mot lan (xem Char.java), o day chi
+            // can hoi lai co bat duoc gi khong roi ngat ket noi.
+            p.getLuong();
+            p.getLuongLock();
+            p.getxu();
+            if (p.daPhatHienAmTien()) {
                 session.disconnect(11);
             }
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));

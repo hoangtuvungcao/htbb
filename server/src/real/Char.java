@@ -3654,7 +3654,30 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return total;
     }
 
+    /**
+     * Sua do dang mac. id: 0 = vu khi, 1 = giap, 2 = tat ca.
+     *
+     * NGOI NO CUA CHUOI LOI TIEN AM — da vá:
+     * `id` den THANG tu goi tin 72 (MapXuLyLenh:698 -> OfflineMap.doRepair -> day) va la
+     * mot byte tho, mien -128..127, khong he duoc loc o bat ky chang nao. Truoc day switch
+     * chi phu 0/1/2 nhung lenh `this.xu -= price` lai nam NGOAI switch, nen mot id la
+     * (vi du 3):
+     *   - khong case nao chay -> KHONG kiem tra so du, va cung khong sua duoc mon do nao
+     *   - nhung van tru 5000 xu, ghi THANG vao truong nen bo qua ca chan duoi 0 lan dong
+     *     log cua subXu()
+     * Tuc la nguoi choi tu ep duoc xu ve AM, am bao nhieu tuy y bang cach gui lai goi tin.
+     * Va xu am chinh la thu kich hoat chuoi ban lien tuc o getxu() — xem chu thich
+     * "PHAT HIEN TIEN AM" ben duoi.
+     *
+     * Nay: id la thi tu choi va ghi hack.txt; tru tien qua subXu() de co chan duoi 0,
+     * cong dung xumat va co dong log nhu moi cho tieu xu khac.
+     */
     public void repairItem(final int id) {
+        if (id != 0 && id != 1 && id != 2) {
+            data.NghiVanGianLan.ghiVatPham(this, "hackR",
+                    "goi lenh sua do voi id = " + id + " (client goc chi gui 0, 1 hoac 2)");
+            return;
+        }
         final Vector<Item> wItems = this.getCharWearing();
         int price = 5000;
         try {
@@ -3706,7 +3729,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
             }
             this.calculateAttrib();
-            this.xu -= price;
+            // Qua subXu() chu KHONG ghi thang `this.xu -= price`: subXu chan duoi 0, cong
+            // vao xumat va ghi log "truxu" nhu moi duong tieu xu khac trong game.
+            this.subXu(price, true, "sua do " + id);
             this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
             this.sendMessage(MessageCreator.createCharWearingMessage(this, this));
         } catch (final Exception e) {
@@ -12937,26 +12962,105 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
+    // ==================== PHAT HIEN TIEN AM ====================
+    // Truoc day getLuong()/getLuongLock()/getxu() goi thang Database.banChar() MOI LAN
+    // duoc goi trong khi gia tri con am — nhung khong he sua gia tri am do, nen lan goi
+    // sau van am, van ban tiep. Ba ham nay co hon 400 diem goi trong src/, rieng
+    // MessageCreator.createCharInventoryMessage (gui moi lan tui do thay doi, moi lan
+    // dang nhap, nhieu lan trong mot thao tac) da cham ca getLuong lan getxu.
+    //
+    // Ket qua la mot nhan vat am tien sinh ra banChar() lien tuc. Moi lan la:
+    //   - mot cau UPDATE xep vao Logdata.query (Vector khong gioi han -> phinh bo nho)
+    //   - va truoc ban va nay, mot ket noi MySQL ro ri VINH VIEN (Database.banChar
+    //     lay ket noi ma khong tra lai pool).
+    // Vai phut la het max_connections, va luc do CA SERVER mat DB chu khong rieng
+    // nguoi choi do. Xem them ban va o Database.banChar.
+    //
+    // Nay: bao dung MOT LAN moi phien, va CHAN GIA TRI VE 0 ngay tai cho de tinh trang
+    // tu lanh — co goi lai bao nhieu lan nua cung khong con so am de bao.
+    private boolean daBaoAmLuong = false;
+    private boolean daBaoAmLuongKhoa = false;
+    private boolean daBaoAmXu = false;
+
+    /** Da phat hien tien am trong phien nay chua? Xem getLuong()/getLuongLock()/getxu(). */
+    public boolean daPhatHienAmTien() {
+        return this.daBaoAmLuong || this.daBaoAmLuongKhoa || this.daBaoAmXu;
+    }
+
+    /** Ghi hack.txt + ban, boc kin de loi ghi log khong bao gio lam hong duong goi tien. */
+    private void baoAmTien(final String loai, final String chiTiet) {
+        try {
+            data.NghiVanGianLan.ghiChung(this, loai, chiTiet);
+        } catch (final Exception ignored) {
+        }
+        try {
+            Database.instance.banChar(this, loai);
+        } catch (final Exception ignored) {
+        }
+    }
+
+    /**
+     * Cong hai so int co chan tran: khong bao gio cuon vong sang so am.
+     *
+     * addLuong() truoc day cong thang vao truong int. Tran int la duong duy nhat lam
+     * `luong` am ma khong qua ham sub nao — tuc la kip no cua ca chuoi loi tren.
+     */
+    public static int congChan(final int a, final int b) {
+        final long tong = (long) a + (long) b;
+        if (tong > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        if (tong < 0L) {
+            return 0;
+        }
+        return (int) tong;
+    }
+
+    /**
+     * Tru mot so long ra khoi mot so int, chan duoi tai 0.
+     *
+     * Cac ham subLuong* truoc day lam `this.luong -= (int) l`. Ep long ve int truoc khi
+     * tru: l vuot 2^31 thi (int) l cuon vong va co the thanh so AM — tuc la TRU tien lai
+     * thanh CONG tien. Tinh bang long roi moi chan nen khong con cua so do.
+     */
+    public static int truChan(final int hienCo, final long tru) {
+        if (tru <= 0L) {
+            return (hienCo > 0) ? hienCo : 0;
+        }
+        final long conLai = (long) hienCo - tru;
+        return (conLai > 0L) ? (int) conLai : 0;
+    }
+
     public int getLuong() {
         if (this.luong < 0) {
-            Database.instance.banChar(this, "amLuong");
+            final int cu = this.luong;
+            this.luong = 0;
+            if (!this.daBaoAmLuong) {
+                this.daBaoAmLuong = true;
+                this.baoAmTien("amLuong", "luong = " + cu);
+            }
         }
-        return (this.luong > 0) ? this.luong : 0;
+        return this.luong;
     }
 
     public int getLuongLock() {
         if (this.lockLuong < 0) {
-            Database.instance.banChar(this, "amluongLock");
+            final int cu = this.lockLuong;
+            this.lockLuong = 0;
+            if (!this.daBaoAmLuongKhoa) {
+                this.daBaoAmLuongKhoa = true;
+                this.baoAmTien("amluongLock", "luongKhoa = " + cu);
+            }
         }
-        return (this.lockLuong > 0) ? this.lockLuong : 0;
+        return this.lockLuong;
     }
 
     public void addLuong(final int luong) {
-        this.luong += luong;
+        this.luong = congChan(this.luong, luong);
     }
 
     public void addLuongLock(final int luong) {
-        this.lockLuong += luong;
+        this.lockLuong = congChan(this.lockLuong, luong);
     }
 
     // ==================== HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI ====================
@@ -13031,7 +13135,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void addXu(final long xu, final String vitri) {
-        this.xu += xu;
+        this.xu = congChanDai(this.xu, xu);
         this.xutim += xu;
         if (xu != 0L) {
             Database.instance.saveOrtherLog("", this.charname, String.valueOf(this.xu) + " nhan " + xu + " tu vi tri " + vitri, "nhanxu");
@@ -13054,11 +13158,26 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
+    /** Cong hai so long co chan tran. Xem chu thich o congChan(int,int). */
+    public static long congChanDai(final long a, final long b) {
+        final long tong = a + b;
+        // Tran long: hai so cung dau ma ket qua doi dau.
+        if (((a ^ tong) & (b ^ tong)) < 0L) {
+            return (a > 0L) ? Long.MAX_VALUE : 0L;
+        }
+        return (tong < 0L) ? 0L : tong;
+    }
+
     public long getxu() {
         if (this.xu < 0L) {
-            Database.instance.banChar(this, "amXu");
+            final long cu = this.xu;
+            this.xu = 0L;
+            if (!this.daBaoAmXu) {
+                this.daBaoAmXu = true;
+                this.baoAmTien("amXu", "xu = " + cu);
+            }
         }
-        return (this.xu > 0L) ? this.xu : 0L;
+        return this.xu;
     }
 
     public void setxu(final long money) {
@@ -13072,12 +13191,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (l < 0L) {
             return;
         }
-        this.luong -= (int) l;
+        this.luong = truChan(this.luong, l);
         this.luonglost += l;
-        if (this.luong < 0) {
-            this.luong = 0;
-        }
-        this.diemxaiVip += (int) l;
+        this.diemxaiVip = congChan(this.diemxaiVip, (int) Math.min(l, (long) Integer.MAX_VALUE));
         // Database.instance.addCharXaiNapLuong(this, 1);
         isSuKienNoel();
         if (getDayTime(0L).compareTo("2023-04-16 00:00:00") >= 0 && getDayTime(0L).compareTo("2023-06-01 00:00:00") <= 0) {
@@ -13146,11 +13262,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (l < 0L) {
             return;
         }
-        this.luong -= (int) l;
+        this.luong = truChan(this.luong, l);
         this.luonglost += l;
-        if (this.luong < 0) {
-            this.luong = 0;
-        }
         isSuKienNoel();
         if (((TeamServer.isServerHoaLu() || TeamServer.isServerLocal()) && isSuKienGioTo2016()) || isSuKienMini()) {
             this.luongxai += l;
@@ -13187,10 +13300,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (l < 0L) {
             return;
         }
-        this.lockLuong -= (int) l;
-        if (this.lockLuong < 0) {
-            this.lockLuong = 0;
-        }
+        this.lockLuong = truChan(this.lockLuong, l);
     }
 
     public void doFinishAutoInbue() {

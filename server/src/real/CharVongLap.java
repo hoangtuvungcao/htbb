@@ -864,7 +864,10 @@ class CharVongLap {
         pInfo = String.valueOf(pInfo) + "," + self.typeTieu;
         pInfo = String.valueOf(pInfo) + "," + self.timeOutGame;
         pInfo = String.valueOf(pInfo) + "," + self.region;
-        pInfo = String.valueOf(pInfo) + "," + self.lockLuong;
+        // Qua getter chu KHONG doc truong tho: getLuongLock() chan gia tri am ve 0 va bao
+        // mot lan (xem Char.java). Cung ham luu nay ghi cot `luonglock` bang p.getLuongLock(),
+        // nen neu o day doc truong tho thi hai cho ghi ra hai so khac nhau khi dang am.
+        pInfo = String.valueOf(pInfo) + "," + self.getLuongLock();
         pInfo = String.valueOf(pInfo) + "," + self.minuteExp;
         pInfo = String.valueOf(pInfo) + "," + self.luot_van_tieu;
         pInfo = String.valueOf(pInfo) + "," + self.buy_luot_van_tieu;

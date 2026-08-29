@@ -9850,18 +9850,42 @@ public void addCharXaiNapLuong(Char p, int type) {
         }
     }
 
+    /**
+     * Danh dau nhan vat bi khoa.
+     *
+     * TRUOC DAY HAM NAY RO RI KET NOI: no goi getConnection() — tuc lay mot Connection RA
+     * KHOI pool — roi khong bao gio goi free(conn) hay conn.close() tren bat ky duong thoat
+     * nao. Moi lan ban la mot ket noi mat vinh vien, va ket noi do cung khong duoc dong nen
+     * MySQL van giu no den tan wait_timeout.
+     *
+     * Dieu do bien mot loi nho thanh loi chet server: Char.getLuong()/getxu() goi vao day
+     * moi lan chung thay tien am, va chung co hon 400 diem goi. Mot nhan vat am tien lam
+     * can pool trong vai phut roi ha ca server. Phia Char.java nay da chan lai (bao mot lan
+     * roi chan gia tri ve 0), nhung ban than ham nay van phai tra ket noi ve — con nhieu
+     * duong khac goi banChar.
+     *
+     * Statement cung duoc hoi len ngoai try de dong duoc ca khi execute() nem loi.
+     */
     public void banChar(Char p, String lydo) {
         Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
+        Statement pree = null;
         try {
             this.saveOrtherLog("", p.charname, "BANCHAR", lydo);
             String sql = "UPDATE tob_char SET ban=1 where charname='" + p.charname + "'";
             conn = this.getConnection();
-            Statement pree = conn.createStatement();
+            pree = conn.createStatement();
             pree.execute(sql);
-            pree.close();
         } catch (Exception ignored) {
+        } finally {
+            try {
+                if (pree != null) { pree.close(); }
+            } catch (Exception ignored) {
+            }
+            try {
+                // Chi tra khi that su lay duoc: ConnPool.free(null) van giam countConnection.
+                if (conn != null) { Database.connPool.free(conn); }
+            } catch (Exception ignored) {
+            }
         }
     }
 
