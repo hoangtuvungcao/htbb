@@ -11,6 +11,7 @@
  * Muốn chặn cả tài khoản thì khoá ở trang Tài khoản (team_user.ban).
  */
 require_once __DIR__ . '/inc/layout.php';
+require_once __DIR__ . '/inc/vatpham.php';
 requireAdmin();
 
 $TRANG = 'nhanvat.php';
@@ -79,6 +80,8 @@ $ketQua = [];
 $ct     = null;
 $chuTk  = '';
 $loiDoc = '';
+$vpRow  = [];
+$loiVatPham = '';
 
 $COT = 'id, charname, userId, lastLv, `class`, xp, gold, luong, luonglock, ban, del,
         lastLog, idserver, idClan, nhack, blacklist, tichluy, topNap';
@@ -90,6 +93,17 @@ try {
         $ct = $st->fetch() ?: null;
         if ($ct) {
             $chuTk = chuNhan((int)$ct['userId']);
+            // Ba cột này là TEXT dài (cả hành trang serialize vào đó) nên chỉ lấy ở
+            // trang chi tiết một nhân vật, KHÔNG thêm vào $COT — $COT còn dùng cho câu
+            // liệt kê 50 dòng.
+            try {
+                $stV = dbGame()->prepare('SELECT equip, inven, bag FROM tob_char WHERE id = ? LIMIT 1');
+                $stV->execute([$xemId]);
+                $vpRow = $stV->fetch() ?: [];
+            } catch (Throwable $ex) {
+                $vpRow = [];
+                $loiVatPham = $ex->getMessage();
+            }
         }
     } elseif ($q !== '') {
         if (ctype_digit($q)) {
@@ -108,6 +122,66 @@ try {
     }
 } catch (Throwable $ex) {
     $loiDoc = $ex->getMessage();
+}
+
+// ---- Vật phẩm của nhân vật đang xem ----
+$vpMac = docChuoiVatPham($vpRow['equip'] ?? null);
+$vpTach = tachTuiVaThoiTrang($vpRow['inven'] ?? null);
+$vpTui = $vpTach['tui'];
+$vpThoiTrang = $vpTach['thoi_trang'];
+$vpRuong = docChuoiVatPham($vpRow['bag'] ?? null);
+
+$tenVP = [];
+if ($ct) {
+    $moiId = [];
+    foreach ([$vpMac, $vpTui, $vpThoiTrang, $vpRuong] as $nhom) {
+        foreach ($nhom as $v) {
+            $moiId[] = (int)$v['template'];
+        }
+    }
+    try {
+        $tenVP = tenVatPhamTheoId(dbGame(), $moiId);
+    } catch (Throwable $ex) {
+        $tenVP = [];
+    }
+}
+
+/** Một bảng vật phẩm. */
+function bangVatPham(array $ds, array $ten, string $trong): void
+{
+    if (!$ds) {
+        echo '<p class="muted small">' . e($trong) . '</p>';
+        return;
+    }
+    echo '<div class="tbl-wrap"><table class="tbl"><thead><tr>'
+       . '<th>Vật phẩm</th><th class="num">+</th><th>Màu</th><th>Ghi chú</th>'
+       . '</tr></thead><tbody>';
+    foreach ($ds as $v) {
+        $id = (int)$v['template'];
+        $ghi = [];
+        if ($v['khoa']) {
+            $ghi[] = 'khoá';
+        }
+        if ((int)$v['tinh_luyen'] > 0) {
+            $ghi[] = 'tinh luyện ' . (int)$v['tinh_luyen'] . '%';
+        }
+        if ((int)$v['thue_phut'] > 0) {
+            $ghi[] = 'có hạn dùng';
+        }
+        if ((int)$v['level'] > 0) {
+            $ghi[] = 'cấp ' . (int)$v['level'];
+        }
+        printf(
+            '<tr><td>%s <span class="muted small">#%d</span></td>'
+            . '<td class="num">%s</td><td>%s</td><td class="muted small">%s</td></tr>',
+            e($ten[$id] ?? '(không có trong data_item)'),
+            $id,
+            (int)$v['plus'] > 0 ? '+' . (int)$v['plus'] : '',
+            e(tenMauVatPham((int)$v['mau'])),
+            e(implode(' · ', $ghi))
+        );
+    }
+    echo '</tbody></table></div>';
 }
 
 function nhanNhanVat(array $nv): string
@@ -203,6 +277,43 @@ adminHead('nhanvat', 'Nhân vật');
                     với tiến trình game. Việc khoá chỉ ăn từ lần vào sau.</li>
             </ul>
         </div>
+    </div>
+
+    <?php if ($loiVatPham !== ''): ?>
+        <div class="flash flash-error">Không đọc được vật phẩm: <?= e($loiVatPham) ?></div>
+    <?php endif; ?>
+
+    <div class="card">
+        <h3>Vật phẩm</h3>
+        <p class="muted small" style="margin:0 0 14px;">
+            Máy chủ này <strong>không có bảng <code>tob_item</code></strong> — trang bị, hành trang
+            và rương được ghi thẳng vào ba cột <code>equip</code>, <code>inven</code>,
+            <code>bag</code> của <code>tob_char</code>. Đây là ảnh chụp <em>lần lưu gần nhất</em>:
+            người chơi đang online thì đồ thật nằm trong RAM của server, chỉ khớp sau khi họ
+            thoát hoặc server tự lưu.
+        </p>
+
+        <div class="grid-2">
+            <div>
+                <h4>Đang mặc <span class="muted small">(<?= count($vpMac) ?>)</span></h4>
+                <?php bangVatPham($vpMac, $tenVP, 'Không mặc gì.'); ?>
+            </div>
+            <div>
+                <h4>Thời trang <span class="muted small">(<?= count($vpThoiTrang) ?>)</span></h4>
+                <?php bangVatPham($vpThoiTrang, $tenVP, 'Không có.'); ?>
+            </div>
+        </div>
+
+        <h4 style="margin-top:18px;">Hành trang <span class="muted small">(<?= count($vpTui) ?>)</span></h4>
+        <?php bangVatPham($vpTui, $tenVP, 'Túi rỗng.'); ?>
+
+        <h4 style="margin-top:18px;">Rương <span class="muted small">(<?= count($vpRuong) ?>)</span></h4>
+        <?php bangVatPham($vpRuong, $tenVP, 'Rương rỗng.'); ?>
+
+        <p class="muted small" style="margin:14px 0 0;">
+            Đá quý và nguyên liệu <em>không</em> nằm trong ba cột này nên không hiện ở đây —
+            chúng ở bảng riêng.
+        </p>
     </div>
 
 <?php else: ?>
