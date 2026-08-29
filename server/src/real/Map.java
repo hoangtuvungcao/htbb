@@ -8091,6 +8091,15 @@ public class Map implements Runnable {
             } else {
                 Item item = player.getItemFormVector(player.iItems, idItem);
                 if (item != null) {
+                    // idMaterial la short doc THANG tu goi tin nen client gui gi cung duoc.
+                    // checkEnoughtGem tra cuu listGemitem[idGem] KHONG kiem bien (Char.java:9849)
+                    // va gemTemplate[idMaterial] cung vay - ra ngoai bien la nem ngoai le.
+                    if (idMaterial < 0 || idMaterial >= gemTemplate.length
+                            || idMaterial >= player.listGemitem.length) {
+                        data.NghiVanGianLan.ghiVatPham(player, "hackthemdong",
+                                "gui id da thuoc tinh ngoai bien: " + idMaterial);
+                        return;
+                    }
                     if (!player.checkEnoughtGem(idMaterial, 1, lock) || gemTemplate[idMaterial].type != GemTemplate.TYPE_ADD_NEW_ATTRIBUTE) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không có đủ đá thuộc tính", ""));
                         return;
@@ -8106,6 +8115,16 @@ public class Map implements Runnable {
                         return;
                     }
 
+                    // TRU DA TRUOC khi cong thuoc tinh.
+                    //
+                    // Truoc day tru o cuoi, sau ca doan dung chuoi thong bao co
+                    // ALL_NAME_ATTRIBUTE_ITEM.get(result[0] + 61) - Vector nap tu bang
+                    // data_attribute. Bang do hien co 198 dong nen chi so toi da 89 van
+                    // hop le va KHONG nem loi, nhung neu bang bi cat bot thi ngoai le se
+                    // roi vao giua "da cong thuoc tinh" va "da tru da": thuoc tinh duoc
+                    // cong ma vien da khong mat. Dung kieu loi da gap that o Huyet Bo De
+                    // (Map.doUseItem + Pet.doChangeThongThao).
+                    player.delGem(idMaterial, 1, lock == 1);
                     int[] result = item.doAddNewAttribute(idMaterial - 227);
                     player.sendMessage(MessageCreator.createMsgItemInfo(item));
                     player.sendMessage(
@@ -8121,7 +8140,6 @@ public class Map implements Runnable {
                                     ""
                             )
                     );
-                    player.delGem(idMaterial, 1, lock == 1);
                     player.sendMessage(MessageCreator.createCharGemItem(player));
                     Database.instance
                             .saveOrtherLog(
