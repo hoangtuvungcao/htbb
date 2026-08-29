@@ -1,0 +1,156 @@
+/**
+ * Kiem thu tinh nang skin linh thu (real.SkinLinhThu).
+ *
+ * Chi kiem cac ham THUAN - khong can Char, khong can DataGame da nap anh.
+ * Cac ham can Char (dangMang, idAnhBanDo, bay, ghiAnhTrangBiThu...) khong kiem
+ * duoc o day vi chung can mot doi tuong Char that, ma tao Char can Session +
+ * CSDL. Do la gioi han that su cua bo test nay.
+ */
+public final class KiemSkinLinhThu {
+
+    public static void chay() {
+        Kiem.nhom("real.SkinLinhThu");
+
+        Kiem.bang("co dung 5 skin", Integer.valueOf(5), Integer.valueOf(real.SkinLinhThu.SO_SKIN));
+        Kiem.bang("mang TEN du 5 phan tu", Integer.valueOf(5), Integer.valueOf(real.SkinLinhThu.TEN.length));
+        Kiem.bang("mang ID_ITEM du 5 phan tu", Integer.valueOf(5), Integer.valueOf(real.SkinLinhThu.ID_ITEM.length));
+        Kiem.bang("mang BAY du 5 phan tu", Integer.valueOf(5), Integer.valueOf(real.SkinLinhThu.BAY.length));
+
+        // hopLe: bien 0..4
+        Kiem.sai("hopLe(-1)", real.SkinLinhThu.hopLe(-1));
+        Kiem.dung("hopLe(0)", real.SkinLinhThu.hopLe(0));
+        Kiem.dung("hopLe(4)", real.SkinLinhThu.hopLe(4));
+        Kiem.sai("hopLe(5) - ngoai bien", real.SkinLinhThu.hopLe(5));
+        Kiem.sai("hopLe(KHONG_CO)", real.SkinLinhThu.hopLe(real.SkinLinhThu.KHONG_CO));
+
+        // skinCuaItem / laItemSkin: anh xa id vat pham -> so hieu skin
+        for (int i = 0; i < real.SkinLinhThu.SO_SKIN; i++) {
+            final int idItem = real.SkinLinhThu.ID_ITEM[i];
+            Kiem.bang("skinCuaItem(" + idItem + ") = " + i,
+                    Integer.valueOf(i), Integer.valueOf(real.SkinLinhThu.skinCuaItem(idItem)));
+            Kiem.dung("laItemSkin(" + idItem + ")", real.SkinLinhThu.laItemSkin(idItem));
+        }
+        Kiem.bang("skinCuaItem(1) = KHONG_CO",
+                Integer.valueOf(real.SkinLinhThu.KHONG_CO), Integer.valueOf(real.SkinLinhThu.skinCuaItem(1)));
+        Kiem.sai("laItemSkin(1)", real.SkinLinhThu.laItemSkin(1));
+
+        // ID_ITEM khong duoc trung nhau, neu trung thi skinCuaItem tra ve sai skin
+        for (int i = 0; i < real.SkinLinhThu.ID_ITEM.length; i++) {
+            for (int j = i + 1; j < real.SkinLinhThu.ID_ITEM.length; j++) {
+                Kiem.sai("ID_ITEM[" + i + "] khac ID_ITEM[" + j + "]",
+                        real.SkinLinhThu.ID_ITEM[i] == real.SkinLinhThu.ID_ITEM[j]);
+            }
+        }
+
+        // moTa: skin hop le tra ve ten, khong hop le tra ve "khong co"
+        Kiem.bang("moTa(0)", real.SkinLinhThu.TEN[0], real.SkinLinhThu.moTa(0));
+        Kiem.bang("moTa(4)", real.SkinLinhThu.TEN[4], real.SkinLinhThu.moTa(4));
+        Kiem.bang("moTa(-1)", "không có", real.SkinLinhThu.moTa(-1));
+        Kiem.bang("moTa(5)", "không có", real.SkinLinhThu.moTa(5));
+
+        kiemBoAnh();
+        kiemDaiIcon();
+        kiemLenhChat();
+    }
+
+    /**
+     * Bo anh phai DU va DUNG DINH DANG.
+     *
+     * Thieu mot trong ba tep la DataGame.napSkinThu tat han skin do — im lang, khong loi.
+     * Va so khung phai DUNG 21: client khong doc so khung tu tep ma tinh chi so bang cong
+     * thuc co dinh (Char.getFrameHorse: xuong +0, len +7, ngang +14), nen it hon 21 la
+     * paintTopHorse thoat som va con thu bien mat dung tick do.
+     */
+    private static void kiemBoAnh() {
+        Kiem.nhom("Skin linh thu - bo anh");
+
+        for (int i = 0; i < real.SkinLinhThu.SO_SKIN; i++) {
+            final java.io.File du = new java.io.File("map/skinthu/" + i);
+            final java.io.File atlas = new java.io.File("map/skinthu/" + i + ".png");
+            final java.io.File avt = new java.io.File("map/skinthu/avt" + i + ".png");
+            Kiem.dung("co map/skinthu/" + i, du.isFile());
+            Kiem.dung("co map/skinthu/" + i + ".png", atlas.isFile());
+            Kiem.dung("co map/skinthu/avt" + i + ".png", avt.isFile());
+            Kiem.bang("skin " + i + " co dung 21 khung", Integer.valueOf(21),
+                    Integer.valueOf(soKhung(du)));
+        }
+    }
+
+    /**
+     * Doc so khung tu tep du lieu: 1 byte so anh con, moi anh con 5 byte, roi short so
+     * khung. Tra -1 neu doc khong duoc.
+     */
+    private static int soKhung(final java.io.File tep) {
+        try {
+            final byte[] b = java.nio.file.Files.readAllBytes(tep.toPath());
+            final int soAnh = b[0] & 0xFF;
+            final int vt = 1 + soAnh * 5;
+            if (vt + 1 >= b.length) {
+                return -1;
+            }
+            return ((b[vt] & 0xFF) << 8) | (b[vt + 1] & 0xFF);
+        } catch (final Exception e) {
+            return -1;
+        }
+    }
+
+    /**
+     * Icon vat pham KHONG duoc dam vao dai 855..859.
+     *
+     * Ban skin dau tien dung dung dai do. Sau khi tinh nang bi go, nam id ay da duoc giao
+     * cho CANH (commit 2c651ce) lam anh o xem truoc cua so Trang bi — dat de len la o xem
+     * truoc cua canh hien ra con thu. Va nIconItem phai phu het dai icon moi: id nao
+     * < nIconItem ma thieu file thi sendByteImg nem NPE roi bo qua ca lenh gui, client
+     * hoi mai khong bao gio duoc tra loi.
+     */
+    private static void kiemDaiIcon() {
+        Kiem.nhom("Skin linh thu - dai icon khong dam vao Canh");
+
+        final String sql = doc("sql/skin_linh_thu.sql");
+        Kiem.dung("doc duoc sql/skin_linh_thu.sql", sql.length() > 0);
+
+        int lonNhat = -1;
+        for (int i = 0; i < real.SkinLinhThu.SO_SKIN; i++) {
+            final int idIcon = 860 + i;
+            Kiem.dung("co map/icon/" + idIcon + ".png",
+                    new java.io.File("map/icon/" + idIcon + ".png").isFile());
+            Kiem.dung("SQL dat icon " + idIcon + " cho vat pham " + real.SkinLinhThu.ID_ITEM[i],
+                    sql.contains("-1, " + idIcon + ", " + idIcon + ","));
+            lonNhat = Math.max(lonNhat, idIcon);
+        }
+        for (int idCanh = 855; idCanh <= 859; idCanh++) {
+            Kiem.sai("KHONG lay id " + idCanh + " cua canh lam icon skin",
+                    sql.contains("-1, " + idCanh + ", " + idCanh + ","));
+        }
+
+        final String dg = doc("src/data/DataGame.java");
+        Kiem.dung("nIconItem phu het dai icon skin (" + (lonNhat + 1) + ")",
+                dg.contains("nIconItem = " + (lonNhat + 1) + ";"));
+    }
+
+    /**
+     * Ban nay CHI co hai nguon phat skin: NPC doi thuong va giftcode. Lenh admin
+     * "tangskin" cua ban dau tien da duoc bo theo yeu cau, nhung "boskin" thi PHAI con —
+     * khong co no thi nguoi choi mac skin vao roi khong go ra duoc.
+     */
+    private static void kiemLenhChat() {
+        Kiem.nhom("Skin linh thu - lenh chat");
+
+        final String chat = doc("src/real/MapChat.java");
+        Kiem.dung("doc duoc src/real/MapChat.java", chat.length() > 0);
+        Kiem.dung("con lenh boskin de thao skin", chat.contains("\"boskin\""));
+        Kiem.sai("KHONG con lenh admin tangskin", chat.contains("tangskin"));
+    }
+
+    private static String doc(final String duongDan) {
+        try {
+            return new String(java.nio.file.Files.readAllBytes(
+                    java.nio.file.Paths.get(duongDan)), "UTF-8");
+        } catch (final Exception e) {
+            return "";
+        }
+    }
+
+    private KiemSkinLinhThu() {
+    }
+}

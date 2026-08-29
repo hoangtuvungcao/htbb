@@ -13082,6 +13082,17 @@ public int applyRongLonReleaseTo(int baseDamage) {
         this.lockLuong = congChan(this.lockLuong, luong);
     }
 
+    // ==================== SKIN LINH THU (xem real.SkinLinhThu) ====================
+    /**
+     * -1 = khong mang skin; 0..4 = Phuc Thu / Gau Truc / Tien Loc / Xich Duong / Chien Lang.
+     *
+     * KHONG luu rieng xuong DB: skin do vat pham dang mac o bang Trang bi thu quyet dinh,
+     * ma vat pham thi da nam san trong awItems (duoc luu qua getAllItemInfoSave). Moi lan
+     * dang nhap / mac do / cuoi thu deu goi SkinLinhThu.dongBoTheoTrangBi de tinh lai, nen
+     * truong nay chi la ban dem tam, khong bao gio lech voi vat pham.
+     */
+    public int idSkinLinhThu = SkinLinhThu.KHONG_CO;
+
     // ==================== HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI ====================
     // Moi nhan vat, moi ngay: toi da MAX_LUONG_TRAIN_NGAY luong mo va MAX_LUONG_TRAIN_NGAY
     // luong khoa. Khong phu thuoc so luong dang co trong nguoi. Han muc luu trong bang

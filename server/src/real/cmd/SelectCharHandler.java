@@ -276,6 +276,11 @@ public class SelectCharHandler implements ICommandHandler {
             Message m = MessageCreator.createMapMessage(p);
             session.sendMessage(m);
             p.map.doSendDynamicObj(p);
+            // Skin linh thu duoc suy ra tu vat pham dang mac o bang Trang bi thu (da nap
+            // vao p.awItems truoc do), khong co cot DB rieng. Phai tinh TRUOC goi thong
+            // tin nhan vat dau tien, khong thi dang nhap vao thay hinh thu that roi phai
+            // doi den luc mac lai do moi hien skin.
+            real.SkinLinhThu.dongBoTheoTrangBi(p);
             m = MessageCreator.createMainCharInfoMessage(p);
             try {
                 session.sendMessage(m);

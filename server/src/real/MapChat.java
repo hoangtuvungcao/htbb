@@ -78,6 +78,20 @@ class MapChat {
                 m.dos.writeShort(player.id);
                 String msgChat = message.dis.readUTF().trim();
 
+                // "boskin": thao skin linh thu ra, tra vat pham ve hanh trang.
+                //
+                // Phai lam bang lenh chat vi bang "Trang bi thu" ben client KHONG co nut
+                // thao do: doUseItem chi tim vat pham trong hanh trang (player.iItems)
+                // nen bam vao mon dang mac khong goi duoc gi, cach doi trang bi thu duy
+                // nhat cua game la mac de len mon khac. Khong co lenh nay thi nguoi choi
+                // lo mac skin vao la khong bao gio tro lai hinh thu that duoc.
+                //
+                // De TRUOC cho chan lenh admin vi day la lenh danh cho moi nguoi choi.
+                if (msgChat.equalsIgnoreCase("boskin")) {
+                    SkinLinhThu.thaoSkin(player);
+                    return;
+                }
+
                 // Nguoi choi thuong chi chat, khong di qua chuoi lenh ben duoi.
                 // Ly do: rat nhieu lenh cu trong chuoi nay khong kiem tra quyen admin
                 // (dvip, ngoc, ruong, quayso, die, class, openboss...) nen neu de nguoi

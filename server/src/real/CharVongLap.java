@@ -1153,11 +1153,32 @@ class CharVongLap {
         byte non = 0;
         byte giap = 0;
         byte yen = 0;
+        byte skin = 0;
         boolean bInventory = false;
         final Vector<Item> itBackInventory = new Vector<Item>();
         if (self.animalRide != null) {
             for (int i = 0; i < self.awItems.size(); ++i) {
                 final Item it = self.awItems.get(i);
+                // Vat pham SKIN LINH THU khong gan theo tung con thu: nguoi choi chon
+                // skin theo NHAN VAT, doi con thu nao cung giu nguyen skin do. Nen o
+                // day nhan no bat ke idAnimal, roi buoc lai vao con dang cuoi de lan
+                // luu tiep theo va cac cho khac (exchangeItemAnimal) van khop.
+                //
+                // Loc theo ID TEMPLATE chu khong theo type: type 19 cung la type cua
+                // phi phong nhan vat — xem real.SkinLinhThu.ID_ITEM.
+                if (it.getTemplate() != null && SkinLinhThu.laItemSkin(it.getTemplate().id)) {
+                    if (skin == 0) {
+                        skin = 1;
+                        it.idAnimal = self.animalRide.dbid;
+                        a.add(it);
+                    } else {
+                        it.place = 0;
+                        it.idAnimal = -1;
+                        bInventory = true;
+                        itBackInventory.add(it);
+                    }
+                    continue;
+                }
                 if (it.idAnimal == self.animalRide.dbid) {
                     if (it.getType() == 17) {
                         if (bandap == 0) {

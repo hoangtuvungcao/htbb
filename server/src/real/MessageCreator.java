@@ -462,6 +462,23 @@ public class MessageCreator {
                 // thieu (hieu ung do khong ve duoc thoi).
                 final java.util.ArrayList<int[]> idCoDuLieu = new java.util.ArrayList<int[]>();
                 final java.util.ArrayList<byte[]> duLieuEff = new java.util.ArrayList<byte[]>();
+                // Du lieu frame cua skin linh thu xep TRUOC danh sach hieu ung.
+                //
+                // Ben client chi co MOT cho ghi vao DataSkillEff.ALL_DATA_EFF, chinh la
+                // vong lap doc goi 26 nay (Client/MessageHandler.cs:1772). Id gui di la
+                // 13000..13004, khong cong 8700 — client dung thang id lam khoa tra cuu.
+                //
+                // Xep truoc vi so luong gui duoc gioi han o 255 (xem doan cat ben duoi):
+                // cat mot hieu ung thi hieu ung do khong ve duoc, con cat mot skin thi
+                // nguoi dang mac skin se CUOI HU KHONG — server da tat duong ngua co dien
+                // cho ho roi ma khong co du lieu frame de ve thay vao.
+                for (int i = 0; i < SkinLinhThu.SO_SKIN; ++i) {
+                    final byte[] dl = DataGame.duLieuSkinThu(i);
+                    if (dl != null) {
+                        idCoDuLieu.add(new int[]{SkinLinhThu.ID_ANH_BAN_DO + i});
+                        duLieuEff.add(dl);
+                    }
+                }
                 for (int i = 0; i < MessageCreator.id_eff_tool_ngu_long.length; ++i) {
                     final int idEff = MessageCreator.id_eff_tool_ngu_long[i];
                     if (idEff >= 0 && DataGame.dataDynamicEffect != null
@@ -478,8 +495,8 @@ public class MessageCreator {
                 // So luong ghi bang MOT byte (client doc readUnsignedByte) nen toi da
                 // 255. Vuot qua la so bi cat cut, client doc lech va ca goi hong ->
                 // moi nguoi choi thay hanh trang rong. Cat bot va bao thay vi de hong.
-                // Cat tu CUOI. Chi client CU (<2.7) moi doc truong dem bang byte nen
-                // moi bi tran 255.
+                // Cat tu CUOI, ma skin da xep len dau nen skin khong bao gio bi cat.
+                // Chi client CU (<2.7) moi doc truong dem bang byte nen bi tran 255.
 
                 // Client 2.7+ doc bang short -> gui du, khong cat.
 
@@ -1193,7 +1210,12 @@ public class MessageCreator {
             }
             final byte[] fr = Animal.fr;
             if (p.animalRide != null) {
-                if (p.rankGov == 0) {
+                // Skin linh thu: doi hinh con thu trong bang "Trang bi thu". Client ve
+                // hoan toan theo hai thu gui o day (so frame + byte anh PNG), khong tra
+                // cuu id thu cuoi nao ca, nen thay hai thu nay la du.
+                if (SkinLinhThu.ghiAnhTrangBiThu(m, p)) {
+                    // da ghi hinh skin
+                } else if (p.rankGov == 0) {
                     m.dos.writeByte(fr[6]);
                     m.dos.write(DataGame.imgAvtAnimal[6]);
                 } else {
@@ -1693,6 +1715,13 @@ public class MessageCreator {
                     }
                 }
 
+                // Skin linh thu: TAT duong ve "ngua co dien". Con thu skin duoc ve bang
+                // duong thu cuoi tool (idThutool o duoi), neu de nguyen userHorse thi
+                // client ve ca hai, con thu that va con skin chong len nhau.
+                if (SkinLinhThu.dangMang(ch)) {
+                    userHorse = 0;
+                }
+
                 m.dos.writeByte(userHorse);
                 byte idImgHorse = ch.idImgHorse;
                 byte fly = 0;
@@ -1717,6 +1746,11 @@ public class MessageCreator {
                         fly = 1;
                         idImgHorse = 20;
                     }
+                }
+                // Cach di chuyen theo skin: con thu bay hay di bo do skin quyet dinh,
+                // khong con theo loai thu that nua.
+                if (SkinLinhThu.dangMang(ch)) {
+                    fly = (byte) SkinLinhThu.bay(ch);
                 }
                 m.dos.writeByte(fly);
                 m.dos.writeByte(idImgHorse);
@@ -1749,6 +1783,14 @@ public class MessageCreator {
             if (ch.animalRide != null && !ch.isMasterClanAndHaveTown()) {
                 idThutool = ch.animalRide.getIdImageTool();
                 indexdxy = ch.animalRide.getIndexDxy();
+                // Skin linh thu di dung duong nay: duong dang ve Rong Bang, Poro, Lan
+                // va hoa hinh. Chi doi id anh, con chi so cua con thu khong dong toi.
+                if (SkinLinhThu.dangMang(ch)) {
+                    idThutool = SkinLinhThu.idAnhBanDo(ch);
+                    // Con thu that co the la ngua thuong (getIndexDxy tra -1 = khong bu
+                    // toa do) nen phai dat lai, khong thi nguoi ngoi tut xuong sat dat.
+                    indexdxy = SkinLinhThu.INDEX_DXY;
+                }
             }
             m.dos.writeShort(idThutool);
             m.dos.writeByte(indexdxy);
@@ -1961,6 +2003,11 @@ public class MessageCreator {
                 }
             }
 
+            // Skin linh thu: tat duong ve "ngua co dien" — xem chu thich o createCharInfo.
+            if (SkinLinhThu.dangMang(p)) {
+                userHorse = 0;
+            }
+
             m.dos.writeByte(userHorse);
 
             byte idImgHorse = p.idImgHorse;
@@ -2002,6 +2049,11 @@ public class MessageCreator {
                 }
             }
 
+            // Cach di chuyen theo skin — xem chu thich o createCharInfo.
+            if (SkinLinhThu.dangMang(p)) {
+                fly = (byte) SkinLinhThu.bay(p);
+            }
+
             m.dos.writeByte(fly);
             m.dos.writeByte(idImgHorse);
         }
@@ -2038,6 +2090,13 @@ public class MessageCreator {
         {
             idThutool = p.animalRide.getIdImageTool();
             indexdxy = p.animalRide.getIndexDxy();
+            // Skin linh thu — goi thong tin cua chinh nhan vat minh. Xem chu thich o
+            // createCharInfo, hai cho phai giong nhau khong thi minh va nguoi ben canh
+            // nhin thay hai con thu khac nhau.
+            if (SkinLinhThu.dangMang(p)) {
+                idThutool = SkinLinhThu.idAnhBanDo(p);
+                indexdxy = SkinLinhThu.INDEX_DXY;
+            }
         }
         // CHAN DOAN linh thu: ghi lai server bao client ve anh nao. Doi chieu voi
         // dong "[ANH] client xin anh id ..." de biet client co di xin anh do khong.

@@ -1366,7 +1366,12 @@ class MapXuLyLenh {
 
                 byte[] fr = Animal.fr;
                 if (p.animalRide != null) {
-                    if (p.rankGov == 0) {
+                    // Skin linh thu: nguoi khac mo bang "Trang bi thu" cua minh cung
+                    // phai thay hinh skin, khong thi minh thay mot dang nguoi khac thay
+                    // mot dang. Cung logic voi createAnimalWearingMessage.
+                    if (SkinLinhThu.ghiAnhTrangBiThu(m, p)) {
+                        // da ghi hinh skin
+                    } else if (p.rankGov == 0) {
                         m.dos.writeByte(fr[6]);
                         m.dos.write(DataGame.imgAvtAnimal[6]);
                     } else {

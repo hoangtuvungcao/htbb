@@ -438,6 +438,10 @@ chỉ tới được qua `Map.processMessage`, mà hai lệnh này **có** trong
 không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` là `protected` và
 `NQSH_5h.jar` có class nhắc tới `doUsePotion`, nên **không xoá** — chỉ ghi lại.
 
+## Tính năng
+
+- Skin linh thú (đổi hình thú cưỡi, giữ nguyên chỉ số): [docs/skin-linh-thu.md](docs/skin-linh-thu.md)
+
 **Lưu ý quan trọng**: mỗi lần push lên nhánh `main` sẽ tự động deploy lên VPS sản
 xuất (`.github/workflows/deploy.yml`). Đổi `KPAH2_patched.jar`, `lib/`, `map/`,
 `cMap/`, hoặc `loginServer/` sẽ khiến server live tự restart (có cảnh báo 60 giây
