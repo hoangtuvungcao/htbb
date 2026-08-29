@@ -473,6 +473,15 @@ public class Res
 			if (imgButtonBar1 == null)
 			{
 				imgButtonBar1 = Image.createImage(Main.res + "/bar1");
+				// bar1 la anh nut o trang thai DANG BAM. No thieu trong bo tai nguyen
+				// hien co, va MainJ2ME.paint doc thang imgButtonBar1.getHeight() /
+				// getWidth() o ba cho (dong 29, 48, 60) - tuc cu bam mot nut lenh la
+				// nem NullReferenceException, lap lai moi khung hinh vi paint chay tu
+				// OnGUI. Lui ve anh nut thuong: mat hieu ung nhan, nhung khong sap.
+				if (imgButtonBar1 == null)
+				{
+					imgButtonBar1 = imgButtonBar;
+				}
 			}
 			if (imgInv3 == null)
 			{

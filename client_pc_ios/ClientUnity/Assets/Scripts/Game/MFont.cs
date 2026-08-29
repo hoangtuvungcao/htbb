@@ -505,6 +505,30 @@ public class MFont
 
 	public int getWidthNotExactOf(string s)
 	{
+		// wO duoc tinh trong ham dung bang getWidthExactOf("o"). Nhung ham dung chay tu
+		// MFont.init() <- GameMidlet <- Main.FixedUpdate, tuc NGOAI OnGUI, ma
+		// GUIStyle.CalcSize chi chay duoc trong OnGUI. Ngoai le bi bat, roi ve chinh ham
+		// nay luc wO con la 0 -> wO = 1 * 0 = 0. Ket qua: ham do du phong nay tra ve 0
+		// cho MOI chuoi, khien moi cho ngat dong va can le goi no ngoai OnGUI deu sai.
+		// Tinh tre o day: lan goi dau tien trong OnGUI se do duoc that.
+		if (wO <= 0)
+		{
+			try
+			{
+				GUIStyle gUIStyle = new GUIStyle();
+				gUIStyle.font = myFont;
+				wO = (int)gUIStyle.CalcSize(new GUIContent("o")).x;
+			}
+			catch (Exception)
+			{
+			}
+			if (wO <= 0)
+			{
+				// Van chua o trong OnGUI. Lay be rong trung binh cua chu thuong o co
+				// mac dinh, con hon tra ve 0 lam moi be rong thanh 0.
+				return s.Length * 8;
+			}
+		}
 		return s.Length * wO;
 	}
 

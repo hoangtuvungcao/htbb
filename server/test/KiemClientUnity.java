@@ -29,6 +29,8 @@ public final class KiemClientUnity {
     private static final String F_BAN_DO = "ClientUnity/Assets/Scripts/Game/Tilemap.cs";
     private static final String F_MAIN = "ClientUnity/Assets/Scripts/Game/Main.cs";
     private static final String F_LENH = "ClientUnity/Assets/Scripts/Game/MainJ2ME.cs";
+    private static final String F_TAI_NGUYEN = "ClientUnity/Assets/Scripts/Game/Res.cs";
+    private static final String F_CHU = "ClientUnity/Assets/Scripts/Game/MFont.cs";
     private static final String F_XAY = "ClientUnity/Assets/Editor/XayDung.cs";
     private static final String F_MANIFEST = "ClientUnity/Packages/manifest.json";
     private static final String F_CHUYEN = "tools/ChuyenTaiNguyen.java";
@@ -40,6 +42,7 @@ public final class KiemClientUnity {
         kiemThieuTaiNguyenKhongSap();
         kiemBanDoKhongTuGoiMai();
         kiemGiaoDien();
+        kiemAnhNutVaDoChu();
         kiemKichBanXay();
         kiemManifest();
         kiemBoChuyenTaiNguyen();
@@ -201,6 +204,41 @@ public final class KiemClientUnity {
                 j2me.contains("Math.min(Canvas.w - Res.imgButtonBar.getWidth() / 2 - 4"));
         Kiem.dung("chan tran do bang be rong chu that",
                 dem(j2me, "MFont.borderFont.getWidth(") >= 2);
+    }
+
+    /**
+     * Hai loi nua, tim ra bang dot khao sat ma nguon nhieu huong.
+     *
+     * 1. bar1 (anh nut o trang thai DANG BAM) thieu trong bo tai nguyen hien co, ma
+     *    MainJ2ME.paint doc thang imgButtonBar1.getHeight()/getWidth() o ba cho. Cu bam
+     *    mot nut lenh la nem NullReferenceException, va vi paint chay tu OnGUI nen loi
+     *    lap lai moi khung hinh. Day KHONG phai chuyen tham my - la crash.
+     *
+     * 2. MFont.wO duoc tinh trong ham dung bang getWidthExactOf("o"), nhung ham dung
+     *    chay tu MFont.init() <- Main.FixedUpdate, tuc NGOAI OnGUI, ma GUIStyle.CalcSize
+     *    chi chay duoc trong OnGUI. Ngoai le bi bat roi ve chinh getWidthNotExactOf luc
+     *    wO con 0 -> wO = 0 vinh vien -> ham do du phong tra ve 0 cho MOI chuoi.
+     */
+    private static void kiemAnhNutVaDoChu() {
+        Kiem.nhom("Client Unity - anh nut thieu va do be rong chu");
+
+        final String res = boChuThich(doc(F_TAI_NGUYEN));
+        Kiem.dung("doc duoc " + F_TAI_NGUYEN, res.length() > 0);
+        Kiem.dung("thieu bar1 thi lui ve anh nut thuong",
+                res.contains("imgButtonBar1 = imgButtonBar"));
+
+        // Chan chinh xac: cho lui ve phai nam SAU cho nap, khong phai truoc.
+        final int viTriNap = res.indexOf("imgButtonBar1 = Image.createImage");
+        final int viTriLui = res.indexOf("imgButtonBar1 = imgButtonBar");
+        Kiem.dung("cho lui ve nam sau cho nap anh",
+                viTriNap >= 0 && viTriLui > viTriNap);
+
+        final String font = boChuThich(doc(F_CHU));
+        Kiem.dung("doc duoc " + F_CHU, font.length() > 0);
+        Kiem.dung("do be rong du phong tinh tre khi wO chua co",
+                font.contains("if (wO <= 0)"));
+        Kiem.sai("KHONG con tra ve thang s.Length * wO khi wO bang 0",
+                font.contains("public int getWidthNotExactOf(string s)\n\t{\n\t\treturn s.Length * wO;"));
     }
 
     private static void kiemKichBanXay() {
