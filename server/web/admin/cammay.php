@@ -243,9 +243,12 @@ adminHead('cammay', 'Cấm theo máy');
         <p><strong>Bảng đã có nhưng chưa ghi nhận máy nào.</strong> Hai nguyên nhân thường gặp:</p>
         <p>1. Máy chủ chưa chạy bản jar có <code>CamTheoMay</code> — kiểm bằng:
            <code>jar tf KPAH2_patched.jar | grep CamTheoMay</code></p>
-        <p>2. Client chưa gửi mã máy. Server đọc mã máy ở <em>trường cuối cùng</em> của gói
+        <p>2. <strong>Client chưa gửi mã máy</strong> — đây là nguyên nhân gần như chắc chắn.
+           Client hiện chỉ gửi mã máy kèm gói <em>đăng ký</em>, mà đăng ký đã chuyển sang web
+           và đường đó đã bị đóng. Server đọc mã máy ở <em>trường cuối cùng</em> của gói
            đăng nhập; client cũ không gửi thì bỏ qua (cố ý — để không ép ai cập nhật cùng lúc).
-           Cần thêm <code>writeUTF(Canvas.IMEI)</code> vào cuối gói đăng nhập bên client rồi build lại.</p>
+           Cần thêm một dòng vào cuối gói đăng nhập bên client rồi build lại:
+           <code>message.writer().writeUTF(Canvas.IMEI);</code></p>
     </div>
 <?php endif; ?>
 

@@ -928,7 +928,12 @@ public class RealController extends ServerController {
         System.out.println("KHOI TAO XONG ");
         Map.loadAllLocaltionMap();
         commandHandler.put(1, new LoginHandler());
-        commandHandler.put(39, new RequestRegisterHandler());
+        // Dang ky da chuyen han sang web (web/register.php). Handler cu
+        // real.RequestRegisterHandler (trong lib/NQSH_5h.jar) la mot diem TAO TAI KHOAN
+        // o trang thai chua dang nhap, va no KHONG di qua han muc 5 tai khoan/IP/gio ma
+        // web/register.php dem bang bang web_chan_spam -> ai noi dung giao thuc la lap
+        // duoc tai khoan hang loat. Thay bang mot loi nhan ro rang.
+        commandHandler.put(39, new real.cmd.DangKyDaChuyenSangWeb());
         commandHandler.put(23, new RequestNPCInfoHandler());
         commandHandler.put(14, new CreateCharHandler());
         commandHandler.put(13, new SelectCharHandler());

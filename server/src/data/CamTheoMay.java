@@ -15,9 +15,17 @@ import java.util.Set;
  * dang choi deu chung MOT IP, nen day khong phai lo xa.
  *
  * MA MAY LAY TU DAU: client Unity gui SystemInfo.deviceUniqueIdentifier
- * (Client/Canvas.cs:157). No DA duoc gui san trong goi dang ky (lenh 39,
- * Client/GameService.cs:1248) nhung KHONG duoc gui trong goi dang nhap, va phia server
- * thi truong Session.IMEI co san ma khong ai dien vao. Lop nay noi hai dau do lai.
+ * (Client/Canvas.cs:157).
+ *
+ * Truoc day no chi duoc gui kem goi DANG KY (lenh 39), va real.RequestRegisterHandler
+ * trong lib/NQSH_5h.jar la noi duy nhat dien io.Session.IMEI. Nhung dang ky da chuyen
+ * han sang web, va duong lenh 39 da bi dong (real.cmd.DangKyDaChuyenSangWeb) vi no tao
+ * tai khoan o trang thai chua dang nhap, vong qua han muc chong spam cua web.
+ *
+ * NGHIA LA: ma may gio CHI den tu goi DANG NHAP. Server da doc san (LoginHandler), con
+ * CLIENT thi chua gui — phai them mot dong vao cuoi goi dang nhap roi build lai:
+ *     message.writer().writeUTF(Canvas.IMEI);
+ * Chua lam buoc do thi bang tob_may_dang_nhap se rong, va moi thu van chay binh thuong.
  *
  * KHONG PHAI DIA CHI MAC, va do la co y: tu Android 10 / iOS 7 tro di ung dung khong doc
  * duoc MAC that nua (Android tra ve 02:00:00:00:00:00 cho moi ung dung, va MAC ngau nhien
