@@ -13,6 +13,15 @@
  *
  * Chạy: php web/admin/test/kiem_duong_dan.php
  */
+// Chỉ chạy bằng dòng lệnh. Thư mục này nằm DƯỚI web root (/var/www/html/kpah
+// là symlink tới /opt/kpah/web) nên không chặn thì ai trên Internet cũng gọi
+// được: lộ đường dẫn tệp, tên bảng, tên cột, và tốn CPU máy chủ. Apache ở đây
+// đặt AllowOverride None nên .htaccess bị bỏ qua — chốt phải nằm trong chính
+// tệp PHP thì mới có tác dụng.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit("File nay chi chay bang dong lenh, khong mo qua trinh duyet.\n");
+}
 
 $nguon = file_get_contents(__DIR__ . '/../chandoan.php');
 
@@ -105,6 +114,53 @@ foreach (array_keys($CHO_PHEP) as $f) {
     } else {
         $hong++;
         echo "  HONG $f thoat ra ngoai: $chuan\n";
+    }
+}
+
+// ---------------------------------------------------------------------------
+//  Thư mục test này nằm DƯỚI web root và phải tự chặn truy cập qua trình duyệt
+// ---------------------------------------------------------------------------
+//
+// CẠM BẪY ĐÃ NỔ (29/08/2026): `/var/www/html/kpah` là symlink tới `/opt/kpah/web`,
+// nên `web/admin/test/` mở được từ Internet. Gọi thử `kiem_doc_ini.php` qua HTTP
+// thì nó chạy thật và in ra kết quả — lộ đường dẫn tệp, tên bảng, tên cột, cùng
+// mọi dữ liệu mẫu trong bài kiểm, lại còn tốn CPU máy chủ cho bất kỳ ai gọi.
+//
+// KHÔNG chặn được bằng `.htaccess`: Apache trên VPS đặt `AllowOverride None`
+// (apache2.conf, khối `<Directory /var/www/>`) nên tệp .htaccess bị bỏ qua hoàn
+// toàn — đặt vào chỉ tạo cảm giác an toàn giả. Chốt phải nằm trong chính tệp PHP.
+echo "\n== Moi tep trong thu muc nay phai tu chan truy cap qua trinh duyet\n";
+
+$thieuChot = [];
+$soBai = 0;
+foreach (glob(__DIR__ . '/*.php') ?: [] as $f) {
+    if (basename($f) === 'index.php') {
+        continue;   // tệp chặn liệt kê thư mục, kiểm riêng ở dưới
+    }
+    $soBai++;
+    if (strpos(file_get_contents($f), "PHP_SAPI !== 'cli'") === false) {
+        $thieuChot[] = basename($f);
+    }
+}
+if ($thieuChot) {
+    $hong++;
+    echo "  HONG thieu chot chan CLI: " . implode(', ', $thieuChot) . "\n";
+} else {
+    $dat++;
+    echo "  OK   ca $soBai bai kiem deu co chot chan CLI\n";
+}
+
+// Không có tệp index thì Apache (đang bật `Options Indexes`) sẽ liệt kê sạch mọi
+// tệp trong thư mục cho bất kỳ ai mở địa chỉ này.
+foreach (['admin/assets', 'admin/inc', 'admin/test', 'assets', 'inc'] as $thuMuc) {
+    $f = dirname(__DIR__, 2) . '/' . $thuMuc . '/index.php';
+    $co = is_file($f) && strpos(file_get_contents($f), 'http_response_code(403)') !== false;
+    if ($co) {
+        $dat++;
+        echo "  OK   web/$thuMuc co tep chan liet ke thu muc\n";
+    } else {
+        $hong++;
+        echo "  HONG web/$thuMuc thieu index.php chan liet ke thu muc\n";
     }
 }
 

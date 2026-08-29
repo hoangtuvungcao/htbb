@@ -352,6 +352,14 @@ web/
 
 ### Kiểm thử (không cần MySQL chạy)
 
+> **Các bài kiểm chỉ chạy được bằng dòng lệnh.** `/var/www/html/kpah` là symlink tới
+> `/opt/kpah/web`, nên `web/admin/test/` mở được từ Internet — gọi qua HTTP thì bài kiểm
+> chạy thật và in ra kết quả, lộ đường dẫn tệp, tên bảng, tên cột. Mỗi tệp vì vậy tự chặn
+> bằng `PHP_SAPI !== 'cli'`, và các thư mục không có trang chỉ mục đều có `index.php` trả
+> 403 để Apache khỏi liệt kê. **Không dùng `.htaccess` được**: Apache trên VPS đặt
+> `AllowOverride None` nên nó bị bỏ qua hoàn toàn — đặt vào chỉ tạo cảm giác an toàn giả.
+
+
 ```bash
 php web/admin/test/kiem_giftcode.php   # bộ kiểm tra cú pháp phần thưởng
 php web/admin/test/kiem_schema.php     # đối chiếu mọi câu SQL với cấu trúc bảng thật

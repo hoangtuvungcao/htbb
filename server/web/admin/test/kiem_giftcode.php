@@ -3,6 +3,16 @@
  * Kiểm thử bộ xác thực chuỗi phần thưởng giftcode (web/admin/inc/thuong.php).
  * Chạy: php test_thuong.php
  */
+// Chỉ chạy bằng dòng lệnh. Thư mục này nằm DƯỚI web root (/var/www/html/kpah
+// là symlink tới /opt/kpah/web) nên không chặn thì ai trên Internet cũng gọi
+// được: lộ đường dẫn tệp, tên bảng, tên cột, và tốn CPU máy chủ. Apache ở đây
+// đặt AllowOverride None nên .htaccess bị bỏ qua — chốt phải nằm trong chính
+// tệp PHP thì mới có tác dụng.
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit("File nay chi chay bang dong lenh, khong mo qua trinh duyet.\n");
+}
+
 require __DIR__ . '/../inc/thuong.php';
 
 $dat = 0;
