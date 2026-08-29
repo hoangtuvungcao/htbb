@@ -171,6 +171,15 @@ public class Session extends Thread {
                 Message message = this.readMessage(dis);
                 this.lastActiveTime = System.currentTimeMillis();
 
+                // readMessage tra ve null khi doc duoc mot goi rong / khong hieu duoc.
+                // Truoc day goi null nay di thang vao processMessage va no ra
+                // NullPointerException tai RealController.processMessage - xem
+                // errorlog.txt ngay 30/07/2026, ba lan. Bo dem ngap goi tin them sau do
+                // cung cham message.command nen loi chi don len som hon chu khong het.
+                if (message == null) {
+                    continue;
+                }
+
                 // Kiem TRUOC khi xu ly: dem sau thi tran ngap da duoc xu ly xong roi.
                 if (this.quaNhieuGoi(message.command)) {
                     break;   // khoi finally ben duoi se disconnect(7)
@@ -202,13 +211,16 @@ public class Session extends Thread {
         if (!this.boDemGoiTin.vuotNguong(command, System.currentTimeMillis())) {
             return false;
         }
-        System.out.println("NGAP GOI TIN: cat ket noi " + this.username
-                + " ip=" + this.ip
-                + " (" + this.boDemGoiTin.demHienTai(command) + " goi "
+        final String chiTiet = this.boDemGoiTin.demHienTai(command) + " goi "
                 + (BoDemGoiTin.laLenhTaiNguyen(command) ? "tai nguyen" : "thuong")
-                + " trong " + BoDemGoiTin.CUA_SO_MS + "ms, tran "
-                + this.boDemGoiTin.tranCua(command) + ")"
-                + " lenh cuoi=" + command);
+                + " trong " + BoDemGoiTin.CUA_SO_MS + "ms (tran "
+                + this.boDemGoiTin.tranCua(command) + "), lenh cuoi=" + command;
+        System.out.println("NGAP GOI TIN: cat ket noi " + this.username
+                + " ip=" + this.ip + " (" + chiTiet + ")");
+        // Truoc day dau vet nay CHI nam o stdout, tuc la mat sach sau moi lan restart.
+        data.NghiVanGianLan.ghiChung(this,
+                (this.charname == null || this.charname.isEmpty()) ? this.username : this.charname,
+                "ngapgoi", chiTiet);
         return true;
     }
 

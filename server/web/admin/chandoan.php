@@ -32,15 +32,19 @@ $DB_ACC_TEN  = preg_replace('/[^A-Za-z0-9_]/', '', DB_ACCOUNT);
  * làm việc của JVM — `WorkingDirectory=/opt/kpah` trong kpah-game.service.
  *
  * ĐÃ BỎ khỏi danh sách vì đối chiếu với src/ thì chúng KHÔNG BAO GIỜ sinh ra:
- *   hack.txt       chỉ được ghi trong Database.banchar() — hàm này không ai gọi
- *   hackdo.txt     không được ghi ở đâu cả, chỉ được ĐỌC (Database.java:3703)
- *   offline.txt    cũng là file ĐẦU VÀO gõ tay (Database.java:11715), không
- *                  liên quan gì tới "rớt kết nối"
- *   saitenchar4.txt nằm trong giveGemItem() — cũng không ai gọi
+ *   offline.txt    là file ĐẦU VÀO gõ tay (Database.java:11715), không liên quan
+ *                  gì tới "rớt kết nối"
+ *   saitenchar4.txt nằm trong giveGemItem() — không ai gọi
+ *
+ * hack.txt / hackdo.txt thì NGƯỢC LẠI — trước đây rỗng vĩnh viễn vì chỗ ghi duy
+ * nhất nằm trong Database.banchar(), một hàm không ai gọi. Nay đã nối thẳng vào
+ * các phép phát hiện gian lận đang chạy thật (data.NghiVanGianLan).
  */
 function fileLog(): array
 {
     return [
+        'hack.txt'          => 'Nghi vấn gian lận — mỗi dòng: giờ | nhân vật | IP | loại | chi tiết',
+        'hackdo.txt'        => 'Nghi vấn gian lận vật phẩm — cùng định dạng với hack.txt',
         'errorlog.txt'      => 'Vết gọi lỗi Java + cảnh báo chặn lệnh admin trái phép (AdminHandler)',
         'log/game.out'      => 'Toàn bộ stdout/stderr của server (chỉ có trên VPS Linux)',
         'log/login.out'     => 'stdout/stderr của login server — đăng nhập hỏng thì xem đây',
@@ -79,7 +83,7 @@ function fileLuuNhanVatHong(): array
 {
     $daBiet = array_keys(fileLog());
     // Ba file server ĐỌC ngược lại như dữ liệu đầu vào, không phải log
-    $daBiet = array_merge($daBiet, ['trangan.txt', 'offline.txt', 'top.txt', 'hack.txt', 'hackdo.txt']);
+    $daBiet = array_merge($daBiet, ['trangan.txt', 'offline.txt', 'top.txt']);
 
     $ra = [];
     foreach (glob(rtrim(SERVER_DIR, "/\\") . '/*.txt') ?: [] as $duongDan) {
@@ -536,15 +540,22 @@ thu('Đọc file log của server', function () {
 // ---------------------------------------------------------------------------
 //  Thống kê lỗi trong log game
 // ---------------------------------------------------------------------------
+// Đối chiếu từng giá trị với chỗ ghi trong src/ chứ đừng đoán theo tên.
+//
+// ĐÃ BỎ 'black': tên nghe như "danh sách đen" nhưng MapDoMenu.java:2791 ghi nó cho
+// mỗi lần MUA HÀNG dịp Black Friday ("mua <tên đồ> vĩnh viễn"). Để trong bảng này
+// là 7 lượt mua bình thường hiện lên thành 7 nghi vấn gian lận.
 $LOAI_LOI = [
     'loiinvent'     => 'Lưu hành trang thất bại — server tự khoá nhân vật',
-    'hackc'         => 'Nghi vấn gian lận',
-    'hackR'         => 'Nghi vấn gian lận',
-    'hackbitem'     => 'Nghi vấn gian lận vật phẩm',
-    'hackchonchar'  => 'Nghi vấn gian lận lúc chọn nhân vật',
-    'black'         => 'Vào danh sách đen',
-    'ffbug'         => 'Lỗi đã biết bị khai thác',
-    'timeout'       => 'Hết giờ chờ',
+    'hackc'         => 'Nghi vấn gian lận — giao thẻ khi không ở đúng map',
+    'hackR'         => 'Nghi vấn gian lận — sửa đồ ngoài map offline',
+    'hackbitem'     => 'Nghi vấn gian lận vật phẩm — mua món không có trong gian hàng',
+    'hackchonchar'  => 'Nghi vấn gian lận — chọn nhân vật của tài khoản khác',
+    'ffbug'         => 'Lỗi đã biết bị khai thác — phi phong lỗi cũ còn trong túi',
+    'thugay'        => 'Tịch thu gậy Giáng Sinh tạo trước ngày vá lỗi',
+    'hklbug'        => 'Lỗi đã biết bị khai thác — vật phẩm thần thú',
+    'tichthuchoi'   => 'Tịch thu chổi đua top',
+    'timeout'       => 'Vật phẩm hết hạn sử dụng, server đã xoá',
 ];
 
 $thongKeLoi = [];

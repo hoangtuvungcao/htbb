@@ -347,6 +347,10 @@ public class MapTown extends Map {
          if (player.map.mapId != idMapTown || player.inCountry != player.myCountry) {
             CharManager.instance.kickPlayer(player, "maptown 1");
             Database.instance.saveOrtherLog("tob_log_other_item", player.charname, "hack giao the >> " + player.charname, "hackc");
+            data.NghiVanGianLan.ghiChung(player, "hackc",
+                    "goi lenh giao the khi khong o dung cho: dang o map " + player.map.mapId
+                  + " (can " + idMapTown + "), dang o nuoc " + player.inCountry
+                  + " (nuoc cua minh la " + player.myCountry + ")");
             return;
          }
 

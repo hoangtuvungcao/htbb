@@ -774,6 +774,9 @@ public class MapLienDau extends Map {
             if (player.map.mapId != this.mapId) {
                 CharManager.instance.kickPlayer(player, "mapliendau 7");
                 Database.instance.saveOrtherLog("tob_log_other_item", player.charname, "hack giao the >> " + player.charname, "hackc");
+                data.NghiVanGianLan.ghiChung(player, "hackc",
+                        "goi lenh giao the o lien dau khi dang o map " + player.map.mapId
+                      + " chu khong phai map " + this.mapId);
                 return;
             }
 

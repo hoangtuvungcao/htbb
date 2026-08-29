@@ -385,8 +385,14 @@ class CharTrangBi {
                     }
                 } else if (Map.isPhiPhong(item.getTemplate().type) && item.minuteExist == 0 && item.dateCreate.equals("2016-09-15")) {
                     Database.instance.saveOrtherLog("tob_log_other_item", self.charname, String.valueOf(item.getTemplate().name) + "|" + item.getDBInfo() + "|" + item.getAttribute(), "ffbug");
+                    data.NghiVanGianLan.ghiVatPham(self, "ffbug",
+                            "phi phong loi cu ngay 2016-09-15 van con trong tui: "
+                          + item.getTemplate().name + " (dbid " + item.dbid + ")");
                 } else if (item.isPhiPhongWordCupHetHan() && item.dateCreate.compareTo("2018-08-22") <= 0) {
                     Database.instance.saveOrtherLog("tob_log_other_item", self.charname, String.valueOf(item.getTemplate().name) + "|" + item.getDBInfo() + "|" + item.getAttribute(), "ffbug");
+                    data.NghiVanGianLan.ghiVatPham(self, "ffbug",
+                            "phi phong World Cup het han van con trong tui: "
+                          + item.getTemplate().name + " (dbid " + item.dbid + ")");
                 } else if (item.isGayGiangSinh() && item.dateCreate.compareTo("2020-07-24 11:00:00") < 0) {
                     Database.instance.saveOrtherLog("tob_log_other_item", self.charname, String.valueOf(item.getTemplate().name) + "|" + item.getDBInfo() + "|" + item.getAttribute(), "thugay");
                 } else {
@@ -572,6 +578,9 @@ class CharTrangBi {
                         }
                     } else if (item.isPhiPhongWordCupHetHan() && item.dateCreate.compareTo("2018-08-22") <= 0) {
                         Database.instance.saveOrtherLog("tob_log_other_item", self.charname, String.valueOf(item.getTemplate().name) + "|" + item.getDBInfo() + "|" + item.getAttribute(), "ffbug");
+                        data.NghiVanGianLan.ghiVatPham(self, "ffbug",
+                                "phi phong World Cup het han van con trong ruong: "
+                              + item.getTemplate().name + " (dbid " + item.dbid + ")");
                     } else if (item.isGayGiangSinh() && item.dateCreate.compareTo("2020-07-24 11:00:00") < 0) {
                         Database.instance.saveOrtherLog("tob_log_other_item", self.charname, String.valueOf(item.getTemplate().name) + "|" + item.getDBInfo() + "|" + item.getAttribute(), "thugay");
                     } else {
@@ -586,6 +595,9 @@ class CharTrangBi {
                         } else if (!item.isHoVeLenh() || Char.getDayTime(0L).compareTo("2019-11-30 00:00:00") < 0) {
                             if (Map.isPhiPhong(item.getTemplate().type) && item.minuteExist == 0 && item.dateCreate.equals("2016-09-15")) {
                                 Database.instance.saveOrtherLog("tob_log_other_item", self.charname, String.valueOf(item.getTemplate().name) + "|" + item.getDBInfo() + "|" + item.getAttribute(), "ffbug");
+                                data.NghiVanGianLan.ghiVatPham(self, "ffbug",
+                                        "phi phong loi cu ngay 2016-09-15 van con trong ruong: "
+                                      + item.getTemplate().name + " (dbid " + item.dbid + ")");
                             } else if (!Map.openLog && TeamServer.server == 5 && self.lastLog.compareTo("2018-03-12 11:25:00") < 0 && Map.isItemThanThu(item.getTemplate().type)) {
                                 Database.instance.saveOrtherLog("tob_log_other_item", self.charname, String.valueOf(item.getTemplate().name) + "|" + item.getDBInfo() + "|" + item.getAttribute(), "hklbug");
                             } else {

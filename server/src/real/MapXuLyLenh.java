@@ -1941,6 +1941,10 @@ class MapXuLyLenh {
                         Map offlineMap = (Map) RealController.mapList.get(-1);
                         if (!map.checkChangeMap(player, 0, 0, toMapID, toTX, toTY) && checklocation) {
                             System.out.print(" " + player.charname + " hack cmn offline ");
+                            data.NghiVanGianLan.ghiChung(player, "hackdoimap",
+                                    "doi map trai phep tu map offline " + player.mapID
+                                  + " sang map " + toMapID + " (" + toTX + "," + toTY + ")"
+                                  + " - server da keo ve cho cu");
                             toMapID = player.mapID;
                             toTX = player.x / 16;
                             toTY = player.y / 16;

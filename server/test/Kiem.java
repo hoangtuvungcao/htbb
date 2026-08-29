@@ -71,6 +71,7 @@ public final class Kiem {
         KiemGoi3Test.chay();
         KiemGoi5Test.chay();
         KiemBoDemGoiTin.chay();
+        KiemNghiVanGianLan.chay();
 
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

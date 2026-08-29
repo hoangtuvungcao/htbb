@@ -698,6 +698,11 @@ class DatabaseNhanVat {
                 e.printStackTrace();
                 try {
                     db.saveOrtherLog("", p.charname, "banchar khi loi invent", "loiinvent");
+                    // Hanh trang khong luu duoc -> server TU KHOA nhan vat ngay ben duoi.
+                    // Thuong la cot inven khong du cho chu khong phai gian lan, nhung van
+                    // phai vao hack.txt: day la luc nguoi choi mat do va can co dau vet.
+                    NghiVanGianLan.ghiChung(p, "loiinvent",
+                            "luu hanh trang that bai nen nhan vat bi khoa - " + e);
                     sql = "UPDATE tob_char SET ban=1 where charname='" + p.charname + "'";
                     conn = db.getConnection();
                     Statement pree = conn.createStatement();

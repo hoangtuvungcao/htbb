@@ -13580,6 +13580,9 @@ public class Map implements Runnable {
                 System.out.println("NGAT KET NOI REPAIR ONLINE");
                 CharManager.instance.kickPlayer(player, "map 9");
                 Database.instance.saveOrtherLog("tob_log_other_item", player.charname, "hack sua do trong map online >> " + player.charname, "hackR");
+                data.NghiVanGianLan.ghiVatPham(player, "hackR",
+                        "goi lenh sua do (id " + id + ") khi dang o map online mapID=" + player.mapID
+                      + " - client goc chi cho sua trong map offline");
                 return;
             }
         } catch (Exception var4) {

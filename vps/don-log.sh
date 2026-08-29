@@ -213,11 +213,11 @@ done
 # script moi lan.
 
 # (a) Server DOC NGUOC LAI nhu du lieu dau vao - xoa la mat du lieu.
-BAO_VE="trangan.txt offline.txt top.txt hack.txt hackdo.txt"
+BAO_VE="trangan.txt offline.txt top.txt"
 
 # (b) logrotate da lo roi (xem vps/kpah-logrotate.conf) - de no tu xoay vong,
 #     dung o day xoa tranh phan.
-LOGROTATE_LO="errorlog.txt errorlogPet.txt errorAnima.txt errorSellITem.txt errorquayso.txt
+LOGROTATE_LO="hack.txt hackdo.txt errorlog.txt errorlogPet.txt errorAnima.txt errorSellITem.txt errorquayso.txt
 savechar.txt saitenchar4.txt update.txt updateleaf.txt rUpdateleaf.txt
 matketinfo.txt nhantieu.txt doitieu.txt thetieu.txt tratieu.txt cuoptieu.txt
 longden.txt longdenchar.txt longdendaylog.txt datra4.txt charWedding.txt

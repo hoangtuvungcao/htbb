@@ -98,6 +98,9 @@ public class SelectCharHandler implements ICommandHandler {
             charItem = Database.instance.getChar(p, charDBID, lastLog);
             if (p.userID != session.userID) {
                 Database.instance.saveOrtherLog("", session.username, "hack dang nhap char " + p.charname + " > " + session.userID + " > " + p.userID, "hackchonchar");
+                data.NghiVanGianLan.ghiChung(session, session.username, "hackchonchar",
+                        "chon nhan vat '" + p.charname + "' (thuoc tai khoan " + p.userID
+                      + ") trong khi dang dang nhap bang tai khoan " + session.userID);
                 session.disconnect(0);
                 return;
             }

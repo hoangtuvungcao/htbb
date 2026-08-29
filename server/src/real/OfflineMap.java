@@ -1322,6 +1322,8 @@ public class OfflineMap extends Map {
 
                         if (!isOk) {
                            Database.instance.saveOrtherLog("", player.charname, "hack mua item id: " + var32, "hackbitem");
+                           data.NghiVanGianLan.ghiVatPham(player, "hackbitem",
+                                   "doi mua vat pham id " + var32 + " khong co trong danh sach ban cua gian hang nay");
                         } else {
                            ItemTemplates template = null;
                            if (!isAnimalItem(var32) && !isBuyTheBaiLinhDanhThue(var32) && !isBuyTheBaiMuaban(var32)) {
