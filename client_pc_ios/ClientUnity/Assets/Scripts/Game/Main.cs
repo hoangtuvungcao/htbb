@@ -149,7 +149,7 @@ public class Main : MonoBehaviour
 		{
 			Canvas.isPointerDrange = false;
 			Vector3 mousePosition = Input.mousePosition;
-			canvas.pointerPressed((int)ScaleGUI.scaleX(mousePosition.x), (int)ScaleGUI.scaleX((float)Screen.height - mousePosition.y));
+			canvas.pointerPressed((int)ScaleGUI.scaleX(mousePosition.x), (int)ScaleGUI.scaleY((float)Screen.height - mousePosition.y));
 			lastMousePos.x = mousePosition.x;
 			lastMousePos.y = mousePosition.y;
 		}
@@ -162,7 +162,7 @@ public class Main : MonoBehaviour
 			}
 			if (Canvas.isPointerDrange)
 			{
-				canvas.pointerDragged((int)ScaleGUI.scaleX(mousePosition2.x), (int)ScaleGUI.scaleX((float)Screen.height - mousePosition2.y));
+				canvas.pointerDragged((int)ScaleGUI.scaleX(mousePosition2.x), (int)ScaleGUI.scaleY((float)Screen.height - mousePosition2.y));
 				lastMousePos.x = mousePosition2.x;
 				lastMousePos.y = mousePosition2.y;
 			}
@@ -170,7 +170,7 @@ public class Main : MonoBehaviour
 		if (Input.GetMouseButtonUp(0))
 		{
 			Vector3 mousePosition3 = Input.mousePosition;
-			canvas.pointerReleased((int)ScaleGUI.scaleX(mousePosition3.x), (int)ScaleGUI.scaleX((float)Screen.height - mousePosition3.y));
+			canvas.pointerReleased((int)ScaleGUI.scaleX(mousePosition3.x), (int)ScaleGUI.scaleY((float)Screen.height - mousePosition3.y));
 			lastMousePos.x = mousePosition3.x;
 			lastMousePos.y = mousePosition3.y;
 		}

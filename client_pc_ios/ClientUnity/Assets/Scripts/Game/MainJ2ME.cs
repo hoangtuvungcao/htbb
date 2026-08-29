@@ -28,7 +28,14 @@ public abstract class MainJ2ME
 			{
 				g.drawImage(Res.imgButtonBar1, 4, Canvas.h - hTab + (hTab - Res.imgButtonBar1.getHeight()) / 2 + 2, 0);
 			}
-			MFont.borderFont.drawString(g, left.caption, 4 + Res.imgButtonBar.getWidth() / 2, num + 2, 2);
+			// Chu duoc can giua theo anh nut. Anh "bar" hien co chi 11x7 pixel nen nua
+			// chu tran han ra ngoai man hinh - chup lai thay goc trai chi con "p nhat"
+			// thay vi "Cap nhat". Day chan lai bang be rong chu THAT: anh nut du to thi
+			// vi tri khong doi mot pixel nao, chi khi nao chu se bi cat moi day vao.
+			MFont.borderFont.drawString(g, left.caption,
+				Math.max(4 + Res.imgButtonBar.getWidth() / 2,
+						 2 + MFont.borderFont.getWidth(left.caption) / 2),
+				num + 2, 2);
 		}
 		if (center != null && center.caption != string.Empty)
 		{
@@ -52,7 +59,12 @@ public abstract class MainJ2ME
 			{
 				g.drawImage(Res.imgButtonBar1, Canvas.w - Res.imgButtonBar1.getWidth() - 4, Canvas.h - hTab + (hTab - Res.imgButtonBar.getHeight()) / 2 + 2, 0);
 			}
-			MFont.borderFont.drawString(g, right.caption, Canvas.w - Res.imgButtonBar.getWidth() / 2 - 4, num + 2, 2);
+			// Doi xung voi cho ve chu ben trai: chan de nua phai cua chu khong tran ra
+			// ngoai canh phai man hinh (truoc day "Thoat" bi cat thanh "Thoa").
+			MFont.borderFont.drawString(g, right.caption,
+				Math.min(Canvas.w - Res.imgButtonBar.getWidth() / 2 - 4,
+						 Canvas.w - 2 - MFont.borderFont.getWidth(right.caption) / 2),
+				num + 2, 2);
 		}
 	}
 

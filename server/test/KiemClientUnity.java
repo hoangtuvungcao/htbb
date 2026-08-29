@@ -27,6 +27,8 @@ public final class KiemClientUnity {
     private static final String F_DOC_LUONG = "ClientUnity/Assets/Scripts/Game/DataInputStream.cs";
     private static final String F_GOI = "ClientUnity/Assets/Scripts/Game/FilePack.cs";
     private static final String F_BAN_DO = "ClientUnity/Assets/Scripts/Game/Tilemap.cs";
+    private static final String F_MAIN = "ClientUnity/Assets/Scripts/Game/Main.cs";
+    private static final String F_LENH = "ClientUnity/Assets/Scripts/Game/MainJ2ME.cs";
     private static final String F_XAY = "ClientUnity/Assets/Editor/XayDung.cs";
     private static final String F_MANIFEST = "ClientUnity/Packages/manifest.json";
     private static final String F_CHUYEN = "tools/ChuyenTaiNguyen.java";
@@ -37,6 +39,7 @@ public final class KiemClientUnity {
         kiemPluginIOS();
         kiemThieuTaiNguyenKhongSap();
         kiemBanDoKhongTuGoiMai();
+        kiemGiaoDien();
         kiemKichBanXay();
         kiemManifest();
         kiemBoChuyenTaiNguyen();
@@ -161,6 +164,43 @@ public final class KiemClientUnity {
         Kiem.dung("loi goi lai nam trong dieu kien chan level 0",
                 khoiCatch.indexOf("if (level != 0)") >= 0
                         && khoiCatch.indexOf("if (level != 0)") < khoiCatch.indexOf("loadMap(0, null)"));
+    }
+
+    /**
+     * Hai loi giao dien do duoc bang cach chay that va chup lai cua so.
+     *
+     * 1. Main.checkInput doi toa do chuot sang toa do game. No dung ScaleGUI.scaleX cho
+     *    CA hai truc, ke ca truc y - trong khi ScaleGUI CO san scaleY. Hien tai vo hai
+     *    vi WIDTH == Screen.width nen ca hai ham deu tra ve chinh no, nhung do la loi
+     *    nam san: ngay nao bat phong giao dien len la cham chuot lech het theo chieu doc.
+     *
+     * 2. MainJ2ME.paint can giua chu lenh theo anh nut Res.imgButtonBar. Anh "bar" hien
+     *    co chi 11x7 pixel, nen nua chu tran ra ngoai man hinh: anh chup cho thay goc
+     *    trai chi con "p nhat" thay vi "Cap nhat", goc phai cut "Thoat" thanh "Thoa".
+     */
+    private static void kiemGiaoDien() {
+        Kiem.nhom("Client Unity - loi giao dien do duoc khi chay that");
+
+        final String main = boChuThich(doc(F_MAIN));
+        Kiem.dung("doc duoc " + F_MAIN, main.length() > 0);
+
+        // Toa do y phai dung scaleY. Dem cho chac: co dung 3 cho nhan chuot.
+        Kiem.bang("ca 3 cho doi toa do y deu dung scaleY", 3,
+                dem(main, "ScaleGUI.scaleY((float)Screen.height"));
+        Kiem.sai("KHONG con dung scaleX cho toa do y",
+                main.contains("ScaleGUI.scaleX((float)Screen.height"));
+
+        final String j2me = boChuThich(doc(F_LENH));
+        Kiem.dung("doc duoc " + F_LENH, j2me.length() > 0);
+
+        // Chan tran phai dua tren be rong chu THAT, khong phai so cung: anh nut du to
+        // thi vi tri cu phai duoc giu nguyen khong doi mot pixel nao.
+        Kiem.dung("chu lenh trai co chan tran",
+                j2me.contains("Math.max(4 + Res.imgButtonBar.getWidth() / 2"));
+        Kiem.dung("chu lenh phai co chan tran",
+                j2me.contains("Math.min(Canvas.w - Res.imgButtonBar.getWidth() / 2 - 4"));
+        Kiem.dung("chan tran do bang be rong chu that",
+                dem(j2me, "MFont.borderFont.getWidth(") >= 2);
     }
 
     private static void kiemKichBanXay() {
