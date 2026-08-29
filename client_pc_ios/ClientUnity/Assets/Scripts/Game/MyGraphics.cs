@@ -133,9 +133,18 @@ public class MyGraphics
 	{
 		if (!lineMaterial)
 		{
-			lineMaterial = new Material("Shader \"Lines/Colored Blended\" {SubShader { Pass {  Blend SrcAlpha OneMinusSrcAlpha  ZWrite Off Cull Off Fog { Mode Off }  BindChannels { Bind \"vertex\", vertex Bind \"color\", color }} } }");
+			// Truoc day: new Material("Shader \"Lines/Colored Blended\" {...}").
+			// Unity da bo han cach tao Material tu chuoi ma shader. Shader dung san
+			// "Hidden/Internal-Colored" la ban thay the chinh thuc cho ve GL, va dat
+			// lai dung bon trang thai cua shader cu: Blend SrcAlpha OneMinusSrcAlpha,
+			// ZWrite Off, Cull Off.
+			Shader shader = Shader.Find("Hidden/Internal-Colored");
+			lineMaterial = new Material(shader);
 			lineMaterial.hideFlags = HideFlags.HideAndDontSave;
-			lineMaterial.shader.hideFlags = HideFlags.HideAndDontSave;
+			lineMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+			lineMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+			lineMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+			lineMaterial.SetInt("_ZWrite", 0);
 		}
 	}
 

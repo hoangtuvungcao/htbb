@@ -14,7 +14,7 @@ Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 3 phần ch
 |---|---|
 | `src/` | Source Java game server |
 | `lib/` | Thư viện `.jar` bên thứ ba (nằm trên `Class-Path` của jar deploy) |
-| `Client/` | Mã client C# **dịch ngược** — chỉ để ĐỌC, **không build được** (xem dưới) |
+| `ClientUnity/` | Client Unity (C#) — **build được**, ra Windows/WebGL/Android/iOS (xem dưới) |
 | `web/` | Website PHP (login, nạp tiền, admin) |
 | `sql/` | Script SQL: fix dữ liệu, migrate, dump mốc |
 | `vps/` | Script deploy & vận hành trên VPS (systemd service, backup DB, deploy-auto) |
@@ -25,29 +25,100 @@ Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 3 phần ch
 | `docs/` | Tài liệu (hướng dẫn build/VPS, bảng id thuộc tính...) |
 | `build/` | Thư mục tạm khi build — không commit |
 
-## `Client/` là gì — và vì sao sửa nó không có tác dụng
+## `ClientUnity/` — client dựng lại được, chạy đa nền tảng
 
-**`Client/` KHÔNG phải dự án build được.** Nó là mã **dịch ngược** từ `Assembly-CSharp.dll`
-của client đã đóng gói. Bằng chứng:
+> **Đính chính.** Bản README trước ghi rằng `Client/` "không phải dự án Unity" và
+> "không build được". Điều đó **sai**. Kết luận ấy dựa trên việc thiếu `Assets/` và
+> `ProjectSettings/` — nhưng đó chỉ là phần khung Unity tự sinh, không phải bằng chứng.
+> Mã bên trong **là mã Unity**: 33 file `using UnityEngine`, và
+> `Properties/AssemblyInfo.cs.meta` chứa `MonoImporter` — dấu vết chỉ Unity mới tạo ra.
+> Toàn bộ 269 file biên dịch sạch với **đúng một lỗi** cần sửa (đã sửa, xem dưới).
+> Thư mục nay đã đổi thành `ClientUnity/Assets/Scripts/Game/`.
 
-- Không có `Assets/`, `ProjectSettings/`, `Packages/` — tức không phải dự án Unity.
-- Không có `.sln`, `.csproj`, `.unity`, `.asmdef` — không mở bằng Visual Studio được.
-- `Client/Properties/AssemblyInfo.cs` chỉ có đúng `[assembly: AssemblyVersion("0.0.0.0")]`
-  — đó là thứ trình dịch ngược (ILSpy/dnSpy) sinh ra khi DLL không có thuộc tính nào khác.
-- Các file không có `namespace`, không có `using`, dùng `sbyte[]` thay cho `byte[]` của Java.
+Đây là bản port của client J2ME sang Unity theo kiểu "Unity làm khung vẽ": **một**
+`MonoBehaviour` duy nhất (`Main`), `OnGUI()` gọi `canvas.paint(g)`, `FixedUpdate()` chạy
+vòng lặp game. Phần còn lại là mã J2ME đã dịch sang C#. Phụ thuộc Unity rất nông — chỉ
+khoảng 15 kiểu (`Texture2D`, `Resources`, `Input`, `SystemInfo`...) — nên nó dựng được
+cho mọi nền tảng Unity hỗ trợ.
 
-**Hệ quả: sửa file trong `Client/` không tới được người chơi.** Nó chỉ có giá trị để
-*đọc* (tra xem client gửi gì, theo thứ tự nào) và để *ghi lại ý định* cho lần sửa client thật.
+### Cách build
 
-Muốn đổi client thật thì có ba đường:
+```
+xay-client.bat taonguon C:\duong\dan\KPAH_276-1   # tạo tài nguyên từ bản J2ME
+xay-client.bat chuanbi                            # tạo cảnh + cấu hình
+xay-client.bat windows                            # -> ClientUnity\Build\Windows\
+xay-client.bat webgl                              # -> ClientUnity\Build\WebGL\
+```
 
-1. **Tìm lại dự án Unity gốc** — đường sạch nhất. Hỏi người đã build client này.
-2. **Vá thẳng DLL** bằng dnSpy: rút `Assembly-CSharp.dll` từ APK
-   (`assets/bin/Data/Managed/`), sửa hàm, lưu lại, đóng gói và ký lại APK.
-   ⚠️ Chỉ được nếu client build bằng **Mono**. Build bằng **IL2CPP** thì không có
-   `Assembly-CSharp.dll` (đã biên dịch ra mã máy) và đường này đóng.
-3. **Biên dịch lại toàn bộ mã dịch ngược** thành DLL thay thế — thường không xuôi, vì
-   mã dịch ngược hiếm khi biên dịch sạch ngay.
+Lần đầu phải chạy đủ ba bước theo thứ tự. `taonguon` và `chuanbi` chỉ cần chạy lại khi
+đổi tài nguyên hoặc đổi cấu hình.
+
+### Nền tảng nào build được
+
+| Nền tảng | Trạng thái | Cần thêm gì |
+|---|---|---|
+| **Windows** (`.exe`) | ✅ build được ngay | — |
+| **WebGL** (trình duyệt) | ✅ build được ngay | — |
+| **Android** (`.apk`) | ⚠️ cần cài module | Unity Hub → Installs → ⚙ → Add modules → *Android Build Support* (~2–3 GB) |
+| **iOS** (`.ipa`) | ⚠️ cần module **và máy Mac** | Module *iOS Build Support*; Unity chỉ xuất dự án Xcode, khâu ký và đóng gói bắt buộc chạy trên macOS |
+| **J2ME** (`.jar`) | ❌ **không bao giờ** | Unity không xuất được J2ME. Bản `.jar` là sản phẩm riêng, giữ nguyên như hiện tại |
+
+**WebGL đáng chú ý**: nó chạy trong trình duyệt trên iPhone, Android, Windows, Mac —
+tức là một bản build phủ gần hết nhu cầu mà không cần module nào thêm, không cần Mac,
+không cần lên chợ ứng dụng.
+
+### Đã phải sửa gì để build được
+
+**1. Shader — lỗi biên dịch duy nhất trên cả 269 file.**
+`MyGraphics.CreateLineMaterial()` tạo `Material` từ **chuỗi mã shader**; Unity đã bỏ hẳn
+cách này. Thay bằng shader dựng sẵn `Hidden/Internal-Colored` và đặt lại đúng bốn trạng
+thái của shader cũ (`Blend SrcAlpha OneMinusSrcAlpha`, `ZWrite Off`, `Cull Off`).
+
+**2. Hàm native của iOS — chặn bằng biên dịch có điều kiện.**
+`iOSPlugins.cs` khai báo sáu hàm `[DllImport("__Internal")]` (`_SMSsend`, `_purchaseItem`,
+`_back`, `_Send`, `_unpause`, `_checkRotation`). IL2CPP sinh tham chiếu tới chúng **dù lúc
+chạy không hề gọi**, nên WebGL hỏng ngay ở khâu liên kết (`undefined symbol: _SMSsend`).
+Bọc trong `#if UNITY_IOS && !UNITY_EDITOR`.
+
+Việc này vá luôn một lỗi tiềm ẩn: điều kiện `Application.platform != 0` trong file đó vẫn
+**đúng** trên Windows (0 là `OSXEditor`), nên bản Windows sẽ ném `DllNotFoundException`
+giữa lúc chơi nếu có đoạn nào gọi tới.
+
+`Net.cs` còn dùng `WWW` (đã lỗi thời nhưng vẫn chạy) — để nguyên cho đỡ rủi ro.
+
+### Tài nguyên game: còn thiếu 62 mục
+
+`tools/ChuyenTaiNguyen.java` dựng `Assets/Resources/res/` từ client J2ME. Nó xử lý hai
+khác biệt về đóng gói:
+
+- Unity chỉ nhận file làm `TextAsset` khi đuôi là `.bytes`, và tra cứu bằng đường dẫn
+  **không có đuôi** → `res/logo` phải là `Assets/Resources/res/logo.bytes`.
+- Nhiều ảnh Unity nạp lẻ (ví dụ `res/bar`) lại nằm **bên trong** gói `.sh` của bản J2ME
+  (định dạng `FilePack`, XOR với khoá `NguyenVanMinh`) → công cụ giải gói để lấy ra.
+
+Kết quả thật: **46/108** tài nguyên khôi phục được, **62 thiếu** — chủ yếu `newEf/42..72`
+(31 file hiệu ứng), `c/hat/`, `c/coat/`, các gói `items`/`other`/`body`/`head`/`leg`.
+Lý do: bản Unity dùng bộ tài nguyên **mới hơn** bản J2ME 2.7.6.
+
+Game vẫn chạy — mã gọi `Image.createImage` trả `null` và ghi log khi thiếu — nhưng một số
+hiệu ứng và trang phục sẽ không hiện. Muốn đủ thì phải xin `Assets/Resources/res/` của
+**dự án Unity gốc**; không có đường vòng nào khác.
+
+⚠️ Công cụ **không** dò tài nguyên theo tên cuối trên khắp cây thư mục. Bản J2ME có cả
+`c/body/42` lẫn `c/leg/42`, nên `newEf/42` sẽ nhận nhầm ảnh thân nhân vật — **sai âm thầm**,
+tệ hơn là thiếu. Chỉ chấp nhận file ở gốc hoặc ảnh trong gói.
+
+### Liên hệ với việc cấm theo thiết bị
+
+Client này **đã có sẵn** `Canvas.IMEI = SystemInfo.deviceUniqueIdentifier`
+([Canvas.cs:157](ClientUnity/Assets/Scripts/Game/Canvas.cs#L157)) — chạy được trên
+Windows, Android, iOS. Dòng gửi mã máy lúc đăng nhập đã có ở
+[GameService.cs:402](ClientUnity/Assets/Scripts/Game/GameService.cs#L402), khớp đúng thứ
+tự trường mà `real/cmd/LoginHandler.java` đọc.
+
+Nghĩa là: **ngày người chơi chuyển sang bản Unity này, tính năng cấm theo thiết bị tự
+hoạt động** mà không phải sửa thêm gì ở server. Bảng `tob_cam_may` trống thì mọi thứ chạy
+bình thường như hiện nay.
 
 ## Build
 

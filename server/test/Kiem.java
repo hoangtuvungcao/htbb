@@ -79,6 +79,7 @@ public final class Kiem {
         KiemBanDoOffline.chay();
         KiemCamTheoMay.chay();
         KiemDongDangKyClient.chay();
+        KiemClientUnity.chay();
 
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

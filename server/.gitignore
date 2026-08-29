@@ -118,3 +118,23 @@ out_tools/
 ### Nguon giai ma tu NQSH_5h.jar (tools/giai-ma-nqsh.bat sinh ra, chi de doc) ###
 /build/nqsh-src/
 /build/cfr.jar
+
+### Du an Unity (ClientUnity/) ###
+# Unity tu sinh lai toan bo nhung thu muc nay khi mo du an. Library/ mot minh da
+# nang hang tram MB nen tuyet doi khong commit.
+/ClientUnity/Library/
+/ClientUnity/Temp/
+/ClientUnity/Obj/
+/ClientUnity/Logs/
+/ClientUnity/UserSettings/
+/ClientUnity/Build/
+/ClientUnity/*.csproj
+/ClientUnity/*.sln
+/ClientUnity/*.slnx
+/ClientUnity/.vsconfig
+
+# Tai nguyen game do tools/ChuyenTaiNguyen.java sinh ra tu ban client J2ME.
+# La san pham dan xuat, khong phai ma nguon: tao lai bang mot lenh (xem README).
+# Khong commit de repo khoi phinh them vai nghin tep nhi phan.
+/ClientUnity/Assets/Resources/
+/ClientUnity/Assets/Resources.meta

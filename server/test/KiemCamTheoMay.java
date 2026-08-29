@@ -20,6 +20,7 @@ public final class KiemCamTheoMay {
 
     private static final String F_LOGIN = "src/real/cmd/LoginHandler.java";
     private static final String F_CAM = "src/data/CamTheoMay.java";
+    private static final String F_CLIENT = "ClientUnity/Assets/Scripts/Game/GameService.cs";
 
     public static void chay() {
         kiemLamSach();
@@ -145,9 +146,9 @@ public final class KiemCamTheoMay {
     private static void kiemHaiDauKhopNhau() {
         Kiem.nhom("Cam theo may - client va server khop thu tu truong");
 
-        final String client = doc("Client/GameService.cs");
+        final String client = doc(F_CLIENT);
         if (client.isEmpty()) {
-            Kiem.dung("doc duoc Client/GameService.cs", false);
+            Kiem.dung("doc duoc " + F_CLIENT, false);
             return;
         }
 
