@@ -86,6 +86,7 @@ public final class Kiem {
         KiemChotCSDL.chay();
         KiemCauHinhPipeline.chay();
         KiemLocBiMat.chay();
+        KiemChiTietThuoc.chay();
         KiemBangMaNguon.chay();
 
         final int ma = tongKet();
