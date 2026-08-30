@@ -357,7 +357,16 @@ public final class KiemSkinLinhThu {
         Kiem.dung("calculateMaxHPMP cong MP skin", chiSo.contains("self.maxmp += SkinLinhThu.congMp(self)"));
         Kiem.dung("calculateDefend cong % thu skin", chiSo.contains("SkinLinhThu.pcThu(self)"));
         Kiem.dung("calculateAccurate cong chinh xac skin",
-                ch.contains("accurate2 += SkinLinhThu.congChinhXac(this)"));
+                ch.contains("this.accurate = (short) (this.accurate + SkinLinhThu.congChinhXac(this))"));
+        // Phai cong THANG vao ket qua cuoi, khong duoc cong vao accurate2 giua ham:
+        // accurate2 con phai di qua phep chia 7 va cai tran 99, 200 se con ~28 va thanh 0
+        // voi nhan vat da cham tran. Nguoi choi doc "+200" thi phai duoc 200.
+        Kiem.sai("KHONG cong chinh xac skin vao accurate2 (se bi chia 7 va chan tran)",
+                ch.contains("accurate2 += SkinLinhThu.congChinhXac"));
+        final int chanTran = ch.indexOf("this.accurate = (short) (this.accurate * 700 / 100)");
+        final int congCx = ch.indexOf("this.accurate + SkinLinhThu.congChinhXac(this)");
+        Kiem.dung("chinh xac skin cong SAU cai tran 99 va phep nhan 700",
+                chanTran > 0 && congCx > chanTran);
         Kiem.dung("calculateAttrib cong xuyen giap skin", ch.contains("SkinLinhThu.pcXuyenGiap(this)"));
         Kiem.dung("checkHapthuSatThuong cong % hap thu skin", ch.contains("SkinLinhThu.pcHapThu(this)"));
 
@@ -371,12 +380,13 @@ public final class KiemSkinLinhThu {
         Kiem.dung("% thu vao upvP (thu khi PK)", khoiThu.contains("upvP += pcThuSkin"));
         Kiem.dung("% thu vao upmP (thu khi PK)", khoiThu.contains("upmP += pcThuSkin"));
 
-        // TRAT TU 1 — hap thu: khoi hap thu cua thu cuoi ngay tren dung "a = ..." (gan de)
-        // chu khong phai "a += ...". Dat dong skin TRUOC no la bi xoa sach, im lang.
-        final int ganDe = ch.indexOf("a = finalDam * (animalRide.att[9]");
-        final int hapThuSkin = ch.indexOf("SkinLinhThu.pcHapThu(this)");
-        Kiem.dung("hap thu skin nam SAU khoi gan de cua thu cuoi (khong thi bi xoa)",
-                ganDe > 0 && hapThuSkin > ganDe);
+        // HAP THU PHAI CONG DON, khong duoc gan de. Khoi hap thu cua linh thu truoc day
+        // viet "a = ..." nen no xoa sach moi thu cong vao truoc — cu the la 3% noi tai
+        // cua Lan. Doi sang "a +=" thi ca ba nguon (Lan, linh thu, skin) deu duoc tinh.
+        Kiem.sai("khoi hap thu cua linh thu KHONG con gan de",
+                ch.contains("a = finalDam * (animalRide.att[9]"));
+        Kiem.dung("khoi hap thu cua linh thu cong don",
+                ch.contains("a += finalDam * (animalRide.att[9]"));
 
         // TRAT TU 2 — HP/MP: phai cong SAU cac khoi nhan phan tram (fullset, pet, noi luc,
         // cai tao). Cong truoc thi 2000 mau bi nhan len theo, ra nhieu hon con so da hua.

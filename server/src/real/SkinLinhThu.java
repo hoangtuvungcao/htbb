@@ -158,12 +158,16 @@ public final class SkinLinhThu {
     public static final int[] CONG_MP = {3000, 0, 0, 0, 0};
 
     /**
-     * Gau Truc: cong thang vao diem chinh xac.
+     * Gau Truc: cong THANG vao diem chinh xac cuoi cung cua nhan vat.
      *
-     * LUU Y VE DO LON: Char.calculateAccurate lam (accurate1 + accurate2 + basic) / 7 roi
-     * CHAN TRAN O 99. Nen 200 diem o day thanh khoang 28 diem sau khi chia — dang ke chu
-     * khong phai vo nghia, nhung cung khong phai "+200" nhu nguoi choi doc thay. Day la
-     * cach ca game van tinh chinh xac, khong phai rieng skin.
+     * Cong o CUOI Char.calculateAccurate, sau ca phep chia 7 lan cai tran 99, nen 200 la
+     * 200 that. Cong vao accurate2 giua ham thi no bi chia 7 con khoang 28, va thanh 0
+     * han voi nhan vat da cham tran — khong dung y "cong thang vao nhan vat".
+     *
+     * Do lon thuc te: cong thuc trung don la random(accurate + 10) < accurate, tuc ti le
+     * accurate/(accurate+10). Duong cong nay bao hoa rat nhanh, nen +200 dang ke voi nhan
+     * vat chinh xac thap va gan nhu khong doi gi voi nhan vat da cao. Do la cach game
+     * dung chinh xac tu truoc, khong phai rieng skin.
      */
     public static final int[] CONG_CHINH_XAC = {0, 200, 0, 0, 0};
 
@@ -180,7 +184,12 @@ public final class SkinLinhThu {
     /** Chien Lang: cong phan tram vao ca thu vat lan thu phep. */
     public static final int[] PC_THU = {0, 0, 0, 0, 20};
 
-    /** Chien Lang: phan tram sat thuong bi hap thu truoc khi tru mau. */
+    /**
+     * Chien Lang: phan tram sat thuong bi hap thu truoc khi tru mau.
+     *
+     * CONG DON voi hap thu san co cua linh thu (Animal.att[9]) va voi noi tai 3% cua Lan
+     * — xem Char.checkHapthuSatThuong. Khong thay the, khong lay so lon hon.
+     */
     public static final int[] PC_HAP_THU = {0, 0, 0, 0, 15};
 
     /**

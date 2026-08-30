@@ -2548,10 +2548,6 @@ public class Char extends LiveActor {
                 }
             }
         }
-        // SKIN LINH THU (Gau Truc): vong lap tren chi duyet wItems (trang bi NHAN VAT),
-        // khong duyet getAnimalWearing() — nen vat pham skin nam trong bang trang bi thu
-        // khong bao gio duoc tinh o day. Phai cong rieng.
-        accurate2 += SkinLinhThu.congChinhXac(this);
         this.accurate = (short) ((accurate1 + accurate2 + this.basic) / 7);
         if (this.accurate >= 100) {
             this.accurate = 99;
@@ -2564,6 +2560,16 @@ public class Char extends LiveActor {
                 this.accurate = (short) (this.accurate * noiluc / 10L);
             }
         }
+        // SKIN LINH THU (Gau Truc): cong THANG vao diem chinh xac cua nhan vat.
+        //
+        // Dat o CUOI HAM, sau chia 7 / chan tran 99 / nhan 700 / nhan noi luc — nen 200
+        // la 200 that. Neu cong vao accurate2 o tren thi no di qua phep chia 7 va cai
+        // tran 99, thanh khoang 28 diem, va thanh 0 voi nhan vat da cham tran.
+        //
+        // Vat pham skin nam trong bang TRANG BI THU, ma vong lap accurate2 o tren chi
+        // duyet wItems (trang bi nhan vat) — no khong bao gio thay skin. Nen du muon di
+        // duong atb cung phai cong rieng o day.
+        this.accurate = (short) (this.accurate + SkinLinhThu.congChinhXac(this));
     }
 
     public byte getRing() {
@@ -3004,8 +3010,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
             // Hấp thụ 3% sát thương
             a += finalDam * 3 / 100;
         }
+        // "a +=" chu khong phai "a =": hap thu phai CONG DON nhu phan sat thuong.
+        //
+        // Truoc day dong nay gan de, nen no XOA SACH moi thu cong vao a truoc no — cu
+        // the la 3% noi tai cua Lan ngay ben tren: nguoi choi cuoi mot con linh thu co
+        // dong att[9] thi mat han 3% do, im lang, khong cach nao biet. Doi sang cong don
+        // thi ca ba nguon (noi tai Lan, chi so linh thu, skin) deu duoc tinh.
         if (animalRide != null && animalRide.att[9] + animalRide.attUp[9] > 0 && Map.r.nextInt(200) <= animalRide.att[9] + animalRide.attUp[9]) {
-            a = finalDam * (animalRide.att[9] + animalRide.attUp[9]) / 100;
+            a += finalDam * (animalRide.att[9] + animalRide.attUp[9]) / 100;
         }
         final int backdam = this.getBackDam(dam);
         if (backdam > 0 && ((!actor.isLienHoaTru() && actor.isMonsterMoba()) || !this.map.isMapChienTruongMoba())) {
