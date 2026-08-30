@@ -126,6 +126,54 @@ if ($thuaOPhp) {
     echo "  OK   khong co loai thua\n";
 }
 
+
+echo "\n== So phan khai trong PHP du cho chi so Java that su doc ==\n";
+// Vi sao can: phep kiem "thieu 1 phan -> bao loi" o tren lay CHINH so khai bao lam
+// chuan, nen no khong the tu phat hien khai SAI. Ma khai thieu la nguy hiem nhat:
+// server doc tachTime[N] vuot mang -> nem ArrayIndexOutOfBounds GIUA luc phat qua,
+// nguoi choi da nhan nua so qua ma dong giftcode_log lan viec tru luot deu khong
+// chay -> nhan lai duoc vo han. Nen o day doi chieu voi chi so ma Java THAT SU doc.
+$khoi = preg_split('/\} else if \(tachTime\[0\]\.equals\("/', $java);
+$doc  = [];
+foreach ($khoi as $k) {
+    if (!preg_match('/^([A-Za-z0-9_]+)"\)/', $k, $mm)) {
+        continue;
+    }
+    $loaiPT = $mm[1];
+    // Bo cac doan nam trong try/catch: doc vuot mang o do bi bat lai nen phan do la
+    // TUY CHON that su. Vi du GEM doc tachTime[3] trong try, chu thich ngay duoi ghi
+    // ro "// GEM:ID:SL" — tuc 3 phan la du, phan thu 4 chi de chon ngoc khoa.
+    $than = preg_replace('/try\s*\{.*?\}\s*catch/s', '', $k);
+    preg_match_all('/tachTime\[(\d+)\]/', $than, $idx);
+    $max = 0;
+    foreach ($idx[1] as $i) {
+        $max = max($max, (int)$i);
+    }
+    // Giu chi so LON NHAT neu mot loai xuat hien nhieu lan.
+    $doc[$loaiPT] = max($doc[$loaiPT] ?? 0, $max);
+}
+$bangPhp = loaiThuong();
+$lech = [];
+foreach ($doc as $loaiPT => $maxIdx) {
+    if (!isset($bangPhp[$loaiPT])) {
+        continue; // da bao o phep kiem tren
+    }
+    $can = $maxIdx + 1;
+    $khai = $bangPhp[$loaiPT][0];
+    if ($khai < $can) {
+        $lech[] = "$loaiPT: PHP khai $khai phan nhung Java doc toi tachTime[$maxIdx] (can $can)";
+    }
+}
+if ($lech) {
+    $hong++;
+    echo "  HONG khai thieu so phan:\n";
+    foreach ($lech as $d) {
+        echo "    - $d\n";
+    }
+} else {
+    $dat++;
+    echo "  OK   da doi chieu " . count($doc) . " loai, khong loai nao khai thieu\n";
+}
 echo "\n===================================\n";
 echo "DAT: $dat   HONG: $hong\n";
 exit($hong > 0 ? 1 : 0);

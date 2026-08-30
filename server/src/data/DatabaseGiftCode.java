@@ -31,13 +31,13 @@ class DatabaseGiftCode {
         }
         text = text.replaceAll("[^a-zA-Z0-9_-]", "");
         if (text.isEmpty()) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Mã quà tặng không hợp lệ.", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("MÃ£ quÃ  táº·ng khÃ´ng há»£p lá».", ""));
             return;
         }
 
         // Gian cach giua 2 lan go ma. Client goi thang duoc goi -31 (idMenuInputText = 7)
         // nen truoc day mot vong lap se vua DO MA (ma chi la chu va so, doan duoc)
-        // vua bat moi lan doan la vai cau truy van xuong database — day chinh la
+        // vua bat moi lan doan la vai cau truy van xuong database â day chinh la
         // ket noi ma ca may chu game dung chung, nghen la ca server cham theo.
         // Im lang bo qua, khong tra loi gi: tra loi cung la mot goi tin, va con
         // cho biet minh dang bi chan.
@@ -46,20 +46,20 @@ class DatabaseGiftCode {
         }
         player.timeNhapGiftCode = System.currentTimeMillis();
 
-        // TEST: mã giftcode test, chỉ hoạt động khi bật sv.testMode và khớp sv.testCode.
-        // Tắt mặc định (testMode=0). Có ghi log, dùng lại được để tiện kiểm thử.
+        // TEST: mÃ£ giftcode test, chá» hoáº¡t Äá»ng khi báº­t sv.testMode vÃ  khá»p sv.testCode.
+        // Táº¯t máº·c Äá»nh (testMode=0). CÃ³ ghi log, dÃ¹ng láº¡i ÄÆ°á»£c Äá» tiá»n kiá»m thá»­.
         if (TeamServer.testMode && !TeamServer.testCode.isEmpty() && text.equals(TeamServer.testCode)) {
             player.addXu(100000000L, "testcode");
             player.addLuong(10000);
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-            player.sendMessage(MessageCreator.createServerAlertMessage("[TEST] Đã nhận 100,000,000 xu + 10,000 lượng.", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("[TEST] ÄÃ£ nháº­n 100,000,000 xu + 10,000 lÆ°á»£ng.", ""));
             db.saveOrtherLog("", player.charname, "TEST giftcode: +100000000 xu, +10000 luong", "testcode");
             return;
         }
 
         int userId = player.userID;
         if (!Database.check_active_putcode(userId)) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Vui lòng kích hoạt tài khoản để sử dụng." + userId, ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Vui lÃ²ng kÃ­ch hoáº¡t tÃ i khoáº£n Äá» sá»­ dá»¥ng." + userId, ""));
             return;
         }
 
@@ -72,7 +72,7 @@ class DatabaseGiftCode {
             pre1 = conn.prepareStatement("select * from giftcode_log where giftcode = '" + text + "' AND player = '" + player.charname + "';");
             rs = pre1.executeQuery();
             if (rs.next()) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã nhập mã quà tặng này rồi.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Báº¡n ÄÃ£ nháº­p mÃ£ quÃ  táº·ng nÃ y rá»i.", ""));
                 return;
             }
             // SECURITY: test/backdoor gift codes (petmax, xuluong, alldanhhieu, ...) permanently disabled.
@@ -87,9 +87,9 @@ class DatabaseGiftCode {
                 int indexPet = 3;
                 if (indexPet >= 0 && indexPet < idpet.length) {
                     player.doCreatePetMax(idpet[indexPet], 5, idtrungpet[indexPet], 1008000000);
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Pet Max", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n ÄÆ°á»£c Pet Max", ""));
                 } else {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Loại pet không hợp lệ (0-4)", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Loáº¡i pet khÃ´ng há»£p lá» (0-4)", ""));
                 }
                 break;
 
@@ -102,12 +102,12 @@ class DatabaseGiftCode {
                       player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                   } catch (IOException ex) {
                   }
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được danh hiệu: " + DanhHieu.getName(8935), ""));
+                  player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n ÄÆ°á»£c danh hiá»u: " + DanhHieu.getName(8935), ""));
 
                   return;
               case "rongbang":
                   player.createRongLon(0, true);
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Rồng Băng.", ""));
+                  player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n ÄÆ°á»£c Rá»ng BÄng.", ""));
                   return;
             case "alldanhhieu":
                   // Add all titles from DanhHieu class
@@ -127,7 +127,7 @@ class DatabaseGiftCode {
                   } catch (IOException ex) {
                   }
                   
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được tất cả danh hiệu!", ""));
+                  player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n ÄÆ°á»£c táº¥t cáº£ danh hiá»u!", ""));
                   
                   Database.instance.saveOrtherLog("", player.charname, "CODE: " + text, "putGiftCode");
                   pre1.execute("insert into giftcode_log set player = '" + player.charname + "', giftcode = '" + text + "', item = '" + 0 + "', xu = " + 0 + ", luong = " + 0 + ", luongK = " + 0 + ";");
@@ -143,21 +143,21 @@ class DatabaseGiftCode {
                       player.addLuong(luong);
                       player.lockLuong += luong;
 
-                      String msg = "Bạn vừa nhận được 2 tỉ xu và 2 triệu lượng.";
+                      String msg = "Báº¡n vá»«a nháº­n ÄÆ°á»£c 2 tá» xu vÃ  2 triá»u lÆ°á»£ng.";
                       player.sendMessage(MessageCreator.createServerAlertMessage(msg, ""));
                       return;
 
               case "hoakylan":
                   player.map.doCreateHoaKyLan(player, 683, 0L);
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Hỏa Kỳ Lân.", ""));
+                  player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n ÄÆ°á»£c Há»a Ká»³ LÃ¢n.", ""));
                   return;
                case "lansu":
                   player.map.doCreateLanSuVu(player, 882, 0L);
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Lân Sư.", ""));
+                  player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n ÄÆ°á»£c LÃ¢n SÆ°.", ""));
                   return;
               case "duongkhang":
                   player.createHeo(0, false);
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Đương Khang.", ""));
+                  player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n ÄÆ°á»£c ÄÆ°Æ¡ng Khang.", ""));
                   return;
 
               case "phiphong":
@@ -181,7 +181,7 @@ class DatabaseGiftCode {
                   Item newitem5 = Map.doCreateMatNa(player, -1, ID_MAT_NA[2], 2, valuemn[2]);
                   Item newitem6 = Map.doCreateMatNa(player, -1, ID_MAT_NA[3], 3, valuemn[3]);
                   Item newitem7 = Map.doCreateMatNa(player, -1, ID_MAT_NA[4], 4, valuemn[4]);   
-                  player.sendMessage(MessageCreator.createServerAlertMessage("Nhận được tất cả mặt nạ 365 ngày", ""));
+                  player.sendMessage(MessageCreator.createServerAlertMessage("Nháº­n ÄÆ°á»£c táº¥t cáº£ máº·t náº¡ 365 ngÃ y", ""));
 
                   return;
 
@@ -229,18 +229,18 @@ class DatabaseGiftCode {
                         }
                         player.sendMessage(MessageCreator.createCharGemItem(player));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận Full Nguyên Liệu Cần thiết.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n Full NguyÃªn Liá»u Cáº§n thiáº¿t.", ""));
                         return;
                         
                         case "tuhondan":
                         player.potions[83] = player.potions[83] + 9999; // tuhondan
                         player.sendMessage(MessageCreator.createCharGemItem(player));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận x9999 tụ hồn đan.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n x9999 tá»¥ há»n Äan.", ""));
                         return;
                         
                case "tranh": {
-                        // Tứ Bình – 5 mảnh mỗi loại (ID: 159 → 174, 16 ID)
+                        // Tá»© BÃ¬nh â 5 máº£nh má»i loáº¡i (ID: 159 â 174, 16 ID)
                         int[] tuBinh = {
                             159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170,
                             171, 172, 173, 174
@@ -249,7 +249,7 @@ class DatabaseGiftCode {
                             player.doAddGemItem(gemId, 5, true);
                         }
 
-                        // Tứ Nhạc – 10 mảnh mỗi loại (ID: 179 → 194, 16 ID)
+                        // Tá»© Nháº¡c â 10 máº£nh má»i loáº¡i (ID: 179 â 194, 16 ID)
                         int[] tuNhac = {
                             179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190,
                             191, 192, 193, 194
@@ -258,7 +258,7 @@ class DatabaseGiftCode {
                             player.doAddGemItem(gemId, 10, true);
                         }
 
-                        // Tứ Khoái – 15 mảnh mỗi loại (ID: 195 → 210, 16 ID)
+                        // Tá»© KhoÃ¡i â 15 máº£nh má»i loáº¡i (ID: 195 â 210, 16 ID)
                         int[] tuKhoai = {
                             195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206,
                             207, 208, 209, 210
@@ -267,7 +267,7 @@ class DatabaseGiftCode {
                             player.doAddGemItem(gemId, 15, true);
                         }
 
-                        // Tứ Linh – 20 mảnh mỗi loại (ID: 211 → 226, 16 ID)
+                        // Tá»© Linh â 20 máº£nh má»i loáº¡i (ID: 211 â 226, 16 ID)
                         int[] tuLinh = {
                             211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222,
                             223, 224, 225, 226
@@ -278,7 +278,7 @@ class DatabaseGiftCode {
 
                         player.sendMessage(MessageCreator.createCharGemItem(player));
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã nhận full tranh!", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Báº¡n ÄÃ£ nháº­n full tranh!", ""));
                         return;
                     }         
               case "sachpet":
@@ -292,12 +292,12 @@ class DatabaseGiftCode {
                                 GiftCode.AddItem(player, id, 0, 0, -1);
                             }
                         }
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận Trứng Pet", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n Trá»©ng Pet", ""));
                         return;
               case "sutu":
                         player.createSuTuBang(0, true);
                         player.createSuTu(0, true);
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được Sư Tử.", ""));
+                        player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n ÄÆ°á»£c SÆ° Tá»­.", ""));
                   return;
                         
               case "lansutu":
@@ -322,7 +322,7 @@ class DatabaseGiftCode {
                 int limit = rs.getInt("limit_use");
 
                 if (limit == 0) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Mã Quà Tặng đã hết lượt sử dụng.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("MÃ£ QuÃ  Táº·ng ÄÃ£ háº¿t lÆ°á»£t sá»­ dá»¥ng.", ""));
                     return;
                 }
 
@@ -368,14 +368,14 @@ class DatabaseGiftCode {
                                 player.createPetVinhVien(Integer.parseInt(tachTime[1]));
                         
                         } else if (tachTime[0].equals("DH")) {
-                            // Danh sách ID danh hiệu có sẵn
+                            // Danh sÃ¡ch ID danh hiá»u cÃ³ sáºµn
                             int[] availableTitles = {
                                 8767, 8768, 8769, 8770, 8771, 8772, 8773, 8774, 8775, 8776, 8777,
                                 8778, 8779, 8785, 8786, 8787, 8788, 8900, 8901, 8902, 8903, 8904,
                                 8905, 8906, 8907, 8908, 8909, 8910, 8911, 8924, 8925, 8935, 8956, 8957
                             };
                             
-                            // Nếu ID = 0, chọn ngẫu nhiên một danh hiệu
+                            // Náº¿u ID = 0, chá»n ngáº«u nhiÃªn má»t danh hiá»u
                             int titleId = Integer.parseInt(tachTime[1]);
                             if (titleId == 0) {
                                 titleId = availableTitles[Map.r.nextInt(availableTitles.length)];
@@ -442,6 +442,24 @@ class DatabaseGiftCode {
                             Database.instance.addCharXaiNapLuong(player, 0);
                         } else if (tachTime[0].equals("MN")) {
                             player.luongNap += Integer.parseInt(tachTime[2]);
+                        } else if (tachTime[0].equals("DIEMDT")) {
+                            // Diem doi thuong — cung kho diem ma NPC "doi thuong" tieu
+                            // (Char.diemDoiThuong), va cung kho ma van tieu / cuop tieu /
+                            // giet quai cong vao.
+                            //
+                            // KHONG dung cham diemQuaiHomNay: tran 1000 diem/ngay o
+                            // Map.capNhatDiemGietQuai chi chan nguon GIET QUAI, khong phai
+                            // chan tong diem. Giftcode la nguon khac, admin phat bao nhieu
+                            // la co y bay nhieu.
+                            //
+                            // Khong phai ghi DB rieng nhu DN: diemDoiThuong nam trong chuoi
+                            // pInfo (CharVongLap:913, doc lai o CharNapDuLieu:224) nen no di
+                            // theo duong luu nhan vat binh thuong.
+                            final int themDiem = Integer.parseInt(tachTime[1]);
+                            player.diemDoiThuong += themDiem;
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Bạn nhận được " + themDiem + " điểm đổi thưởng (tổng: "
+                                            + player.diemDoiThuong + " điểm).", ""));
                         } else if (tachTime[0].equals("PP")) {
                             Char.createPhiPhongMaxBaoKich(player, 0, Integer.parseInt(tachTime[3]), (Item) null, false, false, 0, true);
                             Char.createPhiPhongMaxBaoKich(player, 1, Integer.parseInt(tachTime[3]), (Item) null, false, false, 0, true);
@@ -489,17 +507,17 @@ class DatabaseGiftCode {
                                 randomMN = Integer.parseInt(tachTime[1]);
                             }
                             Item newitem = Map.doCreateMatNa(player, Integer.parseInt(tachTime[3]), ID_MAT_NA[randomMN], randomMN, valuemn[randomMN]);
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Nhận " + newitem.getName() + " 7 ngày", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Nháº­n " + newitem.getName() + " 7 ngÃ y", ""));
                         // ... existing code ...
                     } else if (tachTime[0].equals("MATNA2")) {
-                        // Tạo mặt nạ với option và value random
-                        int[] optionValues = {5, 5, 10, 30, 50}; // Các giá trị value có thể
+                        // Táº¡o máº·t náº¡ vá»i option vÃ  value random
+                        int[] optionValues = {5, 5, 10, 30, 50}; // CÃ¡c giÃ¡ trá» value cÃ³ thá»
                         int randomIndex = Map.r.nextInt(optionValues.length);
-                        int matnaID = Integer.parseInt(tachTime[1]); // ID mặt nạ
-                        int option = randomIndex; // Option mặt nạ (0-4)
-                        int value = optionValues[randomIndex];  // Giá trị option tương ứng
+                        int matnaID = Integer.parseInt(tachTime[1]); // ID máº·t náº¡
+                        int option = randomIndex; // Option máº·t náº¡ (0-4)
+                        int value = optionValues[randomIndex];  // GiÃ¡ trá» option tÆ°Æ¡ng á»©ng
                         Item newitem = Map.doCreateMatNa2(player, Integer.parseInt(tachTime[3]), matnaID, option, value);
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Nhận " + newitem.getName() + (Integer.parseInt(tachTime[3]) > 0 ? " " + Integer.parseInt(tachTime[3])/1440 + " ngày" : " vĩnh viễn"), ""));    
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Nháº­n " + newitem.getName() + (Integer.parseInt(tachTime[3]) > 0 ? " " + Integer.parseInt(tachTime[3])/1440 + " ngÃ y" : " vÄ©nh viá»n"), ""));    
                     } else if (tachTime[0].equals("RONGBANG")) {
                             player.createRongLon(Integer.parseInt(tachTime[1]), true);
                         } else if (tachTime[0].equals("SUTU")) {
@@ -516,7 +534,7 @@ class DatabaseGiftCode {
                         } else if (tachTime[0].equals("DBT")) {
                             player.createPoro(Integer.parseInt(tachTime[1]), false);
 
-                            ///  todo REGEX quà tích lũy 
+                            ///  todo REGEX quÃ  tÃ­ch lÅ©y 
                         } else if (tachTime[0].equals("LANT")) {
                             player.createLan(Integer.parseInt(tachTime[1]), false, 95);
 
@@ -528,7 +546,7 @@ class DatabaseGiftCode {
                             
                             Animal anima = null;
                             anima = new Animal();
-                            anima.name = "Phượng hoàng đa sắc";
+                            anima.name = "PhÆ°á»£ng hoÃ ng Äa sáº¯c";
                             anima.idImg = Animal.PHUONG_HOANG_7MAU;
                             anima.createAtt();
                             anima.level = 1;
@@ -596,7 +614,7 @@ class DatabaseGiftCode {
                 }
 
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được phần quà từ: " + code + ".", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("ChÃºc má»«ng báº¡n ÄÃ£ nháº­n ÄÆ°á»£c pháº§n quÃ  tá»«: " + code + ".", ""));
                 Database.instance.saveOrtherLog("", player.charname, "CODE: " + code, "putGiftCode");
                 sql = "insert into giftcode_log set player = '" + player.charname + "', giftcode = '" + text + "', item = '" + item + "', xu = " + xu + ", luong = " + luong + ", luongK = " + luongkhoa + ";";
                 pre1.execute(sql);
@@ -607,7 +625,7 @@ class DatabaseGiftCode {
                 }
                 System.out.println(limit);
             } else {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Mã quà tặng không tồn tại.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("MÃ£ quÃ  táº·ng khÃ´ng tá»n táº¡i.", ""));
             }
             // System.out.println("\n" + rs.toString() + "\n");
         } catch (Exception e) {
@@ -634,7 +652,7 @@ class DatabaseGiftCode {
             if (daNap >= 10000 && player.tichluy < 10000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|" + 10000 + "|DB:686:1:-1|1|mốc nạp 10K lượng";
+                respond = "1|0|0|" + 10000 + "|DB:686:1:-1|1|má»c náº¡p 10K lÆ°á»£ng";
                 player.tichluy = 10000;
                 stm.execute("update `tob_char` set tichluy = '10000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -644,7 +662,7 @@ class DatabaseGiftCode {
             if (daNap >= 20000 && player.tichluy < 20000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|" + 20000 + "|DB:687:1:0,PP:0:1:43200|1|mốc nạp 20K lượng";
+                respond = "1|0|0|" + 20000 + "|DB:687:1:0,PP:0:1:43200|1|má»c náº¡p 20K lÆ°á»£ng";
                 player.tichluy = 20000;
                 stm.execute("update `tob_char` set tichluy = '20000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -654,7 +672,7 @@ class DatabaseGiftCode {
             if (daNap >= 40000 && player.tichluy < 40000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|" + 40000 + "|PT:74:1:0,PP:0:1:129600|1|mốc nạp 40k lượng";
+                respond = "1|0|0|" + 40000 + "|PT:74:1:0,PP:0:1:129600|1|má»c náº¡p 40k lÆ°á»£ng";
                 player.tichluy = 40000;
                 stm.execute("update `tob_char` set tichluy = '40000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -664,7 +682,7 @@ class DatabaseGiftCode {
             if (daNap >= 80000 && player.tichluy < 80000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|" + 80000 + "|DB:684:1:-1,PP:0:1:-1,PP:0:1:0,HLT:1:1|1|mốc nạp 80k lượng";
+                respond = "1|0|0|" + 80000 + "|DB:684:1:-1,PP:0:1:-1,PP:0:1:0,HLT:1:1|1|má»c náº¡p 80k lÆ°á»£ng";
                 player.tichluy = 80000;
                 stm.execute("update `tob_char` set tichluy = '80000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -675,7 +693,7 @@ class DatabaseGiftCode {
             if (daNap >= 120000 && player.tichluy < 120000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|" + 120000 + "|DB:684:1:-1,AOSHOP:723:1:0,AOSHOP:724:1:0,GEM:249:300:-1,PET:5:1:0|1|mốc nạp 120K lượng";
+                respond = "1|0|0|" + 120000 + "|DB:684:1:-1,AOSHOP:723:1:0,AOSHOP:724:1:0,GEM:249:300:-1,PET:5:1:0|1|má»c náº¡p 120K lÆ°á»£ng";
                 player.tichluy = 120000;
                 stm.execute("update `tob_char` set tichluy = '120000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -686,7 +704,7 @@ class DatabaseGiftCode {
             if (daNap >= 200000 && player.tichluy < 200000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|" + 200000 + "|DB:688:1:-1,HLT:0:1,CHOI:617:1:43200:-1,BT:0:1:43200|1|mốc nạp 200k Lượng";
+                respond = "1|0|0|" + 200000 + "|DB:688:1:-1,HLT:0:1,CHOI:617:1:43200:-1,BT:0:1:43200|1|má»c náº¡p 200k LÆ°á»£ng";
                 player.tichluy = 200000;
                 stm.execute("update `tob_char` set tichluy = '200000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -698,7 +716,7 @@ class DatabaseGiftCode {
             if (daNap >= 400000 && player.tichluy < 400000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|400000|DB:688:1:-1,HLT:0:1,BT:0:1:0,GEM:249:1000:-1,AOSHOP:725:1:15,AOSHOP:726:1:15|1|mốc nạp 400k Lượng";
+                respond = "1|0|0|400000|DB:688:1:-1,HLT:0:1,BT:0:1:0,GEM:249:1000:-1,AOSHOP:725:1:15,AOSHOP:726:1:15|1|má»c náº¡p 400k LÆ°á»£ng";
                 player.tichluy = 400000;
                 stm.execute("update `tob_char` set tichluy = '400000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -711,7 +729,7 @@ class DatabaseGiftCode {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
 
-                respond = "1|0|0|" + 600000 + "|DB:685:1:-1,DB:688:1:-1,PPV:750:1:21600:1,GEM:249:500:-1,HLT:0:1,TRANGPHUC:725:1:30,TRANGPHUC:726:1:30|1|mốc nạp 600k Lượng";
+                respond = "1|0|0|" + 600000 + "|DB:685:1:-1,DB:688:1:-1,PPV:750:1:21600:1,GEM:249:500:-1,HLT:0:1,TRANGPHUC:725:1:30,TRANGPHUC:726:1:30|1|má»c náº¡p 600k LÆ°á»£ng";
                 player.tichluy = 600000;
                 stm.execute("update `tob_char` set tichluy = '600000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -723,7 +741,7 @@ class DatabaseGiftCode {
             if (daNap >= 1000000 && player.tichluy < 1000000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|" + 1000000 + "|DB:685:1:-1,DB:688:1:-1,PPV:742:1:0:1,PPV:742:1:0:0,MATNA:3:1:-1,DH:8770:1:0|1|mốc nạp 1 Triệu Lượng.";
+                respond = "1|0|0|" + 1000000 + "|DB:685:1:-1,DB:688:1:-1,PPV:742:1:0:1,PPV:742:1:0:0,MATNA:3:1:-1,DH:8770:1:0|1|má»c náº¡p 1 Triá»u LÆ°á»£ng.";
                 player.tichluy = 1000000;
                 stm.execute("update `tob_char` set tichluy = '1000000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -733,7 +751,7 @@ class DatabaseGiftCode {
             if (daNap >= 1200000 && player.tichluy < 1200000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|" + 1200000 + "|PT:70:1:0,CHOI:617:1:0,MATNA:2:1:-1,TRANGPHUC:725:1:0,TRANGPHUC:726:1:0|1|mốc nạp 1 Triệu 2 Lượng.";
+                respond = "1|0|0|" + 1200000 + "|PT:70:1:0,CHOI:617:1:0,MATNA:2:1:-1,TRANGPHUC:725:1:0,TRANGPHUC:726:1:0|1|má»c náº¡p 1 Triá»u 2 LÆ°á»£ng.";
                 player.tichluy = 1200000;
                 stm.execute("update `tob_char` set tichluy = '1200000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -743,18 +761,18 @@ class DatabaseGiftCode {
             if (daNap >= 1400000 && player.tichluy < 1400000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|1400000|PT:115:1:0,CHOI:729:1:0:0,DB:899:1:0|1|mốc nạp 1 Triệu 4 Lượng.";
+                respond = "1|0|0|1400000|PT:115:1:0,CHOI:729:1:0:0,DB:899:1:0|1|má»c náº¡p 1 Triá»u 4 LÆ°á»£ng.";
                 player.tichluy = 1400000;
                 stm.execute("update `tob_char` set tichluy = '1400000' where charname = '" + player.charname + "'");
                 stm.close();
                 Database.connGiftCode.free(conn);
                 return respond;
-            } // từ đây trở xuống là lỗi à ? ừm
+            } // tá»« ÄÃ¢y trá» xuá»ng lÃ  lá»i Ã  ? á»«m
 
             if (daNap >= 1600000 && player.tichluy < 1600000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|1600000|PT:72:1:-1,DB:898:1:0,HOVELAN:882:1:43200,CHOI:618:1:0:0|1|mốc nạp 1 trieu 6 luong.";
+                respond = "1|0|0|1600000|PT:72:1:-1,DB:898:1:0,HOVELAN:882:1:43200,CHOI:618:1:0:0|1|má»c náº¡p 1 trieu 6 luong.";
                 player.tichluy = 1600000;
                 stm.execute("update `tob_char` set tichluy = '1600000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -766,7 +784,7 @@ class DatabaseGiftCode {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
 
-                respond = "1|0|0|1800000|MATNA:4:1:-1,VKMAX:0:1:0,VKTBMAX:0:1:0,HOVELAN:882:1:86400,PPV:750:1:0:0,DB:901:1:0|1|mốc nạp 1 Triệu 8 Lượng.";
+                respond = "1|0|0|1800000|MATNA:4:1:-1,VKMAX:0:1:0,VKTBMAX:0:1:0,HOVELAN:882:1:86400,PPV:750:1:0:0,DB:901:1:0|1|má»c náº¡p 1 Triá»u 8 LÆ°á»£ng.";
                 player.tichluy = 1800000;
                 stm.execute("update `tob_char` set tichluy = '1800000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -777,7 +795,7 @@ class DatabaseGiftCode {
             if (daNap >= 2000000 && player.tichluy < 2000000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|2000000|MNT:14400:837:10:5,MNC:14400:837:10:5,DB:638:1:-1,DB:902:1:0,TRANGPHUC:839:1:0,VKTBMAX:0:1:0|1|mốc nạp 2tr Lượng.";
+                respond = "1|0|0|2000000|MNT:14400:837:10:5,MNC:14400:837:10:5,DB:638:1:-1,DB:902:1:0,TRANGPHUC:839:1:0,VKTBMAX:0:1:0|1|má»c náº¡p 2tr LÆ°á»£ng.";
                 player.tichluy = 2000000;
                 stm.execute("update `tob_char` set tichluy = '2000000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -788,7 +806,7 @@ class DatabaseGiftCode {
             if (daNap >= 2200000 && player.tichluy < 2200000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|2200000|MNT:0:837:10:5,MNC:0:837:10:5,GEM:249:5000:-1,HOVELAN:882:1:108000,NLT:0:1:0|1|mốc nạp 2tr2 Lượng.";
+                respond = "1|0|0|2200000|MNT:0:837:10:5,MNC:0:837:10:5,GEM:249:5000:-1,HOVELAN:882:1:108000,NLT:0:1:0|1|má»c náº¡p 2tr2 LÆ°á»£ng.";
                 player.tichluy = 2200000;
                 stm.execute("update `tob_char` set tichluy = '2200000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -800,7 +818,7 @@ class DatabaseGiftCode {
             if (daNap >= 2600000 && player.tichluy < 2600000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|2600000|PT:71:1:-1,PT:86:1:-1,GEM:249:5000:-1,DB:685:1:-1,DB:688:1:-1,HOVELAN:882:1:129600,|1|mốc nạp 2tr6 Lượng.";
+                respond = "1|0|0|2600000|PT:71:1:-1,PT:86:1:-1,GEM:249:5000:-1,DB:685:1:-1,DB:688:1:-1,HOVELAN:882:1:129600,|1|má»c náº¡p 2tr6 LÆ°á»£ng.";
                 player.tichluy = 2600000;
                 stm.execute("update `tob_char` set tichluy = '2600000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -810,7 +828,7 @@ class DatabaseGiftCode {
 //            if (daNap >= 2800000 && player.tichluy < 2800000) {
 //                Connection conn = Database.connGiftCode.getConnection();
 //                Statement stm = conn.createStatement();
-//                respond = "1|0|0|2800000|SUTU:-1,DB:581:1:-1|1|mốc nạp 2tr8 Lượng.";
+//                respond = "1|0|0|2800000|SUTU:-1,DB:581:1:-1|1|má»c náº¡p 2tr8 LÆ°á»£ng.";
 //                player.tichluy = 2800000;
 //                stm.execute("update `tob_char` set tichluy = '2800000' where charname = '" + player.charname + "'");
 //                stm.close();
@@ -821,7 +839,7 @@ class DatabaseGiftCode {
             if (daNap >= 3000000 && player.tichluy < 3000000) {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
-                respond = "1|0|0|3000000|VKTBLV:80:5:0,DB:577:1:-1,DB:578:1:-1|1|mốc nạp 3tr Lượng.";
+                respond = "1|0|0|3000000|VKTBLV:80:5:0,DB:577:1:-1,DB:578:1:-1|1|má»c náº¡p 3tr LÆ°á»£ng.";
                 player.tichluy = 3000000;
                 stm.execute("update `tob_char` set tichluy = '3000000' where charname = '" + player.charname + "'");
                 stm.close();
@@ -1008,9 +1026,9 @@ class DatabaseGiftCode {
             } catch (Exception ignored) {
             }
             try {
-                String[] name = {"Kháng hoả", "Kháng thuỷ", "Kháng mộc", "Kháng kim", "Kháng thổ", "Giá lượng", "Số lượng"};
+                String[] name = {"KhÃ¡ng hoáº£", "KhÃ¡ng thuá»·", "KhÃ¡ng má»c", "KhÃ¡ng kim", "KhÃ¡ng thá»", "GiÃ¡ lÆ°á»£ng", "Sá» lÆ°á»£ng"};
                 if (TeamServer.isServerLienDau()) {
-                    name = new String[]{"Kháng hoả", "Kháng thuỷ", "Kháng mộc", "Kháng kim", "Kháng thổ"};
+                    name = new String[]{"KhÃ¡ng hoáº£", "KhÃ¡ng thuá»·", "KhÃ¡ng má»c", "KhÃ¡ng kim", "KhÃ¡ng thá»"};
                 }
                 int[] id = {120, 121, 122, 123, 124, 125, 126};
                 int[] idcolor = {1, 1, 1, 1, 1, 2, 2, 2};
@@ -1053,7 +1071,7 @@ class DatabaseGiftCode {
             } catch (Exception ignored) {
             }
             try {
-                String[] data = {"750, 'Phi Phong Huyền Vũ', 19, 15, 0, 0, 1, 480, 0, 170, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 626, 0, -1, 10080, -1, '', 8806,0", "751, 'Phù phu thê', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 627, 0, -1, 0, -1, '', -1,0", "752, 'Rương nguyên liệu cao cấp', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 596, 0, -1, 0, -1, '', -1,0", "753, 'Rương nguyên liệu sơ cấp', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 596, 0, -1, 0, -1, '', -1,0", "754, 'Áo dài nam \nTăng 100% băng ,sét ,độc ,lửa lan', 0, 0, 0, 1, 1, 480, 10, 10, 5000, 5000, 0, 0, 0, 0, 0, 1, 0, -1, 630, 0, -1, 10080, -1, '', -1, 0", "755, 'Áo dài nữ \nTăng 100% băng ,sét ,độc ,lửa lan', 0, 0, 0, 2, 1, 480, 10, 10, 5000, 5000, 0, 0, 0, 0, 0, 1, 0, -1, 631, 0, -1, 10080, -1, '', -1, 0"};
+                String[] data = {"750, 'Phi Phong Huyá»n VÅ©', 19, 15, 0, 0, 1, 480, 0, 170, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 626, 0, -1, 10080, -1, '', 8806,0", "751, 'PhÃ¹ phu thÃª', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 627, 0, -1, 0, -1, '', -1,0", "752, 'RÆ°Æ¡ng nguyÃªn liá»u cao cáº¥p', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 596, 0, -1, 0, -1, '', -1,0", "753, 'RÆ°Æ¡ng nguyÃªn liá»u sÆ¡ cáº¥p', 28, 0, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 596, 0, -1, 0, -1, '', -1,0", "754, 'Ão dÃ i nam \nTÄng 100% bÄng ,sÃ©t ,Äá»c ,lá»­a lan', 0, 0, 0, 1, 1, 480, 10, 10, 5000, 5000, 0, 0, 0, 0, 0, 1, 0, -1, 630, 0, -1, 10080, -1, '', -1, 0", "755, 'Ão dÃ i ná»¯ \nTÄng 100% bÄng ,sÃ©t ,Äá»c ,lá»­a lan', 0, 0, 0, 2, 1, 480, 10, 10, 5000, 5000, 0, 0, 0, 0, 0, 1, 0, -1, 631, 0, -1, 10080, -1, '', -1, 0"};
                 for (String datum : data) {
                     try {
                         String sql4 = "insert into data_item values(" + datum + " )";

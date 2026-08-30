@@ -78,6 +78,10 @@ function loaiThuong(): array
         'PHBT'      => [2, 'PHBT:thoiHan',                 'Phượng hoàng băng'],
         'DN'        => [3, 'DN:_:diemNap',                 'Cộng điểm nạp VIP'],
         'MN'        => [3, 'MN:_:luongNap',                'Cộng lượng nạp'],
+        // Diem doi thuong: cung kho diem ma NPC "doi thuong" tieu (Char.diemDoiThuong),
+        // va cung kho ma van tieu / cuop tieu / danh quai cong vao. Tran 1000 diem/ngay
+        // chi ap cho nguon DANH QUAI, khong chan phat bang giftcode.
+        'DIEMDT'    => [2, 'DIEMDT:soDiem',                'Cộng điểm đổi thưởng (NPC “đổi thưởng”)'],
     ];
 }
 
