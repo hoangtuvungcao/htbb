@@ -2849,7 +2849,23 @@ public class Char extends LiveActor {
             }
             if (actor.cat == 0) {
                 final Char temp = (Char) actor;
-                int phandam = d * temp.attNguHanh[4] / 100;
+                // SKIN LINH THU (Gau Truc): noi tai cong them vao PHAN SAT THUONG.
+                // attNguHanh[4] chinh la dong "Phan st" (thuoc tinh so 32) ma trang bi
+                // cong cho — nen cong o day la CONG DON voi phan sat thuong san co cua
+                // do, dung nhu nguoi choi da chot.
+                //
+                // Tran 80% CHI AP KHI noi tai dang gop vao. Ap tran vo dieu kien se am
+                // tham cat bot phan sat thuong cua nhung nguoi da co san tren 80% tu
+                // trang bi — ho khong mac skin nao ma van bi yeu di.
+                final int pcPstSkin = SkinLinhThu.pcCongPhanSatThuong(temp);
+                int pcPst = temp.attNguHanh[4];
+                if (pcPstSkin > 0) {
+                    pcPst += pcPstSkin;
+                    if (pcPst > SkinLinhThu.PC_TRAN_PST) {
+                        pcPst = SkinLinhThu.PC_TRAN_PST;
+                    }
+                }
+                int phandam = d * pcPst / 100;
                 if (temp.arrayBuff[4] != -1 && temp.charClass == 0 && Map.r.nextInt(100) < 70) {
                     final int phandam2 = d * CharManager.SKILL_DAM_PERCENT[temp.charClass][5][temp.skill[5] + this.addMoreLevelSkill[5]] / 100;
                     if (phandam2 > phandam) {
@@ -3065,6 +3081,20 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
             }
         }
+        // SKIN LINH THU: thu kich hoat noi tai co ti le + hoi chieu.
+        //
+        // Dat o day vi checkHapthuSatThuong la CHO DUY NHAT moi duong sat thuong danh vao
+        // nhan vat deu di qua — da soat het: PvP (MapDanhNhau, MapLienDau, Region,
+        // RegionVantienTran), quai thuong (Monster), va toan bo cac lop Boss. Moc o
+        // subDam se sot duong boss; moc o tung noi goi se sot khi them duong moi.
+        //
+        // Truyen finalDam de dieu kien "HP tut duoi 30%" tinh theo mau CON LAI SAU don
+        // nay, chu khong phai doi den don ke tiep moi kich hoat.
+        if (SkinLinhThu.thuKichHoat(this, actor, finalDam)) {
+            SkinLinhThu.baoKichHoat(this);
+        }
+        a += finalDam * SkinLinhThu.pcChanSatThuong(this) / 100;
+
         // SKIN LINH THU (Chien Lang): hap thu them mot phan sat thuong.
         // PHAI dat SAU khoi hap thu cua thu cuoi o tren — khoi do dung "a = ..." (gan de)
         // chu khong phai "a += ...", nen bat cu thu gi cong vao a truoc no deu bi xoa
@@ -13171,6 +13201,21 @@ public int applyRongLonReleaseTo(int baseDamage) {
      * truong nay chi la ban dem tam, khong bao gio lech voi vat pham.
      */
     public int idSkinLinhThu = SkinLinhThu.KHONG_CO;
+
+    /**
+     * Trang thai noi tai cua skin: moc het hieu luc va moc het hoi chieu, tra theo so
+     * hieu skin (moi skin dung mot noi tai). Xem real.SkinLinhThu.
+     *
+     * CHI NAM TRONG BO NHO, khong co cot CSDL: hoi chieu 40 giay ngan hon moi phien
+     * choi, nen mat khi dang xuat la dung — dang nhap lai thi noi tai san sang, khong ai
+     * mat gi. Them cot chi de luu 40 giay la them mot cho co the lech.
+     *
+     * Tra theo so hieu skin chu khong phai mot cap bien: doi skin khi noi tai dang chay
+     * thi buff cua skin cu khong theo sang skin moi, va hoi chieu cua tung skin dem
+     * rieng — dung y, khong phai tinh co.
+     */
+    public final long[] skinHetHieuLuc = new long[SkinLinhThu.SO_SKIN];
+    public final long[] skinHetHoiChieu = new long[SkinLinhThu.SO_SKIN];
 
     // ==================== HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI ====================
     // Moi nhan vat, moi ngay: toi da MAX_LUONG_TRAIN_NGAY luong mo va MAX_LUONG_TRAIN_NGAY

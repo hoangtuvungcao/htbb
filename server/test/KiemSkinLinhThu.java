@@ -54,6 +54,7 @@ public final class KiemSkinLinhThu {
         kiemNoiTaiThuongTruc();
         kiemTiemNang();
         kiemHeNguHanh();
+        kiemNoiTaiCoTiLe();
         kiemMoTaVatPham();
         kiemMangTraTheoType();
         kiemSoTypeTrangBiThu();
@@ -571,6 +572,174 @@ public final class KiemSkinLinhThu {
         final int mocHam = chiSo.indexOf("static int applyThanKhiOnHit");
         final int mocHopHe = chiSo.indexOf("SkinLinhThu.pcSatThuongHopHe(self)");
         Kiem.dung("cho cong nam trong applyThanKhiOnHit", mocHam > 0 && mocHopHe > mocHam);
+    }
+
+    /**
+     * NOI TAI CO TI LE KICH HOAT VA HOI CHIEU — bon dong con lai cua ban mo ta.
+     *
+     * Khong the goi that duoc tu day (can Char that co Session + CSDL), nen kiem hai thu
+     * kiem duoc va deu la cho de sai: SO LIEU dung ban mo ta, va CAC BAT BIEN ma neu vo
+     * thi khong ai phat hien bang mat thuong.
+     */
+    private static void kiemNoiTaiCoTiLe() {
+        Kiem.nhom("Skin linh thu - noi tai co ti le va hoi chieu");
+
+        final int n = real.SkinLinhThu.SO_SKIN;
+        final int[][] bang = {
+            real.SkinLinhThu.DIEU_KIEN, real.SkinLinhThu.PC_KICH_HOAT,
+            real.SkinLinhThu.MS_HIEU_LUC, real.SkinLinhThu.MS_HOI_CHIEU,
+            real.SkinLinhThu.ID_HIEU_UNG, real.SkinLinhThu.PC_CHAN_ST_NOI_TAI,
+            real.SkinLinhThu.PC_CONG_PST_NOI_TAI, real.SkinLinhThu.PC_CONG_TAN_CONG_NOI_TAI,
+        };
+        final String[] tenBang = {
+            "DIEU_KIEN", "PC_KICH_HOAT", "MS_HIEU_LUC", "MS_HOI_CHIEU", "ID_HIEU_UNG",
+            "PC_CHAN_ST_NOI_TAI", "PC_CONG_PST_NOI_TAI", "PC_CONG_TAN_CONG_NOI_TAI",
+        };
+        for (int i = 0; i < bang.length; i++) {
+            Kiem.bang("mang " + tenBang[i] + " du " + n + " phan tu",
+                    Integer.valueOf(n), Integer.valueOf(bang[i].length));
+        }
+        Kiem.bang("mang BAO_KICH_HOAT du " + n + " phan tu",
+                Integer.valueOf(n), Integer.valueOf(real.SkinLinhThu.BAO_KICH_HOAT.length));
+
+        // ---- So lieu, chep tu ban mo ta nguoi choi dua ----
+        Kiem.bang("Phuc Thu: bi class vat ly danh", Integer.valueOf(real.SkinLinhThu.DK_BI_VAT_LY),
+                Integer.valueOf(real.SkinLinhThu.DIEU_KIEN[0]));
+        Kiem.bang("Phuc Thu: chan 30% ST", Integer.valueOf(30),
+                Integer.valueOf(real.SkinLinhThu.PC_CHAN_ST_NOI_TAI[0]));
+        Kiem.bang("Phuc Thu: ti le 15%", Integer.valueOf(15),
+                Integer.valueOf(real.SkinLinhThu.PC_KICH_HOAT[0]));
+        Kiem.bang("Phuc Thu: 3 giay", Integer.valueOf(3000),
+                Integer.valueOf(real.SkinLinhThu.MS_HIEU_LUC[0]));
+
+        Kiem.bang("Gau Truc: bi class phep danh", Integer.valueOf(real.SkinLinhThu.DK_BI_PHEP),
+                Integer.valueOf(real.SkinLinhThu.DIEU_KIEN[1]));
+        Kiem.bang("Gau Truc: PST +50 diem", Integer.valueOf(50),
+                Integer.valueOf(real.SkinLinhThu.PC_CONG_PST_NOI_TAI[1]));
+        Kiem.bang("Gau Truc: tran PST 80%", Integer.valueOf(80),
+                Integer.valueOf(real.SkinLinhThu.PC_TRAN_PST));
+        Kiem.bang("Gau Truc: ti le 15%", Integer.valueOf(15),
+                Integer.valueOf(real.SkinLinhThu.PC_KICH_HOAT[1]));
+
+        Kiem.bang("Tien Loc: bi bat cu ai danh", Integer.valueOf(real.SkinLinhThu.DK_BI_DANH),
+                Integer.valueOf(real.SkinLinhThu.DIEU_KIEN[2]));
+        Kiem.bang("Tien Loc: la chan 50%", Integer.valueOf(50),
+                Integer.valueOf(real.SkinLinhThu.PC_CHAN_ST_NOI_TAI[2]));
+        Kiem.bang("Tien Loc: ti le 10%", Integer.valueOf(10),
+                Integer.valueOf(real.SkinLinhThu.PC_KICH_HOAT[2]));
+        Kiem.bang("Tien Loc: 5 giay", Integer.valueOf(5000),
+                Integer.valueOf(real.SkinLinhThu.MS_HIEU_LUC[2]));
+
+        Kiem.bang("Xich Duong: mau thap", Integer.valueOf(real.SkinLinhThu.DK_HP_THAP),
+                Integer.valueOf(real.SkinLinhThu.DIEU_KIEN[3]));
+        Kiem.bang("Xich Duong: nguong 30% mau", Integer.valueOf(30),
+                Integer.valueOf(real.SkinLinhThu.PC_NGUONG_HP));
+        Kiem.bang("Xich Duong: +50% tan cong", Integer.valueOf(50),
+                Integer.valueOf(real.SkinLinhThu.PC_CONG_TAN_CONG_NOI_TAI[3]));
+        Kiem.bang("Xich Duong: 3 giay", Integer.valueOf(3000),
+                Integer.valueOf(real.SkinLinhThu.MS_HIEU_LUC[3]));
+
+        Kiem.bang("Chien Lang khong co noi tai loai nay (15% hap thu luon bat)",
+                Integer.valueOf(0), Integer.valueOf(real.SkinLinhThu.PC_KICH_HOAT[4]));
+        Kiem.bang("Chien Lang khong co hieu ung hinh", Integer.valueOf(-1),
+                Integer.valueOf(real.SkinLinhThu.ID_HIEU_UNG[4]));
+
+        // ---- Bat bien 1: HOI CHIEU PHAI DAI HON THOI GIAN HIEU LUC ----
+        // Nguoc lai thi noi tai chay lien tuc va ti le/hoi chieu thanh trang tri.
+        for (int s = 0; s < n; s++) {
+            if (real.SkinLinhThu.PC_KICH_HOAT[s] > 0) {
+                Kiem.dung("skin " + s + ": hoi chieu dai hon thoi gian hieu luc",
+                        real.SkinLinhThu.MS_HOI_CHIEU[s] > real.SkinLinhThu.MS_HIEU_LUC[s]);
+            }
+        }
+
+        // ---- Bat bien 2: MOI SKIN CO DUNG MOT LOAI HIEU LUC ----
+        // Hai loai cung luc thi mo ta vat pham chi ghi duoc mot (moTaNoiTai dung if/else),
+        // nguoi choi doc thieu mat mot dong.
+        for (int s = 0; s < n; s++) {
+            int soLoai = 0;
+            if (real.SkinLinhThu.PC_CHAN_ST_NOI_TAI[s] > 0) {
+                soLoai++;
+            }
+            if (real.SkinLinhThu.PC_CONG_PST_NOI_TAI[s] > 0) {
+                soLoai++;
+            }
+            if (real.SkinLinhThu.PC_CONG_TAN_CONG_NOI_TAI[s] > 0) {
+                soLoai++;
+            }
+            Kiem.bang("skin " + s + " co dung " + (real.SkinLinhThu.PC_KICH_HOAT[s] > 0 ? 1 : 0)
+                            + " loai hieu luc noi tai",
+                    Integer.valueOf(real.SkinLinhThu.PC_KICH_HOAT[s] > 0 ? 1 : 0),
+                    Integer.valueOf(soLoai));
+        }
+
+        // ---- Bat bien 3: HAI NHOM MON PHAI PHU KIN VA KHONG CHONG NHAU ----
+        // Ban mo ta ghi "CB - KK - CT" cho Phuc Thu, nhung tren may chu nay Cung thu la
+        // class danh don PHEP (Char.isCharMagic tra true cho class 2 va 4). Nguoi choi da
+        // chot lai la Chien binh, Kiem khach, DAU SI. Neu ai do sua theo ban mo ta thi
+        // Cung thu se nam ca hai nhom va Dau si khong nam nhom nao — chot lai o day.
+        for (int mp = 0; mp < 5; mp++) {
+            final boolean vat = real.SkinLinhThu.laClassVatLy(mp);
+            final boolean phep = real.SkinLinhThu.laClassPhep(mp);
+            Kiem.dung("mon phai " + mp + " thuoc dung mot nhom", vat != phep);
+        }
+        Kiem.dung("Kiem khach danh don vat ly", real.SkinLinhThu.laClassVatLy(0));
+        Kiem.dung("Chien binh danh don vat ly", real.SkinLinhThu.laClassVatLy(1));
+        Kiem.dung("Dau si danh don vat ly", real.SkinLinhThu.laClassVatLy(3));
+        Kiem.dung("Phap su danh don phep", real.SkinLinhThu.laClassPhep(2));
+        Kiem.dung("Cung thu danh don phep (KHONG phai vat ly)", real.SkinLinhThu.laClassPhep(4));
+
+        final String ch = doc("src/real/Char.java");
+        // Nhom "danh don phep" phai khop dung Char.isCharMagic, khong duoc lech.
+        Kiem.dung("isCharMagic van la class 2 va 4",
+                ch.contains("return this.charClass == 2 || this.charClass == 4;"));
+
+        // ---- Bat bien 4: HIEU UNG HINH PHAI KHONG CO CO CHE KEM THEO ----
+        // EFF_SHIELD_1/2 nghe hop nhung Char.getPcGiamSatThuong va getBackDam doc chung
+        // va tu dong cho 15%/30% giam sat thuong + 20%/30% phan don. Dung chung thi muon
+        // 30% ma an 45%, khong ai biet la sai.
+        for (int s = 0; s < n; s++) {
+            final int id = real.SkinLinhThu.ID_HIEU_UNG[s];
+            Kiem.sai("hieu ung skin " + s + " khong phai EFF_SHIELD_1",
+                    id == real.EffectBuff.EFF_SHIELD_1);
+            Kiem.sai("hieu ung skin " + s + " khong phai EFF_SHIELD_2",
+                    id == real.EffectBuff.EFF_SHIELD_2);
+        }
+        final String[] tenHieuUng = {"LIGHT_YELLOW", "LIGHT_MAGENTA", "BUFF_DAM_10", "BUFF_DAM_5"};
+        for (final String t : tenHieuUng) {
+            Kiem.sai("Char.java khong gan co che nao cho " + t, ch.contains(t));
+        }
+
+        // ---- Cho moc trong ma nguon ----
+        final String chiSo = doc("src/real/CharChiSo.java");
+        Kiem.dung("kich hoat noi tai trong checkHapthuSatThuong",
+                ch.contains("SkinLinhThu.thuKichHoat(this, actor, finalDam)"));
+        Kiem.dung("chan sat thuong theo noi tai", ch.contains("SkinLinhThu.pcChanSatThuong(this)"));
+        Kiem.dung("cong phan sat thuong theo noi tai",
+                ch.contains("SkinLinhThu.pcCongPhanSatThuong(temp)"));
+        Kiem.dung("cong tan cong theo noi tai", chiSo.contains("SkinLinhThu.pcCongTanCong(self)"));
+
+        // Kich hoat PHAI nam trong checkHapthuSatThuong — cho duy nhat moi duong sat
+        // thuong danh vao nhan vat deu di qua (PvP, quai thuong, moi lop Boss). Moc o
+        // subDam se sot het duong boss.
+        final int mocHam = ch.indexOf("public int checkHapthuSatThuong");
+        final int mocKichHoat = ch.indexOf("SkinLinhThu.thuKichHoat(this, actor, finalDam)");
+        Kiem.dung("kich hoat nam trong checkHapthuSatThuong",
+                mocHam > 0 && mocKichHoat > mocHam && mocKichHoat - mocHam < 4000);
+
+        // Tran 80% chi duoc ap KHI noi tai gop vao. Ap vo dieu kien se am tham cat bot
+        // phan sat thuong cua nguoi da co tren 80% tu trang bi, du ho khong mac skin nao.
+        Kiem.dung("tran PST chi ap khi noi tai gop vao", ch.contains("if (pcPstSkin > 0) {"));
+
+        // Duong sat thuong danh vao phai con day du ca nam cho goi checkHapthuSatThuong.
+        final String[] duong = {
+            "src/real/MapDanhNhau.java", "src/real/MapLienDau.java", "src/real/Region.java",
+            "src/real/RegionVantienTran.java", "src/real/Monster.java",
+        };
+        for (final String d : duong) {
+            Kiem.dung(d + " van goi checkHapthuSatThuong",
+                    doc(d).contains("checkHapthuSatThuong("));
+        }
     }
 
     /**

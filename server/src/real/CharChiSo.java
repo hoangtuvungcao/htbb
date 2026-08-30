@@ -599,6 +599,14 @@ class CharChiSo {
                 if (!actor.isRuongMaquai()) {
                     int def = actor.getDefendPhysic() + actor.percentBuff[0];
                     int att = self.getAttack();
+                    // SKIN LINH THU (Xich Duong): noi tai "mau duoi 30% thi tang 50% tan
+                    // cong". Cong o day chu khong o calculateAttack: ham do chi chay lai
+                    // khi mac/thao do, con noi tai nay bat tat theo tung giay — de o do
+                    // thi no chi an dung luc nguoi choi tinh co doi trang bi.
+                    final int pcTanCongSkin = SkinLinhThu.pcCongTanCong(self);
+                    if (pcTanCongSkin > 0) {
+                        att += att * pcTanCongSkin / 100;
+                    }
                     // Thêm logic HoaHinh ở đây
                     if (actor.cat == 0 && self.getAnimalRide() != null && 
                     self.getAnimalRide().isHoaHinh == 1 && Map.r.nextInt(100) < 100) { // tile hoahinh

@@ -336,6 +336,230 @@ public final class SkinLinhThu {
         return noiTai(PC_HAP_THU, p);
     }
 
+    // ====================================================================================
+    //                    NOI TAI CO TI LE KICH HOAT VA HOI CHIEU
+    // ====================================================================================
+    //
+    // Khac han phan chi so o tren: phan kia luon bat, phan nay chi bat trong vai giay sau
+    // khi mot dieu kien xay ra, roi phai doi het hoi chieu.
+    //
+    // MOI SKIN CO DUNG MOT NOI TAI, nen moi bang duoi day tra theo so hieu skin va trang
+    // thai chi can hai moc thoi gian tren Char (het hieu luc / het hoi chieu). Khong can
+    // cot CSDL nao: hoi chieu 40 giay ngan hon moi phien choi, mat khi dang xuat la dung.
+    //
+    // TAT CA deu di qua dangMang() nhu phan chi so — xuong thu la tat, khong con hieu luc.
+
+    /** Dieu kien kich hoat, tra theo so hieu skin. */
+    public static final int DK_KHONG = 0;
+    /** Bi mon phai danh don VAT LY danh (Kiem khach, Chien binh, Dau si). */
+    public static final int DK_BI_VAT_LY = 1;
+    /** Bi mon phai danh don PHEP danh (Phap su, Cung thu). */
+    public static final int DK_BI_PHEP = 2;
+    /** Bi bat cu ai danh. */
+    public static final int DK_BI_DANH = 3;
+    /** Mau tut xuong duoi nguong. */
+    public static final int DK_HP_THAP = 4;
+
+    public static final int[] DIEU_KIEN = {
+        DK_BI_VAT_LY, // 0 Phuc Thu
+        DK_BI_PHEP,   // 1 Gau Truc
+        DK_BI_DANH,   // 2 Tien Loc
+        DK_HP_THAP,   // 3 Xich Duong
+        DK_KHONG,     // 4 Chien Lang — noi tai cua no la 15% hap thu, luon bat, khong ti le
+    };
+
+    /** Ti le kich hoat (phan tram). 100 = cu du dieu kien la kich hoat. */
+    public static final int[] PC_KICH_HOAT = {15, 15, 10, 100, 0};
+
+    /** Thoi gian hieu luc sau khi kich hoat (mili giay). */
+    public static final int[] MS_HIEU_LUC = {3000, 3000, 5000, 3000, 0};
+
+    /**
+     * Hoi chieu (mili giay).
+     *
+     * Xich Duong: ban mo ta KHONG ghi hoi chieu cho dong nay, nhung khong co hoi chieu
+     * thi "trong 3 giay" thanh vo nghia — cu o duoi 30% mau la no bat lai ngay, tuc buff
+     * chay lien tuc. Dat 40 giay cho dong bo voi ba noi tai kia. Doi so o day la du.
+     */
+    public static final int[] MS_HOI_CHIEU = {40000, 40000, 40000, 40000, 0};
+
+    /**
+     * Hieu ung hinh anh bao cho nguoi choi biet noi tai dang chay.
+     *
+     * Chon bon id KHONG CO CO CHE NAO KEM THEO — da soat ca ma nguon: LIGHT_YELLOW,
+     * LIGHT_MAGENTA, BUFF_DAM_5, BUFF_DAM_10 khong duoc doc o bat cu dau ngoai bang hang
+     * so, va stune cua chung deu bang 0 nen khong gay choang.
+     *
+     * DUNG dung EFF_SHIELD_1/EFF_SHIELD_2 du ten nghe hop: Char.getPcGiamSatThuong va
+     * getBackDam doc hai id do va tu dong cho 15%/30% giam sat thuong cong 20%/30% phan
+     * don. Muon 30% ma an 45% thi khong ai biet la sai.
+     */
+    public static final int[] ID_HIEU_UNG = {
+        EffectBuff.LIGHT_YELLOW,
+        EffectBuff.LIGHT_MAGENTA,
+        EffectBuff.BUFF_DAM_10,
+        EffectBuff.BUFF_DAM_5,
+        -1,
+    };
+
+    /** Phan tram sat thuong bi CHAN khi noi tai dang chay (Phuc Thu, Tien Loc). */
+    public static final int[] PC_CHAN_ST_NOI_TAI = {30, 0, 50, 0, 0};
+
+    /** Diem phan tram cong vao PHAN SAT THUONG khi noi tai dang chay (Gau Truc). */
+    public static final int[] PC_CONG_PST_NOI_TAI = {0, 50, 0, 0, 0};
+
+    /** Tran phan sat thuong khi noi tai Gau Truc dang cong vao. */
+    public static final int PC_TRAN_PST = 80;
+
+    /** Phan tram TAN CONG cong them khi noi tai dang chay (Xich Duong). */
+    public static final int[] PC_CONG_TAN_CONG_NOI_TAI = {0, 0, 0, 50, 0};
+
+    /** Nguong mau (phan tram) de noi tai DK_HP_THAP kich hoat. */
+    public static final int PC_NGUONG_HP = 30;
+
+    /** Cau bao khi noi tai kich hoat, tra theo so hieu skin. */
+    public static final String[] BAO_KICH_HOAT = {
+        "Phúc Thú che chở: giảm 30% sát thương trong 3 giây!",
+        "Gấu Trúc phản chấn: phản sát thương tăng mạnh trong 3 giây!",
+        "Tiên Lộc dựng lá chắn: chặn 50% sát thương trong 5 giây!",
+        "Xích Dương cuồng nộ: tăng 50% tấn công trong 3 giây!",
+        "",
+    };
+
+    /** Mon phai danh don VAT LY: Kiem khach (0), Chien binh (1), Dau si (3). */
+    public static boolean laClassVatLy(final int charClass) {
+        return charClass == 0 || charClass == 1 || charClass == 3;
+    }
+
+    /**
+     * Mon phai danh don PHEP: Phap su (2), Cung thu (4).
+     *
+     * Khop dung Char.isCharMagic(). Ban mo ta ghi "class tan cong ma (phap su - cung
+     * thu)" — dung y het. Rieng dong Phuc Thu ban mo ta ghi "CB - KK - CT", nhung nguoi
+     * choi da chot lai la Chien binh, Kiem khach, DAU SI: tren may chu nay Cung thu la
+     * class danh don phep, khong the vua o nhom vat ly vua o nhom phep.
+     */
+    public static boolean laClassPhep(final int charClass) {
+        return charClass == 2 || charClass == 4;
+    }
+
+    /** Noi tai cua skin dang mang co dang chay khong. */
+    public static boolean noiTaiDangChay(final Char p) {
+        return dangMang(p)
+                && System.currentTimeMillis() < p.skinHetHieuLuc[p.idSkinLinhThu];
+    }
+
+    /** Noi tai con bao lau moi het hoi chieu (mili giay), 0 = san sang. */
+    public static long conHoiChieu(final Char p) {
+        if (!dangMang(p)) {
+            return 0L;
+        }
+        final long con = p.skinHetHoiChieu[p.idSkinLinhThu] - System.currentTimeMillis();
+        return con > 0L ? con : 0L;
+    }
+
+    /**
+     * Don danh vua roi co thoa DIEU KIEN kich hoat khong (chua xet ti le, chua xet hoi
+     * chieu). Goi tu Char.checkHapthuSatThuong — cho duy nhat moi duong sat thuong danh
+     * vao nhan vat deu di qua (PvP, quai thuong, va toan bo cac boss).
+     *
+     * @param nguonDanh ke gay sat thuong, co the la quai
+     * @param damSapNhan sat thuong sap tru, de biet mau co tut duoi nguong khong
+     */
+    public static boolean thoaDieuKien(final Char p, final LiveActor nguonDanh,
+                                       final int damSapNhan) {
+        if (!dangMang(p)) {
+            return false;
+        }
+        final int dk = DIEU_KIEN[p.idSkinLinhThu];
+        if (dk == DK_BI_DANH) {
+            return true;
+        }
+        if (dk == DK_HP_THAP) {
+            // Tinh theo mau CON LAI SAU don nay: "khi HP giam duoi 30%" — tuc don danh
+            // lam tut xuong duoi nguong cung phai kich hoat, khong doi den don sau.
+            if (p.maxhp <= 0) {
+                return false;
+            }
+            final int conLai = p.hp - (damSapNhan > 0 ? damSapNhan : 0);
+            return conLai * 100 < p.maxhp * PC_NGUONG_HP;
+        }
+        // Hai dieu kien con lai doi ke danh phai la NGUOI CHOI: quai khong co mon phai.
+        if (nguonDanh == null || nguonDanh.cat != 0 || !(nguonDanh instanceof Char)) {
+            return false;
+        }
+        final int mp = ((Char) nguonDanh).charClass;
+        return (dk == DK_BI_VAT_LY) ? laClassVatLy(mp) : laClassPhep(mp);
+    }
+
+    /**
+     * Thu kich hoat noi tai. Tra true neu vua kich hoat NGAY LAN NAY (de nguoi goi gui
+     * hieu ung va cau bao — goi nay chi chay mot lan cho moi lan kich hoat).
+     *
+     * Dang chay thi khong kich hoat lai: neu cho phep, moi don danh trung ti le se gia
+     * han them, thanh ra buff chay lien tuc va hoi chieu khong con y nghia gi.
+     */
+    public static boolean thuKichHoat(final Char p, final LiveActor nguonDanh,
+                                      final int damSapNhan) {
+        if (!thoaDieuKien(p, nguonDanh, damSapNhan)) {
+            return false;
+        }
+        final int s = p.idSkinLinhThu;
+        if (PC_KICH_HOAT[s] <= 0) {
+            return false;
+        }
+        final long now = System.currentTimeMillis();
+        if (now < p.skinHetHieuLuc[s] || now < p.skinHetHoiChieu[s]) {
+            return false;
+        }
+        if (PC_KICH_HOAT[s] < 100 && Map.r.nextInt(100) >= PC_KICH_HOAT[s]) {
+            return false;
+        }
+        p.skinHetHieuLuc[s] = now + MS_HIEU_LUC[s];
+        p.skinHetHoiChieu[s] = now + MS_HOI_CHIEU[s];
+        return true;
+    }
+
+    /** Phan tram sat thuong bi chan boi noi tai dang chay. */
+    public static int pcChanSatThuong(final Char p) {
+        return noiTaiDangChay(p) ? PC_CHAN_ST_NOI_TAI[p.idSkinLinhThu] : 0;
+    }
+
+    /** Diem phan tram cong vao phan sat thuong boi noi tai dang chay. */
+    public static int pcCongPhanSatThuong(final Char p) {
+        return noiTaiDangChay(p) ? PC_CONG_PST_NOI_TAI[p.idSkinLinhThu] : 0;
+    }
+
+    /** Phan tram tan cong cong them boi noi tai dang chay. */
+    public static int pcCongTanCong(final Char p) {
+        return noiTaiDangChay(p) ? PC_CONG_TAN_CONG_NOI_TAI[p.idSkinLinhThu] : 0;
+    }
+
+    /**
+     * Bao cho nguoi choi biet noi tai vua kich hoat: mot hieu ung hinh keo dai dung bang
+     * thoi gian hieu luc, va mot dong chu.
+     *
+     * Nuot moi loi: day chi la phan bao hieu. Hieu luc da duoc ghi vao hai moc thoi gian
+     * roi, khong duoc de mot loi gui goi tin lam hong don danh dang xu ly.
+     */
+    public static void baoKichHoat(final Char p) {
+        if (!dangMang(p)) {
+            return;
+        }
+        final int s = p.idSkinLinhThu;
+        try {
+            if (ID_HIEU_UNG[s] >= 0
+                    && p.addEffBuff((short) ID_HIEU_UNG[s], p.skinHetHieuLuc[s],
+                            EffectBuff.BY_ACTOR, 0) != null) {
+                p.sendEffToChar(p);
+                p.sendEffToNearChar();
+            }
+            p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(BAO_KICH_HOAT[s]));
+        } catch (final Exception e) {
+            // Bao hieu hong thi noi tai van chay — khong duoc lam hong don danh.
+        }
+    }
+
     /**
      * Chuoi day du dat vao cot data_item.name — vua la TEN vua la MO TA.
      *
@@ -384,6 +608,48 @@ public final class SkinLinhThu {
         if (PC_HAP_THU[skin] > 0) {
             s.append("\n- Hấp thụ ").append(PC_HAP_THU[skin]).append("% sát thương");
         }
+        final String noiTai = moTaNoiTai(skin);
+        if (noiTai.length() > 0) {
+            s.append("\n").append(noiTai);
+        }
+        return s.toString();
+    }
+
+    /** Dong mo ta noi tai co ti le, rong neu skin khong co noi tai loai nay. */
+    private static String moTaNoiTai(final int skin) {
+        if (PC_KICH_HOAT[skin] <= 0) {
+            return "";
+        }
+        final StringBuilder s = new StringBuilder("- Nội tại: ");
+        switch (DIEU_KIEN[skin]) {
+            case DK_BI_VAT_LY:
+                s.append("khi bị Kiếm khách, Chiến binh hoặc Đấu sĩ đánh, ");
+                break;
+            case DK_BI_PHEP:
+                s.append("khi bị Pháp sư hoặc Cung thủ đánh, ");
+                break;
+            case DK_BI_DANH:
+                s.append("khi nhận sát thương, ");
+                break;
+            case DK_HP_THAP:
+                s.append("khi máu xuống dưới ").append(PC_NGUONG_HP).append("%, ");
+                break;
+            default:
+                return "";
+        }
+        if (PC_CHAN_ST_NOI_TAI[skin] > 0) {
+            s.append("chặn ").append(PC_CHAN_ST_NOI_TAI[skin]).append("% sát thương");
+        } else if (PC_CONG_PST_NOI_TAI[skin] > 0) {
+            s.append("phản sát thương +").append(PC_CONG_PST_NOI_TAI[skin])
+             .append("% (tối đa ").append(PC_TRAN_PST).append("%)");
+        } else if (PC_CONG_TAN_CONG_NOI_TAI[skin] > 0) {
+            s.append("tăng ").append(PC_CONG_TAN_CONG_NOI_TAI[skin]).append("% tấn công");
+        }
+        s.append(" trong ").append(MS_HIEU_LUC[skin] / 1000).append(" giây");
+        if (PC_KICH_HOAT[skin] < 100) {
+            s.append(". Tỉ lệ ").append(PC_KICH_HOAT[skin]).append('%');
+        }
+        s.append(", hồi chiêu ").append(MS_HOI_CHIEU[skin] / 1000).append(" giây");
         return s.toString();
     }
 
