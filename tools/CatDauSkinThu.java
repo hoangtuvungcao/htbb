@@ -16,8 +16,15 @@ import javax.imageio.ImageIO;
  * gap khoang hai lan rui, va van la anh pixel sac net.
  *
  * BA RANG BUOC PHAI GIU:
- *  1. CAO TOI DA 25 px. GameData.paintIcon: "if (h > 25) { h /= 3; soKhung = 3; }" - anh cao
- *     hon 25 bi hieu la dai 3 khung hoat hinh, icon se chi hien 1/3 tren cung. Dung 18x18.
+ *  1. KHONG QUA 16x16. Luoi hanh trang co BUOC NHAY 18 px moi o
+ *     (WindowInfoScr: "num4 % 3 * 18 + 54 + 9"), va icon duoc ve tu GOC TREN TRAI cua o
+ *     (paintIcon -> drawRegion(..., x, y, 3) voi 3 = TOP|LEFT). Nen icon 18x18 lap kin o,
+ *     khong con khe nao, cac icon dinh lien thanh mot dai - da thu va bi tra lai.
+ *     16x16 chua 2 px khe, dung bang co icon cu.
+ *     Con mot nguong nua o tren cao: GameData.paintIcon lam "if (h > 25) { h /= 3;
+ *     soKhung = 3; }" - anh cao hon 25 px bi hieu la dai 3 khung hoat hinh va chi hien
+ *     1/3 tren cung. Nguong 18 chat hon nen 25 khong bao gio cham toi, nhung dung nang
+ *     kich thuoc len ma quen no.
  *  2. CAT DUNG DO PHAN GIAI GOC, khong phong to thu nho. Anh pixel ma thu nho la nhoe het.
  *  3. Giu kenh trong suot: ghi thang ARGB, khong dan len nen.
  *
@@ -31,17 +38,21 @@ import javax.imageio.ImageIO;
  */
 public final class CatDauSkinThu {
 
-    private static final int CANH = 18;
+    private static final int CANH = 16;
     private static final int ID_ICON_DAU = 860;
     private static final int KHUNG_CHINH_DIEN = 1;
 
-    /** {x0, y0} goc tren trai cua o 18x18, tinh trong khung chinh dien cua tung skin. */
+    /**
+     * {x0, y0} goc tren trai cua o cat, tinh trong khung chinh dien cua tung skin.
+     * Chon bang mat. Doi CANH thi nho doi theo de giu nguyen TAM: canh giam 2 px thi
+     * moi so cong 1.
+     */
     private static final int[][] O_CAT = {
-        {18, 9},   // 0 Phuc Thu   - mu + hoa van vang + mat lon hong
-        {10, 6},   // 1 Gau Truc   - tron mat gau truc, ca hai tai
-        { 6, 7},   // 2 Tien Loc   - goc gac + mat trang mui hong
-        { 5, 4},   // 3 Xich Duong - vien ngoc giua, lua toa deu hai ben
-        { 5, 4},   // 4 Chien Lang - van vang chu V + hai mat do
+        {19, 10},  // 0 Phuc Thu   - mu + hoa van vang + mat lon hong
+        {11,  7},  // 1 Gau Truc   - tron mat gau truc, ca hai tai
+        { 7,  8},  // 2 Tien Loc   - goc gac + mat trang mui hong
+        { 6,  5},  // 3 Xich Duong - vien ngoc giua, lua toa deu hai ben
+        { 6,  5},  // 4 Chien Lang - van vang chu V + hai mat do
     };
 
     public static void main(final String[] args) throws Exception {

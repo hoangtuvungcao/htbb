@@ -24,9 +24,11 @@ public final class KiemIconSkinThu {
 
     /** Nguong client coi anh la dai 3 khung hoat hinh. */
     private static final int CAO_TOI_DA = 25;
+    /** Buoc nhay giua hai o hanh trang (WindowInfoScr: "num4 % 3 * 18 + 54 + 9"). */
+    private static final int BUOC_LUOI = 18;
     private static final int ID_DAU = 860;
     private static final int SO_SKIN = 5;
-    private static final int CANH = 18;
+    private static final int CANH = 16;
 
     public static void chay() {
         Kiem.nhom("Icon skin linh thu - kich thuoc phai an toan voi client");
@@ -47,7 +49,13 @@ public final class KiemIconSkinThu {
                     Integer.valueOf(CANH), Integer.valueOf(im.getWidth()));
             Kiem.bang("icon " + id + " cao " + CANH + "px",
                     Integer.valueOf(CANH), Integer.valueOf(im.getHeight()));
-            // Phep chan doc lap voi con so 18: du sau nay doi cach cat, cao van phai <= 25.
+            // Hai phep chan doc lap voi con so 16, giu ca khi sau nay doi cach cat.
+            //
+            // Icon phai NHO HON o mot chut, khong thi cac icon dinh lien thanh mot dai.
+            // Da di dung vet nay: ban 18x18 lap kin o (buoc luoi cung 18, icon ve tu goc
+            // tren trai) nen trong hanh trang khong con khe nao giua cac o.
+            Kiem.dung("icon " + id + " con khe voi o ben canh (<= " + (BUOC_LUOI - 2) + "px)",
+                    im.getWidth() <= BUOC_LUOI - 2 && im.getHeight() <= BUOC_LUOI - 2);
             Kiem.dung("icon " + id + " cao <= " + CAO_TOI_DA
                     + " (cao hon la client cat con mot phan ba)", im.getHeight() <= CAO_TOI_DA);
             // Chan dung kieu hong that: cat truot ra vung rong (icon trong tron) hoac ra
