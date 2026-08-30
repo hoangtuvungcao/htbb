@@ -163,18 +163,20 @@ class MapDoMenu {
                 map.doChonPhuongHoangMocNap(player, idOptionMenu);
                 return;
             }
-            // NPC Doi Thuong (-90): dong 0 = mo trang doi vat pham, dong 1 = go skin.
-            // Xem RequestNPCInfoHandler case -90 de biet vi sao go skin nam o day chu
-            // khong phai o bang "Trang bi thu": bang do ben client khong co lenh nao.
-            if (idNpc == -90) {
-                if (idMenu == 0) {
-                    map.showMenuDiemDoiThuong(player);
-                    return;
-                }
-                if (idMenu == 1) {
+            // NPC Doi Thuong (-90). CHU Y: dong duoc chon nam o idOptionMenu chu KHONG
+            // phai idMenu — idMenu la so hieu TRANG menu (chinh la tham so thu ba cua
+            // createMsgMenu, o day luon la 0). Xem NPC -2 (dong ~129) va -91 (dong ~180)
+            // deu dung theo kieu nay.
+            //
+            // Toi da lam sai cho nay o lan truoc: bat idMenu == 1 nen bam "Go skin linh
+            // thu" khong ra gi ca. Menu mot dong thi khong lo vi ca hai deu bang 0.
+            if (idNpc == -90 && idMenu == 0) {
+                if (idOptionMenu == 1) {
                     SkinLinhThu.thaoSkin(player);
                     return;
                 }
+                map.showMenuDiemDoiThuong(player);
+                return;
             }
             if (idNpc == -91) {
                 map.doChonDoiThuong(player, 0, idOptionMenu);

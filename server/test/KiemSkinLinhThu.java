@@ -49,6 +49,7 @@ public final class KiemSkinLinhThu {
         Kiem.bang("moTa(5)", "không có", real.SkinLinhThu.moTa(5));
 
         kiemBoAnh();
+        kiemDuongGoSkin();
         kiemMangTraTheoType();
         kiemSoTypeTrangBiThu();
         kiemDaiIcon();
@@ -149,6 +150,43 @@ public final class KiemSkinLinhThu {
         } catch (final Exception e) {
             return -1;
         }
+    }
+
+    /**
+     * Phai co it nhat MOT duong go skin ma nguoi choi ban JAR dung duoc.
+     *
+     * Bang "Trang bi thu" ben client KHONG co lenh nao — da kiem trong nguon dich nguoc
+     * cua ban JAR: wearingAnimal chi xuat hien o hai cho VE va mot cho XEM THONG TIN.
+     * Nen mac skin vao ma khong co duong go thi ke nhu ket vinh vien.
+     *
+     * Ba duong hien co, kiem ca ba:
+     *   - lenh chat "boskin"
+     *   - NPC doi thuong (-90), dong thu hai cua menu
+     *   - xuong thu thi go luon
+     *
+     * VE CHI SO DONG MENU: dong duoc chon nam o idOptionMenu chu KHONG phai idMenu —
+     * idMenu la so hieu TRANG menu (tham so thu ba cua createMsgMenu). Toi da bat nham
+     * idMenu o lan dau nen bam vao khong ra gi. Menu mot dong thi khong lo ra vi ca hai
+     * deu bang 0; chi lo khi menu co tu hai dong tro len. Nen chot lai o day.
+     */
+    private static void kiemDuongGoSkin() {
+        Kiem.nhom("Skin linh thu - duong go skin");
+
+        final String chat = doc("src/real/MapChat.java");
+        Kiem.dung("con lenh chat boskin", chat.contains("\"boskin\""));
+
+        final String npc = doc("src/real/cmd/RequestNPCInfoHandler.java");
+        Kiem.dung("menu NPC doi thuong co dong go skin", npc.contains("Gỡ skin linh thú"));
+
+        final String menu = doc("src/real/MapDoMenu.java");
+        Kiem.dung("NPC -90 goi thaoSkin", menu.contains("SkinLinhThu.thaoSkin(player)"));
+        Kiem.dung("NPC -90 doc dong duoc chon tu idOptionMenu, khong phai idMenu",
+                menu.contains("if (idOptionMenu == 1)"));
+        Kiem.sai("NPC -90 KHONG bat nham idMenu == 1",
+                menu.contains("idNpc == -90 && idMenu == 1"));
+
+        final String xuong = doc("src/real/doUnRideHorse.java");
+        Kiem.dung("xuong thu thi go skin", xuong.contains("SkinLinhThu.thaoSkin(player)"));
     }
 
     /**

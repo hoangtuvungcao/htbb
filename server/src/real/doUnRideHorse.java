@@ -60,6 +60,19 @@ public class doUnRideHorse {
                     }
 
                     player.animalRide = null;
+                    // Xuong thu thi go luon skin linh thu ra, tra vat pham ve hanh trang.
+                    //
+                    // Von thiet ke la skin gan theo NHAN VAT (doi con thu van giu skin),
+                    // nen xuong thu chi lam skin AN di chu khong go ra. Nhung nguoi choi
+                    // ban JAR khong co duong nao de go: bang "Trang bi thu" ben client
+                    // khong co lenh nao ca (da kiem: wearingAnimal chi duoc dung o hai cho
+                    // VE va mot cho XEM THONG TIN). Con lai moi lenh chat "boskin" va menu
+                    // NPC doi thuong — deu kho tim. Go ngay khi xuong thu la duong tu
+                    // nhien nhat: het cuoi thi hoan skin lai.
+                    //
+                    // Hanh trang day thi thaoSkin tu bao va GIU NGUYEN skin dang mac —
+                    // dung nhu truoc khi co doan nay, khong mat gi.
+                    SkinLinhThu.thaoSkin(player);
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                 }
 
