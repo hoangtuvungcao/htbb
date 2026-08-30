@@ -1955,10 +1955,14 @@ public class MessageCreator {
         m.dos.writeByte(p.he);
         m.dos.writeByte(p.lvDetail.lv);
         m.dos.writeShort(p.lvDetail.percent);
-        m.dos.writeShort(p.strength + p.getEffSkillClan(3) + p.newAtb[2] + p.upAbility[2] + p.abilityKham[0] + ((p.animalRide != null) ? p.animalRide.att[5] : 0));
-        m.dos.writeShort(p.agitity + p.getEffSkillClan(3) + p.newAtb[3] + p.upAbility[3] + p.abilityKham[1] + ((p.animalRide != null) ? p.animalRide.att[7] : 0));
-        m.dos.writeShort(p.spirit + p.getEffSkillClan(3) + p.newAtb[4] + p.upAbility[1] + p.abilityKham[2] + ((p.animalRide != null) ? p.animalRide.att[8] : 0));
-        m.dos.writeShort(p.health + p.getEffSkillClan(3) + p.newAtb[5] + p.secondHealth + p.upAbility[0] + p.abilityKham[3] + ((p.animalRide != null) ? p.animalRide.att[6] : 0));
+        // SKIN LINH THU (Tien Loc): bon dong nay la bang diem tiem nang nguoi choi NHIN
+        // THAY. Phai cong phan skin vao day nua, khong thi ho thay chi so y nguyen trong
+        // khi sat thuong va mau lai tang — trong nhu loi, va khong co cach nao kiem chung
+        // la skin dang chay.
+        m.dos.writeShort(p.strength + p.tnSucManh() + p.getEffSkillClan(3) + p.newAtb[2] + p.upAbility[2] + p.abilityKham[0] + ((p.animalRide != null) ? p.animalRide.att[5] : 0));
+        m.dos.writeShort(p.agitity + p.tnKheoLeo() + p.getEffSkillClan(3) + p.newAtb[3] + p.upAbility[3] + p.abilityKham[1] + ((p.animalRide != null) ? p.animalRide.att[7] : 0));
+        m.dos.writeShort(p.spirit + p.tnTinhThan() + p.getEffSkillClan(3) + p.newAtb[4] + p.upAbility[1] + p.abilityKham[2] + ((p.animalRide != null) ? p.animalRide.att[8] : 0));
+        m.dos.writeShort(p.health + p.tnSucKhoe() + p.getEffSkillClan(3) + p.newAtb[5] + p.secondHealth + p.upAbility[0] + p.abilityKham[3] + ((p.animalRide != null) ? p.animalRide.att[6] : 0));
         m.dos.writeShort(p.luck + p.getEffSkillClan(3) + p.upAbility[4]);
         m.dos.writeShort(p.basepoint);
         m.dos.writeShort(p.skillpoint);

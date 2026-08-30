@@ -52,6 +52,9 @@ public final class KiemSkinLinhThu {
         kiemCheChanNguoi();
         kiemDuongGoSkin();
         kiemNoiTaiThuongTruc();
+        kiemTiemNang();
+        kiemHeNguHanh();
+        kiemMoTaVatPham();
         kiemMangTraTheoType();
         kiemSoTypeTrangBiThu();
         kiemDaiIcon();
@@ -411,6 +414,210 @@ public final class KiemSkinLinhThu {
         final int moc2 = ch.indexOf("public void checkKick5AttAnimal()");
         final String khoiRao = moc2 < 0 ? "" : ch.substring(moc2, Math.min(ch.length(), moc2 + 2200));
         Kiem.sai("rao KHONG dung continue (se treo vong lap)", khoiRao.contains("continue;"));
+    }
+
+    /**
+     * TIEN LOC: +20% diem tiem nang, cong TAI CHO chu khong ghi vao chi so goc.
+     *
+     * Cho nguy hiem nhat cua ca tinh nang nay: bon truong strength/agitity/spirit/health
+     * duoc GHI XUONG CSDL nguyen si (DatabaseNhanVat gop chuoi "strength,agitity,..."),
+     * nen cach lam "nang len - tinh - tra lai" se hong vinh vien neu co mot luong khac
+     * luu nhan vat dung khoang giua. Phep kiem duoi day chot lai rang KHONG co cho nao
+     * ghi vao bon truong do ngoai dung cho dat lai chi so goc.
+     *
+     * Cai gia cua cach tinh tai cho la moi cong thuc phai cong tay mot lan. Nen o day
+     * dem so cho, va dem la de doi: thieu mot cho thi chi so do lang le khong duoc cong,
+     * khong loi, khong cach nao thay tru khi ngoi thu tung mon phai.
+     */
+    private static void kiemTiemNang() {
+        Kiem.nhom("Skin linh thu - Tien Loc +20% diem tiem nang");
+
+        Kiem.bang("mang PC_TIEM_NANG du 5 phan tu", Integer.valueOf(real.SkinLinhThu.SO_SKIN),
+                Integer.valueOf(real.SkinLinhThu.PC_TIEM_NANG.length));
+        Kiem.bang("Tien Loc +20%", Integer.valueOf(20),
+                Integer.valueOf(real.SkinLinhThu.PC_TIEM_NANG[2]));
+        for (int s = 0; s < real.SkinLinhThu.SO_SKIN; s++) {
+            if (s != 2) {
+                Kiem.bang("skin " + s + " khong cong tiem nang",
+                        Integer.valueOf(0), Integer.valueOf(real.SkinLinhThu.PC_TIEM_NANG[s]));
+            }
+        }
+
+        final String ch = doc("src/real/Char.java");
+        final String chiSo = doc("src/real/CharChiSo.java");
+        final String mc = doc("src/real/MessageCreator.java");
+
+        // Bon ham tinh tai cho phai con day du.
+        final String[] ham = {"tnSucManh", "tnKheoLeo", "tnTinhThan", "tnSucKhoe"};
+        for (final String h : ham) {
+            Kiem.dung("Char co ham " + h + "()", ch.contains("public int " + h + "()"));
+        }
+
+        // KHONG duoc ghi vao chi so goc: chi duy nhat cho dat lai (Database.basicPoint)
+        // moi duoc gan. Bat cu phep gan nao khac la duong dan toi hong CSDL.
+        Kiem.bang("chi co 1 cho gan this.strength (cho dat lai chi so goc)",
+                Integer.valueOf(1), Integer.valueOf(dem(ch, "this.strength = ")));
+        Kiem.bang("chi co 1 cho gan this.agitity", Integer.valueOf(1),
+                Integer.valueOf(dem(ch, "this.agitity = ")));
+        Kiem.bang("chi co 1 cho gan this.spirit", Integer.valueOf(1),
+                Integer.valueOf(dem(ch, "this.spirit = ")));
+        Kiem.bang("chi co 1 cho gan this.health", Integer.valueOf(1),
+                Integer.valueOf(dem(ch, "this.health = ")));
+        Kiem.dung("cho gan do la cho dat lai theo Database.basicPoint",
+                ch.contains("this.strength = (short) (Database.basicPoint"));
+
+        // Dem so cho da cong. Thieu mot cho = mot cong thuc lang le khong duoc cong.
+        // 25 CHO chu khong phai 25 dong: co dong chua hai chi so cung luc, vi du
+        // "if (self.strength >= self.agitity)" va cong thuc tan cong cua Phap su.
+        final int soChoChiSo = dem(chiSo, "tnSucManh()") + dem(chiSo, "tnKheoLeo()")
+                + dem(chiSo, "tnTinhThan()") + dem(chiSo, "tnSucKhoe()");
+        Kiem.bang("CharChiSo cong du 25 cho", Integer.valueOf(25), Integer.valueOf(soChoChiSo));
+        Kiem.bang("Char cong du 2 cho (ne tranh + chinh xac)",
+                Integer.valueOf(2), Integer.valueOf(dem(ch, "this.agitity + this.tnKheoLeo()")));
+
+        // Khong con cho nao doc chi so goc ma QUEN cong. Bon truong nay trong CharChiSo
+        // chi duoc phep xuat hien ben trong dau ngoac "(self.X + self.tnY())".
+        final String[] truong = {"self.strength", "self.agitity", "self.spirit", "self.health"};
+        final String[] kem = {"self.tnSucManh()", "self.tnKheoLeo()", "self.tnTinhThan()", "self.tnSucKhoe()"};
+        for (int i = 0; i < truong.length; i++) {
+            Kiem.bang("moi cho doc " + truong[i] + " deu co cong tiem nang",
+                    Integer.valueOf(dem(chiSo, truong[i])), Integer.valueOf(dem(chiSo, kem[i])));
+        }
+
+        // Bang chi so nguoi choi NHIN THAY cung phai cong, khong thi ho thay so cu trong
+        // khi sat thuong da tang — khong the tu kiem chung la skin dang chay.
+        Kiem.dung("bang chi so gui client cong suc manh", mc.contains("p.strength + p.tnSucManh()"));
+        Kiem.dung("bang chi so gui client cong kheo leo", mc.contains("p.agitity + p.tnKheoLeo()"));
+        Kiem.dung("bang chi so gui client cong tinh than", mc.contains("p.spirit + p.tnTinhThan()"));
+        Kiem.dung("bang chi so gui client cong suc khoe", mc.contains("p.health + p.tnSucKhoe()"));
+    }
+
+    /**
+     * HE NGU HANH: cuoi skin HOP HE voi mon phai thi cong sat thuong.
+     *
+     * Hop he = he cua SKIN sinh ra he cua MON PHAI, theo vong tuong sinh
+     * Moc -> Hoa -> Tho -> Kim -> Thuy -> Moc.
+     *
+     * Nam cap skin/mon phai duoi day duoc chep tu chinh ban mo ta nguoi choi dua ra, va
+     * doi chieu doc lap voi phep tinh sinh(). Neu ai do doi mot so trong bang HE hay
+     * HE_CUA_MON_PHAI thi mot trong hai ben se lech va phep kiem bao ngay — chu khong doi
+     * den luc nguoi choi phat hien skin cua ho khong len sat thuong.
+     */
+    private static void kiemHeNguHanh() {
+        Kiem.nhom("Skin linh thu - he ngu hanh va cong sat thuong khi hop he");
+
+        Kiem.bang("co 5 he", Integer.valueOf(5), Integer.valueOf(real.SkinLinhThu.TEN_HE.length));
+        Kiem.bang("mang HE du 5 phan tu", Integer.valueOf(real.SkinLinhThu.SO_SKIN),
+                Integer.valueOf(real.SkinLinhThu.HE.length));
+        Kiem.bang("mang HE_CUA_MON_PHAI du 5 mon phai", Integer.valueOf(5),
+                Integer.valueOf(real.SkinLinhThu.HE_CUA_MON_PHAI.length));
+        Kiem.bang("cong 5% sat thuong khi hop he", Integer.valueOf(5),
+                Integer.valueOf(real.SkinLinhThu.PC_SAT_THUONG_HOP_HE));
+
+        // Vong tuong sinh phai kin: di 5 buoc tu bat ky he nao phai ve dung cho cu, va
+        // khong he nao sinh ra chinh no.
+        for (int h = 0; h < real.SkinLinhThu.TEN_HE.length; h++) {
+            int di = h;
+            for (int b = 0; b < real.SkinLinhThu.TEN_HE.length; b++) {
+                di = real.SkinLinhThu.sinh(di);
+            }
+            Kiem.bang("di het vong tu he " + h + " thi ve cho cu",
+                    Integer.valueOf(h), Integer.valueOf(di));
+            Kiem.sai("he " + h + " khong sinh ra chinh no", real.SkinLinhThu.sinh(h) == h);
+        }
+
+        // Ten he phai dung thu tu vong tuong sinh Moc -> Hoa -> Tho -> Kim -> Thuy.
+        final String[] vong = {"Mộc", "Hỏa", "Thổ", "Kim", "Thủy"};
+        for (int h = 0; h < vong.length; h++) {
+            Kiem.bang("he " + h + " la " + vong[h], vong[h], real.SkinLinhThu.TEN_HE[h]);
+        }
+
+        // Nam cap chep tu ban mo ta nguoi choi dua: {skin, mon phai hop}.
+        // 0 Kiem khach, 1 Chien binh, 2 Phap su, 3 Dau si, 4 Cung thu.
+        final int[][] capTheoBanMoTa = {
+            {0, 2}, // Phuc Thu  (Kim)  -> Phap su   (Thuy),  Kim sinh Thuy
+            {1, 1}, // Gau Truc  (Moc)  -> Chien binh (Hoa),  Moc sinh Hoa
+            {2, 4}, // Tien Loc  (Thuy) -> Cung thu  (Moc),   Thuy sinh Moc
+            {3, 3}, // Xich Duong (Hoa) -> Dau si    (Tho),   Hoa sinh Tho
+            {4, 0}, // Chien Lang (Tho) -> Kiem khach (Kim),  Tho sinh Kim
+        };
+        for (final int[] cap : capTheoBanMoTa) {
+            Kiem.bang("skin " + cap[0] + " (" + real.SkinLinhThu.TEN[cap[0]] + ") hop mon phai "
+                            + cap[1], Integer.valueOf(cap[1]),
+                    Integer.valueOf(real.SkinLinhThu.monPhaiHopVoiSkin(cap[0])));
+        }
+
+        // Moi mon phai phai co DUNG MOT skin hop. Thieu thi mot mon phai khong co lua
+        // chon nao, trung thi mot mon phai co hai con con mon khac khong co con nao.
+        final int[] dem = new int[5];
+        for (int s = 0; s < real.SkinLinhThu.SO_SKIN; s++) {
+            final int mp = real.SkinLinhThu.monPhaiHopVoiSkin(s);
+            Kiem.dung("skin " + s + " co mon phai hop hop le", mp >= 0 && mp < 5);
+            if (mp >= 0 && mp < 5) {
+                dem[mp]++;
+            }
+        }
+        for (int mp = 0; mp < 5; mp++) {
+            Kiem.bang("mon phai " + mp + " co dung 1 skin hop",
+                    Integer.valueOf(1), Integer.valueOf(dem[mp]));
+        }
+
+        // Cho moc trong duong tinh sat thuong.
+        final String chiSo = doc("src/real/CharChiSo.java");
+        Kiem.dung("applyThanKhiOnHit cong sat thuong khi hop he",
+                chiSo.contains("SkinLinhThu.pcSatThuongHopHe(self)"));
+        // Phai nam trong applyThanKhiOnHit — do la cho duy nhat moi don danh cua Char deu
+        // di qua sau khi da tru giap va nhan he so ky nang.
+        final int mocHam = chiSo.indexOf("static int applyThanKhiOnHit");
+        final int mocHopHe = chiSo.indexOf("SkinLinhThu.pcSatThuongHopHe(self)");
+        Kiem.dung("cho cong nam trong applyThanKhiOnHit", mocHam > 0 && mocHopHe > mocHam);
+    }
+
+    /**
+     * MO TA VAT PHAM: chuoi trong CSDL phai khop tuyet doi voi bang so trong ma nguon.
+     *
+     * Game nay khong co cot mo ta rieng cho do mac duoc — no nhet ca bang mo ta vao cot
+     * `name` va xuong dong bang ky tu xuong dong that (xem "Áo Nghê Thường" trong ban
+     * dump). Nghia la con so NGUOI CHOI DOC nam o CSDL con con so GAME DUNG nam o ma
+     * nguon. Hai cho, mot su that — khong chot lai thi som muon lech, va lech kieu do
+     * khong ai phat hien tru khi ngoi cong tay.
+     */
+    private static void kiemMoTaVatPham() {
+        Kiem.nhom("Skin linh thu - mo ta vat pham khop voi bang so");
+
+        final String sql = doc("sql/ten_mo_ta_skin_linh_thu.sql");
+        Kiem.dung("doc duoc sql/ten_mo_ta_skin_linh_thu.sql", sql.length() > 100);
+        Kiem.dung("tep sql ghi ro la duoc sinh ra", sql.contains("DUNG SUA TAY"));
+
+        for (int s = 0; s < real.SkinLinhThu.SO_SKIN; s++) {
+            final String moTa = real.SkinLinhThu.moTaVatPham(s);
+            Kiem.dung("mo ta skin " + s + " co ten skin", moTa.contains(real.SkinLinhThu.TEN[s]));
+            Kiem.dung("mo ta skin " + s + " co dong he",
+                    moTa.contains("[hệ " + real.SkinLinhThu.TEN_HE[real.SkinLinhThu.HE[s]] + "]"));
+            // Chuoi trong sql phai la CHINH chuoi ma ma nguon sinh ra, tung ky tu.
+            Kiem.dung("sql chua dung mo ta skin " + s + " (khong lech mot ky tu nao)",
+                    sql.contains(moTa.replace("'", "''")));
+            Kiem.dung("sql cap nhat dung id " + real.SkinLinhThu.ID_ITEM[s],
+                    sql.contains("WHERE `id` = " + real.SkinLinhThu.ID_ITEM[s]));
+        }
+        Kiem.bang("mo ta cua skin khong hop le la chuoi rong", "", real.SkinLinhThu.moTaVatPham(9));
+
+        // Tep cai dat goc phai chi sang tep nay, khong thi nguoi cai chi chay mot tep va
+        // vat pham mang ten ngan khong co mo ta.
+        final String goc = doc("sql/skin_linh_thu.sql");
+        Kiem.dung("skin_linh_thu.sql chi sang tep ten/mo ta",
+                goc.contains("ten_mo_ta_skin_linh_thu.sql"));
+    }
+
+    /** Dem so lan mot chuoi xuat hien. */
+    private static int dem(final String trong, final String tim) {
+        int n = 0;
+        int i = trong.indexOf(tim);
+        while (i >= 0) {
+            n++;
+            i = trong.indexOf(tim, i + tim.length());
+        }
+        return n;
     }
 
     /**

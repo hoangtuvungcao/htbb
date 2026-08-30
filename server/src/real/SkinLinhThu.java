@@ -181,6 +181,23 @@ public final class SkinLinhThu {
      */
     public static final int[] PC_XUYEN_GIAP = {0, 0, 0, 5, 0};
 
+    /**
+     * Tien Loc: cong phan tram vao BON diem tiem nang cua chu nhan
+     * (suc manh / kheo leo / tinh than / suc khoe).
+     *
+     * KHONG ghi vao chinh bon truong do. Bon truong ay duoc GHI XUONG CSDL nguyen si
+     * (DatabaseNhanVat gop chuoi "strength,agitity,spirit,health,..."), nen nang chung
+     * len roi tra lai la dat cuoc vao viec khong co luong nao luu nhan vat trong dung
+     * khoang do — thua mot lan la so phong len nam vinh vien trong CSDL va con phong tiep
+     * moi lan luu. Thay vao do, phan cong duoc tinh TAI CHO o tung cong thuc, qua bon ham
+     * Char.tnSucManh/tnKheoLeo/tnTinhThan/tnSucKhoe.
+     *
+     * Cung vi the KHONG di qua newAtb hay upAbility: newAtb la byte[10] (tran 127, ma 20%
+     * tiem nang cua nhan vat cap cao vuot xa), con upAbility la byte[5] va khong he duoc
+     * dat lai moi lan tinh — cong vao la don vo han roi tran kieu thanh so am.
+     */
+    public static final int[] PC_TIEM_NANG = {0, 0, 20, 0, 0};
+
     /** Chien Lang: cong phan tram vao ca thu vat lan thu phep. */
     public static final int[] PC_THU = {0, 0, 0, 0, 20};
 
@@ -191,6 +208,93 @@ public final class SkinLinhThu {
      * — xem Char.checkHapthuSatThuong. Khong thay the, khong lay so lon hon.
      */
     public static final int[] PC_HAP_THU = {0, 0, 0, 0, 15};
+
+    // ------------------------------------------------------------------------------------
+    //                          HE NGU HANH — CUOI HOP HE THI MANH HON
+    // ------------------------------------------------------------------------------------
+
+    /**
+     * Nam he, XEP THEO VONG TUONG SINH, nen "he nay sinh ra he nao" chi la (i + 1) % 5:
+     *
+     *      Moc -> Hoa -> Tho -> Kim -> Thuy -> Moc
+     *       0      1      2      3      4
+     *
+     * Xep theo vong thay vi theo thu tu quen thuoc (Kim Moc Thuy Hoa Tho) la co y: quan he
+     * tuong sinh thanh mot phep cong, khong con bang tra 5x5 de go nham mot o.
+     */
+    public static final String[] TEN_HE = {"Mộc", "Hỏa", "Thổ", "Kim", "Thủy"};
+
+    /** He cua tung skin, theo thu tu skin 0..4. */
+    public static final int[] HE = {
+        3, // Phuc Thu    - Kim
+        0, // Gau Truc    - Moc
+        4, // Tien Loc    - Thuy
+        1, // Xich Duong  - Hoa
+        2, // Chien Lang  - Tho
+    };
+
+    /**
+     * He cua tung mon phai. Lay dung bang anh xa da co san trong game — xem
+     * data/Animal.java (khang ngu hanh cua thu cuoi) va Char.getTkKhangTheoClass:
+     *
+     *      0 Kiem khach = Kim   1 Chien binh = Hoa   2 Phap su = Thuy
+     *      3 Dau si     = Tho   4 Cung thu   = Moc
+     */
+    public static final int[] HE_CUA_MON_PHAI = {
+        3, // 0 Kiem khach - Kim
+        1, // 1 Chien binh - Hoa
+        4, // 2 Phap su    - Thuy
+        2, // 3 Dau si     - Tho
+        0, // 4 Cung thu   - Moc
+    };
+
+    /** Muc cong sat thuong (phan tram) khi cuoi skin hop he voi mon phai. */
+    public static final int PC_SAT_THUONG_HOP_HE = 5;
+
+    /** He nay sinh ra he nao. Vong tuong sinh: Moc -> Hoa -> Tho -> Kim -> Thuy -> Moc. */
+    public static int sinh(final int he) {
+        return (he + 1) % TEN_HE.length;
+    }
+
+    /**
+     * Skin dang mang co HOP HE voi mon phai cua nguoi choi khong.
+     *
+     * Hop he = he cua SKIN sinh ra he cua MON PHAI. Do la cach ban mo ta ghi:
+     * "Phap su he thuy nen trang bi skin Phuc Thu" — Phuc Thu he Kim, ma Kim sinh Thuy.
+     * Ca nam dong trong ban mo ta deu theo dung quan he nay.
+     *
+     * Chieu nguoc lai KHONG tinh: Thuy sinh Moc, nhung Tien Loc (Thuy) chi hop voi Cung
+     * thu (Moc) chu khong hop voi Phap su (Thuy) du Kim sinh ra Thuy do.
+     */
+    public static boolean hopHe(final Char p) {
+        if (!dangMang(p)) {
+            return false;
+        }
+        final int mp = p.charClass;
+        if (mp < 0 || mp >= HE_CUA_MON_PHAI.length) {
+            return false;
+        }
+        return sinh(HE[p.idSkinLinhThu]) == HE_CUA_MON_PHAI[mp];
+    }
+
+    /** Phan tram sat thuong cong them khi hop he, 0 khi khong hop. */
+    public static int pcSatThuongHopHe(final Char p) {
+        return hopHe(p) ? PC_SAT_THUONG_HOP_HE : 0;
+    }
+
+    /** Mon phai nao hop voi skin nay, dung cho mo ta vat pham. */
+    public static int monPhaiHopVoiSkin(final int skin) {
+        if (!hopLe(skin)) {
+            return -1;
+        }
+        final int heCan = sinh(HE[skin]);
+        for (int mp = 0; mp < HE_CUA_MON_PHAI.length; mp++) {
+            if (HE_CUA_MON_PHAI[mp] == heCan) {
+                return mp;
+            }
+        }
+        return -1;
+    }
 
     /**
      * Doc mot bang noi tai cho nhan vat nay. Tra 0 khi khong dang hien skin.
@@ -220,12 +324,67 @@ public final class SkinLinhThu {
         return noiTai(PC_XUYEN_GIAP, p);
     }
 
+    public static int pcTiemNang(final Char p) {
+        return noiTai(PC_TIEM_NANG, p);
+    }
+
     public static int pcThu(final Char p) {
         return noiTai(PC_THU, p);
     }
 
     public static int pcHapThu(final Char p) {
         return noiTai(PC_HAP_THU, p);
+    }
+
+    /**
+     * Chuoi day du dat vao cot data_item.name — vua la TEN vua la MO TA.
+     *
+     * Game nay khong co cot mo ta rieng cho do mac duoc: khong template nao mang mo ta,
+     * va Item.getInfoSend2Char() tra ve chuoi rong. Cho duy nhat hien duoc chu tu do la
+     * chinh cot name — va game da lam san nhu vay: "Áo Nghê Thường\n- Tăng 50% băng, sét
+     * ..." la MOT gia tri name. Nen skin di theo dung loi do.
+     *
+     * SINH TU CHINH CAC BANG NOI TAI o tren, khong go tay: doi mot con so trong bang thi
+     * mo ta nguoi choi doc duoc tu dong doi theo, khong the lech. test/KiemSkinLinhThu doi
+     * chieu chuoi nay voi sql/skin_linh_thu.sql nen ban SQL cung khong the lech not.
+     *
+     * CHI GHI THU DANG CHAY. Cac noi tai co ti le va hoi chieu trong ban mo ta (giam sat
+     * thuong, la chan, phan sat thuong...) chua lam nen KHONG duoc ghi vao day — hua voi
+     * nguoi choi mot thu khong ton tai thi te hon la khong hua.
+     */
+    public static String moTaVatPham(final int skin) {
+        if (!hopLe(skin)) {
+            return "";
+        }
+        final StringBuilder s = new StringBuilder("Skin linh thú ").append(TEN[skin]);
+        s.append("\n[hệ ").append(TEN_HE[HE[skin]]).append(']');
+        final int mp = monPhaiHopVoiSkin(skin);
+        if (mp >= 0 && mp < CharManager.NAME_CLASS.length) {
+            s.append(" - hợp ").append(CharManager.NAME_CLASS[mp]);
+        }
+        s.append("\n- Hợp hệ: +").append(PC_SAT_THUONG_HOP_HE).append("% sát thương");
+        if (CONG_HP[skin] > 0) {
+            s.append("\n- Cộng ").append(CONG_HP[skin]).append(" HP");
+        }
+        if (CONG_MP[skin] > 0) {
+            s.append("\n- Cộng ").append(CONG_MP[skin]).append(" MP");
+        }
+        if (CONG_CHINH_XAC[skin] > 0) {
+            s.append("\n- Cộng ").append(CONG_CHINH_XAC[skin]).append(" chính xác");
+        }
+        if (PC_TIEM_NANG[skin] > 0) {
+            s.append("\n- Cộng ").append(PC_TIEM_NANG[skin]).append("% điểm tiềm năng");
+        }
+        if (PC_XUYEN_GIAP[skin] > 0) {
+            s.append("\n- ").append(PC_XUYEN_GIAP[skin]).append("% đòn đánh xuyên toàn bộ giáp");
+        }
+        if (PC_THU[skin] > 0) {
+            s.append("\n- Cộng ").append(PC_THU[skin]).append("% phòng thủ");
+        }
+        if (PC_HAP_THU[skin] > 0) {
+            s.append("\n- Hấp thụ ").append(PC_HAP_THU[skin]).append("% sát thương");
+        }
+        return s.toString();
     }
 
     public static boolean hopLe(final int skin) {

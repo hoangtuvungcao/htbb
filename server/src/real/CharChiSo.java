@@ -45,29 +45,29 @@ class CharChiSo {
         }
         switch (self.charClass) {
             case 0: {
-                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + self.health + self.getEffSkillClan(3) + self.upAbility[0] + self.abilityKham[3] + self.secondHealth + ((animalRide != null) ? animalRide.att[6] : 0)) * 80;
-                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + self.spirit + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
+                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + (self.health + self.tnSucKhoe()) + self.getEffSkillClan(3) + self.upAbility[0] + self.abilityKham[3] + self.secondHealth + ((animalRide != null) ? animalRide.att[6] : 0)) * 80;
+                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
                 break;
             }
             case 1: {
-                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + self.health + self.getEffSkillClan(3) + self.secondHealth + self.abilityKham[3] + self.upAbility[0] + ((animalRide != null) ? animalRide.att[6] : 0)) * 70;
-                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + self.spirit + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
+                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + (self.health + self.tnSucKhoe()) + self.getEffSkillClan(3) + self.secondHealth + self.abilityKham[3] + self.upAbility[0] + ((animalRide != null) ? animalRide.att[6] : 0)) * 70;
+                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
                 break;
             }
             case 2: {
-                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + self.health + self.getEffSkillClan(3) + self.secondHealth + self.abilityKham[3] + self.upAbility[0] + ((animalRide != null) ? animalRide.att[6] : 0)) * 60;
-                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + self.spirit + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 50;
+                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + (self.health + self.tnSucKhoe()) + self.getEffSkillClan(3) + self.secondHealth + self.abilityKham[3] + self.upAbility[0] + ((animalRide != null) ? animalRide.att[6] : 0)) * 60;
+                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 50;
                 self.maxmp += self.maxmp * self.buffPass[0] / 100;
                 break;
             }
             case 3: {
-                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + self.health + self.getEffSkillClan(3) + self.upAbility[0] + self.secondHealth + self.abilityKham[3] + ((animalRide != null) ? animalRide.att[6] : 0)) * 70;
-                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + self.spirit + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
+                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + (self.health + self.tnSucKhoe()) + self.getEffSkillClan(3) + self.upAbility[0] + self.secondHealth + self.abilityKham[3] + ((animalRide != null) ? animalRide.att[6] : 0)) * 70;
+                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
                 break;
             }
             case 4: {
-                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + self.health + self.getEffSkillClan(3) + self.secondHealth + self.upAbility[0] + self.abilityKham[3] + ((animalRide != null) ? animalRide.att[6] : 0)) * 60;
-                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + self.spirit + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
+                self.maxhp = (((petUsing != null) ? petUsing.getHealth() : 0) + (self.health + self.tnSucKhoe()) + self.getEffSkillClan(3) + self.secondHealth + self.upAbility[0] + self.abilityKham[3] + ((animalRide != null) ? animalRide.att[6] : 0)) * 60;
+                self.maxmp = (((petUsing != null) ? petUsing.getspirit() : 0) + (self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.upAbility[1] + self.abilityKham[2] + ((animalRide != null) ? animalRide.att[8] : 0)) * 20;
                 break;
             }
         }
@@ -190,8 +190,8 @@ class CharChiSo {
                 animalRide = null;
             }
         }
-        int defend1 = ((petUsing != null) ? petUsing.getagitity() : 0) + self.agitity + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[3] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
-        int defen4 = self.agitity + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[2] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[8] : 0);
+        int defend1 = ((petUsing != null) ? petUsing.getagitity() : 0) + (self.agitity + self.tnKheoLeo()) + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[3] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
+        int defen4 = (self.agitity + self.tnKheoLeo()) + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[2] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[8] : 0);
         int defendVat = 0;
         int defendMa = 0;
         if (self.charClass == 3) {
@@ -201,13 +201,13 @@ class CharChiSo {
             if (self.isSaTang() ) {
                 int lv = self.getLevelCaiTrang();
                 if (lv >= 1 && lv <= 15) {
-                    defen4 = self.agitity + lv + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[3] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
+                    defen4 = (self.agitity + self.tnKheoLeo()) + lv + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[3] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
                     defend1 = defend1 * 11 / 10;
                     defen4 = defen4 * 11 / 10;
                  
                 }
             } else {
-            defen4 = self.agitity + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[3] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
+            defen4 = (self.agitity + self.tnKheoLeo()) + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[3] + self.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
             defend1 = defend1 * 11 / 10;
             defen4 = defen4 * 11 / 10;
             }
@@ -987,6 +987,16 @@ class CharChiSo {
             final boolean targetLaChar = (actor.cat == 0 && actor instanceof Char);
             final boolean targetLaBoss = actor.isBoss() || actor.isTruMoba();
 
+            // ---------- SKIN LINH THU: cuoi skin HOP HE voi mon phai ----------
+            // Hop he = he cua skin sinh ra he cua mon phai (Moc->Hoa->Tho->Kim->Thuy->Moc).
+            // Dat trong ham nay vi day la cho DUY NHAT moi don danh cua Char deu di qua,
+            // sau khi da tru giap va nhan he so ky nang — nen 5% la 5% cua sat thuong
+            // THUC SU gay ra, khong phai 5% cua mot so trung gian.
+            final int pcHopHe = SkinLinhThu.pcSatThuongHopHe(self);
+            if (pcHopHe > 0) {
+                finalDame += (int) ((long) finalDame * pcHopHe / 100L);
+            }
+
             // ---------- BEN TAN CONG: cong them sat thuong ----------
             if (self.itemThanKhi != null) {
                 final int tkHp = self.getTkStTheoHp();
@@ -1141,10 +1151,10 @@ class CharChiSo {
         }
         switch (self.charClass) {
             case 0:
-                attack1 += (short) ((self.strength + self.getEffSkillClan(3) + self.newAtb[2] + self.upAbility[0] + self.abilityKham[0] + ((animalRide != null) ? animalRide.att[5] : 0)) * 4 / 3);
+                attack1 += (short) (((self.strength + self.tnSucManh()) + self.getEffSkillClan(3) + self.newAtb[2] + self.upAbility[0] + self.abilityKham[0] + ((animalRide != null) ? animalRide.att[5] : 0)) * 4 / 3);
                 break;
             case 1:
-                attack1 += (short) ((self.strength + self.getEffSkillClan(3) + self.newAtb[2] + self.upAbility[0] + self.abilityKham[0] + ((animalRide != null) ? animalRide.att[5] : 0)) * 11 / 10);
+                attack1 += (short) (((self.strength + self.tnSucManh()) + self.getEffSkillClan(3) + self.newAtb[2] + self.upAbility[0] + self.abilityKham[0] + ((animalRide != null) ? animalRide.att[5] : 0)) * 11 / 10);
                 if (self.skill[5] + self.addMoreLevelSkill[5] > 0) {
                     int pc = attack1 * self.buffPass[0] / 100;
                     if (pc <= 0) {
@@ -1158,15 +1168,15 @@ class CharChiSo {
                 if (self.isSaTang() && (self.charClass == 2)) {
                     int lv = self.getLevelCaiTrang();
                     if (lv >= 1 && lv <= 15) {
-                    attack1 += (short) ((self.spirit + lv + self.getEffSkillClan(3) + self.newAtb[4] + self.upAbility[3] + self.abilityKham[2]) * 5 / 3 + ((animalRide != null) ? animalRide.att[8] : 0) + (self.strength + self.abilityKham[0]) / 15);
+                    attack1 += (short) (((self.spirit + self.tnTinhThan()) + lv + self.getEffSkillClan(3) + self.newAtb[4] + self.upAbility[3] + self.abilityKham[2]) * 5 / 3 + ((animalRide != null) ? animalRide.att[8] : 0) + ((self.strength + self.tnSucManh()) + self.abilityKham[0]) / 15);
                     }
                 } else {
-                    attack1 += (short) ((self.spirit + self.getEffSkillClan(3) + self.newAtb[4] + self.upAbility[3] + self.abilityKham[2]) * 5 / 3 + ((animalRide != null) ? animalRide.att[8] : 0) + (self.strength + self.abilityKham[0]) / 15);
+                    attack1 += (short) (((self.spirit + self.tnTinhThan()) + self.getEffSkillClan(3) + self.newAtb[4] + self.upAbility[3] + self.abilityKham[2]) * 5 / 3 + ((animalRide != null) ? animalRide.att[8] : 0) + ((self.strength + self.tnSucManh()) + self.abilityKham[0]) / 15);
                 }
                 break;
             case 3:
-                attack1 += (short) (self.strength + self.getEffSkillClan(3) + self.newAtb[2] + self.upAbility[0] + self.abilityKham[0] + ((animalRide != null) ? animalRide.att[5] : 0));
-                if (self.strength >= self.agitity) {
+                attack1 += (short) ((self.strength + self.tnSucManh()) + self.getEffSkillClan(3) + self.newAtb[2] + self.upAbility[0] + self.abilityKham[0] + ((animalRide != null) ? animalRide.att[5] : 0));
+                if ((self.strength + self.tnSucManh()) >= (self.agitity + self.tnKheoLeo())) {
                     attack1 = attack1 * 2 / 3;
                 }
                 break;
@@ -1174,10 +1184,10 @@ class CharChiSo {
                 if (self.isSaTang() && (self.charClass == 4 )) {
                     int lv = self.getLevelCaiTrang();
                     if (lv >= 1 && lv <= 15) {
-                        attack1 += (short) ((self.agitity + lv+ self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[1] + self.abilityKham[1]) * 5 / 3);
+                        attack1 += (short) (((self.agitity + self.tnKheoLeo()) + lv+ self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[1] + self.abilityKham[1]) * 5 / 3);
                     }
                 } else {
-                    attack1 += (short) ((self.agitity + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[1] + ((animalRide != null) ? animalRide.att[7] : 0) + self.abilityKham[1]) * 5 / 3);
+                    attack1 += (short) (((self.agitity + self.tnKheoLeo()) + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[1] + ((animalRide != null) ? animalRide.att[7] : 0) + self.abilityKham[1]) * 5 / 3);
                 }
                 break;
         }

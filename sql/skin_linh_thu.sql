@@ -10,6 +10,13 @@
 --  bat may):
 --
 --      mysql -u root -p <ten_db> < sql/skin_linh_thu.sql
+--      mysql -u root -p <ten_db> < sql/ten_mo_ta_skin_linh_thu.sql
+--
+--  PHAI CHAY CA TEP THU HAI. Tep nay chi dat TEN NGAN. Tep thu hai ghi de bang ten day
+--  du kem MO TA (he ngu hanh + cac dong noi tai) — cot `name` cua game nay vua la ten
+--  vua la mo ta, khong co cot mo ta rieng cho do mac duoc. Tep do DUOC SINH RA tu chinh
+--  cac bang so trong SkinLinhThu.java (xem tools/SinhSqlTenSkinThu.java) nen so nguoi
+--  choi doc duoc luon dung bang so game dung.
 --
 -- -------------------------------------------------------------------------------------
 --  CAC GIA TRI PHAI KHOP VOI CODE — doi o day thi phai doi ca ben kia

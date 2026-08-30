@@ -1094,6 +1094,38 @@ public class Char extends LiveActor {
         }
     }
 
+    /**
+     * SKIN LINH THU (Tien Loc): phan cong them vao tung diem tiem nang, TINH TAI CHO.
+     *
+     * VI SAO KHONG NANG THANG this.strength/agitity/spirit/health: bon truong do duoc
+     * ghi xuong CSDL nguyen si (DatabaseNhanVat gop chuoi "strength,agitity,..."). Nang
+     * chung len roi tra lai o cuoi calculateAttrib() la dat cuoc vao viec khong luong nao
+     * luu nhan vat trong dung khoang giua — thua mot lan la so da phong len nam VINH VIEN
+     * trong CSDL, va con phong tiep moi lan luu sau do. Khong co gia tri nao dang de doi
+     * lay rui ro do.
+     *
+     * Tinh tai cho thi khong co trang thai, khong can dat lai, khong cong don, va khong
+     * bao gio cham vao gia tri duoc luu. Cai gia phai tra la moi cong thuc dung diem tiem
+     * nang deu phai cong tay mot lan — 28 cho, va test/KiemSkinLinhThu chot lai tung cho.
+     *
+     * Tat cung luc voi hinh anh (di qua dangMang), giong moi noi tai skin khac.
+     */
+    public int tnSucManh() {
+        return this.strength * SkinLinhThu.pcTiemNang(this) / 100;
+    }
+
+    public int tnKheoLeo() {
+        return this.agitity * SkinLinhThu.pcTiemNang(this) / 100;
+    }
+
+    public int tnTinhThan() {
+        return this.spirit * SkinLinhThu.pcTiemNang(this) / 100;
+    }
+
+    public int tnSucKhoe() {
+        return this.health * SkinLinhThu.pcTiemNang(this) / 100;
+    }
+
     public void resetNguHanh() {
         this.attNguHanh = new byte[5];
         this.attNguHanhAnimal = new byte[2];
@@ -2496,7 +2528,7 @@ public class Char extends LiveActor {
                 animalRide = null;
             }
         }
-        int dogde1 = this.agitity + this.getEffSkillClan(3) + this.upAbility[3] + this.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
+        int dogde1 = (this.agitity + this.tnKheoLeo()) + this.getEffSkillClan(3) + this.upAbility[3] + this.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
         dogde1 += ((petUsing != null) ? petUsing.getagitity() : 0);
         int dogde2 = 0;
         for (int i = 0; i < this.wItems[this.slotWearing].length; ++i) {
@@ -2537,7 +2569,7 @@ public class Char extends LiveActor {
                 animalRide = null;
             }
         }
-        int accurate1 = this.agitity + this.getEffSkillClan(3) + this.upAbility[3] + this.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
+        int accurate1 = (this.agitity + this.tnKheoLeo()) + this.getEffSkillClan(3) + this.upAbility[3] + this.abilityKham[1] + ((animalRide != null) ? animalRide.att[7] : 0);
         accurate1 += ((petUsing != null) ? petUsing.getagitity() : 0);
         int accurate2 = 0;
         for (int i = 0; i < this.wItems[this.slotWearing].length; ++i) {
