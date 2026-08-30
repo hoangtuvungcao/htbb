@@ -52,11 +52,11 @@ public final class CatDauSkinThu {
      * bu - de sai.
      */
     private static final int[][] TAM_DAU = {
-        {27, 18},  // 0 Phuc Thu   - hoa van vang + mat lon hong
-        {19, 15},  // 1 Gau Truc   - mat gau truc
-        {15, 16},  // 2 Tien Loc   - mat trang mui hong, goc gac
-        {14, 13},  // 3 Xich Duong - vien ngoc giua
-        {14, 13},  // 4 Chien Lang - van vang chu V + hai mat do
+        {27, 21},  // 0 Phuc Thu   - mat lon hong (mom + hai mat), chua it hoa van vang
+        {19, 17},  // 1 Gau Truc   - hai vet mat den + song mui
+        {15, 18},  // 2 Tien Loc   - mat xanh trang, mieng hong
+        {14, 13},  // 3 Xich Duong - vuong mien ngoc giua hai tai (con nay khong co mat ro)
+        {14, 17},  // 4 Chien Lang - hai mat do + van vang chu V + mom
     };
 
     public static void main(final String[] args) throws Exception {
