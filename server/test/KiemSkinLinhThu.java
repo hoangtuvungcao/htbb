@@ -56,6 +56,7 @@ public final class KiemSkinLinhThu {
         kiemHeNguHanh();
         kiemNoiTaiCoTiLe();
         kiemTinhLaiChiSo();
+        kiemChiSoThucTe();
         kiemMoTaVatPham();
         kiemMangTraTheoType();
         kiemSoTypeTrangBiThu();
@@ -362,14 +363,21 @@ public final class KiemSkinLinhThu {
         Kiem.dung("calculateMaxHPMP cong MP skin", chiSo.contains("self.maxmp += SkinLinhThu.congMp(self)"));
         Kiem.dung("calculateDefend cong % thu skin", chiSo.contains("SkinLinhThu.pcThu(self)"));
         Kiem.dung("calculateAccurate cong chinh xac skin",
-                ch.contains("this.accurate = (short) (this.accurate + SkinLinhThu.congChinhXac(this))"));
+                ch.contains("final int chinhXacSkin = SkinLinhThu.congChinhXac(this);"));
+        // Phai ton trong tran cua game. Chinh xac chan cung o 693 (chia 7, chan 99, nhan
+        // 700/100); moi nguon chinh xac khac deu nam duoi do. De skin vuot tran thi no la
+        // chi so duy nhat di ra ngoai thang do cua game.
+        Kiem.dung("chinh xac skin bi chan boi tran cua game",
+                ch.contains("Math.min(tran, this.accurate + chinhXacSkin)"));
+        Kiem.dung("tran do khong duoc CAT BOT cai da co (ban do chien truong nhan noi luc)",
+                ch.contains("Math.max(TRAN_CHINH_XAC, this.accurate)"));
         // Phai cong THANG vao ket qua cuoi, khong duoc cong vao accurate2 giua ham:
         // accurate2 con phai di qua phep chia 7 va cai tran 99, 200 se con ~28 va thanh 0
         // voi nhan vat da cham tran. Nguoi choi doc "+200" thi phai duoc 200.
         Kiem.sai("KHONG cong chinh xac skin vao accurate2 (se bi chia 7 va chan tran)",
                 ch.contains("accurate2 += SkinLinhThu.congChinhXac"));
         final int chanTran = ch.indexOf("this.accurate = (short) (this.accurate * 700 / 100)");
-        final int congCx = ch.indexOf("this.accurate + SkinLinhThu.congChinhXac(this)");
+        final int congCx = ch.indexOf("final int chinhXacSkin = SkinLinhThu.congChinhXac(this);");
         Kiem.dung("chinh xac skin cong SAU cai tran 99 va phep nhan 700",
                 chanTran > 0 && congCx > chanTran);
         Kiem.dung("calculateAttrib cong xuyen giap skin", ch.contains("SkinLinhThu.pcXuyenGiap(this)"));
@@ -821,6 +829,230 @@ public final class KiemSkinLinhThu {
         final int xTinh = xuong.indexOf("player.calculateAttrib()");
         Kiem.dung("xuong thu: co go skin", xThao > 0);
         Kiem.dung("xuong thu: tinh lai chi so SAU khi go skin", xTinh > xThao);
+    }
+
+    /**
+     * DO THAT SU chi so nhan vat truoc/sau khi mang tung skin.
+     *
+     * Day la phep kiem manh nhat cua ca tinh nang: no dung mot Char that, chay
+     * calculateAttrib() that, roi so SO. Moi phep kiem khac trong tep nay chi do van ban
+     * ma nguon — chung bat duoc "quen goi ham" nhung KHONG bat duoc "goi dung ma ra so
+     * sai". Chinh loai sau moi la thu nguoi choi nhin thay.
+     *
+     * Da bat duoc that: bo sot diem tiem nang thu nam lam chi mang dung im, va chinh xac
+     * cua Gau Truc vuot ra ngoai tran cua game.
+     *
+     * DUNG CHI SO KHIEM TON (200) chu khong dung so lon: chinh xac chan tran o 693 va ne
+     * tranh chan o 299, nhan vat chi so cao thi cham tran het va moi thay doi bi cai tran
+     * nuot mat — phep kiem se "dat" ma khong chung minh duoc gi.
+     */
+    private static void kiemChiSoThucTe() {
+        Kiem.nhom("Skin linh thu - do that su chi so tren Char that");
+
+        if (!buDuLieuAnhSkin()) {
+            Kiem.dung("bu duoc du lieu anh skin de dangMang() tra true", false);
+            return;
+        }
+        buGemTemplate();
+
+        for (int mp = 0; mp < 5; mp++) {
+            final int[] goc = doChiSo(mp, real.SkinLinhThu.KHONG_CO);
+            if (goc == null) {
+                Kiem.dung("dung duoc Char that cho mon phai " + mp, false);
+                return;
+            }
+            final int[] phucThu = doChiSo(mp, 0);
+            final int[] gauTruc = doChiSo(mp, 1);
+            final int[] tienLoc = doChiSo(mp, 2);
+            final int[] xichDuong = doChiSo(mp, 3);
+            final int[] chienLang = doChiSo(mp, 4);
+            final String mpTen = " (mon phai " + mp + ")";
+
+            // --- Phuc Thu: +2000 HP, +3000 MP, KHONG dong gi khac ---
+            Kiem.bang("Phuc Thu +2000 maxhp" + mpTen,
+                    Integer.valueOf(goc[HP] + 2000), Integer.valueOf(phucThu[HP]));
+            Kiem.bang("Phuc Thu +3000 maxmp" + mpTen,
+                    Integer.valueOf(goc[MP] + 3000), Integer.valueOf(phucThu[MP]));
+            Kiem.bang("Phuc Thu khong doi tan cong" + mpTen,
+                    Integer.valueOf(goc[TC]), Integer.valueOf(phucThu[TC]));
+            Kiem.bang("Phuc Thu khong doi thu" + mpTen,
+                    Integer.valueOf(goc[TV]), Integer.valueOf(phucThu[TV]));
+
+            // --- Gau Truc: chi doi chinh xac, va KHONG duoc vuot tran cua game ---
+            Kiem.dung("Gau Truc lam chinh xac tang" + mpTen, gauTruc[CX] > goc[CX]);
+            Kiem.dung("Gau Truc KHONG day chinh xac vuot tran " + real.Char.TRAN_CHINH_XAC
+                    + mpTen, gauTruc[CX] <= real.Char.TRAN_CHINH_XAC);
+            Kiem.bang("Gau Truc khong doi maxhp" + mpTen,
+                    Integer.valueOf(goc[HP]), Integer.valueOf(gauTruc[HP]));
+            Kiem.bang("Gau Truc khong doi tan cong" + mpTen,
+                    Integer.valueOf(goc[TC]), Integer.valueOf(gauTruc[TC]));
+
+            // --- Tien Loc: +20% tiem nang -> phai keo THEO nhieu chi so cung luc ---
+            Kiem.dung("Tien Loc lam tan cong tang" + mpTen, tienLoc[TC] > goc[TC]);
+            Kiem.dung("Tien Loc lam maxhp tang" + mpTen, tienLoc[HP] > goc[HP]);
+            Kiem.dung("Tien Loc lam maxmp tang" + mpTen, tienLoc[MP] > goc[MP]);
+            Kiem.dung("Tien Loc lam thu tang" + mpTen, tienLoc[TV] > goc[TV]);
+            Kiem.dung("Tien Loc lam ne tranh tang" + mpTen, tienLoc[NT] > goc[NT]);
+            // May man la diem tiem nang THU NAM, no nuoi chi mang. Chi mang chi duoc
+            // tinh cho Cung thu (crit1 chi chay o charClass == 4), nen chi kiem o do.
+            if (mp == 4) {
+                Kiem.dung("Tien Loc lam chi mang tang (diem tiem nang thu nam)" + mpTen,
+                        tienLoc[CM] > goc[CM]);
+            }
+
+            // --- Xich Duong: chi dong vao xuyen giap ---
+            Kiem.bang("Xich Duong dat xuyen giap = 5" + mpTen,
+                    Integer.valueOf(goc[XG] + 5), Integer.valueOf(xichDuong[XG]));
+            Kiem.bang("Xich Duong khong doi tan cong" + mpTen,
+                    Integer.valueOf(goc[TC]), Integer.valueOf(xichDuong[TC]));
+            Kiem.bang("Xich Duong khong doi maxhp" + mpTen,
+                    Integer.valueOf(goc[HP]), Integer.valueOf(xichDuong[HP]));
+
+            // --- Chien Lang: chi dong vao thu ---
+            Kiem.dung("Chien Lang lam thu vat tang" + mpTen, chienLang[TV] > goc[TV]);
+            Kiem.dung("Chien Lang lam thu phep tang" + mpTen, chienLang[TP] > goc[TP]);
+            Kiem.bang("Chien Lang khong doi maxhp" + mpTen,
+                    Integer.valueOf(goc[HP]), Integer.valueOf(chienLang[HP]));
+            Kiem.bang("Chien Lang khong doi tan cong" + mpTen,
+                    Integer.valueOf(goc[TC]), Integer.valueOf(chienLang[TC]));
+
+            // --- Khong skin nao duoc dong vao xuyen giap ngoai Xich Duong ---
+            Kiem.bang("Phuc Thu khong dong xuyen giap" + mpTen,
+                    Integer.valueOf(goc[XG]), Integer.valueOf(phucThu[XG]));
+            Kiem.bang("Chien Lang khong dong xuyen giap" + mpTen,
+                    Integer.valueOf(goc[XG]), Integer.valueOf(chienLang[XG]));
+        }
+
+        // --- Nhan vat CHI SO CAO: kiem chinh cai tran, bang so chu khong bang van ban ---
+        //
+        // Voi chi so 200 o tren, chinh xac chua cham tran nen bo cai chan tran di van ra
+        // dung ket qua — phep kiem se khong chung minh duoc gi. Phai dung mot nhan vat da
+        // cham tran moi thay. Day dung la loi da tim ra: Gau Truc day chinh xac len 893
+        // trong khi tran cua game la 693.
+        final int[] caoGoc = doChiSoCao(real.SkinLinhThu.KHONG_CO);
+        final int[] caoGauTruc = doChiSoCao(1);
+        final int[] caoTienLoc = doChiSoCao(2);
+        if (caoGoc == null || caoGauTruc == null || caoTienLoc == null) {
+            Kiem.dung("dung duoc Char chi so cao", false);
+            return;
+        }
+        Kiem.bang("nhan vat chi so cao da cham tran chinh xac",
+                Integer.valueOf(real.Char.TRAN_CHINH_XAC), Integer.valueOf(caoGoc[CX]));
+        Kiem.bang("Gau Truc KHONG day chinh xac vuot tran cua game",
+                Integer.valueOf(real.Char.TRAN_CHINH_XAC), Integer.valueOf(caoGauTruc[CX]));
+        // Ne tranh cung co tran (299) va Tien Loc phai ton trong no y het.
+        Kiem.dung("ne tranh cua nhan vat chi so cao khong vuot tran",
+                caoTienLoc[NT] <= 299);
+    }
+
+    /** Nhu doChiSo nhung chi so du cao de cham tran chinh xac va ne tranh. */
+    private static int[] doChiSoCao(final int skin) {
+        try {
+            final real.Char c = new real.Char(null);
+            c.charname = "KIEMTHUCAO";
+            c.charClass = 0;
+            c.lastLV = 100;
+            c.strength = 5000;
+            c.agitity = 5000;
+            c.spirit = 5000;
+            c.health = 5000;
+            c.luck = 5000;
+            c.animalRide = taoThuCuoi();
+            if (c.animalRide == null) {
+                return null;
+            }
+            c.idSkinLinhThu = skin;
+            c.calculateAttrib();
+            final java.lang.reflect.Field f = real.Char.class.getField("attNguHanh");
+            final byte[] nh = (byte[]) f.get(c);
+            return new int[]{c.getAttack(), c.defend_physic, c.defend_magic, c.maxhp,
+                             c.maxmp, c.accurate, c.dodge, c.critical, nh[3]};
+        } catch (final Throwable t) {
+            return null;
+        }
+    }
+
+    private static final int TC = 0;
+    private static final int TV = 1;
+    private static final int TP = 2;
+    private static final int HP = 3;
+    private static final int MP = 4;
+    private static final int CX = 5;
+    private static final int NT = 6;
+    private static final int CM = 7;
+    private static final int XG = 8;
+
+    /** Dung mot Char that, chay calculateAttrib, tra ve day chi so. null neu khong dung duoc. */
+    private static int[] doChiSo(final int monPhai, final int skin) {
+        try {
+            final real.Char c = new real.Char(null);
+            c.charname = "KIEMTHU";
+            c.charClass = (byte) monPhai;
+            c.lastLV = 50;
+            // Chi so khiem ton de khong cham tran chinh xac (693) va ne tranh (299).
+            c.strength = 200;
+            c.agitity = 200;
+            c.spirit = 200;
+            c.health = 200;
+            c.luck = 200;
+            c.animalRide = taoThuCuoi();
+            if (c.animalRide == null) {
+                return null;
+            }
+            c.idSkinLinhThu = skin;
+            c.calculateAttrib();
+            final java.lang.reflect.Field f = real.Char.class.getField("attNguHanh");
+            final byte[] nh = (byte[]) f.get(c);
+            return new int[]{c.getAttack(), c.defend_physic, c.defend_magic, c.maxhp,
+                             c.maxmp, c.accurate, c.dodge, c.critical, nh[3]};
+        } catch (final Throwable t) {
+            return null;
+        }
+    }
+
+    private static data.Animal taoThuCuoi() {
+        try {
+            final java.lang.reflect.Constructor<data.Animal> ct =
+                    data.Animal.class.getDeclaredConstructor();
+            ct.setAccessible(true);
+            return ct.newInstance();
+        } catch (final Throwable t) {
+            return null;
+        }
+    }
+
+    /**
+     * SkinLinhThu.dangMang() doi co du hai tep anh cua skin. Bo kiem thu khong nap
+     * DataGame that, nen bu hai mang do bang du lieu gia — chi can KHAC NULL.
+     */
+    private static boolean buDuLieuAnhSkin() {
+        final int n = real.SkinLinhThu.SO_SKIN;
+        return datTinh("dataSkinThu", new byte[n][1]) && datTinh("imgSkinThu", new byte[n][1]);
+    }
+
+    private static boolean datTinh(final String ten, final Object giaTri) {
+        try {
+            final java.lang.reflect.Field f = data.DataGame.class.getDeclaredField(ten);
+            f.setAccessible(true);
+            f.set(null, giaTri);
+            return true;
+        } catch (final Throwable t) {
+            return false;
+        }
+    }
+
+    private static void buGemTemplate() {
+        try {
+            if (real.Map.gemTemplate == null) {
+                final real.GemTemplate[] g = new real.GemTemplate[400];
+                for (int i = 0; i < g.length; i++) {
+                    g[i] = new real.GemTemplate();
+                }
+                real.Map.gemTemplate = g;
+            }
+        } catch (final Throwable ignored) {
+            // Khong bu duoc thi doChiSo() se tra null va phep kiem tren bao hong.
+        }
     }
 
     /**

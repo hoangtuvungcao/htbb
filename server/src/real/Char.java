@@ -2570,6 +2570,12 @@ public class Char extends LiveActor {
         }
     }
 
+    /**
+     * Tran cung cua diem chinh xac: ham tinh chia 7, chan o 99, roi nhan 700/100.
+     * 99 * 700 / 100 = 693. Moi nguon chinh xac cua game deu nam duoi con so nay.
+     */
+    public static final int TRAN_CHINH_XAC = 99 * 700 / 100;
+
     private void calculateAccurate() {
         Pet petUsing = this.petUsing;
         Animal animalRide = this.animalRide;
@@ -2607,14 +2613,27 @@ public class Char extends LiveActor {
         }
         // SKIN LINH THU (Gau Truc): cong THANG vao diem chinh xac cua nhan vat.
         //
-        // Dat o CUOI HAM, sau chia 7 / chan tran 99 / nhan 700 / nhan noi luc — nen 200
-        // la 200 that. Neu cong vao accurate2 o tren thi no di qua phep chia 7 va cai
-        // tran 99, thanh khoang 28 diem, va thanh 0 voi nhan vat da cham tran.
+        // Dat o CUOI HAM, sau chia 7 / chan tran 99 / nhan 700 — nen 200 la 200 that.
+        // Cong vao accurate2 o tren thi no di qua phep chia 7 va cai tran 99, con khoang
+        // 28 diem, va thanh 0 HAN voi nhan vat da cham tran.
         //
         // Vat pham skin nam trong bang TRANG BI THU, ma vong lap accurate2 o tren chi
-        // duyet wItems (trang bi nhan vat) — no khong bao gio thay skin. Nen du muon di
-        // duong atb cung phai cong rieng o day.
-        this.accurate = (short) (this.accurate + SkinLinhThu.congChinhXac(this));
+        // duyet wItems (trang bi nhan vat) — no khong bao gio thay skin.
+        //
+        // NHUNG VAN PHAI TON TRONG TRAN CUA GAME. Chinh xac cua game co tran cung:
+        // chia 7 roi chan o 99 roi nhan 700/100 => toi da TRAN_CHINH_XAC = 693. Moi
+        // nguon chinh xac khac deu nam duoi tran do. De skin vuot tran thi no la chi so
+        // duy nhat trong ca tinh nang di ra ngoai thang do cua game — do chinh la cho
+        // "cong sai" nhin thay duoc.
+        //
+        // Chan bang max(tran, gia tri dang co) chu khong chan cung 693: ban do chien
+        // truong nhan chinh xac voi noi luc (co the vuot 693 mot cach hop le), va dong
+        // nay khong duoc phep CAT BOT cai nguoi choi da co.
+        final int chinhXacSkin = SkinLinhThu.congChinhXac(this);
+        if (chinhXacSkin > 0) {
+            final int tran = Math.max(TRAN_CHINH_XAC, this.accurate);
+            this.accurate = (short) Math.min(tran, this.accurate + chinhXacSkin);
+        }
     }
 
     public byte getRing() {
