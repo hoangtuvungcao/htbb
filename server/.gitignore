@@ -75,6 +75,13 @@ web/config.local.php
 # ngay 29/08/2026 - ca file .swp cua nano lan file .bak deu chan deploy.
 web/config.local.php.bak*
 web/.config.local.php.sw?
+# Chan CHUNG cho moi file tam cua trinh soan thao, o bat ky dau trong repo. Hai dong
+# tren chi chan dung mot duong dan, nen ngay 30/08/2026 lai vap tiep: nano mo
+# /opt/kpah/server.ini sinh ra /opt/kpah/.server.ini.swp va deploy dung lai.
+*.swp
+*.swo
+*~
+.*.sw?
 
 ### Tool build tam (tools/*.java bien dich ra day)
 out_tools/

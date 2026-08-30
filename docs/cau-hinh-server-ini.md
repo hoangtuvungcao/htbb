@@ -8,53 +8,91 @@ Tài liệu này là bản tra cứu. Phần dựng server lần đầu xem
 
 ---
 
-## 1. Có **hai** file `server.ini` khác nhau
+## 1. Cấu hình giờ **sinh ra từ pipeline** — sửa trên GitHub
 
-Đây là chỗ nhầm nhiều nhất.
+Nguồn duy nhất là [`vps/server.ini.tmpl`](../vps/server.ini.tmpl), **nằm trong git**. Mỗi
+lần deploy, [`vps/sinh-server-ini.sh`](../vps/sinh-server-ini.sh) dựng lại
+`/opt/kpah/server.ini` từ bản mẫu đó cộng với mật khẩu lấy từ GitHub Secrets.
 
-| | Đường dẫn | Dùng cho |
-|---|---|---|
-| Máy nhà | `KPAH\server.ini` | server chạy thử ở nhà |
-| **VPS** | **`/opt/kpah/server.ini`** | **server thật, người chơi đang vào** |
-| VPS (đăng nhập) | `/opt/kpah/loginServer/server.ini` | server đăng nhập |
-
-`server.ini` nằm trong `.gitignore` vì chứa mật khẩu CSDL. Nghĩa là **sửa file ở máy nhà
-rồi `git push` cũng không tới VPS** — hai file hoàn toàn tách rời. Muốn đổi cho server thật
-thì phải sửa **trên VPS**.
-
-Bản mẫu không chứa mật khẩu thật: [`vps/server.ini.linux.example`](../vps/server.ini.linux.example).
-
-## 2. Mở file
-
-**Ở máy nhà** — VS Code: `Ctrl+P` rồi gõ `server.ini`.
-
-**Trên VPS:**
-
-```bash
-ssh root@180.93.57.30
-cp /opt/kpah/server.ini /root/server.ini.bak    # sao lưu trước khi sửa
-nano /opt/kpah/server.ini
+```
+vps/server.ini.tmpl  ─┐
+                      ├─→ sinh-server-ini.sh ─→ /opt/kpah/server.ini ─→ khởi động lại
+GitHub Secrets  ──────┘        (kiểm tra rồi mới cài)
 ```
 
-Lưu trong `nano`: `Ctrl+O` → Enter → `Ctrl+X`.
+Nghĩa là:
 
-File phải cho user `kpah` ghi được, không thì bảng setting trong game không lưu được:
+- **Sửa cấu hình = sửa `vps/server.ini.tmpl` rồi commit.** Sửa ngay trên web GitHub cũng
+  được. Deploy tự chạy, tự khởi động lại nếu cấu hình thật sự đổi.
+- **Đừng sửa tay `/opt/kpah/server.ini` nữa** — lần deploy sau ghi đè.
+- Mọi thay đổi cấu hình từ giờ đều có lịch sử git, xem được ai đổi gì, và `git revert` được.
+
+`/opt/kpah/server.ini` vẫn nằm trong `.gitignore` (nó chứa mật khẩu thật sau khi sinh ra).
+
+Hai file khác **không** đi qua pipeline này, vẫn phải sửa tay trên VPS:
+
+| Đường dẫn | Dùng cho |
+|---|---|
+| `/opt/kpah/loginServer/server.ini` | server đăng nhập |
+| `KPAH\server.ini` (máy nhà) | server chạy thử ở nhà |
+
+## 2. Đổi một thiết lập
+
+1. Mở [`vps/server.ini.tmpl`](../vps/server.ini.tmpl) trên GitHub, bấm sửa, đổi giá trị, commit.
+2. Xem tab **Actions** — deploy chạy ngay.
+3. Nếu cấu hình đổi thật thì server báo trước 60 giây trong game rồi khởi động lại.
+
+Xem trước khi commit, chạy trên VPS (không cài gì, chỉ in ra khác biệt):
 
 ```bash
-chown kpah:kpah /opt/kpah/server.ini
+sudo /opt/kpah/vps/sinh-server-ini.sh --thu
 ```
 
-## 3. Ba cách đổi cấu hình
+**Bộ sinh không bao giờ cài một cấu hình hỏng.** Trước khi ghi đè nó kiểm: còn chỗ trống
+chưa thay không, đủ 23 khoá bắt buộc không, mật khẩu có còn là chuỗi mẫu không, và **thử kết
+nối CSDL thật**. Sai bất kỳ điều nào thì báo lỗi, giữ nguyên file đang chạy, không khởi động
+lại. Bản cũ được lưu vào `/opt/kpah/backup/server.ini.<ngày giờ>` (giữ 10 bản gần nhất).
+
+### `@GIU_NGUYEN@`
+
+Khoá nào trong bản mẫu để giá trị `@GIU_NGUYEN@` thì bộ sinh **không đụng tới**, giữ nguyên
+giá trị đang chạy trên VPS. Dùng cho những khoá mà trong game sửa được và bạn muốn trong
+game thắng — mặc định đang đặt cho ba khoá giờ chiếm thành, vì có lệnh chat `stown`.
+
+Ngược lại, khoá nào có giá trị thẳng trong bản mẫu thì **GitHub thắng**: sửa trong game bằng
+bảng `setting` vẫn ăn ngay, nhưng lần deploy kế tiếp đặt lại theo bản mẫu. Tỉ lệ rơi đang
+thuộc nhóm này — muốn đổi lâu dài thì sửa bản mẫu, đừng sửa trong game.
+
+## 3. Mật khẩu CSDL — GitHub Secrets
+
+Mật khẩu **không** nằm trong bản mẫu (bản mẫu ở trong git, ai xem repo cũng đọc được). Chúng
+đi riêng qua GitHub Secrets, xuống VPS bằng **stdin của ssh**.
+
+Đặt ở: **Settings → Secrets and variables → Actions → New repository secret**
+
+| Secret | Điền vào khoá |
+|---|---|
+| `DB_USER` / `DB_PASSWORD` | `db.user` / `db.password` |
+| `DB_USER_NAP` / `DB_PASS_NAP` | `db.userNap` / `db.pass` |
+| `DB_USER1` / `DB_PASSWORD1` | `db.user1` / `db.password1` |
+
+**Chưa đặt secret nào cũng không sao**: bộ sinh giữ nguyên giá trị đang chạy trên VPS. Nên
+bật pipeline này lên không làm sập server, và bạn đặt secret lúc nào cũng được.
+
+Vì sao phải qua stdin chứ không phải biến môi trường: khoá SSH của Actions bị ép chạy đúng
+một lệnh (`command="..."` trong `authorized_keys`), và sshd chỉ nhận `AcceptEnv LANG LC_*`.
+
+## 3b. Đổi khi đang chạy, không qua git
+
+Vẫn dùng được cho việc gấp, nhưng **lần deploy sau sẽ đặt lại theo bản mẫu**:
 
 | Cách | Khi nào dùng |
 |---|---|
-| Sửa file rồi gõ `setting` → `8` trong game | đổi nhanh, **không cần khởi động lại** — nhưng chỉ với các khoá ở mục 4 |
-| Sửa file rồi `systemctl restart kpah-game` | mọi khoá khác |
-| Bảng `setting` trong game | tiện nhất cho tỉ lệ rơi và giờ chiếm thành |
+| Bảng `setting` trong game | đổi gấp tỉ lệ rơi / giờ chiếm thành giữa sự kiện |
+| Sửa `/opt/kpah/server.ini` rồi gõ `setting` → `8` | chỉ với 17 khoá ở mục 4 |
 
-Bảng `setting` **ghi thẳng vào `server.ini`**, nên đổi trong game vẫn còn sau khi khởi động
-lại. Hai chiều đều đúng: sửa tay file rồi gõ `8` là áp dụng ngay. Bảng setting và file luôn
-là **cùng một nguồn dữ liệu** (xem [`server/CauHinh.java`](../src/server/CauHinh.java)).
+Bảng `setting` ghi thẳng vào `server.ini`, cùng một nguồn dữ liệu với file (xem
+[`server/CauHinh.java`](../src/server/CauHinh.java)).
 
 Lệnh trong ô nhập của `setting`:
 
@@ -210,12 +248,38 @@ Bật log chẩn đoán thú cưỡi cho **đúng một nhân vật** (so theo t
 hoa/thường). Để trống hoặc bỏ hẳn dòng = tắt. Dùng khi soi lỗi hình thú cưỡi / skin linh
 thú mà không muốn ngập log cả server. Phải khởi động lại mới có tác dụng.
 
+### Chép đè bằng file mẫu — chuyện đã xảy ra 30/08/2026
+
+`/opt/kpah/server.ini` bị chép đè bằng `vps/server.ini.linux.example`, nên `db.password`
+thành chuỗi mẫu `DOI_MAT_KHAU_DB`. Triệu chứng **không hề giống nguyên nhân**:
+
+```
+mật khẩu sai → ConnPool rỗng → mọi getConnection() ném NoSuchElementException
+→ server VẪN CHẠY TIẾP → Map.loadAllTemplate đọc Vector rỗng
+→ ArrayIndexOutOfBoundsException trong luồng "main"
+→ main chết TRƯỚC KHI mở socket, nhưng luồng non-daemon khác giữ JVM sống
+→ systemd báo "active (running)" mà không cổng nào lắng nghe
+```
+
+Nhìn `systemctl status` thấy mọi thứ bình thường, nên rất lâu mới lần ra.
+
+Giờ đã có hai lớp chặn:
+
+- `TeamServer.kiemTraCSDL()` thử kết nối **trước mọi lệnh chạm CSDL**; hỏng thì in một dòng
+  nói rõ lý do rồi `System.exit(1)`, để systemd báo `failed` đúng sự thật.
+- `StartLimitBurst` trong [`vps/kpah-game.service`](../vps/kpah-game.service) để systemd
+  thôi bật lại vô hạn và để unit vào trạng thái `failed`.
+
+Và pipeline ở mục 1 làm việc chép đè kia thành vô nghĩa: file luôn được sinh lại từ bản mẫu.
+
 ### Đừng làm ba việc này
 
 1. **Đừng `git add server.ini`.** Nó bị ignore có lý do — trong đó có mật khẩu CSDL.
+   Bản mẫu `vps/server.ini.tmpl` thì ngược lại: **phải** ở trong git, và không được chứa
+   mật khẩu thật (có phép kiểm chặn).
 2. **Đừng gửi nội dung file cho ai**, kể cả dán vào chat hỏi bài. Cần hỏi thì nói **tên
    khoá**, đừng kèm giá trị.
-3. **Đừng sửa file ở máy nhà rồi tưởng VPS đổi theo.** Hai file riêng biệt.
+3. **Đừng sửa tay `/opt/kpah/server.ini`.** Lần deploy sau ghi đè. Sửa `vps/server.ini.tmpl`.
 
 ## 11. Sau khi sửa — kiểm lại
 

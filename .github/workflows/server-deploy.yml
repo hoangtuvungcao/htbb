@@ -54,6 +54,26 @@ jobs:
       - name: Goi deploy tren VPS
         # Khoa nay bi ep chay dung mot lenh (command="..." trong authorized_keys) nen
         # du co lo cung khong mo duoc shell tren VPS. Output cua script hien ngay o day.
+        #
+        # Bi mat CSDL di qua STDIN chu khong qua bien moi truong: khoa bi ep lenh va
+        # sshd chi "AcceptEnv LANG LC_*", nen SendEnv khong toi noi. Stdin thi qua duoc.
+        # Chua dat secret nao cung khong sao - vps/sinh-server-ini.sh se giu nguyen gia
+        # tri dang chay tren VPS, khong lam sap server.
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_USER_NAP: ${{ secrets.DB_USER_NAP }}
+          DB_PASS_NAP: ${{ secrets.DB_PASS_NAP }}
+          DB_USER1: ${{ secrets.DB_USER1 }}
+          DB_PASSWORD1: ${{ secrets.DB_PASSWORD1 }}
         run: |
-          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 \
+          # Dung bien trung gian, KHONG echo gia tri ra log cua Actions.
+          goi=""
+          for k in DB_USER DB_PASSWORD DB_USER_NAP DB_PASS_NAP DB_USER1 DB_PASSWORD1; do
+            v=${!k-}
+            if [ -n "$v" ]; then
+              goi="$goi$k=$v"$'\n'
+            fi
+          done
+          printf '%s' "$goi" | ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 \
               -o StrictHostKeyChecking=yes root@180.93.57.30 deploy

@@ -1,0 +1,138 @@
+#Tien Len TeaM Server  —  BAN MAU SINH TU PIPELINE
+#
+# ============================================================================
+#  DAY LA NGUON DUY NHAT CUA CAU HINH SERVER.
+#
+#  Sua file nay tren GitHub roi commit -> deploy tu dong sinh lai
+#  /opt/kpah/server.ini tren VPS va khoi dong lai server neu cau hinh doi.
+#  KHONG sua tay /opt/kpah/server.ini nua: lan deploy sau se ghi de.
+#
+#  Hai loai gia tri dac biet:
+#    ${TEN_BIEN}    lay tu GitHub Secrets (mat khau - khong bao gio nam trong git).
+#                   Neu chua dat secret thi giu nguyen gia tri dang chay tren VPS,
+#                   nen them file nay vao khong lam sap server.
+#    @GIU_NGUYEN@   khong dung toi, giu nguyen gia tri dang chay tren VPS. Dung cho
+#                   cac khoa ma trong game sua duoc (vd gio chiem thanh bang lenh
+#                   stown) - de deploy khong nuot mat thay doi vua dat trong game.
+#
+#  Khoa nao co gia tri thang o day thi GITHUB THANG: sua trong game bang bang
+#  "setting" van an ngay, nhung lan deploy ke tiep se dat lai theo file nay.
+#  Muon trong game thang han thi doi gia tri thanh @GIU_NGUYEN@.
+# ============================================================================
+
+sv.port=19129
+limit.ccu=20000
+
+# ==== DATABASE (MariaDB tren cung VPS) ====
+# CHU Y: phai la MariaDB hoac MySQL 5.7. MySQL 8 da bo ham PASSWORD() ->
+# login server (CheckLoginSocket.jar) khong xac thuc duoc mat khau.
+db.host=localhost:3306
+db.name=kpah_db
+db.user=${DB_USER}
+db.password=${DB_PASSWORD}
+db.maxco=100
+db.nameNap=kpah_db
+db.userNap=${DB_USER_NAP}
+db.pass=${DB_PASS_NAP}
+db.maxNap=30
+#
+db.host1=localhost:3306
+db.name1=kpah_db
+db.user1=${DB_USER1}
+db.password1=${DB_PASSWORD1}
+db.maxco1=1
+#
+sv.portnap=19153
+sv.server=1
+sv.LG=3
+sv.range=0
+
+# ==== DUONG DAN LINUX ====
+# PHAI co dau / o cuoi. Thu muc phai ton tai va user kpah ghi duoc.
+sv.pathLog=/opt/kpah/log/
+db.run=/opt/kpah/vps/update.sh
+
+sv.createRace=2
+sv.tablerace=tob_race_257
+sv.dayrace=2013-07-11
+db.hour=-1
+db.minute=2
+sv.lang=0
+sv.me=0
+sv.ph=
+sv.choi=snduca
+
+# Login server chay noi bo tren cung VPS - KHONG mo cong 8023 ra internet
+sv.iplogin=127.0.0.1
+sv.portlogin=8023
+
+api.sv=1
+api.url=https://domain.com
+sv.expvantieu=1
+sv.Luckyexp=1
+sv.ExpQua=1
+sv.CodeTest=0
+sv.EnableAvtiveCheck=1
+# So nhan vat toi da moi tai khoan (1..3, client chi ve duoc 3 slot).
+sv.maxCharPerAccount=3
+
+# ==== TI LE DROP KHI TRAIN QUAI ====
+# Cac so la PHAN TRAM so voi ti le goc: 100 = nhu ban goc, 10 = con 1/10, 0 = tat han.
+# Sua o day la cach chinh thuc. Sua bang "setting" trong game van an ngay nhung
+# lan deploy ke tiep se dat lai theo cac so duoi day.
+sv.tileXu=4
+sv.tileLuong=10
+sv.tileItemSuKien=10
+sv.tilePotion=14
+sv.tileNgoc=14
+sv.tileItem=10
+# So chia SO LUONG xu moi lan rot. 10 = nhu ban goc, 30 = chi con 1/3.
+sv.chiaXuRoi=30
+
+# Trang chu + link tai game gui xuong client sau khi dang nhap.
+sv.website=http://180.93.57.30/
+sv.linkTaiGame=http://180.93.57.30/
+
+# ==== TEST FLAGS ====
+sv.testMode=0
+sv.testCode=
+# sv.adminAccounts so sanh voi TEN NHAN VAT (charname), khong phai ten tai khoan.
+sv.adminAccounts=admin,admin2,chienthan
+# Moi ten CO CHUA chu "admin" deu bi chan khi tao nhan vat (chong mao danh GM).
+# Muon tao nhan vat ten "admin": dat =1, trong game go "setting" roi lenh 8, tao
+# nhan vat, roi dat lai =0. Nho commit lai =0, khong thi deploy sau van mo.
+sv.choPhepTaoTenGM=0
+sv.reloginWaitSec=0
+
+# ==== CHONG DoS ====
+# socketTimeout=0 va connRateWindow=0 nghia la TAT han hai lop bao ve do.
+# Mac dinh trong ma nguon neu thieu dong: socketTimeout=180, connRateWindow=30.
+sv.socketTimeout=0
+sv.maxConnPerIp=50
+sv.connRateMax=60
+sv.connRateWindow=0
+sv.dosBanSec=300
+
+# sv.isSuKien83 la khoa chet - khong duoc doc o dau trong ma nguon.
+sv.isSuKien83=0
+sv.isSuKienTrungThul2016=1
+sv.isSuKienTet2017=0
+sv.isSuKienGioTo2016=0
+sv.isSuKienNoel2023=0
+sv.isSuKienTetduonglich2024=0
+
+# ==== GIO CHIEM THANH ====
+# De @GIU_NGUYEN@ vi trong game co lenh "stown" dat truc tiep - deploy khong
+# duoc nuot mat gio vua dat cho su kien. Muon GitHub quan luon thi thay bang so:
+#   -1 = lich chuan 21h thu 3 + thu 7.
+#   sv.ngayChiemThanh: trong = moi ngay; "2026-07-28" = dung ngay; "Tue"/"Sat" = thu.
+sv.gioChiemThanh=@GIU_NGUYEN@
+sv.phutChiemThanh=@GIU_NGUYEN@
+sv.ngayChiemThanh=@GIU_NGUYEN@
+
+# ==== LENH CHAT ADMIN ====
+# setting : bang setting. Trong o nhap: 8 = nap lai server.ini (17 khoa, xem
+#           docs/cau-hinh-server-ini.md muc 4).
+# stown 1 <gio> <phut> [2026-07-28] : set gio chiem thanh
+# stown 0 hoac ktct : tra ve lich chuan
+# tgct : xem gio chiem thanh dang dat

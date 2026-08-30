@@ -1,5 +1,14 @@
 #Tien Len TeaM Server  —  BAN CHO VPS LINUX
 #
+# !!!!!! DUNG CHEP FILE NAY DE LEN /opt/kpah/server.ini !!!!!!
+# Lam the la dat mat khau CSDL thanh chuoi mau DOI_MAT_KHAU_DB -> server bat len
+# roi chet lung chung ma systemd van bao "active (running)". Da xay ra 30/08/2026,
+# xem docs/cau-hinh-server-ini.md muc 10.
+#
+# File nay chi de THAM KHAO. Cau hinh that duoc SINH RA tu vps/server.ini.tmpl
+# (co trong git) qua vps/sinh-server-ini.sh moi lan deploy. Muon doi cau hinh thi
+# sua vps/server.ini.tmpl roi commit.
+#
 # server.ini KHONG nam trong git (bi .gitignore chan, vi chua mat khau DB).
 # Vi vay tren VPS phai tao tay MOT LAN:
 #     cp /opt/kpah/vps/server.ini.linux.example /opt/kpah/server.ini
