@@ -49,6 +49,7 @@ public final class KiemSkinLinhThu {
         Kiem.bang("moTa(5)", "không có", real.SkinLinhThu.moTa(5));
 
         kiemBoAnh();
+        kiemCheChanNguoi();
         kiemDuongGoSkin();
         kiemMangTraTheoType();
         kiemSoTypeTrangBiThu();
@@ -147,6 +148,100 @@ public final class KiemSkinLinhThu {
                 return -1;
             }
             return ((b[vt] & 0xFF) << 8) | (b[vt + 1] & 0xFF);
+        } catch (final Exception e) {
+            return -1;
+        }
+    }
+
+    /**
+     * Con thu skin phai che duoc chan nguoi cuoi o huong NGANG.
+     *
+     * Client ve con thu tai x nhung ve NGUOI tai x + Char.dx_horse[0][dir], ma dong 0 cua
+     * bang do la {0, 0, 7, -7}: huong ngang nguoi bi day sang ben 7px. Va khi cuoi thu
+     * tool thi client KHONG VE CHAN NGUOI (Char.java:1838 bo qua o thu tu 0 khi
+     * idhorse != -1) — no trong cay hoan toan vao con thu che cho do.
+     *
+     * Bo sprite skin hep va nam lech ve mot ben nen nua duoi ben phai cua nguoi tho ra
+     * ngoai, nhin xuyen thay nen dat. Da can bang tools/CanNgangSkinThu.
+     *
+     * Doi chieu voi Poro (map/d_effect/56) o vi tri goc — con thu tool that cua game,
+     * phu 51% va nhin binh thuong. Skin nao tut xuong duoi muc do la se ho lai.
+     */
+    private static void kiemCheChanNguoi() {
+        Kiem.nhom("Skin linh thu - con thu che duoc chan nguoi (huong ngang)");
+
+        final int chuan = doPhuNgang(new java.io.File("map/d_effect/56"));
+        if (chuan < 0) {
+            System.out.println("    (bo qua: khong doc duoc map/d_effect/56)");
+            return;
+        }
+        System.out.println("    Poro phu " + chuan + "% — do la muc san");
+        for (int n = 0; n < real.SkinLinhThu.SO_SKIN; n++) {
+            final int p = doPhuNgang(new java.io.File("map/skinthu/" + n));
+            Kiem.dung("skin " + n + " phu " + p + "%, khong thap hon Poro", p >= chuan);
+        }
+    }
+
+    /** % dai chan nguoi (y -32..-15, rong +-11, lech +7) duoc sprite huong ngang che. */
+    private static int doPhuNgang(final java.io.File tep) {
+        try {
+            final byte[] b = java.nio.file.Files.readAllBytes(tep.toPath());
+            final java.awt.image.BufferedImage at =
+                    javax.imageio.ImageIO.read(new java.io.File(tep.getPath() + ".png"));
+            final int soAnh = b[0] & 0xFF;
+            final int[] ix = new int[soAnh];
+            final int[] iy = new int[soAnh];
+            final int[] iw = new int[soAnh];
+            final int[] ih = new int[soAnh];
+            for (int i = 0; i < soAnh; i++) {
+                ix[i] = b[1 + i * 5 + 1] & 0xFF;
+                iy[i] = b[1 + i * 5 + 2] & 0xFF;
+                iw[i] = b[1 + i * 5 + 3] & 0xFF;
+                ih[i] = b[1 + i * 5 + 4] & 0xFF;
+            }
+            int vt = 1 + soAnh * 5;
+            final int soKhung = ((b[vt] & 0xFF) << 8) | (b[vt + 1] & 0xFF);
+            vt += 2;
+            final boolean[][] dac = new boolean[200][200];
+            for (int f = 0; f < soKhung; f++) {
+                final int soManh = b[vt] & 0xFF;
+                vt++;
+                for (int k = 0; k < soManh; k++) {
+                    final int ddx = (short) (((b[vt] & 0xFF) << 8) | (b[vt + 1] & 0xFF));
+                    final int ddy = (short) (((b[vt + 2] & 0xFF) << 8) | (b[vt + 3] & 0xFF));
+                    final int s = b[vt + 4] & 0xFF;
+                    vt += 7;
+                    if (f != 14) {
+                        continue;
+                    }
+                    for (int yy = 0; yy < ih[s]; yy++) {
+                        for (int xx = 0; xx < iw[s]; xx++) {
+                            if (ix[s] + xx >= at.getWidth() || iy[s] + yy >= at.getHeight()) {
+                                continue;
+                            }
+                            if ((at.getRGB(ix[s] + xx, iy[s] + yy) >>> 24) < 128) {
+                                continue;
+                            }
+                            final int gx = ddx + xx + 100;
+                            final int gy = ddy + yy + 100;
+                            if (gx >= 0 && gx < 200 && gy >= 0 && gy < 200) {
+                                dac[gy][gx] = true;
+                            }
+                        }
+                    }
+                }
+            }
+            int tong = 0;
+            int phu = 0;
+            for (int y = -32; y <= -15; y++) {
+                for (int x = -11; x <= 11; x++) {
+                    tong++;
+                    if (dac[y + 100][x + 7 + 100]) {
+                        phu++;
+                    }
+                }
+            }
+            return tong == 0 ? -1 : phu * 100 / tong;
         } catch (final Exception e) {
             return -1;
         }
