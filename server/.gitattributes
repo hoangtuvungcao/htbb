@@ -16,6 +16,10 @@
 
 # File cau hinh doc boi ca Windows va Linux: giu LF cho chac
 *.ini  text eol=lf
+# vps/server.ini.tmpl duoc doc bang "read -r" trong sinh-server-ini.sh: neu la CRLF
+# thi moi gia tri dinh mot \r o cuoi va di thang vao server.ini.
+*.tmpl text eol=lf
+*.example text eol=lf
 
 # File du lieu frame cua hieu ung / sprite: KHONG CO DUOI nen khong khop luat nao
 # ben duoi, ma "* text=auto" thi git tu do noi dung de doan. Hien tai cac file nay deu
