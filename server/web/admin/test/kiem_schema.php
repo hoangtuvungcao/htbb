@@ -51,6 +51,7 @@ foreach ([
     'sql/them_bang_web_chan_spam.sql',
     'sql/them_bang_tob_log_online.sql',
     'sql/them_bang_cam_may.sql',         // cam theo ma may (tob_cam_may, tob_may_dang_nhap)
+    'sql/them_bang_su_kien.sql',         // bat/tat su kien (tob_su_kien)
     'vps/db_new_server.sql',      // tob_nap_moc dinh nghia o PHAN 2I trong file nay
 ] as $f) {
     $schema += docSchema(file_get_contents($GOC . $f));
@@ -82,7 +83,7 @@ $soCau = 0;
 $FILE = [
     'web/admin/index.php', 'web/admin/taikhoan.php', 'web/admin/nhanvat.php',
     'web/admin/giftcode.php', 'web/admin/log.php', 'web/admin/nhatky.php',
-    'web/admin/chandoan.php', 'web/admin/cammay.php',
+    'web/admin/chandoan.php', 'web/admin/cammay.php', 'web/admin/sukien.php',
     'web/admin/inc/boot.php', 'web/admin/inc/vatpham.php',
     'web/inc/functions.php', 'web/register.php', 'web/login.php', 'web/account.php',
 ];

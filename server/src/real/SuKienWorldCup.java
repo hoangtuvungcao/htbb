@@ -116,8 +116,25 @@ public final class SuKienWorldCup {
 
     // ============================ TRANG THAI ============================
 
-    /** Dang trong thoi gian binh chon (quai roi bong vang, doi phieu duoc). */
+    /**
+     * Dang trong thoi gian binh chon (quai roi bong vang, doi phieu duoc).
+     *
+     * Cong bat/tat o trang quan tri (SuKien) la thu QUYET DINH; cua so thoi gian
+     * sv.worldCup* trong server.ini chi con la GIA TRI MAC DINH cua cong do, dung khi
+     * chua ai dat tay trong bang tob_su_kien.
+     */
     public static boolean dangDienRa() {
+        return SuKien.bat(SuKien.WORLD_CUP);
+    }
+
+    /** Da het binh chon nhung con han nhan qua. */
+    public static boolean dangHanNhanQua() {
+        // Con dang binh chon thi chua toi luc phat qua - hai giai doan khong chong nhau.
+        return !dangDienRa() && SuKien.bat(SuKien.WORLD_CUP_NHAN_QUA);
+    }
+
+    /** Cua so binh chon trong server.ini co bao trum hien tai khong. */
+    static boolean trongCuaSoBinhChon() {
         if (batDau.isEmpty() || ketThuc.isEmpty()) {
             return false;
         }
@@ -125,8 +142,8 @@ public final class SuKienWorldCup {
         return bayGio.compareTo(batDau) >= 0 && bayGio.compareTo(ketThuc) <= 0;
     }
 
-    /** Da het binh chon nhung con han nhan qua. */
-    public static boolean dangHanNhanQua() {
+    /** Cua so nhan qua trong server.ini co bao trum hien tai khong. */
+    static boolean trongCuaSoNhanQua() {
         if (ketThuc.isEmpty() || hanNhanQua.isEmpty()) {
             return false;
         }
@@ -521,12 +538,13 @@ public final class SuKienWorldCup {
 
     /** Mot dong mo ta trang thai, in ra luc khoi dong. */
     public static String moTa() {
+        final String giaiDoan = dangDienRa() ? "DANG BINH CHON"
+                : (dangHanNhanQua() ? "DANG PHAT QUA" : "TAT");
         if (batDau.isEmpty()) {
-            return "TAT (sv.worldCupBatDau de trong)";
+            return giaiDoan + " (sv.worldCupBatDau de trong, dat tay o trang quan tri)";
         }
-        return batDau + " -> " + ketThuc + ", han nhan qua " + hanNhanQua
-                + (dangDienRa() ? " [DANG BINH CHON]"
-                        : (dangHanNhanQua() ? " [DANG PHAT QUA]" : " [CHUA TOI / DA XONG]"));
+        return giaiDoan + " (cua so mac dinh " + batDau + " -> " + ketThuc
+                + ", han nhan qua " + hanNhanQua + ")";
     }
 
     /** Chi dung cho kiem thu - xoa trang thai cho xac nhan mo hop. */

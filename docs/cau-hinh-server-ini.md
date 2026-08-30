@@ -131,11 +131,14 @@ sv.worldCupBatDau   sv.worldCupKetThuc   sv.worldCupHanNhanQua
 
 ### Sự kiện World Cup
 
-Ba khoá `sv.worldCup*` bật/tắt [sự kiện bình chọn Messi – Ronaldo](../src/real/SuKienWorldCup.java).
+Cách bật chính thức [sự kiện bình chọn Messi – Ronaldo](../src/real/SuKienWorldCup.java)
+là hai dòng *World Cup* trên **trang quản trị `/admin/sukien.php`**. Ba khoá
+`sv.worldCup*` chỉ còn là **giá trị mặc định** cho hai cổng đó khi bảng `tob_su_kien` chưa
+có dòng tương ứng.
+
 Định dạng `yyyy-MM-dd HH:mm:ss`, phải theo thứ tự `batDau < ketThuc <= hanNhanQua`.
-**Để trống bất kỳ khoá nào là tắt hẳn** — quái không rơi Quả bóng vàng và NPC Tổng Quản
-không hiện mục sự kiện. Mặc định trong `server.ini.tmpl` là để trống, nên deploy không
-tự mở sự kiện.
+**Để trống bất kỳ khoá nào là mặc định tắt** — quái không rơi Quả bóng vàng và NPC Tổng
+Quản không hiện mục sự kiện. Bản mẫu để trống, nên deploy không tự mở sự kiện.
 
 | Giai đoạn | Người chơi làm gì |
 |---|---|
@@ -258,11 +261,28 @@ Các khoá đọc thô khác, thiếu cũng không ném lỗi: `api.url`, `db.ru
 
 Các khoá ở mục 4 và mục 8 (trừ `limit.ccu`) đều **có giá trị mặc định**, xoá đi vẫn chạy.
 
+### `sv.isSuKien*` giờ chỉ còn là giá trị mặc định
+
+Từ 30/08/2026, chỗ bật/tắt sự kiện là **trang quản trị `/admin/sukien.php`** (bảng
+`tob_su_kien` trong CSDL), không phải file này. Mọi sự kiện đều bật được bất kỳ lúc nào —
+không còn mốc ngày ghi cứng nào trong mã nguồn nữa, xem
+[`src/real/SuKien.java`](../src/real/SuKien.java).
+
+Năm khoá `sv.isSuKien*` vẫn **bắt buộc phải có** (chúng đi qua `parseByte`, thiếu là ném
+lỗi và nuốt luôn mọi dòng cấu hình bên dưới — xem cạm bẫy ở đầu mục này), nhưng giá trị
+của chúng chỉ quyết định trạng thái của năm sự kiện đó **khi bảng `tob_su_kien` chưa có
+dòng tương ứng**, tức lần khởi động đầu tiên sau khi cập nhật. Sau đó bảng CSDL là nguồn
+duy nhất.
+
+Sửa xong trên trang quản trị thì **phải khởi động lại server**: bảng shop
+(`Map.loadShop` đặt SELL/NOT_SELL theo `Char.isSuKien*`), `Map.isSale` và danh sách NPC
+được dựng *một lần* lúc bật máy theo trạng thái sự kiện.
+
 ### `sv.isSuKien83` là khoá chết — đã bỏ khỏi bản mẫu
 
 Nó **không được đọc ở đâu trong mã nguồn**. Đổi giá trị không có tác dụng gì, nên đã bỏ hẳn
-khỏi `vps/server.ini.tmpl` — để lại chỉ khiến người ta tưởng chỉnh được cái gì đó. Năm khoá
-`sv.isSuKien*` còn lại thì có thật (và bắt buộc phải có).
+khỏi `vps/server.ini.tmpl` — để lại chỉ khiến người ta tưởng chỉnh được cái gì đó. Sự kiện
+8/3 giờ bật ở trang quản trị như mọi sự kiện khác.
 
 ### Khoá chẩn đoán thú cưỡi
 

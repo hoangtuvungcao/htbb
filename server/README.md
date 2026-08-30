@@ -444,8 +444,11 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
 ## Tính năng
 
 - Skin linh thú (đổi hình thú cưỡi, giữ nguyên chỉ số): [docs/skin-linh-thu.md](docs/skin-linh-thu.md)
+- **Sự kiện**: mọi sự kiện bật/tắt được bất kỳ lúc nào ở trang quản trị `/admin/sukien.php`
+  ([web/admin/sukien.php](web/admin/sukien.php), bảng `tob_su_kien`). Trước đây mốc thời gian
+  của từng sự kiện ghi cứng trong `Char.java` (toàn 2015–2024, nên đều tắt vĩnh viễn); nay danh
+  mục nằm ở [src/real/SuKien.java](src/real/SuKien.java). **Đổi xong phải khởi động lại server.**
 - Sự kiện World Cup (bình chọn Messi/Ronaldo): [src/real/SuKienWorldCup.java](src/real/SuKienWorldCup.java) ·
-  bật/tắt bằng `sv.worldCup*` trong [docs/cau-hinh-server-ini.md](docs/cau-hinh-server-ini.md#4-khoá-nào-nạp-lại-được-khoá-nào-phải-khởi-động-lại) ·
   chạy [sql/them_su_kien_world_cup.sql](sql/them_su_kien_world_cup.sql) một lần trước khi mở
 
 **Lưu ý quan trọng**: mỗi lần push lên nhánh `main` sẽ tự động deploy lên VPS sản

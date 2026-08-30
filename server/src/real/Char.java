@@ -10957,277 +10957,260 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
     
 
-    public static boolean isSuKienNoel() 
-    {
-        final String daycheck = getDayTime(0L);
-        return !TeamServer.isServerLocal() && !TeamServer.isServerLienDau() && daycheck.compareTo("2023-06-01 00:00:00") < 0;
-    }
+    // ==================================================================================
+    //  CONG BAT/TAT SU KIEN
+    //
+    //  MOI MOC NGAY GHI CUNG O DAY DA BI BO (30/08/2026). Truoc day tung ham duoi day so
+    //  ngay he thong voi mot moc trong khoang 2015..2024:
+    //
+    //      return getDayTime(0L).compareTo("2020-11-01 00:00:00") < 0;
+    //
+    //  Moc nao cung da qua tu lau, nghia la khong su kien nao bat lai duoc neu khong sua
+    //  ma nguon roi build lai jar. Gio tat ca hoi real/SuKien, lay trang thai tu bang
+    //  tob_su_kien - bat luc nao cung duoc, dat o trang quan tri web/admin/sukien.php.
+    //
+    //  TEN VA CHU KY GIU NGUYEN het: hon 400 cho trong ma nguon, va ca bytecode trong
+    //  lib/NQSH_5h.jar, dang goi cac ham nay.
+    //
+    //  CAP isSuKienX / isFinishAllSuKienX GIO LA PHU DINH CHINH XAC cua nhau. Truoc day
+    //  vai cap lech nhau vai ngay - vi du Halloween 2015 "bat" den 20/11 nhung "ket thuc"
+    //  tu 29/11, chin ngay o giua khong ben nao dung - khe ho do chi co nghia tren truc
+    //  thoi gian cu, gio khong con.
+    //
+    //  BA DIEU KIEN KHONG PHAI NGAY THANG THI GIU NGUYEN, vi chung noi ve LOAI MAY CHU
+    //  chu khong noi ve thoi diem:
+    //      Noel      : luon tat tren server lien dau va server local
+    //      Cong tong : server Indo luon coi la moi su kien da ket thuc
+    //      SN Ngude  : tat khi sv.me=1 (Map.openLog)
+    // ==================================================================================
 
-    public static boolean isSuKienTetduonglich2024() 
-    {
-        return TeamServer.isSuKienTetduonglich2024;
-    }
-
-    public static boolean isSuKienNoel2023() 
-    {
-        return TeamServer.isSuKienNoel2023;
-    }
-
-    public static boolean isSuKienMiniNuiChauBau() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2020-10-18 23:59:59") < 0;
-    }
-
-    public static boolean isSuKienMini() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2020-07-11 10:00:00") < 0;
-    }
-
-    public static boolean isSuKienMiniChucNu() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2024-08-30 23:59:00") < 0;
-    }
-
-    public static boolean isFinishSuKienMiniChucNu() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2024-08-31 10:00:00") >= 0;
-    }
-
-    public static boolean isFinishAllSuKienMini() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2020-07-11 10:00:00") > 0;
-    }
-
-    public static boolean isOpenDauGiaChoiBlackFriday() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2022-07-13 10:00:00") >= 0 && daycheck.compareTo("2023-07-21 23:59:59") < 0;
-    }
-
-    public static boolean isOpenSellBlackFriday() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2023-07-13 10:00:00") >= 0 && daycheck.compareTo("2023-07-15 00:00:00") < 0;
-    }
-
-    public static boolean isSuKienBlackFriday() {
-        final String daycheck = getDayOpen(0L);
-        return daycheck.equals("2020-11-25");
-    }
-
-    public static boolean isSuKien83() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2020-03-08 23:59:59") < 0;
-    }
-
-    public static boolean isDemHaloween2023() {
-        return getDayOpen(0L).equals("2023-11-01");
-    }
-
-    public static boolean isDemHaloween() {
-        if (TeamServer.isServerLocal()) {
-            return getDayOpen(0L).equals("2022-11-01");
-        }
-        return getDayOpen(0L).equals("2022-10-31");
-    }
-
-    public static boolean isDemTrungThu() {
-        // Dem ram: tang 1 Banh nuong (potion 125) khi dang nhap va khi len level,
-        // moi nhan vat chi mot lan (chan boi nBinhTra). Bat chung co voi su kien
-        // trung thu de khoi phai sua ngay he thong.
-        if (TeamServer.isSuKienTrungThul2016) {
-            return true;
-        }
-        return getDayOpen(0L).equals("2023-09-17");
-    }
-
-    public static boolean is123Tet() {
-        final String time = getDayOpen(0L);
-        return time.equals("2021-02-12") || time.equals("2021-02-13") || time.equals("2021-02-14") || TeamServer.isServerLocal();
-    }
-
-    public static boolean isDemNoel() {
-        return getDayOpen(0L).equals("2022-12-24") || getDayOpen(0L).equals("2023-01-01");
-    }
-
-    public static boolean isFinishAllSuKienHaloween2016() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2020-11-01 00:00:00") >= 0;
-    }
-
-    public static boolean isSuKienHaloween2016() {
-        final String daycheck = getDayTime(0L);
-        return (TeamServer.isServerLocal() && daycheck.compareTo("2020-11-01 00:00:00") < 0)
-                || daycheck.compareTo("2020-11-01 00:00:00") < 0;
-    }
-
-    public static boolean isSuKien2011l2016() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2022-9-20 10:00:00") >= 0 && daycheck.compareTo("2024-11-20 23:59:59") <= 0;
-    }
-
-    public static boolean isBanLongDenHoaSen() {
-        if (!Map.openLog) {
-            return false;
-        }
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2018-11-24 23:59:59") <= 0;
-    }
-
-    public static boolean isSuKienTrungThul2016() {
-        // sv.isSuKienTrungThul2016=1 trong server.ini de bat thu cong.
-        // Truoc day ham nay chi so ngay he thong voi moc 2023 nen sau 15/05/2023
-        // la khong bao gio bat duoc nua, du server.ini co dat co hay khong.
-        if (TeamServer.isSuKienTrungThul2016) {
-            return true;
-        }
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2023-05-15 00:00:00") < 0;
-    }
-
+    /** Cong tong: con FALSE nghia la cac su kien cu van duoc phep chay. */
     public static boolean isFinishAllSuKien() {
         if (TeamServer.isServerIndo()) {
             return true;
         }
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2023-05-09 10:00:00") > 0;
+        return !SuKien.bat(SuKien.TAT_CA);
     }
 
-    public static boolean isFinishAllSuKienTrungThul2016() {
-        // Dang bat thu cong thi coi nhu su kien chua ket thuc.
-        if (TeamServer.isSuKienTrungThul2016) {
+    // ---------------------------------- Noel ----------------------------------
+
+    public static boolean isSuKienNoel() {
+        if (TeamServer.isServerLocal() || TeamServer.isServerLienDau()) {
             return false;
         }
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2023-10-15 00:00:00") > 0;
-    }
-
-    public static boolean isFinishAllSuKienTet2017() 
-    {
-        return !TeamServer.isSuKienTet2017;
-    }
-
-    public static boolean isSuKienTet2017() 
-    {
-        return TeamServer.isSuKienTet2017;
-    }
-
-    public static boolean isSuKienTet2016() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2016-03-01 10:00:00") < 0;
-    }
-
-    public static boolean isSuKienDuaTopHoaLu() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2020-04-09 10:00:00") < 0;
-    }
-
-    public static boolean isSuKienGioTo2016() 
-    {
-        return TeamServer.isSuKienGioTo2016;
-    }
-
-    public static boolean isFinishAllSuKienTet2016() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2016-03-06 10:00:00") >= 0;
+        return SuKien.bat(SuKien.NOEL);
     }
 
     public static boolean isFinishAllSuKienNoel() {
-        final String daycheck = getDayTime(0L);
-        return TeamServer.isServerLienDau() || TeamServer.isServerLocal() || daycheck.compareTo("2023-06-01 00:00:00") >= 0;
-    }
-
-    public static boolean isFinishAllSuKienGioTo2016() 
-    {
-        return !TeamServer.isSuKienGioTo2016;
-    }
-
-    public static boolean isSuKienSnNgude() {
-        if (Map.openLog) {
-            return false;
-        }
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2016-08-17 10:00:00") < 0;
-    }
-
-    public static boolean isFinishAllSuKienSnNgude() {
-        if (Map.openLog) {
-            return true;
-        }
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2016-08-20 10:00:00") >= 0;
-    }
-
-    public static boolean isSuKienVuLan2015() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2015-09-14 10:00:00") < 0;
-    }
-
-    public static boolean isSuKienTrungThu2015() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2020-09-30 10:00:00") < 0;
+        return !isSuKienNoel();
     }
 
     public static boolean isFinishSuKien() {
         return !isSuKienNoel();
     }
 
-    public static boolean isSinhNhatNgude() {
-        if (!Map.openLog) {
-            final String daycheck = getDayOpen(0L);
-            if (daycheck.equals("2015-08-01") || daycheck.equals("2015-08-02") || daycheck.equals("2015-08-03") || daycheck.equals("2015-08-04") || daycheck.equals("2015-08-05")) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean isSuKienNoel2023() {
+        return SuKien.bat(SuKien.NOEL_2023);
     }
 
-    public static boolean canReceiveGiftSNNgude() {
-        if (!Map.openLog) {
-            final String daycheck = getDayOpen(0L);
-            if (daycheck.equals("2015-08-01") || daycheck.equals("2015-08-02") || daycheck.equals("2015-08-03")) {
-                return true;
-            }
-        }
-        return false;
+    public static boolean isDemNoel() {
+        return SuKien.bat(SuKien.DEM_NOEL);
     }
 
-    public static boolean isSuKienWordcup2017() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2024-07-25 10:00:00") < 0;
+    // ---------------------------------- Tet ----------------------------------
+
+    public static boolean isSuKienTet2017() {
+        return SuKien.bat(SuKien.TET_2017);
     }
 
-    public static boolean isSuKienHe2017() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2024-08-01 10:00:00") < 0;
-    }
-      
-    public static boolean isFinishAllSuKienHe2017() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2024-08-01 10:00:00") > 0;
+    public static boolean isFinishAllSuKienTet2017() {
+        return !isSuKienTet2017();
     }
 
-    public static boolean isSuKienHalowwen2015() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2023-11-20 11:59:00") < 0;
+    public static boolean isSuKienTetduonglich2024() {
+        return SuKien.bat(SuKien.TET_DUONG_LICH);
     }
 
-    public static boolean isFinishAllSuKienHaloween2015() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2023-11-29 00:00:00") >= 0;
+    public static boolean isSuKienTet2016() {
+        return SuKien.bat(SuKien.TET_2016);
     }
 
-    public static boolean isFinishAllSuKienHe2015() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2015-07-08 00:00:00") >= 0;
+    public static boolean isFinishAllSuKienTet2016() {
+        return !isSuKienTet2016();
+    }
+
+    public static boolean is123Tet() {
+        return SuKien.bat(SuKien.TET_123);
+    }
+
+    // ------------------------------ Black Friday ------------------------------
+
+    public static boolean isSuKienBlackFriday() {
+        return SuKien.bat(SuKien.BLACK_FRIDAY);
+    }
+
+    public static boolean isOpenDauGiaChoiBlackFriday() {
+        return SuKien.bat(SuKien.BLACK_FRIDAY_DAU_GIA);
+    }
+
+    public static boolean isOpenSellBlackFriday() {
+        return SuKien.bat(SuKien.BLACK_FRIDAY_BAN);
+    }
+
+    // -------------------------------- Trung Thu --------------------------------
+
+    public static boolean isSuKienTrungThul2016() {
+        return SuKien.bat(SuKien.TRUNG_THU);
+    }
+
+    public static boolean isFinishAllSuKienTrungThul2016() {
+        return !isSuKienTrungThul2016();
+    }
+
+    /**
+     * Dem ram: tang 1 Banh nuong (potion 125) khi dang nhap va khi len level, moi nhan
+     * vat chi mot lan (chan boi nBinhTra). Mac dinh di theo cong Trung Thu, nhung tach
+     * ma rieng de bat duoc mot dem trong ca dot su kien.
+     */
+    public static boolean isDemTrungThu() {
+        return SuKien.bat(SuKien.DEM_TRUNG_THU);
+    }
+
+    public static boolean isSuKienTrungThu2015() {
+        return SuKien.bat(SuKien.TRUNG_THU_2015);
     }
 
     public static boolean isFinishAllSuKienTrungthu2015() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2020-09-30 10:00:00") >= 0;
+        return !isSuKienTrungThu2015();
+    }
+
+    public static boolean isBanLongDenHoaSen() {
+        return SuKien.bat(SuKien.LONG_DEN_HOA_SEN);
+    }
+
+    // -------------------------------- Halloween --------------------------------
+
+    public static boolean isSuKienHaloween2016() {
+        return SuKien.bat(SuKien.HALLOWEEN);
+    }
+
+    public static boolean isFinishAllSuKienHaloween2016() {
+        return !isSuKienHaloween2016();
+    }
+
+    /** Gop ca isDemHaloween lan isDemHaloween2023 vao mot cong. */
+    public static boolean isDemHaloween() {
+        return SuKien.bat(SuKien.DEM_HALLOWEEN);
+    }
+
+    public static boolean isDemHaloween2023() {
+        return SuKien.bat(SuKien.DEM_HALLOWEEN);
+    }
+
+    public static boolean isSuKienHalowwen2015() {
+        return SuKien.bat(SuKien.HALLOWEEN_2015);
+    }
+
+    public static boolean isFinishAllSuKienHaloween2015() {
+        return !isSuKienHalowwen2015();
+    }
+
+    // ----------------------------------- He -----------------------------------
+
+    public static boolean isSuKienHe2017() {
+        return SuKien.bat(SuKien.HE_2017);
+    }
+
+    public static boolean isFinishAllSuKienHe2017() {
+        return !isSuKienHe2017();
+    }
+
+    public static boolean isFinishAllSuKienHe2015() {
+        return !SuKien.bat(SuKien.HE_2015);
+    }
+
+    // ---------------------------------- Vu Lan ----------------------------------
+
+    public static boolean isSuKienVuLan2015() {
+        return SuKien.bat(SuKien.VU_LAN);
     }
 
     public static boolean isFinishAllSuKienVulan2015() {
-        final String daycheck = getDayTime(0L);
-        return daycheck.compareTo("2015-09-14 10:00:00") >= 0;
+        return !isSuKienVuLan2015();
+    }
+
+    // --------------------------------- Gio To ---------------------------------
+
+    public static boolean isSuKienGioTo2016() {
+        return SuKien.bat(SuKien.GIO_TO);
+    }
+
+    public static boolean isFinishAllSuKienGioTo2016() {
+        return !isSuKienGioTo2016();
+    }
+
+    // ---------------------------------- Mini ----------------------------------
+
+    public static boolean isSuKienMini() {
+        return SuKien.bat(SuKien.MINI);
+    }
+
+    public static boolean isFinishAllSuKienMini() {
+        return !isSuKienMini();
+    }
+
+    public static boolean isSuKienMiniChucNu() {
+        return SuKien.bat(SuKien.MINI_CHUC_NU);
+    }
+
+    public static boolean isFinishSuKienMiniChucNu() {
+        return !isSuKienMiniChucNu();
+    }
+
+    public static boolean isSuKienMiniNuiChauBau() {
+        return SuKien.bat(SuKien.MINI_NUI_CHAU_BAU);
+    }
+
+    // --------------------------------- Ky niem ---------------------------------
+
+    public static boolean isSuKien83() {
+        return SuKien.bat(SuKien.QUOC_TE_8_3);
+    }
+
+    public static boolean isSuKien2011l2016() {
+        return SuKien.bat(SuKien.SINH_NHAT_2011);
+    }
+
+    public static boolean isSuKienSnNgude() {
+        if (Map.openLog) {
+            return false;
+        }
+        return SuKien.bat(SuKien.SINH_NHAT_NGUDE);
+    }
+
+    public static boolean isFinishAllSuKienSnNgude() {
+        return !isSuKienSnNgude();
+    }
+
+    public static boolean isSinhNhatNgude() {
+        if (Map.openLog) {
+            return false;
+        }
+        return SuKien.bat(SuKien.SINH_NHAT_NGUDE_QUA);
+    }
+
+    public static boolean canReceiveGiftSNNgude() {
+        return isSinhNhatNgude();
+    }
+
+    public static boolean isSuKienDuaTopHoaLu() {
+        return SuKien.bat(SuKien.DUA_TOP_HOA_LU);
+    }
+
+    // -------------------------------- World Cup --------------------------------
+
+    public static boolean isSuKienWordcup2017() {
+        return SuKien.bat(SuKien.WORLD_CUP_2017);
     }
     
 

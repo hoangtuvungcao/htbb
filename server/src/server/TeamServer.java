@@ -547,7 +547,6 @@ public class TeamServer {
             // trong game se duoc ghi tra lai server.ini (xem CauHinh).
             CauHinh.apDungGioChiemThanh(p);
             CauHinh.apDungSuKienWorldCup(p);
-            System.out.println("SU KIEN WORLD CUP -> " + real.SuKienWorldCup.moTa());
             Database.CHO_PHEP_TAO_TEN_GM = "1".equals(p.getProperty(CauHinh.K_TAO_TEN_GM, "0").trim());
             if (Database.CHO_PHEP_TAO_TEN_GM) {
                 System.out.println("CANH BAO: sv.choPhepTaoTenGM=1 - dang cho phep tao nhan vat"
@@ -633,6 +632,14 @@ public class TeamServer {
 
         // PHAI dung truoc moi viec cham CSDL. Xem kiemTraCSDL().
         kiemTraCSDL(p);
+
+        // Cong bat/tat su kien (bang tob_su_kien). PHAI chay TRUOC Database.startSaveChar()
+        // - ham do goi Map.loadAllTemplate() -> Map.loadShop(), va bang shop dat
+        // SELL/NOT_SELL theo Char.isSuKien* NGAY LUC NAP roi khong hoi lai nua. Nap cong
+        // sau do la shop van theo trang thai cu. Xem real/SuKien.
+        real.SuKien.nap();
+        System.out.println("SU KIEN -> " + real.SuKien.moTa());
+        System.out.println("SU KIEN WORLD CUP -> " + real.SuKienWorldCup.moTa());
 
         Database.instance.createTableTrainLuong(); // bang luu han muc luong train quai theo ngay
         // PHAI chay TRUOC khi nhan nguoi choi: saveChar ghi cot isCT, thieu cot thi lenh

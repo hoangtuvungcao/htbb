@@ -113,6 +113,16 @@ sv.connRateMax=60
 sv.connRateWindow=0
 sv.dosBanSec=300
 
+# ==== SU KIEN ====
+# Tu 30/08/2026 cho bat/tat su kien la TRANG QUAN TRI /admin/sukien.php (bang
+# tob_su_kien trong CSDL), khong phai file nay. Moi su kien deu bat duoc, khong con
+# moc ngay ghi cung nao trong ma nguon nua - xem src/real/SuKien.java.
+#
+# Nam dong duoi day chi con la GIA TRI MAC DINH: chung quyet dinh trang thai cua nam
+# su kien do khi bang tob_su_kien chua co dong tuong ung (may chu chay lan dau sau khi
+# cap nhat). Sau lan khoi dong dau tien, bang CSDL la nguon duy nhat va sua o day
+# khong con tac dung.
+#
 # sv.isSuKien83 DA BO khoi ban mau: no khong duoc doc o dau trong ma nguon, de lai chi
 # lam nguoi ta tuong chinh duoc cai gi do. Xem docs/cau-hinh-server-ini.md muc 10.
 sv.isSuKienTrungThul2016=1
@@ -145,9 +155,10 @@ sv.thuNghiemThuCuoi=
 # tgct : xem gio chiem thanh dang dat
 
 # ==== SU KIEN WORLD CUP (binh chon Messi / Ronaldo) ====
-# De TRONG sv.worldCupBatDau = su kien TAT han: quai khong roi Qua bong vang, NPC
-# Tong Quan khong hien muc "Su kien World Cup". Muon mo thi dien ca BA dong, dinh
-# dang "yyyy-MM-dd HH:mm:ss", va phai theo thu tu batDau < ketThuc <= hanNhanQua.
+# CACH BAT CHINH THUC gio la trang quan tri /admin/sukien.php (hai dong "World Cup").
+# Ba dong duoi day chi con la GIA TRI MAC DINH cho hai cong do khi bang tob_su_kien
+# chua co dong tuong ung. Dinh dang "yyyy-MM-dd HH:mm:ss", thu tu batDau < ketThuc <=
+# hanNhanQua; de trong bat ky dong nao = mac dinh TAT.
 #   batDau..ketThuc      : dang binh chon - quai roi bong vang, doi phieu duoc
 #   ketThuc..hanNhanQua  : het binh chon, ben thang vao NPC nhan qua
 sv.worldCupBatDau=

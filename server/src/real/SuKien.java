@@ -1,0 +1,316 @@
+package real;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import server.TeamServer;
+
+/**
+ * CONG BAT/TAT CUA MOI SU KIEN.
+ *
+ * ==== VAN DE CU ====
+ * Gan het su kien duoc mo bang cach SO NGAY HE THONG voi mot moc GHI CUNG trong
+ * Char.java, vi du:
+ *
+ *     public static boolean isSuKienHaloween2016() {
+ *         return getDayTime(0L).compareTo("2020-11-01 00:00:00") &lt; 0;
+ *     }
+ *
+ * Moi moc nhu vay deu nam trong 2015..2024, tuc HOM NAY MOI SU KIEN DEU DA TAT VINH
+ * VIEN va khong the mo lai neu khong sua ma nguon roi build lai jar. Chi nam su kien
+ * co co rieng trong server.ini (sv.isSuKienTet2017, sv.isSuKienGioTo2016,
+ * sv.isSuKienNoel2023, sv.isSuKienTetduonglich2024, sv.isSuKienTrungThul2016).
+ *
+ * ==== BAY GIO ====
+ * KHONG CON MOC NGAY NAO trong ma nguon. Moi su kien la mot MA + mot cong bat/tat,
+ * luu trong bang CSDL `tob_su_kien` (xem data/DatabaseSuKien), bat luc nao cung duoc.
+ * Trang quan tri web/admin/sukien.php la cho bat/tat.
+ *
+ * Cac ham Char.isSuKien* / Char.isFinishAllSuKien* van con nguyen ten va chu ky - hon
+ * 400 cho trong ma nguon lan bytecode trong lib/NQSH_5h.jar goi chung - chi doi than
+ * thanh mot dong goi sang day.
+ *
+ * ==== MAC DINH GIU NGUYEN HANH VI CU ====
+ * Khi CHUA co ban ghi nao trong CSDL (bang chua tao, CSDL loi, hoac may chu chay lan
+ * dau sau khi cap nhat), macDinh() tra ve DUNG gia tri ma luat cu dang cho ra vao
+ * ngay 30/08/2026: tat ca TAT, rieng Trung Thu theo co sv.isSuKienTrungThul2016 trong
+ * server.ini. Nen cap nhat ban nay len may chu dang chay khong lam doi mot thu gi cho
+ * den khi co nguoi vao trang quan tri bat mot su kien len.
+ *
+ * ==== VI SAO PHAI KHOI DONG LAI SAU KHI DOI ====
+ * Rat nhieu tac dung cua su kien duoc TINH MOT LAN luc khoi dong chu khong hoi lai moi
+ * lan dung: bang shop (Map.loadShop dat SELL/NOT_SELL theo isSuKien*), Map.isSale,
+ * danh sach npc, bang vat pham... Doi cong giua chung thi duoc nua nay hong nua kia,
+ * kho lan hon la khong doi gi. Nen lop nay CO Y chi doc CSDL mot lan luc khoi dong.
+ */
+public final class SuKien {
+
+    // ============================ MA SU KIEN ============================
+    // Ma la khoa chinh trong bang tob_su_kien - DOI LA MAT SETTING cu.
+
+    public static final String TAT_CA = "tatca";
+
+    public static final String TET_2017 = "tet2017";
+    public static final String TET_DUONG_LICH = "tetduonglich";
+    public static final String TET_2016 = "tet2016";
+    public static final String TET_123 = "tet123";
+
+    public static final String NOEL = "noel";
+    public static final String NOEL_2023 = "noel2023";
+    public static final String DEM_NOEL = "demnoel";
+    public static final String BLACK_FRIDAY = "blackfriday";
+    public static final String BLACK_FRIDAY_DAU_GIA = "blackfridaydaugia";
+    public static final String BLACK_FRIDAY_BAN = "blackfridayban";
+
+    public static final String TRUNG_THU = "trungthu";
+    public static final String DEM_TRUNG_THU = "demtrungthu";
+    public static final String TRUNG_THU_2015 = "trungthu2015";
+    public static final String LONG_DEN_HOA_SEN = "longdenhoasen";
+    public static final String HALLOWEEN = "halloween";
+    public static final String DEM_HALLOWEEN = "demhalloween";
+    public static final String HALLOWEEN_2015 = "halloween2015";
+    public static final String HE_2017 = "he2017";
+    public static final String HE_2015 = "he2015";
+    public static final String VU_LAN = "vulan";
+    public static final String GIO_TO = "gioto";
+
+    public static final String MINI = "mini";
+    public static final String MINI_CHUC_NU = "minichucnu";
+    public static final String MINI_NUI_CHAU_BAU = "mininuichaubau";
+
+    public static final String QUOC_TE_8_3 = "quocte83";
+    public static final String SINH_NHAT_2011 = "sinhnhat2011";
+    public static final String SINH_NHAT_NGUDE = "snngude";
+    public static final String SINH_NHAT_NGUDE_QUA = "snngudequa";
+    public static final String DUA_TOP_HOA_LU = "duatophoalu";
+
+    public static final String WORLD_CUP = "worldcup";
+    public static final String WORLD_CUP_NHAN_QUA = "worldcupnhanqua";
+    public static final String WORLD_CUP_2017 = "worldcup2017";
+
+    // ============================ DANH MUC ============================
+
+    /** Mot dong trong danh muc su kien, dung ca cho trang quan tri. */
+    public static final class Muc {
+
+        public final String ma;
+        public final String ten;
+        public final String nhom;
+        /** Mo ta ngan: bat cai nay len thi nguoi choi thay gi. */
+        public final String moTa;
+
+        Muc(final String ma, final String ten, final String nhom, final String moTa) {
+            this.ma = ma;
+            this.ten = ten;
+            this.nhom = nhom;
+            this.moTa = moTa;
+        }
+    }
+
+    /**
+     * Thu tu o day la thu tu hien tren trang quan tri.
+     *
+     * "Cong tong" dat dau tien vi no chan de len phan lon cac su kien khac: hon 70 cho
+     * trong ma nguon viet "if (!Char.isFinishAllSuKien())" TRUOC khi hoi tiep su kien cu
+     * the, nen de nguyen cong tong o trang thai tat thi bat rieng le mot su kien co the
+     * van khong thay gi.
+     */
+    private static final Muc[] DANH_MUC = {
+        new Muc(TAT_CA, "Cổng tổng cho mọi sự kiện", "Cổng chung",
+                "Hơn 70 chỗ trong mã nguồn hỏi cổng này trước khi hỏi từng sự kiện."
+                + " Muốn bật bất kỳ sự kiện cũ nào thì thường phải bật cổng này trước."),
+
+        new Muc(TET_2017, "Tết Nguyên Đán", "Tết",
+                "NPC lì xì, nấu bánh chưng, cây lì xì, top Tết."),
+        new Muc(TET_DUONG_LICH, "Tết dương lịch", "Tết",
+                "NPC cây thông (npc -35): đổi 10 kẹo + 30 lượng lấy quà ngẫu nhiên."),
+        new Muc(TET_2016, "Tết 2016", "Tết",
+                "Bản Tết cũ: đổi bao lì xì."),
+        new Muc(TET_123, "Ba ngày Tết", "Tết",
+                "Thưởng riêng ba ngày mùng 1-2-3."),
+
+        new Muc(NOEL, "Noel", "Cuối năm",
+                "NPC Noel, quà Giáng sinh, tuần lộc. Luôn tắt trên server liên đấu và server local."),
+        new Muc(NOEL_2023, "Noel 2023", "Cuối năm",
+                "Bản Noel dựng lại năm 2023."),
+        new Muc(DEM_NOEL, "Đêm Noel", "Cuối năm",
+                "Thưởng riêng đêm 24/12."),
+        new Muc(BLACK_FRIDAY, "Black Friday", "Cuối năm",
+                "Giảm giá shop dịp Black Friday."),
+        new Muc(BLACK_FRIDAY_DAU_GIA, "Black Friday: đấu giá chổi", "Cuối năm",
+                "Mở phiên đấu giá chổi."),
+        new Muc(BLACK_FRIDAY_BAN, "Black Friday: mở bán", "Cuối năm",
+                "Mở bán các món giới hạn của đợt Black Friday."),
+
+        new Muc(TRUNG_THU, "Trung Thu", "Mùa",
+                "Bánh nướng / bánh dẻo, lồng đèn, NPC Hằng Nga, thả đèn."),
+        new Muc(DEM_TRUNG_THU, "Đêm rằm Trung Thu", "Mùa",
+                "Tặng 1 bánh nướng khi đăng nhập và khi lên cấp, mỗi nhân vật một lần."),
+        new Muc(TRUNG_THU_2015, "Trung Thu 2015", "Mùa",
+                "Bản Trung Thu cũ."),
+        new Muc(LONG_DEN_HOA_SEN, "Bán lồng đèn hoa sen", "Mùa",
+                "Mở bán lồng đèn hoa sen."),
+        new Muc(HALLOWEEN, "Halloween", "Mùa",
+                "Bí ngô, mặt nạ, hộp quà Halloween, boss Dracula."),
+        new Muc(DEM_HALLOWEEN, "Đêm Halloween", "Mùa",
+                "Thưởng riêng đêm 31/10."),
+        new Muc(HALLOWEEN_2015, "Halloween 2015", "Mùa",
+                "Bản Halloween cũ."),
+        new Muc(HE_2017, "Sự kiện Hè", "Mùa",
+                "Kem, dưa hấu, socola, NPC mùa hè."),
+        new Muc(HE_2015, "Hè 2015", "Mùa",
+                "Bản sự kiện hè cũ."),
+        new Muc(VU_LAN, "Vu Lan", "Mùa",
+                "NPC Vu Lan, hoa hồng cài áo."),
+        new Muc(GIO_TO, "Giỗ Tổ Hùng Vương", "Mùa",
+                "Bánh giày, pháo hoa, đổi nguyên liệu, bảng xếp hạng bắn pháo."),
+
+        new Muc(MINI, "Sự kiện mini", "Mini",
+                "Đổi đồ Bạch Mi, Thuý Vũ Hồng Sam, quà đặc biệt ở NPC đấu trường."),
+        new Muc(MINI_CHUC_NU, "Mini Chức Nữ", "Mini",
+                "Nhiệm vụ đi tìm Chức Nữ."),
+        new Muc(MINI_NUI_CHAU_BAU, "Mini Núi Châu Báu", "Mini",
+                "Bản mini của núi châu báu."),
+
+        new Muc(QUOC_TE_8_3, "Quốc tế Phụ nữ 8/3", "Kỷ niệm",
+                "Quà 8/3, hoa hồng."),
+        new Muc(SINH_NHAT_2011, "Sinh nhật 20/11", "Kỷ niệm",
+                "Lồng đèn hoa sen, chổi băng / chổi độc / chổi điện ở NPC sự kiện."),
+        new Muc(SINH_NHAT_NGUDE, "Sinh nhật Ngudẻ", "Kỷ niệm",
+                "NPC sinh nhật."),
+        new Muc(SINH_NHAT_NGUDE_QUA, "Sinh nhật Ngudẻ: phát quà", "Kỷ niệm",
+                "Cho nhận quà sinh nhật."),
+        new Muc(DUA_TOP_HOA_LU, "Đua top Hoa Lư", "Kỷ niệm",
+                "Đợt đua top của server Hoa Lư."),
+
+        new Muc(WORLD_CUP, "World Cup: bình chọn", "World Cup",
+                "Quái rơi Quả bóng vàng; NPC Tổng Quản mở mục bình chọn Messi/Ronaldo."
+                + " Mặc định theo cửa sổ sv.worldCup* trong server.ini."),
+        new Muc(WORLD_CUP_NHAN_QUA, "World Cup: phát quà", "World Cup",
+                "Hết bình chọn, bên thắng vào NPC nhận quà. Bật cùng lúc với mục trên thì"
+                + " mục trên được ưu tiên (vẫn đang bình chọn)."),
+        new Muc(WORLD_CUP_2017, "World Cup 2017 (bản cũ)", "World Cup",
+                "Bản cũ: quái rơi Quả bóng bạc, NPC đổi nguyên liệu."),
+    };
+
+    // ============================ TRANG THAI ============================
+
+    /** Ma -> bat/tat. Ma khong co trong day thi dung macDinh(). */
+    private static final ConcurrentHashMap<String, Boolean> TRANG_THAI =
+            new ConcurrentHashMap<String, Boolean>();
+
+    /** Da doc CSDL thanh cong chua - trang quan tri can biet de canh bao. */
+    private static volatile boolean daNap = false;
+
+    private SuKien() {
+    }
+
+    public static Muc[] danhMuc() {
+        return DANH_MUC.clone();
+    }
+
+    public static Muc timMuc(final String ma) {
+        for (final Muc m : DANH_MUC) {
+            if (m.ma.equals(ma)) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    public static boolean daNap() {
+        return daNap;
+    }
+
+    /** Su kien nay dang bat hay khong. Day la CAU HOI DUY NHAT ma phan con lai cua game hoi. */
+    public static boolean bat(final String ma) {
+        final Boolean v = TRANG_THAI.get(ma);
+        return (v == null) ? macDinh(ma) : v.booleanValue();
+    }
+
+    /**
+     * Gia tri dung khi CSDL chua noi gi.
+     *
+     * CO Y tra ve dung nhung gi luat ngay thang cu dang cho ra hom bo moc ngay
+     * (30/08/2026): tat ca TAT, tru cac muc con co trong server.ini. Nho vay cap nhat
+     * ban nay len may chu dang chay khong lam doi mot thu gi.
+     */
+    private static boolean macDinh(final String ma) {
+        if (TET_2017.equals(ma)) {
+            return TeamServer.isSuKienTet2017;
+        }
+        if (TET_DUONG_LICH.equals(ma)) {
+            return TeamServer.isSuKienTetduonglich2024;
+        }
+        if (NOEL_2023.equals(ma)) {
+            return TeamServer.isSuKienNoel2023;
+        }
+        if (GIO_TO.equals(ma)) {
+            return TeamServer.isSuKienGioTo2016;
+        }
+        if (TRUNG_THU.equals(ma) || DEM_TRUNG_THU.equals(ma)) {
+            return TeamServer.isSuKienTrungThul2016;
+        }
+        if (WORLD_CUP.equals(ma)) {
+            return SuKienWorldCup.trongCuaSoBinhChon();
+        }
+        if (WORLD_CUP_NHAN_QUA.equals(ma)) {
+            return SuKienWorldCup.trongCuaSoNhanQua();
+        }
+        return false;
+    }
+
+    /**
+     * Dat lai toan bo bang trang thai. Goi tu DatabaseSuKien luc khoi dong.
+     *
+     * Ma khong co trong danh muc bi bo qua: mot dong sot lai trong CSDL sau khi doi ten
+     * ma khong duoc phep am tham lam doi hanh vi cua su kien khac.
+     */
+    public static void dat(final java.util.Map<String, Boolean> moi) {
+        TRANG_THAI.clear();
+        if (moi == null) {
+            return;
+        }
+        for (final java.util.Map.Entry<String, Boolean> e : moi.entrySet()) {
+            if (e.getKey() == null || e.getValue() == null || timMuc(e.getKey()) == null) {
+                continue;
+            }
+            TRANG_THAI.put(e.getKey(), e.getValue());
+        }
+        daNap = true;
+    }
+
+    /** Doc CSDL roi ghi lai anh chup de trang quan tri thay duoc trang thai that. */
+    public static void nap() {
+        data.DatabaseSuKien.nap();
+        data.DatabaseSuKien.ghiAnhChup();
+    }
+
+    /** Mot dong tom tat de in ra luc khoi dong. */
+    public static String moTa() {
+        final List<String> dangBat = new ArrayList<String>();
+        for (final Muc m : DANH_MUC) {
+            if (bat(m.ma)) {
+                dangBat.add(m.ten);
+            }
+        }
+        final String nguon = daNap ? "CSDL" : "MAC DINH (chua doc duoc bang tob_su_kien)";
+        if (dangBat.isEmpty()) {
+            return "khong co su kien nao dang bat  [nguon: " + nguon + "]";
+        }
+        return dangBat.size() + "/" + DANH_MUC.length + " dang bat: "
+                + noiChuoi(dangBat) + "  [nguon: " + nguon + "]";
+    }
+
+    /** String.join khong co tren muc ngon ngu 8 cua ban build cu; viet tay cho chac. */
+    private static String noiChuoi(final List<String> ds) {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ds.size(); i++) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            sb.append(ds.get(i));
+        }
+        return sb.toString();
+    }
+}
