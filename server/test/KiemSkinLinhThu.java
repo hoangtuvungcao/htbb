@@ -449,8 +449,13 @@ public final class KiemSkinLinhThu {
         final String chiSo = doc("src/real/CharChiSo.java");
         final String mc = doc("src/real/MessageCreator.java");
 
-        // Bon ham tinh tai cho phai con day du.
-        final String[] ham = {"tnSucManh", "tnKheoLeo", "tnTinhThan", "tnSucKhoe"};
+        // NAM ham tinh tai cho, khong phai bon.
+        //
+        // Nhan vat co NAM diem tiem nang: Database.basicPoint[class][0..4] = suc manh,
+        // kheo leo, tinh than, suc khoe, MAY MAN. Ban dau toi bo sot may man, nen "+20%
+        // diem tiem nang" cong cho bon cai dau ma CHI MANG dung im (crit1 = (luck+..)/5)
+        // va bang chi so hien mot dong khong nhuc nhich giua bon dong tang.
+        final String[] ham = {"tnSucManh", "tnKheoLeo", "tnTinhThan", "tnSucKhoe", "tnMayMan"};
         for (final String h : ham) {
             Kiem.dung("Char co ham " + h + "()", ch.contains("public int " + h + "()"));
         }
@@ -492,6 +497,15 @@ public final class KiemSkinLinhThu {
         Kiem.dung("bang chi so gui client cong kheo leo", mc.contains("p.agitity + p.tnKheoLeo()"));
         Kiem.dung("bang chi so gui client cong tinh than", mc.contains("p.spirit + p.tnTinhThan()"));
         Kiem.dung("bang chi so gui client cong suc khoe", mc.contains("p.health + p.tnSucKhoe()"));
+        Kiem.dung("bang chi so gui client cong may man", mc.contains("p.luck + p.tnMayMan()"));
+
+        // MAY MAN nuoi CHI MANG. Bo sot cho nay thi bon chi so kia tang ma chi mang dung
+        // im — nguoi choi nhin bang la thay ngay co gi do sai.
+        Kiem.dung("chi mang cong may man tu skin",
+                ch.contains("(this.luck + this.tnMayMan())"));
+        Kiem.bang("khong con cho nao doc luck ma quen cong tiem nang (trong Char)",
+                Integer.valueOf(dem(ch, "this.luck + this.tnMayMan()")),
+                Integer.valueOf(dem(ch, "this.luck +")));
     }
 
     /**

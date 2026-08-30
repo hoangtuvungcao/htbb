@@ -1126,6 +1126,19 @@ public class Char extends LiveActor {
         return this.health * SkinLinhThu.pcTiemNang(this) / 100;
     }
 
+    /**
+     * May man — DIEM TIEM NANG THU NAM, dung quen nhu lan dau.
+     *
+     * Nhan vat co NAM diem tiem nang chu khong phai bon: xem cho dat lai chi so goc,
+     * Database.basicPoint[class][0..4] = suc manh, kheo leo, tinh than, suc khoe, MAY MAN.
+     * Bo sot no thi "+20% diem tiem nang" cong cho bon cai dau ma CHI MANG dung im
+     * (crit1 = (luck + ...) / 5), va bang chi so hien mot dong khong nhuc nhich giua bon
+     * dong tang — nguoi choi nhin la biet co gi do sai.
+     */
+    public int tnMayMan() {
+        return this.luck * SkinLinhThu.pcTiemNang(this) / 100;
+    }
+
     public void resetNguHanh() {
         this.attNguHanh = new byte[5];
         this.attNguHanhAnimal = new byte[2];
@@ -2305,7 +2318,7 @@ public class Char extends LiveActor {
         int crit1 = 0;
         int crit2 = 0;
         if (this.charClass == 4) {
-            crit1 = (this.luck + getEffSkillClan(3)) / 5;
+            crit1 = ((this.luck + this.tnMayMan()) + getEffSkillClan(3)) / 5;
         }
         for (Item item : wItems) {
             if (item.level > this.lvDetail.lv) {

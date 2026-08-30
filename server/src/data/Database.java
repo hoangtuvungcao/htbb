@@ -7362,7 +7362,7 @@ public class Database {
                 // tu bat lai. Da bao.
                 //
                 // DOC RIENG TRONG TRY: cot isCT la cot MOI. May chu nao chua chay
-                // themCotTatCaiTrang() thi lenh doc cot nay nem SQLException,
+                // themCotCongTacHienThi() thi lenh doc cot nay nem SQLException,
                 // ma doan nay nam giua ham nap nhan vat — de loi lan ra la HONG DANG NHAP
                 // cua toan bo nguoi choi chi vi quen mot cau ALTER TABLE. Thieu cot thi
                 // lui ve dung hanh vi cu (luon bat), khong ai mat gi.
@@ -7374,6 +7374,19 @@ public class Database {
                     }
                 } catch (final Exception thieuCot) {
                     p.setBatCaiTrang();
+                }
+
+                // Cong tac "Tat canh" — cung mot loi, cung mot menu NPC, cung mot cach vá.
+                // Doc trong try RIENG chu khong gop chung voi isCT: gop lai thi thieu mot
+                // cot lam mat luon cai kia.
+                try {
+                    if (rs.getByte("isCanh") == 0) {
+                        p.setBatCanh();
+                    } else {
+                        p.setTatCanh();
+                    }
+                } catch (final Exception thieuCot) {
+                    p.setBatCanh();
                 }
                 
                  
@@ -11525,7 +11538,13 @@ public void addCharXaiNapLuong(Char p, int type) {
      * Mac dinh 0 = DANG BAT, dung y voi hanh vi tu truoc den gio, nen chay migration
      * khong lam ai bi tat cai trang.
      */
-    public void themCotTatCaiTrang() {
+    public void themCotCongTacHienThi() {
+        themCotNeuThieu("isCT", "cong tac Tat cai trang");
+        themCotNeuThieu("isCanh", "cong tac Tat canh");
+    }
+
+    /** Them mot cot cong tac int NOT NULL DEFAULT 0 vao tob_char neu chua co. */
+    private void themCotNeuThieu(final String tenCot, final String moTa) {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -11535,13 +11554,14 @@ public void addCharXaiNapLuong(Char p, int type) {
             rs = stmt.executeQuery(
                     "SELECT COUNT(*) FROM information_schema.COLUMNS"
                     + " WHERE TABLE_SCHEMA = DATABASE()"
-                    + " AND TABLE_NAME = 'tob_char' AND COLUMN_NAME = 'isCT'");
+                    + " AND TABLE_NAME = 'tob_char' AND COLUMN_NAME = '" + tenCot + "'");
             final boolean daCo = rs.next() && rs.getInt(1) > 0;
             rs.close();
             rs = null;
             if (!daCo) {
-                stmt.execute("ALTER TABLE tob_char ADD COLUMN isCT int(11) NOT NULL DEFAULT 0");
-                System.out.println("[DB] Da them cot tob_char.isCT (cong tac Tat cai trang).");
+                stmt.execute("ALTER TABLE tob_char ADD COLUMN " + tenCot
+                        + " int(11) NOT NULL DEFAULT 0");
+                System.out.println("[DB] Da them cot tob_char." + tenCot + " (" + moTa + ").");
             }
         } catch (Exception e) {
             e.printStackTrace();

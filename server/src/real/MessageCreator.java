@@ -1963,7 +1963,7 @@ public class MessageCreator {
         m.dos.writeShort(p.agitity + p.tnKheoLeo() + p.getEffSkillClan(3) + p.newAtb[3] + p.upAbility[3] + p.abilityKham[1] + ((p.animalRide != null) ? p.animalRide.att[7] : 0));
         m.dos.writeShort(p.spirit + p.tnTinhThan() + p.getEffSkillClan(3) + p.newAtb[4] + p.upAbility[1] + p.abilityKham[2] + ((p.animalRide != null) ? p.animalRide.att[8] : 0));
         m.dos.writeShort(p.health + p.tnSucKhoe() + p.getEffSkillClan(3) + p.newAtb[5] + p.secondHealth + p.upAbility[0] + p.abilityKham[3] + ((p.animalRide != null) ? p.animalRide.att[6] : 0));
-        m.dos.writeShort(p.luck + p.getEffSkillClan(3) + p.upAbility[4]);
+        m.dos.writeShort(p.luck + p.tnMayMan() + p.getEffSkillClan(3) + p.upAbility[4]);
         m.dos.writeShort(p.basepoint);
         m.dos.writeShort(p.skillpoint);
         m.dos.writeInt(p.pointCongHienClan);

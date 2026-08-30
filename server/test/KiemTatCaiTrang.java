@@ -64,8 +64,9 @@ public final class KiemTatCaiTrang {
         // Chi so tham so phai dich theo. Them mot "?" ma quen doi chi so cua charDBID thi
         // cau UPDATE se sua NHAM NHAN VAT KHAC — hoac nem loi, ma nem loi o day nghia la
         // nhan vat bi khoa.
-        Kiem.dung("charDBID chuyen sang tham so 28", luu.contains("pre.setInt(28, p.charDBID)"));
+        Kiem.dung("charDBID chuyen sang tham so 29", luu.contains("pre.setInt(29, p.charDBID)"));
         Kiem.sai("khong con dat charDBID o tham so 27", luu.contains("pre.setInt(27, p.charDBID)"));
+        Kiem.sai("khong con dat charDBID o tham so 28", luu.contains("pre.setInt(28, p.charDBID)"));
 
         // ---- Nap lai luc dang nhap ----
         Kiem.dung("luc nap co doc cot isCT", db.contains("rs.getByte(\"isCT\")"));
@@ -89,20 +90,23 @@ public final class KiemTatCaiTrang {
         // ---- Tu them cot luc khoi dong ----
         // Day la mat xich giu cho khong ai bi khoa. Xem chu thich dau tep.
         Kiem.dung("Database co ham tu them cot",
-                db.contains("public void themCotTatCaiTrang()"));
+                db.contains("public void themCotCongTacHienThi()"));
         Kiem.dung("ham do hoi information_schema truoc (MySQL 5.x khong co IF NOT EXISTS)",
                 db.contains("information_schema.COLUMNS"));
         Kiem.dung("ham do co cau ALTER TABLE them cot",
-                db.contains("ALTER TABLE tob_char ADD COLUMN isCT"));
+                db.contains("ALTER TABLE tob_char ADD COLUMN"));
+        // Mac dinh phai la 0. Cac hang cu sau ALTER deu mang gia tri nay, ma ca hai cong
+        // tac deu quy uoc 0 = DANG BAT — dung hanh vi tu truoc den gio. Dat mac dinh 1 thi
+        // ngay khi may chu khoi dong, moi nguoi choi bi tat cai trang va tat canh.
         Kiem.dung("cot moi mac dinh 0 (= dang bat, dung hanh vi cu)",
-                db.contains("isCT int(11) NOT NULL DEFAULT 0"));
+                db.contains("int(11) NOT NULL DEFAULT 0"));
         Kiem.dung("TeamServer goi ham do luc khoi dong",
-                server.contains("Database.instance.themCotTatCaiTrang()"));
+                server.contains("Database.instance.themCotCongTacHienThi()"));
 
         // Phai goi TRUOC khi may chu mo cong nhan nguoi choi. Do bang cho THAT SU tao
         // socket ("new ServerSocket("), khong do bang chu "ServerSocket" tran — chu do
         // con nam o dong import va o khai bao truong, ca hai deu o dau tep.
-        final int mocThemCot = server.indexOf("themCotTatCaiTrang()");
+        final int mocThemCot = server.indexOf("themCotCongTacHienThi()");
         final int mocMoCong = server.indexOf("new ServerSocket(");
         Kiem.dung("them cot truoc khi mo cong nhan nguoi choi",
                 mocThemCot > 0 && mocMoCong > 0 && mocThemCot < mocMoCong);
@@ -110,6 +114,25 @@ public final class KiemTatCaiTrang {
         // ---- Khong con dong in go loi trong duong chay ----
         Kiem.sai("khong con System.out.println go loi khi bat/tat cai trang",
                 menu.contains("System.out.println(\"Tat cai trang"));
+
+        // ---- Cong tac TAT CANH: cung mot loi, cung mot menu NPC ----
+        Kiem.nhom("Tat canh - cong tac va cho luu");
+
+        Kiem.dung("Char co isTatCanh()", ch.contains("public boolean isTatCanh()"));
+        Kiem.dung("cau UPDATE cua saveChar co ghi cot isCanh", luu.contains("isCanh=?"));
+        Kiem.dung("saveChar dat gia tri cho cot isCanh",
+                luu.contains("p.isTatCanh() ? 1 : 0"));
+        Kiem.sai("KHONG luu chieu nguoc", luu.contains("p.isTatCanh() ? 0 : 1"));
+        Kiem.dung("luc nap co doc cot isCanh", db.contains("rs.getByte(\"isCanh\")"));
+        Kiem.dung("ham tu them cot co lo cot isCanh", db.contains("themCotNeuThieu(\"isCanh\""));
+        Kiem.dung("ham tu them cot co lo cot isCT", db.contains("themCotNeuThieu(\"isCT\""));
+
+        // Doc trong try RIENG, khong gop chung voi isCT: gop lai thi thieu mot cot lam
+        // mat luon cong tac kia.
+        final int mocCanh = db.indexOf("if (rs.getByte(\"isCanh\") == 0) {");
+        final int mocTryCanh = db.lastIndexOf("try {", mocCanh);
+        Kiem.dung("doc isCanh nam trong try RIENG cua no",
+                mocCanh > 0 && mocTryCanh > mocDoc);
     }
 
     private static String doc(final String duong) {
