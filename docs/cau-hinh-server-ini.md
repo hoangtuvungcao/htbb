@@ -53,15 +53,23 @@ chưa thay không, đủ 23 khoá bắt buộc không, mật khẩu có còn là
 nối CSDL thật**. Sai bất kỳ điều nào thì báo lỗi, giữ nguyên file đang chạy, không khởi động
 lại. Bản cũ được lưu vào `/opt/kpah/backup/server.ini.<ngày giờ>` (giữ 10 bản gần nhất).
 
-### `@GIU_NGUYEN@`
+### GitHub quản **toàn bộ** — không còn phải mở `server.ini`
 
-Khoá nào trong bản mẫu để giá trị `@GIU_NGUYEN@` thì bộ sinh **không đụng tới**, giữ nguyên
-giá trị đang chạy trên VPS. Dùng cho những khoá mà trong game sửa được và bạn muốn trong
-game thắng — mặc định đang đặt cho ba khoá giờ chiếm thành, vì có lệnh chat `stown`.
+Bản mẫu chứa **đủ 69 khoá** mà mã nguồn thực sự đọc, không thiếu không thừa (có phép kiểm
+đối chiếu hai chiều với `TeamServer.java` và `CauHinh.java`). Thiếu một khoá là lại phải vào
+VPS sửa tay — đúng việc đã làm sập server; thừa một khoá là nút bấm giả, xoay hết cỡ cũng
+không có tác dụng.
 
-Ngược lại, khoá nào có giá trị thẳng trong bản mẫu thì **GitHub thắng**: sửa trong game bằng
-bảng `setting` vẫn ăn ngay, nhưng lần deploy kế tiếp đặt lại theo bản mẫu. Tỉ lệ rơi đang
-thuộc nhóm này — muốn đổi lâu dài thì sửa bản mẫu, đừng sửa trong game.
+Vì GitHub quản hết nên: sửa trong game bằng bảng `setting` hay lệnh `stown` **vẫn ăn ngay**,
+nhưng lần deploy kế tiếp đặt lại theo bản mẫu. Muốn đổi lâu dài thì sửa bản mẫu.
+
+### Lối thoát `@GIU_NGUYEN@`
+
+Muốn một khoá nào đó để **trong game thắng**, đổi giá trị của nó trong bản mẫu thành
+`@GIU_NGUYEN@`. Bộ sinh sẽ không đụng tới khoá đó, giữ nguyên giá trị đang chạy trên VPS.
+
+Hữu ích nhất cho ba khoá giờ chiếm thành nếu bạn hay đổi giờ giữa sự kiện bằng `stown`.
+Mặc định đang **không** bật, vì bạn muốn chỉ sửa trên GitHub.
 
 ## 3. Mật khẩu CSDL — GitHub Secrets
 
@@ -233,12 +241,13 @@ Các khoá đọc thô khác, thiếu cũng không ném lỗi: `api.url`, `db.ru
 
 Các khoá ở mục 4 và mục 8 (trừ `limit.ccu`) đều **có giá trị mặc định**, xoá đi vẫn chạy.
 
-### `sv.isSuKien83` là khoá chết
+### `sv.isSuKien83` là khoá chết — đã bỏ khỏi bản mẫu
 
-Nó có trong file nhưng **không được đọc ở đâu trong mã nguồn**. Đổi giá trị không có tác
-dụng gì. Năm khoá `sv.isSuKien*` còn lại thì có thật (và bắt buộc phải có).
+Nó **không được đọc ở đâu trong mã nguồn**. Đổi giá trị không có tác dụng gì, nên đã bỏ hẳn
+khỏi `vps/server.ini.tmpl` — để lại chỉ khiến người ta tưởng chỉnh được cái gì đó. Năm khoá
+`sv.isSuKien*` còn lại thì có thật (và bắt buộc phải có).
 
-### Một khoá chẩn đoán không có sẵn trong file
+### Khoá chẩn đoán thú cưỡi
 
 ```ini
 sv.thuNghiemThuCuoi = tenNhanVat
