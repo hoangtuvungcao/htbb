@@ -107,6 +107,21 @@ public final class KiemCauHinhPipeline {
                 coTrongMaLenh(deploy, "doc_bi_mat", '#'));
         Kiem.dung("doc_bi_mat khong treo khi chay tay tu terminal",
                 deploy.contains("[ -t 0 ] && return 0"));
+
+        // ---- 6. Ma thoat cua bo sinh phai mac dinh AN TOAN ----
+        // Ngay 30/08/2026: sinh-server-ini.sh duoc commit tu Windows nen mat bit thuc thi,
+        // vo shell tra ve 126. Ma 126 khong khop nhanh loi nao (luc do chi bat "= 1") nen
+        // roi thang vao nhanh "cau hinh doi" -> deploy TAT SERVER oan. Chi 3 moi la "doi",
+        // moi ma khac 0 va 3 deu phai la loi.
+        Kiem.dung("deploy coi moi ma khac 0 va 3 la loi (khong doan mo)",
+                coTrongMaLenh(deploy, "[ \"$1\" != 0 ] && [ \"$1\" != 3 ]", '#'));
+        Kiem.dung("deploy dung la_loi_sinh o moi cho goi bo sinh",
+                demChuoi(deploy, "la_loi_sinh \"$RC\"") == 3);
+        Kiem.sai("KHONG con nhanh cu chi bat rieng ma 1",
+                deploy.contains("[ \"$RC\" = 1 ] && exit 1"));
+        // Goi qua "bash" thi bit thuc thi khong con quyet dinh duoc nua.
+        Kiem.dung("deploy goi bo sinh qua bash (bit thuc thi khong lam sap deploy nua)",
+                coTrongMaLenh(deploy, "bash \"$DIR/vps/sinh-server-ini.sh\"", '#'));
     }
 
     /** Cac khoa TeamServer doc bang parseInt/parseByte/parseShort - thieu la nem loi. */
@@ -146,6 +161,17 @@ public final class KiemCauHinhPipeline {
             }
         }
         return ra;
+    }
+
+    /** Dem so lan chuoi xuat hien - de chac moi cho goi deu duoc bao ve, khong sot cho nao. */
+    private static int demChuoi(final String noiDung, final String chuoi) {
+        int n = 0;
+        int i = noiDung.indexOf(chuoi);
+        while (i >= 0) {
+            n++;
+            i = noiDung.indexOf(chuoi, i + chuoi.length());
+        }
+        return n;
     }
 
     private static boolean laSo(final String v) {

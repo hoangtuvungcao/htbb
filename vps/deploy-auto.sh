@@ -69,10 +69,19 @@ cd "$DIR" || { echo "[LOI] Khong vao duoc $DIR"; exit 1; }
 CAN_BAT_LAI=0
 trap 'echo "[NGAT] bi ngat giua duong"; [ "$CAN_BAT_LAI" = 1 ] && systemctl start $SV_GAME; exit 1' HUP INT TERM PIPE
 
-# Sinh lai server.ini. Tra ve: 0 khong doi, 3 da doi (phai restart), 1 loi.
+# Sinh lai server.ini. Tra ve: 0 khong doi, 3 da doi (phai restart), con lai = loi.
+#
+# Goi qua "bash" chu khong chay truc tiep: file them moi tu Windows de mat bit thuc
+# thi, luc do vo shell tra ve 126. Ngay 30/08/2026 dinh dung cai do - 126 khong khop
+# nhanh loi nao nen bi hieu nham thanh "cau hinh doi" va server bi tat oan.
 sinh_cau_hinh() {
-    "$DIR/vps/sinh-server-ini.sh"
+    bash "$DIR/vps/sinh-server-ini.sh"
     return $?
+}
+
+# Chi 3 moi la "da doi". MOI ma khac 0 va 3 deu la loi, khong duoc doan mo.
+la_loi_sinh() {
+    [ "$1" != 0 ] && [ "$1" != 3 ]
 }
 
 # Tat -> (pull neu can) -> sinh cau hinh -> kiem jar -> bat lai -> doi cong 19129.
@@ -103,8 +112,9 @@ khoi_dong_lai() {
 
         echo "== Sinh lai server.ini tu ban mau"
         sinh_cau_hinh
-        if [ $? = 1 ]; then
-            echo "[LOI] cau hinh moi khong dung duoc. Bat lai voi server.ini cu."
+        RC=$?
+        if la_loi_sinh "$RC"; then
+            echo "[LOI] cau hinh moi khong dung duoc (ma thoat $RC). Bat lai voi server.ini cu."
             systemctl start "$SV_GAME"
             exit 1
         fi
@@ -169,8 +179,14 @@ if [ "$CU" = "$MOI" ]; then
     # Van phai thu sinh lai cau hinh de thay doi do di vao duoc.
     sinh_cau_hinh
     RC=$?
-    [ "$RC" = 1 ] && exit 1
-    [ "$RC" = 0 ] && { echo "Cau hinh cung khong doi. Khong lam gi."; exit 0; }
+    if la_loi_sinh "$RC"; then
+        echo "[LOI] bo sinh cau hinh that bai (ma thoat $RC). KHONG dong toi server."
+        exit 1
+    fi
+    if [ "$RC" = 0 ]; then
+        echo "Cau hinh cung khong doi. Khong lam gi."
+        exit 0
+    fi
     echo "== Cau hinh doi -> phai khoi dong lai"
     khoi_dong_lai 0 "$CU"
 fi
@@ -189,7 +205,10 @@ if ! echo "$DOI" | grep -qE "$CAN_RESTART_REGEX"; then
     # tren GitHub co the doi trong cung lan push do.
     sinh_cau_hinh
     RC=$?
-    [ "$RC" = 1 ] && exit 1
+    if la_loi_sinh "$RC"; then
+        echo "[LOI] bo sinh cau hinh that bai (ma thoat $RC). KHONG dong toi server."
+        exit 1
+    fi
     if [ "$RC" = 0 ]; then
         echo "   xong, server khong bi gian doan"
         exit 0
