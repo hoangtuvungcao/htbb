@@ -3,6 +3,13 @@ Description=KPAH game server
 After=network.target mariadb.service kpah-login.service
 Wants=mariadb.service kpah-login.service
 
+# Thoi khoi dong lai sau 5 lan chet trong 300s, de unit vao trang thai "failed"
+# thay vi lap vo han. Can cho chot kiemTraCSDL() trong TeamServer: khi server.ini
+# sai mat khau CSDL, server tu thoat ma 1 - khong co gioi han nay thi Restart=always
+# se khoi dong lai mai mai moi 10s va khong ai thay unit hong.
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
 [Service]
 Type=simple
 User=kpah

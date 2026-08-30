@@ -296,6 +296,86 @@ public class TeamServer {
         }
     }
 
+    /** Chuoi mat khau mau trong vps/server.ini.linux.example - khong bao gio la mat khau that. */
+    static final String MAT_KHAU_MAU = "DOI_MAT_KHAU_DB";
+
+    /**
+     * Tra ve ly do khong vao duoc CSDL, hoac null neu vao duoc.
+     *
+     * Tach rieng khoi kiemTraCSDL() de test goi duoc: ham kia ket thuc bang System.exit(1),
+     * ma mot ham goi exit thi khong the kiem thu duoc - JVM chay test se chet theo.
+     * KHONG bao gio dua mat khau vao chuoi tra ve: chuoi nay di thang ra log.
+     */
+    public static String chanDoanCSDL(final Properties p) {
+        final String host = p.getProperty("db.host");
+        final String ten = p.getProperty("db.name");
+        final String user = p.getProperty("db.user");
+        final String matKhau = p.getProperty("db.password");
+        if (matKhau == null || matKhau.isEmpty()) {
+            return "db.password dang de trong";
+        }
+        if (MAT_KHAU_MAU.equals(matKhau)) {
+            return "db.password van la chuoi mau \"" + MAT_KHAU_MAU + "\" - file server.ini nay"
+                    + " la ban sao cua vps/server.ini.linux.example, chua dien mat khau that";
+        }
+        java.sql.Connection c = null;
+        try {
+            c = java.sql.DriverManager.getConnection("jdbc:mysql://" + host + "/" + ten, user, matKhau);
+            final java.sql.Statement st = c.createStatement();
+            st.executeQuery("select 1").close();
+            st.close();
+            return null;
+        } catch (final Throwable t) {
+            return "khong ket noi duoc: " + t.getMessage();
+        } finally {
+            try {
+                if (c != null) {
+                    c.close();
+                }
+            } catch (final Exception ignored) {
+            }
+        }
+    }
+
+    /**
+     * Dung han server ngay khi khong vao duoc CSDL, thay vi de no chay tiep roi chet lung chung.
+     *
+     * VI SAO PHAI CO. Mat khau sai thi ConnPool rong, moi getConnection() nem
+     * NoSuchElementException, nhung server VAN CHAY TIEP - cho den luc Map.loadAllTemplate
+     * doc phai Vector rong roi nem ArrayIndexOutOfBoundsException trong luong "main". Luc do
+     * main chet TRUOC KHI mo socket, con cac luong non-daemon khac van song nen JVM khong
+     * thoat. Ket qua: systemd bao "active (running)" trong khi khong cong nao lang nghe, va
+     * nguoi van hanh nhin systemctl status thi thay moi thu binh thuong.
+     *
+     * Da xay ra that ngay 30/08/2026: server.ini bi chep de bang chinh file mau, mat mot luc
+     * lau moi lan ra vi trieu chung danh lac huong hoan toan.
+     *
+     * Chet ngay tai day thi systemd bao "failed" dung su that, va log co MOT dong noi ro ly
+     * do thay vi hang tram stack trace NoSuchElementException khong dau la dau. Xem them
+     * StartLimitBurst trong vps/kpah-game.service de systemd thoi khoi dong lai vo han.
+     *
+     * KHONG in mat khau ra log - chi noi no co dung chuoi mau hay khong.
+     */
+    public static void kiemTraCSDL(final Properties p) {
+        final String vuongMac = chanDoanCSDL(p);
+        if (vuongMac == null) {
+            return;
+        }
+        final String host = p.getProperty("db.host");
+        final String ten = p.getProperty("db.name");
+        final String user = p.getProperty("db.user");
+        System.out.println();
+        System.out.println("!!!!!!!!!! KHONG VAO DUOC CSDL - DUNG SERVER !!!!!!!!!!");
+        System.out.println("  ly do    : " + vuongMac);
+        System.out.println("  dang thu : " + host + "/" + ten + " voi user " + user);
+        System.out.println("  cach sua : sua /opt/kpah/server.ini roi systemctl restart kpah-game");
+        System.out.println("  (dung han o day de systemd bao 'failed' dung su that; neu chay tiep");
+        System.out.println("   thi server chet lung chung ma systemd van bao 'active (running)')");
+        System.out.println();
+        System.out.flush();
+        System.exit(1);
+    }
+
     public static void reloadMaxLG() {
         try {
             Properties p = new Properties();
@@ -401,8 +481,8 @@ public class TeamServer {
             }
         });
         
+        final Properties p = new Properties();
         try {
-            Properties p = new Properties();
             p.load(Files.newInputStream(Paths.get("server.ini")));
             BaoTriDaily.Server = Integer.parseInt(p.getProperty("api.sv"));
             BaoTriDaily.domain = p.getProperty("api.url");
@@ -545,7 +625,10 @@ public class TeamServer {
             e.printStackTrace();
             return;
         }
-      
+
+        // PHAI dung truoc moi viec cham CSDL. Xem kiemTraCSDL().
+        kiemTraCSDL(p);
+
         Database.instance.createTableTrainLuong(); // bang luu han muc luong train quai theo ngay
         // PHAI chay TRUOC khi nhan nguoi choi: saveChar ghi cot isCT, thieu cot thi lenh
         // luu nem loi va nhanh bat loi cua no KHOA NHAN VAT. Xem themCotCongTacHienThi().
