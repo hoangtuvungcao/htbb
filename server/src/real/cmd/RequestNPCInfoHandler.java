@@ -804,6 +804,16 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     menuMocNap[menu.length] = "Nhận mốc nạp";
                     p.idxMocNapMenu = menu.length;
                     menu = menuMocNap;
+                    // Su kien World Cup: cung noi vao CUOI menu chu khong chen vao giua,
+                    // de moi vi tri phia truoc giu nguyen. Xem real/SuKienWorldCup.
+                    p.idxSuKienWorldCup = -1;
+                    if (real.SuKienWorldCup.hienTrongMenu()) {
+                        String[] menuSuKien = new String[menu.length + 1];
+                        System.arraycopy(menu, 0, menuSuKien, 0, menu.length);
+                        menuSuKien[menu.length] = "Sự kiện World Cup";
+                        p.idxSuKienWorldCup = menu.length;
+                        menu = menuSuKien;
+                    }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }

@@ -546,6 +546,8 @@ public class TeamServer {
             // Gio chiem thanh: cung nguon voi bang setting trong game, admin sua
             // trong game se duoc ghi tra lai server.ini (xem CauHinh).
             CauHinh.apDungGioChiemThanh(p);
+            CauHinh.apDungSuKienWorldCup(p);
+            System.out.println("SU KIEN WORLD CUP -> " + real.SuKienWorldCup.moTa());
             Database.CHO_PHEP_TAO_TEN_GM = "1".equals(p.getProperty(CauHinh.K_TAO_TEN_GM, "0").trim());
             if (Database.CHO_PHEP_TAO_TEN_GM) {
                 System.out.println("CANH BAO: sv.choPhepTaoTenGM=1 - dang cho phep tao nhan vat"

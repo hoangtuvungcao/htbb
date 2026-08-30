@@ -269,7 +269,8 @@ public class doUsePotion {
                     case 103:
                     case 106:
                     case 107:
-                    case 108:
+                    // 108 da chuyen thanh "Hop qua may man" cua su kien World Cup, xu ly
+                    // rieng o cuoi switch nay.
                     case 109:
                     case 110:
                     case 156:
@@ -819,10 +820,35 @@ public class doUsePotion {
                         break;
                     case 159:
                         Char.doOpenLixi2021(player);
+                        break;
                     case TYPE_QUA_BONG_BAC:
-
+                        // Truoc day nhanh nay rong: vat pham da bi tru o dau ham roi khong
+                        // lam gi ca, tuc bam vao Qua bong bac la MAT LUON. Tra lai.
+                        var10002 = player.potions[potionType]++;
+                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                        break;
+                    case SuKienWorldCup.ITEM_HOP_MAY_MAN:
+                        // Hop qua may man cua su kien World Cup. Ngoai thoi gian su kien,
+                        // dong 108 nay khong duoc phat cho ai nen khong co gi de mo.
+                        var10002 = player.potions[potionType]++;
+                        if (!SuKienWorldCup.hienTrongMenu()) {
+                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Sự kiện World Cup chưa mở hoặc đã kết thúc.", ""));
+                        } else if (SuKienWorldCup.xacNhanMoHop(player)) {
+                            var10002 = player.potions[potionType]--;
+                            SuKienWorldCup.moHopMayMan(player);
+                        }
                         break;
                     case TYPE_QUA_BONG_VANG:
+                        // Trong thoi gian World Cup, bong vang la NGUYEN LIEU binh chon nen
+                        // bam vao chi hien huong dan. Het su kien thi tra lai cong dung cu
+                        // (ban phao hoa) nhu truoc.
+                        if (SuKienWorldCup.hienTrongMenu()) {
+                            var10002 = player.potions[potionType]++;
+                            SuKienWorldCup.xemBongVang(player);
+                            break;
+                        }
                         doUseBongVang(player);
                         break;
                 }

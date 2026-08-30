@@ -155,6 +155,22 @@ class MapDoMenu {
                 map.showMenuMocNap(player);
                 return;
             }
+            // NPC Tong Quan (-10), muc "Su kien World Cup": cung la muc cuoi menu, vi tri
+            // ghi trong player.idxSuKienWorldCup. CHU Y idMenu == 0 && idOptionMenu == vi tri:
+            // client tra lai DUNG idMenu no nhan duoc (o menu goc la 0) va gui dong duoc chon
+            // trong idOptionMenu - xem GameService.doMenuOption ben client.
+            if (idNpc == -10 && SuKienWorldCup.hienTrongMenu()) {
+                if (idMenu == 0 && player.idxSuKienWorldCup >= 0
+                        && idOptionMenu == player.idxSuKienWorldCup) {
+                    player.sendMessage(MessageCreator.createMsgMenu(
+                            SuKienWorldCup.menuGoc(), idNpc, SuKienWorldCup.MENU_GOC));
+                    return;
+                }
+                if (idMenu == SuKienWorldCup.MENU_GOC || idMenu == SuKienWorldCup.MENU_BXH) {
+                    SuKienWorldCup.doMenu(player, idNpc, idMenu, idOptionMenu);
+                    return;
+                }
+            }
             if (idNpc == -520) {
                 map.doChonMocNap(player, idOptionMenu);
                 return;

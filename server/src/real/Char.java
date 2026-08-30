@@ -112,6 +112,10 @@ public class Char extends LiveActor {
     // RequestNPCInfoHandler gan lai moi lan mo menu de Map.doMenu nhan dung click du menu
     // co bao nhieu muc tuy theo co/khong co cac dong "Nhan qua top"/"Nhan qua" phia truoc.
     public int idxMocNapMenu = -1;
+    // Vi tri (idOptionMenu) cua muc "Su kien World Cup" trong menu NPC Tong Quan, cung
+    // duoc RequestNPCInfoHandler gan lai moi lan mo menu. -1 = su kien dang tat nen
+    // menu khong co dong nay. Xem real/SuKienWorldCup.
+    public int idxSuKienWorldCup = -1;
     public short partyID;
     public int masterIDParty;
     public Vector<Short> idItem;

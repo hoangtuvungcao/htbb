@@ -900,6 +900,11 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
+                // Su kien World Cup (binh chon Messi/Ronaldo): quai thuong 2-3% roi mot
+                // Qua bong vang, boss luon roi 20-50 qua. Tat khi sv.worldCupBatDau trong.
+                if (SuKienWorldCup.dangDienRa()) {
+                    SuKienWorldCup.quaiRoiBongVang(m, p, this, droplist);
+                }
 
                 if (Char.isSuKienHe2017()) {
                     if (Map.randomMillion() < tile(1000, PC_TILE_ITEM_SUKIEN)) { // Số quái chêt random drop

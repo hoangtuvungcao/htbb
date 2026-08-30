@@ -40,6 +40,10 @@ public final class CauHinh {
     public static final String K_TILE_ITEM = "sv.tileItem";
     public static final String K_CHIA_XU = "sv.chiaXuRoi";
     public static final String K_TAO_TEN_GM = "sv.choPhepTaoTenGM";
+    /** Cua so thoi gian su kien World Cup, dinh dang "yyyy-MM-dd HH:mm:ss". */
+    public static final String K_WC_BAT_DAU = "sv.worldCupBatDau";
+    public static final String K_WC_KET_THUC = "sv.worldCupKetThuc";
+    public static final String K_WC_HAN_NHAN_QUA = "sv.worldCupHanNhanQua";
 
     private CauHinh() {
     }
@@ -200,10 +204,25 @@ public final class CauHinh {
             TeamServer.testMode = "1".equals(nhan(p.getProperty("sv.testMode"), "0"));
             TeamServer.testCode = nhan(p.getProperty("sv.testCode"), "").toLowerCase();
 
+            apDungSuKienWorldCup(p);
+
             return "Đã nạp lại " + FILE + ".";
         } catch (final Exception e) {
             return "Không nạp được " + FILE + ": " + e;
         }
+    }
+
+    /**
+     * Ap dung cua so thoi gian su kien World Cup. Dung ca luc khoi dong.
+     *
+     * De trong bat ky khoa nao = su kien TAT (quai khong roi bong vang, menu khong hien).
+     * Xem real/SuKienWorldCup.
+     */
+    public static void apDungSuKienWorldCup(final Properties p) {
+        real.SuKienWorldCup.datThoiGian(
+                nhan(p.getProperty(K_WC_BAT_DAU), ""),
+                nhan(p.getProperty(K_WC_KET_THUC), ""),
+                nhan(p.getProperty(K_WC_HAN_NHAN_QUA), ""));
     }
 
     /** Ap dung gio chiem thanh trong file vao MapTown. Dung ca luc khoi dong. */

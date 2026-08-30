@@ -117,7 +117,7 @@ Gõ `6` trước khi sửa là cách nhanh nhất để biết đang đặt bao 
 
 ## 4. Khoá nào nạp lại được, khoá nào phải khởi động lại
 
-Chỉ **17 khoá** dưới đây được `CauHinh.napLai()` đọc lại. **Mọi khoá khác chỉ được đọc một
+Chỉ **20 khoá** dưới đây được `CauHinh.napLai()` đọc lại. **Mọi khoá khác chỉ được đọc một
 lần lúc bật máy** — sửa xong bắt buộc `systemctl restart kpah-game`.
 
 ```
@@ -126,7 +126,24 @@ sv.chiaXuRoi
 sv.gioChiemThanh   sv.phutChiemThanh   sv.ngayChiemThanh
 sv.adminAccounts   sv.maxCharPerAccount   sv.choPhepTaoTenGM
 sv.website   sv.linkTaiGame   sv.testMode   sv.testCode
+sv.worldCupBatDau   sv.worldCupKetThuc   sv.worldCupHanNhanQua
 ```
+
+### Sự kiện World Cup
+
+Ba khoá `sv.worldCup*` bật/tắt [sự kiện bình chọn Messi – Ronaldo](../src/real/SuKienWorldCup.java).
+Định dạng `yyyy-MM-dd HH:mm:ss`, phải theo thứ tự `batDau < ketThuc <= hanNhanQua`.
+**Để trống bất kỳ khoá nào là tắt hẳn** — quái không rơi Quả bóng vàng và NPC Tổng Quản
+không hiện mục sự kiện. Mặc định trong `server.ini.tmpl` là để trống, nên deploy không
+tự mở sự kiện.
+
+| Giai đoạn | Người chơi làm gì |
+|---|---|
+| `batDau` → `ketThuc` | train quái nhặt Quả bóng vàng, đổi 100 bóng + 5000 lượng lấy 1 phiếu + 1 Hộp quà may mắn |
+| `ketThuc` → `hanNhanQua` | bên nhiều phiếu hơn thắng; ai đã bỏ phiếu cho bên đó vào NPC nhận quà |
+
+Chạy `sql/them_su_kien_world_cup.sql` **một lần** trước khi mở sự kiện lần đầu — nó đặt tên
+cho dòng thuốc 108 (Hộp quà may mắn) và tạo hai bảng điểm.
 
 Cách tự kiểm chứng khi thêm khoá mới: khoá nào xuất hiện trong
 [`src/server/CauHinh.java`](../src/server/CauHinh.java) thì nạp lại được; khoá chỉ có trong
