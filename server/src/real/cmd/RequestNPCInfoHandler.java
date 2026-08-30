@@ -812,7 +812,19 @@ public class RequestNPCInfoHandler implements ICommandHandler {
             case -90: {
                 p = CharManager.instance.getByUserID(session.userID);
                 if (p != null) {
-                    menu = new String[]{"Điểm hiện tại: " + p.diemDoiThuong + " điểm - Xem đổi thưởng"};
+                    // Dong 1 "Go skin linh thu": bang "Trang bi thu" ben client KHONG co
+                    // nut thao (da kiem trong ban JAR: wearingAnimal chi duoc dung o hai
+                    // cho VE va mot cho XEM THONG TIN, khong co lenh nao), va them nut vao
+                    // do thi phai dong goi lai jar client cho tung nguoi choi. Menu NPC thi
+                    // server tu dung nen chay duoc tren MOI ban client.
+                    //
+                    // Luon hien ca hai dong ke ca khi khong mang skin: an di thi chi so
+                    // dong bi truot, dong 1 lai thanh mot chuc nang khac. SkinLinhThu
+                    // .thaoSkin da tu bao "Ban khong mang skin linh thu nao."
+                    menu = new String[]{
+                            "Điểm hiện tại: " + p.diemDoiThuong + " điểm - Xem đổi thưởng",
+                            "Gỡ skin linh thú"
+                    };
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }

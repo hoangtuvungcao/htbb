@@ -163,11 +163,18 @@ class MapDoMenu {
                 map.doChonPhuongHoangMocNap(player, idOptionMenu);
                 return;
             }
-            // NPC Doi Thuong (-90): mo man "diem hien tai" (RequestNPCInfoHandler case -90)
-            // chi co 1 dong duy nhat, chon dong do (idMenu==0) moi thu mo trang do vat pham.
-            if (idNpc == -90 && idMenu == 0) {
-                map.showMenuDiemDoiThuong(player);
-                return;
+            // NPC Doi Thuong (-90): dong 0 = mo trang doi vat pham, dong 1 = go skin.
+            // Xem RequestNPCInfoHandler case -90 de biet vi sao go skin nam o day chu
+            // khong phai o bang "Trang bi thu": bang do ben client khong co lenh nao.
+            if (idNpc == -90) {
+                if (idMenu == 0) {
+                    map.showMenuDiemDoiThuong(player);
+                    return;
+                }
+                if (idMenu == 1) {
+                    SkinLinhThu.thaoSkin(player);
+                    return;
+                }
             }
             if (idNpc == -91) {
                 map.doChonDoiThuong(player, 0, idOptionMenu);

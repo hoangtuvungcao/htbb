@@ -111,6 +111,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
             }
 
+            case 'xoa_nhieu': {
+                // Xoa nhieu ma mot luot. Doc thang $_POST vi p() chi tra ve chuoi.
+                $tho = $_POST['ids'] ?? [];
+                if (!is_array($tho)) {
+                    $tho = [$tho];
+                }
+                // Loc ky: chi giu so nguyen duong, bo trung. Danh sach nay di thang vao
+                // cau SQL duoi dang placeholder nen khong co duong tiem SQL, nhung van
+                // loc de mot o rong hay chu la khong bien thanh id 0.
+                $ids = [];
+                foreach ($tho as $x) {
+                    $n = filter_var($x, FILTER_VALIDATE_INT);
+                    if ($n !== false && $n > 0) {
+                        $ids[$n] = $n;
+                    }
+                }
+                $ids = array_values($ids);
+                if (!$ids) {
+                    veLai($TRANG, 'error', 'Chưa chọn mã nào để xoá.');
+                }
+
+                $cho = implode(',', array_fill(0, count($ids), '?'));
+                $st  = dbGame()->prepare('SELECT id, giftcode FROM giftcode WHERE id IN (' . $cho . ')');
+                $st->execute($ids);
+                $ten = [];
+                foreach ($st->fetchAll() as $d) {
+                    $ten[] = (string)$d['giftcode'];
+                }
+                if (!$ten) {
+                    veLai($TRANG, 'error', 'Không tìm thấy mã nào trong số đã chọn.');
+                }
+
+                $xoa = dbGame()->prepare('DELETE FROM giftcode WHERE id IN (' . $cho . ')');
+                $xoa->execute($ids);
+                $soXoa = $xoa->rowCount();
+
+                // Ghi nhat ky TUNG ma chu khong gop mot dong: sau nay tra cuu "ma X bien
+                // di dau" thi tim theo ten ma van ra.
+                foreach ($ten as $t) {
+                    ghiNhatKy('xoa_giftcode', $t, 'xoá hàng loạt (' . $soXoa . ' mã một lượt)');
+                }
+                veLai($TRANG, 'success',
+                    'Đã xoá ' . $soXoa . ' mã: ' . implode(', ', $ten)
+                    . '. Nhật ký ai đã nhận vẫn còn trong giftcode_log.');
+                break;
+            }
+
             case 'cho_nhan_lai': {
                 $ma     = p('ma');
                 $player = p('player');
@@ -271,9 +318,20 @@ adminHead('giftcode', 'Giftcode');
 
     <div class="card">
         <h3>Danh sách mã (<?= count($dsMa) ?>)</h3>
+
+        <!-- Form xoa hang loat de NGOAI bang. Tung dong da co form "Tat"/"Xoa" rieng,
+             ma HTML khong cho long form vao nhau, nen cac o chon ben duoi noi vao form
+             nay bang thuoc tinh form="hangloat" thay vi nam trong no. -->
+        <form id="hangloat" method="post" action="giftcode.php"
+              onsubmit="return confirm('XOÁ HẲN các mã đã chọn? Không hoàn lại được.');">
+            <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+            <input type="hidden" name="viec" value="xoa_nhieu">
+        </form>
+
         <div class="tbl-wrap">
         <table class="tbl">
             <thead><tr>
+                <th class="num"><input type="checkbox" id="chonTatCa" title="Chọn tất cả"></th>
                 <th class="num">ID</th><th>Mã</th><th class="num">Xu</th><th class="num">Lượng</th>
                 <th class="num">Lượng khoá</th><th>Phần thưởng</th><th class="num">Còn lượt</th>
                 <th class="num">Đã phát</th><th>Trạng thái</th><th></th>
@@ -285,6 +343,8 @@ adminHead('giftcode', 'Giftcode');
                 $dung    = $batTat && $conLuot !== 0;
             ?>
                 <tr>
+                    <td class="num"><input type="checkbox" form="hangloat" name="ids[]"
+                                           value="<?= (int)$gc['id'] ?>" class="oChon"></td>
                     <td class="num"><?= (int)$gc['id'] ?></td>
                     <td><strong><?= e($gc['giftcode']) ?></strong></td>
                     <td class="num"><?= so($gc['xu']) ?></td>
@@ -322,11 +382,43 @@ adminHead('giftcode', 'Giftcode');
                 </tr>
             <?php endforeach; ?>
             <?php if (!$dsMa): ?>
-                <tr><td colspan="10" class="muted">Chưa có mã nào.</td></tr>
+                <tr><td colspan="11" class="muted">Chưa có mã nào.</td></tr>
             <?php endif; ?>
             </tbody>
         </table>
         </div>
+
+        <?php if ($dsMa): ?>
+        <p class="nowrap" style="margin-top:10px">
+            <button class="btn btn-do btn-nho" form="hangloat">Xoá các mã đã chọn</button>
+            <span class="muted" id="demChon">chưa chọn mã nào</span>
+        </p>
+        <script>
+        // Chon tat ca + dem so ma dang chon. Khong co script nay thi tung o van bam tay
+        // duoc va nut xoa van chay — script chi lam cho tien tay hon, khong phai dieu kien.
+        (function () {
+            var tatCa = document.getElementById('chonTatCa');
+            var dem   = document.getElementById('demChon');
+            var o     = Array.prototype.slice.call(document.querySelectorAll('.oChon'));
+            function capNhat() {
+                var n = o.filter(function (x) { return x.checked; }).length;
+                dem.textContent = n === 0 ? 'chưa chọn mã nào' : ('đang chọn ' + n + ' mã');
+                if (tatCa) {
+                    tatCa.checked = n > 0 && n === o.length;
+                    tatCa.indeterminate = n > 0 && n < o.length;
+                }
+            }
+            if (tatCa) {
+                tatCa.addEventListener('change', function () {
+                    o.forEach(function (x) { x.checked = tatCa.checked; });
+                    capNhat();
+                });
+            }
+            o.forEach(function (x) { x.addEventListener('change', capNhat); });
+            capNhat();
+        })();
+        </script>
+        <?php endif; ?>
     </div>
 
     <div class="card">
