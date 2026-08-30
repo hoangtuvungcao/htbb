@@ -55,6 +55,7 @@ public final class KiemSkinLinhThu {
         kiemTiemNang();
         kiemHeNguHanh();
         kiemNoiTaiCoTiLe();
+        kiemTinhLaiChiSo();
         kiemMoTaVatPham();
         kiemMangTraTheoType();
         kiemSoTypeTrangBiThu();
@@ -740,6 +741,72 @@ public final class KiemSkinLinhThu {
             Kiem.dung(d + " van goi checkHapthuSatThuong",
                     doc(d).contains("checkHapthuSatThuong("));
         }
+    }
+
+    /**
+     * PHAI TINH LAI CHI SO moi khi trang thai skin doi — va tinh DUNG LUC.
+     *
+     * LOI DA XAY RA THAT, nguoi choi bao: "tang tiem nang nhung tan cong khong tang".
+     *
+     * Goc: attack / maxhp / defend_physic / accurate deu la TRUONG DUOC LUU SAN, chi doi
+     * khi calculateAttrib() chay. Con bang diem tiem nang lai duoc tinh TUOI ngay luc dung
+     * goi tin (MessageCreator cong p.tnSucManh() tai cho). Nen khi thieu loi goi
+     * calculateAttrib, nguoi choi THAY tiem nang tang ma moi chi so dan xuat dung im —
+     * trong nhu skin chi cong mot nua.
+     *
+     * Ba lo, khong phai mot:
+     *   1. dongBoVaGui khong goi calculateAttrib -> mac/thao skin khong an gi.
+     *   2. doRideAnimal goi calculateAttrib TRUOC khi dong bo skin -> len thu khong an gi.
+     *   3. SelectCharHandler khong goi lai sau khi dong bo -> dang nhap khong an gi.
+     *
+     * Ly do sau xa: SkinLinhThu.dangMang phu thuoc vao CA animalRide, ma viec tinh lai
+     * chi duoc kich khi idSkinLinhThu doi. Len thu thi so hieu skin KHONG doi (da co san
+     * tu luc dang nhap) — cai doi la animalRide. Nen o duong cuoi thu, loi goi
+     * calculateAttrib phai VO DIEU KIEN, khong duoc gan vao "dongBoTheoTrangBi tra true".
+     *
+     * Phep kiem duoi day chot THU TU chu khong chi su co mat: dung thu tu thi chay dung
+     * cu phap ma van khong an gi, y het luc chua sua.
+     */
+    private static void kiemTinhLaiChiSo() {
+        Kiem.nhom("Skin linh thu - tinh lai chi so khi trang thai skin doi");
+
+        final String db = doc("src/real/SkinLinhThu.java");
+        final String cuoi = doc("src/real/doRideAnimal.java");
+        final String xuong = doc("src/real/doUnRideHorse.java");
+        final String dangNhap = doc("src/real/cmd/SelectCharHandler.java");
+
+        // --- 1. Mac / thao skin ---
+        Kiem.dung("dongBoVaGui goi calculateAttrib", db.contains("p.calculateAttrib();"));
+        final int mocDongBo = db.indexOf("public static void dongBoVaGui");
+        final int mocTinh = db.indexOf("p.calculateAttrib();", mocDongBo);
+        final int mocGui = db.indexOf("createMainCharInfoMessage(p)", mocDongBo);
+        Kiem.dung("loi goi do nam trong dongBoVaGui", mocDongBo > 0 && mocTinh > mocDongBo);
+        Kiem.dung("tinh lai TRUOC khi dung goi tin (khong thi goi dau tien mang so cu)",
+                mocTinh > 0 && mocGui > mocTinh);
+
+        // --- 2. Cuoi thu ---
+        final int cuoiDongBo = cuoi.indexOf("SkinLinhThu.dongBoTheoTrangBi(player)");
+        final int cuoiTinh = cuoi.indexOf("player.calculateAttrib()");
+        Kiem.dung("doRideAnimal co dong bo skin", cuoiDongBo > 0);
+        Kiem.dung("doRideAnimal co tinh lai chi so", cuoiTinh > 0);
+        Kiem.dung("cuoi thu: tinh lai chi so SAU khi dong bo skin (khong phai truoc)",
+                cuoiTinh > cuoiDongBo);
+
+        // --- 3. Dang nhap ---
+        final int dnDongBo = dangNhap.indexOf("SkinLinhThu.dongBoTheoTrangBi(p)");
+        final int dnTinh = dangNhap.indexOf("p.calculateAttrib();", dnDongBo);
+        final int dnGui = dangNhap.indexOf("createMainCharInfoMessage(p)", dnDongBo);
+        Kiem.dung("dang nhap: co dong bo skin", dnDongBo > 0);
+        Kiem.dung("dang nhap: tinh lai chi so sau khi dong bo",
+                dnTinh > dnDongBo);
+        Kiem.dung("dang nhap: tinh lai TRUOC goi thong tin nhan vat dau tien",
+                dnTinh > 0 && dnGui > dnTinh);
+
+        // --- 4. Xuong thu ---
+        final int xThao = xuong.indexOf("SkinLinhThu.thaoSkin(player)");
+        final int xTinh = xuong.indexOf("player.calculateAttrib()");
+        Kiem.dung("xuong thu: co go skin", xThao > 0);
+        Kiem.dung("xuong thu: tinh lai chi so SAU khi go skin", xTinh > xThao);
     }
 
     /**

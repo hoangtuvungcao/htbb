@@ -812,6 +812,16 @@ public final class SkinLinhThu {
         if (!dongBoTheoTrangBi(p)) {
             return;
         }
+        // PHAI tinh lai chi so TRUOC khi dung goi tin.
+        //
+        // attack / maxhp / defend_physic / accurate deu la TRUONG DUOC LUU SAN, chi tinh
+        // lai khi calculateAttrib() chay. Doi skin ma khong goi no thi bon truong do van
+        // la so cua truoc luc mac — trong khi bang diem tiem nang lai duoc tinh tuoi ngay
+        // luc dung goi tin (MessageCreator cong p.tnSucManh() vao tai cho). Ket qua:
+        // nguoi choi THAY tiem nang tang ma tan cong dung im. Dung loi da bi bao.
+        //
+        // Dat truoc cac lenh gui, khong thi goi tin dau tien van mang so cu.
+        p.calculateAttrib();
         try {
             p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
             // Nguoi xung quanh chi can createCharInfo: do la goi mang idThutool, tuc hinh

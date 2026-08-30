@@ -1,19 +1,34 @@
 # Skin linh thú
 
-Trang bị vật phẩm skin → **con linh thú (thú cưỡi) đang cưỡi đổi hình, đổi hoạt ảnh và
-đổi cách di chuyển**. Chỉ số của con linh thú giữ nguyên tuyệt đối.
+Trang bị vật phẩm skin → **con linh thú (thú cưỡi) đang cưỡi đổi hình**, và **chủ nhân
+được thêm chỉ số + một nội tại**.
+
+Một câu phải nhớ: **chỉ số của bản thân con linh thú không bị đụng tới một chút nào.**
+Skin không ghi gì vào `Animal`, không ghi vào `tob_animal`. Nó chỉ ghi đè ở tầng đóng gói
+tin (phần hình ảnh) và cộng thêm vào chỉ số của **nhân vật** (phần sức mạnh). Bán con thú,
+đổi con thú, nâng cấp con thú — skin không liên quan.
 
 Code: [`src/real/SkinLinhThu.java`](../src/real/SkinLinhThu.java) —
-tool sinh icon: [`tools/TaoIconSkinThu.java`](../tools/TaoIconSkinThu.java) —
-SQL: [`sql/skin_linh_thu.sql`](../sql/skin_linh_thu.sql)
+kiểm thử: [`test/KiemSkinLinhThu.java`](../test/KiemSkinLinhThu.java) —
+SQL: [`sql/skin_linh_thu.sql`](../sql/skin_linh_thu.sql) +
+[`sql/ten_mo_ta_skin_linh_thu.sql`](../sql/ten_mo_ta_skin_linh_thu.sql)
 
 ---
 
 ## 1. Cài đặt
 
+**Hai** tệp SQL, chạy theo thứ tự:
+
 ```bash
 mysql -u root -p <ten_db> < sql/skin_linh_thu.sql
+mysql -u root -p <ten_db> < sql/ten_mo_ta_skin_linh_thu.sql
 ```
+
+Tệp thứ nhất tạo 5 vật phẩm với **tên ngắn**. Tệp thứ hai ghi đè bằng **tên đầy đủ kèm mô
+tả** (hệ + các dòng chỉ số + nội tại). Bỏ tệp thứ hai thì vật phẩm vẫn chạy đúng nhưng
+người chơi không đọc được nó làm gì.
+
+Tệp thứ hai **được sinh ra**, đừng sửa tay — xem mục 5.5.
 
 Rồi build lại server và khởi động lại (bảng item template và bộ ảnh chỉ nạp một lần lúc
 bật máy):
@@ -30,12 +45,17 @@ build.bat
 |---|---|
 | Trang bị | Cưỡi linh thú → mở **Trang bị thú** → mặc vật phẩm skin vào **ô đầu tiên bên phải** |
 | Đổi skin | Mặc skin khác đè lên, skin cũ tự về hành trang |
-| Tháo skin | Chọn ô skin trong bảng Trang bị thú rồi bấm **Tháo** (phím trái), hoặc gõ `boskin` trong chat |
+| Gỡ skin | **Xuống thú** (tự gỡ), hoặc NPC đổi thưởng → *Gỡ skin linh thú*, hoặc gõ `boskin` trong chat |
 | Xem đang mang gì | Mở bảng Trang bị thú, hoặc gõ `boskin` khi không mang skin sẽ báo |
 
-Xuống thú thì skin tự ẩn (không có con thú thì không có gì để đổi hình); cưỡi lại là hiện
-lại. Đổi sang con linh thú khác vẫn giữ skin — **skin gắn theo nhân vật, không theo từng
-con thú**.
+**Xuống thú là gỡ hẳn**, vật phẩm trả về hành trang — không phải chỉ ẩn đi. Thiết kế gốc là
+skin gắn theo nhân vật nên xuống thú chỉ ẩn, nhưng bản JAR **không có nút tháo** trong bảng
+Trang bị thú (đã kiểm: `wearingAnimal` bên client chỉ được dùng ở hai chỗ *vẽ* và một chỗ
+*xem thông tin*), nên người chơi bản JAR không có đường nào gỡ ngoài lệnh chat và menu NPC
+— cả hai đều khó tìm. Hành trang đầy thì báo và **giữ nguyên skin đang mặc**, không mất gì.
+
+Đổi sang con linh thú khác vẫn giữ skin — **skin gắn theo nhân vật, không theo từng con
+thú**.
 
 ## 3. Nguồn phát skin
 
@@ -49,26 +69,194 @@ trên là đủ, và giftcode làm được đúng việc mà lệnh đó làm.
 
 ## 4. Năm skin
 
-| # | Tên | Item id | Icon | Ảnh bản đồ | Sprite nguồn |
-|---|---|---|---|---|---|
-| 0 | Phúc Thú | 905 | 860 | 13000 | `8907` — thú hoa hồng lá xanh |
-| 1 | Gấu Trúc | 906 | 861 | 13001 | `8906` — gấu trúc cánh băng |
-| 2 | Tiên Lộc | 907 | 862 | 13002 | `8908` — hươu gạc pha lê |
-| 3 | Xích Dương | 908 | 863 | 13003 | `8905` — thú lửa bờm cháy |
-| 4 | Chiến Lang | 909 | 864 | 13004 | `8909` — hươu nâu gạc trắng |
+| # | Tên | Item id | Hệ | Hợp môn phái | Chỉ số thường trực | Nội tại |
+|---|---|---|---|---|---|---|
+| 0 | Phúc Thú | 905 | Kim | Pháp sư | +2000 HP, +3000 MP | bị đánh đòn vật lý → chặn 30% ST |
+| 1 | Gấu Trúc | 906 | Mộc | Chiến binh | +200 chính xác | bị đánh đòn phép → phản ST +50 điểm |
+| 2 | Tiên Lộc | 907 | Thủy | Cung thủ | +20% điểm tiềm năng | nhận ST → lá chắn chặn 50% ST |
+| 3 | Xích Dương | 908 | Hỏa | Đấu sĩ | 5% đòn xuyên toàn bộ giáp | máu dưới 30% → +50% tấn công |
+| 4 | Chiến Lang | 909 | Thổ | Kiếm khách | +20% thủ, +15% hấp thụ ST | — (15% hấp thụ luôn bật) |
 
-Cột "sprite nguồn" là tên tệp trong bộ được đưa vào. **Tên gán theo hình chứ không theo
-thứ tự tệp**: bộ sprite đánh số 8905..8909 nhưng con hoa hồng hợp với "Phúc Thú" hơn là
-con lửa, nên thứ tự bị hoán lại. Đổi thứ tự này thì phải đổi lại tệp trong `map/skinthu/`,
-không phải đổi code.
+Cưỡi skin **hợp hệ** với môn phái của mình thì thêm **+5% sát thương**. Chi tiết ở mục 5.3.
+
+Ảnh: icon `860+n`, ảnh bản đồ `13000+n`, tệp `map/skinthu/<n>` + `<n>.png`.
+
+Sprite nguồn (tên tệp trong bộ được đưa vào): Phúc Thú `8907`, Gấu Trúc `8906`, Tiên Lộc
+`8908`, Xích Dương `8905`, Chiến Lang `8909`. **Tên gán theo hình chứ không theo thứ tự
+tệp** — con hoa hồng hợp với "Phúc Thú" hơn là con lửa, nên thứ tự bị hoán lại. Đổi thứ tự
+này thì đổi tệp trong `map/skinthu/`, không phải đổi code.
 
 Đổi id ở SQL thì phải đổi `SkinLinhThu.ID_ITEM` cho khớp rồi build lại.
 
 ---
 
-## 5. Vì sao làm theo cách này
+## 5. Chỉ số, hệ và nội tại
 
-### 5.1 Không bao giờ ghi vào `Animal.idImg`
+### 5.1 Số đặt trong mã nguồn, không đặt trong `data_item.atb`
+
+Mọi con số nằm trong các bảng hằng số của `SkinLinhThu`, tra theo số hiệu skin. Ba lý do:
+
+1. **Số là cố định theo từng skin**, không quay ngẫu nhiên theo từng món đồ — nên nó là
+   hằng số của tính năng, không phải thuộc tính của vật phẩm.
+2. **Đường `atb` của trang bị thú bị lọc theo type ở mọi chỗ tính chỉ số** —
+   `calculateAttack` chỉ nhận type 15/17, `calculateDefend` chỉ nhận 14/16/18. Type 30 rơi
+   ra ngoài hết, nên đi đường đó vẫn phải sửa từng chỗ. Sửa thẳng thì rõ ràng hơn là nhồi
+   số vào DB rồi vẫn phải sửa.
+3. **Phép kiểm đọc được**, và đổi số không phải chạy SQL trên máy chủ.
+
+Hệ quả: `Item.attribShowedForType[30]` để **trống** — không có dòng `atb` nào để hiện, bật
+cờ lên chỉ hiện số 0. Người chơi đọc chỉ số qua **mô tả trong tên vật phẩm** (mục 5.5).
+
+**Mọi thứ đều đi qua `SkinLinhThu.dangMang()`** — cùng một cổng với phần hình ảnh. Xuống
+thú, bang chủ đang giữ thành, hay máy chủ thiếu file ảnh thì không được chỉ số nào. Thưởng
+cho thứ người chơi không hề nhìn thấy là nói dối họ.
+
+### 5.2 Chỉ số thường trực — cộng ở đâu
+
+| Chỉ số | Chỗ cộng |
+|---|---|
+| +2000 HP, +3000 MP | `CharChiSo.calculateMaxHPMP`, cuối hàm |
+| +200 chính xác | `Char.calculateAccurate`, **cuối hàm** |
+| +20% điểm tiềm năng | 25 chỗ trong `CharChiSo` + 2 chỗ trong `Char` + bảng gửi client |
+| 5% xuyên giáp | `Char.calculateAttrib` → `attNguHanh[3]` |
+| +20% thủ | `CharChiSo.calculateDefend`, cả **bốn** bộ đếm phần trăm |
+| +15% hấp thụ | `Char.checkHapthuSatThuong` |
+
+Bốn điểm dễ làm sai:
+
+**"+200 chính xác" phải cộng ở CUỐI hàm.** `calculateAccurate` làm
+`(accurate1 + accurate2 + basic) / 7` rồi **chặn trần ở 99**. Cộng vào `accurate2` giữa hàm
+thì 200 còn khoảng 28, và thành 0 hẳn với nhân vật đã chạm trần. Cộng sau cả phép chia,
+trần, nhân 700 và nhân nội lực thì 200 mới là 200 thật.
+*(Công thức trúng đòn là `random(accurate + 10) < accurate` — bão hoà rất nhanh, nên +200
+đáng kể với nhân vật chính xác thấp và gần như không đổi với nhân vật đã cao. Đó là cách
+game dùng chỉ số này từ trước, không phải riêng skin.)*
+
+**"Xuyên giáp" ở server này là TỈ LỆ, không phải trừ giáp.** `Char.getBuffEffAttack` quay
+`r.nextInt(100) < attNguHanh[3]`, trúng thì đòn đó **bỏ qua hoàn toàn** giáp mục tiêu
+(`attackDam` đặt `dam = att`). Nên 5 = "5% số đòn xuyên thẳng", không phải "giảm 5% giáp
+mỗi đòn". Cộng **sau** `resetNguHanh()` — hàm đó cấp phát lại `attNguHanh` mỗi lần chạy, mà
+`calculateAttrib()` chạy lại mỗi lần mặc/tháo đồ.
+
+**"+20% tiềm năng" tính TẠI CHỖ, không ghi vào bốn trường chỉ số.** `strength`, `agitity`,
+`spirit`, `health` được **ghi xuống CSDL nguyên si** (`DatabaseNhanVat` gộp chuỗi
+`"strength,agitity,spirit,health,…"`). Cách "nâng lên → tính → trả lại" là đặt cược vào việc
+không luồng nào lưu nhân vật đúng khoảng giữa — thua một lần là số phồng lên nằm **vĩnh
+viễn** trong CSDL và còn phồng tiếp mỗi lần lưu sau đó. Nên bốn hàm
+`Char.tnSucManh/tnKheoLeo/tnTinhThan/tnSucKhoe` tính tại chỗ, và mọi công thức phải cộng
+tay một lần. Cũng không đi qua `newAtb` (`byte[10]`, trần 127) hay `upAbility` (`byte[5]`,
+**không hề được đặt lại** mỗi lần tính → cộng dồn đến tràn kiểu thành số âm).
+
+**"+20% thủ" phải vào cả bốn bộ đếm.** `upVat`/`upMa` ra thủ hiện trong bảng nhân vật,
+`upvP`/`upmP` ra thủ dùng khi đánh nhau với người chơi (`defendVatPlayer`/`defendMaPlayer`).
+Thiếu cặp sau thì người chơi thấy +20% trong bảng mà vào PK không được gì.
+
+Bảng chỉ số gửi cho client (`MessageCreator`) cũng cộng phần tiềm năng — không thì người
+chơi thấy số cũ trong khi sát thương và máu đã tăng, trông như lỗi và không có cách nào tự
+kiểm chứng.
+
+### 5.3 Hệ ngũ hành — hợp hệ thì mạnh hơn
+
+Năm hệ được **xếp theo vòng tương sinh**, nên "hệ này sinh ra hệ nào" chỉ là `(i + 1) % 5`,
+không còn bảng tra 5×5 để gõ nhầm một ô:
+
+```
+Mộc → Hỏa → Thổ → Kim → Thủy → Mộc
+ 0     1     2     3     4
+```
+
+Ánh xạ môn phái → hệ **đã có sẵn trong game** (xem `data/Animal.getKhangNguHanh` và
+`Char.getTkKhangTheoClass`), không phải tự đặt:
+
+| Môn phái | 0 Kiếm khách | 1 Chiến binh | 2 Pháp sư | 3 Đấu sĩ | 4 Cung thủ |
+|---|---|---|---|---|---|
+| Hệ | Kim | Hỏa | Thủy | Thổ | Mộc |
+
+**Hợp hệ = hệ của SKIN sinh ra hệ của MÔN PHÁI** → **+5% sát thương**. Một chiều thôi: Tiên
+Lộc (Thủy) hợp Cung thủ (Mộc) vì Thủy sinh Mộc, nhưng **không** hợp Pháp sư (Thủy) dù Kim
+sinh ra Thủy. Mỗi môn phái đúng một skin.
+
+Cộng trong `CharChiSo.applyThanKhiOnHit` — chỗ duy nhất mọi đòn của nhân vật đều đi qua
+**sau khi đã trừ giáp và nhân hệ số kỹ năng**, nên 5% là 5% của sát thương thật.
+
+### 5.4 Nội tại có tỉ lệ và hồi chiêu
+
+| Skin | Điều kiện | Hiệu lực | Tỉ lệ | Hồi chiêu |
+|---|---|---|---|---|
+| Phúc Thú | bị Kiếm khách / Chiến binh / Đấu sĩ đánh | chặn 30% ST, 3 giây | 15% | 40 giây |
+| Gấu Trúc | bị Pháp sư / Cung thủ đánh | phản ST +50 điểm (trần 80%), 3 giây | 15% | 40 giây |
+| Tiên Lộc | nhận sát thương (bất kỳ) | lá chắn chặn 50% ST, 5 giây | 10% | 40 giây |
+| Xích Dương | máu xuống dưới 30% | +50% tấn công, 3 giây | 100% | 40 giây |
+
+**Móc ở `Char.checkHapthuSatThuong` — và chỉ ở đó.** Đó là chỗ **duy nhất** mọi đường sát
+thương đánh vào nhân vật đều đi qua: PvP (`MapDanhNhau`, `MapLienDau`, `Region`,
+`RegionVantienTran`), quái thường (`Monster`), và **toàn bộ các lớp Boss** (~30 chỗ gọi).
+Móc ở `subDam` sẽ **sót sạch đường boss**; móc ở từng nơi gọi sẽ sót khi ai đó thêm đường
+mới. `test/KiemSkinLinhThu` chốt lại cả vị trí lẫn sự tồn tại của năm đường gọi.
+
+**Trạng thái chỉ nằm trong bộ nhớ** — hai mảng `long` trên `Char`, tra theo số hiệu skin.
+Hồi chiêu 40 giây ngắn hơn mọi phiên chơi nên mất khi đăng xuất là đúng; thêm cột CSDL chỉ
+để lưu 40 giây là thêm một chỗ có thể lệch. Tra theo số hiệu skin để đổi skin giữa chừng
+không mang buff cũ sang.
+
+**Hồi chiêu phải dài hơn thời gian hiệu lực**, không thì nội tại chạy liên tục và tỉ lệ
+thành trang trí. Phép kiểm chốt bất biến này.
+
+**Hiệu ứng hình dùng bốn id không có cơ chế nào kèm theo** — `LIGHT_YELLOW`,
+`LIGHT_MAGENTA`, `BUFF_DAM_5`, `BUFF_DAM_10`. Xem mục 10 về cái bẫy ở đây.
+
+**Trần phản sát thương 80% chỉ áp khi nội tại góp vào.** Áp vô điều kiện sẽ âm thầm cắt bớt
+phản sát thương của những người đã có trên 80% từ trang bị, dù họ không mặc skin nào.
+
+Hai chỗ phải tự quyết vì bản mô tả không nói rõ:
+
+- **"CB - KK - CT" của Phúc Thú** làm là Chiến binh, Kiếm khách, **Đấu sĩ**. Trên máy chủ
+  này Cung thủ là class đánh đòn **phép** (`Char.isCharMagic` = class 2 và 4) nên nó không
+  thể vừa ở nhóm vật lý vừa ở nhóm phép — mà dòng Gấu Trúc lại ghi đúng "pháp sư - cung
+  thủ" là phép. Phép kiểm chốt hai nhóm phủ kín và không chồng nhau.
+- **Xích Dương không có hồi chiêu trong bản mô tả.** Không có hồi chiêu thì "trong 3 giây"
+  thành vô nghĩa — cứ ở dưới 30% máu là bật lại ngay. Đặt 40 giây cho đồng bộ.
+
+### 5.5 Mô tả vật phẩm sinh từ chính bảng số
+
+Game này **không có cột mô tả** cho đồ mặc được: không template nào mang mô tả, và
+`Item.getInfoSend2Char()` trả chuỗi rỗng. Chỗ duy nhất hiện được chữ tự do là **cột
+`name`** — và game đã làm sẵn như vậy (áo Nghê Thường nhét cả bảng mô tả vào `name`, xuống
+dòng bằng ký tự xuống dòng thật). Skin đi theo đúng lối đó.
+
+```
+Skin linh thú Tiên Lộc
+[hệ Thủy] - hợp Cung thủ
+- Hợp hệ: +5% sát thương
+- Cộng 20% điểm tiềm năng
+- Nội tại: khi nhận sát thương, chặn 50% sát thương trong 5 giây.
+  Tỉ lệ 10%, hồi chiêu 40 giây
+```
+
+Chuỗi này do `SkinLinhThu.moTaVatPham()` **sinh ra từ chính các bảng số**, và
+[`tools/SinhSqlTenSkinThu.java`](../tools/SinhSqlTenSkinThu.java) sinh tệp SQL từ hàm đó:
+
+```bash
+javac --release 8 -encoding UTF-8 -cp build/sb-src -d build/sb-tools tools/SinhSqlTenSkinThu.java
+java -cp "build/sb-tools;build/sb-src" SinhSqlTenSkinThu
+```
+
+Vì sao phải sinh chứ không gõ tay: con số **người chơi đọc** nằm ở CSDL còn con số **game
+dùng** nằm ở mã nguồn. Hai chỗ, một sự thật — gõ tay là sớm muộn lệch, và lệch kiểu đó
+không ai phát hiện trừ khi ngồi cộng tay. Phép kiểm còn đối chiếu lại lần nữa: đổi một số
+trong mã mà quên sinh lại SQL là nó báo.
+
+Chuỗi tiếng Việt đi **thẳng từ hằng số Java ra tệp UTF-8**, không qua `sed`/`perl`/heredoc —
+xem mục 10.
+
+**Mô tả chỉ ghi thứ đang chạy.** Hứa với người chơi một thứ không tồn tại thì tệ hơn là
+không hứa.
+
+---
+
+## 6. Vì sao làm theo cách này (phần đổi hình)
+
+### 6.1 Không bao giờ ghi vào `Animal.idImg`
 
 `data.Animal.idImg` nghe như "id hình ảnh" nhưng thực ra là **khoá loài thú**. Nó vừa tra
 bảng hình ảnh (`Animal.fr`, `idImgPaint`, `rideHorse`, `idImgIcon`, `typeAnimal`) vừa tra
@@ -79,7 +267,7 @@ Ghi `idImg` để đổi hình là **mất hẳn loài thú thật** — đúng 
 khôi phục được. Vì vậy skin chỉ sống trong `Char.idSkinLinhThu` và chỉ được đọc ở tầng
 đóng gói tin.
 
-### 5.2 Client vẽ thú cưỡi bằng hai đường, skin phải đi đường thứ hai
+### 6.2 Client vẽ thú cưỡi bằng hai đường, skin phải đi đường thứ hai
 
 | Đường | Cơ chế | Thêm hình mới được không |
 |---|---|---|
@@ -89,7 +277,7 @@ khôi phục được. Vì vậy skin chỉ sống trong `Char.idSkinLinhThu` v�
 Skin đi đường 2, và **phải tắt đường 1 cùng lúc** (gửi `userHorse = 0`) — không thì client
 vẽ cả hai, con thú thật và con skin chồng lên nhau.
 
-### 5.3 Dải id ảnh mới tinh 13000–13004
+### 6.3 Dải id ảnh mới tinh 13000–13004
 
 Client giữ ảnh theo id trong `GameData.listImgIcon` và **không hề có số phiên bản**; mục
 chỉ bị bỏ khi bảng quá 100 phần tử *và* rảnh quá 120 giây, nên thực tế nó sống đến lúc tắt
@@ -103,14 +291,14 @@ Chọn dải mới tinh thì không client nào có sẵn ảnh cũ của id đ�
 Ảnh cũng để ở thư mục **riêng** `map/skinthu/`, không chen vào `map/d_effect/`: thư mục đó
 chỉ nạp id 0..299 (dải 8700..8999) và cả 300 id đều đã có file.
 
-### 5.4 Skin suy ra từ vật phẩm, không có cột DB riêng
+### 6.4 Skin suy ra từ vật phẩm, không có cột DB riêng
 
 `Char.idSkinLinhThu` không lưu xuống DB. Vật phẩm skin nằm trong `Char.awItems`, mà
 `awItems` thì đã được lưu sẵn qua `getAllItemInfoSave`. Mỗi lần đăng nhập / mặc đồ / cưỡi
 thú đều gọi `SkinLinhThu.dongBoTheoTrangBi` để tính lại, nên **không bao giờ lệch** giữa
 "skin đang hiện" và "vật phẩm đang mặc", và không phải thêm cột hay bảng nào.
 
-### 5.5 Vật phẩm skin phải đi nhánh trang bị thú lúc nạp lại
+### 6.5 Vật phẩm skin phải đi nhánh trang bị thú lúc nạp lại
 
 Cả đồ nhân vật lẫn trang bị thú đều được lưu vào **cùng một cột `equip`**
 (`Database.getInfoCharSave` nối `getCharWearing()` rồi nối tiếp `awItems`), nên lúc nạp
@@ -123,19 +311,20 @@ nhánh đồ nhân vật — và ở đó `POS_WEARING_CHAR` không có ô 30, `
 
 (Bản đầu tiên đặt type 19 = type Phi phong: khi đó **không** ném lỗi mà âm thầm **chiếm ô
 Phi phong** — `POS_WEARING_CHAR[19] = 11` — đăng nhập lại là mất skin, nhân vật lại mọc
-thêm áo choàng, và không gỡ ra được. Xem mục 5.7 về việc đổi sang type 30.) Vì vậy `Char.setItemWearing()` và nhánh nạp legacy đều lọc thêm
-`SkinLinhThu.laItemSkin`, và cho skin vào `awItems` **bỏ qua `checkExistAnimal`** — skin
-gắn theo nhân vật nên bán con thú đi vẫn phải giữ được.
+thêm áo choàng, và không gỡ ra được. Xem mục 6.7.) Vì vậy `Char.setItemWearing()` và nhánh
+nạp legacy đều lọc thêm `SkinLinhThu.laItemSkin`, và cho skin vào `awItems` **bỏ qua
+`checkExistAnimal`** — skin gắn theo nhân vật nên bán con thú đi vẫn phải giữ được.
 
-### 5.6 Thiếu file ảnh thì tắt hẳn skin, không tắt một nửa
+### 6.6 Thiếu file ảnh thì tắt hẳn skin, không tắt một nửa
 
 Bật skin là **tắt** đường ngựa cổ điển (`userHorse = 0`). Nếu lúc đó dữ liệu frame không
 nạp được thì đường thú cưỡi tool cũng không vẽ được gì (client vẫn tạo `DataSkillEff`
 nhưng `listFrame` rỗng nên `paintTopHorse`/`paintBottomHorse` thoát ngay) → **người chơi
-cưỡi hư không**. Nên `SkinLinhThu.dangMang` kiểm đủ cả hai file
-(`SkinLinhThu.coDuAnh`) trước khi bật.
+cưỡi hư không**. Nên `SkinLinhThu.dangMang` kiểm đủ cả hai file (`SkinLinhThu.coDuAnh`)
+trước khi bật — và vì mọi chỉ số cũng đi qua `dangMang`, thiếu ảnh là **tắt cả sức mạnh**,
+không có chuyện được chỉ số mà không thấy hình.
 
-### 5.7 Vật phẩm dùng type 30 — và vì sao không phải 19
+### 6.7 Vật phẩm dùng type 30 — và vì sao không phải 19
 
 Bảng "Trang bị thú" của client có 10 ô, thứ tự type do client quy định sẵn trong
 `idWearAnimal`. **Hai bản client đánh số cột phải khác nhau:**
@@ -158,7 +347,7 @@ skin rơi xuống khoảng trống giữa hai cột ở góc dưới.
    mới mỗi lần đăng nhập, không cache, không cổng phiên bản — nên đổi `data_item` là tới
    được người chơi ngay sau khi khởi động lại server.
 2. **Type 19 vốn là type của Phi phong nhân vật** (`Map.isPhiPhong`). Dùng chung một số
-   cho hai thứ khác nhau chính là gốc của cả loạt lỗi ở mục 5.5.
+   cho hai thứ khác nhau chính là gốc của cả loạt lỗi ở mục 6.5.
 3. **Type 30 không đụng đồ mặc nào.** Trong `data_item` chỉ có đúng dòng `id=30` "ếch
    quỷ" — đó là bản ghi **loài thú**, không phải vật phẩm mặc được. Trang bị thú thật của
    server chỉ có type 14–18 (Giáp, Hộ uyển, Nón, Bàn đạp, Yên cương), đúng bằng
@@ -180,7 +369,7 @@ Máy đã chạy bản sql cũ thì chạy thêm `sql/sua_type_skin_linh_thu.sql
 
 ---
 
-## 6. Thay bộ ảnh khác
+## 7. Thay bộ ảnh khác
 
 Bản này dùng bộ sprite dựng sẵn, **không** dựng từ bảng vẽ gốc như bản đầu tiên. Mỗi skin
 cần đúng hai tệp trong `map/skinthu/`:
@@ -200,7 +389,10 @@ java -cp build/tools-classes TaoIconSkinThu map/skinthu 5 860 map/icon
 Lệnh này đọc thẳng atlas + dữ liệu frame, ghép lại đúng cách client ghép (mảnh `onTop = 0`
 vẽ trước, `onTop = 1` vẽ sau), rồi ghi `map/icon/860+n.png`.
 
-Thiếu một trong hai tệp thì `DataGame.napSkinThu` **tắt hẳn skin đó** — xem mục 5.6.
+Thiếu một trong hai tệp thì `DataGame.napSkinThu` **tắt hẳn skin đó** — xem mục 6.6.
+
+Bộ ảnh mới thì phải **căn lại chỗ ngồi** — xem mục 9, và hai công cụ
+`tools/CanChoNgoiSkinThu.java` (dọc) + `tools/CanNgangSkinThu.java` (ngang).
 
 Muốn soi hình học trước khi dùng (con thú so với chỗ người ngồi):
 
@@ -212,7 +404,7 @@ java -cp build/tools-classes XemSkinNhuTrongGame xem.png map/d_effect/56 map/ski
 
 Điều duy nhất phải kiểm bằng tay là **đúng 21 frame** và mọi ô nằm trong biên atlas. Đọc
 byte đầu tiên ra số ảnh con `n`, nhảy `1 + n*5` byte rồi đọc `short` — phải ra 21. Nếu bộ
-sprite ít hơn 21 frame thì con thú biến mất đúng tick đó, xem mục "Ba cái bẫy" dưới đây.
+sprite ít hơn 21 frame thì con thú biến mất đúng tick đó, xem "Ba cái bẫy" dưới đây.
 
 ### Chọn tư thế: để tool làm, đừng chọn tay
 
@@ -258,19 +450,11 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
 3. **Ảnh phải nhìn sang TRÁI.** Client lật ngang khi đi sang phải
    (`paintTopHorse(..., (dir == RIGHT) ? 2 : 0)`). Bảng nào vẽ nhìn phải thì thêm `--lat`.
 
-### Chiều cao quyết định người ngồi đúng hay lơ lửng
-
-Người ngồi được nhấc lên bằng `Char.dy_horse_tool[indexdxy]`, là bảng **cố định**. Skin gửi
-`indexdxy = 0` (dòng `{-20,-15,-15,-15}`, đúng dòng con Poro dùng). Nên con thú phải cao
-xấp xỉ con Poro: đo từ `map/d_effect/56` được xuống 39px, lên 40px, ngang 42px, đáy thò
-xuống 7px dưới chân nhân vật. Tool tự thu về đúng ba số đó.
-
-Con nào có phần vươn cao bất thường (Tiên Lộc có bộ gạc rất cao) thì dùng `--cao=140` để
-phóng to lên — không thì phần *thân* bị bóp nhỏ và người ngồi lơ lửng trên ngọn gạc.
-
 ---
 
-## 7. Các điểm đã nối vào code gốc
+## 8. Các điểm đã nối vào code gốc
+
+**Phần hình ảnh**
 
 | File | Nối gì |
 |---|---|
@@ -282,54 +466,76 @@ phóng to lên — không thì phần *thân* bị bóp nhỏ và người ngồ
 | `MessageCreator.createMainCharInfoMessage` | y hệt trên (phải giống nhau, không thì mình và người bên cạnh thấy hai con thú khác nhau) |
 | `MessageCreator.createAnimalWearingMessage` | Ảnh 3 frame bảng Trang bị thú |
 | `Map.doSendDetailChar` | Ảnh bảng Trang bị thú khi người khác xem mình |
+
+**Phần vật phẩm**
+
+| File | Nối gì |
+|---|---|
 | `Map.exchangeItem` | Chặn vật phẩm skin, đẩy sang đường trang bị thú |
 | `Map.doUseItem` | Coi vật phẩm skin là trang bị thú; đồng bộ + gửi lại sau khi mặc |
-| `Map.doChat` | Lệnh `boskin` (mọi người) |
+| `Map.doChat` | Lệnh `boskin` |
+| `MapDoMenu` | NPC đổi thưởng (`-90`) → *Gỡ skin linh thú*, đọc `idOptionMenu` |
 | `Map` đổi thưởng | 5 mục mới |
-| `Char.idSkinLinhThu` | Trường skin |
 | `Char.getAnimalWearing` | Nhận vật phẩm skin bất kể `idAnimal`, buộc lại vào con đang cưỡi |
-| `doRideAnimal` | Đồng bộ skin khi cưỡi thú |
-| `SelectCharHandler` | Đồng bộ skin lúc đăng nhập |
+| `Char.setItemWearing` | Chặn skin rơi vào nhánh đồ nhân vật |
+| `Item.attribShowedForType` | Dài 36 thay vì 30 (type 30..34 phải tra được) |
+| `doRideAnimal` | Đồng bộ skin khi cưỡi thú, rồi **tính lại chỉ số sau đó** |
+| `doUnRideHorse` | Gỡ skin và trả vật phẩm về hành trang khi xuống thú |
+| `SelectCharHandler` | Đồng bộ skin lúc đăng nhập, rồi **tính lại chỉ số** trước gói đầu tiên |
+| `SkinLinhThu.dongBoVaGui` | Tính lại chỉ số **trước** khi dựng gói tin |
 
-## 8. Giới hạn đã biết
+**Phần chỉ số và nội tại**
+
+| File | Nối gì |
+|---|---|
+| `Char.idSkinLinhThu` | Skin đang mang |
+| `Char.skinHetHieuLuc` / `skinHetHoiChieu` | Trạng thái nội tại (chỉ trong bộ nhớ) |
+| `Char.tnSucManh/tnKheoLeo/tnTinhThan/tnSucKhoe` | +20% tiềm năng, tính tại chỗ |
+| `Char.calculateAttrib` | Xuyên giáp → `attNguHanh[3]` |
+| `Char.calculateAccurate` | +200 chính xác (cuối hàm) |
+| `Char.checkHapthuSatThuong` | Kích hoạt nội tại + hấp thụ + chặn sát thương |
+| `Char.buffAttackSkill` | Phản sát thương của Gấu Trúc, trần 80% |
+| `Char.checkKick5AttAnimal` | Rào chỉ số `groupKickAnimal` (xem mục 10) |
+| `CharChiSo.calculateMaxHPMP` | +HP/+MP, và +20% tiềm năng |
+| `CharChiSo.calculateDefend` | +20% thủ (bốn bộ đếm), và +20% tiềm năng |
+| `CharChiSo.calculateAttack` | +20% tiềm năng |
+| `CharChiSo.attackDam` | +50% tấn công của Xích Dương |
+| `CharChiSo.applyThanKhiOnHit` | +5% sát thương khi hợp hệ |
+| `MessageCreator` bảng chỉ số | Cộng phần tiềm năng vào số người chơi nhìn thấy |
+
+## 9. Giới hạn đã biết
 
 - ~~**Icon skin vẽ sai vị trí trong bảng "Trang bị thú"**~~ — **đã sửa, cả hai bản client.**
-  Gốc lỗi không phải ở cách vẽ mà ở **số type**: bản JAR đánh số cột phải là 30–34 còn bản
-  Unity (port từ jar cũ hơn) đánh 19–23. Đặt type 19 thì bản Unity vẽ đúng, còn bản JAR tra
-  `posPaintWearing[19]` = `(34, 92)` — ô **Phi phong của bảng nhân vật** — nên icon rơi
-  xuống góc dưới. Đã thống nhất theo bản JAR: server gửi type **30**, bản Unity sửa
-  `idWearAnimal` cho khớp. Xem mục 5.7.
-  Bản JAR **không phải đóng gói lại**: server gửi `type` của từng template xuống client mỗi
-  lần đăng nhập, nên chỉ cần chạy `sql/sua_type_skin_linh_thu.sql` rồi khởi động lại server.
-  Bản Unity vẫn giữ `paintIconTrangBiThu` lấy vị trí ô thẳng từ `idWearAnimal`, vì mảng
-  `posPaintWearing` bên đó mới dài 20 phần tử, chưa có ô 30–34.
-- **Bộ sprite này thấp hơn con thú chuẩn, nên người ngồi hơi cao.** Client vẽ con thú ở
-  **chân** nhân vật rồi nhấc riêng nhân vật lên bằng `Char.dy_horse[0]` = `{-20,-15,-15,-15}`
-  — một bảng **cố định**, không theo con thú. Nên con thú càng thấp thì chân người càng
-  gần đỉnh lưng nó. Đo bằng `tools/XemSkinNhuTrongGame.java` (độ "lụt" của chân người vào
-  thân thú, hướng xuống / lên / ngang):
+  Gốc lỗi không phải ở cách vẽ mà ở **số type** — xem mục 6.7. Bản JAR **không phải đóng
+  gói lại**: chỉ cần chạy `sql/sua_type_skin_linh_thu.sql` rồi khởi động lại server.
+- ~~**Người ngồi lơ lửng / "rỗng mất thân"**~~ — **đã sửa bằng cách căn lại dữ liệu**, cả
+  trục dọc lẫn trục ngang. Số hiện tại (đo bằng logic của hai công cụ căn):
 
-  | | xuống | lên | ngang |
-  |---|---|---|---|
-  | Poro (`d_effect/56`, mốc chuẩn) | 12 | 18 | 20 |
-  | Lân (`d_effect/64`) | 15 | 20 | 17 |
-  | 0 Phúc Thú | **6** | 19 | **12** |
-  | 1 Gấu Trúc | **9** | 21 | **12** |
-  | 2 Tiên Lộc | 12 | 18 | 18 |
-  | 3 Xích Dương | 10 | 17 | 14 |
-  | 4 Chiến Lang | 11 | 16 | 13 |
+  | | lụt xuống | lụt lên | lụt ngang | che chân người |
+  |---|---|---|---|---|
+  | Poro (`d_effect/56`, mốc chuẩn) | 12 | 20 | 22 | 51% |
+  | Lân (`d_effect/64`) | 15 | 21 | 17 | 44% |
+  | 0 Phúc Thú | 12 | 20 | 22 | 65% |
+  | 1 Gấu Trúc | 12 | 20 | 18 | 67% |
+  | 2 Tiên Lộc | 12 | 20 | 22 | 55% |
+  | 3 Xích Dương | 12 | 20 | 19 | 68% |
+  | 4 Chiến Lang | 12 | 20 | 20 | 65% |
 
-  Tiên Lộc khớp mốc chuẩn; Phúc Thú và Gấu Trúc hụt nhiều nhất. **Không chữa được bằng
-  cách dời** toạ độ: dời con thú lên cho khớp chỗ ngồi thì chân nó rời mặt đất đúng bấy
-  nhiêu. Muốn hết hẳn thì phải **phóng to sprite** về đúng cỡ con Poro (cao 39/40/42),
-  đúng như công cụ của bản đầu tiên vẫn làm — đổi lại ảnh bị nội suy.
+  Cột cuối là thứ quan trọng nhất và cũng là thứ tôi đo sai hai lần trước khi tìm ra gốc:
+  client vẽ con thú ở `x` nhưng vẽ **người** ở `x + Char.dx_horse[0][dir]` = `x + 7` khi
+  quay ngang, mà cưỡi thú tool thì client **không vẽ chân người** (`Char.java:1838` bỏ ô
+  thứ tự 0 khi `idhorse != -1`) — nó trông cậy hoàn toàn vào con thú che chỗ đó. Sprite hẹp
+  và lệch trái thì nửa dưới bên phải của người thò ra ngoài, nhìn xuyên thấy nền đất.
+  **Tiên Lộc vẫn yếu nhất (55%)** vì là con nai mảnh; dịch hết giới hạn cũng chỉ tới đó,
+  muốn hơn thì phải vẽ lại ảnh cho dày thân.
+  `test/KiemSkinLinhThu.kiemCheChanNguoi` chốt lại mọi skin phải che ≥ mức của Poro.
 - **Icon con thú nhỏ cạnh tên nhân vật vẫn là của linh thú thật** (`Animal.idImgIcon`).
-  Cố ý: nó cho biết con linh thú thật là con gì, đúng tinh thần "chỉ số vẫn là của nó".
-  Tên và chỉ số trong bảng thông tin cũng vậy.
-- **Bang chủ đang giữ thành** không hiện skin. Cả hai chỗ ghi `idThutool` đều nằm trong
-  `if (animalRide != null && !isMasterClanAndHaveTown())`, nên với người đó id ảnh skin
-  không bao giờ được gửi; nếu vẫn tắt đường ngựa cổ điển thì họ **mất hẳn con thú**. Vì
-  vậy `SkinLinhThu.dangMang` chặn sẵn trường hợp này, con thú vẽ như bình thường.
+  Cố ý: nó cho biết con linh thú thật là con gì, đúng tinh thần "chỉ số của con thú vẫn là
+  của nó". Tên và chỉ số con thú trong bảng thông tin cũng vậy.
+- **Bang chủ đang giữ thành** không hiện skin, và do đó **không được chỉ số nào**. Cả hai
+  chỗ ghi `idThutool` đều nằm trong `if (animalRide != null && !isMasterClanAndHaveTown())`,
+  nên với người đó id ảnh skin không bao giờ được gửi; nếu vẫn tắt đường ngựa cổ điển thì
+  họ **mất hẳn con thú**. Vì vậy `SkinLinhThu.dangMang` chặn sẵn trường hợp này.
 - **Thú đang hoá hình + mang skin**: skin thắng (đè lên hình hoá hình). Nhánh hoá hình
   ghi `-1` cho `userHorse`/`fly`/`idImgHorse` rồi bỏ qua, còn `idThutool` phía dưới vẫn
   đổi sang skin — an toàn vì bản thân hoá hình cũng đi đường thú cưỡi tool.
@@ -337,8 +543,61 @@ phóng to lên — không thì phần *thân* bị bóp nhỏ và người ngồ
   **trước** danh sách hiệu ứng nên nếu có ngày tràn thì bị cắt là hiệu ứng chứ không phải
   skin — cắt hiệu ứng chỉ làm hiệu ứng đó không vẽ, còn cắt skin thì người đang mặc skin
   sẽ cưỡi hư không.
+- **Nội tại mất khi đăng xuất.** Cố ý — hồi chiêu 40 giây ngắn hơn mọi phiên chơi, xem
+  mục 5.4.
 
-## 9. Bẫy đã gỡ (ghi lại để đừng đặt lại)
+## 10. Bẫy đã gỡ (ghi lại để đừng đặt lại)
+
+**Mảng tra theo type phía server**
+
+- **`Item.attribShowedForType` dài 30 mà skin mang type 30.** `getInfoAtbItem` ném
+  `ArrayIndexOutOfBoundsException` **ngay giữa lúc dựng gói tin**, hỏng cả
+  `createAnimalWearingMessage` lẫn `createCharInventoryMessage`: người chơi thấy bảng Trang
+  bị thú **rỗng** và vật phẩm biến mất khỏi hành trang, dù dữ liệu vẫn còn nguyên. Lỗi bị
+  `try/catch` ở ngoài nuốt nên chỉ thấy hậu quả, không thấy lỗi. Đã nâng lên 36 hàng.
+  *Bài học: soát mảng tra theo type ở cả hai phía, lần đó chỉ soát phía client.*
+- **`checkKick5AttAnimal` tra `groupKickAnimal[type - 14]`, mà mảng đó dài đúng 5**
+  (type 14..18). Skin type 30 → chỉ số 16 → văng, và rơi vào một `catch` **rỗng** nên im
+  lặng. Chưa nổ vì skin đang có `heItem = -1`, nhưng `heItem` là trường của **từng món** và
+  có nhiều đường gán nó (`ItemChangeColor`, nâng cấp ngũ hành). Đã rào bằng chính độ dài
+  mảng. Rào **không được dùng `continue`**: vòng lặp đó tăng biến đếm ở cuối thân vòng.
+
+**Hiệu ứng và cơ chế ẩn**
+
+- **`EFF_SHIELD_1` / `EFF_SHIELD_2` không phải hiệu ứng hình suông.**
+  `Char.getPcGiamSatThuong` và `getBackDam` đọc hai id đó và tự động cho **15%/30% giảm sát
+  thương cộng 20%/30% phản đòn**. Dùng chúng làm hình cho lá chắn thì muốn 30% mà ăn 45%,
+  không ai biết là sai. Nội tại skin dùng `LIGHT_YELLOW`, `LIGHT_MAGENTA`, `BUFF_DAM_5`,
+  `BUFF_DAM_10` — đã soát cả mã nguồn: không được đọc ở bất cứ đâu, `stune` bằng 0.
+- **`checkHapthuSatThuong` có một dòng gán đè.** Khối hấp thụ của linh thú viết `a = …` chứ
+  không phải `a += …`, nên nó **xoá sạch** mọi thứ cộng vào trước — cụ thể là 3% nội tại
+  của Lân. Đã đổi sang cộng dồn.
+
+**Chỉ số dẫn xuất là trường được lưu sẵn, phải tính lại đúng lúc**
+
+- **`attack` / `maxhp` / `defend_physic` / `accurate` chỉ đổi khi `calculateAttrib()`
+  chạy**, còn bảng điểm tiềm năng lại được tính **tươi** ngay lúc dựng gói tin. Thiếu lời
+  gọi `calculateAttrib()` thì người chơi **thấy tiềm năng tăng mà tấn công đứng im** —
+  trông như skin chỉ cộng một nửa. Đúng lỗi đã bị báo, và nó có **ba lỗ**:
+  `dongBoVaGui` không gọi (mặc/tháo skin), `doRideAnimal` gọi **trước** khi đồng bộ skin
+  (lên thú), `SelectCharHandler` không gọi lại sau khi đồng bộ (đăng nhập).
+- **Ở đường cưỡi thú, lời gọi đó phải VÔ ĐIỀU KIỆN**, không được gắn vào
+  `dongBoTheoTrangBi(...) == true`. `dangMang()` phụ thuộc vào **cả `animalRide`**, mà lên
+  thú thì số hiệu skin *không* đổi (đã có sẵn từ lúc đăng nhập) — cái đổi là `animalRide`.
+  Gắn vào điều kiện đó là chỉ số skin không bao giờ bật khi lên thú.
+- `test/KiemSkinLinhThu.kiemTinhLaiChiSo` chốt **thứ tự**, không chỉ sự có mặt: sai thứ tự
+  thì chạy đúng cú pháp mà vẫn không ăn gì, y hệt lúc chưa sửa.
+
+**Chỉ số được lưu xuống CSDL**
+
+- **Không bao giờ ghi tạm vào `strength`/`agitity`/`spirit`/`health`.** Bốn trường đó được
+  `DatabaseNhanVat` gộp chuỗi ghi thẳng xuống CSDL. Cách "nâng lên → tính → trả lại" thua
+  một lần là số phồng nằm vĩnh viễn và còn phồng tiếp. Xem mục 5.2.
+- **`upAbility` không hề được đặt lại** mỗi lần `calculateAttrib()` chạy, và là `byte[5]`.
+  Cộng vào là dồn vô hạn rồi tràn kiểu thành số âm. `attNguHanh` thì **có** được đặt lại
+  (trong `resetNguHanh`) nên cộng vào được — nhưng phải cộng **sau** lời gọi đó.
+
+**Gói tin và giao diện**
 
 - **Không gửi `createAnimalWearingMessage` cho người xung quanh.** Gói đó vào
   `GameScr.onAnimalWearingInfo`; khi `charID` khác nhân vật của người nhận thì nó gọi
@@ -348,6 +607,9 @@ phóng to lên — không thì phần *thân* bị bóp nhỏ và người ngồ
   mang là `imgAnimal`, mà `imgAnimal` chỉ dùng vẽ trong cửa sổ thông tin chứ không dùng
   vẽ trên bản đồ. Hình trên bản đồ đi bằng `createCharInfo`.
   *(Lưu ý: `doRideAnimal.java` vẫn còn một dòng như vậy từ trước — lỗi cũ, chưa đụng tới.)*
+- **Menu NPC đọc `idOptionMenu`, không phải `idMenu`.** `idMenu` là số hiệu **trang** menu,
+  `idOptionMenu` mới là **dòng** người chơi chọn. Menu một dòng che mất lỗi này vì cả hai
+  cùng bằng 0.
 - **Không nâng `nIconItem` quá số icon thật sự thêm vào.** Id nào `< nIconItem` mà thiếu
   file thì `allImg[id]` là null, `sendByteImg` ném NPE rồi bỏ qua cả lệnh gửi → client
   hỏi mãi không bao giờ được trả lời. Thêm 5 icon (860..864) thì nâng đúng lên 865.
@@ -363,3 +625,15 @@ phóng to lên — không thì phần *thân* bị bóp nhỏ và người ngồ
   khi tính năng bị gỡ, đúng năm id ấy đã được giao cho **Cánh** (commit `2c651ce`) làm ảnh
   ô xem trước cửa sổ Trang bị. Đặt đè lên là ô xem trước của Cánh hiện ra con thú. Bản này
   dùng 860..864 và nâng `nIconItem` lên 865.
+
+**Sửa văn bản tiếng Việt**
+
+- **Đừng sửa file tiếng Việt bằng `perl` đọc với `:encoding(UTF-8)` rồi ghi không đặt lớp
+  mã hoá cho đầu ra.** Nó chỉ in một dòng cảnh báo `Wide character in print` rồi **vẫn
+  ghi** — toàn bộ tiếng Việt trong file bị mã hoá hai lần. Lỗi này **âm**: file vẫn là
+  UTF-8 hợp lệ nên `iconv` vẫn báo đạt, `javac` vẫn biên dịch trót lọt, không có cảnh báo
+  nào lúc build. Chỉ mở game lên nhìn mới biết. Đã hỏng 178 dòng ở hai file như vậy.
+  Dùng `sed r <tep>` (theo byte), hoặc tốt hơn là **sinh chuỗi thẳng từ Java ra UTF-8** như
+  `tools/SinhSqlTenSkinThu.java`. `test/KiemBangMaNguon.java` quét toàn bộ mã nguồn để chặn
+  việc này tái diễn — nhận biết bằng **cặp ký tự**, không phải từng ký tự lẻ (`Ã` là chữ
+  cái tiếng Việt thật, trong "MÃ", "XÃ", "ĐÃ").

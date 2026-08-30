@@ -281,6 +281,11 @@ public class SelectCharHandler implements ICommandHandler {
             // tin nhan vat dau tien, khong thi dang nhap vao thay hinh thu that roi phai
             // doi den luc mac lai do moi hien skin.
             real.SkinLinhThu.dongBoTheoTrangBi(p);
+            // Tinh lai chi so SAU khi biet skin, TRUOC goi thong tin nhan vat dau tien.
+            // Skin cong chi so cho chu nhan (HP/MP, thu, tiem nang...) ma attack/maxhp/
+            // defend deu la truong duoc luu san — lan calculateAttrib truoc do trong qua
+            // trinh dang nhap chay khi idSkinLinhThu con la -1, nen khong co phan skin.
+            p.calculateAttrib();
             m = MessageCreator.createMainCharInfoMessage(p);
             try {
                 session.sendMessage(m);

@@ -64,13 +64,23 @@ public class doRideAnimal {
                     }
                 }
 
-                player.calculateAttrib();
                 // Skin gan theo NHAN VAT nen doi con thu van giu skin cu. Van phai goi
                 // dong bo o day: luc chua cuoi thu thi getAnimalWearing khong chay nen
                 // vat pham skin chua duoc doc, va SkinLinhThu.dangMang doi phai co
                 // animalRide. Goi truoc khi dung cac goi tin ben duoi vi ca ba goi deu
                 // mang hinh con thu.
                 SkinLinhThu.dongBoTheoTrangBi(player);
+                // calculateAttrib() PHAI chay SAU dong tren, khong duoc truoc.
+                //
+                // SkinLinhThu.dangMang doi phai co animalRide, ma animalRide vua moi duoc
+                // gan ngay ben tren — tuc chi so skin chuyen tu TAT sang BAT dung tai day.
+                // Tinh truoc thi tinh voi trang thai "chua cuoi", nguoi choi len thu xong
+                // thay tiem nang tang ma tan cong dung im cho den lan mac do ke tiep.
+                //
+                // Cung KHONG duoc gan vao dieu kien "dongBoTheoTrangBi tra true": ham do
+                // chi tra true khi so hieu skin DOI, ma o day so hieu thuong khong doi
+                // (da co san tu luc dang nhap) — cai doi la animalRide.
+                player.calculateAttrib();
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                 player.sendToNearPlayer(MessageCreator.createCharInfo(player));
