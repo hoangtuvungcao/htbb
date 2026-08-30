@@ -362,6 +362,13 @@ code {
 .btn-block { width: 100%; }
 form.inline { display: inline; margin: 0; }
 
+/* Ô đặt lịch hẹn mở/đóng sự kiện (sukien.php). Xếp dọc để hai mốc và nút không
+   ép cột bảng rộng ra — bảng sự kiện đã có 6 cột. */
+.lich-form { display: flex; flex-direction: column; gap: 5px; margin: 0 0 5px; }
+.lich-o { display: flex; align-items: center; gap: 6px; }
+.lich-o span { min-width: 30px; }
+.lich-o input { padding: 4px 7px; font-size: .81rem; }
+
 /* ---------------------------------------------------------------------------
    Biểu mẫu
    --------------------------------------------------------------------------- */

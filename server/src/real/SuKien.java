@@ -280,8 +280,17 @@ public final class SuKien {
         daNap = true;
     }
 
-    /** Doc CSDL roi ghi lai anh chup de trang quan tri thay duoc trang thai that. */
+    /**
+     * Doc CSDL roi ghi lai anh chup de trang quan tri thay duoc trang thai that.
+     *
+     * CHAY LICH HEN TRUOC KHI DOC. May chu tat vai tieng (hoac vai ngay) thi trong luc do
+     * co the da co moc mo/dong toi han. Doc cot `bat` truoc roi moi chay lich thi lan bat
+     * may nay van theo trang thai CU, va phai doi them mot vong khoi dong lai nua - tuc la
+     * mot su kien hen mo luc 0h se thuc su mo luc 0h06 kem mot lan da nguoi choi khong can
+     * thiet. Chay lich truoc thi no vao game ngay tu lan bat may nay.
+     */
     public static void nap() {
+        data.DatabaseSuKien.chayLichDenHan();
         data.DatabaseSuKien.nap();
         data.DatabaseSuKien.ghiAnhChup();
     }

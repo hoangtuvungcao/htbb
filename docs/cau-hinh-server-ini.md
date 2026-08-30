@@ -117,7 +117,7 @@ Gõ `6` trước khi sửa là cách nhanh nhất để biết đang đặt bao 
 
 ## 4. Khoá nào nạp lại được, khoá nào phải khởi động lại
 
-Chỉ **20 khoá** dưới đây được `CauHinh.napLai()` đọc lại. **Mọi khoá khác chỉ được đọc một
+Chỉ **23 khoá** dưới đây được `CauHinh.napLai()` đọc lại. **Mọi khoá khác chỉ được đọc một
 lần lúc bật máy** — sửa xong bắt buộc `systemctl restart kpah-game`.
 
 ```
@@ -127,7 +127,37 @@ sv.gioChiemThanh   sv.phutChiemThanh   sv.ngayChiemThanh
 sv.adminAccounts   sv.maxCharPerAccount   sv.choPhepTaoTenGM
 sv.website   sv.linkTaiGame   sv.testMode   sv.testCode
 sv.worldCupBatDau   sv.worldCupKetThuc   sv.worldCupHanNhanQua
+sv.suKienTuKhoiDongLai   sv.suKienGomGiay   sv.suKienBaoTruocGiay
 ```
+
+### Lịch hẹn sự kiện và tự khởi động lại
+
+Đổi trạng thái một sự kiện chỉ có hiệu lực **sau khi khởi động lại máy chủ** — bảng shop
+(`Map.loadShop` đặt SELL/NOT_SELL theo `Char.isSuKien*`), `Map.isSale` và danh sách NPC
+đều được dựng *một lần* lúc bật máy. Mặc định máy chủ tự lo việc đó, xem
+[`src/real/LichSuKien.java`](../src/real/LichSuKien.java).
+
+| Khoá | Mặc định | Ý nghĩa |
+|---|---|---|
+| `sv.suKienTuKhoiDongLai` | `1` | `0` = tắt hẳn. Lịch hẹn **vẫn chạy** (vẫn đổi cột `bat`), chỉ là không ai tự bật lại máy — trang quản trị sẽ hiện "chờ khởi động lại". |
+| `sv.suKienGomGiay` | `120` | Đợi bao lâu không còn thay đổi nào nữa mới khởi động lại. Kẹp trong `30..3600`. |
+| `sv.suKienBaoTruocGiay` | `60` | Báo trong game bao lâu trước khi tắt. Kẹp trong `10..600`. |
+
+**Đừng hạ `sv.suKienGomGiay` xuống thấp.** `kpah-game.service` đặt `StartLimitBurst=5` /
+`StartLimitIntervalSec=300`: khởi động quá 5 lần trong 300 giây thì systemd cho unit vào
+trạng thái `failed` và **không bật lại nữa** — server nằm hẳn cho tới khi có người ssh vào.
+Việc gom chính là thứ giữ cho "bật liền 5 sự kiện" chỉ tốn một lần khởi động lại. Cùng lý
+do đó, máy chủ không làm gì trong **3 phút đầu** sau khi bật máy, nên hai lần khởi động lại
+liên tiếp luôn cách nhau trên 6 phút.
+
+Đừng hạ `sv.suKienBaoTruocGiay` xuống dưới 10 giây: client nhét tin báo vào một hàng đợi
+tĩnh và mỗi tin mất 15–20 giây mới trôi hết, nên người chơi sẽ bị đá mà chưa kịp thấy chữ
+nào — còn tin thì hiện lại ngay sau khi họ đăng nhập lại, lúc bảo trì đã xong.
+
+Máy chủ **không tự tắt mình**: nó bật cờ `5h_systems.restart`, `BaoTriDaily` đọc cờ đó mỗi
+5 giây rồi chạy cả chuỗi lưu dữ liệu trước khi `System.exit(0)`, và systemd bật lại sau 10
+giây (`Restart=always`). Nhờ vậy trang quản trị **không cần quyền sudo hay ssh** — nó chỉ
+ghi vào CSDL.
 
 ### Sự kiện World Cup
 

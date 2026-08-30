@@ -131,6 +131,26 @@ sv.isSuKienGioTo2016=0
 sv.isSuKienNoel2023=0
 sv.isSuKienTetduonglich2024=0
 
+# ==== LICH HEN SU KIEN + TU KHOI DONG LAI ====
+# Doi mot su kien chi co hieu luc sau khi khoi dong lai may chu (bang shop, Map.isSale,
+# danh sach NPC deu duoc dung MOT LAN luc bat may theo trang thai su kien). Mac dinh may
+# chu tu lo viec do; xem src/real/LichSuKien.java.
+#
+# sv.suKienTuKhoiDongLai : 1 = tu khoi dong lai khi thiet lap doi (mac dinh), 0 = tat han
+#                          - luc do lich hen VAN chay, chi la nguoi van hanh phai tu
+#                          chay `systemctl restart kpah-game`.
+# sv.suKienGomGiay       : doi bao lau khong con thay doi nao nua moi khoi dong lai.
+#                          Kep trong 30..3600. DUNG HA XUONG THAP: kpah-game.service dat
+#                          StartLimitBurst=5 / 300s, bat vai su kien lien tay ma moi lan
+#                          mot lan khoi dong lai la unit vao trang thai "failed" va server
+#                          NAM HAN cho toi khi co nguoi ssh vao.
+# sv.suKienBaoTruocGiay  : bao trong game bao lau truoc khi tat. Kep trong 10..600.
+#                          Duoi 10 giay thi tin bao khong kip troi het hang doi cua client
+#                          (moi tin mat 15-20 giay) - nguoi choi bi da ma khong thay chu nao.
+sv.suKienTuKhoiDongLai=1
+sv.suKienGomGiay=120
+sv.suKienBaoTruocGiay=60
+
 # ==== GIO CHIEM THANH ====
 #   -1 = lich chuan 21h thu 3 + thu 7.
 #   sv.ngayChiemThanh: trong = moi ngay; "2026-07-28" = dung ngay; "Tue"/"Sat" = thu.

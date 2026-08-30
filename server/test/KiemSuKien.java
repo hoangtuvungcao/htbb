@@ -251,7 +251,7 @@ public final class KiemSuKien {
         final String sql = doc("sql/them_bang_su_kien.sql");
         Kiem.dung("co tep sql/them_bang_su_kien.sql", !sql.isEmpty());
         final String[] cot = {"ma", "bat", "ten", "nhom", "mo_ta", "dang_bat",
-            "sua_boi", "sua_luc", "may_chu_luc"};
+            "sua_boi", "sua_luc", "may_chu_luc", "mo_luc", "dong_luc"};
         for (final String c : cot) {
             Kiem.dung("cot " + c + " co trong CREATE TABLE cua Java",
                     dbSuKien.contains("\"" + c + " ") || dbSuKien.contains("+ \"" + c + " ")

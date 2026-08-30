@@ -444,10 +444,13 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
 ## Tính năng
 
 - Skin linh thú (đổi hình thú cưỡi, giữ nguyên chỉ số): [docs/skin-linh-thu.md](docs/skin-linh-thu.md)
-- **Sự kiện**: mọi sự kiện bật/tắt được bất kỳ lúc nào ở trang quản trị `/admin/sukien.php`
-  ([web/admin/sukien.php](web/admin/sukien.php), bảng `tob_su_kien`). Trước đây mốc thời gian
-  của từng sự kiện ghi cứng trong `Char.java` (toàn 2015–2024, nên đều tắt vĩnh viễn); nay danh
-  mục nằm ở [src/real/SuKien.java](src/real/SuKien.java). **Đổi xong phải khởi động lại server.**
+- **Sự kiện**: mọi sự kiện bật/tắt được bất kỳ lúc nào — hoặc **hẹn giờ mở/đóng** — ở trang
+  quản trị `/admin/sukien.php` ([web/admin/sukien.php](web/admin/sukien.php), bảng `tob_su_kien`).
+  Trước đây mốc thời gian của từng sự kiện ghi cứng trong `Char.java` (toàn 2015–2024, nên đều
+  tắt vĩnh viễn); nay danh mục nằm ở [src/real/SuKien.java](src/real/SuKien.java).
+  Đổi xong **server tự khởi động lại**: gom các thay đổi trong 2 phút, báo trong game 60 giây,
+  rồi lưu dữ liệu và thoát cho systemd bật lại — xem [src/real/LichSuKien.java](src/real/LichSuKien.java)
+  và [docs/cau-hinh-server-ini.md](docs/cau-hinh-server-ini.md) mục 4.
 - Sự kiện World Cup (bình chọn Messi/Ronaldo): [src/real/SuKienWorldCup.java](src/real/SuKienWorldCup.java) ·
   chạy [sql/them_su_kien_world_cup.sql](sql/them_su_kien_world_cup.sql) một lần trước khi mở
 

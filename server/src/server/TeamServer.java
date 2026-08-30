@@ -547,6 +547,7 @@ public class TeamServer {
             // trong game se duoc ghi tra lai server.ini (xem CauHinh).
             CauHinh.apDungGioChiemThanh(p);
             CauHinh.apDungSuKienWorldCup(p);
+            CauHinh.apDungLichSuKien(p);
             Database.CHO_PHEP_TAO_TEN_GM = "1".equals(p.getProperty(CauHinh.K_TAO_TEN_GM, "0").trim());
             if (Database.CHO_PHEP_TAO_TEN_GM) {
                 System.out.println("CANH BAO: sv.choPhepTaoTenGM=1 - dang cho phep tao nhan vat"
@@ -683,6 +684,10 @@ public class TeamServer {
         // Lay mau so nguoi online 5 phut/lan -> bang tob_log_online, cho trang Tong quan
         // ve bieu do. Tu tao bang va tu don dong cu hon 30 ngay.
         data.GhiSoOnline.batDau();
+        // Lich hen mo/dong su kien + tu khoi dong lai khi thiet lap doi. PHAI chay SAU
+        // BaoTriDaily: no bat co 5h_systems.restart cho vong lap ben do doc va tat may,
+        // chu khong tu tat. Xem real/LichSuKien.
+        real.LichSuKien.batDau();
         String daycheck = Char.getDayTime(0L);
         if (daycheck.compareTo("2020-11-18 17:15:00") < 0) {
             Char.initINfoCheckTrungItemVV();

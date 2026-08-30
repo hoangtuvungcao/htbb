@@ -44,6 +44,10 @@ public final class CauHinh {
     public static final String K_WC_BAT_DAU = "sv.worldCupBatDau";
     public static final String K_WC_KET_THUC = "sv.worldCupKetThuc";
     public static final String K_WC_HAN_NHAN_QUA = "sv.worldCupHanNhanQua";
+    /** Lich hen mo/dong su kien + tu khoi dong lai. Xem real/LichSuKien. */
+    public static final String K_SK_TU_KHOI_DONG_LAI = "sv.suKienTuKhoiDongLai";
+    public static final String K_SK_GOM_GIAY = "sv.suKienGomGiay";
+    public static final String K_SK_BAO_TRUOC_GIAY = "sv.suKienBaoTruocGiay";
 
     private CauHinh() {
     }
@@ -205,6 +209,7 @@ public final class CauHinh {
             TeamServer.testCode = nhan(p.getProperty("sv.testCode"), "").toLowerCase();
 
             apDungSuKienWorldCup(p);
+            apDungLichSuKien(p);
 
             return "Đã nạp lại " + FILE + ".";
         } catch (final Exception e) {
@@ -223,6 +228,33 @@ public final class CauHinh {
                 nhan(p.getProperty(K_WC_BAT_DAU), ""),
                 nhan(p.getProperty(K_WC_KET_THUC), ""),
                 nhan(p.getProperty(K_WC_HAN_NHAN_QUA), ""));
+    }
+
+    /**
+     * Ap dung cau hinh lich hen su kien. Dung ca luc khoi dong.
+     *
+     * Hai moc thoi gian bi KEP TRONG KHOANG chu khong nhan nguyen gia tri nguoi go:
+     *   - gom  : 30..3600 giay. Duoi 30 thi bat vai su kien lien tay se thanh nhieu lan
+     *            khoi dong lai va dung phai StartLimitBurst=5/300s cua systemd -> unit
+     *            "failed", server nam han. Xem chot an toan trong real/LichSuKien.
+     *   - bao truoc: 10..600 giay. Duoi 10 giay thi tin bao khong kip troi het hang doi
+     *            cua client (moi tin mat 15-20 giay) - nguoi choi bi da ma khong thay
+     *            chu nao, con tin thi hien lai sau khi dang nhap lai. Xem BaoTriDaily.
+     */
+    public static void apDungLichSuKien(final Properties p) {
+        real.LichSuKien.tuKhoiDongLai =
+                !"0".equals(nhan(p.getProperty(K_SK_TU_KHOI_DONG_LAI), "1"));
+        real.LichSuKien.gomGiay =
+                trongKhoang(so(p.getProperty(K_SK_GOM_GIAY), 120), 30, 3600);
+        real.LichSuKien.baoTruocGiay =
+                trongKhoang(so(p.getProperty(K_SK_BAO_TRUOC_GIAY), 60), 10, 600);
+    }
+
+    private static int trongKhoang(final int v, final int nhoNhat, final int lonNhat) {
+        if (v < nhoNhat) {
+            return nhoNhat;
+        }
+        return v > lonNhat ? lonNhat : v;
     }
 
     /** Ap dung gio chiem thanh trong file vao MapTown. Dung ca luc khoi dong. */
