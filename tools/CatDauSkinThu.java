@@ -16,11 +16,13 @@ import javax.imageio.ImageIO;
  * gap khoang hai lan rui, va van la anh pixel sac net.
  *
  * BA RANG BUOC PHAI GIU:
- *  1. KHONG QUA 16x16. Luoi hanh trang co BUOC NHAY 18 px moi o
- *     (WindowInfoScr: "num4 % 3 * 18 + 54 + 9"), va icon duoc ve tu GOC TREN TRAI cua o
- *     (paintIcon -> drawRegion(..., x, y, 3) voi 3 = TOP|LEFT). Nen icon 18x18 lap kin o,
- *     khong con khe nao, cac icon dinh lien thanh mot dai - da thu va bi tra lai.
- *     16x16 chua 2 px khe, dung bang co icon cu.
+ *  1. PHAI NHO HON O MOT CHUT. Luoi hanh trang buoc 18 px moi o (WindowInfoScr:
+ *     "num4 % 3 * 18 + 54 + 9"), va icon duoc ve CAN GIUA o - paintIcon goi
+ *     drawRegion(..., x, y, 3) voi 3 = HCENTER|VCENTER, MyGraphics tru di nua chieu
+ *     rong/cao. Nen kich thuoc icon quyet dinh be rong vien:
+ *         18x18 -> vien 0, cac icon dinh lien thanh mot dai   (da thu, bi tra lai)
+ *         16x16 -> vien 1 px, van day o                       (da thu, bi tra lai)
+ *         12x12 -> vien 3 px, nhin ro la nam gon trong o
  *     Con mot nguong nua o tren cao: GameData.paintIcon lam "if (h > 25) { h /= 3;
  *     soKhung = 3; }" - anh cao hon 25 px bi hieu la dai 3 khung hoat hinh va chi hien
  *     1/3 tren cung. Nguong 18 chat hon nen 25 khong bao gio cham toi, nhung dung nang
@@ -38,25 +40,27 @@ import javax.imageio.ImageIO;
  */
 public final class CatDauSkinThu {
 
-    private static final int CANH = 16;
+    private static final int CANH = 12;
     private static final int ID_ICON_DAU = 860;
     private static final int KHUNG_CHINH_DIEN = 1;
 
     /**
-     * {x0, y0} goc tren trai cua o cat, tinh trong khung chinh dien cua tung skin.
-     * Chon bang mat. Doi CANH thi nho doi theo de giu nguyen TAM: canh giam 2 px thi
-     * moi so cong 1.
+     * TAM cua cai dau trong khung chinh dien cua tung skin (chon bang mat).
+     *
+     * Luu TAM chu khong luu goc tren trai: doi CANH thi o cat tu dong van nam giua dau,
+     * khong phai tu cong tru lai. Ban truoc luu goc nen moi lan doi co lai phai nho cong
+     * bu - de sai.
      */
-    private static final int[][] O_CAT = {
-        {19, 10},  // 0 Phuc Thu   - mu + hoa van vang + mat lon hong
-        {11,  7},  // 1 Gau Truc   - tron mat gau truc, ca hai tai
-        { 7,  8},  // 2 Tien Loc   - goc gac + mat trang mui hong
-        { 6,  5},  // 3 Xich Duong - vien ngoc giua, lua toa deu hai ben
-        { 6,  5},  // 4 Chien Lang - van vang chu V + hai mat do
+    private static final int[][] TAM_DAU = {
+        {27, 18},  // 0 Phuc Thu   - hoa van vang + mat lon hong
+        {19, 15},  // 1 Gau Truc   - mat gau truc
+        {15, 16},  // 2 Tien Loc   - mat trang mui hong, goc gac
+        {14, 13},  // 3 Xich Duong - vien ngoc giua
+        {14, 13},  // 4 Chien Lang - van vang chu V + hai mat do
     };
 
     public static void main(final String[] args) throws Exception {
-        for (int n = 0; n < O_CAT.length; n++) {
+        for (int n = 0; n < TAM_DAU.length; n++) {
             final byte[] dt = Files.readAllBytes(Paths.get("map/skinthu/" + n));
             final BufferedImage atlas = ImageIO.read(new File("map/skinthu/" + n + ".png"));
             final int p = 1 + KHUNG_CHINH_DIEN * 5;
@@ -65,11 +69,14 @@ public final class CatDauSkinThu {
             final int fw = dt[p + 3] & 0xFF;
             final int fh = dt[p + 4] & 0xFF;
 
-            final int x0 = O_CAT[n][0];
-            final int y0 = O_CAT[n][1];
-            if (x0 + CANH > fw || y0 + CANH > fh) {
-                throw new IllegalStateException("skin " + n + ": o cat " + x0 + "," + y0
-                        + " vuot khung " + fw + "x" + fh);
+            // Goc tren trai suy ra tu tam, roi keo vao trong neu loi ra ngoai khung.
+            int x0 = TAM_DAU[n][0] - CANH / 2;
+            int y0 = TAM_DAU[n][1] - CANH / 2;
+            x0 = Math.max(0, Math.min(x0, fw - CANH));
+            y0 = Math.max(0, Math.min(y0, fh - CANH));
+            if (CANH > fw || CANH > fh) {
+                throw new IllegalStateException("skin " + n + ": canh " + CANH
+                        + " lon hon khung " + fw + "x" + fh);
             }
 
             final BufferedImage icon = new BufferedImage(CANH, CANH, BufferedImage.TYPE_INT_ARGB);
