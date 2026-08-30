@@ -64,37 +64,22 @@ public class Region {
         this.map = m;
         this.timeExist = System.currentTimeMillis();
         this.idRegion = (short)id;
-        new Thread(){
-            private long lastTimeUpdateMap;
-
-            /*
-             * Exception decompiling
-             */
-            @Override
-            public void run() {
-                /*
-                 * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
-                 * 
-                 * org.benf.cfr.reader.util.ConfusedCFRException: Started 2 blocks at once
-                 *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.getStartingBlocks(Op04StructuredStatement.java:412)
-                 *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.buildNestedBlocks(Op04StructuredStatement.java:487)
-                 *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op03SimpleStatement.createInitialStructuredBlock(Op03SimpleStatement.java:736)
-                 *     at org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisInner(CodeAnalyser.java:850)
-                 *     at org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysisOrWrapFail(CodeAnalyser.java:278)
-                 *     at org.benf.cfr.reader.bytecode.CodeAnalyser.getAnalysis(CodeAnalyser.java:201)
-                 *     at org.benf.cfr.reader.entities.attributes.AttributeCode.analyse(AttributeCode.java:94)
-                 *     at org.benf.cfr.reader.entities.Method.analyse(Method.java:531)
-                 *     at org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:1055)
-                 *     at org.benf.cfr.reader.entities.ClassFile.analyseInnerClassesPass1(ClassFile.java:923)
-                 *     at org.benf.cfr.reader.entities.ClassFile.analyseMid(ClassFile.java:1035)
-                 *     at org.benf.cfr.reader.entities.ClassFile.analyseTop(ClassFile.java:942)
-                 *     at org.benf.cfr.reader.Driver.doClass(Driver.java:84)
-                 *     at org.benf.cfr.reader.CfrDriverImpl.analyse(CfrDriverImpl.java:78)
-                 *     at org.benf.cfr.reader.Main.main(Main.java:54)
-                 */
-                throw new IllegalStateException("Decompilation failed");
-            }
-        }.start();
+        // O day nguyen ban co mot luong nua, nhung CFR khong dich noi than ham run()
+        // nen sinh ra "throw new IllegalStateException(\"Decompilation failed\")". Moi
+        // Region tao luong do roi luong chet ngay: 610 stack trace moi lan khoi dong
+        // (58.850 dong trong mot tep log cu), va 610 thread bi tao ra vo ich.
+        //
+        // Da bo han. Hanh vi khong doi mot chut nao - no von nem loi ngay dong dau tien.
+        //
+        // Luong do tung lam gi: no la ban sao cua vong cap nhat trong startSandVilage(),
+        // nhung cho PHE 1 - tuc la noi duy nhat goi Region.update() (xu ly boss va
+        // allPlayers.get(1)). Bo no di thi update() va updateWind() thanh ma chet, khong
+        // con ai goi. GIU LAI hai ham do de con biet cai gi da mat.
+        //
+        // Muon phuc hoi tinh nang thi phai viet lai vong lap do theo mau cua
+        // startSandVilage(), dung LOCK1/lastTimeUpdateMap1/map_run_state1 va goi update().
+        // Luu y: luong cu duoc start() NGAY DAU HAM DUNG, truoc ca khi allPlayers duoc
+        // them phan tu - nen ban goc chac chan cung da hong theo kieu khac.
         this.allPlayers.add(new Vector());
         this.allPlayers.add(new Vector());
         this.allPlayerMessages.add(new Vector());

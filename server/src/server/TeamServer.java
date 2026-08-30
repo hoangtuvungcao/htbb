@@ -484,6 +484,9 @@ public class TeamServer {
         final Properties p = new Properties();
         try {
             p.load(Files.newInputStream(Paths.get("server.ini")));
+            // PHAI dat NGAY SAU khi doc server.ini va TRUOC Database.setLink(...):
+            // data.ConnPool in mat khau CSDL ra stdout ngay trong ham dung. Xem LocBiMat.
+            LocBiMat.batDau(p);
             BaoTriDaily.Server = Integer.parseInt(p.getProperty("api.sv"));
             BaoTriDaily.domain = p.getProperty("api.url");
             TeamServer.PORT = Integer.parseInt(p.getProperty("sv.port"));

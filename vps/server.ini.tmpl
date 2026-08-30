@@ -113,8 +113,8 @@ sv.connRateMax=60
 sv.connRateWindow=0
 sv.dosBanSec=300
 
-# sv.isSuKien83 la khoa chet - khong duoc doc o dau trong ma nguon.
-sv.isSuKien83=0
+# sv.isSuKien83 DA BO khoi ban mau: no khong duoc doc o dau trong ma nguon, de lai chi
+# lam nguoi ta tuong chinh duoc cai gi do. Xem docs/cau-hinh-server-ini.md muc 10.
 sv.isSuKienTrungThul2016=1
 sv.isSuKienTet2017=0
 sv.isSuKienGioTo2016=0
@@ -122,13 +122,20 @@ sv.isSuKienNoel2023=0
 sv.isSuKienTetduonglich2024=0
 
 # ==== GIO CHIEM THANH ====
-# De @GIU_NGUYEN@ vi trong game co lenh "stown" dat truc tiep - deploy khong
-# duoc nuot mat gio vua dat cho su kien. Muon GitHub quan luon thi thay bang so:
 #   -1 = lich chuan 21h thu 3 + thu 7.
 #   sv.ngayChiemThanh: trong = moi ngay; "2026-07-28" = dung ngay; "Tue"/"Sat" = thu.
-sv.gioChiemThanh=@GIU_NGUYEN@
-sv.phutChiemThanh=@GIU_NGUYEN@
-sv.ngayChiemThanh=@GIU_NGUYEN@
+#
+# Lenh chat "stown" trong game van dat duoc ngay lap tuc, nhung lan deploy ke tiep se
+# dat lai theo ba dong duoi day. Muon trong game thang han thi doi gia tri thanh
+# @GIU_NGUYEN@ - luc do bo sinh khong dung toi, giu nguyen cai dang chay tren VPS.
+sv.gioChiemThanh=-1
+sv.phutChiemThanh=-1
+sv.ngayChiemThanh=
+
+# Bat log chan doan thu cuoi cho DUNG MOT nhan vat (so theo ten, khong phan biet
+# hoa/thuong). De trong = tat. Dung khi soi loi hinh thu cuoi / skin linh thu ma
+# khong muon ngap log ca server.
+sv.thuNghiemThuCuoi=
 
 # ==== LENH CHAT ADMIN ====
 # setting : bang setting. Trong o nhap: 8 = nap lai server.ini (17 khoa, xem

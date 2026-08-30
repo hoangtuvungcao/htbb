@@ -31,6 +31,7 @@ public final class KiemCauHinhPipeline {
     private static final String F_DEPLOY = "vps/deploy-auto.sh";
     private static final String F_WORKFLOW = ".github/workflows/deploy.yml";
     private static final String F_SERVER = "src/server/TeamServer.java";
+    private static final String F_CAUHINH = "src/server/CauHinh.java";
 
     public static void chay() {
         Kiem.nhom("Cau hinh qua pipeline - ba noi phai khop nhau");
@@ -60,6 +61,22 @@ public final class KiemCauHinhPipeline {
             if (v != null) {
                 Kiem.dung("ban mau dat " + k + " la mot so (parseX se khong nem loi)", laSo(v));
             }
+        }
+
+        // ---- 1b. TAT CA thiet lap phai nam trong ban mau, khong thieu khong thua ----
+        // Muc dich cua pipeline la khong bao gio phai mo /opt/kpah/server.ini nua. Chi can
+        // MOT khoa ma nguon doc ma ban mau khong co, la lai phai vao VPS sua tay - dung cai
+        // viec da lam sap server. Chieu nguoc lai cung phai dung: khoa nao ban mau co ma
+        // khong ai doc thi la nut bam gia, xoay het co cung khong co tac dung.
+        final List<String> maNguonDoc = khoaMaNguonDoc(sv, doc(F_CAUHINH));
+        Kiem.dung("tim duoc danh sach khoa ma nguon doc (tren 60)", maNguonDoc.size() > 60);
+        for (final String k : maNguonDoc) {
+            Kiem.dung("ban mau co khoa " + k + " (khong thi van phai sua tay tren VPS)",
+                    banMau.containsKey(k));
+        }
+        for (final String k : banMau.keySet()) {
+            Kiem.dung("khoa " + k + " trong ban mau that su duoc ma nguon doc",
+                    maNguonDoc.contains(k));
         }
 
         // ---- 2. Cho trong ${...} phai co du o ca workflow lan danh sach cho phep ----
@@ -122,6 +139,27 @@ public final class KiemCauHinhPipeline {
         // Goi qua "bash" thi bit thuc thi khong con quyet dinh duoc nua.
         Kiem.dung("deploy goi bo sinh qua bash (bit thuc thi khong lam sap deploy nua)",
                 coTrongMaLenh(deploy, "bash \"$DIR/vps/sinh-server-ini.sh\"", '#'));
+    }
+
+    /**
+     * Moi khoa cau hinh ma nguon that su doc: p.getProperty(...) trong TeamServer, cong
+     * cac khoa CauHinh.napLai() doc lai duoc.
+     */
+    private static List<String> khoaMaNguonDoc(final String maServer, final String maCauHinh) {
+        final List<String> ra = new ArrayList<String>();
+        final Matcher m = Pattern.compile("p\\.getProperty\\(\"([^\"]+)\"\\)").matcher(maServer);
+        while (m.find()) {
+            if (!ra.contains(m.group(1))) {
+                ra.add(m.group(1));
+            }
+        }
+        final Matcher m2 = Pattern.compile("\"((?:sv|db|api|limit)\\.[A-Za-z0-9_]+)\"").matcher(maCauHinh);
+        while (m2.find()) {
+            if (!ra.contains(m2.group(1))) {
+                ra.add(m2.group(1));
+            }
+        }
+        return ra;
     }
 
     /** Cac khoa TeamServer doc bang parseInt/parseByte/parseShort - thieu la nem loi. */
