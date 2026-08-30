@@ -49,6 +49,7 @@ public final class KiemSkinLinhThu {
         Kiem.bang("moTa(5)", "không có", real.SkinLinhThu.moTa(5));
 
         kiemBoAnh();
+        kiemMangTraTheoType();
         kiemSoTypeTrangBiThu();
         kiemDaiIcon();
         kiemLenhChat();
@@ -147,6 +148,46 @@ public final class KiemSkinLinhThu {
             return ((b[vt] & 0xFF) << 8) | (b[vt + 1] & 0xFF);
         } catch (final Exception e) {
             return -1;
+        }
+    }
+
+    /**
+     * Mang tra theo TYPE phia SERVER phai phu het dai type dang dung.
+     *
+     * Day la cho da tung vo that: Item.attribShowedForType dai 30, ma skin mang type 30,
+     * nen Item.getInfoAtbItem nem ArrayIndexOutOfBoundsException NGAY giua luc dung goi
+     * tin. Hong ca createAnimalWearingMessage lan createCharInventoryMessage: nguoi choi
+     * thay bang "Trang bi thu" RONG va vat pham bien mat khoi hanh trang, du du lieu van
+     * con nguyen. Loi bi try/catch o ngoai nuot nen chi thay hau qua, khong thay loi.
+     *
+     * Lan do toi da soat rat ky cac mang tra theo type phia CLIENT ma quen mat phia
+     * SERVER. Kiem tra nay chan dung viec do lap lai.
+     */
+    private static void kiemMangTraTheoType() {
+        Kiem.nhom("Skin linh thu - mang tra theo type phia server");
+
+        final int type = real.SkinLinhThu.TYPE_ITEM;
+        Kiem.dung("Item.attribShowedForType phu het type " + type,
+                real.Item.attribShowedForType != null
+                        && real.Item.attribShowedForType.length > type);
+        if (real.Item.attribShowedForType != null
+                && real.Item.attribShowedForType.length > type) {
+            Kiem.dung("hang " + type + " khong rong (null la NPE luc doc)",
+                    real.Item.attribShowedForType[type] != null);
+            Kiem.dung("hang " + type + " du 10 cot",
+                    real.Item.attribShowedForType[type].length >= 10);
+            // Skin khong cong chi so nao nen khong duoc hien dong nao.
+            boolean coHien = false;
+            for (final boolean b : real.Item.attribShowedForType[type]) {
+                coHien = coHien || b;
+            }
+            Kiem.sai("skin khong hien dong chi so nao (skin khong cong chi so)", coHien);
+        }
+        // Ca dai cot phai 30..34 deu phai an toan, khong rieng gi o dang dung.
+        for (int t = 30; t <= 34; t++) {
+            Kiem.dung("type " + t + " tra duoc khong nem loi",
+                    real.Item.attribShowedForType.length > t
+                            && real.Item.attribShowedForType[t] != null);
         }
     }
 

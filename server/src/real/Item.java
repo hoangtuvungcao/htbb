@@ -312,7 +312,14 @@ public class Item extends Actor {
         Item.COLOR_YELLOW = 5;
         Item.MAX_ATT_KHAM = 18;
         Item.MAX_ATT = 33;
-        final boolean[][] attribShowedForType = new boolean[30][];
+        // Dai 36 chu khong phai 30: cot phai bang "Trang bi thu" mang type 30..34
+        // (xem real.SkinLinhThu.TYPE_ITEM). De 30 thi getInfoAtbItem nem
+        // ArrayIndexOutOfBoundsException NGAY giua luc dung goi tin, lam hong ca
+        // createAnimalWearingMessage lan createCharInventoryMessage — nguoi choi thay
+        // bang trang bi thu RONG va vat pham bien mat khoi hanh trang, du no van con
+        // nguyen trong du lieu. Sau hang moi de trong = khong hien dong chi so nao,
+        // dung y cho skin vi skin khong cong chi so.
+        final boolean[][] attribShowedForType = new boolean[36][];
         attribShowedForType[0] = new boolean[]{false, true, true, true, false, false, true, false, false, false};
         attribShowedForType[1] = new boolean[]{false, true, true, true, false, false, true, false, false, false};
         attribShowedForType[2] = new boolean[]{false, true, true, true, false, false, true, false, false, false};
@@ -352,6 +359,12 @@ public class Item extends Actor {
         attribShowedForType[27] = new boolean[10];
         attribShowedForType[28] = new boolean[10];
         attribShowedForType[29] = new boolean[10];
+        attribShowedForType[30] = new boolean[10];
+        attribShowedForType[31] = new boolean[10];
+        attribShowedForType[32] = new boolean[10];
+        attribShowedForType[33] = new boolean[10];
+        attribShowedForType[34] = new boolean[10];
+        attribShowedForType[35] = new boolean[10];
         Item.attribShowedForType = attribShowedForType;
         attrName = new String[]{"Tấn công", "Phòng thủ", "Né tránh", "Chính xác", "Chí mạng", "Sức khoẻ", "Chỉ số 6", "Chỉ số 7", "Chỉ số 8", "Chỉ số 9"};
         Item.na = new String[]{"Giáp nhẹ", "Giáp nặng", "Giáp vải", "Giáp nặng", "Giáp nhẹ"};
