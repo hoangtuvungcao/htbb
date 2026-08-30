@@ -201,7 +201,6 @@ class MapDoMenu {
                         case 3:
                         if(player.isBatCaiTrang()){
                             player.setTatCaiTrang();
-                            System.out.println("Tat cai trang" + player.getLevelCaiTrang());
                             player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                             player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                             player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));

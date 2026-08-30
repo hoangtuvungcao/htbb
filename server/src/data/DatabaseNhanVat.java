@@ -657,7 +657,7 @@ class DatabaseNhanVat {
         Connection conn = null;
         PreparedStatement pre = null;
         String sql = "UPDATE tob_char SET pInfo=?,basic=?,skill=?,potion=?,totalTimePlay=totalTimePlay+?, luong=?, lastLv=?,xp=?,gold=?,hp=?, idClan=?, reupclass=?,headStyle=?,ticket=?,x=?,y=?,book=?,lastLog=Now(),infotop=?,equip=?,"
-                + "inven=?,bag=?,killme=?,luonglock=?,tuido=?,isPP=?,isMN=? where id=?";
+                + "inven=?,bag=?,killme=?,luonglock=?,tuido=?,isPP=?,isMN=?,isCT=? where id=?";
         try {
             conn = db.getConnection();
             pre = conn.prepareStatement(sql);
@@ -691,7 +691,12 @@ class DatabaseNhanVat {
             pre.setString(24, tuido.toString());
             pre.setByte(25, (byte) (p.isTatPhiPhong() ? 1 : 0));
             pre.setByte(26, (byte) (p.isTatMatNa() ? 1 : 0));
-            pre.setInt(27, p.charDBID);
+            // Cot isCT luu "DA TAT cai trang" (1 = tat), cung chieu voi isPP va isMN.
+            // Chon chieu nay de hang cu — sau ALTER TABLE deu bang 0 — doc ra thanh "dang
+            // bat", dung y nhu hanh vi tu truoc den gio. Luu chieu nguoc lai thi ngay khi
+            // chay migration, TOAN BO nguoi choi bi tat cai trang.
+            pre.setByte(27, (byte) (p.isBatCaiTrang() ? 0 : 1));
+            pre.setInt(28, p.charDBID);
             try {
                 pre.execute();
             } catch (Exception e) {

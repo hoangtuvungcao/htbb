@@ -81,6 +81,7 @@ public final class Kiem {
         KiemCamTheoMay.chay();
         KiemDongDangKyClient.chay();
         KiemClientUnity.chay();
+        KiemTatCaiTrang.chay();
         KiemBangMaNguon.chay();
 
         final int ma = tongKet();

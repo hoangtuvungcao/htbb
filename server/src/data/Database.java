@@ -7354,6 +7354,27 @@ public class Database {
                 } else {
                     p.setTatMatNa();
                 }
+
+                // Cong tac "Tat cai trang" (NPC Tho ren than bi -> Bo suu tap).
+                //
+                // Truoc day Char.isBatCaiTrang chi la mot bien trong bo nho, mac dinh
+                // true va khong duoc luu o dau — nen tat xong, dang xuat vao lai la no
+                // tu bat lai. Da bao.
+                //
+                // DOC RIENG TRONG TRY: cot isCT la cot MOI. May chu nao chua chay
+                // themCotTatCaiTrang() thi lenh doc cot nay nem SQLException,
+                // ma doan nay nam giua ham nap nhan vat — de loi lan ra la HONG DANG NHAP
+                // cua toan bo nguoi choi chi vi quen mot cau ALTER TABLE. Thieu cot thi
+                // lui ve dung hanh vi cu (luon bat), khong ai mat gi.
+                try {
+                    if (rs.getByte("isCT") == 0) {
+                        p.setBatCaiTrang();
+                    } else {
+                        p.setTatCaiTrang();
+                    }
+                } catch (final Exception thieuCot) {
+                    p.setBatCaiTrang();
+                }
                 
                  
                 
@@ -11488,6 +11509,59 @@ public void addCharXaiNapLuong(Char p, int type) {
     }
 
     // ============ HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI (theo ngay, moi nhan vat) ============
+
+    /**
+     * Them cot tob_char.isCT (cong tac "Tat cai trang") neu chua co. Goi 1 lan luc khoi
+     * dong server, TRUOC khi nhan nguoi choi vao.
+     *
+     * VI SAO PHAI TU THEM CHU KHONG BAT NGUOI QUAN TRI CHAY SQL: cau UPDATE trong
+     * DatabaseNhanVat.saveChar co ghi cot nay. Cot khong ton tai thi cau do nem loi, va
+     * nhanh bat loi ngay duoi no KHOA NHAN VAT (ban=1) vi no coi moi that bai luu la loi
+     * hanh trang. Tuc quen mot cau ALTER TABLE se KHOA SACH nguoi choi ngay lan dang xuat
+     * dau tien. Khong duoc de mot buoc thu cong dung giua duong do.
+     *
+     * MySQL 5.x khong co "ADD COLUMN IF NOT EXISTS" nen phai hoi information_schema truoc.
+     *
+     * Mac dinh 0 = DANG BAT, dung y voi hanh vi tu truoc den gio, nen chay migration
+     * khong lam ai bi tat cai trang.
+     */
+    public void themCotTatCaiTrang() {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(
+                    "SELECT COUNT(*) FROM information_schema.COLUMNS"
+                    + " WHERE TABLE_SCHEMA = DATABASE()"
+                    + " AND TABLE_NAME = 'tob_char' AND COLUMN_NAME = 'isCT'");
+            final boolean daCo = rs.next() && rs.getInt(1) > 0;
+            rs.close();
+            rs = null;
+            if (!daCo) {
+                stmt.execute("ALTER TABLE tob_char ADD COLUMN isCT int(11) NOT NULL DEFAULT 0");
+                System.out.println("[DB] Da them cot tob_char.isCT (cong tac Tat cai trang).");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                stmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
 
     /** Tao bang luu han muc neu chua co. Goi 1 lan luc khoi dong server. */
     public void createTableTrainLuong() {

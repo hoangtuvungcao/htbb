@@ -547,6 +547,9 @@ public class TeamServer {
         }
       
         Database.instance.createTableTrainLuong(); // bang luu han muc luong train quai theo ngay
+        // PHAI chay TRUOC khi nhan nguoi choi: saveChar ghi cot isCT, thieu cot thi lenh
+        // luu nem loi va nhanh bat loi cua no KHOA NHAN VAT. Xem themCotTatCaiTrang().
+        Database.instance.themCotTatCaiTrang();
         Database.startSaveChar();
         TeamServer.timeRemovePool = System.currentTimeMillis();
         System.out.println("Starting server...");
