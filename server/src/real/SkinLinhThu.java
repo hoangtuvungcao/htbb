@@ -131,6 +131,94 @@ public final class SkinLinhThu {
      */
     public static final int[] BAY = {0, 0, 0, 0, 0};
 
+    // ====================================================================================
+    //                              NOI TAI THUONG TRUC
+    // ====================================================================================
+
+    /**
+     * Chi so skin cong cho CHU NHAN, luon bat khi dang mang skin (khong ti le, khong
+     * hoi chieu). Thu tu moi bang khop thu tu skin 0..4 nhu TEN va ID_ITEM.
+     *
+     * VI SAO DE SO O DAY MA KHONG DE TRONG data_item.atb:
+     *   - So la CO DINH theo tung skin, khong quay ngau nhien theo tung mon do, nen no la
+     *     hang so cua tinh nang chu khong phai thuoc tinh cua vat pham.
+     *   - Duong atb cua trang bi thu bi loc theo TYPE o moi cho tinh chi so
+     *     (calculateAttack nhan 15/17, calculateDefend nhan 14/16/18) — type 30 roi ra
+     *     ngoai het, nen di duong do van phai sua tung cho. Sua thang o tung cho thi ro
+     *     rang hon la nhoi so vao DB roi van phai sua.
+     *   - De o day thi phep kiem doc duoc, va doi so khong phai chay SQL tren may chu.
+     *
+     * Hien thi cho nguoi choi di duong khac: xem SkinLinhThuMoTa (bang data_attribute da
+     * co san ten cho moi dong nay — 3 Chinh xac, 31 Xuyen giap, 33 Tang HP, 34 Tang MP,
+     * 81 Hap thu sat thuong).
+     */
+
+    /** Phuc Thu: cong thang vao maxhp / maxmp cua chu nhan. */
+    public static final int[] CONG_HP = {2000, 0, 0, 0, 0};
+    public static final int[] CONG_MP = {3000, 0, 0, 0, 0};
+
+    /**
+     * Gau Truc: cong thang vao diem chinh xac.
+     *
+     * LUU Y VE DO LON: Char.calculateAccurate lam (accurate1 + accurate2 + basic) / 7 roi
+     * CHAN TRAN O 99. Nen 200 diem o day thanh khoang 28 diem sau khi chia — dang ke chu
+     * khong phai vo nghia, nhung cung khong phai "+200" nhu nguoi choi doc thay. Day la
+     * cach ca game van tinh chinh xac, khong phai rieng skin.
+     */
+    public static final int[] CONG_CHINH_XAC = {0, 200, 0, 0, 0};
+
+    /**
+     * Xich Duong: xuyen giap, cong vao Char.attNguHanh[3].
+     *
+     * XUYEN GIAP O SERVER NAY LA TI LE CHU KHONG PHAI TRU GIAP: xem
+     * Char.getBuffEffAttack — no quay r.nextInt(100) < attNguHanh[3], trung thi don do
+     * BO QUA HOAN TOAN giap muc tieu (attackDam dat dam = att). Nen 5 = "5% so don bo
+     * qua giap", khong phai "giam 5% giap moi don".
+     */
+    public static final int[] PC_XUYEN_GIAP = {0, 0, 0, 5, 0};
+
+    /** Chien Lang: cong phan tram vao ca thu vat lan thu phep. */
+    public static final int[] PC_THU = {0, 0, 0, 0, 20};
+
+    /** Chien Lang: phan tram sat thuong bi hap thu truoc khi tru mau. */
+    public static final int[] PC_HAP_THU = {0, 0, 0, 0, 15};
+
+    /**
+     * Doc mot bang noi tai cho nhan vat nay. Tra 0 khi khong dang hien skin.
+     *
+     * Di qua dangMang() chu khong qua hopLe(idSkinLinhThu): noi tai phai tat cung luc voi
+     * hinh anh. Nguoi xuong thu, bang chu dang giu thanh, hay may chu thieu file anh thi
+     * khong thay con skin dau ca — cho ho chi so trong luc do la thuong cho thu ho khong
+     * he co.
+     */
+    private static int noiTai(final int[] bang, final Char p) {
+        return dangMang(p) ? bang[p.idSkinLinhThu] : 0;
+    }
+
+    public static int congHp(final Char p) {
+        return noiTai(CONG_HP, p);
+    }
+
+    public static int congMp(final Char p) {
+        return noiTai(CONG_MP, p);
+    }
+
+    public static int congChinhXac(final Char p) {
+        return noiTai(CONG_CHINH_XAC, p);
+    }
+
+    public static int pcXuyenGiap(final Char p) {
+        return noiTai(PC_XUYEN_GIAP, p);
+    }
+
+    public static int pcThu(final Char p) {
+        return noiTai(PC_THU, p);
+    }
+
+    public static int pcHapThu(final Char p) {
+        return noiTai(PC_HAP_THU, p);
+    }
+
     public static boolean hopLe(final int skin) {
         return skin >= 0 && skin < SO_SKIN;
     }

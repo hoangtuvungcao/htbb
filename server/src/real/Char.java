@@ -1156,7 +1156,22 @@ public class Char extends LiveActor {
         while (type < wItems.size()) {
             Item mItem = wItems.get(type);
             try {
-                if (mItem.heItem > -1) {
+                // RAO CHI SO: ben duoi tra groupKickAnimal[mItem.getType() - 14], ma mang
+                // do chi dai 5 (type 14..18). Vat pham SKIN LINH THU mang type 30 -> chi
+                // so 16 -> ArrayIndexOutOfBounds. Loi do roi vao catch rong ngay duoi nen
+                // no IM LANG: khong log gi, chi lang le bo qua phan con lai cua mon dang
+                // xet. Dung loai loi da tung lam hong createAnimalWearingMessage.
+                //
+                // Khong trong cay vao "skin luon co heItem = -1": heItem la truong cua
+                // TUNG MON chu khong phai cua template, va co nhieu duong gan no
+                // (ItemChangeColor, nang cap ngu hanh). Chan bang chinh do dai mang thi
+                // dung du sau nay them type moi vao bang trang bi thu.
+                //
+                // KHONG dung "continue": vong lap nay tang bien dem o CUOI than vong,
+                // continue se nhay qua dong do va treo may chu.
+                final int loaiTrangBiThu = mItem.getType() - 14;
+                if (mItem.heItem > -1
+                        && loaiTrangBiThu >= 0 && loaiTrangBiThu < groupKickAnimal.length) {
                     if (mItem.colorName == 1 && mItem.hangItem == 1
                             && mItem.plus == 15) {
                         this.isFullsetAnimal = (byte) (this.isFullsetAnimal + 1);
@@ -2072,6 +2087,16 @@ public class Char extends LiveActor {
         this.resetNguHanh();
         this.checkKickAtt5();
         this.checkKick5AttAnimal();
+        // SKIN LINH THU (Xich Duong): xuyen giap. PHAI dat sau resetNguHanh() —
+        // ham do cap phat lai attNguHanh moi lan chay, con calculateAttrib() thi chay
+        // lai moi lan mac/thao do. Cong truoc khi reset la mat, va neu ban than
+        // attNguHanh khong duoc reset thi "+=" o day se cong don khong gioi han roi
+        // tran kieu byte thanh so am (dung loi da xay ra voi this.speed, xem chu thich
+        // ben duoi). Cong sau reset + co reset that = an toan.
+        final int xuyenGiapSkin = SkinLinhThu.pcXuyenGiap(this);
+        if (xuyenGiapSkin > 0) {
+            this.attNguHanh[3] = (byte) Math.min(127, this.attNguHanh[3] + xuyenGiapSkin);
+        }
         this.coolDown = new short[CharManager.SKILL_COOLDOWN[this.charClass].length][11];
         // Than khi: "Tang toc do danh" = giam thoi gian hoi chieu. Ap ngay khi
         // dung bang coolDown nen moi noi kiem tra hoi chieu deu huong theo.
@@ -2523,6 +2548,10 @@ public class Char extends LiveActor {
                 }
             }
         }
+        // SKIN LINH THU (Gau Truc): vong lap tren chi duyet wItems (trang bi NHAN VAT),
+        // khong duyet getAnimalWearing() — nen vat pham skin nam trong bang trang bi thu
+        // khong bao gio duoc tinh o day. Phai cong rieng.
+        accurate2 += SkinLinhThu.congChinhXac(this);
         this.accurate = (short) ((accurate1 + accurate2 + this.basic) / 7);
         if (this.accurate >= 100) {
             this.accurate = 99;
@@ -2992,6 +3021,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
             }
         }
+        // SKIN LINH THU (Chien Lang): hap thu them mot phan sat thuong.
+        // PHAI dat SAU khoi hap thu cua thu cuoi o tren — khoi do dung "a = ..." (gan de)
+        // chu khong phai "a += ...", nen bat cu thu gi cong vao a truoc no deu bi xoa
+        // sach. (Do cung la ly do noi tai 3% cua Lan hien khong an khi dang cuoi mot con
+        // thu co dong att[9] — loi co san, khong phai do dong nay.)
+        a += finalDam * SkinLinhThu.pcHapThu(this) / 100;
         a += finalDam * this.getPcGiamSatThuong() / 100;
         if (a < 0) {
             a = 1;

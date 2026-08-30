@@ -146,6 +146,12 @@ class CharChiSo {
                 self.maxhp += 10000;     // Level 15: chỉ +10000
             }
         }
+        // SKIN LINH THU (Phuc Thu): cong THANG, dat SAU moi khoi nhan phan tram o tren
+        // (fullset, pet, noi luc chien truong, cai tao) va TRUOC hai dong chan hp/mp.
+        // Dat truoc cac khoi phan tram thi 2000 mau se bi nhan len theo, thanh nhieu hon
+        // con so ghi trong mo ta; dat sau hai dong chan thi hp co the vuot maxhp.
+        self.maxhp += SkinLinhThu.congHp(self);
+        self.maxmp += SkinLinhThu.congMp(self);
         if (self.hp > self.maxhp) {
             self.hp = self.maxhp;
         }
@@ -435,6 +441,18 @@ class CharChiSo {
             upMa += petUsing.getCanKhon()[1] + petUsing.getKienCo();
             upVat += petUsing.getKimCang()[1] + petUsing.getKienCo();
             upThuTbChar += petUsing.getHoThe();
+        }
+        // SKIN LINH THU (Chien Lang): "+20% thu cho chu nhan". Cong vao ca BON bo dem
+        // phan tram giong het cach rankGov/vip lam o tren: upVat/upMa ra thu hien trong
+        // bang nhan vat, upvP/upmP ra thu dung khi danh nhau voi nguoi choi
+        // (defendVatPlayer/defendMaPlayer, dong 516-517). Thieu cap sau thi nguoi choi
+        // thay +20% trong bang ma vao PK lai khong duoc gi.
+        final int pcThuSkin = SkinLinhThu.pcThu(self);
+        if (pcThuSkin > 0) {
+            upVat += pcThuSkin;
+            upMa += pcThuSkin;
+            upvP += pcThuSkin;
+            upmP += pcThuSkin;
         }
         self.defend_physic += upVat * self.defend_physic / 100;
         self.defend_magic += upMa * self.defend_magic / 100;

@@ -51,6 +51,7 @@ public final class KiemSkinLinhThu {
         kiemBoAnh();
         kiemCheChanNguoi();
         kiemDuongGoSkin();
+        kiemNoiTaiThuongTruc();
         kiemMangTraTheoType();
         kiemSoTypeTrangBiThu();
         kiemDaiIcon();
@@ -285,6 +286,124 @@ public final class KiemSkinLinhThu {
     }
 
     /**
+     * NOI TAI THUONG TRUC cua tung skin: so lieu, va CHO MOC vao ma nguon.
+     *
+     * Kiem hai tang, vi mot minh tang so lieu la vo dung: bang so co the dung y nguyen
+     * trong khi cho doc no da bi xoa mat trong mot lan don ma nao do — luc do skin im
+     * lang khong cong gi ma bo kiem van bao dat. Nen moi chi so deu duoc chot them mot
+     * lan o dung ham tinh chi so an no.
+     *
+     * Cac cho moc KHONG the goi that duoc tu day: chung deu can mot Char that (co Session
+     * + CSDL). Chot bang van ban ma nguon la thu manh nhat lam duoc trong gioi han do —
+     * no bat duoc viec xoa nham hoac doi ten ham, tuc dung loi that su de xay ra.
+     *
+     * TRAT TU cung duoc chot, khong chi su co mat: hai cho ben duoi ma dat sai vi tri thi
+     * chay dung cu phap nhung ra so sai (xem chu thich tung dong).
+     */
+    private static void kiemNoiTaiThuongTruc() {
+        Kiem.nhom("Skin linh thu - noi tai thuong truc (chi so)");
+
+        // ---- Tang 1: so lieu ----
+        final int[][] bang = {
+            real.SkinLinhThu.CONG_HP,
+            real.SkinLinhThu.CONG_MP,
+            real.SkinLinhThu.CONG_CHINH_XAC,
+            real.SkinLinhThu.PC_XUYEN_GIAP,
+            real.SkinLinhThu.PC_THU,
+            real.SkinLinhThu.PC_HAP_THU,
+        };
+        final String[] tenBang = {
+            "CONG_HP", "CONG_MP", "CONG_CHINH_XAC", "PC_XUYEN_GIAP", "PC_THU", "PC_HAP_THU",
+        };
+        for (int i = 0; i < bang.length; i++) {
+            Kiem.bang("mang " + tenBang[i] + " du " + real.SkinLinhThu.SO_SKIN + " phan tu",
+                    Integer.valueOf(real.SkinLinhThu.SO_SKIN), Integer.valueOf(bang[i].length));
+        }
+
+        // So lay tu ban mo ta nguoi choi dua. Doi so trong game thi phai doi ca o day —
+        // do la co y: khong ai sua duoc chi so ma quen mat ban mo ta da hua voi nguoi choi.
+        Kiem.bang("Phuc Thu +2000 HP", Integer.valueOf(2000),
+                Integer.valueOf(real.SkinLinhThu.CONG_HP[0]));
+        Kiem.bang("Phuc Thu +3000 MP", Integer.valueOf(3000),
+                Integer.valueOf(real.SkinLinhThu.CONG_MP[0]));
+        Kiem.bang("Gau Truc +200 chinh xac", Integer.valueOf(200),
+                Integer.valueOf(real.SkinLinhThu.CONG_CHINH_XAC[1]));
+        Kiem.bang("Xich Duong +5% xuyen giap", Integer.valueOf(5),
+                Integer.valueOf(real.SkinLinhThu.PC_XUYEN_GIAP[3]));
+        Kiem.bang("Chien Lang +20% thu", Integer.valueOf(20),
+                Integer.valueOf(real.SkinLinhThu.PC_THU[4]));
+        Kiem.bang("Chien Lang +15% hap thu", Integer.valueOf(15),
+                Integer.valueOf(real.SkinLinhThu.PC_HAP_THU[4]));
+
+        // Moi dong chi so chi thuoc ve DUNG MOT skin. Chan loi chep de: dan mot dong sang
+        // bang khac ma quen doi chi so thi bon skin con lai bong duoc thom lay.
+        final int[] chuSoHuu = {0, 0, 1, 3, 4, 4};
+        for (int i = 0; i < bang.length; i++) {
+            for (int s = 0; s < bang[i].length; s++) {
+                if (s == chuSoHuu[i]) {
+                    Kiem.dung(tenBang[i] + " co gia tri o skin " + s, bang[i][s] > 0);
+                } else {
+                    Kiem.bang(tenBang[i] + " phai bang 0 o skin " + s,
+                            Integer.valueOf(0), Integer.valueOf(bang[i][s]));
+                }
+            }
+        }
+
+        // ---- Tang 2: cho moc trong ma nguon ----
+        final String chiSo = doc("src/real/CharChiSo.java");
+        final String ch = doc("src/real/Char.java");
+
+        Kiem.dung("calculateMaxHPMP cong HP skin", chiSo.contains("self.maxhp += SkinLinhThu.congHp(self)"));
+        Kiem.dung("calculateMaxHPMP cong MP skin", chiSo.contains("self.maxmp += SkinLinhThu.congMp(self)"));
+        Kiem.dung("calculateDefend cong % thu skin", chiSo.contains("SkinLinhThu.pcThu(self)"));
+        Kiem.dung("calculateAccurate cong chinh xac skin",
+                ch.contains("accurate2 += SkinLinhThu.congChinhXac(this)"));
+        Kiem.dung("calculateAttrib cong xuyen giap skin", ch.contains("SkinLinhThu.pcXuyenGiap(this)"));
+        Kiem.dung("checkHapthuSatThuong cong % hap thu skin", ch.contains("SkinLinhThu.pcHapThu(this)"));
+
+        // % thu phai vao ca BON bo dem. Thieu upvP/upmP thi nguoi choi thay +20% trong
+        // bang nhan vat nhung vao danh nhau voi nguoi choi khac lai khong duoc gi
+        // (defendVatPlayer/defendMaPlayer tinh rieng bang hai bo dem do).
+        final int moc = chiSo.indexOf("SkinLinhThu.pcThu(self)");
+        final String khoiThu = moc < 0 ? "" : chiSo.substring(moc, Math.min(chiSo.length(), moc + 400));
+        Kiem.dung("% thu vao upVat", khoiThu.contains("upVat += pcThuSkin"));
+        Kiem.dung("% thu vao upMa", khoiThu.contains("upMa += pcThuSkin"));
+        Kiem.dung("% thu vao upvP (thu khi PK)", khoiThu.contains("upvP += pcThuSkin"));
+        Kiem.dung("% thu vao upmP (thu khi PK)", khoiThu.contains("upmP += pcThuSkin"));
+
+        // TRAT TU 1 — hap thu: khoi hap thu cua thu cuoi ngay tren dung "a = ..." (gan de)
+        // chu khong phai "a += ...". Dat dong skin TRUOC no la bi xoa sach, im lang.
+        final int ganDe = ch.indexOf("a = finalDam * (animalRide.att[9]");
+        final int hapThuSkin = ch.indexOf("SkinLinhThu.pcHapThu(this)");
+        Kiem.dung("hap thu skin nam SAU khoi gan de cua thu cuoi (khong thi bi xoa)",
+                ganDe > 0 && hapThuSkin > ganDe);
+
+        // TRAT TU 2 — HP/MP: phai cong SAU cac khoi nhan phan tram (fullset, pet, noi luc,
+        // cai tao). Cong truoc thi 2000 mau bi nhan len theo, ra nhieu hon con so da hua.
+        final int nhanNoiLuc = chiSo.indexOf("self.maxhp = (int) (self.maxhp * noiluc / 10L)");
+        final int congHp = chiSo.indexOf("self.maxhp += SkinLinhThu.congHp(self)");
+        Kiem.dung("cong HP skin nam SAU khoi nhan phan tram noi luc",
+                nhanNoiLuc > 0 && congHp > nhanNoiLuc);
+        // ... va TRUOC hai dong chan, khong thi hp co the vuot maxhp.
+        final int chanHp = chiSo.indexOf("if (self.hp > self.maxhp)");
+        Kiem.dung("cong HP skin nam TRUOC dong chan hp", chanHp > 0 && congHp < chanHp);
+
+        // ---- Rao chi so cua checkKick5AttAnimal ----
+        // groupKickAnimal chi dai 5 (type 14..18) ma skin mang type 30 -> chi so 16.
+        // Khong rao thi ArrayIndexOutOfBounds, va no roi vao mot catch RONG nen im lang.
+        Kiem.dung("groupKickAnimal van chi phu type 14..18",
+                ch.contains("groupKickAnimal = new byte[][]{{18}, {16}, {14}, {15}, {17}}"));
+        Kiem.dung("TYPE_ITEM cua skin nam NGOAI dai do (nen phai rao)",
+                real.SkinLinhThu.TYPE_ITEM - 14 >= 5);
+        Kiem.dung("checkKick5AttAnimal co rao chi so truoc khi tra bang",
+                ch.contains("loaiTrangBiThu >= 0 && loaiTrangBiThu < groupKickAnimal.length"));
+        // Rao bang "continue" se treo may chu: vong lap tang bien dem o CUOI than vong.
+        final int moc2 = ch.indexOf("public void checkKick5AttAnimal()");
+        final String khoiRao = moc2 < 0 ? "" : ch.substring(moc2, Math.min(ch.length(), moc2 + 2200));
+        Kiem.sai("rao KHONG dung continue (se treo vong lap)", khoiRao.contains("continue;"));
+    }
+
+    /**
      * Mang tra theo TYPE phia SERVER phai phu het dai type dang dung.
      *
      * Day la cho da tung vo that: Item.attribShowedForType dai 30, ma skin mang type 30,
@@ -309,12 +428,14 @@ public final class KiemSkinLinhThu {
                     real.Item.attribShowedForType[type] != null);
             Kiem.dung("hang " + type + " du 10 cot",
                     real.Item.attribShowedForType[type].length >= 10);
-            // Skin khong cong chi so nao nen khong duoc hien dong nao.
+            // Hang 30 phai de trong. Skin CO noi tai (xem kiemNoiTaiThuongTruc) nhung so
+            // cua no nam trong hang so cua real.SkinLinhThu chu KHONG nam trong atb cua
+            // vat pham — nen khong co dong atb nao de hien, va bat co len la hien so 0.
             boolean coHien = false;
             for (final boolean b : real.Item.attribShowedForType[type]) {
                 coHien = coHien || b;
             }
-            Kiem.sai("skin khong hien dong chi so nao (skin khong cong chi so)", coHien);
+            Kiem.sai("skin khong hien dong atb nao (noi tai khong nam trong atb)", coHien);
         }
         // Ca dai cot phai 30..34 deu phai an toan, khong rieng gi o dang dung.
         for (int t = 30; t <= 34; t++) {
