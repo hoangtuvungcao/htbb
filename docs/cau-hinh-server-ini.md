@@ -153,8 +153,10 @@ Toàn bộ phần đọc cấu hình nằm trong **một khối `try`**
 ném lỗi ngay tại dòng đó, và **mọi dòng phía sau không được đọc** — nhưng server **vẫn khởi
 động**, chạy với cấu hình dở dang.
 
-Ví dụ thật: xoá `limit.ccu` thì `sv.port` (đọc trước) vẫn đúng, còn **toàn bộ kết nối CSDL
-(đọc sau) không được đặt** — server bật lên nhưng không vào được.
+Ví dụ: xoá `limit.ccu` thì `sv.port` (đọc trước, dòng 409) vẫn đúng, còn **toàn bộ kết nối
+CSDL (đọc sau, dòng 418–421) không được đặt** — server bật lên nhưng không vào được. Thứ tự
+các dòng trong hàm quyết định cái gì sống sót, nên cùng một lỗi gõ nhầm có thể ra triệu
+chứng hoàn toàn khác nhau tuỳ khoá nào sai.
 
 Dấu hiệu duy nhất là dòng này trong log:
 
@@ -172,23 +174,41 @@ Không thấy dòng nào là đã đọc trọn file.
 
 ### Các khoá **bắt buộc phải có**
 
-Những khoá này đọc thẳng không có giá trị mặc định, thiếu là kích hoạt cạm bẫy ở trên:
+Chỉ những khoá đi qua `parseInt` / `parseByte` / `parseShort` mới ném lỗi khi thiếu — và
+chính chúng kích hoạt cạm bẫy ở trên. Đúng 23 khoá:
 
 ```
-api.sv  api.url  sv.port  limit.ccu  sv.server  sv.portnap  sv.LG  sv.range
-sv.pathLog  sv.iplogin  sv.portlogin  sv.EnableAvtiveCheck
-db.host  db.name  db.user  db.password  db.maxco
-db.nameNap  db.userNap  db.pass  db.maxNap
-db.host1  db.name1  db.user1  db.password1  db.maxco1
-sv.isSuKien*  (mọi khoá sự kiện)
+api.sv        sv.port      sv.server    sv.portnap   sv.portlogin
+limit.ccu     sv.LG        sv.range     sv.lang      sv.me
+sv.createRace sv.expvantieu sv.Luckyexp sv.ExpQua    sv.CodeTest
+sv.EnableAvtiveCheck        db.hour      db.minute
+sv.isSuKienTrungThul2016    sv.isSuKienTet2017       sv.isSuKienGioTo2016
+sv.isSuKienNoel2023         sv.isSuKienTetduonglich2024
 ```
 
-Các khoá ở mục 8 (trừ `limit.ccu`) và ở mục 4 thì **có mặc định**, xoá đi vẫn chạy.
+**Nhóm `db.*` thì khác**: chúng được đọc thô rồi truyền thẳng vào `Database.setLink(...)`,
+nên thiếu **không** ném lỗi ở đây — server vẫn bật, chỉ là không kết nối được CSDL. Triệu
+chứng khác hẳn (log lỗi kết nối chứ không phải *Load configuration file error*).
+
+Các khoá đọc thô khác, thiếu cũng không ném lỗi: `api.url`, `db.run`, `sv.dayrace`,
+`sv.iplogin`, `sv.pathLog`, `sv.tablerace`, `sv.thuNghiemThuCuoi`.
+
+Các khoá ở mục 4 và mục 8 (trừ `limit.ccu`) đều **có giá trị mặc định**, xoá đi vẫn chạy.
 
 ### `sv.isSuKien83` là khoá chết
 
 Nó có trong file nhưng **không được đọc ở đâu trong mã nguồn**. Đổi giá trị không có tác
-dụng gì. Các khoá `sv.isSuKien*` còn lại thì có thật.
+dụng gì. Năm khoá `sv.isSuKien*` còn lại thì có thật (và bắt buộc phải có).
+
+### Một khoá chẩn đoán không có sẵn trong file
+
+```ini
+sv.thuNghiemThuCuoi = tenNhanVat
+```
+
+Bật log chẩn đoán thú cưỡi cho **đúng một nhân vật** (so theo tên, không phân biệt
+hoa/thường). Để trống hoặc bỏ hẳn dòng = tắt. Dùng khi soi lỗi hình thú cưỡi / skin linh
+thú mà không muốn ngập log cả server. Phải khởi động lại mới có tác dụng.
 
 ### Đừng làm ba việc này
 

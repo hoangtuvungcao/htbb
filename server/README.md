@@ -185,6 +185,9 @@ pull file `.jar` có sẵn, nó **không** tự biên dịch `.java`.
 Hướng dẫn đầy đủ: [docs/HUONG_DAN_BUILD_VPS.md](docs/HUONG_DAN_BUILD_VPS.md) ·
 [docs/HUONG_DAN_VPS_FRP.md](docs/HUONG_DAN_VPS_FRP.md) · [web/README.md](web/README.md)
 
+Chỉnh cấu hình đang chạy (tỉ lệ rơi, giờ chiếm thành, quyền admin, chống flood):
+[docs/cau-hinh-server-ini.md](docs/cau-hinh-server-ini.md)
+
 ## Ràng buộc phải biết trước khi sửa cấu trúc
 
 Đây là những thứ **không di chuyển/đổi tên được**, đã kiểm chứng trực tiếp:

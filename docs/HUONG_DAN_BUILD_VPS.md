@@ -837,6 +837,13 @@ thẳng vào `/opt/kpah/server.ini`. Sửa tay file rồi gõ `setting` → `8` 
 cần restart. Nhớ file phải cho user `kpah` ghi được (`chown kpah:kpah /opt/kpah/server.ini`),
 nếu không thông báo trong game sẽ nói "CHƯA lưu được server.ini".
 
+**Chỉ 17 khoá nạp lại được**, mọi khoá khác bắt buộc `systemctl restart kpah-game`. Và một
+cạm bẫy phải biết: sai **một** dòng trong `server.ini` là **mọi dòng bên dưới bị bỏ qua**
+mà server vẫn khởi động, chạy với cấu hình dở dang — dấu hiệu duy nhất là dòng
+`Load configuration file error!` trong log.
+
+Bảng tra đầy đủ từng khoá: **[cau-hinh-server-ini.md](cau-hinh-server-ini.md)**.
+
 ---
 
 ## PHẦN I — Build lại jar **trên VPS** (nếu muốn sửa code ngay trên VPS)
