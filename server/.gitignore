@@ -113,10 +113,23 @@ out_tools/
 /update.txt
 /updateleaf.txt
 /check_gem.txt
+/errorlogPet.txt
+/datra4.txt
+/charWedding.txt
 # Luu nhan vat that bai o duong luu chinh -> DatabaseNhanVat.java:770 tao mot file
 # mang DUNG TEN NHAN VAT tai thu muc goc. Ten la du lieu chay nen khong liet ke
 # truoc duoc; vps/don-log.sh quet chung theo tuoi, con day chi lo phan git.
 # Khong dat "/*.txt" vi con map/help.txt, docs/*.txt... deu la file that su cua repo.
+
+# vps/kpah-logrotate.conf xoay vong nhom .txt goc tren day (muc 3 trong file do):
+# sinh them <ten>.txt.1.gz (so tang dan neu rotate > 1). KHONG liet ke tung ten
+# xoay vong o day - da tung thieu 3 file (errorlogPet.txt, datra4.txt,
+# charWedding.txt vua them o tren) vi logrotate.conf co file moi ma .gitignore
+# khong cap nhat theo. Hau qua: file .gz do hien untracked tren VPS, khien
+# vps/deploy-auto.sh tuong bi sua tay va tu choi deploy moi lan logrotate chay -
+# xem chu thich "Kiem tra repo co bi sua tay khong" trong file do. Dung mot mau
+# chung khong can dong bo hai danh sach tay nua.
+/*.txt.[0-9]*
 
 ### Thu muc bien dich tam cua test.bat ###
 /build/test-classes/
