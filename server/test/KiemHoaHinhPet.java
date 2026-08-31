@@ -154,15 +154,22 @@ public final class KiemHoaHinhPet {
     private static void quetVanBanNguon() {
         Kiem.nhom("Hoa hinh Pet - noi day UI (menu NPC, RealController, CharChiSo, Database)");
 
-        // Hoa hinh Pet dung MOT frame chung cho moi loai (map/d_effect/69.png,
-        // theo yeu cau admin 01/09/2026) - truoc do tung anh xa rieng theo loai
-        // (49-53, xem git log commit a081ee1/bc728bd cho lich su vu "pet bien
-        // mat" dan toi thiet ke do). Test nay khoa CA HAI dieu kien: code phai
-        // tra dung hang so ID_HIEU_UNG_HOA_HINH_PET, VA file anh 69.png phai
-        // that su ton tai tren dia (khong phai id rong khong co anh).
+        // Hoa hinh Pet dung MOT frame chung cho moi loai. Lich su bo cuc:
+        // 49-53 rieng theo loai (a081ee1) -> gop ve 69 chung (1d263ff, anh linh
+        // thu boc lua) -> PET MAT TICH (01/09/2026, nguoi choi bao lai) vi
+        // 69.png la anh VUONG 256x256 (luoi nhieu hang, dung cho he thong danh
+        // hieu tren dau nhan vat) trong khi truong nay can anh DAI HEP (cao gap
+        // doi rong tro len, giong 35/41/42/44 - cac id dung cho pet tien hoa
+        // thuong) vi getTotalFrame() (so khung cat) lay tu rieng
+        // Map.petTemplate, KHONG phu thuoc anh - anh sai bo cuc thi client cat
+        // sai khung va khong ve duoc pet. Quay lai id 49 (45x114, dung bo cuc).
+        // Test nay khoa BA dieu kien: code phai tra dung hang so
+        // ID_HIEU_UNG_HOA_HINH_PET, file anh phai TON TAI, VA anh phai DAI HEP
+        // (cao > rong) - thieu kiem tra hinh dang la dung y het loi 69 vua gap,
+        // vi 69.png cung ton tai va cung nang hon 1000 byte, chi SAI BO CUC.
         final String petJava = doc("src/data/Pet.java");
         Kiem.dung("doc duoc Pet.java", !petJava.isEmpty());
-        Kiem.dung("hang so ID_HIEU_UNG_HOA_HINH_PET = 69", petJava.contains("ID_HIEU_UNG_HOA_HINH_PET = 69"));
+        Kiem.dung("hang so ID_HIEU_UNG_HOA_HINH_PET = 49", petJava.contains("ID_HIEU_UNG_HOA_HINH_PET = 49"));
         final int dauHamEff = petJava.indexOf("public int getIdEffPet()");
         final int cuoiHamEff = petJava.indexOf("\n    }", dauHamEff);
         Kiem.dung("tim thay than ham getIdEffPet()", dauHamEff >= 0 && cuoiHamEff > dauHamEff);
@@ -175,9 +182,19 @@ public final class KiemHoaHinhPet {
                     && !thanEff.contains("return 51;") && !thanEff.contains("return 52;")
                     && !thanEff.contains("return 53;"));
         }
-        final java.io.File anh69 = new java.io.File("map/d_effect/69.png");
-        Kiem.dung("map/d_effect/69.png ton tai tren dia va khong rong",
-                anh69.isFile() && anh69.length() > 1000L);
+        final java.io.File anhHoaHinh = new java.io.File("map/d_effect/49.png");
+        Kiem.dung("map/d_effect/49.png ton tai tren dia va khong rong",
+                anhHoaHinh.isFile() && anhHoaHinh.length() > 1000L);
+        try {
+            final java.awt.image.BufferedImage anh = javax.imageio.ImageIO.read(anhHoaHinh);
+            Kiem.dung("map/d_effect/49.png doc duoc nhu anh PNG hop le", anh != null);
+            if (anh != null) {
+                Kiem.dung("map/d_effect/49.png la anh DAI HEP (cao > rong) - dung bo cuc pet hoa hinh, KHONG phai anh vuong nhu 69.png",
+                        anh.getHeight() > anh.getWidth());
+            }
+        } catch (final java.io.IOException e) {
+            Kiem.dung("doc duoc map/d_effect/49.png bang ImageIO (" + e + ")", false);
+        }
 
         final String menuNpc = doc("src/real/cmd/RequestNPCInfoHandler.java");
         Kiem.dung("doc duoc RequestNPCInfoHandler.java", !menuNpc.isEmpty());
@@ -204,6 +221,30 @@ public final class KiemHoaHinhPet {
         final String database = doc("src/data/Database.java");
         Kiem.dung("doc duoc Database.java", !database.isEmpty());
         Kiem.dung("getCharPet don hoa hinh het han luc nap nhan vat", database.contains("pet.endHoaHinhPet()"));
+
+        // getInfoSendUser() truoc day chi ghi "kháng xuyên giáp cấp N" ma khong
+        // noi ro N la giam bao nhieu % / ti le bao nhieu / hoi chieu bao lau -
+        // nguoi choi hoi lai (01/09/2026) vi khong biet cap 5 co gi. Sua bang
+        // cach dung CHUNG thongSoKhangXuyenGiap() voi applyKhangXuyenGiap() (da
+        // co test so 5-9 kiem tra dung gia tri qua lay mau thong ke), chi kiem
+        // THEM o day la getInfoSendUser() co IN cac con so do ra, khong test lai
+        // gia tri (khong the goi that getInfoSendUser() - can mot Item that lam
+        // itemPet, phu thuoc Map.itemTemplates khong nap duoc ngoai server that).
+        Kiem.dung("co ham dung chung thongSoKhangXuyenGiap(cap) giua thuc thi va hien thi",
+                petJava.contains("private static int[] thongSoKhangXuyenGiap("));
+        final int dauHamInfo = petJava.indexOf("public String getInfoSendUser()");
+        Kiem.dung("tim thay than ham getInfoSendUser()", dauHamInfo >= 0);
+        if (dauHamInfo >= 0) {
+            final String thanInfo = petJava.substring(dauHamInfo);
+            Kiem.dung("getInfoSendUser() goi thongSoKhangXuyenGiap() de lay so lieu hien thi",
+                    thanInfo.contains("thongSoKhangXuyenGiap(this.khangXuyenGiapCap)"));
+            Kiem.dung("dong hien thi co ghi ro giam bao nhieu % sat thuong",
+                    thanInfo.contains("giảm ") && thanInfo.contains("thongSo[0] + \"% sát thương"));
+            Kiem.dung("dong hien thi co ghi ro ti le kich hoat",
+                    thanInfo.contains("thongSo[1]") && thanInfo.contains("% cơ hội kích hoạt"));
+            Kiem.dung("dong hien thi co ghi ro hoi chieu",
+                    thanInfo.contains("hồi chiêu ") && thanInfo.contains("thongSo[2] + \"s)\""));
+        }
     }
 
     private static String doc(final String duong) {

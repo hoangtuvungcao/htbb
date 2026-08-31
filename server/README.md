@@ -462,28 +462,31 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   không hóa hình tiếp — dọn dữ liệu lúc đăng nhập lại (`Database.getCharPet`), không real-time.
   Xem [src/data/Pet.java](src/data/Pet.java) (`applyKhangXuyenGiap`), [src/real/RealController.java](src/real/RealController.java)
   (case 13 của `doCreateItem`), test [test/KiemHoaHinhPet.java](test/KiemHoaHinhPet.java).
-  Có đổi hình khi hoá hình: `getIdEffPet()` trả `ID_HIEU_UNG_HOA_HINH_PET` (= **69**, MỘT frame
-  dùng chung cho mọi loài pet — xem bên dưới), gửi qua `MessageCreator.java` làm trường hiển thị
+  Có đổi hình khi hoá hình: `getIdEffPet()` trả `ID_HIEU_UNG_HOA_HINH_PET` (= **49**, MỘT frame
+  dùng chung cho mọi loài pet), gửi qua `MessageCreator.java` thay thế `idImg` làm trường hiển thị
   chính cho pet đã tiến hoá (`TYPE_PET_TOOL`) trên session `version180`.
-  **Sự cố đã xảy ra và đã sửa (31/08/2026, hai lượt)**: lượt đầu bật tính năng lên thì pet
-  **biến mất khỏi màn hình** hoàn toàn sau khi hoá hình — người dùng báo lại. Đoán ban đầu là id
-  49–53 "chưa được client đăng ký" nên đã gỡ bỏ hẳn nhánh đổi hiệu ứng. Nhưng người dùng chỉ ra
-  đúng: **chưa xem kỹ project tham khảo**. Đối chiếu lại mới thấy `map/d_effect/49..53` trên repo
-  này vẫn là ảnh icon nhỏ gốc (30×13, không liên quan pet) — bản KPAH tham khảo đã **thay ảnh
-  mới** thành sprite hoá hình thật (kèm `*.bak_orig` lưu ảnh cũ, đối chiếu md5 khớp 100% với ảnh
-  cũ ở đây, xác nhận repo này chưa từng được cập nhật ảnh). Đã chép 10 file (`49`, `49.png`, ...,
-  `53`, `53.png`) từ project tham khảo sang `map/d_effect/`, xem lại bằng mắt (đúng là sprite
-  sinh vật — 49 rồng, 53 chim), rồi bật lại nhánh trong `getIdEffPet()` — vẫn re theo 5 loài lúc
-  đó (commit `a081ee1`).
-  **Đổi tiếp (01/09/2026)**: theo yêu cầu admin, thôi re theo loài — dùng CHUNG một frame có sẵn
-  là `map/d_effect/69.png` (ảnh linh thú bọc lửa) cho MỌI pet khi hoá hình. Frame 69 đang đồng
-  thời là ảnh của một danh hiệu (`CharSuKien.java`, giftcode loại `DH`, id `8769 = 69+8700`) —
-  dùng chung một ảnh cho hai tính năng khác nhau không xung đột kỹ thuật vì hai hệ thống gửi qua
-  hai trường mạng khác nhau (`getIdEffPet()` gửi id gốc 0–299, danh hiệu gửi id đã +8700), chỉ là
-  trùng hình nếu người chơi có cả hai cùng lúc. Vì `map/d_effect/` được gửi qua mạng lúc đăng nhập
-  (`DataGame.java` quét cả thư mục lúc khởi động server), **chỉ cần deploy server, không cần sửa
-  gì phía client**. Test `KiemHoaHinhPet.chay()` khoá cả hằng số lẫn sự tồn tại của file ảnh trên
-  đĩa.
+  **Ba sự cố đã xảy ra và đã sửa (31/08–01/09/2026)**: (1) lượt đầu bật tính năng lên thì pet
+  **biến mất khỏi màn hình** hoàn toàn sau khi hoá hình — đoán ban đầu là id 49–53 "chưa được
+  client đăng ký" nên gỡ bỏ hẳn nhánh đổi hiệu ứng; hoá ra `map/d_effect/49..53` trên repo này vẫn
+  là ảnh icon nhỏ gốc (30×13, không liên quan pet) — bản KPAH tham khảo đã thay ảnh mới thành
+  sprite hoá hình thật, đối chiếu md5 xác nhận repo này chưa từng cập nhật ảnh. Đã chép 10 file
+  (`49`, `49.png`, ..., `53`, `53.png`) từ project tham khảo sang, bật lại nhánh — lúc đó vẫn rẽ
+  theo 5 loài (commit `a081ee1`). (2) Theo yêu cầu admin, gộp về dùng CHUNG một frame — ban đầu
+  chọn `map/d_effect/69.png` có sẵn (ảnh linh thú bọc lửa) — nhưng **pet lại biến mất lần nữa**:
+  69.png là ảnh VUÔNG 256×256 (bố cục lưới nhiều hàng, dùng cho hệ thống danh hiệu trên đầu nhân
+  vật, giftcode `DH` id `8769 = 69+8700`), trong khi trường này cần ảnh DẢI HẸP ĐỨNG (cao gấp đôi
+  rộng trở lên — so 35: 45×114, 41: 58×117, 44: 62×96, đều là các id pet tiến hoá bình thường vẫn
+  dùng ổn định) vì `getTotalFrame()` (số khung cắt ảnh) lấy từ `Map.petTemplate[idTemplate].nFrame`
+  — một con số CỐ ĐỊNH theo loài pet, không phụ thuộc ảnh — nên ảnh sai tỉ lệ bị cắt lệch khung và
+  không vẽ được. (3) Vẫn muốn giữ đúng hình linh thú lửa: cắt 2 tư thế từ lưới sprite của 69.png,
+  resize về đúng 45×57/khung (khớp bố cục cũ của id 49), ghi đè `map/d_effect/49.png` — **giữ
+  nguyên file toạ độ khung `map/d_effect/49`** vì kích thước canvas không đổi. Không sửa trực tiếp
+  nội dung `69.png` vì đó là ảnh danh hiệu đang sống, đổi hình dạng sẽ ảnh hưởng danh hiệu id 8769.
+  Kết quả: đúng hình linh thú lửa admin muốn, đúng quy cách nên không còn làm mất pet. Vì
+  `map/d_effect/` được gửi qua mạng lúc đăng nhập (`DataGame.java` quét cả thư mục lúc khởi động
+  server), **chỉ cần deploy server, không cần sửa gì phía client**. Test `KiemHoaHinhPet.chay()`
+  khoá cả hằng số, sự tồn tại của file ảnh, LẪN hình dạng ảnh (cao > rộng) — thiếu kiểm tra hình
+  dạng là đúng y hệt lỗi (2) vừa gặp, vì ảnh sai bố cục vẫn tồn tại và vẫn nặng hơn ngưỡng byte.
 - **Hóa hình Thú lên 5 cấp** (nâng cấp tính năng hóa hình Thú có sẵn, cho khớp hệ thống Pet ở
   trên): cấp 1 (kích hoạt lần đầu, NPC "Luyện thú" idNpc `-6`) **giữ nguyên y hệt** hành vi cũ —
   30 lọ thuốc hoá hình (item 268), tỷ lệ 70%, có thể mất nguyên liệu mà thất bại. Cấp 2–5 (nâng

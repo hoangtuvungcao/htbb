@@ -213,18 +213,33 @@ public class Pet extends Actor {
     }
 
     /** Anh hoa hinh Pet: MOT hieu ung dung chung cho moi loai (khong rieng tung loai nua). */
-    private static final int ID_HIEU_UNG_HOA_HINH_PET = 69;
+    private static final int ID_HIEU_UNG_HOA_HINH_PET = 49;
 
     public int getIdEffPet() {
         // Lich su: id 49-53 (rieng tung loai) tung bi go roi bat lai trong cung
         // ngay 31/08/2026 sau khi phat hien anh cu chua duoc cap nhat (xem git
         // log commit a081ee1/bc728bd) - luc do ANH la van de, khong phai co che
-        // chon id theo loai. Nay theo yeu cau admin, doi hang sang dung CHUNG
-        // mot frame (map/d_effect/69.png, san co - anh linh thu boc lua, dang
-        // dung lam danh hieu id 8769 = 69+8700 o CharSuKien.java, dung chung
-        // anh cho hai tinh nang khac nhau khong xung dot vi khac truong gui).
-        // Vi map/d_effect gui qua mang o goi 26 (DataGame.java quet toan bo thu
-        // muc luc khoi dong server), CHỈ CAN DEPLOY SERVER, khong can sua client.
+        // chon id theo loai. Sau do doi thu sang dung CHUNG frame id 69
+        // (map/d_effect/69.png, anh linh thu boc lua dang dung lam danh hieu id
+        // 8769 = 69+8700 o CharSuKien.java) - NHUNG PET BI MAT TICH, vi 69.png
+        // la anh vuong 256x256 (bo cuc luoi nhieu hang, danh cho he thong danh
+        // hieu tren dau nhan vat), trong khi truong nay (thay the idImg cho pet
+        // TYPE_PET_TOOL, xem MessageCreator.java) doi mot DAI HEP DUNG - so sanh
+        // id 35 (45x114), 41 (58x117), 44 (62x96): deu cao gap doi rong, khong
+        // phai anh vuong. So khung cat anh (getTotalFrame(), lay tu
+        // Map.petTemplate[idTemplate].nFrame, KHONG phu thuoc anh nay) bi lech bo
+        // cuc, khien client cat sai va khong ve duoc pet. Da doi lai id 49 - MOT
+        // hieu ung chung cho moi loai, dung quy cach 45x114/2 khung nhu cu -
+        // NHUNG thay noi dung anh: cat 2 tu the tu luoi sprite cua 69.png (linh
+        // thu boc lua, dung crop+resize NEAREST_NEIGHBOR ve dung 45x57 moi
+        // khung, xem tool tam thoi da dung), giu NGUYEN file metadata "49" (toa
+        // do khung khong doi vi kich thuoc canvas khong doi) de khong lech bo
+        // cuc nhu vua gap voi 69. Ket qua: van la hinh linh thu lua admin muon,
+        // nhung dung dung quy cach nen khong con lam pet mat tich. KHONG dung
+        // truc tiep noi dung 69.png (dang la anh danh hieu song, doi hinh dang
+        // no se anh huong danh hieu id 8769). Vi map/d_effect gui qua mang o
+        // goi 26 (DataGame.java quet toan bo thu muc luc khoi dong server), CHỈ
+        // CAN DEPLOY SERVER, khong can sua client.
         if (this.itemPet != null) {
             if (this.idHoaHinhPet != -1 && !this.endHoaHinhPet()) {
                 return ID_HIEU_UNG_HOA_HINH_PET;
@@ -472,6 +487,23 @@ public class Pet extends Actor {
      * tu CharChiSo.applyThanKhiOnHit() moi khi pet nay dang duoc cuoi/su dung
      * va chu nhan bi tan cong.
      */
+    /**
+     * {giam % sat thuong khi proc, ti le proc %, hoi chieu giay} theo cap
+     * khang xuyen giap 1..5. Dung CHUNG giua applyKhangXuyenGiap() (thuc thi)
+     * va getInfoSendUser() (hien chi tiet cho nguoi choi xem) - truoc day chi
+     * co o applyKhangXuyenGiap(), nguoi choi thay "kháng xuyên giáp cấp 5"
+     * ma khong biet cu the la giam bao nhieu/ti le bao nhieu.
+     */
+    private static int[] thongSoKhangXuyenGiap(final int cap) {
+        switch (cap) {
+            case 1: return new int[]{5, 10, 100};
+            case 2: return new int[]{10, 10, 100};
+            case 3: return new int[]{15, 20, 80};
+            case 4: return new int[]{20, 20, 80};
+            default: return new int[]{25, 30, 60};
+        }
+    }
+
     public int applyKhangXuyenGiap(int finalDame) {
         if (this.khangXuyenGiapCap <= 0 || this.endHoaHinhPet()) {
             return finalDame;
@@ -480,36 +512,10 @@ public class Pet extends Actor {
             return finalDame;
         }
 
-        int reducePercent;
-        int chance;
-        long cooldownMs;
-        switch (this.khangXuyenGiapCap) {
-            case 1:
-                reducePercent = 5;
-                chance = 10;
-                cooldownMs = 100000L;
-                break;
-            case 2:
-                reducePercent = 10;
-                chance = 10;
-                cooldownMs = 100000L;
-                break;
-            case 3:
-                reducePercent = 15;
-                chance = 20;
-                cooldownMs = 80000L;
-                break;
-            case 4:
-                reducePercent = 20;
-                chance = 20;
-                cooldownMs = 80000L;
-                break;
-            default:
-                reducePercent = 25;
-                chance = 30;
-                cooldownMs = 60000L;
-                break;
-        }
+        final int[] thongSo = thongSoKhangXuyenGiap(this.khangXuyenGiapCap);
+        final int reducePercent = thongSo[0];
+        final int chance = thongSo[1];
+        final long cooldownMs = thongSo[2] * 1000L;
 
         if (Map.r.nextInt(100) >= chance) {
             return finalDame;
@@ -856,8 +862,11 @@ public class Pet extends Actor {
                 if (this.endHoaHinhPet()) {
                     info = info + " - ĐÃ HẾT HẠN, hoá hình lại để tiếp tục kháng xuyên giáp";
                 } else {
+                    final int[] thongSo = thongSoKhangXuyenGiap(this.khangXuyenGiapCap);
                     final long conLaiNgay = (this.timeEndHoaHinhPet - System.currentTimeMillis()) / (24L * 60L * 60000L);
                     info = info + ": kháng xuyên giáp cấp " + this.khangXuyenGiapCap
+                            + " (giảm " + thongSo[0] + "% sát thương, " + thongSo[1]
+                            + "% cơ hội kích hoạt mỗi đòn, hồi chiêu " + thongSo[2] + "s)"
                             + ", còn " + conLaiNgay + " ngày";
                 }
             }
