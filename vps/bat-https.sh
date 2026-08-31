@@ -169,16 +169,57 @@ cat > "$CONF_EP" <<'EOF'
 # nhu cu: voi chung chi tu ky, ep ca site la moi nguoi choi deu gap man hinh canh
 # bao do cua trinh duyet va phan lon se tuong server bi hack roi bo di.
 #
-# Dieu kien %{HTTPS} != on la thu chan vong lap chuyen huong vo tan - VirtualHost
-# 443 cung doc tep nay.
+# ---------------------------------------------------------------------------
+#  VI SAO LUAT NAY NAM TRONG <Directory> CHU KHONG O TANG SERVER
+# ---------------------------------------------------------------------------
+#  Ban dau viet o tang server (RewriteRule ^/kpah/admin ...). Apache nap tep,
+#  configtest bao Syntax OK, khong mot dong canh bao nao - va luat KHONG HE CHAY.
+#  Ly do: luat rewrite o tang server MAC DINH KHONG duoc VirtualHost ke thua
+#  (phai co RewriteOptions Inherit trong tung vhost). Moi yeu cau that deu do
+#  <VirtualHost *:80> phuc vu, nen luat o ngoai bi bo qua hoan toan.
+#
+#  <Directory> thi khac: no duoc gop vao moi vhost, nen dat o day la chay that.
+#  Da kiem tu ngoai Internet: http .../kpah/admin/ phai tra ve 301.
+#
+#  Ghi ca hai duong dan vi /var/www/html/kpah la symlink tro toi /opt/kpah/web:
+#  Apache so khop <Directory> theo duong dan THAT sau khi giai symlink, nhung ghi
+#  ca hai thi khong phu thuoc vao chuyen do nua.
+#
+#  Trong <Directory>, mau "^" khop moi thu, va %{REQUEST_URI} van la duong dan
+#  day du ke ca phan thu muc - nen khong phai dung lai tien to bang tay.
+#
+#  Dieu kien %{HTTPS} != on chan vong lap chuyen huong vo tan: VirtualHost 443
+#  cung gop tep nay.
 <IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteCond %{HTTPS} !=on
-    RewriteRule ^/kpah/admin https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+    <Directory /opt/kpah/web/admin>
+        RewriteEngine On
+        RewriteCond %{HTTPS} !=on
+        RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+    </Directory>
+    <Directory /var/www/html/kpah/admin>
+        RewriteEngine On
+        RewriteCond %{HTTPS} !=on
+        RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+    </Directory>
 </IfModule>
 EOF
 a2enconf kpah-admin-https >/dev/null 2>&1
 echo "      Xong. Trang cong khai cong 80 khong bi anh huong."
+
+# ---------------------------------------------------------------------------
+#  3b. Mo cong 443 tren tuong lua
+# ---------------------------------------------------------------------------
+# Thieu buoc nay thi Apache lang nghe 443 nhung khong ai ngoai Internet vao duoc,
+# va trieu chung rat de doan sai: tu TRONG may curl https://localhost tra ve 200
+# nen moi thu "trong nhu da chay". Da dinh dung cai nay mot lan.
+if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "^Status: active"; then
+    if ufw status 2>/dev/null | grep -qE "^443/tcp\s+ALLOW"; then
+        echo "      Tuong lua: 443/tcp da mo san."
+    else
+        ufw allow 443/tcp >/dev/null 2>&1
+        echo "      Tuong lua: da mo 443/tcp."
+    fi
+fi
 
 # ---------------------------------------------------------------------------
 #  4. Kiem tra cau hinh TRUOC khi nap lai
