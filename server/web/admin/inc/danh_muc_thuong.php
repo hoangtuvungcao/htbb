@@ -52,7 +52,24 @@
  *     khối bắt lỗi để ra hành vi mong muốn là thứ đổi nghĩa ngay lần ai đó sửa
  *     chỗ đó. Bộ chọn LUÔN ghi đủ bốn phần để ý định nằm trong chuỗi.
  *
- *  2. PT GHI THẲNG VÀO MẢNG, KHÔNG KIỂM BIÊN.
+ *  2. TRỨNG PHƯỢNG HOÀNG DÙNG `PT`, KHÔNG DÙNG `EGG` — dù tên loại kia là "trứng".
+ *
+ *     `EGG:loai:soLuong` gọi `Char.createTrungPhuongHoang()`, mà hàm đó chỉ làm
+ *     đúng một việc: `++potions[n]` cho BỐN giá trị loai.
+ *
+ *         loai 16 -> potions[86]  "Phượng hoàng"
+ *         loai 17 -> potions[70]  "Trứng phượng hoàng băng"
+ *         loai 18 -> potions[71]  "Trứng Hoả kỳ lân"
+ *         loai 19 -> potions[111] "Sách kỹ năng pet"  <-- không phải trứng
+ *
+ *     Nên `EGG:17:1` và `PT:70:1` làm y hệt nhau. Chọn `PT` vì nó hơn ở ba điểm:
+ *       - đủ MỌI id, không chỉ bốn cái;
+ *       - `EGG` KHÔNG có nhánh else, nên loai ngoài 16..19 thì người chơi không
+ *         nhận gì mà vẫn thấy "Chúc mừng… nhận được trứng phượng hoàng";
+ *       - `EGG` không gửi `createCharInventoryMessage`, nên hành trang không tự
+ *         làm mới — người chơi phải vào lại game mới thấy quà. `PT` thì gửi.
+ *
+ *  3. PT GHI THẲNG VÀO MẢNG, KHÔNG KIỂM BIÊN.
  *
  *         player.potions[idGem] = player.potions[idGem] + soluong;
  *
@@ -297,10 +314,11 @@ function dmDanhMuc(PDO $game): array
     }
     if ($trungThuoc) {
         $dm['trung_thuoc'] = [
-            'ten'    => 'Trứng trong ô thuốc',
+            'ten'    => 'Trứng phượng hoàng / hoả kỳ lân / đương khang…',
             'loai'   => 'PT',
-            'ghiChu' => 'Trứng phượng hoàng / hoả kỳ lân / đương khang… nằm ở data_potion, '
-                      . 'nên dùng loại PT chứ không phải ITEM.',
+            'ghiChu' => 'Mấy loại trứng này KHÔNG phải vật phẩm trong hành trang — trong '
+                      . 'game chúng là ô thuốc (data_item không có dòng nào tên phượng '
+                      . 'hoàng cả). Nên phải dùng loại PT, không phải ITEM.',
             'muc'    => $trungThuoc,
         ];
     }

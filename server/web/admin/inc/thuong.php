@@ -24,7 +24,15 @@ function loaiThuong(): array
         'PT'        => [3, 'PT:idBinh:soLuong',            'Bình / vật phẩm trong ô potion'],
         'PET'       => [4, 'PET:id:soLuong:thoiHan',       'Thú nuôi có thời hạn'],
         'PETV'      => [2, 'PETV:id',                      'Thú nuôi vĩnh viễn'],
-        'EGG'       => [3, 'EGG:loai:soLuong',             'Trứng phượng hoàng'],
+        // Tên loại này gây hiểu sai, nên ghi rõ ra đây. createTrungPhuongHoang() chỉ
+        // làm đúng một việc: ++potions[n] cho BỐN giá trị loai, và không có nhánh else —
+        // loai khác thì người chơi KHÔNG nhận gì mà vẫn thấy "Chúc mừng… nhận được trứng
+        // phượng hoàng". Nó cũng không gửi createCharInventoryMessage nên hành trang
+        // không tự làm mới. Dùng PT:<id>:<số lượng> thì vừa đủ mọi id vừa làm mới đúng.
+        'EGG'       => [3, 'EGG:loai:soLuong',
+            'Chỉ 4 loại: 16 = Phượng hoàng, 17 = Trứng PH băng, 18 = Trứng hoả kỳ lân, '
+            . '19 = Sách kỹ năng pet (không phải trứng). Loại khác: không nhận gì. '
+            . 'Nên dùng PT thay thế'],
         'DH'        => [4, 'DH:idDanhHieu:soLuong:thoiHan','Danh hiệu; id 0 = ngẫu nhiên'],
         'DANHHIEU2' => [4, 'DANHHIEU2:id:soLuong:thoiHan', 'Danh hiệu (bản 2)'],
         'HLT'       => [3, 'HLT:id:soLuong',               'Huyết linh thảo'],

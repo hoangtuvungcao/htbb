@@ -290,6 +290,40 @@ ktDung('danh muc thuoc bo dong khong ten',
     strpos($dmFile, "name <> ") !== false);
 
 // ===========================================================================
+echo "\n== Trung phuong hoang phai dung PT, KHONG dung EGG\n";
+// ===========================================================================
+// EGG:loai:soLuong goi Char.createTrungPhuongHoang(), ham do KHONG co nhanh else -
+// loai ngoai 16..19 thi nguoi choi khong nhan gi ma van thay "Chuc mung... nhan duoc
+// trung phuong hoang". No cung khong gui createCharInventoryMessage nen hanh trang
+// khong tu lam moi. PT lam dung ca hai viec do va nhan MOI id, khong chi bon cai.
+$dmNhom = null;
+$rf = new ReflectionFunction('dmDanhMuc');
+// Khong goi dmDanhMuc that (can PDO). Chi kiem tra bang cach doc ma nguon: nhom
+// "trung_thuoc" phai gan loai 'PT', tuyet doi khong duoc la 'EGG'.
+ktDung("nhom trung trong o thuoc gan loai 'PT'",
+    (bool)preg_match("/\\\$dm\\['trung_thuoc'\\]\\s*=\\s*\\[[^\\]]*'loai'\\s*=>\\s*'PT'/s", $dmFile));
+ktDung("khong nhom nao trong danh_muc_thuong.php dung loai 'EGG'",
+    strpos($dmFile, "'loai' => 'EGG'") === false && strpos($dmFile, "=> 'EGG'") === false);
+
+// Doi chieu voi chinh Char.java: bon anh xa nay phai con dung, khong thi ghi chu
+// giai thich o tren sai theo.
+$charJava = (string)@file_get_contents($GOC . 'src/real/Char.java');
+ktDung('idPH 16 -> potions[86] (Phuong hoang)',
+    strpos($charJava, 'idPH == 16') !== false && strpos($charJava, 'n = 86') !== false);
+ktDung('idPH 17 -> potions[70] (Trung PH bang)',
+    strpos($charJava, 'idPH == 17') !== false && strpos($charJava, 'n2 = 70') !== false);
+ktDung('idPH 18 -> potions[71] (Trung hoa ky lan)',
+    strpos($charJava, 'idPH == 18') !== false && strpos($charJava, 'n2 = 71') !== false);
+// Cat rieng THAN ham createTrungPhuongHoang() ra roi moi tim trong do - tim tren ca
+// tep se an vao chinh cau chu thich giai thich dieu nay, lam phep kiem luon "dat"
+// bat ke ma nguon that su lam gi.
+$viTriHam = strpos($charJava, 'public void createTrungPhuongHoang');
+ktDung('tim thay ham createTrungPhuongHoang trong Char.java', $viTriHam !== false);
+$thanHam = $viTriHam !== false ? substr($charJava, $viTriHam, 1200) : '';
+ktDung('createTrungPhuongHoang KHONG lam moi hanh trang (khong goi createCharInventoryMessage)',
+    $thanHam !== '' && strpos($thanHam, 'createCharInventoryMessage') === false);
+
+// ===========================================================================
 echo "\n===================================\n";
 if ($hong === 0) {
     echo "DAT: $dat kiem tra\n";
