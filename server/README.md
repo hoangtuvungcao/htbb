@@ -487,6 +487,54 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   vào chuỗi cột `att` có sẵn (giống cách `KHANG_DONG_BANG`/... từng được thêm trước đây), **không
   ALTER TABLE**. Xem [src/data/Animal.java](src/data/Animal.java) (`doHoaHinh`,
   `applyKhangXuyenGiap`), test [test/KiemHoaHinhThu.java](test/KiemHoaHinhThu.java).
+- **Tinh Luyện Thần Binh — xem vũ khí trước khi chọn nguyên liệu**: bấm mục menu NPC (`-8`)
+  trước đây nhảy THẲNG vào ô chọn nguyên liệu, không cho xem chỉ số/% tinh luyện hiện tại của vũ
+  khí đang mặc. Nay thêm một bước trung gian: menu gửi một "shop" chỉ chứa đúng vũ khí thần binh
+  đang mặc (type 7) để xem, bấm "Tiếp tục" mới mở danh sách nguyên liệu thật — xem
+  [src/real/RealController.java](src/real/RealController.java) (case 8) và
+  [src/real/Map.java](src/real/Map.java) (`doBuyItemShopNew`, nhánh `type == 7`).
+  Nhân tiện phát hiện và sửa một chỗ **lệch dữ liệu có sẵn từ trước**: nhánh `type == 6` (dựng hộp
+  thoại xác nhận "Bạn có muốn dùng X để tinh luyện Y") tự lọc nguyên liệu riêng bằng một mảng
+  `validMaterialIDs` cứng, KHÔNG có trường hợp mốc 99% (`locNguyenLieuTinhLuyen()` đòi nguyên liệu
+  phải CAO HƠN trang bị ở mốc này) và hiện giá SAI (500 lượng, không trừ xu) so với lúc THỰC THI
+  thật (`idpopup` 124: 1 lượng + 3.000.000 xu) — khiến chỉ số nguyên liệu người chơi gửi về có thể
+  trỏ sang MÓN KHÁC trong danh sách dùng để thực thi. Đã đổi sang dùng chung
+  `locNguyenLieuTinhLuyen()` và đồng bộ giá tiền. Test:
+  [test/KiemTinhLuyenThanBinh.java](test/KiemTinhLuyenThanBinh.java).
+- **Xu rơi quá ít khi đánh quái level cao — lỗi tràn số**: `Potion.quantity` là kiểu `short` (giới
+  hạn giao thức: `Char`/`Map`/`MapClan` gửi nó về client bằng `dos.writeShort(...)`, tối đa
+  32767), nhưng `Monster.java` tính số xu rơi ra từ `rcvgold` của quái (có con tới hàng trăm
+  nghìn/hàng triệu trong `data_monster`, ví dụ Dracula 10.000.000) rồi ép thẳng `(short)` KHÔNG
+  kẹp biên — quái càng mạnh, số xu tính ra càng dễ VƯỢT 32767 và **tràn thành số nhỏ, có khi ÂM**
+  (vd 40000 tràn thành −25536, nghĩa là nhặt xu lại bị TRỪ xu; phần thưởng đặc biệt 1.000.000 của
+  quái ma `idGhost` tràn còn 16960). Đây là gốc thật của cảm giác "quái mạnh mà xu rơi ít" — không
+  phải do tỷ lệ rơi (`Monster.PC_TILE_XU`, xem mục cấu hình admin bên dưới). Sửa bằng cách kẹp số
+  lượng về `[0, Short.MAX_VALUE]` ngay trong constructor `Potion` — xem
+  [src/real/Potion.java](src/real/Potion.java), test
+  [test/KiemTranXuRoi.java](test/KiemTranXuRoi.java). Do giới hạn giao thức là CỨNG (client chỉ
+  đọc 2 byte), quái cực mạnh vẫn chỉ nhận tối đa 32767 xu MỖI MÓN rơi ra — nếu muốn phần thưởng
+  cao hơn nữa cho boss, cách làm sẵn có trong chính `Monster.java` (nhánh quái ma) là RẢI NHIỀU
+  món 32767 thay vì một món khổng lồ, chưa áp dụng cho quái thường vì đổi cách rơi (nhiều vật
+  phẩm trên đất thay vì một) là thay đổi lớn hơn, chưa rõ có phải điều muốn hay không.
+  Tỷ lệ rơi xu (CHANCE quái có rơi xu không, khác với SỐ LƯỢNG rơi bao nhiêu — mục trên) đã là
+  công tắc admin có sẵn: `Monster.PC_TILE_XU` (mặc định 10, tức 10% tỷ lệ gốc — CHỈ áp dụng cho
+  quái thường lúc train, không ảnh hưởng boss/quest/tiêu), chỉnh trực tiếp trong game (menu admin
+  → `xuLyDrop`/`xuLyLenh` lệnh `5`) hoặc `server.ini` khoá `sv.tileXu`, lưu lại ngay không cần
+  build lại — xem [src/real/AdminMenu.java](src/real/AdminMenu.java).
+- **Dọn rác trong log `game.out`**: `vps/kpah-logrotate.conf` đã lo xoay vòng theo dung lượng/thời
+  gian (30 ngày, tối đa 20MB/file) — vấn đề là NỘI DUNG, không phải dung lượng. Hai nhóm gây rác
+  nhiều nhất: (1) [src/io/Session.java](src/io/Session.java) in đầy đủ stack trace mỗi khi gửi dữ
+  liệu cho client thất bại — mà nguyên nhân phổ biến nhất là "socket đã đóng" (client vừa ngắt kết
+  nối), xảy ra ở MỌI lần logout/đổi map/rớt mạng, tức RẤT thường xuyên trong một game online; nay
+  chỉ in 1 dòng gọn thay vì cả stack trace, không đổi logic xử lý kết nối. (2) Ba vòng lặp cập
+  nhật bản đồ chạy mãi cho MỖI map (`real/Map.java` — `updateWind`/`update` — và
+  `real/MapVongLap.java` — `updateSand`) in TRÙNG (cả `printStackTrace()` lẫn một dòng
+  `println` cho CÙNG một lỗi) và không có gì chặn lặp lại — nếu lỗi thật sự xảy ra sẽ lặp vô hạn
+  mỗi 300ms cho tới khi restart server; nay chỉ báo lỗi **1 lần cho cả server** (giữ đầy đủ stack
+  trace ở lần báo đó để còn debug được), giống đúng cách `data.GhiSoOnline.baoLoiMotLan()` đã làm
+  sẵn cho một vòng lặp khác. Test: [test/KiemDonLog.java](test/KiemDonLog.java). Chưa động tới
+  hơn 50 chỗ `e.printStackTrace()` rải rác trong `Char.java` (đường xử lý hành động người chơi) —
+  phạm vi quá rộng để sửa an toàn trong một lượt, để lại cho lần sau nếu cần.
 
 **Lưu ý quan trọng**: mỗi lần push lên nhánh `main` sẽ tự động deploy lên VPS sản
 xuất (`.github/workflows/deploy.yml`). Đổi `KPAH2_patched.jar`, `lib/`, `map/`,

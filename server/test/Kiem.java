@@ -99,6 +99,9 @@ public final class Kiem {
         KiemHoaHinhPet.chay();
         KiemHoaHinhThu.chay();
         KiemSoLuongItemGiftcode.chay();
+        KiemTranXuRoi.chay();
+        KiemTinhLuyenThanBinh.chay();
+        KiemDonLog.chay();
         KiemBangMaNguon.chay();
 
         final int ma = tongKet();

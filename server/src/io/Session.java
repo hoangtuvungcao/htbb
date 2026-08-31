@@ -293,7 +293,13 @@ public class Session extends Thread {
                 this.sender.sendMessage(m, 8);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // Loi thuong gap nhat o day la socket da dong (client vua ngat ket
+            // noi) - xay ra RAT thuong xuyen trong mot game online (moi lan
+            // logout/doi map/rot mang). In ca stack trace bien log thanh rac,
+            // ngap that su nhung loi can chu y (logrotate chi lo dung luong,
+            // khong lo NOI DUNG). Chi in 1 dong. Ap dung cung kieu cho hai cho
+            // khac trong file nay (sendMessageLogin, Sender.run).
+            System.out.println("Session.sendMessage: loi gui du lieu (co the client da ngat ket noi) - " + e);
         }
 
     }
@@ -421,7 +427,7 @@ public class Session extends Thread {
                     os.flush();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("Session.sendMessageLogin: loi gui du lieu (co the client da ngat ket noi) - " + e);
             }
 
         }
@@ -502,7 +508,7 @@ public class Session extends Thread {
 
                         os.flush();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.out.println("Session.Sender.run: loi gui du lieu (co the client da ngat ket noi) - " + e);
                         if (os == null) {
                             break;
                         }

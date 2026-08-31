@@ -20,6 +20,12 @@ import util.Logger;
  */
 class MapVongLap {
 
+    // Vong lap "RUN MAP" (updateSand) chay MAI cho MOI map. Neu co loi, no
+    // lap lai moi Map.DELAY_UPDATE_MAP (300ms) - in day du stack trace moi
+    // lan se ngap log ngay lap tuc. Chi bao 1 lan cho ca server, giong
+    // GhiSoOnline.baoLoiMotLan (va real.Map.daBaoLoiRunMapWind/Update).
+    private static boolean daBaoLoiRunMapSand = false;
+
     static void startSendInfoAdv() {
         Map.loadRuongMaQuai();
         Map.loadThungGo();
@@ -1034,8 +1040,11 @@ class MapVongLap {
 
                         map.map_run_state = 1;
                     } catch (Exception var5) {
-                        var5.printStackTrace();
-                        System.out.println("LOI TRONG HAM RUN MAP " + var5.toString());
+                        if (!daBaoLoiRunMapSand) {
+                            daBaoLoiRunMapSand = true;
+                            System.out.println("LOI TRONG HAM RUN MAP (updateSand, chi bao 1 lan - lap lai se ngap log):");
+                            var5.printStackTrace();
+                        }
                     }
 
                     try {

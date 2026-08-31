@@ -982,6 +982,12 @@ public class Map implements Runnable {
     static byte[] X_FOWARD;
     static byte[] Y_FOWARD;
     public static long DELAY_UPDATE_MAP;
+    // Hai vong lap "RUN MAP" (updateWind/update) chay MAI cho MOI map. Neu co
+    // loi, no lap lai moi DELAY_UPDATE_MAP (300ms) cho toi khi server tat -
+    // in day du stack trace moi lan se ngap log ngay lap tuc. Chi bao 1 lan
+    // cho ca server (dung chung giua cac map), giong GhiSoOnline.baoLoiMotLan.
+    private static boolean daBaoLoiRunMapWind = false;
+    private static boolean daBaoLoiRunMapUpdate = false;
     Object LOCK = new Object();
     Object LOCK2 = new Object();
     Object LOCK1 = new Object();
@@ -7711,44 +7717,31 @@ public class Map implements Runnable {
                         return;
                     }
             
-                    if (player.getLuong() <500) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 500 lượng để tinh luyện", ""));
+                    if (player.getLuong() < 1) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 1 lượng để tinh luyện", ""));
                         return;
                     }
-            
-                 
-                    
-            
-                    // Lấy danh sách đã lọc
-                    Vector filteredItems = new Vector();
-                    int equipLevel = player.itemVukhiThoiTrang.level;
-                    int equipType = player.itemVukhiThoiTrang.getTemplate().type;
-                    int[] validMaterialIDs = {421,408,447,434,460,422,409,448,435,461,423,410,449,436,462,424,411,450,437,463,425,412,451,438,464,893,894,895,896,897};
-                    
-                    // Lọc lại danh sách items hợp lệ
-                    for (int i = 0; i < player.iItems.size(); i++) {
-                        Item item = (Item)player.iItems.elementAt(i);
-                        boolean isValidMaterial = false;
-                        for (int materialID : validMaterialIDs) {
-                            if (item.tempateID == materialID) {
-                                isValidMaterial = true;
-                                break;
-                            }
-                        }
-                        
-                        if (isValidMaterial && 
-                            Math.abs(item.level - equipLevel) <= 10 &&
-                            item.getTemplate().type == equipType) {
-                            filteredItems.addElement(item);
-                        }
+
+                    if (player.getxu() < 3000000) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần có 3.000.000 Xu để tinh luyện", ""));
+                        return;
                     }
-            
+
+                    // Dung CHUNG locNguyenLieuTinhLuyen() voi luc HIEN danh sach va luc
+                    // THUC THI (idpopup 124) - xem chu thich o dinh nghia ham do. Truoc
+                    // day cho nay tu loc rieng bang validMaterialIDs, thieu truong hop
+                    // moc 99% (locNguyenLieuTinhLuyen doi nguyen lieu phai CAO HON trang
+                    // bi) va hien gia sai (500 luong, khong tru xu) so voi luc thuc thi
+                    // that (1 luong + 3 trieu xu) - khien shopIndex nguoi choi gui ve co
+                    // the tro sang MON KHAC trong danh sach that su duoc dung de thuc thi.
+                    Vector<Item> filteredItems = locNguyenLieuTinhLuyen(player);
+
                     // Kiểm tra index hợp lệ
                     if (shopIndex < 0 || shopIndex >= filteredItems.size()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Nguyên liệu không hợp lệ", ""));
                         return;
                     }
-            
+
                     // Lấy item được chọn từ danh sách đã lọc
                     Item selectedItem = (Item)filteredItems.elementAt(shopIndex);
                   
@@ -7765,12 +7758,49 @@ public class Map implements Runnable {
                     );
 
                     player.sendMessage(MessageCreator.createMsgPopUp(shopIndex, 124, popupMsg));
-                                
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            else if (type == -10000) 
+            else if (type == 7)
+            {
+                // Buoc "xem vu khi than binh dang mac" truoc khi mo danh sach nguyen
+                // lieu (RealController.doCreateItem, muc menu "Tinh Luyện Thần Binh",
+                // gui shop nay voi type 7). Shop chi co dung 1 item nen khong can doc
+                // shopIndex nguoi choi chon - chi validate lai dieu kien (phong khi
+                // trang bi/luong/xu da doi giua luc mo shop nay va luc bam Tiep tuc)
+                // roi moi mo tiep danh sach nguyen lieu that.
+                try {
+                    if (!player.checkVuKhiThanBinh()) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                player.daTinhLuyenToiDa()
+                                        ? "Vũ khí thần binh này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
+                                        : "Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
+                        return;
+                    }
+
+                    if (player.itemVukhiThoiTrang.TinhLuyen >= 100) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Cấp độ tinh luyện đã đạt cấp tối đa", ""));
+                        return;
+                    }
+
+                    if (player.getLuong() < 1) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 1 lượng để tinh luyện", ""));
+                        return;
+                    }
+
+                    if (player.getxu() < 3000000) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần có 3.000.000 Xu để tinh luyện", ""));
+                        return;
+                    }
+
+                    showTinhLuyenMaterialList(player);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            else if (type == -10000)
             {
                 // if (player.vip <= 0) {
                 //     player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ điều kiện mua rương nguyên liệu.", ""));
@@ -16386,8 +16416,11 @@ public class Map implements Runnable {
 
                             Map.this.map_run_state2 = 1;
                         } catch (Exception var5) {
-                            var5.printStackTrace();
-                            System.out.println("LOI TRONG HAM RUN MAP " + var5.toString());
+                            if (!daBaoLoiRunMapWind) {
+                                daBaoLoiRunMapWind = true;
+                                System.out.println("LOI TRONG HAM RUN MAP (updateWind, chi bao 1 lan - lap lai se ngap log):");
+                                var5.printStackTrace();
+                            }
                         }
 
                         try {
@@ -16479,8 +16512,11 @@ public class Map implements Runnable {
 
                     this.map_run_state1 = 1;
                 } catch (Exception var5) {
-                    var5.printStackTrace();
-                    System.out.println("LOI TRONG HAM RUN MAP " + var5.toString());
+                    if (!daBaoLoiRunMapUpdate) {
+                        daBaoLoiRunMapUpdate = true;
+                        System.out.println("LOI TRONG HAM RUN MAP (update, chi bao 1 lan - lap lai se ngap log):");
+                        var5.printStackTrace();
+                    }
                 }
 
                 try {

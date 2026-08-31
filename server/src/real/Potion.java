@@ -154,7 +154,16 @@ public class Potion extends Actor
         this.belongUser = 0;
         this.type = 0;
         this.type = type;
-        this.quantity = (short)quantity;
+        // quantity duoc goi tren day xuong client bang dos.writeShort(...) (xem
+        // Char/Map/MapClan doNhat...), tuc gioi han cung cua giao thuc la 2 byte
+        // co dau: toi da 32767. Truoc day (short)quantity CAT THANG khong kep,
+        // nen mon xu roi cua quai mau rcvgold lon (co con toi hang tram nghin/
+        // hang trieu trong data_monster) hoac phan thuong dac biet cua quai ma
+        // (Map.idGhost, dat cung 1000000 o Monster.doDropXu) bi TRAN SO AM/rac
+        // sau khi chia ti le - nguoi choi giet quai cang manh cang de nhat duoc
+        // so xu vo nghia (co khi am, tuc mat xu khi nhat). Kep ve bien an toan
+        // thay vi de tran.
+        this.quantity = (short) Math.max(0, Math.min(quantity, Short.MAX_VALUE));
         this.map = map;
     }
     

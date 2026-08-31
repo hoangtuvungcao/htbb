@@ -1786,49 +1786,14 @@ public class RealController extends ServerController {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn còn thiếu nguyên liệu: " + player.getNguyenLieuTL(), ""));
                             return;
                         }
-                    
-                        // Tạo danh sách mới chỉ chứa các item phù hợp
-                        Vector filteredItems = new Vector();
-                        int equipLevel = player.itemVukhiThoiTrang.level;
-                        int equipType = player.itemVukhiThoiTrang.getTemplate().type;
-                        
-                        // Valid material IDs từ CheckNguyenLieuTL
-                        int[] validMaterialIDs = {421,408,447,434,460,422,409,448,435,461,423,410,449,436,462,424,411,450,437,463,425,412,451,438,464,893,894,895,896,897};
-                        
-                        // Lọc items từ rương người chơi
-                        for (int i = 0; i < player.iItems.size(); i++) {
-                            Item item = (Item)player.iItems.elementAt(i);
-                            
-                            // Kiểm tra ID có trong danh sách nguyên liệu hợp lệ
-                            boolean isValidMaterial = false;
-                            for (int materialID : validMaterialIDs) {
-                                if (item.tempateID == materialID) {
-                                    isValidMaterial = true;
-                                    break;
-                                }
-                            }
-                            
-                            // Thêm item nếu thỏa mãn điều kiện
-                            if (isValidMaterial) {
-                                if (player.itemVukhiThoiTrang.TinhLuyen == 99) {
-                                    // Ở cấp 99, nguyên liệu phải cao hơn 0-10 level
-                                    if (item.level > equipLevel && 
-                                        item.level - equipLevel <= 10 &&
-                                        item.getTemplate().type == equipType) {
-                                        filteredItems.addElement(item);
-                                    }
-                                } else {
-                                    // Các cấp khác cho phép ±10 level
-                                    if (Math.abs(item.level - equipLevel) <= 10 &&
-                                        item.getTemplate().type == equipType) {
-                                        filteredItems.addElement(item);
-                                    }
-                                }
-                            }
-                        }
-                    
-                        // Hiển thị shop với danh sách đã lọc
-                        player.sendMessage(MessageCreator.createMessageShopNew(player, filteredItems, "Chọn", "Nguyên liệu", 6));
+
+                        // Hien vu khi than binh dang mac truoc de nguoi choi xem chi so
+                        // hien tai, thay vi nhay thang vao o chon nguyen lieu nhu truoc day.
+                        // Bam "Tiep tuc" o shop nay (type 7) moi thuc su mo danh sach
+                        // nguyen lieu that - xem Map.doBuyItemShopNew, nhanh type == 7.
+                        final Vector<Item> vuKhiDangMac = new Vector<>();
+                        vuKhiDangMac.addElement(player.itemVukhiThoiTrang);
+                        player.sendMessage(MessageCreator.createMessageShopNew(player, vuKhiDangMac, "Tiếp tục", "Vũ Khí Thần Binh", 7));
                         return;
                         case 9:
                         if (!player.checkVuKhiThanBinh()) {
