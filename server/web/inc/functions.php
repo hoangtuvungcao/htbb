@@ -2,6 +2,38 @@
 require_once __DIR__ . '/db.php';
 
 if (session_status() === PHP_SESSION_NONE) {
+    /*
+     * Cứng hoá cookie phiên TRƯỚC khi mở phiên — đặt sau session_start() thì
+     * cookie đã gửi đi rồi, không sửa được nữa.
+     *
+     *  httponly : JavaScript không đọc được cookie. Một lỗi XSS ở bất kỳ trang
+     *             nào trong web/ (kể cả trang giới thiệu) sẽ không đánh cắp
+     *             được phiên admin đang mở ở tab khác.
+     *  samesite : trình duyệt không gửi cookie theo yêu cầu từ site khác. Đây là
+     *             lớp thứ hai sau token CSRF — token bảo vệ form, cờ này bảo vệ
+     *             cả những đường mà form không đi qua. 'Lax' chứ không 'Strict'
+     *             vì Strict làm mất phiên khi bấm link từ ngoài vào.
+     *  secure   : CHỈ đặt khi đang thật sự chạy HTTPS. Đặt cứng thành true trên
+     *             máy chủ còn HTTP là trình duyệt không gửi cookie nữa và không
+     *             ai đăng nhập được — kể cả bạn.
+     */
+    $dangHttps = (($_SERVER['HTTPS'] ?? '') !== '' && ($_SERVER['HTTPS'] ?? '') !== 'off')
+        || (int)($_SERVER['SERVER_PORT'] ?? 0) === 443
+        || strtolower((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
+
+    if (PHP_SAPI !== 'cli') {
+        // Chống "session fixation": bỏ qua mã phiên do người gửi tự nghĩ ra thay
+        // vì nhận lấy rồi dùng luôn. Kẻ tấn công không thể dúi trước một mã phiên
+        // rồi đợi bạn đăng nhập vào chính mã đó.
+        @ini_set('session.use_strict_mode', '1');
+        @session_set_cookie_params([
+            'lifetime' => 0,
+            'path'     => '/',
+            'httponly' => true,
+            'samesite' => 'Lax',
+            'secure'   => $dangHttps,
+        ]);
+    }
     session_start();
 }
 

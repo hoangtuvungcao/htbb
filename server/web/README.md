@@ -78,7 +78,58 @@ phép kiểm tra khác (cửa sổ dài hơn) trên cùng hành động vẫn c�
 - Đã dùng **PDO prepared statement** (chống SQL injection) và **CSRF token** cho form.
 - Hàm `PASSWORD()` của MySQL là băm yếu, nhưng **bắt buộc dùng** để khớp login server hiện tại.
   Nếu sau này bạn nâng cấp cơ chế đăng nhập của server, hãy đổi cả hai nơi cho đồng bộ.
+- Cookie phiên đặt `HttpOnly` + `SameSite=Lax`, và `Secure` **khi đang chạy HTTPS**
+  (`web/inc/functions.php`). Không đặt cứng `Secure=true`: trên máy chủ còn HTTP thì
+  trình duyệt sẽ không gửi cookie nữa và **không ai đăng nhập được**, kể cả bạn.
 - Để người ngoài truy cập: mở cổng 80 (Apache) và trỏ tên miền / IP public vào máy.
+
+### Bảo vệ khu quản trị
+
+Ẩn đường dẫn `/admin` **không phải** một lớp bảo vệ — máy quét thư mục tìm ra trong
+vài giây. Hai thứ thật sự chặn được:
+
+**1. HTTPS.** Nếu máy chủ chỉ mở cổng 80, mỗi lần đăng nhập admin thì tên và mật khẩu
+đi qua Internet dưới dạng chữ thường; ai trên đường truyền cũng đọc được. Đây là cách
+thông tin đăng nhập admin bị lộ trong thực tế. Bật:
+
+```bash
+sudo /opt/kpah/vps/bat-https.sh                  # chứng chỉ tự ký (theo IP)
+sudo /opt/kpah/vps/bat-https.sh admin.abc.com    # chứng chỉ thật (Let's Encrypt)
+```
+
+Script chỉ **thêm** cổng 443 và chỉ ép HTTPS cho `/kpah/admin` — trang công khai của
+người chơi vẫn chạy cổng 80, nên không người chơi nào gặp cảnh báo chứng chỉ.
+
+**2. Xác thực hai bước (TOTP).** Biết mật khẩu vẫn chưa vào được: phải có thêm mã 6 số
+từ điện thoại, đổi 30 giây một lần, mỗi mã dùng **đúng một lần**.
+
+```bash
+cd /opt/kpah
+sudo -u www-data php web/admin/tao_ma_2buoc.php <tên tài khoản>   # ghi danh
+sudo -u www-data php web/admin/tao_ma_2buoc.php --danh-sach       # xem ai đã bật
+```
+
+**Ghi danh chỉ làm được qua SSH, cố ý như vậy.** Nếu để người gõ đúng mật khẩu tự ghi
+danh trên web thì kẻ trộm được mật khẩu cũng tự ghi danh được bằng điện thoại của nó —
+lúc đó 2FA không chặn ai cả, chỉ thêm một bước cho chủ nhà. Web **không có** đường nào
+tạo hay đổi khoá bí mật, và `kiem_hai_buoc.php` có một phép kiểm giữ đúng điều đó.
+
+Ghi danh xong cho tất cả người trong `ADMIN_ACCOUNTS` thì thêm vào `config.local.php`:
+
+```php
+define('ADMIN_2FA_BAT_BUOC', true);
+```
+
+Từ đó tài khoản nào chưa có khoá là **không vào được**, kể cả đúng mật khẩu. Chưa đặt
+dòng này thì người chưa ghi danh vẫn vào được chỉ bằng mật khẩu — **đừng dừng ở bước
+ghi danh**. Trang Tổng quan hiện cảnh báo đỏ cho tới khi cả hai việc trên xong.
+
+**Mất điện thoại:** dùng một trong 8 mã dự phòng in ra lúc ghi danh (mỗi mã một lần).
+Hết mã thì vào máy chủ bằng SSH, `DELETE FROM web_admin_2fa WHERE admin_user='tên';`
+rồi ghi danh lại. Có SSH là luôn còn đường về, nên **không cần cửa hậu nào trên web**.
+
+Mã sai bị tính vào bộ đếm khoá 8 lần / 15 phút y như mật khẩu sai. Bắt buộc phải vậy:
+mã chỉ có sáu chữ số, không đếm thì một script dò được cả dải trong vài giờ.
 
 ## Thông tin database: đọc thẳng từ `server.ini`
 
@@ -368,6 +419,7 @@ web/
     ├── assets/admin.css  # Toàn bộ giao diện khu quản trị — tự đủ, không dùng style.css
     ├── inc/
     │   ├── boot.php    # Đăng nhập, phân quyền, ghi nhật ký, chặn dò mật khẩu
+    │   ├── hai_buoc.php # Xác thực hai bước TOTP (RFC 6238), mã dự phòng
     │   ├── layout.php  # Khung trang (menu trái + thanh trên) + biểu đồ thuần CSS
     │   └── thuong.php  # Bảng 60 loại phần thưởng + kiểm tra cú pháp giftcode
     └── test/           # Kiểm thử, không cần MySQL
@@ -379,6 +431,7 @@ web/
         ├── kiem_log_online.php
         ├── kiem_vatpham.php
         ├── kiem_giao_dien.php
+        ├── kiem_hai_buoc.php
         └── chan_doan_ket_noi.php
 ```
 
@@ -402,6 +455,7 @@ php web/admin/test/kiem_doc_log.php    # hàm đọc phần cuối file log
 php web/admin/test/kiem_log_online.php # log số người online: đối chiếu cột Java <-> PHP
 php web/admin/test/kiem_vatpham.php    # bộ đọc vật phẩm: đối chiếu vị trí trường với Item.java
 php web/admin/test/kiem_giao_dien.php  # mọi lớp CSS các trang dùng đều phải có định nghĩa
+php web/admin/test/kiem_hai_buoc.php   # TOTP hai bước: đối chiếu vector chính thức RFC 6238
 
 # Chẩn đoán lỗi kết nối database — chạy TRÊN MÁY CHỦ, chỉ bằng dòng lệnh
 sudo -u www-data php web/admin/test/chan_doan_ket_noi.php

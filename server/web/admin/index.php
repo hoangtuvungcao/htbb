@@ -6,14 +6,113 @@
  * Đã đăng nhập    -> thống kê tài khoản / nhân vật / giftcode.
  */
 require_once __DIR__ . '/inc/layout.php';
+require_once __DIR__ . '/inc/hai_buoc.php';
 
 $loi = [];
 $tenDaGo = '';
 
+/**
+ * Phiên "đã đúng mật khẩu, đang chờ mã hai bước" sống được bao lâu (giây).
+ *
+ * Ngắn là cố ý. Trạng thái này nằm giữa hai cánh cửa: mật khẩu đã đúng rồi. Để
+ * nó treo cả tiếng trên một máy công cộng là để sẵn nửa lượt đăng nhập cho người
+ * ngồi vào sau.
+ */
+const CHO_2FA_HAN = 300;
+
+/** Đang chờ gõ mã hai bước cho ai, hoặc null. Tự hết hạn. */
+function cho2fa(): ?array
+{
+    $c = $_SESSION['kpah_cho_2fa'] ?? null;
+    if (!$c) {
+        return null;
+    }
+    if (time() - (int)($c['luc'] ?? 0) > CHO_2FA_HAN) {
+        unset($_SESSION['kpah_cho_2fa']);
+        return null;
+    }
+    return $c;
+}
+
+/** Đóng phiên chờ và mở phiên admin thật. */
+function vaoDuoc(array $tk, string $cach): void
+{
+    unset($_SESSION['kpah_cho_2fa']);
+    session_regenerate_id(true);
+    $_SESSION['kpah_admin'] = [
+        'id'       => (int)$tk['id'],
+        'username' => (string)$tk['username'],
+        'last'     => time(),
+    ];
+    ghiNhatKy('dang_nhap', (string)$tk['username'], 'vào trang quản trị (' . $cach . ')');
+    header('Location: index.php');
+    exit;
+}
+
 // ---------------------------------------------------------------------------
 //  Đăng nhập
 // ---------------------------------------------------------------------------
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser()) {
+// Bấm "Đăng nhập bằng tài khoản khác" ở bước hai.
+if (isset($_GET['huy_2fa'])) {
+    unset($_SESSION['kpah_cho_2fa']);
+    header('Location: index.php');
+    exit;
+}
+
+// ---------------------------------------------------------------------------
+//  Bước HAI: đã đúng mật khẩu, đang chờ mã 6 số
+// ---------------------------------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser() && cho2fa() !== null) {
+    $cho = (array)cho2fa();
+    if (!csrfCheck($_POST['csrf'] ?? null)) {
+        $loi[] = 'Phiên làm việc hết hạn, hãy đăng nhập lại.';
+    } elseif (dangBiChanDoSai()) {
+        $loi[] = 'Đã gõ sai quá nhiều lần. Chờ 15 phút rồi thử lại.';
+    } else {
+        $maGoVao = trim((string)($_POST['ma2b'] ?? ''));
+        $ten = (string)$cho['username'];
+        $d = hbDong($ten);
+
+        if ($d === null || (int)$d['kich_hoat'] !== 1) {
+            // Khoá bị gỡ giữa lúc đang đăng nhập (ai đó chạy DELETE để cứu tài
+            // khoản). Bắt đầu lại từ đầu chứ không cho đi tiếp — phiên chờ này
+            // được tạo dựa trên một điều kiện giờ không còn đúng.
+            unset($_SESSION['kpah_cho_2fa']);
+            $loi[] = 'Thiết lập hai bước của tài khoản này vừa thay đổi. Hãy đăng nhập lại.';
+        } else {
+            $buoc = hbKiemMa((string)$d['khoa_bimat'], $maGoVao, (int)$d['buoc_da_dung']);
+            if ($buoc !== null) {
+                hbGhiBuocDaDung($ten, $buoc);
+                vaoDuoc(['id' => $cho['id'], 'username' => $ten], 'mã hai bước');
+            }
+
+            // Không phải mã 6 số thì thử xem có phải mã dự phòng không.
+            $conLai = hbDungMaDuPhong((string)($d['ma_du_phong'] ?? ''), $maGoVao);
+            if ($conLai !== null) {
+                hbGhiMaDuPhong($ten, $conLai);
+                $soConLai = 0;
+                foreach (explode("\n", $conLai) as $b) {
+                    if (trim($b) !== '') {
+                        $soConLai++;
+                    }
+                }
+                ghiNhatKy('2fa_ma_du_phong', $ten, 'dùng một mã dự phòng, còn lại ' . $soConLai);
+                vaoDuoc(['id' => $cho['id'], 'username' => $ten], 'mã dự phòng');
+            }
+
+            // SAI MÃ = MỘT LẦN GÕ SAI. Bắt buộc phải đếm: mã chỉ có 6 chữ số, tức
+            // một triệu khả năng. Không tính vào bộ đếm khoá thì một script dò
+            // được cả dải trong vài giờ, và 2FA thành đồ trang trí.
+            ghiNhatKyDangNhapThatBai($ten, 'sai mã hai bước');
+            $loi[] = 'Mã không đúng. Kiểm tra lại đồng hồ điện thoại, hoặc dùng một mã dự phòng.';
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+//  Bước MỘT: tên tài khoản + mật khẩu
+// ---------------------------------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser() && cho2fa() === null) {
     if (!csrfCheck($_POST['csrf'] ?? null)) {
         $loi[] = 'Phiên làm việc hết hạn, hãy thử lại.';
     } elseif (dangBiChanDoSai()) {
@@ -46,16 +145,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser()) {
                 } elseif ((int)$row['ban'] === 1) {
                     ghiNhatKyDangNhapThatBai($tenDaGo, 'tài khoản admin đang bị khoá');
                     $loi[] = 'Tài khoản này đang bị khoá.';
-                } else {
+                } elseif (hbDaGhiDanh((string)$row['username'])) {
+                    // Mật khẩu đúng, nhưng CHƯA vào được. Phiên chờ này không phải
+                    // phiên admin: requireAdmin() chỉ đọc $_SESSION['kpah_admin'],
+                    // nên mọi trang khác vẫn đá về đây.
                     session_regenerate_id(true);
-                    $_SESSION['kpah_admin'] = [
+                    $_SESSION['kpah_cho_2fa'] = [
                         'id'       => (int)$row['id'],
                         'username' => (string)$row['username'],
-                        'last'     => time(),
+                        'luc'      => time(),
                     ];
-                    ghiNhatKy('dang_nhap', (string)$row['username'], 'vào trang quản trị');
                     header('Location: index.php');
                     exit;
+                } elseif (hbBatBuocTatCa()) {
+                    // ADMIN_2FA_BAT_BUOC = true: đúng mật khẩu vẫn không đủ.
+                    ghiNhatKyDangNhapThatBai($tenDaGo, 'chưa ghi danh hai bước mà đang bắt buộc');
+                    $loi[] = 'Tài khoản này chưa bật xác thực hai bước, và máy chủ đang bắt buộc. '
+                           . 'Ghi danh trên máy chủ trước: php web/admin/tao_ma_2buoc.php ' . $tenDaGo;
+                } else {
+                    vaoDuoc($row, 'chỉ mật khẩu — CHƯA bật hai bước');
                 }
             } catch (Throwable $ex) {
                 // Khối này bắt CẢ hai loại lỗi, và chúng cần cách sửa khác hẳn nhau:
@@ -84,6 +192,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser()) {
 // ---------------------------------------------------------------------------
 //  Chưa đăng nhập -> form
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+//  Chưa đăng nhập, đã đúng mật khẩu -> form gõ mã hai bước
+// ---------------------------------------------------------------------------
+if (!adminUser() && cho2fa() !== null) {
+    $cho = (array)cho2fa();
+    $conLai = hbSoMaDuPhongConLai((string)$cho['username']);
+    adminHead('tongquan', 'Mã hai bước');
+    ?>
+        <div class="auth-card">
+            <div class="auth-mark">🔐</div>
+            <h1 class="auth-title">Mã hai bước</h1>
+            <p class="auth-sub">Mở ứng dụng xác thực và gõ mã 6 số của
+               <strong><?= e((string)$cho['username']) ?></strong>.</p>
+
+            <?php foreach ($loi as $l): ?>
+                <div class="flash flash-error"><?= e($l) ?></div>
+            <?php endforeach; ?>
+
+            <form method="post" action="index.php" autocomplete="off">
+                <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+                <label>Mã 6 số
+                    <?php /* inputmode=numeric để điện thoại mở sẵn bàn số. Không đặt
+                             type=number: nó cắt mất số 0 ở đầu và thêm mũi tên tăng giảm. */ ?>
+                    <input type="text" name="ma2b" required autofocus
+                           inputmode="numeric" autocomplete="one-time-code"
+                           pattern="[0-9 -]*" maxlength="12" placeholder="123456">
+                </label>
+                <button type="submit" class="btn btn-primary btn-block">Vào</button>
+            </form>
+
+            <p class="muted small" style="margin-top:14px;">
+                Mất điện thoại? Gõ một trong 8 <strong>mã dự phòng</strong> vào ô trên
+                (<?= so($conLai) ?> mã còn lại) — mỗi mã dùng đúng một lần.
+                <?php if ($conLai === 0): ?>
+                    <br><strong>Đã hết mã dự phòng.</strong> Vào máy chủ bằng SSH và chạy
+                    <code>DELETE FROM web_admin_2fa WHERE admin_user='<?= e((string)$cho['username']) ?>';</code>
+                    rồi ghi danh lại.
+                <?php endif; ?>
+            </p>
+            <p class="muted small">
+                <a href="index.php?huy_2fa=1">Đăng nhập bằng tài khoản khác</a>
+            </p>
+        </div>
+    <?php
+    adminFoot();
+    exit;
+}
+
 if (!adminUser()) {
     adminHead('tongquan', 'Đăng nhập quản trị');
     ?>
@@ -327,6 +483,58 @@ adminHead('tongquan', 'Tổng quan');
         <a href="giftcode.php" class="btn btn-primary btn-nho">Tạo giftcode</a>
     </div>
 </div>
+
+<?php
+// ---------------------------------------------------------------------------
+//  Cảnh báo an toàn đăng nhập
+// ---------------------------------------------------------------------------
+// Hai lỗ này không hiện ra ở đâu khác: trang vẫn chạy tốt, vẫn đăng nhập được,
+// vẫn đẹp. Chúng chỉ lộ ra vào hôm có người lấy được mật khẩu. Nên phải nói ngay
+// trên trang đầu, mỗi lần mở, cho tới khi được sửa.
+$chayHttps = (($_SERVER['HTTPS'] ?? '') !== '' && ($_SERVER['HTTPS'] ?? '') !== 'off')
+    || (int)($_SERVER['SERVER_PORT'] ?? 0) === 443
+    || strtolower((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
+$daBat2fa = hbDaGhiDanh(adminName());
+$conMaDuPhong = $daBat2fa ? hbSoMaDuPhongConLai(adminName()) : 0;
+?>
+
+<?php if (!$chayHttps): ?>
+    <div class="luuy">
+        <p><strong>Trang này đang chạy trên HTTP, không có mã hoá.</strong>
+           Mỗi lần bạn đăng nhập, tên và mật khẩu đi qua Internet dưới dạng chữ thường —
+           bất kỳ ai trên đường truyền (wifi công cộng, nhà mạng, nhà cung cấp máy chủ)
+           đọc được nguyên văn. Đây là cách thông tin đăng nhập admin bị lộ trong thực tế,
+           và nó không liên quan gì tới việc đường dẫn <code>/admin</code> có bí mật hay không.</p>
+        <p class="small">Sửa: bật HTTPS trên máy chủ — <code>sudo /opt/kpah/vps/bat-https.sh</code>.
+           Xem <a href="chandoan.php">Chẩn đoán</a> để biết máy chủ đang mở những cổng nào.</p>
+    </div>
+<?php endif; ?>
+
+<?php if (!$daBat2fa): ?>
+    <div class="luuy">
+        <p><strong>Tài khoản <?= e(adminName()) ?> chưa bật xác thực hai bước.</strong>
+           Hiện tại chỉ cần biết mật khẩu là vào được đây — kể cả người không phải bạn.</p>
+        <p class="small">Bật bằng lệnh chạy trên máy chủ (khoá bí mật không đi qua web, cố ý như vậy):</p>
+        <p><code>cd /opt/kpah &amp;&amp; sudo -u www-data php web/admin/tao_ma_2buoc.php <?= e(adminName()) ?></code></p>
+        <?php if (!hbBatBuocTatCa()): ?>
+            <p class="small">Ghi danh xong cho tất cả người trong <code>ADMIN_ACCOUNTS</code> thì thêm
+               <code>define('ADMIN_2FA_BAT_BUOC', true);</code> vào <code>web/config.local.php</code> —
+               chưa có dòng đó thì người chưa ghi danh vẫn vào được chỉ bằng mật khẩu.</p>
+        <?php endif; ?>
+    </div>
+<?php elseif ($conMaDuPhong === 0): ?>
+    <div class="luuy">
+        <p><strong>Đã hết mã dự phòng.</strong> Nếu mất điện thoại lúc này thì bạn phải vào máy chủ
+           bằng SSH mới lấy lại được quyền quản trị.</p>
+        <p class="small">Sinh bộ mã mới (khoá cũ sẽ bị thay, phải quét lại trên điện thoại):
+           <code>sudo -u www-data php web/admin/tao_ma_2buoc.php <?= e(adminName()) ?></code></p>
+    </div>
+<?php elseif ($conMaDuPhong <= 2): ?>
+    <div class="luuy">
+        <p><strong>Chỉ còn <?= so($conMaDuPhong) ?> mã dự phòng.</strong>
+           Hết mã thì mất điện thoại là phải dùng SSH để vào lại.</p>
+    </div>
+<?php endif; ?>
 
 <h3 class="muted small" style="letter-spacing:1px;text-transform:uppercase;">Người chơi online</h3>
 <?php if (!$onCoBang): ?>
