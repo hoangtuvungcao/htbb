@@ -88,6 +88,7 @@ public final class Kiem {
         KiemLocBiMat.chay();
         KiemChiTietThuoc.chay();
         KiemIconSkinThu.chay();
+        KiemDanhMucNgoc.chay();
         KiemSuKien.chay();
         KiemLichSuKien.chay();
         KiemSuKienWorldCup.chay();

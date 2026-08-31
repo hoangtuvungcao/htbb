@@ -131,6 +131,64 @@ rồi ghi danh lại. Có SSH là luôn còn đường về, nên **không cần
 Mã sai bị tính vào bộ đếm khoá 8 lần / 15 phút y như mật khẩu sai. Bắt buộc phải vậy:
 mã chỉ có sáu chữ số, không đếm thì một script dò được cả dải trong vài giờ.
 
+## Bộ chọn vật phẩm của trang Giftcode
+
+Ô "Phần thưởng vật phẩm" trước đây là một ô trống, phải tự nhớ id — không nhớ được là
+không tạo được mã. Mà id nằm rải ở **ba** nguồn khác nhau:
+
+| Nguồn | Số dòng | Loại thưởng |
+|---|---|---|
+| `data_item` | 914 | `ITEM` |
+| `data_potion` | 162 | `PT` |
+| `Map.gemTemplate` — **ghi cứng trong Java, không có trong CSDL** | 270 | `GEM` |
+
+Riêng "trứng" đã nằm ở cả ba: trứng thú là `data_item` type 26, trứng linh thú là type
+21, còn trứng phượng hoàng / hoả kỳ lân / đương khang / bạch cốt / lân sư tử lại là
+`data_potion`.
+
+**Bộ chọn là bộ sinh chuỗi, không phải đường đi riêng.** Nó ghép chuỗi rồi chèn vào
+chính ô văn bản cũ; chuỗi vẫn qua `kiemTraItem()` y như khi gõ tay. Nên nó không thể
+tạo ra một loại dữ liệu sai mới, và ai quen gõ tay vẫn làm được như trước.
+
+Danh mục **nhúng thẳng vào trang, không AJAX**: chỉ ~600 lựa chọn sau khi lọc, còn một
+endpoint AJAX là một đường vào mới phải tự lo `requireAdmin` và CSRF.
+
+### Đã lọc bớt những gì
+
+- **Bỏ đồ chế ở NPC thợ rèn thần bí** — vũ khí (type 3–7), trang bị (0,1,2 và 8–11),
+  ngọc trang bị (12), trang bị thú (14–18). Đó là đồ người chơi tự làm bằng nguyên liệu,
+  không phải thứ đem phát. Bỏ đi thì danh sách vật phẩm còn **183** món thay vì 914.
+  Vẫn phát được nếu thật cần: gõ tay `ITEM:<id>:<số lượng>`.
+- **Nhóm sẵn ngọc nguyên liệu theo tên gọi thật**: `NLSC1`–`NLSC6`, `NLCC1`–`NLCC6`,
+  mỗi nhóm 5 hệ. Ví dụ **NLCC6** = Tơ lụa / Bạc / Thuỷ tinh / Gỗ sưa / Da cứng cấp 6,
+  tức id 108, 115, 122, 129, 136 — không ai nhớ dãy số đó.
+
+### Quà giftcode là quà khoá
+
+| Loại | Khoá được không |
+|---|---|
+| `ITEM` | **luôn khoá**, không có tham số để mở — `Char.createItemSoLuong` đặt `newItem.lock = 1` |
+| `GEM` | **có chọn, mặc định khoá** |
+| `PT` | không có khái niệm khoá — ô thuốc chỉ là một con số đếm trong mảng `potions` |
+
+Một cái bẫy đã đọc từ `DatabaseGiftCode.java`: viết `GEM:108:5` (ba phần) thì
+`Integer.parseInt(tachTime[3])` ném lỗi và **khối `catch` đặt khoá = true**. Kết quả
+tình cờ đúng chính sách, nhưng hành vi đến từ một khối bắt lỗi thì đổi nghĩa ngay lần ai
+đó sửa chỗ đó — nên bộ chọn luôn ghi đủ bốn phần: `GEM:108:5:-1`.
+
+### 270 tên ngọc là tệp SINH RA
+
+`web/admin/inc/danh_muc_ngoc.php` **đừng sửa tay**. Sinh lại sau khi đổi ngọc:
+
+```bash
+java -cp "build/classes;lib/NQSH_5h.jar;lib/mysql-connector-java-5.1.49.jar" SinhDanhMucNgoc
+```
+
+Phải sinh bằng Java chứ không đọc bằng regex: 160 trong 270 tên lấy từ hằng số
+`data.Text.*`, nên đọc tệp `.java` sẽ ra `Text.BAO_HIEM_20` thay vì `Bảo hiểm 20%`.
+`test/KiemDanhMucNgoc.java` đối chiếu tệp sinh với mảng Java, nên quên chạy lại là bộ
+kiểm đỏ chứ không âm thầm lệch tên.
+
 ## Thông tin database: đọc thẳng từ `server.ini`
 
 Website **không** giữ bản sao thông tin database. `config.php` đọc thẳng từ hai file
@@ -260,7 +318,7 @@ Khu riêng để **xem thống kê người chơi, khoá tài khoản, tạo gif
 | **Nhân vật** | Tìm theo tên hoặc ID tài khoản · **khoá – mở khoá từng nhân vật** · xem cấp, lượng, xu, lần vào cuối, bang hội, cờ nghi vấn · **danh sách vật phẩm**: đồ đang mặc, thời trang, hành trang, rương |
 | **Cấm theo máy** | Cấm đăng nhập theo **mã máy** thay vì theo tài khoản · xem một máy đã dùng những tài khoản nào (và ngược lại) · lọc ra máy dùng nhiều tài khoản bất thường |
 | **Sự kiện** | Bật / tắt **mọi sự kiện trong game** bất kỳ lúc nào (Tết, Noel, Trung Thu, Halloween, Giỗ Tổ, Hè, Vu Lan, World Cup…) · **hẹn giờ mở và đóng** từng sự kiện · so trạng thái đang chạy trên server với thiết lập vừa đặt · **server tự khởi động lại** sau khi gom các thay đổi (không cần sudo/ssh, trang chỉ ghi CSDL) · trước đây mốc thời gian ghi cứng trong `Char.java` nên không sự kiện nào mở lại được |
-| **Giftcode** | Tạo / sửa / tắt / xoá mã · **kiểm tra cú pháp phần thưởng trước khi lưu** · xem ai đã nhận mã nào · cho một nhân vật nhận lại |
+| **Giftcode** | Tạo / sửa / tắt / xoá mã · **bộ chọn vật phẩm theo tên, không cần nhớ id** · **kiểm tra cú pháp phần thưởng trước khi lưu** · xem ai đã nhận mã nào · cho một nhân vật nhận lại |
 | **Log game** | 8 bảng log server tự ghi (vật phẩm, ngọc, mua shop, mua kho, bang hội, tiêu lượng, nạp/xài lượng, xổ số), lọc theo nhân vật |
 | **Chẩn đoán & Lỗi** | 13 phép kiểm tra sức khoẻ, thống kê lỗi server ghi vào DB, xem cuối các file log của server, lỗi của chính trang web — xem mục dưới |
 | **Nhật ký admin** | Mọi thao tác trên trang quản trị. Không xoá được từ giao diện |
@@ -420,6 +478,8 @@ web/
     ├── inc/
     │   ├── boot.php    # Đăng nhập, phân quyền, ghi nhật ký, chặn dò mật khẩu
     │   ├── hai_buoc.php # Xác thực hai bước TOTP (RFC 6238), mã dự phòng
+    │   ├── danh_muc_thuong.php # Danh mục cho bộ chọn vật phẩm của Giftcode
+    │   ├── danh_muc_ngoc.php   # 270 tên ngọc — SINH RA từ Java, đừng sửa tay
     │   ├── layout.php  # Khung trang (menu trái + thanh trên) + biểu đồ thuần CSS
     │   └── thuong.php  # Bảng 60 loại phần thưởng + kiểm tra cú pháp giftcode
     └── test/           # Kiểm thử, không cần MySQL
@@ -432,6 +492,7 @@ web/
         ├── kiem_vatpham.php
         ├── kiem_giao_dien.php
         ├── kiem_hai_buoc.php
+        ├── kiem_danh_muc_thuong.php
         └── chan_doan_ket_noi.php
 ```
 
@@ -456,6 +517,7 @@ php web/admin/test/kiem_log_online.php # log số người online: đối chiế
 php web/admin/test/kiem_vatpham.php    # bộ đọc vật phẩm: đối chiếu vị trí trường với Item.java
 php web/admin/test/kiem_giao_dien.php  # mọi lớp CSS các trang dùng đều phải có định nghĩa
 php web/admin/test/kiem_hai_buoc.php   # TOTP hai bước: đối chiếu vector chính thức RFC 6238
+php web/admin/test/kiem_danh_muc_thuong.php # bộ chọn vật phẩm: mọi chuỗi sinh ra phải qua kiemTraItem()
 
 # Chẩn đoán lỗi kết nối database — chạy TRÊN MÁY CHỦ, chỉ bằng dòng lệnh
 sudo -u www-data php web/admin/test/chan_doan_ket_noi.php

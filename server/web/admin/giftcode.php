@@ -18,6 +18,7 @@
  */
 require_once __DIR__ . '/inc/layout.php';
 require_once __DIR__ . '/inc/thuong.php';
+require_once __DIR__ . '/inc/danh_muc_thuong.php';
 requireAdmin();
 
 $TRANG = 'giftcode.php';
@@ -292,10 +293,57 @@ adminHead('giftcode', 'Giftcode');
                 </label>
             </div>
 
+            <?php
+            // -------------------------------------------------------------------
+            //  BỘ CHỌN VẬT PHẨM
+            // -------------------------------------------------------------------
+            // Chỉ SINH CHUỖI rồi chèn vào ô văn bản bên dưới. Chuỗi vẫn đi qua
+            // kiemTraItem() y như khi gõ tay, nên bộ chọn không mở ra một đường dữ
+            // liệu thứ hai — xem đầu inc/danh_muc_thuong.php.
+            //
+            // Cả danh mục được nhúng thẳng vào trang, không gọi AJAX: tổng chỉ
+            // ~1350 lựa chọn (914 vật phẩm + 162 thuốc + 270 ngọc). Một endpoint
+            // AJAX ở đây sẽ là một đường vào mới phải tự lo xác thực và CSRF, để
+            // đổi lấy đúng một lần tải nhẹ hơn.
+            $dmuc = dmDanhMuc(dbGame());
+            ?>
+            <?php if ($dmuc): ?>
+            <div class="bochon" id="boChon">
+                <div class="bochon-dau">
+                    <strong>Chọn vật phẩm</strong>
+                    <span class="muted small">không cần nhớ id — chọn rồi bấm Thêm</span>
+                </div>
+                <div class="bochon-hang">
+                    <label class="o"><span>Nhóm</span>
+                        <select id="bcNhom">
+                            <?php foreach ($dmuc as $ma => $n): ?>
+                                <option value="<?= e($ma) ?>"><?= e($n['ten']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                    <label class="o"><span>Tìm theo tên hoặc id</span>
+                        <input type="text" id="bcTim" placeholder="ví dụ: trứng, cấp 6, 848">
+                    </label>
+                </div>
+                <div class="bochon-hang">
+                    <label class="o bochon-rong"><span>Vật phẩm <span class="muted small" id="bcDem"></span></span>
+                        <select id="bcMuc" size="8"></select>
+                    </label>
+                    <div class="bochon-so" id="bcTruong"></div>
+                </div>
+                <div class="bochon-chan">
+                    <button type="button" class="btn btn-nho btn-primary" id="bcThem">Thêm vào phần thưởng</button>
+                    <code class="bochon-xem" id="bcXem">—</code>
+                </div>
+                <p class="muted small" id="bcGhiChu"></p>
+            </div>
+            <?php endif; ?>
+
             <label class="o" style="margin-top:12px;"><span>Phần thưởng vật phẩm</span>
-                <textarea name="item" placeholder="ITEM:848:1000,TRANGPHUC:833:1:30"><?= e($f($dangSua, 'item')) ?></textarea>
+                <textarea name="item" id="oPhanThuong" placeholder="ITEM:848:1000,TRANGPHUC:833:1:30"><?= e($f($dangSua, 'item')) ?></textarea>
                 <small>Nhiều phần thưởng ngăn nhau bằng dấu phẩy. Để trống nếu chỉ cho xu / lượng.
-                       Cú pháp được kiểm tra trước khi lưu — xem bảng bên dưới.</small>
+                       Cú pháp được kiểm tra trước khi lưu — xem bảng bên dưới.
+                       Vẫn gõ hoặc dán tay được như trước; bộ chọn chỉ ghép chuỗi giúp bạn.</small>
             </label>
 
             <div class="form-actions">
@@ -305,6 +353,162 @@ adminHead('giftcode', 'Giftcode');
                 <?php endif; ?>
             </div>
         </form>
+
+        <?php if ($dmuc): ?>
+        <script>
+        /*
+         * Bộ chọn vật phẩm. Chỉ GHÉP CHUỖI rồi chèn vào ô "Phần thưởng vật phẩm" —
+         * chuỗi đó vẫn đi qua kiemTraItem() phía máy chủ y như khi gõ tay, nên script
+         * này không phải chốt an toàn và tắt JavaScript cũng không mở ra lối nào.
+         *
+         * Toàn bộ danh mục nhúng thẳng vào trang, không gọi AJAX: chỉ ~1350 lựa chọn,
+         * mà một endpoint AJAX là một đường vào mới phải tự lo requireAdmin và CSRF.
+         *
+         * JS thuần, không thư viện: web/ không được tải gì từ Internet
+         * (web/admin/test/kiem_giao_dien.php có phép kiểm giữ điều đó).
+         */
+        (function () {
+            var DM = <?= json_encode($dmuc, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG
+                | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+            var TRUONG = <?php
+                $tr = [];
+                foreach ($dmuc as $n) {
+                    $tr[$n['loai']] = dmTruongCuaLoai($n['loai']);
+                }
+                echo json_encode($tr, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG
+                    | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+            ?>;
+
+            var oNhom   = document.getElementById('bcNhom');
+            var oTim    = document.getElementById('bcTim');
+            var oMuc    = document.getElementById('bcMuc');
+            var oTruong = document.getElementById('bcTruong');
+            var oDem    = document.getElementById('bcDem');
+            var oXem    = document.getElementById('bcXem');
+            var oGhiChu = document.getElementById('bcGhiChu');
+            var oThem   = document.getElementById('bcThem');
+            var oPT     = document.getElementById('oPhanThuong');
+            if (!oNhom || !oMuc || !oPT) { return; }
+
+            function nhomHienTai() { return DM[oNhom.value] || null; }
+
+            /* Dựng lại danh sách vật phẩm theo nhóm + từ khoá tìm. */
+            function veDanhSach() {
+                var n = nhomHienTai();
+                oMuc.innerHTML = '';
+                if (!n) { return; }
+                var tu = (oTim.value || '').trim().toLowerCase();
+                var dem = 0;
+                for (var id in n.muc) {
+                    if (!Object.prototype.hasOwnProperty.call(n.muc, id)) { continue; }
+                    var ten = n.muc[id];
+                    /* Tìm theo CẢ tên và id: người quen id cũ vẫn gõ số được. */
+                    if (tu !== '' && ten.toLowerCase().indexOf(tu) === -1
+                        && id.indexOf(tu) === -1) { continue; }
+                    var o = document.createElement('option');
+                    o.value = id;
+                    o.textContent = id + ' — ' + ten;
+                    oMuc.appendChild(o);
+                    dem++;
+                }
+                if (dem > 0) { oMuc.selectedIndex = 0; }
+                oDem.textContent = tu === '' ? ('(' + dem + ')')
+                    : ('(' + dem + ' khớp “' + tu + '”)');
+                if (dem === 0) {
+                    var t = document.createElement('option');
+                    t.textContent = 'không có món nào khớp';
+                    t.disabled = true;
+                    oMuc.appendChild(t);
+                }
+            }
+
+            /* Dựng lại các ô số / ô chọn theo loại phần thưởng của nhóm. */
+            function veTruong() {
+                var n = nhomHienTai();
+                oTruong.innerHTML = '';
+                if (!n) { return; }
+                (TRUONG[n.loai] || []).forEach(function (t) {
+                    var nhan = document.createElement('label');
+                    nhan.className = 'o';
+                    var sp = document.createElement('span');
+                    sp.textContent = t.nhan;
+                    nhan.appendChild(sp);
+                    var o;
+                    if (t.chon) {
+                        o = document.createElement('select');
+                        for (var gt in t.chon) {
+                            if (!Object.prototype.hasOwnProperty.call(t.chon, gt)) { continue; }
+                            var op = document.createElement('option');
+                            op.value = gt;
+                            op.textContent = t.chon[gt];
+                            o.appendChild(op);
+                        }
+                    } else {
+                        o = document.createElement('input');
+                        o.type = 'number';
+                        o.min = '1';
+                    }
+                    o.value = t.macDinh;
+                    o.setAttribute('data-ma', t.ma);
+                    o.addEventListener('change', veXem);
+                    o.addEventListener('input', veXem);
+                    nhan.appendChild(o);
+                    oTruong.appendChild(nhan);
+                });
+            }
+
+            /* Chuỗi sẽ được chèn, theo đúng thứ tự tham số của máy chủ. */
+            function chuoi() {
+                var n = nhomHienTai();
+                if (!n || !oMuc.value) { return ''; }
+                var phan = [n.loai, oMuc.value];
+                var o = oTruong.querySelectorAll('[data-ma]');
+                for (var i = 0; i < o.length; i++) {
+                    var v = (o[i].value || '').trim();
+                    if (v === '') { return ''; }
+                    phan.push(v);
+                }
+                return phan.join(':');
+            }
+
+            function veXem() {
+                var s = chuoi();
+                oXem.textContent = s === '' ? '—' : s;
+                oThem.disabled = (s === '');
+            }
+
+            function doiNhom() {
+                var n = nhomHienTai();
+                oGhiChu.textContent = n ? (n.ghiChu || '') : '';
+                veTruong();
+                veDanhSach();
+                veXem();
+            }
+
+            oThem.addEventListener('click', function () {
+                var s = chuoi();
+                if (s === '') { return; }
+                var cu = (oPT.value || '').trim();
+                /* Bỏ dấu phẩy lẻ ở cuối để không sinh ra phần rỗng — kiemTraItem()
+                   bỏ qua phần rỗng, nhưng chuỗi lưu lại trông như bị lỗi. */
+                cu = cu.replace(/,+\s*$/, '');
+                oPT.value = (cu === '') ? s : (cu + ',' + s);
+                oPT.focus();
+            });
+
+            oNhom.addEventListener('change', doiNhom);
+            oTim.addEventListener('input', veDanhSach);
+            oMuc.addEventListener('change', veXem);
+            oTim.addEventListener('keydown', function (e) {
+                /* Enter trong ô tìm KHÔNG được gửi biểu mẫu: người ta đang tìm món,
+                   chưa chọn xong, mà Enter mặc định sẽ lưu luôn cả mã giftcode. */
+                if (e.key === 'Enter') { e.preventDefault(); oMuc.focus(); }
+            });
+
+            doiNhom();
+        })();
+        </script>
+        <?php endif; ?>
 
         <div class="luuy">
             <p><strong>Nhớ ba điều:</strong></p>
