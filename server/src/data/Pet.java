@@ -212,33 +212,22 @@ public class Pet extends Actor {
         this.itemPet = itemP;
     }
 
+    /** Anh hoa hinh Pet: MOT hieu ung dung chung cho moi loai (khong rieng tung loai nua). */
+    private static final int ID_HIEU_UNG_HOA_HINH_PET = 69;
+
     public int getIdEffPet() {
-        // Hoa hinh doi hieu ung/anh theo loai (id 49-53) - da BI GO BO 31/08/2026
-        // roi BAT LAI CUNG NGAY sau khi tim ra nguyen nhan that: khong phai id
-        // "chua dang ky" ma la map/d_effect/49..53 tren repo nay con giu ANH GOC
-        // (icon nho 30x13, khong lien quan pet) - ban KPAH tham khao (Downloads)
-        // da THAY ANH MOI (sprite thu hoa hinh that, kem *.bak_orig luu anh cu)
-        // dung y 5 id nay cho dung tinh nang nay. Da doi chieu md5 anh cu tren
-        // repo nay KHOP HET voi *.bak_orig ben do, xac nhan repo nay chua bao
-        // gio duoc cap nhat anh. Da chep 10 file (49,49.png..53,53.png) tu ban
-        // tham khao sang map/d_effect/ o day - xem anh moi bang mat, dung la
-        // sprite sinh vat (49=rong, 53=chim, khop isPetRong/isPetDaiBang duoi
-        // day). Vi map/d_effect gui qua mang o goi 26 (DataGame.java quet toan
-        // bo thu muc luc khoi dong server), CHỈ CAN DEPLOY SERVER, khong can
-        // sua gi phia client.
+        // Lich su: id 49-53 (rieng tung loai) tung bi go roi bat lai trong cung
+        // ngay 31/08/2026 sau khi phat hien anh cu chua duoc cap nhat (xem git
+        // log commit a081ee1/bc728bd) - luc do ANH la van de, khong phai co che
+        // chon id theo loai. Nay theo yeu cau admin, doi hang sang dung CHUNG
+        // mot frame (map/d_effect/69.png, san co - anh linh thu boc lua, dang
+        // dung lam danh hieu id 8769 = 69+8700 o CharSuKien.java, dung chung
+        // anh cho hai tinh nang khac nhau khong xung dot vi khac truong gui).
+        // Vi map/d_effect gui qua mang o goi 26 (DataGame.java quet toan bo thu
+        // muc luc khoi dong server), CHỈ CAN DEPLOY SERVER, khong can sua client.
         if (this.itemPet != null) {
             if (this.idHoaHinhPet != -1 && !this.endHoaHinhPet()) {
-                if (this.isPetRong()) {
-                    return 49;
-                } else if (this.isPetCu()) {
-                    return 50;
-                } else if (this.isPetYeuTinh()) {
-                    return 51;
-                } else if (this.isPetDoi()) {
-                    return 52;
-                } else if (this.isPetDaiBang()) {
-                    return 53;
-                }
+                return ID_HIEU_UNG_HOA_HINH_PET;
             }
             if (this.isPetCu()) {
                 if (this.itemPet.level == 1) {
