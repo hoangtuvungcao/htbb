@@ -1914,10 +1914,67 @@ public class RealController extends ServerController {
                         return;
                    case 12:
                             menu = new String[]{"Kho Mảnh", "Bộ Sưu Tập", "Cải Trang", player.isBatCaiTrang() ? "Tắt Cải Trang" : "Bật Cải Trang"};
-                            player.sendMessage(MessageCreator.createMsgMenu(menu, -518, 0));   
-                      
+                            player.sendMessage(MessageCreator.createMsgMenu(menu, -518, 0));
+
                         return;
-                    
+
+                    // Hoa hinh Pet (them 31/08/2026) - port tu ban KPAH khac, doi
+                    // dieu kien theo pet da co san (itemPet.level>=2 = da sieu tien
+                    // hoa qua doTienHoa()), dung lai item 268 (lo thuoc hoa hinh)
+                    // dang dung cho hoa hinh Thu de khong phai tao vat pham moi.
+                    case 13:
+                        if (player.petUsing == null || player.petUsing.itemPet == null) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần trang bị một Pet để hoá hình", ""));
+                            return;
+                        }
+                        if (player.petUsing.getTimeExpire() != 32000) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể hoá hình Pet vĩnh viễn", ""));
+                            return;
+                        }
+                        if (player.petUsing.itemPet.level < 2) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Pet phải siêu tiến hoá (trạng thái 2) mới có thể hoá hình", ""));
+                            return;
+                        }
+                        if (player.petUsing.capHoaHinh >= 5) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Pet đã hoá hình tối đa cấp 5", ""));
+                            return;
+                        }
+
+                        final int capMoiHoaHinhPet = player.petUsing.capHoaHinh + 1;
+                        final int soLuongThuocHoaHinhPet = capMoiHoaHinhPet * 10;
+                        if (player.listGemitem[268] < soLuongThuocHoaHinhPet && player.listGemitemLock[268] < soLuongThuocHoaHinhPet) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Cần " + soLuongThuocHoaHinhPet + " lọ thuốc hoá hình để lên cấp " + capMoiHoaHinhPet, ""));
+                            return;
+                        }
+                        if (player.getLuong() < 5000) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Cần 5000 lượng để hoá hình", ""));
+                            return;
+                        }
+
+                        if (player.listGemitemLock[268] >= soLuongThuocHoaHinhPet) {
+                            player.delGem(268, soLuongThuocHoaHinhPet, true);
+                        } else {
+                            player.delGem(268, soLuongThuocHoaHinhPet, false);
+                        }
+                        player.subLuong(5000L);
+
+                        if (!player.petUsing.isPetTool() && player.petUsing.getIdEffPet() > -1) {
+                            player.huyEff(player, player.petUsing.getIdEffPet());
+                        }
+                        player.petUsing.capHoaHinh = (byte) capMoiHoaHinhPet;
+                        player.petUsing.idHoaHinhPet = 67;
+                        player.petUsing.timeEndHoaHinhPet = System.currentTimeMillis() + 864_000_000L;
+                        player.petUsing.initKhangXuyenGiapWhenHoaHinh();
+                        Database.instance.savePet(player.petUsing);
+
+                        player.sendMessage(MessageCreator.createCharGemItem(player));
+                        player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Hoá hình Pet thành công, lên cấp " + capMoiHoaHinhPet + "/5", ""));
+                        Database.instance.saveOrtherLog("", player.charname, "Hoa hinh pet len cap " + capMoiHoaHinhPet, "hoahinhpet");
+                        return;
+
                     case 4:
                         player.sendMessage(MessageCreator.createServerAlertMessage("Sắp ra mắt.", ""));
                         return;

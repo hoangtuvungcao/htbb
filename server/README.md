@@ -453,6 +453,17 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   và [docs/cau-hinh-server-ini.md](docs/cau-hinh-server-ini.md) mục 4.
 - Sự kiện World Cup (bình chọn Messi/Ronaldo): [src/real/SuKienWorldCup.java](src/real/SuKienWorldCup.java) ·
   chạy [sql/them_su_kien_world_cup.sql](sql/them_su_kien_world_cup.sql) một lần trước khi mở
+- **Hóa hình Pet** (port từ một bản KPAH khác — xem `AGENT_MEMORY`/lịch sử trò chuyện): NPC dịch
+  vụ chung (npcType `-8`) có thêm mục "Hoá Hình Pet" — pet phải vĩnh viễn + đã siêu tiến hoá
+  (`itemPet.level>=2`), tốn `cấp_mới×10` lọ thuốc hoá hình (item 268, **dùng lại** item của tính
+  năng hóa hình Thú có sẵn, không tạo item mới) + 5000 lượng, lên tối đa cấp 5, mỗi cấp cộng dồn
+  "kháng xuyên giáp" (giảm 5–25% sát thương nhận, tỷ lệ 10–30%, hồi chiêu 60–100s — cooldown riêng,
+  KHÔNG dùng chung `timeBienHinh` với nội tại theo loài, tránh xung đột). Hết hạn sau 10 ngày nếu
+  không hóa hình tiếp — dọn dữ liệu lúc đăng nhập lại (`Database.getCharPet`), không real-time.
+  Xem [src/data/Pet.java](src/data/Pet.java) (`applyKhangXuyenGiap`), [src/real/RealController.java](src/real/RealController.java)
+  (case 13 của `doCreateItem`), test [test/KiemHoaHinhPet.java](test/KiemHoaHinhPet.java).
+  **Chưa xác minh được**: hiệu ứng hình ảnh dùng id 49–53 (`getIdEffPet()`) theo đúng bản gốc —
+  cần tự kiểm tra bằng mắt trên client thật, vì không có cách xác minh asset client từ code server.
 
 **Lưu ý quan trọng**: mỗi lần push lên nhánh `main` sẽ tự động deploy lên VPS sản
 xuất (`.github/workflows/deploy.yml`). Đổi `KPAH2_patched.jar`, `lib/`, `map/`,

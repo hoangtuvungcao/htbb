@@ -42,6 +42,21 @@ public class Pet extends Actor {
     public static int[][] percent = new int[][]{{20, 0, 0, 0, 0, 0, 0, 0}, {10, 10, 0, 0, 0, 0, 0, 0}, {20, 20, 0, 0, 0, 0, 0, 0}, {30, 0, 0, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 0, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 1, 1, 1, 0, 1}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 3, 0, 0, 0, 0}, {10, 10, 10, 0, 3, 0, 0, 0}, {10, 10, 10, 0, 0, 3, 0, 0}, {5, 0, 0, 0, 0, 0, 0, 0}, {10, 10, 10, 1, 1, 1, 20, 0}, {10, 10, 10, 1, 1, 1, 20, 1}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {0, 0, 10, 0, 0, 0, 0, 0}, {0, 5, 0, 0, 0, 0, 0, 0}, {10, 0, 10, 1, 1, 1, 0, 1}, {10, 10, 10, 0, 0, 0, 0, 0}, new int[8], new int[8], new int[8], new int[8], new int[8], {10, 0, 25, 0, 0, 0, 0, 0}, new int[8], new int[8], new int[8], new int[8], new int[8], new int[8]};
     static int[][] pc_chang_thong_thao = new int[][]{{983, 14, 3, 0}, {996, 498, 3, 0}, {999, 666, 333, 0}, {1000, 750, 500, 250}};
     long timeBienHinh = 0L;
+    // Hoa hinh Pet (them 31/08/2026, port tu ban KPAH khac - xem README).
+    // idHoaHinhPet: id hieu ung dang ap dung, -1 = chua hoa hinh (khong dung de
+    // phan biet nhieu "kieu" hoa hinh - hien tai chi co dung mot cap do MOI LOAI
+    // thu qua getIdEffPet(), gia tri 67 chi la danh dau da hoa hinh cho ro rang).
+    public short idHoaHinhPet = -1;
+    public long timeEndHoaHinhPet = 0L;
+    // 0..5, luon dong bo bang capHoaHinh qua initKhangXuyenGiapWhenHoaHinh() -
+    // tach rieng (khong dung thang capHoaHinh) de khop dinh dang luu CSDL cu.
+    public byte khangXuyenGiapCap = 0;
+    public byte capHoaHinh = 0;
+    // Cooldown RIENG cho khang xuyen giap - KHONG dung chung timeBienHinh, vi
+    // truong do da la cooldown cua 5 noi tai theo loai thu (checkBienHinh/
+    // checkVetThuongSau/checkHoangSo/checkBatTu/checkYemBua). Neu dung chung,
+    // hoa hinh se boi tranh cooldown voi chinh noi tai cua loai thu đó.
+    private long timeKhangXuyenGiap = 0L;
     static int[] MATERIAL_UPDGRADE = new int[]{0, 2, 5, 8, 11};
     static int[] PC_UPDGRADE_OK = new int[]{0, 90, 45, 20, 15, 7};
     byte phamchat = -1;
@@ -199,6 +214,19 @@ public class Pet extends Actor {
 
     public int getIdEffPet() {
         if (this.itemPet != null) {
+            if (this.idHoaHinhPet != -1 && !this.endHoaHinhPet()) {
+                if (this.isPetRong()) {
+                    return 49;
+                } else if (this.isPetCu()) {
+                    return 50;
+                } else if (this.isPetYeuTinh()) {
+                    return 51;
+                } else if (this.isPetDoi()) {
+                    return 52;
+                } else if (this.isPetDaiBang()) {
+                    return 53;
+                }
+            }
             if (this.isPetCu()) {
                 if (this.itemPet.level == 1) {
                     return 37;
@@ -427,6 +455,66 @@ public class Pet extends Actor {
         } else {
             return false;
         }
+    }
+
+    public boolean endHoaHinhPet() {
+        return this.idHoaHinhPet != -1 && this.timeEndHoaHinhPet - System.currentTimeMillis() <= 0L;
+    }
+
+    public void initKhangXuyenGiapWhenHoaHinh() {
+        this.khangXuyenGiapCap = this.capHoaHinh;
+    }
+
+    /**
+     * Kha nang giam sat thuong khi bi danh, mo dan theo capHoaHinh (1..5). Goi
+     * tu CharChiSo.applyThanKhiOnHit() moi khi pet nay dang duoc cuoi/su dung
+     * va chu nhan bi tan cong.
+     */
+    public int applyKhangXuyenGiap(int finalDame) {
+        if (this.khangXuyenGiapCap <= 0 || this.endHoaHinhPet()) {
+            return finalDame;
+        }
+        if (System.currentTimeMillis() < this.timeKhangXuyenGiap) {
+            return finalDame;
+        }
+
+        int reducePercent;
+        int chance;
+        long cooldownMs;
+        switch (this.khangXuyenGiapCap) {
+            case 1:
+                reducePercent = 5;
+                chance = 10;
+                cooldownMs = 100000L;
+                break;
+            case 2:
+                reducePercent = 10;
+                chance = 10;
+                cooldownMs = 100000L;
+                break;
+            case 3:
+                reducePercent = 15;
+                chance = 20;
+                cooldownMs = 80000L;
+                break;
+            case 4:
+                reducePercent = 20;
+                chance = 20;
+                cooldownMs = 80000L;
+                break;
+            default:
+                reducePercent = 25;
+                chance = 30;
+                cooldownMs = 60000L;
+                break;
+        }
+
+        if (Map.r.nextInt(100) >= chance) {
+            return finalDame;
+        }
+
+        this.timeKhangXuyenGiap = System.currentTimeMillis() + cooldownMs;
+        return finalDame - finalDame * reducePercent / 100;
     }
 
     public void doUpdrage2MaxByAdmin(Char p, int nUp) {
@@ -1230,6 +1318,22 @@ public class Pet extends Actor {
             if (this.max_pham_chat < 0) {
                 this.max_pham_chat = 0;
             }
+            // Hoa hinh Pet (them 31/08/2026) - du lieu cu (data.length<=13) khong
+            // co may truong nay, giu nguyen gia tri mac dinh khai bao tren field
+            // (-1/0/0/0). Kiem tra do dai TUNG truong mot, khong dung try/catch
+            // chung o tren, de mot ban ghi cu khong lam mat luon max_pham_chat.
+            if (data.length > 13) {
+                this.idHoaHinhPet = Short.parseShort(data[13]);
+            }
+            if (data.length > 14) {
+                this.timeEndHoaHinhPet = Long.parseLong(data[14]);
+            }
+            if (data.length > 15) {
+                this.khangXuyenGiapCap = Byte.parseByte(data[15]);
+            }
+            if (data.length > 16) {
+                this.capHoaHinh = Byte.parseByte(data[16]);
+            }
         } catch (Exception e) {
             Logger.logErrorPet(e);
         }
@@ -1250,6 +1354,10 @@ public class Pet extends Actor {
         info = info + "," + this.id_skill2;
         info = info + "," + this.canTrade;
         info = info + "," + this.max_pham_chat;
+        info = info + "," + this.idHoaHinhPet;
+        info = info + "," + this.timeEndHoaHinhPet;
+        info = info + "," + this.khangXuyenGiapCap;
+        info = info + "," + this.capHoaHinh;
         return info;
     }
 

@@ -1112,6 +1112,13 @@ class CharChiSo {
             // ---------- PHAN DON cua muc tieu ----------
             if (targetLaChar) {
                 final Char bidanh = (Char) actor;
+
+                // ---------- KHANG XUYEN GIAP cua pet dang cuoi (hoa hinh) ----------
+                final Pet petBiDanh = bidanh.getPetUsing();
+                if (petBiDanh != null && finalDame > 0) {
+                    finalDame = petBiDanh.applyKhangXuyenGiap(finalDame);
+                }
+
                 final int pcPhan = bidanh.getTkPhanDon();
                 if (pcPhan > 0 && finalDame > 0) {
                     int damPhan = (int) ((long) finalDame * pcPhan / 100L);

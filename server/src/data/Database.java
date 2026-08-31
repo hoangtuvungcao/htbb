@@ -3577,6 +3577,17 @@ public class Database {
                     this.saveOrtherLog("tob_log_other_item", p.charname, pet.getDBInfo(), "pd");
                     p.sendMessage(MessageCreator.createServerAlertAutoOffMessage(pet.getName() + " đã hết thời gian sử dụng"));
                 } else {
+                    // Hoa hinh Pet het han: don ve mac dinh luc nap nhan vat (dang
+                    // nhap), giong cach ban goc dang lam - khong dat het han thuc
+                    // thoi trong luc dang choi, vi cong that cua het han
+                    // (endHoaHinhPet()) da duoc applyKhangXuyenGiap()/getIdEffPet()
+                    // tu kiem tra rieng, chi CSDL la can don lai cho lan luu sau.
+                    if (pet.endHoaHinhPet()) {
+                        pet.idHoaHinhPet = -1;
+                        pet.timeEndHoaHinhPet = 0L;
+                        pet.khangXuyenGiapCap = 0;
+                        pet.capHoaHinh = 0;
+                    }
                     if (pet.place == 1) {
                         p.petUsing = pet;
                     }
