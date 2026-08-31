@@ -1119,6 +1119,12 @@ class CharChiSo {
                     finalDame = petBiDanh.applyKhangXuyenGiap(finalDame);
                 }
 
+                // ---------- KHANG XUYEN GIAP cua linh thu dang cuoi (hoa hinh) ----------
+                final Animal animalBiDanh = bidanh.getAnimalRide();
+                if (animalBiDanh != null && finalDame > 0) {
+                    finalDame = animalBiDanh.applyKhangXuyenGiap(finalDame);
+                }
+
                 final int pcPhan = bidanh.getTkPhanDon();
                 if (pcPhan > 0 && finalDame > 0) {
                     int damPhan = (int) ((long) finalDame * pcPhan / 100L);

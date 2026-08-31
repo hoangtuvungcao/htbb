@@ -888,12 +888,13 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 if (p != null) {
                     menu = new String[]{"Tạo thú", "Luyện thú"};
                     if (p.animalRide != null) {
-                        menu = new String[]{"Tạo thú", "Luyện thú", "Nâng cấp thú(" + Animal.price[3][p.animalRide.level] + " lượng)","Hóa Hình"};
+                        final String tenMucHoaHinh = "Hóa Hình" + (p.animalRide.capHoaHinh > 0 ? " (cấp " + p.animalRide.capHoaHinh + "/5)" : "");
+                        menu = new String[]{"Tạo thú", "Luyện thú", "Nâng cấp thú(" + Animal.price[3][p.animalRide.level] + " lượng)", tenMucHoaHinh};
                         if ((p.animalRide.isPhuongHoangBang() && p.animalRide.level >= 4 && p.animalRide.KHANG_BI_CHAY == 0) || (p.animalRide.isPhuongHoangLua() && p.animalRide.level >= 4 && p.animalRide.KHANG_DONG_BANG == 0) || (p.animalRide.isLan() && p.animalRide.level >= 4 && p.animalRide.KHANG_HOA_TUYET == 0)
                                 // Rong bang: mo ca hai khang (bi chay + dong bang) trong mot lan
                                 || (p.animalRide.isRongLon() && p.animalRide.level >= 4
                                     && (p.animalRide.KHANG_BI_CHAY == 0 || p.animalRide.KHANG_DONG_BANG == 0))) {
-                            menu = new String[]{"Tạo thú", "Luyện thú", "Nâng cấp thú(" + Animal.price[3][p.animalRide.level] + " lượng)","Hóa Hình", "Nâng cấp kháng(200l)"};
+                            menu = new String[]{"Tạo thú", "Luyện thú", "Nâng cấp thú(" + Animal.price[3][p.animalRide.level] + " lượng)", tenMucHoaHinh, "Nâng cấp kháng(200l)"};
                         }
                     }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);

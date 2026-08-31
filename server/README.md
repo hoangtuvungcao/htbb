@@ -464,6 +464,15 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   (case 13 của `doCreateItem`), test [test/KiemHoaHinhPet.java](test/KiemHoaHinhPet.java).
   **Chưa xác minh được**: hiệu ứng hình ảnh dùng id 49–53 (`getIdEffPet()`) theo đúng bản gốc —
   cần tự kiểm tra bằng mắt trên client thật, vì không có cách xác minh asset client từ code server.
+- **Hóa hình Thú lên 5 cấp** (nâng cấp tính năng hóa hình Thú có sẵn, cho khớp hệ thống Pet ở
+  trên): cấp 1 (kích hoạt lần đầu, NPC "Luyện thú" idNpc `-6`) **giữ nguyên y hệt** hành vi cũ —
+  30 lọ thuốc hoá hình (item 268), tỷ lệ 70%, có thể mất nguyên liệu mà thất bại. Cấp 2–5 (nâng
+  cấp thêm, cùng nút "Hoá Hình") **chắc chắn thành công** nếu đủ 30 lọ thuốc — khớp cách Pet đang
+  làm. Mỗi cấp cộng dồn "kháng xuyên giáp" dùng đúng bảng tỷ lệ của Pet, tồn tại **song song** với
+  hiệu ứng tấn công "Lửa thượng cổ" cũ (giảm giáp đối phương) — không đụng vào hiệu ứng đó. Lưu
+  vào chuỗi cột `att` có sẵn (giống cách `KHANG_DONG_BANG`/... từng được thêm trước đây), **không
+  ALTER TABLE**. Xem [src/data/Animal.java](src/data/Animal.java) (`doHoaHinh`,
+  `applyKhangXuyenGiap`), test [test/KiemHoaHinhThu.java](test/KiemHoaHinhThu.java).
 
 **Lưu ý quan trọng**: mỗi lần push lên nhánh `main` sẽ tự động deploy lên VPS sản
 xuất (`.github/workflows/deploy.yml`). Đổi `KPAH2_patched.jar`, `lib/`, `map/`,

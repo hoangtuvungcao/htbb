@@ -97,6 +97,7 @@ public final class Kiem {
         KiemSuKienWorldCup.chay();
         KiemVongQuayThanTai.chay();
         KiemHoaHinhPet.chay();
+        KiemHoaHinhThu.chay();
         KiemBangMaNguon.chay();
 
         final int ma = tongKet();

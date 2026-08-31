@@ -34,6 +34,16 @@ public class Animal extends Actor {
     public int dbidLiendau = -1;
     public int isHoaHinh = 0;
     public long timeHoaHinh = 0L;
+    // Cap hoa hinh Thu (them 31/08/2026, khop he thong da lam cho Pet - xem
+    // README). Cap 1 = lan hoa hinh dau tien (isHoaHinh/timeHoaHinh o tren,
+    // giu nguyen 70% ty le nhu truoc); cap 2..5 la nang cap them, dung chung
+    // bang khang xuyen giap voi Pet.
+    public byte capHoaHinh = 0;
+    public byte khangXuyenGiapCap = 0;
+    // Cooldown RIENG cho khang xuyen giap cua Thu - Animal chua co truong
+    // cooldown dung chung nao khac (khac Pet co timeBienHinh), nhung van tach
+    // rieng de khoi phai kiem tra lai moi khi Animal them ky nang moi sau nay.
+    private long timeKhangXuyenGiap = 0L;
     public String name = "";
     static byte[] addMoreSP = new byte[]{0, 0, 0, 0, 0, 2, 3, 0, 3, 3, 3, 3, 3, 3, 3}; // Thêm giá trị cho index 14
 static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6, 6}; // Thêm giá trị cho index 14
@@ -643,6 +653,14 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             } catch (Exception exception) {
             }
 
+            // Hoa hinh Thu cap do (them 31/08/2026) - du lieu cu (chua co hai
+            // truong nay) van doc duoc, giu nguyen mac dinh 0/0 khai bao tren field.
+            if (data.length > this.att.length + 11) {
+                this.capHoaHinh = Byte.parseByte(data[this.att.length + 11]);
+            }
+            if (data.length > this.att.length + 12) {
+                this.khangXuyenGiapCap = Byte.parseByte(data[this.att.length + 12]);
+            }
         } catch (Exception var5) {
         }
 
@@ -722,6 +740,8 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
         info = info + "," + this.KHANG_THO;
         info = info + "," + this.KHANG_THUY;
         info = info + "," + this.KHANG_HOA;
+        info = info + "," + this.capHoaHinh;
+        info = info + "," + this.khangXuyenGiapCap;
         return info;
     }
 
@@ -1129,49 +1149,127 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
         return this.isHoaHinh == 1 && System.currentTimeMillis() - this.timeHoaHinh > 0L;
     }
 
+    /**
+     * Hoa hinh Thu (them 31/08/2026): cap 1 la lan kich hoat dau tien, GIU
+     * NGUYEN het hanh vi cu (30 lo thuoc hoa hinh id 268, 70% ty le, mat
+     * nguyen lieu du thanh cong hay khong). Cap 2..5 la nang cap them, khop
+     * he thong da lam cho Pet - CHAC CHAN thanh cong neu du nguyen lieu,
+     * khong con roi ngau nhien nhu cap 1.
+     */
     public void doHoaHinh(Char p) {
-        // Change required amount to 30
-        int soluongDel = 30;
-        
-        // Check if player has enough materials
-        if (p.listGemitem[268] < soluongDel && p.listGemitemLock[268] < soluongDel) {
-            p.sendMessage(MessageCreator.createServerAlertMessage("Ngươi cần có " + soluongDel + " lọ thuốc hóa hình để hóa hình", ""));
-            return;
-        }
-    
         if (p.animalRide == null) {
             p.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải cưỡi linh thú ", ""));
             return;
         }
 
-        if (p.animalRide.isHoaHinh == 1 && System.currentTimeMillis() - p.animalRide.timeHoaHinh > 0L) {
-            p.sendMessage(MessageCreator.createServerAlertMessage("Linh thú đã hóa hình, vui lòng đợi 15 ngày để hóa hình lại", ""));
+        if (p.animalRide.capHoaHinh >= 5) {
+            p.sendMessage(MessageCreator.createServerAlertMessage("Linh thú đã hóa hình tối đa cấp 5", ""));
             return;
         }
-    
-        // Random success chance (70%)
-        if (Map.r.nextInt(100) < 70) {
-            // Set hoa hinh status and time
-            p.animalRide.isHoaHinh = 1;
-            p.animalRide.timeHoaHinh = System.currentTimeMillis() + (15L * 24L * 60L * 60000L); // 15 days
-            Database.instance.saveAnimal(p.animalRide);
-            p.sendMessage(MessageCreator.createServerAlertMessage("Hóa hình thành công !", ""));
 
+        // Change required amount to 30
+        int soluongDel = 30;
+
+        // Check if player has enough materials
+        if (p.listGemitem[268] < soluongDel && p.listGemitemLock[268] < soluongDel) {
+            p.sendMessage(MessageCreator.createServerAlertMessage("Ngươi cần có " + soluongDel + " lọ thuốc hóa hình để hóa hình", ""));
+            return;
+        }
+
+        if (p.animalRide.capHoaHinh == 0) {
+            // Random success chance (70%) - CHI cap 1, dung y het truoc day.
+            if (Map.r.nextInt(100) < 70) {
+                p.animalRide.isHoaHinh = 1;
+                p.animalRide.timeHoaHinh = System.currentTimeMillis() + (15L * 24L * 60L * 60000L); // 15 days
+                p.animalRide.capHoaHinh = 1;
+                p.animalRide.initKhangXuyenGiapWhenHoaHinh();
+                Database.instance.saveAnimal(p.animalRide);
+                p.sendMessage(MessageCreator.createServerAlertMessage("Hóa hình thành công !", ""));
+
+                p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+                veLaiHinhAnhThuCuoi(p);
+            } else {
+                p.sendMessage(MessageCreator.createServerAlertMessage("Hóa hình thất bại!", ""));
+            }
+        } else {
+            // Nang cap them (cap 2..5) - chac chan thanh cong.
+            p.animalRide.capHoaHinh = (byte) (p.animalRide.capHoaHinh + 1);
+            p.animalRide.timeHoaHinh = System.currentTimeMillis() + (15L * 24L * 60L * 60000L);
+            p.animalRide.initKhangXuyenGiapWhenHoaHinh();
+            Database.instance.saveAnimal(p.animalRide);
+            p.sendMessage(MessageCreator.createServerAlertMessage("Hóa hình thành công, lên cấp " + p.animalRide.capHoaHinh + "/5", ""));
             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
             veLaiHinhAnhThuCuoi(p);
-        } else {
-            p.sendMessage(MessageCreator.createServerAlertMessage("Hóa hình thất bại!", ""));
         }
-    
+
         // Use materials
         if (p.listGemitemLock[268] >= soluongDel) {
             p.delGem(268, soluongDel, true);
         } else {
-            p.delGem(268, soluongDel, false); 
+            p.delGem(268, soluongDel, false);
         }
-    
+
         p.sendMessage(MessageCreator.createCharGemItem(p));
-        Database.instance.saveOrtherLog("", p.charname, "Hoa hinh thu", "hoahinh");
+        Database.instance.saveOrtherLog("", p.charname, "Hoa hinh thu cap " + p.animalRide.capHoaHinh, "hoahinh");
+    }
+
+    public void initKhangXuyenGiapWhenHoaHinh() {
+        this.khangXuyenGiapCap = this.capHoaHinh;
+    }
+
+    /**
+     * Kha nang giam sat thuong khi bi danh, mo dan theo capHoaHinh (1..5) -
+     * dung CHUNG bang ty le/gia tri/hoi chieu voi data.Pet.applyKhangXuyenGiap()
+     * de nhat quan. Goi tu CharChiSo.applyThanKhiOnHit() moi khi nguoi cuoi
+     * linh thu nay bi tan cong. KHONG lien quan hieu ung "Lua thuong co" cu
+     * (do la hieu ung TAN CONG lam giam giap doi phuong, con day la hieu ung
+     * PHONG THU giam sat thuong nhan vao) - ca hai cung ton tai song song.
+     */
+    public int applyKhangXuyenGiap(int finalDame) {
+        if (this.khangXuyenGiapCap <= 0 || this.isHoaHinh != 1 || System.currentTimeMillis() - this.timeHoaHinh > 0L) {
+            return finalDame;
+        }
+        if (System.currentTimeMillis() < this.timeKhangXuyenGiap) {
+            return finalDame;
+        }
+
+        int reducePercent;
+        int chance;
+        long cooldownMs;
+        switch (this.khangXuyenGiapCap) {
+            case 1:
+                reducePercent = 5;
+                chance = 10;
+                cooldownMs = 100000L;
+                break;
+            case 2:
+                reducePercent = 10;
+                chance = 10;
+                cooldownMs = 100000L;
+                break;
+            case 3:
+                reducePercent = 15;
+                chance = 20;
+                cooldownMs = 80000L;
+                break;
+            case 4:
+                reducePercent = 20;
+                chance = 20;
+                cooldownMs = 80000L;
+                break;
+            default:
+                reducePercent = 25;
+                chance = 30;
+                cooldownMs = 60000L;
+                break;
+        }
+
+        if (Map.r.nextInt(100) >= chance) {
+            return finalDame;
+        }
+
+        this.timeKhangXuyenGiap = System.currentTimeMillis() + cooldownMs;
+        return finalDame - finalDame * reducePercent / 100;
     }
 
     /**

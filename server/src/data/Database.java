@@ -10256,6 +10256,10 @@ public void addCharXaiNapLuong(Char p, int type) {
             if (gem.isHoaHinh == 1 && gem.timeHoaHinh >= 0L && System.currentTimeMillis() - gem.timeHoaHinh >= 0L) {
                 gem.isHoaHinh = 0;
                 gem.timeHoaHinh = 0L;
+                // Het han thi don luon cap hoa hinh (them 31/08/2026) - khong de
+                // capHoaHinh > 0 ma isHoaHinh da ve 0, tranh lech du lieu.
+                gem.capHoaHinh = 0;
+                gem.khangXuyenGiapCap = 0;
             }
 
             if (gem.dbownerId == 0) {
@@ -10852,6 +10856,10 @@ public void addCharXaiNapLuong(Char p, int type) {
             if (gem.isHoaHinh == 1 && gem.timeHoaHinh >= 0L && System.currentTimeMillis() - gem.timeHoaHinh >= 0L) {
                 gem.isHoaHinh = 0;
                 gem.timeHoaHinh = 0L;
+                // Het han thi don luon cap hoa hinh (them 31/08/2026) - khong de
+                // capHoaHinh > 0 ma isHoaHinh da ve 0, tranh lech du lieu.
+                gem.capHoaHinh = 0;
+                gem.khangXuyenGiapCap = 0;
             }
 
             if (gem.dbownerId == 0) {
