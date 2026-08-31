@@ -318,6 +318,15 @@ code {
     max-width: 460px; word-break: break-word;
     color: var(--text-2); font-size: .83rem; font-family: var(--mono);
 }
+/* Bản dịch dễ đọc của cột "Phần thưởng" (giftcode.php) — chuỗi thô ở trên giữ
+   font đơn cách để đối chiếu/copy, còn danh sách tên thật thì đổi lại font chữ
+   thường: đây là tiếng Việt có dấu, không phải cú pháp cần căn đều ký tự. */
+.chi-tiet-thuong {
+    margin: 5px 0 0; padding-left: 17px;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: .82rem; color: var(--text);
+}
+.chi-tiet-thuong li { margin: 1px 0; }
 .tbl td a { font-weight: 500; }
 
 /* Thanh cuộn mảnh, hợp nền tối */

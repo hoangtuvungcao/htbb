@@ -23,6 +23,36 @@ requireAdmin();
 
 $TRANG = 'giftcode.php';
 
+/**
+ * In cột "Phần thưởng": chuỗi thô để đối chiếu/copy, cộng bản dịch dễ đọc ngay
+ * dưới — dùng chính `dmMoTaChuoiThuong()` đã dựng cho bộ chọn, nên tên hiện ra
+ * ở đây LUÔN khớp với tên hiện trong bộ chọn phía trên.
+ *
+ * Không bao giờ ném lỗi ra bảng: một mã cũ với cú pháp lạ chỉ nên hiện dòng
+ * "? ..." ở đúng chỗ của nó, không được làm vỡ toàn bộ danh sách giftcode.
+ */
+function oPhanThuongChiTiet(string $chuoi): void
+{
+    $chuoi = trim($chuoi);
+    if ($chuoi === '') {
+        echo '<span class="muted">—</span>';
+        return;
+    }
+    echo '<code>' . e($chuoi) . '</code>';
+    try {
+        $moTa = dmMoTaChuoiThuong(dbGame(), $chuoi);
+    } catch (Throwable $ex) {
+        $moTa = [];
+    }
+    if ($moTa) {
+        echo '<ul class="chi-tiet-thuong">';
+        foreach ($moTa as $dong) {
+            echo '<li>' . e($dong) . '</li>';
+        }
+        echo '</ul>';
+    }
+}
+
 // ---------------------------------------------------------------------------
 //  Thao tác
 // ---------------------------------------------------------------------------
@@ -614,7 +644,7 @@ adminHead('giftcode', 'Giftcode');
                     <td class="num"><?= so($gc['xu']) ?></td>
                     <td class="num"><?= so($gc['luong']) ?></td>
                     <td class="num"><?= so($gc['luongLock']) ?></td>
-                    <td class="info"><?= e((string)($gc['item'] ?? '')) ?: '<span class="muted">—</span>' ?></td>
+                    <td class="info"><?php oPhanThuongChiTiet((string)($gc['item'] ?? '')); ?></td>
                     <td class="num"><?= $conLuot < 0 ? '∞' : so($conLuot) ?></td>
                     <td class="num">
                         <a href="giftcode.php?tab=log&amp;ma=<?= e(urlencode($gc['giftcode'])) ?>">
@@ -736,7 +766,7 @@ adminHead('giftcode', 'Giftcode');
                     <td class="num"><?= so($r['xu']) ?></td>
                     <td class="num"><?= so($r['luong']) ?></td>
                     <td class="num"><?= so($r['luongK']) ?></td>
-                    <td class="info"><?= e((string)($r['item'] ?? '')) ?></td>
+                    <td class="info"><?php oPhanThuongChiTiet((string)($r['item'] ?? '')); ?></td>
                     <td class="nowrap">
                         <form method="post" action="giftcode.php" class="inline"
                               onsubmit="return confirm('Cho <?= e((string)$r['player']) ?> nhận lại mã <?= e((string)$r['giftcode']) ?>?');">

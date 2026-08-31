@@ -388,6 +388,20 @@ ktDung("co require_once 'danh_muc_thu.php'", strpos($dmFile, "danh_muc_thu.php'"
 ktDung("co require_once 'danh_muc_danh_hieu.php'",
     strpos($dmFile, "danh_muc_danh_hieu.php'") !== false);
 
+// ---- Vat pham TRUNG TEN (khac id, khac level) - phai gan them cap de phan biet ----
+// Bi hoi "sao co nhieu item trung lap nhung khac id". Doi chieu CSDL that: chi dung
+// "Phi phong Lăng Vân" (584 Lv35 / 596 Lv95 / 597 Lv100) trung ten trong cac type bo
+// chon dang dung - ba id nay la BA BAC KHAC NHAU that su trong game (khong co cot nao
+// danh dau "ban chinh"), khong phai loi du lieu de "sua con mot". dmVatPham() phai
+// CHI gan "(Lv N)" cho ten trung, KHONG gan tran lan cho moi mon co level > 0 - da xac
+// nhan hau het vat pham khac (trung, skin, canh, manh suu tap) deu level thap hoac
+// dung chung mot level cho ca nhom, gan vao do chi la nhieu chu khong phan biet duoc gi.
+ktDung('dmVatPham dem so lan trung ten TRUOC khi gan nhan',
+    strpos($dmFile, '$demTen[$ten]') !== false);
+ktDung('dmVatPham CHI gan (Lv N) khi ten trung (demTen > 1), khong gan tran lan',
+    (bool)preg_match('/if \(\$demTen\[\$ten\] > 1\)/', $dmFile));
+ktDung('dmVatPham SELECT ca cot level de gan nhan', strpos($dmFile, 'name, type, level') !== false);
+
 // ===========================================================================
 echo "\n== Ma nguon: bo chon khong duoc thanh duong di thu hai\n";
 // ===========================================================================
@@ -477,6 +491,88 @@ ktDung('tim thay ham createTrungPhuongHoang trong Char.java', $viTriHam !== fals
 $thanHam = $viTriHam !== false ? substr($charJava, $viTriHam, 1200) : '';
 ktDung('createTrungPhuongHoang KHONG lam moi hanh trang (khong goi createCharInventoryMessage)',
     $thanHam !== '' && strpos($thanHam, 'createCharInventoryMessage') === false);
+
+// ===========================================================================
+echo "\n== Cot 'Chi tiet': giai thich chuoi phan thuong thanh van ban doc duoc\n";
+// ===========================================================================
+// dmMoTaChuoiThuong() can mot PDO that (tra ten qua data_item/data_potion), nen
+// theo dung quy uoc CUA CHINH TEP NAY (xem dau tep: "khong goi dmDanhMuc() vi ham
+// do truy van CSDL") - kiem bang soi ma nguon, KHONG goi truc tiep. Hanh vi chay
+// that da duoc doi chieu THU CONG qua 18 chuoi vi du tren CSDL that cua VPS luc
+// viet ham nay (ITEM/PT/GEM/TT/PET/PETV/TK/DH/EGG/CAITRANG/MATNA/RONGBANG/HKL/
+// loai la/id la deu ra dung); o day chi khoa lai cac bat bien quan trong.
+
+ktDung('co ham dmMoTaChuoiThuong()', strpos($dmFile, 'function dmMoTaChuoiThuong(') !== false);
+ktDung('co ham dmTenTheoLoai()', strpos($dmFile, 'function dmTenTheoLoai(') !== false);
+
+// Khong duoc ném lỗi ra ngoai: mot doan chuoi cu hong khong duoc lam vo trang
+// danh sach giftcode.
+ktDung('dmMoTaChuoiThuong xu ly duoc loai KHONG ro (khong nam trong loaiThuong)',
+    strpos($dmFile, 'không rõ loại') !== false);
+
+// Danh sach loai co "id" that su can tra ten - doi chieu voi chinh danh sach da
+// cai vao switch trong dmTenTheoLoaiKhongCache(). Thieu mot loai o day la mot
+// loai bi rot ve nhanh "khong tim thay ten" oan, du id hoan toan hop le.
+$phanThan = substr($dmFile,
+    (int)strpos($dmFile, 'function dmTenTheoLoaiKhongCache'),
+    (int)strpos($dmFile, 'function dmMoTaChuoiThuong') - (int)strpos($dmFile, 'function dmTenTheoLoaiKhongCache'));
+ktDung('doc duoc than ham dmTenTheoLoaiKhongCache', strlen($phanThan) > 200);
+foreach ([
+    'ITEM', 'DB', 'TT', 'AOTT', 'AOSHOP', 'TRANGPHUC', 'MATNA2', 'HLT', 'VKID',
+    'PPR', 'PPV', 'PPRK', 'PPVK', 'PPLUCK', 'HOVELAN', 'CHOI', 'TK', 'TKMAX',
+    'TKF', 'TKMAXF', 'PT', 'GEM', 'PET', 'PETV', 'DH', 'DANHHIEU2', 'CAITRANG',
+    'MATNA', 'EGG',
+] as $loai) {
+    ktDung("dmTenTheoLoaiKhongCache co xu ly loai $loai",
+        strpos($phanThan, "'$loai'") !== false || strpos($phanThan, "case '$loai':") !== false);
+}
+
+// EGG: bon gia tri hop le phai khop CHINH XAC voi Char.createTrungPhuongHoang()
+// (da doi chieu o khoi kiem "Trung phuong hoang" phia tren) - lech mot so la
+// hien sai ten trong cot Chi tiet du giftcode van phat dung.
+ktDung('EGG 16 -> Phuong hoang', strpos($dmFile, "16 => 'Phượng hoàng'") !== false);
+ktDung('EGG 17 -> Trung phuong hoang bang', strpos($dmFile, "17 => 'Trứng phượng hoàng băng'") !== false);
+ktDung('EGG 18 -> Trung Hoa ky lan', strpos($dmFile, "18 => 'Trứng Hoả kỳ lân'") !== false);
+ktDung('EGG 19 co canh bao KHONG phai trung', strpos($dmFile, 'Sách kỹ năng pet (KHÔNG phải trứng)') !== false);
+
+// CAITRANG: chi 903/904 co nghia, dung nhu Char.createItemCaiTrang.
+ktDung('CAITRANG 903 -> Cai Trang Bat Gioi', strpos($dmFile, "903) { return 'Cải Trang Bát Giới'") !== false);
+ktDung('CAITRANG 904 -> Cai Trang Sa Tang', strpos($dmFile, "904) { return 'Cải Trang Sa Tăng'") !== false);
+
+// MATNA: option la CHI SO 0..4, -1 la ngau nhien - khong duoc tra thang id vat
+// pham (se ra sai hoan toan, xem thuong.php ghi chu 'option -1 = ngau nhien').
+ktDung('MATNA -1 la ngau nhien', strpos($dmFile, "\$id === -1") !== false);
+ktDung('MATNA cong 745 vao chi so de ra id that (Char.ID_MAT_NA)',
+    strpos($dmFile, '745 + $id') !== false);
+
+// Don vi thoi han: cac loai da xac minh bang PHUT khong duoc lan sang bang NGAY
+// va nguoc lai - doi chieu voi bang da dung trong khoi kiem truoc do trong tep nay.
+$donVi = dmDonViThoiHanLoai();
+foreach (['HKL', 'PET', 'TK', 'TKMAX', 'DH', 'DANHHIEU2', 'MATNA', 'MATNA2'] as $l) {
+    kt("don vi cua $l la phut (da xac minh doc Char.java)", $donVi[$l] ?? null, 'phút');
+}
+foreach (['RONGBANG', 'SUTU', 'SUTUBANG', 'DKB', 'DKT', 'TL',
+          'PHT', 'PHDST', 'PHMT', 'PHKT', 'PHTT', 'PHBT'] as $l) {
+    kt("don vi cua $l la ngay (da xac minh doc Char.java)", $donVi[$l] ?? null, 'ngày');
+}
+
+// Co bo nho trong mot lan tai trang - trang danh sach goi ham nay cho MOI doan
+// cua MOI ma, cung mot vat pham lap lai o nhieu ma khong duoc doi ra nhieu cau
+// SELECT.
+ktDung('dmTenTheoLoai co bo nho tam (static cache) trong mot lan tai trang',
+    strpos($dmFile, 'static $boNho') !== false);
+
+// ---- giftcode.php: da noi vao ca hai bang, khong lam vo trang khi loi ----
+ktDung("giftcode.php co ham oPhanThuongChiTiet()", strpos($gc, 'function oPhanThuongChiTiet(') !== false);
+ktDung('oPhanThuongChiTiet duoc goi trong bang danh sach ma',
+    substr_count($gc, 'oPhanThuongChiTiet(') >= 2);
+ktDung('oPhanThuongChiTiet boc try/catch quanh dmMoTaChuoiThuong (mot doan hong khong lam vo ca trang)',
+    (bool)preg_match('/function oPhanThuongChiTiet.*?catch \(Throwable/s', $gc));
+// Chuoi tho van con trong <code> de doi chieu/copy - khong chi thay bang ban dich.
+ktDung('van giu chuoi tho trong <code> ben canh ban dich', strpos($gc, "'<code>' . e(\$chuoi)") !== false);
+
+$css = (string)@file_get_contents($GOC . 'web/admin/assets/admin.css');
+ktDung('admin.css co dinh nghia .chi-tiet-thuong', strpos($css, '.chi-tiet-thuong') !== false);
 
 // ===========================================================================
 echo "\n===================================\n";

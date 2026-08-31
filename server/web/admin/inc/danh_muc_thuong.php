@@ -273,7 +273,7 @@ function dmMotDong(?string $ten): string
  */
 function dmVatPham(PDO $game, array $chiLay = []): array
 {
-    $sql = 'SELECT id, name, type FROM data_item';
+    $sql = 'SELECT id, name, type, level FROM data_item';
     $args = [];
     if ($chiLay) {
         // Ép về số nguyên rồi nhúng thẳng: đây là mảng do MÃ NGUỒN tạo (hằng số
@@ -294,12 +294,35 @@ function dmVatPham(PDO $game, array $chiLay = []): array
     try {
         $st = $game->prepare($sql);
         $st->execute($args);
-        foreach ($st->fetchAll() as $d) {
+        $dong = $st->fetchAll();
+
+        // Đếm trước xem tên nào TRÙNG THẬT trong đúng tập đang lấy — vd
+        // "Phi phong Lăng Vân" có ba id (584/596/597) khác nhau về level (35/95/
+        // 100), không có cột nào đánh dấu "bậc chính thức". KHÔNG thể tự đoán id
+        // nào "đúng"; cách trung thực là cho người tạo mã thấy đủ để tự chọn.
+        //
+        // CHỈ gắn cấp cho tên bị trùng, không gắn tràn lan cho mọi món có
+        // level > 0: phần lớn vật phẩm khác (trứng, skin, cánh, mảnh sưu tập) đều
+        // có level 1 hoặc dùng chung một level cho cả nhóm — gắn "(Lv 1)" vào đó
+        // chỉ là nhiễu, không giúp phân biệt gì cả. Đã đối chiếu CSDL đang chạy:
+        // trong các type mà bộ chọn dùng, chỉ đúng "Phi phong Lăng Vân" trùng tên.
+        $demTen = [];
+        foreach ($dong as $d) {
+            $ten = dmMotDong((string)$d['name']);
+            $demTen[$ten] = ($demTen[$ten] ?? 0) + 1;
+        }
+
+        foreach ($dong as $d) {
             $id = (int)$d['id'];
             if (isset($idRac[$id])) {
                 continue;
             }
-            $ra[(int)$d['type']][$id] = dmMotDong((string)$d['name']);
+            $ten = dmMotDong((string)$d['name']);
+            if ($demTen[$ten] > 1) {
+                $level = (int)$d['level'];
+                $ten .= $level > 0 ? ' (Lv ' . $level . ')' : ' (id ' . $id . ')';
+            }
+            $ra[(int)$d['type']][$id] = $ten;
         }
     } catch (Throwable $ex) {
         return [];
@@ -770,4 +793,264 @@ function dmTruongCuaLoai(string $loai): array
             ];
     }
     return [];
+}
+
+// ============================================================================
+//  GIẢI THÍCH CHUỖI PHẦN THƯỞNG THÀNH VĂN BẢN ĐỌC ĐƯỢC
+// ============================================================================
+//
+// Trang danh sách giftcode trước đây chỉ in nguyên chuỗi kiểu
+// "ITEM:848:1000,TRANGPHUC:833:1:30" — đúng với những gì server đọc, nhưng
+// không ai nhớ id 848/833 là gì mà không mở lại bộ chọn. Cột "Chi tiết" dịch
+// từng đoạn ra tên thật và nhãn tham số, dùng CHÍNH các danh mục đã dựng cho
+// bộ chọn (data_item / data_potion / Map.gemTemplate / Map.petTemplate /
+// DanhHieu) — nên tên hiện ra ở đây LUÔN khớp với tên hiện trong bộ chọn.
+//
+// CHỈ ĐỂ HIỂN THỊ, KHÔNG DÙNG ĐỂ KIỂM TRA HAY GHI XUỐNG. Đây thuần tuý là một
+// bộ giải thích một chiều: đọc chuỗi đã lưu trong CSDL, tra tên, in ra. Nó
+// không validate gì (kiemTraItem() vẫn là nơi duy nhất chặn dữ liệu sai), và
+// đọc sai một đoạn khó hiểu chỉ làm dòng đó hiển thị xấu chứ không ảnh hưởng gì
+// đến quà thật đã phát.
+//
+// PHỦ HẾT 61 LOẠI trong loaiThuong(), nhưng độ chi tiết không đều — vì bằng
+// chứng có sẵn không đều:
+//   - Loại có danh mục riêng (ITEM/PT/GEM/TT/PET/PETV/DH/DANHHIEU2/MATNA/MATNA2/
+//     EGG/CAITRANG/TKF/TKMAXF và các loại phi phong PPR/PPV/PPRK/PPVK/PPLUCK/
+//     HOVELAN/CHOI/AOTT/AOSHOP/TRANGPHUC/HLT/DB/VKID/TK/TKMAX) -> TRA RA TÊN THẬT.
+//   - Loại chỉ nhận thời hạn, không có id (RONGBANG/SUTU/HKL/PHT/...) -> chỉ in
+//     lại mô tả có sẵn trong loaiThuong() kèm số ngày/phút, ĐÃ XÁC MINH đơn vị
+//     bằng cách đọc thẳng Char.java cho từng hàm (createRongLon/createSuTu/
+//     createHeoBang/createTuanLoc/createPhuongHoang dùng tham số "day" nhân
+//     24*60*60000 = NGÀY; doCreateHoaKyLanTime dùng "minute" nhân 60000 = PHÚT).
+//   - Loại còn lại (VKTT/VKMAX/NLT/PP/PP8X/VKTBLV...) không tra được đơn vị thời
+//     hạn trong đợt rà soát này -> in số thô, KHÔNG bịa đơn vị chưa xác minh.
+
+/**
+ * Đơn vị của tham số tên "thoiHan" trong cú pháp — ĐÃ XÁC MINH bằng cách đọc
+ * thẳng hàm Java xử lý từng loại (không đoán theo tên tham số).
+ *
+ * Tham số tên "soNgay" thì KHÔNG cần bảng này: chính cái tên đã nói rõ đơn vị,
+ * và mọi chỗ đã đọc code đều dùng đúng nghĩa đó (nhân 24*60*60000 ra mili-giây).
+ */
+function dmDonViThoiHanLoai(): array
+{
+    return [
+        'HKL' => 'phút', 'PET' => 'phút', 'TK' => 'phút', 'TKMAX' => 'phút',
+        'DH' => 'phút', 'DANHHIEU2' => 'phút', 'MATNA' => 'phút', 'MATNA2' => 'phút',
+        'RONGBANG' => 'ngày', 'SUTU' => 'ngày', 'SUTUBANG' => 'ngày',
+        'DKB' => 'ngày', 'DKT' => 'ngày', 'TL' => 'ngày',
+        'PHT' => 'ngày', 'PHDST' => 'ngày', 'PHMT' => 'ngày',
+        'PHKT' => 'ngày', 'PHTT' => 'ngày', 'PHBT' => 'ngày',
+    ];
+}
+
+/**
+ * Tra một id ra tên đọc được, theo đúng nguồn của từng loại thưởng. Trả về
+ * null nếu loại đó không có id để tra (vẫn hợp lệ — nhiều loại chỉ nhận thời
+ * hạn), hoặc id không tìm thấy trong danh mục.
+ */
+function dmTenTheoLoai(PDO $game, string $loai, string $idRaw): ?string
+{
+    if (!ctype_digit(ltrim($idRaw, '-')) || $idRaw === '' || $idRaw === '-') {
+        return null;
+    }
+    $id = (int)$idRaw;
+
+    // Bộ nhớ trong một lần tải trang: trang danh sách giftcode gọi hàm này cho
+    // MỖI đoạn của MỖI mã, và cùng một vật phẩm (ví dụ mảnh sưu tập 848) thường
+    // lặp lại ở nhiều mã khác nhau. Không cache thì mỗi lần lặp lại là một câu
+    // SELECT data_item mới — vô hại với chín mã hiện có, nhưng vô ích khi số mã
+    // tăng lên. `null` cũng được nhớ (bằng cờ isset riêng) để không lặp lại tra
+    // một id không tồn tại nhiều lần trong cùng một lượt tải trang.
+    static $boNho = [];
+    $khoa = $loai . ':' . $id;
+    if (array_key_exists($khoa, $boNho)) {
+        return $boNho[$khoa];
+    }
+    return $boNho[$khoa] = dmTenTheoLoaiKhongCache($game, $loai, $id);
+}
+
+/** Thân thật của dmTenTheoLoai() — tách riêng để hàm bọc ngoài lo việc cache. */
+function dmTenTheoLoaiKhongCache(PDO $game, string $loai, int $id): ?string
+{
+    switch ($loai) {
+        // ---- data_item, tra thang bang id that ----
+        case 'ITEM': case 'DB': case 'TT': case 'AOTT': case 'AOSHOP':
+        case 'TRANGPHUC': case 'MATNA2': case 'HLT': case 'VKID':
+        case 'PPR': case 'PPV': case 'PPRK': case 'PPVK': case 'PPLUCK':
+        case 'HOVELAN': case 'CHOI': case 'TK': case 'TKMAX':
+        case 'TKF': case 'TKMAXF':
+            try {
+                $st = $game->prepare('SELECT name FROM data_item WHERE id = ?');
+                $st->execute([$id]);
+                $ten = $st->fetchColumn();
+                return $ten === false ? null : dmMotDong((string)$ten);
+            } catch (Throwable $ex) {
+                return null;
+            }
+
+        case 'PT':
+            $thuoc = dmThuoc($game);
+            return $thuoc[$id] ?? null;
+
+        case 'GEM':
+            $ngoc = danhMucNgoc();
+            return isset($ngoc[$id]) ? $ngoc[$id]['ten'] : null;
+
+        case 'PET': case 'PETV':
+            // Chi so MANG, khong phai id vat pham - xem dmIdManhSuuTap()/danhMucThu().
+            $thu = danhMucThu();
+            return $thu[$id] ?? null;
+
+        case 'DH':
+            if ($id === 0) {
+                return 'Ngẫu nhiên (một trong 34 danh hiệu cũ)';
+            }
+            $dh = danhMucDanhHieu();
+            return isset($dh[$id]) ? $dh[$id]['ten'] : null;
+
+        case 'DANHHIEU2':
+            $dh2 = danhMucDanhHieu();
+            return isset($dh2[$id]) ? $dh2[$id]['ten'] : null;
+
+        case 'CAITRANG':
+            // Chi dung 903/904 lam viec - xem doUsePotion/Char.createItemCaiTrang.
+            if ($id === 903) { return 'Cải Trang Bát Giới'; }
+            if ($id === 904) { return 'Cải Trang Sa Tăng'; }
+            return null;
+
+        case 'MATNA':
+            // option la CHI SO 0..4 vao Char.ID_MAT_NA = {745,746,747,748,749},
+            // KHONG PHAI id vat pham - xem thuong.php.
+            if ($id === -1) {
+                return 'Ngẫu nhiên';
+            }
+            if ($id >= 0 && $id <= 4) {
+                try {
+                    $st = $game->prepare('SELECT name FROM data_item WHERE id = ?');
+                    $st->execute([745 + $id]);
+                    $ten = $st->fetchColumn();
+                    return $ten === false ? null : dmMotDong((string)$ten);
+                } catch (Throwable $ex) {
+                    return null;
+                }
+            }
+            return null;
+
+        case 'EGG':
+            // Char.createTrungPhuongHoang() - CHI 4 gia tri nay co nghia, xem
+            // ghi chu 'EGG' trong loaiThuong().
+            $anhXa = [16 => 'Phượng hoàng', 17 => 'Trứng phượng hoàng băng',
+                18 => 'Trứng Hoả kỳ lân', 19 => 'Sách kỹ năng pet (KHÔNG phải trứng)'];
+            return $anhXa[$id] ?? null;
+    }
+    return null;
+}
+
+/**
+ * Tách một chuỗi phần thưởng đầy đủ (một hoặc nhiều đoạn nối bằng dấu phẩy)
+ * thành các dòng mô tả đọc được. Không bao giờ ném lỗi — dữ liệu cũ có thể có
+ * đoạn hỏng hoặc loại không còn dùng, gặp đoạn không hiểu thì in nguyên văn
+ * kèm dấu hỏi thay vì làm vỡ cả trang danh sách.
+ *
+ * @return string[] mỗi phần tử là một dòng mô tả cho một phần thưởng
+ */
+function dmMoTaChuoiThuong(PDO $game, string $chuoiDayDu): array
+{
+    $chuoiDayDu = trim($chuoiDayDu);
+    if ($chuoiDayDu === '') {
+        return [];
+    }
+
+    $bangLoai = loaiThuong();
+    $donViThoiHan = dmDonViThoiHanLoai();
+    $ra = [];
+
+    foreach (explode(',', $chuoiDayDu) as $doan) {
+        $doan = trim($doan);
+        if ($doan === '') {
+            continue;
+        }
+        $tach = array_map('trim', explode(':', $doan));
+        $loai = strtoupper($tach[0]);
+
+        if (!isset($bangLoai[$loai])) {
+            $ra[] = '? "' . $doan . '" (không rõ loại)';
+            continue;
+        }
+
+        [, $cuPhap, $moTa] = $bangLoai[$loai];
+        // Tên tham số theo đúng thứ tự ghi trong cú pháp, bỏ phần đầu (tên loại).
+        $tenThamSo = array_slice(explode(':', $cuPhap), 1);
+
+        // Tham vào vị trí đầu tiên NẾU cú pháp gọi nó là một biến thể của "id" —
+        // đây là quy ước đặt tên xuyên suốt bảng loaiThuong(), không phải đoán mò.
+        $tenThamSoDau = $tenThamSo[0] ?? '';
+        $laThamSoId = $tenThamSoDau !== '' && $tenThamSoDau !== '_'
+            && stripos($tenThamSoDau, 'id') !== false;
+        // MATNA dùng tên "option" (chỉ số 0..4, không phải chữ "id") nhưng vẫn cần
+        // tra tên; EGG dùng tên "loai" (giá trị 16..19) — cả hai không lọt qua được
+        // kiểm tra chứa chữ "id" ở trên nên phải liệt kê thẳng theo tên loại.
+        $laThamSoId = $laThamSoId || $tenThamSoDau === 'option' || $loai === 'EGG';
+
+        $tenThat = null;
+        if ($laThamSoId && isset($tach[1])) {
+            $tenThat = dmTenTheoLoai($game, $loai, $tach[1]);
+        }
+
+        // Có tên thật thì DÙNG TÊN LÀM TIÊU ĐỀ DÒNG — mô tả trong loaiThuong() được
+        // viết cho bảng tham khảo cú pháp (nhiều loại dài cả một đoạn cảnh báo,
+        // như EGG), nhét vào đây thành một dòng chi tiết dài dằng dặc không ai đọc.
+        // Chỉ giữ mô tả làm tiêu đề khi KHÔNG có tên thật để hiện — id lạ, hoặc
+        // loại này vốn không có id nào để tra (mô tả của nhóm đó vốn đã ngắn:
+        // "Rồng băng", "Hoả kỳ lân"...).
+        if ($tenThat !== null) {
+            $dong = $tenThat;
+        } elseif ($laThamSoId && isset($tach[1])) {
+            $dong = $moTa . ' (id ' . $tach[1] . ' — không tìm thấy tên)';
+        } else {
+            $dong = $moTa;
+        }
+
+        // Các tham số còn lại: in kèm nhãn, bỏ qua "_" (chỗ trống chưa dùng) và
+        // vị trí đã dùng làm id ở trên.
+        $phanConLai = [];
+        foreach ($tenThamSo as $i => $ten) {
+            $viTri = $i + 1; // +1 vì tach[0] là tên loại
+            if ($ten === '_' || !isset($tach[$viTri])) {
+                continue;
+            }
+            if ($i === 0 && $laThamSoId) {
+                continue; // da dung o tren
+            }
+            $giaTri = $tach[$viTri];
+            if ($ten === 'thoiHan' && isset($donViThoiHan[$loai])) {
+                $donVi = $donViThoiHan[$loai];
+                $phanConLai[] = $giaTri === '0'
+                    ? 'vĩnh viễn'
+                    : $giaTri . ' ' . $donVi;
+            } elseif ($ten === 'soNgay') {
+                // Chinh cai ten "so ngay" da noi ro don vi - moi noi da doc code deu
+                // dung dung nghia do (nhan 24*60*60000 ra mili-giay), khong can tra
+                // bang rieng nhu "thoiHan" (ten tham so mo hon, don vi lech theo tung
+                // loai).
+                $phanConLai[] = $giaTri === '0' ? 'vĩnh viễn' : $giaTri . ' ngày';
+            } elseif ($ten === 'soLuong') {
+                $phanConLai[] = 'số lượng ' . $giaTri;
+            } elseif ($ten === 'khoa') {
+                // Quy uoc dau khac nhau giua cac loai (GEM: am la khoa; TT: 1 la
+                // khoa) - khong doan, chi in nguyen gia tri kem nhan.
+                $phanConLai[] = 'khoá=' . $giaTri;
+            } else {
+                $phanConLai[] = $ten . '=' . $giaTri;
+            }
+        }
+        if ($phanConLai) {
+            $dong .= ' (' . implode(', ', $phanConLai) . ')';
+        }
+
+        $ra[] = $dong;
+    }
+
+    return $ra;
 }
