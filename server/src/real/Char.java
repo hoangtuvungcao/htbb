@@ -12646,7 +12646,28 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 p.iItems.add(newItem);
             }
         } else {
+            // Manh suu tap cong don qua 1 item duy nhat (otherAtt[65] o tren) -
+            // cac loai vat pham khac (vd trung thu type 26 trong giftcode) KHONG
+            // co co che cong don, nen truoc day chi tao dung 1 item roi VAN bao
+            // "nhan duoc soLuong X" - sai. Phai tao THAT su tung item rieng le.
             p.iItems.add(newItem);
+            int daTao = 1;
+            for (int i = 1; i < soLuong; i++) {
+                if (p.isFullInventory()) {
+                    break;
+                }
+                final Item themItem = new Item((ItemTemplates) Map.itemTemplates.get(5).get(idtemplate), false, 0, 0, idtemplate);
+                themItem.id = p.getIDItem();
+                themItem.owner = p.charDBID;
+                themItem.level = themItem.getTemplate().level;
+                themItem.identify = p.charDBID;
+                themItem.clazz = -1;
+                themItem.lock = 1;
+                themItem.dateCreate = getDayTime(0L);
+                p.iItems.add(themItem);
+                daTao++;
+            }
+            soLuong = daTao;
         }
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
         final String info = String.valueOf(newItem.getDBInfo()) + "|" + newItem.getAttribute() + "_" + newItem.level;

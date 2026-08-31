@@ -98,28 +98,13 @@ require_once __DIR__ . '/danh_muc_danh_hieu.php';
 const DM_SO_O_THUOC = 162;
 
 /**
- * `ITEM:id:soLuong` CHỈ THẬT SỰ CỘNG DỒN SỐ LƯỢNG VỚI ĐÚNG 12 ID NÀY — mảnh sưu
- * tập Bát Giới / Sa Tăng. Mọi id khác, dù ghi số lượng bao nhiêu, server cũng chỉ
- * tạo ĐÚNG MỘT món.
- *
- * ĐỌC THẲNG TỪ `Char.createItemSoLuong` (Char.java:12617-12648):
- *
- *     if (newItem.isManhSuuTap()) {           // Item.java:3292 — id 848..859
- *         ... cộng dồn otherAtt[65] += soLuong, trần 30000 ...
- *     } else {
- *         p.iItems.add(newItem);              // <-- LUÔN thêm ĐÚNG MỘT món
- *     }
- *     ...
- *     "Chúc mừng. Bạn đã nhận được " + soLuong + " " + newItem.getName()
- *
- * Dòng thông báo cuối vẫn in nguyên `soLuong` NGƯỜI TẠO MÃ GÕ, bất kể nhánh nào
- * chạy. Nghĩa là bộ chọn cho id ngoài dải này chọn "Số lượng: 5" thì người chơi
- * nhận ĐÚNG 1 món trong khi màn hình báo "nhận được 5" — và dòng ghi trong
- * `giftcode_log`/textarea cũng ghi số 5, nên sau này xem lại còn tưởng đã đúng.
- *
- * Vì vậy: với id KHÔNG nằm trong danh sách này, JavaScript khoá ô "Số lượng" về
- * 1 và giải thích lý do — không cấm gõ tay `ITEM:id:5`, chỉ là bộ chọn không giúp
- * tạo ra một chuỗi trông đúng mà làm sai với id thường.
+ * 12 id mảnh sưu tập Bát Giới / Sa Tăng — `ITEM:id:soLuong` cộng dồn số lượng
+ * này vào MỘT item duy nhất (`otherAtt[65]`, trần 30000) thay vì tạo nhiều item
+ * rời như id thường (từ 31/08/2026, xem `Char.createItemSoLuong`,
+ * Char.java:12617+). Trước đó id ngoài danh sách này bị khoá "Số lượng" về 1 ở
+ * bộ chọn vì server chỉ tạo đúng 1 món — lỗi đã sửa, ô khoá đã bỏ. Hàm này giữ
+ * lại vì `Item.isManhSuuTap()` (Item.java:3292) vẫn cần đúng 12 id để biết khi
+ * nào cộng dồn vào 1 item thay vì tạo item rời.
  */
 function dmIdManhSuuTap(): array
 {

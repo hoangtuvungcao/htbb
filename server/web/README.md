@@ -180,10 +180,14 @@ ba trường hợp sau bị bắt và sửa:
   là một hệ trang trí riêng (`Item.isCanh()`) — tách thành nhóm **"Cánh"** riêng, và ban
   đầu gán nhầm loại `ITEM` (Cánh không có chỉ số trong cột `atb`, chỉ số thật chỉ được
   gán khi tạo qua `TT`) — đã sửa lại thành loại `TT`.
-- **`ITEM:id:soLuong`** chỉ thật sự cộng dồn số lượng với đúng 12 id mảnh sưu tập
-  (848–859). Mọi id khác, server chỉ tạo **đúng 1 món** dù ghi số lượng bao nhiêu —
-  nhưng thông báo vẫn in nguyên số đã gõ. Bộ chọn khoá ô "Số lượng" về 1 khi món đang
-  chọn không nằm trong 12 id đó.
+- **`ITEM:id:soLuong`** — trước 31/08/2026 chỉ thật sự cộng dồn số lượng với đúng 12 id
+  mảnh sưu tập (848–859); mọi id khác server chỉ tạo **đúng 1 món** dù ghi số lượng bao
+  nhiêu (vd "Trứng thú" type 26), nhưng thông báo vẫn in nguyên số đã gõ. Bộ chọn từng
+  khoá ô "Số lượng" về 1 để tránh tạo chuỗi trông đúng mà làm sai.
+  **Đã sửa tận gốc**: `Char.createItemSoLuong()` (Char.java) giờ tạo THẬT SỰ nhiều item
+  rời cho id ngoài 12 id trên (12 id mảnh sưu tập vẫn cộng dồn vào một item như cũ, có
+  trần 30000) — có kiểm tra đầy hành trang giữa chừng nếu số lượng lớn hơn chỗ trống. Bộ
+  chọn không còn khoá ô "Số lượng" nữa. Xem `test/KiemSoLuongItemGiftcode.java`.
 
 ### Đợt mở rộng thứ hai: Thời trang, Thú nuôi, Thần khí, Danh hiệu
 

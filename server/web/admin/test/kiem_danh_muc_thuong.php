@@ -447,14 +447,15 @@ ktDung('co go bo Canh ra khoi vong lap type 29 truoc khi dung cho Manh cai trang
 ktDung('nhom bat het (vat_pham) co gan nhan rieng cho Canh, khong de lan "Manh cai trang"',
     strpos($dmFile, "'Cánh' : (\$tenLoai[\$type]") !== false);
 
-// ---- ITEM: o So luong phai bi khoa cho id ngoai manh suu tap ----
-ktDung('co ham dmIdManhSuuTap()', strpos($dmFile, 'function dmIdManhSuuTap()') !== false);
-ktDung('JS co doc ID_MANH_SUU_TAP tu dmIdManhSuuTap()',
-    strpos($gc, 'dmIdManhSuuTap()') !== false);
-ktDung('JS co ham khoa o So luong', strpos($gc, 'function capNhatKhoaSoLuong') !== false);
-ktDung('ham khoa duoc goi khi doi muc hoac doi nhom (qua doiMuc)',
-    strpos($gc, 'function doiMuc()') !== false
-    && strpos($gc, 'capNhatKhoaSoLuong();') !== false);
+// ---- ITEM: So luong phai dung duoc cho MOI id, khong con bi khoa ve 1 -----
+// Char.createItemSoLuong (Char.java) da duoc sua 31/08/2026: id ngoai manh
+// suu tap gio tao THAT SU nhieu item rieng le thay vi luon dung 1 - nen bo
+// chon KHONG con ly do khoa o "So luong" nua. Xem test Java tuong ung trong
+// test/KiemSoLuongItemGiftcode.java.
+ktDung('co ham dmIdManhSuuTap() (van dung de biet id nao cong don vao 1 item)',
+    strpos($dmFile, 'function dmIdManhSuuTap()') !== false);
+ktDung('JS KHONG con khoa o So luong (capNhatKhoaSoLuong da bo, sua tan goc o Java)',
+    strpos($gc, 'capNhatKhoaSoLuong') === false && strpos($gc, 'ID_MANH_SUU_TAP') === false);
 ktDung('oMuc lang nghe "change" bang doiMuc chu khong phai truc tiep veXem',
     (bool)preg_match("/oMuc\\.addEventListener\\('change',\\s*doiMuc\\)/", $gc));
 
