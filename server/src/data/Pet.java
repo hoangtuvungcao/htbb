@@ -213,20 +213,16 @@ public class Pet extends Actor {
     }
 
     public int getIdEffPet() {
+        // Hoa hinh KHONG doi hieu ung/anh o day nua (tung thu id 49-53 theo
+        // loai, da bo 31/08/2026): MessageCreator.java dung gia tri ham nay
+        // lam CHINH truong "type" gui cho client khi pet dang o TYPE_PET_TOOL
+        // (moi pet da tien hoa, khong rieng hoa hinh) tren session version180
+        // - ghi de idImg thuong. Id 49-53 chua duoc xac minh la client THAT
+        // co dang ky (khac ban KPAH nguon cua tinh nang nay), va thuc te gay
+        // pet bien mat khoi man hinh sau khi hoa hinh - da bao cao va xac
+        // nhan. Kha nang khang xuyen giap (applyKhangXuyenGiap) khong lien
+        // quan gi ham nay, van hoat dong day du du khong doi hinh anh.
         if (this.itemPet != null) {
-            if (this.idHoaHinhPet != -1 && !this.endHoaHinhPet()) {
-                if (this.isPetRong()) {
-                    return 49;
-                } else if (this.isPetCu()) {
-                    return 50;
-                } else if (this.isPetYeuTinh()) {
-                    return 51;
-                } else if (this.isPetDoi()) {
-                    return 52;
-                } else if (this.isPetDaiBang()) {
-                    return 53;
-                }
-            }
             if (this.isPetCu()) {
                 if (this.itemPet.level == 1) {
                     return 37;
@@ -844,6 +840,20 @@ public class Pet extends Actor {
                 info = info + "\n- Cần " + MATERIAL_UPDGRADE[this.itemPet.getTemplate().atb[0]] + " nguyên liệu cao cấp cấp 6";
                 info = info + "\n- Cần " + MATERIAL_UPDGRADE[this.itemPet.getTemplate().atb[0]] + " nguyên liệu sơ cấp cấp 6";
                 info = info + "\n- Tỷ lệ thành công: " + PC_UPDGRADE_OK[this.itemPet.getTemplate().atb[0]] + "%";
+            }
+
+            // Hoa hinh (them 31/08/2026) - khong co hieu ung hinh anh rieng
+            // (xem getIdEffPet()), nen day la CACH DUY NHAT nguoi choi thay
+            // duoc minh da hoa hinh cap may / con han bao lau.
+            if (this.capHoaHinh > 0) {
+                info = info + "\n- Hoá hình cấp " + this.capHoaHinh + "/5";
+                if (this.endHoaHinhPet()) {
+                    info = info + " - ĐÃ HẾT HẠN, hoá hình lại để tiếp tục kháng xuyên giáp";
+                } else {
+                    final long conLaiNgay = (this.timeEndHoaHinhPet - System.currentTimeMillis()) / (24L * 60L * 60000L);
+                    info = info + ": kháng xuyên giáp cấp " + this.khangXuyenGiapCap
+                            + ", còn " + conLaiNgay + " ngày";
+                }
             }
 
             return info;

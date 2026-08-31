@@ -154,6 +154,26 @@ public final class KiemHoaHinhPet {
     private static void quetVanBanNguon() {
         Kiem.nhom("Hoa hinh Pet - noi day UI (menu NPC, RealController, CharChiSo, Database)");
 
+        // BAO VE CHONG TAI DIEN: hoa hinh KHONG duoc doi getIdEffPet() nua.
+        // Da bi bao cao pet BIEN MAT khoi man hinh sau khi hoa hinh (31/08/2026)
+        // - nguyen nhan la MessageCreator.java dung getIdEffPet() lam CHINH
+        // truong "type" gui client khi pet o TYPE_PET_TOOL (moi pet da tien
+        // hoa) tren session version180, va id 49-53 chua duoc client dang ky.
+        // Da go bo nhanh hoa hinh trong getIdEffPet(); test nay khoa lai de
+        // khong ai vo tinh them lai.
+        final String petJava = doc("src/data/Pet.java");
+        Kiem.dung("doc duoc Pet.java", !petJava.isEmpty());
+        final int dauHamEff = petJava.indexOf("public int getIdEffPet()");
+        final int cuoiHamEff = petJava.indexOf("\n    }", dauHamEff);
+        Kiem.dung("tim thay than ham getIdEffPet()", dauHamEff >= 0 && cuoiHamEff > dauHamEff);
+        if (dauHamEff >= 0 && cuoiHamEff > dauHamEff) {
+            final String thanEff = petJava.substring(dauHamEff, cuoiHamEff);
+            Kiem.dung("getIdEffPet() KHONG con doc idHoaHinhPet (tung gay pet bien mat)",
+                    !thanEff.contains("idHoaHinhPet"));
+            Kiem.dung("getIdEffPet() KHONG con doc capHoaHinh",
+                    !thanEff.contains("capHoaHinh"));
+        }
+
         final String menuNpc = doc("src/real/cmd/RequestNPCInfoHandler.java");
         Kiem.dung("doc duoc RequestNPCInfoHandler.java", !menuNpc.isEmpty());
         Kiem.dung("menu NPC -8 co muc \"Hoá Hình Pet\"", menuNpc.contains("\"Hoá Hình Pet\""));
@@ -166,7 +186,8 @@ public final class KiemHoaHinhPet {
         Kiem.dung("dung item 268 (lo thuoc hoa hinh co san, khong tao item moi)",
                 realController.contains("player.listGemitem[268]") && realController.contains("player.delGem(268,"));
         Kiem.dung("tru 5000 luong", realController.contains("player.subLuong(5000L)"));
-        Kiem.dung("gan idHoaHinhPet = 67 (hieu ung Lan, dung chung moi cap)", realController.contains("player.petUsing.idHoaHinhPet = 67"));
+        Kiem.dung("gan idHoaHinhPet = 67 (co dinh, danh dau da hoa hinh - khong con dieu khien hieu ung hinh anh nao)",
+                realController.contains("player.petUsing.idHoaHinhPet = 67"));
         Kiem.dung("thoi han 10 ngay (864_000_000L ms)", realController.contains("864_000_000L"));
         Kiem.dung("co luu CSDL sau khi hoa hinh", realController.contains("Database.instance.savePet(player.petUsing);"));
 

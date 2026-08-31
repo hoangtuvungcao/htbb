@@ -462,8 +462,17 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   không hóa hình tiếp — dọn dữ liệu lúc đăng nhập lại (`Database.getCharPet`), không real-time.
   Xem [src/data/Pet.java](src/data/Pet.java) (`applyKhangXuyenGiap`), [src/real/RealController.java](src/real/RealController.java)
   (case 13 của `doCreateItem`), test [test/KiemHoaHinhPet.java](test/KiemHoaHinhPet.java).
-  **Chưa xác minh được**: hiệu ứng hình ảnh dùng id 49–53 (`getIdEffPet()`) theo đúng bản gốc —
-  cần tự kiểm tra bằng mắt trên client thật, vì không có cách xác minh asset client từ code server.
+  **KHÔNG có hiệu ứng hình ảnh riêng** (đã thử id 49–53 theo bản gốc rồi bỏ 31/08/2026 — xem
+  sự cố dưới đây): thấy trạng thái/cấp hoá hình qua dòng chữ trong thông tin pet
+  (`getInfoSendUser()`) chứ pet không đổi hình. Chỉ là chỉ số (kháng xuyên giáp), không phải
+  skin.
+  **Sự cố đã xảy ra và đã sửa**: bản đầu tiên cho `getIdEffPet()` trả về id 49–53 khi đang hoá
+  hình. Không ngờ được: `MessageCreator.java` dùng đúng giá trị này làm **trường hiển thị chính**
+  gửi cho client mỗi khi pet đã tiến hoá (`TYPE_PET_TOOL`, mọi pet tiến hoá — không riêng hoá
+  hình) trên session `version180`, ghi đè cả `idImg` gốc. Id 49–53 không được client đăng ký ⇒
+  **pet biến mất khỏi màn hình** sau khi hoá hình — người dùng báo lại, đã gỡ bỏ hoàn toàn nhánh
+  đổi hiệu ứng trong `getIdEffPet()`. Có test chặn tái diễn (`KiemHoaHinhPet.chay()` kiểm tra thân
+  hàm `getIdEffPet()` không còn đọc `idHoaHinhPet`/`capHoaHinh`).
 - **Hóa hình Thú lên 5 cấp** (nâng cấp tính năng hóa hình Thú có sẵn, cho khớp hệ thống Pet ở
   trên): cấp 1 (kích hoạt lần đầu, NPC "Luyện thú" idNpc `-6`) **giữ nguyên y hệt** hành vi cũ —
   30 lọ thuốc hoá hình (item 268), tỷ lệ 70%, có thể mất nguyên liệu mà thất bại. Cấp 2–5 (nâng
