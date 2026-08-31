@@ -462,17 +462,22 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   không hóa hình tiếp — dọn dữ liệu lúc đăng nhập lại (`Database.getCharPet`), không real-time.
   Xem [src/data/Pet.java](src/data/Pet.java) (`applyKhangXuyenGiap`), [src/real/RealController.java](src/real/RealController.java)
   (case 13 của `doCreateItem`), test [test/KiemHoaHinhPet.java](test/KiemHoaHinhPet.java).
-  **KHÔNG có hiệu ứng hình ảnh riêng** (đã thử id 49–53 theo bản gốc rồi bỏ 31/08/2026 — xem
-  sự cố dưới đây): thấy trạng thái/cấp hoá hình qua dòng chữ trong thông tin pet
-  (`getInfoSendUser()`) chứ pet không đổi hình. Chỉ là chỉ số (kháng xuyên giáp), không phải
-  skin.
-  **Sự cố đã xảy ra và đã sửa**: bản đầu tiên cho `getIdEffPet()` trả về id 49–53 khi đang hoá
-  hình. Không ngờ được: `MessageCreator.java` dùng đúng giá trị này làm **trường hiển thị chính**
-  gửi cho client mỗi khi pet đã tiến hoá (`TYPE_PET_TOOL`, mọi pet tiến hoá — không riêng hoá
-  hình) trên session `version180`, ghi đè cả `idImg` gốc. Id 49–53 không được client đăng ký ⇒
-  **pet biến mất khỏi màn hình** sau khi hoá hình — người dùng báo lại, đã gỡ bỏ hoàn toàn nhánh
-  đổi hiệu ứng trong `getIdEffPet()`. Có test chặn tái diễn (`KiemHoaHinhPet.chay()` kiểm tra thân
-  hàm `getIdEffPet()` không còn đọc `idHoaHinhPet`/`capHoaHinh`).
+  Có đổi hình khi hoá hình: `getIdEffPet()` trả id 49–53 theo loài (49=Rồng, 50=Cú, 51=Yêu
+  tinh, 52=Đọi, 53=Đại bàng), gửi qua `MessageCreator.java` làm trường hiển thị chính cho pet
+  đã tiến hoá (`TYPE_PET_TOOL`) trên session `version180`.
+  **Sự cố đã xảy ra và đã sửa (31/08/2026, hai lượt)**: lượt đầu bật tính năng lên thì pet
+  **biến mất khỏi màn hình** hoàn toàn sau khi hoá hình — người dùng báo lại. Đoán ban đầu là id
+  49–53 "chưa được client đăng ký" nên đã gỡ bỏ hẳn nhánh đổi hiệu ứng. Nhưng người dùng chỉ ra
+  đúng: **chưa xem kỹ project tham khảo**. Đối chiếu lại mới thấy `map/d_effect/49..53` trên repo
+  này vẫn là ảnh icon nhỏ gốc (30×13, không liên quan pet) — bản KPAH tham khảo đã **thay ảnh
+  mới** thành sprite hoá hình thật (kèm `*.bak_orig` lưu ảnh cũ, đối chiếu md5 khớp 100% với ảnh
+  cũ ở đây, xác nhận repo này chưa từng được cập nhật ảnh). Đã chép 10 file (`49`, `49.png`, ...,
+  `53`, `53.png`) từ project tham khảo sang `map/d_effect/`, xem lại bằng mắt (đúng là sprite
+  sinh vật — 49 rồng, 53 chim), rồi bật lại nhánh trong `getIdEffPet()`. Vì `map/d_effect/` được
+  gửi qua mạng lúc đăng nhập (`DataGame.java` quét cả thư mục lúc khởi động server), **chỉ cần
+  deploy server, không cần sửa gì phía client**. Có test chặn tái diễn — `KiemHoaHinhPet.chay()`
+  kiểm tra CẢ code (nhánh hoá hình còn tồn tại) LẪN file ảnh trên đĩa (đúng là bản mới, không
+  phải icon cũ) — thiếu một trong hai là tái diễn y hệt sự cố.
 - **Hóa hình Thú lên 5 cấp** (nâng cấp tính năng hóa hình Thú có sẵn, cho khớp hệ thống Pet ở
   trên): cấp 1 (kích hoạt lần đầu, NPC "Luyện thú" idNpc `-6`) **giữ nguyên y hệt** hành vi cũ —
   30 lọ thuốc hoá hình (item 268), tỷ lệ 70%, có thể mất nguyên liệu mà thất bại. Cấp 2–5 (nâng

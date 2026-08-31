@@ -213,16 +213,33 @@ public class Pet extends Actor {
     }
 
     public int getIdEffPet() {
-        // Hoa hinh KHONG doi hieu ung/anh o day nua (tung thu id 49-53 theo
-        // loai, da bo 31/08/2026): MessageCreator.java dung gia tri ham nay
-        // lam CHINH truong "type" gui cho client khi pet dang o TYPE_PET_TOOL
-        // (moi pet da tien hoa, khong rieng hoa hinh) tren session version180
-        // - ghi de idImg thuong. Id 49-53 chua duoc xac minh la client THAT
-        // co dang ky (khac ban KPAH nguon cua tinh nang nay), va thuc te gay
-        // pet bien mat khoi man hinh sau khi hoa hinh - da bao cao va xac
-        // nhan. Kha nang khang xuyen giap (applyKhangXuyenGiap) khong lien
-        // quan gi ham nay, van hoat dong day du du khong doi hinh anh.
+        // Hoa hinh doi hieu ung/anh theo loai (id 49-53) - da BI GO BO 31/08/2026
+        // roi BAT LAI CUNG NGAY sau khi tim ra nguyen nhan that: khong phai id
+        // "chua dang ky" ma la map/d_effect/49..53 tren repo nay con giu ANH GOC
+        // (icon nho 30x13, khong lien quan pet) - ban KPAH tham khao (Downloads)
+        // da THAY ANH MOI (sprite thu hoa hinh that, kem *.bak_orig luu anh cu)
+        // dung y 5 id nay cho dung tinh nang nay. Da doi chieu md5 anh cu tren
+        // repo nay KHOP HET voi *.bak_orig ben do, xac nhan repo nay chua bao
+        // gio duoc cap nhat anh. Da chep 10 file (49,49.png..53,53.png) tu ban
+        // tham khao sang map/d_effect/ o day - xem anh moi bang mat, dung la
+        // sprite sinh vat (49=rong, 53=chim, khop isPetRong/isPetDaiBang duoi
+        // day). Vi map/d_effect gui qua mang o goi 26 (DataGame.java quet toan
+        // bo thu muc luc khoi dong server), CHỈ CAN DEPLOY SERVER, khong can
+        // sua gi phia client.
         if (this.itemPet != null) {
+            if (this.idHoaHinhPet != -1 && !this.endHoaHinhPet()) {
+                if (this.isPetRong()) {
+                    return 49;
+                } else if (this.isPetCu()) {
+                    return 50;
+                } else if (this.isPetYeuTinh()) {
+                    return 51;
+                } else if (this.isPetDoi()) {
+                    return 52;
+                } else if (this.isPetDaiBang()) {
+                    return 53;
+                }
+            }
             if (this.isPetCu()) {
                 if (this.itemPet.level == 1) {
                     return 37;
