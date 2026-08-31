@@ -195,6 +195,29 @@ public final class KiemHoaHinhPet {
         } catch (final java.io.IOException e) {
             Kiem.dung("doc duoc map/d_effect/49.png bang ImageIO (" + e + ")", false);
         }
+        // BAO VE CHONG TAI DIEN LAN NUA: sau khi sua dung bo cuc (cao > rong),
+        // pet VAN mat tich - hoa ra con mot khac biet nua: moi anh dang dung tot
+        // o cho nay (41, 42, 44, va chinh 49 nguyen ban tu a081ee1) deu la PNG
+        // colormap (color type 3 trong IHDR - anh bang mau/index), trong khi
+        // ban ghep dau tien (dung BufferedImage.TYPE_INT_ARGB + ImageIO ghi mac
+        // dinh) ra PNG truecolor+alpha (color type 6) - client hoac khong doc
+        // duoc hoac ve sai voi kieu anh nay cho rieng duong ve pet nay. Sua
+        // bang cach dung IndexColorModel de ep ve dung PNG colormap. Kiem tra
+        // byte color type ngay trong IHDR (offset 25 - xem dinh dang PNG:
+        // 8 byte signature + 4 byte do dai chunk + 4 byte "IHDR" + 4 rong +
+        // 4 cao + 1 bit depth + 1 COLOR TYPE o day) de khoa dung dinh dang,
+        // vi ImageIO.read() tu giai ma duoc CA HAI kieu nen khong the chi dua
+        // vao "doc duoc" o kiem tra phia tren.
+        try {
+            final byte[] raw = Files.readAllBytes(Paths.get("map/d_effect/49.png"));
+            Kiem.dung("map/d_effect/49.png du dai de doc byte color type trong IHDR", raw.length > 26);
+            if (raw.length > 26) {
+                Kiem.bang("map/d_effect/49.png la PNG kieu colormap/index (color type 3), giong moi anh khac dang dung o day - KHONG phai truecolor+alpha (6) nhu ban ghep dau tien",
+                        Byte.valueOf((byte) 3), Byte.valueOf(raw[25]));
+            }
+        } catch (final IOException e) {
+            Kiem.dung("doc duoc byte tho cua map/d_effect/49.png (" + e + ")", false);
+        }
 
         final String menuNpc = doc("src/real/cmd/RequestNPCInfoHandler.java");
         Kiem.dung("doc duoc RequestNPCInfoHandler.java", !menuNpc.isEmpty());
