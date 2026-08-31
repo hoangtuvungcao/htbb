@@ -928,7 +928,12 @@ public class Char extends LiveActor {
         Char.allItemLuckyDraw = new Vector<ItemLuckyDraw>();
         Char.pcWinLuckyDraw = 2;
         Char.nItemLucky = 11;
-        Char.addMore = 2;
+        // addMore = 7 (truoc la 2): CharSuKien.loadAllItemLucky() vua chen 5 phan
+        // tu Canh (898-902) ngay sau id 619, day toan bo vi tri phia sau lui 5 o.
+        // groupLucky[] o duoi la CHI SO TUONG DOI (chua cong addMore) tro vao vong
+        // lap idgem/ps trong loadAllItemLucky() - tang addMore len 7 de bu dung 5
+        // o vua chen, neu khong phan thuong phu se boc nham sang Canh/thu cung.
+        Char.addMore = 7;
         Char.groupLucky = new byte[][]{{42, 43, 44, 45, 46, 47, 48, 49}, {51}, {15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41}, {50, 52}};
         Char.except_quay_so = null;
         Char.timeGetPhuongHoang = 0L;

@@ -87,17 +87,23 @@ public class ItemLuckyDraw {
                     newItem.createOptionCanh(4, Map.r.nextInt(91) + 10);
                 }
 
+                // Ti le vinh vien 0.1% (theo yeu cau) = pcWinLuckyDraw(2%) x 5%.
+                // 2% la ti le "trung" chung cho moi vat pham co the chon trong vong
+                // quay (xem Char.pcWinLuckyDraw, dung chung voi phi phong/vu khi
+                // choi), nen o day chi can 5/100 = 5% trong so lan trung la du.
                 int pc1 = Map.r.nextInt(100);
-                if (pc1 <= 1) {
+                if (pc1 <= 4) {
+                    time = 0; // vinh vien
+                } else if (pc1 <= 6) {
                     time = 43200;
-                } else if (pc1 <= 4) {
+                } else if (pc1 <= 9) {
                     time = 7200;
-                } else if (pc1 <= 7) {
+                } else if (pc1 <= 12) {
                     time = 4320;
                 } else {
                     time = 1440;
                 }
-                
+
             }
             else if (isChoi(idTemplate)) {
                 newItem = new Item((ItemTemplates)((Hashtable)Map.itemTemplates.get(5)).get(idTemplate), false, 0, 0, idTemplate);

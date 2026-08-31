@@ -758,42 +758,47 @@ class CharSuKien {
         it2 = (ItemTemplates) Map.itemTemplates.get(5).get(619);
         item2.name = String.valueOf(it2.name) + " lv " + it2.level;
         Char.allItemLuckyDraw.add(item2);
-// TODO cánh quay s
-//        item2 = new ItemLuckyDraw();
-//        item2.cat = 3;
-//        item2.id = 898;
-//        it2 = (ItemTemplates) Map.itemTemplates.get(5).get(898);
-//        item2.name = String.valueOf(it2.name) + " lv " + it2.level;
-//        Char.allItemLuckyDraw.add(item2);
-//
-//        item2 = new ItemLuckyDraw();
-//        item2.cat = 3;
-//        item2.id = 899;
-//        it2 = (ItemTemplates) Map.itemTemplates.get(5).get(899);
-//        item2.name = String.valueOf(it2.name) + " lv " + it2.level;
-//        Char.allItemLuckyDraw.add(item2);
-//
-//        item2 = new ItemLuckyDraw();
-//        item2.cat = 3;
-//        item2.id = 900;
-//        it2 = (ItemTemplates) Map.itemTemplates.get(5).get(900);
-//        item2.name = String.valueOf(it2.name) + " lv " + it2.level;
-//        Char.allItemLuckyDraw.add(item2);
-//
-//        item2 = new ItemLuckyDraw();
-//        item2.cat = 3;
-//        item2.id = 901;
-//        it2 = (ItemTemplates) Map.itemTemplates.get(5).get(901);
-//        item2.name = String.valueOf(it2.name) + " lv " + it2.level;
-//        Char.allItemLuckyDraw.add(item2);
-//
-//        item2 = new ItemLuckyDraw();
-//        item2.cat = 3;
-//        item2.id = 902;
-//        it2 = (ItemTemplates) Map.itemTemplates.get(5).get(902);
-//        item2.name = String.valueOf(it2.name) + " lv " + it2.level;
-//        Char.allItemLuckyDraw.add(item2);
-        
+        // Canh (898-902) - them 5 phan tu NGAY TAI DAY. Char.addMore da duoc tang
+        // tu 2 len 7 (xem Char.java) de bu dung 5 vi tri nay - groupLucky[] van
+        // tro dung vao vong lap idgem/ps o duoi. Doi vi tri chen (hoac so luong
+        // phan tu) ma khong doi addMore theo se lam phan thuong phu (idgem/ps)
+        // trung sang nham vat pham khac - xem KiemVongQuayThanTai.
+        item2 = new ItemLuckyDraw();
+        item2.cat = 3;
+        item2.id = 898;
+        it2 = (ItemTemplates) Map.itemTemplates.get(5).get(898);
+        item2.name = String.valueOf(it2.name) + " lv " + it2.level;
+        Char.allItemLuckyDraw.add(item2);
+
+        item2 = new ItemLuckyDraw();
+        item2.cat = 3;
+        item2.id = 899;
+        it2 = (ItemTemplates) Map.itemTemplates.get(5).get(899);
+        item2.name = String.valueOf(it2.name) + " lv " + it2.level;
+        Char.allItemLuckyDraw.add(item2);
+
+        item2 = new ItemLuckyDraw();
+        item2.cat = 3;
+        item2.id = 900;
+        it2 = (ItemTemplates) Map.itemTemplates.get(5).get(900);
+        item2.name = String.valueOf(it2.name) + " lv " + it2.level;
+        Char.allItemLuckyDraw.add(item2);
+
+        item2 = new ItemLuckyDraw();
+        item2.cat = 3;
+        item2.id = 901;
+        it2 = (ItemTemplates) Map.itemTemplates.get(5).get(901);
+        item2.name = String.valueOf(it2.name) + " lv " + it2.level;
+        Char.allItemLuckyDraw.add(item2);
+
+        item2 = new ItemLuckyDraw();
+        item2.cat = 3;
+        item2.id = 902;
+        it2 = (ItemTemplates) Map.itemTemplates.get(5).get(902);
+        item2.name = String.valueOf(it2.name) + " lv " + it2.level;
+        Char.allItemLuckyDraw.add(item2);
+
+
         item2 = new ItemLuckyDraw();
         item2.cat = 6;
         item2.id = 11;
