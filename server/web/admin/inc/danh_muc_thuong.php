@@ -85,6 +85,35 @@ require_once __DIR__ . '/danh_muc_ngoc.php';
 const DM_SO_O_THUOC = 162;
 
 /**
+ * `ITEM:id:soLuong` CHỈ THẬT SỰ CỘNG DỒN SỐ LƯỢNG VỚI ĐÚNG 12 ID NÀY — mảnh sưu
+ * tập Bát Giới / Sa Tăng. Mọi id khác, dù ghi số lượng bao nhiêu, server cũng chỉ
+ * tạo ĐÚNG MỘT món.
+ *
+ * ĐỌC THẲNG TỪ `Char.createItemSoLuong` (Char.java:12617-12648):
+ *
+ *     if (newItem.isManhSuuTap()) {           // Item.java:3292 — id 848..859
+ *         ... cộng dồn otherAtt[65] += soLuong, trần 30000 ...
+ *     } else {
+ *         p.iItems.add(newItem);              // <-- LUÔN thêm ĐÚNG MỘT món
+ *     }
+ *     ...
+ *     "Chúc mừng. Bạn đã nhận được " + soLuong + " " + newItem.getName()
+ *
+ * Dòng thông báo cuối vẫn in nguyên `soLuong` NGƯỜI TẠO MÃ GÕ, bất kể nhánh nào
+ * chạy. Nghĩa là bộ chọn cho id ngoài dải này chọn "Số lượng: 5" thì người chơi
+ * nhận ĐÚNG 1 món trong khi màn hình báo "nhận được 5" — và dòng ghi trong
+ * `giftcode_log`/textarea cũng ghi số 5, nên sau này xem lại còn tưởng đã đúng.
+ *
+ * Vì vậy: với id KHÔNG nằm trong danh sách này, JavaScript khoá ô "Số lượng" về
+ * 1 và giải thích lý do — không cấm gõ tay `ITEM:id:5`, chỉ là bộ chọn không giúp
+ * tạo ra một chuỗi trông đúng mà làm sai với id thường.
+ */
+function dmIdManhSuuTap(): array
+{
+    return [848, 849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859];
+}
+
+/**
  * Các `data_item.type` bị LOẠI khỏi bộ chọn: đồ người chơi tự chế ở NPC
  * **thợ rèn thần bí**.
  *
@@ -107,6 +136,67 @@ const DM_SO_O_THUOC = 162;
 function dmLoaiTypeDoChe(): array
 {
     return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18];
+}
+
+/**
+ * Các id trong `data_item` mà CỘT `type` KHÔNG KHỚP HÀNH VI THẬT của id đó trong
+ * game. Loại khỏi bộ chọn vì nhóm hiện ra (theo type) hứa hẹn sai — người tạo mã
+ * chọn đúng cái tên đẹp nhưng người chơi nhận được một thứ khác hẳn.
+ *
+ * PHÁT HIỆN NHƯ THẾ NÀO. Bị hỏi vì sao "Skin linh thú" lại nằm trong nhóm "Phi
+ * phong" — kiểm tra thì đúng: `data_item` type 19 (phi phong) có 5 dòng id
+ * 950–954 tên "Skin Phúc Thú (hệ Kim)"... Đi tìm thêm thì lộ ra hai trường hợp
+ * cùng dạng lỗi ở hai nhóm khác, nên xử lý chung một chỗ:
+ *
+ *   950–954  type 19 (Phi phong), tên "Skin ..."
+ *     `SkinLinhThu.ID_ITEM` — mảng DUY NHẤT gán id cho tính năng đổi hình thú
+ *     cưỡi — chỉ có `{905, 906, 907, 908, 909}`. Nhưng 950–954 có `style = 0`,
+ *     Y HỆT style của "Phi phong Lăng Vân" (id 584) — tức chúng KHÔNG "vô dụng"
+ *     như tưởng ban đầu, mà là một phi phong THƯỜNG, chạy được, chỉ là tên trên
+ *     màn hình hứa hẹn đổi hình thú cưỡi mà nó không làm. Phát ra là lừa dối
+ *     người chơi lẫn người tạo mã.
+ *
+ *   728  type 27 (Thú nuôi), tên "Gậy Giáng Sinh"
+ *     Mọi thú nuôi thật trong type 27 đều có `atb0 = 5` (đối chiếu 727, 790,
+ *     802, 832, 873 trong CSDL). Riêng 728 có `atb0 = atb1 = 0` — không theo
+ *     khuôn của một con thú. `Item.java` có hằng số riêng
+ *     `GAY_GIANG_SINH = 728` và một nhánh `case 728: // gậy giáng sinh` xử lý
+ *     nó như VŨ KHÍ dịp lễ, không đọc gì từ nhánh xử lý thú nuôi cả.
+ *
+ * VÌ SAO LOẠI Ở TẦNG `dmVatPham()` CHỨ KHÔNG PHẢI Ở TỪNG NHÓM. Đặt ở đây thì
+ * loại được khỏi MỌI nhóm cùng lúc — kể cả nhóm "Vật phẩm khác" bắt hết ở cuối,
+ * nơi mà lọc theo type sẽ không chặn được (các id này vẫn mang type hợp lệ với
+ * bộ lọc theo type). Không có danh sách này thì đúng type mà vẫn lọt hàng lỗi.
+ *
+ * Không tự động dò (ví dụ so `atb0` hay tên) vì sẽ bắt nhầm những món hợp lệ đặt
+ * giá trị khác thường. Đây là danh sách CHỌN TAY, dựa trên bằng chứng đọc mã
+ * nguồn cụ thể ở trên — xem `web/admin/test/kiem_danh_muc_thuong.php`, đối
+ * chiếu lại đúng bằng chứng đó.
+ *
+ * Vẫn phát được nếu thật sự cần: gõ tay `ITEM:<id>:<số lượng>`.
+ */
+function dmIdRac(): array
+{
+    return [728, 950, 951, 952, 953, 954];
+}
+
+/**
+ * Id năm viên "Cánh" — Lam Băng, Bạch Linh, Xích Vũ, Hồng Vân, Tử Ảnh.
+ *
+ * TỪNG BỊ GỘP NHẦM VÀO NHÓM "MẢNH CẢI TRANG" chỉ vì cùng `data_item.type = 29`.
+ * Nhưng Cánh là một hệ thống trang trí RIÊNG — `Item.isCanh()`
+ * (`return id >= 898 && id <= 902`) và `Char.wModel.CanhModel` — không ghép
+ * được thành bộ cải trang như 24 mảnh Bát Giới / Sa Tăng còn lại của type 29.
+ * Xác nhận thêm bằng chính chú thích trong `sql/them_phi_phong_vo_hinh.sql`:
+ * "Cánh là type 29 và nằm ở danh sách THỜI TRANG (wModel.CanhModel) chứ không
+ * phải danh sách trang bị".
+ *
+ * Khác với `dmIdRac()`: đây KHÔNG phải hàng lỗi, chỉ là xếp sai nhóm. Nên tách
+ * thành nhóm riêng "Cánh" thay vì loại bỏ — vẫn là quà hợp lệ, chỉ cần đúng tên.
+ */
+function dmIdCanh(): array
+{
+    return [898, 899, 900, 901, 902];
 }
 
 /**
@@ -181,12 +271,22 @@ function dmVatPham(PDO $game, array $chiLay = []): array
     }
     $sql .= ' ORDER BY type, id';
 
+    // Loại rác NGAY TẠI ĐÂY — hàm này là điểm chung của mọi nhóm vật phẩm (từng
+    // nhóm riêng lẫn nhóm bắt hết "Vật phẩm khác"), nên lọc một lần ở đây là chặn
+    // được ở mọi nơi. Lọc trong PHP chứ không thêm vào WHERE: danh sách rác đến từ
+    // đối chiếu mã nguồn, không phải một điều kiện suy ra được từ cột nào của bảng.
+    $idRac = array_flip(dmIdRac());
+
     $ra = [];
     try {
         $st = $game->prepare($sql);
         $st->execute($args);
         foreach ($st->fetchAll() as $d) {
-            $ra[(int)$d['type']][(int)$d['id']] = dmMotDong((string)$d['name']);
+            $id = (int)$d['id'];
+            if (isset($idRac[$id])) {
+                continue;
+            }
+            $ra[(int)$d['type']][$id] = dmMotDong((string)$d['name']);
         }
     } catch (Throwable $ex) {
         return [];
@@ -323,17 +423,47 @@ function dmDanhMuc(PDO $game): array
         ];
     }
 
+    // ---- Cánh: 5 món, TÁCH RIÊNG khỏi type 29 ----
+    // Cùng type 29 với 24 mảnh cải trang Bát Giới/Sa Tăng, nhưng Cánh là một hệ
+    // trang trí RIÊNG (Item.isCanh(), Char.wModel.CanhModel) — không ghép được vào
+    // bộ cải trang. Xem dmIdCanh(). Lấy đúng 5 id thay vì lọc theo type để không
+    // lẫn lại vào "Mảnh cải trang" bên dưới.
+    $idCanh = array_flip(dmIdCanh());
+    $muaCanh = [];
+    foreach ($vp[29] ?? [] as $id => $ten) {
+        if (isset($idCanh[$id])) {
+            $muaCanh[$id] = $ten;
+        }
+    }
+    if ($muaCanh) {
+        $dm['canh'] = [
+            'ten'    => 'Cánh',
+            'loai'   => 'ITEM',
+            'ghiChu' => 'Trang trí cánh — hệ riêng (Char.wModel.CanhModel), không phải mảnh '
+                      . 'cải trang dù cùng nằm chung data_item type 29.',
+            'muc'    => $muaCanh,
+        ];
+    }
+
     // ---- Các nhóm hay phát khác ----
     foreach ([
-        29 => ['manh_caitrang', 'Mảnh cải trang', 'Ghép thành bộ cải trang.'],
+        29 => ['manh_caitrang', 'Mảnh cải trang', 'Ghép thành bộ cải trang Bát Giới / Sa Tăng.'],
         30 => ['skin_thu',      'Skin linh thú',  'Đổi hình thú cưỡi, không đổi chỉ số.'],
         19 => ['phi_phong',     'Phi phong',      'Loại thưởng ITEM cho phi phong thường; '
                                                 . 'muốn chọn kháng thì dùng PPRK và gõ tay.'],
         27 => ['thu_nuoi',      'Thú nuôi',       'Thú nuôi dạng vật phẩm trong hành trang.'],
         25 => ['hoa_ky_lan',    'Hoả kỳ lân',     ''],
     ] as $type => [$ma, $ten, $ghiChu]) {
-        if (!empty($vp[$type])) {
-            $dm[$ma] = ['ten' => $ten, 'loai' => 'ITEM', 'ghiChu' => $ghiChu, 'muc' => $vp[$type]];
+        $muc = $vp[$type] ?? [];
+        if ($type === 29) {
+            // Bỏ 5 món Cánh đã tách ra nhóm riêng ở trên — còn lại đúng 24 mảnh
+            // cải trang thật (848–871).
+            foreach ($idCanh as $id => $_) {
+                unset($muc[$id]);
+            }
+        }
+        if ($muc) {
+            $dm[$ma] = ['ten' => $ten, 'loai' => 'ITEM', 'ghiChu' => $ghiChu, 'muc' => $muc];
         }
     }
 
@@ -353,13 +483,16 @@ function dmDanhMuc(PDO $game): array
     // sẽ cần, và thiếu nó thì họ lại quay về gõ id bằng tay.
     $boDiType = dmLoaiTypeDoChe();
     $tenLoai = dmTenLoaiVatPham();
+    $canhTrongCatchAll = array_flip(dmIdCanh());
     $mucVp = [];
     foreach (dmVatPham($game) as $type => $ds) {
         if (in_array($type, $boDiType, true)) {
             continue;
         }
-        $nhan = $tenLoai[$type] ?? ('type ' . $type);
         foreach ($ds as $id => $ten) {
+            // Cánh mượn chung type 29 với mảnh cải trang — dùng nhãn riêng ở đây
+            // để không lặp lại đúng lỗi vừa sửa bên trên trong nhóm bắt hết này.
+            $nhan = isset($canhTrongCatchAll[$id]) ? 'Cánh' : ($tenLoai[$type] ?? ('type ' . $type));
             $mucVp[$id] = '[' . $nhan . '] ' . $ten;
         }
     }

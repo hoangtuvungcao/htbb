@@ -378,6 +378,14 @@ adminHead('giftcode', 'Giftcode');
                 echo json_encode($tr, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG
                     | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
             ?>;
+            /*
+             * ITEM:id:soLuong CHỈ THẬT SỰ cộng dồn số lượng với đúng 12 id mảnh sưu tập
+             * này (Char.createItemSoLuong, Char.java:12617-12648). Id khác, dù ghi số
+             * lượng bao nhiêu, server cũng chỉ tạo ĐÚNG MỘT món — nhưng dòng thông báo
+             * vẫn in nguyên số đã gõ, nên không sửa ở đây thì bộ chọn tạo ra chuỗi
+             * TRÔNG đúng mà làm sai. Xem dmIdManhSuuTap() trong inc/danh_muc_thuong.php.
+             */
+            var ID_MANH_SUU_TAP = <?= json_encode(array_flip(dmIdManhSuuTap())) ?>;
 
             var oNhom   = document.getElementById('bcNhom');
             var oTim    = document.getElementById('bcTim');
@@ -457,6 +465,33 @@ adminHead('giftcode', 'Giftcode');
                 });
             }
 
+            /*
+             * Với loại ITEM: id KHÔNG nằm trong ID_MANH_SUU_TAP thì khoá "Số lượng" về 1,
+             * vì server sẽ âm thầm tạo đúng 1 món bất kể ghi bao nhiêu (xem lời giải thích
+             * ở khai báo ID_MANH_SUU_TAP). Không cấm gõ tay ITEM:id:5 ngoài bộ chọn — chỉ
+             * là bộ chọn không được giúp tạo ra một chuỗi trông đúng mà làm sai.
+             */
+            function capNhatKhoaSoLuong() {
+                var n = nhomHienTai();
+                var oSl = oTruong.querySelector('[data-ma="sl"]');
+                if (!oSl) { return; }
+                var oGhiChuSl = oTruong.querySelector('.bc-ghichu-sl');
+                var khongCongDon = n && n.loai === 'ITEM'
+                    && !Object.prototype.hasOwnProperty.call(ID_MANH_SUU_TAP, oMuc.value || '');
+                oSl.disabled = !!khongCongDon;
+                if (khongCongDon) {
+                    oSl.value = '1';
+                }
+                if (khongCongDon && !oGhiChuSl) {
+                    var g = document.createElement('div');
+                    g.className = 'muted small bc-ghichu-sl';
+                    g.textContent = 'Món này không cộng dồn số lượng qua giftcode — server chỉ tạo đúng 1 món dù ghi bao nhiêu.';
+                    oSl.parentNode.appendChild(g);
+                } else if (!khongCongDon && oGhiChuSl) {
+                    oGhiChuSl.remove();
+                }
+            }
+
             /* Chuỗi sẽ được chèn, theo đúng thứ tự tham số của máy chủ. */
             function chuoi() {
                 var n = nhomHienTai();
@@ -477,12 +512,17 @@ adminHead('giftcode', 'Giftcode');
                 oThem.disabled = (s === '');
             }
 
+            function doiMuc() {
+                capNhatKhoaSoLuong();
+                veXem();
+            }
+
             function doiNhom() {
                 var n = nhomHienTai();
                 oGhiChu.textContent = n ? (n.ghiChu || '') : '';
                 veTruong();
                 veDanhSach();
-                veXem();
+                doiMuc();
             }
 
             oThem.addEventListener('click', function () {
@@ -497,8 +537,8 @@ adminHead('giftcode', 'Giftcode');
             });
 
             oNhom.addEventListener('change', doiNhom);
-            oTim.addEventListener('input', veDanhSach);
-            oMuc.addEventListener('change', veXem);
+            oTim.addEventListener('input', function () { veDanhSach(); doiMuc(); });
+            oMuc.addEventListener('change', doiMuc);
             oTim.addEventListener('keydown', function (e) {
                 /* Enter trong ô tìm KHÔNG được gửi biểu mẫu: người ta đang tìm món,
                    chưa chọn xong, mà Enter mặc định sẽ lưu luôn cả mã giftcode. */

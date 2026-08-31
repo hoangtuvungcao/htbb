@@ -164,6 +164,40 @@ for ($t = 0; $t <= 30; $t++) {
 kt('moi type con lai deu co ten tieng Viet', $thieuTen, []);
 
 // ===========================================================================
+echo "\n== Cot 'type' KHONG khop hanh vi that - ba truong hop da xac minh\n";
+// ===========================================================================
+// Ca ba deu tim ra tu vong ra soat sau khi nguoi dung hoi "sao Skin thu lai nam
+// trong Phi phong". Chung cung mot dang loi: id do that trong data_item, dung
+// type do that, nhung ma nguon Java xu ly id do khac han y nghia cua type.
+
+// ---- 950-954: type 19 (Phi phong) nhung ten la "Skin ..." ----
+// KHONG phai vo dung nhu doan dau tien tuong: style=0 giong het "Phi phong Lang
+// Van" (id 584) nen no chay duoc nhu mot phi phong THUONG. Van phai loai vi ten
+// hua doi hinh thu cuoi ma no khong lam.
+$rac = dmIdRac();
+kt('dmIdRac dung 6 id (5 skin gia + 1 gay giang sinh)', count($rac), 6);
+foreach ([950, 951, 952, 953, 954] as $id) {
+    ktDung("id $id (Skin gia trong Phi phong) nam trong danh sach loai", in_array($id, $rac, true));
+}
+
+// ---- 728: type 27 (Thu nuoi) nhung la vu khi le hoi "Gay Giang Sinh" ----
+// Moi thu nuoi that deu co atb0=5 (doi chieu 727,790,802,832,873); rieng 728 co
+// atb0=atb1=0. Item.java co hang so GAY_GIANG_SINH=728 va nhanh "case 728" rieng,
+// khong doc gi tu nhanh xu ly thu nuoi ca.
+ktDung('id 728 (Gay Giang Sinh, vu khi le hoi) nam trong danh sach loai',
+    in_array(728, $rac, true));
+
+// ---- 898-902: type 29 (chung voi Manh cai trang) nhung la "Canh" - he rieng ----
+// Item.isCanh() = id 898..902, KHONG lien quan cot type. Xac nhan bang so sanh
+// hai file (Item.java + danh_muc_thuong.php) doc doc lap, tranh chep lai dung
+// mot con so sai tu ca hai noi.
+$idItemJava = (string)@file_get_contents($GOC . 'src/real/Item.java');
+ktDung('doc duoc src/real/Item.java', $idItemJava !== '');
+ktDung('Item.isCanh() dung dai 898..902',
+    (bool)preg_match('/id\s*>=\s*898\s*&&.*id\s*<=\s*902/s', $idItemJava));
+kt('dmIdCanh khop dung 5 id 898-902', dmIdCanh(), [898, 899, 900, 901, 902]);
+
+// ===========================================================================
 echo "\n== So o thuoc khop giua PHP va Java\n";
 // ===========================================================================
 // PT ghi THANG vao mang: player.potions[id] += soLuong, khong kiem bien. Mot id
@@ -288,6 +322,25 @@ ktDung('danh muc thuoc chi lay id trong dai hop le',
     strpos($dmFile, 'DM_SO_O_THUOC') !== false);
 ktDung('danh muc thuoc bo dong khong ten',
     strpos($dmFile, "name <> ") !== false);
+
+// ---- Nhom "Canh" phai tach rieng khoi "Manh cai trang" ----
+ktDung("co nhom rieng \$dm['canh']", strpos($dmFile, "\$dm['canh']") !== false);
+ktDung('nhom Canh dung ham dmIdCanh()', strpos($dmFile, 'dmIdCanh()') !== false);
+ktDung('co go bo Canh ra khoi vong lap type 29 truoc khi dung cho Manh cai trang',
+    strpos($dmFile, 'unset($muc[$id])') !== false);
+ktDung('nhom bat het (vat_pham) co gan nhan rieng cho Canh, khong de lan "Manh cai trang"',
+    strpos($dmFile, "'Cánh' : (\$tenLoai[\$type]") !== false);
+
+// ---- ITEM: o So luong phai bi khoa cho id ngoai manh suu tap ----
+ktDung('co ham dmIdManhSuuTap()', strpos($dmFile, 'function dmIdManhSuuTap()') !== false);
+ktDung('JS co doc ID_MANH_SUU_TAP tu dmIdManhSuuTap()',
+    strpos($gc, 'dmIdManhSuuTap()') !== false);
+ktDung('JS co ham khoa o So luong', strpos($gc, 'function capNhatKhoaSoLuong') !== false);
+ktDung('ham khoa duoc goi khi doi muc hoac doi nhom (qua doiMuc)',
+    strpos($gc, 'function doiMuc()') !== false
+    && strpos($gc, 'capNhatKhoaSoLuong();') !== false);
+ktDung('oMuc lang nghe "change" bang doiMuc chu khong phai truc tiep veXem',
+    (bool)preg_match("/oMuc\\.addEventListener\\('change',\\s*doiMuc\\)/", $gc));
 
 // ===========================================================================
 echo "\n== Trung phuong hoang phai dung PT, KHONG dung EGG\n";
