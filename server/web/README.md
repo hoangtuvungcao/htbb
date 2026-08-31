@@ -368,7 +368,7 @@ Khu riêng để **xem thống kê người chơi, khoá tài khoản, tạo gif
 |---|---|
 | **Tổng quan** | Tổng tài khoản / đăng ký hôm nay–7–30 ngày, số bị khoá, số chưa kích hoạt; nhân vật vào game 24h/7/30 ngày; biểu đồ 14 ngày (đăng ký + hoạt động); phân bố nghề và cấp độ; top cấp / top lượng / top nạp; tài khoản mới nhất; thao tác admin gần nhất |
 | **Tài khoản** | Tìm theo tên / email / SĐT / ID · **khoá – mở khoá đăng nhập** · kích hoạt – huỷ kích hoạt · đổi mật khẩu · xem mọi nhân vật của tài khoản |
-| **Nhân vật** | Tìm theo tên hoặc ID tài khoản · **khoá – mở khoá từng nhân vật** · xem cấp, lượng, xu, lần vào cuối, bang hội, cờ nghi vấn · **danh sách vật phẩm**: đồ đang mặc, thời trang, hành trang, rương |
+| **Nhân vật** | Tìm theo tên hoặc ID tài khoản · **khoá – mở khoá từng nhân vật** · **đặt cấp độ** (chỉ tác dụng khi nhân vật offline) · xem cấp, lượng, xu, lần vào cuối, bang hội, cờ nghi vấn · **danh sách vật phẩm**: đồ đang mặc, thời trang, hành trang, rương |
 | **Cấm theo máy** | Cấm đăng nhập theo **mã máy** thay vì theo tài khoản · xem một máy đã dùng những tài khoản nào (và ngược lại) · lọc ra máy dùng nhiều tài khoản bất thường |
 | **Sự kiện** | Bật / tắt **mọi sự kiện trong game** bất kỳ lúc nào (Tết, Noel, Trung Thu, Halloween, Giỗ Tổ, Hè, Vu Lan, World Cup…) · **hẹn giờ mở và đóng** từng sự kiện · so trạng thái đang chạy trên server với thiết lập vừa đặt · **server tự khởi động lại** sau khi gom các thay đổi (không cần sudo/ssh, trang chỉ ghi CSDL) · trước đây mốc thời gian ghi cứng trong `Char.java` nên không sự kiện nào mở lại được |
 | **Giftcode** | Tạo / sửa / tắt / xoá mã · **bộ chọn vật phẩm theo tên, không cần nhớ id** · **kiểm tra cú pháp phần thưởng trước khi lưu** · xem ai đã nhận mã nào · cho một nhân vật nhận lại |
@@ -483,6 +483,27 @@ Trang **chỉ đọc**, và chỉ đọc đúng 10 tên file viết sẵn trong 
 họ tự thoát — trang web không nói chuyện được với tiến trình game đang chạy. Muốn
 đá ra ngay thì dùng bảng điều khiển trong game (`AdminPanel`).
 
+### Đặt cấp độ — rủi ro KHÁC HẲN khoá nhân vật, không phải "chỉ chậm có hiệu lực"
+
+Khoá nhân vật an toàn khi online vì cột `ban` không nằm trong câu `UPDATE` lưu
+nhân vật định kỳ — server không bao giờ ghi đè lại nó. **`lastLv`/`xp` thì có.**
+Nhân vật đang online giữ một bản cấp độ cũ trong RAM của tiến trình game; lần
+server tự lưu tiếp theo (định kỳ, hoặc lúc thoát) sẽ ghi đè NGUYÊN bản cũ đó lên
+đúng dòng vừa sửa — không phải "chậm có hiệu lực" mà là **mất hẳn thay đổi mà
+không có cảnh báo nào**. Trang web không có cách nào biết một nhân vật có đang
+online hay không (`CharManager` chỉ giữ trong RAM của Java, không ghi ra CSDL),
+nên không tự chặn được — chỉ cảnh báo rõ trên trang, người vận hành tự xác nhận
+nhân vật đang offline trước khi bấm.
+
+Chỉ cần đặt `lastLv`; **không đụng đến chỉ số nào khác**. `SelectCharHandler.java`
+tự tính lại sức mạnh/nhanh nhẹn/HP/điểm kỹ năng từ `lastLv` ngay lúc chọn nhân
+vật, giống hệt lên cấp tự nhiên. Cột `xp` chỉ được đặt kèm cho khớp mốc "vừa lên
+cấp" (0% vào cấp tiếp theo) để thanh kinh nghiệm không hiện số âm — tra từ
+`web/admin/inc/capdo.php`, tệp **sinh ra** từ `real.LevelDetail.expMain`
+(`tools/SinhBangCapDo.java`, đối chiếu lại bằng `test/KiemBangCapDo.java`), không
+gõ tay: mảng có 91 số dài tới 14 chữ số, gõ nhầm một chữ số không ai nhìn ra được
+bằng mắt.
+
 ### Vài chốt an toàn đã cài sẵn
 
 - Không khoá được tài khoản nằm trong `ADMIN_ACCOUNTS` — kể cả của chính mình.
@@ -519,7 +540,7 @@ web/
 └── admin/              # KHU QUẢN TRỊ (xem mục ở trên)
     ├── index.php       # Đăng nhập + bảng tổng quan / thống kê
     ├── taikhoan.php    # Khoá, kích hoạt, đổi mật khẩu tài khoản
-    ├── nhanvat.php     # Khoá / mở khoá nhân vật
+    ├── nhanvat.php     # Khoá / mở khoá nhân vật · đặt cấp độ
     ├── cammay.php      # Cấm theo mã máy + tra cứu máy ↔ tài khoản
     ├── sukien.php      # Bật / tắt mọi sự kiện trong game (bảng tob_su_kien)
     ├── giftcode.php    # Tạo & quản lý mã quà, xem ai đã nhận
@@ -531,10 +552,13 @@ web/
     ├── inc/
     │   ├── boot.php    # Đăng nhập, phân quyền, ghi nhật ký, chặn dò mật khẩu
     │   ├── hai_buoc.php # Xác thực hai bước TOTP (RFC 6238), mã dự phòng
-    │   ├── danh_muc_thuong.php # Danh mục cho bộ chọn vật phẩm của Giftcode
+    │   ├── danh_muc_thuong.php # Danh mục + giải thích chuỗi cho bộ chọn Giftcode
     │   ├── danh_muc_ngoc.php   # 270 tên ngọc — SINH RA từ Java, đừng sửa tay
+    │   ├── danh_muc_thu.php    # 30 tên thú nuôi — SINH RA từ Java, đừng sửa tay
+    │   ├── danh_muc_danh_hieu.php # 48 tên danh hiệu — SINH RA từ Java, đừng sửa tay
+    │   ├── capdo.php   # Bảng cấp độ → kinh nghiệm — SINH RA từ Java, đừng sửa tay
     │   ├── layout.php  # Khung trang (menu trái + thanh trên) + biểu đồ thuần CSS
-    │   └── thuong.php  # Bảng 60 loại phần thưởng + kiểm tra cú pháp giftcode
+    │   └── thuong.php  # Bảng 61 loại phần thưởng + kiểm tra cú pháp giftcode
     └── test/           # Kiểm thử, không cần MySQL
         ├── kiem_giftcode.php
         ├── kiem_schema.php
@@ -546,6 +570,7 @@ web/
         ├── kiem_giao_dien.php
         ├── kiem_hai_buoc.php
         ├── kiem_danh_muc_thuong.php
+        ├── kiem_capdo.php
         └── chan_doan_ket_noi.php
 ```
 
@@ -571,6 +596,7 @@ php web/admin/test/kiem_vatpham.php    # bộ đọc vật phẩm: đối chiế
 php web/admin/test/kiem_giao_dien.php  # mọi lớp CSS các trang dùng đều phải có định nghĩa
 php web/admin/test/kiem_hai_buoc.php   # TOTP hai bước: đối chiếu vector chính thức RFC 6238
 php web/admin/test/kiem_danh_muc_thuong.php # bộ chọn vật phẩm: mọi chuỗi sinh ra phải qua kiemTraItem()
+php web/admin/test/kiem_capdo.php      # bảng cấp độ → kinh nghiệm dùng cho "Đặt cấp độ"
 
 # Chẩn đoán lỗi kết nối database — chạy TRÊN MÁY CHỦ, chỉ bằng dòng lệnh
 sudo -u www-data php web/admin/test/chan_doan_ket_noi.php

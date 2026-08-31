@@ -9,9 +9,36 @@
  *   · Bị loại khỏi mọi bảng xếp hạng (các câu top đều có `and ban=0`).
  *   · Tài khoản VẪN đăng nhập được, chỉ là không còn nhân vật để vào.
  * Muốn chặn cả tài khoản thì khoá ở trang Tài khoản (team_user.ban).
+ *
+ * -----------------------------------------------------------------------
+ *  ĐẶT CẤP ĐỘ — RỦI RO KHÁC HẲN KHOÁ NHÂN VẬT, ĐỌC KỸ TRƯỚC KHI SỬA
+ * -----------------------------------------------------------------------
+ * Khoá nhân vật AN TOÀN khi người chơi đang online vì cột `ban` không nằm
+ * trong câu UPDATE lưu nhân vật định kỳ (DatabaseNhanVat.java) — server không
+ * bao giờ ghi đè lại cột đó, nên khoá "chỉ ăn từ lần vào sau" đúng nghĩa: chắc
+ * chắn ăn, chỉ là chưa ngay lập tức.
+ *
+ * ĐẶT CẤP ĐỘ THÌ KHÁC HẲN. `lastLv` và `xp` là hai cột nằm NGAY TRONG câu lưu
+ * định kỳ đó. Nhân vật đang online giữ một bản `lastLv` cũ trong RAM của tiến
+ * trình game; lần server tự lưu tiếp theo (định kỳ, hoặc lúc thoát) sẽ ghi
+ * NGUYÊN bản cũ đó đè lên đúng dòng mình vừa sửa — không phải "chậm có hiệu
+ * lực" mà là MẤT HẲN thay đổi mà không có cảnh báo nào. Vì trang web không có
+ * cách nào biết một nhân vật có đang online hay không (CharManager chỉ giữ
+ * trong RAM của tiến trình Java, không ghi ra CSDL), không thể tự động chặn
+ * việc này — chỉ có thể cảnh báo rõ và để người vận hành tự xác nhận nhân vật
+ * đang offline trước khi bấm.
+ *
+ * MOI CHI SO KHAC KHONG CAN DONG TAY. `Char.strength/agitity/spirit/health/
+ * luck`, điểm kỹ năng, điểm cơ bản... đều được máy chủ TỰ TÍNH LẠI từ `lastLv`
+ * ngay lúc chọn nhân vật (SelectCharHandler.java:206-215, rồi gọi
+ * p.calculateAttrib()) — giống hệt một người chơi lên cấp tự nhiên. Đặt `xp`
+ * đúng bằng mốc "vừa lên cấp" (capDoRaExp(), sinh từ real.LevelDetail.expMain)
+ * chỉ để thanh kinh nghiệm không hiện số âm hay tỉ lệ sai, không ảnh hưởng gì
+ * đến chỉ số chiến đấu.
  */
 require_once __DIR__ . '/inc/layout.php';
 require_once __DIR__ . '/inc/vatpham.php';
+require_once __DIR__ . '/inc/capdo.php';
 requireAdmin();
 
 $TRANG = 'nhanvat.php';
@@ -47,6 +74,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $ten = (string)$nv['charname'];
     $ve  = $TRANG . '?id=' . $id;
+
+    if ($viec === 'dat_cap_do') {
+        $capDoMoi = (int)p('cap_do');
+        if ($capDoMoi < 1 || $capDoMoi > CAPDO_TOI_DA) {
+            veLai($ve, 'error', 'Cấp độ phải từ 1 đến ' . CAPDO_TOI_DA . '.');
+        }
+        $bangExp = capDoRaExp();
+        $expMoi  = $bangExp[$capDoMoi - 1];
+
+        $stCu = dbGame()->prepare('SELECT lastLv, xp FROM tob_char WHERE id = ? LIMIT 1');
+        $stCu->execute([$id]);
+        $cu = $stCu->fetch();
+
+        $up = dbGame()->prepare('UPDATE tob_char SET lastLv = ?, xp = ? WHERE id = ?');
+        $up->execute([$capDoMoi, $expMoi, $id]);
+
+        ghiNhatKy('dat_cap_do_nhan_vat', $ten,
+            'lastLv: ' . (int)($cu['lastLv'] ?? '?') . ' -> ' . $capDoMoi
+            . ' | xp: ' . (string)($cu['xp'] ?? '?') . ' -> ' . $expMoi);
+
+        veLai($ve, 'success', 'Đã đặt cấp độ ' . $ten . ' thành ' . $capDoMoi
+            . '. CHỈ CÓ HIỆU LỰC THẬT nếu nhân vật đang offline lúc bấm — nếu đang '
+            . 'online, lần server tự lưu tiếp theo sẽ ghi đè lại cấp cũ mà không báo gì.');
+    }
 
     if ($viec !== 'khoa' && $viec !== 'mo_khoa') {
         veLai($TRANG, 'error', 'Không hiểu thao tác.');
@@ -281,6 +332,31 @@ adminHead('nhanvat', 'Nhân vật');
                        giữa lúc lưu hỏng.</p>
                 </div>
             <?php endif; ?>
+
+            <h4 style="margin:18px 0 10px;">Đặt cấp độ</h4>
+            <form method="post" action="nhanvat.php" class="ngang"
+                  onsubmit="return confirm('Đặt cấp độ ' + document.getElementById('capDoMoi').value + ' cho <?= e($ct['charname']) ?>?\n\nCHỈ làm việc này khi chắc chắn nhân vật đang OFFLINE — xem cảnh báo bên dưới.');">
+                <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+                <input type="hidden" name="viec" value="dat_cap_do">
+                <input type="hidden" name="id" value="<?= (int)$ct['id'] ?>">
+                <label class="o" style="max-width:140px;">
+                    <span>Cấp độ mới (hiện tại: <?= (int)$ct['lastLv'] ?>)</span>
+                    <input type="number" id="capDoMoi" name="cap_do" min="1" max="<?= CAPDO_TOI_DA ?>"
+                           value="<?= (int)$ct['lastLv'] ?>" required>
+                </label>
+                <button class="btn btn-do btn-nho" style="align-self:flex-end;">Đặt cấp độ</button>
+            </form>
+            <div class="luuy" style="margin-top:12px;">
+                <p><strong>Chỉ làm khi nhân vật đang offline.</strong> Trang web không có cách nào
+                   biết một nhân vật có đang online hay không. Nếu đang online, lần server tự lưu
+                   tiếp theo (định kỳ, hoặc lúc người chơi thoát) sẽ ghi đè lại đúng cấp cũ đang có
+                   trong bộ nhớ của tiến trình game — <strong>không phải chậm có hiệu lực như khoá
+                   nhân vật, mà là MẤT HẲN thay đổi mà không có cảnh báo nào.</strong></p>
+                <p class="small">Cách chắc chắn: nhờ người chơi thoát game trước, hoặc đặt lại lần
+                   nữa sau khi chắc chắn họ đã ngắt kết nối. Mọi chỉ số khác (sức mạnh, HP, điểm kỹ
+                   năng…) được máy chủ tự tính lại từ cấp độ ngay lúc chọn nhân vật — không cần và
+                   không nên đụng vào cột nào khác.</p>
+            </div>
         </div>
 
         <div class="card">

@@ -1,0 +1,114 @@
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Doi chieu web/admin/inc/capdo.php voi mang real.LevelDetail.expMain.
+ *
+ * Mang co 91 phan tu, nhieu so dai toi 14 chu so - loi go nham MOT chu so o day
+ * khong ai nhin ra bang mat. Bo kiem nay doc lai tung so trong tep PHP va so
+ * TUNG PHAN TU MOT voi mang that, khong chi so luong phan tu.
+ */
+public final class KiemBangCapDo {
+
+    private static final String TEP = "web/admin/inc/capdo.php";
+    private static final Pattern DONG_SO = Pattern.compile("^\\s*(\\d+),\\s*//\\s*cap\\s+(\\d+)\\s*$");
+
+    private KiemBangCapDo() {
+    }
+
+    public static void chay() {
+        Kiem.nhom("Bang cap do - tep sinh phai khop tung so voi LevelDetail.expMain");
+
+        final String php = doc(TEP);
+        Kiem.dung("doc duoc " + TEP, !php.isEmpty());
+        if (php.isEmpty()) {
+            return;
+        }
+
+        final long[] that = real.LevelDetail.expMain;
+        Kiem.dung("doc duoc real.LevelDetail.expMain", that != null && that.length > 0);
+        if (that == null) {
+            return;
+        }
+
+        final List<Long> tuTep = new ArrayList<Long>();
+        final List<Integer> capTuTep = new ArrayList<Integer>();
+        for (final String dong : php.split("\r?\n")) {
+            final Matcher m = DONG_SO.matcher(dong);
+            if (m.matches()) {
+                tuTep.add(Long.valueOf(Long.parseLong(m.group(1))));
+                capTuTep.add(Integer.valueOf(Integer.parseInt(m.group(2))));
+            }
+        }
+
+        Kiem.bang("so muc trong tep khop so phan tu mang Java",
+                Integer.valueOf(that.length), Integer.valueOf(tuTep.size()));
+
+        int lech = 0;
+        String viDuLech = "";
+        for (int i = 0; i < that.length && i < tuTep.size(); i++) {
+            // Nhan cap ghi trong chu thich phai la chi so + 1 - bat luon neu dong bi
+            // xoa nham hay chen nham thu tu luc sinh lai bang tay.
+            if (capTuTep.get(i).intValue() != i + 1) {
+                lech++;
+                if (viDuLech.isEmpty()) {
+                    viDuLech = "dong " + i + ": ghi \"cap " + capTuTep.get(i) + "\" nhung phai la cap " + (i + 1);
+                }
+                continue;
+            }
+            if (that[i] != tuTep.get(i).longValue()) {
+                lech++;
+                if (viDuLech.isEmpty()) {
+                    viDuLech = "cap " + (i + 1) + ": Java=" + that[i] + " tep=" + tuTep.get(i);
+                }
+            }
+        }
+        Kiem.bang("khong so nao lech" + (viDuLech.isEmpty() ? "" : " (" + viDuLech + ")"),
+                Integer.valueOf(0), Integer.valueOf(lech));
+
+        // Tran cap ghi trong tep phai THAP HON do dai mang mot don vi - tranh dung
+        // toi bien co loi lech-mot trong chinh LevelDetail.getXpFromLevel() ben Java
+        // (dieu kien "level < expMain.length" sai cho dung level = do dai mang).
+        if (preg1(php, "CAPDO_TOI_DA\\s*=\\s*(\\d+)") != null) {
+            final int tranCap = Integer.parseInt(preg1(php, "CAPDO_TOI_DA\\s*=\\s*(\\d+)"));
+            Kiem.bang("CAPDO_TOI_DA = do dai mang - 1 (tranh loi lech-mot cua Java)",
+                    Integer.valueOf(that.length - 1), Integer.valueOf(tranCap));
+        } else {
+            Kiem.dung("tim thay hang so CAPDO_TOI_DA trong tep", false);
+        }
+
+        // Doi chieu voi du lieu THAT dang chay: cap cao nhat tung ghi nhan tren VPS
+        // la 90 (doi chieu 31/08/2026) - tran cap cho phat phai >= gia tri do, khong
+        // thi mot so nhan vat dang co san se KHONG the "dat lai dung cap hien tai".
+        ktDungCu("tran cap (" + (that.length - 1) + ") >= 90 (cap cao nhat da ghi nhan tren VPS)",
+                that.length - 1 >= 90);
+
+        Kiem.dung("tep sinh co ghi ro DUNG SUA TAY", php.contains("DUNG SUA TAY"));
+        Kiem.dung("tep sinh co ghi cach sinh lai", php.contains("SinhBangCapDo"));
+        Kiem.dung("tep sinh co ghi ro moi thu khac tu tinh lai tu lastLv, khong duoc dong tay",
+                php.contains("SelectCharHandler"));
+    }
+
+    private static void ktDungCu(final String moTa, final boolean dung) {
+        Kiem.dung(moTa, dung);
+    }
+
+    private static String preg1(final String s, final String regex) {
+        final Matcher m = Pattern.compile(regex).matcher(s);
+        return m.find() ? m.group(1) : null;
+    }
+
+    private static String doc(final String duong) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(duong)), StandardCharsets.UTF_8);
+        } catch (final IOException e) {
+            return "";
+        }
+    }
+}
