@@ -251,7 +251,7 @@ echo "\n== MOI CHUOI BO CHON SINH RA DEU PHAI QUA kiemTraItem()\n";
 // Day la phep kiem chinh. Dung lai dung phep ghep chuoi cua JavaScript:
 //   phan = [loai, id, ...gia tri cac truong]  ->  noi bang dau hai cham
 $bangLoai = loaiThuong();
-foreach (['ITEM', 'PT', 'GEM'] as $loai) {
+foreach (['ITEM', 'PT', 'GEM', 'TT', 'PET', 'PETV', 'TK', 'TKMAX', 'DH'] as $loai) {
     $phan = [$loai, '848'];
     foreach (dmTruongCuaLoai($loai) as $t) {
         $phan[] = $t['macDinh'];
@@ -292,6 +292,103 @@ foreach (dmTruongCuaLoai('GEM') as $t) {
 }
 
 // ===========================================================================
+echo "\n== Mo rong dot hai: TT / PET / PETV / TK / TKMAX / DH\n";
+// ===========================================================================
+
+// ---- TT: Char.createThoiTrang(p, id, soNgay, khoa) ----
+$tt = dmTruongCuaLoai('TT');
+kt('TT co dung 3 truong (sl, ngay, khoa)', count($tt), 3);
+kt('TT truong 2 la "ngay", macDinh 0 (vinh vien)', $tt[1]['ma'] ?? null, 'ngay');
+kt('TT truong ngay cho phep minSo=0 (khong bi kep len 1)', $tt[1]['minSo'] ?? null, '0');
+kt('TT truong 3 la "khoa", macDinh 1 (khoa - dung chinh sach)', $tt[2]['macDinh'] ?? null, '1');
+ktDung('TT khoa la o chon co ca hai lua chon', isset($tt[2]['chon']) && count($tt[2]['chon']) === 2);
+// TT dung quy uoc NGUOC voi GEM: 1 = khoa (gan thang newItem.lock), khong phai
+// so am nhu GEM. Neu ai do "sua cho giong GEM" se doi chinh sach cho ca nhom
+// Thoi trang lan Canh ma khong biet.
+ktDung('TT: gia tri "khoa" trong chon la 1 (KHAC quy uoc am cua GEM)',
+    isset($tt[2]['chon']['1']) && !isset($tt[2]['chon']['-1']));
+
+// ---- PET / PETV: id la CHI SO MANG petTemplate, khong phai id vat pham ----
+$pet = dmTruongCuaLoai('PET');
+kt('PET co dung 2 truong (sl, phut)', count($pet), 2);
+kt('PET truong 2 la "phut"', $pet[1]['ma'] ?? null, 'phut');
+kt('PETV khong co truong nao (chi id, khong vong lap so luong)', dmTruongCuaLoai('PETV'), []);
+
+// ---- TK / TKMAX: truong an giu cho tham so chua dung cua server ----
+foreach (['TK', 'TKMAX'] as $l) {
+    $tk = dmTruongCuaLoai($l);
+    kt("$l co dung 2 truong (1 an + 1 phut)", count($tk), 2);
+    ktDung("$l truong dau AN va macDinh la dau gach duoi", ($tk[0]['an'] ?? false) === true
+        && ($tk[0]['macDinh'] ?? null) === '_');
+    kt("$l truong hien la \"phut\", macDinh 0 (vinh vien)", $tk[1]['ma'] ?? null, 'phut');
+    kt("$l truong phut cho phep minSo=0", $tk[1]['minSo'] ?? null, '0');
+}
+
+// ---- DH: id=0 la nguyen chu "ngau nhien", CHI trong 34/48 danh hieu ----
+$dh = dmTruongCuaLoai('DH');
+kt('DH co dung 2 truong (sl, phut)', count($dh), 2);
+
+// ===========================================================================
+echo "\n== Nguon du lieu moi: petTemplate va DanhHieu deu ghi cung trong Java\n";
+// ===========================================================================
+kt('danhMucThu() co dung 30 con (chi so 0..29)', count(danhMucThu()), 30);
+$thu = danhMucThu();
+ktDung('chi so 0..29 lien tuc, khong thieu chi so nao', array_keys($thu) === range(0, 29));
+// 5 va 28 trung ten that su (Map.petTemplate ghi hai dong giong het nhau) - xac
+// nhan lai o day de khong ai tuong day la loi cua bo sinh.
+kt('chi so 5 va 28 cung ten "Lồng đèn hoa sen" (trung That trong Java, khong phai loi)',
+    $thu[5] ?? null, $thu[28] ?? null);
+
+$dhMuc = danhMucDanhHieu();
+kt('danhMucDanhHieu() co dung 48 danh hieu (khong tinh muc "ngau nhien" tu them)',
+    count($dhMuc), 48);
+$soNgauNhien = 0;
+foreach ($dhMuc as $d) {
+    if ($d['ngauNhien']) { $soNgauNhien++; }
+}
+kt('dung 34 danh hieu danh dau ngauNhien=true', $soNgauNhien, 34);
+ktDung('danh hieu 8767 (Anh hung) la ngau nhien',
+    ($dhMuc[8767]['ngauNhien'] ?? null) === true);
+ktDung('danh hieu 8983 la CO THAT nhung KHONG ngau nhien duoc',
+    isset($dhMuc[8983]) && $dhMuc[8983]['ngauNhien'] === false);
+ktDung('khong co danh hieu 8999 ("TEST") trong danh muc', !isset($dhMuc[8999]));
+for ($id = 8780; $id <= 8784; $id++) {
+    ktDung("khong co danh hieu $id (ten rong trong Java) trong danh muc", !isset($dhMuc[$id]));
+}
+
+// ===========================================================================
+echo "\n== Ma nguon: cac nhom moi phai dung, dung loai, dung id\n";
+// ===========================================================================
+$dmFile = (string)@file_get_contents($GOC . 'web/admin/inc/danh_muc_thuong.php');
+
+// ---- Canh PHAI dung TT, khong con la ITEM (loi tu dot truoc, da sua) ----
+ktDung("nhom canh dung loai 'TT' (KHONG con la 'ITEM')",
+    (bool)preg_match("/'ten'\\s*=>\\s*'Cánh'\\s*,\\s*\\n\\s*'loai'\\s*=>\\s*'TT'/", $dmFile));
+
+// ---- dmThoiTrang: dung atb9, dung type, LOAI type 29 (Canh) va 22/23/24 ----
+ktDung('dmThoiTrang loc bang atb9 IN (1, 2)', strpos($dmFile, 'atb9 IN (1, 2)') !== false);
+ktDung('dmThoiTrang gioi han type IN (0, 1, 2, 13)',
+    strpos($dmFile, 'type IN (0, 1, 2, 13)') !== false);
+// Doi chieu du lieu that: type 22/23/24 (The mua ban, Xa tieu lenh, Lenh bai tran
+// yeu) CUNG co atb9=1 nhung KHONG phai thoi trang that - xac nhan chung KHONG
+// nam trong danh sach type duoc dmThoiTrang lay.
+foreach ([22, 23, 24, 29] as $t) {
+    ktDung("dmThoiTrang KHONG lay type $t",
+        !(bool)preg_match('/type IN \(0, 1, 2, 13[^)]*' . $t . '/', $dmFile));
+}
+
+// ---- Than khi: canh bao chinh sach khoa phai duoc ghi ro, khong duoc am di ----
+ktDung('co canh bao thang khi khong bao gio bi khoa',
+    strpos($dmFile, 'KHÔNG BAO GIỜ bị khoá') !== false);
+ktDung('canh bao trich dung newItem.lock = 0 cua Char.createThanKhi',
+    strpos($dmFile, 'newItem.lock = 0') !== false || strpos($dmFile, 'createThanKhi') !== false);
+
+// ---- require dung ca hai tep sinh moi ----
+ktDung("co require_once 'danh_muc_thu.php'", strpos($dmFile, "danh_muc_thu.php'") !== false);
+ktDung("co require_once 'danh_muc_danh_hieu.php'",
+    strpos($dmFile, "danh_muc_danh_hieu.php'") !== false);
+
+// ===========================================================================
 echo "\n== Ma nguon: bo chon khong duoc thanh duong di thu hai\n";
 // ===========================================================================
 $gc = (string)@file_get_contents($GOC . 'web/admin/giftcode.php');
@@ -317,7 +414,12 @@ ktDung('JS khong goi XMLHttpRequest', strpos($js, 'XMLHttpRequest') === false);
 ktDung('du lieu nhung bang json_encode co JSON_HEX_TAG',
     strpos($gc, 'JSON_HEX_TAG') !== false);
 
-$dmFile = (string)@file_get_contents($GOC . 'web/admin/inc/danh_muc_thuong.php');
+// ---- JS: ho tro truong an va minSo, khong thi TK/TKMAX va "0 = vinh vien" hong ----
+ktDung('JS ho tro truong an (t.an) - can cho tham so chua dung cua TK/TKMAX', strpos($js, 't.an') !== false);
+ktDung('JS ho tro minSo - can cho "0 = vinh vien" khong bi kep len 1', strpos($js, 't.minSo') !== false);
+ktDung('JS truong an tao input type=hidden, khong hien o nhap', strpos($js, "an.type = 'hidden'") !== false);
+
+// $dmFile da doc o dau tep (khoi "cac nhom moi phai dung"), dung lai chu khong doc lai.
 ktDung('danh muc thuoc chi lay id trong dai hop le',
     strpos($dmFile, 'DM_SO_O_THUOC') !== false);
 ktDung('danh muc thuoc bo dong khong ten',

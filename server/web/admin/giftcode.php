@@ -436,6 +436,20 @@ adminHead('giftcode', 'Giftcode');
                 oTruong.innerHTML = '';
                 if (!n) { return; }
                 (TRUONG[n.loai] || []).forEach(function (t) {
+                    /*
+                     * Trường ẩn (t.an === true): tham số server BẮT BUỘC PHẢI CÓ trong
+                     * chuỗi (server truy cập theo chỉ số mảng cố định) nhưng KHÔNG hề
+                     * đọc giá trị — ví dụ TK/TKMAX có một "_" chưa dùng ở giữa. Không
+                     * hiện ô nhập, chỉ gắn sẵn giá trị cố định để chuoi() đọc được.
+                     */
+                    if (t.an) {
+                        var an = document.createElement('input');
+                        an.type = 'hidden';
+                        an.value = t.macDinh;
+                        an.setAttribute('data-ma', t.ma);
+                        oTruong.appendChild(an);
+                        return;
+                    }
                     var nhan = document.createElement('label');
                     nhan.className = 'o';
                     var sp = document.createElement('span');
@@ -454,7 +468,13 @@ adminHead('giftcode', 'Giftcode');
                     } else {
                         o = document.createElement('input');
                         o.type = 'number';
-                        o.min = '1';
+                        /*
+                         * Mặc định sàn 1 (số lượng không được là 0), nhưng vài trường
+                         * (số ngày/phút "0 = vĩnh viễn") khai rõ minSo='0' — ép cứng
+                         * min='1' cho mọi ô số từng làm trình duyệt TỰ KẸP 0 thành 1
+                         * ngay khi rời ô, biến "vĩnh viễn" thành "1 ngày/phút" âm thầm.
+                         */
+                        o.min = (t.minSo !== undefined && t.minSo !== null) ? t.minSo : '1';
                     }
                     o.value = t.macDinh;
                     o.setAttribute('data-ma', t.ma);

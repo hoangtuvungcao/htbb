@@ -134,24 +134,26 @@ mã chỉ có sáu chữ số, không đếm thì một script dò được cả
 ## Bộ chọn vật phẩm của trang Giftcode
 
 Ô "Phần thưởng vật phẩm" trước đây là một ô trống, phải tự nhớ id — không nhớ được là
-không tạo được mã. Mà id nằm rải ở **ba** nguồn khác nhau:
+không tạo được mã. Mà id nằm rải ở **năm** nguồn khác nhau:
 
 | Nguồn | Số dòng | Loại thưởng |
 |---|---|---|
-| `data_item` | 914 | `ITEM` |
+| `data_item` | 914 (77 trong đó là "thời trang", lọc bằng cột `atb9`) | `ITEM`, `TT` |
 | `data_potion` | 162 | `PT` |
 | `Map.gemTemplate` — **ghi cứng trong Java, không có trong CSDL** | 270 | `GEM` |
+| `Map.petTemplate` — **ghi cứng trong Java, id là CHỈ SỐ MẢNG** | 30 | `PET`, `PETV` |
+| `DanhHieu.getName()` — **ghi cứng trong một switch Java** | 48 | `DH` |
 
-Riêng "trứng" đã nằm ở cả ba: trứng thú là `data_item` type 26, trứng linh thú là type
-21, còn trứng phượng hoàng / hoả kỳ lân / đương khang / bạch cốt / lân sư tử lại là
-`data_potion`.
+Riêng "trứng" đã nằm ở cả ba nguồn đầu: trứng thú là `data_item` type 26, trứng linh thú
+là type 21, còn trứng phượng hoàng / hoả kỳ lân / đương khang / bạch cốt / lân sư tử lại
+là `data_potion`.
 
 **Bộ chọn là bộ sinh chuỗi, không phải đường đi riêng.** Nó ghép chuỗi rồi chèn vào
 chính ô văn bản cũ; chuỗi vẫn qua `kiemTraItem()` y như khi gõ tay. Nên nó không thể
 tạo ra một loại dữ liệu sai mới, và ai quen gõ tay vẫn làm được như trước.
 
-Danh mục **nhúng thẳng vào trang, không AJAX**: chỉ ~600 lựa chọn sau khi lọc, còn một
-endpoint AJAX là một đường vào mới phải tự lo `requireAdmin` và CSRF.
+Danh mục **nhúng thẳng vào trang, không AJAX**: chỉ khoảng một nghìn lựa chọn sau khi
+lọc, còn một endpoint AJAX là một đường vào mới phải tự lo `requireAdmin` và CSRF.
 
 ### Đã lọc bớt những gì
 
@@ -163,30 +165,81 @@ endpoint AJAX là một đường vào mới phải tự lo `requireAdmin` và C
   mỗi nhóm 5 hệ. Ví dụ **NLCC6** = Tơ lụa / Bạc / Thuỷ tinh / Gỗ sưa / Da cứng cấp 6,
   tức id 108, 115, 122, 129, 136 — không ai nhớ dãy số đó.
 
+### Ba lỗi tìm ra khi rà lại theo yêu cầu người dùng
+
+Cột `data_item.type` không phải lúc nào cũng khớp hành vi thật của id đó trong game —
+ba trường hợp sau bị bắt và sửa:
+
+- **950–954** mang `type=19` (Phi phong) nhưng tên "Skin Phúc Thú..." — style trùng hệt
+  "Phi phong Lăng Vân" nên chạy được như phi phong thường, chỉ là tên hứa đổi hình thú
+  cưỡi mà nó không làm. Đã loại khỏi bộ chọn (`dmIdRac()`).
+- **728** "Gậy Giáng Sinh" mang `type=27` (Thú nuôi) nhưng `Item.java` có hằng số
+  `GAY_GIANG_SINH=728` xử lý nó như vũ khí lễ hội — mọi thú nuôi thật đều có `atb0=5`,
+  riêng 728 thì không. Đã loại khỏi bộ chọn.
+- **898–902** "Cánh" mang `type=29` chung với 24 mảnh cải trang Bát Giới/Sa Tăng, nhưng
+  là một hệ trang trí riêng (`Item.isCanh()`) — tách thành nhóm **"Cánh"** riêng, và ban
+  đầu gán nhầm loại `ITEM` (Cánh không có chỉ số trong cột `atb`, chỉ số thật chỉ được
+  gán khi tạo qua `TT`) — đã sửa lại thành loại `TT`.
+- **`ITEM:id:soLuong`** chỉ thật sự cộng dồn số lượng với đúng 12 id mảnh sưu tập
+  (848–859). Mọi id khác, server chỉ tạo **đúng 1 món** dù ghi số lượng bao nhiêu —
+  nhưng thông báo vẫn in nguyên số đã gõ. Bộ chọn khoá ô "Số lượng" về 1 khi món đang
+  chọn không nằm trong 12 id đó.
+
+### Đợt mở rộng thứ hai: Thời trang, Thú nuôi, Thần khí, Danh hiệu
+
+Một đợt rà soát 69 agent kiểm chứng chéo tìm thêm 22 vấn đề ở các loại thưởng còn lại.
+Đưa thêm vào bộ chọn những phần xác minh đủ an toàn:
+
+- **Thời trang (`TT`)** — không phải một `type`, mà là cột `atb9 IN (1,2)`, rải trên 4
+  type (áo/mặt nạ/nón/chổi bay). Trước đợt này bộ chọn hoàn toàn không có nhóm này, dù
+  có thể là loại được phát nhiều nhất. Cố ý bỏ 6 dòng type 22/23/24 dù cũng có `atb9=1`
+  — đối chiếu dữ liệu thật thì đó không phải thời trang, chỉ là cách né bị nhân hệ số
+  theo class.
+- **Thú nuôi (`PET`/`PETV`)** — id ở đây là **chỉ số mảng** `Map.petTemplate` (0–29),
+  hoàn toàn không phải id vật phẩm; server đọc thẳng không kiểm biên, id ngoài dải ném
+  lỗi giữa lúc phát quà và làm mất luôn dòng log lẫn việc trừ lượt. Tên 30 con thú lấy
+  từ tệp sinh `danh_muc_thu.php`, chỉ số 5 và 28 trùng tên "Lồng đèn hoa sen" — đúng vậy
+  trong chính mã nguồn, không phải lỗi.
+- **Thần khí (`TK`/`TKMAX`)** — chỉ đúng 3 id (890/891/892) được hệ thống nhận diện.
+  **Lưu ý chính sách**: `Char.createThanKhi()` đặt cứng `newItem.lock = 0`, bỏ qua tham
+  số khoá — thần khí phát qua giftcode **luôn giao dịch được**, không có cách nào khoá.
+- **Danh hiệu (`DH`)** — chỉ 34/48 danh hiệu random được bằng cách gõ id `0`; 14 danh
+  hiệu còn lại (id 8983 trở lên) phải chọn đúng tên, gõ `0` sẽ không bao giờ ra chúng.
+
+Cố ý **chưa** đưa vào: `AOTT` (chỉ 12 id ghi cứng — dùng `TT` thay thế, an toàn hơn hẳn),
+`TKF`/`TKMAXF` (quy tắc dòng ẩn theo màu quá rối để làm vội), `PPRK`/`PPVK` chọn kháng
+(chỉ có tác dụng thật với đúng 1 id). Vẫn phải gõ tay cho các loại này.
+
 ### Quà giftcode là quà khoá
 
 | Loại | Khoá được không |
 |---|---|
 | `ITEM` | **luôn khoá**, không có tham số để mở — `Char.createItemSoLuong` đặt `newItem.lock = 1` |
+| `TT` | **có chọn, mặc định khoá** — gán thẳng vào `newItem.lock` (1 = khoá, khác chiều dấu của `GEM`) |
 | `GEM` | **có chọn, mặc định khoá** |
 | `PT` | không có khái niệm khoá — ô thuốc chỉ là một con số đếm trong mảng `potions` |
+| `TK`/`TKMAX` | **không bao giờ khoá được** — `Char.createThanKhi()` đặt cứng `lock=0` |
 
 Một cái bẫy đã đọc từ `DatabaseGiftCode.java`: viết `GEM:108:5` (ba phần) thì
 `Integer.parseInt(tachTime[3])` ném lỗi và **khối `catch` đặt khoá = true**. Kết quả
 tình cờ đúng chính sách, nhưng hành vi đến từ một khối bắt lỗi thì đổi nghĩa ngay lần ai
 đó sửa chỗ đó — nên bộ chọn luôn ghi đủ bốn phần: `GEM:108:5:-1`.
 
-### 270 tên ngọc là tệp SINH RA
+### Ba tệp danh mục là SINH RA — đừng sửa tay
 
-`web/admin/inc/danh_muc_ngoc.php` **đừng sửa tay**. Sinh lại sau khi đổi ngọc:
+Tên 270 ngọc, 30 thú nuôi, 48 danh hiệu đều ghi cứng trong mã nguồn Java, không nằm
+trong CSDL nào. Sinh lại sau khi đổi dữ liệu tương ứng:
 
 ```bash
 java -cp "build/classes;lib/NQSH_5h.jar;lib/mysql-connector-java-5.1.49.jar" SinhDanhMucNgoc
+java -cp "build/classes;lib/NQSH_5h.jar;lib/mysql-connector-java-5.1.49.jar" SinhDanhMucThu
+java -cp "build/classes;lib/NQSH_5h.jar;lib/mysql-connector-java-5.1.49.jar" SinhDanhMucDanhHieu
 ```
 
-Phải sinh bằng Java chứ không đọc bằng regex: 160 trong 270 tên lấy từ hằng số
-`data.Text.*`, nên đọc tệp `.java` sẽ ra `Text.BAO_HIEM_20` thay vì `Bảo hiểm 20%`.
-`test/KiemDanhMucNgoc.java` đối chiếu tệp sinh với mảng Java, nên quên chạy lại là bộ
+Phải sinh bằng Java chứ không đọc bằng regex: 160/270 tên ngọc lấy từ hằng số
+`data.Text.*` (đọc tệp `.java` sẽ ra `Text.BAO_HIEM_20` thay vì `Bảo hiểm 20%`), còn tên
+danh hiệu nằm trong một khối `switch` với các nhánh case-fallthrough dễ đọc nhầm. Ba bộ
+`test/KiemDanhMuc*.java` đối chiếu tệp sinh với mã nguồn Java, nên quên chạy lại là bộ
 kiểm đỏ chứ không âm thầm lệch tên.
 
 ## Thông tin database: đọc thẳng từ `server.ini`

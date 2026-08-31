@@ -6,16 +6,27 @@
  *
  *  VÌ SAO CÓ TỆP NÀY. Ô "Phần thưởng vật phẩm" trước đây là một ô văn bản trống,
  *  người tạo mã phải tự nhớ id. Không nhớ được là không tạo được giftcode — và
- *  không nhớ được là chuyện bình thường, vì id nằm rải ở BA nguồn khác nhau:
+ *  không nhớ được là chuyện bình thường, vì id nằm rải ở NĂM nguồn khác nhau:
  *
- *      data_item     (914 dòng)  -> loại thưởng ITEM / TRANGPHUC
- *      data_potion   (162 dòng)  -> loại thưởng PT
- *      Map.gemTemplate (270 viên, GHI CỨNG TRONG JAVA, không có trong CSDL)
- *                                -> loại thưởng GEM
+ *      data_item        (914 dòng)  -> ITEM, và cột atb9 lọc ra "thời trang" -> TT
+ *      data_potion      (162 dòng)  -> PT
+ *      Map.gemTemplate  (270 viên, GHI CỨNG TRONG JAVA, không trong CSDL)   -> GEM
+ *      Map.petTemplate  (30 con,   GHI CỨNG TRONG JAVA, id = CHỈ SỐ MẢNG)   -> PET / PETV
+ *      DanhHieu.getName (48 tên,   GHI CỨNG TRONG JAVA trong một switch)    -> DH
  *
- *  Riêng chuyện "trứng" đã nằm ở cả ba nguồn: trứng thú là `data_item` type 26,
- *  trứng linh thú là `data_item` type 21, còn trứng phượng hoàng / hoả kỳ lân /
- *  đương khang / bạch cốt / lân sư tử lại là `data_potion`. Không ai nhớ nổi.
+ *  Riêng chuyện "trứng" đã nằm ở cả ba nguồn đầu: trứng thú là `data_item` type
+ *  26, trứng linh thú là `data_item` type 21, còn trứng phượng hoàng / hoả kỳ
+ *  lân / đương khang / bạch cốt / lân sư tử lại là `data_potion`. Không ai nhớ
+ *  nổi.
+ *
+ *  MỞ RỘNG (đợt hai). Một đợt rà soát 69 agent kiểm chứng chéo tìm thêm 22 lỗi
+ *  ở các loại thưởng còn lại — hầu hết là "id không phải id vật phẩm mà là một
+ *  con số có ý nghĩa khác" (chỉ số mảng, chỉ số cấp bậc...) không kiểm biên bên
+ *  Java. Đợt này đưa thêm được PET/PETV, TT (thời trang), TK/TKMAX (thần khí),
+ *  DH (danh hiệu) vào bộ chọn một cách an toàn. Còn AOTT (chỉ 12 id ghi cứng,
+ *  đã có TT thay thế tốt hơn), TKF/TKMAXF (quy tắc dòng ẩn theo màu quá rối để
+ *  vội), PPRK/PPVK chọn kháng (chỉ có tác dụng thật với đúng 1 id) — CHƯA đưa
+ *  vào, vẫn phải gõ tay.
  *
  *  ------------------------------------------------------------------------
  *   BỘ CHỌN LÀ BỘ SINH CHUỖI, KHÔNG PHẢI ĐƯỜNG ĐI RIÊNG
@@ -80,6 +91,8 @@
  */
 
 require_once __DIR__ . '/danh_muc_ngoc.php';
+require_once __DIR__ . '/danh_muc_thu.php';
+require_once __DIR__ . '/danh_muc_danh_hieu.php';
 
 /** Số ô thuốc của nhân vật — phải khớp Char.SO_O_THUOC bên Java. */
 const DM_SO_O_THUOC = 162;
@@ -318,11 +331,49 @@ function dmThuoc(PDO $game): array
 }
 
 /**
+ * "Thời trang" KHÔNG PHẢI một `data_item.type` — nó là cột `atb9` (giá trị 1
+ * hoặc 2, `Map.isModelClothes()`), rải trên NHIỀU type khác nhau: 0 (áo), 1
+ * (mặt nạ/nón), 2 (nón), 13 (chổi bay). Lọc theo type như các nhóm khác sẽ
+ * không tách được thời trang khỏi áo/quần/nón THẬT — đây là lý do trước đợt
+ * này bộ chọn hoàn toàn không có nhóm thời trang, dù có thể là loại được phát
+ * nhiều nhất trong game.
+ *
+ * CỐ Ý BỎ type 22/23/24 dù chúng cũng có atb9=1 (Thẻ mua bán, Xa tiêu lệnh,
+ * Lệnh bài trấn yêu — 6 dòng). Đối chiếu dữ liệu thật: atb9=1 ở đó không có
+ * nghĩa "thời trang", chỉ là cách né bị nhân hệ số theo class — xếp chung vào
+ * đây sẽ làm người chọn "Thời trang" nhận nhầm một thẻ giao dịch.
+ *
+ * CỐ Ý BỎ type 29 (Cánh, atb9=1) — Cánh đã có nhóm riêng ở trên (dmIdCanh()),
+ * lấy đây nữa sẽ lặp lại.
+ *
+ * Loại thưởng: `TT:id:soLuong:soNgay:khoa` -> `Char.createThoiTrang()`
+ * (Char.java:6295-6348). Đã đọc toàn bộ thân hàm để xác nhận AN TOÀN cho mọi id
+ * trong nhóm này — có null-guard (`if (template == null) return null`), và có
+ * nhánh xử lý riêng đúng cho Cánh / mặt nạ / chổi nếu lỡ id rơi vào (không xảy
+ * ra ở đây vì đã lọc loại type, nhưng hàm tự nó đã an toàn với mọi id thật).
+ */
+function dmThoiTrang(PDO $game): array
+{
+    $ra = [];
+    try {
+        $st = $game->query('SELECT id, name FROM data_item
+                             WHERE atb9 IN (1, 2) AND type IN (0, 1, 2, 13)
+                             ORDER BY type, id');
+        foreach ($st->fetchAll() as $d) {
+            $ra[(int)$d['id']] = dmMotDong((string)$d['name']);
+        }
+    } catch (Throwable $ex) {
+        return [];
+    }
+    return $ra;
+}
+
+/**
  * Dựng toàn bộ danh mục cho bộ chọn.
  *
  * Mỗi nhóm có:
  *   ten     - nhãn hiện trong ô "Nhóm"
- *   loai    - mã loại phần thưởng sẽ sinh ra (ITEM / PT / GEM / TRANGPHUC)
+ *   loai    - mã loại phần thưởng sẽ sinh ra (ITEM / PT / GEM / TT / PET / PETV / TK / TKMAX / DH)
  *   ghiChu  - câu giải thích hiện dưới ô chọn
  *   muc     - [id => nhãn]
  *
@@ -437,11 +488,104 @@ function dmDanhMuc(PDO $game): array
     }
     if ($muaCanh) {
         $dm['canh'] = [
+            // ĐÃ SỬA: loại này TỪNG là 'ITEM' — sai. Cánh không có chỉ số trong cột
+            // atb (chú thích Char.java:6311 "canh 898-902 co atb rong trong data_item,
+            // chi so nam o createOptionCanh") — chỉ số THẬT (lockAtb/otherAtt) chỉ
+            // được gán khi tạo qua `Char.createThoiTrang()` (loại TT), KHÔNG được gán
+            // khi tạo qua `Char.createItemSoLuong()` (loại ITEM, không hề gọi
+            // createOptionCanh). Phát Cánh bằng ITEM cho ra một món 0 chỉ số.
             'ten'    => 'Cánh',
-            'loai'   => 'ITEM',
+            'loai'   => 'TT',
             'ghiChu' => 'Trang trí cánh — hệ riêng (Char.wModel.CanhModel), không phải mảnh '
-                      . 'cải trang dù cùng nằm chung data_item type 29.',
+                      . 'cải trang dù cùng nằm chung data_item type 29. Dùng TT (không phải '
+                      . 'ITEM) vì chỉ số của cánh chỉ được gán đúng qua đường này.',
             'muc'    => $muaCanh,
+        ];
+    }
+
+    // ---- Thời trang: atb9, không phải type — xem dmThoiTrang() ----
+    $thoiTrang = dmThoiTrang($game);
+    if ($thoiTrang) {
+        $dm['thoi_trang'] = [
+            'ten'    => 'Thời trang (' . count($thoiTrang) . ')',
+            'loai'   => 'TT',
+            'ghiChu' => 'Áo / mặt nạ / nón / chổi bay thời trang — cột atb9, không phải type. '
+                      . 'Gõ vào ô tìm để lọc theo tên hoặc id.',
+            'muc'    => $thoiTrang,
+        ];
+    }
+
+    // ---- Thú nuôi vĩnh viễn / có thời hạn (Map.petTemplate, KHONG PHAI data_item) ----
+    // Xem canh bao dau tools/SinhDanhMucThu.java: id o day la CHI SO MANG (0..29),
+    // Char.createPet()/createPetVinhVien() doc thang khong kiem bien.
+    $thu = danhMucThu();
+    if ($thu) {
+        $dm['thu_vinh_vien'] = [
+            'ten'    => 'Thú nuôi — vĩnh viễn',
+            'loai'   => 'PETV',
+            'ghiChu' => 'Chỉ số ở đây là THỨ TỰ trong danh sách (0–' . (count($thu) - 1)
+                      . '), không phải id vật phẩm. Chỉ số 5 và 28 trùng tên '
+                      . '"Lồng đèn hoa sen" — đúng là hai con khác nhau trong game, không '
+                      . 'phải lỗi hiển thị.',
+            'muc'    => $thu,
+        ];
+        $dm['thu_thoi_han'] = [
+            'ten'    => 'Thú nuôi — có thời hạn',
+            'loai'   => 'PET',
+            'ghiChu' => 'Cùng danh sách với "Thú nuôi — vĩnh viễn", nhưng có thêm số ngày.',
+            'muc'    => $thu,
+        ];
+    }
+
+    // ---- Thần khí: chỉ đúng 3 id (890/891/892), xem src/ThanKhi/ThoRenThanBi.java ----
+    // Đọc trực tiếp bằng id — không lọc từ $vp (chỉ query các type 19/21/25/26/27/29/30
+    // ở trên; 890/891/892 mang type 4, không nằm trong đó).
+    $thanKhi = [];
+    try {
+        $st = $game->prepare('SELECT id, name FROM data_item WHERE id IN (890, 891, 892)');
+        $st->execute();
+        foreach ($st->fetchAll() as $d) {
+            $thanKhi[(int)$d['id']] = dmMotDong((string)$d['name']);
+        }
+    } catch (Throwable $ex) {
+        $thanKhi = [];
+    }
+    if ($thanKhi) {
+        // CẢNH BÁO CHÍNH SÁCH: `Char.createThanKhi()` đặt CỨNG `newItem.lock = 0`,
+        // bỏ qua hoàn toàn tham số khoá được truyền vào (Char.java, ngay sau dòng
+        // "ItemTemplates template = ..."). Thần khí phát qua TK/TKMAX vì vậy LUÔN
+        // giao dịch được — không có cách nào khoá bằng cú pháp giftcode. Đây là hành
+        // vi của máy chủ, không phải thiếu sót của bộ chọn.
+        $ghiChuThanKhi = 'Chỉ đúng 3 id này được hệ thần khí nhận diện. '
+                       . 'LƯU Ý: khác mọi loại khác trong bộ chọn, thần khí phát qua giftcode '
+                       . 'KHÔNG BAO GIỜ bị khoá — máy chủ luôn tạo ở trạng thái giao dịch được, '
+                       . 'không có cách nào đặt khoá qua giftcode.';
+        $dm['than_khi'] = [
+            'ten' => 'Thần khí', 'loai' => 'TK', 'ghiChu' => $ghiChuThanKhi, 'muc' => $thanKhi,
+        ];
+        $dm['than_khi_max'] = [
+            'ten' => 'Thần khí — tối đa chỉ số', 'loai' => 'TKMAX',
+            'ghiChu' => $ghiChuThanKhi, 'muc' => $thanKhi,
+        ];
+    }
+
+    // ---- Danh hiệu ----
+    $danhHieu = danhMucDanhHieu();
+    if ($danhHieu) {
+        // id 0 KHÔNG có trong danhMucDanhHieu() (không phải một danh hiệu thật) —
+        // thêm tay làm mục đầu tiên, ghi rõ nó là gì thay vì để trống nghĩa.
+        $mucDanhHieu = [0 => 'Ngẫu nhiên — chỉ ra một trong 34 danh hiệu KHÔNG đánh dấu '
+            . '"(không random được)" bên dưới'];
+        foreach ($danhHieu as $id => $d) {
+            $mucDanhHieu[$id] = $d['ten'] . ($d['ngauNhien'] ? '' : ' (không random được)');
+        }
+        $dm['danh_hieu'] = [
+            'ten'    => 'Danh hiệu',
+            'loai'   => 'DH',
+            'ghiChu' => 'Chỉ 34/48 danh hiệu random được bằng cách gõ id 0 — 14 danh hiệu '
+                      . 'đánh dấu "(không random được)" PHẢI chọn đúng tên ở đây, gõ id=0 sẽ '
+                      . 'không bao giờ ra chúng.',
+            'muc'    => $mucDanhHieu,
         ];
     }
 
@@ -567,6 +711,62 @@ function dmTruongCuaLoai(string $loai): array
                     '-1' => 'Khoá — không giao dịch được (nên dùng)',
                     '0'  => 'Không khoá',
                 ]],
+            ];
+
+        case 'TT':
+            // TT:id:soLuong:soNgay:khoa -> Char.createThoiTrang(p, id, soNgay, khoa)
+            // (Char.java:6295). Vòng lặp soLuong lần TẠO THẬT soLuong món riêng biệt —
+            // khác hẳn ITEM (chỉ tạo đúng 1 bất kể soLuong). soNgay tính bằng NGÀY
+            // (nhân 1440 bên trong), khác PET/TK dùng PHÚT — đừng nhầm đơn vị.
+            // `khoa` ở đây là gán THẲNG vào newItem.lock (1 = khoá), KHÁC quy ước
+            // "âm là khoá" của GEM — hai loại dùng hai chiều dấu khác nhau.
+            return [
+                ['ma' => 'sl', 'nhan' => 'Số lượng', 'macDinh' => '1'],
+                ['ma' => 'ngay', 'nhan' => 'Số ngày (0 = vĩnh viễn)', 'macDinh' => '0', 'minSo' => '0'],
+                ['ma' => 'khoa', 'nhan' => 'Khoá', 'macDinh' => '1', 'chon' => [
+                    '1' => 'Khoá — không giao dịch được (nên dùng)',
+                    '0' => 'Không khoá',
+                ]],
+            ];
+
+        case 'PET':
+            // PET:id:soLuong:thoiHan(phút) -> vòng lặp soLuong lần Char.createPet(id, phút).
+            // id ở đây là CHỈ SỐ MẢNG Map.petTemplate (0..29), không phải id vật phẩm —
+            // xem danhMucThu(). Mặc định 10080 phút (7 ngày): 0 rơi vào một nhánh hiển
+            // thị đặc biệt của game (Pet.getTimeExpire) không hẳn là "vĩnh viễn" thật sự
+            // như TT/GEM — muốn vĩnh viễn rõ ràng thì dùng nhóm "Thú nuôi — vĩnh viễn".
+            return [
+                ['ma' => 'sl', 'nhan' => 'Số lượng', 'macDinh' => '1'],
+                ['ma' => 'phut', 'nhan' => 'Thời hạn (phút)', 'macDinh' => '10080'],
+            ];
+
+        case 'PETV':
+            // PETV:id -> Char.createPetVinhVien(id). Đúng 2 phần, không tham số nào
+            // khác — kể cả nếu người gõ tay thêm số lượng, server cũng CHỈ đọc
+            // tachTime[1] rồi tạo đúng 1 con (không có vòng lặp như PET).
+            return [];
+
+        case 'TK':
+        case 'TKMAX':
+            // TK:id:_:thoiHan(phút, 0=vĩnh viễn) -> Char.createThanKhi(..., 0, thoiHan, ...).
+            // Phần thứ hai ("_") là CHỖ TRỐNG CHƯA DÙNG trong chính mã nguồn — server
+            // gọi createThanKhi với ma_vat=0 GHI CỨNG ngay tại lời gọi, không hề đọc
+            // tachTime[2] — nhưng phần đó vẫn phải CÓ MẶT vì server truy cập tới
+            // tachTime[3] theo chỉ số mảng. Trường 'an' (ẩn) dưới đây tự điền "_" mà
+            // không hiện ô nhập, để không ai phải đoán "điền gì vào chỗ này".
+            return [
+                ['ma' => '_', 'an' => true, 'macDinh' => '_'],
+                ['ma' => 'phut', 'nhan' => 'Thời hạn (phút, 0 = vĩnh viễn)', 'macDinh' => '0', 'minSo' => '0'],
+            ];
+
+        case 'DH':
+            // DH:id:soLuong:thoiHan(phút, 0=vĩnh viễn) -> player.addDanhHieu(id, phút)
+            // lặp soLuong lần (Char.java:14545). id=0 là "ngẫu nhiên" nhưng CHỈ ngẫu
+            // nhiên trong 34/48 danh hiệu — xem danhMucDanhHieu() và mục "ngẫu nhiên"
+            // được thêm sẵn trong danh sách chọn.
+            return [
+                ['ma' => 'sl', 'nhan' => 'Số lượng', 'macDinh' => '1'],
+                ['ma' => 'phut', 'nhan' => 'Thời hạn (phút, 0 = vĩnh viễn)', 'macDinh' => '0', 'minSo' => '0'],
             ];
     }
     return [];
