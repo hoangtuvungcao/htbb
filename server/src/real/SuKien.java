@@ -161,7 +161,9 @@ public final class SuKien {
         new Muc(HE_2015, "Hè 2015", "Mùa",
                 "Bản sự kiện hè cũ."),
         new Muc(VU_LAN, "Vu Lan", "Mùa",
-                "NPC Vu Lan, hoa hồng cài áo."),
+                "Rơi nhánh hoa hồng vàng (thu hoạch cây thần, chế đồ, tiến giai, săn boss,"
+                + " giết quái lệch cấp); NPC Đấu Trường đổi bó hoa vàng/đỏ và nguyên liệu;"
+                + " tinh luyện thần khí +10% với đá hỏa thạch cấp 2; Mặt nạ Ông Địa."),
         new Muc(GIO_TO, "Giỗ Tổ Hùng Vương", "Mùa",
                 "Bánh giày, pháo hoa, đổi nguyên liệu, bảng xếp hạng bắn pháo."),
 

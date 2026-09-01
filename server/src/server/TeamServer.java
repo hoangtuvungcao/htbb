@@ -209,7 +209,15 @@ public class TeamServer {
     public static boolean isSuKienGioTo2016;
     public static boolean isSuKienNoel2023;
     public static boolean isSuKienTetduonglich2024;
-    
+
+    /**
+     * Gia xu doi "50 hoa hong vang -> 1 bo hoa do" o su kien Vu Lan (NPC Dau Truong).
+     * Doc tu server.ini khoa sv.giaXuBoHoaDoVuLan - moi server tu dat rieng (Van Xuan
+     * dat thap hon cac server khac), khong hardcode ten server trong Java vi khong co
+     * san co che so ten server (chi co TeamServer.server la so id).
+     */
+    public static int giaXuBoHoaDoVuLan = 150000;
+
 
     static {
         TeamServer.running = true;
@@ -524,6 +532,7 @@ public class TeamServer {
             real.Monster.PC_TILE_NGOC = tilePercent(p.getProperty("sv.tileNgoc"), 30);
             real.Monster.PC_TILE_ITEM = tilePercent(p.getProperty("sv.tileItem"), 20);
             Map.DIV_DROP_XU = Math.max(1, parseIntDefault(p.getProperty("sv.chiaXuRoi"), 10));
+            TeamServer.giaXuBoHoaDoVuLan = parseIntDefault(p.getProperty("sv.giaXuBoHoaDoVuLan"), 150000);
             // Khoa tuy chon - khong co trong server.ini thi tat. Xem chu thich o
             // khai bao TeamServer.thuNghiemThuCuoi.
             final String tenThuNghiem = p.getProperty("sv.thuNghiemThuCuoi");

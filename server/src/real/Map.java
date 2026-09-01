@@ -6819,6 +6819,18 @@ public class Map implements Runnable {
             Database.instance.saveOrtherLog("", player.getName(), "nhan dc dua hau khi che do", "trungdua");
         }
 
+        if (Char.isSuKienVuLan2015()) {
+            int tlVuLan = 50;
+            if (player.wModel != null && (player.wModel.isBongDaNamAoCam() || player.wModel.isBongDaNuAoSoc())) {
+                tlVuLan *= 2;
+            }
+            if (r.nextInt(100) < tlVuLan) {
+                player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG]++;
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                Database.instance.saveOrtherLog("", player.getName(), "nhan dc nhanh hoa hong vang khi che do", "vulan");
+            }
+        }
+
         return item;
     }
 
@@ -7168,6 +7180,10 @@ public class Map implements Runnable {
         } else if (player.hp <= 0) {
             return false;
         } else if (((PotionUse) player.coolDownPotion.get(potionType)).doUsePotion() && !player.isVetThuongSau()) {
+            // Mat na Ong Dia: +20% hieu qua hoi khi hp duoi 30% toi da
+            if (player.isBuffHoiMatNaOngDia()) {
+                hpAdd += hpAdd * 20 / 100;
+            }
             player.hp = player.hp + hpAdd + hpAdd * player.getEffSkillClanMember(3) / 100;
             if (player.hp <= 0) {
                 player.hp = 0;
@@ -7204,6 +7220,10 @@ public class Map implements Runnable {
     protected boolean doUseMP(Char player, short potionType, int mpAdd) throws IOException {
         boolean isUse = ((PotionUse) player.coolDownPotion.get(potionType)).doUsePotion();
         if (isUse && !player.isYemBua()) {
+            // Mat na Ong Dia: +20% hieu qua hoi khi hp duoi 30% toi da
+            if (player.isBuffHoiMatNaOngDia()) {
+                mpAdd += mpAdd * 20 / 100;
+            }
             player.mp += mpAdd;
             player.calculatorHPMP();
             if (potionType > 125) {
@@ -12607,100 +12627,262 @@ public class Map implements Runnable {
         Database.instance.saveOrtherLog("", player.charname, info, "duabe");
     }
 
+    /**
+     * Mo 1 "Bo hoa vang" (su kien Vu Lan viet lai, xem real/Potion.TYPE_BO_HOA_VANG).
+     *
+     * TAI SU DUNG ten ham va vi tri cu (truoc day la thuong het nhiem vu Vu Lan 2015,
+     * chi 500000 exp + 1 bang thuong ngau nhien) - noi dung ben trong da thay het theo
+     * danh sach qua that su cua ban Vu Lan moi. Goi tu doUsePotion.java khi nguoi choi
+     * bam dung Bo hoa vang.
+     *
+     * Khuon mau bang thuong: giong het doGiftQuestChucNu/doBanPhaoHoaGioto - mang song
+     * song per (trong so) / idgift / typegift / soluongmin / soluongmax, chon bang
+     * Char.getIndexRandom(per) roi re nhanh theo typegift. Type dung lai: 4=potions[],
+     * 6=gemTemplate qua doAddGemItem. Type moi rieng cho Vu Lan (xem doTraThuongVuLan):
+     * -10=vu khi thoi trang (mua ban duoc), -11=ho ve lenh 7/3 ngay theo isBoVang (mua
+     * ban duoc), -12=NLSC tu chon bac (khoa/khong khoa ngau nhien, bac theo isBoVang),
+     * -13=ban do nui chau bau (GemTemplate.BAN_DO_KHO_BAU), -14=huyet linh thao
+     * (Map.doCreateHuyetLinhThao), -15=manh Bat Gioi/Sa Tang (thay Ngo Khong/Duong Tang -
+     * chua co trong DB), -16=mat na ong dia (thoi han 3-5 ngay, ti le nho ra ban vinh
+     * vien), -17=ngoc huyen minh tu chon cap theo isBoVang, -18=exp ngau nhien
+     * (soluongmin/max la khoang exp, khac voi cac dong khac luon co soluong=1).
+     */
     public void doGiftQuestVulan(Char player) {
-        addXpCharEvent(player, 500000L, false, "doGiftQuestVulan");
-        int[] per = new int[]{5000, 5000, 5000, 5000, 5000, 1000, 2000, 2000, 10, 500, 200, 500, 5000, 300, 10, 5000, 5000, 5000, 5000, 100, 10, 0, 300};
-        int[] idgift = new int[]{
-            93,
-            95,
-            8,
-            13,
-            7,
-            114,
-            113,
-            112,
-            119,
-            100,
-            GemTemplate.BOT_XANH_LA,
-            GemTemplate.BOT_XANH,
-            GemTemplate.BOT_TRANG,
-            GemTemplate.BOT_DO,
-            GemTemplate.LKD_35,
-            -1,
-            -1,
-            -1,
-            -1,
-            -1,
-            -2,
-            -3,
-            -5
+        int[] per = new int[]{
+            1200, 1200, 1200, 1000, 1000, 1000, 1200,
+            600, 500,
+            700,
+            400,
+            600,
+            300,
+            500,
+            300,
+            200,
+            300,
+            200,
+            80
         };
-        int[] typegift = new int[]{4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, -1, -1, -1, -1, -1, -2, -3, -5};
-        int[] soluongmax = new int[]{100, 100, 5, 5, 10, 5, 5, 5, 1, 1, 50, 100, 100, 50, 1, 5000, 10000, 50000, 200000, 500000, 1, 1, 3};
-        int[] soluongmin = new int[]{50, 50, 1, 1, 3, 3, 3, 3, 1, 1, 10, 50, 50, 10, 1, 5000, 10000, 50000, 200000, 500000, 1, 1, 1};
-        String info = "Chúc mừng bạn nhận được ";
+        int[] idgift = new int[]{
+            Potion.TYPE_LUA_TO, Potion.TYPE_LUA_VUA, Potion.TYPE_LUA_THUONG,
+            Potion.TYPE_ATTACK_FOOD, Potion.TYPE_DEF_FOOD, Potion.TYPE_ALL_FOOD,
+            Potion.TYPE_BINH_TANG_TOC,
+            GemTemplate.LKD_30, -10,
+            -11,
+            -12,
+            Potion.TYPE_SACH_SKILL_PET,
+            -14,
+            -17,
+            Potion.TYPE_HP7000,
+            Potion.TYPE_TIEN_DAN,
+            -13,
+            -15,
+            -16
+        };
+        int[] typegift = new int[]{
+            4, 4, 4,
+            4, 4, 4,
+            4,
+            6, -10,
+            -11,
+            -12,
+            4,
+            -14,
+            -17,
+            4,
+            4,
+            -13,
+            -15,
+            -16
+        };
+        int[] soluongmax = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        int[] soluongmin = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        // "Ngau nhien 300-500k exp" chen rieng ngoai bang trong so per (khong dung chung
+        // co che typegift 1-don-vi voi cac dong tren, can range rieng cho soluong).
+        per = appendInt(per, 500);
+        idgift = appendInt(idgift, -18);
+        typegift = appendInt(typegift, -18);
+        soluongmin = appendInt(soluongmin, 300000);
+        soluongmax = appendInt(soluongmax, 500000);
         int index = Char.getIndexRandom(per);
-        if (typegift[index] == -5) {
-            int ind = r.nextInt(3) + 3;
-            int soluong = soluongmin[index];
-            if (soluongmin[index] < soluongmax[index]) {
-                soluong += r.nextInt(soluongmax[index] - soluongmin[index] + 1);
-            }
+        String info = doTraThuongVuLan(player, idgift[index], typegift[index], soluongmin[index], soluongmax[index], true);
+        Database.instance.saveOrtherLog("", player.charname, info, "bohoavangvulan");
+    }
 
-            int idgem = GemTemplate.ID_MATERIAL_LOW[ind][r.nextInt(5)];
+    /**
+     * Mo 1 "Bo hoa do" (su kien Vu Lan viet lai) - phan thuong nhe hon bo hoa vang,
+     * dung chung ham tra thuong doTraThuongVuLan. Goi tu doUsePotion.java.
+     */
+    public void doGiftBoHoaDoVuLan(Char player) {
+        int[] per = new int[]{
+            1300, 1300, 1300,
+            1000, 1000, 1000,
+            1200,
+            700,
+            500,
+            600,
+            500,
+            300,
+            200,
+            400,
+            300,
+            300
+        };
+        int[] idgift = new int[]{
+            Potion.TYPE_LUA_VUA, Potion.TYPE_LUA_THUONG, Potion.TYPE_LUA_THUONG,
+            Potion.TYPE_ATTACK_FOOD, Potion.TYPE_DEF_FOOD, Potion.TYPE_ALL_FOOD,
+            Potion.TYPE_BINH_TANG_TOC,
+            GemTemplate.LKD_30,
+            -11,
+            -12,
+            -14,
+            Potion.TYPE_HP7000,
+            Potion.TYPE_TIEN_DAN,
+            -13,
+            -15,
+            -15
+        };
+        int[] typegift = new int[]{
+            4, 4, 4,
+            4, 4, 4,
+            4,
+            6,
+            -11,
+            -12,
+            -14,
+            4,
+            4,
+            -13,
+            -15,
+            -15
+        };
+        int[] soluongmax = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        int[] soluongmin = new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        per = appendInt(per, 500);
+        idgift = appendInt(idgift, -18);
+        typegift = appendInt(typegift, -18);
+        soluongmin = appendInt(soluongmin, 100000);
+        soluongmax = appendInt(soluongmax, 300000);
+        int index = Char.getIndexRandom(per);
+        String info = doTraThuongVuLan(player, idgift[index], typegift[index], soluongmin[index], soluongmax[index], false);
+        Database.instance.saveOrtherLog("", player.charname, info, "bohoadovulan");
+    }
+
+    /** Noi them 1 phan tu vao cuoi mang int - dung de ghep dong "exp ngau nhien" vao bang thuong Vu Lan. */
+    private static int[] appendInt(int[] a, int v) {
+        int[] r2 = java.util.Arrays.copyOf(a, a.length + 1);
+        r2[a.length] = v;
+        return r2;
+    }
+
+    /**
+     * Tra 1 phan thuong Vu Lan cho player theo (idgift, typegift), dung chung cho ca bo
+     * hoa vang va bo hoa do (isBoVang phan biet thoi han Ho ve lenh 7 vs 3 ngay va mo ta
+     * chi tiet mang Bat Gioi/Sa Tang bac tren/duoi). Tra ve chuoi mo ta de ghi log.
+     */
+    private String doTraThuongVuLan(Char player, int idgift, int typegift, int soluongmin, int soluongmax, boolean isBoVang) {
+        String info = "Chúc mừng bạn nhận được ";
+        if (player.isFullInventory() && typegift != 4 && typegift != -18) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy, không nhận thêm được.", ""));
+            return info + "(hanh trang day)";
+        }
+        if (typegift == 4) {
+            int soluong = soluongmin;
+            if (soluongmin < soluongmax) {
+                soluong += r.nextInt(soluongmax - soluongmin + 1);
+            }
+            player.potions[idgift] = player.potions[idgift] + soluong;
+            info = info + soluong + " " + LoginHandler.PORTION_NAME[idgift];
+            player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+        } else if (typegift == 6) {
             boolean lock = r.nextInt(2) == 1;
-            player.doAddGemItem(idgem, soluong, lock);
-            info = info + soluong + " " + gemTemplate[idgem].name + (lock ? " khoá" : "");
+            player.doAddGemItem(idgift, 1, lock);
+            info = info + gemTemplate[idgift].name + (lock ? " khoá" : "");
             player.sendMessage(MessageCreator.createCharGemItem(player));
             player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
-        } else if (typegift[index] == -1) {
-            player.addXu((long) soluongmax[index], "map 57");
-            info = info + soluongmax[index] + " xu";
-            player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-        } else if (typegift[index] == -2) {
-            int[] minute = new int[]{3, 5, 7};
-            Item newItem = ItemLuckyDraw.createItemCoat(player, r.nextInt(2), r.nextInt(100) < 50, minute[r.nextInt(minute.length)]);
-            player.iItems.add(newItem);
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-            info = info + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút";
-            player.sendMessage(MessageCreator.createMsgChat(player.id, info));
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-        } else if (typegift[index] == 4) {
-            int soluong = soluongmin[index];
-            if (soluongmin[index] < soluongmax[index]) {
-                soluong += r.nextInt(soluongmax[index] - soluongmin[index] + 1);
+        } else if (typegift == -10) {
+            // Vu khi thoi trang co the tinh luyen, MUA BAN DUOC. createVuKhiThoiTrang
+            // luon ep newItem.lock = 1 (bo qua tham so isLock - loi co san trong ham
+            // do), nen phai tu mo khoa lai item vua tao (la phan tu cuoi cua iItems).
+            int soLuongTruoc = player.iItems.size();
+            Char.createVuKhiThoiTrang(player, r.nextInt(2), 0, null, false, true, 1, false);
+            if (player.iItems.size() > soLuongTruoc) {
+                Item vuKhi = player.iItems.lastElement();
+                vuKhi.lock = 0;
+                info = info + vuKhi.getName() + " (có thể giao dịch)";
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             }
-
-            player.potions[idgift[index]] = player.potions[idgift[index]] + soluong;
-            info = info + soluong + " " + LoginHandler.PORTION_NAME[idgift[index]];
-            player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-        } else if (typegift[index] == 6) {
-            int soluong = soluongmin[index];
-            if (soluongmin[index] < soluongmax[index]) {
-                soluong += r.nextInt(soluongmax[index] - soluongmin[index] + 1);
+        } else if (typegift == -11) {
+            int minute = isBoVang ? 10080 : 4320;
+            Item hoVeLenh = doCreateHoVeLenh(player, minute);
+            if (hoVeLenh != null) {
+                info = info + hoVeLenh.getName() + " thời hạn " + (isBoVang ? "7" : "3") + " ngày (có thể giao dịch)";
             }
-
+        } else if (typegift == -12) {
+            // NLSC tu chon bac: bo vang cap 4-5, bo do cap 3-4 - dai bac lay tu isBoVang.
+            int bacMin = isBoVang ? 3 : 2;
+            int bac = bacMin + r.nextInt(2);
+            int idgem = GemTemplate.ID_MATERIAL_LOW[bac][r.nextInt(GemTemplate.ID_MATERIAL_LOW[bac].length)];
             boolean lock = r.nextInt(2) == 1;
-            player.doAddGemItem(idgift[index], soluong, lock);
-            info = info + soluong + " " + gemTemplate[idgift[index]].name + (lock ? " khoá" : "");
+            player.doAddGemItem(idgem, 1, lock);
+            info = info + gemTemplate[idgem].name + (lock ? " khoá" : "");
             player.sendMessage(MessageCreator.createCharGemItem(player));
             player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
-            if (idgift[index] == GemTemplate.LKD_35 || idgift[index] == GemTemplate.LKD_40) {
-                try {
-                    sendAllCharServer(
-                            -1,
-                            MessageCreator.createServerAlertAutoOffMessage(
-                                    player.charname + " đã nhận được " + gemTemplate[idgift[index]].name + " khi làm nhiệm vụ tìm trẻ lạc"
-                            )
-                    );
-                } catch (IOException var13) {
-                }
+        } else if (typegift == -13) {
+            boolean lock = true;
+            player.doAddGemItem(GemTemplate.BAN_DO_KHO_BAU, 1, lock);
+            info = info + gemTemplate[GemTemplate.BAN_DO_KHO_BAU].name + " khoá";
+            player.sendMessage(MessageCreator.createCharGemItem(player));
+            player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        } else if (typegift == -14) {
+            Item hlt = doCreateHuyetLinhThao(player, r.nextInt(2));
+            if (hlt != null) {
+                info = info + hlt.getName();
+            }
+        } else if (typegift == -15) {
+            // Manh Bat Gioi/Sa Tang thay cho Ngo Khong/Duong Tang (chua co trong DB) -
+            // random 1 trong cac manh da co san (id 848-871).
+            int idManh = 848 + r.nextInt(871 - 848 + 1);
+            boolean lock = true;
+            player.doAddGemItem(idManh, 1, lock);
+            info = info + gemTemplate[idManh].name + " khoá";
+            player.sendMessage(MessageCreator.createCharGemItem(player));
+            player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        } else if (typegift == -17) {
+            // Ngoc huyen minh tu chon cap: bo vang cap 5-6, bo do cap 4-5. ID_NGOC_HUYEN_MINH
+            // = {235..240} ung voi cap 1..6, nen chi so cap N la N-1.
+            int capMin = isBoVang ? 5 : 4;
+            int cap = capMin + r.nextInt(2);
+            int idngoc = GemTemplate.ID_NGOC_HUYEN_MINH[cap - 1];
+            boolean lock = r.nextInt(2) == 1;
+            player.doAddGemItem(idngoc, 1, lock);
+            info = info + gemTemplate[idngoc].name + (lock ? " khoá" : "");
+            player.sendMessage(MessageCreator.createCharGemItem(player));
+            player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        } else if (typegift == -18) {
+            int soluong = soluongmin;
+            if (soluongmin < soluongmax) {
+                soluong += r.nextInt(soluongmax - soluongmin + 1);
+            }
+            addXpCharEvent(player, (long) soluong, false, isBoVang ? "bohoavangvulan" : "bohoadovulan");
+            info = info + soluong + " exp";
+            player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        } else if (typegift == -16) {
+            // Mat na Ong Dia (item 872) thoi han 3-5 ngay, MUA BAN DUOC, ti le nho ra
+            // ban VINH VIEN. doCreateMatNa(player, minute, ...): minute>0 tu do KHONG
+            // khoa item (dung y cho ban co thoi han - mua ban duoc), minute<=0 thi TU
+            // KHOA (phai mo lai vi ban vinh vien cung phai mua ban duoc theo yeu cau).
+            int[] soNgay = new int[]{3, 4, 5};
+            int minute = soNgay[r.nextInt(soNgay.length)] * 1440;
+            boolean vinhVien = r.nextInt(100) < 2;
+            Item mask = doCreateMatNa(player, vinhVien ? 0 : minute, 872, 0, 0);
+            if (mask != null) {
+                mask.lock = 0;
+                info = info + mask.getName() + (vinhVien ? " (vĩnh viễn, có thể giao dịch)" : " thời hạn " + (minute / 1440) + " ngày (có thể giao dịch)");
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             }
         }
-
-        Database.instance.saveOrtherLog("", player.charname, info, "chuc83");
+        return info;
     }
 
     public Item doGenNewItem(

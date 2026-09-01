@@ -737,6 +737,18 @@ class MapCheTao {
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 Database.instance.saveOrtherLog("", player.getName(), "nhan dc dua hau khi add them thuoc tinh", "trungdua");
             }
+
+            if (Char.isSuKienVuLan2015()) {
+                int tlVuLan = 50;
+                if (player.wModel != null && (player.wModel.isBongDaNamAoCam() || player.wModel.isBongDaNuAoSoc())) {
+                    tlVuLan *= 2;
+                }
+                if (r.nextInt(100) < tlVuLan) {
+                    player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG]++;
+                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                    Database.instance.saveOrtherLog("", player.getName(), "nhan dc nhanh hoa hong vang khi tien giai", "vulan");
+                }
+            }
         } catch (Exception var14) {
             var14.printStackTrace();
         }

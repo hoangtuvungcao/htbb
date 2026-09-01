@@ -1915,6 +1915,7 @@ public class RealController extends ServerController {
                         player.petUsing.idHoaHinhPet = 67;
                         player.petUsing.timeEndHoaHinhPet = System.currentTimeMillis() + 864_000_000L;
                         player.petUsing.initKhangXuyenGiapWhenHoaHinh();
+                        player.sendPetEff();
                         Database.instance.savePet(player.petUsing);
 
                         player.sendMessage(MessageCreator.createCharGemItem(player));

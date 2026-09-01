@@ -200,6 +200,10 @@ public class MapTown extends Map {
          return false;
       } else if (((PotionUse)player.coolDownPotion.get(potionType)).doUsePotion() && !player.isVetThuongSau()) {
          this.setCoolDownHp(player);
+         // Mat na Ong Dia: +20% hieu qua hoi khi hp duoi 30% toi da
+         if (player.isBuffHoiMatNaOngDia()) {
+            hpAdd += hpAdd * 20 / 100;
+         }
          player.hp = player.hp + hpAdd + hpAdd * player.getEffSkillClanMember(3) / 100;
          player.calculatorHPMP();
          if (player.hp <= 0) {
@@ -238,6 +242,10 @@ public class MapTown extends Map {
    protected boolean doUseMP(Char player, short potionType, int mpAdd) throws IOException {
       if (((PotionUse)player.coolDownPotion.get(potionType)).doUsePotion()) {
          this.setCoolDownMp(player);
+         // Mat na Ong Dia: +20% hieu qua hoi khi hp duoi 30% toi da
+         if (player.isBuffHoiMatNaOngDia()) {
+            mpAdd += mpAdd * 20 / 100;
+         }
          player.mp += mpAdd;
          player.calculatorHPMP();
          Message m = new Message(22);

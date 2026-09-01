@@ -900,6 +900,31 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
+                if (Char.isSuKienVuLan2015()) {
+                    // Vu Lan (viet lai): giet quai thuong lech cap +-5 co ti le nho roi 1
+                    // nhanh hoa hong vang. X2 neu dang mac do bong da (item 791/792).
+                    int tlVuLan = 3000; // ~3%, theo don vi tile(x, PC_TILE_ITEM_SUKIEN)
+                    if (p.wModel != null && (p.wModel.isBongDaNamAoCam() || p.wModel.isBongDaNuAoSoc())) {
+                        tlVuLan *= 2;
+                    }
+                    if (Map.randomMillion() < tile(tlVuLan, PC_TILE_ITEM_SUKIEN)) {
+                        final int deltalv = Map.abs(p.lvDetail.lv - this.level);
+                        if (deltalv <= 5) {
+                            pt = new Potion(Potion.TYPE_NHANH_HOA_HONG_VANG, 1, m);
+                            pt.id = m.getIDITEM();
+                            pt.x = this.x - 4;
+                            pt.y = this.y - 4;
+                            pt.belongUser = p.charDBID;
+                            m.addPotion(pt, this.inCountry);
+                            pt.time_drop = System.currentTimeMillis();
+                            droplist.add(pt);
+                            if (p.autoGetItem == 1) {
+                                p.idPotion.add(pt.id);
+                            }
+                            p.countKillMonster(true);
+                        }
+                    }
+                }
                 // Su kien World Cup (binh chon Messi/Ronaldo): quai thuong 2-3% roi mot
                 // Qua bong vang, boss luon roi 20-50 qua. Tat khi sv.worldCupBatDau trong.
                 if (SuKienWorldCup.dangDienRa()) {
@@ -1529,6 +1554,25 @@ public class Monster extends LiveActor {
                             lkd.isBoss = true;
                             lkd.cat = 6;
                             listGem.add(lkd);
+                        }
+                        // Vu Lan (viet lai): moi boss chet roi han 2-4 nhanh hoa hong vang
+                        // cho nguoi giet, x2 neu dang mac do bong da (item 791/792).
+                        if (Char.isSuKienVuLan2015()) {
+                            int soHoaHong = 2 + Map.r.nextInt(3);
+                            if (p.wModel != null && (p.wModel.isBongDaNamAoCam() || p.wModel.isBongDaNuAoSoc())) {
+                                soHoaHong *= 2;
+                            }
+                            final Potion ptHoaHong = new Potion(Potion.TYPE_NHANH_HOA_HONG_VANG, soHoaHong, m);
+                            ptHoaHong.id = m.getIDITEM();
+                            ptHoaHong.x = this.x - 4;
+                            ptHoaHong.y = this.y - 4;
+                            ptHoaHong.belongUser = p.charDBID;
+                            m.addPotion(ptHoaHong, this.inCountry);
+                            ptHoaHong.time_drop = System.currentTimeMillis();
+                            droplist.add(ptHoaHong);
+                            if (p.autoGetItem == 1) {
+                                p.idPotion.add(ptHoaHong.id);
+                            }
                         }
                     }
                     if (gem4 != null) {

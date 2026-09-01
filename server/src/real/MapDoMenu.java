@@ -179,18 +179,11 @@ class MapDoMenu {
                 map.doChonPhuongHoangMocNap(player, idOptionMenu);
                 return;
             }
-            // NPC Doi Thuong (-90). CHU Y: dong duoc chon nam o idOptionMenu chu KHONG
-            // phai idMenu — idMenu la so hieu TRANG menu (chinh la tham so thu ba cua
-            // createMsgMenu, o day luon la 0). Xem NPC -2 (dong ~129) va -91 (dong ~180)
-            // deu dung theo kieu nay.
-            //
-            // Toi da lam sai cho nay o lan truoc: bat idMenu == 1 nen bam "Go skin linh
-            // thu" khong ra gi ca. Menu mot dong thi khong lo vi ca hai deu bang 0.
+            // NPC Doi Thuong (-90): mot dong duy nhat "Xem doi thuong" — nut "Go skin linh
+            // thu" da bi bo (theo yeu cau nguoi choi), nen moi lua chon o day deu mo bang
+            // diem doi thuong. Con hai duong go skin khac: lenh chat "boskin" va goi packet
+            // 29 chung cho moi trang bi thu (Map.thaoTrangBiThu).
             if (idNpc == -90 && idMenu == 0) {
-                if (idOptionMenu == 1) {
-                    SkinLinhThu.thaoSkin(player);
-                    return;
-                }
                 map.showMenuDiemDoiThuong(player);
                 return;
             }
@@ -1398,6 +1391,25 @@ class MapDoMenu {
                     break;
                 case -31:
                     if (player.map.mapIDLoadMap != 0 && player.map.mapIDLoadMap != 70 && player.map.mapIDLoadMap != 201) {
+                        return;
+                    }
+
+                    // Su kien Vu Lan: muc "Su kien Vu Lan" noi CUOI menu goc (idMenu 0),
+                    // vi tri that su ghi trong player.idxSuKienVuLanDauTruong luc mo menu
+                    // (RequestNPCInfoHandler case -31). Phai chan O DAY, TRUOC khi remap
+                    // VI_TRI_MENU_DAU_TRUONG ben duoi - bang do chi biet cac vi tri co san,
+                    // vi tri moi nay se bi no return im lang neu khong chan truoc.
+                    if (idMenu == 0 && SuKien.bat(SuKien.VU_LAN) && player.idxSuKienVuLanDauTruong >= 0
+                            && idOptionMenu == player.idxSuKienVuLanDauTruong) {
+                        MapSuKien.doMenuDauTruongVuLan(map, player, idNpc, MapSuKien.MENU_VU_LAN_DAU_TRUONG_GOC, -1);
+                        return;
+                    }
+                    // Menu con rieng cua Vu Lan (doi bo hoa / doi nguyen lieu, ke ca menu con
+                    // chon loai NLSC voi tag dong idOptionMenu+base): tat ca nam trong dai
+                    // [MENU_VU_LAN_DAU_TRUONG_GOC..MENU_VU_LAN_MAX], khong dung idMenu 0/10/11/12
+                    // hien co cua NPC nay nen khong dung cham gi toi logic dau truong/nui chau bau.
+                    if (idMenu >= MapSuKien.MENU_VU_LAN_DAU_TRUONG_GOC && idMenu <= MapSuKien.MENU_VU_LAN_MAX) {
+                        MapSuKien.doMenuDauTruongVuLan(map, player, idNpc, idMenu, idOptionMenu);
                         return;
                     }
 

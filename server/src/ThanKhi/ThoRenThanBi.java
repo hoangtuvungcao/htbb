@@ -571,6 +571,12 @@ public class ThoRenThanBi
         int baseChance = (targetPlus >= 1 && targetPlus <= 10) ? BASE_UPGRADE_RATE_BY_TARGET_PLUS[targetPlus - 1] : 50;
 
         int finalChance = baseChance + boosterPercent;
+        // Su kien Vu Lan (viet lai): dung Hoa thach cap 2 (boosterType == 2) trong luc su
+        // kien bat thi cong THEM 10% (khong thay the +10% goc cua vien da - tong +20% khi
+        // ca hai cung ap dung, dung tinh than "tang THEM 10%" cua yeu cau).
+        if (boosterType == 2 && Char.isSuKienVuLan2015()) {
+            finalChance += 10;
+        }
         if (finalChance > 100) finalChance = 100;
         if (finalChance < 1)   finalChance = 1;
 

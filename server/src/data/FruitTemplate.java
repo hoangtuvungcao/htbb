@@ -143,6 +143,22 @@ public class FruitTemplate {
                 }
             }
 
+            if (Char.isSuKienVuLan2015()) {
+                int tl = 50;
+                if (this.isTraiBac() || this.isTraiVang()) {
+                    tl = 101;
+                }
+                if (p.wModel != null && (p.wModel.isBongDaNamAoCam() || p.wModel.isBongDaNuAoSoc())) {
+                    tl *= 2;
+                }
+
+                if (Map.r.nextInt(100) < tl) {
+                    int var8 = p.potions[real.Potion.TYPE_NHANH_HOA_HONG_VANG]++;
+                    p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
+                    Database.instance.saveOrtherLog("", p.getName(), "nhan dc nhanh hoa hong vang khi thu hoach cay than", "vulan");
+                }
+            }
+
             Char.isSuKienTet2017();
             return true;
         }

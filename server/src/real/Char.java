@@ -100,6 +100,11 @@ public class Char extends LiveActor {
     public long xuxai;
     public long luongxai;
     public long luongxainhanRuong;
+    // Luong da tieu, rieng cho su kien Vu Lan (khong dung chung luongxai/luongxainhanRuong
+    // - hai field do da bi 5 su kien khac dung chung, them mot su kien nua vao se de dam
+    // vao nhau neu bat cung luc). Cu 200 luong tieu (= 2 luong/diem x 100 diem) tu dong
+    // tang 1 Hoa hong do - xem subLuong().
+    public long luongXaiVuLan;
     public int charDBID, tichluy, tichluy_tuan, countChar, tichluy_bosung, qua_npc;
     public byte speed;
     public byte slotWearing;
@@ -116,6 +121,11 @@ public class Char extends LiveActor {
     // duoc RequestNPCInfoHandler gan lai moi lan mo menu. -1 = su kien dang tat nen
     // menu khong co dong nay. Xem real/SuKienWorldCup.
     public int idxSuKienWorldCup = -1;
+    // Vi tri (idOptionMenu) cua muc "Su kien Vu Lan" trong menu NPC Dau Truong (npcType
+    // -31), gan lai moi lan RequestNPCInfoHandler mo menu -31. -1 = su kien dang tat.
+    // Doc TRUOC bang remap VI_TRI_MENU_DAU_TRUONG trong MapDoMenu de khong bi bang do
+    // chan nham (bang chi chap nhan vi tri no biet). Xem real/MapSuKien.doMenuDauTruongVuLan.
+    public int idxSuKienVuLanDauTruong = -1;
     public short partyID;
     public int masterIDParty;
     public Vector<Short> idItem;
@@ -3382,7 +3392,18 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     @Override
     public int getAttack() {
-        return super.getAttack() + this.getValueLua(2) * this.attack / 100;
+        int att = super.getAttack() + this.getValueLua(2) * this.attack / 100;
+        // Mat na Ong Dia (id 872): +10% sat thuong khi dang mac, luon luon
+        if (this.wModel != null && this.wModel.isMatNaOngDia()) {
+            att += att * 10 / 100;
+        }
+        return att;
+    }
+
+    // Mat na Ong Dia (id 872): dieu kien buff +20% hieu qua hoi HP/MP - dang mac
+    // mat na VA hp hien tai duoi 30% toi da. Dung chung cho moi diem hoi HP/MP.
+    public boolean isBuffHoiMatNaOngDia() {
+        return this.wModel != null && this.wModel.isMatNaOngDia() && this.maxhp > 0 && this.hp * 100 / this.maxhp < 30;
     }
 
     @Override
@@ -5444,6 +5465,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 hoihp += 500;
             }
         }
+        // Mat na Ong Dia: +20% hieu qua hoi khi hp duoi 30% toi da
+        if (this.isBuffHoiMatNaOngDia()) {
+            hoihp += hoihp * 20 / 100;
+        }
         return hoihp;
     }
 
@@ -5469,6 +5494,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
             if (c != null) {
                 hoimp += 50;
             }
+        }
+        // Mat na Ong Dia: +20% hieu qua hoi khi hp duoi 30% toi da
+        if (this.isBuffHoiMatNaOngDia()) {
+            hoimp += hoimp * 20 / 100;
         }
         return hoimp;
     }
@@ -10487,6 +10516,25 @@ public int applyRongLonReleaseTo(int baseDamage) {
         isTatPhiPhong = false;
     }
 
+    /**
+     * Bat/tat HIEN THI skin linh thu, chon o NPC Tho Ren Than Bi. CHI an hinh anh con thu
+     * (xem SkinLinhThu.hienThi) — khong dong toi chi so/noi tai da mac, va KHONG luu CSDL
+     * (giong hoi chieu skin: mat khi dang xuat la dung, nguoi choi bat lai duoc ngay).
+     */
+    private boolean isTatSkinLinhThu = false;
+
+    public boolean isTatSkinLinhThu() {
+        return isTatSkinLinhThu;
+    }
+
+    public void setTatSkinLinhThu() {
+        isTatSkinLinhThu = true;
+    }
+
+    public void setBatSkinLinhThu() {
+        isTatSkinLinhThu = false;
+    }
+
     private boolean isTatCanh = false;
 
     public boolean isTatCanh() {
@@ -13454,7 +13502,20 @@ public int applyRongLonReleaseTo(int baseDamage) {
             
             Database.instance.addCharEventHLW(this, 2, 0, (int) l, (int)this.luongxainhanRuong);
         }
-        
+        if (SuKien.bat(SuKien.VU_LAN)) {
+            // "Tieu 2 luong = 1 diem tieu xai, du 100 diem doi duoc 1 nhanh hoa hong" ->
+            // gop lam 1 nguong duy nhat: cu 200 luong tieu thi tu dong tang 1 Hoa hong do
+            // (khong can ghe NPC), dung field rieng luongXaiVuLan (xem khai bao field).
+            this.luongXaiVuLan += l;
+            if (this.luongXaiVuLan >= 200L) {
+                long soHoaHong = this.luongXaiVuLan / 200L;
+                this.luongXaiVuLan -= soHoaHong * 200L;
+                this.potions[Potion.TYPE_HOA_HONG_DO] += (int) soHoaHong;
+                this.sendMessage(MessageCreator.createCharInventoryMessage(this, 0));
+                this.sendMessage(MessageCreator.createMsgChat(this.id, "Nhận được " + soHoaHong + " hoa hồng đỏ (điểm tiêu xài)"));
+                Database.instance.saveOrtherLog("", this.charname, "nhan " + soHoaHong + " hoa hong do tu diem tieu xai", "vulan");
+            }
+        }
     }
 
     public void subLuongTang(final long l) {
@@ -13491,6 +13552,17 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 this.luongxai -= a * 5000L;
                 this.sendMessage(MessageCreator.createCharInventoryMessage(this, 0));
                 this.sendMessage(MessageCreator.createMsgChat(this.id, "Nhận được " + a + " vé quay Phượng Hoàng khi xài lượng"));
+            }
+        }
+        if (SuKien.bat(SuKien.VU_LAN)) {
+            this.luongXaiVuLan += l;
+            if (this.luongXaiVuLan >= 200L) {
+                long soHoaHong = this.luongXaiVuLan / 200L;
+                this.luongXaiVuLan -= soHoaHong * 200L;
+                this.potions[Potion.TYPE_HOA_HONG_DO] += (int) soHoaHong;
+                this.sendMessage(MessageCreator.createCharInventoryMessage(this, 0));
+                this.sendMessage(MessageCreator.createMsgChat(this.id, "Nhận được " + soHoaHong + " hoa hồng đỏ (điểm tiêu xài)"));
+                Database.instance.saveOrtherLog("", this.charname, "nhan " + soHoaHong + " hoa hong do tu diem tieu xai", "vulan");
             }
         }
     }

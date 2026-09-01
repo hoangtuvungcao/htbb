@@ -1720,7 +1720,7 @@ public class MessageCreator {
                 // Skin linh thu: TAT duong ve "ngua co dien". Con thu skin duoc ve bang
                 // duong thu cuoi tool (idThutool o duoi), neu de nguyen userHorse thi
                 // client ve ca hai, con thu that va con skin chong len nhau.
-                if (SkinLinhThu.dangMang(ch)) {
+                if (SkinLinhThu.hienThi(ch)) {
                     userHorse = 0;
                 }
 
@@ -1751,7 +1751,7 @@ public class MessageCreator {
                 }
                 // Cach di chuyen theo skin: con thu bay hay di bo do skin quyet dinh,
                 // khong con theo loai thu that nua.
-                if (SkinLinhThu.dangMang(ch)) {
+                if (SkinLinhThu.hienThi(ch)) {
                     fly = (byte) SkinLinhThu.bay(ch);
                 }
                 m.dos.writeByte(fly);
@@ -1787,7 +1787,7 @@ public class MessageCreator {
                 indexdxy = ch.animalRide.getIndexDxy();
                 // Skin linh thu di dung duong nay: duong dang ve Rong Bang, Poro, Lan
                 // va hoa hinh. Chi doi id anh, con chi so cua con thu khong dong toi.
-                if (SkinLinhThu.dangMang(ch)) {
+                if (SkinLinhThu.hienThi(ch)) {
                     idThutool = SkinLinhThu.idAnhBanDo(ch);
                     // Con thu that co the la ngua thuong (getIndexDxy tra -1 = khong bu
                     // toa do) nen phai dat lai, khong thi nguoi ngoi tut xuong sat dat.
@@ -2010,7 +2010,7 @@ public class MessageCreator {
             }
 
             // Skin linh thu: tat duong ve "ngua co dien" — xem chu thich o createCharInfo.
-            if (SkinLinhThu.dangMang(p)) {
+            if (SkinLinhThu.hienThi(p)) {
                 userHorse = 0;
             }
 
@@ -2056,7 +2056,7 @@ public class MessageCreator {
             }
 
             // Cach di chuyen theo skin — xem chu thich o createCharInfo.
-            if (SkinLinhThu.dangMang(p)) {
+            if (SkinLinhThu.hienThi(p)) {
                 fly = (byte) SkinLinhThu.bay(p);
             }
 
@@ -2099,7 +2099,7 @@ public class MessageCreator {
             // Skin linh thu — goi thong tin cua chinh nhan vat minh. Xem chu thich o
             // createCharInfo, hai cho phai giong nhau khong thi minh va nguoi ben canh
             // nhin thay hai con thu khac nhau.
-            if (SkinLinhThu.dangMang(p)) {
+            if (SkinLinhThu.hienThi(p)) {
                 idThutool = SkinLinhThu.idAnhBanDo(p);
                 indexdxy = SkinLinhThu.INDEX_DXY;
             }

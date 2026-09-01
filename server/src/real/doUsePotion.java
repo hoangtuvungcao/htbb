@@ -270,9 +270,9 @@ public class doUsePotion {
                     case 106:
                     case 107:
                     // 108 da chuyen thanh "Hop qua may man" cua su kien World Cup, xu ly
-                    // rieng o cuoi switch nay.
-                    case 109:
-                    case 110:
+                    // rieng o cuoi switch nay. 109/110 (Bo hoa vang/do, su kien Vu Lan viet
+                    // lai) cung xu ly rieng - xem case Potion.TYPE_BO_HOA_VANG/TYPE_BO_HOA_DO
+                    // ben duoi, KHONG duoc de o day nua (trung nhan case).
                     case 156:
                     case 157:
                     case 158:
@@ -826,6 +826,14 @@ public class doUsePotion {
                         // lam gi ca, tuc bam vao Qua bong bac la MAT LUON. Tra lai.
                         var10002 = player.potions[potionType]++;
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                        break;
+                    case Potion.TYPE_BO_HOA_VANG:
+                        // Su kien Vu Lan (viet lai): mo 1 bo hoa vang -> qua ngau nhien.
+                        // So luong da bi tru truoc switch (dong ~138) nen KHONG tra lai.
+                        player.map.doGiftQuestVulan(player);
+                        break;
+                    case Potion.TYPE_BO_HOA_DO:
+                        player.map.doGiftBoHoaDoVuLan(player);
                         break;
                     case SuKienWorldCup.ITEM_HOP_MAY_MAN:
                         // Hop qua may man cua su kien World Cup. Ngoai thoi gian su kien,

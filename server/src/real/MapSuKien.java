@@ -2291,109 +2291,145 @@ class MapSuKien {
         }
     }
 
-    static void doMenuVuLan2015(Map map, Char player, int idNpc, int idMenu, int idOptionMenu) {
-        if (idMenu == 0) {
-            if (idOptionMenu == 0) {
-                if (player.receiveQuestVulan == 0) {
-                    if (player.countnvVulan >= 100) {
-                        player.sendMessage(MessageCreator.createMsgChat(-49, "Con ta đã về nhà rồi. Chúc ngươi may mắn"));
-                        return;
-                    }
+    // ============================ VU LAN (viet lai) - NPC Dau Truong (npcType -31) ============================
+    //
+    // Doi cong hoan toan noi dung cu (doMenuVuLan2015 - nhiem vu tim con Me hien 2015, da
+    // XOA). NPC Dau Truong that su (-31, xem RequestNPCInfoHandler/MapDoMenu case -31) noi
+    // them 1 muc "Su kien Vu Lan" o CUOI menu goc khi su kien bat (khong dung cham gi toi
+    // logic dau truong/tran yeu tran/nui chau bau cu). Tat ca cac idMenu duoi day chi dung
+    // RIENG trong pham vi npcType -31, phai nam trong doan [MENU_VU_LAN_DAU_TRUONG_GOC..
+    // MENU_VU_LAN_MAX] de MapDoMenu.doMenu nhan dung va chan TRUOC bang remap
+    // VI_TRI_MENU_DAU_TRUONG (xem chu thich o do).
+    static final int MENU_VU_LAN_DAU_TRUONG_GOC = 60;
+    static final int MENU_VU_LAN_DOI_HOA = 61;
+    static final int MENU_VU_LAN_DOI_NGUYEN_LIEU = 62;
+    static final int MENU_VU_LAN_DOI_NGUYEN_LIEU_LOAI_BASE = 63; // +tier(0..3) = 63..66
+    static final int MENU_VU_LAN_MAX = 66;
 
-                    if (player.potions[77] <= 0) {
-                        player.sendMessage(MessageCreator.createMsgChat(-49, "Hãy đi tìm nến rồi đến gặp ta nhé."));
-                        return;
-                    }
-
-                    player.sendMessage(
-                            MessageCreator.createMsgPopUp(player.id, 13, "Con ta đi tìm thuốc cho ta đã lâu rồi mà chưa thấy về. Ngươi có thể giúp ta tìm con không?")
-                    );
-                } else if (player.receiveQuestVulan == 1) {
-                    if (player.charCopy == null
-                            || player.map.mapId != player.charCopy.map.mapId
-                            || player.map.mapIDLoadMap != 0 && player.map.mapIDLoadMap != 70 && player.map.mapIDLoadMap != 80) {
-                        if (player.charCopy == null) {
-                            player.receiveQuestVulan = 0;
-                        }
-
-                        player.sendMessage(MessageCreator.createMsgChat(-49, "Hãy tranh thủ tìm giúp con ta về đây nha."));
-                    } else {
-                        map.doGiftQuestVulan(player);
-                        player.receiveQuestVulan = 0;
-                        player.charCopyDissapear();
-                    }
-                }
+    static void doMenuDauTruongVuLan(Map map, Char player, int idNpc, int idMenu, int idOptionMenu) {
+        if (idMenu == MENU_VU_LAN_DAU_TRUONG_GOC) {
+            if (idOptionMenu < 0) {
+                player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Đổi bó hoa", "Đổi nguyên liệu"}, idNpc, MENU_VU_LAN_DAU_TRUONG_GOC));
+            } else if (idOptionMenu == 0) {
+                player.sendMessage(MessageCreator.createMsgMenu(
+                        new String[]{
+                                "10 nhánh hoa hồng vàng + 15 lượng -> 1 bó hoa vàng",
+                                "50 nhánh hoa hồng vàng + " + TeamServer.giaXuBoHoaDoVuLan + " xu -> 1 bó hoa đỏ",
+                                "30 hoa hồng đỏ -> 1 bó hoa đỏ"
+                        },
+                        idNpc, MENU_VU_LAN_DOI_HOA
+                ));
             } else if (idOptionMenu == 1) {
-                player.sendMessage(MessageCreator.createMsgMenu(new String[]{"3 ng.liệu sc 6", "5 ng.liệu sc 6", "7 ng.liệu sc 6", "10 ng.liệu sc 6"}, idNpc, 2));
+                player.sendMessage(MessageCreator.createMsgMenu(
+                        new String[]{
+                                "30 hoa hồng vàng + 60 lượng -> 3 NLSC 6 tự chọn",
+                                "30 hoa hồng vàng + 80 lượng -> 5 NLSC 6 tự chọn",
+                                "30 hoa hồng vàng + 110 lượng -> 7 NLSC 6 tự chọn",
+                                "30 hoa hồng vàng + 130 lượng -> 10 NLSC 6 tự chọn"
+                        },
+                        idNpc, MENU_VU_LAN_DOI_NGUYEN_LIEU
+                ));
             }
-        } else if (idMenu != 1) {
-            if (idMenu == 2) {
-                int[] sl = new int[]{3, 5, 7, 10};
-                int[] slCaudoi = new int[]{100, 100, 100, 100};
-                int[] slCaudoi1 = new int[]{10, 20, 30, 40};
-                int[] var10000 = new int[]{70, 100, 140, 180};
-                String[] mmenu = new String[GemTemplate.ID_MATERIAL_LOW[5].length];
-
-                for (int i = 0; i < GemTemplate.ID_MATERIAL_LOW[5].length; i++) {
-                    String info = "(" + slCaudoi[idOptionMenu] + " hh, " + slCaudoi1[idOptionMenu] + " hv, " + slCaudoi1[idOptionMenu] + " ht)";
-                    mmenu[i] = sl[idOptionMenu] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][i]].name + " khóa" + info;
-                }
-
-                player.sendMessage(MessageCreator.createMsgMenu(mmenu, idNpc, idOptionMenu + 3));
-            } else if (idMenu == 3 || idMenu == 4 || idMenu == 5 || idMenu == 6) {
-                int[] sl = new int[]{0, 0, 0, 3, 5, 7, 10};
-                int[] slCaudoi = new int[]{0, 0, 0, 100, 100, 100, 100};
-                int[] slCaudoi1 = new int[]{0, 0, 0, 10, 20, 30, 40};
-                int[] price = new int[]{0, 0, 0, 70, 100, 140, 180};
-                if (player.getLuong() < price[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                    );
-                    return;
-                }
-
-                if (player.potions[71] < slCaudoi[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage(
-                                    "Bạn phải có đủ " + slCaudoi[idMenu] + " hoa hồng mỗi loại mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""
-                            )
-                    );
-                    return;
-                }
-
-                if (player.potions[74] < slCaudoi1[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage(
-                                    "Bạn phải có đủ " + slCaudoi1[idMenu] + " hoa hồng mỗi loại mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""
-                            )
-                    );
-                    return;
-                }
-
-                if (player.potions[72] < slCaudoi1[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage(
-                                    "Bạn phải có đủ " + slCaudoi1[idMenu] + " hoa hồng mỗi loại mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""
-                            )
-                    );
-                    return;
-                }
-
-                player.subLuong((long) price[idMenu]);
-                player.potions[74] = player.potions[74] - slCaudoi1[idMenu];
-                player.potions[72] = player.potions[72] - slCaudoi1[idMenu];
-                player.potions[71] = player.potions[71] - slCaudoi[idMenu];
-                player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
-                player.sendMessage(MessageCreator.createCharGemItem(player));
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(
-                        MessageCreator.createServerAlertMessage(
-                                "Bạn nhận được " + sl[idMenu] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name + " khóa", ""
-                        )
-                );
-                Database.instance.saveOrtherLog("", player.charname, sl[idMenu] + "_" + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name, "redeem");
-            }
+            return;
         }
+        if (idMenu == MENU_VU_LAN_DOI_HOA) {
+            doVuLanDoiHoa(player, idOptionMenu);
+            return;
+        }
+        if (idMenu == MENU_VU_LAN_DOI_NGUYEN_LIEU) {
+            if (idOptionMenu < 0 || idOptionMenu > 3) {
+                return;
+            }
+            String[] mmenu = new String[GemTemplate.ID_MATERIAL_LOW[5].length];
+            for (int i = 0; i < mmenu.length; i++) {
+                mmenu[i] = gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][i]].name;
+            }
+            player.sendMessage(MessageCreator.createMsgMenu(mmenu, idNpc, MENU_VU_LAN_DOI_NGUYEN_LIEU_LOAI_BASE + idOptionMenu));
+            return;
+        }
+        if (idMenu >= MENU_VU_LAN_DOI_NGUYEN_LIEU_LOAI_BASE && idMenu <= MENU_VU_LAN_MAX) {
+            int tier = idMenu - MENU_VU_LAN_DOI_NGUYEN_LIEU_LOAI_BASE;
+            doVuLanDoiNguyenLieu(player, tier, idOptionMenu);
+        }
+    }
+
+    private static void doVuLanDoiHoa(Char player, int idOptionMenu) {
+        if (idOptionMenu == 0) {
+            if (player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] < 10) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 10 nhánh hoa hồng vàng", ""));
+                return;
+            }
+            if (player.getLuong() < 15L) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 15 lượng", ""));
+                return;
+            }
+            player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= 10;
+            player.subLuong(15L);
+            player.potions[Potion.TYPE_BO_HOA_VANG]++;
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được 1 bó hoa vàng", ""));
+            Database.instance.saveOrtherLog("", player.charname, "doi 10 nhanh hoa hong vang + 15 luong lay 1 bo hoa vang", "vulan");
+        } else if (idOptionMenu == 1) {
+            long gia = TeamServer.giaXuBoHoaDoVuLan;
+            if (player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] < 50) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 50 nhánh hoa hồng vàng", ""));
+                return;
+            }
+            if (player.getxu() < gia) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ " + gia + " xu", ""));
+                return;
+            }
+            player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= 50;
+            player.subXu(gia, true, "map dautruong vulan");
+            player.potions[Potion.TYPE_BO_HOA_DO]++;
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được 1 bó hoa đỏ", ""));
+            Database.instance.saveOrtherLog("", player.charname, "doi 50 nhanh hoa hong vang + " + gia + " xu lay 1 bo hoa do", "vulan");
+        } else if (idOptionMenu == 2) {
+            if (player.potions[Potion.TYPE_HOA_HONG_DO] < 30) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 30 hoa hồng đỏ", ""));
+                return;
+            }
+            player.potions[Potion.TYPE_HOA_HONG_DO] -= 30;
+            player.potions[Potion.TYPE_BO_HOA_DO]++;
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được 1 bó hoa đỏ", ""));
+            Database.instance.saveOrtherLog("", player.charname, "doi 30 hoa hong do lay 1 bo hoa do", "vulan");
+        }
+    }
+
+    private static void doVuLanDoiNguyenLieu(Char player, int tier, int idOptionMenu) {
+        if (idOptionMenu < 0 || idOptionMenu >= GemTemplate.ID_MATERIAL_LOW[5].length) {
+            return;
+        }
+        int[] sl = new int[]{3, 5, 7, 10};
+        int[] price = new int[]{60, 80, 110, 130};
+        final int caudoiHoaHongVang = 30;
+        if (player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] < caudoiHoaHongVang) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + caudoiHoaHongVang + " hoa hồng vàng mới có thể đổi được " + sl[tier] + " nguyên liệu", ""));
+            return;
+        }
+        if (player.getLuong() < price[tier]) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[tier] + " lượng mới có thể đổi được " + sl[tier] + " nguyên liệu", ""));
+            return;
+        }
+        player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= caudoiHoaHongVang;
+        player.subLuong((long) price[tier]);
+        int idNlsc = GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu];
+        player.doAddGemItem(idNlsc, sl[tier], true);
+        String info = "Bạn nhận được " + sl[tier] + " " + gemTemplate[idNlsc].name + " khóa";
+        // Ngau nhien them 1 manh Bat Gioi/Sa Tang (thay cho Ngo Khong/Duong Tang - chua co
+        // trong DB, theo quyet dinh khi lam yeu cau), ti le tang dan theo moc doi cao hon.
+        int[] tlManh = new int[]{10, 20, 30, 50};
+        if (r.nextInt(100) < tlManh[tier]) {
+            int idManh = 848 + r.nextInt(871 - 848 + 1);
+            player.doAddGemItem(idManh, 1, true);
+            info = info + ", và ngẫu nhiên 1 " + gemTemplate[idManh].name + " khóa";
+        }
+        player.sendMessage(MessageCreator.createCharGemItem(player));
+        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+        player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        Database.instance.saveOrtherLog("", player.charname, info, "vulan_doinl");
     }
 
     static void doMenuNpcTet2015(Map map, Char player, int idNpc, int idMenu, int idOptionMenu) {
@@ -2701,157 +2737,6 @@ class MapSuKien {
         }
     }
 
-    static void doMenuNpcVuLan(Map map, Char player, int idNpc, int idMenu, int idOptionMenu) {
-        try {
-            if (idMenu == 0) {
-                if (idOptionMenu == 0) {
-                    if (player.luongNap < 15000L) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần phải có 15k điểm mới có thể đổi được trứng phượng hoàng băng", ""));
-                        return;
-                    }
-
-                    player.luongNap -= 15000L;
-                    player.potions[70]++;
-                    Database.instance.saveOrtherLog("", player.charname, "doi phuong hoang bang", "phb");
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                } else if (idOptionMenu == 1) {
-                    player.sendMessage(MessageCreator.createMsgInputText(-32015, idMenu, "Nhập số lượng hoa đăng đổi", 1));
-                } else if (idOptionMenu == 2) {
-                    player.sendMessage(MessageCreator.createMsgInputText(-32016, idMenu, "Nhập số lượng nến đổi", 1));
-                } else if (idOptionMenu == 3 || idOptionMenu == 4 || idOptionMenu == 5) {
-                    int[] sl = new int[]{2, 5, 7};
-                    String[] mmenu = new String[GemTemplate.ID_MATERIAL_LOW[5].length];
-
-                    for (int i = 0; i < GemTemplate.ID_MATERIAL_LOW[5].length; i++) {
-                        mmenu[i] = sl[idOptionMenu - 3] + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][i]].name + " khóa";
-                    }
-
-                    player.sendMessage(MessageCreator.createMsgMenu(mmenu, idNpc, idOptionMenu - 2));
-                } else if (idOptionMenu == 6) {
-                    if (player.potions[77] < 1) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không có chìa khóa vàng", ""));
-                        return;
-                    }
-
-                    if (player.potions[119] < 1) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không có đèn hoa đăng", ""));
-                        return;
-                    }
-
-                    player.potions[77]--;
-                    player.potions[119]--;
-                    player.potions[80]++;
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    Database.instance.saveOrtherLog("", player.charname, "Chúc mừng bạn nhận được 1 bình tăng 5% các chỉ số trong 3 ngày", "binh5");
-                } else if (idOptionMenu == 7 && !openLog && TeamServer.server == 4 && player.giftTop > 0) {
-                    if (player.giftTop != 1 && player.giftTop != 2) {
-                        String info = "";
-                        if (player.giftTop == 3) {
-                            info = "1 trứng ph lửa_5 đá ngũ hợp tinh khiết";
-                            player.potions[86]++;
-                            player.doAddGemItem(154, 5, false);
-
-                            for (int i = 0; i < 5; i++) {
-                                player.doAddGemItem(GemTemplate.ID_MATERIAL_HIGHT[5][i], 2, false);
-                                player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][i], 2, false);
-                                info = info + "_1 " + gemTemplate[GemTemplate.ID_MATERIAL_HIGHT[5][i]].name;
-                                info = info + "_1 " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][i]].name;
-                            }
-                        } else if (player.giftTop > 3) {
-                            info = "3 đá ngũ hợp tinh khiết";
-                            player.doAddGemItem(154, 3, false);
-
-                            for (int i = 0; i < 5; i++) {
-                                player.doAddGemItem(GemTemplate.ID_MATERIAL_HIGHT[5][i], 1, false);
-                                player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][i], 1, false);
-                                info = info + "_1 " + gemTemplate[GemTemplate.ID_MATERIAL_HIGHT[5][i]].name;
-                                info = info + "_1 " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][i]].name;
-                            }
-                        }
-
-                        player.sendMessage(
-                                MessageCreator.createServerAlertMessage("Bạn đã nhận được quà đua top " + (player.giftTop == 3 ? player.giftTop : 100), "")
-                        );
-                        player.giftTop = 0;
-                        Database.instance.updateRcvGiftTop(player.charname);
-                        player.sendMessage(MessageCreator.createCharGemItem(player));
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                        Database.instance.saveOrtherLog("", player.charname, info, "quatop");
-                    } else {
-                        String[] mmenu = new String[]{"Phi phong ma pháp", "Phi phong vật lý"};
-                        player.sendMessage(MessageCreator.createMsgMenu(mmenu, idNpc, 4));
-                    }
-                }
-            } else if (idMenu == 1 || idMenu == 2 || idMenu == 3) {
-                int[] sl = new int[]{2, 5, 7};
-                int[] diem = new int[]{200, 400, 800};
-                if (player.luongNap < (long) diem[idMenu - 1]) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần phải có " + diem[idMenu - 1] + " điểm mới có thể đổi được nguyên liệu", ""));
-                    return;
-                }
-
-                player.luongNap = player.luongNap - (long) diem[idMenu - 1];
-                player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu - 1], true);
-                String info = sl[idMenu - 1]
-                        + " "
-                        + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name
-                        + "_"
-                        + player.luongNap
-                        + " > "
-                        + diem[idMenu - 1];
-                if (idMenu == 3) {
-                    player.doAddGemItem(154, 2, true);
-                    player.doAddGemItem(66, 1, true);
-                    info = info + " 2 da ngu hop tinh khiet, 1 lkd 35%";
-                }
-
-                player.sendMessage(MessageCreator.createCharGemItem(player));
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + info, ""));
-                Database.instance.saveOrtherLog("", player.charname, info, "doidiem");
-            } else if (idMenu == 4 && !openLog && TeamServer.server == 4 && player.giftTop > 0 && (player.giftTop == 1 || player.giftTop == 2)) {
-                int[] id = new int[]{584, 585, 586, 587, 588, 589, 590, 591, 592, 593, 594, 595, 596, 597};
-                int lv = player.lvDetail.lv;
-                if (lv < 35) {
-                    lv = 35;
-                }
-
-                int idtemp = id[(lv - 35) / 5];
-                Item newItem = ItemLuckyDraw.createMaxItemCoatLucky(idtemp, player, idOptionMenu, false);
-                newItem.dateCreate = Char.getDayOpen(0L);
-                newItem.timeLoan = 0L;
-                newItem.minuteExist = 0;
-                player.iItems.add(newItem);
-                String info = newItem.getDBInfo() + "|" + newItem.getAttribute() + "_" + newItem.level + "vv";
-                if (player.giftTop == 1) {
-                    player.potions[70]++;
-                    info = info + "_1 trung phuong hoang bang";
-                    info = info + "_10 " + gemTemplate[154].name;
-                    player.doAddGemItem(154, 10, false);
-                } else if (player.giftTop == 2) {
-                    player.potions[86]++;
-                    info = info + "_1 trung phuong hoang lua";
-                    info = info + "_5 " + gemTemplate[154].name;
-                    player.doAddGemItem(154, 5, false);
-                }
-
-                for (int i = 0; i < 5; i++) {
-                    player.doAddGemItem(GemTemplate.ID_MATERIAL_HIGHT[5][i], 3, false);
-                    player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][i], 3, false);
-                    info = info + "_3 " + gemTemplate[GemTemplate.ID_MATERIAL_HIGHT[5][i]].name;
-                    info = info + "_3 " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][i]].name;
-                }
-
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã nhận được quà đua top " + player.giftTop, ""));
-                player.giftTop = 0;
-                Database.instance.updateRcvGiftTop(player.charname);
-                player.sendMessage(MessageCreator.createCharGemItem(player));
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                Database.instance.saveOrtherLog("", player.charname, info, "quatop");
-            }
-        } catch (Exception var11) {
-        }
-    }
 
     static void doMenuNpcVaoHa(Map map, Char player, int idNpc, int idMenu, int idOptionMenu) {
         try {

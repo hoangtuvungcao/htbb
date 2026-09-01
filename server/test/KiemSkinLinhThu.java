@@ -51,6 +51,7 @@ public final class KiemSkinLinhThu {
         kiemBoAnh();
         kiemCheChanNguoi();
         kiemDuongGoSkin();
+        kiemHienThiSkin();
         kiemNoiTaiThuongTruc();
         kiemTiemNang();
         kiemHeNguHanh();
@@ -277,18 +278,80 @@ public final class KiemSkinLinhThu {
         final String chat = doc("src/real/MapChat.java");
         Kiem.dung("con lenh chat boskin", chat.contains("\"boskin\""));
 
+        // Nut "Go skin linh thu" o NPC doi thuong (-90) da bi bo theo yeu cau nguoi choi —
+        // chan CA HAI phia (menu gui di lan nhanh xu ly idOptionMenu) khong con dau vet.
         final String npc = doc("src/real/cmd/RequestNPCInfoHandler.java");
-        Kiem.dung("menu NPC doi thuong co dong go skin", npc.contains("Gỡ skin linh thú"));
+        Kiem.sai("menu NPC doi thuong KHONG con dong go skin",
+                npc.contains("Gỡ skin linh thú"));
 
         final String menu = doc("src/real/MapDoMenu.java");
-        Kiem.dung("NPC -90 goi thaoSkin", menu.contains("SkinLinhThu.thaoSkin(player)"));
-        Kiem.dung("NPC -90 doc dong duoc chon tu idOptionMenu, khong phai idMenu",
-                menu.contains("if (idOptionMenu == 1)"));
-        Kiem.sai("NPC -90 KHONG bat nham idMenu == 1",
-                menu.contains("idNpc == -90 && idMenu == 1"));
+        Kiem.sai("MapDoMenu KHONG con goi thaoSkin tu NPC (nhanh go skin da bi bo)",
+                menu.contains("SkinLinhThu.thaoSkin(player)"));
+        Kiem.dung("NPC -90 van mo bang diem doi thuong",
+                menu.contains("idNpc == -90 && idMenu == 0") && menu.contains("showMenuDiemDoiThuong(player)"));
 
         final String xuong = doc("src/real/doUnRideHorse.java");
         Kiem.dung("xuong thu thi go skin", xuong.contains("SkinLinhThu.thaoSkin(player)"));
+    }
+
+    /**
+     * Bat/tat HIEN THI skin linh thu o NPC Tho Ren Than Bi (them 01/09/2026). Cong tac nay
+     * CHI duoc phep an hinh anh, khong duoc dong toi chi so/noi tai da mac — xem
+     * SkinLinhThu.hienThi va Char.isTatSkinLinhThu.
+     */
+    private static void kiemHienThiSkin() {
+        Kiem.nhom("Skin linh thu - bat/tat hien thi");
+
+        final String db = doc("src/real/SkinLinhThu.java");
+        Kiem.dung("co ham hienThi", db.contains("public static boolean hienThi(final Char p) {"));
+        Kiem.dung("hienThi = dangMang VA chua tat hien thi",
+                db.contains("return dangMang(p) && !p.isTatSkinLinhThu();"));
+        // Hai cho phat hinh anh PHAI doi sang hienThi() — dung dangMang() thang o day thi
+        // cong tac khong co tac dung gi (van ve skin du da tat hien thi).
+        Kiem.dung("idAnhBanDo dung hienThi",
+                db.contains("return hienThi(p) ? ID_ANH_BAN_DO + p.idSkinLinhThu : -1;"));
+        Kiem.dung("bay dung hienThi", db.contains("return hienThi(p) ? BAY[p.idSkinLinhThu] : -1;"));
+
+        // MessageCreator: sau khi doi, KHONG con cho nao goi thang SkinLinhThu.dangMang(...)
+        // de quyet dinh ve hinh — tat ca phai qua hienThi() thi cong tac moi co tac dung.
+        final String mc = doc("src/real/MessageCreator.java");
+        Kiem.sai("MessageCreator khong con goi thang SkinLinhThu.dangMang (phai qua hienThi)",
+                mc.contains("SkinLinhThu.dangMang("));
+        Kiem.bang("MessageCreator co du 6 cho goi SkinLinhThu.hienThi",
+                Integer.valueOf(6), Integer.valueOf(dem(mc, "SkinLinhThu.hienThi(")));
+
+        // Char: cong tac rieng cua nguoi choi, khong luu CSDL — giong hoi chieu cua noi tai
+        // co ti le (mat khi dang xuat la dung, bat lai duoc ngay o NPC).
+        final String ch = doc("src/real/Char.java");
+        Kiem.dung("Char co truong isTatSkinLinhThu", ch.contains("private boolean isTatSkinLinhThu = false;"));
+        Kiem.dung("Char co ham isTatSkinLinhThu()", ch.contains("public boolean isTatSkinLinhThu() {"));
+        Kiem.dung("Char co ham setTatSkinLinhThu()", ch.contains("public void setTatSkinLinhThu() {"));
+        Kiem.dung("Char co ham setBatSkinLinhThu()", ch.contains("public void setBatSkinLinhThu() {"));
+
+        // NPC Tho Ren Than Bi (npcType -8, menu dang co "Than Khi", "Trang bi thu"...):
+        // them dong bat/tat ngay trong menu do, giong ba nut phi phong/mat na/canh co san.
+        final String npc = doc("src/real/cmd/RequestNPCInfoHandler.java");
+        final int mocCaseTam = npc.indexOf("case -8: {");
+        final int mocDongToggle = npc.indexOf("hiển thị skin thú");
+        Kiem.dung("menu NPC -8 co dong bat/tat hien thi skin thu", mocDongToggle > 0);
+        Kiem.dung("dong toggle nam trong menu cua case -8",
+                mocCaseTam > 0 && mocDongToggle > mocCaseTam && mocDongToggle - mocCaseTam < 2000);
+
+        // RealController: option moi phai doi ca hai chieu va gui lai goi tin, dung nhu ba
+        // nut phi phong/mat na/canh da co san (case 5/6/7). KHONG chot theo so case cu the:
+        // menu NPC -8 con bi sap xep lai boi cong viec khac dang chay song song (da thay
+        // "Tinh Hoa Trang Phuc" gop vao case 11, day so case cua toggle nay tu 15 xuong
+        // 14) — mot chot theo so cu the se do sai moi lan menu doi thu tu. Neo theo chinh
+        // loi goi isTatSkinLinhThu() (chi xuat hien dung mot cho trong file) thay vi so case.
+        final String rc = doc("src/real/RealController.java");
+        final int mocToggle = rc.indexOf("if (player.isTatSkinLinhThu()) {");
+        Kiem.dung("doCreateItem co nhanh toggle hien thi skin thu", mocToggle > 0);
+        final int mocSetTat = rc.indexOf("player.setTatSkinLinhThu();", mocToggle);
+        final int mocSetBat = rc.indexOf("player.setBatSkinLinhThu();", mocToggle);
+        Kiem.dung("nhanh toggle co goi setTatSkinLinhThu gan ke",
+                mocToggle > 0 && mocSetTat > mocToggle && mocSetTat - mocToggle < 500);
+        Kiem.dung("nhanh toggle co goi setBatSkinLinhThu gan ke",
+                mocToggle > 0 && mocSetBat > mocToggle && mocSetBat - mocToggle < 500);
     }
 
     /**
@@ -535,8 +598,6 @@ public final class KiemSkinLinhThu {
                 Integer.valueOf(real.SkinLinhThu.HE.length));
         Kiem.bang("mang HE_CUA_MON_PHAI du 5 mon phai", Integer.valueOf(5),
                 Integer.valueOf(real.SkinLinhThu.HE_CUA_MON_PHAI.length));
-        Kiem.bang("cong 5% sat thuong khi hop he", Integer.valueOf(5),
-                Integer.valueOf(real.SkinLinhThu.PC_SAT_THUONG_HOP_HE));
 
         // Vong tuong sinh phai kin: di 5 buoc tu bat ky he nao phai ve dung cho cu, va
         // khong he nao sinh ra chinh no.
@@ -586,15 +647,33 @@ public final class KiemSkinLinhThu {
                     Integer.valueOf(1), Integer.valueOf(dem[mp]));
         }
 
-        // Cho moc trong duong tinh sat thuong.
+        // Khong con co che +% sat thuong chung khi hop he (nguoi choi yeu cau bo, ban mo ta
+        // 5 skin khong nhac dong nay) — chan cho applyThanKhiOnHit KHONG con dong nao goi
+        // ham do nua, tranh ai do vo tinh khoi phuc lai mot manh cu.
         final String chiSo = doc("src/real/CharChiSo.java");
-        Kiem.dung("applyThanKhiOnHit cong sat thuong khi hop he",
-                chiSo.contains("SkinLinhThu.pcSatThuongHopHe(self)"));
-        // Phai nam trong applyThanKhiOnHit — do la cho duy nhat moi don danh cua Char deu
-        // di qua sau khi da tru giap va nhan he so ky nang.
-        final int mocHam = chiSo.indexOf("static int applyThanKhiOnHit");
-        final int mocHopHe = chiSo.indexOf("SkinLinhThu.pcSatThuongHopHe(self)");
-        Kiem.dung("cho cong nam trong applyThanKhiOnHit", mocHam > 0 && mocHopHe > mocHam);
+        Kiem.sai("applyThanKhiOnHit khong con cong sat thuong rieng khi hop he",
+                chiSo.contains("pcSatThuongHopHe"));
+
+        // ---- hopHe() gio la CONG TAC cho nhom "Tac dung chi so": xem SkinLinhThu.java ----
+        final String db = doc("src/real/SkinLinhThu.java");
+        // Bon chi so tinh: chinh xac/tiem nang/xuyen giap/thu PHAI di qua noiTaiHopHe —
+        // sai he thi tra 0, dung y "Tac dung chi so" chi bat khi hop he.
+        Kiem.dung("congChinhXac dung noiTaiHopHe (Gau Truc, can hop he)",
+                db.contains("public static int congChinhXac(final Char p) {\n        return noiTaiHopHe(CONG_CHINH_XAC, p);"));
+        Kiem.dung("pcXuyenGiap dung noiTaiHopHe (Xich Duong, can hop he)",
+                db.contains("public static int pcXuyenGiap(final Char p) {\n        return noiTaiHopHe(PC_XUYEN_GIAP, p);"));
+        Kiem.dung("pcTiemNang dung noiTaiHopHe (Tien Loc, can hop he)",
+                db.contains("public static int pcTiemNang(final Char p) {\n        return noiTaiHopHe(PC_TIEM_NANG, p);"));
+        Kiem.dung("pcThu dung noiTaiHopHe (Chien Lang, can hop he)",
+                db.contains("public static int pcThu(final Char p) {\n        return noiTaiHopHe(PC_THU, p);"));
+        // Ba dong "Buff bi dong" (HP/MP cua Phuc Thu, hap thu cua Chien Lang) PHAI van di
+        // qua noiTai thuong (luon bat, khong doi hop he) — khong duoc lay nham sang gated.
+        Kiem.dung("congHp van dung noiTai thuong (Buff bi dong, luon bat)",
+                db.contains("public static int congHp(final Char p) {\n        return noiTai(CONG_HP, p);"));
+        Kiem.dung("congMp van dung noiTai thuong (Buff bi dong, luon bat)",
+                db.contains("public static int congMp(final Char p) {\n        return noiTai(CONG_MP, p);"));
+        Kiem.dung("pcHapThu van dung noiTai thuong (Buff bi dong, luon bat)",
+                db.contains("public static int pcHapThu(final Char p) {\n        return noiTai(PC_HAP_THU, p);"));
     }
 
     /**
@@ -624,6 +703,15 @@ public final class KiemSkinLinhThu {
         }
         Kiem.bang("mang BAO_KICH_HOAT du " + n + " phan tu",
                 Integer.valueOf(n), Integer.valueOf(real.SkinLinhThu.BAO_KICH_HOAT.length));
+        Kiem.bang("mang NOI_TAI_CAN_HOP_HE du " + n + " phan tu",
+                Integer.valueOf(n), Integer.valueOf(real.SkinLinhThu.NOI_TAI_CAN_HOP_HE.length));
+
+        // Chi Phuc Thu (skin 0) can hop he moi kich hoat noi tai co ti le — do la dong
+        // "Tac dung chi so" cua no theo ban mo ta. Bon skin con lai la "Buff bi dong".
+        for (int s = 0; s < n; s++) {
+            Kiem.bang("skin " + s + " NOI_TAI_CAN_HOP_HE = " + (s == 0),
+                    Boolean.valueOf(s == 0), Boolean.valueOf(real.SkinLinhThu.NOI_TAI_CAN_HOP_HE[s]));
+        }
 
         // ---- So lieu, chep tu ban mo ta nguoi choi dua ----
         Kiem.bang("Phuc Thu: bi class vat ly danh", Integer.valueOf(real.SkinLinhThu.DK_BI_VAT_LY),
@@ -763,6 +851,17 @@ public final class KiemSkinLinhThu {
             Kiem.dung(d + " van goi checkHapthuSatThuong",
                     doc(d).contains("checkHapthuSatThuong("));
         }
+
+        // thoaDieuKien phai chan theo NOI_TAI_CAN_HOP_HE (sai he thi noi tai co ti le cua
+        // Phuc Thu khong kich hoat) TRUOC khi doc DIEU_KIEN.
+        final String db = doc("src/real/SkinLinhThu.java");
+        final int mocThoaDK = db.indexOf("public static boolean thoaDieuKien(");
+        final int mocHopHeGate = db.indexOf("NOI_TAI_CAN_HOP_HE[p.idSkinLinhThu] && !hopHe(p)");
+        final int mocDocDieuKien = db.indexOf("final int dk = DIEU_KIEN[p.idSkinLinhThu];");
+        Kiem.dung("thoaDieuKien co chan theo NOI_TAI_CAN_HOP_HE",
+                mocThoaDK > 0 && mocHopHeGate > mocThoaDK);
+        Kiem.dung("chan hop he nam TRUOC khi doc DIEU_KIEN",
+                mocHopHeGate > 0 && mocDocDieuKien > mocHopHeGate);
     }
 
     /**
@@ -878,8 +977,17 @@ public final class KiemSkinLinhThu {
             Kiem.bang("Phuc Thu khong doi thu" + mpTen,
                     Integer.valueOf(goc[TV]), Integer.valueOf(phucThu[TV]));
 
-            // --- Gau Truc: chi doi chinh xac, va KHONG duoc vuot tran cua game ---
-            Kiem.dung("Gau Truc lam chinh xac tang" + mpTen, gauTruc[CX] > goc[CX]);
+            // --- Gau Truc: "Tac dung chi so" (+200 chinh xac) CHI khi hop he (mp == 1,
+            // Chien binh) — nguoi choi yeu cau "sai he thi chi con buff bi dong chu khong
+            // co tac dung chu dong", nen o day chinh xac phai giu NGUYEN chi so goc khi
+            // mon phai khac 1, va chi tang dung luc mp == 1.
+            final boolean hopGauTruc = mp == 1;
+            Kiem.bang("Gau Truc chinh xac " + (hopGauTruc ? "co tang (hop he)" : "giu nguyen (sai he)") + mpTen,
+                    Boolean.valueOf(hopGauTruc), Boolean.valueOf(gauTruc[CX] > goc[CX]));
+            if (!hopGauTruc) {
+                Kiem.bang("Gau Truc sai he: chinh xac bang dung chi so goc" + mpTen,
+                        Integer.valueOf(goc[CX]), Integer.valueOf(gauTruc[CX]));
+            }
             Kiem.dung("Gau Truc KHONG day chinh xac vuot tran " + real.Char.TRAN_CHINH_XAC
                     + mpTen, gauTruc[CX] <= real.Char.TRAN_CHINH_XAC);
             Kiem.bang("Gau Truc khong doi maxhp" + mpTen,
@@ -887,30 +995,53 @@ public final class KiemSkinLinhThu {
             Kiem.bang("Gau Truc khong doi tan cong" + mpTen,
                     Integer.valueOf(goc[TC]), Integer.valueOf(gauTruc[TC]));
 
-            // --- Tien Loc: +20% tiem nang -> phai keo THEO nhieu chi so cung luc ---
-            Kiem.dung("Tien Loc lam tan cong tang" + mpTen, tienLoc[TC] > goc[TC]);
-            Kiem.dung("Tien Loc lam maxhp tang" + mpTen, tienLoc[HP] > goc[HP]);
-            Kiem.dung("Tien Loc lam maxmp tang" + mpTen, tienLoc[MP] > goc[MP]);
-            Kiem.dung("Tien Loc lam thu tang" + mpTen, tienLoc[TV] > goc[TV]);
-            Kiem.dung("Tien Loc lam ne tranh tang" + mpTen, tienLoc[NT] > goc[NT]);
+            // --- Tien Loc: "Tac dung chi so" (+20% tiem nang) CHI khi hop he (mp == 4,
+            // Cung thu) — sai he thi ca nam chi so keo theo phai giu nguyen het, khong duoc
+            // ho ri mot chut nao.
+            final boolean hopTienLoc = mp == 4;
+            Kiem.bang("Tien Loc tan cong " + (hopTienLoc ? "co tang (hop he)" : "giu nguyen (sai he)") + mpTen,
+                    Boolean.valueOf(hopTienLoc), Boolean.valueOf(tienLoc[TC] > goc[TC]));
+            Kiem.bang("Tien Loc maxhp " + (hopTienLoc ? "co tang (hop he)" : "giu nguyen (sai he)") + mpTen,
+                    Boolean.valueOf(hopTienLoc), Boolean.valueOf(tienLoc[HP] > goc[HP]));
+            Kiem.bang("Tien Loc maxmp " + (hopTienLoc ? "co tang (hop he)" : "giu nguyen (sai he)") + mpTen,
+                    Boolean.valueOf(hopTienLoc), Boolean.valueOf(tienLoc[MP] > goc[MP]));
+            Kiem.bang("Tien Loc thu " + (hopTienLoc ? "co tang (hop he)" : "giu nguyen (sai he)") + mpTen,
+                    Boolean.valueOf(hopTienLoc), Boolean.valueOf(tienLoc[TV] > goc[TV]));
+            Kiem.bang("Tien Loc ne tranh " + (hopTienLoc ? "co tang (hop he)" : "giu nguyen (sai he)") + mpTen,
+                    Boolean.valueOf(hopTienLoc), Boolean.valueOf(tienLoc[NT] > goc[NT]));
+            if (!hopTienLoc) {
+                Kiem.bang("Tien Loc sai he: tan cong bang dung chi so goc" + mpTen,
+                        Integer.valueOf(goc[TC]), Integer.valueOf(tienLoc[TC]));
+            }
             // May man la diem tiem nang THU NAM, no nuoi chi mang. Chi mang chi duoc
-            // tinh cho Cung thu (crit1 chi chay o charClass == 4), nen chi kiem o do.
+            // tinh cho Cung thu (crit1 chi chay o charClass == 4) — dung luc do cung la
+            // mon phai hop he cua Tien Loc, nen chi kiem tang o day.
             if (mp == 4) {
-                Kiem.dung("Tien Loc lam chi mang tang (diem tiem nang thu nam)" + mpTen,
+                Kiem.dung("Tien Loc lam chi mang tang (diem tiem nang thu nam, hop he)" + mpTen,
                         tienLoc[CM] > goc[CM]);
             }
 
-            // --- Xich Duong: chi dong vao xuyen giap ---
-            Kiem.bang("Xich Duong dat xuyen giap = 5" + mpTen,
-                    Integer.valueOf(goc[XG] + 5), Integer.valueOf(xichDuong[XG]));
+            // --- Xich Duong: "Tac dung chi so" (+5% xuyen giap) CHI khi hop he (mp == 3,
+            // Dau si) — sai he thi xuyen giap phai bang dung chi so goc.
+            final boolean hopXichDuong = mp == 3;
+            Kiem.bang("Xich Duong xuyen giap" + (hopXichDuong ? " +5 (hop he)" : " giu nguyen (sai he)") + mpTen,
+                    Integer.valueOf(hopXichDuong ? goc[XG] + 5 : goc[XG]), Integer.valueOf(xichDuong[XG]));
             Kiem.bang("Xich Duong khong doi tan cong" + mpTen,
                     Integer.valueOf(goc[TC]), Integer.valueOf(xichDuong[TC]));
             Kiem.bang("Xich Duong khong doi maxhp" + mpTen,
                     Integer.valueOf(goc[HP]), Integer.valueOf(xichDuong[HP]));
 
-            // --- Chien Lang: chi dong vao thu ---
-            Kiem.dung("Chien Lang lam thu vat tang" + mpTen, chienLang[TV] > goc[TV]);
-            Kiem.dung("Chien Lang lam thu phep tang" + mpTen, chienLang[TP] > goc[TP]);
+            // --- Chien Lang: "Tac dung chi so" (+20% thu) CHI khi hop he (mp == 0, Kiem
+            // khach) — sai he thi thu vat/thu phep phai bang dung chi so goc.
+            final boolean hopChienLang = mp == 0;
+            Kiem.bang("Chien Lang thu vat " + (hopChienLang ? "co tang (hop he)" : "giu nguyen (sai he)") + mpTen,
+                    Boolean.valueOf(hopChienLang), Boolean.valueOf(chienLang[TV] > goc[TV]));
+            Kiem.bang("Chien Lang thu phep " + (hopChienLang ? "co tang (hop he)" : "giu nguyen (sai he)") + mpTen,
+                    Boolean.valueOf(hopChienLang), Boolean.valueOf(chienLang[TP] > goc[TP]));
+            if (!hopChienLang) {
+                Kiem.bang("Chien Lang sai he: thu vat bang dung chi so goc" + mpTen,
+                        Integer.valueOf(goc[TV]), Integer.valueOf(chienLang[TV]));
+            }
             Kiem.bang("Chien Lang khong doi maxhp" + mpTen,
                     Integer.valueOf(goc[HP]), Integer.valueOf(chienLang[HP]));
             Kiem.bang("Chien Lang khong doi tan cong" + mpTen,
@@ -950,7 +1081,12 @@ public final class KiemSkinLinhThu {
         try {
             final real.Char c = new real.Char(null);
             c.charname = "KIEMTHUCAO";
-            c.charClass = 0;
+            // Chi so tinh (chinh xac, ne tranh...) cua Gau Truc/Tien Loc gio CHI cong khi
+            // hop he — phai dung DUNG mon phai hop he voi skin dang kiem, khong thi bai
+            // kiem tran cua game duoi day khong con cong gi de ma chan tran nua. Khong co
+            // skin (KHONG_CO) thi mon phai nao cung nhu nhau, giu class 0.
+            final int mpHopHe = real.SkinLinhThu.hopLe(skin) ? real.SkinLinhThu.monPhaiHopVoiSkin(skin) : 0;
+            c.charClass = (byte) (mpHopHe >= 0 ? mpHopHe : 0);
             c.lastLV = 100;
             c.strength = 5000;
             c.agitity = 5000;

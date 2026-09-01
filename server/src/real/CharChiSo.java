@@ -995,16 +995,6 @@ class CharChiSo {
             final boolean targetLaChar = (actor.cat == 0 && actor instanceof Char);
             final boolean targetLaBoss = actor.isBoss() || actor.isTruMoba();
 
-            // ---------- SKIN LINH THU: cuoi skin HOP HE voi mon phai ----------
-            // Hop he = he cua skin sinh ra he cua mon phai (Moc->Hoa->Tho->Kim->Thuy->Moc).
-            // Dat trong ham nay vi day la cho DUY NHAT moi don danh cua Char deu di qua,
-            // sau khi da tru giap va nhan he so ky nang — nen 5% la 5% cua sat thuong
-            // THUC SU gay ra, khong phai 5% cua mot so trung gian.
-            final int pcHopHe = SkinLinhThu.pcSatThuongHopHe(self);
-            if (pcHopHe > 0) {
-                finalDame += (int) ((long) finalDame * pcHopHe / 100L);
-            }
-
             // ---------- BEN TAN CONG: cong them sat thuong ----------
             if (self.itemThanKhi != null) {
                 final int tkHp = self.getTkStTheoHp();

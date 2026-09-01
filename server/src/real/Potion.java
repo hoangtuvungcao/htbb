@@ -143,7 +143,15 @@ public class Potion extends Actor
     public static final short TYPE_CT_HOA_DUOC = 132;
     public static final short TYPE_QUA_BONG_BAC = 160;
     public static final short TYPE_QUA_BONG_VANG = 161;
-    
+
+    // Su kien Vu Lan (viet lai) - 4 o con trong cua data_potion: 106, 107, 109, 110.
+    // (108 DA BI CHIEM boi "Hop qua may man" cua su kien World Cup - xem
+    // sql/them_su_kien_world_cup.sql va LoginHandler.POTION_SHOP - KHONG duoc dung lai).
+    public static final short TYPE_NHANH_HOA_HONG_VANG = 106;
+    public static final short TYPE_HOA_HONG_DO = 107;
+    public static final short TYPE_BO_HOA_VANG = 109;
+    public static final short TYPE_BO_HOA_DO = 110;
+
     public short quantity;
     public int belongUser;
     public int id_char;
