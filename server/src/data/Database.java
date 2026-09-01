@@ -3582,12 +3582,7 @@ public class Database {
                     // thoi trong luc dang choi, vi cong that cua het han
                     // (endHoaHinhPet()) da duoc applyKhangXuyenGiap()/getIdEffPet()
                     // tu kiem tra rieng, chi CSDL la can don lai cho lan luu sau.
-                    if (pet.endHoaHinhPet()) {
-                        pet.idHoaHinhPet = -1;
-                        pet.timeEndHoaHinhPet = 0L;
-                        pet.khangXuyenGiapCap = 0;
-                        pet.capHoaHinh = 0;
-                    }
+                    pet.donHoaHinhHetHan();
                     if (pet.place == 1) {
                         p.petUsing = pet;
                     }

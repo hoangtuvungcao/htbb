@@ -478,40 +478,32 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   và [docs/cau-hinh-server-ini.md](docs/cau-hinh-server-ini.md) mục 4.
 - Sự kiện World Cup (bình chọn Messi/Ronaldo): [src/real/SuKienWorldCup.java](src/real/SuKienWorldCup.java) ·
   chạy [sql/them_su_kien_world_cup.sql](sql/them_su_kien_world_cup.sql) một lần trước khi mở
-- **Hóa hình Pet** (port từ một bản KPAH khác — xem `AGENT_MEMORY`/lịch sử trò chuyện): NPC dịch
-  vụ chung (npcType `-8`) có thêm mục "Hoá Hình Pet" — pet phải vĩnh viễn + đã siêu tiến hoá
-  (`itemPet.level>=2`), tốn `cấp_mới×10` lọ thuốc hoá hình (item 268, **dùng lại** item của tính
-  năng hóa hình Thú có sẵn, không tạo item mới) + 5000 lượng, lên tối đa cấp 5, mỗi cấp cộng dồn
-  "kháng xuyên giáp" (giảm 5–25% sát thương nhận, tỷ lệ 10–30%, hồi chiêu 60–100s — cooldown riêng,
-  KHÔNG dùng chung `timeBienHinh` với nội tại theo loài, tránh xung đột). Hết hạn sau 10 ngày nếu
-  không hóa hình tiếp — dọn dữ liệu lúc đăng nhập lại (`Database.getCharPet`), không real-time.
-  Xem [src/data/Pet.java](src/data/Pet.java) (`applyKhangXuyenGiap`), [src/real/RealController.java](src/real/RealController.java)
-  (case 13 của `doCreateItem`), test [test/KiemHoaHinhPet.java](test/KiemHoaHinhPet.java).
-  Có đổi hình khi hoá hình: `getIdEffPet()` trả `ID_HIEU_UNG_HOA_HINH_PET` (= **49**, MỘT frame
-  dùng chung cho mọi loài pet), gửi qua `MessageCreator.java` thay thế `idImg` làm trường hiển thị
-  chính cho pet đã tiến hoá (`TYPE_PET_TOOL`) trên session `version180`.
-  **Ba sự cố đã xảy ra và đã sửa (31/08–01/09/2026)**: (1) lượt đầu bật tính năng lên thì pet
-  **biến mất khỏi màn hình** hoàn toàn sau khi hoá hình — đoán ban đầu là id 49–53 "chưa được
-  client đăng ký" nên gỡ bỏ hẳn nhánh đổi hiệu ứng; hoá ra `map/d_effect/49..53` trên repo này vẫn
-  là ảnh icon nhỏ gốc (30×13, không liên quan pet) — bản KPAH tham khảo đã thay ảnh mới thành
-  sprite hoá hình thật, đối chiếu md5 xác nhận repo này chưa từng cập nhật ảnh. Đã chép 10 file
-  (`49`, `49.png`, ..., `53`, `53.png`) từ project tham khảo sang, bật lại nhánh — lúc đó vẫn rẽ
-  theo 5 loài (commit `a081ee1`). (2) Theo yêu cầu admin, gộp về dùng CHUNG một frame — ban đầu
-  chọn `map/d_effect/69.png` có sẵn (ảnh linh thú bọc lửa) — nhưng **pet lại biến mất lần nữa**:
-  69.png là ảnh VUÔNG 256×256 (bố cục lưới nhiều hàng, dùng cho hệ thống danh hiệu trên đầu nhân
-  vật, giftcode `DH` id `8769 = 69+8700`), trong khi trường này cần ảnh DẢI HẸP ĐỨNG (cao gấp đôi
-  rộng trở lên — so 35: 45×114, 41: 58×117, 44: 62×96, đều là các id pet tiến hoá bình thường vẫn
-  dùng ổn định) vì `getTotalFrame()` (số khung cắt ảnh) lấy từ `Map.petTemplate[idTemplate].nFrame`
-  — một con số CỐ ĐỊNH theo loài pet, không phụ thuộc ảnh — nên ảnh sai tỉ lệ bị cắt lệch khung và
-  không vẽ được. (3) Vẫn muốn giữ đúng hình linh thú lửa: cắt 2 tư thế từ lưới sprite của 69.png,
-  resize về đúng 45×57/khung (khớp bố cục cũ của id 49), ghi đè `map/d_effect/49.png` — **giữ
-  nguyên file toạ độ khung `map/d_effect/49`** vì kích thước canvas không đổi. Không sửa trực tiếp
-  nội dung `69.png` vì đó là ảnh danh hiệu đang sống, đổi hình dạng sẽ ảnh hưởng danh hiệu id 8769.
-  Kết quả: đúng hình linh thú lửa admin muốn, đúng quy cách nên không còn làm mất pet. Vì
-  `map/d_effect/` được gửi qua mạng lúc đăng nhập (`DataGame.java` quét cả thư mục lúc khởi động
-  server), **chỉ cần deploy server, không cần sửa gì phía client**. Test `KiemHoaHinhPet.chay()`
-  khoá cả hằng số, sự tồn tại của file ảnh, LẪN hình dạng ảnh (cao > rộng) — thiếu kiểm tra hình
-  dạng là đúng y hệt lỗi (2) vừa gặp, vì ảnh sai bố cục vẫn tồn tại và vẫn nặng hơn ngưỡng byte.
+- **Hoá Hình Pet → Pet Lân** (menu NPC dịch vụ chung, npcType `-8`; luật viết lại ngày 02/09/2026
+  theo mô tả của người yêu cầu): pet nuôi **vĩnh viễn** đã tiến hoá, cấp n (cột `atb0` của template
+  pet, 1–5) + **n×10 bình hoá hình** (item 268, dùng chung với hoá hình Thú) = **Pet Lân cấp n**,
+  hạn **10 ngày**, không tốn lượng. Hoá hình lại lúc nào cũng được (tính lại 10 ngày, cấp Lân theo
+  cấp pet hiện tại). Pet Lân giữ nguyên mọi chỉ số gốc và có thêm **Kháng xuyên giáp** khi chủ bị
+  đánh: cấp 1 +5% (tỉ lệ 10%, duy trì 3s, hồi chiêu 100s), cấp 2 +10% (10%/3s/100s), cấp 3 +15%
+  (20%/5s/80s), cấp 4 +20% (20%/5s/80s), cấp 5 +25% (30%/8s/60s) — trong cửa sổ duy trì mọi đòn
+  đều được giảm, hồi chiêu tính từ lúc kích hoạt. Hết hạn thì trở về con cũ **ngay khi đang chơi**
+  (`Char.checkExpirePet`, mỗi 5 phút) và cả lúc nạp nhân vật (`Database.getCharPet`). Tên pet hiện
+  "Lân cấp n - <tên gốc>" khi đang hoá hình. Log `hoahinhpet` ghi cấp, số bình và lúc hết hạn.
+  Xem [src/data/Pet.java](src/data/Pet.java) (`thongSoKhangXuyenGiap`, `applyKhangXuyenGiap`,
+  `capPet`, `donHoaHinhHetHan`), [src/real/RealController.java](src/real/RealController.java)
+  (case 13), test [test/KiemHoaHinhPet.java](test/KiemHoaHinhPet.java).
+  **Ảnh Lân = đúng `map/d_effect/69.png`** (lưới sprite 256×256, 13 ô, cũng là ảnh danh hiệu
+  8769 = 69+8700), `Pet.getIdEffPet()` trả `ID_HIEU_UNG_HOA_HINH_PET = 69`. Điều làm pet biến mất
+  hôm 01/09 không phải ảnh mà là **bảng khung** `map/d_effect/69`: nó viết cho đường vẽ hiệu ứng (13
+  ô, anim dài 48/1/0), còn đường vẽ pet (`Pet.paint` trên client) lấy bảng từ `ALL_PET_DATA` rồi
+  `frame % anim.length`, gặp anim 0 khung là chia cho 0. Hai bảng đi hai đường riêng trên client
+  (`ALL_PET_DATA` cho pet qua khối `id_eff_pet_tool` của gói 26, `ALL_DATA_EFF` cho hiệu ứng) và chỉ
+  dùng chung ảnh, nên giải pháp là gửi cho pet **bảng riêng** `map/d_effect/69.pet` (cấu trúc y
+  hệt bảng pet `49`: 3 ô nhỏ trỏ vào ô 10/11/12 của lưới 69, dx = −w/2, dy = −h để Lân đứng trên
+  đất; sinh bằng `tools/TaoPetLan.java`). `DataGame` nạp `<id>.pet` vào `dataPetEffect`,
+  `DataGame.moTaPet(id)` ưu tiên nó, `MessageCreator` dùng hàm đó cho khối pet của gói 26, và 69
+  được thêm vào `id_eff_pet_tool` (id 49 cũ chưa từng nằm trong danh sách này nên client không có
+  bảng khung cho nó). Bảng `69` và ảnh `69.png` giữ nguyên byte. Test khoá cả bảng `.pet` (đúng ô,
+  đúng offset, phần đuôi trùng `49`) lẫn việc ảnh/bảng gốc không bị sửa.
 - **Hóa hình Thú lên 5 cấp** (nâng cấp tính năng hóa hình Thú có sẵn, cho khớp hệ thống Pet ở
   trên): cấp 1 (kích hoạt lần đầu, NPC "Luyện thú" idNpc `-6`) **giữ nguyên y hệt** hành vi cũ —
   30 lọ thuốc hoá hình (item 268), tỷ lệ 70%, có thể mất nguyên liệu mà thất bại. Cấp 2–5 (nâng
@@ -569,21 +561,20 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   sẵn cho một vòng lặp khác. Test: [test/KiemDonLog.java](test/KiemDonLog.java). Chưa động tới
   hơn 50 chỗ `e.printStackTrace()` rải rác trong `Char.java` (đường xử lý hành động người chơi) —
   phạm vi quá rộng để sửa an toàn trong một lượt, để lại cho lần sau nếu cần.
-- **Tinh Hoa Trang Phục** (menu NPC dịch vụ chung, npcType `-8`, mục sau "Cải Tạo Cải Trang" đã có
-  sẵn): đường **bảo đảm** để đưa một trong 11 bộ thời trang vĩnh viễn đạt mốc `CaiTao=10` (mốc tối
-  đa vẫn có từ "Cải Tạo Cải Trang" cũ, nhưng đó là random 1–10%, 70% tỉ lệ thành công, tốn 500
-  lượng) — đổi lại tốn bình hoá hình thú cưỡi (item/gem 268, dùng chung với Hoá Hình Pet/Thú) theo
-  nhóm, càng hiếm càng cần nhiều: nhóm 1 (Nghê Thường/Ngọc Nữ/Xích Cước/Kim Đồng/Lôi Công, id
-  797–801) 10 bình; nhóm 2 (Bạch Mi/Thuý Vũ Hồng Sam/Hắc Lang/Thần Nữ, id 723–726) 15 bình; nhóm 3
-  (Lạc Long Quân/Âu Cơ, id 756–757) 20 bình. Khi `CaiTao` đạt 10, `Item.getName()` tự đổi tên hiển
-  thị thành **Giáp Sơn Tinh Vương** (bộ đồ giới tính nam trong `data_item`) hoặc **Mị Nương Công
-  Chúa** (giới tính nữ) — theo đúng xác nhận của người yêu cầu: đây là ĐỔI TÊN chính bộ đồ đó khi đã
-  tinh hoa tối đa, KHÔNG tạo vật phẩm mới (hai tên "Giáp Sơn Tinh Vương"/"Mị Nương Công Chúa" không
-  tồn tại trong `data_item` — đã tra CSDL trực tiếp trước khi kết luận). Giới tính lấy từ CHÍNH bộ
-  đồ (cột `gender`), không phải giới tính nhân vật. Xem [src/real/Item.java](src/real/Item.java)
-  (`tenTrangPhucSauTinhHoa`, `getName`), [src/real/Map.java](src/real/Map.java)
-  (`showTrangPhucTinhHoaList`, nhánh `type == 8` / `idpopup == 126`), test
-  [test/KiemTinhHoaTrangPhuc.java](test/KiemTinhHoaTrangPhuc.java).
+- **Cải Tạo Cải Trang** (menu NPC dịch vụ chung, npcType `-8`; luật viết lại ngày 02/09/2026 theo
+  mô tả của người yêu cầu): đem một trong 11 bộ thời trang **vĩnh viễn** đi cải tạo. Nhóm 1 (Nghê
+  Thường/Ngọc Nữ/Xích Cước/Kim Đồng/Lôi Công, id 797–801) tốn 500 **điểm xài**; nhóm 2 (Hắc
+  Lang/Thần Nữ/Bạch Mi/Thuý Vũ Hồng Sam, id 723–726) tốn 300 điểm xài; nhóm 3 (Lạc Long Quân/Âu Cơ,
+  id 756–757) tốn 500 **điểm nạp**. Không tốn lượng. 70% thành công: bộ đồ đổi hình thành **Giáp
+  Sơn Tinh Vương** (đồ nam) hoặc **Mị Nương Công Chúa** (đồ nữ), giữ nguyên chỉ số và mô tả gốc,
+  thêm dòng "Tinh Hoa: +N% HP" với N ngẫu nhiên 1–10 và **chỉ cộng HP**. Thất bại mất điểm. Cải tạo
+  lại bao nhiêu lần tuỳ ý, kể cả đã thành công, để tìm N cao hơn (N mới ghi đè N cũ). Chọn được cả
+  bộ đang mặc lẫn bộ trong hành trang; bộ đang mặc đổi thì chỉ số và hình gửi lại ngay. Mỗi lần ghi
+  log `caitaocaitrang`. Đường "tinh hoa bảo đảm" (đổi bình hoá hình thú cưỡi lấy chắc 10%) đã bỏ
+  cùng ngày. Luật gom ở [src/real/CaiTaoCaiTrang.java](src/real/CaiTaoCaiTrang.java); tên hiển thị
+  ở [src/real/Item.java](src/real/Item.java) (`tenHienThiSauCaiTao`, giữ các dòng mô tả sau tên);
+  HP ở [src/real/CharChiSo.java](src/real/CharChiSo.java); test
+  [test/KiemCaiTaoCaiTrang.java](test/KiemCaiTaoCaiTrang.java).
 
 **Lưu ý quan trọng**: mỗi lần push lên nhánh `main` sẽ tự động deploy lên VPS sản
 xuất (`.github/workflows/deploy.yml`). Đổi `KPAH2_patched.jar`, `lib/`, `map/`,

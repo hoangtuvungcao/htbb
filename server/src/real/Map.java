@@ -7270,30 +7270,11 @@ public class Map implements Runnable {
     public void processMessage(Char player, Message message) throws IOException {
         MapXuLyLenh.processMessage(this, player,message);
     }
-    // cải tạo cải trang
-    public void  showCaiTaoMaterialList (Char player) {
-      // Tạo danh sách chứa các item phù hợp
-      Vector caitrang = new Vector();
-                        
-      // Danh sách ID cải trang cần lọc
-      int[] validItemIDs = {797, 798, 799, 800, 801, 723, 724, 725, 726,756,757};
-      
-      // Lọc items từ rương người chơi
-      for (int i = 0; i < player.iItems.size(); i++) {
-          Item item = (Item)player.iItems.elementAt(i);
-          
-          // Kiểm tra ID và hạn sử dụng
-          for (int validID : validItemIDs) {
-              if (item.tempateID == validID && item.minuteExist <= 0) { // -1 là vĩnh viễn
-                  caitrang.addElement(item);
-                  break;
-              }
-          }
-      }
-      
-      // Hiển thị shop với danh sách đã lọc
-      player.sendMessage(MessageCreator.createMessageShopNew(player, caitrang, "Chọn", "Cải Tạo", 5));
-                      
+    // Cai Tao Cai Trang: danh sach bo thoi trang vinh vien cai tao duoc (bo dang mac dung
+    // dau, roi hanh trang). Luat, nhom, gia: xem real/CaiTaoCaiTrang.
+    public void showCaiTaoMaterialList(Char player) {
+        player.sendMessage(MessageCreator.createMessageShopNew(
+                player, CaiTaoCaiTrang.locTrangPhuc(player), "Chọn", "Cải Tạo", 5));
     }
 
 
@@ -7428,51 +7409,6 @@ public class Map implements Runnable {
     public void showTinhLuyenMaterialList(Char player) {
         player.sendMessage(MessageCreator.createMessageShopNew(
                 player, locNguyenLieuTinhLuyen(player), "Chọn", "Nguyên liệu", 6));
-    }
-
-    /**
-     * Tinh Hoa Trang Phuc (them 01/09/2026): duong bao dam thay cho may ngau
-     * nhien cua "Cai Tao Cai Trang" - doi bao hoa hinh thu cuoi (item/gem 268,
-     * dung CHUNG voi Hoa Hinh Pet/Thu) de CHAC CHAN dat CaiTao=10 cho mot
-     * trong 11 bo thoi trang vinh vien duoi day, luc do Item.getName() tu doi
-     * thanh Giap Son Tinh Vuong/Mi Nuong Cong Chua (xem Item.java). So luong
-     * can khac nhau theo nhom (nhom cang hiem cang can nhieu binh).
-     */
-
-    /** So binh hoa hinh thu cuoi (item 268) can de tinh hoa mot mon, theo nhom - hoac -1 neu id khong hop le. */
-    static int soLuongTinhHoaCanThiet(final int templateID) {
-        switch (templateID) {
-            case 797: case 798: case 799: case 800: case 801:
-                return 10; // nhom 1: Nghe Thuong, Ngoc Nu, Xich Cuoc, Kim Dong, Loi Cong
-            case 723: case 724: case 725: case 726:
-                return 15; // nhom 2: Bach Mi, Thuy Vu Hong Sam, Hac Lang, Than Nu
-            case 756: case 757:
-                return 20; // nhom 3: Lac Long Quan, Au Co
-            default:
-                return -1;
-        }
-    }
-
-    /**
-     * Loc trang phuc vinh vien, dung nhom, CHUA tinh hoa toi da trong hanh
-     * trang. Dung CHUNG giua luc HIEN danh sach (showTrangPhucTinhHoaList) va
-     * luc XU LY lua chon (type 8 / idpopup 126) - tranh dung lech y het bay da
-     * gap voi Tinh Luyen Than Binh (xem locNguyenLieuTinhLuyen o tren).
-     */
-    private Vector<Item> locTrangPhucTinhHoa(Char player) {
-        Vector<Item> ra = new Vector<>();
-        for (int i = 0; i < player.iItems.size(); i++) {
-            Item item = (Item) player.iItems.elementAt(i);
-            if (item.minuteExist <= 0 && item.CaiTao < 10 && soLuongTinhHoaCanThiet(item.tempateID) > 0) {
-                ra.addElement(item);
-            }
-        }
-        return ra;
-    }
-
-    public void showTrangPhucTinhHoaList(Char player) {
-        player.sendMessage(MessageCreator.createMessageShopNew(
-                player, locTrangPhucTinhHoa(player), "Chọn", "Tinh Hoa Trang Phục", 8));
     }
 
   
@@ -7688,90 +7624,33 @@ public class Map implements Runnable {
                 showKhoManh(player);
                 return;
             }
-            else if (type == 5) 
+            else if (type == 5)
             {
+                // Cai Tao Cai Trang - buoc 1: nguoi choi chon mot bo trong danh sach
+                // (showCaiTaoMaterialList). O day chi kiem dieu kien roi mo hop thoai xac
+                // nhan (idpopup 125); tru diem va quay ket qua nam o idpopup 125, KHONG o day.
+                // Luat, nhom, gia: xem real/CaiTaoCaiTrang.
                 try {
                     int shopIndex = message.dis.readUnsignedByte();
-                    
-                    // Tạo danh sách chứa các item phù hợp để cải tạo
-                    Vector upgradableItems = new Vector();
-                    
-                    // Danh sách ID item có thể cải tạo với 500 điểm
-                    int[] highTierItems = {797, 798, 799, 800, 801,756,757};
-                    // Danh sách ID item có thể cải tạo với 300 điểm
-                    int[] normalTierItems = {723, 724, 725, 726};
-                    
-                    // Lọc items từ rương người chơi
-                    for (int i = 0; i < player.iItems.size(); i++) {
-                        Item item = (Item)player.iItems.elementAt(i);
-                        
-                        // Kiểm tra ID và hạn sử dụng
-                        boolean isValidItem = false;
-                        for (int validID : highTierItems) {
-                            if (item.tempateID == validID && item.minuteExist <= 0) {
-                                upgradableItems.addElement(item);
-                                isValidItem = true;
-                                break;
-                            }
-                        }
-                        if (!isValidItem) {
-                            for (int validID : normalTierItems) {
-                                if (item.tempateID == validID && item.minuteExist <= 0) {
-                                    upgradableItems.addElement(item);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                
-                    // Kiểm tra index hợp lệ
-                    if (shopIndex < 0 || shopIndex >= upgradableItems.size()) {
+                    Vector<Item> dsCaiTao = CaiTaoCaiTrang.locTrangPhuc(player);
+                    if (shopIndex < 0 || shopIndex >= dsCaiTao.size()) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không hợp lệ", ""));
                         return;
                     }
-                
-                    // Lấy item được chọn để cải tạo
-                    Item selectedItem = (Item)upgradableItems.elementAt(shopIndex);
-                    String itemName = selectedItem.getTemplate().name;
-                    
-                    // Xác định yêu cầu điểm dựa vào ID item
-                    int requiredPoints = 300; // Mặc định 300 điểm
-                    for (int highTierID : highTierItems) {
-                        if (selectedItem.tempateID == highTierID) {
-                            requiredPoints = 500;
-                            break;
-                        }
-                    }
-                    
-                    // Check requirements dựa theo loại item
-                    if(player.diemNapVip < requiredPoints) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ điểm nạp để cải tạo", ""));
+                    Item selectedItem = dsCaiTao.elementAt(shopIndex);
+                    int diemCan = CaiTaoCaiTrang.diemCan(selectedItem.tempateID);
+                    String tenDiem = CaiTaoCaiTrang.tenDiem(selectedItem.tempateID);
+                    if (CaiTaoCaiTrang.diemHienCo(player, selectedItem.tempateID) < diemCan) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Bạn không đủ " + diemCan + " " + tenDiem + " để cải tạo", ""));
                         return;
                     }
-                   
-                    if(player.getLuong() < 500) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ lượng để cải tạo", ""));
-                        return;
-                    }
-                
-                   
-                    // Cắt lấy phần trước dấu "-" nếu có
-                    if(itemName.contains("-")) {
-                        itemName = itemName.split("-")[0].trim();
-                    }
-                    // Chuyển "Áo" thành "áo"
-                    itemName = itemName.replace("Áo", "áo");
-            
-                    // Tạo thông báo xác nhận
-                    String popupMsg = String.format(
-                        "Bạn có muốn cải tạo %s với giá 500 lượng và %d điểm nạp không?",
-                        itemName,
-                        requiredPoints
-                    );
-                
+                    String popupMsg = "Bạn có muốn cải tạo " + CaiTaoCaiTrang.tenNgan(selectedItem.getTemplate().name)
+                            + " với " + diemCan + " " + tenDiem + " không? Thành công nhận "
+                            + Item.tenTrangPhucSauTinhHoa(selectedItem.tempateID)
+                            + " kèm dòng Tinh Hoa tăng % HP, thất bại mất điểm.";
                     player.sendMessage(MessageCreator.createMsgPopUp(shopIndex, 125, popupMsg));
                     return;
-                    
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -7875,34 +7754,6 @@ public class Map implements Runnable {
                     }
 
                     showTinhLuyenMaterialList(player);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            else if (type == 8)
-            {
-                // Tinh Hoa Trang Phuc: nguoi choi chon 1 bo thoi trang tu danh sach
-                // (showTrangPhucTinhHoaList) - o day chi kiem tra du binh hoa hinh
-                // thu cuoi (item 268) roi mo hop thoai xac nhan (idpopup 126). Tru
-                // binh va dat CaiTao=10 thuc su nam o idpopup 126, KHONG phai o day.
-                try {
-                    int shopIndex = message.dis.readUnsignedByte();
-                    Vector<Item> filteredItems = locTrangPhucTinhHoa(player);
-                    if (shopIndex < 0 || shopIndex >= filteredItems.size()) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Trang phục không hợp lệ", ""));
-                        return;
-                    }
-                    Item selectedItem = filteredItems.elementAt(shopIndex);
-                    int soLuongCan = soLuongTinhHoaCanThiet(selectedItem.tempateID);
-                    if (player.listGemitem[268] < soLuongCan && player.listGemitemLock[268] < soLuongCan) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage(
-                                "Cần " + soLuongCan + " bình hoá hình thú cưỡi để tinh hoa " + selectedItem.getName(), ""));
-                        return;
-                    }
-                    String tenSauTinhHoa = Item.tenTrangPhucSauTinhHoa(selectedItem.tempateID);
-                    player.sendMessage(MessageCreator.createMsgPopUp(shopIndex, 126,
-                            "Bạn có muốn dùng " + soLuongCan + " bình hoá hình thú cưỡi để tinh hoa "
-                            + selectedItem.getName() + ", nhận " + tenSauTinhHoa + " không?"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -9154,111 +9005,63 @@ public class Map implements Runnable {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Có lỗi xảy ra", ""));
                 }
             }
-            if (idpopup == 125) 
+            if (idpopup == 125)
             {
-        
-                
+                // Cai Tao Cai Trang - buoc 2: nguoi choi da bam xac nhan. idActor la chi so
+                // trong danh sach loc, doc thang tu goi tin nen phai chan bien. Loc lai bang
+                // DUNG ham da dung o type == 5 de hai buoc khong lech nhau. Luat, nhom, gia:
+                // xem real/CaiTaoCaiTrang.
                 try {
-                    // Tạo random object
+                    Vector<Item> dsCaiTao = CaiTaoCaiTrang.locTrangPhuc(player);
+                    if (idActor < 0 || idActor >= dsCaiTao.size()) {
+                        data.NghiVanGianLan.ghiVatPham(player, "haccaitaocaitrang",
+                                "gui chi so cai tao ngoai bien: " + idActor + " (danh sach co " + dsCaiTao.size() + " mon)");
+                        return;
+                    }
+                    Item selectedItem = dsCaiTao.elementAt(idActor);
+                    int diemCan = CaiTaoCaiTrang.diemCan(selectedItem.tempateID);
+                    String tenDiem = CaiTaoCaiTrang.tenDiem(selectedItem.tempateID);
+                    if (CaiTaoCaiTrang.diemHienCo(player, selectedItem.tempateID) < diemCan) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Bạn không đủ " + diemCan + " " + tenDiem + " để cải tạo", ""));
+                        return;
+                    }
+
+                    // Tru diem TRUOC khi quay: thanh cong hay that bai deu mat diem.
+                    CaiTaoCaiTrang.truDiem(player, selectedItem.tempateID, diemCan);
+
+                    int caiTaoCu = selectedItem.CaiTao;
                     Random r = new Random();
-                    
-                    // Tạo danh sách chứa các item phù hợp để cải tạo
-                    Vector<Item> upgradableItems = new Vector<>();
-                    
-                    // Danh sách ID item có thể cải tạo với 500 điểm
-                    int[] highTierItems = {797, 798, 799, 800, 801,756,757};
-                    // Danh sách ID item có thể cải tạo với 300 điểm
-                    int[] normalTierItems = {723, 724, 725, 726};
-                    
-                    // Lọc items từ rương người chơi
-                    for (int i = 0; i < player.iItems.size(); i++) {
-                        Item item = player.iItems.get(i);
-                        if (item == null) continue;
-                        
-                        boolean isValidItem = false;
-                        for (int validID : highTierItems) {
-                            if (item.tempateID == validID && item.minuteExist <= 0) {
-                                upgradableItems.add(item);
-                                isValidItem = true;
-                                break;
-                            }
-                        }
-                        if (!isValidItem) {
-                            for (int validID : normalTierItems) {
-                                if (item.tempateID == validID && item.minuteExist <= 0) {
-                                    upgradableItems.add(item);
-                                    break;
-                                }
-                            }
-                        }
+                    boolean thanhCong = r.nextInt(100) < CaiTaoCaiTrang.TI_LE_THANH_CONG;
+                    String ketQua;
+                    if (thanhCong) {
+                        selectedItem.CaiTao = CaiTaoCaiTrang.quayPhanTramTinhHoa(r);
+                        ketQua = "thanh cong " + selectedItem.CaiTao + "%";
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Cải tạo thành công! Nhận " + Item.tenTrangPhucSauTinhHoa(selectedItem.tempateID)
+                                + ", Tinh Hoa +" + selectedItem.CaiTao + "% HP", ""));
+                    } else {
+                        ketQua = "that bai";
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Cải tạo thất bại! Mất " + diemCan + " " + tenDiem, ""));
                     }
-            
-                    // Kiểm tra index hợp lệ
-                    if (idActor < 0 || idActor >= upgradableItems.size()) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không hợp lệ", ""));
-                        return;
+
+                    // Bo DANG MAC doi CaiTao thi HP va hinh anh doi theo -> tinh lai chi so va
+                    // gui lai cho chinh minh + nguoi xung quanh, y het luc mac/thao do.
+                    if (CaiTaoCaiTrang.laBoDangMac(player, selectedItem)) {
+                        player.calculateAttrib();
+                        player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
+                        player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
+                        player.sendToNearPlayer(MessageCreator.createCharWearingMessage(player, player));
                     }
-            
-                    // Lấy item được chọn để cải tạo
-                    Item selectedItem = upgradableItems.get(idActor);
-                    if (selectedItem == null) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không tồn tại", ""));
-                        return;
-                    }
-                    
-                    // Xác định yêu cầu điểm dựa vào ID item
-                    int requiredPoints = 300;
-                    for (int highTierID : highTierItems) {
-                        if (selectedItem.tempateID == highTierID) {
-                            requiredPoints = 500;
-                            break;
-                        }
-                    }
-            
-                    // Kiểm tra điều kiện
-                    if(player.diemNapVip < requiredPoints) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ điểm nạp để cải tạo", ""));
-                        return;
-                    }
-                    if(player.getLuong() < 500) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ lượng để cải tạo", ""));
-                        return;
-                    }
-            
-                    // Trừ điểm nạp và lượng
-                    player.diemNapVip -= requiredPoints;
-                    Database.instance.addCharXaiNapLuong(player, 0); // LƯU DN SAU KHI TIÊU
-                    player.subLuong(500);
-                
-                    // Logic cải tạo item với tỉ lệ thành công/thất bại
-                    boolean success = r.nextInt(100) < 70; // 70% tỉ lệ thành công
-                    
-                    if (success) {
-                        int randomValue = r.nextInt(100); // Random từ 0-99
-                        int caiTaoValue;
-                        
-                        if (randomValue < 40) { // 40% tỉ lệ ra 1-3%
-                            caiTaoValue = r.nextInt(3) + 1;
-                        } else if (randomValue < 70) { // 30% tỉ lệ ra 4-6%
-                            caiTaoValue = r.nextInt(3) + 4;
-                        } else if (randomValue < 90) { // 20% tỉ lệ ra 7-8%
-                            caiTaoValue = r.nextInt(2) + 7;
-                        } else { // 10% tỉ lệ ra 9-10%
-                            caiTaoValue = r.nextInt(2) + 9;
-                        }
-                        
-                        selectedItem.CaiTao = caiTaoValue;
-                        // Thông báo thành công
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Cải tạo thành công! Nhận được " + caiTaoValue + "%", ""));
-                    } else { // 30% tỉ lệ thất bại
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Cải tạo thất bại!", ""));
-                    }
-                    
-                    // Cập nhật giao diện
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                     showCaiTaoMaterialList(player);
 
+                    Database.instance.saveOrtherLog("", player.charname,
+                            CaiTaoCaiTrang.tenNgan(selectedItem.getTemplate().name) + " (id " + selectedItem.tempateID
+                            + ") | tru " + diemCan + " " + tenDiem + " | tinh hoa " + caiTaoCu + "% -> " + ketQua,
+                            "caitaocaitrang");
                 } catch (Exception e) {
                     e.printStackTrace();
                     player.sendMessage(MessageCreator.createServerAlertMessage("Có lỗi xảy ra", ""));
@@ -9468,45 +9271,6 @@ public class Map implements Runnable {
                         success ? "thanh_cong" : "that_bai");
                     Database.instance.saveOrtherLog("", player.charname, logInfo, "tinhluyentb");
         
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            else if (idpopup == 126) {
-                // Xac nhan Tinh Hoa Trang Phuc (xem type == 8 o tren). idActor la
-                // chi so trong danh sach loc, doc thang tu goi tin nen phai chan
-                // bien - giong dung cach lam voi idpopup 124.
-                try {
-                    Vector<Item> filteredItems = locTrangPhucTinhHoa(player);
-                    if (idActor < 0 || idActor >= filteredItems.size()) {
-                        data.NghiVanGianLan.ghiVatPham(player, "hactinhhoatrangphuc",
-                                "gui chi so trang phuc tinh hoa ngoai bien: " + idActor
-                              + " (danh sach co " + filteredItems.size() + " mon)");
-                        return;
-                    }
-                    Item selectedItem = filteredItems.elementAt(idActor);
-                    int soLuongCan = soLuongTinhHoaCanThiet(selectedItem.tempateID);
-                    if (player.listGemitem[268] < soLuongCan && player.listGemitemLock[268] < soLuongCan) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage(
-                                "Không đủ " + soLuongCan + " bình hoá hình thú cưỡi", ""));
-                        return;
-                    }
-
-                    if (player.listGemitemLock[268] >= soLuongCan) {
-                        player.delGem(268, soLuongCan, true);
-                    } else {
-                        player.delGem(268, soLuongCan, false);
-                    }
-                    selectedItem.CaiTao = 10;
-
-                    player.sendMessage(MessageCreator.createServerAlertMessage(
-                            "Tinh hoa thành công! Nhận được " + selectedItem.getName(), ""));
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                    showTrangPhucTinhHoaList(player);
-
-                    Database.instance.saveOrtherLog("", player.charname,
-                            "tinh hoa trang phuc -> " + selectedItem.getName(), "tinhhoatrangphuc");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

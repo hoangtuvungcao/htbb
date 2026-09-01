@@ -52,6 +52,8 @@ public final class LocLogVatPham {
             "XOATC",                    // xoa thoi trang
             "tichthu", "tichthuchoi", "logchoi", "thugay", // admin / server tich thu
             "downlv",                   // bi tut cap
+            "caitaocaitrang",           // cai tao cai trang: tru diem xai/nap, doi % Tinh Hoa (real/CaiTaoCaiTrang)
+            "hoahinhpet",               // hoa hinh pet Lan: tru binh 268, cap Lan, va luc het han (data/Pet)
             // --- 2. Loi va nghi van gian lan (khop web/admin/chandoan.php + NghiVanGianLan) ---
             "loiinvent",                // luu hanh trang that bai - server tu khoa nhan vat
             "loisave",                  // luu nhan vat tu dong that bai

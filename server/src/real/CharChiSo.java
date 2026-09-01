@@ -120,19 +120,11 @@ class CharChiSo {
                 self.maxmp = (int) (self.maxmp * noiluc / 10L);
             }
         }
-        // cải tạo cải trang
-        // buff hp
+        // Cai Tao Cai Trang: dong "Tinh Hoa" cong % HP toi da - va CHI HP (yeu cau
+        // 02/09/2026; truoc do con cong ca MP va tan cong, da bo). Xem real/CaiTaoCaiTrang.
         if (self.wModel != null && (self.wModel.isCaiTaoMiNuong() || self.wModel.isCaiTaoSonTinh())) {
-            // Lấy phần trăm cải tạo từ wModel
-            int percentCaiTao = self.wModel.itemModel.CaiTao; // Giả sử có method này
-            
-            // Tính toán bonus dựa trên phần trăm cải tạo
-            double hpBonus = self.maxhp * (percentCaiTao / 100.0);
-            double mpBonus = self.maxmp * (percentCaiTao / 100.0);
-            
-            self.maxhp += hpBonus;
-            self.maxmp += mpBonus;
-           
+            final int percentCaiTao = self.wModel.itemModel.CaiTao;
+            self.maxhp += (int) (self.maxhp * (percentCaiTao / 100.0));
         }
         if (self.isBatGioi()) {
             int level = self.getLevelCaiTrang();
@@ -1331,14 +1323,6 @@ class CharChiSo {
                     self.attackPlayer = (int) (self.attackPlayer * noiluc / 10L + (self.attackPlayer / 20));
                 }
             }
-        }
-        // cải tạo cải trang
-        if (self.wModel != null && (self.wModel.isCaiTaoMiNuong() || self.wModel.isCaiTaoSonTinh())) {
-            int percentCaiTao = self.wModel.itemModel.CaiTao;
-            double dameBonus = self.attack * (percentCaiTao / 100.0);
-            self.attack += dameBonus;
-            self.attackPlayer += dameBonus;
-            System.out.println("Cải tạo cải trang: " + percentCaiTao + "%" + "dameBonus: " + dameBonus);
         }
         // ---- THAN KHI: "Tang diem sat thuong" — cong SAU CUNG ----
         // Dat o cuoi ham nen khong bi bat ky he so nhan nao phia tren khuech dai,

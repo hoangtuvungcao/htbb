@@ -5,14 +5,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Hoa hinh Pet (port tu ban KPAH khac tai Downloads, xem README.md).
+ * Hoa hinh Pet -> pet Lan (luat viet lai ngay 02/09/2026 theo mo ta cua nguoi yeu cau):
+ *   pet nuoi VINH VIEN cap n + n x 10 binh hoa hinh (item 268) = pet Lan cap n, han 10 ngay,
+ *   khong ton luong; het han tro ve con cu NGAY khi dang choi; khang xuyen giap theo bang
+ *   5 cap co THOI GIAN DUY TRI; ten hien "Lan cap n - ..."; anh la DUNG map/d_effect/69.png.
  *
- * Pet.java song trong package data va dung Actor/Map/Char that - khong the
- * doc lap hoan toan nhu KiemBangCapDo/KiemLichSuKien. Bu lai bang cach: phan
- * co the goi that (endHoaHinhPet, initKhangXuyenGiapWhenHoaHinh,
- * applyKhangXuyenGiap, getDBInfo/initDbInfo roundtrip) thi goi THAT, khong
- * doan; phan noi day UI (RealController case 13, menu NPC -8, moc CharChiSo,
- * don CSDL luc nap) thi quet van ban nguon nhu KiemVongQuayThanTai.
+ * Pet.java song trong package data va dung Map/Char that, nen: phan goi that duoc (bang
+ * khang, applyKhangXuyenGiap co moc thoi gian, endHoaHinhPet, donHoaHinhHetHan, getName,
+ * getDBInfo/initDbInfo) thi goi THAT; phan noi day UI (RealController case 13, menu NPC -8,
+ * Char.checkExpirePet, Database.getCharPet, goi 26) thi quet van ban nguon.
+ *
+ * Phan ANH la cho da hong hai lan (31/08 va 01/09/2026) nen khoa ky nhat: id 69 phai nam trong
+ * id_eff_pet_tool (id 49 cu chua tung nam trong do -> client khong co bang khung -> pet khong
+ * ve: J2ME Pet.paint "if (deff == null) return"), va 69.pet phai dung cau truc bang pet.
  */
 public final class KiemHoaHinhPet {
 
@@ -20,78 +25,126 @@ public final class KiemHoaHinhPet {
     }
 
     public static void chay() {
-        Kiem.nhom("Hoa hinh Pet - field, luu CSDL, khang xuyen giap");
+        Kiem.nhom("Hoa hinh Pet -> pet Lan: luat, bang khang xuyen giap, het han");
 
-        // ===== 1) Gia tri mac dinh tren mot Pet moi tinh =====
+        kiemMacDinh();
+        kiemBangKhang();
+        kiemApDungTheoThoiGian();
+        kiemHetHan();
+        kiemLuuCSDL();
+        kiemTen();
+        quetVanBanNguon();
+        kiemAnhVaBangKhung();
+    }
+
+    private static void kiemMacDinh() {
         final Pet p0 = new Pet(0);
         Kiem.bang("Pet moi: idHoaHinhPet = -1", Short.valueOf((short) -1), Short.valueOf(p0.idHoaHinhPet));
         Kiem.bang("Pet moi: capHoaHinh = 0", Byte.valueOf((byte) 0), Byte.valueOf(p0.capHoaHinh));
         Kiem.bang("Pet moi: khangXuyenGiapCap = 0", Byte.valueOf((byte) 0), Byte.valueOf(p0.khangXuyenGiapCap));
-        Kiem.dung("Pet moi: endHoaHinhPet() = false (chua hoa hinh)", !p0.endHoaHinhPet());
-        Kiem.bang("Pet moi: applyKhangXuyenGiap khong doi sat thuong (chua hoa hinh)",
+        Kiem.sai("Pet moi: endHoaHinhPet() = false", p0.endHoaHinhPet());
+        Kiem.sai("Pet moi: dangHoaHinh() = false", p0.dangHoaHinh());
+        Kiem.sai("Pet moi: donHoaHinhHetHan() = false (khong co gi de don)", p0.donHoaHinhHetHan());
+        Kiem.bang("Pet moi: capPet() = 0 (chua co itemPet)", Integer.valueOf(0), Integer.valueOf(p0.capPet()));
+        Kiem.bang("Pet moi: applyKhangXuyenGiap khong doi sat thuong",
                 Integer.valueOf(1000), Integer.valueOf(p0.applyKhangXuyenGiap(1000)));
+        Kiem.bang("han hoa hinh = 10 ngay", Long.valueOf(10L * 24L * 3600L * 1000L), Long.valueOf(Pet.HAN_HOA_HINH_MS));
+    }
 
-        // ===== 2) endHoaHinhPet() =====
-        final Pet pHan = new Pet(0);
-        pHan.idHoaHinhPet = 67;
-        pHan.timeEndHoaHinhPet = System.currentTimeMillis() + 60000L;
-        Kiem.dung("idHoaHinhPet != -1, con han -> endHoaHinhPet() = false", !pHan.endHoaHinhPet());
-        pHan.timeEndHoaHinhPet = System.currentTimeMillis() - 60000L;
-        Kiem.dung("idHoaHinhPet != -1, het han -> endHoaHinhPet() = true", pHan.endHoaHinhPet());
-        final Pet pChuaHH = new Pet(0);
-        pChuaHH.timeEndHoaHinhPet = System.currentTimeMillis() - 60000L;
-        Kiem.dung("idHoaHinhPet = -1 (chua hoa hinh) -> endHoaHinhPet() = false du moc da qua",
-                !pChuaHH.endHoaHinhPet());
+    private static void kiemBangKhang() {
+        final int[][] mongDoi = {
+            {5, 10, 3, 100},
+            {10, 10, 3, 100},
+            {15, 20, 5, 80},
+            {20, 20, 5, 80},
+            {25, 30, 8, 60},
+        };
+        for (int cap = 1; cap <= 5; cap++) {
+            final int[] ts = Pet.thongSoKhangXuyenGiap(cap);
+            Kiem.bang("cap " + cap + ": giam " + mongDoi[cap - 1][0] + "%", Integer.valueOf(mongDoi[cap - 1][0]), Integer.valueOf(ts[0]));
+            Kiem.bang("cap " + cap + ": ti le " + mongDoi[cap - 1][1] + "%", Integer.valueOf(mongDoi[cap - 1][1]), Integer.valueOf(ts[1]));
+            Kiem.bang("cap " + cap + ": duy tri " + mongDoi[cap - 1][2] + "s", Integer.valueOf(mongDoi[cap - 1][2]), Integer.valueOf(ts[2]));
+            Kiem.bang("cap " + cap + ": hoi chieu " + mongDoi[cap - 1][3] + "s", Integer.valueOf(mongDoi[cap - 1][3]), Integer.valueOf(ts[3]));
+        }
+        Kiem.bang("cap 0: khong co gi", "[0, 0, 0, 0]", java.util.Arrays.toString(Pet.thongSoKhangXuyenGiap(0)));
+        Kiem.bang("cap 6 (vuot): tinh nhu cap 5", java.util.Arrays.toString(Pet.thongSoKhangXuyenGiap(5)),
+                java.util.Arrays.toString(Pet.thongSoKhangXuyenGiap(6)));
 
-        // ===== 3) initKhangXuyenGiapWhenHoaHinh() dong bo dung capHoaHinh =====
+        for (int cap = 1; cap <= 5; cap++) {
+            Kiem.bang("pet cap " + cap + " can " + (cap * 10) + " binh", Integer.valueOf(cap * 10), Integer.valueOf(Pet.soBinhHoaHinhCan(cap)));
+        }
+        Kiem.bang("pet chua co cap -> -1 (khong hoa hinh duoc)", Integer.valueOf(-1), Integer.valueOf(Pet.soBinhHoaHinhCan(0)));
+    }
+
+    /**
+     * Cua so duy tri va hoi chieu, do bang moc thoi gian truyen vao (khong phu thuoc dong ho).
+     * Chi ti le kich hoat la ngau nhien -> lap toi khi kich hoat, roi kiem cac moc sau do.
+     */
+    private static void kiemApDungTheoThoiGian() {
+        final int base = 1000000;
+        for (int cap = 1; cap <= 5; cap++) {
+            final int[] ts = Pet.thongSoKhangXuyenGiap(cap);
+            final int giam = base - base * ts[0] / 100;
+            final Pet p = new Pet(0);
+            p.idHoaHinhPet = 67;
+            p.capHoaHinh = (byte) cap;
+            p.initKhangXuyenGiapWhenHoaHinh();
+            p.timeEndHoaHinhPet = System.currentTimeMillis() + 3600000L;
+            final long t0 = 1000000000L;
+            boolean kichHoat = false;
+            for (int lan = 0; lan < 5000 && !kichHoat; lan++) {
+                kichHoat = p.applyKhangXuyenGiap(base, t0) == giam;
+            }
+            Kiem.dung("cap " + cap + ": kich hoat duoc trong 5000 lan thu (ti le " + ts[1] + "%)", kichHoat);
+            if (!kichHoat) {
+                continue;
+            }
+            Kiem.bang("cap " + cap + ": ngay sau kich hoat, don ke tiep VAN giam (trong cua so duy tri)",
+                    Integer.valueOf(giam), Integer.valueOf(p.applyKhangXuyenGiap(base, t0 + 1)));
+            Kiem.bang("cap " + cap + ": 1ms truoc khi het duy tri van giam",
+                    Integer.valueOf(giam), Integer.valueOf(p.applyKhangXuyenGiap(base, t0 + ts[2] * 1000L - 1)));
+            Kiem.bang("cap " + cap + ": het duy tri -> dang hoi chieu, khong giam",
+                    Integer.valueOf(base), Integer.valueOf(p.applyKhangXuyenGiap(base, t0 + ts[2] * 1000L)));
+            Kiem.bang("cap " + cap + ": 1ms truoc khi het hoi chieu van khong giam",
+                    Integer.valueOf(base), Integer.valueOf(p.applyKhangXuyenGiap(base, t0 + ts[3] * 1000L - 1)));
+            Kiem.dung("cap " + cap + ": duy tri ngan hon hoi chieu (khong the vua duy tri vua hoi chieu xong)", ts[2] < ts[3]);
+        }
+        // initKhangXuyenGiapWhenHoaHinh dong bo dung cap
         final Pet pDb = new Pet(0);
         pDb.capHoaHinh = 4;
         pDb.initKhangXuyenGiapWhenHoaHinh();
         Kiem.bang("initKhangXuyenGiapWhenHoaHinh: khangXuyenGiapCap = capHoaHinh",
                 Byte.valueOf((byte) 4), Byte.valueOf(pDb.khangXuyenGiapCap));
+    }
 
-        // ===== 4) applyKhangXuyenGiap: het han thi khong giam du con cap =====
-        final Pet pHetHanConCap = new Pet(0);
-        pHetHanConCap.idHoaHinhPet = 67;
-        pHetHanConCap.capHoaHinh = 5;
-        pHetHanConCap.khangXuyenGiapCap = 5;
-        pHetHanConCap.timeEndHoaHinhPet = System.currentTimeMillis() - 1000L;
-        Kiem.bang("het han (con capHoaHinh=5) -> applyKhangXuyenGiap khong doi sat thuong",
-                Integer.valueOf(500), Integer.valueOf(pHetHanConCap.applyKhangXuyenGiap(500)));
+    private static void kiemHetHan() {
+        final Pet pHan = new Pet(0);
+        pHan.idHoaHinhPet = 67;
+        pHan.capHoaHinh = 5;
+        pHan.initKhangXuyenGiapWhenHoaHinh();
+        pHan.timeEndHoaHinhPet = System.currentTimeMillis() + 60000L;
+        Kiem.sai("con han -> endHoaHinhPet() = false", pHan.endHoaHinhPet());
+        Kiem.dung("con han -> dangHoaHinh() = true", pHan.dangHoaHinh());
+        Kiem.sai("con han -> donHoaHinhHetHan() = false, khong don", pHan.donHoaHinhHetHan());
+        Kiem.bang("con han -> capHoaHinh giu nguyen", Byte.valueOf((byte) 5), Byte.valueOf(pHan.capHoaHinh));
 
-        // ===== 5) Bang gia tri giam theo cap (dung mau lon de vuot qua ngau nhien) =====
-        // Voi moi cap, gia tri sat thuong SAU KHI GIAM phai dung CHINH XAC cong
-        // thuc - neu proc xay ra ma ra so khac, sai cong thuc se lam test hong
-        // ngay, khong can doi ty le ngau nhien khop tuyet doi.
-        krThuGiam(1, 5);
-        krThuGiam(2, 10);
-        krThuGiam(3, 15);
-        krThuGiam(4, 20);
-        krThuGiam(5, 25);
+        pHan.timeEndHoaHinhPet = System.currentTimeMillis() - 60000L;
+        Kiem.dung("het han -> endHoaHinhPet() = true", pHan.endHoaHinhPet());
+        Kiem.sai("het han -> dangHoaHinh() = false", pHan.dangHoaHinh());
+        Kiem.bang("het han (con cap 5) -> applyKhangXuyenGiap khong doi sat thuong",
+                Integer.valueOf(500), Integer.valueOf(pHan.applyKhangXuyenGiap(500)));
+        Kiem.dung("het han -> donHoaHinhHetHan() = true", pHan.donHoaHinhHetHan());
+        Kiem.bang("sau khi don: idHoaHinhPet = -1", Short.valueOf((short) -1), Short.valueOf(pHan.idHoaHinhPet));
+        Kiem.bang("sau khi don: capHoaHinh = 0", Byte.valueOf((byte) 0), Byte.valueOf(pHan.capHoaHinh));
+        Kiem.bang("sau khi don: khangXuyenGiapCap = 0", Byte.valueOf((byte) 0), Byte.valueOf(pHan.khangXuyenGiapCap));
+        Kiem.bang("sau khi don: timeEndHoaHinhPet = 0", Long.valueOf(0L), Long.valueOf(pHan.timeEndHoaHinhPet));
 
-        // ===== 6) Cooldown: ngay sau khi proc, lan goi ke tiep tren CUNG mot Pet
-        // phai bi chan (tra ve nguyen) cho toi khi het cooldown =====
-        boolean thayDoiCoDuocChanCooldown = false;
-        for (int lan = 0; lan < 500 && !thayDoiCoDuocChanCooldown; lan++) {
-            final Pet pCd = new Pet(0);
-            pCd.idHoaHinhPet = 67;
-            pCd.capHoaHinh = 5;
-            pCd.khangXuyenGiapCap = 5;
-            pCd.timeEndHoaHinhPet = System.currentTimeMillis() + 3600000L;
-            final int lan1 = pCd.applyKhangXuyenGiap(1000);
-            if (lan1 != 1000) {
-                // Vua proc (giam con 750) -> cooldown 60s vua duoc dat, goi ngay
-                // lan nua PHAI bi chan.
-                final int lan2 = pCd.applyKhangXuyenGiap(1000);
-                Kiem.bang("cap 5: goi ngay sau khi proc bi chan boi cooldown (khong giam tiep)",
-                        Integer.valueOf(1000), Integer.valueOf(lan2));
-                thayDoiCoDuocChanCooldown = true;
-            }
-        }
-        Kiem.dung("kiem duoc it nhat mot lan proc trong 500 lan thu (cap 5, ty le 30%) de kiem tra cooldown",
-                thayDoiCoDuocChanCooldown);
+        final Pet pChuaHH = new Pet(0);
+        pChuaHH.timeEndHoaHinhPet = System.currentTimeMillis() - 60000L;
+        Kiem.sai("chua hoa hinh (idHoaHinhPet = -1) -> endHoaHinhPet() = false du moc da qua", pChuaHH.endHoaHinhPet());
+    }
 
-        // ===== 7) getDBInfo()/initDbInfo() roundtrip =====
+    private static void kiemLuuCSDL() {
         final Pet a = new Pet(0);
         a.idTemplate = 0;
         a.timeBuy = 111L;
@@ -106,167 +159,191 @@ public final class KiemHoaHinhPet {
         a.capHoaHinh = 3;
         final String infoMoi = a.getDBInfo();
         final Pet b = new Pet("ten test", (byte) 0, 1, infoMoi, null, "2020-01-01 00:00:00.0");
-        Kiem.bang("roundtrip getDBInfo/initDbInfo: idHoaHinhPet", Short.valueOf((short) 67), Short.valueOf(b.idHoaHinhPet));
-        Kiem.bang("roundtrip getDBInfo/initDbInfo: timeEndHoaHinhPet", Long.valueOf(9999999999L), Long.valueOf(b.timeEndHoaHinhPet));
-        Kiem.bang("roundtrip getDBInfo/initDbInfo: khangXuyenGiapCap", Byte.valueOf((byte) 3), Byte.valueOf(b.khangXuyenGiapCap));
-        Kiem.bang("roundtrip getDBInfo/initDbInfo: capHoaHinh", Byte.valueOf((byte) 3), Byte.valueOf(b.capHoaHinh));
+        Kiem.bang("roundtrip: idHoaHinhPet", Short.valueOf((short) 67), Short.valueOf(b.idHoaHinhPet));
+        Kiem.bang("roundtrip: timeEndHoaHinhPet", Long.valueOf(9999999999L), Long.valueOf(b.timeEndHoaHinhPet));
+        Kiem.bang("roundtrip: khangXuyenGiapCap", Byte.valueOf((byte) 3), Byte.valueOf(b.khangXuyenGiapCap));
+        Kiem.bang("roundtrip: capHoaHinh", Byte.valueOf((byte) 3), Byte.valueOf(b.capHoaHinh));
         Kiem.bang("roundtrip: truong cu (powerEat) khong bi anh huong", Short.valueOf((short) 3), Short.valueOf(b.powerEat));
 
-        // ===== 8) Tuong thich nguoc: chuoi CU (13 truong, chua co hoa hinh) van
-        // doc duoc, khong nem loi, va mac dinh dung -1/0/0/0 =====
-        final String infoCu = "0,111,0,1,222,3,0,1,2,3,4,0,2"; // dung 13 truong nhu truoc khi them hoa hinh
+        final String infoCu = "0,111,0,1,222,3,0,1,2,3,4,0,2"; // 13 truong nhu truoc khi co hoa hinh
         final Pet c = new Pet("ten cu", (byte) 0, 1, infoCu, null, "2020-01-01 00:00:00.0");
-        Kiem.bang("chuoi cu (13 truong): idHoaHinhPet mac dinh -1", Short.valueOf((short) -1), Short.valueOf(c.idHoaHinhPet));
-        Kiem.bang("chuoi cu (13 truong): timeEndHoaHinhPet mac dinh 0", Long.valueOf(0L), Long.valueOf(c.timeEndHoaHinhPet));
-        Kiem.bang("chuoi cu (13 truong): khangXuyenGiapCap mac dinh 0", Byte.valueOf((byte) 0), Byte.valueOf(c.khangXuyenGiapCap));
-        Kiem.bang("chuoi cu (13 truong): capHoaHinh mac dinh 0", Byte.valueOf((byte) 0), Byte.valueOf(c.capHoaHinh));
-        Kiem.bang("chuoi cu (13 truong): truong cu van doc dung (powerEat)", Short.valueOf((short) 3), Short.valueOf(c.powerEat));
-
-        // ===== 9) getIdEffPet(): hoa hinh phai LAN AT hieu ung theo cap thuong =====
-        final Pet pRong = new Pet(0);
-        pRong.idTemplate = 0;
-        pRong.itemPet = null;
-        Kiem.dung("getIdEffPet() = -1 khi chua co itemPet (khong lien quan hoa hinh)", pRong.getIdEffPet() == -1);
-
-        quetVanBanNguon();
+        Kiem.bang("chuoi cu: idHoaHinhPet mac dinh -1", Short.valueOf((short) -1), Short.valueOf(c.idHoaHinhPet));
+        Kiem.bang("chuoi cu: capHoaHinh mac dinh 0", Byte.valueOf((byte) 0), Byte.valueOf(c.capHoaHinh));
+        Kiem.bang("chuoi cu: powerEat van dung", Short.valueOf((short) 3), Short.valueOf(c.powerEat));
     }
 
-    private static void krThuGiam(final int cap, final int reducePercentMongDoi) {
-        final int baseDame = 1000000; // so lon de con so sau giam la duy nhat, de nhan biet dung/sai
-        final int mongDoi = baseDame - baseDame * reducePercentMongDoi / 100;
-        boolean thayDoi = false;
-        for (int lan = 0; lan < 2000 && !thayDoi; lan++) {
-            final Pet p = new Pet(0);
-            p.idHoaHinhPet = 67;
-            p.capHoaHinh = (byte) cap;
-            p.khangXuyenGiapCap = (byte) cap;
-            p.timeEndHoaHinhPet = System.currentTimeMillis() + 3600000L;
-            final int ketQua = p.applyKhangXuyenGiap(baseDame);
-            if (ketQua != baseDame) {
-                Kiem.bang("cap " + cap + ": giam dung " + reducePercentMongDoi + "% khi proc",
-                        Integer.valueOf(mongDoi), Integer.valueOf(ketQua));
-                thayDoi = true;
-            }
-        }
-        Kiem.dung("cap " + cap + ": thay duoc it nhat 1 lan proc trong 2000 lan thu (de kiem cong thuc giam)", thayDoi);
+    private static void kiemTen() {
+        final Pet p = new Pet(0);
+        p.idHoaHinhPet = 67;
+        p.capHoaHinh = 3;
+        p.timeEndHoaHinhPet = System.currentTimeMillis() + 60000L;
+        Kiem.dung("dang hoa hinh: ten bat dau bang \"Lân cấp 3 - \"", p.getName().startsWith("Lân cấp 3 - "));
+        p.timeEndHoaHinhPet = System.currentTimeMillis() - 60000L;
+        Kiem.sai("het han: ten khong con tien to Lan", p.getName().startsWith("Lân cấp"));
+        final Pet pThuong = new Pet(0);
+        Kiem.sai("chua hoa hinh: ten khong co tien to Lan", pThuong.getName().startsWith("Lân cấp"));
+        Kiem.dung("getIdEffPet() = -1 khi chua co itemPet", pThuong.getIdEffPet() == -1);
     }
 
     private static void quetVanBanNguon() {
-        Kiem.nhom("Hoa hinh Pet - noi day UI (menu NPC, RealController, CharChiSo, Database)");
+        Kiem.nhom("Hoa hinh Pet - noi day UI (RealController, menu NPC, Char, Database, goi 26)");
 
-        // Hoa hinh Pet dung MOT frame chung cho moi loai. Lich su bo cuc:
-        // 49-53 rieng theo loai (a081ee1) -> gop ve 69 chung (1d263ff, anh linh
-        // thu boc lua) -> PET MAT TICH (01/09/2026, nguoi choi bao lai) vi
-        // 69.png la anh VUONG 256x256 (luoi nhieu hang, dung cho he thong danh
-        // hieu tren dau nhan vat) trong khi truong nay can anh DAI HEP (cao gap
-        // doi rong tro len, giong 35/41/42/44 - cac id dung cho pet tien hoa
-        // thuong) vi getTotalFrame() (so khung cat) lay tu rieng
-        // Map.petTemplate, KHONG phu thuoc anh - anh sai bo cuc thi client cat
-        // sai khung va khong ve duoc pet. Quay lai id 49 (45x114, dung bo cuc).
-        // Test nay khoa BA dieu kien: code phai tra dung hang so
-        // ID_HIEU_UNG_HOA_HINH_PET, file anh phai TON TAI, VA anh phai DAI HEP
-        // (cao > rong) - thieu kiem tra hinh dang la dung y het loi 69 vua gap,
-        // vi 69.png cung ton tai va cung nang hon 1000 byte, chi SAI BO CUC.
-        final String petJava = doc("src/data/Pet.java");
-        Kiem.dung("doc duoc Pet.java", !petJava.isEmpty());
-        Kiem.dung("hang so ID_HIEU_UNG_HOA_HINH_PET = 49", petJava.contains("ID_HIEU_UNG_HOA_HINH_PET = 49"));
-        final int dauHamEff = petJava.indexOf("public int getIdEffPet()");
-        final int cuoiHamEff = petJava.indexOf("\n    }", dauHamEff);
-        Kiem.dung("tim thay than ham getIdEffPet()", dauHamEff >= 0 && cuoiHamEff > dauHamEff);
-        if (dauHamEff >= 0 && cuoiHamEff > dauHamEff) {
-            final String thanEff = petJava.substring(dauHamEff, cuoiHamEff);
-            Kiem.dung("getIdEffPet() co nhanh hoa hinh doc idHoaHinhPet", thanEff.contains("idHoaHinhPet"));
-            Kiem.dung("nhanh hoa hinh tra ve DUNG hang so chung (khong con re theo loai isPetRong/isPetCu/...)",
-                    thanEff.contains("return ID_HIEU_UNG_HOA_HINH_PET;")
-                    && !thanEff.contains("return 49;") && !thanEff.contains("return 50;")
-                    && !thanEff.contains("return 51;") && !thanEff.contains("return 52;")
-                    && !thanEff.contains("return 53;"));
-        }
-        final java.io.File anhHoaHinh = new java.io.File("map/d_effect/49.png");
-        Kiem.dung("map/d_effect/49.png ton tai tren dia va khong rong",
-                anhHoaHinh.isFile() && anhHoaHinh.length() > 1000L);
-        try {
-            final java.awt.image.BufferedImage anh = javax.imageio.ImageIO.read(anhHoaHinh);
-            Kiem.dung("map/d_effect/49.png doc duoc nhu anh PNG hop le", anh != null);
-            if (anh != null) {
-                Kiem.dung("map/d_effect/49.png la anh DAI HEP (cao > rong) - dung bo cuc pet hoa hinh, KHONG phai anh vuong nhu 69.png",
-                        anh.getHeight() > anh.getWidth());
-            }
-        } catch (final java.io.IOException e) {
-            Kiem.dung("doc duoc map/d_effect/49.png bang ImageIO (" + e + ")", false);
-        }
-        // BAO VE CHONG TAI DIEN LAN NUA: sau khi sua dung bo cuc (cao > rong),
-        // pet VAN mat tich - hoa ra con mot khac biet nua: moi anh dang dung tot
-        // o cho nay (41, 42, 44, va chinh 49 nguyen ban tu a081ee1) deu la PNG
-        // colormap (color type 3 trong IHDR - anh bang mau/index), trong khi
-        // ban ghep dau tien (dung BufferedImage.TYPE_INT_ARGB + ImageIO ghi mac
-        // dinh) ra PNG truecolor+alpha (color type 6) - client hoac khong doc
-        // duoc hoac ve sai voi kieu anh nay cho rieng duong ve pet nay. Sua
-        // bang cach dung IndexColorModel de ep ve dung PNG colormap. Kiem tra
-        // byte color type ngay trong IHDR (offset 25 - xem dinh dang PNG:
-        // 8 byte signature + 4 byte do dai chunk + 4 byte "IHDR" + 4 rong +
-        // 4 cao + 1 bit depth + 1 COLOR TYPE o day) de khoa dung dinh dang,
-        // vi ImageIO.read() tu giai ma duoc CA HAI kieu nen khong the chi dua
-        // vao "doc duoc" o kiem tra phia tren.
-        try {
-            final byte[] raw = Files.readAllBytes(Paths.get("map/d_effect/49.png"));
-            Kiem.dung("map/d_effect/49.png du dai de doc byte color type trong IHDR", raw.length > 26);
-            if (raw.length > 26) {
-                Kiem.bang("map/d_effect/49.png la PNG kieu colormap/index (color type 3), giong moi anh khac dang dung o day - KHONG phai truecolor+alpha (6) nhu ban ghep dau tien",
-                        Byte.valueOf((byte) 3), Byte.valueOf(raw[25]));
-            }
-        } catch (final IOException e) {
-            Kiem.dung("doc duoc byte tho cua map/d_effect/49.png (" + e + ")", false);
-        }
+        final String pet = doc("src/data/Pet.java");
+        Kiem.dung("doc duoc Pet.java", !pet.isEmpty());
+        Kiem.dung("hang so ID_HIEU_UNG_HOA_HINH_PET = 69 (dung anh 69.png)", pet.contains("ID_HIEU_UNG_HOA_HINH_PET = 69;"));
+        final String thanEff = doan(pet, "public int getIdEffPet()", "\n    }");
+        Kiem.dung("getIdEffPet(): dang hoa hinh -> tra hang so chung",
+                thanEff.contains("idHoaHinhPet != -1") && thanEff.contains("return ID_HIEU_UNG_HOA_HINH_PET;"));
+        final String thanInfo = doan(pet, "public String getInfoSendUser()", "public boolean canLearnSkill()");
+        Kiem.dung("getInfoSendUser() in du 4 so: giam %, ti le, duy tri, hoi chieu",
+                thanInfo.contains("thongSo[0]") && thanInfo.contains("thongSo[1]")
+                && thanInfo.contains("thongSo[2]") && thanInfo.contains("thongSo[3]"));
+        Kiem.dung("getInfoSendUser() goi ten Pet Lan cap n", thanInfo.contains("Pet Lân cấp"));
+
+        final String rc = doc("src/real/RealController.java");
+        Kiem.dung("doc duoc RealController.java", !rc.isEmpty());
+        final String case13 = doan(rc, "case 13:", "case 14:");
+        Kiem.dung("co case 13 (Hoa hinh Pet)", !case13.isEmpty());
+        Kiem.dung("case 13: chi pet vinh vien (getTimeExpire() != 32000)", case13.contains("getTimeExpire() != 32000"));
+        Kiem.dung("case 13: doi pet DA TIEN HOA (level < 1 thi chan) - hinh Lan chi ve cho TYPE_PET_TOOL",
+                case13.contains("itemPet.level < 1"));
+        Kiem.sai("case 13: KHONG con doi sieu tien hoa (level < 2)", case13.contains("itemPet.level < 2"));
+        Kiem.sai("case 13: KHONG con chan 'toi da cap 5' (hoa hinh lai luc nao cung duoc)", case13.contains("capHoaHinh >= 5"));
+        Kiem.dung("case 13: cap Lan = capPet() cua pet", case13.contains("player.petUsing.capPet()"));
+        Kiem.dung("case 13: so binh = soBinhHoaHinhCan(cap) (n x 10)", case13.contains("soBinhHoaHinhCan(capPetHoaHinh)"));
+        Kiem.dung("case 13: dung item 268", case13.contains("player.listGemitem[268]") && case13.contains("player.delGem(268,"));
+        Kiem.sai("case 13: KHONG ton luong", case13.contains("subLuong(") || case13.contains("getLuong()") || case13.contains("Cần 5000 lượng"));
+        Kiem.dung("case 13: han lay tu Pet.HAN_HOA_HINH_MS", case13.contains("HAN_HOA_HINH_MS"));
+        Kiem.sai("case 13: khong con so 864_000_000L viet tay", case13.contains("864_000_000L"));
+        Kiem.dung("case 13: gan idHoaHinhPet = 67 (co bao da hoa hinh)", case13.contains("idHoaHinhPet = 67"));
+        Kiem.dung("case 13: luu CSDL", case13.contains("Database.instance.savePet(player.petUsing);"));
+        Kiem.dung("case 13: gui lai hinh cho NGUOI XUNG QUANH",
+                case13.contains("sendToNearPlayer(MessageCreator.createCharWearingMessage(player, player))"));
+        Kiem.dung("case 13: thong bao co du 4 so cua bang khang",
+                case13.contains("tsKxg[0]") && case13.contains("tsKxg[1]") && case13.contains("tsKxg[2]") && case13.contains("tsKxg[3]"));
+        Kiem.dung("case 13: ghi log hoahinhpet kem cap va so binh",
+                case13.contains("\"hoahinhpet\"") && case13.contains("soBinhHoaHinh"));
 
         final String menuNpc = doc("src/real/cmd/RequestNPCInfoHandler.java");
-        Kiem.dung("doc duoc RequestNPCInfoHandler.java", !menuNpc.isEmpty());
         Kiem.dung("menu NPC -8 co muc \"Hoá Hình Pet\"", menuNpc.contains("\"Hoá Hình Pet\""));
+        Kiem.dung("menu NPC -8 hien 'Lan cap n' khi dang hoa hinh (dangHoaHinh)",
+                menuNpc.contains("dangHoaHinh()") && menuNpc.contains("Lân cấp"));
 
-        final String realController = doc("src/real/RealController.java");
-        Kiem.dung("doc duoc RealController.java", !realController.isEmpty());
-        Kiem.dung("co case 13 (Hoa hinh Pet)", realController.contains("case 13:"));
-        Kiem.dung("kiem tra itemPet.level >= 2 (da sieu tien hoa)", realController.contains("player.petUsing.itemPet.level < 2"));
-        Kiem.dung("kiem tra capHoaHinh toi da 5", realController.contains("player.petUsing.capHoaHinh >= 5"));
-        Kiem.dung("dung item 268 (lo thuoc hoa hinh co san, khong tao item moi)",
-                realController.contains("player.listGemitem[268]") && realController.contains("player.delGem(268,"));
-        Kiem.dung("tru 5000 luong", realController.contains("player.subLuong(5000L)"));
-        Kiem.dung("gan idHoaHinhPet = 67 (co dinh cho moi cap - chi la co bao 'da hoa hinh', getIdEffPet() luon tra ve frame chung)",
-                realController.contains("player.petUsing.idHoaHinhPet = 67"));
-        Kiem.dung("thoi han 10 ngay (864_000_000L ms)", realController.contains("864_000_000L"));
-        Kiem.dung("co luu CSDL sau khi hoa hinh", realController.contains("Database.instance.savePet(player.petUsing);"));
-
-        final String charChiSo = doc("src/real/CharChiSo.java");
-        Kiem.dung("doc duoc CharChiSo.java", !charChiSo.isEmpty());
-        Kiem.dung("applyThanKhiOnHit co goi applyKhangXuyenGiap cho phe bi danh",
-                charChiSo.contains("petBiDanh.applyKhangXuyenGiap(finalDame)"));
+        final String charJava = doc("src/real/Char.java");
+        final String thanExpire = doan(charJava, "public void checkExpirePet()", "public void checkExpireMDAmor()");
+        Kiem.dung("Char.checkExpirePet: don hoa hinh het han REAL-TIME (donHoaHinhHetHan)", thanExpire.contains("donHoaHinhHetHan()"));
+        Kiem.dung("Char.checkExpirePet: het han thi gui lai hinh cho minh va nguoi xung quanh",
+                thanExpire.contains("sendPetEff()") && thanExpire.contains("sendToNearPlayer(MessageCreator.createCharWearingMessage(this, this))"));
+        Kiem.dung("Char.checkExpirePet: co bao cho nguoi choi", thanExpire.contains("đã hết hạn"));
+        Kiem.dung("Char.checkExpirePet: pet trong tui cung duoc don va luu", thanExpire.contains("petTui.donHoaHinhHetHan()"));
 
         final String database = doc("src/data/Database.java");
-        Kiem.dung("doc duoc Database.java", !database.isEmpty());
-        Kiem.dung("getCharPet don hoa hinh het han luc nap nhan vat", database.contains("pet.endHoaHinhPet()"));
+        Kiem.dung("Database.getCharPet don bang donHoaHinhHetHan() (mot nguon)", database.contains("pet.donHoaHinhHetHan();"));
+        Kiem.sai("Database khong con tu tay dat pet.capHoaHinh = 0", database.contains("pet.capHoaHinh = 0;"));
 
-        // getInfoSendUser() truoc day chi ghi "kháng xuyên giáp cấp N" ma khong
-        // noi ro N la giam bao nhieu % / ti le bao nhieu / hoi chieu bao lau -
-        // nguoi choi hoi lai (01/09/2026) vi khong biet cap 5 co gi. Sua bang
-        // cach dung CHUNG thongSoKhangXuyenGiap() voi applyKhangXuyenGiap() (da
-        // co test so 5-9 kiem tra dung gia tri qua lay mau thong ke), chi kiem
-        // THEM o day la getInfoSendUser() co IN cac con so do ra, khong test lai
-        // gia tri (khong the goi that getInfoSendUser() - can mot Item that lam
-        // itemPet, phu thuoc Map.itemTemplates khong nap duoc ngoai server that).
-        Kiem.dung("co ham dung chung thongSoKhangXuyenGiap(cap) giua thuc thi va hien thi",
-                petJava.contains("private static int[] thongSoKhangXuyenGiap("));
-        final int dauHamInfo = petJava.indexOf("public String getInfoSendUser()");
-        Kiem.dung("tim thay than ham getInfoSendUser()", dauHamInfo >= 0);
-        if (dauHamInfo >= 0) {
-            final String thanInfo = petJava.substring(dauHamInfo);
-            Kiem.dung("getInfoSendUser() goi thongSoKhangXuyenGiap() de lay so lieu hien thi",
-                    thanInfo.contains("thongSoKhangXuyenGiap(this.khangXuyenGiapCap)"));
-            Kiem.dung("dong hien thi co ghi ro giam bao nhieu % sat thuong",
-                    thanInfo.contains("giảm ") && thanInfo.contains("thongSo[0] + \"% sát thương"));
-            Kiem.dung("dong hien thi co ghi ro ti le kich hoat",
-                    thanInfo.contains("thongSo[1]") && thanInfo.contains("% cơ hội kích hoạt"));
-            Kiem.dung("dong hien thi co ghi ro hoi chieu",
-                    thanInfo.contains("hồi chiêu ") && thanInfo.contains("thongSo[2] + \"s)\""));
+        final String charChiSo = doc("src/real/CharChiSo.java");
+        Kiem.dung("applyThanKhiOnHit goi applyKhangXuyenGiap cho phe bi danh",
+                charChiSo.contains("petBiDanh.applyKhangXuyenGiap(finalDame)"));
+
+        Kiem.sai("'hoahinhpet' duoc GIU trong LocLogVatPham", data.LocLogVatPham.boQua("hoahinhpet"));
+    }
+
+    /** Anh 69.png giu nguyen; bang khung rieng 69.pet dung cau truc pet; 69 co trong id_eff_pet_tool. */
+    private static void kiemAnhVaBangKhung() {
+        Kiem.nhom("Hoa hinh Pet - anh 69.png va bang khung rieng 69.pet");
+
+        try {
+            final java.awt.image.BufferedImage anh = javax.imageio.ImageIO.read(new java.io.File("map/d_effect/69.png"));
+            Kiem.dung("map/d_effect/69.png doc duoc", anh != null);
+            if (anh != null) {
+                Kiem.dung("69.png van la luoi 256x256 (khong bi cat/resize)", anh.getWidth() == 256 && anh.getHeight() == 256);
+            }
+        } catch (final IOException e) {
+            Kiem.dung("doc duoc map/d_effect/69.png (" + e + ")", false);
+        }
+
+        final byte[] b69 = docByte("map/d_effect/69");
+        final byte[] b49 = docByte("map/d_effect/49");
+        final byte[] bPet = docByte("map/d_effect/69.pet");
+        Kiem.dung("bang khung 69 (danh hieu) van con va van 13 o", b69.length > 0 && (b69[0] & 0xFF) == 13);
+        Kiem.dung("bang khung pet mau 49 con", b49.length > 42 && (b49[0] & 0xFF) == 3);
+        Kiem.dung("co bang khung rieng map/d_effect/69.pet", bPet.length > 0);
+        if (b69.length == 0 || b49.length <= 42 || bPet.length == 0) {
+            return;
+        }
+        Kiem.bang("69.pet: 3 o nho", Integer.valueOf(3), Integer.valueOf(bPet[0] & 0xFF));
+        final int[] oDung = {10, 11, 12};
+        for (int i = 0; i < 3; i++) {
+            final int goc = 1 + oDung[i] * 5;
+            final int moi = 1 + i * 5;
+            Kiem.bang("69.pet o " + i + " = o " + oDung[i] + " cua bang 69 (x,y,w,h)",
+                    (b69[goc + 1] & 0xFF) + "," + (b69[goc + 2] & 0xFF) + "," + (b69[goc + 3] & 0xFF) + "," + (b69[goc + 4] & 0xFF),
+                    (bPet[moi + 1] & 0xFF) + "," + (bPet[moi + 2] & 0xFF) + "," + (bPet[moi + 3] & 0xFF) + "," + (bPet[moi + 4] & 0xFF));
+            Kiem.dung("69.pet o " + i + " nam trong anh 256x256",
+                    (bPet[moi + 1] & 0xFF) + (bPet[moi + 3] & 0xFF) <= 256 && (bPet[moi + 2] & 0xFF) + (bPet[moi + 4] & 0xFF) <= 256);
+        }
+        Kiem.bang("69.pet: 3 khung", Integer.valueOf(3), Integer.valueOf(docShort(bPet, 16)));
+        for (int i = 0; i < 3; i++) {
+            final int k = 18 + i * 8;
+            final int w = bPet[1 + i * 5 + 3] & 0xFF;
+            final int h = bPet[1 + i * 5 + 4] & 0xFF;
+            Kiem.bang("69.pet khung " + i + ": 1 part", Integer.valueOf(1), Integer.valueOf(bPet[k] & 0xFF));
+            Kiem.bang("69.pet khung " + i + ": dx = -w/2 (can giua)", Integer.valueOf(-(w / 2)), Integer.valueOf(docShort(bPet, k + 1)));
+            Kiem.bang("69.pet khung " + i + ": dy = -h (chan cham dat, khong bay)", Integer.valueOf(-h), Integer.valueOf(docShort(bPet, k + 3)));
+            Kiem.bang("69.pet khung " + i + ": tro o nho " + i, Integer.valueOf(i), Integer.valueOf(bPet[k + 5] & 0xFF));
+        }
+        boolean duoiKhop = bPet.length == b49.length;
+        for (int i = 42; duoiKhop && i < b49.length; i++) {
+            duoiKhop = bPet[i] == b49[i];
+        }
+        Kiem.dung("69.pet: phan sequence/anim/bong trung tung byte voi bang pet 49", duoiKhop);
+
+        final String mc = doc("src/real/MessageCreator.java");
+        final String dongMang = doan(mc, "id_eff_pet_tool = new int[]{", "};");
+        Kiem.dung("MessageCreator: id_eff_pet_tool co 69 (khong co thi client khong co bang khung -> pet khong ve)",
+                !dongMang.isEmpty() && (", 69}".length() > 0) && chuaSo(dongMang, 69));
+        final String khoiPet = doan(mc, "id_eff_pet_tool.length; ++i", "id_eff_tool_ngu_long");
+        Kiem.dung("goi 26 khoi pet lay bang khung qua DataGame.moTaPet()", khoiPet.contains("DataGame.moTaPet(idEff)"));
+        Kiem.sai("goi 26 khoi pet khong con doc thang dataDynamicEffect[idEff]", khoiPet.contains("dataDynamicEffect[idEff]"));
+
+        final String dg = doc("src/data/DataGame.java");
+        Kiem.dung("DataGame nap map/d_effect/<id>.pet vao dataPetEffect", dg.contains("dataPetEffect[j] = Files.readAllBytes(filePet.toPath());"));
+        final String thanMoTa = doan(dg, "public static byte[] moTaPet(", "\n    }");
+        Kiem.dung("DataGame.moTaPet uu tien .pet roi moi toi bang chung",
+                thanMoTa.indexOf("dataPetEffect[idEff]") >= 0
+                && thanMoTa.indexOf("dataPetEffect[idEff]") < thanMoTa.indexOf("return dataDynamicEffect[idEff]"));
+    }
+
+    private static boolean chuaSo(final String mang, final int so) {
+        final int dau = mang.indexOf('{');
+        final String[] phan = mang.substring(dau + 1).split(",");
+        for (final String p : phan) {
+            final String t = p.trim();
+            if (!t.isEmpty() && t.chars().allMatch(Character::isDigit) && Integer.parseInt(t) == so) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static int docShort(final byte[] b, final int i) {
+        return (short) (((b[i] & 0xFF) << 8) | (b[i + 1] & 0xFF));
+    }
+
+    private static String doan(final String ma, final String tu, final String den) {
+        final int bd = ma.indexOf(tu);
+        if (bd < 0) {
+            return "";
+        }
+        final int kt = ma.indexOf(den, bd + tu.length());
+        return kt < 0 ? ma.substring(bd) : ma.substring(bd, kt);
+    }
+
+    private static byte[] docByte(final String duong) {
+        try {
+            return Files.readAllBytes(Paths.get(duong));
+        } catch (final IOException e) {
+            return new byte[0];
         }
     }
 

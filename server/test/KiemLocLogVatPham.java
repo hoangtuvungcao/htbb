@@ -35,7 +35,8 @@ public final class KiemLocLogVatPham {
         // Bat buoc giu: mat do, gian lan, tai san tang bat thuong.
         for (final String s : new String[]{"matdo", "trade", "sitemu", "delI", "timeout", "XOAPET",
                 "loiinvent", "hackc", "hackR", "hackbitem", "hackchonchar", "ffbug", "hklbug", "hcm",
-                "naptien", "nhanxu", "logxu", "autosave", "lenlv", "lenlevel", "putGiftCode"}) {
+                "naptien", "nhanxu", "logxu", "autosave", "lenlv", "lenlevel", "putGiftCode",
+                "caitaocaitrang", "hoahinhpet"}) {
             Kiem.sai("van ghi '" + s + "'", data.LocLogVatPham.boQua(s));
         }
         // Rac da tat - nhung loai tung chiem hang trieu dong.

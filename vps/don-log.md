@@ -120,7 +120,7 @@ tob_log_xoso       timelog
 ```
 
 Riêng trong `tob_log_all_item`, mọi dòng **không thuộc danh sách giữ** thì xoá hết không cần
-đợi qua hạn (mục 1b của script). Từ 02/09/2026 server chỉ còn ghi 52 loại phục vụ ba việc: truy
+đợi qua hạn (mục 1b của script). Từ 02/09/2026 server chỉ còn ghi 54 loại phục vụ ba việc: truy
 vật phẩm hiếm bị mất hay đổi chủ, lỗi và nghi vấn gian lận, tài sản tăng bất thường. Khoảng 250
 loại còn lại trong mã nguồn không ghi nữa — riêng `luckGOLD` từng chiếm 3,2 triệu dòng trong một
 ngày, hơn nửa bảng. Danh sách gốc nằm ở `src/data/LocLogVatPham.java` (`GIU`); bản chép trong

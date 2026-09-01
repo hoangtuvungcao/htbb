@@ -57,6 +57,11 @@ public class Pet extends Actor {
     // checkVetThuongSau/checkHoangSo/checkBatTu/checkYemBua). Neu dung chung,
     // hoa hinh se boi tranh cooldown voi chinh noi tai cua loai thu đó.
     private long timeKhangXuyenGiap = 0L;
+    // Moc het hieu luc cua lan kich hoat hien tai (cua so duy tri 3-8s, xem
+    // applyKhangXuyenGiap): trong cua so nay MOI don nhan vao deu duoc giam. Khong luu CSDL.
+    private long timeKhangXuyenGiapHetHieuLuc = 0L;
+    /** Han hoa hinh Lan: 10 ngay tinh tu luc hoa hinh; hoa hinh lai thi tinh lai tu dau. */
+    public static final long HAN_HOA_HINH_MS = 864_000_000L;
     static int[] MATERIAL_UPDGRADE = new int[]{0, 2, 5, 8, 11};
     static int[] PC_UPDGRADE_OK = new int[]{0, 90, 45, 20, 15, 7};
     byte phamchat = -1;
@@ -212,34 +217,24 @@ public class Pet extends Actor {
         this.itemPet = itemP;
     }
 
-    /** Anh hoa hinh Pet: MOT hieu ung dung chung cho moi loai (khong rieng tung loai nua). */
-    private static final int ID_HIEU_UNG_HOA_HINH_PET = 49;
+    /**
+     * Anh hoa hinh Pet = pet Lan: id 69 -> map/d_effect/69.png (luoi sprite 256x256, cung la anh
+     * danh hieu 8769) - theo yeu cau ngay 02/09/2026 dung DUNG anh nay.
+     *
+     * Duong ve pet tren client (Pet.paint) lay anh GameData.getImgIcon(8700 + id) va bang khung
+     * Pet.ALL_PET_DATA[id]; bang do do goi 26 gui trong khoi id_eff_pet_tool (MessageCreator).
+     * Bang khung "69" viet cho hieu ung / danh hieu (anim dai 48/1/0 khung) - pet doc se chia cho
+     * 0 va bien mat (su co 01/09/2026, luc do doan nham la do anh vuong). Vi vay pet nhan bang
+     * RIENG map/d_effect/69.pet (DataGame.moTaPet uu tien <id>.pet), cau truc nhu bang pet 49,
+     * sinh bang tools/TaoPetLan.java. Anh va bang "69" cua danh hieu giu nguyen.
+     *
+     * Id 49 cu (anh cat/resize tu 69.png) chua tung nam trong id_eff_pet_tool nen client khong
+     * co bang khung cho no - da thay bang 69 + 69.pet. test/KiemHoaHinhPet.java khoa ca ba:
+     * hang so nay, 69 co trong id_eff_pet_tool, va 69.pet dung cau truc.
+     */
+    public static final int ID_HIEU_UNG_HOA_HINH_PET = 69;
 
     public int getIdEffPet() {
-        // Lich su: id 49-53 (rieng tung loai) tung bi go roi bat lai trong cung
-        // ngay 31/08/2026 sau khi phat hien anh cu chua duoc cap nhat (xem git
-        // log commit a081ee1/bc728bd) - luc do ANH la van de, khong phai co che
-        // chon id theo loai. Sau do doi thu sang dung CHUNG frame id 69
-        // (map/d_effect/69.png, anh linh thu boc lua dang dung lam danh hieu id
-        // 8769 = 69+8700 o CharSuKien.java) - NHUNG PET BI MAT TICH, vi 69.png
-        // la anh vuong 256x256 (bo cuc luoi nhieu hang, danh cho he thong danh
-        // hieu tren dau nhan vat), trong khi truong nay (thay the idImg cho pet
-        // TYPE_PET_TOOL, xem MessageCreator.java) doi mot DAI HEP DUNG - so sanh
-        // id 35 (45x114), 41 (58x117), 44 (62x96): deu cao gap doi rong, khong
-        // phai anh vuong. So khung cat anh (getTotalFrame(), lay tu
-        // Map.petTemplate[idTemplate].nFrame, KHONG phu thuoc anh nay) bi lech bo
-        // cuc, khien client cat sai va khong ve duoc pet. Da doi lai id 49 - MOT
-        // hieu ung chung cho moi loai, dung quy cach 45x114/2 khung nhu cu -
-        // NHUNG thay noi dung anh: cat 2 tu the tu luoi sprite cua 69.png (linh
-        // thu boc lua, dung crop+resize NEAREST_NEIGHBOR ve dung 45x57 moi
-        // khung, xem tool tam thoi da dung), giu NGUYEN file metadata "49" (toa
-        // do khung khong doi vi kich thuoc canvas khong doi) de khong lech bo
-        // cuc nhu vua gap voi 69. Ket qua: van la hinh linh thu lua admin muon,
-        // nhung dung dung quy cach nen khong con lam pet mat tich. KHONG dung
-        // truc tiep noi dung 69.png (dang la anh danh hieu song, doi hinh dang
-        // no se anh huong danh hieu id 8769). Vi map/d_effect gui qua mang o
-        // goi 26 (DataGame.java quet toan bo thu muc luc khoi dong server), CHỈ
-        // CAN DEPLOY SERVER, khong can sua client.
         if (this.itemPet != null) {
             if (this.idHoaHinhPet != -1 && !this.endHoaHinhPet()) {
                 return ID_HIEU_UNG_HOA_HINH_PET;
@@ -383,7 +378,9 @@ public class Pet extends Actor {
         }
 
         String idInfo = "\nID: " + this.idDB;
-        return this.itemPet != null ? this.itemPet.getName() + idInfo + (hh != null ? hh : "") : this.name + idInfo + (hh != null ? hh : "");
+        // Dang hoa hinh Lan thi ten hien "Lân cấp n - <ten goc>" de nguoi choi biet ngay (luat 02/09/2026).
+        final String tienTo = this.dangHoaHinh() ? "Lân cấp " + this.capHoaHinh + " - " : "";
+        return tienTo + (this.itemPet != null ? this.itemPet.getName() + idInfo + (hh != null ? hh : "") : this.name + idInfo + (hh != null ? hh : ""));
     }
 
     public int getbaoKich() {
@@ -483,46 +480,94 @@ public class Pet extends Actor {
     }
 
     /**
-     * Kha nang giam sat thuong khi bi danh, mo dan theo capHoaHinh (1..5). Goi
-     * tu CharChiSo.applyThanKhiOnHit() moi khi pet nay dang duoc cuoi/su dung
-     * va chu nhan bi tan cong.
+     * Bang "Khang xuyen giap" theo cap Lan 1..5 (yeu cau ngay 02/09/2026):
+     * {giam % sat thuong, ti le kich hoat %, thoi gian duy tri (giay), hoi chieu (giay)}.
+     *   cap 1:  +5%  / 10% / 3s / 100s
+     *   cap 2:  +10% / 10% / 3s / 100s
+     *   cap 3:  +15% / 20% / 5s / 80s
+     *   cap 4:  +20% / 20% / 5s / 80s
+     *   cap 5:  +25% / 30% / 8s / 60s
+     * Dung CHUNG giua applyKhangXuyenGiap() (thuc thi), getInfoSendUser() (hien cho nguoi
+     * choi) va RealController case 13 (thong bao luc hoa hinh). Cap < 1 tra ve toan 0, cap > 5
+     * tinh nhu 5.
      */
-    /**
-     * {giam % sat thuong khi proc, ti le proc %, hoi chieu giay} theo cap
-     * khang xuyen giap 1..5. Dung CHUNG giua applyKhangXuyenGiap() (thuc thi)
-     * va getInfoSendUser() (hien chi tiet cho nguoi choi xem) - truoc day chi
-     * co o applyKhangXuyenGiap(), nguoi choi thay "kháng xuyên giáp cấp 5"
-     * ma khong biet cu the la giam bao nhieu/ti le bao nhieu.
-     */
-    private static int[] thongSoKhangXuyenGiap(final int cap) {
+    public static int[] thongSoKhangXuyenGiap(final int cap) {
         switch (cap) {
-            case 1: return new int[]{5, 10, 100};
-            case 2: return new int[]{10, 10, 100};
-            case 3: return new int[]{15, 20, 80};
-            case 4: return new int[]{20, 20, 80};
-            default: return new int[]{25, 30, 60};
+            case 1: return new int[]{5, 10, 3, 100};
+            case 2: return new int[]{10, 10, 3, 100};
+            case 3: return new int[]{15, 20, 5, 80};
+            case 4: return new int[]{20, 20, 5, 80};
+            default: return cap < 1 ? new int[]{0, 0, 0, 0} : new int[]{25, 30, 8, 60};
         }
     }
 
-    public int applyKhangXuyenGiap(int finalDame) {
+    /**
+     * Giam sat thuong nhan vao theo "Khang xuyen giap" cua pet Lan. Goi tu
+     * CharChiSo.applyThanKhiOnHit() moi khi chu nhan bi danh va dang dung pet nay.
+     *
+     * Co che (khac ban 31/08 chi giam MOT don roi vao hoi chieu): kich hoat mo mot CUA SO DUY
+     * TRI 3-8s, moi don trong cua so deu bi giam, khong quay lai ti le; hoi chieu tinh tu luc
+     * kich hoat. Ngoai cua so va da het hoi chieu thi moi quay ti le lan nua.
+     */
+    public int applyKhangXuyenGiap(final int finalDame) {
+        return applyKhangXuyenGiap(finalDame, System.currentTimeMillis());
+    }
+
+    /** Ban nhan moc thoi gian, de test dieu khien duoc duy tri / hoi chieu. */
+    public int applyKhangXuyenGiap(final int finalDame, final long now) {
         if (this.khangXuyenGiapCap <= 0 || this.endHoaHinhPet()) {
             return finalDame;
         }
-        if (System.currentTimeMillis() < this.timeKhangXuyenGiap) {
-            return finalDame;
-        }
-
         final int[] thongSo = thongSoKhangXuyenGiap(this.khangXuyenGiapCap);
-        final int reducePercent = thongSo[0];
-        final int chance = thongSo[1];
-        final long cooldownMs = thongSo[2] * 1000L;
-
-        if (Map.r.nextInt(100) >= chance) {
+        if (now < this.timeKhangXuyenGiapHetHieuLuc) {
+            return finalDame - finalDame * thongSo[0] / 100;
+        }
+        if (now < this.timeKhangXuyenGiap) {
             return finalDame;
         }
+        if (Map.r.nextInt(100) >= thongSo[1]) {
+            return finalDame;
+        }
+        this.timeKhangXuyenGiapHetHieuLuc = now + thongSo[2] * 1000L;
+        this.timeKhangXuyenGiap = now + thongSo[3] * 1000L;
+        return finalDame - finalDame * thongSo[0] / 100;
+    }
 
-        this.timeKhangXuyenGiap = System.currentTimeMillis() + cooldownMs;
-        return finalDame - finalDame * reducePercent / 100;
+    /** Dang mang hinh Lan: da hoa hinh va con han. */
+    public boolean dangHoaHinh() {
+        return this.idHoaHinhPet != -1 && !this.endHoaHinhPet();
+    }
+
+    /**
+     * Cap cua pet nuoi = cot atb0 cua template item pet ("Cú cấp 3" co atb0 = 3), 0 neu chua
+     * co cap. Day la "n" trong cong thuc: pet cap n + n x 10 binh hoa hinh = pet Lan cap n.
+     */
+    public int capPet() {
+        if (this.itemPet == null || this.itemPet.getTemplate() == null) {
+            return 0;
+        }
+        return Math.max(0, Math.min(5, this.itemPet.getTemplate().atb[0]));
+    }
+
+    /** So binh hoa hinh (item 268) de hoa hinh pet cap n thanh Lan cap n: n x 10; -1 neu chua co cap. */
+    public static int soBinhHoaHinhCan(final int capPet) {
+        return capPet < 1 ? -1 : capPet * 10;
+    }
+
+    /**
+     * Neu hoa hinh da het han thi tra pet ve con cu (xoa moi dau vet Lan) va tra ve true.
+     * Goi tu Char.checkExpirePet() (moi 5 phut, khi dang choi) va Database.getCharPet() (luc nap).
+     */
+    public boolean donHoaHinhHetHan() {
+        if (!this.endHoaHinhPet()) {
+            return false;
+        }
+        this.idHoaHinhPet = -1;
+        this.timeEndHoaHinhPet = 0L;
+        this.khangXuyenGiapCap = 0;
+        this.capHoaHinh = 0;
+        this.timeKhangXuyenGiapHetHieuLuc = 0L;
+        return true;
     }
 
     public void doUpdrage2MaxByAdmin(Char p, int nUp) {
@@ -854,20 +899,19 @@ public class Pet extends Actor {
                 info = info + "\n- Tỷ lệ thành công: " + PC_UPDGRADE_OK[this.itemPet.getTemplate().atb[0]] + "%";
             }
 
-            // Hoa hinh (them 31/08/2026) - khong co hieu ung hinh anh rieng
-            // (xem getIdEffPet()), nen day la CACH DUY NHAT nguoi choi thay
-            // duoc minh da hoa hinh cap may / con han bao lau.
+            // Hoa hinh Lan (luat 02/09/2026): day la cho nguoi choi doc duoc cap Lan,
+            // con han bao lau va khang xuyen giap dang co gi. Dung CHUNG bang
+            // thongSoKhangXuyenGiap() voi applyKhangXuyenGiap() de hien dung so dang chay.
             if (this.capHoaHinh > 0) {
-                info = info + "\n- Hoá hình cấp " + this.capHoaHinh + "/5";
                 if (this.endHoaHinhPet()) {
-                    info = info + " - ĐÃ HẾT HẠN, hoá hình lại để tiếp tục kháng xuyên giáp";
+                    info = info + "\n- Hoá hình Lân cấp " + this.capHoaHinh + " ĐÃ HẾT HẠN, pet trở về hình cũ";
                 } else {
                     final int[] thongSo = thongSoKhangXuyenGiap(this.khangXuyenGiapCap);
                     final long conLaiNgay = (this.timeEndHoaHinhPet - System.currentTimeMillis()) / (24L * 60L * 60000L);
-                    info = info + ": kháng xuyên giáp cấp " + this.khangXuyenGiapCap
-                            + " (giảm " + thongSo[0] + "% sát thương, " + thongSo[1]
-                            + "% cơ hội kích hoạt mỗi đòn, hồi chiêu " + thongSo[2] + "s)"
-                            + ", còn " + conLaiNgay + " ngày";
+                    info = info + "\n- Pet Lân cấp " + this.capHoaHinh + ", còn " + conLaiNgay + " ngày"
+                            + "\n- Kháng xuyên giáp +" + thongSo[0] + "%: khi bị đánh có " + thongSo[1]
+                            + "% kích hoạt, giảm " + thongSo[0] + "% sát thương trong " + thongSo[2]
+                            + "s, hồi chiêu " + thongSo[3] + "s";
                 }
             }
 

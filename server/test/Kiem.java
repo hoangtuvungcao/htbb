@@ -108,7 +108,7 @@ public final class Kiem {
         KiemTranXuRoi.chay();
         KiemTinhLuyenThanBinh.chay();
         KiemDonLog.chay();
-        KiemTinhHoaTrangPhuc.chay();
+        KiemCaiTaoCaiTrang.chay();
         KiemBangMaNguon.chay();
 
         final int ma = tongKet();

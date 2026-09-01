@@ -1850,16 +1850,10 @@ public class RealController extends ServerController {
                         return;
                         // cải tạo cải trang
                         case 11:
-                        // Cai Tao Cai Trang: gop chung voi "Tinh Hoa Trang Phuc" (01/09/2026,
-                        // theo yeu cau nguoi dung - hai muc la MOT khai niem, khong phai hai
-                        // tinh nang rieng). Bam vao day gio hien 2 lua chon, xu ly o
-                        // switch(idMenu) case 90 duoi day: "cai tao ngau nhien" la HANH VI
-                        // CU giu nguyen y het (500 luong, 70% ti le, +1-10% ngau nhien),
-                        // "tinh hoa bao dam" la tinh nang moi (doi binh hoa hinh thu cuoi
-                        // lay chac chan CaiTao=10 - xem Map.showTrangPhucTinhHoaList).
-                        player.sendMessage(MessageCreator.createMsgMenu(
-                                new String[]{"Cải tạo ngẫu nhiên (500 lượng)", "Tinh hoa bảo đảm (bình hoá hình thú cưỡi)"},
-                                idNpc, 90));
+                        // Cai Tao Cai Trang: mo thang danh sach bo thoi trang cai tao duoc (bo
+                        // dang mac + hanh trang). Luat, gia theo nhom, ti le: xem real/CaiTaoCaiTrang.
+                        // Submenu "tinh hoa bao dam" (idMenu 90) da bo ngay 02/09/2026.
+                        player.map.showCaiTaoMaterialList(player);
                         return;
                    case 12:
                             menu = new String[]{"Kho Mảnh", "Bộ Sưu Tập", "Cải Trang", player.isBatCaiTrang() ? "Tắt Cải Trang" : "Bật Cải Trang"};
@@ -1872,57 +1866,63 @@ public class RealController extends ServerController {
                     // hoa qua doTienHoa()), dung lai item 268 (lo thuoc hoa hinh)
                     // dang dung cho hoa hinh Thu de khong phai tao vat pham moi.
                     case 13:
+                        // Hoa Hinh Pet -> pet Lan (luat 02/09/2026, xem data/Pet.java): pet nuoi VINH
+                        // VIEN cap n + n x 10 binh hoa hinh (item 268) = pet Lan cap n, han 10 ngay,
+                        // KHONG ton luong. Hoa hinh lai luc nao cung duoc: tinh lai 10 ngay, cap Lan
+                        // theo cap pet hien tai. Truoc 02/09 la len tung cap 1->5, moi cap 10 x cap
+                        // binh + 5000 luong, doi pet sieu tien hoa - da bo.
                         if (player.petUsing == null || player.petUsing.itemPet == null) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần trang bị một Pet để hoá hình", ""));
                             return;
                         }
                         if (player.petUsing.getTimeExpire() != 32000) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể hoá hình Pet vĩnh viễn", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ hoá hình được Pet nuôi vĩnh viễn", ""));
                             return;
                         }
-                        if (player.petUsing.itemPet.level < 2) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Pet phải siêu tiến hoá (trạng thái 2) mới có thể hoá hình", ""));
+                        // Hinh Lan chi ve duoc cho pet DA TIEN HOA (TYPE_PET_TOOL - xem getType() va
+                        // MessageCreator): pet chua tien hoa se nhan chi so ma khong doi hinh, nen chan.
+                        if (player.petUsing.itemPet.level < 1) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Pet phải tiến hoá rồi mới hoá hình được", ""));
                             return;
                         }
-                        if (player.petUsing.capHoaHinh >= 5) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Pet đã hoá hình tối đa cấp 5", ""));
+                        final int capPetHoaHinh = player.petUsing.capPet();
+                        final int soBinhHoaHinh = data.Pet.soBinhHoaHinhCan(capPetHoaHinh);
+                        if (soBinhHoaHinh < 0) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Pet chưa có cấp, không hoá hình được", ""));
                             return;
                         }
-
-                        final int capMoiHoaHinhPet = player.petUsing.capHoaHinh + 1;
-                        final int soLuongThuocHoaHinhPet = capMoiHoaHinhPet * 10;
-                        if (player.listGemitem[268] < soLuongThuocHoaHinhPet && player.listGemitemLock[268] < soLuongThuocHoaHinhPet) {
+                        if (player.listGemitem[268] < soBinhHoaHinh && player.listGemitemLock[268] < soBinhHoaHinh) {
                             player.sendMessage(MessageCreator.createServerAlertMessage(
-                                    "Cần " + soLuongThuocHoaHinhPet + " lọ thuốc hoá hình để lên cấp " + capMoiHoaHinhPet, ""));
+                                    "Cần " + soBinhHoaHinh + " bình hoá hình (cấp " + capPetHoaHinh + " x 10) để hoá hình thành Pet Lân cấp " + capPetHoaHinh, ""));
                             return;
                         }
-                        if (player.getLuong() < 5000) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Cần 5000 lượng để hoá hình", ""));
-                            return;
-                        }
-
-                        if (player.listGemitemLock[268] >= soLuongThuocHoaHinhPet) {
-                            player.delGem(268, soLuongThuocHoaHinhPet, true);
+                        if (player.listGemitemLock[268] >= soBinhHoaHinh) {
+                            player.delGem(268, soBinhHoaHinh, true);
                         } else {
-                            player.delGem(268, soLuongThuocHoaHinhPet, false);
+                            player.delGem(268, soBinhHoaHinh, false);
                         }
-                        player.subLuong(5000L);
 
                         if (!player.petUsing.isPetTool() && player.petUsing.getIdEffPet() > -1) {
                             player.huyEff(player, player.petUsing.getIdEffPet());
                         }
-                        player.petUsing.capHoaHinh = (byte) capMoiHoaHinhPet;
+                        final int capHoaHinhCu = player.petUsing.capHoaHinh;
+                        player.petUsing.capHoaHinh = (byte) capPetHoaHinh;
                         player.petUsing.idHoaHinhPet = 67;
-                        player.petUsing.timeEndHoaHinhPet = System.currentTimeMillis() + 864_000_000L;
+                        player.petUsing.timeEndHoaHinhPet = System.currentTimeMillis() + data.Pet.HAN_HOA_HINH_MS;
                         player.petUsing.initKhangXuyenGiapWhenHoaHinh();
                         player.sendPetEff();
                         Database.instance.savePet(player.petUsing);
 
                         player.sendMessage(MessageCreator.createCharGemItem(player));
+                        // Gui hinh Lan cho ca minh lan nguoi xung quanh - truoc day chi gui cho minh.
                         player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
+                        player.sendToNearPlayer(MessageCreator.createCharWearingMessage(player, player));
+                        final int[] tsKxg = data.Pet.thongSoKhangXuyenGiap(capPetHoaHinh);
                         player.sendMessage(MessageCreator.createServerAlertMessage(
-                                "Hoá hình Pet thành công, lên cấp " + capMoiHoaHinhPet + "/5", ""));
-                        Database.instance.saveOrtherLog("", player.charname, "Hoa hinh pet len cap " + capMoiHoaHinhPet, "hoahinhpet");
+                                "Hoá hình thành công: Pet Lân cấp " + capPetHoaHinh + " trong 10 ngày. Kháng xuyên giáp +" + tsKxg[0]
+                                + "% (tỉ lệ " + tsKxg[1] + "%, duy trì " + tsKxg[2] + "s, hồi chiêu " + tsKxg[3] + "s)", ""));
+                        Database.instance.saveOrtherLog("", player.charname,
+                                "hoa hinh pet Lan cap " + capPetHoaHinh + " (truoc: " + capHoaHinhCu + ") | tru " + soBinhHoaHinh + " binh 268", "hoahinhpet");
                         return;
 
                     // Bat/tat HIEN THI skin linh thu (them 01/09/2026) — chi an hinh anh
@@ -1972,34 +1972,6 @@ public class RealController extends ServerController {
             }
 
             switch (idMenu) {
-                case 90:
-                    // Cai Tao Cai Trang (them 01/09/2026, gop chung voi "Tinh Hoa Trang
-                    // Phuc" - xem chu thich o case 11 phia tren).
-                    if (idOptionMenu == 0) {
-                        // Cai tao ngau nhien - HANH VI CU giu nguyen y het, chi doi cho o
-                        // (truoc day nam thang trong case 11).
-                        if (player.getLuong() < 500) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần 500 lượng để cải tạo cải trang", ""));
-                            return;
-                        }
-
-                        Vector caitrang = new Vector();
-                        int[] validItemIDs = {797, 798, 799, 800, 801, 723, 724, 725, 726, 756, 757};
-                        for (int i = 0; i < player.iItems.size(); i++) {
-                            Item item = (Item) player.iItems.elementAt(i);
-                            for (int validID : validItemIDs) {
-                                if (item.tempateID == validID && item.minuteExist <= 0) { // -1 là vĩnh viễn
-                                    caitrang.addElement(item);
-                                    break;
-                                }
-                            }
-                        }
-                        player.sendMessage(MessageCreator.createMessageShopNew(player, caitrang, "Chọn", "Cải Tạo", 5));
-                    } else if (idOptionMenu == 1) {
-                        // Tinh hoa bao dam - tinh nang moi (truoc day la case 14 rieng).
-                        player.map.showTrangPhucTinhHoaList(player);
-                    }
-                    return;
                 case 100:
                     int gioHoatDong = player.runtimeCharProperties.getHourOnline();
                     switch (idOptionMenu) {

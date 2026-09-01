@@ -3,7 +3,9 @@ package data;
 import io.Message;
 import io.Session;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.Set;
 import real.Char;
@@ -41,6 +43,8 @@ public class DataGame {
     public static byte[][] imgCoVat;
     public static byte[][] imgDynamicEffect;
     public static byte[][] dataDynamicEffect;
+    /** Bang khung RIENG cho duong ve PET, nap tu map/d_effect/<id>.pet (null = dung <id>). Xem moTaPet(). */
+    public static byte[][] dataPetEffect;
     public static byte[][] imgEffectSkill;
     public static byte[][] imgEffectArrow;
     public static byte[][] dataBoss;
@@ -247,6 +251,7 @@ public class DataGame {
             nMonster = 300;
             imgDynamicEffect = new byte[nMonster][];
             dataDynamicEffect = new byte[nMonster][];
+            dataPetEffect = new byte[nMonster][];
 
             for (j = 0; j < nMonster; ++j) {
                 try {
@@ -280,6 +285,14 @@ public class DataGame {
                     try {
                         fis.close();
                     } catch (Exception var1228) {
+                    }
+                    // Bang khung RIENG cho duong ve PET (neu co): map/d_effect/<j>.pet. Dung khi anh
+                    // <j>.png la luoi sprite cua hieu ung / danh hieu - bang <j> viet cho duong ve
+                    // hieu ung, pet doc se hong - nhung van muon pet dung DUNG anh do. Hien co
+                    // 69.pet cho pet Lan (tools/TaoPetLan.java sinh ra). Xem moTaPet().
+                    final File filePet = new File("map/d_effect/" + j + ".pet");
+                    if (filePet.isFile()) {
+                        dataPetEffect[j] = Files.readAllBytes(filePet.toPath());
                     }
                 } catch (Exception var1232) {
 //                    var1232.printStackTrace();
@@ -874,6 +887,22 @@ public class DataGame {
             var4.printStackTrace();
         }
 
+    }
+
+    /**
+     * Bang khung cho DUONG VE PET cua id hieu ung nay: uu tien map/d_effect/<id>.pet, khong co
+     * thi dung bang chung <id>. Client giu hai bang rieng (Pet.ALL_PET_DATA cho pet,
+     * DataSkillEff.ALL_DATA_EFF cho hieu ung) nhung dung chung anh <id>.png, nen mot anh co the
+     * mang hai bang khung. MessageCreator (goi 26, khoi id_eff_pet_tool) goi ham nay.
+     */
+    public static byte[] moTaPet(final int idEff) {
+        if (idEff < 0 || dataDynamicEffect == null || idEff >= dataDynamicEffect.length) {
+            return null;
+        }
+        if (dataPetEffect != null && dataPetEffect[idEff] != null) {
+            return dataPetEffect[idEff];
+        }
+        return dataDynamicEffect[idEff];
     }
 
     /**

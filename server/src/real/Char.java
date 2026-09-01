@@ -3692,6 +3692,23 @@ public int applyRongLonReleaseTo(int baseDamage) {
             if (expire) {
                 this.sendMessage(MessageCreator.createCharInventoryMessage(this, 2));
             }
+            // Hoa hinh Lan het han (10 ngay) -> tra pet ve con cu NGAY khi dang choi, khong doi
+            // dang nhap lai (luat 02/09/2026). Pet trong tui don im lang; pet dang dung thi gui
+            // lai hinh cho minh va nguoi xung quanh.
+            for (int i = 0; i < this.pet.size(); ++i) {
+                final data.Pet petTui = this.pet.get(i);
+                if (petTui != this.petUsing && petTui.donHoaHinhHetHan()) {
+                    Database.instance.savePet(petTui);
+                }
+            }
+            if (this.petUsing != null && this.petUsing.donHoaHinhHetHan()) {
+                Database.instance.savePet(this.petUsing);
+                this.sendPetEff();
+                this.sendMessage(MessageCreator.createCharWearingMessage(this, this));
+                this.sendToNearPlayer(MessageCreator.createCharWearingMessage(this, this));
+                this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hoá hình Lân của pet đã hết hạn, pet trở về hình cũ"));
+                Database.instance.saveOrtherLog("", this.charname, "hoa hinh pet Lan het han", "hoahinhpet");
+            }
             if (this.petUsing != null && this.petUsing.getTimeExpire() <= 0) {
                 this.calculateAttrib();
                 this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
