@@ -3905,6 +3905,11 @@ public class Database {
     }
 
     public void saveOrtherLog(String table, String charname, String info, String action) {
+        // CHI ghi loai nam trong LocLogVatPham.GIU (mat do, gian lan, tai san tang bat thuong);
+        // loai khac bo ca bang lan UserLogger. Ca bay ham ghi vao tob_log_all_item deu gac nhu vay.
+        if (LocLogVatPham.boQua(action)) {
+            return;
+        }
         try {
             info = BadWord.removeAccent(info.toLowerCase());
             String sql = "insert into tob_log_all_item (charname,info,timelog,aclog) values ('" + charname + "','" + info + "',now(),'" + action + "')";
@@ -4348,6 +4353,9 @@ public class Database {
  
 
     public void saveLogLearnSkill(String charname, String info) {
+        if (LocLogVatPham.boQua("hocskill")) {
+            return;
+        }
         try {
             String sql = "insert into tob_log_all_item (charname,charname2,info,timelog,aclog) values ('" + charname + "','" + charname + "','" + info + "',Now(),'hocskill')";
             Logdata.query.add(sql);
@@ -4358,6 +4366,9 @@ public class Database {
     }
 
     public void saveLogNapMoney(String charname, String info) {
+        if (LocLogVatPham.boQua("naptien")) {
+            return;
+        }
         try {
             String sql = "insert into tob_log_all_item (charname,charname2,info,timelog,aclog) values ('" + charname + "','" + charname + "','" + info + "',Now(),'naptien')";
             Logdata.query.add(sql);
@@ -4367,6 +4378,9 @@ public class Database {
     }
 
     public void saveLogTradeItem(String from, String to, String info) {
+        if (LocLogVatPham.boQua("trade")) {
+            return;
+        }
         try {
             String sql = "insert into tob_log_all_item(charname,charname2,info,timelog,aclog) values ('" + from + "','" + to + "','" + info + "',Now(),'trade')";
             Logdata.query.add(sql);
@@ -4382,7 +4396,8 @@ public class Database {
      *
      * Cac duong CHUYEN NHUONG deu da co log rieng tu truoc:
      *   ban trong gian hang  -> saveLogSellItem
-     *   ban cho NPC          -> saveLogItemSellShop  (aclog 'sitems')
+     *   ban cho NPC          -> saveLogItemSellShop  (aclog 'sitems' - DA TAT tu 02/09/2026: khong nam trong
+     *                           LocLogVatPham.GIU vi qua on; muon ghi lai thi them no vao danh sach do)
      *   trao doi voi nguoi   -> saveLogTradeItem
      * Ham nay danh cho cac duong lam vat pham BIEN MAT ma truoc day khong ghi gi:
      * nghien do, ban tu dong luc nhat, admin xoa tay, va server tu xoa luc nap nhan vat.
@@ -4419,6 +4434,9 @@ public class Database {
     }
 
     public void saveLogMatVatPham(Char p, Item item, String lyDo) {
+        if (LocLogVatPham.boQua("matdo")) {
+            return;
+        }
         try {
             if (p == null || item == null) {
                 return;
@@ -4440,6 +4458,9 @@ public class Database {
     }
 
     public void saveLogItemSellShop(String seller, int charID, String info) {
+        if (LocLogVatPham.boQua("sitems")) {
+            return;
+        }
         try {
             info = BadWord.removeAccent(info);
             String sql = "insert into tob_log_all_item (idchar,charname,info,timelog,aclog) values (" + charID + ",'" + seller + "','" + info + "',Now(),'sitems')";
@@ -4450,6 +4471,9 @@ public class Database {
     }
 
     public void saveLogSellItem(String seller, String customer, String info) {
+        if (LocLogVatPham.boQua("sitemu")) {
+            return;
+        }
         try {
             info = BadWord.removeAccent(info);
             String sql = "insert into tob_log_all_item (charname,charname2,info,timelog,aclog) values ('" + seller + "','" + customer + "','" + info + "',Now(),'sitemu')";

@@ -1799,168 +1799,168 @@ CREATE TABLE `data_potion` (
 --
 
 INSERT INTO `data_potion` (`id`, `idImage`, `delay`, `isTrade`, `name`, `name2`, `price`, `recovered`) VALUES
-(0, 0, 0, 0, 'Xu', 'xu', 0, 0),
-(1, 1, 350, 1, 'HP nhỏ', 'hpnho', 100, 80),
-(2, 2, 350, 1, 'HP vừa', 'hpvua', 500, 300),
-(3, 3, 350, 1, 'HP to', 'hpto', 800, 1000),
-(4, 4, 350, 1, 'MP nhỏ', 'mpnho', 50, 160),
-(5, 5, 350, 1, 'MP vừa', 'mpvua', 150, 600),
-(6, 6, 350, 1, 'MP to', 'mpto', 500, 2000),
-(7, 22, 350, 0, 'Bình tăng tốc thường', 'binhtangtocthuong', 500, 1),
-(8, 88, 350, 0, 'Bình tăng tốc vàng.\nGiảm 20% thời gian chín của trái vàng', 'binhtangtocvanggiamthoigianchincuatraivang', 500, 2),
-(9, 26, 350, 0, 'Nhân sâm', 'nhansam', 500, 1),
-(10, 62, 350, 0, 'Tiên dược thường: cộng 100k exp', 'tienduocthuongcongkexp', 500, 2),
-(11, 40, 0, 0, 'Tiên dược cao cấp: cộng 500k exp', 'tienduoccaocapcongkexp', 500, 1),
-(12, 36, 0, 0, 'Tiên dược đặc biệt: cộng 1t exp', 'tienduocdacbietcongtexp', 500, 0),
-(13, 23, 0, 0, 'Bình tăng tốc bạc.\nGiảm 20% thời gian chín của trái bạc', 'binhtangtocbacgiamthoigianchincuatraibac', 500, 0),
-(14, 15, 0, 0, 'Khăn đỏ', 'khando', 500, 0),
-(15, 16, 0, 0, 'Khăn xanh', 'khanxanh', 500, 0),
-(16, 17, 0, 0, 'Khăn vàng', 'khanvang', 500, 0),
-(17, 18, 0, 0, 'Khăn xanh lá', 'khanxanhla', 500, 0),
-(18, 19, 0, 0, 'Khăn tím', 'khantim', 500, 0),
-(19, 13, 0, 0, 'Thổ địa phù', 'thodiaphu', 1000, -1),
-(20, 13, 0, 0, 'Vé tàu', 'vetau', 15000, -1),
-(21, 9, 350, 1, 'HP đ.biệt vừa', 'hpdbietvua', 0, 0),
-(22, 10, 350, 1, 'HP đ.biệt to', 'hpdbietto', 0, 0),
-(23, 7, 350, 1, 'MP đ.biệt vừa', 'mpdbietvua', 0, 0),
-(24, 8, 350, 1, 'MP đ.biệt to', 'mpdbietto', 0, 0),
-(25, 20, 350, 0, 'Thuốc khôi phục tiềm năng', 'thuockhoiphuctiemnang', 0, 0),
-(26, 21, 350, 0, 'Thuốc khôi phục', 'thuockhoiphuc', 0, 0),
-(27, 32, 0, 0, 'Thần hành phù', 'thanhanhphu', 0, 0),
-(28, 32, 0, 0, 'Thẻ cấm chat', 'thecamchat', 0, 0),
-(29, 32, 0, 0, 'Phiếu công ích', 'phieucongich', 0, 0),
-(30, 27, 0, 1, 'Thiên lý mã', 'thienlyma', 0, 0),
-(31, 33, 0, 0, 'Kim bài', 'kimbai', 0, 0),
-(32, 13, 0, 0, 'Thẻ đấu trường', 'thedautruong', 0, 0),
-(33, 39, 0, 0, 'Thẻ chiếm thành', 'thechiemthanh', 0, 0),
-(34, 37, 0, 0, 'Xích thố', 'xichtho', 0, 0),
-(35, 11, 0, 0, 'Vé giờ vàng 100, x2 kinh nghiệm trong một giờ chơi. Tính theo thời gian chơi', 'vegiovangxkinhnghiemtrongmotgiochoitinhtheothoigianchoi', 0, 0),
-(36, 35, 0, 0, 'Tuần lộc', 'tuanloc', 0, 0),
-(37, 113, 0, 1, 'Đầu đinh', 'daudinh', 0, 0),
-(38, 114, 0, 1, 'Tóc búi', 'tocbui', 0, 0),
-(39, 115, 0, 1, 'Tóc cột cao', 'toccotcao', 0, 0),
-(40, 116, 0, 1, 'Tóc chéo', 'toccheo', 0, 0),
-(41, 117, 0, 1, 'Tóc xù', 'tocxu', 0, 0),
-(42, 118, 0, 1, 'Tóc ngang vai', 'tocngangvai', 0, 0),
-(43, 119, 0, 1, 'Tóc đinh so le', 'tocdinhsole', 0, 0),
-(44, 120, 0, 1, 'Tóc so le', 'tocsole', 0, 0),
-(45, 121, 0, 1, 'Tóc thư sinh', 'tocthusinh', 0, 0),
-(46, 122, 0, 1, 'Tóc cài hoa', 'toccaihoa', 0, 0),
-(47, 123, 0, 1, 'Tóc bờm ngựa', 'tocbomngua', 0, 0),
-(48, 124, 0, 1, 'Tóc tiên đồng', 'toctiendong', 0, 0),
-(49, 125, 0, 1, 'Tóc dựng đứng', 'tocdungdung', 0, 0),
-(50, 43, 0, 0, 'Hoa mai', 'hoamai', 0, 0),
-(51, 43, 0, 0, 'Hoa mai', 'hoamai', 0, 0),
-(52, 43, 0, 0, 'Hoa mai', 'hoamai', 0, 0),
-(53, 43, 0, 0, 'Hoa mai', 'hoamai', 0, 0),
-(54, 44, 0, 0, 'Hoa đào', 'hoadao', 0, 0),
-(55, 44, 0, 0, 'Hoa đào', 'hoadao', 0, 0),
-(56, 44, 0, 0, 'Hoa đào', 'hoadao', 0, 0),
-(57, 44, 0, 0, 'Hoa đào', 'hoadao', 0, 0),
-(58, 45, 0, 0, 'Hoa hồng', 'hoahong', 0, 0),
-(59, 45, 0, 0, 'Hoa hồng', 'hoahong', 0, 0),
-(60, 45, 0, 0, 'Hoa hồng', 'hoahong', 0, 0),
-(61, 45, 0, 0, 'Hoa hồng', 'hoahong', 0, 0),
-(62, 40, 0, 0, 'Bí ma', 'bima', 0, 0),
-(63, 42, 0, 0, 'Hộp may mắn', 'hopmayman', 0, 0),
-(64, 47, 0, 1, 'Hắc Ngưu', 'hacnguu', 0, 0),
-(65, 46, 0, 1, 'Mãnh hổ', 'manhho', 0, 0),
-(66, 48, 0, 1, 'Sói xám', 'soixam', 0, 0),
-(67, 49, 0, 1, 'Tiên Hạc', 'tienhac', 0, 0),
-(68, 38, 0, 1, 'Bạch mã', 'bachma', 0, 0),
-(69, 32, 0, 0, 'Vé quay số', 'vequayso', 0, 0),
-(70, 24, 0, 1, 'Trứng phượng hoàng băng', 'trungphuonghoangbang', 0, 0),
-(71, 227, 0, 1, 'Trứng Hoả kỳ lân', 'trunghoakylan', 0, 0),
-(72, 146, 0, 1, 'Trứng đương khang', 'trungduongkhang', 0, 0),
-(73, 141, 0, 0, 'Túi nhặt ngọc', 'tuinhatngoc', 0, 0),
-(74, 145, 0, 1, 'Trứng bạch cốt', 'trungbachcot', 0, 0),
-(75, 11, 1000, 0, 'Vé giờ vàng 100, x2 kinh nghiệm trong 3 giờ chơi. Tính theo thời gian chơi', 'vegiovangxkinhnghiemtronggiochoitinhtheothoigianchoi', 0, 0),
-(76, 32, 0, 0, 'Vé quay số đặc biệt', 'vequaysodacbiet', 0, 0),
-(77, 213, 0, 0, 'Mảnh bản đồ 1', 'manhbando', 0, 0),
-(78, 32, 0, 0, 'Thẻ liên hoa', 'thelienhoa', 0, 0),
-(79, 42, 0, 0, 'Hộp thần kỳ', 'hopthanky', 0, 0),
-(80, 60, 0, 0, 'Bình tăng lực 5%/n. Tăng 5% các chỉ số trong 3 ngày', 'binhtanglucntangcacchisotrongngay', 0, 0),
-(81, 11, 0, 0, 'Vé giờ vàng tăng 150% kinh nghiệm.', 'vegiovangtangkinhnghiem', 0, 0),
-(82, 107, 0, 0, 'Thẻ vận tiêu. Thêm một lượt vận tiêu khi sử dụng', 'thevantieuthemmotluotvantieukhisudung', 0, 0),
-(83, 245, 0, 0, 'Tụ hồn đan. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn.', 'tuhondantangkinhnghiemchothunuoikhichoan', 0, 0),
-(84, 31, 0, 0, 'Thuốc cường hoá', 'thuoccuonghoa', 0, 0),
-(85, 32, 0, 0, 'Thẻ triệu hồi', 'thetrieuhoi', 0, 0),
-(86, 65, 0, 1, 'Phượng hoàng', 'phuonghoang', 0, 0),
-(87, 32, 0, 0, 'Thẻ bài phong chức', 'thebaiphongchuc', 0, 0),
-(88, 73, 0, 0, 'Nhẫn Bách niên giai lão 2%pt', 'nhanbachniengiailaopt', 0, 0),
-(89, 74, 0, 0, 'Nhẫn Vĩnh kết đồng tâm 4%pt', 'nhanvinhketdongtampt', 0, 0),
-(90, 75, 0, 0, 'Nhẫn Loan phụng hòa minh 7%pt', 'nhanloanphunghoaminhpt', 0, 0),
-(91, 32, 0, 0, 'Vé vào mỏ', 'vevaomo', 0, 0),
-(92, 76, 0, 0, 'Thiệp cưới', 'thiepcuoi', 0, 0),
-(93, 10, 350, 1, 'HP7k', 'hpk', 0, 0),
-(94, 10, 350, 1, 'HP15k', 'hpk', 0, 0),
-(95, 8, 350, 1, 'MP7k', 'mpk', 0, 0),
-(96, 8, 350, 1, 'MP15k', 'mpk', 0, 0),
-(97, 105, 0, 0, 'Lệnh bài đổi tiêu', 'lenhbaidoitieu', 0, 0),
-(98, 93, 0, 0, 'Phù phu thê', 'phuphuthe', 0, 0),
-(99, 64, 0, 0, 'Pháo hoa', 'phaohoa', 0, 0),
-(100, 77, 0, 0, 'loa', 'loa', 0, 0),
-(101, 67, 0, 0, 'Rương vàng', 'ruongvang', 0, 0),
-(102, 68, 0, 0, 'Rương bạc', 'ruongbac', 0, 0),
-(103, 43, 0, 0, 'Lá vàng', 'lavang', 0, 0),
-(104, 246, 0, 0, 'Dây thừng. Dùng để bắt thú nuôi', 'daythungdungdebatthunuoi', 0, 0),
-(105, 214, 0, 0, 'Mảnh bản đồ 2', 'manhbando', 0, 0),
-(106, 0, 0, 0, '', '', 0, 0),
-(107, 0, 0, 0, '', '', 0, 0),
-(108, 0, 0, 0, '', '', 0, 0),
-(109, 83, 0, 0, '', '', 0, 0),
-(110, 0, 0, 0, '', '', 0, 0),
-(111, 0, 0, 0, '', '', 0, 0),
-(112, 85, 0, 0, 'Thức ăn tươi', 'thucantuoi', 0, 0),
-(113, 86, 0, 0, 'Thức ăn khô', 'thucankho', 0, 0),
-(114, 87, 0, 0, 'Thức ăn tổng hợp', 'thucantonghop', 0, 0),
-(115, 166, 0, 1, 'Trứng Lân sư tử', 'trunglansutu', 0, 0),
-(116, 106, 0, 0, 'Lệnh bài đổi tiêu cao cấp', 'lenhbaidoitieucaocap', 0, 0),
-(117, 215, 0, 0, 'Mảnh bản đồ 3', 'manhbando', 0, 0),
-(118, 32, 0, 0, 'Vé phượng hoàng.\nDùng quay số phượng hoàng', 'vephuonghoangdungquaysophuonghoang', 0, 0),
-(119, 152, 0, 0, 'Tiên đan\nHồi sinh bản thân.', 'tiendanhoisinhbanthan', 0, 0),
-(120, 91, 0, 0, 'Thịt', 'thit', 0, 0),
-(121, 89, 0, 0, 'Trứng', 'trung', 0, 0),
-(122, 199, 0, 0, 'Đậu xanh', 'dauxanh', 0, 0),
-(123, 31, 0, 0, 'Thuốc cường hóa siêu cấp', 'thuoccuonghoasieucap', 0, 0),
-(124, 66, 0, 0, 'Bánh dẻo', 'banhdeo', 0, 0),
-(125, 92, 0, 0, 'Bánh nướng', 'banhnuong', 0, 0),
-(126, 162, 0, 0, 'Hp chiến trường.\nHồi 10.000 hp', 'hpchientruonghoihp', 0, 0),
-(127, 174, 0, 0, 'Đoạn cốt.\nHồi 10.000 mp', 'doancothoimp', 0, 0),
-(128, 163, 0, 0, 'Thuốc cường hoá chiến trường', 'thuoccuonghoachientruong', 0, 0),
-(129, 156, 0, 0, 'Hỗn độn.\nTăng 20% giáp trong 90s', 'hondontanggiaptrongs', 0, 0),
-(130, 158, 0, 0, 'Hỗn Nguyên.\nTăng 20% sát thương.', 'honnguyentangsatthuong', 0, 0),
-(131, 159, 0, 0, 'Hoá công.\nTăng 50% sát thương boss.', 'hoacongtangsatthuongboss', 0, 0),
-(132, 157, 0, 0, 'Hoả dược. Gây sát thương theo x10% nội lực bản thân lên toàn bộ mục tiêu trong bán kính 5m.', 'hoaduocgaysatthuongtheoxnoilucbanthanlentoanbomuctieutrongbankinhm', 0, 0),
-(133, 171, 0, 0, 'Hộp bánh thập cẩm', 'hopbanhthapcam', 0, 0),
-(134, 212, 0, 0, 'Hộp bánh đặc biệt', 'hopbanhdacbiet', 0, 0),
-(135, 108, 0, 0, 'Hạt mầm', 'hatmam', 0, 0),
-(136, 28, 0, 0, 'Nến', 'nen', 0, 0),
-(137, 208, 0, 0, 'Kẹo', 'keo', 0, 0),
-(138, 207, 0, 0, 'Bí ngô', 'bingo', 0, 0),
-(139, 35, 0, 0, 'Hộp quà', 'hopqua', 0, 0),
-(140, 222, 0, 0, 'Hộp quà halloween', 'hopquahalloween', 0, 0),
-(141, 223, 0, 0, 'Hộp quà tặng halloween', 'hopquatanghalloween', 0, 0),
-(142, 30, 0, 0, 'Bột mỳ', 'botmy', 0, 0),
-(143, 0, 0, 0, 'Hộp quà bí mật', 'hopquabimat', 0, 0),
-(144, 230, 0, 0, 'Sao vàng', 'saovang', 0, 0),
-(145, 14, 0, 0, 'Dưa Hấu', 'duahau', 0, 0),
-(146, 99, 0, 0, 'Kem', 'kem', 0, 0),
-(147, 220, 0, 0, 'Túi quà may mắn', 'tuiquamayman', 0, 0),
-(148, 177, 0, 0, 'Gạo nếp', 'gaonep', 0, 0),
-(149, 233, 0, 0, 'Thịt mỡ', 'thitmo', 0, 0),
-(150, 172, 0, 0, 'Lá dong', 'ladong', 0, 0),
-(151, 180, 0, 0, 'Bánh chưng', 'banhchung', 0, 0),
-(152, 175, 0, 0, 'Bánh tét', 'banhtet', 0, 0),
-(153, 170, 0, 0, 'Giấy', 'giay', 0, 0),
-(154, 174, 0, 0, 'Thuốc pháo', 'thuocphao', 0, 0),
-(155, 64, 0, 0, 'Pháo hoa tết', 'phaohoatet', 0, 0),
-(156, 200, 0, 0, 'Lửa thường', 'luathuong', 0, 0),
-(157, 201, 0, 0, 'Lửa vừa', 'luavua', 0, 0),
-(158, 202, 0, 0, 'Lửa to', 'luato', 0, 0),
-(159, 76, 0, 0, 'Bao lì xì', 'baolixi', 0, 0),
-(160, 247, 0, 0, 'Quả bóng bạc', 'quabongbac', 0, 0),
-(161, 248, 0, 0, 'Quả bóng vàng', 'quabongvang', 0, 0);
+(0,0,0,0,'Xu','xu',0,0),
+(1,1,350,1,'HP nhỏ','hpnho',100,80),
+(2,2,350,1,'HP vừa','hpvua',500,300),
+(3,3,350,1,'HP to','hpto',800,1000),
+(4,4,350,1,'MP nhỏ','mpnho',50,160),
+(5,5,350,1,'MP vừa','mpvua',150,600),
+(6,6,350,1,'MP to','mpto',500,2000),
+(7,22,350,0,'Bình tăng tốc thường','binhtangtocthuong',500,1),
+(8,88,350,0,'Bình tăng tốc vàng.\nGiảm 20% thời gian chín của trái vàng','binhtangtocvanggiamthoigianchincuatraivang',500,2),
+(9,26,350,0,'Nhân sâm','nhansam',500,1),
+(10,62,350,0,'Tiên dược thường: cộng 100k exp','tienduocthuongcongkexp',500,2),
+(11,40,0,0,'Tiên dược cao cấp: cộng 500k exp','tienduoccaocapcongkexp',500,1),
+(12,36,0,0,'Tiên dược đặc biệt: cộng 1t exp','tienduocdacbietcongtexp',500,0),
+(13,23,0,0,'Bình tăng tốc bạc.\nGiảm 20% thời gian chín của trái bạc','binhtangtocbacgiamthoigianchincuatraibac',500,0),
+(14,15,0,0,'Khăn đỏ','khando',500,0),
+(15,16,0,0,'Khăn xanh','khanxanh',500,0),
+(16,17,0,0,'Khăn vàng','khanvang',500,0),
+(17,18,0,0,'Khăn xanh lá','khanxanhla',500,0),
+(18,19,0,0,'Khăn tím','khantim',500,0),
+(19,13,0,0,'Thổ địa phù','thodiaphu',1000,-1),
+(20,13,0,0,'Vé tàu','vetau',15000,-1),
+(21,9,350,1,'HP đ.biệt vừa','hpdbietvua',0,0),
+(22,10,350,1,'HP đ.biệt to','hpdbietto',0,0),
+(23,7,350,1,'MP đ.biệt vừa','mpdbietvua',0,0),
+(24,8,350,1,'MP đ.biệt to','mpdbietto',0,0),
+(25,20,350,0,'Thuốc khôi phục tiềm năng','thuockhoiphuctiemnang',0,0),
+(26,21,350,0,'Thuốc khôi phục','thuockhoiphuc',0,0),
+(27,32,0,0,'Thần hành phù','thanhanhphu',0,0),
+(28,32,0,0,'Thẻ cấm chat','thecamchat',0,0),
+(29,32,0,0,'Phiếu công ích','phieucongich',0,0),
+(30,27,0,1,'Thiên lý mã','thienlyma',0,0),
+(31,33,0,0,'Kim bài','kimbai',0,0),
+(32,13,0,0,'Thẻ đấu trường','thedautruong',0,0),
+(33,39,0,0,'Thẻ chiếm thành','thechiemthanh',0,0),
+(34,37,0,0,'Xích thố','xichtho',0,0),
+(35,11,0,0,'Vé giờ vàng 100, x2 kinh nghiệm trong một giờ chơi. Tính theo thời gian chơi','vegiovangxkinhnghiemtrongmotgiochoitinhtheothoigianchoi',0,0),
+(36,35,0,0,'Tuần lộc','tuanloc',0,0),
+(37,113,0,1,'Đầu đinh','daudinh',0,0),
+(38,114,0,1,'Tóc búi','tocbui',0,0),
+(39,115,0,1,'Tóc cột cao','toccotcao',0,0),
+(40,116,0,1,'Tóc chéo','toccheo',0,0),
+(41,117,0,1,'Tóc xù','tocxu',0,0),
+(42,118,0,1,'Tóc ngang vai','tocngangvai',0,0),
+(43,119,0,1,'Tóc đinh so le','tocdinhsole',0,0),
+(44,120,0,1,'Tóc so le','tocsole',0,0),
+(45,121,0,1,'Tóc thư sinh','tocthusinh',0,0),
+(46,122,0,1,'Tóc cài hoa','toccaihoa',0,0),
+(47,123,0,1,'Tóc bờm ngựa','tocbomngua',0,0),
+(48,124,0,1,'Tóc tiên đồng','toctiendong',0,0),
+(49,125,0,1,'Tóc dựng đứng','tocdungdung',0,0),
+(50,43,0,0,'Hoa mai','hoamai',0,0),
+(51,43,0,0,'Hoa mai','hoamai',0,0),
+(52,43,0,0,'Hoa mai','hoamai',0,0),
+(53,43,0,0,'Hoa mai','hoamai',0,0),
+(54,44,0,0,'Hoa đào','hoadao',0,0),
+(55,44,0,0,'Hoa đào','hoadao',0,0),
+(56,44,0,0,'Hoa đào','hoadao',0,0),
+(57,44,0,0,'Hoa đào','hoadao',0,0),
+(58,45,0,0,'Hoa hồng','hoahong',0,0),
+(59,45,0,0,'Hoa hồng','hoahong',0,0),
+(60,45,0,0,'Hoa hồng','hoahong',0,0),
+(61,45,0,0,'Hoa hồng','hoahong',0,0),
+(62,40,0,0,'Bí ma','bima',0,0),
+(63,42,0,0,'Hộp may mắn','hopmayman',0,0),
+(64,47,0,1,'Hắc Ngưu','hacnguu',0,0),
+(65,46,0,1,'Mãnh hổ','manhho',0,0),
+(66,48,0,1,'Sói xám','soixam',0,0),
+(67,49,0,1,'Tiên Hạc','tienhac',0,0),
+(68,38,0,1,'Bạch mã','bachma',0,0),
+(69,32,0,0,'Vé quay số','vequayso',0,0),
+(70,24,0,1,'Trứng phượng hoàng băng','trungphuonghoangbang',0,0),
+(71,227,0,1,'Trứng Hoả kỳ lân','trunghoakylan',0,0),
+(72,146,0,1,'Trứng đương khang','trungduongkhang',0,0),
+(73,141,0,0,'Túi nhặt ngọc','tuinhatngoc',0,0),
+(74,145,0,1,'Trứng bạch cốt','trungbachcot',0,0),
+(75,11,1000,0,'Vé giờ vàng 100, x2 kinh nghiệm trong 3 giờ chơi. Tính theo thời gian chơi','vegiovangxkinhnghiemtronggiochoitinhtheothoigianchoi',0,0),
+(76,32,0,0,'Vé quay số đặc biệt','vequaysodacbiet',0,0),
+(77,213,0,0,'Mảnh bản đồ 1','manhbando',0,0),
+(78,32,0,0,'Thẻ liên hoa','thelienhoa',0,0),
+(79,42,0,0,'Hộp thần kỳ','hopthanky',0,0),
+(80,60,0,0,'Bình tăng lực 5%/n. Tăng 5% các chỉ số trong 3 ngày','binhtanglucntangcacchisotrongngay',0,0),
+(81,11,0,0,'Vé giờ vàng tăng 150% kinh nghiệm.','vegiovangtangkinhnghiem',0,0),
+(82,107,0,0,'Thẻ vận tiêu. Thêm một lượt vận tiêu khi sử dụng','thevantieuthemmotluotvantieukhisudung',0,0),
+(83,245,0,0,'Tụ hồn đan. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn.','tuhondantangkinhnghiemchothunuoikhichoan',0,0),
+(84,31,0,0,'Thuốc cường hoá','thuoccuonghoa',0,0),
+(85,32,0,0,'Thẻ triệu hồi','thetrieuhoi',0,0),
+(86,65,0,1,'Phượng hoàng','phuonghoang',0,0),
+(87,32,0,0,'Thẻ bài phong chức','thebaiphongchuc',0,0),
+(88,73,0,0,'Nhẫn Bách niên giai lão 2%pt','nhanbachniengiailaopt',0,0),
+(89,74,0,0,'Nhẫn Vĩnh kết đồng tâm 4%pt','nhanvinhketdongtampt',0,0),
+(90,75,0,0,'Nhẫn Loan phụng hòa minh 7%pt','nhanloanphunghoaminhpt',0,0),
+(91,32,0,0,'Vé vào mỏ','vevaomo',0,0),
+(92,76,0,0,'Thiệp cưới','thiepcuoi',0,0),
+(93,10,350,1,'HP7k','hpk',0,0),
+(94,10,350,1,'HP15k','hpk',0,0),
+(95,8,350,1,'MP7k','mpk',0,0),
+(96,8,350,1,'MP15k','mpk',0,0),
+(97,105,0,0,'Lệnh bài đổi tiêu','lenhbaidoitieu',0,0),
+(98,93,0,0,'Phù phu thê','phuphuthe',0,0),
+(99,64,0,0,'Pháo hoa','phaohoa',0,0),
+(100,77,0,0,'loa','loa',0,0),
+(101,67,0,0,'Rương vàng','ruongvang',0,0),
+(102,68,0,0,'Rương bạc','ruongbac',0,0),
+(103,43,0,0,'Lá vàng','lavang',0,0),
+(104,246,0,0,'Dây thừng. Dùng để bắt thú nuôi','daythungdungdebatthunuoi',0,0),
+(105,214,0,0,'Mảnh bản đồ 2','manhbando',0,0),
+(106,45,0,0,'Nhánh hoa hồng vàng','nhanhhoahongvang',0,0),
+(107,45,0,0,'Hoa hồng đỏ','hoahongdo',0,0),
+(108,220,0,0,'Hộp quà may mắn\nQuà bình chọn World Cup.\nBấm hai lần để mở, nhận ngẫu nhiên phi phong, nguyên liệu, xu/lượng hoặc pet.','hopquamayman',0,0),
+(109,45,0,1,'Bó hoa vàng','bohoavang',0,0),
+(110,45,0,0,'Bó hoa đỏ','bohoado',0,0),
+(111,95,0,1,'Sách kỹ năng pet','sachkynangpet',0,0),
+(112,85,0,0,'Thức ăn tươi','thucantuoi',0,0),
+(113,86,0,0,'Thức ăn khô','thucankho',0,0),
+(114,87,0,0,'Thức ăn tổng hợp','thucantonghop',0,0),
+(115,166,0,1,'Trứng Lân sư tử','trunglansutu',0,0),
+(116,106,0,0,'Lệnh bài đổi tiêu cao cấp','lenhbaidoitieucaocap',0,0),
+(117,215,0,0,'Mảnh bản đồ 3','manhbando',0,0),
+(118,32,0,0,'Vé phượng hoàng.\nDùng quay số phượng hoàng','vephuonghoangdungquaysophuonghoang',0,0),
+(119,152,0,0,'Tiên đan\nHồi sinh bản thân.','tiendanhoisinhbanthan',0,0),
+(120,91,0,0,'Thịt','thit',0,0),
+(121,89,0,0,'Trứng','trung',0,0),
+(122,199,0,0,'Đậu xanh','dauxanh',0,0),
+(123,31,0,0,'Thuốc cường hóa siêu cấp','thuoccuonghoasieucap',0,0),
+(124,66,0,0,'Bánh dẻo','banhdeo',0,0),
+(125,92,0,0,'Bánh nướng','banhnuong',0,0),
+(126,162,0,0,'Hp chiến trường.\nHồi 10.000 hp','hpchientruonghoihp',0,0),
+(127,174,0,0,'Đoạn cốt.\nHồi 10.000 mp','doancothoimp',0,0),
+(128,163,0,0,'Thuốc cường hoá chiến trường','thuoccuonghoachientruong',0,0),
+(129,156,0,0,'Hỗn độn.\nTăng 20% giáp trong 90s','hondontanggiaptrongs',0,0),
+(130,158,0,0,'Hỗn Nguyên.\nTăng 20% sát thương.','honnguyentangsatthuong',0,0),
+(131,159,0,0,'Hoá công.\nTăng 50% sát thương boss.','hoacongtangsatthuongboss',0,0),
+(132,157,0,0,'Hoả dược. Gây sát thương theo x10% nội lực bản thân lên toàn bộ mục tiêu trong bán kính 5m.','hoaduocgaysatthuongtheoxnoilucbanthanlentoanbomuctieutrongbankinhm',0,0),
+(133,171,0,0,'Hộp bánh thập cẩm','hopbanhthapcam',0,0),
+(134,212,0,0,'Hộp bánh đặc biệt','hopbanhdacbiet',0,0),
+(135,108,0,0,'Hạt mầm','hatmam',0,0),
+(136,28,0,0,'Nến','nen',0,0),
+(137,208,0,0,'Kẹo','keo',0,0),
+(138,207,0,0,'Bí ngô','bingo',0,0),
+(139,35,0,0,'Hộp quà','hopqua',0,0),
+(140,222,0,0,'Hộp quà halloween','hopquahalloween',0,0),
+(141,223,0,0,'Hộp quà tặng halloween','hopquatanghalloween',0,0),
+(142,30,0,0,'Bột mỳ','botmy',0,0),
+(143,0,0,0,'Hộp quà bí mật','hopquabimat',0,0),
+(144,230,0,0,'Sao vàng','saovang',0,0),
+(145,14,0,0,'Dưa Hấu','duahau',0,0),
+(146,99,0,0,'Kem','kem',0,0),
+(147,220,0,0,'Túi quà may mắn','tuiquamayman',0,0),
+(148,177,0,0,'Gạo nếp','gaonep',0,0),
+(149,233,0,0,'Thịt mỡ','thitmo',0,0),
+(150,172,0,0,'Lá dong','ladong',0,0),
+(151,180,0,0,'Bánh chưng','banhchung',0,0),
+(152,175,0,0,'Bánh tét','banhtet',0,0),
+(153,170,0,0,'Giấy','giay',0,0),
+(154,174,0,0,'Thuốc pháo','thuocphao',0,0),
+(155,64,0,0,'Pháo hoa tết','phaohoatet',0,0),
+(156,200,0,0,'Lửa thường','luathuong',0,0),
+(157,201,0,0,'Lửa vừa','luavua',0,0),
+(158,202,0,0,'Lửa to','luato',0,0),
+(159,76,0,0,'Bao lì xì','baolixi',0,0),
+(160,247,0,0,'Quả bóng bạc','quabongbac',0,0),
+(161,248,0,0,'Quả bóng vàng','quabongvang',0,0);
 
 -- --------------------------------------------------------
 
@@ -4730,6 +4730,212 @@ ALTER TABLE `tob_wedding`
 --
 ALTER TABLE `tob_x2exp`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+-- ============================================================================
+--  9 BANG THEM SAU (bo sung vao ban seed ngay 02/09/2026)
+--
+--  Truoc do 9 bang nay chi nam trong cac file sql/them_bang_*.sql rieng le, nen
+--  server dung theo dung huong dan (gamedb7_clean.sql + vps/db_new_server.sql)
+--  bi THIEU ca 9 - trong do tob_su_kien la nguon duy nhat cua he thong su kien.
+--
+--  LAY GI: cau truc ca 9 bang; con DU LIEU thi chi lay 2 bang la cau hinh
+--  (tob_su_kien, tob_event_world_cup_state). Cac bang con lai la log / du lieu
+--  nguoi choi (tob_log_online, web_admin_log, web_chan_spam, tob_may_dang_nhap,
+--  tob_top_event_world_cup, web_admin_2fa) nen de TRONG - ban seed nay khong
+--  chua du lieu nguoi choi nao.
+-- ============================================================================
+
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+DROP TABLE IF EXISTS `web_admin_2fa`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `web_admin_2fa` (
+  `admin_user` varchar(50) NOT NULL COMMENT 'team_user.username, chu thuong. Khop ADMIN_ACCOUNTS trong config.local.php',
+  `khoa_bimat` varchar(64) NOT NULL COMMENT 'Khoa TOTP dang Base32 (20 byte = 32 ky tu). CHI sinh boi tao_ma_2buoc.php',
+  `kich_hoat` tinyint(4) NOT NULL DEFAULT 0 COMMENT '1 = tai khoan nay BUOC PHAI go ma hai buoc, khong co cach bo qua',
+  `buoc_da_dung` bigint(20) NOT NULL DEFAULT 0 COMMENT 'Buoc thoi gian cao nhat da dung. Chong dung lai mot ma da bi doc len',
+  `ma_du_phong` text DEFAULT NULL COMMENT '8 ma du phong DA BAM, ngan nhau bang \\n. Moi ma dung dung mot lan',
+  `tao_luc` datetime DEFAULT NULL COMMENT 'Luc ghi danh',
+  `dung_luc` datetime DEFAULT NULL COMMENT 'Lan cuoi go ma thanh cong',
+  PRIMARY KEY (`admin_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tob_cam_may`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tob_cam_may` (
+  `ma_may` varchar(64) NOT NULL COMMENT 'SystemInfo.deviceUniqueIdentifier do client gửi',
+  `ly_do` varchar(255) NOT NULL DEFAULT '',
+  `boi_ai` varchar(64) NOT NULL DEFAULT '' COMMENT 'admin nào cấm',
+  `luc` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`ma_may`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Danh sách máy bị cấm đăng nhập';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tob_may_dang_nhap`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tob_may_dang_nhap` (
+  `ma_may` varchar(64) NOT NULL,
+  `username` varchar(64) NOT NULL,
+  `ip` varchar(45) NOT NULL DEFAULT '' COMMENT 'dài 45 để chứa được cả IPv6',
+  `lan_dau` datetime NOT NULL DEFAULT current_timestamp(),
+  `lan_cuoi` datetime NOT NULL DEFAULT current_timestamp(),
+  `so_lan` int(11) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`ma_may`,`username`),
+  KEY `k_username` (`username`),
+  KEY `k_lan_cuoi` (`lan_cuoi`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Máy nào đã đăng nhập tài khoản nào';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tob_su_kien`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tob_su_kien` (
+  `ma` varchar(40) NOT NULL COMMENT 'khoa, khop hang so trong src/real/SuKien.java',
+  `bat` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'WEB ghi: 1 = bat su kien',
+  `ten` varchar(100) DEFAULT NULL COMMENT 'SERVER ghi',
+  `nhom` varchar(40) DEFAULT NULL COMMENT 'SERVER ghi',
+  `mo_ta` varchar(500) DEFAULT NULL COMMENT 'SERVER ghi',
+  `dang_bat` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'SERVER ghi: trang thai that luc khoi dong',
+  `sua_boi` varchar(50) DEFAULT NULL COMMENT 'WEB ghi',
+  `sua_luc` datetime DEFAULT NULL COMMENT 'WEB ghi',
+  `may_chu_luc` datetime DEFAULT NULL COMMENT 'SERVER ghi: lan khoi dong gan nhat',
+  `mo_luc` datetime DEFAULT NULL,
+  `dong_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`ma`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tob_log_online`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tob_log_online` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `thoi_gian` datetime NOT NULL COMMENT 'luc lay mau',
+  `ket_noi` int(11) NOT NULL DEFAULT 0 COMMENT 'so socket dang mo',
+  `nhan_vat` int(11) NOT NULL DEFAULT 0 COMMENT 'so nhan vat that trong game',
+  PRIMARY KEY (`id`),
+  KEY `idx_thoi_gian` (`thoi_gian`)
+) ENGINE=InnoDB AUTO_INCREMENT=986 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `web_admin_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `web_admin_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `admin_user` varchar(50) NOT NULL DEFAULT '' COMMENT 'team_user.username cua nguoi thao tac',
+  `hanh_dong` varchar(50) NOT NULL DEFAULT '' COMMENT 'khoa_tk, mo_tk, tao_giftcode, dang_nhap_that_bai...',
+  `doi_tuong` varchar(100) NOT NULL DEFAULT '' COMMENT 'ten tai khoan / ten nhan vat / ma giftcode bi tac dong',
+  `chi_tiet` varchar(1000) NOT NULL DEFAULT '' COMMENT 'mo ta ro hon, vd gia tri cu -> gia tri moi',
+  `ip` varchar(45) NOT NULL DEFAULT '' COMMENT 'IPv6 dai nhat 45 ky tu',
+  `thoi_gian` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_thoi_gian` (`thoi_gian`),
+  KEY `idx_admin_user` (`admin_user`),
+  KEY `idx_hanh_dong` (`hanh_dong`),
+  KEY `idx_doi_tuong` (`doi_tuong`),
+  KEY `idx_chan_do_mk` (`ip`,`hanh_dong`,`thoi_gian`)
+) ENGINE=InnoDB AUTO_INCREMENT=319 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `web_chan_spam`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `web_chan_spam` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(45) NOT NULL DEFAULT '' COMMENT 'IPv6 dai nhat 45 ky tu',
+  `hanh_dong` varchar(30) NOT NULL DEFAULT '' COMMENT 'dang_ky, tao_don_nap...',
+  `thoi_gian` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_dem` (`ip`,`hanh_dong`,`thoi_gian`)
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tob_event_world_cup_state`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tob_event_world_cup_state` (
+  `event_key` varchar(64) NOT NULL,
+  `winner_side` tinyint(4) NOT NULL DEFAULT 0,
+  `is_finalized` tinyint(4) NOT NULL DEFAULT 0,
+  `finalized_by` varchar(100) DEFAULT NULL,
+  `timeupdate` datetime DEFAULT NULL,
+  PRIMARY KEY (`event_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tob_top_event_world_cup`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tob_top_event_world_cup` (
+  `charname` varchar(100) NOT NULL,
+  `point_messi` int(11) NOT NULL DEFAULT 0,
+  `point_ronaldo` int(11) NOT NULL DEFAULT 0,
+  `claim_normal` tinyint(4) NOT NULL DEFAULT 0,
+  `claim_top` tinyint(4) NOT NULL DEFAULT 0,
+  `timeupdate` datetime DEFAULT NULL,
+  PRIMARY KEY (`charname`),
+  KEY `idx_messi` (`point_messi`),
+  KEY `idx_ronaldo` (`point_ronaldo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+
+-- Du lieu CAU HINH cua tob_su_kien va tob_event_world_cup_state
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('blackfriday',0,'Black Friday','Cuối năm','Giảm giá shop dịp Black Friday.',0,'admin','2026-08-30 23:05:24','2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('blackfridayban',0,'Black Friday: mở bán','Cuối năm','Mở bán các món giới hạn của đợt Black Friday.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('blackfridaydaugia',0,'Black Friday: đấu giá chổi','Cuối năm','Mở phiên đấu giá chổi.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('demhalloween',0,'Đêm Halloween','Mùa','Thưởng riêng đêm 31/10.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('demnoel',0,'Đêm Noel','Cuối năm','Thưởng riêng đêm 24/12.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('demtrungthu',0,'Đêm rằm Trung Thu','Mùa','Tặng 1 bánh nướng khi đăng nhập và khi lên cấp, mỗi nhân vật một lần.',0,'admin','2026-08-30 22:14:03','2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('duatophoalu',0,'Đua top Hoa Lư','Kỷ niệm','Đợt đua top của server Hoa Lư.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('gioto',0,'Giỗ Tổ Hùng Vương','Mùa','Bánh giày, pháo hoa, đổi nguyên liệu, bảng xếp hạng bắn pháo.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('halloween',0,'Halloween','Mùa','Bí ngô, mặt nạ, hộp quà Halloween, boss Dracula.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('halloween2015',0,'Halloween 2015','Mùa','Bản Halloween cũ.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('he2015',0,'Hè 2015','Mùa','Bản sự kiện hè cũ.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('he2017',0,'Sự kiện Hè','Mùa','Kem, dưa hấu, socola, NPC mùa hè.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('longdenhoasen',0,'Bán lồng đèn hoa sen','Mùa','Mở bán lồng đèn hoa sen.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('mini',0,'Sự kiện mini','Mini','Đổi đồ Bạch Mi, Thuý Vũ Hồng Sam, quà đặc biệt ở NPC đấu trường.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('minichucnu',0,'Mini Chức Nữ','Mini','Nhiệm vụ đi tìm Chức Nữ.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('mininuichaubau',0,'Mini Núi Châu Báu','Mini','Bản mini của núi châu báu.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('noel',0,'Noel','Cuối năm','NPC Noel, quà Giáng sinh, tuần lộc. Luôn tắt trên server liên đấu và server local.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('noel2023',0,'Noel 2023','Cuối năm','Bản Noel dựng lại năm 2023.',0,'admin','2026-08-30 22:23:29','2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('quocte83',0,'Quốc tế Phụ nữ 8/3','Kỷ niệm','Quà 8/3, hoa hồng.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('sinhnhat2011',0,'Sinh nhật 20/11','Kỷ niệm','Lồng đèn hoa sen, chổi băng / chổi độc / chổi điện ở NPC sự kiện.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('snngude',0,'Sinh nhật Ngudẻ','Kỷ niệm','NPC sinh nhật.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('snngudequa',0,'Sinh nhật Ngudẻ: phát quà','Kỷ niệm','Cho nhận quà sinh nhật.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('tatca',0,'Cổng tổng cho mọi sự kiện','Cổng chung','Hơn 70 chỗ trong mã nguồn hỏi cổng này trước khi hỏi từng sự kiện. Muốn bật bất kỳ sự kiện cũ nào thì thường phải bật cổng này trước.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('tet123',0,'Ba ngày Tết','Tết','Thưởng riêng ba ngày mùng 1-2-3.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('tet2016',0,'Tết 2016','Tết','Bản Tết cũ: đổi bao lì xì.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('tet2017',0,'Tết Nguyên Đán','Tết','NPC lì xì, nấu bánh chưng, cây lì xì, top Tết.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('tetduonglich',0,'Tết dương lịch','Tết','NPC cây thông (npc -35): đổi 10 kẹo + 30 lượng lấy quà ngẫu nhiên.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('trungthu',0,'Trung Thu','Mùa','Bánh nướng / bánh dẻo, lồng đèn, NPC Hằng Nga, thả đèn.',0,'admin','2026-08-30 22:13:46','2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('trungthu2015',0,'Trung Thu 2015','Mùa','Bản Trung Thu cũ.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('vulan',1,'Vu Lan','Mùa','Rơi nhánh hoa hồng vàng (thu hoạch cây thần, chế đồ, tiến giai, săn boss, giết quái lệch cấp); NPC Đấu Trường đổi bó hoa vàng/đỏ và nguyên liệu; tinh luyện thần khí +10% với đá hỏa thạch cấp 2; Mặt nạ Ông Địa.',1,'lich hen','2026-09-01 22:03:06','2026-09-02 01:25:59',NULL,'2026-09-17 23:59:00');
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('worldcup',0,'World Cup: bình chọn','World Cup','Quái rơi Quả bóng vàng; NPC Tổng Quản mở mục bình chọn Messi/Ronaldo. Mặc định theo cửa sổ sv.worldCup* trong server.ini.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('worldcup2017',0,'World Cup 2017 (bản cũ)','World Cup','Bản cũ: quái rơi Quả bóng bạc, NPC đổi nguyên liệu.',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+INSERT INTO `tob_su_kien` (`ma`, `bat`, `ten`, `nhom`, `mo_ta`, `dang_bat`, `sua_boi`, `sua_luc`, `may_chu_luc`, `mo_luc`, `dong_luc`) VALUES ('worldcupnhanqua',0,'World Cup: phát quà','World Cup','Hết bình chọn, bên thắng vào NPC nhận quà. Bật cùng lúc với mục trên thì mục trên được ưu tiên (vẫn đang bình chọn).',0,NULL,NULL,'2026-09-02 01:25:59',NULL,NULL);
+
+INSERT INTO `tob_event_world_cup_state` (`event_key`, `winner_side`, `is_finalized`, `finalized_by`, `timeupdate`) VALUES ('WORLD_CUP',0,0,NULL,'2026-08-30 18:55:40');
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

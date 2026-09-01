@@ -96,12 +96,30 @@ public class DataGame {
             nMonster = 63;
             imgEffectSkill = new byte[nMonster][];
 
-            try {
-                for (j = 0; j < nMonster; ++j) {
-                    fis = new FileInputStream("map/imgEff/" + j + ".png");
+            // ==== SUA 02/09/2026: duong dan thieu chu "s" ====
+            // Ban cu doc "map/imgEff/" nhung thu muc that la "map/imgEffs/" (63 file,
+            // khop dung nMonster). Ket qua: FileInputStream nem loi ngay o j=0, ma try
+            // lai nam NGOAI vong lap nen ca vong dung luon -> CA 63 O DEU NULL.
+            //
+            // Hau qua: moi yeu cau anh hieu ung skill (id 9000..9062 trong sendByteImg)
+            // deu nem NullPointerException tai `m.dos.write(imgEffectSkill[...])`, tuc
+            // NEM TRUOC `s.sendMessage(m)` - nen client KHONG NHAN DUOC PHAN HOI NAO ca
+            // (khac voi nhan goi rong). Client ngoi cho mot anh khong bao gio toi.
+            // Da thay that trong log: "[ANH] LOI phuc vu anh id 9006/9008/9036".
+            //
+            // Vi thu muc sai ten nen loi nay xay ra tren MOI may, ke ca VPS - khong phai
+            // rieng may nha. test/KiemAnhHieuUng.java ghim lai de khong tai dien.
+            //
+            // try chuyen VAO TRONG vong lap: mot file thieu chi mat dung anh do, khong
+            // con keo theo toan bo cac anh sau no.
+            int soAnhEffSkill = 0;
+            for (j = 0; j < nMonster; ++j) {
+                try {
+                    fis = new FileInputStream("map/imgEffs/" + j + ".png");
                     dis = new DataInputStream(fis);
                     imgEffectSkill[j] = new byte[dis.available()];
                     dis.read(imgEffectSkill[j], 0, imgEffectSkill[j].length);
+                    ++soAnhEffSkill;
 
                     try {
                         dis.close();
@@ -112,9 +130,12 @@ public class DataGame {
                         fis.close();
                     } catch (Exception var1243) {
                     }
+                } catch (Exception var1253) {
                 }
-            } catch (Exception var1253) {
             }
+            // In ra de lan sau thieu anh thi THAY NGAY, thay vi im lang roi NPE luc phuc vu.
+            System.out.println("ANH HIEU UNG SKILL -> " + soAnhEffSkill + "/" + nMonster
+                    + " tu map/imgEffs/");
 
             nMonster = 3;
             imgThanThu = new byte[nMonster][];

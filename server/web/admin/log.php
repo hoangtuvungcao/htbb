@@ -18,7 +18,8 @@ $BANG = [
         'ten'  => 'Vật phẩm',
         'mota' => 'Mọi thứ liên quan tới vật phẩm: nhặt, tạo, mất, lỗi lưu hành trang. '
                 . 'Truy vì sao mất đồ: lọc Loại = matdo (nghiền, bán tự động, admin xoá, '
-                . 'server xoá lúc nạp) hoặc sitems (bán cho NPC).',
+                . 'server xoá lúc nạp). Từ 02/09/2026 bảng CHỈ còn ghi các loại về mất đồ, gian lận '
+                . 'và tài sản tăng bất thường - danh sách GIU ở src/data/LocLogVatPham.java.',
         'cot'  => ['id' => 'ID', 'charname' => 'Nhân vật', 'aclog' => 'Loại',
                    'info' => 'Chi tiết', 'charname2' => 'Liên quan', 'timelog' => 'Lúc'],
         'loc'  => 'charname', 'loc2' => 'aclog', 'sap' => 'id DESC',

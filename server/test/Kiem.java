@@ -77,6 +77,7 @@ public final class Kiem {
         KiemMenuDauTruong.chay();
         KiemNpcAn.chay();
         KiemLogMatVatPham.chay();
+        KiemLocLogVatPham.chay();
         KiemBanDoOffline.chay();
         KiemCamTheoMay.chay();
         KiemDongDangKyClient.chay();

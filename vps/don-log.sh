@@ -139,6 +139,41 @@ echo "$BANG_LOG" | while read -r BANG COT; do
     echo "      da xoa $DA dong"
 done
 
+# ---------- 1b. Cac loai log KHONG CON GHI - xoa not dong cu, khong cho qua han ----------
+#
+# Tu 02/09/2026 server CHI ghi vao tob_log_all_item nhung aclog nam trong danh sach
+# giu (xem src/data/LocLogVatPham.java - danh sach o do la ban goc, day chi la ban
+# chep; test/KiemLocLogVatPham.java ep hai ben phai khop). Moi dong KHONG thuoc danh
+# sach giu la rac cu (rieng luckGOLD 3,2 trieu dong trong mot ngay) - xoa theo lo.
+LOAI_GIU="matdo trade sitemu delI timeout inven2tui tui2inven uwea uride XOAPET XOATC tichthu tichthuchoi logchoi thugay downlv loiinvent loisave hackc hackR hackbitem hackchonchar hcm ngoairange ngoairange1 stGive ffbug hklbug scamchat iftrung naptien nhanlk mocNap mocnap nhanluong nhanxu logxu autosave lenlv lenlevel putGiftCode gcode quatop quatopct top100 tophl thuongchiemthanh salaryC salaryCN txs xoso idruongmm"
+
+DS=""
+for L in $LOAI_GIU; do DS="$DS${DS:+,}'$L'"; done
+CO=$(sql "SELECT COUNT(*) FROM information_schema.TABLES
+          WHERE TABLE_SCHEMA='$DB_NAME' AND TABLE_NAME='tob_log_all_item';")
+if [ "$CO" = "1" ]; then
+    CAN=$(sql "SELECT COUNT(*) FROM tob_log_all_item WHERE aclog NOT IN ($DS);")
+    case "$CAN" in
+        ''|*[!0-9]*) echo "  - loai khong con ghi: khong dem duoc ($CAN)";;
+        0) echo "  - loai khong con ghi: khong con dong nao";;
+        *)
+            if [ $THU = 1 ]; then
+                echo "  - loai khong con ghi (ngoai danh sach giu): SE XOA $CAN dong"
+            else
+                echo "  - loai khong con ghi (ngoai danh sach giu): xoa $CAN dong theo lot $LO..."
+                DA=0
+                for _ in $(seq 1 "$TOI_DA_LOT"); do
+                    N=$(sql "DELETE FROM tob_log_all_item WHERE aclog NOT IN ($DS) LIMIT $LO; SELECT ROW_COUNT();" | tail -1)
+                    case "$N" in ''|*[!0-9]*) echo "      [LOI] $N"; break;; esac
+                    [ "$N" = "0" ] && break
+                    DA=$((DA + N))
+                    sleep "$NGHI"
+                done
+                echo "      da xoa $DA dong"
+            fi;;
+    esac
+fi
+
 # ---------- 2. Bang thong ke luong theo tuan (tob_log_use_luong_<tuan>_<thang>_<nam>) ----------
 #
 # Database.saveLogThongKeChiTieu ghi vao mot bang MOI moi tuan. Cac bang cu

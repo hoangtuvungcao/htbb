@@ -12,7 +12,7 @@ schema** cho 19 chỗ đọc:
 - `test/KiemSkinLinhThu.java` đọc `skin_linh_thu.sql`, `ten_mo_ta_skin_linh_thu.sql`,
   `sua_type_skin_linh_thu.sql`
 - `test/KiemBangMaNguon.java` quét cả `sql/` tìm lỗi bảng mã
-- `web/admin/test/kiem_schema.php` đọc 7 file ở đây + `vps/db_new_server.sql`
+- `web/admin/test/kiem_schema.php` đọc 6 file `them_bang_*.sql` ở đây + `vps/db_new_server.sql`
 
 Xoá một file là hỏng những chỗ đó, hoàn toàn không liên quan tới việc migration đã chạy chưa.
 
@@ -20,17 +20,24 @@ Xoá một file là hỏng những chỗ đó, hoàn toàn không liên quan t�
 
 | File | Vai trò |
 |---|---|
-| `gamedb7_clean.sql` | **Bản seed dựng server mới**: 84 bảng + toàn bộ dữ liệu game, không có nhân vật/tài khoản nào. Dùng theo `docs/HUONG_DAN_BUILD_VPS.md`. |
+| `gamedb7_clean.sql` | **Bản seed dựng server mới**: 93 bảng + toàn bộ dữ liệu game, không có nhân vật/tài khoản nào. Dùng theo `docs/HUONG_DAN_BUILD_VPS.md`. |
 
 Làm mới từ VPS ngày 02/09/2026: `data_item` 904 → **914** dòng, `data_attribute` 141 → **198**
-dòng. Các bảng khác là bản chụp cũ nhưng đã đối chiếu khớp production, **trừ ba chỗ**:
+dòng, `data_potion` khớp production **từng byte** (162 dòng, gồm cả 106-110 của hai sự kiện
+Vu Lan / World Cup), và thêm 9 bảng (7 bảng nhóm `them_bang_*` + 2 bảng World Cup). Các bảng
+khác là bản chụp cũ nhưng đã đối chiếu khớp production, **trừ hai chỗ**:
 
-- `data_potion` id 106-110 vẫn rỗng → hai file sự kiện bên dưới **vẫn thật sự cần**
 - `giftcode` vẫn 14 dòng (production có 32)
 - `tob_tubinh` vẫn 0 dòng (production có 16; `vps/db_new_server.sql` PHẦN 2B nạp)
 
-Bản seed có **84** bảng còn production có **99** — phần thiếu do các file migration bên dưới
-và `vps/db_new_server.sql` bù vào. Nên **bản seed một mình chưa đủ** để dựng server mới.
+Bản seed có **93** bảng còn production có **99**. Trong 12 bảng production có mà seed không có,
+8 bảng là bảng theo kỳ do server tự tạo khi chạy (`tob_log_use_luong_*`, `tob_nap_xai_luong_*`,
+`tob_char_thach_dau_*`, `tob_qua_loi_dai_*` — xem `Database.createTable`); 4 bảng còn lại:
+`tob_nap_moc` và `history_win_xoso` do `vps/db_new_server.sql` tạo, `tob_train_luong` do
+`Database.java` tự `CREATE TABLE IF NOT EXISTS`, còn `tob_skin_thu` là bảng mồ côi trên
+production — không một dòng code nào nhắc tới. Ngược lại seed còn giữ 6 bảng log
+`tob_log_use_luong_*_2025` đã hết kỳ, vô hại. Nên **bản seed một mình chưa đủ** để dựng server
+mới: vẫn phải chạy `vps/db_new_server.sql` sau khi nạp seed.
 
 ## Migration — thêm bảng (đã áp dụng, vẫn cần cho server mới)
 
@@ -43,14 +50,16 @@ và `vps/db_new_server.sql` bù vào. Nên **bản seed một mình chưa đủ*
 | `them_bang_cam_may.sql` | ✅ có bảng, 0 dòng (chưa ai bị cấm máy) |
 | `them_bang_2buoc.sql` | ✅ có bảng, 0 dòng (chưa ai bật 2FA) |
 
-Các bảng này **không có** trong bản seed, nên dựng server mới vẫn phải chạy.
+Từ bản làm mới ngày 02/09/2026, cả 7 bảng này **đã có trong bản seed**, nên dựng server mới từ
+seed không cần chạy lại chúng. Vẫn giữ file vì `web/admin/test/kiem_schema.php` parse chúng để
+kiểm schema của DB thật, và các trang admin (`cammay.php`, `sukien.php`, `nhatky.php`) trỏ người
+vận hành tới đây khi thiếu bảng. Muốn bỏ hẳn thì phải đổi `kiem_schema.php` sang đọc seed trước.
 
 ## Migration — sự kiện & vật phẩm
 
 | File | Trạng thái trên production |
 |---|---|
-| `them_su_kien_vu_lan_2026.sql` | ✅ đã áp dụng (potion 106/107/109/110). **Vẫn cần**: seed còn để trống. |
-| `them_su_kien_world_cup.sql` | ✅ đã áp dụng (potion 108 + 2 bảng). **Vẫn cần**: seed còn để trống. |
+| `them_su_kien_world_cup.sql` | ✅ đã áp dụng (potion 108 + 2 bảng). Bản seed đã hấp thụ cả ba. Giữ vì 4 file Java, `test/KiemSuKienWorldCup.java`, `web/admin/sukien.php` và docs trỏ vào. |
 | `them_phi_phong_vo_hinh.sql` | ⚠️ **áp dụng một phần**: item 910 có, nhưng giftcode `canhvohinh` **chưa có**. |
 | `skin_linh_thu.sql` | ✅ 5 dòng, type 30, xstart 860-864. Bản seed đã hấp thụ (id 905-909). |
 | `ten_mo_ta_skin_linh_thu.sql` | ✅ tên đã kèm mô tả `[hệ …]`. Bản seed đã hấp thụ. |
@@ -79,6 +88,13 @@ trỏ vào dải này, đã đổi sang `map/icon/815-819, 827, 828`. Chuỗi l�
 
 **Lưu ý về `data_potion`:** `SELECT COUNT(*)` phải luôn là **162**. `Char.SO_O_THUOC` và mảng
 `listPotion` của client đều cấp phát theo con số này — thêm/bớt dòng là lệch cả hai bên.
+Vì vậy thuốc mới **không** `INSERT` mà `UPDATE` vào ô trống sẵn có (kiến thức giữ lại từ
+`them_su_kien_vu_lan_2026.sql`, đã xoá): 106 nhánh hoa hồng vàng, 107 hoa hồng đỏ, 109 bó hoa
+vàng (giao dịch được), 110 bó hoa đỏ là bốn thuốc sự kiện Vu Lan; 108 là hộp quà World Cup. Bốn
+thuốc Vu Lan dùng tạm `idImage = 45` (ảnh hoa hồng của 58-61, chưa có ảnh riêng) và được
+`LoginHandler.POTION_SHOP` ánh xạ sang `data_shop` 87/88/90/91 — bốn dòng shop đó có `decript`
+rỗng nên mượn được; ai điền `decript` cho chúng là mô tả bốn thuốc này hiện nhầm. Hằng số ở
+`src/real/Potion.java` (`TYPE_NHANH_HOA_HONG_VANG`…), menu ở `MapSuKien.doMenuDauTruongVuLan`.
 
 ## Chưa áp dụng / thao tác tay
 
@@ -94,6 +110,7 @@ trỏ vào dải này, đã đổi sang `map/icon/815-819, 827, 828`. Chuỗi l�
 | `sua_icon_ao_brazin.sql` | Đã áp dụng, bản seed đã hấp thụ, không còn gì tham chiếu. Kiến thức giữ ở mục "Icon vật phẩm" bên trên. |
 | `sua_icon_dai_800_806.sql` | Như trên. Phần cơ chế đã chuyển vào comment ở `src/data/DataGame.java`. |
 | `buff_ddsa.sql` | **Chưa từng áp dụng**: không một giftcode nào trong ~40 cái của nó tồn tại trên production. Là file buff cho một nhân vật cụ thể, không phải migration. Nội dung còn bị lỗi bảng mã (từng nằm trong danh sách bỏ qua của `test/KiemBangMaNguon.java`). |
+| `them_su_kien_vu_lan_2026.sql` | Đã áp dụng; bản seed làm mới ngày 02/09/2026 có khối `data_potion` khớp production từng byte (đã `diff` bản dump), nên 4 dòng 106/107/109/110 đã nằm trong seed. Không còn file nào tham chiếu. Kiến thức giữ ở mục "Lưu ý về `data_potion`" bên trên. |
 
 ## Cách xoá một template vật phẩm cho an toàn
 

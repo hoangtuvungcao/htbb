@@ -1,12 +1,14 @@
 # KPAH — Khí Phách Anh Hùng (private server)
 
-Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 3 phần chạy độc lập:
+Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 4 phần chạy độc lập:
 
 - **Java game server** — `src/`, build bằng `build.bat`. Jar deploy thật là
   `KPAH2_patched.jar` ở gốc repo.
-- **Client C#** — `Client/` (bản port từ client J2ME/MIDP gốc).
-  ⚠️ **Đây là mã DỊCH NGƯỢC, không build được** — xem mục "Thư mục" bên dưới.
-- **Web PHP** — `web/` (đăng nhập, nạp tiền, PDO + MySQL). Xem `web/README.md`.
+- **Login server** — `loginServer/` (jar riêng, cổng 8023; game server không nhận
+  đăng nhập nếu thiếu nó).
+- **Client Unity (C#)** — `ClientUnity/`, port từ client J2ME gốc, **build được** ra
+  Windows/WebGL/Android/iOS bằng `xay-client.bat` — xem mục `ClientUnity/` bên dưới.
+- **Web PHP** — `web/` (đăng nhập, nạp tiền, admin; PDO + MySQL). Xem `web/README.md`.
 
 ## Thư mục
 

@@ -158,3 +158,7 @@ out_tools/
 # Khong commit de repo khoi phinh them vai nghin tep nhi phan.
 /ClientUnity/Assets/Resources/
 /ClientUnity/Assets/Resources.meta
+
+### Rac he dieu hanh / trinh quan ly tep - da tung lot vao map/d_effect/desktop.ini ###
+Thumbs.db
+desktop.ini
