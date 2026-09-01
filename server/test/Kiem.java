@@ -84,6 +84,7 @@ public final class Kiem {
         KiemTatCaiTrang.chay();
         KiemTaiLieuCauHinh.chay();
         KiemChotCSDL.chay();
+        KiemMayDevCSDL.chay();
         KiemCauHinhPipeline.chay();
         KiemLocBiMat.chay();
         KiemChiTietThuoc.chay();
@@ -92,6 +93,9 @@ public final class Kiem {
         KiemDanhMucThu.chay();
         KiemDanhMucDanhHieu.chay();
         KiemDanhMucItem.chay();
+        KiemBangThuocTinh.chay();
+        KiemLienKetTaiLieu.chay();
+        KiemAnhHieuUng.chay();
         KiemBangCapDo.chay();
         KiemSuKien.chay();
         KiemLichSuKien.chay();

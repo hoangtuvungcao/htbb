@@ -766,11 +766,27 @@ public class DataGame {
         
             Message m = new Message(-51);
             m.dos.writeShort(idImg);
+            // ==== DAI 800-806 BI CHIEM: DUNG dat xstart cua vat pham vao day ====
+            // Dai nay KHONG doc map/icon/<id>.png ma phuc vu tu mang imgOther
+            // (= map/other/0..5.png). Vat pham nao co xstart trong dai nay thi:
+            //   800      -> map/other/0.png la BAN DO THE GIOI co lon. Client ve icon bang
+            //               drawImage(img, x, y, HCENTER|VCENTER) nen anh to PHU KIN UI.
+            //   801..805 -> ra map/other/1..5.png, tuc hien sai anh.
+            //   806      -> imgOther chi co 6 phan tu (0..5) nen k=6 truot dieu kien duoi
+            //               va server gui goi KHONG CO BYTE ANH NAO. Ben client,
+            //               MessageHandler case -51 da dat img.isLoad = false TRUOC khi
+            //               goi Image.createImage; anh rong lam createImage nem loi nen
+            //               img.img giu nguyen null -> tu do MOI LAN paintIcon deu
+            //               NullPointerException, UI thung cho den khi tat han client.
+            // Trieu chung nhin thay: mo hanh trang thi mot phan UI bi anh ban do de len,
+            // hoac o vat pham trong tron roi giao dien vo tu do tro di.
+            // Da tung dinh that: bay vat pham 872-878 deu tro vao dai nay, phai doi sang
+            // map/icon/815-819, 827, 828. Xem sql/README.md muc "Icon vat pham".
             if (idImg < nIconItem && !(idImg >= 800 && idImg <= 806)) {
                 m.dos.write(allImg[idImg]);
             } else if (idImg >= 800 && idImg <= 806) {
-                // imgOther chi co 6 phan tu (0..5) nhung dai nay rong 7 (800..806),
-                // idImg = 806 se ném ArrayIndexOutOfBounds khi phuc vu anh.
+                // imgOther chi co 6 phan tu (0..5) nhung dai nay rong 7 (800..806), nen
+                // idImg = 806 roi vao day va khong ghi gi ca - xem chuoi loi o tren.
                 int k = idImg - 800;
                 if (k >= 0 && k < imgOther.length && imgOther[k] != null) {
                     m.dos.write(imgOther[k]);

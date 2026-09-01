@@ -50,7 +50,16 @@ Database thì **không cần dump gì cả** — server mới bắt đầu trắ
 
 | File trong repo | Là gì |
 |---|---|
-| `sql/gamedb7_clean.sql` | 84 bảng + **toàn bộ dữ liệu game** (904 item, 138 monster, 162 bình, 148 shop, 49 quest, 141 attribute, 147 từ khoá lọc), **không có** một nhân vật/tài khoản nào |
+| `sql/gamedb7_clean.sql` | 84 bảng + **toàn bộ dữ liệu game** (914 item, 138 monster, 162 bình, 148 shop, 49 quest, 198 attribute, 147 từ khoá lọc), **không có** một nhân vật/tài khoản nào |
+
+> Làm mới từ VPS ngày **02/09/2026**: `data_item` 904 → **914** món (5 skin linh thú id
+> 905-909, Phi phong vô hình id 910, 5 skin id 950-954) và `data_attribute` 141 → **198**
+> dòng (id 0..186 liên tục + khối 200..210). Các bảng còn lại là bản chụp cũ nhưng **đã đối
+> chiếu khớp production** (138 monster, 162 bình, 148 shop, 49 quest).
+>
+> Nhờ `data_attribute` đủ 187 dòng đầu, server dựng mới **không còn phải chạy tay** khối
+> PHẦN 2C nữa (xem mục cạm bẫy phía dưới). `test/KiemBangThuocTinh.java` ghim điều kiện
+> id 0..186 liên tục, để lần dump lại sau không âm thầm làm mất nó.
 | `loginServer/account.sql` | cấu trúc bảng `team_user` |
 | `vps/db_new_server.sql` | script dọn sạch + tạo tài khoản admin, mình vừa viết |
 
@@ -71,7 +80,7 @@ người chơi nhưng giữ mọi thiết lập khác.
 
 ### A2. Đặt mật khẩu admin cho server mới
 
-Mở [vps/db_new_server.sql](vps/db_new_server.sql), sửa 2 dòng đầu:
+Mở [vps/db_new_server.sql](../vps/db_new_server.sql), sửa 2 dòng đầu:
 
 ```sql
 SET @admin_user = 'admin';
@@ -420,7 +429,7 @@ nói rõ giá trị đúng:
 +-------------------------------+---------+-----------+
 ```
 
-[vps/db_new_server.sql](vps/db_new_server.sql) làm 6 việc: chặn lại nếu bạn chưa đặt mật
+[vps/db_new_server.sql](../vps/db_new_server.sql) làm 6 việc: chặn lại nếu bạn chưa đặt mật
 khẩu admin (chặn **trước khi** xoá bất cứ thứ gì), xoá sạch mọi bảng dữ liệu người chơi
 (đọc từ `information_schema` nên không sót bảng log xoay vòng theo tháng), giữ nguyên 16
 bảng dữ liệu game, **bù 2 thứ mà bản dump sạch bị thiếu** (xem dưới), xoá sạch tài khoản,
@@ -433,7 +442,7 @@ mới tìm ra, script đã bù sẵn:
    Tên bắt đầu bằng `tob_` nhưng đây là **dữ liệu game**, không phải của người chơi. Để
    trống thì nhân vật lv ≥ 40 vào game sẽ ném `Duplicate entry ... for key PRIMARY` ở
    `addCharTubinh` và `ArrayIndexOutOfBounds` ở `createMsgCharTuBinh`.
-2. **`history_win_xoso`** — [Database.java:1619](src/data/Database.java#L1619) `INSERT` vào
+2. **`history_win_xoso`** — [Database.java:1619](../src/data/Database.java#L1619) `INSERT` vào
    bảng này nhưng không có lệnh tạo bảng, dump cũng không có. Thiếu là ai thắng xổ số sẽ ăn
    `Table doesn't exist`.
 3. **4 cột `tob_char.equip/inven/bag/tuido` còn là `TEXT`** (trần 65.535 byte) và 3 cột
@@ -460,7 +469,7 @@ Script ở C3 đã tạo tài khoản `admin` (mật khẩu bạn đặt) và th
 tài khoản (`server.ini` → `sv.adminAccounts=admin,admin2`). Nên sau khi vào game bằng tài
 khoản `admin`, tạo nhân vật đặt tên đúng **`admin`** thì mới có quyền. Người chơi thường
 không giành được tên này: mọi tên chứa chữ "admin" đã bị chặn ở
-[Database.java:14632](src/data/Database.java#L14632).
+[Database.java:14632](../src/data/Database.java#L14632).
 
 Người chơi mới đăng ký qua web (PHẦN F): `config.php` để `AUTO_ACTIVATE = true` là đăng ký
 xong vào game được luôn. Nếu bạn tạo tài khoản bằng tay trong DB thì phải tự thêm dòng
@@ -544,7 +553,7 @@ chmod 640 server.ini loginServer/server.ini
 grep -n "password\|pathLog\|db.run" server.ini      # kiem tra lai
 ```
 
-Bản mẫu [vps/server.ini.linux.example](vps/server.ini.linux.example) đã sửa sẵn cho Linux:
+Bản mẫu [vps/server.ini.linux.example](../vps/server.ini.linux.example) đã sửa sẵn cho Linux:
 `sv.pathLog=/opt/kpah/log/` (có dấu `/` cuối), `db.run=/opt/kpah/vps/update.sh`, user DB
 `kpah`, và giữ nguyên các tỉ lệ drop bạn đang dùng.
 
@@ -633,7 +642,7 @@ systemctl restart apache2
 chỉ cần sửa file này, người chơi bấm **"Cập nhật"** trong client là xong — không phải
 phát hành client mới.
 
-Client đã trỏ đúng IP: [Client/ServerListScr.cs:36](Client/ServerListScr.cs#L36)
+Client đã trỏ đúng IP: [ServerListScr.cs:36](../ClientUnity/Assets/Scripts/Game/ServerListScr.cs#L36)
 `SERVER_HOST = "180.93.57.30"`, port `19129`.
 (Client lưu port bằng `short` nên không nhận port > 32767 — đừng đổi sang cổng cao.)
 
@@ -703,7 +712,7 @@ git push
 sudo /opt/kpah/vps/update.sh
 ```
 
-[vps/update.sh](vps/update.sh) làm đúng thứ tự an toàn: kiểm tra repo trên VPS có bị sửa tay
+[vps/update.sh](../vps/update.sh) làm đúng thứ tự an toàn: kiểm tra repo trên VPS có bị sửa tay
 không (nếu có thì dừng và chỉ cách xử lý, chứ không pull nửa vời), tắt game server bằng
 SIGTERM để shutdown hook lưu dữ liệu, `git pull --ff-only`, kiểm tra jar vừa kéo về có hỏng
 không (`unzip -t`), `chown` lại, bật lại 2 service, in trạng thái + kiểm tra cổng 19129.
@@ -733,8 +742,8 @@ systemctl start kpah-game
 git add -A && git commit -m "..." && git push
 ```
 
-Không phải SSH vào VPS nữa. [.github/workflows/deploy.yml](.github/workflows/deploy.yml) chạy
-sau mỗi push lên `main`, SSH vào VPS gọi [vps/deploy-auto.sh](vps/deploy-auto.sh).
+Không phải SSH vào VPS nữa. [.github/workflows/deploy.yml](../.github/workflows/deploy.yml) chạy
+sau mỗi push lên `main`, SSH vào VPS gọi [vps/deploy-auto.sh](../vps/deploy-auto.sh).
 
 **Nó không restart bừa.** Script so danh sách file giữa commit cũ và mới:
 
@@ -752,10 +761,10 @@ sau mỗi push lên `main`, SSH vào VPS gọi [vps/deploy-auto.sh](vps/deploy-a
 UPDATE kpah_db.5h_systems SET status = 0 WHERE command = 'baotri_thongbao';
 ```
 
-`BaoTriDaily` đọc cờ này mỗi 5 giây ([Database.baoTriThongBaoCMD](src/data/Database.java))
+`BaoTriDaily` đọc cờ này mỗi 5 giây ([Database.baoTriThongBaoCMD](../src/data/Database.java))
 rồi chạy **dòng thông báo trên đỉnh màn hình** cho mọi người đang online
-([BaoTriDaily.baoTruocBaoTri](src/real/BaoTriDaily.java)) — đúng loại tin mà nút "Bảo Trì" của
-AdminPanel dùng ([AdminPanel.java:711](src/server/AdminPanel.java#L711)). Cờ **chỉ báo, không
+([BaoTriDaily.baoTruocBaoTri](../src/real/BaoTriDaily.java)) — đúng loại tin mà nút "Bảo Trì" của
+AdminPanel dùng ([AdminPanel.java:711](../src/server/AdminPanel.java#L711)). Cờ **chỉ báo, không
 tự tắt server** — việc tắt để cho `systemctl stop` (SIGTERM → shutdown hook lưu dữ liệu). Chạy
 câu SQL trên bất cứ lúc nào cũng được nếu muốn báo tay mà không deploy.
 
@@ -763,21 +772,21 @@ câu SQL trên bất cứ lúc nào cũng được nếu muốn báo tay mà kh�
 >
 > **1. Đừng gửi nhiều mốc đếm ngược.** Client nhét tin 38 vào hàng đợi **tĩnh**
 > `GameScr.serverInfo`, và `paintServerInfo` **chỉ chạy khi người chơi đang ở màn hình game**
-> ([GameScr.cs:4737](Client/GameScr.cs#L4737)), mỗi tin mất 15-20 giây mới trôi hết
-> ([Ticker.cs](Client/Ticker.cs)). Hàng đợi **không bị xoá khi mất kết nối** → tin nào chưa
+> ([GameScr.cs:4737](../ClientUnity/Assets/Scripts/Game/GameScr.cs#L4737)), mỗi tin mất 15-20 giây mới trôi hết
+> ([Ticker.cs](../ClientUnity/Assets/Scripts/Game/Ticker.cs)). Hàng đợi **không bị xoá khi mất kết nối** → tin nào chưa
 > trôi kịp lúc tắt server sẽ chạy tiếp **ngay sau khi họ đăng nhập lại**, hiện *"bảo trì sau 1
 > phút"* đúng lúc bảo trì đã xong. Bản đầu gửi 4 mốc 60/30/20/10 nên mốc 10s gần như chắc chắn
 > còn đọng. Một tin gửi trước 60 giây thì trôi xong từ lúc còn 40 giây.
 >
 > **2. Đừng gán `RealController.maquee`.** `LoginHandler`/`SelectCharHandler` gửi lại maquee
 > cho **mọi người mới đăng nhập** nếu nó khác rỗng
-> ([LoginHandler.java:650](src/real/cmd/LoginHandler.java#L650)) — đường tồn thông báo thứ hai.
+> ([LoginHandler.java:650](../src/real/cmd/LoginHandler.java#L650)) — đường tồn thông báo thứ hai.
 > Dùng `MessageCreator.createthongbao(text)` (truyền chuỗi trực tiếp) thay cho
 > `createServerInfoMessage()` (đọc maquee) là tránh được.
 >
 > Nếu sau này vẫn muốn chắc chắn 100% không đọng: tin **37**
 > (`createServerAlertMessage`) bật `Canvas.startOKDlg` ngay, không qua hàng đợi
-> ([MessageHandler.cs:2065](Client/MessageHandler.cs#L2065)) — nhưng nó là hộp thoại phải bấm
+> ([MessageHandler.cs:2065](../ClientUnity/Assets/Scripts/Game/MessageHandler.cs#L2065)) — nhưng nó là hộp thoại phải bấm
 > OK, không phải dòng chạy.
 
 **Khoá SSH bị giới hạn.** Khoá riêng `/root/.ssh/deploy_github` khai trong `authorized_keys`
@@ -905,31 +914,42 @@ thì vẫn xong, chỉ chậm.
 → Bảng `data_attribute` thiếu id 141..186. Bản dump `sql/gamedb7_clean.sql` chỉ có 141 dòng
 (id 0..140), trong khi module Thần Khí dùng tới id 186. Tên thuộc tính tra cứu **theo vị
 trí** trong danh sách nạp lúc khởi động (`otherAtt[i] -> ALL_NAME_ATTRIBUTE_ITEM.get(i+61)`,
-xem [Item.java:1031](src/real/Item.java#L1031) và [Map.java:15658](src/real/Map.java#L15658)),
+xem [Item.java:1031](../src/real/Item.java#L1031) và [Map.java:15658](../src/real/Map.java#L15658)),
 nên id phải liên tục. Gói đăng nhập cmd 25 chỉ gửi đúng số dòng đang có, client tra key
 "163" ra null rồi chết giữa lúc vẽ — nên **client đơ mà server im lặng**.
-Kiểm tra: `mysql -u root kpah_db -e "SELECT COUNT(*) FROM data_attribute;"` — phải là 187.
-Chưa đủ thì chạy khối PHẦN 2C trong [vps/db_new_server.sql](vps/db_new_server.sql) rồi **restart server**
-(`loadNameAttributeItem` chỉ chạy lúc khởi động). Server dựng mới bằng
-[vps/db_new_server.sql](vps/db_new_server.sql) đã tự nạp ở PHẦN 2C.
-Bẫy hay dính: máy Windows ở nhà đã vá tay từ trước nên test ở nhà thấy chạy tốt, lên VPS
-mới lại đơ.
+Kiểm tra: `mysql -u root kpah_db -e "SELECT COUNT(*) FROM data_attribute;"` — phải **≥ 187**,
+và quan trọng hơn là **id 0..186 không được thiếu cái nào** (số dòng đủ mà hổng id ở giữa thì
+vẫn đơ). Kiểm đúng cách:
+
+```bash
+mysql -u root kpah_db -e "SELECT COUNT(*) FROM data_attribute WHERE id BETWEEN 0 AND 186;"
+# phải ra đúng 187
+```
+
+**Từ 02/09/2026 việc này đã được sửa tận gốc:** `sql/gamedb7_clean.sql` giờ có đủ 198 dòng
+(id 0..186 liên tục + khối 200..210, lấy từ VPS), nên server dựng mới từ bản seed đó **không
+còn phải chạy tay** khối PHẦN 2C nữa. `test/KiemBangThuocTinh.java` ghim điều kiện liên tục
+này để lần dump lại sau không âm thầm làm mất. Nếu dựng bằng
+[vps/db_new_server.sql](../vps/db_new_server.sql) thì PHẦN 2C vẫn tự nạp như cũ.
+
+Bẫy hay dính (vẫn còn đúng): máy Windows ở nhà đã vá tay từ trước nên test ở nhà thấy chạy
+tốt, lên VPS mới lại đơ — nên hãy kiểm bằng câu lệnh trên trên **chính VPS**.
 
 **Tạo món (Thần Khí, đồ giftcode...) xong, logout vào lại là mất món đó**
 Ba nguyên nhân khác nhau, cùng một triệu chứng. Kiểm tra theo thứ tự:
 
 1. **Cột `inven` còn là `TEXT`** (trần 65.535 byte) — xem PHẦN 2D ở
-   [vps/db_new_server.sql](vps/db_new_server.sql). Món mới nằm ở cuối chuỗi nên chết đầu tiên.
+   [vps/db_new_server.sql](../vps/db_new_server.sql). Món mới nằm ở cuối chuỗi nên chết đầu tiên.
    ```bash
    mysql -u root kpah_db -e "SELECT COLUMN_NAME, COLUMN_TYPE FROM information_schema.COLUMNS
      WHERE TABLE_SCHEMA='kpah_db' AND TABLE_NAME='tob_char'
        AND COLUMN_NAME IN ('equip','inven','bag','tuido');"
    ```
-   Còn `text` thì chạy khối PHẦN 2D trong [vps/db_new_server.sql](vps/db_new_server.sql). Xem ai đang sát
+   Còn `text` thì chạy khối PHẦN 2D trong [vps/db_new_server.sql](../vps/db_new_server.sql). Xem ai đang sát
    trần: `SELECT charname, LENGTH(inven) FROM tob_char ORDER BY LENGTH(inven) DESC LIMIT 5;`
 
 2. **Trần đọc lại 130 entry** trong `setitemInvenBag` —
-   [Char.java:12074](src/real/Char.java#L12074). Đã sửa: trần giờ là
+   [Char.java:12074](../src/real/Char.java#L12074). Đã sửa: trần giờ là
    `Char.MAX_ENTRY_INVEN_LOAD` = 42 × 5 + 16 = 226, đủ cho 210 ô túi + 3 ô đặc biệt + 6 món
    model. Trước đó mọi entry từ vị trí 130 trở đi bị **xoá vĩnh viễn mỗi lần login** — mất
    luôn phần model dính ở cuối chuỗi. Ai còn chạy jar cũ thì vẫn dính; kiểm tra:
@@ -942,15 +962,15 @@ Ba nguyên nhân khác nhau, cùng một triệu chứng. Kiểm tra theo thứ 
 
 3. **Món vẫn còn nhưng bị tháo ra khỏi ô trang bị.** Đây là *thiết kế hiện tại*, không phải
    lỗi tràn: 3 ô đặc biệt `itemHoaKyLan` / `itemVukhiThoiTrang` / `itemThanKhi` được ghi vào
-   cột `inven` chung với hành trang ([Database.java:12685](src/data/Database.java#L12685))
+   cột `inven` chung với hành trang ([Database.java:12685](../src/data/Database.java#L12685))
    nhưng lúc đọc lại thì mọi entry đều vào `iItems`
-   ([Char.java:12214](src/real/Char.java#L12214)) — không có cờ nào đánh dấu "đang đeo". Nên
+   ([Char.java:12214](../src/real/Char.java#L12214)) — không có cờ nào đánh dấu "đang đeo". Nên
    sau mỗi lần login phải bấm đeo lại. Muốn giữ nguyên trạng thái đeo thì phải thêm một giá
    trị `place` riêng cho từng ô (place 4 đang dành cho model) rồi khôi phục theo `place`.
 
 **Thêm option vào menu NPC nhưng bấm vào không hiển thị gì, log cũng không có gì**
 → Bẫy lớn nhất khi sửa menu: lệnh `-30` (chọn option menu) **không đi thẳng vào
-`Map.doMenu`**. Nó vào `RealController` trước ([RealController.java:1024](src/real/RealController.java#L1024)),
+`Map.doMenu`**. Nó vào `RealController` trước ([RealController.java:1024](../src/real/RealController.java#L1024)),
 ở đó có một `switch (idNpc)` với bản **copy** logic menu của một số NPC (-65, -800, -50,
 -51, -49, -8). NPC nào có case riêng ở đây và **không** set `defHandle = true` thì
 `Map.doMenu` vĩnh viễn không nhận được NPC đó — code viết trong `Map.doMenu` cho NPC ấy là
@@ -964,7 +984,7 @@ Ví dụ thực tế: mục "Hỗ Trợ" của NPC tổng tiêu đầu (-50) đ�
 
 **Nhân vật mất thân (chỉ còn cái đầu), hành trang và ô trang bị nhìn như rỗng**
 → Bảng `data_item` bị **lỗ id**. Client cấp phát mảng template theo **số lượng** nhưng ghi
-vào mảng theo **id** ([MessageHandler.cs:1647](Client/MessageHandler.cs#L1647)):
+vào mảng theo **id** ([MessageHandler.cs:1647](../ClientUnity/Assets/Scripts/Game/MessageHandler.cs#L1647)):
 
     int soLuong = readShort();
     ItemTemplate[] array = new ItemTemplate[soLuong + 1];
@@ -978,7 +998,7 @@ ngắn đi một ô → template có id lớn nhất bị `IndexOutOfRange`, mà
 âm thầm**. Chuỗi hậu quả rất khó lần vì nó không giống lỗi vật phẩm:
 
 - `Res.getItem(id)` trả `null`
-- `Char.setWearingInfo()` ([Char.cs:2804](Client/Char.cs#L2804)) nổ NPE giữa vòng lặp — mà
+- `Char.setWearingInfo()` ([Char.cs:2804](../ClientUnity/Assets/Scripts/Game/Char.cs#L2804)) nổ NPE giữa vòng lặp — mà
   hàm này đặt `bodyStyle`/`legStyle`/`hatStyle`/`weaponStyle` **= -1 trước vòng lặp** → mọi
   style sau chỗ nổ giữ nguyên -1 → `paintAvatar` bỏ qua thân, chân, nón, vũ khí →
   **nhân vật chỉ còn cái đầu**
@@ -990,7 +1010,7 @@ dòng → mất đúng template **904 = "Cải Trang Sa Tăng" (type 0 = áo)** 
 món đó là mất thân.
 
 Đã vá hai lớp: server gửi **đủ id 0..max**, id trống thì gửi ô rỗng (`MessageCreator`, khối
-"Bang template vat pham"), và PHẦN 2G trong [vps/db_new_server.sql](vps/db_new_server.sql)
+"Bang template vat pham"), và PHẦN 2G trong [vps/db_new_server.sql](../vps/db_new_server.sql)
 bù lại dòng đã xoá. Kiểm tra
 nhanh bất cứ lúc nào:
 
@@ -1022,7 +1042,7 @@ server** (toàn bộ `map/` chỉ đọc một lần lúc khởi động), và k
 `.png` lẫn file dữ liệu không đuôi** cùng nhau.
 
 **Sách kỹ năng pet (potion 111) không có tên, không có icon**
-→ `data_potion` chỉ được đọc **một lần lúc khởi động** ([Map.java:3030](src/real/Map.java#L3030)),
+→ `data_potion` chỉ được đọc **một lần lúc khởi động** ([Map.java:3030](../src/real/Map.java#L3030)),
 không phải "mỗi lần hiện túi bình". Sửa mô tả trong DB xong thì phải `loadpotion` (lệnh chat
 admin) **hoặc** bật lại server — và vì client nhận danh sách thuốc trong **gói đăng nhập**
 (`LoginHandler.createMsgLogin`), người chơi còn phải **đăng nhập lại** mới thấy tên/icon mới.
@@ -1032,7 +1052,7 @@ Thêm một ràng buộc dễ quên: nhân vật có **162 ô thuốc** (`Char.S
 `tob_char.potion` lưu 162 trường) nhưng client cấp phát ô thuốc theo **số dòng của
 `data_potion`**. Bảng thiếu dòng là người chơi giữ thuốc id cao (sách pet là **111**) sẽ làm
 client nổ giữa lúc đọc gói hành trang → rỗng sạch cả túi. `Char.getAllPotion()` đã chặn
-(bỏ qua id vượt trần + ghi log), và PHẦN 2H trong [vps/db_new_server.sql](vps/db_new_server.sql)
+(bỏ qua id vượt trần + ghi log), và PHẦN 2H trong [vps/db_new_server.sql](../vps/db_new_server.sql)
 bù đủ dòng 0..161.
 
 **Không ai đăng nhập được, log login server im lặng**
@@ -1083,7 +1103,7 @@ server DB.
 **`OutOfMemoryError: unable to create new native thread` ở `Region.startSandVilage`**
 → Server tạo **một thread cho mỗi region của mỗi map** — đo thực tế trên VPS này là
 **2936 thread**. Hai thứ chặn nó, phải sửa cả hai (đã có sẵn trong
-[vps/kpah-game.service](vps/kpah-game.service)):
+[vps/kpah-game.service](../vps/kpah-game.service)):
 `TasksMax=infinity` (systemd mặc định chỉ ~2250, đếm cả thread) và `-Xss256k` (mặc định
 mỗi thread 1 MB stack → 2936 thread cần ~2,9 GB, vượt RAM; 256k còn ~730 MB).
 Kiểm tra số thread thật: `ls /proc/$(pgrep -f KPAH2_patched.jar)/task | wc -l`
@@ -1099,13 +1119,13 @@ mã nguồn để sửa). Nó chỉ giết luồng AWT, server chạy bình thư
 
 **`SQL ERROR=CREATE TABLE tob_log_use_luong_5_7_2026 LIKE tob_log_use_luong`**
 → Vô hại. Đây là bảng log xoay vòng theo tuần/tháng; server tạo bằng `CREATE TABLE ... LIKE`
-**không có** `IF NOT EXISTS`, và [Database.java:5793](src/data/Database.java#L5793) chỉ in
+**không có** `IF NOT EXISTS`, và [Database.java:5793](../src/data/Database.java#L5793) chỉ in
 `SQL ERROR=` chứ không in lý do. Lần khởi động đầu tạo xong rồi, nên mọi lần restart sau
 trong cùng tuần/tháng đều in lại dòng này. Xác nhận bảng đã có:
 `mysql -u root -e "SHOW TABLES FROM kpah_db LIKE 'tob_log_use_luong%';"`
 
 **`bash: /opt/kpah/vps/update.sh: /bin/bash^M: bad interpreter`**
-→ File `.sh` bị lưu kiểu CRLF của Windows. Repo đã có [.gitattributes](.gitattributes) ép
+→ File `.sh` bị lưu kiểu CRLF của Windows. Repo đã có [.gitattributes](../.gitattributes) ép
 `*.sh eol=lf` nên không xảy ra nữa; nếu vẫn gặp (file cũ đã commit trước đó):
 `sed -i 's/\r$//' /opt/kpah/vps/*.sh`.
 

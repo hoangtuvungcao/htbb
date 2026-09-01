@@ -26,10 +26,31 @@ package io;
  */
 public final class BoDemGoiTin {
 
-    /** So lenh thuong toi da trong mot cua so. 300/5s = 60 goi moi giay. */
-    public static final int  GOI_THUONG_TOI_DA     = 300;
-    /** So lenh tai nguyen toi da trong mot cua so. Rong hon vi vao map la mot chum. */
-    public static final int  GOI_TAI_NGUYEN_TOI_DA = 600;
+    /** Mac dinh cho may that (qua Internet): 300/5s = 60 goi moi giay. */
+    public static final int GOI_THUONG_MAC_DINH     = 300;
+    /** Mac dinh cho may that. Rong hon vi vao map la mot chum. */
+    public static final int GOI_TAI_NGUYEN_MAC_DINH = 600;
+
+    /**
+     * Nguong that su dang dung, dat tu server.ini luc khoi dong (sv.tranGoiThuong /
+     * sv.tranGoiTaiNguyen). Mac dinh giu nguyen so cu nen may nao khong dat gi thi hanh vi
+     * khong doi mot chut nao.
+     *
+     * VI SAO PHAI DOI DUOC. Hai nguong nay duoc canh theo do tre Internet. Qua loopback
+     * (may nha tu chay server de thu) KHONG CO do tre, nen mot client vua xoa cache tai anh
+     * nhanh hon han va cham tran mot cach hoan toan luong thien - da xay ra that: log bao
+     * "NGAP GOI TIN: cat ket noi admin ip=127.0.0.1 (601 goi tai nguyen trong 5000ms)" ba
+     * lan lien trong mot phien thu, va sau khi nang tran len 6000 thi VAN bi cat o goi
+     * 6001. Tuc qua loopback khong co con so "du cao" nao chac chan; may nha nen TAT han
+     * phep dem tai nguyen thay vi doan mot con so.
+     *
+     * 0 (hoac so am) = TAT han phep dem do, dung quy uoc cua sv.socketTimeout va
+     * sv.connRateWindow. Chi dat 0 o may nha; tren VPS day la lop chan spam lenh -51
+     * (doc anh tu dia, vua ton dia vua ton bang thong).
+     */
+    public static int GOI_THUONG_TOI_DA     = GOI_THUONG_MAC_DINH;
+    public static int GOI_TAI_NGUYEN_TOI_DA = GOI_TAI_NGUYEN_MAC_DINH;
+
     /** Do dai cua so dem (ms). */
     public static final long CUA_SO_MS             = 5000L;
 
@@ -66,6 +87,13 @@ public final class BoDemGoiTin {
         final boolean taiNguyen = laLenhTaiNguyen(command);
         final int dem  = taiNguyen ? ++this.demTaiNguyen : ++this.demThuong;
         final int tran = taiNguyen ? GOI_TAI_NGUYEN_TOI_DA : GOI_THUONG_TOI_DA;
+        if (tran <= 0) {
+            // 0 = TAT han phep dem nay, dung quy uoc cua sv.socketTimeout va
+            // sv.connRateWindow trong ban mau. PHAI co nhanh nay: khong thi tran=0 lam
+            // "dem > tran" dung ngay o goi DAU TIEN, tuc ai dat =0 tuong la tat thi hoa ra
+            // cat sach moi ket noi. Chi may nha moi nen tat.
+            return false;
+        }
         return dem > tran;
     }
 

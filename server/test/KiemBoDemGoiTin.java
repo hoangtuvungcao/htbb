@@ -26,6 +26,112 @@ public final class KiemBoDemGoiTin {
         haiLoaiDemRieng();
         khongCatNhamNguoiChoiThat();
         ngapThatSuThiBiCat();
+        nguongDoiDuocMaMacDinhKhongDoi();
+        tranBangKhongLaTat();
+    }
+
+    /**
+     * Hai nguong doi duoc qua server.ini, nhung MAC DINH phai y nguyen so cu.
+     *
+     * Vi sao dat duoc: canh theo do tre Internet, ma may nha chay qua loopback khong co do
+     * tre nen client cache rong cham tran 600 mot cach luong thien (da bi cat oan that).
+     * Vi sao mac dinh phai y nguyen: ban mau VPS ghim 300/600, va may nao khong dat gi thi
+     * hanh vi khong duoc doi mot chut nao.
+     */
+    private static void nguongDoiDuocMaMacDinhKhongDoi() {
+        Kiem.bang("mac dinh lenh thuong van la 300",
+                Integer.valueOf(300), Integer.valueOf(BoDemGoiTin.GOI_THUONG_MAC_DINH));
+        Kiem.bang("mac dinh lenh tai nguyen van la 600",
+                Integer.valueOf(600), Integer.valueOf(BoDemGoiTin.GOI_TAI_NGUYEN_MAC_DINH));
+
+        // Ban mau VPS phai ghim dung hai so mac dinh do: lech la deploy am tham doi hanh vi
+        // chan flood tren server that.
+        final String tmpl = doc("vps/server.ini.tmpl");
+        Kiem.dung("ban mau VPS ghim sv.tranGoiThuong=300", coDong(tmpl, "sv.tranGoiThuong=300"));
+        Kiem.dung("ban mau VPS ghim sv.tranGoiTaiNguyen=600",
+                coDong(tmpl, "sv.tranGoiTaiNguyen=600"));
+
+        // Va ma nguon phai that su doc hai khoa do (khong thi ban mau co nut bam gia).
+        final String sv = doc("src/server/TeamServer.java");
+        Kiem.dung("TeamServer doc sv.tranGoiThuong",
+                sv.contains("p.getProperty(\"sv.tranGoiThuong\")"));
+        Kiem.dung("TeamServer doc sv.tranGoiTaiNguyen",
+                sv.contains("p.getProperty(\"sv.tranGoiTaiNguyen\")"));
+
+        // Doc kieu co default (parseIntDefault) chu KHONG phai Integer.parseInt: thieu khoa
+        // ma nem loi la bo qua MOI DONG ben duoi trong cung khoi try - dung cai bay
+        // 30/08/2026. Xem docs/cau-hinh-server-ini.md muc 10.
+        Kiem.sai("KHONG doc bang Integer.parseInt (thieu khoa se nem loi)",
+                sv.contains("Integer.parseInt(p.getProperty(\"sv.tranGoiTaiNguyen\"))")
+                        || sv.contains("Integer.parseInt(p.getProperty(\"sv.tranGoiThuong\"))"));
+    }
+
+    /**
+     * tran = 0 phai la TAT han, KHONG phai "cat ngay tu goi dau".
+     *
+     * Da dinh that: hai khoa nay moi them va luc dau khong co nhanh nay, nen tran=0 lam
+     * "dem > tran" dung ngay o goi DAU TIEN. Ban mau ghi ro sv.socketTimeout=0 va
+     * sv.connRateWindow=0 la TAT, nen ai doc ban mau roi dat sv.tranGoiTaiNguyen=0 tuong la
+     * tat thi hoa ra CAT SACH moi ket noi - loai loi khong ai nhin ra bang mat.
+     */
+    private static void tranBangKhongLaTat() {
+        final int cuThuong = BoDemGoiTin.GOI_THUONG_TOI_DA;
+        final int cuTaiNguyen = BoDemGoiTin.GOI_TAI_NGUYEN_TOI_DA;
+        try {
+            BoDemGoiTin.GOI_TAI_NGUYEN_TOI_DA = 0;
+            final BoDemGoiTin bo = new BoDemGoiTin(0L);
+            boolean bicat = false;
+            for (int i = 1; i <= 20000; i++) {
+                if (bo.vuotNguong(LENH_TAI_NGUYEN, 0L)) {
+                    bicat = true;
+                    break;
+                }
+            }
+            Kiem.sai("tran tai nguyen = 0 -> KHONG cat, ke ca 20000 goi", bicat);
+
+            // Va phai tat DUNG mot loai: lenh thuong van chan binh thuong.
+            final BoDemGoiTin bo2 = new BoDemGoiTin(0L);
+            boolean thuongVanChan = false;
+            for (int i = 1; i <= cuThuong + 5; i++) {
+                if (bo2.vuotNguong(LENH_THUONG, 0L)) {
+                    thuongVanChan = true;
+                    break;
+                }
+            }
+            Kiem.dung("tat dem tai nguyen KHONG lam tat luon dem lenh thuong", thuongVanChan);
+
+            BoDemGoiTin.GOI_THUONG_TOI_DA = -1;
+            final BoDemGoiTin bo3 = new BoDemGoiTin(0L);
+            boolean amBiCat = false;
+            for (int i = 1; i <= 5000; i++) {
+                if (bo3.vuotNguong(LENH_THUONG, 0L)) {
+                    amBiCat = true;
+                    break;
+                }
+            }
+            Kiem.sai("tran am cung la TAT (khong cat)", amBiCat);
+        } finally {
+            BoDemGoiTin.GOI_THUONG_TOI_DA = cuThuong;
+            BoDemGoiTin.GOI_TAI_NGUYEN_TOI_DA = cuTaiNguyen;
+        }
+    }
+
+    private static boolean coDong(final String noiDung, final String dongCanTim) {
+        for (final String d : noiDung.split("\n")) {
+            if (d.trim().equals(dongCanTim)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static String doc(final String duong) {
+        try {
+            return new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(duong)),
+                    java.nio.charset.StandardCharsets.UTF_8);
+        } catch (final java.io.IOException e) {
+            return "";
+        }
     }
 
     private static void phanLoaiLenh() {

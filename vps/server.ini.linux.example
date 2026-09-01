@@ -28,6 +28,8 @@ db.host=localhost:3306
 db.name=kpah_db
 db.user=kpah
 db.password=DOI_MAT_KHAU_DB
+# Cho phep db.password de trong - chi may nha (XAMPP) moi dat 1. Tren VPS giu 0.
+db.choPhepMatKhauTrong=0
 db.maxco=100
 db.nameNap=kpah_db
 db.userNap=kpah

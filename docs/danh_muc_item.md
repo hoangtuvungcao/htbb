@@ -14,7 +14,7 @@ và mục 2 trong ghi chú icon của dự án) — đừng gán vật phẩm m�
 
 test/KiemDanhMucItem.java đối chiếu số lượng + vài id mốc với chính file SQL.
 
-Tổng: 904 vật phẩm (id 1-904).
+Tổng: 914 vật phẩm (id 1-954).
 
 | ID | Tên | type | Cấp | Giá | icon |
 |---:|---|---:|---:|---:|---:|
@@ -626,8 +626,8 @@ Tổng: 904 vật phẩm (id 1-904).
 | 606 | Yếu Ly cung | 7 | 76 | 370000 | 49 |
 | 607 | Thương Ưng cung | 7 | 81 | 380000 | 74 |
 | 608 | Phi phong world cup | 19 | 1 | 0 | 518 |
-| 609 | áo brazin nam,tăng100% băng lan, sét lan, độc lan | 0 | 1 | 0 | 519 |
-| 610 | áo brazin nữ,tăng100% băng lan, sét lan, độc lan | 0 | 1 | 0 | 519 |
+| 609 | áo brazin nam,tăng100% băng lan, sét lan, độc lan | 0 | 1 | 0 | 854 |
+| 610 | áo brazin nữ,tăng100% băng lan, sét lan, độc lan | 0 | 1 | 0 | 826 |
 | 611 | Rương bảo tiêu | 20 | 1 | 0 | 519 |
 | 612 | Rương cướp tiêu | 20 | 1 | 0 | 520 |
 | 613 | Chổi băng ánh | 13 | 1 | 0 | 522 |
@@ -739,7 +739,6 @@ Tổng: 904 vật phẩm (id 1-904).
 | 719 | Khổng Tước Cung | 7 | 40 | 0 | 174 |
 | 720 | Huyết linh thảo.\r\nTiến hoá trạng thái thú nuôi | 28 | 1 | 0 | 578 |
 | 721 | Huyết bồ đề\r\nThay đổi độ thông thạo của thú nuôi | 28 | 1 | 0 | 579 |
-| 722 | Sách kỹ năng pet | 28 | 1 | 0 | 580 |
 | 723 | Hắc Lang\n- Tăng 50% băng ,sét ,độc ,lửa lan | 0 | 1 | 0 | 581 |
 | 724 | Thần nữ\n- Tăng 50% băng ,sét ,độc ,lửa lan | 0 | 1 | 0 | 582 |
 | 725 | Bạch Mi\n- Tăng 50% băng ,sét ,độc ,lửa lan | 0 | 1 | 0 | 584 |
@@ -889,13 +888,13 @@ Tổng: 904 vật phẩm (id 1-904).
 | 869 | Kim cô sa tăng | 29 | 1 | 0 | 797 |
 | 870 | Giày sa tăng | 29 | 1 | 0 | 798 |
 | 871 | Găng sa tăng | 29 | 1 | 0 | 799 |
-| 872 | Mặt nạ ông địa | 1 | 1 | 0 | 800 |
-| 873 | Capybara | 27 | 5 | 0 | 801 |
-| 874 | Hộ vệ lân sư tử 4x lv 1 | 21 | 45 | 55 | 802 |
-| 875 | Hộ vệ lân sư tử 4x lv 2 | 21 | 45 | 55 | 803 |
-| 876 | Hộ vệ lân sư tử 4x lv 3 | 21 | 45 | 55 | 804 |
-| 877 | Hộ vệ lân sư tử 5x lv 1 | 21 | 55 | 55 | 805 |
-| 878 | Hộ vệ lân sư tử 5x lv 2 | 21 | 55 | 55 | 806 |
+| 872 | Mặt nạ ông địa | 1 | 1 | 0 | 815 |
+| 873 | Capybara | 27 | 5 | 0 | 816 |
+| 874 | Hộ vệ lân sư tử 4x lv 1 | 21 | 45 | 55 | 817 |
+| 875 | Hộ vệ lân sư tử 4x lv 2 | 21 | 45 | 55 | 818 |
+| 876 | Hộ vệ lân sư tử 4x lv 3 | 21 | 45 | 55 | 819 |
+| 877 | Hộ vệ lân sư tử 5x lv 1 | 21 | 55 | 55 | 827 |
+| 878 | Hộ vệ lân sư tử 5x lv 2 | 21 | 55 | 55 | 828 |
 | 879 | Hộ vệ lân sư tử 5x lv 3 | 21 | 55 | 55 | 807 |
 | 880 | Hộ vệ lân sư tử 6x lv 1 | 21 | 65 | 55 | 808 |
 | 881 | Hộ vệ lân sư tử 6x lv 2 | 21 | 65 | 55 | 809 |
@@ -904,7 +903,7 @@ Tổng: 904 vật phẩm (id 1-904).
 | 884 | Trứng đương khang | 21 | 65 | 55 | 842 |
 | 885 | Trứng lân | 21 | 65 | 55 | 841 |
 | 886 | Trứng bạch cốt | 21 | 65 | 55 | 843 |
-| 887 | Trứng rồng băng | 21 | 65 | 55 | 840 |
+| 887 | Trứng rồng băng | 21 | 1 | 55 | 840 |
 | 888 | Áo noel nam 2024\n- Bỏng lạnh trong [10s]- Thời gian hồi: [30s]- Tỷ lệ xh: 5% | 0 | 1 | 0 | 844 |
 | 889 | Áo noel nữ 2024\n- Bỏng lạnh trong [10s]- Thời gian hồi: [30s]- Tỷ lệ xh: 5% | 0 | 1 | 0 | 846 |
 | 890 | Quạt ba tiêu | 4 | 10 | 0 | 822 |
@@ -922,3 +921,14 @@ Tổng: 904 vật phẩm (id 1-904).
 | 902 | Cánh Tử ảnh | 29 | 10 | 12500 | 838 |
 | 903 | Cải Trang Bát Giới | 0 | 1 | 0 | 776 |
 | 904 | Cải Trang Sa Tăng | 0 | 1 | 0 | 777 |
+| 905 | Skin linh thú Phúc Thú\n[hệ Kim] - hợp Pháp sư\n- Cộng 2000 HP\n- Cộng 3000 MP\n- Nội tại (khi hợp hệ): khi bị Kiếm khách, Chiến binh hoặc Đấu sĩ đánh, chặn 30% sát thương trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây | 30 | 1 | 0 | 860 |
+| 906 | Skin linh thú Gấu Trúc\n[hệ Mộc] - hợp Chiến binh\n- Cộng 200 chính xác (khi hợp hệ)\n- Nội tại: khi bị Pháp sư hoặc Cung thủ đánh, phản sát thương +50% (tối đa 80%) trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây | 30 | 1 | 0 | 861 |
+| 907 | Skin linh thú Tiên Lộc\n[hệ Thủy] - hợp Cung thủ\n- Cộng 20% điểm tiềm năng (khi hợp hệ)\n- Nội tại: khi nhận sát thương, chặn 50% sát thương trong 5 giây. Tỉ lệ 10%, hồi chiêu 40 giây | 30 | 1 | 0 | 862 |
+| 908 | Skin linh thú Xích Dương\n[hệ Hỏa] - hợp Đấu sĩ\n- 5% đòn đánh xuyên toàn bộ giáp (khi hợp hệ)\n- Nội tại: khi máu xuống dưới 30%, tăng 50% tấn công trong 3 giây, hồi chiêu 40 giây | 30 | 1 | 0 | 863 |
+| 909 | Skin linh thú Chiến Lang\n[hệ Thổ] - hợp Kiếm khách\n- Cộng 20% phòng thủ (khi hợp hệ)\n- Hấp thụ 15% sát thương | 30 | 1 | 0 | 864 |
+| 910 | Phi phong vô hình | 19 | 0 | 0 | 829 |
+| 950 | Skin Phúc Thú (hệ Kim) | 19 | 0 | 0 | 815 |
+| 951 | Skin Gấu Trúc (hệ Mộc) | 19 | 0 | 0 | 816 |
+| 952 | Skin Tiên Lộc (hệ Thủy) | 19 | 0 | 0 | 817 |
+| 953 | Skin Xích Dương (hệ Hỏa) | 19 | 0 | 0 | 818 |
+| 954 | Skin Chiến Lang (hệ Thổ) | 19 | 0 | 0 | 819 |

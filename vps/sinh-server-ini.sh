@@ -80,13 +80,25 @@ done < "$TMPL" > "$MOI"
   -> dat secret tuong ung trong GitHub: Settings > Secrets and variables > Actions"
 
 # ---- Kiem tra truoc khi cai ----
-lay() { grep -m1 -E "^$1=" "$MOI" | sed -E "s/^[^=]*=//"; }
+# Lay dong CUOI, DUNG NHU java.util.Properties (last-wins). Ban cu dung `grep -m1` tuc
+# dong DAU: mot khoa khai hai lan la bo sinh kiem tra gia tri nay ma server lai chay bang
+# gia tri khac. Xem them phep chan khoa trung ngay ben duoi.
+lay() { grep -E "^$1=" "$MOI" | tail -n 1 | sed -E "s/^[^=]*=//"; }
 
 # Chi xet dong lenh: phan huong dan dau ban mau co nhac chu ${TEN_BIEN} nen quet ca
 # file thi luc nao cung bao dong gia.
 if grep -vE '^[[:space:]]*#' "$MOI" | grep -q '\${'; then
     loi "con cho trong chua thay the trong ban sinh ra"
 fi
+
+# Mot khoa khai HAI LAN la ke ho nghiem trong: java.util.Properties lay dong CUOI, nen ai
+# them mot dong "db.choPhepMatKhauTrong=1" hay "db.password=" xuong duoi dong that la moi
+# phep kiem o day van doc dong tren va bao sach, con server chay bang gia tri duoi. Da thu
+# that: bo sinh cai file do va bao "cau hinh doi" nhu binh thuong. Chan thang tai day.
+TRUNG=$(grep -vE '^[[:space:]]*#' "$MOI" | grep -oE '^[^=]+=' | sed -E 's/=$//; s/[[:space:]]+//g' \
+        | sort | uniq -d | tr '\n' ' ')
+[ -z "$TRUNG" ] || loi "khoa bi khai hai lan: $TRUNG
+  -> sua vps/server.ini.tmpl de moi khoa chi xuat hien MOT lan"
 
 # Dung 23 khoa nay di qua parseInt/parseByte/parseShort trong TeamServer. Thieu mot
 # cai la ca khoi doc cau hinh nem loi va MOI DONG BEN DUOI bi bo qua, ma server
@@ -105,6 +117,13 @@ done
 
 MK=$(lay db.password)
 [ "$MK" = "$MAT_KHAU_MAU" ] && loi "db.password van la chuoi mau $MAT_KHAU_MAU"
+
+# Loi thoat "mat khau de trong" chi danh cho may nha (XAMPP). Tren VPS phai luon la 0,
+# neu khong thi go mat mot lop chan cua su co 30/08/2026. Chan ngay o day de mot ban mau
+# bi sua tay khong bao gio den duoc /opt/kpah/server.ini.
+CHO_TRONG=$(lay db.choPhepMatKhauTrong)
+[ "$CHO_TRONG" = "0" ] || loi "db.choPhepMatKhauTrong='$CHO_TRONG' - tren VPS phai la 0
+  -> sua lai vps/server.ini.tmpl (khoa nay chi dat 1 o server.ini cua may nha)"
 
 # ---- Thu ket noi that truoc khi cai ----
 # Day la phep chan quan trong nhat: mat khau sai ma van cai thi server bat len

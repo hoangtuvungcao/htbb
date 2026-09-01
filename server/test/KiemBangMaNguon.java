@@ -81,7 +81,8 @@ public final class KiemBangMaNguon {
      * bat duoc file MOI bi hong.
      */
     private static final List<String> BO_QUA = Arrays.asList(
-        "sql/buff_ddsa.sql",
+        // sql/buff_ddsa.sql da xoa ngay 02/09/2026 (chua tung ap dung vao production,
+        // noi dung con bi loi bang ma) - xem sql/README.md muc "Da xoa".
         "sql/them_bang_cam_may.sql",
         "sql/gamedb7_clean.sql",
         "vps/db_new_server.sql",
@@ -103,6 +104,12 @@ public final class KiemBangMaNguon {
         int daQuet = 0;
         for (final String tm : THU_MUC) {
             final Path goc = Paths.get(tm);
+            // PHAI bao loi khi thu muc khong con: ban cu chi `continue`, nen doi ten hay
+            // di chuyen mot thu muc la pham vi quet AM THAM teo lai ma phep kiem van bao
+            // "dat" - tuc lop bao ve chinh chong mojibake bien mat khong ai biet. Chan
+            // duoi (daQuet > 50) khong du: chi can src/ con nguyen la da qua nguong do.
+            Kiem.dung("thu muc " + tm + " con ton tai (khong thi pham vi quet bi teo am tham)",
+                    Files.isDirectory(goc));
             if (!Files.isDirectory(goc)) {
                 continue;
             }

@@ -231,7 +231,7 @@ Không muốn cài NSSM thì dùng Task Scheduler, trigger *At startup*, chọn
 
 ### C1. IP đã sửa sẵn
 
-[Client/ServerListScr.cs](Client/ServerListScr.cs) dòng 36 đã là:
+[ServerListScr.cs](../ClientUnity/Assets/Scripts/Game/ServerListScr.cs) dòng 36 đã là:
 
 ```csharp
 public const string SERVER_HOST = "180.93.57.30";
@@ -245,7 +245,7 @@ public const string SERVER_HOST = "180.93.57.30";
 ### C2. File danh sách server — đã sửa sẵn cả hai nơi
 
 - `C:\xampp\htdocs\NQSH2.txt`
-- [web/NQSH2.txt](web/NQSH2.txt)
+- [web/NQSH2.txt](../web/NQSH2.txt)
 
 Nội dung, một dòng: `Server 1:180.93.57.30:19129:0`
 

@@ -99,6 +99,19 @@ public final class KiemDanhMucItem {
                 "Mặt nạ ông địa", tuMd.get(Integer.valueOf(872)));
         Kiem.bang("id 904 = 'Cải Trang Sa Tăng'", "Cải Trang Sa Tăng", tuMd.get(Integer.valueOf(904)));
 
+        // Moc o VUNG MOI. Ba moc tren deu <= 904, tuc dung o cuoi ban dump cu; neu ban
+        // dump lai bi cat ngang o do thi ba moc kia van dat. Hai moc duoi neo lai phan
+        // duoi cua bang: 910 (Phi phong vo hinh) va 954 (id lon nhat hien co).
+        Kiem.bang("id 910 = 'Phi phong vô hình'", "Phi phong vô hình", tuMd.get(Integer.valueOf(910)));
+        Kiem.bang("id 954 = 'Skin Chiến Lang (hệ Thổ)' (id lon nhat)",
+                "Skin Chiến Lang (hệ Thổ)", tuMd.get(Integer.valueOf(954)));
+
+        // Ten co ky tu xuong dong (mysqldump ghi thanh "\n" hai ky tu) phai qua duoc ca
+        // hai duong doc ma khong lam vo dong bang markdown.
+        final String ten888 = tuMd.get(Integer.valueOf(888));
+        Kiem.dung("id 888 doc duoc va giu nguyen \\n dang ky tu (khong vo dong bang)",
+                ten888 != null && ten888.startsWith("Áo noel nam 2024\\n"));
+
         Kiem.dung("tep sinh co ghi ro DUNG SUA TAY", md.contains("sinh ra"));
         Kiem.dung("tep sinh co ghi cach sinh lai", md.contains("SinhDanhMucItem"));
     }

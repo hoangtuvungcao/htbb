@@ -308,24 +308,22 @@ public class TeamServer {
     static final String MAT_KHAU_MAU = "DOI_MAT_KHAU_DB";
 
     /**
-     * Tra ve ly do khong vao duoc CSDL, hoac null neu vao duoc.
+     * Thu mo mot ket noi THAT toi CSDL. Tra ve ly do that bai, hoac null neu vao duoc.
      *
-     * Tach rieng khoi kiemTraCSDL() de test goi duoc: ham kia ket thuc bang System.exit(1),
-     * ma mot ham goi exit thi khong the kiem thu duoc - JVM chay test se chet theo.
-     * KHONG bao gio dua mat khau vao chuoi tra ve: chuoi nay di thang ra log.
+     * Tach rieng khoi chanDoanCSDL() de nhanh nhuong bo cho may dev (xem kiemTraCSDL) van
+     * BAT BUOC phai ket noi duoc that: no chi mien phep kiem "mat khau de trong", chu khong
+     * mien phep thu ket noi. Nho vay mot may dat db.choPhepMatKhauTrong=1 ma CSDL sai/chua
+     * bat van chet ngay voi ly do ro rang, khong chay lung chung.
+     *
+     * KHONG bao gio dua mat khau vao chuoi tra ve: chuoi nay di thang ra log, ma cac tep log
+     * de quyen -rw-r--r-- (ai cung doc duoc). Cung vi the KHONG dung dang URL
+     * "?user=..&password=.." - driver in lai ca URL trong thong bao loi.
      */
-    public static String chanDoanCSDL(final Properties p) {
+    public static String thuKetNoiCSDL(final Properties p) {
         final String host = p.getProperty("db.host");
         final String ten = p.getProperty("db.name");
         final String user = p.getProperty("db.user");
         final String matKhau = p.getProperty("db.password");
-        if (matKhau == null || matKhau.isEmpty()) {
-            return "db.password dang de trong";
-        }
-        if (MAT_KHAU_MAU.equals(matKhau)) {
-            return "db.password van la chuoi mau \"" + MAT_KHAU_MAU + "\" - file server.ini nay"
-                    + " la ban sao cua vps/server.ini.linux.example, chua dien mat khau that";
-        }
         java.sql.Connection c = null;
         try {
             c = java.sql.DriverManager.getConnection("jdbc:mysql://" + host + "/" + ten, user, matKhau);
@@ -346,6 +344,88 @@ public class TeamServer {
     }
 
     /**
+     * Tra ve ly do khong vao duoc CSDL, hoac null neu vao duoc.
+     *
+     * Tach rieng khoi kiemTraCSDL() de test goi duoc: ham kia ket thuc bang System.exit(1),
+     * ma mot ham goi exit thi khong the kiem thu duoc - JVM chay test se chet theo.
+     * KHONG bao gio dua mat khau vao chuoi tra ve: chuoi nay di thang ra log.
+     *
+     * Ham nay LUON NGHIEM NGAT, khong co ngoai le nao: mat khau de trong van la mot ly do.
+     * Nhanh nhuong bo cho may dev nam o kiemTraCSDL() - cho duy nhat quyet dinh mot chan
+     * doan co lam chet server hay khong. Xem test/KiemMayDevCSDL.java.
+     */
+    public static String chanDoanCSDL(final Properties p) {
+        final String matKhau = p.getProperty("db.password");
+        if (matKhau == null || matKhau.isEmpty()) {
+            return "db.password dang de trong";
+        }
+        if (MAT_KHAU_MAU.equals(matKhau)) {
+            return "db.password van la chuoi mau \"" + MAT_KHAU_MAU + "\" - file server.ini nay"
+                    + " la ban sao cua vps/server.ini.linux.example, chua dien mat khau that";
+        }
+        return thuKetNoiCSDL(p);
+    }
+
+    /**
+     * Host CSDL co phai may noi bo (loopback) hay khong.
+     *
+     * Dang gia tri trong server.ini la "host:cong": localhost:3306, 127.0.0.1:3306,
+     * [::1]:3306. Mot ten may khac ma tinh ra cung tro ve 127.0.0.1 thi o day van tinh la
+     * O XA - lech ve phia nghiem ngat, dung huong an toan.
+     */
+    public static boolean laHostNoiBo(final String hostCong) {
+        if (hostCong == null) {
+            return false;
+        }
+        String h = hostCong.trim().toLowerCase();
+        if (h.startsWith("[")) {
+            // IPv6 co ngoac: [::1]:3306
+            final int dongNgoac = h.indexOf(']');
+            if (dongNgoac > 0) {
+                h = h.substring(1, dongNgoac);
+            }
+        } else if (h.indexOf(':') > 0 && h.indexOf(':') == h.lastIndexOf(':')) {
+            // Dung MOT dau hai cham -> la "host:cong". Nhieu hon la IPv6 tran, de nguyen.
+            h = h.substring(0, h.indexOf(':'));
+        }
+        return "localhost".equals(h) || "127.0.0.1".equals(h) || "::1".equals(h)
+                || "0:0:0:0:0:0:0:1".equals(h);
+    }
+
+    /**
+     * Co cho phep db.password de trong hay khong. Ham THUAN (khong doc file, khong cham
+     * CSDL) de test chay duoc moi to hop.
+     *
+     * MAC DINH LA KHONG. Thieu khoa, khoa de trong, "0", "true", hay viet sai chinh ta -
+     * tat ca deu ra false. Chi dung chuoi "1" moi mo, VA con phai them dieu kien CSDL nam
+     * ngay tren may noi bo. Nho vay mot server.ini bi thieu dong, bi cat ngan, hay bi ghi
+     * de bang ban mau deu roi vao huong nghiem ngat.
+     */
+    public static boolean quyetDinhChoPhepMatKhauTrong(final String khoa, final String host) {
+        if (khoa == null || !"1".equals(khoa.trim())) {
+            return false;
+        }
+        return laHostNoiBo(host);
+    }
+
+    /**
+     * Doc quyet dinh tren tu server.ini.
+     *
+     * PHAI doc khoa bang loi goi getProperty voi chuoi viet thang tren MOT dong (nhu ben
+     * duoi): test KiemCauHinhPipeline quet ma nguon bang bieu thuc chinh quy de doi chieu
+     * hai chieu voi vps/server.ini.tmpl. Doi thanh hang so hay tach bien la khoa nay "vo
+     * hinh" voi phep doi chieu do.
+     *
+     * Va vi phep quet KHONG bo qua dong chu thich, chu thich o day tuyet doi khong duoc
+     * viet lai nguyen dang loi goi ay - lam vay la phep doi chieu tu thoa man bang chinh
+     * chu thich, va xoa mat loi goi that di no cung khong biet.
+     */
+    public static boolean choPhepMatKhauTrong(final Properties p) {
+        return quyetDinhChoPhepMatKhauTrong(p.getProperty("db.choPhepMatKhauTrong"),
+                p.getProperty("db.host"));
+    }
+
+    /**
      * Dung han server ngay khi khong vao duoc CSDL, thay vi de no chay tiep roi chet lung chung.
      *
      * VI SAO PHAI CO. Mat khau sai thi ConnPool rong, moi getConnection() nem
@@ -363,9 +443,36 @@ public class TeamServer {
      * StartLimitBurst trong vps/kpah-game.service de systemd thoi khoi dong lai vo han.
      *
      * KHONG in mat khau ra log - chi noi no co dung chuoi mau hay khong.
+     *
+     * NHUONG BO CHO MAY DEV. May nha chay XAMPP thuong de root khong mat khau, ma dat mat
+     * khau MySQL chi de chay thu thi rat vuong. Nen khi server.ini co
+     * db.choPhepMatKhauTrong=1 VA db.host tro vao may noi bo, thi rieng phep kiem "mat khau
+     * de trong" duoc mien - moi phep kiem khac giu nguyen, va van phai ket noi duoc that.
+     * Xem choPhepMatKhauTrong(). VPS duoc giu o ba lop:
+     *   1. vps/server.ini.tmpl ghim db.choPhepMatKhauTrong=0, va deploy-auto.sh SINH LAI
+     *      /opt/kpah/server.ini tu ban mau do o moi lan deploy;
+     *   2. vps/sinh-server-ini.sh tu choi cai neu gia tri khac 0, va tu choi ca file co
+     *      khoa khai hai lan (Properties lay dong cuoi, bo sinh truoc day lay dong dau);
+     *   3. thieu khoa (hoac sai chinh ta) mac dinh la KHONG cho - fail-closed.
+     *
+     * DUNG COI DAY LA BAT KHA XAM PHAM. Hai lop dau la lop VAN HANH, khong phai lop ky
+     * thuat: ai co quyen root tren VPS van sua tay /opt/kpah/server.ini duoc, va rieng
+     * duong vps/update.sh thi khoi dong lai ma KHONG sinh lai server.ini - sua tay se song
+     * tiep cho tan lan deploy sau. Cung dung tuong "mat khau trong thi MySQL tu chan": neu
+     * grant cho phep thi MariaDB van cho vao qua TCP binh thuong. Lop chan that su cuoi
+     * cung o day chi la thuKetNoiCSDL() - phai ket noi duoc that moi chay.
      */
     public static void kiemTraCSDL(final Properties p) {
-        final String vuongMac = chanDoanCSDL(p);
+        final String matKhau = p.getProperty("db.password");
+        final boolean choTrong = choPhepMatKhauTrong(p);
+        final String vuongMac;
+        if (choTrong && "".equals(matKhau)) {
+            // "".equals(...) co y: khoa THIEU (null) hay chuoi mau van di duong nghiem ngat.
+            System.out.println("CSDL MAY DEV -> chap nhan db.password de trong, van thu ket noi that");
+            vuongMac = thuKetNoiCSDL(p);
+        } else {
+            vuongMac = chanDoanCSDL(p);
+        }
         if (vuongMac == null) {
             return;
         }
@@ -376,7 +483,15 @@ public class TeamServer {
         System.out.println("!!!!!!!!!! KHONG VAO DUOC CSDL - DUNG SERVER !!!!!!!!!!");
         System.out.println("  ly do    : " + vuongMac);
         System.out.println("  dang thu : " + host + "/" + ten + " voi user " + user);
-        System.out.println("  cach sua : sua /opt/kpah/server.ini roi systemctl restart kpah-game");
+        if (choTrong) {
+            System.out.println("  cach sua : bat MySQL (XAMPP) roi chay lai run.bat");
+        } else {
+            System.out.println("  cach sua : sua /opt/kpah/server.ini roi systemctl restart kpah-game");
+            if ("".equals(matKhau)) {
+                System.out.println("  o may nha: them db.choPhepMatKhauTrong=1 vao server.ini cua may minh");
+                System.out.println("             (ban mau VPS ghim 0 - DUNG sua ban mau)");
+            }
+        }
         System.out.println("  (dung han o day de systemd bao 'failed' dung su that; neu chay tiep");
         System.out.println("   thi server chet lung chung ma systemd van bao 'active (running)')");
         System.out.println();
@@ -602,6 +717,17 @@ public class TeamServer {
             TeamServer.CONN_RATE_MAX       = parseIntDefault(p.getProperty("sv.connRateMax"), 60);
             TeamServer.CONN_RATE_WINDOW_MS = parseIntDefault(p.getProperty("sv.connRateWindow"), 30) * 1000;
             TeamServer.DOS_BAN_MS          = (long) parseIntDefault(p.getProperty("sv.dosBanSec"), 300) * 1000L;
+            // Nguong NGAP GOI TIN. Canh theo do tre Internet, nen may nha chay qua loopback
+            // (khong co do tre) phai nang len khong thi client cache rong bi cat oan. Xem
+            // io/BoDemGoiTin. Doc kieu co default: thieu khoa thi giu so cu, KHONG nem loi
+            // lam bo qua moi dong ben duoi.
+            io.BoDemGoiTin.GOI_THUONG_TOI_DA = parseIntDefault(
+                    p.getProperty("sv.tranGoiThuong"), io.BoDemGoiTin.GOI_THUONG_MAC_DINH);
+            io.BoDemGoiTin.GOI_TAI_NGUYEN_TOI_DA = parseIntDefault(
+                    p.getProperty("sv.tranGoiTaiNguyen"), io.BoDemGoiTin.GOI_TAI_NGUYEN_MAC_DINH);
+            System.out.println("NGAP GOI TIN -> tran thuong=" + io.BoDemGoiTin.GOI_THUONG_TOI_DA
+                    + ", tran tai nguyen=" + io.BoDemGoiTin.GOI_TAI_NGUYEN_TOI_DA
+                    + " moi " + io.BoDemGoiTin.CUA_SO_MS + "ms");
             System.out.println("DoS PROTECT -> socketTimeout=" + (TeamServer.SOCKET_TIMEOUT_MS / 1000)
                     + "s, maxConnPerIp=" + TeamServer.MAX_CONN_PER_IP
                     + ", connRate=" + TeamServer.CONN_RATE_MAX + "/" + (TeamServer.CONN_RATE_WINDOW_MS / 1000)

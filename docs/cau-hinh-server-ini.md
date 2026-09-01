@@ -232,13 +232,58 @@ phẩy. Để trống = không cấp cho ai.
 | `sv.connRateWindow` | độ dài cửa sổ đếm, giây (30) |
 | `sv.dosBanSec` | cấm tạm một IP flood bao lâu, giây (300) |
 | `sv.reloginWaitSec` | phải chờ bao lâu mới vào lại sau khi thoát (0 = vào ngay) |
+| `sv.tranGoiThuong` | số gói tin **thường** tối đa của một kết nối trong 5 giây (300) |
+| `sv.tranGoiTaiNguyen` | số gói **tải tài nguyên** tối đa của một kết nối trong 5 giây (600) |
 | `limit.ccu` | số người online tối đa — **bắt buộc có**, không có mặc định |
+
+### Hai ngưỡng `sv.tranGoi*` — vì sao máy nhà phải nâng lên
+
+Lệnh tải tài nguyên (`-47` ảnh nhân vật, `-48` quần áo, `-49` hiệu ứng, `-51` ảnh) được đếm
+**riêng** với hạn mức rộng hơn, vì lúc vào bản đồ mới chúng trả về một chùm hoàn toàn bình
+thường. Vượt ngưỡng là **cắt kết nối** ngay ([io/BoDemGoiTin.java](../src/io/BoDemGoiTin.java)).
+
+Hai số này được canh theo **độ trễ Internet**. Qua loopback (máy nhà tự chạy server để thử)
+không có độ trễ, nên một client vừa xoá cache tải ảnh nhanh hơn hẳn và chạm trần một cách hoàn
+toàn lương thiện — đã xảy ra thật: `NGAP GOI TIN: cat ket noi admin ip=127.0.0.1 (601 goi tai
+nguyen trong 5000ms (tran 600))` ba lần liền trong một phiên thử, và sau khi **nâng trần lên
+6000 thì vẫn bị cắt ở gói 6001**. Tức qua loopback không có con số nào là "đủ cao" chắc chắn.
+
+**`0` (hoặc số âm) = tắt hẳn phép đếm đó**, cùng quy ước với `sv.socketTimeout` và
+`sv.connRateWindow`. Máy nhà nên đặt `sv.tranGoiTaiNguyen=0` trong `server.ini` **của máy đó**,
+thay vì đoán một con số. Bản mẫu VPS ghim `300`/`600` là giá trị đã chạy từ trước — **đừng hạ
+xuống và đừng đặt 0 ở đó**: tắt trên VPS là mở cửa cho spam lệnh `-51` (đọc ảnh từ đĩa, vừa tốn
+đĩa vừa tốn băng thông).
+
+Đọc kiểu có mặc định (`parseIntDefault`), **không** phải `Integer.parseInt` — thiếu dòng thì giữ
+số cũ chứ không ném lỗi làm bỏ qua mọi dòng bên dưới (xem mục 10).
 
 ## 9. Kết nối CSDL
 
 Đều phải khởi động lại. `db.maxco` + `db.maxNap` + `db.maxco1` + login server (8) + web
 **phải nhỏ hơn** `max_connections` của MariaDB, thiếu là giờ đông người ăn lỗi
 *Too many connections*.
+
+### `db.choPhepMatKhauTrong` — lối thoát **chỉ dành cho máy nhà**
+
+Server từ chối khởi động khi `db.password` để trống (xem mục 10). Máy nhà chạy XAMPP thường
+để `root` không mật khẩu, nên khoá này mở riêng phép kiểm đó:
+
+| Giá trị | Ý nghĩa |
+|---|---|
+| `0` | Nghiêm ngặt. **Bản mẫu VPS ghim giá trị này.** |
+| `1` | Cho `db.password` để trống — **và chỉ khi** `db.host` trỏ vào máy nội bộ (`localhost`, `127.0.0.1`, `[::1]`). |
+| thiếu khoá, `""`, `true`, sai chính tả | Nghiêm ngặt (mặc định fail-closed). |
+
+Đặt `1` trong `server.ini` **của máy mình** (file này bị `.gitignore`), **tuyệt đối không**
+thêm vào `vps/server.ini.tmpl`. Phải khởi động lại, không nạp lại được.
+
+Khoá này **chỉ** miễn phép kiểm "mật khẩu để trống". Nó không miễn phép thử kết nối thật,
+cũng không miễn phép kiểm chuỗi mẫu `DOI_MAT_KHAU_DB` — máy đặt `1` mà chưa bật MySQL thì
+vẫn chết ngay với lý do rõ ràng. VPS được bảo vệ ở ba lớp độc lập: bản mẫu ghim `0` và
+deploy **sinh lại** `/opt/kpah/server.ini` từ bản mẫu mỗi lần deploy;
+[`vps/sinh-server-ini.sh`](../vps/sinh-server-ini.sh) từ chối cài nếu giá trị khác `0`; và
+thiếu khoá thì mặc định là nghiêm ngặt. Xem `TeamServer.choPhepMatKhauTrong()` và
+[test/KiemMayDevCSDL.java](../test/KiemMayDevCSDL.java).
 
 ## 10. Cạm bẫy
 
@@ -347,6 +392,11 @@ Giờ đã có hai lớp chặn:
   thôi bật lại vô hạn và để unit vào trạng thái `failed`.
 
 Và pipeline ở mục 1 làm việc chép đè kia thành vô nghĩa: file luôn được sinh lại từ bản mẫu.
+
+Lối thoát `db.choPhepMatKhauTrong` (mục 9) **không** hé lại cạm bẫy này: nó chỉ nhận đúng giá
+trị `1`, chỉ khi CSDL nằm ở máy nội bộ, và chuỗi mẫu `DOI_MAT_KHAU_DB` không bao giờ đi qua nó
+(nhánh nới lỏng so bằng chuỗi rỗng). Bản mẫu ghim `0`, và `vps/sinh-server-ini.sh` từ chối cài
+nếu khác `0` — nên bản sinh ra cho VPS luôn nghiêm ngặt.
 
 ### Đừng làm ba việc này
 

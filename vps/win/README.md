@@ -10,6 +10,40 @@ Tất cả đi qua **SSH**, không cần mở thêm cổng nào trên VPS.
 | `vps-loi.bat` | Lọc riêng các dòng lỗi trong log + log login server |
 | `vps-sql.bat "<câu SQL>"` | Chạy một câu SQL trên DB của VPS |
 | `vps-db-tunnel.bat` | Mở đường hầm để dùng HeidiSQL/Workbench xem DB như DB local |
+| `vps-db-tai-ve.bat` | **Tải** `kpah_db` + `account` từ VPS về máy này |
+| `vps-db-nap-vao-local.bat` | **Nạp** bản vừa tải vào MySQL local (XAMPP) — ghi đè DB local |
+
+## Cho DB local giống VPS
+
+Chạy hai file, theo thứ tự:
+
+```
+vps-db-tai-ve.bat          -> tải về %USERPROFILE%\Desktop\kpah-db-backup\
+vps-db-nap-vao-local.bat   -> nạp vào MySQL local
+```
+
+Vì sao tách làm hai: bước tải chỉ **đọc** VPS (an toàn, chạy lúc nào cũng được), bước nạp thì
+**ghi đè** DB trên máy này. Tách ra thì tải xong vẫn xem lại được rồi mới quyết định nạp.
+
+Những thứ hai script này tự lo:
+
+- **Không khoá DB production**: dump bằng `--single-transaction --quick`, server thật vẫn chạy bình thường.
+- **Bắt được dump bị cắt giữa đường**: `mysqldump` chết giữa đường vẫn để lại file trông như thật —
+  đúng cạm bẫy từng làm `backup_db.sh` xoá bản cũ sau khi tạo ra một bản dump hỏng. Nên có **hai** phép
+  kiểm độc lập: mã thoát của `ssh`, và dòng `-- Dump completed` ở cuối file. Bước nạp kiểm **lại** lần nữa
+  trước khi xoá gì.
+- **Sao lưu DB local trước khi ghi đè**, ra `truoc_khi_nap_*.sql` cùng thư mục — muốn lấy lại nhân vật thử
+  cũ thì nạp file đó.
+- **Chờ bạn tắt server tử tế** (Admin Panel → "Bảo Trì", hoặc Ctrl+C ở console) chứ không tự kill: kill
+  cứng thì hook lưu dữ liệu không chạy kịp.
+- **Xoá hẳn DB rồi nạp lại** chứ không nạp đè: nạp đè thì bảng nào local có mà VPS không có sẽ còn lại,
+  hai bên vẫn không giống nhau.
+
+Lệnh `DROP DATABASE` cố ý nằm trong `vps-db-nap-vao-local.bat` (ghim cứng `127.0.0.1`), **không** nhúng
+vào file dump: file dump nằm trên Desktop, ai chạy nhầm nó ngược lên VPS thì chỉ mất máy bàn chứ không
+xoá sạch DB thật.
+
+> Bản dump chứa dữ liệu người chơi thật (tên đăng nhập, nhân vật, nạp thẻ). Đừng chia sẻ file ra ngoài.
 
 ## Ví dụ `vps-sql.bat`
 

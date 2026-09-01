@@ -30,6 +30,11 @@ db.host=localhost:3306
 db.name=kpah_db
 db.user=${DB_USER}
 db.password=${DB_PASSWORD}
+# Cho phep db.password de trong. TREN VPS PHAI LUON LA 0.
+# Chi may nha (XAMPP, root khong mat khau) moi dat 1, va dat trong server.ini cua may do
+# chu KHONG phai o day. De 1 o ban mau nay la go mat mot lop chan cua su co 30/08/2026.
+# vps/sinh-server-ini.sh tu choi cai neu gia tri khac 0. Xem TeamServer.choPhepMatKhauTrong().
+db.choPhepMatKhauTrong=0
 db.maxco=100
 db.nameNap=kpah_db
 db.userNap=${DB_USER_NAP}
@@ -117,6 +122,15 @@ sv.maxConnPerIp=50
 sv.connRateMax=60
 sv.connRateWindow=0
 sv.dosBanSec=300
+
+# Nguong NGAP GOI TIN moi 5 giay cho MOT ket noi (io/BoDemGoiTin): lenh thuong va lenh tai
+# nguyen (-47/-48/-49/-51, tuc tai anh) dem rieng. Hai so nay la dung gia tri da chay tu
+# truoc, DUNG ha xuong va DUNG dat 0 o day.
+# 0 = TAT han phep dem do (giong quy uoc sv.socketTimeout / sv.connRateWindow). Chi may nha
+# moi nen tat: qua loopback khong co do tre mang nen client cache rong cham tran mot cach
+# luong thien, va tat o VPS la mo cua cho spam lenh -51 (doc anh tu dia).
+sv.tranGoiThuong=300
+sv.tranGoiTaiNguyen=600
 
 # ==== SU KIEN ====
 # Tu 30/08/2026 cho bat/tat su kien la TRANG QUAN TRI /admin/sukien.php (bang

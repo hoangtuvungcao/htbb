@@ -5819,6 +5819,22 @@ public class Database {
         }
     }
 
+    /**
+     * CODE CHET - khong con duong nao goi toi, va tep no doc KHONG TON TAI.
+     *
+     * Da kiem ngay 02/09/2026: khong mot cho nao trong src/, test/, tools/, web/ goi
+     * setPotionFromFile, va grep toan bo 878 class trong lib/NQSH_5h.jar cung khong co
+     * tham chieu nao (nen khong phai bi goi qua reflection tu ma nguon cu).
+     *
+     * `map/data.txt` khong ton tai trong repo. TeamServer.readData nuot moi loi
+     * (catch rong) roi tra ve Vector RONG, nen neu co ai goi thi vong lap ben duoi chay 0
+     * lan - im lang khong lam gi, khong bao loi. Tuc trang thai "hong" va "binh thuong"
+     * cua ham nay nhin nhu nhau, do la ly do no nam day lau ma khong ai biet.
+     *
+     * De lai vi day tung la tien ich chay tay (cong 1 binh o vi tri 27 cho danh sach nhan
+     * vat ghi trong tep). Muon dung lai thi phai tu tao map/data.txt - moi dong mot ten
+     * nhan vat. DUNG xoa tep nao trong map/ vi tuong ham nay can.
+     */
     public void setPotionFromFile() {
         Vector<String> data = TeamServer.readData("map/data.txt", "data.txt");
         Connection conn = null;

@@ -188,6 +188,29 @@ Hướng dẫn đầy đủ: [docs/HUONG_DAN_BUILD_VPS.md](docs/HUONG_DAN_BUILD_
 Chỉnh cấu hình đang chạy (tỉ lệ rơi, giờ chiếm thành, quyền admin, chống flood):
 [docs/cau-hinh-server-ini.md](docs/cau-hinh-server-ini.md)
 
+### Chạy thử ở máy nhà
+
+Ba thành phần, theo đúng thứ tự này:
+
+```
+1. MySQL      c:\xampp\mysql_start.bat        (hoặc bảng điều khiển XAMPP)
+                 cần 2 CSDL: kpah_db (game) + account (đăng nhập)
+2. Login      loginServer\run.bat             -> cổng 8023
+3. Game       run.bat                         -> cổng 19129
+```
+
+Chạy đúng thì log game in `CONNECTED TO SERVER LOGIN` rồi `Listen on port 19129`. Thiếu bước 2
+thì server vẫn lên nhưng log kêu `CONNECT TO SERVER LOG IN FAIL` mỗi giây và **không ai đăng
+nhập được**.
+
+`server.ini` là file **của riêng từng máy** (bị `.gitignore`) — máy nhà và VPS mỗi bên một bản,
+nên chạy local không ảnh hưởng gì tới VPS. Máy nhà để `db.password` trống được nhờ khoá
+`db.choPhepMatKhauTrong=1`; bản mẫu VPS ghim `0` và bộ sinh từ chối cài nếu khác `0`
+(xem [mục 9](docs/cau-hinh-server-ini.md)). **Đừng** thêm khoá đó vào `vps/server.ini.tmpl`.
+
+Cấu hình cho VPS **không** nằm ở `server.ini` mà ở [`vps/server.ini.tmpl`](vps/server.ini.tmpl):
+mỗi lần deploy, `vps/sinh-server-ini.sh` sinh lại `/opt/kpah/server.ini` từ bản mẫu đó.
+
 ## Ràng buộc phải biết trước khi sửa cấu trúc
 
 Đây là những thứ **không di chuyển/đổi tên được**, đã kiểm chứng trực tiếp:

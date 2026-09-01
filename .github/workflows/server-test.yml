@@ -1,0 +1,64 @@
+name: Kiem thu
+
+# Chay bo kiem thu (test/Kiem.java) o moi lan push va moi pull request.
+#
+# VI SAO CAN. Truoc day .github/ chi co deploy.yml: moi push len main la SSH vao VPS va
+# deploy, KHONG he chay mot phep kiem nao truoc do. Bo test co 2300+ phep va chay het trong
+# khoang 1 giay, nen khong co ly do gi de khong chay.
+#
+# CO Y KHONG deploy o day. File nay chi kiem thu. Viec deploy van do deploy.yml lo.
+#
+# Bo test KHONG can CSDL va KHONG can mang:
+#   - Moi phep doc file trong repo bang duong dan tuong doi tu GOC REPO, nen bat buoc phai
+#     chay voi working-directory la goc repo (mac dinh cua actions/checkout).
+#   - test/KiemChotCSDL.java co thu ket noi 127.0.0.1:1 va localhost:3306. Khong co MySQL
+#     thi hai cho nay bi tu choi ket noi NGAY (ECONNREFUSED), dung nhu phep kiem mong doi -
+#     no kiem "bao loi dung cach", khong kiem "ket noi duoc".
+#
+# GHI CHU ve pham vi: chay tren ban chi-co-file-trong-git thi co 6 phep KHONG chay, vi chung
+# doi hai thu bi .gitignore chan (ban giai ma build/c276/... va anh goc inv_1.bytes). Ca hai
+# cho do TU IN ra dong "bo qua ..." nen khong am tham. Da do that ngay 02/09/2026:
+# worktree 2332 phep, ban sach 2326 phep, ca hai deu DAT.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+# Push lien tiep tren cung nhanh thi huy lan cu, khoi xep hang vo ich.
+concurrency:
+  group: kiem-thu-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  kiem-thu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # JDK 17 bien dich duoc --release 8. VPS chay Java 8 (class version 52), nen PHAI giu
+      # --release 8 giong build.bat/test.bat - doi so nay la jar deploy khong chay tren VPS.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Bien dich src/ va test/
+        run: |
+          set -euo pipefail
+          LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/NQSH_5h.jar"
+          mkdir -p build/ci-classes
+          find src test -name '*.java' > build/ci-sources.txt
+          echo "So file .java: $(wc -l < build/ci-sources.txt)"
+          javac --release 8 -encoding UTF-8 -nowarn -Xlint:none \
+                -cp "$LIBCP" -sourcepath "src:test" \
+                -d build/ci-classes @build/ci-sources.txt
+
+      - name: Chay bo kiem thu
+        run: |
+          set -euo pipefail
+          LIBCP="lib/jxl-2.6.jar:lib/mysql-connector-java-5.1.49.jar:lib/NQSH_5h.jar"
+          # Kiem.tongKet() tra ve 1 khi co phep hong, nen ma thoat cua java la ket luan.
+          java -cp "build/ci-classes:$LIBCP" Kiem
