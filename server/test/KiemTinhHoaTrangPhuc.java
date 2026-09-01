@@ -159,32 +159,53 @@ public final class KiemTinhHoaTrangPhuc {
     }
 
     private static void kiemVanBanNguonRealController() {
+        // "Tinh Hoa Trang Phuc" da GOP vao "Cai Tao Cai Trang" (01/09/2026, theo
+        // yeu cau nguoi dung) thay vi la muc rieng - bam vao gio hien mot submenu
+        // 2 lua chon (idMenu 90), KHONG con mo shop truc tiep tu trong so case
+        // cua idOptionMenu nua. Neo theo NOI DUNG chuoi menu / so idMenu 90 (mot
+        // hang so co dinh, khong bi day so nhu cac case idOptionMenu vi khong
+        // phu thuoc vi tri trong mang menu) thay vi so case idOptionMenu cu the -
+        // da tung dong y voi chinh nguoi dung ve bay nay khi ho tu doi
+        // KiemSkinLinhThu.java sang neo theo isTatSkinLinhThu() thay vi "case 15".
         final String rc = doc("src/real/RealController.java");
         Kiem.dung("doc duoc src/real/RealController.java", !rc.isEmpty());
         if (rc.isEmpty()) {
             return;
         }
-        final int dauCase14 = rc.indexOf("case 14:");
-        // "case 4:" xuat hien nhieu lan trong file switch khong lien quan khac -
-        // phai tim ban NGAY SAU case 14 (case "Sap ra mat" ke tiep trong CUNG mot
-        // switch), khong duoc dung indexOf tu dau file se vo tinh khop case 4 o
-        // mot switch hoan toan khac truoc do.
-        final int dauCase4 = dauCase14 >= 0 ? rc.indexOf("case 4:", dauCase14) : -1;
-        Kiem.dung("tim thay case 14 (Tinh Hoa Trang Phuc) truoc case 4 (Sap ra mat) ke tiep",
-                dauCase14 >= 0 && dauCase4 > dauCase14);
-        if (dauCase14 >= 0 && dauCase4 > dauCase14) {
-            final String thanCase14 = rc.substring(dauCase14, dauCase4);
-            Kiem.dung("case 14 goi Map.showTrangPhucTinhHoaList qua player.map",
-                    thanCase14.contains("player.map.showTrangPhucTinhHoaList(player);"));
+        final String moSubmenu = "\"Cải tạo ngẫu nhiên (500 lượng)\", \"Tinh hoa bảo đảm (bình hoá hình thú cưỡi)\"";
+        final int dauMoSubmenu = rc.indexOf(moSubmenu);
+        Kiem.dung("co cho mo submenu 2 lua chon (cai tao ngau nhien / tinh hoa bao dam)",
+                dauMoSubmenu >= 0);
+        Kiem.dung("submenu gui di voi idMenu 90 (dung sau chuoi menu, cung mot loi goi)",
+                dauMoSubmenu >= 0 && rc.indexOf("90));", dauMoSubmenu) > 0
+                && rc.indexOf("90));", dauMoSubmenu) - dauMoSubmenu < 300);
+
+        final int dauCase90 = rc.indexOf("case 90:");
+        final int dauCase100 = rc.indexOf("case 100:");
+        Kiem.dung("tim thay case 90 (xu ly submenu) truoc case 100 (nhan qua hoat dong, mot idMenu khac co san)",
+                dauCase90 >= 0 && dauCase100 > dauCase90);
+        if (dauCase90 >= 0 && dauCase100 > dauCase90) {
+            final String thanCase90 = rc.substring(dauCase90, dauCase100);
+            Kiem.dung("case 90 nhanh idOptionMenu==0 (cai tao ngau nhien) van giu HANH VI CU y het (500 luong, mang id 11 mon, type 5)",
+                    thanCase90.contains("Bạn cần 500 lượng để cải tạo cải trang")
+                    && thanCase90.contains("int[] validItemIDs = {797, 798, 799, 800, 801, 723, 724, 725, 726, 756, 757};")
+                    && thanCase90.contains("\"Chọn\", \"Cải Tạo\", 5)"));
+            Kiem.dung("case 90 nhanh idOptionMenu==1 (tinh hoa bao dam) goi Map.showTrangPhucTinhHoaList qua player.map",
+                    thanCase90.contains("player.map.showTrangPhucTinhHoaList(player);"));
         }
     }
 
     private static void kiemVanBanNguonRequestNPCInfoHandler() {
+        // "Tinh Hoa Trang Phuc" da GOP vao "Cai Tao Cai Trang" (01/09/2026) nen
+        // KHONG con la muc rieng trong mang menu - "Cai Tao Cai Trang" van la
+        // MOT muc DUY NHAT, chi doi noi dung ben trong (mo submenu thay vi mo
+        // shop truc tiep - xem kiemVanBanNguonRealController).
         final String menuNpc = doc("src/real/cmd/RequestNPCInfoHandler.java");
         Kiem.dung("doc duoc RequestNPCInfoHandler.java", !menuNpc.isEmpty());
-        Kiem.dung("menu NPC -8 co muc \"Tinh Hoa Trang Phục\" (sau \"Cải Tạo Cải Trang\" da co san)",
-                menuNpc.contains("\"Cải Tạo Cải Trang\",\"Bộ Sưu Tập\"")
-                && menuNpc.contains("\"Tinh Hoa Trang Phục\"}"));
+        Kiem.dung("menu NPC -8 van co muc \"Cải Tạo Cải Trang\" (gio la muc GOP, khong con Tinh Hoa Trang Phuc rieng)",
+                menuNpc.contains("\"Cải Tạo Cải Trang\""));
+        Kiem.dung("menu NPC -8 KHONG con muc rieng \"Tinh Hoa Trang Phục\" (da gop vao Cải Tạo Cải Trang)",
+                !menuNpc.contains("\"Tinh Hoa Trang Phục\""));
     }
 
     private static String doc(final String duong) {

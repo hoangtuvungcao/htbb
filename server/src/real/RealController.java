@@ -1850,32 +1850,16 @@ public class RealController extends ServerController {
                         return;
                         // cải tạo cải trang
                         case 11:
-                        if (player.getLuong() < 500) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần 500 lượng để cải tạo cải trang", ""));
-                            return;
-                        }
-                        
-                        // Tạo danh sách chứa các item phù hợp
-                        Vector caitrang = new Vector();
-                        
-                        // Danh sách ID cải trang cần lọc
-                        int[] validItemIDs = {797, 798, 799, 800, 801, 723, 724, 725, 726,756,757};
-                        
-                        // Lọc items từ rương người chơi
-                        for (int i = 0; i < player.iItems.size(); i++) {
-                            Item item = (Item)player.iItems.elementAt(i);
-                            
-                            // Kiểm tra ID và hạn sử dụng
-                            for (int validID : validItemIDs) {
-                                if (item.tempateID == validID && item.minuteExist <= 0) { // -1 là vĩnh viễn
-                                    caitrang.addElement(item);
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        // Hiển thị shop với danh sách đã lọc
-                        player.sendMessage(MessageCreator.createMessageShopNew(player, caitrang, "Chọn", "Cải Tạo", 5));
+                        // Cai Tao Cai Trang: gop chung voi "Tinh Hoa Trang Phuc" (01/09/2026,
+                        // theo yeu cau nguoi dung - hai muc la MOT khai niem, khong phai hai
+                        // tinh nang rieng). Bam vao day gio hien 2 lua chon, xu ly o
+                        // switch(idMenu) case 90 duoi day: "cai tao ngau nhien" la HANH VI
+                        // CU giu nguyen y het (500 luong, 70% ti le, +1-10% ngau nhien),
+                        // "tinh hoa bao dam" la tinh nang moi (doi binh hoa hinh thu cuoi
+                        // lay chac chan CaiTao=10 - xem Map.showTrangPhucTinhHoaList).
+                        player.sendMessage(MessageCreator.createMsgMenu(
+                                new String[]{"Cải tạo ngẫu nhiên (500 lượng)", "Tinh hoa bảo đảm (bình hoá hình thú cưỡi)"},
+                                idNpc, 90));
                         return;
                    case 12:
                             menu = new String[]{"Kho Mảnh", "Bộ Sưu Tập", "Cải Trang", player.isBatCaiTrang() ? "Tắt Cải Trang" : "Bật Cải Trang"};
@@ -1940,12 +1924,31 @@ public class RealController extends ServerController {
                         Database.instance.saveOrtherLog("", player.charname, "Hoa hinh pet len cap " + capMoiHoaHinhPet, "hoahinhpet");
                         return;
 
-                    // Tinh Hoa Trang Phuc (them 01/09/2026): mo danh sach trang phuc
-                    // vinh vien dung nhom, chua tinh hoa toi da - xem
-                    // Map.showTrangPhucTinhHoaList/locTrangPhucTinhHoa cho logic loc
-                    // va Item.tenTrangPhucSauTinhHoa cho ten se nhan.
+                    // Bat/tat HIEN THI skin linh thu (them 01/09/2026) — chi an hinh anh
+                    // con thu, khong dong toi chi so/noi tai da mac. Xem SkinLinhThu.hienThi.
+                    // So case doi tu 15 xuong 14 (01/09/2026): gop "Tinh Hoa Trang Phuc"
+                    // (case 14 cu) vao chung case 11 "Cai Tao Cai Trang" nen xoa mot muc
+                    // menu rieng, muc nay tut xuong dung mot bac trong mang menu.
                     case 14:
-                        player.map.showTrangPhucTinhHoaList(player);
+                        String textSkinThu = "Đã ";
+                        if (player.isTatSkinLinhThu()) {
+                            player.setBatSkinLinhThu();
+                            textSkinThu += "bật";
+                        } else {
+                            textSkinThu += "tắt";
+                            player.setTatSkinLinhThu();
+                        }
+                        textSkinThu += " hiển thị skin thú thành công";
+                        try {
+                            player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
+                            player.sendToNearPlayer(MessageCreator.createCharInfo(player));
+                            if (player.animalRide != null) {
+                                player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
+                            }
+                        } catch (Exception var7) {
+                            var7.printStackTrace();
+                        }
+                        player.sendMessage(MessageCreator.createServerAlertMessage(textSkinThu, ""));
                         return;
 
                     case 4:
@@ -1968,6 +1971,34 @@ public class RealController extends ServerController {
             }
 
             switch (idMenu) {
+                case 90:
+                    // Cai Tao Cai Trang (them 01/09/2026, gop chung voi "Tinh Hoa Trang
+                    // Phuc" - xem chu thich o case 11 phia tren).
+                    if (idOptionMenu == 0) {
+                        // Cai tao ngau nhien - HANH VI CU giu nguyen y het, chi doi cho o
+                        // (truoc day nam thang trong case 11).
+                        if (player.getLuong() < 500) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần 500 lượng để cải tạo cải trang", ""));
+                            return;
+                        }
+
+                        Vector caitrang = new Vector();
+                        int[] validItemIDs = {797, 798, 799, 800, 801, 723, 724, 725, 726, 756, 757};
+                        for (int i = 0; i < player.iItems.size(); i++) {
+                            Item item = (Item) player.iItems.elementAt(i);
+                            for (int validID : validItemIDs) {
+                                if (item.tempateID == validID && item.minuteExist <= 0) { // -1 là vĩnh viễn
+                                    caitrang.addElement(item);
+                                    break;
+                                }
+                            }
+                        }
+                        player.sendMessage(MessageCreator.createMessageShopNew(player, caitrang, "Chọn", "Cải Tạo", 5));
+                    } else if (idOptionMenu == 1) {
+                        // Tinh hoa bao dam - tinh nang moi (truoc day la case 14 rieng).
+                        player.map.showTrangPhucTinhHoaList(player);
+                    }
+                    return;
                 case 100:
                     int gioHoatDong = player.runtimeCharProperties.getHourOnline();
                     switch (idOptionMenu) {

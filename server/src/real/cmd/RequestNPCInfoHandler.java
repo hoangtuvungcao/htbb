@@ -546,6 +546,18 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     if (p.idTongKim > -1) {
                         menu[1] = "Vào lại chiến trường";
                     }
+                    // Su kien Vu Lan: noi vao CUOI menu (sau moi muc tren, ke ca muc Mini
+                    // neu con hien) chu khong chen vao giua, de VI_TRI_MENU_DAU_TRUONG
+                    // (MapDoMenu) khong bi lech vi tri cac muc no da biet. Xem
+                    // real/MapSuKien.doMenuDauTruongVuLan.
+                    p.idxSuKienVuLanDauTruong = -1;
+                    if (real.SuKien.bat(real.SuKien.VU_LAN)) {
+                        String[] menuVuLan = new String[menu.length + 1];
+                        System.arraycopy(menu, 0, menuVuLan, 0, menu.length);
+                        menuVuLan[menu.length] = "Sự kiện Vu Lan";
+                        p.idxSuKienVuLanDauTruong = menu.length;
+                        menu = menuVuLan;
+                    }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }
@@ -866,7 +878,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         (p.isTatCanh() ? "Bật" : "Tắt") + " cánh",
                         "Tinh Luyện Thần Binh","Gia Hạn VKTB(5000l 7n)","Thần Khí","Cải Tạo Cải Trang","Bộ Sưu Tập",
                         "Hoá Hình Pet" + (p.petUsing != null && p.petUsing.capHoaHinh > 0 ? " (cấp " + p.petUsing.capHoaHinh + "/5)" : ""),
-                        "Tinh Hoa Trang Phục"};
+                        (p.isTatSkinLinhThu() ? "Bật" : "Tắt") + " hiển thị skin thú"};
                     if (TeamServer.isServerLienDau()) {
                         menu = new String[]{"Vũ khí", "Trang bị", "Trang bị thú"};
                     }
