@@ -16500,6 +16500,35 @@ public class Map implements Runnable {
                 }
             }
 
+            // lo #3-b loi.xlsx (tam): log chan doan "Canh rung dong -> nham Binh Kieu".
+            // Chi log khi dang o nhom Bach Hac (18, 661-664) de khong ngap log server.
+            // XOA sau khi biet duoc dung index/toM/gia tri that su can sua.
+            if (this.mapIDLoadMap == 18) {
+                try {
+                    System.out.println("[CHK-MAP] player=" + p.charname + " mapId=" + this.mapId
+                            + " mapIDLoadMap=" + this.mapIDLoadMap + " index=" + index
+                            + " mapidChange(yeu cau)=" + mapidChange
+                            + " toMap(CMLocation tim thay)=" + (toMap == null ? "null" : ("toM=" + toMap.toM + " toX=" + toMap.toX + " toY=" + toMap.toY))
+                            + " player.x/16=" + (p.x / 16) + " player.y/16=" + (p.y / 16));
+                    if (toMap != null && index >= 0 && index < locationMap.length && toMap.toM < locationMap[index].length) {
+                        short[] dbgLoc = locationMap[index][toMap.toM];
+                        String[] dbgName = (index < nameMap.length && toMap.toM < nameMap[index].length) ? nameMap[index][toMap.toM] : null;
+                        StringBuilder sb = new StringBuilder("[CHK-MAP] locationMap[" + index + "][" + toMap.toM + "]=");
+                        for (int z = 0; z + 2 < dbgLoc.length; z += 3) {
+                            sb.append("{mapId=").append(dbgLoc[z]).append(",x=").append(dbgLoc[z + 1]).append(",y=").append(dbgLoc[z + 2]).append("}");
+                            if (dbgName != null && z / 3 < dbgName.length) {
+                                sb.append("(ten=").append(dbgName[z / 3]).append(") ");
+                            }
+                        }
+                        System.out.println(sb.toString());
+                    } else {
+                        System.out.println("[CHK-MAP] KHONG doc duoc locationMap[" + index + "][" + (toMap == null ? -1 : toMap.toM) + "] - index/toM ngoai pham vi.");
+                    }
+                } catch (Exception dbgEx) {
+                    System.out.println("[CHK-MAP] loi khi log: " + dbgEx);
+                }
+            }
+
             if (toMap != null) {
                 short[] location = locationMap[index][toMap.toM];
 

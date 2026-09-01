@@ -1788,6 +1788,13 @@ class MapXuLyLenh {
 
                 int toTX = message.dis.readShort();
                 int toTY = message.dis.readShort();
+                // lo #3-b loi.xlsx (tam): log chan doan "Canh rung dong -> nham Binh Kieu".
+                // Chi log khi dang o nhom Bach Hac (18, 661-664). XOA sau khi sua xong.
+                if (map.mapIDLoadMap == 18) {
+                    System.out.println("[DO-CHANGE-MAP] player=" + player.charname + " tu mapId=" + map.mapId
+                            + " mapIDLoadMap=" + map.mapIDLoadMap + " -> toMapID(client gui)=" + toMapID
+                            + " toTX=" + toTX + " toTY=" + toTY);
+                }
                 if (toMapID != 9 && toMapID != 481 && toMapID != 482 && toMapID != 483 && toMapID != 484) {
                     if (toMapID == 201) {
                         if (map.mapIDLoadMap == 9 && (toTX != 39 || toTY != 90 || player.y / 16 > 10 && player.idClan > -1)) {
@@ -1977,6 +1984,14 @@ class MapXuLyLenh {
                         } else {
                             canchange = false;
                         }
+                    }
+
+                    // lo #3-b loi.xlsx (tam): xem chu thich o dau ham. XOA sau khi sua xong.
+                    if (map.mapIDLoadMap == 18) {
+                        System.out.println("[DO-CHANGE-MAP] player=" + player.charname + " KET QUA CUOI: canchange=" + canchange
+                                + " toMapID(sau khi kiem tra/co the bi ghi de)=" + toMapID
+                                + " toTX=" + toTX + " toTY=" + toTY
+                                + " toMap=" + (toMap == null ? "null" : ("mapId=" + toMap.mapId + " mapIDLoadMap=" + toMap.mapIDLoadMap)));
                     }
 
                     if (!canchange) {
