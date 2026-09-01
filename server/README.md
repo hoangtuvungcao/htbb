@@ -544,6 +544,21 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   sẵn cho một vòng lặp khác. Test: [test/KiemDonLog.java](test/KiemDonLog.java). Chưa động tới
   hơn 50 chỗ `e.printStackTrace()` rải rác trong `Char.java` (đường xử lý hành động người chơi) —
   phạm vi quá rộng để sửa an toàn trong một lượt, để lại cho lần sau nếu cần.
+- **Tinh Hoa Trang Phục** (menu NPC dịch vụ chung, npcType `-8`, mục sau "Cải Tạo Cải Trang" đã có
+  sẵn): đường **bảo đảm** để đưa một trong 11 bộ thời trang vĩnh viễn đạt mốc `CaiTao=10` (mốc tối
+  đa vẫn có từ "Cải Tạo Cải Trang" cũ, nhưng đó là random 1–10%, 70% tỉ lệ thành công, tốn 500
+  lượng) — đổi lại tốn bình hoá hình thú cưỡi (item/gem 268, dùng chung với Hoá Hình Pet/Thú) theo
+  nhóm, càng hiếm càng cần nhiều: nhóm 1 (Nghê Thường/Ngọc Nữ/Xích Cước/Kim Đồng/Lôi Công, id
+  797–801) 10 bình; nhóm 2 (Bạch Mi/Thuý Vũ Hồng Sam/Hắc Lang/Thần Nữ, id 723–726) 15 bình; nhóm 3
+  (Lạc Long Quân/Âu Cơ, id 756–757) 20 bình. Khi `CaiTao` đạt 10, `Item.getName()` tự đổi tên hiển
+  thị thành **Giáp Sơn Tinh Vương** (bộ đồ giới tính nam trong `data_item`) hoặc **Mị Nương Công
+  Chúa** (giới tính nữ) — theo đúng xác nhận của người yêu cầu: đây là ĐỔI TÊN chính bộ đồ đó khi đã
+  tinh hoa tối đa, KHÔNG tạo vật phẩm mới (hai tên "Giáp Sơn Tinh Vương"/"Mị Nương Công Chúa" không
+  tồn tại trong `data_item` — đã tra CSDL trực tiếp trước khi kết luận). Giới tính lấy từ CHÍNH bộ
+  đồ (cột `gender`), không phải giới tính nhân vật. Xem [src/real/Item.java](src/real/Item.java)
+  (`tenTrangPhucSauTinhHoa`, `getName`), [src/real/Map.java](src/real/Map.java)
+  (`showTrangPhucTinhHoaList`, nhánh `type == 8` / `idpopup == 126`), test
+  [test/KiemTinhHoaTrangPhuc.java](test/KiemTinhHoaTrangPhuc.java).
 
 **Lưu ý quan trọng**: mỗi lần push lên nhánh `main` sẽ tự động deploy lên VPS sản
 xuất (`.github/workflows/deploy.yml`). Đổi `KPAH2_patched.jar`, `lib/`, `map/`,

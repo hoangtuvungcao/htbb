@@ -2817,8 +2817,44 @@ public class Item extends Actor {
         return result.toString();
     }
 
+    // Tinh Hoa Trang Phuc (them 01/09/2026): 11 bo thoi trang vinh vien (nhom 1:
+    // Nghe Thuong/Ngoc Nu/Xich Cuoc/Kim Dong/Loi Cong id 797-801, nhom 2: Bach
+    // Mi/Thuy Vu Hong Sam/Hac Lang/Than Nu id 723-726, nhom 3: Lac Long
+    // Quan/Au Co id 756-757) doi TEN hien thi thanh Giap Son Tinh Vuong (nam)
+    // hoac Mi Nuong Cong Chua (nu) ngay khi CaiTao dat toi da (10%) - du dat
+    // 10% qua "Cai Tao Cai Trang" (may ngau nhien, case 11) hay qua "Tinh Hoa
+    // Trang Phuc" (bao dam bang binh hoa hinh thu cuoi, case 14 - xem
+    // Map.showTrangPhucTinhHoaList). Gioi tinh lay TU CHINH mon do (cot gender
+    // trong data_item, xem truy van CSDL truoc khi lam), KHONG phai gioi tinh
+    // nhan vat - vi 11 mon nay von da gan gioi (vd Xich Cuoc la nam, Nghe
+    // Thuong la nu) khong lien quan nhan vat dang mac la nam hay nu.
+    private static final int[] ID_TRANG_PHUC_TINH_HOA = {797, 798, 799, 800, 801, 723, 724, 725, 726, 756, 757};
+    private static final int[] GIOI_TINH_TRANG_PHUC_TINH_HOA = {2, 2, 1, 1, 1, 1, 2, 1, 2, 1, 2};
+
+    /**
+     * Ten trang phuc SE MANG khi tinh hoa toi da (CaiTao=10), theo gioi tinh
+     * cua chinh mon do - hoac null neu id nay khong thuoc nhom tinh hoa trang
+     * phuc. Dung CHUNG giua getName() (hien ten khi DA tinh hoa) va
+     * Map.java (xem truoc ten SE NHAN trong hop thoai xac nhan truoc khi
+     * tinh hoa, luc CaiTao con chua dat 10).
+     */
+    public static String tenTrangPhucSauTinhHoa(final int templateID) {
+        for (int k = 0; k < ID_TRANG_PHUC_TINH_HOA.length; k++) {
+            if (ID_TRANG_PHUC_TINH_HOA[k] == templateID) {
+                return (GIOI_TINH_TRANG_PHUC_TINH_HOA[k] == 1) ? "Giáp Sơn Tinh Vương" : "Mị Nương Công Chúa";
+            }
+        }
+        return null;
+    }
+
     @Override
     public String getName() {
+        if (this.CaiTao >= 10) {
+            final String tenTinhHoa = tenTrangPhucSauTinhHoa(this.tempateID);
+            if (tenTinhHoa != null) {
+                return tenTinhHoa;
+            }
+        }
         String name = this.getTemplate().name;
         final String[] mg = {"ma pháp", "vậy lý", "", ""};
         if (this.magic_physic < 2) {

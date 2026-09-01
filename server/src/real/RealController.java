@@ -1940,6 +1940,14 @@ public class RealController extends ServerController {
                         Database.instance.saveOrtherLog("", player.charname, "Hoa hinh pet len cap " + capMoiHoaHinhPet, "hoahinhpet");
                         return;
 
+                    // Tinh Hoa Trang Phuc (them 01/09/2026): mo danh sach trang phuc
+                    // vinh vien dung nhom, chua tinh hoa toi da - xem
+                    // Map.showTrangPhucTinhHoaList/locTrangPhucTinhHoa cho logic loc
+                    // va Item.tenTrangPhucSauTinhHoa cho ten se nhan.
+                    case 14:
+                        player.map.showTrangPhucTinhHoaList(player);
+                        return;
+
                     case 4:
                         player.sendMessage(MessageCreator.createServerAlertMessage("Sắp ra mắt.", ""));
                         return;

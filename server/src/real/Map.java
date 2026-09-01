@@ -7396,6 +7396,51 @@ public class Map implements Runnable {
                 player, locNguyenLieuTinhLuyen(player), "Chọn", "Nguyên liệu", 6));
     }
 
+    /**
+     * Tinh Hoa Trang Phuc (them 01/09/2026): duong bao dam thay cho may ngau
+     * nhien cua "Cai Tao Cai Trang" - doi bao hoa hinh thu cuoi (item/gem 268,
+     * dung CHUNG voi Hoa Hinh Pet/Thu) de CHAC CHAN dat CaiTao=10 cho mot
+     * trong 11 bo thoi trang vinh vien duoi day, luc do Item.getName() tu doi
+     * thanh Giap Son Tinh Vuong/Mi Nuong Cong Chua (xem Item.java). So luong
+     * can khac nhau theo nhom (nhom cang hiem cang can nhieu binh).
+     */
+
+    /** So binh hoa hinh thu cuoi (item 268) can de tinh hoa mot mon, theo nhom - hoac -1 neu id khong hop le. */
+    static int soLuongTinhHoaCanThiet(final int templateID) {
+        switch (templateID) {
+            case 797: case 798: case 799: case 800: case 801:
+                return 10; // nhom 1: Nghe Thuong, Ngoc Nu, Xich Cuoc, Kim Dong, Loi Cong
+            case 723: case 724: case 725: case 726:
+                return 15; // nhom 2: Bach Mi, Thuy Vu Hong Sam, Hac Lang, Than Nu
+            case 756: case 757:
+                return 20; // nhom 3: Lac Long Quan, Au Co
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * Loc trang phuc vinh vien, dung nhom, CHUA tinh hoa toi da trong hanh
+     * trang. Dung CHUNG giua luc HIEN danh sach (showTrangPhucTinhHoaList) va
+     * luc XU LY lua chon (type 8 / idpopup 126) - tranh dung lech y het bay da
+     * gap voi Tinh Luyen Than Binh (xem locNguyenLieuTinhLuyen o tren).
+     */
+    private Vector<Item> locTrangPhucTinhHoa(Char player) {
+        Vector<Item> ra = new Vector<>();
+        for (int i = 0; i < player.iItems.size(); i++) {
+            Item item = (Item) player.iItems.elementAt(i);
+            if (item.minuteExist <= 0 && item.CaiTao < 10 && soLuongTinhHoaCanThiet(item.tempateID) > 0) {
+                ra.addElement(item);
+            }
+        }
+        return ra;
+    }
+
+    public void showTrangPhucTinhHoaList(Char player) {
+        player.sendMessage(MessageCreator.createMessageShopNew(
+                player, locTrangPhucTinhHoa(player), "Chọn", "Tinh Hoa Trang Phục", 8));
+    }
+
   
 
     void doBuyItemShopNew(Char player, Message message) 
@@ -7796,6 +7841,34 @@ public class Map implements Runnable {
                     }
 
                     showTinhLuyenMaterialList(player);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            else if (type == 8)
+            {
+                // Tinh Hoa Trang Phuc: nguoi choi chon 1 bo thoi trang tu danh sach
+                // (showTrangPhucTinhHoaList) - o day chi kiem tra du binh hoa hinh
+                // thu cuoi (item 268) roi mo hop thoai xac nhan (idpopup 126). Tru
+                // binh va dat CaiTao=10 thuc su nam o idpopup 126, KHONG phai o day.
+                try {
+                    int shopIndex = message.dis.readUnsignedByte();
+                    Vector<Item> filteredItems = locTrangPhucTinhHoa(player);
+                    if (shopIndex < 0 || shopIndex >= filteredItems.size()) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Trang phục không hợp lệ", ""));
+                        return;
+                    }
+                    Item selectedItem = filteredItems.elementAt(shopIndex);
+                    int soLuongCan = soLuongTinhHoaCanThiet(selectedItem.tempateID);
+                    if (player.listGemitem[268] < soLuongCan && player.listGemitemLock[268] < soLuongCan) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Cần " + soLuongCan + " bình hoá hình thú cưỡi để tinh hoa " + selectedItem.getName(), ""));
+                        return;
+                    }
+                    String tenSauTinhHoa = Item.tenTrangPhucSauTinhHoa(selectedItem.tempateID);
+                    player.sendMessage(MessageCreator.createMsgPopUp(shopIndex, 126,
+                            "Bạn có muốn dùng " + soLuongCan + " bình hoá hình thú cưỡi để tinh hoa "
+                            + selectedItem.getName() + ", nhận " + tenSauTinhHoa + " không?"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -9361,6 +9434,45 @@ public class Map implements Runnable {
                         success ? "thanh_cong" : "that_bai");
                     Database.instance.saveOrtherLog("", player.charname, logInfo, "tinhluyentb");
         
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            else if (idpopup == 126) {
+                // Xac nhan Tinh Hoa Trang Phuc (xem type == 8 o tren). idActor la
+                // chi so trong danh sach loc, doc thang tu goi tin nen phai chan
+                // bien - giong dung cach lam voi idpopup 124.
+                try {
+                    Vector<Item> filteredItems = locTrangPhucTinhHoa(player);
+                    if (idActor < 0 || idActor >= filteredItems.size()) {
+                        data.NghiVanGianLan.ghiVatPham(player, "hactinhhoatrangphuc",
+                                "gui chi so trang phuc tinh hoa ngoai bien: " + idActor
+                              + " (danh sach co " + filteredItems.size() + " mon)");
+                        return;
+                    }
+                    Item selectedItem = filteredItems.elementAt(idActor);
+                    int soLuongCan = soLuongTinhHoaCanThiet(selectedItem.tempateID);
+                    if (player.listGemitem[268] < soLuongCan && player.listGemitemLock[268] < soLuongCan) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Không đủ " + soLuongCan + " bình hoá hình thú cưỡi", ""));
+                        return;
+                    }
+
+                    if (player.listGemitemLock[268] >= soLuongCan) {
+                        player.delGem(268, soLuongCan, true);
+                    } else {
+                        player.delGem(268, soLuongCan, false);
+                    }
+                    selectedItem.CaiTao = 10;
+
+                    player.sendMessage(MessageCreator.createServerAlertMessage(
+                            "Tinh hoa thành công! Nhận được " + selectedItem.getName(), ""));
+                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                    showTrangPhucTinhHoaList(player);
+
+                    Database.instance.saveOrtherLog("", player.charname,
+                            "tinh hoa trang phuc -> " + selectedItem.getName(), "tinhhoatrangphuc");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
