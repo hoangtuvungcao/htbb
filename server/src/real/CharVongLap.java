@@ -36,6 +36,26 @@ class CharVongLap {
             self.hp = 1;
             return;
         }
+        // "Luyen do tu dong" (dap do tu dong): MapEpNgoc.doAutoImbue chi BAT co
+        // startAutoImbue, con moi lan dap that su phai do vong lap map goi
+        // Char.doAutoImbue(). Truoc day cho goi do CHI ton tai trong OfflineMap
+        // (map id -1 - map du phong cho char co mapID khong ton tai), nen voi nguoi
+        // choi dang dung o map binh thuong thi co duoc bat len roi khong ai chay:
+        // client ket vinh vien o hop thoai "Xin cho". Dat o day vi ca ba vong lap map
+        // (update/updateSand/updateWind, moi 300ms) deu goi Char.update() cho tung
+        // nguoi choi - cung nhip ma OfflineMap dung. OfflineMap goi thang
+        // p.doAutoImbue() va KHONG goi p.update(), nen khong bi dap doi.
+        if (self.startAutoImbue) {
+            try {
+                self.doAutoImbue();
+            } catch (final Exception ex) {
+                // Khong de loi thoat ra ngoai: vong lap nguoi choi o MapVongLap bat
+                // Exception bang "break", mot loi o day se lam dung cap nhat CA map.
+                self.sendStopAutoImbue("Lỗi khi luyện tự động, đã dừng");
+                self.idGemLkd = -1;
+                ex.printStackTrace();
+            }
+        }
         if (self.currentDanhHieu == null || (self.currentDanhHieu != null && self.currentDanhHieu.isExpire())) {
             self.doOffDanhHieu();
         }

@@ -778,14 +778,13 @@ class CharCapNhat {
         final Item item = self.getItemFormVector(self.iItems, (short) self.itemImbue);
         if (item != null) {
             if (!Map.isItemCanImbue(item.getTemplate().type)) {
-                self.sendMessage(MessageCreator.createServerAlertMessage("Không thể cường hoá trang bị này", ""));
-                self.startAutoImbue = false;
+                // sendStopAutoImbue = tat co + goi -69 (mo khoa ScreenDapDo) + bao loi.
+                self.sendStopAutoImbue("Không thể cường hoá trang bị này");
                 self.idGemLkd = -1;
                 return;
             }
             if (item.isManhSuuTap() || item.isTBSuuTap() || item.isCanh() || item.isCaiTrangSuuTap()) {
-                self.sendMessage(MessageCreator.createServerAlertMessage("Không thể cường hoá ", ""));
-                self.startAutoImbue = false;
+                self.sendStopAutoImbue("Không thể cường hoá ");
                 self.idGemLkd = -1;
                 return;
             }
@@ -906,18 +905,16 @@ class CharCapNhat {
                     self.startAutoImbue = false;
                 }
             } else {
-                self.startAutoImbue = false;
                 self.idGemLkd = -1;
-                self.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm đã đạt mức mong muốn", ""));
+                self.sendStopAutoImbue("Vật phẩm đã đạt mức mong muốn");
             }
         } else {
             // lo #7 loi.xlsx: item null (da ban/gui kho/het han thue giua luc dang auto)
             // truoc day khong co nhanh else - co startAutoImbue ket true vinh vien, lam
             // lan bam Start ke tiep bi MapEpNgoc.doAutoImbue tu choi am tham (khong phan
             // hoi gi), nguoi choi thay nhu "bam la loi".
-            self.startAutoImbue = false;
             self.idGemLkd = -1;
-            self.sendMessage(MessageCreator.createServerAlertMessage("Không tìm thấy vật phẩm để luyện, đã dừng luyện tự động", ""));
+            self.sendStopAutoImbue("Không tìm thấy vật phẩm để luyện, đã dừng luyện tự động");
         }
     }
 

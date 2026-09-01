@@ -1034,7 +1034,13 @@ class MapVongLap {
                         map.map_run_state = 0;
                         long l1 = System.currentTimeMillis();
                         if (l1 - map.lastTimeUpdateMap >= Map.DELAY_UPDATE_MAP) {
-                            updateSand(map);
+                            // Phai goi qua map.updateSand() (Map.updateSand() lai goi
+                            // MapVongLap.updateSand(this)) chu KHONG goi thang ham tinh
+                            // updateSand(map): OfflineMap ghi de updateSand() va ban ghi
+                            // de do moi la ban chay auto-imbue cho nguoi choi trong map
+                            // offline. Goi thang ham tinh lam mat tinh da hinh -> ban ghi
+                            // de tro thanh ma chet.
+                            map.updateSand();
                             map.lastTimeUpdateMap = System.currentTimeMillis();
                         }
 

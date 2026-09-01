@@ -13030,41 +13030,85 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return this.gender == 2;
     }
 
+    // Bao cho client BIET la phien luyen tu dong da dung han. Bat buoc phai goi o MOI
+    // duong that bai, vi client (ScreenDapDo) khoa man hinh bang co TINH static
+    // isFinishImbue = false ngay khi bam "Cong N" va chi mo khoa khi nhan goi -69 co
+    // byte cuoi = 1. Neu chi gui createServerAlertMessage thi hop thoai "Xin cho" dong
+    // nhung co van ket false -> nhung lan bam sau bao "Khong the chon khi dang trong
+    // qua trinh luyen tu dong" cho den khi thoat game.
+    public void sendStopAutoImbue(final String info) {
+        this.sendStopAutoImbue(info, true);
+    }
+
+    public void sendStopAutoImbue(final String info, final boolean showAlert) {
+        this.startAutoImbue = false;
+        final Message m = new Message(-69);
+        try {
+            m.dos.writeByte(1);
+            m.dos.writeUTF(info);
+            m.dos.writeByte(1);
+            this.sendMessage(m);
+            m.cleanup();
+        } catch (final Exception ex) {
+        }
+        if (showAlert) {
+            // Gui SAU goi -69: onAutoImbue goi Canvas.endDlg(), neu gui alert truoc thi
+            // chinh endDlg() do se dong luon hop thoai bao loi vua hien.
+            this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        }
+    }
+
     public void doSetAutoImbue(final short idItem, final short[] idGem, final int plus, final byte[] lock) {
         this.startAutoImbue = false;
+        // Xoa lua chon cua phien TRUOC. Truoc day hai truong nay khong duoc dat lai:
+        // neu phien truoc co dung da bao hiem / da may man ma phien nay khong chon,
+        // server van doc idGemBH/idGemMM cu va an luon da cua nguoi choi.
+        this.idGemBH = -1;
+        this.idGemMM = -1;
+        this.BHLock = false;
+        this.MMLock = false;
+        if (idGem == null || lock == null || idGem.length < 3 || lock.length < 3) {
+            // doan duoi doc idGem[0..2] khong dieu kien; goi tin thieu phan tu se nem
+            // ArrayIndexOutOfBounds va nguoi choi chi thay treo o "Xin cho".
+            this.sendStopAutoImbue("Dữ liệu luyện tự động không hợp lệ");
+            return;
+        }
         final Item item = this.getItemFormVector(this.iItems, idItem);
         if (item == null) {
-            this.sendMessage(MessageCreator.createServerAlertMessage("Không tìm thấy vật phẩm", ""));
+            this.sendStopAutoImbue("Không tìm thấy vật phẩm");
             return;
         }
         try {
             if (Map.isItemSelled(this, item.id, item)) {
+                // isItemSelled co nhanh tra ve true KHONG bao gi (item.isSelling ||
+                // item.prizeSell > 0) - truoc day cho nay return im lang, client treo.
+                this.sendStopAutoImbue("Không thể luyện khi vật phẩm đang được bán");
                 return;
             }
             if (!Map.isItemCanImbue(item.getTemplate().type)) {
-                this.sendMessage(MessageCreator.createServerAlertMessage("Không thể cường hoá trang bị này", ""));
+                this.sendStopAutoImbue("Không thể cường hoá trang bị này");
                 return;
             }
             if (item.isManhSuuTap() || item.isTBSuuTap() || item.isCanh() || item.isCaiTrangSuuTap()) {
-                this.sendMessage(MessageCreator.createServerAlertMessage("Không thể cường hoá ", ""));
+                this.sendStopAutoImbue("Không thể cường hoá ");
                 return;
             }
         } catch (final Exception ex) {
             // lo #7 loi.xlsx: truoc day catch rong o day nuot loi va CHAY TIEP xuong
             // duoi nhu the moi kiem tra da qua het, co the khoi dong auto-imbue tren
             // mot item dang loi/hong template - dung han lai, khong chay tiep.
-            this.sendMessage(MessageCreator.createServerAlertMessage("Không thể cường hoá vật phẩm này", ""));
+            this.sendStopAutoImbue("Không thể cường hoá vật phẩm này");
             return;
         }
         if (!GemTemplate.isLKD(idGem[0])) {
-            this.sendMessage(MessageCreator.createServerAlertMessage("Chưa chọn luyện kim dược", ""));
+            this.sendStopAutoImbue("Chưa chọn luyện kim dược");
             return;
         }
         if (plus < 0 || plus > 15) {
             // lo #7 loi.xlsx: khong ep gioi han truoc day co the lam CharCapNhat.doAutoImbue
             // truy cap percent[item.plus] ngoai mang (mang chi co 15 phan tu, index 0-14)
             // neu self.plus > 15, nem ArrayIndexOutOfBoundsException bi nuot am tham o noi khac.
-            this.sendMessage(MessageCreator.createServerAlertMessage("Mức cường hoá không hợp lệ", ""));
+            this.sendStopAutoImbue("Mức cường hoá không hợp lệ");
             return;
         }
         this.plus = (byte) plus;

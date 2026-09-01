@@ -459,16 +459,22 @@ class MapEpNgoc {
 
     static void doAutoImbue(Map map, Char player, Message msg) {
         if (!player.isCorrectPass && !player.passWord.equals("")) {
+            // Mo khoa ScreenDapDo (co static isFinishImbue) truoc khi hien o nhap mat
+            // khau, nhung KHONG kem hop thoai bao loi vi no se de len o nhap mat khau.
+            // Chi lam khi CHUA co phien nao chay, de khong huy nham phien dang chay.
+            if (!player.startAutoImbue) {
+                player.sendStopAutoImbue("", false);
+            }
             player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
         } else if (!player.startAutoImbue) {
             try {
                 if (player.lvDetail.lv < 10) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Hãy đi luyện đến cấp 10 trở lên để sử dụng chức năng này.", ""));
+                    player.sendStopAutoImbue("Hãy đi luyện đến cấp 10 trở lên để sử dụng chức năng này.");
                     return;
                 }
 
                 if (player.getxu() < 5000L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có tối thiểu 5000 xu mới có thể sử dụng chức năng này", ""));
+                    player.sendStopAutoImbue("Bạn phải có tối thiểu 5000 xu mới có thể sử dụng chức năng này");
                     return;
                 }
 
@@ -476,7 +482,7 @@ class MapEpNgoc {
                 byte plus = msg.dis.readByte();
                 byte size = msg.dis.readByte();
                 if (size > 3) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bắt đầu luyện tự động", ""));
+                    player.sendStopAutoImbue("Không thể bắt đầu luyện tự động");
                     return;
                 }
 
@@ -495,7 +501,7 @@ class MapEpNgoc {
                 // cho client - nguoi choi bam Start thay "khong phan hoi" giong nhu treo,
                 // du nguyen nhan that su co the la bat ky loi nao (doc goi tin sai, item
                 // hong...). Bao loi chung de it nhat ho biet la co loi, khong phai lag.
-                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bắt đầu luyện tự động, thử lại sau", ""));
+                player.sendStopAutoImbue("Không thể bắt đầu luyện tự động, thử lại sau");
             }
         } else {
             // lo #7 loi.xlsx: truoc day nhanh nay im lang hoan toan khi cờ startAutoImbue
