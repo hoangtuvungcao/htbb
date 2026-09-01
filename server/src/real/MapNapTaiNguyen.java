@@ -786,6 +786,18 @@ class MapNapTaiNguyen {
         bot.id = RealController.intance.idGen.getID(0, "Tao bot");
         Map.npcHoatieu.add(bot);
         CharManager.instance.put(bot);
+        bot = new Char(null);
+        // hoa tieu moi cho "Rung gia" (lo #4 loi.xlsx) - toa do TAM, can chinh lai trong game
+        bot.setInfoChar("hoa tieu", -100, 2, 0, m, 160, 160, -3080, 269, 293, 317);
+        bot.id = RealController.intance.idGen.getID(0, "Tao bot");
+        Map.npcHoatieu.add(bot);
+        CharManager.instance.put(bot);
+        bot = new Char(null);
+        // hoa tieu moi cho "Ham toi" (lo #4 loi.xlsx) - toa do TAM, can chinh lai trong game
+        bot.setInfoChar("hoa tieu", -101, 2, 0, m, 160, 160, -3081, 269, 293, 317);
+        bot.id = RealController.intance.idGen.getID(0, "Tao bot");
+        Map.npcHoatieu.add(bot);
+        CharManager.instance.put(bot);
         if (!Char.isFinishAllSuKienSnNgude()) {
             bot = new Char(null);
             bot.setInfoChar("co nang tiec tung", -49, 2, 0, m, 800, 672, -3074, 269, 293, 317);
@@ -1017,6 +1029,18 @@ class MapNapTaiNguyen {
         CharManager.instance.put(bot);
         bot = new Char(null);
         bot.setInfoChar("doi tieu", -52, 2, 0, m, 704, 656, -32077, 25, 51, 77);
+        bot.id = RealController.intance.idGen.getID(0, "Tao bot");
+        Map.npcHoatieu.add(bot);
+        CharManager.instance.put(bot);
+        bot = new Char(null);
+        // hoa tieu moi cho "Rung gia" (lo #4 loi.xlsx) - toa do TAM, can chinh lai trong game
+        bot.setInfoChar("hoa tieu", -100, 2, 0, m, 160, 160, -3080, 269, 293, 317);
+        bot.id = RealController.intance.idGen.getID(0, "Tao bot");
+        Map.npcHoatieu.add(bot);
+        CharManager.instance.put(bot);
+        bot = new Char(null);
+        // hoa tieu moi cho "Ham toi" (lo #4 loi.xlsx) - toa do TAM, can chinh lai trong game
+        bot.setInfoChar("hoa tieu", -101, 2, 0, m, 160, 160, -3081, 269, 293, 317);
         bot.id = RealController.intance.idGen.getID(0, "Tao bot");
         Map.npcHoatieu.add(bot);
         CharManager.instance.put(bot);

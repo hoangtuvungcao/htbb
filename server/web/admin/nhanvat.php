@@ -99,6 +99,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             . 'online, lần server tự lưu tiếp theo sẽ ghi đè lại cấp cũ mà không báo gì.');
     }
 
+    if ($viec === 'buff_level') {
+        // Port tu server/Panel/ButtonEditor.java showBuffExpDialog (che do "Len
+        // Level/Phan tram") - AdminPanel desktop chi dung duoc khi nhan vat dang
+        // online (doc/ghi thang RAM); ban web nay ghi thang DB nhu "Dat cap do" o
+        // tren, dung duoc ca khi offline, cung mang rui ro y het (bi ghi de neu
+        // dang online).
+        $capMoi = (int)p('cap_do_buff');
+        $phanTram = (float)p('phan_tram_buff');
+        if ($capMoi < 1 || $capMoi > CAPDO_TOI_DA) {
+            veLai($ve, 'error', 'Cấp độ phải từ 1 đến ' . CAPDO_TOI_DA . '.');
+        }
+        if ($phanTram < 0 || $phanTram >= 100) {
+            veLai($ve, 'error', '% vào cấp phải từ 0 đến dưới 100.');
+        }
+        $bangExp = capDoRaExp();
+        $bangExpRequire = capDoRaExpRequire();
+        // cong thuc y het calculateExpToBuff() ben Java: expMain[cap-1] + expRequire[cap] * %/100
+        $xpMoi = (int)round($bangExp[$capMoi - 1] + $bangExpRequire[$capMoi] * ($phanTram / 100.0));
+
+        $stCu = dbGame()->prepare('SELECT lastLv, xp FROM tob_char WHERE id = ? LIMIT 1');
+        $stCu->execute([$id]);
+        $cu = $stCu->fetch();
+
+        $up = dbGame()->prepare('UPDATE tob_char SET lastLv = ?, xp = ? WHERE id = ?');
+        $up->execute([$capMoi, $xpMoi, $id]);
+
+        ghiNhatKy('buff_level_nhan_vat', $ten,
+            'lastLv: ' . (int)($cu['lastLv'] ?? '?') . ' -> ' . $capMoi
+            . ' (' . $phanTram . '%) | xp: ' . (string)($cu['xp'] ?? '?') . ' -> ' . $xpMoi);
+
+        veLai($ve, 'success', 'Đã buff ' . $ten . ' lên cấp ' . $capMoi . ' (' . $phanTram . '%). '
+            . 'CHỈ CÓ HIỆU LỰC THẬT nếu nhân vật đang offline lúc bấm — nếu đang online, lần '
+            . 'server tự lưu tiếp theo sẽ ghi đè lại mà không báo gì.');
+    }
+
+    if ($viec === 'xoa_vat_pham') {
+        // Cột phải nằm trong danh sách trắng này — tên cột được ghép thẳng vào SQL
+        // bên dưới (không tham số hoá được tên cột qua PDO) nên KHÔNG được nhận
+        // trực tiếp từ input mà không kiểm tra.
+        $cotChoPhep = ['equip', 'inven', 'bag'];
+        $cot = p('cot');
+        $viTri = (int)p('vi_tri');
+        if (!in_array($cot, $cotChoPhep, true)) {
+            veLai($ve, 'error', 'Cột vật phẩm không hợp lệ.');
+        }
+
+        $stCu = dbGame()->prepare("SELECT $cot FROM tob_char WHERE id = ? LIMIT 1");
+        $stCu->execute([$id]);
+        $chuoiCu = (string)($stCu->fetchColumn() ?: '');
+
+        // Lấy tên món đồ để ghi log TRƯỚC khi xoá.
+        $moTa = 'vị trí ' . $viTri;
+        foreach (docChuoiVatPham($chuoiCu) as $vp) {
+            if ($vp['_i'] === $viTri) {
+                $tenId = tenVatPhamTheoId(dbGame(), [(int)$vp['template']]);
+                $moTa = ($tenId[$vp['template']] ?? ('#' . $vp['template']))
+                    . ((int)$vp['plus'] > 0 ? ' +' . (int)$vp['plus'] : '');
+                break;
+            }
+        }
+
+        try {
+            $chuoiMoi = xoaVatPhamTheoViTri($chuoiCu, $viTri);
+        } catch (Throwable $ex) {
+            veLai($ve, 'error', $ex->getMessage());
+        }
+
+        $up = dbGame()->prepare("UPDATE tob_char SET $cot = ? WHERE id = ?");
+        $up->execute([$chuoiMoi, $id]);
+
+        ghiNhatKy('xoa_vat_pham_nhan_vat', $ten, "cột $cot, đã xoá: $moTa");
+
+        veLai($ve, 'success', 'Đã xoá "' . $moTa . '" khỏi ' . $ten . '. CHỈ CÓ HIỆU LỰC THẬT '
+            . 'nếu nhân vật đang offline lúc bấm — nếu đang online, lần server tự lưu tiếp theo '
+            . 'có thể ghi đè lại, món đồ quay về như cũ mà không báo gì.');
+    }
+
     if ($viec !== 'khoa' && $viec !== 'mo_khoa') {
         veLai($TRANG, 'error', 'Không hiểu thao tác.');
     }
@@ -214,16 +291,17 @@ if ($ct) {
     }
 }
 
-/** Một bảng vật phẩm. */
-function bangVatPham(array $ds, array $ten, string $trong): void
+/** Một bảng vật phẩm. $cot/$idNhanVat null thì không có nút xoá (dùng cho nơi khác nếu cần). */
+function bangVatPham(array $ds, array $ten, string $trong, ?string $cot = null, ?int $idNhanVat = null): void
 {
     if (!$ds) {
         echo '<p class="muted small">' . e($trong) . '</p>';
         return;
     }
+    $coXoa = $cot !== null && $idNhanVat !== null;
     echo '<div class="tbl-wrap"><table class="tbl"><thead><tr>'
        . '<th>Vật phẩm</th><th class="num">+</th><th>Màu</th><th>Ghi chú</th>'
-       . '</tr></thead><tbody>';
+       . ($coXoa ? '<th></th>' : '') . '</tr></thead><tbody>';
     foreach ($ds as $v) {
         $id = (int)$v['template'];
         $ghi = [];
@@ -241,13 +319,30 @@ function bangVatPham(array $ds, array $ten, string $trong): void
         }
         printf(
             '<tr><td>%s <span class="muted small">#%d</span></td>'
-            . '<td class="num">%s</td><td>%s</td><td class="muted small">%s</td></tr>',
+            . '<td class="num">%s</td><td>%s</td><td class="muted small">%s</td>',
             e($ten[$id] ?? '(không có trong data_item)'),
             $id,
             (int)$v['plus'] > 0 ? '+' . (int)$v['plus'] : '',
             e(tenMauVatPham((int)$v['mau'])),
             e(implode(' · ', $ghi))
         );
+        if ($coXoa) {
+            $tenMon = ($ten[$id] ?? ('#' . $id)) . ((int)$v['plus'] > 0 ? ' +' . (int)$v['plus'] : '');
+            ?>
+            <td class="nowrap">
+                <form method="post" action="nhanvat.php" class="inline"
+                      onsubmit="return confirm('Xoá vĩnh viễn <?= e($tenMon) ?> khỏi hành trang?\n\nChỉ chắc ăn khi nhân vật đang OFFLINE — nếu đang online, món đồ có thể bị lưu đè trở lại.');">
+                    <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+                    <input type="hidden" name="viec" value="xoa_vat_pham">
+                    <input type="hidden" name="id" value="<?= $idNhanVat ?>">
+                    <input type="hidden" name="cot" value="<?= e($cot) ?>">
+                    <input type="hidden" name="vi_tri" value="<?= (int)$v['_i'] ?>">
+                    <button class="btn btn-do btn-nho">Xoá</button>
+                </form>
+            </td>
+            <?php
+        }
+        echo '</tr>';
     }
     echo '</tbody></table></div>';
 }
@@ -357,6 +452,32 @@ adminHead('nhanvat', 'Nhân vật');
                    năng…) được máy chủ tự tính lại từ cấp độ ngay lúc chọn nhân vật — không cần và
                    không nên đụng vào cột nào khác.</p>
             </div>
+
+            <h4 style="margin:18px 0 10px;">Buff level kèm %</h4>
+            <form method="post" action="nhanvat.php" class="ngang"
+                  onsubmit="return confirm('Buff ' + document.getElementById('capMoiBuff').value + ' (' + document.getElementById('phanTramBuff').value + '%) cho <?= e($ct['charname']) ?>?\n\nCùng rủi ro như Đặt cấp độ ở trên — chỉ làm khi chắc chắn nhân vật đang OFFLINE.');">
+                <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+                <input type="hidden" name="viec" value="buff_level">
+                <input type="hidden" name="id" value="<?= (int)$ct['id'] ?>">
+                <label class="o" style="max-width:140px;">
+                    <span>Cấp độ</span>
+                    <input type="number" id="capMoiBuff" name="cap_do_buff" min="1" max="<?= CAPDO_TOI_DA ?>"
+                           value="<?= (int)$ct['lastLv'] ?>" required>
+                </label>
+                <label class="o" style="max-width:140px;">
+                    <span>% vào cấp</span>
+                    <input type="number" id="phanTramBuff" name="phan_tram_buff" min="0" max="99.99" step="0.01"
+                           value="0" required>
+                </label>
+                <button class="btn btn-do btn-nho" style="align-self:flex-end;">Buff level</button>
+            </form>
+            <div class="luuy" style="margin-top:12px;">
+                <p>Giống hệt "Đặt cấp độ" nhưng cho nhập thêm % tiến độ vào cấp đó (thay vì luôn
+                   là 0%) — port từ tính năng "Buff EXP → Lên Level/Phần trăm" đã có sẵn trong
+                   AdminPanel (ứng dụng chạy trên server), bản đó chỉ dùng được khi nhân vật đang
+                   online; bản này ghi thẳng DB nên dùng được cả lúc offline, nhưng mang đúng rủi
+                   ro như "Đặt cấp độ" ở trên nếu nhân vật đang online lúc bấm.</p>
+            </div>
         </div>
 
         <div class="card">
@@ -385,23 +506,30 @@ adminHead('nhanvat', 'Nhân vật');
             người chơi đang online thì đồ thật nằm trong RAM của server, chỉ khớp sau khi họ
             thoát hoặc server tự lưu.
         </p>
+        <div class="luuy" style="margin:0 0 14px;">
+            <p><strong>Nút "Xoá" chỉ chắc ăn khi nhân vật đang OFFLINE.</strong> Trang web
+               không biết một nhân vật có đang online hay không — nếu đang online, lần server
+               tự lưu tiếp theo (sau khi bán đồ, dùng thuốc, giao dịch…) có thể ghi đè cột này
+               bằng bản trong RAM của server, làm món đồ vừa xoá quay lại như cũ mà không báo
+               gì. Mọi thao tác xoá đều được ghi lại ở trang <a href="log.php">Log</a>.</p>
+        </div>
 
         <div class="grid-2">
             <div>
                 <h4>Đang mặc <span class="muted small">(<?= count($vpMac) ?>)</span></h4>
-                <?php bangVatPham($vpMac, $tenVP, 'Không mặc gì.'); ?>
+                <?php bangVatPham($vpMac, $tenVP, 'Không mặc gì.', 'equip', (int)$ct['id']); ?>
             </div>
             <div>
                 <h4>Thời trang <span class="muted small">(<?= count($vpThoiTrang) ?>)</span></h4>
-                <?php bangVatPham($vpThoiTrang, $tenVP, 'Không có.'); ?>
+                <?php bangVatPham($vpThoiTrang, $tenVP, 'Không có.', 'inven', (int)$ct['id']); ?>
             </div>
         </div>
 
         <h4 style="margin-top:18px;">Hành trang <span class="muted small">(<?= count($vpTui) ?>)</span></h4>
-        <?php bangVatPham($vpTui, $tenVP, 'Túi rỗng.'); ?>
+        <?php bangVatPham($vpTui, $tenVP, 'Túi rỗng.', 'inven', (int)$ct['id']); ?>
 
         <h4 style="margin-top:18px;">Rương <span class="muted small">(<?= count($vpRuong) ?>)</span></h4>
-        <?php bangVatPham($vpRuong, $tenVP, 'Rương rỗng.'); ?>
+        <?php bangVatPham($vpRuong, $tenVP, 'Rương rỗng.', 'bag', (int)$ct['id']); ?>
 
         <p class="muted small" style="margin:14px 0 0;">
             Đá quý và nguyên liệu <em>không</em> nằm trong ba cột này nên không hiện ở đây —

@@ -476,6 +476,7 @@ class MapEpNgoc {
                 byte plus = msg.dis.readByte();
                 byte size = msg.dis.readByte();
                 if (size > 3) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bắt đầu luyện tự động", ""));
                     return;
                 }
 
@@ -490,7 +491,17 @@ class MapEpNgoc {
                 player.doSetAutoImbue(id, idGemtemplate, plus, lock);
             } catch (Exception var9) {
                 var9.printStackTrace();
+                // lo #7 loi.xlsx: truoc day catch-all nay chi in log server, khong bao gi
+                // cho client - nguoi choi bam Start thay "khong phan hoi" giong nhu treo,
+                // du nguyen nhan that su co the la bat ky loi nao (doc goi tin sai, item
+                // hong...). Bao loi chung de it nhat ho biet la co loi, khong phai lag.
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bắt đầu luyện tự động, thử lại sau", ""));
             }
+        } else {
+            // lo #7 loi.xlsx: truoc day nhanh nay im lang hoan toan khi cờ startAutoImbue
+            // dang bi ket true (xem fix o CharCapNhat.doAutoImbue) - nguoi choi bam Start
+            // ma khong thay gi xay ra, tuong la loi.
+            player.sendMessage(MessageCreator.createServerAlertMessage("Đang trong phiên luyện tự động, hãy dừng trước khi bắt đầu lại", ""));
         }
     }
 

@@ -13050,9 +13050,21 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 return;
             }
         } catch (final Exception ex) {
+            // lo #7 loi.xlsx: truoc day catch rong o day nuot loi va CHAY TIEP xuong
+            // duoi nhu the moi kiem tra da qua het, co the khoi dong auto-imbue tren
+            // mot item dang loi/hong template - dung han lai, khong chay tiep.
+            this.sendMessage(MessageCreator.createServerAlertMessage("Không thể cường hoá vật phẩm này", ""));
+            return;
         }
         if (!GemTemplate.isLKD(idGem[0])) {
             this.sendMessage(MessageCreator.createServerAlertMessage("Chưa chọn luyện kim dược", ""));
+            return;
+        }
+        if (plus < 0 || plus > 15) {
+            // lo #7 loi.xlsx: khong ep gioi han truoc day co the lam CharCapNhat.doAutoImbue
+            // truy cap percent[item.plus] ngoai mang (mang chi co 15 phan tu, index 0-14)
+            // neu self.plus > 15, nem ArrayIndexOutOfBoundsException bi nuot am tham o noi khac.
+            this.sendMessage(MessageCreator.createServerAlertMessage("Mức cường hoá không hợp lệ", ""));
             return;
         }
         this.plus = (byte) plus;

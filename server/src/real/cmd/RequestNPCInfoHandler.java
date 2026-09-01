@@ -334,6 +334,22 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                 }
                 return;
             }
+            case -101:
+            case -100: {
+                // Hoa Tieu moi cho map 26/113 (lo #4 loi.xlsx) - menu rieng, khong
+                // dung mang IDMAP_HOA_TIEU dung chung voi -38..-48.
+                p = CharManager.instance.getByUserID(session.userID);
+                if (p != null) {
+                    int[] dest = (npcType == -100) ? new int[]{114, 10} : new int[]{114, 15};
+                    menu = new String[dest.length];
+                    for (int i = 0; i < dest.length; ++i) {
+                        menu[i] = Map.getNameMap(dest[i]);
+                    }
+                    msg = MessageCreator.createMsgMenu(menu, npcType, 0);
+                    session.sendMessage(msg);
+                }
+                return;
+            }
             case -48:
             case -47:
             case -46:

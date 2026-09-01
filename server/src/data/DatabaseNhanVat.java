@@ -947,6 +947,13 @@ class DatabaseNhanVat {
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("LOI excute char " + e);
+                // lo #5 loi.xlsx: truoc day chi in ra console roi bo qua - khong ai biet
+                // du lieu (hanh trang/trang bi...) chua duoc luu, mat dau vet khi debug
+                // sau nay. Ghi lai ben vung, cung bang tob_log_other da dung o cho khac.
+                try {
+                    db.saveOrtherLog("tob_log_other_item", p.charname, "loi luu saveCharAuto - " + e, "loisave");
+                } catch (Exception ignored) {
+                }
             }
             try {
                 if (p.charDBID > 0) {

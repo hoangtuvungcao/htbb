@@ -301,7 +301,13 @@ class DatabaseGiftCode {
                   return;
                         
               case "lansutu":
-                  player.createLan(525948, false, 95);
+                  // lo #6 loi.xlsx ("khong hien thi chi so ho ve lan su tu"): isAlert
+                  // truoc day la false - MOI giftcode khac trong file nay deu bao
+                  // "Chuc mung ban da nhan duoc..." cho nguoi choi biet vua nhan gi,
+                  // rieng case nay im lang hoan toan. createLan(..., true, ...) tu no
+                  // da co san dung thong bao can ("Chuc mung. Ban da nhan duoc linh
+                  // thu Lan su tu"), chi can bat isAlert len.
+                  player.createLan(525948, true, 95);
               return;
                
                default:

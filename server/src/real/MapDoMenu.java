@@ -1235,6 +1235,21 @@ class MapDoMenu {
                         MapSuKien.doMenuTrungThu2016(map, player, idNpc, idMenu, idOptionMenu);
                     }
                     break;
+                case -101:
+                case -100: {
+                    // Hoa Tieu moi cho map 26/113 (lo #4 loi.xlsx) - tu kiem tra map goc
+                    // rieng, khong dung mang idMapLoad/xyNPC dung chung voi -38..-48.
+                    int homeMap = (idNpc == -100) ? 26 : 113;
+                    if (player.map.mapIDLoadMap != homeMap) {
+                        return;
+                    }
+                    if (player.monster != null) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không thể dịch chuyển khi đang vận tiêu", ""));
+                        return;
+                    }
+                    map.doHoaTieu(player, idNpc, idMenu, idOptionMenu);
+                    break;
+                }
                 case -48:
                 case -47:
                 case -46:

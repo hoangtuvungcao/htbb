@@ -37,40 +37,23 @@ public final class KiemBangCapDo {
             return;
         }
 
-        final List<Long> tuTep = new ArrayList<Long>();
-        final List<Integer> capTuTep = new ArrayList<Integer>();
-        for (final String dong : php.split("\r?\n")) {
-            final Matcher m = DONG_SO.matcher(dong);
-            if (m.matches()) {
-                tuTep.add(Long.valueOf(Long.parseLong(m.group(1))));
-                capTuTep.add(Integer.valueOf(Integer.parseInt(m.group(2))));
-            }
-        }
+        // capDoRaExp() (chi so mang = cap - 1) va capDoRaExpRequire() (chi so mang =
+        // CHINH cap do) nam trong cung mot tep, cung dung dang dong "N, // cap M" -
+        // phai tach rieng tung ham truoc khi doi chieu, khong thi regex se gop nham
+        // ca hai bang lam mot.
+        final int viTriHam2 = php.indexOf("function capDoRaExpRequire()");
+        final String phanExp = viTriHam2 >= 0 ? php.substring(0, viTriHam2) : php;
+        doiChieu("capDoRaExp()", phanExp, that, 1);
 
-        Kiem.bang("so muc trong tep khop so phan tu mang Java",
-                Integer.valueOf(that.length), Integer.valueOf(tuTep.size()));
-
-        int lech = 0;
-        String viDuLech = "";
-        for (int i = 0; i < that.length && i < tuTep.size(); i++) {
-            // Nhan cap ghi trong chu thich phai la chi so + 1 - bat luon neu dong bi
-            // xoa nham hay chen nham thu tu luc sinh lai bang tay.
-            if (capTuTep.get(i).intValue() != i + 1) {
-                lech++;
-                if (viDuLech.isEmpty()) {
-                    viDuLech = "dong " + i + ": ghi \"cap " + capTuTep.get(i) + "\" nhung phai la cap " + (i + 1);
-                }
-                continue;
+        if (viTriHam2 >= 0) {
+            final long[] thatRequire = real.LevelDetail.expRequire;
+            Kiem.dung("doc duoc real.LevelDetail.expRequire", thatRequire != null && thatRequire.length > that.length);
+            if (thatRequire != null) {
+                doiChieu("capDoRaExpRequire()", php.substring(viTriHam2), thatRequire, 0);
             }
-            if (that[i] != tuTep.get(i).longValue()) {
-                lech++;
-                if (viDuLech.isEmpty()) {
-                    viDuLech = "cap " + (i + 1) + ": Java=" + that[i] + " tep=" + tuTep.get(i);
-                }
-            }
+        } else {
+            Kiem.dung("tim thay ham capDoRaExpRequire() trong tep (cho chuc nang Buff level %)", false);
         }
-        Kiem.bang("khong so nao lech" + (viDuLech.isEmpty() ? "" : " (" + viDuLech + ")"),
-                Integer.valueOf(0), Integer.valueOf(lech));
 
         // Tran cap ghi trong tep phai THAP HON do dai mang mot don vi - tranh dung
         // toi bien co loi lech-mot trong chinh LevelDetail.getXpFromLevel() ben Java
@@ -97,6 +80,50 @@ public final class KiemBangCapDo {
 
     private static void ktDungCu(final String moTa, final boolean dung) {
         Kiem.dung(moTa, dung);
+    }
+
+    /**
+     * Doi chieu mot bang "N, // cap M" trong PHP voi mot mang long that ben Java.
+     *
+     * @param capBanDau nhan cap mong doi cho phan tu chi so 0 (1 cho capDoRaExp -
+     *                  chi so mang = cap-1; 0 cho capDoRaExpRequire - chi so mang =
+     *                  chinh cap do).
+     */
+    private static void doiChieu(final String tenHam, final String phanTep, final long[] that, final int capBanDau) {
+        final List<Long> tuTep = new ArrayList<Long>();
+        final List<Integer> capTuTep = new ArrayList<Integer>();
+        for (final String dong : phanTep.split("\r?\n")) {
+            final Matcher m = DONG_SO.matcher(dong);
+            if (m.matches()) {
+                tuTep.add(Long.valueOf(Long.parseLong(m.group(1))));
+                capTuTep.add(Integer.valueOf(Integer.parseInt(m.group(2))));
+            }
+        }
+
+        Kiem.bang(tenHam + " so muc trong tep khop so phan tu mang Java",
+                Integer.valueOf(that.length), Integer.valueOf(tuTep.size()));
+
+        int lech = 0;
+        String viDuLech = "";
+        for (int i = 0; i < that.length && i < tuTep.size(); i++) {
+            // Nhan cap ghi trong chu thich phai dung nhu ky vong - bat luon neu dong bi
+            // xoa nham hay chen nham thu tu luc sinh lai bang tay.
+            if (capTuTep.get(i).intValue() != i + capBanDau) {
+                lech++;
+                if (viDuLech.isEmpty()) {
+                    viDuLech = "dong " + i + ": ghi \"cap " + capTuTep.get(i) + "\" nhung phai la cap " + (i + capBanDau);
+                }
+                continue;
+            }
+            if (that[i] != tuTep.get(i).longValue()) {
+                lech++;
+                if (viDuLech.isEmpty()) {
+                    viDuLech = "cap " + (i + capBanDau) + ": Java=" + that[i] + " tep=" + tuTep.get(i);
+                }
+            }
+        }
+        Kiem.bang(tenHam + " khong so nao lech" + (viDuLech.isEmpty() ? "" : " (" + viDuLech + ")"),
+                Integer.valueOf(0), Integer.valueOf(lech));
     }
 
     private static String preg1(final String s, final String regex) {

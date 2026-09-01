@@ -521,6 +521,14 @@ public class MessageHandler : Cmd_message, IMessageHandler
 					{
 						mainChar.useHorse = (sbyte)(b83 - 1);
 					}
+					else
+					{
+						// lo #2 loi.xlsx: server gui -1 luc hoa hinh thu de tat ve "ngua co
+						// dien" (xem Animal.java hoaHinh) - truoc day thieu nhanh else nay
+						// nen useHorse giu nguyen gia tri CU (dang cuoi thu thuong truoc do),
+						// lech pha voi idImgHorse=-1 moi, khien con thu ve sai/khong hien.
+						mainChar.useHorse = -1;
+					}
 					mainChar.anmFly = msg.reader().readByte();
 					mainChar.idImgHorse = msg.reader().readByte();
 					mainChar.speed = msg.reader().readByte();
@@ -714,6 +722,13 @@ public class MessageHandler : Cmd_message, IMessageHandler
 				if (b50 >= 0)
 				{
 					char3.useHorse = (sbyte)(b50 - 1);
+				}
+				else
+				{
+					// lo #2 loi.xlsx: xem chu thich tuong tu o nhanh mainChar phia tren -
+					// thieu else khien nguoi dung gan do (thu cuoi thuong truoc do) khong
+					// thay con thu hoa hinh cua nguoi khac.
+					char3.useHorse = -1;
 				}
 				char3.anmFly = msg.reader().readByte();
 				char3.idImgHorse = msg.reader().readByte();

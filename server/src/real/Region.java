@@ -69,17 +69,26 @@ public class Region {
         // Region tao luong do roi luong chet ngay: 610 stack trace moi lan khoi dong
         // (58.850 dong trong mot tep log cu), va 610 thread bi tao ra vo ich.
         //
-        // Da bo han. Hanh vi khong doi mot chut nao - no von nem loi ngay dong dau tien.
+        // Da bo han (roi tu day). Luong do tung lam gi: no la ban sao cua vong cap nhat
+        // trong startSandVilage(), nhung cho PHE 1 - tuc la noi duy nhat goi
+        // Region.update() (xu ly boss va allPlayers.get(1)). Bo no di lam update() thanh
+        // ma chet - HAU QUA THAT: nguoi choi phe Hac Ho dung tren map co Region (nregion>0,
+        // vd "Dong Bach Hac"/"Canh Rung Dong") khong bao gio thay quai cap nhat vi tri/
+        // xuat hien, vi khong con ai goi update() ca (lo #3 loi.xlsx, xac nhan "luon xay
+        // ra" - dung voi mot bug cau truc, khong phai theo trang thai chien tranh).
         //
-        // Luong do tung lam gi: no la ban sao cua vong cap nhat trong startSandVilage(),
-        // nhung cho PHE 1 - tuc la noi duy nhat goi Region.update() (xu ly boss va
-        // allPlayers.get(1)). Bo no di thi update() va updateWind() thanh ma chet, khong
-        // con ai goi. GIU LAI hai ham do de con biet cai gi da mat.
+        // DA PHUC HOI o duoi: startVilage1() (them moi, cuoi ham dung) - dung dung mau
+        // startSandVilage(), LOCK1/lastTimeUpdateMap1/map_run_state1 (3 truong nay tu
+        // truoc gio khai bao san nhung chua ai dung), goi update(). Dat SAU cac dong
+        // add() ben duoi (khac ban goc - luong cu start() truoc ca khi allPlayers co
+        // phan tu, mot loi khac cua rieng no).
         //
-        // Muon phuc hoi tinh nang thi phai viet lai vong lap do theo mau cua
-        // startSandVilage(), dung LOCK1/lastTimeUpdateMap1/map_run_state1 va goi update().
-        // Luu y: luong cu duoc start() NGAY DAU HAM DUNG, truoc ca khi allPlayers duoc
-        // them phan tu - nen ban goc chac chan cung da hong theo kieu khac.
+        // updateWind() (PHE 2 - Huyen Vu) VAN la ma chet, CO CHU Y chua phuc hoi: cac
+        // Vector (allPlayers, monsters, tempMonster...) trong ham dung nay chi add() 2
+        // phan tu (chi so 0,1) - goi updateWind() se nem IndexOutOfBoundsException ngay
+        // vi no doc chi so 2. Phe Huyen Vu cung khong chon duoc qua menu doi phe
+        // (MapDoMenu.java ~4039 chi dao 0/1) nen co ve la noi dung da ngung dung tu lau,
+        // khong phai lo #3 dang hoi.
         this.allPlayers.add(new Vector());
         this.allPlayers.add(new Vector());
         this.allPlayerMessages.add(new Vector());
@@ -96,6 +105,7 @@ public class Region {
         this.EFFECT_AUTO.add(new Vector());
         this.startLeafVilage();
         this.startSandVilage();
+        this.startVilage1();
     }
 
     public void startLeafVilage() {
@@ -213,6 +223,54 @@ public class Region {
                     }
                     catch (Exception e) {
                         e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+    }
+
+    /**
+     * lo #3 loi.xlsx ("quai He Hac Ho khong hien thi"): day la tick rieng cho PHE 1
+     * (Hac Ho), theo dung mau startSandVilage() (PHE 0) - xem chu thich o constructor
+     * giai thich vi sao update() truoc day la ma chet (khong ai goi). Dung
+     * LOCK1/lastTimeUpdateMap1/map_run_state1 - 3 truong nay da khai bao san tu truoc,
+     * chi chua co ai dung toi.
+     */
+    public void startVilage1() {
+        new Thread() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        if (AdminHandler.isStopServer) {
+                            Region.this.map_run_state1 = 0;
+                            return;
+                        }
+                        while (true) {
+                            if (!RealController.savingChar) {
+                                Region.this.map_run_state1 = 0;
+                                long l1 = System.currentTimeMillis();
+                                if (l1 - Region.this.lastTimeUpdateMap1 >= Map.DELAY_UPDATE_MAP) {
+                                    Region.this.update();
+                                    Region.this.lastTimeUpdateMap1 = System.currentTimeMillis();
+                                }
+                                Region.this.map_run_state1 = 1;
+                                break;
+                            }
+                            Thread.sleep(100L);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("LOI TRONG HAM RUN MAP (PHE 1) " + e.toString());
+                    }
+                    try {
+                        Object object = Region.this.LOCK1;
+                        synchronized (object) {
+                            Region.this.LOCK1.wait(Map.DELAY_UPDATE_MAP);
+                            continue;
+                        }
+                    } catch (Exception exception) {
+                        continue;
                     }
                 }
             }

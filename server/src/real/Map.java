@@ -6479,6 +6479,16 @@ public class Map implements Runnable {
         Item item = null;
 
         try {
+            if (player.isFullInventory()) {
+                // lo #5 loi.xlsx: truoc day khong kiem tra day hanh trang o day (chi co
+                // o doCreateItem - ham MO MENU, khong phai ham XAC NHAN tao do nay) -
+                // van tru xu/nguyen lieu va cong duoc do vao iItems du da day, nhung do
+                // do chi ton tai trong RAM (xem sua o duoi, saveItem cu la no-op) nen
+                // mat khi ngat ket noi giua chung.
+                player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy, không thể tạo thêm đồ", ""));
+                return null;
+            }
+
             if (!this.enoughMaterial(
                     player, typeItem, isWeapone(typeItem) ? (levelItem - 21) / 5 : (levelItem - 20) / 5, magic_physic, option, player.infoItemCreate.materialUse
             )) {
@@ -6762,7 +6772,11 @@ public class Map implements Runnable {
 
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                     String gemUse = MapEpNgoc.deleteGemItem(this, player, id, material, player.infoItemCreate.materialUse);
-                    Database.instance.saveItem(item);
+                    // lo #5 loi.xlsx: Database.saveItem(Item) la ham RONG (no-op) - do
+                    // vua tao chi ton tai trong RAM cho toi lan saveCharAuto() ke tiep
+                    // (kich hoat boi hanh dong KHAC nhu ban do/dung thuoc, khong phai boi
+                    // chinh viec che tao), nen mat het neu ngat ket noi truoc do. Luu ngay.
+                    Database.instance.saveCharAuto(player);
                     Database.instance
                             .saveOrtherLog(
                                     "tob_log_other_item",
@@ -13205,8 +13219,22 @@ public class Map implements Runnable {
     }
 
     void doHoaTieu(Char player, int idNpc, int idMenu, int idOptionMenu) {
-        int idMap = RequestNPCInfoHandler.getIDMap(idNpc + 48, idOptionMenu);
-        int[] xy = RequestNPCInfoHandler.getXYMap(idNpc + 48, idOptionMenu);
+        int idMap;
+        int[] xy;
+        if (idNpc == -100 || idNpc == -101) {
+            // Hoa Tieu moi cho map 26 "Rung gia" (-100) va map 113 "Ham toi" (-101)
+            // (lo #4 loi.xlsx) - id qua nho/lon de dung chung cong thuc idNpc+48 voi
+            // 11 Hoa Tieu cu (-38..-48) nen tach rieng, khong dung mang posHoaTieu/
+            // IDMAP_HOA_TIEU dung chung. Chi co 2 lua chon dich moi noi, toa do dich
+            // lay lai tu xyNPC cua Hoa Tieu cu (da biet la vi tri dung duoc).
+            int[] destMapId = (idNpc == -100) ? new int[]{114, 10} : new int[]{114, 15};
+            int[][] destXY = (idNpc == -100) ? new int[][]{{64, 8}, {71, 123}} : new int[][]{{64, 8}, {9, 19}};
+            idMap = destMapId[idOptionMenu];
+            xy = destXY[idOptionMenu];
+        } else {
+            idMap = RequestNPCInfoHandler.getIDMap(idNpc + 48, idOptionMenu);
+            xy = RequestNPCInfoHandler.getXYMap(idNpc + 48, idOptionMenu);
+        }
         this.playerExit(player);
         player.region = 0;
         Map oldMap = player.map;

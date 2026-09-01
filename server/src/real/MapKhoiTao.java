@@ -391,7 +391,17 @@ class MapKhoiTao {
                 }
             }
 
-            if (map.mapIDLoadMap == 25) {
+            // map 25 (MapBoss) chua bao gio co Hoa Tieu that: truoc day goi
+            // Map.npcHoatieu.get(15) - Vector chi co 15 phan tu (0-14) nen luon
+            // nem IndexOutOfBoundsException, bi catch chung nuot mat, khien
+            // startWindVilage/startSandVilage/startLeafVilage/doStartThreadUpdatePlayer
+            // phia duoi bi bo qua het cho map nay. Bo han khoi nay thay vi sua id
+            // vi khong ro y do ban dau la map nao.
+
+            if (map.mapIDLoadMap == 26) {
+                // Hoa Tieu moi them cho "Rung gia" (lo #4 loi.xlsx) - toa do dat NPC
+                // (real/MapNapTaiNguyen.java) la TAM, chua co du lieu map nhi phan de
+                // xac nhan diem di duoc, can vao game kiem tra lai vi tri.
                 if (nregion > 0) {
                     for (int i = 0; i < nregion; i++) {
                         map.addPlayer(0, (Char) Map.npcHoatieu.get(15), i);
@@ -401,6 +411,21 @@ class MapKhoiTao {
                     map.addPlayer(0, (Char) Map.npcHoatieu.get(15), 0);
                     map.addPlayer(1, (Char) Map.npcHoatieu.get(15), 0);
                     map.addPlayer(2, (Char) Map.npcHoatieu.get(15), 0);
+                }
+            }
+
+            if (map.mapIDLoadMap == 113) {
+                // Hoa Tieu moi them cho "Ham toi" (lo #4 loi.xlsx) - xem ghi chu o
+                // khoi map 26 phia tren, toa do cung la TAM.
+                if (nregion > 0) {
+                    for (int i = 0; i < nregion; i++) {
+                        map.addPlayer(0, (Char) Map.npcHoatieu.get(16), i);
+                        map.addPlayer(1, (Char) Map.npcHoatieu.get(16), i);
+                    }
+                } else {
+                    map.addPlayer(0, (Char) Map.npcHoatieu.get(16), 0);
+                    map.addPlayer(1, (Char) Map.npcHoatieu.get(16), 0);
+                    map.addPlayer(2, (Char) Map.npcHoatieu.get(16), 0);
                 }
             }
 

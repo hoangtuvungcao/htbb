@@ -34,8 +34,16 @@ public final class SinhBangCapDo {
 
     public static void main(final String[] thamSo) throws Exception {
         final long[] expMain = real.LevelDetail.expMain;
+        final long[] expRequire = real.LevelDetail.expRequire;
         if (expMain == null || expMain.length == 0) {
             System.out.println("[LOI] LevelDetail.expMain rong - khong sinh gi.");
+            System.exit(1);
+        }
+        if (expRequire == null || expRequire.length <= expMain.length) {
+            // expRequire duoc doc bang index = CAP DO THAT (khong phai capDo-1 nhu
+            // expMain), nen dai hon expMain dung 1 phan tu (index 0 khong dung toi,
+            // phan tu cuoi la 0L cho cap toi da - khong co cap ke tiep de tinh %).
+            System.out.println("[LOI] LevelDetail.expRequire rong hoac ngan hon du so voi expMain - khong sinh gi.");
             System.exit(1);
         }
 
@@ -66,6 +74,11 @@ public final class SinhBangCapDo {
         s.append(" * trang web KHONG duoc va KHONG can dong vao bat ky cot nao khac.\n");
         s.append(" *\n");
         s.append(" * test/KiemBangCapDo.java doi chieu tung phan tu voi mang that trong Java.\n");
+        s.append(" *\n");
+        s.append(" * capDoRaExpRequire() them cho chuc nang \"Buff level kem %\" (lo #A trong\n");
+        s.append(" * loi.xlsx, port tu server/Panel/ButtonEditor.java showBuffExpDialog/\n");
+        s.append(" * calculateExpToBuff) - can de tinh dung xp ung voi MOT PHAN TRAM cu the\n");
+        s.append(" * vao trong cap do, khong chi moc 0% nhu capDoRaExp().\n");
         s.append(" */\n\n");
         s.append("/** Cap do cao nhat trang quan tri cho phep dat. */\n");
         s.append("const CAPDO_TOI_DA = ").append(tranCap).append(";\n\n");
@@ -78,6 +91,20 @@ public final class SinhBangCapDo {
         s.append("    return [\n");
         for (int i = 0; i < expMain.length; i++) {
             s.append("        ").append(expMain[i]).append(", // cap ").append(i + 1).append("\n");
+        }
+        s.append("    ];\n");
+        s.append("}\n\n");
+        s.append("/**\n");
+        s.append(" * Tong diem kinh nghiem can co de dat DUNG mot % cu the vao trong mot cap do\n");
+        s.append(" * (dung real.LevelDetail.expMain[capDo-1] + expRequire[capDo] * % / 100).\n");
+        s.append(" * Chi so mang = cap do (KHONG phai cap do - 1) - trung voi cach\n");
+        s.append(" * real.LevelDetail.expRequire duoc doc index ben Java (expRequire[lv]).\n");
+        s.append(" */\n");
+        s.append("function capDoRaExpRequire(): array\n");
+        s.append("{\n");
+        s.append("    return [\n");
+        for (int i = 0; i < expRequire.length; i++) {
+            s.append("        ").append(expRequire[i]).append(", // cap ").append(i).append("\n");
         }
         s.append("    ];\n");
         s.append("}\n");

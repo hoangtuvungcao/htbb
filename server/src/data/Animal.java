@@ -1293,7 +1293,12 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             p.sendToNearPlayer(MessageCreator.createCharInfo(p));
             p.sendMessage(MessageCreator.createCharWearingMessage(p, p));
             p.sendMessage(MessageCreator.createAnimalWearingMessage(p, p));
-            p.sendToNearPlayer(MessageCreator.createAnimalWearingMessage(p, p));
+            // lo #2 loi.xlsx: KHONG gui createAnimalWearingMessage cho nguoi xung
+            // quanh - client hieu goi nay la "mo cua so Trang bi thu", charID khac
+            // nguoi nhan se hat man hinh ho sang xem trang bi cua nguoi hoa hinh (xem
+            // docs/skin-linh-thu.md muc 10). Day la loi da biet, bi copy nham tu
+            // doRideAnimal.java khi viet tinh nang hoa hinh - KHONG sua doRideAnimal.java
+            // cung luc, do la bug rieng chua duoc yeu cau.
             MessageCreator.createMsgCharMonster(p, p);
         } catch (Exception e) {
             e.printStackTrace();

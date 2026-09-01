@@ -69,7 +69,12 @@ function docChuoiVatPham(?string $chuoi): array
     }
 
     $ra = [];
-    foreach (explode('>', $chuoi) as $mau) {
+    // '_i' = vi tri mau nay trong mang explode('>', $chuoi) (sau khi da cat dau '>'
+    // dau chuoi giong server) - dung de XOA dung mau bang xoaVatPhamTheoViTri(), vi
+    // day la CHUOI THO duy nhat con giu du lieu day du (cac truong sau dau '|' bi bo
+    // qua o day). Danh so tren TOAN BO mang, ke ca mau bi bo qua ben duoi, de vi tri
+    // luon khop voi chuoi goc.
+    foreach (explode('>', $chuoi) as $i => $mau) {
         if (trim($mau) === '') {
             continue;
         }
@@ -83,6 +88,7 @@ function docChuoiVatPham(?string $chuoi): array
             return isset($t[$i]) && is_numeric(trim($t[$i])) ? (int)trim($t[$i]) : $macDinh;
         };
         $ra[] = [
+            '_i'         => $i,
             'template'   => $lay(VP_TEMPLATE, -1),
             'place'      => $lay(VP_PLACE, -1),
             'plus'       => $lay(VP_PLUS),
@@ -95,6 +101,35 @@ function docChuoiVatPham(?string $chuoi): array
         ];
     }
     return $ra;
+}
+
+/**
+ * Xoá đúng một vật phẩm khỏi chuỗi thô (equip/inven/bag), theo vị trí '_i' trả về
+ * từ docChuoiVatPham() — dùng cho tính năng xoá đồ hành trang khi phát hiện hack.
+ *
+ * Giữ NGUYÊN phần thô của các vật phẩm còn lại (không parse rồi build lại từ các
+ * trường đã rút gọn — docChuoiVatPham() bỏ qua thuộc tính sau dấu "|", build lại
+ * từ đó sẽ làm hỏng dữ liệu các item khác). Chỉ cắt bỏ đúng một mẩu theo vị trí.
+ *
+ * QUAN TRỌNG: cột `inven` có phần "thời trang đang mặc" nối thêm ở mẩu cuối cùng
+ * (xem ghi chú đầu file) — hàm này không đụng gì tới việc đó, chỉ xoá mẩu ở đúng
+ * $viTri, nên vẫn an toàn dùng chung cho cả ba cột.
+ */
+function xoaVatPhamTheoViTri(?string $chuoi, int $viTri): string
+{
+    $chuoi = trim((string)$chuoi);
+    $coDauGach = ($chuoi !== '' && $chuoi[0] === '>');
+    if ($coDauGach) {
+        $chuoi = substr($chuoi, 1);
+    }
+    $mau = explode('>', $chuoi);
+    if (!isset($mau[$viTri])) {
+        throw new RuntimeException('Không tìm thấy vật phẩm ở vị trí ' . $viTri . ' để xoá.');
+    }
+    unset($mau[$viTri]);
+    // Server tự cắt dấu '>' đầu chuỗi nếu có (CharTrangBi:358) nên không cần giữ
+    // lại $coDauGach khi ghép lại - luôn ghi bản không có dấu gạch đầu cho gọn.
+    return implode('>', $mau);
 }
 
 /**

@@ -15,6 +15,11 @@
  * trang web KHONG duoc va KHONG can dong vao bat ky cot nao khac.
  *
  * test/KiemBangCapDo.java doi chieu tung phan tu voi mang that trong Java.
+ *
+ * capDoRaExpRequire() them cho chuc nang "Buff level kem %" (lo #A trong
+ * loi.xlsx, port tu server/Panel/ButtonEditor.java showBuffExpDialog/
+ * calculateExpToBuff) - can de tinh dung xp ung voi MOT PHAN TRAM cu the
+ * vao trong cap do, khong chi moc 0% nhu capDoRaExp().
  */
 
 /** Cap do cao nhat trang quan tri cho phep dat. */
@@ -118,5 +123,109 @@ function capDoRaExp(): array
         33468195013080, // cap 89
         50202292519620, // cap 90
         75303438779430, // cap 91
+    ];
+}
+
+/**
+ * Tong diem kinh nghiem can co de dat DUNG mot % cu the vao trong mot cap do
+ * (dung real.LevelDetail.expMain[capDo-1] + expRequire[capDo] * % / 100).
+ * Chi so mang = cap do (KHONG phai cap do - 1) - trung voi cach
+ * real.LevelDetail.expRequire duoc doc index ben Java (expRequire[lv]).
+ */
+function capDoRaExpRequire(): array
+{
+    return [
+        0, // cap 0
+        200, // cap 1
+        600, // cap 2
+        1200, // cap 3
+        2000, // cap 4
+        4000, // cap 5
+        8000, // cap 6
+        16000, // cap 7
+        16000, // cap 8
+        24000, // cap 9
+        36000, // cap 10
+        54000, // cap 11
+        64800, // cap 12
+        90720, // cap 13
+        127008, // cap 14
+        177811, // cap 15
+        248935, // cap 16
+        261382, // cap 17
+        339796, // cap 18
+        441735, // cap 19
+        574256, // cap 20
+        497688, // cap 21
+        597226, // cap 22
+        716671, // cap 23
+        860005, // cap 24
+        1032006, // cap 25
+        1238407, // cap 26
+        1486089, // cap 27
+        1783307, // cap 28
+        2139968, // cap 29
+        2567962, // cap 30
+        3081554, // cap 31
+        3697865, // cap 32
+        4437438, // cap 33
+        5324925, // cap 34
+        6389910, // cap 35
+        7667892, // cap 36
+        9201471, // cap 37
+        11041765, // cap 38
+        13250118, // cap 39
+        15900142, // cap 40
+        19080170, // cap 41
+        22896204, // cap 42
+        27475445, // cap 43
+        32970534, // cap 44
+        39564641, // cap 45
+        47477569, // cap 46
+        56973083, // cap 47
+        68367699, // cap 48
+        82041239, // cap 49
+        98449487, // cap 50
+        118139384, // cap 51
+        141767261, // cap 52
+        170120713, // cap 53
+        204144856, // cap 54
+        244973827, // cap 55
+        293968592, // cap 56
+        352762311, // cap 57
+        423314773, // cap 58
+        507977728, // cap 59
+        609573273, // cap 60
+        731487928, // cap 61
+        877785513, // cap 62
+        1053342616, // cap 63
+        1264011139, // cap 64
+        1516813367, // cap 65
+        1820176040, // cap 66
+        2184211248, // cap 67
+        2621053498, // cap 68
+        3145264198, // cap 69
+        3774317037, // cap 70
+        11322951112, // cap 71
+        16984426668, // cap 72
+        25476640002, // cap 73
+        38214960003, // cap 74
+        57322440005, // cap 75
+        85983660007, // cap 76
+        128975490011, // cap 77
+        193463235016, // cap 78
+        290194852524, // cap 79
+        435292278786, // cap 80
+        652938418179, // cap 81
+        979407627269, // cap 82
+        1469111440903, // cap 83
+        2203667161355, // cap 84
+        3305500742033, // cap 85
+        4958251113049, // cap 86
+        7437376669573, // cap 87
+        11156065004360, // cap 88
+        16734097506540, // cap 89
+        25101146259810, // cap 90
+        0, // cap 91
     ];
 }
