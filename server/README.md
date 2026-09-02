@@ -507,6 +507,16 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
   (2.947 lần trong log VPS, kèm một lần cắt kết nối vì "601 gói tài nguyên").
   Test: [test/KiemMatDoKhiTaoDo.java](test/KiemMatDoKhiTaoDo.java).
 
+- **Cửa hàng theo sự kiện** ([src/real/Map.java](src/real/Map.java), `doChangeInfoShopEvent`,
+  sửa ngày 02/09/2026): "Pháo hoa tết" (`data_shop` 148/149) trước đây chỉ bị bốn khối
+  `if` (Halloween/Hè/Tết/World Cup) ghi đè khi **đúng** sự kiện đó đang bật; hết cả bốn thì
+  không khối nào chạy, cờ `sell` giữ nguyên trạng thái bật lần cuối — mua được quanh năm dù
+  không có sự kiện. Nay tắt hẳn khi cả bốn đều tắt. Thêm hai ô Bóng đá nam/nữ (`data_shop`
+  180/181, đã có sẵn tên/giá 1000 lượng/ảnh trên production từ trước — code chỉ bật/tắt cờ
+  `sell` theo `Char.isSuKienVuLan2015()`, không ghi đè dữ liệu có sẵn): hai bộ này nhân đôi tỉ
+  lệ rơi nhánh hoa hồng vàng khi đánh quái trong kỳ Vu Lan. Test:
+  [test/KiemCuaHangSuKien.java](test/KiemCuaHangSuKien.java).
+
 - Skin linh thú (đổi hình thú cưỡi, giữ nguyên chỉ số): [docs/skin-linh-thu.md](docs/skin-linh-thu.md)
 - **Sự kiện**: mọi sự kiện bật/tắt được bất kỳ lúc nào — hoặc **hẹn giờ mở/đóng** — ở trang
   quản trị `/admin/sukien.php` ([web/admin/sukien.php](web/admin/sukien.php), bảng `tob_su_kien`).

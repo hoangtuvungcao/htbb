@@ -65,6 +65,14 @@ vận hành tới đây khi thiếu bảng. Muốn bỏ hẳn thì phải đổi
 | `ten_mo_ta_skin_linh_thu.sql` | ✅ tên đã kèm mô tả `[hệ …]`. Bản seed đã hấp thụ. |
 | `sua_type_skin_linh_thu.sql` | ✅ đã áp dụng, **giờ là no-op**: điều kiện `AND type = 19` không còn khớp dòng nào (cả 5 đã là type 30). Giữ vì `SkinLinhThu.java` trỏ vào nó làm hướng dẫn khi đổi `TYPE_ITEM`. |
 
+**`data_shop` id 180/181 (thời trang Bóng đá nam/nữ, ngày 02/09/2026):** hai dòng này đã có sẵn
+trên production khi kiểm tra — không có migration nào trong repo tạo ra chúng, và lịch sử code
+không nhắc tới id 180/181 trước ngày đó. Chưa rõ nguồn gốc (khả năng là dữ liệu cũ từ trước khi
+repo này bắt đầu, hoặc thao tác tay qua trang quản trị). Đã nối `Map.doChangeInfoShopEvent` vào
+hai id có sẵn đó để bật/tắt cờ `sell` theo `Char.isSuKienVuLan2015()` — xem
+`Map.SHOP_BONG_DA_NAM/NU` — mà **không** ghi đè tên/giá/ảnh đang có. Bản seed cũng đã cập nhật
+hai dòng này để khớp production.
+
 ## Icon vật phẩm — kiến thức giữ lại từ 2 file đã xoá
 
 Hai file `sua_icon_ao_brazin.sql` và `sua_icon_dai_800_806.sql` đã xoá ngày 02/09/2026: cả hai

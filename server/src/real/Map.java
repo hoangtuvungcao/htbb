@@ -2466,7 +2466,7 @@ public class Map implements Runnable {
                 Map.shop[index] = new ShopTemplate(147, 35, "Hộp quà\n- Vật phẩm sự kiện", "", 1, 6000000, Map.SELL_XU, 0, Char.isSuKienHaloween2016() ? Map.SELL : Map.NOT_SELL, 6000000);
             }
         }
-        if (Char.isSuKienTet2017()) 
+        if (Char.isSuKienTet2017())
         {
             int index = getIndexShopTemplate(148);
             if (index != -1) {
@@ -2477,7 +2477,59 @@ public class Map implements Runnable {
                 Map.shop[index] = new ShopTemplate(149, 64, "Pháo hoa tết\n- Vật phẩm sự kiện", "", 1, 10000000, Map.SELL_XU, 0, Char.isSuKienTet2017() ? Map.SELL : Map.NOT_SELL, 10000000);
             }
         }
-        
+
+        // ---- Khong su kien nao dang bat thi phai TAT hai o dung chung 148/149 ----
+        //
+        // Bon khoi if o tren chi GHI DE hai o nay khi su kien tuong ung dang bat. Khi tat
+        // ca deu tat thi khong khoi nao chay, va hai o giu nguyen dong trong bang
+        // data_shop - ma hai dong do de sell=1. Ket qua: "Pháo hoa tết" nam trong gian
+        // hang quanh nam du khong co su kien nao lien quan. Client van ve chung ra vi no
+        // loc theo co isSell (GameScr.onNPCSellSpecialItem), con doBuySpecialItem thi tu
+        // choi ban - nguoi choi thay mot mon "co ma khong mua duoc".
+        //
+        // Chi dong hai o NAY: chung la vat pham su kien thuan tuy trong data_shop
+        // ("Pháo hoa tết - Vật phẩm sự kiện"). Hai o 147 va 135 cung duoc su kien muon
+        // nhung dong goc cua chung la "Dây thừng" va "Socola" - do that, khong duoc tu
+        // dong tat.
+        if (!Char.isSuKienWordcup2017() && !Char.isSuKienHe2017()
+                && !Char.isSuKienHaloween2016() && !Char.isSuKienTet2017()) {
+            ngungBanOSuKien(148);
+            ngungBanOSuKien(149);
+        }
+
+        // ---- Thoi trang bong da: hien trong cua hang khi Vu Lan dang bat ----
+        //
+        // Hai bo nay la thu DUY NHAT nhan doi ti le roi nhanh hoa hong vang khi danh quai
+        // trong ky Vu Lan (Monster.java, nhanh isSuKienVuLan2015 dung
+        // wModel.isBongDaNamAoCam/isBongDaNuAoSoc). O gian hang (id 180/181, ten, gia
+        // 1000 luong, anh 162/163) DA CO SAN trong data_shop tren VPS TU TRUOC, chi
+        // thieu duong noi voi co su kien - khac voi 147/148/149/135 o tren, cho nay
+        // KHONG ghi de ten/gia: chi bat/tat co sell, giu nguyen moi thu khac trong DB.
+        datOanhToggleSuKien(SHOP_BONG_DA_NAM, Char.isSuKienVuLan2015());
+        datOanhToggleSuKien(SHOP_BONG_DA_NU, Char.isSuKienVuLan2015());
+    }
+
+    /** O gian hang cua thoi trang Bóng đá nam (item 791), da co san trong data_shop. */
+    public static final int SHOP_BONG_DA_NAM = 180;
+    /** O gian hang cua thoi trang Bóng đá nữ (item 792), da co san trong data_shop. */
+    public static final int SHOP_BONG_DA_NU = 181;
+    /** So ngay su dung khi mua thoi trang bong da. */
+    public static final int SO_NGAY_BONG_DA = 7;
+
+    /** Dua mot o gian hang ve trang thai KHONG BAN, giu nguyen moi truong khac. */
+    private static void ngungBanOSuKien(final int idShop) {
+        final int index = getIndexShopTemplate(idShop);
+        if (index != -1 && Map.shop[index] != null) {
+            Map.shop[index].sell = (byte) Map.NOT_SELL;
+        }
+    }
+
+    /** Bat/tat co sell cua mot o gian hang co san, khong dung toi ten/gia/anh. */
+    private static void datOanhToggleSuKien(final int idShop, final boolean dangBat) {
+        final int index = getIndexShopTemplate(idShop);
+        if (index != -1 && Map.shop[index] != null) {
+            Map.shop[index].sell = (byte) (dangBat ? Map.SELL : Map.NOT_SELL);
+        }
     }
 
     public static void reloadShop() {
@@ -14011,6 +14063,17 @@ public class Map implements Runnable {
             case 755:
                 template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(755));
                 newItem = new Item(template, false, -1, 0, 755);
+                break;
+            // Hai bo thoi trang bong da. PHAI co case rieng: switch nay khong co nhanh
+            // default, id nao khong liet ke o day thi newItem giu null va ham tra ve null
+            // trong im lang - nguoi choi tru tien xong khong nhan duoc gi.
+            case 791:
+                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(791));
+                newItem = new Item(template, false, -1, 0, 791);
+                break;
+            case 792:
+                template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(new Integer(792));
+                newItem = new Item(template, false, -1, 0, 792);
         }
 
         if (newItem != null) {
@@ -14030,7 +14093,11 @@ public class Map implements Runnable {
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
             Database.instance.saveOrtherLog("", player.charname, "mua  " + newItem.getName() + "|" + newItem.getInfoSave(), "dothoitrang");
-            Database.instance.saveItem(newItem);
+            // Database.saveItem(Item) la ham RONG (no-op) - mon vua mua chi ton tai trong
+            // BO NHO cho toi lan luu tu dong ke tiep, ma chu ky do la 5/7/9/11 phut ngau
+            // nhien. Mat ket noi trong khoang do la nguoi choi mat tien ma khong co do.
+            // Luu ngay, giong cach duong che tao da phai sua.
+            Database.instance.saveCharAuto(player);
         }
 
         return newItem;

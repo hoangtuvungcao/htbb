@@ -256,6 +256,26 @@ public class doBuySpecialItem {
                         player.subLuong((long) item.getPrice(isSale));
                         doBuyModelClothe(player, 744, 7, 0);
                         nameItem = "Ao tinh quan";
+                    } else if (item.id == Map.SHOP_BONG_DA_NAM || item.id == Map.SHOP_BONG_DA_NU) {
+                        // Thoi trang bong da - thu duy nhat nhan doi ti le roi nhanh hoa
+                        // hong vang khi danh quai trong ky Vu Lan (xem Monster.java,
+                        // nhanh isSuKienVuLan2015). Chi ban trong ky do:
+                        // Map.doChangeInfoShopEvent dat co sell theo Char.isSuKienVuLan2015().
+                        soluong = 1;
+                        final boolean laNam = (item.id == Map.SHOP_BONG_DA_NAM);
+                        if (player.isFullInventory()) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy.", ""));
+                            return;
+                        }
+
+                        if (player.getLuong() < item.getPrice(isSale)) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng.", ""));
+                            return;
+                        }
+
+                        player.subLuong((long) item.getPrice(isSale));
+                        doBuyModelClothe(player, laNam ? 791 : 792, Map.SO_NGAY_BONG_DA, 0);
+                        nameItem = laNam ? "Thoi trang bong da nam" : "Thoi trang bong da nu";
                     } else if (item.id == 175) {
                         soluong = 1;
                         if (player.isFullInventory()) {

@@ -2224,7 +2224,9 @@ INSERT INTO `data_shop` (`id`, `idImg`, `name`, `decript`, `value`, `price`, `ty
 (176, 191, 'Bản đồ khoá \n -Dùng vào Núi châu báu', '', 1, 100, 0, 2, 0, 100),
 (177, 214, 'Mảnh bản đồ 2 \n -Vật phẩm sự kiện', '', 10, 20, 0, 0, 0, 20),
 (178, 167, 'Áo dài nam \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan. Thời hạn 7 ngày', '', 1, 70, 0, 0, 0, 70),
-(179, 168, 'áo dài nữ \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan. Thời hạn 7 ngày', '', 1, 70, 0, 0, 0, 70);
+(179, 168, 'áo dài nữ \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan. Thời hạn 7 ngày', '', 1, 70, 0, 0, 0, 70),
+(180, 162, 'Bóng đá nam\n- Nhân đôi tỉ lệ rơi nhánh hoa hồng vàng', '', 1, 1000, 0, 0, 0, 1000),
+(181, 163, 'Bóng đá nữ\n- Nhân đôi tỉ lệ rơi nhánh hoa hồng vàng', '', 1, 1000, 0, 0, 0, 1000);
 
 -- --------------------------------------------------------
 
