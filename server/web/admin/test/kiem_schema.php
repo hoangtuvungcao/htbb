@@ -53,6 +53,7 @@ foreach ([
     'sql/them_bang_cam_may.sql',         // cam theo ma may (tob_cam_may, tob_may_dang_nhap)
     'sql/them_bang_su_kien.sql',         // bat/tat su kien (tob_su_kien)
     'sql/them_bang_2buoc.sql',           // xac thuc hai buoc (web_admin_2fa)
+    'sql/them_bang_web_lenh_nhan_vat.sql', // hang doi lenh web -> server game (web_lenh_nhan_vat)
     'vps/db_new_server.sql',      // tob_nap_moc dinh nghia o PHAN 2I trong file nay
 ] as $f) {
     $schema += docSchema(file_get_contents($GOC . $f));
@@ -64,7 +65,7 @@ $schemaAcc = docSchema(file_get_contents($GOC . 'loginServer/account.sql'));
 $schema['team_user'] = $schemaAcc['team_user'];
 
 echo "Doc duoc " . count($schema) . " bang tu schema.\n";
-foreach (['team_user', 'tob_char', 'giftcode', 'giftcode_log', '5h_active', 'web_admin_log', 'web_chan_spam', 'tob_nap_moc'] as $b) {
+foreach (['team_user', 'tob_char', 'giftcode', 'giftcode_log', '5h_active', 'web_admin_log', 'web_chan_spam', 'tob_nap_moc', 'web_lenh_nhan_vat'] as $b) {
     printf("  %-16s %s\n", $b, isset($schema[$b]) ? count($schema[$b]) . ' cot' : '*** KHONG THAY ***');
 }
 
@@ -87,6 +88,7 @@ $FILE = [
     'web/admin/chandoan.php', 'web/admin/cammay.php', 'web/admin/sukien.php',
     'web/admin/inc/boot.php', 'web/admin/inc/vatpham.php',
     'web/admin/inc/hai_buoc.php', 'web/admin/tao_ma_2buoc.php',
+    'web/admin/inc/lenh_nhan_vat.php',
     'web/inc/functions.php', 'web/register.php', 'web/login.php', 'web/account.php',
 ];
 

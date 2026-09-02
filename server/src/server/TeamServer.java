@@ -819,6 +819,10 @@ public class TeamServer {
         // Lay mau so nguoi online 5 phut/lan -> bang tob_log_online, cho trang Tong quan
         // ve bieu do. Tu tao bang va tu don dong cu hon 30 ngay.
         data.GhiSoOnline.batDau();
+        // Lenh tu trang quan tri web (dat cap do...) qua bang web_lenh_nhan_vat: doc moi giay,
+        // nhan vat dang online thi cong thang vao RAM roi luu ngay, offline thi ghi CSDL.
+        // Xem data/LenhWeb.
+        data.LenhWeb.batDau();
         // Lich hen mo/dong su kien + tu khoi dong lai khi thiet lap doi. PHAI chay SAU
         // BaoTriDaily: no bat co 5h_systems.restart cho vong lap ben do doc va tat may,
         // chu khong tu tat. Xem real/LichSuKien.

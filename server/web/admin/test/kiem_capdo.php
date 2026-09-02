@@ -94,19 +94,30 @@ ktDung('co ghi ro moi chi so khac tu tinh tu lastLv (khong duoc dong tay cot kha
     strpos($noiDung, 'SelectCharHandler') !== false);
 
 // ===========================================================================
-echo "\n== nhanvat.php: da noi dung, co canh bao online, khong dong cot khac\n";
+echo "\n== nhanvat.php: da noi dung, gui lenh cho server game, khong ghi thang tob_char\n";
 // ===========================================================================
 $nv = (string)@file_get_contents(__DIR__ . '/../nhanvat.php');
 ktDung('co require capdo.php', strpos($nv, "inc/capdo.php") !== false);
 ktDung('co viec dat_cap_do', strpos($nv, "'dat_cap_do'") !== false);
 ktDung('co kiem tra cap do trong khoang 1..CAPDO_TOI_DA',
     strpos($nv, 'CAPDO_TOI_DA') !== false && strpos($nv, '$capDoMoi < 1') !== false);
-// CHI duoc UPDATE lastLv va xp - dung cot nao khac la tu y tinh lai chi so ma
-// dung ra la viec cua may chu luc chon nhan vat.
-ktDung("UPDATE CHI dong lastLv va xp, khong dong cot nao khac",
-    (bool)preg_match('/UPDATE tob_char SET lastLv = \?, xp = \? WHERE id = \?/', $nv));
-ktDung('co canh bao ro rang ve rui ro dang online (khac han khoa nhan vat)',
-    strpos($nv, 'MẤT HẲN thay đổi mà không có cảnh báo nào') !== false);
+// 02/09/2026: web KHONG con UPDATE tob_char truc tiep. Nhan vat dang online giu ban cu
+// trong RAM va lan tu luu ke tiep ghi de lai, nen web chi gui lenh qua bang
+// web_lenh_nhan_vat (inc/lenh_nhan_vat.php); server game (src/data/LenhWeb.java) doc va tu
+// ap dung - online thi cong thang vao RAM roi luu ngay, offline thi UPDATE nhu cu.
+ktDung('nhanvat.php KHONG con UPDATE lastLv/xp truc tiep (nguyen nhan mat buff khi online)',
+    !preg_match('/UPDATE tob_char SET lastLv/', $nv));
+ktDung('nhanvat.php nap inc/lenh_nhan_vat.php va gui lenh qua guiLenhCapDo()',
+    strpos($nv, "inc/lenh_nhan_vat.php") !== false && strpos($nv, 'guiLenhCapDo(') !== false);
+$java = (string)@file_get_contents(__DIR__ . '/../../../src/data/LenhWeb.java');
+// Server cung KHONG UPDATE tob_char: luc dang nhap server doc cap/exp tu cot pInfo, hai cot
+// lastLv/xp chi cho bang xep hang - ghi chung la vo dung. Nhan vat offline thi lenh nam cho
+// (trang_thai 4) va duoc cong qua duong len cap that khi nguoi choi vao game.
+ktDung("server (LenhWeb.java) KHONG UPDATE tob_char (dang nhap doc pInfo, cot lastLv/xp vo dung)",
+    $java !== '' && !preg_match('/UPDATE tob_char/', $java));
+ktDung('server co trang thai "cho vao game" cho nhan vat offline', strpos($java, 'CHO_DANG_NHAP = 4') !== false);
+ktDung('trang giai thich co che moi: dung duoc ca khi dang online',
+    strpos($nv, 'Dùng được cả khi nhân vật đang online') !== false);
 ktDung('form co xac nhan (confirm) truoc khi gui', strpos($nv, "onsubmit=\"return confirm(") !== false);
 ktDung('co ghi nhat ky thao tac', strpos($nv, "'dat_cap_do_nhan_vat'") !== false);
 

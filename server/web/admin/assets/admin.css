@@ -463,6 +463,7 @@ label.o small { display: block; margin-top: 5px; color: var(--text-3); font-size
 }
 .flash-success { background: var(--ok-mo);     border-color: rgba(53,196,137,.4);  color: #8fe6c0; }
 .flash-error   { background: var(--danger-mo); border-color: rgba(242,85,90,.4);   color: #ffa8ab; }
+.flash-warning { background: var(--warn-mo);   border-color: rgba(224,163,64,.4);  color: #f3cf8a; }
 .flash code    { background: rgba(0,0,0,.28); border-color: rgba(255,255,255,.12); color: inherit; }
 
 .luuy {

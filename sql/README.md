@@ -49,9 +49,10 @@ mới: vẫn phải chạy `vps/db_new_server.sql` sau khi nạp seed.
 | `them_bang_web_chan_spam.sql` | ✅ đang ghi (25 dòng) |
 | `them_bang_cam_may.sql` | ✅ có bảng, 0 dòng (chưa ai bị cấm máy) |
 | `them_bang_2buoc.sql` | ✅ có bảng, 0 dòng (chưa ai bật 2FA) |
+| `them_bang_web_lenh_nhan_vat.sql` | 🆕 02/09/2026 — hàng đợi lệnh web → server game (đặt cấp độ cho nhân vật đang online). Server (`data/LenhWeb.java`) và web (`inc/lenh_nhan_vat.php`) đều tự `CREATE TABLE IF NOT EXISTS`, không cần chạy tay; **chưa có trong seed** |
 
-Từ bản làm mới ngày 02/09/2026, cả 7 bảng này **đã có trong bản seed**, nên dựng server mới từ
-seed không cần chạy lại chúng. Vẫn giữ file vì `web/admin/test/kiem_schema.php` parse chúng để
+Từ bản làm mới ngày 02/09/2026, 7 bảng đầu **đã có trong bản seed**, nên dựng server mới từ
+seed không cần chạy lại chúng (bảng `web_lenh_nhan_vat` thêm sau, server tự tạo lúc khởi động). Vẫn giữ file vì `web/admin/test/kiem_schema.php` parse chúng để
 kiểm schema của DB thật, và các trang admin (`cammay.php`, `sukien.php`, `nhatky.php`) trỏ người
 vận hành tới đây khi thiếu bảng. Muốn bỏ hẳn thì phải đổi `kiem_schema.php` sang đọc seed trước.
 

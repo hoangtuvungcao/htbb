@@ -11,34 +11,34 @@
  * Muốn chặn cả tài khoản thì khoá ở trang Tài khoản (team_user.ban).
  *
  * -----------------------------------------------------------------------
- *  ĐẶT CẤP ĐỘ — RỦI RO KHÁC HẲN KHOÁ NHÂN VẬT, ĐỌC KỸ TRƯỚC KHI SỬA
+ *  ĐẶT CẤP ĐỘ — ĐI QUA SERVER GAME, KHÔNG GHI THẲNG tob_char
  * -----------------------------------------------------------------------
  * Khoá nhân vật AN TOÀN khi người chơi đang online vì cột `ban` không nằm
  * trong câu UPDATE lưu nhân vật định kỳ (DatabaseNhanVat.java) — server không
  * bao giờ ghi đè lại cột đó, nên khoá "chỉ ăn từ lần vào sau" đúng nghĩa: chắc
  * chắn ăn, chỉ là chưa ngay lập tức.
  *
- * ĐẶT CẤP ĐỘ THÌ KHÁC HẲN. `lastLv` và `xp` là hai cột nằm NGAY TRONG câu lưu
- * định kỳ đó. Nhân vật đang online giữ một bản `lastLv` cũ trong RAM của tiến
- * trình game; lần server tự lưu tiếp theo (định kỳ, hoặc lúc thoát) sẽ ghi
- * NGUYÊN bản cũ đó đè lên đúng dòng mình vừa sửa — không phải "chậm có hiệu
- * lực" mà là MẤT HẲN thay đổi mà không có cảnh báo nào. Vì trang web không có
- * cách nào biết một nhân vật có đang online hay không (CharManager chỉ giữ
- * trong RAM của tiến trình Java, không ghi ra CSDL), không thể tự động chặn
- * việc này — chỉ có thể cảnh báo rõ và để người vận hành tự xác nhận nhân vật
- * đang offline trước khi bấm.
+ * `lastLv` và `xp` THÌ KHÁC: hai cột này nằm ngay trong câu lưu định kỳ đó.
+ * Trước 02/09/2026 trang này UPDATE thẳng chúng; với nhân vật đang online thì
+ * bản cũ trong RAM của tiến trình game bị lưu đè lại ngay lần tự lưu kế tiếp —
+ * người chơi thoát ra vào lại vẫn thấy cấp cũ, không một cảnh báo nào. Web
+ * không nhìn thấy RAM server nên không tự xử lý được.
  *
- * MOI CHI SO KHAC KHONG CAN DONG TAY. `Char.strength/agitity/spirit/health/
- * luck`, điểm kỹ năng, điểm cơ bản... đều được máy chủ TỰ TÍNH LẠI từ `lastLv`
- * ngay lúc chọn nhân vật (SelectCharHandler.java:206-215, rồi gọi
- * p.calculateAttrib()) — giống hệt một người chơi lên cấp tự nhiên. Đặt `xp`
- * đúng bằng mốc "vừa lên cấp" (capDoRaExp(), sinh từ real.LevelDetail.expMain)
- * chỉ để thanh kinh nghiệm không hiện số âm hay tỉ lệ sai, không ảnh hưởng gì
- * đến chỉ số chiến đấu.
+ * CÁCH LÀM HIỆN TẠI (inc/lenh_nhan_vat.php + src/data/LenhWeb.java): web chỉ
+ * CHÈN MỘT DÒNG LỆNH vào bảng `web_lenh_nhan_vat`. Server đọc bảng mỗi giây:
+ *   · nhân vật đang online  → cộng thẳng vào RAM bằng đúng đường lên cấp tự
+ *     nhiên (Map.addXPForChar, như nút "Buff EXP" của AdminPanel) rồi lưu ngay;
+ *   · nhân vật offline      → UPDATE lastLv/xp như web làm trước đây;
+ *   · lỗi                   → ghi lý do vào ket_qua.
+ * Trang web đợi tối đa vài giây rồi đọc lại trạng thái để báo cho người bấm.
+ * Server đang tắt thì lệnh nằm chờ và được thực hiện khi server chạy lại.
+ * Web KHÔNG tính exp nữa — server tính bằng chính real.LevelDetail; capdo.php
+ * chỉ còn dùng để giới hạn cấp (CAPDO_TOI_DA) và cho bộ kiểm đối chiếu bảng.
  */
 require_once __DIR__ . '/inc/layout.php';
 require_once __DIR__ . '/inc/vatpham.php';
 require_once __DIR__ . '/inc/capdo.php';
+require_once __DIR__ . '/inc/lenh_nhan_vat.php';
 requireAdmin();
 
 $TRANG = 'nhanvat.php';
@@ -75,63 +75,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ten = (string)$nv['charname'];
     $ve  = $TRANG . '?id=' . $id;
 
-    if ($viec === 'dat_cap_do') {
-        $capDoMoi = (int)p('cap_do');
+    if ($viec === 'dat_cap_do' || $viec === 'buff_level') {
+        // Ca hai deu la MOT lenh "dat_cap_do" gui cho server game (xem inc/lenh_nhan_vat.php);
+        // "Buff level kem %" chi khac o cho cho nhap them % vao cap. Port tu
+        // server/Panel/ButtonEditor.java showBuffExpDialog ("Len Level/Phan tram"), nhung
+        // AdminPanel desktop chi dung duoc khi nhan vat dang online - o day server tu biet
+        // online hay offline va xu ly tuong ung, web khong con ghi thang tob_char.
+        $laBuff   = $viec === 'buff_level';
+        $capDoMoi = (int)p($laBuff ? 'cap_do_buff' : 'cap_do');
+        $phanTram = $laBuff ? (float)p('phan_tram_buff') : 0.0;
         if ($capDoMoi < 1 || $capDoMoi > CAPDO_TOI_DA) {
             veLai($ve, 'error', 'Cấp độ phải từ 1 đến ' . CAPDO_TOI_DA . '.');
         }
-        $bangExp = capDoRaExp();
-        $expMoi  = $bangExp[$capDoMoi - 1];
+        // Bang luu phan nghin (buoc 0,1%) nen chi nhan toi 99,9 - nhap 99,95 se bi lam tron
+        // thanh 100,0% = sang cap sau, khong dung y nguoi bam.
+        if ($phanTram < 0 || $phanTram > 99.9) {
+            veLai($ve, 'error', '% vào cấp phải từ 0 đến 99,9 (bước 0,1).');
+        }
+        $phanNghin = phanTramRaPhanNghin($phanTram);
 
         $stCu = dbGame()->prepare('SELECT lastLv, xp FROM tob_char WHERE id = ? LIMIT 1');
         $stCu->execute([$id]);
         $cu = $stCu->fetch();
 
-        $up = dbGame()->prepare('UPDATE tob_char SET lastLv = ?, xp = ? WHERE id = ?');
-        $up->execute([$capDoMoi, $expMoi, $id]);
+        $idLenh = guiLenhCapDo(dbGame(), $id, $ten, $capDoMoi, $phanNghin, adminName());
+        $lenh   = choKetQuaLenh(dbGame(), $idLenh);
+        [$loaiBao, $thongBao] = moTaKetQuaLenh($lenh, $ten, $capDoMoi, $phanNghin);
 
-        ghiNhatKy('dat_cap_do_nhan_vat', $ten,
+        // Nhat ky ghi dung so server dung (phan nghin), khong ghi so tho nguoi dung go.
+        ghiNhatKy($laBuff ? 'buff_level_nhan_vat' : 'dat_cap_do_nhan_vat', $ten,
             'lastLv: ' . (int)($cu['lastLv'] ?? '?') . ' -> ' . $capDoMoi
-            . ' | xp: ' . (string)($cu['xp'] ?? '?') . ' -> ' . $expMoi);
+            . ($phanNghin > 0 ? ' (' . phanNghinRaChuoi($phanNghin) . ')' : '')
+            . ' | xp cũ: ' . (string)($cu['xp'] ?? '?')
+            . ' | lệnh #' . $idLenh . ': ' . tenTrangThaiLenh((int)($lenh['trang_thai'] ?? -1))
+            . ($lenh && $lenh['ket_qua'] !== '' ? ' - ' . $lenh['ket_qua'] : ''));
 
-        veLai($ve, 'success', 'Đã đặt cấp độ ' . $ten . ' thành ' . $capDoMoi
-            . '. CHỈ CÓ HIỆU LỰC THẬT nếu nhân vật đang offline lúc bấm — nếu đang '
-            . 'online, lần server tự lưu tiếp theo sẽ ghi đè lại cấp cũ mà không báo gì.');
+        veLai($ve, $loaiBao, $thongBao);
     }
 
-    if ($viec === 'buff_level') {
-        // Port tu server/Panel/ButtonEditor.java showBuffExpDialog (che do "Len
-        // Level/Phan tram") - AdminPanel desktop chi dung duoc khi nhan vat dang
-        // online (doc/ghi thang RAM); ban web nay ghi thang DB nhu "Dat cap do" o
-        // tren, dung duoc ca khi offline, cung mang rui ro y het (bi ghi de neu
-        // dang online).
-        $capMoi = (int)p('cap_do_buff');
-        $phanTram = (float)p('phan_tram_buff');
-        if ($capMoi < 1 || $capMoi > CAPDO_TOI_DA) {
-            veLai($ve, 'error', 'Cấp độ phải từ 1 đến ' . CAPDO_TOI_DA . '.');
+    if ($viec === 'huy_lenh') {
+        $idLenh = (int)p('id_lenh');
+        if (huyLenh(dbGame(), $idLenh, adminName())) {
+            ghiNhatKy('huy_lenh_nhan_vat', $ten, 'lệnh #' . $idLenh);
+            veLai($ve, 'success', 'Đã huỷ lệnh #' . $idLenh . ' cho ' . $ten . '.');
         }
-        if ($phanTram < 0 || $phanTram >= 100) {
-            veLai($ve, 'error', '% vào cấp phải từ 0 đến dưới 100.');
-        }
-        $bangExp = capDoRaExp();
-        $bangExpRequire = capDoRaExpRequire();
-        // cong thuc y het calculateExpToBuff() ben Java: expMain[cap-1] + expRequire[cap] * %/100
-        $xpMoi = (int)round($bangExp[$capMoi - 1] + $bangExpRequire[$capMoi] * ($phanTram / 100.0));
-
-        $stCu = dbGame()->prepare('SELECT lastLv, xp FROM tob_char WHERE id = ? LIMIT 1');
-        $stCu->execute([$id]);
-        $cu = $stCu->fetch();
-
-        $up = dbGame()->prepare('UPDATE tob_char SET lastLv = ?, xp = ? WHERE id = ?');
-        $up->execute([$capMoi, $xpMoi, $id]);
-
-        ghiNhatKy('buff_level_nhan_vat', $ten,
-            'lastLv: ' . (int)($cu['lastLv'] ?? '?') . ' -> ' . $capMoi
-            . ' (' . $phanTram . '%) | xp: ' . (string)($cu['xp'] ?? '?') . ' -> ' . $xpMoi);
-
-        veLai($ve, 'success', 'Đã buff ' . $ten . ' lên cấp ' . $capMoi . ' (' . $phanTram . '%). '
-            . 'CHỈ CÓ HIỆU LỰC THẬT nếu nhân vật đang offline lúc bấm — nếu đang online, lần '
-            . 'server tự lưu tiếp theo sẽ ghi đè lại mà không báo gì.');
+        veLai($ve, 'error', 'Không huỷ được lệnh #' . $idLenh . ': server đã xử lý xong (hoặc lệnh không tồn tại).');
     }
 
     if ($viec === 'xoa_vat_pham') {
@@ -430,7 +418,7 @@ adminHead('nhanvat', 'Nhân vật');
 
             <h4 style="margin:18px 0 10px;">Đặt cấp độ</h4>
             <form method="post" action="nhanvat.php" class="ngang"
-                  onsubmit="return confirm('Đặt cấp độ ' + document.getElementById('capDoMoi').value + ' cho <?= e($ct['charname']) ?>?\n\nCHỈ làm việc này khi chắc chắn nhân vật đang OFFLINE — xem cảnh báo bên dưới.');">
+                  onsubmit="return confirm('Đặt cấp độ ' + document.getElementById('capDoMoi').value + ' cho <?= e($ct['charname']) ?>?\n\nNhân vật đang online sẽ được cộng ngay; offline thì cộng ngay khi họ vào game. Chỉ NÂNG cấp, không hạ.');">
                 <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
                 <input type="hidden" name="viec" value="dat_cap_do">
                 <input type="hidden" name="id" value="<?= (int)$ct['id'] ?>">
@@ -442,20 +430,22 @@ adminHead('nhanvat', 'Nhân vật');
                 <button class="btn btn-do btn-nho" style="align-self:flex-end;">Đặt cấp độ</button>
             </form>
             <div class="luuy" style="margin-top:12px;">
-                <p><strong>Chỉ làm khi nhân vật đang offline.</strong> Trang web không có cách nào
-                   biết một nhân vật có đang online hay không. Nếu đang online, lần server tự lưu
-                   tiếp theo (định kỳ, hoặc lúc người chơi thoát) sẽ ghi đè lại đúng cấp cũ đang có
-                   trong bộ nhớ của tiến trình game — <strong>không phải chậm có hiệu lực như khoá
-                   nhân vật, mà là MẤT HẲN thay đổi mà không có cảnh báo nào.</strong></p>
-                <p class="small">Cách chắc chắn: nhờ người chơi thoát game trước, hoặc đặt lại lần
-                   nữa sau khi chắc chắn họ đã ngắt kết nối. Mọi chỉ số khác (sức mạnh, HP, điểm kỹ
-                   năng…) được máy chủ tự tính lại từ cấp độ ngay lúc chọn nhân vật — không cần và
-                   không nên đụng vào cột nào khác.</p>
+                <p><strong>Dùng được cả khi nhân vật đang online.</strong> Trang web không ghi thẳng
+                   CSDL nữa mà gửi một lệnh vào bảng <code>web_lenh_nhan_vat</code>; server game đọc
+                   mỗi giây và tự xử lý: nhân vật <strong>đang online</strong> được cộng ngay trong
+                   game (đúng như lên cấp tự nhiên: có điểm cơ bản, điểm kỹ năng, hồi đầy HP/MP) rồi
+                   lưu lại tức thì; nhân vật <strong>offline</strong> thì lệnh nằm chờ và server cộng
+                   ngay khi họ vào game. Kết quả hiện ngay sau khi bấm.</p>
+                <p class="small"><strong>Chỉ nâng cấp.</strong> Cấp/% mới phải cao hơn mức hiện tại,
+                   nếu không server từ chối và báo lỗi — hạ cấp để lại điểm cơ bản/kỹ năng vượt mức,
+                   chốt chống gian lận lúc đăng nhập sẽ xoá điểm và kỹ năng của người chơi. Server game
+                   đang tắt thì lệnh nằm chờ và được thực hiện khi server chạy lại — không cần bấm lại;
+                   theo dõi hoặc huỷ ở bảng "Lệnh đã gửi" bên dưới.</p>
             </div>
 
             <h4 style="margin:18px 0 10px;">Buff level kèm %</h4>
             <form method="post" action="nhanvat.php" class="ngang"
-                  onsubmit="return confirm('Buff ' + document.getElementById('capMoiBuff').value + ' (' + document.getElementById('phanTramBuff').value + '%) cho <?= e($ct['charname']) ?>?\n\nCùng rủi ro như Đặt cấp độ ở trên — chỉ làm khi chắc chắn nhân vật đang OFFLINE.');">
+                  onsubmit="return confirm('Buff ' + document.getElementById('capMoiBuff').value + ' (' + document.getElementById('phanTramBuff').value + '%) cho <?= e($ct['charname']) ?>?\n\nNhân vật đang online sẽ được cộng ngay; offline thì cộng ngay khi họ vào game. Chỉ NÂNG cấp, không hạ.');">
                 <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
                 <input type="hidden" name="viec" value="buff_level">
                 <input type="hidden" name="id" value="<?= (int)$ct['id'] ?>">
@@ -466,7 +456,7 @@ adminHead('nhanvat', 'Nhân vật');
                 </label>
                 <label class="o" style="max-width:140px;">
                     <span>% vào cấp</span>
-                    <input type="number" id="phanTramBuff" name="phan_tram_buff" min="0" max="99.99" step="0.01"
+                    <input type="number" id="phanTramBuff" name="phan_tram_buff" min="0" max="99.9" step="0.1"
                            value="0" required>
                 </label>
                 <button class="btn btn-do btn-nho" style="align-self:flex-end;">Buff level</button>
@@ -474,10 +464,53 @@ adminHead('nhanvat', 'Nhân vật');
             <div class="luuy" style="margin-top:12px;">
                 <p>Giống hệt "Đặt cấp độ" nhưng cho nhập thêm % tiến độ vào cấp đó (thay vì luôn
                    là 0%) — port từ tính năng "Buff EXP → Lên Level/Phần trăm" đã có sẵn trong
-                   AdminPanel (ứng dụng chạy trên server), bản đó chỉ dùng được khi nhân vật đang
-                   online; bản này ghi thẳng DB nên dùng được cả lúc offline, nhưng mang đúng rủi
-                   ro như "Đặt cấp độ" ở trên nếu nhân vật đang online lúc bấm.</p>
+                   AdminPanel (ứng dụng chạy trên server). Cũng đi qua bảng lệnh như "Đặt cấp độ"
+                   ở trên nên dùng được cả khi nhân vật đang online lẫn offline.</p>
             </div>
+
+            <?php
+            // Lenh da gui cho nhan vat nay (moi nhat truoc). Bang chua co -> rong, khong loi.
+            $lenhGanDay = [];
+            try {
+                $lenhGanDay = docLenhCuaNhanVat(dbGame(), (int)$ct['id']);
+            } catch (Throwable $exLenh) {
+                $lenhGanDay = [];
+            }
+            ?>
+            <h4 style="margin:18px 0 10px;">Lệnh đã gửi</h4>
+            <?php if (!$lenhGanDay): ?>
+                <p class="muted small">Chưa có lệnh nào cho nhân vật này.</p>
+            <?php else: ?>
+                <div class="tbl-wrap"><table class="tbl">
+                    <thead><tr><th>#</th><th>Yêu cầu</th><th>Trạng thái</th><th>Kết quả</th><th>Người gửi</th><th>Lúc</th><th></th></tr></thead>
+                    <tbody>
+                    <?php foreach ($lenhGanDay as $l): $tt = (int)$l['trang_thai']; ?>
+                        <tr>
+                            <td class="muted small"><?= (int)$l['id'] ?></td>
+                            <td>cấp <?= (int)$l['cap_do'] ?><?= (int)$l['phan_nghin'] > 0 ? ' (' . e(phanNghinRaChuoi((int)$l['phan_nghin'])) . ')' : '' ?></td>
+                            <td><?= e(tenTrangThaiLenh($tt)) ?></td>
+                            <td class="small"><?= e((string)$l['ket_qua']) ?></td>
+                            <td class="small"><?= e((string)$l['admin_user']) ?></td>
+                            <td class="muted small"><?= e((string)$l['tao_luc']) ?><?= $l['xu_ly_luc'] ? ' → ' . e((string)$l['xu_ly_luc']) : '' ?></td>
+                            <td>
+                                <?php if ($tt === LENH_CHO || $tt === LENH_CHO_DANG_NHAP): ?>
+                                    <form method="post" action="nhanvat.php" style="display:inline"
+                                          onsubmit="return confirm('Huỷ lệnh #<?= (int)$l['id'] ?>?');">
+                                        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+                                        <input type="hidden" name="viec" value="huy_lenh">
+                                        <input type="hidden" name="id" value="<?= (int)$ct['id'] ?>">
+                                        <input type="hidden" name="id_lenh" value="<?= (int)$l['id'] ?>">
+                                        <button class="btn btn-nho">Huỷ</button>
+                                    </form>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table></div>
+                <p class="muted small" style="margin-top:6px;">"Chờ vào game" = nhân vật đang offline, server sẽ cộng ngay khi họ đăng nhập.
+                   "Chờ server" quá lâu = server game đang tắt; lệnh sẽ chạy khi server lên.</p>
+            <?php endif; ?>
         </div>
 
         <div class="card">
@@ -487,8 +520,8 @@ adminHead('nhanvat', 'Nhân vật');
                     hiểu nhầm là bị xoá.</li>
                 <li>Bị loại khỏi mọi bảng xếp hạng.</li>
                 <li>Tài khoản <strong>vẫn đăng nhập được</strong> và vẫn chơi được các nhân vật khác.</li>
-                <li>Người đang online <strong>không bị đá ra</strong> — trang web không nói chuyện được
-                    với tiến trình game. Việc khoá chỉ ăn từ lần vào sau.</li>
+                <li>Người đang online <strong>không bị đá ra</strong> — việc khoá ghi thẳng cột
+                    <code>ban</code>, không đi qua bảng lệnh như "Đặt cấp độ". Khoá chỉ ăn từ lần vào sau.</li>
             </ul>
         </div>
     </div>
@@ -507,11 +540,12 @@ adminHead('nhanvat', 'Nhân vật');
             thoát hoặc server tự lưu.
         </p>
         <div class="luuy" style="margin:0 0 14px;">
-            <p><strong>Nút "Xoá" chỉ chắc ăn khi nhân vật đang OFFLINE.</strong> Trang web
-               không biết một nhân vật có đang online hay không — nếu đang online, lần server
-               tự lưu tiếp theo (sau khi bán đồ, dùng thuốc, giao dịch…) có thể ghi đè cột này
-               bằng bản trong RAM của server, làm món đồ vừa xoá quay lại như cũ mà không báo
-               gì. Mọi thao tác xoá đều được ghi lại ở trang <a href="log.php">Log</a>.</p>
+            <p><strong>Nút "Xoá" chỉ chắc ăn khi nhân vật đang OFFLINE.</strong> Khác với
+               "Đặt cấp độ", nút này vẫn ghi thẳng CSDL, không đi qua bảng lệnh cho server —
+               nếu nhân vật đang online, lần server tự lưu tiếp theo (sau khi bán đồ, dùng thuốc,
+               giao dịch…) có thể ghi đè cột này bằng bản trong RAM của server, làm món đồ vừa
+               xoá quay lại như cũ mà không báo gì. Mọi thao tác xoá đều được ghi lại ở trang
+               <a href="log.php">Log</a>.</p>
         </div>
 
         <div class="grid-2">
