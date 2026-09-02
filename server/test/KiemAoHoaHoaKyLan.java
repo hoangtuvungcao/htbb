@@ -43,6 +43,7 @@ public final class KiemAoHoaHoaKyLan {
         kiemTraHetHanTrongVongLapDinhKy();
         menuLuonCoBaLuaChon();
         xuLyMenuBaLuaChonDungIdOptionMenu();
+        menuTuNpcThoRenThanBi();
     }
 
     private static void hangSoGiaVaHan() {
@@ -239,6 +240,32 @@ public final class KiemAoHoaHoaKyLan {
         Kiem.dung("nhanh Ao hoa goi dung ham", than.contains("player.doAoHoaHoaKyLan(player.itemTam);"));
         Kiem.sai("khong con dieu kien mo rong 'idOptionMenu != 0' (se lam Ao hoa roi nham vao Nang cap)",
                 than.contains("} else if (idOptionMenu != 0) {"));
+    }
+
+    /**
+     * Truoc 02/09/2026, Hoa Ky Lan CHI mo duoc bang cach dung thang item trong hanh trang
+     * (Map.java, nhanh isItemThanThu). Nguoi dung yeu cau mo them qua NPC "tho ren than bi"
+     * (idNpc/idMenu -8, idOptionMenu moi = 15) - dung LAI dung mot menu -513, khong tao
+     * duong rieng.
+     */
+    private static void menuTuNpcThoRenThanBi() {
+        final String npc = doc("src/real/cmd/RequestNPCInfoHandler.java");
+        Kiem.dung("menu NPC -8 co muc \"Hoả Kỳ Lân\"", npc.contains("\"Hoả Kỳ Lân\""));
+        Kiem.dung("muc \"Hoả Kỳ Lân\" bao dang ao hoa qua dangAoHoaHoaKyLan()",
+                npc.contains("dangAoHoaHoaKyLan()") && npc.contains("(đang ảo hóa)"));
+
+        final String rc = doc("src/real/RealController.java");
+        final int vtCase = rc.indexOf("case 15: {");
+        Kiem.dung("doCreateItem (NPC -8) co case 15 (Hoa Ky Lan)", vtCase > 0);
+        final String than = rc.substring(Math.max(0, vtCase), Math.min(rc.length(), vtCase + 1400));
+        Kiem.dung("uu tien item DANG MAC (player.itemHoaKyLan) truoc khi quet tui",
+                than.contains("Item itemHoaKyLan = player.itemHoaKyLan;"));
+        Kiem.dung("khong tim thay thi bao nguoi choi, khong nem loi im lang",
+                than.contains("Bạn cần có Hoả Kỳ Lân trong hành trang"));
+        Kiem.dung("dung LAI menu -513 (Su dung/Nang cap/Ao hoa), khong tao duong rieng",
+                than.contains("new String[]{\"Sử dụng\", \"Nâng cấp\", \"Ảo hóa\"}, -513, 0"));
+        Kiem.dung("gan player.itemTam TRUOC khi mo menu -513 (MapDoMenu doc qua itemTam)",
+                than.indexOf("player.itemTam = itemHoaKyLan;") < than.indexOf("-513, 0"));
     }
 
     private static int dem(final String trong, final String mau) {
