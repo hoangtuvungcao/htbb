@@ -1966,36 +1966,6 @@ public class RealController extends ServerController {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Sắp ra mắt.", ""));
                         return;
 
-                    // Hoa Ky Lan qua NPC "tho ren than bi" (them 02/09/2026, theo yeu cau
-                    // nguoi dung - truoc do CHI mo duoc bang cach dung thang item trong hanh
-                    // trang, xem Map.java nhanh isItemThanThu(t)). Dung LAI dung mot menu -513
-                    // (Su dung/Nang cap/Ao hoa) qua player.itemTam, khong tao duong rieng.
-                    //
-                    // Uu tien item DANG MAC (player.itemHoaKyLan): "Ảo hóa" tren mot item chua
-                    // mac se tu dong mac no (xem Char.doAoHoaHoaKyLan), nen neu nguoi choi da
-                    // mac san mot con thi phai dung DUNG con do, khong duoc lay tam mot item
-                    // khac con nam trong tui roi vo tinh doi con dang mac.
-                    case 15: {
-                        Item itemHoaKyLan = player.itemHoaKyLan;
-                        if (itemHoaKyLan == null) {
-                            for (final Item it : player.iItems) {
-                                if (it != null && Char.isItemThanThu(it.getTemplate().type)) {
-                                    itemHoaKyLan = it;
-                                    break;
-                                }
-                            }
-                        }
-                        if (itemHoaKyLan == null) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần có Hoả Kỳ Lân trong hành trang", ""));
-                            return;
-                        }
-                        player.itemTam = itemHoaKyLan;
-                        final String[] menuHoaKyLan = itemHoaKyLan.getTemplate().idItemUpLevel > -1
-                                ? new String[]{"Sử dụng", "Nâng cấp", "Ảo hóa"}
-                                : new String[]{"Sử dụng", "Ảo hóa"};
-                        player.sendMessage(MessageCreator.createMsgMenu(menuHoaKyLan, -513, 0));
-                        return;
-                    }
 //                int gioHoatDong = player.runtimeCharProperties.getHourOnline();
 //                String[] menu = new String[]{
 //                    String.format("Hoạt động 1 giờ (%s/1)", gioHoatDong),

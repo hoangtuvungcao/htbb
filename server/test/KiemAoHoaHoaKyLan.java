@@ -43,7 +43,7 @@ public final class KiemAoHoaHoaKyLan {
         kiemTraHetHanTrongVongLapDinhKy();
         menuLuonCoBaLuaChon();
         xuLyMenuBaLuaChonDungIdOptionMenu();
-        menuTuNpcThoRenThanBi();
+        khongConMucHoaKyLanONpcThoRenThanBi();
         hienThiTrongTuiDaCong();
     }
 
@@ -126,7 +126,7 @@ public final class KiemAoHoaHoaKyLan {
             Kiem.bang("duoi 1 phut -> \"dưới 1 phút\"", "dưới 1 phút", c.conLaiAoHoaHoaKyLanText());
             c.timeAoHoaHoaKyLan = now - 60000L;
             Kiem.bang("da qua han -> khong am, \"dưới 1 phút\"", "dưới 1 phút", c.conLaiAoHoaHoaKyLanText());
-            Kiem.dung("nhan NPC tho ren than bi dung cung helper ngay+gio", doc("src/real/cmd/RequestNPCInfoHandler.java").contains("p.conLaiAoHoaHoaKyLanText()"));
+            Kiem.dung("NPC tho ren than bi KHONG con dung helper (muc Hoa Ky Lan da bo 02/09/2026)", !doc("src/real/cmd/RequestNPCInfoHandler.java").contains("conLaiAoHoaHoaKyLanText()"));
         } catch (final Throwable t) {
             Kiem.dung("tao duoc Char(null) de kiem conLaiAoHoaHoaKyLanText (" + t + ")", false);
         }
@@ -347,30 +347,24 @@ public final class KiemAoHoaHoaKyLan {
     }
 
     /**
-     * Truoc 02/09/2026, Hoa Ky Lan CHI mo duoc bang cach dung thang item trong hanh trang
-     * (Map.java, nhanh isItemThanThu). Nguoi dung yeu cau mo them qua NPC "tho ren than bi"
-     * (idNpc/idMenu -8, idOptionMenu moi = 15) - dung LAI dung mot menu -513, khong tao
-     * duong rieng.
+     * 02/09/2026: muc "Hoả Kỳ Lân" tren NPC "tho ren than bi" (idMenu -8, idOptionMenu 15)
+     * da them roi lai BO trong cung ngay theo yeu cau nguoi dung. Ao hoa chi con mo bang
+     * cach dung thang item Hoa Ky Lan trong hanh trang (Map.java, nhanh isItemThanThu ->
+     * menu -513 Su dung/[Nang cap]/Ao hoa).
      */
-    private static void menuTuNpcThoRenThanBi() {
+    private static void khongConMucHoaKyLanONpcThoRenThanBi() {
         final String npc = doc("src/real/cmd/RequestNPCInfoHandler.java");
-        Kiem.dung("menu NPC -8 co muc \"Hoả Kỳ Lân\"", npc.contains("\"Hoả Kỳ Lân\""));
-        Kiem.dung("muc \"Hoả Kỳ Lân\" bao dang ao hoa qua dangAoHoaHoaKyLan(), kem so ngay con lai",
-                npc.contains("dangAoHoaHoaKyLan()") && npc.contains("(đang ảo hóa, còn \" + p.conLaiAoHoaHoaKyLanText() + \")"));
+        Kiem.dung("menu NPC -8 KHONG con muc \"Hoả Kỳ Lân\"", !npc.contains("Hoả Kỳ Lân"));
+        Kiem.dung("NPC -8 khong con doc trang thai ao hoa Hoa Ky Lan",
+                !npc.contains("dangAoHoaHoaKyLan()") && !npc.contains("conLaiAoHoaHoaKyLanText()"));
 
         final String rc = doc("src/real/RealController.java");
-        final int vtCase = rc.indexOf("case 15: {");
-        Kiem.dung("doCreateItem (NPC -8) co case 15 (Hoa Ky Lan)", vtCase > 0);
-        final String than = rc.substring(Math.max(0, vtCase), Math.min(rc.length(), vtCase + 1400));
-        Kiem.dung("uu tien item DANG MAC (player.itemHoaKyLan) truoc khi quet tui",
-                than.contains("Item itemHoaKyLan = player.itemHoaKyLan;"));
-        Kiem.dung("khong tim thay thi bao nguoi choi, khong nem loi im lang",
-                than.contains("Bạn cần có Hoả Kỳ Lân trong hành trang"));
-        Kiem.dung("dung LAI menu -513 (Su dung/[Nang cap]/Ao hoa, an Nang cap khi da max), khong tao duong rieng",
-                than.contains("new String[]{\"Sử dụng\", \"Nâng cấp\", \"Ảo hóa\"}") && than.contains("new String[]{\"Sử dụng\", \"Ảo hóa\"}")
-                && than.contains("MessageCreator.createMsgMenu(menuHoaKyLan, -513, 0)"));
-        Kiem.dung("gan player.itemTam TRUOC khi mo menu -513 (MapDoMenu doc qua itemTam)",
-                than.indexOf("player.itemTam = itemHoaKyLan;") < than.indexOf("-513, 0"));
+        Kiem.dung("doCreateItem (NPC -8) khong con nhanh Hoa Ky Lan (case 15)",
+                !rc.contains("Bạn cần có Hoả Kỳ Lân trong hành trang") && !rc.contains("menuHoaKyLan"));
+
+        final String map = doc("src/real/Map.java");
+        Kiem.dung("dung item Hoa Ky Lan trong tui VAN mo menu -513 co \"Ảo hóa\"",
+                map.contains("\"Ảo hóa\"") && map.contains("-513"));
     }
 
     private static String doan(final String ma, final String tu, final String den) {
