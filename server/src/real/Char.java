@@ -9079,6 +9079,30 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     /**
+     * Thoi gian con lai cua "Ao hoa Hoa Ky Lan" dang chu, ngay + gio (theo yeu cau 02/09/2026
+     * "đếm ngày + thời gian"): "6 ngày 23 giờ"; duoi 1 ngay: "5 giờ 12 phút"; duoi 1 gio:
+     * "12 phút"; duoi 1 phut: "dưới 1 phút". Dung chung cho dong trong tui do
+     * (Item.getCharSeal(Char)) va nhan menu NPC tho ren than bi (RequestNPCInfoHandler) de hai
+     * cho khong lech nhau. Chi goi khi dangAoHoaHoaKyLan() = true.
+     */
+    public String conLaiAoHoaHoaKyLanText() {
+        long conMs = this.timeAoHoaHoaKyLan - System.currentTimeMillis();
+        if (conMs < 0L) {
+            conMs = 0L;
+        }
+        final long ngay = conMs / (24L * 60L * 60000L);
+        final long gio = (conMs / (60L * 60000L)) % 24L;
+        final long phut = (conMs / 60000L) % 60L;
+        if (ngay > 0L) {
+            return ngay + " ngày " + gio + " giờ";
+        }
+        if (gio > 0L) {
+            return gio + " giờ " + phut + " phút";
+        }
+        return phut > 0L ? phut + " phút" : "dưới 1 phút";
+    }
+
+    /**
      * Chi so KIEU PHAN TRAM cua Hoa Ky Lan dang mac (otherAtt cua item), cong them ao
      * hoa neu dang bat. Dung cho khang bang/set/doc/lua lan (CharChiSo) va sat thuong
      * theo % tan cong chu / % maxhp doi thu (data.CharThanthu). Tra ve 0 neu khong mac

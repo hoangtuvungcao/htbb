@@ -2828,8 +2828,8 @@ public class Item extends Actor {
         if (mau == null || !Char.isItemThanThu(mau.type)) {
             return goc;
         }
-        final long conNgay = owner.conLaiNgayAoHoaHoaKyLan();
-        final String dong = "Đã ảo hóa - còn " + (conNgay < 1L ? "dưới 1" : String.valueOf(conNgay)) + " ngày";
+        // Ngay + gio (duoi 1 ngay: gio + phut) - xem Char.conLaiAoHoaHoaKyLanText.
+        final String dong = "Đã ảo hóa - còn " + owner.conLaiAoHoaHoaKyLanText();
         return goc.isEmpty() ? dong : dong + "\n" + goc;
     }
 

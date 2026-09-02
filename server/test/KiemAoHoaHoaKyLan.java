@@ -104,14 +104,32 @@ public final class KiemAoHoaHoaKyLan {
         Kiem.dung("Item co getCharSeal(Char owner)", !thanSeal.isEmpty());
         Kiem.dung("khong ao hoa / khong chu -> tra nguyen seal goc", thanSeal.contains("if (owner == null || !owner.dangAoHoaHoaKyLan()) {\n            return goc;"));
         Kiem.dung("chi ap dung cho item Than Thu (type 25)", thanSeal.contains("!Char.isItemThanThu(mau.type)"));
-        Kiem.dung("dong co dau '-' (client bo chu ' tạo' o cac cho co kiem) va so ngay tu conLaiNgayAoHoaHoaKyLan",
-                thanSeal.contains("\"Đã ảo hóa - còn \"") && thanSeal.contains("owner.conLaiNgayAoHoaHoaKyLan()"));
+        Kiem.dung("dong co dau '-' (client bo chu ' tạo' o cac cho co kiem) va ngay+gio tu conLaiAoHoaHoaKyLanText",
+                thanSeal.contains("\"Đã ảo hóa - còn \"") && thanSeal.contains("owner.conLaiAoHoaHoaKyLanText()"));
         Kiem.dung("dong ao hoa dat TRUOC seal goc (client noi ' tạo' vao cuoi chuoi)",
                 thanSeal.contains("return goc.isEmpty() ? dong : dong + \"\\n\" + goc;"));
-        Kiem.dung("duoi 1 ngay thi ghi 'dưới 1'", thanSeal.contains("conNgay < 1L ? \"dưới 1\""));
         Kiem.dung("createCharInventoryMessage type 1 truyen chu tui (p) vao getCharSeal", thanInv.contains("it.getCharSeal(p)"));
         Kiem.bang("chi DUNG MOT cho goi getCharSeal(p) trong MessageCreator",
                 Integer.valueOf(1), Integer.valueOf(dem(mc, "getCharSeal(p)")));
+
+        // Dem ngay + gio (yeu cau 02/09/2026) - goi that tren mot Char(null), dat moc tuong doi.
+        try {
+            final real.Char c = new real.Char(null);
+            final long now = System.currentTimeMillis();
+            c.timeAoHoaHoaKyLan = now + 6L * 86400000L + 23L * 3600000L + 30L * 60000L + 5000L;
+            Kiem.bang("con 6 ngay 23 gio 30 phut -> \"6 ngày 23 giờ\"", "6 ngày 23 giờ", c.conLaiAoHoaHoaKyLanText());
+            c.timeAoHoaHoaKyLan = now + 5L * 3600000L + 12L * 60000L + 5000L;
+            Kiem.bang("duoi 1 ngay -> \"5 giờ 12 phút\"", "5 giờ 12 phút", c.conLaiAoHoaHoaKyLanText());
+            c.timeAoHoaHoaKyLan = now + 3L * 60000L + 5000L;
+            Kiem.bang("duoi 1 gio -> \"3 phút\"", "3 phút", c.conLaiAoHoaHoaKyLanText());
+            c.timeAoHoaHoaKyLan = now + 10000L;
+            Kiem.bang("duoi 1 phut -> \"dưới 1 phút\"", "dưới 1 phút", c.conLaiAoHoaHoaKyLanText());
+            c.timeAoHoaHoaKyLan = now - 60000L;
+            Kiem.bang("da qua han -> khong am, \"dưới 1 phút\"", "dưới 1 phút", c.conLaiAoHoaHoaKyLanText());
+            Kiem.dung("nhan NPC tho ren than bi dung cung helper ngay+gio", doc("src/real/cmd/RequestNPCInfoHandler.java").contains("p.conLaiAoHoaHoaKyLanText()"));
+        } catch (final Throwable t) {
+            Kiem.dung("tao duoc Char(null) de kiem conLaiAoHoaHoaKyLanText (" + t + ")", false);
+        }
     }
 
     private static void hangSoGiaVaHan() {
@@ -338,7 +356,7 @@ public final class KiemAoHoaHoaKyLan {
         final String npc = doc("src/real/cmd/RequestNPCInfoHandler.java");
         Kiem.dung("menu NPC -8 co muc \"Hoả Kỳ Lân\"", npc.contains("\"Hoả Kỳ Lân\""));
         Kiem.dung("muc \"Hoả Kỳ Lân\" bao dang ao hoa qua dangAoHoaHoaKyLan(), kem so ngay con lai",
-                npc.contains("dangAoHoaHoaKyLan()") && npc.contains("(đang ảo hóa, còn \" + p.conLaiNgayAoHoaHoaKyLan() + \" ngày)"));
+                npc.contains("dangAoHoaHoaKyLan()") && npc.contains("(đang ảo hóa, còn \" + p.conLaiAoHoaHoaKyLanText() + \")"));
 
         final String rc = doc("src/real/RealController.java");
         final int vtCase = rc.indexOf("case 15: {");
