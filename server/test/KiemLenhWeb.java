@@ -32,6 +32,80 @@ public final class KiemLenhWeb {
         webKhongGhiThangNua();
         baBenCungHopDong();
         apDungOnlineDungDuongTuNhienVaLuuNgay();
+        xoaVatPhamQuaLenh();
+    }
+
+    /**
+     * "Xoa vat pham" cung tung ghi thang cot equip/inven/bag -> online bi luu de. Nay di qua
+     * cung hang doi: tham_so = "<cot>><mau>", server go mon khop TUNG KY TU trong RAM.
+     */
+    private static void xoaVatPhamQuaLenh() {
+        // --- thuan toan: tach tham so ---
+        String[] ts = LenhWeb.tachThamSo("inven>12,3,4|5,6");
+        Kiem.dung("tach \"inven>12,3,4|5,6\" -> cot inven, mau giu nguyen ca dau |",
+                ts != null && ts[0].equals("inven") && ts[1].equals("12,3,4|5,6"));
+        Kiem.dung("cot khong trong danh sach -> null", LenhWeb.tachThamSo("tuido>1,2") == null);
+        Kiem.dung("thieu dau > -> null", LenhWeb.tachThamSo("inven") == null);
+        Kiem.dung("mau rong -> null", LenhWeb.tachThamSo("bag>") == null);
+        Kiem.dung("null -> null", LenhWeb.tachThamSo(null) == null);
+
+        // --- thuan toan: xoa mau khoi chuoi cot ---
+        Kiem.bang("xoa mau o giua", "a|1>c|3", LenhWeb.xoaMauKhoiChuoi("a|1>b|2>c|3", "b|2"));
+        Kiem.bang("xoa mau dau, bo dau > dau chuoi nhu server", "b|2>c|3", LenhWeb.xoaMauKhoiChuoi(">a|1>b|2>c|3", "a|1"));
+        Kiem.bang("xoa mau cuoi", "a|1>b|2", LenhWeb.xoaMauKhoiChuoi("a|1>b|2>c|3", "c|3"));
+        Kiem.bang("chi xoa MOT lan du trung", "x|1>x|1", LenhWeb.xoaMauKhoiChuoi("x|1>x|1>x|1", "x|1"));
+        Kiem.bang("giu nguyen phan thoi trang dang mac o cuoi inven", "a|1>0,5,7", LenhWeb.xoaMauKhoiChuoi("a|1>b|2>0,5,7", "b|2"));
+        Kiem.bang("mau chi la mot phan cua mau khac thi KHONG khop (khop tung ky tu)", null, LenhWeb.xoaMauKhoiChuoi("ab|1>c|2", "b|1"));
+        Kiem.bang("khong tim thay -> null", null, LenhWeb.xoaMauKhoiChuoi("a|1>b|2", "z|9"));
+        Kiem.bang("chuoi rong -> null", null, LenhWeb.xoaMauKhoiChuoi("", "a|1"));
+        Kiem.bang("xoa mon duy nhat -> chuoi rong", "", LenhWeb.xoaMauKhoiChuoi("a|1", "a|1"));
+
+        // --- hop dong Java / PHP / SQL ---
+        final String java = doc("src/data/LenhWeb.java");
+        final String php = doc("web/admin/inc/lenh_nhan_vat.php");
+        final String sql = doc("sql/them_bang_web_lenh_nhan_vat.sql");
+        final String nv = doc("web/admin/nhanvat.php");
+        Kiem.bang("loai lenh xoa", "xoa_vat_pham", LenhWeb.LOAI_XOA_VAT_PHAM);
+        Kiem.dung("PHP gui cung loai", php.contains("const LENH_LOAI_XOA_VAT_PHAM = 'xoa_vat_pham';"));
+        Kiem.dung("PHP ghep tham so cung dinh dang cot + '>' + mau", php.contains("return $cot . '>' . $mau;"));
+        Kiem.dung("cot tham_so co trong Java, PHP va SQL",
+                java.contains("`tham_so`") && php.contains("`tham_so`") && sql.contains("`tham_so`"));
+        Kiem.dung("bang cu (chua co tham_so) duoc them cot: Java qua information_schema, PHP qua SHOW COLUMNS",
+                java.contains("information_schema.COLUMNS") && java.contains("ADD COLUMN `tham_so`")
+                && php.contains("SHOW COLUMNS FROM") && php.contains("ADD COLUMN `tham_so`"));
+        Kiem.dung("Java va PHP dung cung danh sach cot equip/inven/bag",
+                java.contains("{\"equip\", \"inven\", \"bag\"}") && php.contains("['equip', 'inven', 'bag']"));
+
+        // --- web khong sua cot nua ---
+        Kiem.sai("nhanvat.php KHONG con UPDATE tob_char SET $cot", nv.contains("UPDATE tob_char SET $cot"));
+        Kiem.dung("nhanvat.php gui lenh xoa qua guiLenhXoaVatPham()", nv.contains("guiLenhXoaVatPham(dbGame(), $id, $ten, $cot, $mau, adminName())"));
+        Kiem.dung("form xoa gui kem template + plus de doi chieu mon nguoi bam da nhin thay",
+                nv.contains("name=\"template\"") && nv.contains("name=\"plus\"") && nv.contains("(int)p('template', '-1') === (int)$vp['template']"));
+        Kiem.sai("het canh bao 'chi chac an khi OFFLINE' o nut xoa", nv.contains("Chỉ chắc ăn khi nhân vật đang OFFLINE"));
+
+        // --- server: online go dung mon, offline sua CSDL roi doi chieu khi vao game ---
+        final String go = than(java, "public static boolean goVatPhamOnline");
+        Kiem.dung("equip: quet wItems[slot][] (dat null) va awItems", go.contains("p.wItems[slot]") && go.contains("goKhoiVector(p.awItems, mau)"));
+        Kiem.dung("inven: ba mon dac biet (HKL, vu khi thoi trang, than khi) roi iItems",
+                go.contains("p.itemHoaKyLan = null;") && go.contains("p.itemVukhiThoiTrang = null;")
+                && go.contains("p.itemThanKhi = null;") && go.contains("goKhoiVector(p.iItems, mau)"));
+        Kiem.dung("bag: bItem", go.contains("goKhoiVector(p.bItem, mau)"));
+        Kiem.dung("khop bang getInfoSave() - dung chuoi server ghi xuong cot",
+                java.contains("mau.equals(it.getInfoSave())"));
+        Kiem.dung("sau khi go: calculateAttrib, gui lai tui + do mac + thong tin, roi saveCharAuto",
+                go.contains("p.calculateAttrib();") && go.contains("createCharInventoryMessage(p, 1)")
+                && go.contains("createCharWearingMessage(p, p)") && go.contains("Database.instance.saveCharAuto(p);")
+                && go.indexOf("Database.instance.saveCharAuto(p);") > go.indexOf("createCharInventoryMessage(p, 1)"));
+        final String xl = than(java, "static KetQua xuLyXoaVatPham");
+        Kiem.dung("online ma khong khop -> LOI ro rang, khong doan mo",
+                xl.contains("khong thay mon khop trong \" + cot"));
+        Kiem.dung("offline: sua CSDL roi CHO_DANG_NHAP de doi chieu RAM khi vao game",
+                xl.contains("xoaVatPhamOffline(charId, cot, mau)")
+                && xl.contains("return new KetQua(CHO_DANG_NHAP, \"da xoa trong CSDL"));
+        Kiem.dung("vao game sau khi da xoa offline ma khong con mon -> XONG, khong bao loi",
+                xl.contains("trangThaiCu == CHO_DANG_NHAP") && xl.contains("xac nhan khi vao game: khong con mon do"));
+        Kiem.dung("xoa offline chi dong dung cot trong danh sach (ten cot ghep vao SQL)",
+                than(java, "static int xoaVatPhamOffline").contains("if (!laCotVatPham(cot))"));
     }
 
     /** Cong thuc exp phai la cong thuc cua LevelDetail: dat exp roi doc lai dung cap + %. */
@@ -128,7 +202,7 @@ public final class KiemLenhWeb {
                 && php.contains("INSERT INTO " + bang + " ") && php.contains("FROM " + bang + " "));
         Kiem.dung("file SQL tao cung ten bang", sql.contains("CREATE TABLE IF NOT EXISTS `" + bang + "`"));
 
-        final String[] cot = {"id", "loai", "char_id", "charname", "cap_do", "phan_nghin", "admin_user",
+        final String[] cot = {"id", "loai", "char_id", "charname", "cap_do", "phan_nghin", "tham_so", "admin_user",
             "trang_thai", "ket_qua", "tao_luc", "xu_ly_luc"};
         for (final String c : cot) {
             Kiem.dung("cot `" + c + "` co trong ca Java, PHP va SQL",
@@ -224,9 +298,9 @@ public final class KiemLenhWeb {
             Kiem.dung("tao duoc Char(null) de kiem tu choi ha cap (" + t + ")", false);
         }
 
-        // Offline: KHONG ghi tob_char (dang nhap doc pInfo, khong doc lastLv/xp) -> nam cho.
-        final String xl = than(java, "public static KetQua xuLy");
-        Kiem.sai("LenhWeb KHONG UPDATE tob_char (cot lastLv/xp khong duoc dang nhap doc)", java.contains("UPDATE tob_char"));
+        // Offline: KHONG ghi lastLv/xp (dang nhap doc pInfo, khong doc hai cot do) -> nam cho.
+        final String xl = than(java, "static KetQua xuLyDatCapDo");
+        Kiem.sai("LenhWeb KHONG UPDATE lastLv/xp (dang nhap khong doc hai cot do)", java.contains("UPDATE tob_char SET lastLv"));
         Kiem.dung("(tien de) dang nhap lay cap/exp tu pInfo: CharNapDuLieu doc data[4]/data[5]",
                 doc("src/real/CharNapDuLieu.java").contains("self.lastLV = Short.parseShort(data[5]);"));
         Kiem.dung("xuLy: offline -> CHO_DANG_NHAP, sau khi chac tob_char co nhan vat",

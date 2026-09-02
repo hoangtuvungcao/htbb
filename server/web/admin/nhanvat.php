@@ -100,7 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $idLenh = guiLenhCapDo(dbGame(), $id, $ten, $capDoMoi, $phanNghin, adminName());
         $lenh   = choKetQuaLenh(dbGame(), $idLenh);
-        [$loaiBao, $thongBao] = moTaKetQuaLenh($lenh, $ten, $capDoMoi, $phanNghin);
+        $muc    = 'cấp ' . $capDoMoi . ($phanNghin > 0 ? ' (' . phanNghinRaChuoi($phanNghin) . ')' : '');
+        [$loaiBao, $thongBao] = moTaKetQuaLenh($lenh, $ten, $muc);
 
         // Nhat ky ghi dung so server dung (phan nghin), khong ghi so tho nguoi dung go.
         ghiNhatKy($laBuff ? 'buff_level_nhan_vat' : 'dat_cap_do_nhan_vat', $ten,
@@ -123,45 +124,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($viec === 'xoa_vat_pham') {
-        // Cột phải nằm trong danh sách trắng này — tên cột được ghép thẳng vào SQL
-        // bên dưới (không tham số hoá được tên cột qua PDO) nên KHÔNG được nhận
-        // trực tiếp từ input mà không kiểm tra.
-        $cotChoPhep = ['equip', 'inven', 'bag'];
+        // Cột phải nằm trong danh sách trắng — tên cột được ghép thẳng vào SQL bên dưới
+        // (không tham số hoá được tên cột qua PDO) nên KHÔNG được nhận trực tiếp từ input.
         $cot = p('cot');
         $viTri = (int)p('vi_tri');
-        if (!in_array($cot, $cotChoPhep, true)) {
+        if (!in_array($cot, LENH_COT_VAT_PHAM, true)) {
             veLai($ve, 'error', 'Cột vật phẩm không hợp lệ.');
         }
 
+        // Web KHONG sua cot nua (nhan vat online se bi luu de). Chi doc chuoi hien tai de lay
+        // DUNG mau tho cua mon do o vi tri da bam, roi gui cho server (inc/lenh_nhan_vat.php);
+        // server tim mon khop tung ky tu trong RAM (online) hay trong CSDL (offline).
         $stCu = dbGame()->prepare("SELECT $cot FROM tob_char WHERE id = ? LIMIT 1");
         $stCu->execute([$id]);
-        $chuoiCu = (string)($stCu->fetchColumn() ?: '');
+        $chuoiCu = trim((string)($stCu->fetchColumn() ?: ''));
+        if ($chuoiCu !== '' && $chuoiCu[0] === '>') {
+            $chuoiCu = substr($chuoiCu, 1);
+        }
+        $cacMau = explode('>', $chuoiCu);
+        if (!isset($cacMau[$viTri]) || trim($cacMau[$viTri]) === '') {
+            veLai($ve, 'error', 'Không tìm thấy vật phẩm ở vị trí ' . $viTri . ' — dữ liệu đã đổi, tải lại trang rồi bấm lại.');
+        }
+        $mau = $cacMau[$viTri];
 
-        // Lấy tên món đồ để ghi log TRƯỚC khi xoá.
+        // Doi chieu voi mon nguoi bam da NHIN THAY (template + plus gui kem tu form): neu server
+        // vua luu lai giua luc mo trang va bam, vi tri nay co the da la mon khac.
         $moTa = 'vị trí ' . $viTri;
-        foreach (docChuoiVatPham($chuoiCu) as $vp) {
-            if ($vp['_i'] === $viTri) {
-                $tenId = tenVatPhamTheoId(dbGame(), [(int)$vp['template']]);
-                $moTa = ($tenId[$vp['template']] ?? ('#' . $vp['template']))
-                    . ((int)$vp['plus'] > 0 ? ' +' . (int)$vp['plus'] : '');
-                break;
-            }
+        $khop = false;
+        foreach (docChuoiVatPham($mau) as $vp) {
+            $tenId = tenVatPhamTheoId(dbGame(), [(int)$vp['template']]);
+            $moTa = ($tenId[$vp['template']] ?? ('#' . $vp['template']))
+                . ((int)$vp['plus'] > 0 ? ' +' . (int)$vp['plus'] : '');
+            $khop = (int)p('template', '-1') === (int)$vp['template'] && (int)p('plus', '0') === (int)$vp['plus'];
+            break;
+        }
+        if (!$khop) {
+            veLai($ve, 'error', 'Vật phẩm ở vị trí ' . $viTri . ' hiện là "' . $moTa
+                . '", không còn là món bạn bấm — dữ liệu đã đổi, tải lại trang rồi bấm lại.');
         }
 
-        try {
-            $chuoiMoi = xoaVatPhamTheoViTri($chuoiCu, $viTri);
-        } catch (Throwable $ex) {
-            veLai($ve, 'error', $ex->getMessage());
-        }
+        $idLenh = guiLenhXoaVatPham(dbGame(), $id, $ten, $cot, $mau, adminName());
+        $lenh   = choKetQuaLenh(dbGame(), $idLenh);
+        $muc    = 'xoá "' . $moTa . '" (' . $cot . ')';
+        [$loaiBao, $thongBao] = moTaKetQuaLenh($lenh, $ten, $muc);
 
-        $up = dbGame()->prepare("UPDATE tob_char SET $cot = ? WHERE id = ?");
-        $up->execute([$chuoiMoi, $id]);
+        ghiNhatKy('xoa_vat_pham_nhan_vat', $ten, "cột $cot, xoá: $moTa"
+            . ' | lệnh #' . $idLenh . ': ' . tenTrangThaiLenh((int)($lenh['trang_thai'] ?? -1))
+            . ($lenh && $lenh['ket_qua'] !== '' ? ' - ' . $lenh['ket_qua'] : ''));
 
-        ghiNhatKy('xoa_vat_pham_nhan_vat', $ten, "cột $cot, đã xoá: $moTa");
-
-        veLai($ve, 'success', 'Đã xoá "' . $moTa . '" khỏi ' . $ten . '. CHỈ CÓ HIỆU LỰC THẬT '
-            . 'nếu nhân vật đang offline lúc bấm — nếu đang online, lần server tự lưu tiếp theo '
-            . 'có thể ghi đè lại, món đồ quay về như cũ mà không báo gì.');
+        veLai($ve, $loaiBao, $thongBao);
     }
 
     if ($viec !== 'khoa' && $viec !== 'mo_khoa') {
@@ -319,12 +330,14 @@ function bangVatPham(array $ds, array $ten, string $trong, ?string $cot = null, 
             ?>
             <td class="nowrap">
                 <form method="post" action="nhanvat.php" class="inline"
-                      onsubmit="return confirm('Xoá vĩnh viễn <?= e($tenMon) ?> khỏi hành trang?\n\nChỉ chắc ăn khi nhân vật đang OFFLINE — nếu đang online, món đồ có thể bị lưu đè trở lại.');">
+                      onsubmit="return confirm('Xoá vĩnh viễn <?= e($tenMon) ?> khỏi nhân vật?\n\nNhân vật đang online thì server gỡ ngay trong game; offline thì xoá trong CSDL.');">
                     <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
                     <input type="hidden" name="viec" value="xoa_vat_pham">
                     <input type="hidden" name="id" value="<?= $idNhanVat ?>">
                     <input type="hidden" name="cot" value="<?= e($cot) ?>">
                     <input type="hidden" name="vi_tri" value="<?= (int)$v['_i'] ?>">
+                    <input type="hidden" name="template" value="<?= $id ?>">
+                    <input type="hidden" name="plus" value="<?= (int)$v['plus'] ?>">
                     <button class="btn btn-do btn-nho">Xoá</button>
                 </form>
             </td>
@@ -487,7 +500,7 @@ adminHead('nhanvat', 'Nhân vật');
                     <?php foreach ($lenhGanDay as $l): $tt = (int)$l['trang_thai']; ?>
                         <tr>
                             <td class="muted small"><?= (int)$l['id'] ?></td>
-                            <td>cấp <?= (int)$l['cap_do'] ?><?= (int)$l['phan_nghin'] > 0 ? ' (' . e(phanNghinRaChuoi((int)$l['phan_nghin'])) . ')' : '' ?></td>
+                            <td><?= e(moTaYeuCauLenh($l)) ?></td>
                             <td><?= e(tenTrangThaiLenh($tt)) ?></td>
                             <td class="small"><?= e((string)$l['ket_qua']) ?></td>
                             <td class="small"><?= e((string)$l['admin_user']) ?></td>
@@ -540,12 +553,12 @@ adminHead('nhanvat', 'Nhân vật');
             thoát hoặc server tự lưu.
         </p>
         <div class="luuy" style="margin:0 0 14px;">
-            <p><strong>Nút "Xoá" chỉ chắc ăn khi nhân vật đang OFFLINE.</strong> Khác với
-               "Đặt cấp độ", nút này vẫn ghi thẳng CSDL, không đi qua bảng lệnh cho server —
-               nếu nhân vật đang online, lần server tự lưu tiếp theo (sau khi bán đồ, dùng thuốc,
-               giao dịch…) có thể ghi đè cột này bằng bản trong RAM của server, làm món đồ vừa
-               xoá quay lại như cũ mà không báo gì. Mọi thao tác xoá đều được ghi lại ở trang
-               <a href="log.php">Log</a>.</p>
+            <p><strong>Nút "Xoá" dùng được cả khi nhân vật đang online.</strong> Giống "Đặt cấp
+               độ", lệnh xoá đi qua bảng lệnh cho server game: nhân vật đang online thì server tìm
+               đúng món đó trong RAM, gỡ ra và lưu ngay; offline thì server xoá trong CSDL rồi đối
+               chiếu lại một lần nữa khi nhân vật vào game. Server báo lỗi nếu món đồ đã đổi so với
+               bảng đang xem (tải lại trang rồi bấm lại). Mọi thao tác xoá đều được ghi lại ở trang
+               <a href="log.php">Log</a> và bảng "Lệnh đã gửi".</p>
         </div>
 
         <div class="grid-2">

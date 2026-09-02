@@ -113,8 +113,8 @@ $java = (string)@file_get_contents(__DIR__ . '/../../../src/data/LenhWeb.java');
 // Server cung KHONG UPDATE tob_char: luc dang nhap server doc cap/exp tu cot pInfo, hai cot
 // lastLv/xp chi cho bang xep hang - ghi chung la vo dung. Nhan vat offline thi lenh nam cho
 // (trang_thai 4) va duoc cong qua duong len cap that khi nguoi choi vao game.
-ktDung("server (LenhWeb.java) KHONG UPDATE tob_char (dang nhap doc pInfo, cot lastLv/xp vo dung)",
-    $java !== '' && !preg_match('/UPDATE tob_char/', $java));
+ktDung("server (LenhWeb.java) KHONG UPDATE lastLv/xp (dang nhap doc pInfo, hai cot do vo dung)",
+    $java !== '' && !preg_match('/UPDATE tob_char SET lastLv/', $java));
 ktDung('server co trang thai "cho vao game" cho nhan vat offline', strpos($java, 'CHO_DANG_NHAP = 4') !== false);
 ktDung('trang giai thich co che moi: dung duoc ca khi dang online',
     strpos($nv, 'Dùng được cả khi nhân vật đang online') !== false);

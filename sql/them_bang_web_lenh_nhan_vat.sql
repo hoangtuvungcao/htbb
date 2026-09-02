@@ -2,21 +2,27 @@
 -- Bang `web_lenh_nhan_vat` - hang doi lenh tu trang quan tri web cho server game.
 --
 -- KHONG BAT BUOC CHAY TAY: ca server game (src/data/LenhWeb.java) lan trang web
--- (web/admin/inc/lenh_nhan_vat.php) deu tu CREATE TABLE IF NOT EXISTS. File nay co de:
+-- (web/admin/inc/lenh_nhan_vat.php) deu tu CREATE TABLE IF NOT EXISTS (va tu them cot
+-- `tham_so` neu bang duoc tao tu ban dau tien chua co cot nay). File nay co de:
 --   1. bo kiem web/admin/test/kiem_schema.php doi chieu duoc ten cot,
 --   2. ai muon co bang truoc khi khoi dong lai server thi chay tay duoc.
 --
 --     mysql -u root kpah_db < sql/them_bang_web_lenh_nhan_vat.sql
 --
--- VI SAO CAN (02/09/2026): "Dat cap do" / "Buff level" tren web ghi thang lastLv/xp
--- vao tob_char. Cach do chua bao gio co tac dung: nhan vat online bi luu de tu RAM, con
--- luc dang nhap server doc cap/exp tu cot pInfo chu KHONG doc lastLv/xp (hai cot do chi
--- cho bang xep hang / man chon nhan vat). Web khong nhin thay RAM server, nen doi cach:
--- web chi CHEN MOT DONG LENH vao bang nay; server doc moi giay va tu ap dung bang dung
--- duong len cap tu nhien (Map.addXPForChar, nhu nut Buff EXP cua AdminPanel) roi luu ngay.
--- Nhan vat offline thi dong lenh nam cho, server cong ngay khi thay nhan vat vao game.
+-- VI SAO CAN (02/09/2026): "Dat cap do" / "Buff level" / "Xoa vat pham" tren web ghi
+-- thang vao tob_char. Nhan vat online bi luu de tu RAM; rieng cap do con khong an ca khi
+-- offline vi luc dang nhap server doc cap/exp tu cot pInfo chu KHONG doc lastLv/xp. Web
+-- khong nhin thay RAM server, nen doi cach: web chi CHEN MOT DONG LENH vao bang nay;
+-- server doc moi giay va tu ap dung trong RAM roi luu ngay.
 --
--- trang_thai: 0 = cho server;  1 = da cong cho nhan vat dang online (da luu);
+-- loai:
+--   dat_cap_do   : cap_do + phan_nghin. Online -> Map.addXPForChar (duong len cap tu
+--                  nhien). Offline -> cho vao game (4). Chi NANG cap.
+--   xoa_vat_pham : tham_so = "<cot>><mau>" (cot equip/inven/bag; mau = chuoi tho cua
+--                  mon do). Online -> go dung mon khop trong RAM. Offline -> server xoa
+--                  mau khoi cot trong CSDL roi de "cho vao game" (4) de doi chieu lai
+--                  RAM khi nhan vat dang nhap.
+-- trang_thai: 0 = cho server;  1 = da thuc hien cho nhan vat dang online (da luu);
 --             2 = (ma cu) da ghi CSDL khi offline - khong con tao moi;
 --             3 = loi (xem ket_qua, vd "chi ho tro NANG cap");
 --             4 = nhan vat offline, cho vao game;  5 = nguoi quan tri huy.
@@ -26,19 +32,24 @@
 
 CREATE TABLE IF NOT EXISTS `web_lenh_nhan_vat` (
   `id`         bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `loai`       varchar(30)  NOT NULL                          COMMENT 'dat_cap_do',
+  `loai`       varchar(30)  NOT NULL                          COMMENT 'dat_cap_do | xoa_vat_pham',
   `char_id`    int(11)      NOT NULL                          COMMENT 'tob_char.id',
   `charname`   varchar(50)  NOT NULL DEFAULT ''               COMMENT 'de doc log, khong dung de tim',
   `cap_do`     int(11)      NOT NULL DEFAULT 0,
   `phan_nghin` int(11)      NOT NULL DEFAULT 0                COMMENT '% vao cap x10, 0..999',
+  `tham_so`    text         NULL                              COMMENT 'xoa_vat_pham: "<cot>><mau>"',
   `admin_user` varchar(50)  NOT NULL DEFAULT ''               COMMENT 'team_user.username nguoi bam',
-  `trang_thai` tinyint(4)   NOT NULL DEFAULT 0                COMMENT '0 cho, 1 online da cong, 2 (cu) da ghi CSDL, 3 loi, 4 cho vao game, 5 huy',
-  `ket_qua`    varchar(255) NOT NULL DEFAULT ''               COMMENT 'server ghi: lv cu -> lv moi, hoac ly do loi',
+  `trang_thai` tinyint(4)   NOT NULL DEFAULT 0                COMMENT '0 cho, 1 online da xong, 2 (cu) da ghi CSDL, 3 loi, 4 cho vao game, 5 huy',
+  `ket_qua`    varchar(255) NOT NULL DEFAULT ''               COMMENT 'server ghi: viec da lam, hoac ly do loi',
   `tao_luc`    datetime     NOT NULL DEFAULT current_timestamp(),
   `xu_ly_luc`  datetime     NULL,
   PRIMARY KEY (`id`),
   KEY `idx_trang_thai` (`trang_thai`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Bang da tao truoc khi co cot tham_so (ban deploy dau 02/09/2026) thi them cot:
+--   ALTER TABLE `web_lenh_nhan_vat` ADD COLUMN `tham_so` text NULL AFTER `phan_nghin`;
+-- (server va web tu lam viec nay, chi ghi ra day de biet.)
 
 -- Kiem tra lai: phai ra 1.
 SELECT COUNT(*) AS co_bang FROM information_schema.tables
