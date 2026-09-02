@@ -172,7 +172,10 @@ public class CharThanthu extends Char {
 
                 for(int i = 0; i < target.size(); ++i) {
                     LiveActor mt = (LiveActor)target.get(i);
-                    Message msg = MessageCreator.createMsgAddDynamicNewEffect(EffectBuff.EFF_SKILL_HOA_KY_LAN, 100L, EffectBuff.BY_MAP, mt.id, mt.x / 16, mt.y / 16, 127, EffectBuff.ODER_PAINT[EffectBuff.EFF_SKILL_HOA_KY_LAN], this.owner.attack * 5 / 100);
+                    // Truoc day ghi cung "attack*5/100" (dung cho cap 1) lam hieu ung hien
+                    // SAI so voi cap 2/3 - dung lai dung so vua tinh o attackDam nhu
+                    // doAttackAuto da lam (dong 91/102 phia tren).
+                    Message msg = MessageCreator.createMsgAddDynamicNewEffect(EffectBuff.EFF_SKILL_HOA_KY_LAN, 100L, EffectBuff.BY_MAP, mt.id, mt.x / 16, mt.y / 16, 127, EffectBuff.ODER_PAINT[EffectBuff.EFF_SKILL_HOA_KY_LAN], this.attackDam((LiveActor)target.get(0)));
                     this.owner.sendMessage(msg);
 
                     for(int j = this.owner.nearChars.size() - 1; j >= 0; --j) {
@@ -200,7 +203,8 @@ public class CharThanthu extends Char {
                 m.dos.writeByte(1);
                 this.owner.sendMessage(m);
                 this.owner.sendToNearPlayer(m);
-                Message msg = MessageCreator.createMsgAddDynamicNewEffect(EffectBuff.EFF_SKILL_HOA_KY_LAN, 100L, EffectBuff.BY_MAP, ((LiveActor)target.get(0)).id, ((LiveActor)target.get(0)).x / 16, ((LiveActor)target.get(0)).y / 16, 127, EffectBuff.ODER_PAINT[EffectBuff.EFF_SKILL_HOA_KY_LAN], this.owner.attack * 5 / 100);
+                // Truoc day ghi cung "attack*5/100" - dung lai dung so vua tinh o attackDam.
+                Message msg = MessageCreator.createMsgAddDynamicNewEffect(EffectBuff.EFF_SKILL_HOA_KY_LAN, 100L, EffectBuff.BY_MAP, ((LiveActor)target.get(0)).id, ((LiveActor)target.get(0)).x / 16, ((LiveActor)target.get(0)).y / 16, 127, EffectBuff.ODER_PAINT[EffectBuff.EFF_SKILL_HOA_KY_LAN], this.attackDam(c));
                 this.owner.sendMessage(msg);
 
                 for(int j = this.owner.nearChars.size() - 1; j >= 0; --j) {
@@ -279,24 +283,19 @@ public class CharThanthu extends Char {
                     return 0;
                 }
 
-                if (this.getIdCharThanThu() == 1) {
-                    return this.owner.attack * 20 / 100;
-                }
-
-                if (this.getIdCharThanThu() == 2) {
-                    return actor.maxhp * 20 / 100;
-                }
-            } else {
-                if (this.getIdCharThanThu() == 1) {
-                    return this.owner.attack * 20 / 100;
-                }
-
-                if (this.getIdCharThanThu() == 2) {
-                    return this.owner.attack * 30 / 100;
+                // Doc thang tu Hoa Ky Lan dang mac (otherAtt 38 = % tan cong chu, 40 = %
+                // maxhp doi thu) thay vi ba nhanh cap 1/2/3 rieng - cong duoc "ao hoa"
+                // (+10 diem phan tram, xem Char.chiSoPhanTramHoaKyLan) va tu dong dung
+                // voi ca cap 4, 5... sau nay neu them, khong can sua lai cho nay.
+                // Cap 3 (otherAtt40=20) danh QUAI: dung % maxhp cua quai; cap 1/2 (chua
+                // co otherAtt40) roi ve nhanh % tan cong ben duoi - dung y chang cu.
+                final int pcMaxHp = this.owner.chiSoPhanTramHoaKyLan(40);
+                if (pcMaxHp > 0) {
+                    return actor.maxhp * pcMaxHp / 100;
                 }
             }
 
-            return this.owner.attack * 5 / 100;
+            return this.owner.attack * this.owner.chiSoPhanTramHoaKyLan(38) / 100;
         } else {
             return 0;
         }
@@ -322,26 +321,14 @@ public class CharThanthu extends Char {
                     att -= att * (Map.abs(deltalv) - 5) * 2 / 100;
                 }
 
-                if (this.getIdCharThanThu() == 1) {
-                    int dam = actor.checkGiamSatThuongTong(att * 20 / 100);
-                    return dam;
-                }
-
-                if (this.getIdCharThanThu() == 2) {
-                    int dam = actor.checkGiamSatThuongTong(att * 30 / 100);
-                    return dam;
-                }
+                // Doc thang tu Hoa Ky Lan dang mac (otherAtt 38, cong "ao hoa" neu co) -
+                // GHI CHU: khac attackDamAuto, ham nay CHUA TUNG dung otherAtt 40 (% maxhp
+                // doi thu) o BAT KY cap nao, ke ca cap 3 - giu dung hanh vi cu, khong them
+                // nhanh maxhp o day de khong doi can bang danh thu cong.
+                return actor.checkGiamSatThuongTong(att * this.owner.chiSoPhanTramHoaKyLan(38) / 100);
             } else {
-                if (this.getIdCharThanThu() == 1) {
-                    return this.owner.attack * 20 / 100;
-                }
-
-                if (this.getIdCharThanThu() == 2) {
-                    return this.owner.attack * 30 / 100;
-                }
+                return this.owner.attack * this.owner.chiSoPhanTramHoaKyLan(38) / 100;
             }
-
-            return this.owner.attack * 5 / 100;
         } else {
             return 0;
         }

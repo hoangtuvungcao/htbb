@@ -345,10 +345,12 @@ class CharChiSo {
         }
    
         if (self.itemHoaKyLan != null) {
-            self.khangbanglan += self.itemHoaKyLan.otherAtt[24];
-            self.khangsetlan += self.itemHoaKyLan.otherAtt[25];
-            self.khangdoclan += self.itemHoaKyLan.otherAtt[26];
-            self.khanglualan += self.itemHoaKyLan.otherAtt[31];
+            // chiSoPhanTramHoaKyLan cong them +10 (diem phan tram) khi dang "ao hoa" -
+            // xem Char.dangAoHoaHoaKyLan/doAoHoaHoaKyLan.
+            self.khangbanglan += self.chiSoPhanTramHoaKyLan(24);
+            self.khangsetlan += self.chiSoPhanTramHoaKyLan(25);
+            self.khangdoclan += self.chiSoPhanTramHoaKyLan(26);
+            self.khanglualan += self.chiSoPhanTramHoaKyLan(31);
         }
         // Hut mau cua mat na. Vong lap tren chi duyet wItems (o trang bi) nen mat na —
         // nam trong wModel — khong bao gio duoc cong, du tooltip van ghi "Hút máu: 10".

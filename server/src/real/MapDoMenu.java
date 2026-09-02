@@ -623,25 +623,20 @@ class MapDoMenu {
                                     player.doNangCapHoaKyLan(player.itemTam, GemTemplate.HOA_THACH_C1);
                                 }
                             }
-                        } else if (idOptionMenu != 0) {
+                        } else if (idOptionMenu == 1) {
                             if (player.itemTam.minuteExist > 0) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể nâng cấp", ""));
                                 return;
                             }
 
                             player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Hoả thạch cấp 1", "Hoả thạch cấp 2"}, -513, 1));
+                        } else if (idOptionMenu == 2) {
+                            // "Ảo hóa" - xem Char.doAoHoaHoaKyLan. Ham do tu kiem vinh vien/
+                            // du luong/mac len nguoi, o day chi don itemTam sau khi xong.
+                            player.doAoHoaHoaKyLan(player.itemTam);
+                            player.itemTam = null;
                         } else {
-                            player.charThanThuDissapear();
-                            player.iItems.remove(player.itemTam);
-                            if (player.itemHoaKyLan != null) {
-                                player.iItems.add(player.itemHoaKyLan);
-                            }
-
-                            player.doCreateCharThanThu(player.itemTam.getTemplate().atb[0]);
-                            player.itemHoaKyLan = player.itemTam;
-                            player.calculateAttrib();
-                            player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
-                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                            player.doTrangBiHoaKyLan(player.itemTam);
                             Database.instance.saveOrtherLog("", player.charname, player.itemTam.getInfoSave(), "itemthanthu");
                             player.itemTam = null;
                         }

@@ -227,6 +227,10 @@ class CharNapDuLieu {
                 } catch (final Exception ex8b) {
                 }
                 try {
+                    self.timeAoHoaHoaKyLan = Long.parseLong(data[115]);
+                } catch (final Exception ex8c) {
+                }
+                try {
                     self.idAutoSkill = Byte.parseByte(data[30]);
                     self.idAutoGetitem = Byte.parseByte(data[31]);
                 } catch (final Exception ex9) {

@@ -15370,26 +15370,16 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    if (isItemThanThu(t)) 
+                    if (isItemThanThu(t))
                     {
-                        if (item.getTemplate().idItemUpLevel > -1) {
-                            player.itemTam = item;
-                            player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Sử dụng", "Nâng cấp"}, -513, 0));
-                        } else {
-                            player.charThanThuDissapear();
-                            player.iItems.remove(item);
-                            if (player.itemHoaKyLan != null) {
-                                player.iItems.add(player.itemHoaKyLan);
-                            }
-
-                            player.doCreateCharThanThu(item.getTemplate().atb[0]);
-                            player.itemHoaKyLan = item;
-                            player.calculateAttrib();
-                            player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
-                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                            Database.instance.saveOrtherLog("", player.charname, item.getInfoSave(), "itemthanthu");
-                        }
-
+                        // Luon hien du 3 lua chon, ke ca khi da toi cap toi da (idItemUpLevel
+                        // == -1, truoc day tu dong mac ngay khong hoi gi): "Nâng cấp" tren
+                        // mot item da max tu no khong lam gi ca (Char.doNangCapHoaKyLan tu
+                        // kiem idItemUpLevel > -1 ben trong), nen giu chung MOT menu cho don
+                        // gian va de "Ảo hóa" (chon ao hoa, xem Char.doAoHoaHoaKyLan) dung
+                        // duoc voi CA HOA KY LAN CAP TOI DA - dung noi nguoi choi can nhat.
+                        player.itemTam = item;
+                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Sử dụng", "Nâng cấp", "Ảo hóa"}, -513, 0));
                         return;
                     }
 

@@ -498,6 +498,11 @@ public class Char extends LiveActor {
     public Animal animalRide;
     public Pet petUsing;
     public Item itemHoaKyLan;
+    /**
+     * Moc het han "Ao hoa Hoa Ky Lan" (0 = khong dang ao hoa). Xem
+     * dangAoHoaHoaKyLan/doAoHoaHoaKyLan/checkExpireAoHoaHoaKyLan.
+     */
+    public long timeAoHoaHoaKyLan;
     public Item itemTam;
     public Item itemPet;
     public Item itemVukhiThoiTrang;
@@ -4937,9 +4942,16 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.charthanthu.lastLV = 40;
             this.charthanthu.charClass = this.charClass;
             this.charthanthu.charname = "@" + this.charname + "@";
-            this.charthanthu.maxhp = 1000;
+            // "Suc khoe" cua Than Thu doc tu Hoa Ky Lan dang mac (otherAtt 39), cong duoc
+            // "ao hoa" (+10%, xem Char.chiSoTuyetDoiHoaKyLan). CA BA cap hien deu ghi
+            // otherAtt[39]=1000 nen gia tri KHONG doi so voi ban cu khi chua ao hoa - chi
+            // khac tu luc co ao hoa, hoac neu sau nay them cap moi voi suc khoe rieng.
+            // itemHoaKyLan BAT BUOC phai duoc gan TRUOC khi goi ham nay - xem
+            // doTrangBiHoaKyLan (noi goi DUY NHAT cua doCreateCharThanThu).
+            final int sucKhoe = this.chiSoTuyetDoiHoaKyLan(39);
+            this.charthanthu.maxhp = (sucKhoe > 0) ? sucKhoe : 1000;
             this.charthanthu.maxmp = 1000;
-            this.charthanthu.hp = 1000;
+            this.charthanthu.hp = this.charthanthu.maxhp;
             this.charthanthu.mp = 1000;
             this.charthanthu.setXtoYto(this.x, this.y);
             this.charthanthu.userID = this.userID + 1000000000;
@@ -9033,6 +9045,121 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));
             this.sendMessage(MessageCreator.createCharGemItem(this));
             Database.instance.saveOrtherLog("", this.charname, infoLog, "nangcaphkl");
+        }
+    }
+
+    /** Gia (luong) va han (ms) cua "Ao hoa Hoa Ky Lan". Xem doAoHoaHoaKyLan. */
+    public static final int GIA_LUONG_AO_HOA_HOA_KY_LAN = 100;
+    public static final long HAN_AO_HOA_HOA_KY_LAN_MS = 7L * 24 * 60 * 60 * 1000L;
+
+    public boolean dangAoHoaHoaKyLan() {
+        return this.timeAoHoaHoaKyLan - System.currentTimeMillis() > 0L;
+    }
+
+    /**
+     * Chi so KIEU PHAN TRAM cua Hoa Ky Lan dang mac (otherAtt cua item), cong them ao
+     * hoa neu dang bat. Dung cho khang bang/set/doc/lua lan (CharChiSo) va sat thuong
+     * theo % tan cong chu / % maxhp doi thu (data.CharThanthu). Tra ve 0 neu khong mac
+     * Hoa Ky Lan nao.
+     *
+     * ao hoa CONG THANG 10 (10 diem phan tram), khong nhan 1.1: dung y "kháng độc lan
+     * 5% > 15%" trong yeu cau goc - nhan 1.1 se ra 5.5%, khong phai 15%.
+     */
+    public int chiSoPhanTramHoaKyLan(final int idxOtherAtt) {
+        if (this.itemHoaKyLan == null) {
+            return 0;
+        }
+        return this.itemHoaKyLan.otherAtt[idxOtherAtt] + (this.dangAoHoaHoaKyLan() ? 10 : 0);
+    }
+
+    /**
+     * Chi so KIEU TUYET DOI (khong phai %, vi du suc khoe) cua Hoa Ky Lan dang mac, ao
+     * hoa thi +10%. Tra ve 0 neu khong mac Hoa Ky Lan nao.
+     */
+    public int chiSoTuyetDoiHoaKyLan(final int idxOtherAtt) {
+        if (this.itemHoaKyLan == null) {
+            return 0;
+        }
+        final int co = this.itemHoaKyLan.otherAtt[idxOtherAtt];
+        return this.dangAoHoaHoaKyLan() ? (co + co / 10) : co;
+    }
+
+    /**
+     * Gan MOT Hoa Ky Lan len nguoi: huy Than Thu cu (neu co), tra vat pham cu ve tui,
+     * tao Than Thu moi theo cap cua item MOI. Dung chung cho ca nut "Sử dụng" (Map.java
+     * doUseItem, MapDoMenu case -513) lan doAoHoaHoaKyLan ben duoi.
+     *
+     * PHAI gan itemHoaKyLan = item TRUOC khi goi doCreateCharThanThu: ham do doc
+     * chiSoTuyetDoiHoaKyLan(39) qua chinh itemHoaKyLan de lay suc khoe Than Thu, nen
+     * item moi phai san sang truoc.
+     */
+    public void doTrangBiHoaKyLan(final Item item) {
+        this.charThanThuDissapear();
+        this.iItems.remove(item);
+        if (this.itemHoaKyLan != null) {
+            this.iItems.add(this.itemHoaKyLan);
+        }
+        this.itemHoaKyLan = item;
+        this.doCreateCharThanThu(item.getTemplate().atb[0]);
+        this.calculateAttrib();
+        try {
+            this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
+            this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));
+        } catch (final Exception ex) {
+        }
+    }
+
+    /**
+     * "ẢO HÓA HỎA KỲ LÂN" - theo yeu cau nguoi dung ngay 02/09/2026.
+     *
+     * Cong thuc: Hoa Ky Lan (VINH VIEN, minuteExist <= 0) + 100 luong -> +10% (hoac +10
+     * neu chi so do la %) MOI chi so cua Hoa Ky Lan (4 khang lan + sat thuong theo chu +
+     * sat thuong max hp cua doi thu + suc khoe Than Thu) trong 7 ngay. Het han tu dong
+     * tro ve chi so goc, khong can dang nhap lai (xem checkExpireAoHoaHoaKyLan, goi tu
+     * CharVongLap moi 5 phut giong checkExpirePet).
+     *
+     * Neu item chua duoc mac thi mac luon (dung chung logic voi nut "Sử dụng") - "ảo
+     * hóa" mot Hoa Ky Lan dang nam trong tui la vo nghia neu khong mang len nguoi.
+     */
+    public void doAoHoaHoaKyLan(final Item item) {
+        if (item.minuteExist > 0) {
+            this.sendMessage(MessageCreator.createServerAlertMessage("Chỉ ảo hóa được Hoả Kỳ Lân vĩnh viễn", ""));
+            return;
+        }
+        if (this.getLuong() < GIA_LUONG_AO_HOA_HOA_KY_LAN) {
+            this.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
+            return;
+        }
+        this.subLuong((long) GIA_LUONG_AO_HOA_HOA_KY_LAN);
+        // Dat moc het han TRUOC khi mac (dong duoi): doTrangBiHoaKyLan -> doCreateCharThanThu
+        // doc chiSoTuyetDoiHoaKyLan(39) NGAY luc tao Than Thu de lay suc khoe. Dat sau thi
+        // Than Thu vua tao thieu +10% suc khoe cho toi lan mac lai ke tiep - da tung lam
+        // sai o ban dau, sua lai o day.
+        this.timeAoHoaHoaKyLan = System.currentTimeMillis() + HAN_AO_HOA_HOA_KY_LAN_MS;
+        if (this.itemHoaKyLan != item) {
+            this.doTrangBiHoaKyLan(item);
+        } else {
+            this.calculateAttrib();
+            try {
+                this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
+            } catch (final Exception ex) {
+            }
+        }
+        this.sendMessage(MessageCreator.createServerAlertMessage("Ảo hóa Hoả Kỳ Lân thành công, có tác dụng trong 7 ngày", ""));
+        Database.instance.saveOrtherLog("", this.charname, item.getInfoSave(), "aohoahkl");
+    }
+
+    /** Ao hoa Hoa Ky Lan het han: tro ve chi so goc NGAY khi dang choi. Goi tu CharVongLap moi 5 phut. */
+    public void checkExpireAoHoaHoaKyLan() {
+        try {
+            if (this.timeAoHoaHoaKyLan > 0L && this.timeAoHoaHoaKyLan - System.currentTimeMillis() <= 0L) {
+                this.timeAoHoaHoaKyLan = 0L;
+                this.calculateAttrib();
+                this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
+                this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Ảo hóa Hoả Kỳ Lân đã hết hạn, chỉ số trở về ban đầu"));
+                Database.instance.saveOrtherLog("", this.charname, "ao hoa hoa ky lan het han", "aohoahkl");
+            }
+        } catch (final Exception ex) {
         }
     }
 

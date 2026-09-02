@@ -124,6 +124,7 @@ class CharVongLap {
                 self.checkExpireMDAmor();
                 self.checkExpirePet();
                 self.checkExpireItemInentry();
+                self.checkExpireAoHoaHoaKyLan();
             } catch (final Exception ex2) {
             }
             ++self.minuteOnline;
@@ -933,6 +934,7 @@ class CharVongLap {
         pInfo = String.valueOf(pInfo) + "," + self.diemDoiThuong;
         pInfo = String.valueOf(pInfo) + "," + self.diemQuaiHomNay;
         pInfo = String.valueOf(pInfo) + "," + self.soQuaiHomNay;
+        pInfo = String.valueOf(pInfo) + "," + self.timeAoHoaHoaKyLan;
 
         return pInfo;
     }

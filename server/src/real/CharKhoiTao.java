@@ -241,6 +241,7 @@ class CharKhoiTao {
         self.kkk = 0;
         self.timeExit = 0L;
         self.itemHoaKyLan = null;
+        self.timeAoHoaHoaKyLan = 0L;
         self.itemTam = null;
         self.itemPet = null;
         self.itemVukhiThoiTrang = null;
