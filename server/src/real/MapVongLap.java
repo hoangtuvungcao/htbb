@@ -3,6 +3,7 @@ package real;
 
 import data.Database;
 import io.Message;
+import io.ThreadPool;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
@@ -482,12 +483,38 @@ class MapVongLap {
                         // Chi luu khi doi tuong nay DUNG la nhan vat dang dang ky cho tai
                         // khoan do. Neu no la ban cu con sot lai trong vector nguoi choi
                         // thi ghi xuong se de len ban moi hon - dung cai loi dang di sua.
-                        try {
-                            if (CharManager.instance.getByUserID(p.userID) == p) {
-                                Database.instance.saveChar(p, false);
-                            }
-                        } catch (Exception exLuu) {
-                            exLuu.printStackTrace();
+                        //
+                        // PHAI QUA ThreadPool, KHONG duoc goi Database.instance.saveChar
+                        // TRUC TIEP o day: ham nay chay ngay trong vong lap cap nhat cua
+                        // CHINH LUONG "MAP <id>" (Map implements Runnable, moi map mot
+                        // luong rieng) - dung khuon mau CharVongLap dang dung cho autosave
+                        // dinh ky. saveChar la nhieu cau lenh SQL noi tiep tren bang
+                        // tob_char (MyISAM, khoa CA BANG khi ghi); goi dong bo o day tung
+                        // bien mat ~03/09/2026: sau mot lan khoi dong lai lam nhieu nguoi
+                        // reconnect gan nhu cung luc, luong nay bi CHAN CHO khoa bang, va
+                        // vi no la LUONG DUY NHAT cap nhat quai cho ca ban do nen toan bo
+                        // quai tren MOI ban do ngung hien (moi luong "MAP <id>" deu co the
+                        // dinh cung kieu). Day qua hang doi thi luong map duoc giai phong
+                        // ngay, viec luu van xay ra, chi cham hon vai chuc ms.
+                        //
+                        // Phep kiem "dung la ban dang dang ky" phai lam NGAY BAY GIO,
+                        // TRUOC khi remove(p) o duoi - trong bo nho, khong dung I/O nen
+                        // khong chan luong. Lam phep kiem nay BEN TRONG Runnable la sai:
+                        // luc do CharManager da go p roi (dong remove(p) chay truoc khi
+                        // ThreadPool kip thuc thi), phep kiem se luon that bai va KHONG
+                        // BAO GIO luu duoc gi ca.
+                        if (CharManager.instance.getByUserID(p.userID) == p) {
+                            final Char pCanLuu = p;
+                            ThreadPool.instant.workList.add(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Database.instance.saveChar(pCanLuu, false);
+                                    } catch (Exception exLuu) {
+                                        exLuu.printStackTrace();
+                                    }
+                                }
+                            });
                         }
                         players.remove(k);
                         CharManager.instance.remove(p);

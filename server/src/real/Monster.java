@@ -903,7 +903,7 @@ public class Monster extends LiveActor {
                 if (Char.isSuKienVuLan2015()) {
                     // Vu Lan (viet lai): giet quai thuong lech cap +-5 co ti le nho roi 1
                     // nhanh hoa hong vang. X2 neu dang mac do bong da (item 791/792).
-                    int tlVuLan = 300000; // ~3%, theo don vi tile(x, PC_TILE_ITEM_SUKIEN)
+                    int tlVuLan = 2000000; // ~3%, theo don vi tile(x, PC_TILE_ITEM_SUKIEN)
                     if (p.wModel != null && (p.wModel.isBongDaNamAoCam() || p.wModel.isBongDaNuAoSoc())) {
                         tlVuLan *= 2;
                     }

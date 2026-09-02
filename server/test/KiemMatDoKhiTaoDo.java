@@ -192,16 +192,47 @@ public final class KiemMatDoKhiTaoDo {
         Kiem.dung("chot nam TRUOC cho luu", viTriChot > 0 && viTriLuu > viTriChot);
     }
 
-    /** Khong duoc phep co duong nao go nhan vat ma khong luu. */
+    /**
+     * Khong duoc phep co duong nao go nhan vat ma khong luu - VA khong duoc phep luu
+     * DONG BO ngay trong vong lap ban do.
+     *
+     * Sua lan dau (chi luu, khong doi cho luu) tung tao ra mot regression nghiem trong
+     * hon ca loi dang sua: Database.instance.saveChar(p, false) goi TRUC TIEP, dong bo,
+     * ngay trong vong lap cap nhat cua CHINH LUONG "MAP <id>" (Map implements Runnable,
+     * moi map mot luong rieng, ca quai lan nguoi choi cua ban do do deu cap nhat qua
+     * dung luong nay). saveChar la nhieu cau lenh SQL noi tiep tren bang tob_char
+     * (MyISAM, khoa CA BANG khi ghi) - mot lan goi cham (khoa bang, cho ket noi) la
+     * luong map do dung hinh, va quai tren ban do do (roi ca ban do khac cung theo
+     * kieu) ngung cap nhat/hien thi. Da xay ra that ~03/09/2026 sau mot lan khoi dong
+     * lai lam nhieu nguoi reconnect gan nhu cung luc.
+     *
+     * Sua dung: giu nguyen phep kiem "dung la ban dang dang ky" (re, chi bo nho, lam
+     * NGAY tren luong map), nhung day CHINH VIEC GHI xuong CSDL qua ThreadPool -
+     * dung khuon mau CharVongLap dang dung cho autosave dinh ky.
+     */
     private static void khongGoNhanVatMaKhongLuu() {
         final String s = doc("src/real/MapVongLap.java");
-        Kiem.dung("vong lap ban do luu truoc khi go khoi so dang ky",
-                s.contains("Database.instance.saveChar(p, false);"));
-        Kiem.dung("chi luu khi doi tuong nay dung la nhan vat dang dang ky",
-                s.contains("if (CharManager.instance.getByUserID(p.userID) == p) {"));
-        final int viTriLuu = s.indexOf("Database.instance.saveChar(p, false);");
-        final int viTriGo = s.indexOf("CharManager.instance.remove(p);");
-        Kiem.dung("cho luu nam TRUOC cho go", viTriLuu > 0 && viTriGo > viTriLuu);
+        Kiem.dung("co import io.ThreadPool", s.contains("import io.ThreadPool;"));
+        Kiem.dung("phep kiem dung la ban dang dang ky nam NGOAI Runnable (lam tren luong map)",
+                s.contains("if (CharManager.instance.getByUserID(p.userID) == p) {\n"
+                        + "                            final Char pCanLuu = p;\n"
+                        + "                            ThreadPool.instant.workList.add(new Runnable() {"));
+        Kiem.dung("viec GHI CSDL nam trong Runnable, day qua ThreadPool",
+                s.contains("ThreadPool.instant.workList.add(new Runnable() {")
+                        && s.contains("Database.instance.saveChar(pCanLuu, false);"));
+        // Chot quan trong nhat: khong con goi Database.instance.saveChar DONG BO
+        // (ngoai Runnable) trong ham nay - day chinh la thu gay dung hinh quai.
+        final int viTriHam = s.indexOf("static void updateSand(Map map)");
+        final int viTriKetThucVongLap = s.indexOf("boolean exitBoard = false;");
+        Kiem.dung("tim thay vi tri de kiem", viTriHam >= 0);
+        final int viTriRunnableMo = s.indexOf("ThreadPool.instant.workList.add(new Runnable() {");
+        final int viTriRunnableDong = s.indexOf("});", viTriRunnableMo);
+        final String truocRunnable = s.substring(Math.max(0, viTriRunnableMo - 600), viTriRunnableMo);
+        final String trongRunnable = s.substring(viTriRunnableMo, viTriRunnableDong);
+        Kiem.sai("khong goi saveChar dong bo NGAY TRUOC Runnable (ngoai luong)",
+                truocRunnable.contains("Database.instance.saveChar("));
+        Kiem.dung("saveChar nam BEN TRONG Runnable (dung luong ThreadPool)",
+                trongRunnable.contains("Database.instance.saveChar(pCanLuu, false);"));
     }
 
     /**
