@@ -502,10 +502,35 @@ public class FruitTemplate {
         return info;
     }
 
+    /**
+     * Hang trong bang EXP ung voi cap nhan vat - LUON hop le.
+     *
+     * Cong thuc goc (lv - 34) / 5 chi dung cho cap 34..83: cap 84..88 roi vao hang 10 (mang
+     * rong, cho giu cho), cap 89+ vuot ngoai bang, cap duoi 34 cho chi so am. Ca ba deu nem
+     * ArrayIndexOutOfBounds ngay trong SelectCharHandler -> initInfoFromDB -> createFruit, vong
+     * nhan goi tin nuot loi, nhan vat khong duoc dua vao ban do: client thay map trong, "khong
+     * hien thi nhan vat" (02/09/2026, nhan vat vua duoc web buff thang len 90 nen o vuon chua
+     * du, phai tao moi luc dang nhap). Nhan vat cao cap cay dan khong gap vi o vuon da luu du
+     * tu lau - loi chi lo ra khi co o vuon moi.
+     *
+     * Kep ve hang cuoi CO DU LIEU (moc cap 79..83) cho cap cao, hang dau cho cap thap.
+     */
+    public static int hangExpTheoCap(final int lvChar) {
+        int id = (lvChar - 34) / 5;
+        if (id < 0) {
+            id = 0;
+        }
+        int cuoi = EXP.length - 1;
+        while (cuoi > 0 && EXP[cuoi].length < 2) {
+            cuoi--;
+        }
+        return id > cuoi ? cuoi : id;
+    }
+
     public void initGift(int lvChar) {
         if (this.type == 0) {
             if (TeamServer.ExpQua) {
-                int id = (lvChar - 34) / 5;
+                final int id = hangExpTheoCap(lvChar);
                 this.gift = EXP[id][0] + Map.r.nextInt(EXP[id][1] - EXP[id][0]);
             } else {
                 this.gift = 0; // Set exp = 0 khi tính năng bị tắt

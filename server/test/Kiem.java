@@ -101,6 +101,7 @@ public final class Kiem {
         KiemLienKetTaiLieu.chay();
         KiemAnhHieuUng.chay();
         KiemLenhWeb.chay();
+        KiemQuaVuonCapCao.chay();
         KiemBangCapDo.chay();
         KiemSuKien.chay();
         KiemLichSuKien.chay();
