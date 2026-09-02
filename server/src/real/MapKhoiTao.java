@@ -376,19 +376,6 @@ class MapKhoiTao {
                     map.addPlayer(1, (Char) Map.npcHoatieu.get(12), 0);
                     map.addPlayer(2, (Char) Map.npcHoatieu.get(12), 0);
                 }
-                // CHAN DOAN TAM THOI (xoa sau khi tim ra nguyen nhan) - su co NPC hoa tieu
-                // khong hien tren Loc tri (02/09/2026). Ban vung/region truoc do khong dung
-                // (nRegion = 0 o day, khong phai ban do nhieu khu that su - xem
-                // test/KiemNpcHoaTieuNhieuKhu.java). In ra de xac nhan addPlayer co that su
-                // dua bot vao allPlayers khong, va cac truong .mapID/.x/.y/.exit cua bot dang
-                // la gi luc do (Map.addPlayer nuot moi ngoai le trong im lang).
-                final Char botHT = (Char) Map.npcHoatieu.get(12);
-                System.out.println("[HOATIEU-CHAN-DOAN] map.mapId=" + map.mapId + " nregion=" + nregion
-                        + " trongAllPlayers0=" + map.allPlayers.get(0).contains(botHT)
-                        + " trongAllPlayers1=" + map.allPlayers.get(1).contains(botHT)
-                        + " trongAllPlayers2=" + map.allPlayers.get(2).contains(botHT)
-                        + " bot.mapID=" + botHT.mapID + " bot.x=" + botHT.x + " bot.y=" + botHT.y
-                        + " bot.exit=" + botHT.exit + " bot.isBot=" + botHT.isBot);
             }
 
             if (map.mapIDLoadMap == 114) {

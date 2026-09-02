@@ -333,7 +333,13 @@ class CharCapNhat {
                     self.map.removePlayer(self.inCountry, c);
                 }
             } catch (final Exception e) {
-                break;
+                // TRUOC DAY "break": mot loi rieng le o BAT KY doi tuong nao trong nearChars
+                // (vi du mot nguoi choi vua thoat giua chung, con so du lieu chua kip don) lam
+                // GAY LUON ca vong lap, bo qua het cac doi tuong CON LAI (chi so thap hon, vi
+                // vong nay duyet tu cuoi ve dau) - kem theo khong gui duoc goi vi tri lam moi
+                // cho ho trong tick nay. "continue": chi bo qua DUNG mot doi tuong loi, cac
+                // doi tuong khac van duoc xu ly binh thuong.
+                continue;
             }
         }
         if (self.map.mapIDLoadMap == 0 || self.map.mapIDLoadMap == 70 || self.map.mapIDLoadMap == 80) {
@@ -432,8 +438,18 @@ class CharCapNhat {
                         }
                     }
                 } catch (final Exception e2) {
+                    // Cung ly do voi vong tren (self.nearChars): "break" o day tung lam MOI
+                    // doi tuong con lai trong danh sach (chi so thap hon k hien tai, vi vong
+                    // nay cung duyet tu cuoi ve dau) khong bao gio duoc xet toi trong tick nay
+                    // - ke ca cac bot NPC dat vao map tu luc khoi dong (o dau danh sach, tuc
+                    // chi so THAP nhat, nen la nhom de mat nhat). Trong luc dong nguoi (su
+                    // kien boss the gioi...), chi can MOT nguoi choi trong danh sach gay loi
+                    // (vi du vua thoat giua chung) la NPC nhu "hoa tieu"/"xa phu" bien mat het
+                    // cho toi lan tick sau co may man khong loi (su co 02/09/2026). "continue"
+                    // giu dung y dinh chan doan (in ra roi bo qua) nhung khong lam hong ca
+                    // nhung doi tuong con lai.
                     System.out.println("LOI TIM NEARCHAR TRONG CHAR ");
-                    break;
+                    continue;
                 }
             }
             if (havedata) {
