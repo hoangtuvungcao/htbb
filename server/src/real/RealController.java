@@ -1990,7 +1990,10 @@ public class RealController extends ServerController {
                             return;
                         }
                         player.itemTam = itemHoaKyLan;
-                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Sử dụng", "Nâng cấp", "Ảo hóa"}, -513, 0));
+                        final String[] menuHoaKyLan = itemHoaKyLan.getTemplate().idItemUpLevel > -1
+                                ? new String[]{"Sử dụng", "Nâng cấp", "Ảo hóa"}
+                                : new String[]{"Sử dụng", "Ảo hóa"};
+                        player.sendMessage(MessageCreator.createMsgMenu(menuHoaKyLan, -513, 0));
                         return;
                     }
 //                int gioHoatDong = player.runtimeCharProperties.getHourOnline();

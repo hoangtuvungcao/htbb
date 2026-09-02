@@ -598,6 +598,12 @@ class MapDoMenu {
                     break;
                 case -513:
                     if (player.itemTam != null) {
+                        // Da toi cap toi da (idItemUpLevel == -1): menu chi con 2 muc, "Nâng cấp"
+                        // bi an di (xem Map.java / RealController.java, cho tao menu -513), nen
+                        // "Ảo hóa" lui tu idOptionMenu 2 xuong 1. Phai kiem TRUOC khi doc
+                        // idOptionMenu ben duoi, khong thi "Ảo hóa" o menu 2 muc se bi hieu nham
+                        // thanh "mo bang chon hoả thạch nâng cấp".
+                        final boolean daToiDaCap = player.itemTam.getTemplate().idItemUpLevel == -1;
                         if (idMenu != 0) {
                             if (idMenu == 1) {
                                 if (player.itemTam.minuteExist > 0) {
@@ -623,14 +629,14 @@ class MapDoMenu {
                                     player.doNangCapHoaKyLan(player.itemTam, GemTemplate.HOA_THACH_C1);
                                 }
                             }
-                        } else if (idOptionMenu == 1) {
+                        } else if (!daToiDaCap && idOptionMenu == 1) {
                             if (player.itemTam.minuteExist > 0) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể nâng cấp", ""));
                                 return;
                             }
 
                             player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Hoả thạch cấp 1", "Hoả thạch cấp 2"}, -513, 1));
-                        } else if (idOptionMenu == 2) {
+                        } else if ((daToiDaCap && idOptionMenu == 1) || (!daToiDaCap && idOptionMenu == 2)) {
                             // "Ảo hóa" - xem Char.doAoHoaHoaKyLan. Ham do tu kiem vinh vien/
                             // du luong/mac len nguoi, o day chi don itemTam sau khi xong.
                             player.doAoHoaHoaKyLan(player.itemTam);

@@ -15372,14 +15372,16 @@ public class Map implements Runnable {
 
                     if (isItemThanThu(t))
                     {
-                        // Luon hien du 3 lua chon, ke ca khi da toi cap toi da (idItemUpLevel
-                        // == -1, truoc day tu dong mac ngay khong hoi gi): "Nâng cấp" tren
-                        // mot item da max tu no khong lam gi ca (Char.doNangCapHoaKyLan tu
-                        // kiem idItemUpLevel > -1 ben trong), nen giu chung MOT menu cho don
-                        // gian va de "Ảo hóa" (chon ao hoa, xem Char.doAoHoaHoaKyLan) dung
-                        // duoc voi CA HOA KY LAN CAP TOI DA - dung noi nguoi choi can nhat.
+                        // Da toi cap toi da (idItemUpLevel == -1) thi an "Nâng cấp" di (bam vao
+                        // tu no khong lam gi - Char.doNangCapHoaKyLan tu kiem dieu kien nay ben
+                        // trong - de menu con 2 muc cho ro rang thay vi mot nut vo tac dung).
+                        // MapDoMenu.java (case -513) doc lai dung idItemUpLevel nay de biet
+                        // "Ảo hóa" nam o idOptionMenu 1 hay 2 tuong ung.
                         player.itemTam = item;
-                        player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Sử dụng", "Nâng cấp", "Ảo hóa"}, -513, 0));
+                        final String[] menuHoaKyLan = item.getTemplate().idItemUpLevel > -1
+                                ? new String[]{"Sử dụng", "Nâng cấp", "Ảo hóa"}
+                                : new String[]{"Sử dụng", "Ảo hóa"};
+                        player.sendMessage(MessageCreator.createMsgMenu(menuHoaKyLan, -513, 0));
                         return;
                     }
 

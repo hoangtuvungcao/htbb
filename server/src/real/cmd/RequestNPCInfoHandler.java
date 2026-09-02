@@ -888,7 +888,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         "Tinh Luyện Thần Binh","Gia Hạn VKTB(5000l 7n)","Thần Khí","Cải Tạo Cải Trang","Bộ Sưu Tập",
                         "Hoá Hình Pet" + (p.petUsing != null && p.petUsing.dangHoaHinh() ? " (Lân cấp " + p.petUsing.capHoaHinh + ")" : ""),
                         (p.isTatSkinLinhThu() ? "Bật" : "Tắt") + " hiển thị skin thú",
-                        "Hoả Kỳ Lân" + (p.dangAoHoaHoaKyLan() ? " (đang ảo hóa)" : "")};
+                        "Hoả Kỳ Lân" + (p.dangAoHoaHoaKyLan() ? " (đang ảo hóa, còn " + p.conLaiNgayAoHoaHoaKyLan() + " ngày)" : "")};
                     if (TeamServer.isServerLienDau()) {
                         menu = new String[]{"Vũ khí", "Trang bị", "Trang bị thú"};
                     }

@@ -9073,6 +9073,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return this.timeAoHoaHoaKyLan - System.currentTimeMillis() > 0L;
     }
 
+    /** So ngay con lai cua "Ao hoa Hoa Ky Lan", chi goi khi dangAoHoaHoaKyLan() = true. */
+    public long conLaiNgayAoHoaHoaKyLan() {
+        return (this.timeAoHoaHoaKyLan - System.currentTimeMillis()) / (24L * 60L * 60000L);
+    }
+
     /**
      * Chi so KIEU PHAN TRAM cua Hoa Ky Lan dang mac (otherAtt cua item), cong them ao
      * hoa neu dang bat. Dung cho khang bang/set/doc/lua lan (CharChiSo) va sat thuong

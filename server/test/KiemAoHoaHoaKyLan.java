@@ -220,23 +220,34 @@ public final class KiemAoHoaHoaKyLan {
         Kiem.dung("tinh lai chi so ngay khi het han (khong doi dang nhap lai)", than.contains("this.calculateAttrib();"));
     }
 
-    /** Menu chon Hoa Ky Lan tu tui do phai LUON co 3 lua chon, ke ca item da cap toi da. */
+    /**
+     * Menu chon Hoa Ky Lan tu tui do: 3 lua chon (Su dung/Nang cap/Ao hoa) neu con nang cap
+     * duoc, CHI CON 2 (Su dung/Ao hoa, an "Nâng cấp") neu da toi cap toi da (idItemUpLevel ==
+     * -1) - doi theo yeu cau nguoi dung 02/09/2026 (truoc do menu luon co 3 muc du max hay
+     * chua, "Nâng cấp" tren item max bam vao khong lam gi ca, gay nham lan).
+     */
     private static void menuLuonCoBaLuaChon() {
         final String s = doc("src/real/Map.java");
-        Kiem.dung("menu 3 lua chon: Su dung / Nang cap / Ao hoa",
-                s.contains("new String[]{\"Sử dụng\", \"Nâng cấp\", \"Ảo hóa\"}, -513, 0"));
-        Kiem.sai("khong con re nhanh rieng theo idItemUpLevel (truoc day item max tu dong mac, khong hoi gi)",
-                s.contains("if (item.getTemplate().idItemUpLevel > -1) {\n                            player.itemTam = item;"));
+        final String than = doan(s, "if (isItemThanThu(t))", "player.sendMessage(MessageCreator.createMsgMenu(menuHoaKyLan, -513, 0));");
+        Kiem.dung("tim thay nhanh isItemThanThu", !than.isEmpty());
+        Kiem.dung("con nang cap duoc (idItemUpLevel > -1) thi menu 3 muc", than.contains("new String[]{\"Sử dụng\", \"Nâng cấp\", \"Ảo hóa\"}"));
+        Kiem.dung("da toi da (idItemUpLevel == -1) thi menu chi con 2 muc, an Nang cap", than.contains("new String[]{\"Sử dụng\", \"Ảo hóa\"}"));
+        Kiem.dung("re nhanh theo dung item.getTemplate().idItemUpLevel", than.contains("item.getTemplate().idItemUpLevel > -1"));
     }
 
-    /** idOptionMenu 0/1/2 phai ung DUNG voi Su dung / Nang cap / Ao hoa, khong dam vao nhau. */
+    /**
+     * idOptionMenu phai ung DUNG voi Su dung / Nang cap / Ao hoa, khong dam vao nhau - VI TRI
+     * cua "Ảo hóa" lech theo viec menu co 2 hay 3 muc (xem bien daToiDaCap trong MapDoMenu).
+     */
     private static void xuLyMenuBaLuaChonDungIdOptionMenu() {
         final String s = doc("src/real/MapDoMenu.java");
         final int vtCase = s.indexOf("case -513:");
         Kiem.dung("tim thay case -513", vtCase > 0);
-        final String than = s.substring(vtCase, Math.min(s.length(), vtCase + 2500));
-        Kiem.dung("idOptionMenu == 1 la Nang cap", than.contains("} else if (idOptionMenu == 1) {"));
-        Kiem.dung("idOptionMenu == 2 la Ao hoa, goi doAoHoaHoaKyLan", than.contains("} else if (idOptionMenu == 2) {\n                            // "));
+        final String than = s.substring(vtCase, Math.min(s.length(), vtCase + 3200));
+        Kiem.dung("tinh daToiDaCap tu idItemUpLevel == -1", than.contains("final boolean daToiDaCap = player.itemTam.getTemplate().idItemUpLevel == -1;"));
+        Kiem.dung("menu con Nang cap (!daToiDaCap): idOptionMenu == 1 la Nang cap", than.contains("} else if (!daToiDaCap && idOptionMenu == 1) {"));
+        Kiem.dung("Ao hoa ung voi idOptionMenu 1 (da toi da) hoac 2 (con nang cap), goi doAoHoaHoaKyLan",
+                than.contains("} else if ((daToiDaCap && idOptionMenu == 1) || (!daToiDaCap && idOptionMenu == 2)) {"));
         Kiem.dung("nhanh Ao hoa goi dung ham", than.contains("player.doAoHoaHoaKyLan(player.itemTam);"));
         Kiem.sai("khong con dieu kien mo rong 'idOptionMenu != 0' (se lam Ao hoa roi nham vao Nang cap)",
                 than.contains("} else if (idOptionMenu != 0) {"));
@@ -251,8 +262,8 @@ public final class KiemAoHoaHoaKyLan {
     private static void menuTuNpcThoRenThanBi() {
         final String npc = doc("src/real/cmd/RequestNPCInfoHandler.java");
         Kiem.dung("menu NPC -8 co muc \"Hoả Kỳ Lân\"", npc.contains("\"Hoả Kỳ Lân\""));
-        Kiem.dung("muc \"Hoả Kỳ Lân\" bao dang ao hoa qua dangAoHoaHoaKyLan()",
-                npc.contains("dangAoHoaHoaKyLan()") && npc.contains("(đang ảo hóa)"));
+        Kiem.dung("muc \"Hoả Kỳ Lân\" bao dang ao hoa qua dangAoHoaHoaKyLan(), kem so ngay con lai",
+                npc.contains("dangAoHoaHoaKyLan()") && npc.contains("(đang ảo hóa, còn \" + p.conLaiNgayAoHoaHoaKyLan() + \" ngày)"));
 
         final String rc = doc("src/real/RealController.java");
         final int vtCase = rc.indexOf("case 15: {");
@@ -262,10 +273,20 @@ public final class KiemAoHoaHoaKyLan {
                 than.contains("Item itemHoaKyLan = player.itemHoaKyLan;"));
         Kiem.dung("khong tim thay thi bao nguoi choi, khong nem loi im lang",
                 than.contains("Bạn cần có Hoả Kỳ Lân trong hành trang"));
-        Kiem.dung("dung LAI menu -513 (Su dung/Nang cap/Ao hoa), khong tao duong rieng",
-                than.contains("new String[]{\"Sử dụng\", \"Nâng cấp\", \"Ảo hóa\"}, -513, 0"));
+        Kiem.dung("dung LAI menu -513 (Su dung/[Nang cap]/Ao hoa, an Nang cap khi da max), khong tao duong rieng",
+                than.contains("new String[]{\"Sử dụng\", \"Nâng cấp\", \"Ảo hóa\"}") && than.contains("new String[]{\"Sử dụng\", \"Ảo hóa\"}")
+                && than.contains("MessageCreator.createMsgMenu(menuHoaKyLan, -513, 0)"));
         Kiem.dung("gan player.itemTam TRUOC khi mo menu -513 (MapDoMenu doc qua itemTam)",
                 than.indexOf("player.itemTam = itemHoaKyLan;") < than.indexOf("-513, 0"));
+    }
+
+    private static String doan(final String ma, final String tu, final String den) {
+        final int bd = ma.indexOf(tu);
+        if (bd < 0) {
+            return "";
+        }
+        final int kt = ma.indexOf(den, bd + tu.length());
+        return kt < 0 ? ma.substring(bd) : ma.substring(bd, kt + den.length());
     }
 
     private static int dem(final String trong, final String mau) {
