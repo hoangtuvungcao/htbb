@@ -2808,6 +2808,31 @@ public class Item extends Actor {
         return name;
     }
 
+    /**
+     * Nhu getCharSeal() nhung biet CHU SO HUU: Hoa Ky Lan (type 25) trong tui cua nguoi dang
+     * "Ao hoa Hoa Ky Lan" co them dong dau "Đã ảo hóa - còn N ngày" (yeu cau 02/09/2026, di
+     * cung so da cong o getInfoAtbItem(Char)). Chuoi nay la truong nameCharSeal ben client
+     * (ClientUnity ItemInInventory.cs): client ve moi dong "\n" rieng, va TU NOI chu " tạo" vao
+     * CUOI chuoi (hai cho khong kiem, hai cho bo qua neu chuoi co dau "-"), nen:
+     *   - dat dong ao hoa o DAU, phan seal goc (ten nguoi tao...) giu o cuoi de " tạo" van dung
+     *     cho no - cung ly do Than Khi dat "Không thể nâng cấp thêm" o dau (xem getCharSeal);
+     *   - co dau "-" trong dong de cac cho co kiem khong noi " tạo" khi seal goc rong.
+     * Chi dung cho goi tui do (createCharInventoryMessage type 1); cac goi khac giu getCharSeal().
+     */
+    public String getCharSeal(final Char owner) {
+        final String goc = this.getCharSeal();
+        if (owner == null || !owner.dangAoHoaHoaKyLan()) {
+            return goc;
+        }
+        final ItemTemplates mau = this.getTemplate();
+        if (mau == null || !Char.isItemThanThu(mau.type)) {
+            return goc;
+        }
+        final long conNgay = owner.conLaiNgayAoHoaHoaKyLan();
+        final String dong = "Đã ảo hóa - còn " + (conNgay < 1L ? "dưới 1" : String.valueOf(conNgay)) + " ngày";
+        return goc.isEmpty() ? dong : dong + "\n" + goc;
+    }
+
     public String getCharSeal() {
         StringBuilder result = new StringBuilder();
 

@@ -1068,7 +1068,9 @@ public class MessageCreator {
                     m.dos.writeByte(it.hangItem);
                     m.dos.writeByte(it.magic_physic);
                     m.dos.writeByte(it.lock);
-                    m.dos.writeUTF(it.getCharSeal());
+                    // Truyen chu so huu: Hoa Ky Lan trong tui co dong "Đã ảo hóa - còn N ngày"
+                    // (Item.getCharSeal(Char)); item khac tra ve dung nhu getCharSeal().
+                    m.dos.writeUTF(it.getCharSeal(p));
                     m.dos.writeShort(it.getMinuteLoan(true));
                     // Truyen chu so huu: Hoa Ky Lan trong tui hien so DA CONG khi dang ao hoa
                     // (Item.getInfoAtbItem(Char)); item khac tra ve dung nhu getInfoAtbItem().

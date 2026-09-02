@@ -98,6 +98,20 @@ public final class KiemAoHoaHoaKyLan {
         Kiem.dung("createCharInventoryMessage type 1 truyen chu tui (p) vao getInfoAtbItem", thanInv.contains("it.getInfoAtbItem(p)"));
         Kiem.bang("chi DUNG MOT cho goi getInfoAtbItem(p) trong MessageCreator (cac cho khac giu nguyen)",
                 Integer.valueOf(1), Integer.valueOf(dem(mc, "getInfoAtbItem(p)")));
+
+        // Dong "Đã ảo hóa - còn N ngày" trong tui (yeu cau 02/09/2026) - di qua truong seal.
+        final String thanSeal = doan(it, "public String getCharSeal(final Char owner) {", "\n    }");
+        Kiem.dung("Item co getCharSeal(Char owner)", !thanSeal.isEmpty());
+        Kiem.dung("khong ao hoa / khong chu -> tra nguyen seal goc", thanSeal.contains("if (owner == null || !owner.dangAoHoaHoaKyLan()) {\n            return goc;"));
+        Kiem.dung("chi ap dung cho item Than Thu (type 25)", thanSeal.contains("!Char.isItemThanThu(mau.type)"));
+        Kiem.dung("dong co dau '-' (client bo chu ' tạo' o cac cho co kiem) va so ngay tu conLaiNgayAoHoaHoaKyLan",
+                thanSeal.contains("\"Đã ảo hóa - còn \"") && thanSeal.contains("owner.conLaiNgayAoHoaHoaKyLan()"));
+        Kiem.dung("dong ao hoa dat TRUOC seal goc (client noi ' tạo' vao cuoi chuoi)",
+                thanSeal.contains("return goc.isEmpty() ? dong : dong + \"\\n\" + goc;"));
+        Kiem.dung("duoi 1 ngay thi ghi 'dưới 1'", thanSeal.contains("conNgay < 1L ? \"dưới 1\""));
+        Kiem.dung("createCharInventoryMessage type 1 truyen chu tui (p) vao getCharSeal", thanInv.contains("it.getCharSeal(p)"));
+        Kiem.bang("chi DUNG MOT cho goi getCharSeal(p) trong MessageCreator",
+                Integer.valueOf(1), Integer.valueOf(dem(mc, "getCharSeal(p)")));
     }
 
     private static void hangSoGiaVaHan() {
