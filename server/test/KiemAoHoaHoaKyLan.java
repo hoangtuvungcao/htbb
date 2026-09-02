@@ -44,6 +44,60 @@ public final class KiemAoHoaHoaKyLan {
         menuLuonCoBaLuaChon();
         xuLyMenuBaLuaChonDungIdOptionMenu();
         menuTuNpcThoRenThanBi();
+        hienThiTrongTuiDaCong();
+    }
+
+    /**
+     * 02/09/2026: nguoi choi "khong thay cong" - Hoa Ky Lan dang mac khong duoc gui cho client o
+     * dau (khong trong iItems, khong trong wItems), con trong tui thi gui so GOC. Sua: tui do gui
+     * so DA CONG khi dang ao hoa, dung CHUNG hai helper voi luc danh (mot nguon), va gui lai tui
+     * ngay khi ao hoa / het han. Chi doi gia tri hien thi, khong dong vao otherAtt.
+     */
+    private static void hienThiTrongTuiDaCong() {
+        // Helper dung chung - goi that.
+        Kiem.bang("khang lan (o 24) 50 = 5,0% -> 150 = 15,0% (phan nghin, +100)", Integer.valueOf(150), Integer.valueOf(real.Char.congAoHoaPhanTram(24, 50)));
+        Kiem.bang("st theo chu (o 38) 30% -> 40% (+10)", Integer.valueOf(40), Integer.valueOf(real.Char.congAoHoaPhanTram(38, 30)));
+        Kiem.bang("st max hp (o 40) 20% -> 30% (+10)", Integer.valueOf(30), Integer.valueOf(real.Char.congAoHoaPhanTram(40, 20)));
+        Kiem.bang("o dang = 0 thi KHONG cong (cap 1/2 khong co o 40)", Integer.valueOf(0), Integer.valueOf(real.Char.congAoHoaPhanTram(40, 0)));
+        Kiem.bang("suc khoe 0 thi KHONG cong", Integer.valueOf(0), Integer.valueOf(real.Char.congAoHoaTuyetDoi(0)));
+        Kiem.bang("congAoHoaTuyetDoi(1000) = 1100 (+10%)", Integer.valueOf(1100), Integer.valueOf(real.Char.congAoHoaTuyetDoi(1000)));
+        Kiem.bang("congAoHoaTuyetDoi(5) = 5 (chia nguyen, khong lam tron len)", Integer.valueOf(5), Integer.valueOf(real.Char.congAoHoaTuyetDoi(5)));
+        for (final int idx : new int[]{24, 25, 26, 31, 38, 40}) {
+            Kiem.dung("o " + idx + " la chi so kieu % cua Hoa Ky Lan", real.Char.laOtherAttHoaKyLanPhanTram(idx));
+        }
+        Kiem.sai("o 39 (suc khoe) KHONG phai kieu %", real.Char.laOtherAttHoaKyLanPhanTram(39));
+        Kiem.bang("o suc khoe = 39", Integer.valueOf(39), Integer.valueOf(real.Char.OTHER_ATT_HOA_KY_LAN_SUC_KHOE));
+        Kiem.sai("o 0 khong thuoc Hoa Ky Lan", real.Char.laOtherAttHoaKyLanPhanTram(0));
+
+        final String ch = doc("src/real/Char.java");
+        final String thanPT = doan(ch, "public int chiSoPhanTramHoaKyLan(final int idxOtherAtt) {", "\n    }");
+        final String thanTD = doan(ch, "public int chiSoTuyetDoiHoaKyLan(final int idxOtherAtt) {", "\n    }");
+        Kiem.dung("chiSoPhanTramHoaKyLan dung helper chung congAoHoaPhanTram", thanPT.contains("congAoHoaPhanTram(idxOtherAtt, co)"));
+        Kiem.dung("chiSoTuyetDoiHoaKyLan dung helper chung congAoHoaTuyetDoi", thanTD.contains("congAoHoaTuyetDoi(co)"));
+        Kiem.sai("khong con '+ 10' viet tay trong chiSoPhanTramHoaKyLan", thanPT.contains("? 10 : 0"));
+        final String thanAo = doan(ch, "public void doAoHoaHoaKyLan(final Item item) {", "\n    }");
+        Kiem.dung("doAoHoaHoaKyLan (dang mac san): gui lai tui do de so doi ngay",
+                thanAo.contains("this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));"));
+        final String thanHet = doan(ch, "public void checkExpireAoHoaHoaKyLan() {", "\n    }");
+        Kiem.dung("checkExpireAoHoaHoaKyLan: gui lai tui do de so ve goc ngay",
+                thanHet.contains("this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));"));
+
+        final String it = doc("src/real/Item.java");
+        final String thanOv = doan(it, "public Vector<InfoItemAttribute> getInfoAtbItem(final Char owner) {", "\n    }");
+        Kiem.dung("Item co getInfoAtbItem(Char owner)", !thanOv.isEmpty());
+        Kiem.dung("khong ao hoa / khong chu -> tra nguyen vector goc", thanOv.contains("if (owner == null || !owner.dangAoHoaHoaKyLan()) {\n            return goc;"));
+        Kiem.dung("chi ap dung cho item Than Thu (type 25), kiem null template", thanOv.contains("if (mau == null || !Char.isItemThanThu(mau.type)) {"));
+        Kiem.dung("moc id = atb + newAtb + addMoreLevelSkill + lockAtb (dung cong thuc cua getInfoAtbItem())",
+                thanOv.contains("this.atb.length + this.newAtb.length + this.addMoreLevelSkill.length + this.lockAtb.length"));
+        Kiem.dung("kieu % dung congAoHoaPhanTram", thanOv.contains("Char.congAoHoaPhanTram(j, info.value)"));
+        Kiem.dung("suc khoe dung congAoHoaTuyetDoi", thanOv.contains("Char.congAoHoaTuyetDoi(info.value)"));
+        Kiem.sai("KHONG ghi vao this.otherAtt (chi doi hien thi)", thanOv.contains("this.otherAtt[") && thanOv.contains("] ="));
+
+        final String mc = doc("src/real/MessageCreator.java");
+        final String thanInv = doan(mc, "if (type == 1) {\n                final int len = p.iItems.size();", "\n            }");
+        Kiem.dung("createCharInventoryMessage type 1 truyen chu tui (p) vao getInfoAtbItem", thanInv.contains("it.getInfoAtbItem(p)"));
+        Kiem.bang("chi DUNG MOT cho goi getInfoAtbItem(p) trong MessageCreator (cac cho khac giu nguyen)",
+                Integer.valueOf(1), Integer.valueOf(dem(mc, "getInfoAtbItem(p)")));
     }
 
     private static void hangSoGiaVaHan() {
@@ -61,7 +115,12 @@ public final class KiemAoHoaHoaKyLan {
         final int vt = s.indexOf("public int chiSoPhanTramHoaKyLan(final int idxOtherAtt) {");
         Kiem.dung("tim thay chiSoPhanTramHoaKyLan", vt > 0);
         final String than = s.substring(vt, Math.min(s.length(), vt + 300));
-        Kiem.dung("cong THANG 10, khong nhan 1.1", than.contains("+ (this.dangAoHoaHoaKyLan() ? 10 : 0)"));
+        // 02/09/2026: phep cong chuyen vao helper tinh chung voi hien thi tui do (mot nguon).
+        Kiem.dung("cong THANG 10, khong nhan 1.1",
+                than.contains("this.dangAoHoaHoaKyLan() ? congAoHoaPhanTram(idxOtherAtt, co) : co")
+                && s.contains("public static int congAoHoaPhanTram(final int idxOtherAtt, final int co) {")
+                // khang lan do bang phan nghin -> +100; cac o % con lai +10; o = 0 khong cong
+                && s.contains("return co + 100;") && s.contains("return co + 10;"));
         Kiem.sai("khong nhan 110/100 hay 1.1 o day", than.contains("110") || than.contains("1.1"));
         Kiem.dung("tra ve 0 khi khong mac Hoa Ky Lan nao", than.contains("if (this.itemHoaKyLan == null) {\n            return 0;\n        }"));
     }
@@ -72,7 +131,9 @@ public final class KiemAoHoaHoaKyLan {
         final int vt = s.indexOf("public int chiSoTuyetDoiHoaKyLan(final int idxOtherAtt) {");
         Kiem.dung("tim thay chiSoTuyetDoiHoaKyLan", vt > 0);
         final String than = s.substring(vt, Math.min(s.length(), vt + 300));
-        Kiem.dung("cong 10% (co + co/10), khong phai cong thang 10", than.contains("co + co / 10"));
+        Kiem.dung("cong 10% (co + co/10), khong phai cong thang 10",
+                than.contains("this.dangAoHoaHoaKyLan() ? congAoHoaTuyetDoi(co) : co")
+                && s.contains("return co <= 0 ? co : co + co / 10;"));
     }
 
     /** doAoHoaHoaKyLan: chi Hoa Ky Lan VINH VIEN, va phai du 100 luong. */
@@ -80,7 +141,7 @@ public final class KiemAoHoaHoaKyLan {
         final String s = doc("src/real/Char.java");
         final int vt = s.indexOf("public void doAoHoaHoaKyLan(final Item item) {");
         Kiem.dung("tim thay doAoHoaHoaKyLan", vt > 0);
-        final String than = s.substring(vt, Math.min(s.length(), vt + 1500));
+        final String than = s.substring(vt, Math.min(s.length(), vt + 1900));
         Kiem.dung("tu choi item co thoi han (minuteExist > 0)", than.contains("if (item.minuteExist > 0) {"));
         Kiem.dung("kiem du GIA_LUONG_AO_HOA_HOA_KY_LAN luong", than.contains("this.getLuong() < GIA_LUONG_AO_HOA_HOA_KY_LAN"));
         Kiem.dung("tru dung GIA_LUONG_AO_HOA_HOA_KY_LAN luong", than.contains("this.subLuong((long) GIA_LUONG_AO_HOA_HOA_KY_LAN);"));

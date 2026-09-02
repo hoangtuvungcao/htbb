@@ -345,8 +345,9 @@ class CharChiSo {
         }
    
         if (self.itemHoaKyLan != null) {
-            // chiSoPhanTramHoaKyLan cong them +10 (diem phan tram) khi dang "ao hoa" -
-            // xem Char.dangAoHoaHoaKyLan/doAoHoaHoaKyLan.
+            // chiSoPhanTramHoaKyLan cong them khi dang "ao hoa": bon o khang lan nay do bang
+            // PHAN NGHIN (r.nextInt(1000) < khang) nen +10 diem phan tram = +100 - xem
+            // Char.congAoHoaPhanTram (mot nguon cho ca tran lan hien thi tui do).
             self.khangbanglan += self.chiSoPhanTramHoaKyLan(24);
             self.khangsetlan += self.chiSoPhanTramHoaKyLan(25);
             self.khangdoclan += self.chiSoPhanTramHoaKyLan(26);

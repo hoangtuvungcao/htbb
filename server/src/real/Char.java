@@ -9091,7 +9091,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (this.itemHoaKyLan == null) {
             return 0;
         }
-        return this.itemHoaKyLan.otherAtt[idxOtherAtt] + (this.dangAoHoaHoaKyLan() ? 10 : 0);
+        final int co = this.itemHoaKyLan.otherAtt[idxOtherAtt];
+        return this.dangAoHoaHoaKyLan() ? congAoHoaPhanTram(idxOtherAtt, co) : co;
     }
 
     /**
@@ -9103,7 +9104,58 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return 0;
         }
         final int co = this.itemHoaKyLan.otherAtt[idxOtherAtt];
-        return this.dangAoHoaHoaKyLan() ? (co + co / 10) : co;
+        return this.dangAoHoaHoaKyLan() ? congAoHoaTuyetDoi(co) : co;
+    }
+
+    /**
+     * Cac o otherAtt cua Hoa Ky Lan (Item.doAddOptionThanThu) va cong thuc ao hoa - MOT NGUON
+     * duy nhat, dung chung cho luc DANH (chiSo*HoaKyLan o tren, CharChiSo, data.CharThanthu)
+     * va luc HIEN THI trong tui do (Item.getInfoAtbItem(Char)). Truoc 02/09/2026 tui do gui
+     * so goc nen nguoi choi "khong thay cong" du ao hoa da chay trong tran.
+     *
+     * Yeu cau goc: "kháng độc lan 5% > 15%", "st theo chủ 30% > 40%", "st max hp 20% > 30%",
+     * "sức khỏe 1000 > 1100" - tuc +10 DIEM PHAN TRAM cho chi so %, +10% cho suc khoe. Nhung
+     * cac o KHONG cung thang do (xac nhan 02/09/2026 qua data_attribute.ispercent va cach dung
+     * trong tran):
+     *   - 24/25/26/31 bon khang lan: ispercent=2, tran dung Map.r.nextInt(1000) < khang
+     *     (CharChiSo/Char) -> don vi PHAN NGHIN. Gia tri goc 50 = 5,0%. Muon +10 diem phan tram
+     *     phai cong +100 (truoc do cong +10 = chi +1,0%, ca hien thi lan tran deu sai so voi
+     *     yeu cau, nguoi choi nhin 5,0% -> 6,0% "khong thay cong").
+     *   - 38 sat thuong % tan cong chu, 40 sat thuong % maxhp doi thu: ispercent=1, tran chia
+     *     /100 -> don vi PHAN TRAM. Cong +10.
+     *   - 39 suc khoe Than Thu: tuyet doi, +10%.
+     * O nao dang bang 0 (Hoa Ky Lan cap 1/2 khong co o 40) thi KHONG cong: "+10% cac chi so cua
+     * HKL" la chi so no CO. Truoc do cap 1/2 dang ao hoa bi cong nham 10% maxhp tu so 0 trong
+     * tran ma tui do lai khong hien dong nao (getInfoAtbItem bo qua o = 0).
+     */
+    public static final int[] OTHER_ATT_HOA_KY_LAN_PHAN_TRAM = {24, 25, 26, 31, 38, 40};
+    public static final int OTHER_ATT_HOA_KY_LAN_SUC_KHOE = 39;
+    /** Bon o khang lan do bang phan nghin (1000 = 100%), nen +10 diem phan tram = +100. */
+    private static final int[] OTHER_ATT_HOA_KY_LAN_PHAN_NGHIN = {24, 25, 26, 31};
+
+    public static int congAoHoaPhanTram(final int idxOtherAtt, final int co) {
+        if (co <= 0) {
+            return co;
+        }
+        for (final int i : OTHER_ATT_HOA_KY_LAN_PHAN_NGHIN) {
+            if (i == idxOtherAtt) {
+                return co + 100;
+            }
+        }
+        return co + 10;
+    }
+
+    public static int congAoHoaTuyetDoi(final int co) {
+        return co <= 0 ? co : co + co / 10;
+    }
+
+    public static boolean laOtherAttHoaKyLanPhanTram(final int idx) {
+        for (final int i : OTHER_ATT_HOA_KY_LAN_PHAN_TRAM) {
+            if (i == idx) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -9164,6 +9216,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.calculateAttrib();
             try {
                 this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
+                // Gui lai tui do: so cua cac Hoa Ky Lan trong tui doi theo co ao hoa
+                // (Item.getInfoAtbItem(Char)) - khong gui thi client giu so cu toi lan mo tui sau.
+                this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));
             } catch (final Exception ex) {
             }
         }
@@ -9178,6 +9233,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 this.timeAoHoaHoaKyLan = 0L;
                 this.calculateAttrib();
                 this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
+                // Tui do tro ve so goc ngay (xem Item.getInfoAtbItem(Char)).
+                this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));
                 this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Ảo hóa Hoả Kỳ Lân đã hết hạn, chỉ số trở về ban đầu"));
                 Database.instance.saveOrtherLog("", this.charname, "ao hoa hoa ky lan het han", "aohoahkl");
             }

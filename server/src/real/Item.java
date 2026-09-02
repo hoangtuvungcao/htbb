@@ -1019,6 +1019,48 @@ public class Item extends Actor {
         return allAtb;
     }
 
+    /**
+     * Nhu getInfoAtbItem() nhung biet CHU SO HUU: neu day la Hoa Ky Lan (type 25, xem
+     * Char.isItemThanThu) va chu dang "Ao hoa Hoa Ky Lan" thi cac o otherAtt cua no duoc hien
+     * DA CONG dung nhu luc danh (Char.congAoHoaPhanTram / congAoHoaTuyetDoi - mot nguon).
+     *
+     * VI SAO. Hoa Ky Lan dang MAC (Char.itemHoaKyLan) khong nam trong tui (iItems) lan
+     * wItems nen client khong co cho nao xem so cua no; con o trong tui thi gui so GOC. Ao hoa
+     * cong +10 trong tran nhung nguoi choi nhin vao tui khong thay so nao doi (phan anh
+     * 02/09/2026). Co ao hoa la cua NHAN VAT (khong phai cua item): trong 7 ngay, con Hoa Ky
+     * Lan nao mac len cung duoc cong - nen hien so da cong cho MOI Hoa Ky Lan trong tui la
+     * dung y nghia, khong phai chi con dang mac.
+     *
+     * Chi doi GIA TRI hien thi, khong dong vao otherAtt luu CSDL - het han thi tu ve so goc,
+     * khong co chuyen cong hai lan hay quen tru khi het han luc offline.
+     */
+    public Vector<InfoItemAttribute> getInfoAtbItem(final Char owner) {
+        final Vector<InfoItemAttribute> goc = this.getInfoAtbItem();
+        if (owner == null || !owner.dangAoHoaHoaKyLan()) {
+            return goc;
+        }
+        final ItemTemplates mau = this.getTemplate();
+        if (mau == null || !Char.isItemThanThu(mau.type)) {
+            return goc;
+        }
+        // otherAtt[j] duoc ghi voi id = j + (atb + newAtb + addMoreLevelSkill + lockAtb).length
+        // o ca hai nhanh cua getInfoAtbItem() - giu dung cong thuc do de doi nguoc lai.
+        final int moc = this.atb.length + this.newAtb.length + this.addMoreLevelSkill.length + this.lockAtb.length;
+        final Vector<InfoItemAttribute> ra = new Vector<InfoItemAttribute>(goc.size());
+        for (int i = 0; i < goc.size(); ++i) {
+            final InfoItemAttribute info = goc.get(i);
+            final int j = info.id - moc;
+            if (j >= 0 && j < this.otherAtt.length && Char.laOtherAttHoaKyLanPhanTram(j)) {
+                ra.add(new InfoItemAttribute((short) info.id, Char.congAoHoaPhanTram(j, info.value)));
+            } else if (j == Char.OTHER_ATT_HOA_KY_LAN_SUC_KHOE) {
+                ra.add(new InfoItemAttribute((short) info.id, Char.congAoHoaTuyetDoi(info.value)));
+            } else {
+                ra.add(info);
+            }
+        }
+        return ra;
+    }
+
     public String getInfoOptionPet() {
         String info = "";
         NameAttributeItem nAtt = null;

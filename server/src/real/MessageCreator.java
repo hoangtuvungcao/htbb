@@ -1070,7 +1070,9 @@ public class MessageCreator {
                     m.dos.writeByte(it.lock);
                     m.dos.writeUTF(it.getCharSeal());
                     m.dos.writeShort(it.getMinuteLoan(true));
-                    final Vector<InfoItemAttribute> allAtb = it.getInfoAtbItem();
+                    // Truyen chu so huu: Hoa Ky Lan trong tui hien so DA CONG khi dang ao hoa
+                    // (Item.getInfoAtbItem(Char)); item khac tra ve dung nhu getInfoAtbItem().
+                    final Vector<InfoItemAttribute> allAtb = it.getInfoAtbItem(p);
                     m.dos.writeByte(allAtb.size());
                     for (byte k = 0; k < allAtb.size(); ++k) {
                         final InfoItemAttribute info = allAtb.get(k);
