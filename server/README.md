@@ -468,6 +468,45 @@ không bao giờ tới đó → đường đó chết. Nhưng `Map.doUsePotion` 
 
 ## Tính năng
 
+- **Để auto làm đồ, hành trang đầy thì bị out và mất đồ** — sửa ngày 02/09/2026, hai vế riêng biệt:
+
+  **Vế "bị out" — chống ngập gói tin cắt nhầm người chơi.** Ngưỡng là 300 gói/5 giây
+  (`sv.tranGoiThuong`), và vượt ngưỡng là **cắt kết nối ngay**. Nhưng lệnh mua vật phẩm (85)
+  **không có trường số lượng**: mua 300 đơn vị nguyên liệu là 300 gói tin. Bảng
+  `tob_log_buy_shop` trên VPS có 300 đơn mua trong đúng một giây, trùng khớp từng dòng
+  `ngapgoi` trong `hack.txt` — 22/24 dòng có `lệnh cuối=85`. Khi hành trang đầy thì tệ hơn:
+  chốt chặn ở [src/real/doBuySpecialItem.java](src/real/doBuySpecialItem.java) kiểm nhầm **ô
+  thuốc** (`potions[item.id + 19]`) cho **nguyên liệu**, mà nguyên liệu nằm ở ô ngọc, nên
+  `potions[135..144]` luôn bằng 0 và lệnh mua **luôn bị từ chối** kể cả khi người chơi đã có sẵn
+  đúng loại đó. Auto lặp vô hạn, không lần nào tiến triển. Đã sửa: kiểm đúng ô ngọc, và
+  [src/io/BoDemGoiTin.java](src/io/BoDemGoiTin.java) chỉ **bỏ bớt gói** khi vượt ngưỡng, chỉ cắt
+  kết nối khi nhịp cao gấp `BOI_CAT_KET_NOI` lần. Cắt kết nối là hình phạt rất nặng vì nó kéo
+  theo một vòng lưu/nạp nhân vật.
+
+  **Vế "mất đồ" — không để bản nhân vật cũ ghi đè bản mới.** Khi bị cắt rồi vào lại ngay (log
+  cho thấy 8 lần cắt trong 37 giây), có lúc tồn tại hai đối tượng `Char` cho cùng một nhân vật,
+  trùng cả `id`, `userID` lẫn tên. `CharManager.remove(p)` cũ xoá theo **tên/charDBID** nên lệnh
+  `remove(p_mới)` (khi từ chối lượt đăng nhập trùng) lại gỡ đăng ký chính **nhân vật đang sống**;
+  `Map.removePLayer` cũng đối chiếu theo tên nên `playerExit(bản_cũ)` có thể gỡ nhầm bản mới ra
+  khỏi bản đồ. Bản cũ còn lại trong vòng lặp bản đồ, và `CharVongLap` cứ 5 giây lại gọi
+  `kickPlayer` cho nhân vật có `timeExit` đã qua — tức nó **tự lưu đè** trạng thái đông cứng của
+  mình lên bản ghi mới hơn. Đã sửa bốn chỗ, tất cả đối chiếu theo **tham chiếu đối tượng**:
+  `CharManager.put/remove` (và `put` giờ ghi cả cụm, không để rò khoá khi thất bại),
+  `Map.removePLayer`, `RealController.onDisconnected` (chỉ động đến nhân vật của đúng phiên đó),
+  và chốt cuối trong `CharManager.kickPlayer`: **không ghi xuống một bản `Char` đã hết hiệu lực**.
+  Kèm theo: `MapVongLap` không còn gỡ nhân vật khỏi sổ đăng ký mà không lưu; `Char.KHOA_LUU`
+  khiến hai lần lưu của cùng một nhân vật không chồng nhau; và bốn hàm ghi `tob_char` dùng chung
+  `ghepChuoiVatPham` — duyệt trên **bản chụp** và **huỷ cả lần lưu** nếu ghép chuỗi lỗi, thay vì
+  ghi một chuỗi hành trang cắt cụt (ghi chuỗi dở dang là xoá vĩnh viễn mọi món sau điểm đứt).
+
+  Sửa kèm: tạo đồ thất bại **không còn bị trừ 5000 xu** ([src/real/MapCheTao.java](src/real/MapCheTao.java));
+  phiên đập đồ tự động **lưu khi kết thúc** thay vì chờ lần lưu tự động 5–11 phút sau
+  ([src/real/CharCapNhat.java](src/real/CharCapNhat.java)); và `DataGame.sendByteImg` kiểm biên
+  trước khi ghi ảnh — mảng `imgPet` chỉ có 20 ô trong khi dải id là 5200–5499, nên mỗi yêu cầu
+  ảnh pet id ≥ 20 ném lỗi **trước** lệnh gửi, client không nhận được trả lời nào và hỏi lại mãi
+  (2.947 lần trong log VPS, kèm một lần cắt kết nối vì "601 gói tài nguyên").
+  Test: [test/KiemMatDoKhiTaoDo.java](test/KiemMatDoKhiTaoDo.java).
+
 - Skin linh thú (đổi hình thú cưỡi, giữ nguyên chỉ số): [docs/skin-linh-thu.md](docs/skin-linh-thu.md)
 - **Sự kiện**: mọi sự kiện bật/tắt được bất kỳ lúc nào — hoặc **hẹn giờ mở/đóng** — ở trang
   quản trị `/admin/sukien.php` ([web/admin/sukien.php](web/admin/sukien.php), bảng `tob_su_kien`).

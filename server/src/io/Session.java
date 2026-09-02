@@ -182,7 +182,14 @@ public class Session extends Thread {
 
                 // Kiem TRUOC khi xu ly: dem sau thi tran ngap da duoc xu ly xong roi.
                 if (this.quaNhieuGoi(message.command)) {
-                    break;   // khoi finally ben duoi se disconnect(7)
+                    if (this.boDemGoiTin.vuotXaNguong(message.command)) {
+                        break;   // khoi finally ben duoi se disconnect(7)
+                    }
+                    // Chi vuot tran o muc "nhanh tay": BO goi nay, GIU ket noi.
+                    // Cat ket noi o day tung van nham nguoi choi luong thien dang
+                    // lam do khi hanh trang day, va moi lan cat la mot vong
+                    // luu/nap nhan vat - dung cho co hoi mat du lieu.
+                    continue;
                 }
 
                 try {
@@ -211,16 +218,22 @@ public class Session extends Thread {
         if (!this.boDemGoiTin.vuotNguong(command, System.currentTimeMillis())) {
             return false;
         }
-        final String chiTiet = this.boDemGoiTin.demHienTai(command) + " goi "
-                + (BoDemGoiTin.laLenhTaiNguyen(command) ? "tai nguyen" : "thuong")
-                + " trong " + BoDemGoiTin.CUA_SO_MS + "ms (tran "
-                + this.boDemGoiTin.tranCua(command) + "), lenh cuoi=" + command;
-        System.out.println("NGAP GOI TIN: cat ket noi " + this.username
-                + " ip=" + this.ip + " (" + chiTiet + ")");
-        // Truoc day dau vet nay CHI nam o stdout, tuc la mat sach sau moi lan restart.
-        data.NghiVanGianLan.ghiChung(this,
-                (this.charname == null || this.charname.isEmpty()) ? this.username : this.charname,
-                "ngapgoi", chiTiet);
+        final boolean cat = this.boDemGoiTin.vuotXaNguong(command);
+        // Khi chi BO BOT goi thi ket noi con song, nen moi goi vuot tran deu se sinh
+        // ra mot dong log. Chan lai con 1 dong moi cua so 5 giay. Rieng lan CAT ket
+        // noi thi luon ghi: no chi xay ra mot lan cho ca ket noi do.
+        if (cat || this.boDemGoiTin.xinPhepBao()) {
+            final String chiTiet = this.boDemGoiTin.demHienTai(command) + " goi "
+                    + (BoDemGoiTin.laLenhTaiNguyen(command) ? "tai nguyen" : "thuong")
+                    + " trong " + BoDemGoiTin.CUA_SO_MS + "ms (tran "
+                    + this.boDemGoiTin.tranCua(command) + "), lenh cuoi=" + command;
+            System.out.println("NGAP GOI TIN: " + (cat ? "cat ket noi " : "bo bot goi cua ")
+                    + this.username + " ip=" + this.ip + " (" + chiTiet + ")");
+            // Truoc day dau vet nay CHI nam o stdout, tuc la mat sach sau moi lan restart.
+            data.NghiVanGianLan.ghiChung(this,
+                    (this.charname == null || this.charname.isEmpty()) ? this.username : this.charname,
+                    "ngapgoi", (cat ? "CAT KET NOI - " : "bo bot goi - ") + chiTiet);
+        }
         return true;
     }
 

@@ -464,7 +464,7 @@ class MapCheTao {
                     return;
                 }
 
-                map.doCreateNewItem(
+                final Item vuaTao = map.doCreateNewItem(
                         player,
                         message,
                         player.infoItemCreate.idTemplate,
@@ -478,6 +478,15 @@ class MapCheTao {
                         null,
                         false
                 );
+                // CHI tru xu khi that su nhan duoc do. doCreateNewItem tra ve null khi
+                // hanh trang day, thieu nguyen lieu, hoac goi tin khong hop le - ban cu
+                // van tru 5000 xu o ca ba truong hop do. Nguoi de auto tao do voi hanh
+                // trang day bi bao mon xu lien tuc ma khong nhan duoc gi va khong co
+                // cach nao biet.
+                if (vuaTao == null) {
+                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                    return;
+                }
                 player.subXu(5000L, true, "map 23");
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             } catch (Exception var4) {

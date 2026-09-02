@@ -1647,10 +1647,20 @@ public class RealController extends ServerController {
 
     }
 
+    /**
+     * Mot phien vua dut. CHI duoc dong den nhan vat cua DUNG phien do.
+     *
+     * Truoc day ham nay tra cuu nhan vat theo conn.userID roi kick luon, khong he
+     * doi chieu xem nhan vat ay co thuoc phien nay khong. Khi nguoi choi bi cat roi
+     * vao lai ngay (auto tu ket noi lai trong vai giay), phien CU dut sau khi phien
+     * MOI da dang nhap xong: luc do getByUserID tra ve nhan vat cua phien MOI, va
+     * phien cu di kick chinh nhan vat dang choi - nguoi choi bi van ra khoi game,
+     * va moi thay doi ke tu lan luu truoc do bi doc bang ban chup cu.
+     */
     public void onDisconnected(Session conn) {
         if (conn.userID != -1) {
             Char p = CharManager.instance.getByUserID(conn.userID);
-            if (p != null) {
+            if (p != null && p.getSession() == conn) {
                 CharManager.instance.kickPlayer(p, "onDisconnected realcontrol");
                 p.exit = true;
             }

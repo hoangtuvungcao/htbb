@@ -20,6 +20,23 @@ import static real.Map.petTemplate;
  */
 public class doBuySpecialItem {
 
+    /**
+     * Mon hang nay o shop cong vao O NGOC nao? Tra ve -1 neu no khong phai ngoc.
+     *
+     * Bang tra cuu phai khop VOI CHINH cac nhanh mua ben duoi: shop id 116..125 goi
+     * doAddGemItem voi mang {71,72,78,79,85,86,92,93,99,100}, con 176 la ban do kho bau.
+     */
+    private static int idNgocCuaShopItem(final int idShop) {
+        if (idShop >= 116 && idShop <= 125) {
+            final int[] idgem = {71, 72, 78, 79, 85, 86, 92, 93, 99, 100};
+            return idgem[idShop - 116];
+        }
+        if (idShop == 176) {
+            return GemTemplate.BAN_DO_KHO_BAU;
+        }
+        return -1;
+    }
+
     public static void doBuySpecialItem(Char player, Message msg) {
         if (!player.isCorrectPass && !player.passWord.equals("")) {
             player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
@@ -34,7 +51,22 @@ public class doBuySpecialItem {
                     ShopTemplate item = getShopTemplate(id);
                     if (player.isFullInventory()) {
                         try {
-                            if (item.id > 1 && player.potions[item.id + 19] == 0 || item.id < 2 && !player.hadSpecialItem(item.id)) {
+                            // Hanh trang day thi van phai cho mua nhung thu chi CONG DON
+                            // vao mot o da co san. Ban cu kiem bang potions[item.id + 19]
+                            // cho MOI mon, ma cong thuc do chi dung voi o THUOC: nguyen
+                            // lieu che tao (shop id 116..125 va 176) di vao o NGOC qua
+                            // doAddGemItem, nen potions[135..144] luon bang 0 va lenh mua
+                            // luon bi tu choi ke ca khi nguoi choi da co san dung loai
+                            // nguyen lieu do. Nguoi de auto mua nguyen lieu voi hanh trang
+                            // day vi vay ket trong mot vong lap khong bao gio tien trien -
+                            // moi don mua la mot goi tin (lenh 85 khong co truong so luong)
+                            // nen no ban ra hang tram goi moi giay.
+                            final int idNgoc = idNgocCuaShopItem(item.id);
+                            final boolean daCoSanO = (idNgoc >= 0)
+                                    ? (player.listGemitem[idNgoc] > 0 || player.listGemitemLock[idNgoc] > 0)
+                                    : (item.id > 1 ? player.potions[item.id + 19] > 0
+                                                   : player.hadSpecialItem(item.id));
+                            if (!daCoSanO) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
                                 return;
                             }

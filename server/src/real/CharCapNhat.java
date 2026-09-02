@@ -770,6 +770,27 @@ class CharCapNhat {
         }
     }
 
+    /**
+     * Luu nhan vat khi mot PHIEN luyen tu dong ket thuc.
+     *
+     * Truoc day ca duong luyen do (thu cong lan tu dong) khong he goi luu mot lan nao:
+     * moi thay doi - muc cuong hoa, chi so mon do, so luyen kim duoc da dot, xu da tru -
+     * chi nam trong bo nho cho toi lan luu tu dong ke tiep (5 den 11 phut mot lan) hoac
+     * cho toi luc thoat game. Ma mot phien luyen tu dong chay moi ~300ms mot nhip, tuc
+     * vai tram luot trong nua phut. Mat ket noi bat thuong giua khoang do la mat sach,
+     * dung cam giac "vao lai bi lui ve truoc luc lam do".
+     *
+     * Chi luu MOT lan khi phien ket thuc, khong luu moi nhip: luu la mot cau UPDATE
+     * lon tren bang MyISAM (khoa ca bang), lam moi nhip se ghim ca server.
+     */
+    private static void luuSauKhiLuyen(final Char self) {
+        try {
+            Database.instance.saveCharAuto(self);
+        } catch (final Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     static void doAutoImbue(Char self) {
         if (!self.startAutoImbue) {
             return;
@@ -834,6 +855,7 @@ class CharCapNhat {
                             self.sendMessage(m);
                         } catch (final Exception ex2) {
                         }
+                        luuSauKhiLuyen(self);
                     }
                 } else {
                     final Message j = new Message(-69);
@@ -903,6 +925,7 @@ class CharCapNhat {
                     } catch (final Exception ex3) {
                     }
                     self.startAutoImbue = false;
+                    luuSauKhiLuyen(self);
                 }
             } else {
                 self.idGemLkd = -1;

@@ -24,6 +24,108 @@ import java.util.*;
  */
 class DatabaseNhanVat {
 
+    /** Bon chuoi vat pham ghi xuong tob_char: equip / inven / bag / tuido. */
+    static final class ChuoiVatPham {
+        final String equip;
+        final String inven;
+        final String bag;
+        final String tuido;
+
+        ChuoiVatPham(final String equip, final String inven, final String bag, final String tuido) {
+            this.equip = equip;
+            this.inven = inven;
+            this.bag = bag;
+            this.tuido = tuido;
+        }
+    }
+
+    /**
+     * Ghep bon chuoi vat pham de ghi xuong CSDL. Dung cho ca saveChar va saveCharAuto.
+     *
+     * HAI DIEU KHAC BAN CU, ca hai deu de tranh MAT DO:
+     *
+     * 1. Duyet tren BAN CHUP (Vector.toArray la method synchronized nen ban chup la
+     *    nguyen tu) chu khong duyet thang Vector. for-each tren Vector dung iterator
+     *    fail-fast: neu luong game them mot mon vao iItems trong luc luong luu dang
+     *    duyet thi nem ConcurrentModificationException NGAY GIUA vong lap. Chuyen do
+     *    xay ra that: che tao them mon vao iItems roi goi saveCharAuto ngay tren luong
+     *    doc socket (Map.doCreateNewItem), trong khi luong ban do co the dang autosave
+     *    dung nhan vat do (CharVongLap -> ThreadPool).
+     *
+     * 2. Nem loi ra NGOAI thay vi nuot. Ban cu bao moi vong duyet trong
+     *    "catch (Exception ignored) {}", nen khi nem giua vong lap thi StringBuilder
+     *    chi con MOT PHAN danh sach - va cau UPDATE VAN CHAY voi chuoi cat cut do, xoa
+     *    vinh vien moi mon nam sau diem dut, ke ca phan model o cuoi chuoi inven. Nay
+     *    loi day len de ham luu HUY BO ca lan ghi: tha bo mot lan luu (lan sau luu lai)
+     *    con hon ghi xuong mot hanh trang thieu.
+     */
+    private static ChuoiVatPham ghepChuoiVatPham(final Char p) {
+        final StringBuilder equip = new StringBuilder();
+        ghepDanhSach(equip, chup(p.getCharWearing(0)));
+        ghepDanhSach(equip, chup(p.getCharWearing(1)));
+        ghepDanhSach(equip, chup(p.awItems));
+
+        final StringBuilder inven = new StringBuilder();
+        if (p.itemHoaKyLan != null) {
+            inven.append(p.itemHoaKyLan.getInfoSave()).append(">");
+        }
+        if (p.itemVukhiThoiTrang != null) {
+            inven.append(p.itemVukhiThoiTrang.getInfoSave()).append(">");
+        }
+        if (p.itemThanKhi != null) {
+            inven.append(p.itemThanKhi.getInfoSave()).append(">");
+        }
+        ghepDanhSach(inven, chup(p.iItems));
+
+        final StringBuilder bag = new StringBuilder();
+        ghepDanhSach(bag, chup(p.bItem));
+
+        final StringBuilder tuido = new StringBuilder();
+        ghepDanhSach(tuido, chup(p.bagItems));
+
+        // Phan model deo tren nguoi nam o CUOI chuoi inven, sau dau ">" - giu dung
+        // dinh dang cu de CharTrangBi.setitemInvenBag doc lai khong doi gi.
+        String sInven = boDauPhanCachCuoi(inven);
+        // wModel duoc tao trong CharKhoiTao nen thuc te khong bao gio null. Van kiem:
+        // ban cu bao ca khoi trong "catch (Exception ignored)" nen mot NPE o day chi
+        // lam mat phan model; nay loi se HUY CA LAN LUU, ma huy vi mot o khong bao gio
+        // null thi qua dat - khong duoc phep chan duong luu vi mot gia dinh.
+        final String infomodel = (p.wModel == null) ? "" : p.wModel.getInfoModelWearing();
+        if (infomodel != null && !infomodel.equals("")) {
+            sInven = sInven + ">" + infomodel;
+        }
+        return new ChuoiVatPham(boDauPhanCachCuoi(equip), sInven,
+                boDauPhanCachCuoi(bag), boDauPhanCachCuoi(tuido));
+    }
+
+    /**
+     * Ban chup nguyen tu cua mot Vector vat pham.
+     *
+     * null la KHONG hop le: bon vector nay deu duoc tao trong CharKhoiTao va khong cho
+     * nao gan lai null. Neu van gap null thi nhan vat dang o trang thai hong - luc do
+     * ghi mot danh sach RONG xuong CSDL la xoa sach o do, nen tha nem loi de ham luu
+     * huy ca lan ghi (ban ghi cu con nguyen) va de lai dau vet trong loi-luu-nhan-vat.txt.
+     */
+    private static Item[] chup(final Vector<Item> v) {
+        if (v == null) {
+            throw new IllegalStateException("danh sach vat pham null - khong ghi de bang danh sach rong");
+        }
+        return v.toArray(new Item[0]);
+    }
+
+    private static void ghepDanhSach(final StringBuilder sb, final Item[] ds) {
+        for (final Item it : ds) {
+            if (it != null) {
+                sb.append(it.getInfoSave()).append(">");
+            }
+        }
+    }
+
+    private static String boDauPhanCachCuoi(final StringBuilder sb) {
+        final int n = sb.length();
+        return (n == 0) ? "" : sb.substring(0, n - 1);
+    }
+
     static List<CharData> getCharList(Database db, int userID, Session s) {
         List<CharData> list = null;
         Connection conn = null;
@@ -403,50 +505,30 @@ class DatabaseNhanVat {
     }
 
     static void saveCharBackup(Database db, Connection conn, Char p) {
-        StringBuilder equip = new StringBuilder();
-        StringBuilder invent = new StringBuilder();
-        StringBuilder bag = new StringBuilder();
+        // Dung chung ham ghep chuoi voi saveChar/saveCharAuto: duyet tren ban chup nen
+        // khong nem giua chung, va ghep loi thi bo ca lan ghi thay vi ghi mot chuoi
+        // do dang. Xem chu thich o ghepChuoiVatPham().
+        //
+        // MOT KHAC BIET so voi ban cu: chuoi inven nay bay gio co ke ca ba o dac biet
+        // (hoa ky lan, vu khi thoi trang, than khi) - dung dinh dang ma tob_char dang
+        // dung, thay vi mot dinh dang rieng chi co iItems. Ham nay hien khong duoc goi
+        // o dau ca, nen thay doi la vo hai; neu sau nay dung lai thi ban sao luu se
+        // doc lai duoc bang dung mot duong voi ban chinh.
+        final String equip;
+        final String invent;
+        final String bag;
         try {
-            Vector<Item> wearing = new Vector<>();
-            wearing = p.getCharWearing(0);
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
+            final ChuoiVatPham chuoi = ghepChuoiVatPham(p);
+            equip = chuoi.equip;
+            invent = chuoi.inven;
+            bag = chuoi.bag;
+        } catch (Exception exChuoi) {
+            exChuoi.printStackTrace();
+            try {
+                Logger.logString("saveCharBackup " + p.charname + ": " + exChuoi, "loi-luu-nhan-vat.txt");
+            } catch (Exception ignored) {
             }
-            wearing = p.getCharWearing(1);
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
-            }
-            wearing = p.awItems;
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
-            }
-            if (!equip.toString().equals("")) {
-                equip = new StringBuilder(equip.substring(0, equip.length() - 1));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            for (Item item2 : p.iItems) {
-                invent.append(item2.getInfoSave()).append(">");
-            }
-            if (!invent.toString().equals("")) {
-                invent = new StringBuilder(invent.substring(0, invent.length() - 1));
-            }
-            String infomodel = p.wModel.getInfoModelWearing();
-            if (!infomodel.equals("")) {
-                invent.append(">").append(infomodel);
-            }
-        } catch (Exception ignored) {
-        }
-        try {
-            for (Item item2 : p.bItem) {
-                bag.append(item2.getInfoSave()).append(">");
-            }
-            if (!bag.toString().equals("")) {
-                bag = new StringBuilder(bag.substring(0, bag.length() - 1));
-            }
-        } catch (Exception ignored) {
+            return;
         }
         PreparedStatement pre = null;
         PreparedStatement pre2 = null;
@@ -591,68 +673,29 @@ class DatabaseNhanVat {
             skill.append(",").append(p.skillLvClan[i]);
         }
         String dbInfo = p.getDBInfo();
-        StringBuilder equip = new StringBuilder();
-        StringBuilder invent = new StringBuilder();
-        StringBuilder bag = new StringBuilder();
-        StringBuilder tuido = new StringBuilder();
+        final String equip;
+        final String invent;
+        final String bag;
+        final String tuido;
         try {
-            Vector<Item> wearing = new Vector<>();
-            wearing = p.getCharWearing(0);
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
+            final ChuoiVatPham chuoi = ghepChuoiVatPham(p);
+            equip = chuoi.equip;
+            invent = chuoi.inven;
+            bag = chuoi.bag;
+            tuido = chuoi.tuido;
+        } catch (Exception exChuoi) {
+            // Ghep chuoi that bai -> HUY CA LAN LUU. Ghi de mot chuoi do dang la xoa
+            // vinh vien nhung mon nam sau diem dut. Xem chu thich o ghepChuoiVatPham().
+            exChuoi.printStackTrace();
+            try {
+                Logger.logString("saveChar " + p.charname + ": " + exChuoi, "loi-luu-nhan-vat.txt");
+            } catch (Exception ignored) {
             }
-            wearing = p.getCharWearing(1);
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
+            try {
+                db.saveOrtherLog("", p.charname, "huy luu vi ghep chuoi vat pham loi - " + exChuoi, "loisave");
+            } catch (Exception ignored) {
             }
-            wearing = p.awItems;
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
-            }
-            if (!equip.toString().equals("")) {
-                equip = new StringBuilder(equip.substring(0, equip.length() - 1));
-            }
-        } catch (Exception ignored) {
-        }
-        try {
-            if (p.itemHoaKyLan != null) {
-                invent.append(p.itemHoaKyLan.getInfoSave()).append(">");
-            }
-            if (p.itemVukhiThoiTrang != null) {
-                invent.append(p.itemVukhiThoiTrang.getInfoSave()).append(">");
-            }
-            if (p.itemThanKhi != null) {
-                invent.append(p.itemThanKhi.getInfoSave()).append(">");
-            }
-            for (Item item2 : p.iItems) {
-                invent.append(item2.getInfoSave()).append(">");
-            }
-            if (!invent.toString().equals("")) {
-                invent = new StringBuilder(invent.substring(0, invent.length() - 1));
-            }
-            String infomodel = p.wModel.getInfoModelWearing();
-            if (!infomodel.equals("")) {
-                invent.append(">").append(infomodel);
-            }
-        } catch (Exception ignored) {
-        }
-        try {
-            for (Item item2 : p.bItem) {
-                bag.append(item2.getInfoSave()).append(">");
-            }
-            if (!bag.toString().equals("")) {
-                bag = new StringBuilder(bag.substring(0, bag.length() - 1));
-            }
-        } catch (Exception ignored) {
-        }
-        try {
-            for (int k = 0; k < p.bagItems.size(); ++k) {
-                tuido.append(p.bagItems.get(k).getInfoSave()).append(">");
-            }
-            if (!tuido.toString().equals("")) {
-                tuido = new StringBuilder(tuido.substring(0, tuido.length() - 1));
-            }
-        } catch (Exception ignored) {
+            return false;
         }
         Connection conn = null;
         PreparedStatement pre = null;
@@ -845,68 +888,28 @@ class DatabaseNhanVat {
             skill.append(",").append(p.skillLvClan[i]);
         }
         String dbInfo = p.getDBInfo();
-        StringBuilder equip = new StringBuilder();
-        StringBuilder invent = new StringBuilder();
-        StringBuilder bag = new StringBuilder();
-        StringBuilder tuido = new StringBuilder();
+        final String equip;
+        final String invent;
+        final String bag;
+        final String tuido;
         try {
-            Vector<Item> wearing = new Vector<>();
-            wearing = p.getCharWearing(0);
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
+            final ChuoiVatPham chuoi = ghepChuoiVatPham(p);
+            equip = chuoi.equip;
+            invent = chuoi.inven;
+            bag = chuoi.bag;
+            tuido = chuoi.tuido;
+        } catch (Exception exChuoi) {
+            // Ghep chuoi that bai -> HUY CA LAN LUU. Xem chu thich o ghepChuoiVatPham().
+            exChuoi.printStackTrace();
+            try {
+                Logger.logString("saveCharAuto " + p.charname + ": " + exChuoi, "loi-luu-nhan-vat.txt");
+            } catch (Exception ignored) {
             }
-            wearing = p.getCharWearing(1);
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
+            try {
+                db.saveOrtherLog("", p.charname, "huy luu tu dong vi ghep chuoi vat pham loi - " + exChuoi, "loisave");
+            } catch (Exception ignored) {
             }
-            wearing = p.awItems;
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
-            }
-            if (!equip.toString().equals("")) {
-                equip = new StringBuilder(equip.substring(0, equip.length() - 1));
-            }
-        } catch (Exception ignored) {
-        }
-        try {
-            if (p.itemHoaKyLan != null) {
-                invent.append(p.itemHoaKyLan.getInfoSave()).append(">");
-            }
-            if (p.itemVukhiThoiTrang != null) {
-                invent.append(p.itemVukhiThoiTrang.getInfoSave()).append(">");
-            } 
-            if (p.itemThanKhi != null) {
-                invent.append(p.itemThanKhi.getInfoSave()).append(">");
-            }
-            for (Item item2 : p.iItems) {
-                invent.append(item2.getInfoSave()).append(">");
-            }
-            if (!invent.toString().equals("")) {
-                invent = new StringBuilder(invent.substring(0, invent.length() - 1));
-            }
-            String infomodel = p.wModel.getInfoModelWearing();
-            if (!infomodel.equals("")) {
-                invent.append(">").append(infomodel);
-            }
-        } catch (Exception ignored) {
-        }
-        try {
-            for (Item item2 : p.bItem) {
-                bag.append(item2.getInfoSave()).append(">");
-            }
-            if (!bag.toString().equals("")) {
-                bag = new StringBuilder(bag.substring(0, bag.length() - 1));
-            }
-        } catch (Exception ignored) {
-        }
-        try {
-            for (int k = 0; k < p.bagItems.size(); ++k) {
-                tuido.append(p.bagItems.get(k).getInfoSave()).append(">");
-            }
-            if (!tuido.toString().equals("")) {
-                tuido = new StringBuilder(tuido.substring(0, tuido.length() - 1));
-            }
-        } catch (Exception ignored) {
+            return false;
         }
         final String sql = "UPDATE tob_char SET pInfo=?,basic=?,skill=?,potion=?,totalTimePlay=totalTimePlay+?, luong=?, lastLv=?,xp=?,gold=?,hp=?, idClan=?, reupclass=?,headStyle=?,ticket=?,x=?,y=?,book=?,lastLog=Now(),infotop=?,equip=?,inven=?,bag=?,luonglock=?,tuido=? where id=?";
         Connection conn = null;
@@ -988,11 +991,22 @@ class DatabaseNhanVat {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } catch (SQLException ex) {
+        // Bat Exception chu KHONG chi SQLException. Cho xin ket noi
+        // (ConnPool.getConFromPool) nem java.util.NoSuchElementException - mot
+        // RuntimeException - khi pool can; SQLException khong bat duoc no. Truoc day no
+        // xuyen qua day roi bi nuot o ben goi (Map.doCreateNewItem boc ca than trong
+        // catch (Exception)), nen mot lan luu that bai KHONG de lai bat ky dau vet nao:
+        // khong dong log, khong file, va ham van coi nhu da luu. Do dung la thu lam cho
+        // chuyen "mat do" khong the chan doan duoc.
+        } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println(" LOI SAVE CHAR " + p.charname + " | " + p.lvDetail.getExp());
             String logError = "UPDATE tob_char SET pInfo=" + dbInfo + ",basic=" + basic + ",skill=" + skill + ",potion=" + potion + ",totalTimePlay=totalTimePlay+" + totalPlay + ", luong=" + p.getLuong() + ", lastLv=" + p.lastLV + ",xp=" + p.lvDetail.getExp() + ",gold=" + p.getxu() + ",hp=" + p.hp + ",idClan=" + p.idClan + ",headStyle=" + p.headStyle + " where id=" + p.charDBID;
             Logger.logString(logError, "savechar.txt");
+            try {
+                db.saveOrtherLog("", p.charname, "luu tu dong that bai - " + ex, "loisave");
+            } catch (Exception ignored) {
+            }
             return false;
         } finally {
             try {
@@ -1249,58 +1263,23 @@ class DatabaseNhanVat {
             skill.append(",").append(p.skillLvClan[i]);
         }
         String dbInfo = p.getDBInfo();
-        StringBuilder equip = new StringBuilder();
-        StringBuilder invent = new StringBuilder();
-        StringBuilder bag = new StringBuilder();
+        final String equip;
+        final String invent;
+        final String bag;
         try {
-            Vector<Item> wearing = new Vector<>();
-            wearing = p.getCharWearing(0);
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
+            final ChuoiVatPham chuoi = ghepChuoiVatPham(p);
+            equip = chuoi.equip;
+            invent = chuoi.inven;
+            bag = chuoi.bag;
+        } catch (Exception exChuoi) {
+            // Ghep chuoi that bai -> HUY CA LAN LUU, khong ghi de mot chuoi do dang.
+            // Xem chu thich o ghepChuoiVatPham().
+            exChuoi.printStackTrace();
+            try {
+                Logger.logString("saveCharLienDau " + p.charname + ": " + exChuoi, "loi-luu-nhan-vat.txt");
+            } catch (Exception ignored) {
             }
-            wearing = p.getCharWearing(1);
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
-            }
-            wearing = p.awItems;
-            for (Item item : wearing) {
-                equip.append(item.getInfoSave()).append(">");
-            }
-            if (!equip.toString().equals("")) {
-                equip = new StringBuilder(equip.substring(0, equip.length() - 1));
-            }
-        } catch (Exception ignored) {
-        }
-        try {
-            if (p.itemHoaKyLan != null) {
-                invent.append(p.itemHoaKyLan.getInfoSave()).append(">");
-            }
-            if (p.itemVukhiThoiTrang != null) {
-                invent.append(p.itemVukhiThoiTrang.getInfoSave()).append(">");
-            } 
-            if (p.itemThanKhi != null) {
-                invent.append(p.itemThanKhi.getInfoSave()).append(">");
-            }
-            for (Item item2 : p.iItems) {
-                invent.append(item2.getInfoSave()).append(">");
-            }
-            if (!invent.toString().equals("")) {
-                invent = new StringBuilder(invent.substring(0, invent.length() - 1));
-            }
-            String infomodel = p.wModel.getInfoModelWearing();
-            if (!infomodel.equals("")) {
-                invent.append(">").append(infomodel);
-            }
-        } catch (Exception ignored) {
-        }
-        try {
-            for (Item item2 : p.bItem) {
-                bag.append(item2.getInfoSave()).append(">");
-            }
-            if (!bag.toString().equals("")) {
-                bag = new StringBuilder(bag.substring(0, bag.length() - 1));
-            }
-        } catch (Exception ignored) {
+            return;
         }
         Connection conn = null;
         PreparedStatement pre = null;

@@ -10118,13 +10118,26 @@ public void addCharXaiNapLuong(Char p, int type) {
      * @return
      */
     // Than method (242 dong) da chuyen sang DatabaseNhanVat.java. Chu ky GIU NGUYEN.
+    // Khoa Char.KHOA_LUU: hai lan luu cua CUNG mot nhan vat khong duoc chong nhau,
+    // neu khong ban chup cu co the execute sau ban chup moi va an mat do vua lam.
+    // Xem chu thich day du o Char.KHOA_LUU.
     public boolean saveChar(Char p, boolean admindExit) {
-        return DatabaseNhanVat.saveChar(this, p,admindExit);
+        if (p == null) {
+            return false;
+        }
+        synchronized (p.KHOA_LUU) {
+            return DatabaseNhanVat.saveChar(this, p, admindExit);
+        }
     }
 
     // Than method (206 dong) da chuyen sang DatabaseNhanVat.java. Chu ky GIU NGUYEN.
     public boolean saveCharAuto(Char p) {
-        return DatabaseNhanVat.saveCharAuto(this, p);
+        if (p == null) {
+            return false;
+        }
+        synchronized (p.KHOA_LUU) {
+            return DatabaseNhanVat.saveCharAuto(this, p);
+        }
     }
 
     public void saveCharSP(String allGem, int chardbid) {

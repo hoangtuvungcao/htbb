@@ -208,6 +208,25 @@ public class Char extends LiveActor {
     public short[][] posNPCInVilage;
     public int attackDamage;
     public int outdelay;
+    /**
+     * Khoa cho viec LUU rieng nhan vat nay. Database.saveChar va
+     * Database.saveCharAuto deu giu khoa nay, nen hai lan luu cua CUNG mot nhan vat
+     * khong bao gio chong nhau.
+     *
+     * VI SAO CAN. Ca hai ham luu chia lam hai pha tach roi: pha CHUP (ghep chuoi
+     * equip/inven/bag/tuido tu doi tuong Char dang song) roi moi den pha GHI (xin ket
+     * noi trong pool, prepareStatement, execute). Giua hai pha la mot khoang tre khong
+     * xac dinh. Cau lenh la "UPDATE tob_char SET ... inven=? WHERE id=?" - ghi de toan
+     * bo cot, khong co dieu kien phien ban. Nen neu hai lan luu chong nhau thi ban chup
+     * SOM hon co the execute SAU, va nhung mon tao ra giua hai moc chup bien mat khoi
+     * CSDL du bo nho van dung.
+     *
+     * Ma co RAT NHIEU luong cung luu mot nhan vat: luong doc socket goi saveCharAuto
+     * sau moi lan che tao (Map.doCreateNewItem), luong ban do day saveCharAuto vao
+     * ThreadPool moi 5-11 phut (CharVongLap), luong doc socket goi saveChar khi cat ket
+     * noi (CharManager.kickPlayer), va RealController.saveAllChar luc tat server.
+     */
+    public final transient Object KHOA_LUU = new Object();
     public Vector<Item> iItems;
     public Vector<Item> tItems;
     public Vector<Item> rItems;

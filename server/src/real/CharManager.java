@@ -148,25 +148,32 @@ public class CharManager {
         return SKILL_RANGE[clazz][skillType];
     }
 
+    /**
+     * Ghi MOT doi tuong Char vao so dang ky. Duoc an ca cum: hoac vao du ca bon
+     * (userID, charID, charName, vChars), hoac khong vao gi.
+     *
+     * Ban cu ghi tung buoc va khi buoc sau that bai thi KHONG hoan lai buoc truoc:
+     * userID (va co the ca charID) van tro toi doi tuong Char vua bi tu choi. Tai
+     * khoan do coi nhu "dang online" vinh vien, nguoi choi khong vao lai duoc cho
+     * toi khi khoi dong lai server. Kiem het dieu kien TRUOC roi moi ghi thi khong
+     * con trang thai do dang nao de ro ri, va cung khong con cua so cho luong khac
+     * nhin thay so dang ky nua voi nua.
+     */
     public boolean put(Char p) {
-        if (p.userID == -1) {
+        if (p == null || p.userID == -1) {
             return false;
-        } else if (!this.userID.containsKey(p.userID)) {
-            this.userID.put(p.userID, p);
-            if (!this.charID.containsKey(p.id)) {
-                this.charID.put(p.id, p);
-                if (!this.charName.containsKey(p.getName())) {
-                    this.charName.put(p.getName(), p);
-                    this.vChars.add(p);
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
+        }
+        synchronized (this) {
+            if (this.userID.containsKey(p.userID)
+                    || this.charID.containsKey(p.id)
+                    || this.charName.containsKey(p.getName())) {
                 return false;
             }
-        } else {
-            return false;
+            this.userID.put(p.userID, p);
+            this.charID.put(p.id, p);
+            this.charName.put(p.getName(), p);
+            this.vChars.add(p);
+            return true;
         }
     }
 
@@ -204,37 +211,55 @@ public class CharManager {
 
     }
 
+    /**
+     * Go MOT doi tuong Char khoi so dang ky. So sanh theo THAM CHIEU doi tuong,
+     * KHONG theo ten hay charDBID.
+     *
+     * VI SAO. Khi nguoi choi bi cat ket noi roi vao lai ngay (auto tu ket noi lai),
+     * co luc ton tai hai doi tuong Char cho cung mot nhan vat. Ca hai trung nhau ca
+     * ba khoa: p.id, p.userID va p.getName(). Ban cu xoa thang theo ba khoa do, roi
+     * con quet vChars bang dieu kien "trung ten HOAC trung charDBID" - nen loi goi
+     * remove(p_moi) o SelectCharHandler/LoginHandler (khi tu choi luot dang nhap
+     * trung) lai go dang ky chinh NHAN VAT DANG SONG.
+     *
+     * Hau qua truoc day: nhan vat that bi go khoi so nhung van con trong vector
+     * nguoi choi cua ban do, van duoc p.update() moi tick; luot dang nhap ke tiep
+     * thay so trong nen put() thanh cong -> hai Char cung mot charDBID cung song.
+     * "Bong ma" cu giu trang thai dong bang va cu 5-11 phut lai saveCharAuto de len
+     * ban ghi that. Do dung la hien tuong "vao lai bi lui ve trang thai cu, mat het
+     * do vua lam".
+     *
+     * Char (va ca chuoi cha LiveActor/Actor) khong ghi de equals(), nen
+     * Vector.remove(Object) chinh la so sanh tham chieu - dung y muon.
+     */
     public void remove(Char p) {
-        try {
-            this.charID.remove(p.id);
-        } catch (Exception var7) {
+        if (p == null) {
+            return;
         }
-
-        try {
-            this.userID.remove(p.userID);
-        } catch (Exception var6) {
-        }
-
-        try {
-            if (this.charName.size() > 0) {
-                this.charName.remove(p.getName());
-            }
-        } catch (Exception var5) {
-        }
-
-        int size = this.vChars.size();
-
-        for(int i = 0; i < size; ++i) {
+        synchronized (this) {
             try {
-                if (((Char)this.vChars.get(i)).getName().toLowerCase().equals(p.getName().toLowerCase()) || ((Char)this.vChars.get(i)).charDBID == p.charDBID) {
-                    this.vChars.remove(i);
-                    break;
+                if (this.charID.get(p.id) == p) {
+                    this.charID.remove(p.id);
                 }
-            } catch (Exception var8) {
+            } catch (Exception ignored) {
+            }
+            try {
+                if (this.userID.get(p.userID) == p) {
+                    this.userID.remove(p.userID);
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                if (this.charName.get(p.getName()) == p) {
+                    this.charName.remove(p.getName());
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                this.vChars.remove(p);
+            } catch (Exception ignored) {
             }
         }
-
-        this.vChars.remove(p);
     }
 
     public Char getByCharID(short id) {
@@ -315,8 +340,26 @@ public class CharManager {
 
             try {
                 p.timeOutGame = System.currentTimeMillis() + 600000L;
-                Database.instance.saveChar(p, false);
-                Database.instance.addInfoWebChar(p);
+                // CHOT AN TOAN CUOI CUNG cho chuyen "vao lai bi lui ve trang thai cu".
+                //
+                // Chi ghi xuong khi doi tuong Char nay VAN la ban dang dang ky cho tai
+                // khoan do. Neu no la ban CU con sot lai - nguoi choi da bi cat roi vao
+                // lai bang mot doi tuong Char khac - thi cau UPDATE se de len ban moi
+                // hon, xoa sach moi thu ho vua lam ke tu luc bi cat.
+                //
+                // Duong dan toi tinh huong do co that: CharVongLap cu 5 giay lai goi
+                // kickPlayer cho nhan vat co timeExit da qua (dieu kien
+                // "now - timeExit > 5000"), va chinh kickPlayer dat timeExit. Neu mot
+                // ban cu vi ly do nao do con nam trong vector nguoi choi cua ban do thi
+                // dung 5 giay sau no tu goi lai kickPlayer va ghi de.
+                if (this.getByUserID(p.userID) == p) {
+                    Database.instance.saveChar(p, false);
+                    Database.instance.addInfoWebChar(p);
+                } else {
+                    System.out.println("KHONG LUU nhan vat " + p.getName()
+                            + " khi kick (" + pos + "): doi tuong nay khong con la ban"
+                            + " dang dang ky - ghi xuong se de len ban moi hon.");
+                }
                 p.resetAllData();
 
                 Database.instance.saveLogActiveUser(p.getName() + "_logout", p.lvDetail.lv + " " + "_" + p.getxu() + "_" + p.getLuong() + "_" + p.getLuongLock());

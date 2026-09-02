@@ -474,6 +474,21 @@ class MapVongLap {
                 try {
                     Char p = (Char) players.get(k);
                     if ((p.map == null || p.getSession() == null || p.mapID == -1) && p.isBot == -1) {
+                        // Duong nay go nhan vat khoi SO DANG KY, khong chi khoi ban do.
+                        // Truoc day no khong luu mot lan nao: moi thay doi ke tu lan luu
+                        // truoc (tu dong 5-11 phut mot lan) bien mat khong dau vet, va lan
+                        // vao lai doc dung ban ghi cu do. Phai luu truoc khi go.
+                        //
+                        // Chi luu khi doi tuong nay DUNG la nhan vat dang dang ky cho tai
+                        // khoan do. Neu no la ban cu con sot lai trong vector nguoi choi
+                        // thi ghi xuong se de len ban moi hon - dung cai loi dang di sua.
+                        try {
+                            if (CharManager.instance.getByUserID(p.userID) == p) {
+                                Database.instance.saveChar(p, false);
+                            }
+                        } catch (Exception exLuu) {
+                            exLuu.printStackTrace();
+                        }
                         players.remove(k);
                         CharManager.instance.remove(p);
                     } else if (p.exit) {

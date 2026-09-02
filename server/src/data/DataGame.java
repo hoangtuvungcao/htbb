@@ -590,7 +590,15 @@ public class DataGame {
                 }
             }
 
-            byte nPet = 20;
+            // Dai id anh pet ma sendByteImg phuc vu la 5200..5499, tuc chi so 0..299.
+            // Ban cu chi cap 20 o nen moi yeu cau anh pet co chi so >= 20 deu nem
+            // ArrayIndexOutOfBounds NGAY GIUA sendByteImg - va vi lenh gui nam ben
+            // trong khoi try nen client khong nhan duoc goi tra loi nao, no hoi lai
+            // mai. Log VPS ngay 02/09/2026: 2.947 lan, tap trung o id 5221/5269/5235/
+            // 5249/5244, va co mot lan ket noi bi cat vi "601 goi tai nguyen".
+            // Cap du ca dai: o nao khong co file thi de null, sendByteImg tu lo.
+            // (map/pet/ hien co 0..20, 44, 81 - ban cu bo qua ca 20.png lan 44.png.)
+            final int nPet = 300;
             imgPet = new byte[nPet][];
 
             for (j = 0; j < nPet; ++j) {
@@ -778,6 +786,34 @@ public class DataGame {
     private static final java.util.Set<Integer> daXinAnh =
             java.util.Collections.synchronizedSet(new java.util.HashSet<Integer>());
 
+    /**
+     * Ghi mot anh vao goi tra loi, co kiem bien va kiem null.
+     *
+     * VI SAO PHAI CO. Truoc day moi nhanh trong sendByteImg goi thang
+     * m.dos.write(kho[chiSo]). Chi mot chi so ngoai bien (hoac mot o null vi thieu file)
+     * la nem ngoai le NGAY GIUA ham - ma lenh gui s.sendMessage(m) lai nam BEN TRONG
+     * cung khoi try, nen client KHONG nhan duoc goi tra loi nao. Client danh dau anh do
+     * la "chua tai" roi hoi lai, mai mai.
+     *
+     * Do la mot vong lap co that: log VPS ngay 02/09/2026 co 2.947 dong
+     * "[ANH] LOI phuc vu anh id ..." (nhieu nhat la 5221 va 5269 - dai anh pet, luc do
+     * mang imgPet chi co 20 o), va mot ket noi bi cat vi "601 goi tai nguyen trong
+     * 5000ms, lenh cuoi=-51" - dung la nguoi choi bi van ra khoi game vi mot anh thieu.
+     *
+     * Thieu anh thi chi thieu DUNG anh do: ghi 0 byte roi de sendByteImg gui goi di
+     * binh thuong, kem mot dong log de con biet duong bo sung file.
+     */
+    private static void ghiAnh(final Message m, final byte[][] kho, final int chiSo, final int idImg)
+            throws java.io.IOException {
+        if (kho != null && chiSo >= 0 && chiSo < kho.length && kho[chiSo] != null) {
+            m.dos.write(kho[chiSo]);
+            return;
+        }
+        System.out.println("[ANH] thieu anh id " + idImg + " (chi so " + chiSo
+                + (kho == null ? ", kho chua nap" : ", kho co " + kho.length + " o")
+                + ") - gui goi rong, KHONG de client hoi lai mai");
+    }
+
     public static void sendByteImg(Session s, Message msg) {
         short idImg = -1;   // khai bao NGOAI try de catch ben duoi doc duoc
         try {
@@ -817,7 +853,7 @@ public class DataGame {
             // Da tung dinh that: bay vat pham 872-878 deu tro vao dai nay, phai doi sang
             // map/icon/815-819, 827, 828. Xem sql/README.md muc "Icon vat pham".
             if (idImg < nIconItem && !(idImg >= 800 && idImg <= 806)) {
-                m.dos.write(allImg[idImg]);
+                ghiAnh(m, allImg, idImg, idImg);
             } else if (idImg >= 800 && idImg <= 806) {
                 // imgOther chi co 6 phan tu (0..5) nhung dai nay rong 7 (800..806), nen
                 // idImg = 806 roi vao day va khong ghi gi ca - xem chuoi loi o tren.
@@ -830,40 +866,40 @@ public class DataGame {
                 m.dos.write(imgOther[idImg - 900]);
             } else if (idImg >= 1000 && idImg < 2600) {
       
-                m.dos.write(iconClanImg[idImg - 1000]);
+                ghiAnh(m, iconClanImg, idImg - 1000, idImg);
             } else if (idImg >= 2600 && idImg < 3200) {
-                m.dos.write(iconSkillClanImg[idImg - 2600]);
+                ghiAnh(m, iconSkillClanImg, idImg - 2600, idImg);
             } else if (idImg >= 3200 && idImg < 4200) {
-                m.dos.write(imgTreeFarm[idImg - 3200]);
+                ghiAnh(m, imgTreeFarm, idImg - 3200, idImg);
             } else if (idImg >= 4200 && idImg < 5200) {
-                m.dos.write(imgHouseFarm[idImg - 4200]);
+                ghiAnh(m, imgHouseFarm, idImg - 4200, idImg);
             } else if (idImg >= 5200 && idImg < 5500) {
-                m.dos.write(imgPet[idImg - 5200]);
+                ghiAnh(m, imgPet, idImg - 5200, idImg);
             } else if (idImg >= 5500 && idImg < 6500) {
-                m.dos.write(imgPotion[idImg - 5500]);
+                ghiAnh(m, imgPotion, idImg - 5500, idImg);
             } else if (idImg >= 6500 && idImg < 7500) {
-                m.dos.write(imgGem[idImg - 6500]);
+                ghiAnh(m, imgGem, idImg - 6500, idImg);
             } else if (idImg >= 7500 && idImg < 8000) {
-                m.dos.write(imgIconAnimal[idImg - 7500]);
+                ghiAnh(m, imgIconAnimal, idImg - 7500, idImg);
             } else if (idImg >= 8000 && idImg < 8200) {
-                m.dos.write(imgIconQuest[idImg - 8000]);
+                ghiAnh(m, imgIconQuest, idImg - 8000, idImg);
             } else if (idImg >= 8200 && idImg < 8500) {
-                m.dos.write(imgFruit[idImg - 8200]);
+                ghiAnh(m, imgFruit, idImg - 8200, idImg);
             } else if (idImg >= 8500 && idImg < 8700) {
-                m.dos.write(imgCoVat[idImg - 8500]);
+                ghiAnh(m, imgCoVat, idImg - 8500, idImg);
             } else if (idImg >= 8700 && idImg < 9000) {
-                m.dos.write(imgDynamicEffect[idImg - 8700]);
+                ghiAnh(m, imgDynamicEffect, idImg - 8700, idImg);
              
             } else if (idImg >= 9000 && idImg < 10000) {
-                m.dos.write(imgEffectSkill[idImg - 9000]);
+                ghiAnh(m, imgEffectSkill, idImg - 9000, idImg);
                
             } else if (idImg >= 10000 && idImg < 11000) {
-                m.dos.write(imgEffectArrow[idImg - 10000]);
+                ghiAnh(m, imgEffectArrow, idImg - 10000, idImg);
                
             } else if (idImg >= 11000 && idImg < 12000) {
-                m.dos.write(iconClanImg[idImg - 11000]);
+                ghiAnh(m, iconClanImg, idImg - 11000, idImg);
             } else if (idImg >= 12000 && idImg < 12100) {
-                m.dos.write(imgThanThu[idImg - 12000]);
+                ghiAnh(m, imgThanThu, idImg - 12000, idImg);
             } else if (idImg >= real.SkinLinhThu.ID_ANH_BAN_DO
                     && idImg < real.SkinLinhThu.ID_ANH_BAN_DO + real.SkinLinhThu.SO_SKIN) {
                 // Skin linh thu. Dai id nay chua tung duoc dung (dai cu cao nhat het o

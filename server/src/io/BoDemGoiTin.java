@@ -54,9 +54,28 @@ public final class BoDemGoiTin {
     /** Do dai cua so dem (ms). */
     public static final long CUA_SO_MS             = 5000L;
 
+    /**
+     * Vuot tran BAO NHIEU LAN thi moi that su cat ket noi.
+     *
+     * VI SAO CO CON SO NAY. Ban dau vuot tran la cat ngay, va dieu do cat nham nguoi
+     * choi luong thien: khi hanh trang day, moi duong xu ly tren server deu tra ve
+     * NGAY (khong ghi CSDL, khong tra goi trang thai) nen mat het "phanh" tu nhien,
+     * con vong lap auto ben client thi ban lai moi khung hinh. Nhip goi tin vot len
+     * vai chuc lan/giay va cham tran 300/5s trong vai giay - nguoi choi bi van ra
+     * khoi game giua luc dang lam do.
+     *
+     * Cach xu ly dung: vuot tran thi BO BOT goi (server khong xu ly nua, nhip tu ha
+     * xuong dung tran), chi cat ket noi khi nhip cao gap BOI nay - luc do khong con
+     * la nguoi choi nhanh tay nua. Cat ket noi la hinh phat rat nang vi no keo theo
+     * mot vong luu/nap nhan vat.
+     */
+    public static final int  BOI_CAT_KET_NOI       = 4;
+
     private long mocCuaSo;
     private int  demThuong;
     private int  demTaiNguyen;
+    /** Da ghi log "bo bot goi" trong cua so hien tai chua (chi ghi 1 dong moi cua so). */
+    private boolean daBaoTrongCuaSo;
 
     public BoDemGoiTin(final long bayGio) {
         this.mocCuaSo = bayGio;
@@ -82,6 +101,7 @@ public final class BoDemGoiTin {
             this.mocCuaSo = bayGio;
             this.demThuong = 0;
             this.demTaiNguyen = 0;
+            this.daBaoTrongCuaSo = false;
         }
 
         final boolean taiNguyen = laLenhTaiNguyen(command);
@@ -95,6 +115,39 @@ public final class BoDemGoiTin {
             return false;
         }
         return dem > tran;
+    }
+
+    /**
+     * Nhip goi tin da cao gap BOI_CAT_KET_NOI lan tran chua?
+     *
+     * Chi khi do moi cat ket noi. Duoi muc do, goi vuot tran chi bi BO (server khong
+     * xu ly) - ket noi giu nguyen, nhan vat khong bi mot vong luu/nap nao.
+     *
+     * Chi co nghia khi vuotNguong() vua tra ve true.
+     */
+    public boolean vuotXaNguong(final int command) {
+        final boolean taiNguyen = laLenhTaiNguyen(command);
+        final int dem  = taiNguyen ? this.demTaiNguyen : this.demThuong;
+        final int tran = taiNguyen ? GOI_TAI_NGUYEN_TOI_DA : GOI_THUONG_TOI_DA;
+        if (tran <= 0) {
+            return false;
+        }
+        return dem > tran * BOI_CAT_KET_NOI;
+    }
+
+    /**
+     * Xin phep ghi MOT dong log cho cua so dem hien tai.
+     *
+     * Can co: khi bo bot goi thay vi cat ket noi, ket noi con song nen moi goi vuot
+     * tran deu se sinh ra mot dong log - hang chuc nghin dong moi phut. Chan lai con
+     * dung 1 dong moi cua so 5 giay.
+     */
+    public boolean xinPhepBao() {
+        if (this.daBaoTrongCuaSo) {
+            return false;
+        }
+        this.daBaoTrongCuaSo = true;
+        return true;
     }
 
     /** So goi da dem duoc trong cua so hien tai, cho dong log khi cat ket noi. */

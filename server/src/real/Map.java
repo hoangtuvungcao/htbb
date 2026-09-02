@@ -16997,14 +16997,14 @@ public class Map implements Runnable {
             players = (Vector<Char>) this.allPlayers.get(player.inCountry);
         }
 
-        for (int i = 0; i < players.size(); i++) {
-            try {
-                if (((Char) players.get(i)).charname.toLowerCase().equals(player.charname.toLowerCase())) {
-                    players.remove(i);
-                    break;
-                }
-            } catch (Exception var5) {
-            }
+        // Go theo THAM CHIEU doi tuong, khong theo ten. Khi nguoi choi bi cat roi vao
+        // lai ngay, hai doi tuong Char cua cung mot nhan vat co the cung ton tai: doi
+        // chieu theo ten thi playerExit(ban_cu) go dung ban MOI dang choi ra khoi ban
+        // do - nguoi choi bien mat voi nguoi khac, khong con duoc p.update() nua, roi
+        // bi chinh vong lap ban do don di.
+        try {
+            players.remove(player);
+        } catch (Exception ignored) {
         }
     }
 
