@@ -206,6 +206,23 @@ public class Char extends LiveActor {
     public int[] tPotions;
     public int[] rPotions;
     public short[][] posNPCInVilage;
+    /**
+     * True cho mot bot duoc dat vao TAT CA cac khu (region) cua mot ban do nhieu khu (vi du NPC
+     * "hoa tieu" tren cac ban do nhu Loc tri - 5 khu: chinh + Dong/Tay/Nam/Bac).
+     *
+     * VI SAO CAN. MapKhoiTao dat CHUNG mot doi tuong Char (tu Map.npcHoatieu) vao moi khu bang
+     * Map.addPlayer(country, bot, i) voi i chay tu 0..nregion-1. Duong nay goi thang
+     * Region.addPlayer(country, p) - KHONG giong Region.playerJoin(Char) (duong nguoi choi that
+     * dung) - nen KHONG BAO GIO gan bot.region. Truong bot.region vi vay dung mai o gia tri mac
+     * dinh 0 (Actor.region), trong khi CharCapNhat.updateNearChar loc nghiem ngat
+     * "p1.region != self.region" khong co ngoai le cho bot -> bot chi hien voi nguoi choi dang
+     * o DUNG khu 0 (khu chinh), MAT HAN voi nguoi choi o cac khu Dong/Tay/Nam/Bac (su co
+     * 02/09/2026). Mot doi tuong Char DUY NHAT khong the mang nhieu gia tri region cung luc (no
+     * duoc dat vao ca 5 khu), nen sua bang co nay: bot co co nay thi bo qua han phep so
+     * region trong updateNearChar, thay vi co gang gan dung mot region roi that bai voi 4 khu
+     * con lai.
+     */
+    public boolean hienThiMoiRegion;
     public int attackDamage;
     public int outdelay;
     /**

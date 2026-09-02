@@ -391,7 +391,7 @@ class CharCapNhat {
                     if (p1 != null) {
                         final boolean givcard2 = Char.givingCard(p1.inCountry, p1.id);
                         if (self != p1) {
-                            if ((p1.mapID != self.mapID && p1.isBot == -1) || (p1.mapID == self.mapID && p1.region != self.region) || (p1.isBot == -1 && p1.inCountry != self.inCountry && !self.isPublicMap())) {
+                            if ((p1.mapID != self.mapID && p1.isBot == -1) || (p1.mapID == self.mapID && p1.region != self.region && !p1.hienThiMoiRegion) || (p1.isBot == -1 && p1.inCountry != self.inCountry && !self.isPublicMap())) {
                                 self.charOutRange(p1);
                                 try {
                                     self.map.removePlayer(self.inCountry, p1);

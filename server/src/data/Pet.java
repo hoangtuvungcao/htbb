@@ -43,9 +43,9 @@ public class Pet extends Actor {
     static int[][] pc_chang_thong_thao = new int[][]{{983, 14, 3, 0}, {996, 498, 3, 0}, {999, 666, 333, 0}, {1000, 750, 500, 250}};
     long timeBienHinh = 0L;
     // Hoa hinh Pet (them 31/08/2026, port tu ban KPAH khac - xem README).
-    // idHoaHinhPet: id hieu ung dang ap dung, -1 = chua hoa hinh (khong dung de
-    // phan biet nhieu "kieu" hoa hinh - hien tai chi co dung mot cap do MOI LOAI
-    // thu qua getIdEffPet(), gia tri 67 chi la danh dau da hoa hinh cho ro rang).
+    // idHoaHinhPet: -1 = chua hoa hinh, khac -1 = da hoa hinh (danh dau CO/KHONG,
+    // gan = 67 luc kich hoat cho ro rang - gia tri cu the KHONG dung de chon anh
+    // hien thi). Anh hien thi thuc te chon theo capHoaHinh, xem getIdEffPet().
     public short idHoaHinhPet = -1;
     public long timeEndHoaHinhPet = 0L;
     // 0..5, luon dong bo bang capHoaHinh qua initKhangXuyenGiapWhenHoaHinh() -
@@ -218,26 +218,49 @@ public class Pet extends Actor {
     }
 
     /**
-     * Anh hoa hinh Pet = pet Lan: id 69 -> map/d_effect/69.png (luoi sprite 256x256, cung la anh
-     * danh hieu 8769) - theo yeu cau ngay 02/09/2026 dung DUNG anh nay.
+     * Anh hoa hinh Pet = pet Lan: map/d_effect/67.png (cap 1-3), 68.png (cap 4), 69.png (cap 5) -
+     * ca ba la luoi sprite 256x256, dong thoi la anh danh hieu 8767/8768/8769. 69 la anh Lan that
+     * (yeu cau 02/09/2026); 67/68 la hai o hieu ung tam thoi cho toi khi co anh dang di dung cau
+     * truc nhu 69 (xem tools/TaoPetLanCapThap.java) - nguoi yeu cau da xac nhan chap nhan pet
+     * dung yen nhap nhay hieu ung o hai cap nay thay vi di that.
      *
      * Duong ve pet tren client (Pet.paint) lay anh GameData.getImgIcon(8700 + id) va bang khung
      * Pet.ALL_PET_DATA[id]; bang do do goi 26 gui trong khoi id_eff_pet_tool (MessageCreator).
-     * Bang khung "69" viet cho hieu ung / danh hieu (anim dai 48/1/0 khung) - pet doc se chia cho
-     * 0 va bien mat (su co 01/09/2026, luc do doan nham la do anh vuong). Vi vay pet nhan bang
-     * RIENG map/d_effect/69.pet (DataGame.moTaPet uu tien <id>.pet), cau truc nhu bang pet 49,
-     * sinh bang tools/TaoPetLan.java. Anh va bang "69" cua danh hieu giu nguyen.
+     * Bang khung goc "67"/"68"/"69" viet cho hieu ung / danh hieu (anim dai 48/1/0 khung) - pet
+     * doc se chia cho 0 va bien mat (su co 01/09/2026 voi rieng 69, luc do doan nham la do anh
+     * vuong). Vi vay moi anh nhan bang RIENG <id>.pet (DataGame.moTaPet uu tien <id>.pet), cau
+     * truc nhu bang pet 49, sinh bang tools/TaoPetLan.java (69) va TaoPetLanCapThap.java (67, 68).
      *
      * Id 49 cu (anh cat/resize tu 69.png) chua tung nam trong id_eff_pet_tool nen client khong
      * co bang khung cho no - da thay bang 69 + 69.pet. test/KiemHoaHinhPet.java khoa ca ba:
-     * hang so nay, 69 co trong id_eff_pet_tool, va 69.pet dung cau truc.
+     * cac hang so nay, 67/68/69 co trong id_eff_pet_tool, va cac file .pet dung cau truc.
      */
     public static final int ID_HIEU_UNG_HOA_HINH_PET = 69;
+    /** Anh Lan cap 4 (xem idHieuUngHoaHinhTheoCap). */
+    public static final int ID_HIEU_UNG_HOA_HINH_PET_CAP_4 = 68;
+    /** Anh Lan cap 1-3 (xem idHieuUngHoaHinhTheoCap). */
+    public static final int ID_HIEU_UNG_HOA_HINH_PET_CAP_THAP = 67;
+
+    /**
+     * Chon anh hoa hinh theo capHoaHinh: cap 1-3 dung chung mot anh (67), cap 4 rieng (68),
+     * cap 5 dung anh Lan that (69, ID_HIEU_UNG_HOA_HINH_PET). Quy uoc theo yeu cau 02/09/2026:
+     * "pet cấp 1 = Lân cấp 1 (67)", "pet cấp 4 = Lân cấp 2 (68)", "pet cấp 5 = Lân cấp 5 (69,
+     * đã có sẵn)" - cap 2, 3 (khong duoc neu ten rieng) dung chung anh voi cap 1.
+     */
+    private int idHieuUngHoaHinhTheoCap() {
+        if (this.capHoaHinh >= 5) {
+            return ID_HIEU_UNG_HOA_HINH_PET;
+        }
+        if (this.capHoaHinh == 4) {
+            return ID_HIEU_UNG_HOA_HINH_PET_CAP_4;
+        }
+        return ID_HIEU_UNG_HOA_HINH_PET_CAP_THAP;
+    }
 
     public int getIdEffPet() {
         if (this.itemPet != null) {
             if (this.idHoaHinhPet != -1 && !this.endHoaHinhPet()) {
-                return ID_HIEU_UNG_HOA_HINH_PET;
+                return idHieuUngHoaHinhTheoCap();
             }
             if (this.isPetCu()) {
                 if (this.itemPet.level == 1) {
