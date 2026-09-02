@@ -165,9 +165,17 @@ public final class KiemMatDoKhiTaoDo {
                 && s.contains("if (this.userID.get(p.userID) == p)")
                 && s.contains("if (this.charName.get(p.getName()) == p)"));
         Kiem.dung("xoa khoi vChars theo tham chieu", s.contains("this.vChars.remove(p);"));
+        // 02/09/2026: put() khong con tu choi ca cum theo ten cho BOT (xem
+        // KiemCharManagerBotTrungTen) - nhung bat bien cua fix "mat do" van phai giu: moi phep
+        // kiem (id/userID, va ten cho nguoi choi that) deu nam TRUOC dong ghi dau tien, nen
+        // that bai thi khong ro ri khoa nao.
+        final String thanPut = s.substring(s.indexOf("public boolean put(Char p) {"));
+        final int viTriGhiDau = thanPut.indexOf("this.userID.put(p.userID, p);");
+        final int viTriKiemId = thanPut.indexOf("if (this.userID.containsKey(p.userID) || this.charID.containsKey(p.id)) {");
+        final int viTriKiemTen = thanPut.indexOf("if (tenDaCo && p.isBot == -1) {");
         Kiem.dung("put ghi ca cum: kiem het dieu kien truoc roi moi ghi",
-                s.contains("if (this.userID.containsKey(p.userID)")
-                && s.contains("|| this.charName.containsKey(p.getName())) {"));
+                viTriGhiDau > 0 && viTriKiemId >= 0 && viTriKiemTen >= 0
+                && viTriKiemId < viTriGhiDau && viTriKiemTen < viTriGhiDau);
 
         final String map = doc("src/real/Map.java");
         Kiem.dung("Map.removePLayer cung go theo tham chieu", map.contains("players.remove(player);"));

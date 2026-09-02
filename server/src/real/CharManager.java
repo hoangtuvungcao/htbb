@@ -164,14 +164,39 @@ public class CharManager {
             return false;
         }
         synchronized (this) {
-            if (this.userID.containsKey(p.userID)
-                    || this.charID.containsKey(p.id)
-                    || this.charName.containsKey(p.getName())) {
+            if (this.userID.containsKey(p.userID) || this.charID.containsKey(p.id)) {
+                if (p.isBot != -1) {
+                    // Bot ma trung id/userID la loi cau hinh that (hai bot dung chung mot so),
+                    // truoc day bi nuot im lang - in ra de con biet duong sua.
+                    System.out.println("[CharManager] BO QUA bot \"" + p.getName() + "\" (isBot=" + p.isBot
+                            + ", id=" + p.id + ", userID=" + p.userID + "): trung id hoac userID voi mot Char da dang ky.");
+                }
                 return false;
             }
+            final boolean tenDaCo = this.charName.containsKey(p.getName());
+            if (tenDaCo && p.isBot == -1) {
+                // Nguoi choi that: ten la khoa duy nhat, tu choi nhu cu (SelectCharHandler se
+                // disconnect(14)).
+                return false;
+            }
+            // Bot NPC: NHIEU bot dung chung mot ten hien thi la binh thuong ("hoa tieu" x14,
+            // "xa phu" x5 - moi ban do/khu mot con). Truoc day put() tu choi CA CUM khi trung ten,
+            // nen chi con dau tien moi ten duoc dang ky; nhung con sau KHONG nam trong charID.
+            // Hau qua (su co NPC hoa tieu / xa phu "bien mat" tren Loc tri va cac khu
+            // Dong/Tay/Nam/Bac, 02/09/2026): goi vi tri (Map.writeActorPos) chi mang id/x/y,
+            // client phai hoi lai "id nay la ai" (requestCharInfo) -> Map.doSendWearingInfo tra
+            // bang CharManager.getByCharID(id) -> null -> khong tra loi -> client giu mot cai vo
+            // khong ve duoc, cu 10 giay hoi lai mai. Bot vao duoc ban do (allPlayers) ma nguoi
+            // choi khong bao gio nhin thay.
+            //
+            // Sua: bot van dang ky charID/userID/vChars (ba khoa nay la duy nhat cho tung bot),
+            // chi khong ghi de o charName neu ten da co (tra cuu theo ten khong bao gio dung
+            // cho bot - CharManager.getCharByCharName con toLowerCase truoc khi tim).
             this.userID.put(p.userID, p);
             this.charID.put(p.id, p);
-            this.charName.put(p.getName(), p);
+            if (!tenDaCo) {
+                this.charName.put(p.getName(), p);
+            }
             this.vChars.add(p);
             return true;
         }
