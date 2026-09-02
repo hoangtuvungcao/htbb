@@ -786,6 +786,51 @@ public class DataGame {
     private static final java.util.Set<Integer> daXinAnh =
             java.util.Collections.synchronizedSet(new java.util.HashSet<Integer>());
 
+    /** Id anh da bao thieu roi - moi id bao mot lan, khong de log ngap (297 dong cho rieng 5269). */
+    private static final java.util.Set<Integer> daBaoThieu =
+            java.util.Collections.synchronizedSet(new java.util.HashSet<Integer>());
+
+    /**
+     * PNG 1x1 trong suot chuan (67 byte) - phuong an cuoi neu ImageIO khong chay duoc.
+     * Chi dung khi anhTrongSuot() khong tao duoc anh 32x96; anh 1x1 lam AnimalMove chia
+     * chieu cao cho so khung ra 0, nen khong phai lua chon dau.
+     */
+    public static final byte[] PNG_1X1_TRONG_SUOT = {
+        (byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, (byte) 0xC4,
+        (byte) 0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41, 0x54, 0x78, (byte) 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
+        0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, (byte) 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, (byte) 0xAE,
+        0x42, 0x60, (byte) 0x82
+    };
+
+    /** Kich thuoc anh thay the. 96 cao de AnimalMove chia cho so khung (toi 96) van ra >= 1. */
+    public static final int ANH_TRONG_SUOT_RONG = 32;
+    public static final int ANH_TRONG_SUOT_CAO = 96;
+
+    private static byte[] anhTrongSuot;
+
+    /**
+     * Anh PNG trong suot 32x96, tao mot lan bang ImageIO (chay duoc khong can man hinh).
+     * Tra ve cho MOI yeu cau anh ma server khong co file - xem ghiAnh().
+     */
+    public static synchronized byte[] anhTrongSuot() {
+        if (anhTrongSuot == null) {
+            try {
+                final java.awt.image.BufferedImage bi = new java.awt.image.BufferedImage(
+                        ANH_TRONG_SUOT_RONG, ANH_TRONG_SUOT_CAO, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+                final java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+                if (!javax.imageio.ImageIO.write(bi, "png", bo) || bo.size() < PNG_1X1_TRONG_SUOT.length) {
+                    throw new IllegalStateException("ImageIO khong ghi duoc png");
+                }
+                anhTrongSuot = bo.toByteArray();
+            } catch (final Throwable t) {
+                System.out.println("[ANH] khong tao duoc anh trong suot 32x96 (" + t + "), dung PNG 1x1");
+                anhTrongSuot = PNG_1X1_TRONG_SUOT.clone();
+            }
+        }
+        return anhTrongSuot;
+    }
+
     /**
      * Ghi mot anh vao goi tra loi, co kiem bien va kiem null.
      *
@@ -800,8 +845,14 @@ public class DataGame {
      * mang imgPet chi co 20 o), va mot ket noi bi cat vi "601 goi tai nguyen trong
      * 5000ms, lenh cuoi=-51" - dung la nguoi choi bi van ra khoi game vi mot anh thieu.
      *
-     * Thieu anh thi chi thieu DUNG anh do: ghi 0 byte roi de sendByteImg gui goi di
-     * binh thuong, kem mot dong log de con biet duong bo sung file.
+     * THIEU ANH THI TRA ANH TRONG SUOT, KHONG TRA GOI RONG. Ban 2d778f5 (sang 02/09/2026)
+     * tra goi 0 byte de client khong hoi lai - nhung client (MessageHandler case -51) dat
+     * img.isLoad = false TRUOC roi moi Image.createImage(0 byte) -> img.img null. Tu do moi
+     * lan ve pet (AnimalMove.paint: imgIcon.img.getHeight()) la NullPointerException ngay
+     * trong vong ve actor -> ca NHAN VAT bien mat, nguoi choi bao "vao map boss khong hien
+     * thi nhan vat". Dinh that voi id 5221 (map/pet/21.png khong co, ma 105 pet Rong/Cu/Tho
+     * bay... deu mang idImg 21) va 5269 (Lan hoa hinh). Anh trong suot hop le thi client ve
+     * "khong gi ca" va thoi hoi - dung ca hai muc tieu.
      */
     private static void ghiAnh(final Message m, final byte[][] kho, final int chiSo, final int idImg)
             throws java.io.IOException {
@@ -809,9 +860,12 @@ public class DataGame {
             m.dos.write(kho[chiSo]);
             return;
         }
-        System.out.println("[ANH] thieu anh id " + idImg + " (chi so " + chiSo
-                + (kho == null ? ", kho chua nap" : ", kho co " + kho.length + " o")
-                + ") - gui goi rong, KHONG de client hoi lai mai");
+        m.dos.write(anhTrongSuot());
+        if (daBaoThieu.add(Integer.valueOf(idImg))) {
+            System.out.println("[ANH] thieu anh id " + idImg + " (chi so " + chiSo
+                    + (kho == null ? ", kho chua nap" : ", kho co " + kho.length + " o")
+                    + ") - tra anh trong suot de client khong loi ve, khong hoi lai (bao mot lan)");
+        }
     }
 
     public static void sendByteImg(Session s, Message msg) {
@@ -855,15 +909,12 @@ public class DataGame {
             if (idImg < nIconItem && !(idImg >= 800 && idImg <= 806)) {
                 ghiAnh(m, allImg, idImg, idImg);
             } else if (idImg >= 800 && idImg <= 806) {
-                // imgOther chi co 6 phan tu (0..5) nhung dai nay rong 7 (800..806), nen
-                // idImg = 806 roi vao day va khong ghi gi ca - xem chuoi loi o tren.
-                int k = idImg - 800;
-                if (k >= 0 && k < imgOther.length && imgOther[k] != null) {
-                    m.dos.write(imgOther[k]);
-                }
+                // imgOther chi co 6 phan tu (0..5) nhung dai nay rong 7 (800..806): 806 truoc
+                // day khong ghi gi ca (goi rong -> client NPE, xem chuoi loi o tren). Nay qua
+                // ghiAnh de thieu thi tra anh trong suot nhu moi dai khac.
+                ghiAnh(m, imgOther, idImg - 800, idImg);
             } else if (idImg >= 900 && idImg < 1000) {
-               
-                m.dos.write(imgOther[idImg - 900]);
+                ghiAnh(m, imgOther, idImg - 900, idImg);
             } else if (idImg >= 1000 && idImg < 2600) {
       
                 ghiAnh(m, iconClanImg, idImg - 1000, idImg);
