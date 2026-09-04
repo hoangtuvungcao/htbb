@@ -178,7 +178,6 @@ public class SelectCharHandler implements ICommandHandler {
                 session.disconnect(12);
                 return;
             }
-            p.idWedding = -1;
             if (p.idWedding > -1) {
                 final Wedding wd = Map.allWedding.get(p.idWedding);
                 if (wd != null) {

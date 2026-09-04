@@ -440,7 +440,7 @@ public class ThoRenThanBi
         newItem.lock = (byte) (player.thanKhiCraftState.getMaterialMode() > 0 ? 1 : 0);
 
         int color = 0;
-        int chance = Map.random(100); // 0..99
+        int chance = Map.r.nextInt(100); // 0..99
         switch (player.thanKhiCraftState.getMaterialLevel()) 
         {
             case 1:  color = 0;                     break;  // trắng
@@ -457,10 +457,10 @@ public class ThoRenThanBi
         switch (color) 
         {
             case 0: hiddenCount = 0;                                                  break; // Bình thường
-            case 3: hiddenCount = (2 + Map.random(4 - 2 + 1));                        break; // 2..4
-            case 2: hiddenCount = (3 + Map.random(6 - 3 + 1));                        break; // 3..6
-            case 1: hiddenCount = (4 + Map.random(8 - 4 + 1));                        break; // 4..8
-            case 4: hiddenCount = (5 + Map.random(9 - 5 + 1));                        break; // 5..9
+            case 3: hiddenCount = (2 + Map.r.nextInt(4 - 2 + 1));                        break; // 2..4
+            case 2: hiddenCount = (3 + Map.r.nextInt(6 - 3 + 1));                        break; // 3..6
+            case 1: hiddenCount = (4 + Map.r.nextInt(8 - 4 + 1));                        break; // 4..8
+            case 4: hiddenCount = (5 + Map.r.nextInt(9 - 5 + 1));                        break; // 5..9
             default: hiddenCount = 0;                                                 break;
         }
         if (hiddenCount > 9) hiddenCount = 9;  // chặn trần
@@ -470,12 +470,12 @@ public class ThoRenThanBi
         java.util.List<Integer> pickedIdx = new java.util.ArrayList<>(5);
         while (pickedIdx.size() < 2) 
         {
-            int idx = Map.random(5); // 0..4
+            int idx = Map.r.nextInt(5); // 0..4
             if (!pickedIdx.contains(idx)) pickedIdx.add(idx);
         }
         while (pickedIdx.size() < 4) 
         {
-            int idx = 5 + Map.random(5); // 5..9
+            int idx = 5 + Map.r.nextInt(5); // 5..9
             if (!pickedIdx.contains(idx)) pickedIdx.add(idx);
         }
         pickedIdx.add(10); // item cuối cùng
@@ -487,9 +487,9 @@ public class ThoRenThanBi
             newItem.otherAtt[optId - 61] = (short) qty;
         }
 
-        int attrIdx = Map.random(item_attribute_ids.length);
+        int attrIdx = Map.r.nextInt(item_attribute_ids.length);
         short attrOptId = item_attribute_ids[attrIdx];
-        int attrValue = 100 + Map.random(81); // 100..180
+        int attrValue = 100 + Map.r.nextInt(81); // 100..180
         newItem.otherAtt[attrOptId - 61] = (short) attrValue;
         player.iItems.add(newItem);
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
@@ -744,7 +744,7 @@ public class ThoRenThanBi
             while (needOpen > 0 && openedCount < maxHidden)
             {
                 safety++;
-                int idx = Map.random(HIDDEN_STAT_IDS.length);
+                int idx = Map.r.nextInt(HIDDEN_STAT_IDS.length);
                 short statOptId = HIDDEN_STAT_IDS[idx];
                 if (statOptId < 0) continue;
                 if (existIds.contains(statOptId)) continue;
@@ -926,10 +926,10 @@ public class ThoRenThanBi
         }
 
         // Random lại hệ (có thể trùng)
-        int rndIdx = Map.random(item_attribute_ids.length); // 0..4
+        int rndIdx = Map.r.nextInt(item_attribute_ids.length); // 0..4
         short newAttrId = item_attribute_ids[rndIdx];
         int newStoreIdx = newAttrId - 61;
-        int attrValue = 170 + Map.random(50); // 170..219
+        int attrValue = 170 + Map.r.nextInt(50); // 170..219
 
         // Xóa dòng hệ cũ và gán dòng hệ mới (ghi đè param)
         if (oldStoreIdx >= 0 && oldStoreIdx < item.otherAtt.length) item.otherAtt[oldStoreIdx] = 0;

@@ -283,6 +283,17 @@ public class CharThanthu extends Char {
                     return 0;
                 }
 
+                // Cung 2 buoc giam dame ma attackDam() (danh thu cong) da co nhung nhip tu
+                // dong nay tung bo sot: chenh lech cap (deltalv, chong nguoi cap thap ha
+                // nguoi cap cao) va checkGiamSatThuongTong (dau tu giam sat thuong cua chinh
+                // nan nhan) - thieu ca hai khien nguoi choi bi tick tu dong nay an sat thuong
+                // KHONG duoc giam theo dung dau tu/loi the cap do cua ho.
+                int deltalv = this.owner.lvDetail.lv - actor.getLevel();
+                int att = this.owner.attack;
+                if (deltalv < 0 && Map.abs(deltalv) > 5) {
+                    att -= att * (Map.abs(deltalv) - 5) * 2 / 100;
+                }
+
                 // Doc thang tu Hoa Ky Lan dang mac (otherAtt 38 = % tan cong chu, 40 = %
                 // maxhp doi thu) thay vi ba nhanh cap 1/2/3 rieng - cong duoc "ao hoa"
                 // (+10 diem phan tram, xem Char.chiSoPhanTramHoaKyLan) va tu dong dung
@@ -291,8 +302,10 @@ public class CharThanthu extends Char {
                 // co otherAtt40) roi ve nhanh % tan cong ben duoi - dung y chang cu.
                 final int pcMaxHp = this.owner.chiSoPhanTramHoaKyLan(40);
                 if (pcMaxHp > 0) {
-                    return actor.maxhp * pcMaxHp / 100;
+                    return actor.checkGiamSatThuongTong(actor.maxhp * pcMaxHp / 100);
                 }
+
+                return actor.checkGiamSatThuongTong(att * this.owner.chiSoPhanTramHoaKyLan(38) / 100);
             }
 
             return this.owner.attack * this.owner.chiSoPhanTramHoaKyLan(38) / 100;

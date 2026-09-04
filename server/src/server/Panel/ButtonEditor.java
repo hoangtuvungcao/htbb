@@ -723,6 +723,13 @@ public class ButtonEditor extends DefaultCellEditor {
         }
 
         // --- HIỂN THỊ ITEM ---
+        // Moi dong Item trong bang chi luu du lieu hien thi (ten, so luong, ...),
+        // KHONG luu tham chieu Item that su. Neu nguoi choi co 2 item cung ten
+        // cung so luong (rat pho bien: 1 ban vinh vien + 1 ban co han, hoac 2 ban
+        // khoa/mo rieng), sau nay khong the phan biet duoc dong nao ung voi item
+        // nao chi tu (ten, so luong). Vi vay luu song song map rowIndex -> Item
+        // ngay tai day, luc con tham chieu truc tiep den doi tuong Item that.
+        java.util.Map<Integer, Item> itemRowMap = new java.util.HashMap<>();
         boolean hasItem = false;
         for (Item item : player.iItems) {
             if (!hasItem) {
@@ -743,6 +750,7 @@ public class ButtonEditor extends DefaultCellEditor {
                 timeStr = sdf.format(new java.util.Date(expire));
             }
             data.add(new Object[]{icon, name, quantity, "Item", timeStr});
+            itemRowMap.put(data.size() - 1, item);
         }
 
 
@@ -875,8 +883,11 @@ public class ButtonEditor extends DefaultCellEditor {
                         return;
                     }
 
-                   
-                    showEditItemDialog(playerName, name, type, quantity, time, row, table, model);
+
+                    // Truyen thang tham chieu Item (neu dong nay la Item) de tranh
+                    // phai quet lai theo (ten, so luong) - xem itemRowMap o tren.
+                    Item clickedItem = itemRowMap.get(row);
+                    showEditItemDialog(playerName, name, type, quantity, time, row, table, model, clickedItem);
                 }
             }
         });
@@ -888,7 +899,7 @@ public class ButtonEditor extends DefaultCellEditor {
 
  
     
-    private void showEditItemDialog(String playerName, Object name, Object type, Object quantity, Object time, int row, JTable table, DefaultTableModel model) {
+    private void showEditItemDialog(String playerName, Object name, Object type, Object quantity, Object time, int row, JTable table, DefaultTableModel model, Item clickedItem) {
        
         String typeStr = type != null ? type.toString() : "";
         String nameStr = name != null ? name.toString() : "";
@@ -1023,28 +1034,15 @@ public class ButtonEditor extends DefaultCellEditor {
                 adminPanel.addLog("[" + playerName + "] " + detailMsg);
             }
         } else if ("Item".equals(typeStr)) {
-            // Item
-            int itemIndex = -1;
-            for (int i = 0; i < player.iItems.size(); i++) {
-                Item item = player.iItems.get(i);
-                if (item.getName().equals(nameStr)) {
-                    if (item.quanlity == currentQuantity) {
-                        itemIndex = i;
-                        break;
-                    }
-                    if (itemIndex == -1) {
-                        itemIndex = i;
-                    }
-                }
-            }
-            if (itemIndex == -1) {
-                System.out.println("Không tìm thấy itemIndex!");
-                return;
-            }
-
-            Item item = player.iItems.get(itemIndex);
-            if (item == null) {
-                System.out.println("Item null tại index=" + itemIndex);
+            // Item: dung THANG tham chieu Item duoc truyen tu showInventoryTable
+            // (itemRowMap), KHONG quet lai player.iItems theo (ten, so luong).
+            // Truoc day quet lai theo ten+so luong se lay nham item neu nguoi
+            // choi co 2 item cung ten cung so luong (vd 1 ban vinh vien + 1 ban
+            // co han) - luon lay ban dau tien tim thay, co the khong phai ban
+            // admin vua bam vao.
+            Item item = clickedItem;
+            if (item == null || !player.iItems.contains(item)) {
+                System.out.println("Không tìm thấy item (có thể đã bị xóa/thay đổi trước đó)!");
                 return;
             }
 
@@ -1080,7 +1078,10 @@ public class ButtonEditor extends DefaultCellEditor {
                     // admin lam. Ghi truoc khi remove, vi sau do khong con doi tuong de doc.
                     data.Database.instance.saveLogMatVatPham(player, item,
                             "admin xoa tay tu bang dieu khien (so luong " + oldQuantity + " -> 0)");
-                    player.iItems.remove(itemIndex);
+                    // Xoa theo THAM CHIEU doi tuong (khong dung itemIndex da cu), vi
+                    // dialog nay la modal va co the mo lau trong khi nguoi choi van
+                    // choi tren luong khac, lam xe dich vi tri trong player.iItems.
+                    player.iItems.remove(item);
                     model.removeRow(row);
                 } else {
                     item.quanlity = newQuantity;
@@ -1162,7 +1163,13 @@ public class ButtonEditor extends DefaultCellEditor {
                 }
                 int confirm = JOptionPane.showConfirmDialog(dialog, "Bạn có chắc muốn xóa Pet này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    player.pet.remove(petIndexFinal); // <-- Use petIndexFinal here
+                    // Xoa theo THAM CHIEU doi tuong pet (khong dung petIndexFinal da cu):
+                    // dialog nay la JDialog modal, co the mo rat lau. Trong luc do nhan vat
+                    // van choi tren luong khac va co the lam xe dich vi tri trong player.pet,
+                    // khien remove(int index) xoa nham pet khac voi pet ma admin da chon
+                    // (trong khi Database.instance.deletePet(pet.idDB) ben duoi van xoa
+                    // dung pet trong DB vi dung id on dinh) -> lech du lieu RAM/DB.
+                    player.pet.remove(pet);
                     System.out.println("pet.idDB: " + pet.idDB + " petIndexFinal: " + petIndexFinal);
                     Database.instance.deletePet(pet.idDB);
                     model.removeRow(row);
@@ -1258,7 +1265,7 @@ public class ButtonEditor extends DefaultCellEditor {
                 }
                 int confirm = JOptionPane.showConfirmDialog(dialog, "Bạn có chắc muốn xóa Animal này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    player.animal.remove(animalIndexFinal);
+                    player.animal.remove(animal);
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 2));
                     Database.instance.delAnimal(animal.dbid);
                     model.removeRow(row);

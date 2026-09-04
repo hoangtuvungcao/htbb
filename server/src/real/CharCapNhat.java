@@ -29,7 +29,9 @@ class CharCapNhat {
     static int expReceive(Char self, int xpReceive) {
         int dxp = 0;
         if (self.petUsing != null) {
-            dxp = dxp * self.petUsing.getPcUpExp() / 100;
+            // Nhan voi xpReceive (kinh nghiem thuong vua nhan), khong phai dxp - dxp con = 0
+            // tai day nen ban cu nhan-voi-0 khien bonus EXP cua pet luon bang 0.
+            dxp = xpReceive * self.petUsing.getPcUpExp() / 100;
         }
 
         // xp canh
@@ -813,7 +815,11 @@ class CharCapNhat {
         }
         final int[] percent = {100, 90, 85, 80, 70, 30, 15, 10, 7, 4, 3, 2, 1, 1, 0};
         final Item item = self.getItemFormVector(self.iItems, (short) self.itemImbue);
-        if (item != null) {
+        // iItems.contains: nhip nay chay tren luong cap nhat cua Map/Region trong khi mot
+        // lenh tuc thoi khac cua CHINH nguoi choi (gui kho/rao ban/giao dich, chay tren
+        // luong phien rieng) co the vua dua item nay ra khoi iItems - coi nhu khong tim
+        // thay, di vao chinh nhanh else ben duoi thay vi tiep tuc sua doi mot item da roi tui.
+        if (item != null && self.iItems.contains(item)) {
             if (!Map.isItemCanImbue(item.getTemplate().type)) {
                 // sendStopAutoImbue = tat co + goi -69 (mo khoa ScreenDapDo) + bao loi.
                 self.sendStopAutoImbue("Không thể cường hoá trang bị này");
@@ -838,6 +844,24 @@ class CharCapNhat {
                 isLock = true;
             }
             if (item.plus < self.plus) {
+                // Kiem TRUOC khi roll: ban cu tru xu/nguyen lieu o CUOI nhip (dong ben duoi)
+                // roi moi kiem "con du cho nhip SAU khong" - nhip HIEN TAI van roll/ap dung
+                // mien phi neu vua het xu/nguyen lieu dung luc nay, va self.xu co the bi tru
+                // AM (khong duoc Math.max(...,0) nhu truong luong). Chuyen kiem tra ra truoc.
+                if (!self.enoughtLkd() || self.xu < 5000L) {
+                    self.idGemLkd = -1;
+                    final Message jThieu = new Message(-69);
+                    try {
+                        jThieu.dos.writeByte(1);
+                        jThieu.dos.writeUTF("Dừng luyện tự động (hết nguyên liệu hoặc xu), hiện tại +" + item.plus);
+                        jThieu.dos.writeByte(1);
+                        self.sendMessage(jThieu);
+                    } catch (final Exception exThieu) {
+                    }
+                    self.startAutoImbue = false;
+                    luuSauKhiLuyen(self);
+                    return;
+                }
                 final int pcInsu = Map.random(100);
                 final int bh = self.getPcBHAuto();
                 final int pc = Map.random(100);

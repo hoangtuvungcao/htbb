@@ -635,13 +635,16 @@ class MapSuKien {
                     c.nbanh = 0;
                     Database.instance.saveCooking(Char.nauBanhTet, 2);
                 } else if (idOptionMenu == 2) {
-                    if (player.potions[151] < 1 || player.potions[152] < 1) {
+                    if (!player.truNeuDu(
+                            () -> player.potions[151] >= 1 && player.potions[152] >= 1,
+                            () -> {
+                                player.potions[151]--;
+                                player.potions[152]--;
+                            })) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh", ""));
                         return;
                     }
 
-                    player.potions[151]--;
-                    player.potions[152]--;
                     doDangBanhChung(map, player);
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 } else if (idOptionMenu == 3) {
@@ -654,12 +657,11 @@ class MapSuKien {
                         return;
                     }
 
-                    if (player.getLuong() < 5) {
+                    if (!player.truLuongNeuDu(5L)) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
                         return;
                     }
 
-                    player.subLuong(5L);
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     Char.nauBanhChung.addCharCook(player);
                     Database.instance.saveCooking(Char.nauBanhChung, 1);
@@ -672,12 +674,11 @@ class MapSuKien {
                         return;
                     }
 
-                    if (player.getxu() < 500000L) {
+                    if (!player.truXuNeuDu(500000L, true, "map 46")) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
                         return;
                     }
 
-                    player.subXu(500000L, true, "map 46");
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     Char.nauBanhTet.addCharCook(player);
                     Database.instance.saveCooking(Char.nauBanhTet, 2);
@@ -699,20 +700,22 @@ class MapSuKien {
                 int[] sl = new int[]{0, 3, 5, 7, 10};
                 int[] slCaudoi = new int[]{0, 5, 5, 5, 5};
                 int[] price = new int[]{0, 50, 70, 100, 120};
-                if (player.getLuong() < price[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                    );
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= price[idMenu] && player.potions[152] >= slCaudoi[idMenu],
+                        () -> {
+                            player.subLuong((long) price[idMenu]);
+                            player.potions[152] = player.potions[152] - slCaudoi[idMenu];
+                        })) {
+                    if (player.getLuong() < price[idMenu]) {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                        );
+                    } else {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ nguyên liệu", ""));
+                    }
                     return;
                 }
 
-                if (player.potions[152] < slCaudoi[idMenu]) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ nguyên liệu", ""));
-                    return;
-                }
-
-                player.subLuong((long) price[idMenu]);
-                player.potions[152] = player.potions[152] - slCaudoi[idMenu];
                 player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -870,18 +873,20 @@ class MapSuKien {
             if (idOptionMenu == 0) {
                 player.sendMessage(MessageCreator.createMsgInputText(-32016, 0, "Số kem", 1));
             } else if (idOptionMenu == 1) {
-                if (player.getLuong() < 120) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 120 lượng mới có thể đổi được linh thú Tuần Lộc", ""));
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= 120 && player.potions[146] >= 50,
+                        () -> {
+                            player.subLuong(120L);
+                            player.potions[146] = player.potions[146] - 50;
+                        })) {
+                    if (player.getLuong() < 120) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 120 lượng mới có thể đổi được linh thú Tuần Lộc", ""));
+                    } else {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có kem", ""));
+                    }
                     return;
                 }
 
-                if (player.potions[146] < 50) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có kem", ""));
-                    return;
-                }
-
-                player.subLuong(120L);
-                player.potions[146] = player.potions[146] - 50;
                 player.createTuanLoc(30L);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
@@ -941,20 +946,22 @@ class MapSuKien {
             int[] sl = new int[]{0, 3, 5, 7, 10};
             int[] slCaudoi = new int[]{0, 20, 30, 40, 50};
             int[] price = new int[]{0, 50, 70, 100, 120};
-            if (player.getLuong() < price[idMenu]) {
-                player.sendMessage(
-                        MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                );
+            if (!player.truNeuDu(
+                    () -> player.getLuong() >= price[idMenu] && player.potions[146] >= slCaudoi[idMenu],
+                    () -> {
+                        player.subLuong((long) price[idMenu]);
+                        player.potions[146] = player.potions[146] - slCaudoi[idMenu];
+                    })) {
+                if (player.getLuong() < price[idMenu]) {
+                    player.sendMessage(
+                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                    );
+                } else {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ nguyên liệu", ""));
+                }
                 return;
             }
 
-            if (player.potions[146] < slCaudoi[idMenu]) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ nguyên liệu", ""));
-                return;
-            }
-
-            player.subLuong((long) price[idMenu]);
-            player.potions[146] = player.potions[146] - slCaudoi[idMenu];
             player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
             player.sendMessage(MessageCreator.createCharGemItem(player));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -1195,8 +1202,12 @@ class MapSuKien {
                     return;
                 }
 
+                if (!player.truLuongNeuDu(1000L)) {
+                    player.sendMessage(MessageCreator.createMsgChat(player.id, "Không đủ lượng"));
+                    return;
+                }
+
                 player.buylongden = 1;
-                player.subLuong(1000L);
                 player.createPetVinhVien(28);
             } else if (idOptionMenu == 4) {
                 if (!isMapLang(player.map)) {
@@ -1227,7 +1238,11 @@ class MapSuKien {
                     return;
                 }
 
-                player.subLuong(3000L);
+                if (!player.truLuongNeuDu(3000L)) {
+                    player.sendMessage(MessageCreator.createMsgChat(player.id, "Không đủ lượng"));
+                    return;
+                }
+
                 totalChoiBan--;
                 Database.instance.updateSoLuongChoiBan();
                 Char.createChoi(617, player);
@@ -1260,7 +1275,11 @@ class MapSuKien {
                     return;
                 }
 
-                player.subLuong(3000L);
+                if (!player.truLuongNeuDu(3000L)) {
+                    player.sendMessage(MessageCreator.createMsgChat(player.id, "Không đủ lượng"));
+                    return;
+                }
+
                 totalChoiBan--;
                 Database.instance.updateSoLuongChoiBan();
                 Char.createChoi(619, player);
@@ -1293,7 +1312,11 @@ class MapSuKien {
                     return;
                 }
 
-                player.subLuong(3000L);
+                if (!player.truLuongNeuDu(3000L)) {
+                    player.sendMessage(MessageCreator.createMsgChat(player.id, "Không đủ lượng"));
+                    return;
+                }
+
                 totalChoiBan--;
                 Database.instance.updateSoLuongChoiBan();
                 Char.createChoi(618, player);
@@ -1302,21 +1325,23 @@ class MapSuKien {
             int[] sl = new int[]{0, 3, 5, 7, 10};
             int[] slCaudoi = new int[]{0, 50, 50, 50, 50};
             int[] price = new int[]{0, 50, 70, 100, 120};
-            if (player.getLuong() < price[idMenu]) {
-                player.sendMessage(
-                        MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                );
+            if (!player.truNeuDu(
+                    () -> player.getLuong() >= price[idMenu] && player.potions[137] >= slCaudoi[idMenu] && player.potions[138] >= slCaudoi[idMenu],
+                    () -> {
+                        player.subLuong((long) price[idMenu]);
+                        player.potions[137] = player.potions[137] - slCaudoi[idMenu];
+                        player.potions[138] = player.potions[138] - slCaudoi[idMenu];
+                    })) {
+                if (player.getLuong() < price[idMenu]) {
+                    player.sendMessage(
+                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                    );
+                } else {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ nguyên liệu", ""));
+                }
                 return;
             }
 
-            if (player.potions[137] < slCaudoi[idMenu] || player.potions[138] < slCaudoi[idMenu]) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ nguyên liệu", ""));
-                return;
-            }
-
-            player.subLuong((long) price[idMenu]);
-            player.potions[137] = player.potions[137] - slCaudoi[idMenu];
-            player.potions[138] = player.potions[138] - slCaudoi[idMenu];
             player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
             player.sendMessage(MessageCreator.createCharGemItem(player));
             Item newitem = null;
@@ -1504,20 +1529,22 @@ class MapSuKien {
             int[] sl = new int[]{0, 3, 5, 7, 10};
             int[] slCaudoi = new int[]{0, 50, 50, 50, 50};
             int[] price = new int[]{0, 50, 70, 100, 120};
-            if (player.getLuong() < price[idMenu]) {
-                player.sendMessage(
-                        MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                );
+            if (!player.truNeuDu(
+                    () -> player.getLuong() >= price[idMenu] && player.potions[117] >= slCaudoi[idMenu],
+                    () -> {
+                        player.subLuong((long) price[idMenu]);
+                        player.potions[117] = player.potions[117] - slCaudoi[idMenu];
+                    })) {
+                if (player.getLuong() < price[idMenu]) {
+                    player.sendMessage(
+                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                    );
+                } else {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ nguyên liệu", ""));
+                }
                 return;
             }
 
-            if (player.potions[117] < slCaudoi[idMenu]) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ nguyên liệu", ""));
-                return;
-            }
-
-            player.subLuong((long) price[idMenu]);
-            player.potions[117] = player.potions[117] - slCaudoi[idMenu];
             player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
             boolean receiveda = false;
             int[] tlnhanhvl = new int[]{0, 1, 1, 3, 10};
@@ -1580,10 +1607,21 @@ class MapSuKien {
                     return;
                 }
 
-                player.subLuong((long) money[idOptionMenu]);
-                player.potions[77] = player.potions[77] - slx[idOptionMenu];
-                player.potions[105] = player.potions[105] - slx[idOptionMenu];
-                player.potions[142] = player.potions[142] - slx[idOptionMenu];
+                if (!player.truNeuDu(
+                        () -> player.potions[77] >= slx[idOptionMenu]
+                                && player.potions[105] >= slx[idOptionMenu]
+                                && player.potions[142] >= slx[idOptionMenu]
+                                && player.getLuong() >= money[idOptionMenu],
+                        () -> {
+                            player.subLuong((long) money[idOptionMenu]);
+                            player.potions[77] = player.potions[77] - slx[idOptionMenu];
+                            player.potions[105] = player.potions[105] - slx[idOptionMenu];
+                            player.potions[142] = player.potions[142] - slx[idOptionMenu];
+                        })) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu hoặc lượng", ""));
+                    return;
+                }
+
                 String info = "Đổi";
                 if (idOptionMenu == 0) {
                     int[] time = new int[]{30};
@@ -1624,21 +1662,23 @@ class MapSuKien {
             int[] sl = new int[]{0, 3, 5, 7, 10};
             int[] slCaudoi = new int[]{0, 25, 25, 25, 25};
             int[] price = new int[]{0, 50, 70, 100, 120};
-            if (player.getLuong() < price[idMenu]) {
-                player.sendMessage(
-                        MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                );
+            if (!player.truNeuDu(
+                    () -> player.getLuong() >= price[idMenu] && player.potions[83] >= slCaudoi[idMenu] && player.potions[105] >= slCaudoi[idMenu],
+                    () -> {
+                        player.subLuong((long) price[idMenu]);
+                        player.potions[83] = player.potions[83] - slCaudoi[idMenu];
+                        player.potions[105] = player.potions[105] - slCaudoi[idMenu];
+                    })) {
+                if (player.getLuong() < price[idMenu]) {
+                    player.sendMessage(
+                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                    );
+                } else {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ nguyên liệu", ""));
+                }
                 return;
             }
 
-            if (player.potions[83] < slCaudoi[idMenu] || player.potions[105] < slCaudoi[idMenu]) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ nguyên liệu", ""));
-                return;
-            }
-
-            player.subLuong((long) price[idMenu]);
-            player.potions[83] = player.potions[83] - slCaudoi[idMenu];
-            player.potions[105] = player.potions[105] - slCaudoi[idMenu];
             player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
             boolean receiveda = false;
             if (idMenu == 3 || idMenu == 4) {
@@ -1699,7 +1739,11 @@ class MapSuKien {
                     return;
                 }
 
-                player.subLuong(100L);
+                if (!player.truLuongNeuDu(100L)) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng.", ""));
+                    return;
+                }
+
                 player.createPet(22, 10080);
             } else {
                 player.sendMessage(MessageCreator.createMsgMenu(new String[]{"3 ng.liệu sc 6", "5 ng.liệu sc 6", "7 ng.liệu sc 6", "10 ng.liệu sc 6"}, idNpc, 5));
@@ -1708,22 +1752,27 @@ class MapSuKien {
             int[] sl = new int[]{0, 3, 5, 7, 10};
             int[] slCaudoi = new int[]{0, 1, 1, 1, 1};
             int[] price = new int[]{0, 50, 70, 100, 140};
-            if (player.getLuong() < price[idMenu]) {
-                player.sendMessage(
-                        MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                );
+            if (!player.truNeuDu(
+                    () -> player.getLuong() >= price[idMenu]
+                            && player.potions[74] >= slCaudoi[idMenu]
+                            && player.potions[120] >= slCaudoi[idMenu]
+                            && player.potions[83] >= slCaudoi[idMenu],
+                    () -> {
+                        player.subLuong((long) price[idMenu]);
+                        player.potions[74] = player.potions[74] - slCaudoi[idMenu];
+                        player.potions[120] = player.potions[120] - slCaudoi[idMenu];
+                        player.potions[83] = player.potions[83] - slCaudoi[idMenu];
+                    })) {
+                if (player.getLuong() < price[idMenu]) {
+                    player.sendMessage(
+                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                    );
+                } else {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ các chữ Phúc Lộc Thọ", ""));
+                }
                 return;
             }
 
-            if (player.potions[74] < slCaudoi[idMenu] || player.potions[120] < slCaudoi[idMenu] || player.potions[83] < slCaudoi[idMenu]) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa có đủ các chữ Phúc Lộc Thọ", ""));
-                return;
-            }
-
-            player.subLuong((long) price[idMenu]);
-            player.potions[74] = player.potions[74] - slCaudoi[idMenu];
-            player.potions[120] = player.potions[120] - slCaudoi[idMenu];
-            player.potions[83] = player.potions[83] - slCaudoi[idMenu];
             player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
             boolean receiveda = false;
             if (idMenu == 3 || idMenu == 4) {
@@ -1783,24 +1832,26 @@ class MapSuKien {
                 int[] sl = new int[]{0, 3, 5, 7, 10};
                 int[] slCaudoi = new int[]{0, 10, 10, 10, 10};
                 int[] price = new int[]{0, 50, 70, 100, 140};
-                if (player.getLuong() < price[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                    );
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= price[idMenu] && player.potions[77] >= slCaudoi[idMenu],
+                        () -> {
+                            player.subLuong((long) price[idMenu]);
+                            player.potions[77] = player.potions[77] - slCaudoi[idMenu];
+                        })) {
+                    if (player.getLuong() < price[idMenu]) {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                        );
+                    } else {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage(
+                                        "Bạn phải có đủ " + slCaudoi[idMenu] + " sao vàng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""
+                                )
+                        );
+                    }
                     return;
                 }
 
-                if (player.potions[77] < slCaudoi[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage(
-                                    "Bạn phải có đủ " + slCaudoi[idMenu] + " sao vàng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""
-                            )
-                    );
-                    return;
-                }
-
-                player.subLuong((long) price[idMenu]);
-                player.potions[77] = player.potions[77] - slCaudoi[idMenu];
                 player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -1851,8 +1902,16 @@ class MapSuKien {
                     return;
                 }
 
-                player.subLuong(70L);
-                player.potions[124] = player.potions[124] - 20;
+                if (!player.truNeuDu(
+                        () -> player.potions[124] >= 20 && player.getLuong() >= 70,
+                        () -> {
+                            player.subLuong(70L);
+                            player.potions[124] = player.potions[124] - 20;
+                        })) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 70 lượng", ""));
+                    return;
+                }
+
                 player.doCreatePetBachThu(43200, true);
                 Database.instance.saveOrtherLog("", player.charname, "doi pet bach thu " + idOptionMenu, "petbachthu");
                 Database.instance.saveLogThongKeChiTieu("pet bach thu", 0, 1, 70L, "luong");
@@ -1904,13 +1963,31 @@ class MapSuKien {
                     return;
                 }
 
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= price[idMenu] && player.potions[124] >= slCaudoi1[idMenu],
+                        () -> {
+                            player.subLuong((long) price[idMenu]);
+                            player.potions[124] = player.potions[124] - slCaudoi1[idMenu];
+                        })) {
+                    if (player.getLuong() < price[idMenu]) {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                        );
+                    } else {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage(
+                                        "Bạn phải có đủ " + slCaudoi[idMenu] + " bánh dẻo mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""
+                                )
+                        );
+                    }
+                    return;
+                }
+
                 boolean nhantuhondan = false;
                 if (r.nextInt(100) < 10 && doCreateHoVeLenhByLevel(player, 4320) != null) {
                     nhantuhondan = true;
                 }
 
-                player.subLuong((long) price[idMenu]);
-                player.potions[124] = player.potions[124] - slCaudoi1[idMenu];
                 player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -1952,18 +2029,20 @@ class MapSuKien {
             } else if (idOptionMenu == 2) {
                 player.sendMessage(MessageCreator.createMsgMenu(new String[]{"3 ng.liệu sc 6", "5 ng.liệu sc 6", "7 ng.liệu sc 6", "10 ng.liệu sc 6"}, idNpc, 3));
             } else if (idOptionMenu == 3) {
-                if (player.potions[120] < 50) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
+                if (!player.truNeuDu(
+                        () -> player.potions[120] >= 50 && player.getLuong() >= 100,
+                        () -> {
+                            player.potions[120] = player.potions[120] - 50;
+                            player.subLuong(100L);
+                        })) {
+                    if (player.potions[120] < 50) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
+                    } else {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
+                    }
                     return;
                 }
 
-                if (player.getLuong() < 100) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
-                    return;
-                }
-
-                player.potions[120] = player.potions[120] - 50;
-                player.subLuong(100L);
                 player.createPet(21, 10080);
                 Database.instance.saveOrtherLog("", player.charname, "doi long den rong xanh", "rongxanh");
             } else if (idOptionMenu == 4) {
@@ -2002,34 +2081,35 @@ class MapSuKien {
             int[] slCaudoi = new int[]{0, 0, 0, 0, 50, 50, 50, 50};
             int[] slCaudoi1 = new int[]{0, 0, 0, 0, 5, 10, 15, 20};
             int[] price = new int[]{0, 0, 0, 0, 70, 100, 140, 180};
-            if (player.getLuong() < price[idMenu]) {
-                player.sendMessage(
-                        MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                );
+            if (!player.truNeuDu(
+                    () -> player.getLuong() >= price[idMenu]
+                            && player.potions[120] >= slCaudoi[idMenu]
+                            && player.potions[105] >= slCaudoi1[idMenu],
+                    () -> {
+                        player.subLuong((long) price[idMenu]);
+                        player.potions[120] = player.potions[120] - slCaudoi1[idMenu];
+                        player.potions[105] = player.potions[105] - slCaudoi1[idMenu];
+                    })) {
+                if (player.getLuong() < price[idMenu]) {
+                    player.sendMessage(
+                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                    );
+                } else if (player.potions[120] < slCaudoi[idMenu]) {
+                    player.sendMessage(
+                            MessageCreator.createServerAlertMessage(
+                                    "Bạn phải có đủ " + slCaudoi[idMenu] + " bánh dẻo mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""
+                            )
+                    );
+                } else {
+                    player.sendMessage(
+                            MessageCreator.createServerAlertMessage(
+                                    "Bạn phải có đủ " + slCaudoi1[idMenu] + " bánh nướng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""
+                            )
+                    );
+                }
                 return;
             }
 
-            if (player.potions[120] < slCaudoi[idMenu]) {
-                player.sendMessage(
-                        MessageCreator.createServerAlertMessage(
-                                "Bạn phải có đủ " + slCaudoi[idMenu] + " bánh dẻo mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""
-                        )
-                );
-                return;
-            }
-
-            if (player.potions[105] < slCaudoi1[idMenu]) {
-                player.sendMessage(
-                        MessageCreator.createServerAlertMessage(
-                                "Bạn phải có đủ " + slCaudoi1[idMenu] + " bánh nướng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""
-                        )
-                );
-                return;
-            }
-
-            player.subLuong((long) price[idMenu]);
-            player.potions[120] = player.potions[120] - slCaudoi1[idMenu];
-            player.potions[105] = player.potions[105] - slCaudoi1[idMenu];
             player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
             player.sendMessage(MessageCreator.createCharGemItem(player));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -2110,10 +2190,18 @@ class MapSuKien {
                         return;
                     }
 
+                    if (!player.truNeuDu(
+                            () -> player.getLuong() >= 10 && player.potions[105] >= 1,
+                            () -> {
+                                player.subLuong(10L);
+                                player.potions[105]--;
+                            })) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 10 lượng mới có thể đổi được 1 nguyên liệu", ""));
+                        return;
+                    }
+
                     int idgem = r.nextInt(GemTemplate.ID_MATERIAL_LOW[5].length);
                     Database.instance.saveLogThongKeChiTieu(GemTemplate.ID_MATERIAL_LOW[5][idgem] + "_doi_" + 1, 0, 1, 10L, "luong");
-                    player.subLuong(10L);
-                    player.potions[105]--;
                     player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idgem], 1, true);
                     player.sendMessage(MessageCreator.createCharGemItem(player));
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -2139,23 +2227,25 @@ class MapSuKien {
                 int[] sl = new int[]{0, 0, 0, 3, 5, 7, 10};
                 int[] slCaudoi = new int[]{0, 0, 0, 5, 5, 5, 5};
                 int[] price = new int[]{0, 0, 0, 50, 70, 100, 120};
-                if (player.getLuong() < price[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                    );
-                    return;
-                }
-
-                if (player.potions[105] < slCaudoi[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slCaudoi[idMenu] + " sao mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                    );
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= price[idMenu] && player.potions[105] >= slCaudoi[idMenu],
+                        () -> {
+                            player.subLuong((long) price[idMenu]);
+                            player.potions[105] = player.potions[105] - slCaudoi[idMenu];
+                        })) {
+                    if (player.getLuong() < price[idMenu]) {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                        );
+                    } else {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slCaudoi[idMenu] + " sao mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                        );
+                    }
                     return;
                 }
 
                 Database.instance.saveLogThongKeChiTieu(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu] + "_doi_" + sl[idMenu], 0, 1, (long) price[idMenu], "luong");
-                player.subLuong((long) price[idMenu]);
-                player.potions[105] = player.potions[105] - slCaudoi[idMenu];
                 player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 int[] var15 = new int[]{0, 0, 0, 1, 2, 5, 10};
@@ -2242,23 +2332,25 @@ class MapSuKien {
                 int[] sl = new int[]{0, 0, 0, 3, 5, 7, 10};
                 int[] slCaudoi = new int[]{0, 0, 0, 10, 10, 10, 10};
                 int[] price = new int[]{0, 0, 0, 50, 70, 100, 120};
-                if (player.getLuong() < price[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                    );
-                    return;
-                }
-
-                if (player.potions[105] < slCaudoi[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slCaudoi[idMenu] + " kem mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
-                    );
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= price[idMenu] && player.potions[105] >= slCaudoi[idMenu],
+                        () -> {
+                            player.subLuong((long) price[idMenu]);
+                            player.potions[105] = player.potions[105] - slCaudoi[idMenu];
+                        })) {
+                    if (player.getLuong() < price[idMenu]) {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                        );
+                    } else {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slCaudoi[idMenu] + " kem mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
+                        );
+                    }
                     return;
                 }
 
                 Database.instance.saveLogThongKeChiTieu(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu] + "_doi_" + sl[idMenu], 0, 1, (long) price[idMenu], "luong");
-                player.subLuong((long) price[idMenu]);
-                player.potions[105] = player.potions[105] - slCaudoi[idMenu];
                 player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 int[] pc = new int[]{0, 0, 0, 1, 2, 5, 10};
@@ -2363,9 +2455,16 @@ class MapSuKien {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 15 lượng", ""));
                 return;
             }
-            player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= 10;
-            player.subLuong(15L);
-            player.potions[Potion.TYPE_BO_HOA_VANG]++;
+            if (!player.truNeuDu(
+                    () -> player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] >= 10 && player.getLuong() >= 15L,
+                    () -> {
+                        player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= 10;
+                        player.subLuong(15L);
+                        player.potions[Potion.TYPE_BO_HOA_VANG]++;
+                    })) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 10 nhánh hoa hồng vàng và 15 lượng", ""));
+                return;
+            }
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được 1 bó hoa vàng", ""));
             Database.instance.saveOrtherLog("", player.charname, "doi 10 nhanh hoa hong vang + 15 luong lay 1 bo hoa vang", "vulan");
@@ -2379,9 +2478,16 @@ class MapSuKien {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ " + gia + " xu", ""));
                 return;
             }
-            player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= 50;
-            player.subXu(gia, true, "map dautruong vulan");
-            player.potions[Potion.TYPE_BO_HOA_DO]++;
+            if (!player.truNeuDu(
+                    () -> player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] >= 50 && player.getxu() >= gia,
+                    () -> {
+                        player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= 50;
+                        player.subXu(gia, true, "map dautruong vulan");
+                        player.potions[Potion.TYPE_BO_HOA_DO]++;
+                    })) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 50 nhánh hoa hồng vàng và " + gia + " xu", ""));
+                return;
+            }
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được 1 bó hoa đỏ", ""));
             Database.instance.saveOrtherLog("", player.charname, "doi 50 nhanh hoa hong vang + " + gia + " xu lay 1 bo hoa do", "vulan");
@@ -2390,8 +2496,15 @@ class MapSuKien {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 30 hoa hồng đỏ", ""));
                 return;
             }
-            player.potions[Potion.TYPE_HOA_HONG_DO] -= 30;
-            player.potions[Potion.TYPE_BO_HOA_DO]++;
+            if (!player.truNeuDu(
+                    () -> player.potions[Potion.TYPE_HOA_HONG_DO] >= 30,
+                    () -> {
+                        player.potions[Potion.TYPE_HOA_HONG_DO] -= 30;
+                        player.potions[Potion.TYPE_BO_HOA_DO]++;
+                    })) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 30 hoa hồng đỏ", ""));
+                return;
+            }
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được 1 bó hoa đỏ", ""));
             Database.instance.saveOrtherLog("", player.charname, "doi 30 hoa hong do lay 1 bo hoa do", "vulan");
@@ -2413,8 +2526,15 @@ class MapSuKien {
             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[tier] + " lượng mới có thể đổi được " + sl[tier] + " nguyên liệu", ""));
             return;
         }
-        player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= caudoiHoaHongVang;
-        player.subLuong((long) price[tier]);
+        if (!player.truNeuDu(
+                () -> player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] >= caudoiHoaHongVang && player.getLuong() >= price[tier],
+                () -> {
+                    player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= caudoiHoaHongVang;
+                    player.subLuong((long) price[tier]);
+                })) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + caudoiHoaHongVang + " hoa hồng vàng và " + price[tier] + " lượng", ""));
+            return;
+        }
         int idNlsc = GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu];
         player.doAddGemItem(idNlsc, sl[tier], true);
         String info = "Bạn nhận được " + sl[tier] + " " + gemTemplate[idNlsc].name + " khóa";
@@ -2477,8 +2597,16 @@ class MapSuKien {
                     return;
                 }
 
-                player.subLuong(100L);
-                player.potions[120] = player.potions[120] - 50;
+                if (!player.truNeuDu(
+                        () -> player.potions[120] >= 50 && player.getLuong() >= 100,
+                        () -> {
+                            player.subLuong(100L);
+                            player.potions[120] = player.potions[120] - 50;
+                        })) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
+                    return;
+                }
+
                 player.createPet(14, 43200);
             } else if (idOptionMenu == 4) {
                 player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Hộp mứt nhỏ", "Hộp mứt to"}, idNpc, 2));
@@ -2488,8 +2616,15 @@ class MapSuKien {
                     return;
                 }
 
-                player.potions[142]++;
-                player.potions[121]--;
+                if (!player.truNeuDu(
+                        () -> player.potions[121] >= 1,
+                        () -> {
+                            player.potions[142]++;
+                            player.potions[121]--;
+                        })) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ thỏi vàng", ""));
+                    return;
+                }
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã đổi được 1 hộp quà tết", ""));
             } else if (idOptionMenu == 6) {
@@ -2513,8 +2648,16 @@ class MapSuKien {
                 return;
             }
 
-            player.potions[118]--;
-            player.subLuong(80L);
+            if (!player.truNeuDu(
+                    () -> player.potions[118] >= 50 && player.getLuong() >= 80,
+                    () -> {
+                        player.potions[118]--;
+                        player.subLuong(80L);
+                    })) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh tét hoặc lượng", ""));
+                return;
+            }
+
             doBuyModelClothe(player, getShopTemplate(idOptionMenu == 0 ? 106 : 105), 30);
             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã đổi được 1 bộ đồ thời trang", ""));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -2525,8 +2668,15 @@ class MapSuKien {
                 return;
             }
 
-            player.potions[idOptionMenu == 0 ? 125 : 119]++;
-            player.potions[122] = player.potions[122] - (idOptionMenu == 0 ? 200 : 350);
+            if (!player.truNeuDu(
+                    () -> player.potions[122] >= (idOptionMenu == 0 ? 200 : 350),
+                    () -> {
+                        player.potions[idOptionMenu == 0 ? 125 : 119]++;
+                        player.potions[122] = player.potions[122] - (idOptionMenu == 0 ? 200 : 350);
+                    })) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ dưa hấu", ""));
+                return;
+            }
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đổi được một " + (idOptionMenu == 0 ? "hộp mứt nhỏ" : "Hộp mứt to"), ""));
         } else if (idMenu == 3) {
@@ -2545,14 +2695,15 @@ class MapSuKien {
             int[] sl = new int[]{0, 0, 0, 0, 3, 5, 7, 10};
             int[] slCaudoi = new int[]{0, 0, 0, 0, 7, 10, 14, 18};
             int[] var14 = new int[]{0, 0, 0, 0, 70, 100, 140, 180};
-            if (player.potions[74] < slCaudoi[idMenu]) {
+            if (!player.truNeuDu(
+                    () -> player.potions[74] >= slCaudoi[idMenu],
+                    () -> player.potions[74] = player.potions[74] - slCaudoi[idMenu])) {
                 player.sendMessage(
                         MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slCaudoi[idMenu] + " câu đối mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
                 );
                 return;
             }
 
-            player.potions[74] = player.potions[74] - slCaudoi[idMenu];
             player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
             player.sendMessage(MessageCreator.createCharGemItem(player));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -2569,35 +2720,33 @@ class MapSuKien {
         if (!Char.isFinishAllSuKienNoel()) {
             if (idMenu == 0) {
                 if (idOptionMenu == 0) {
-                    if (player.potions[71] < 10) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ kẹo", ""));
-                        return;
-                    }
-
-                    if (player.getxu() < 3000L) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
+                    if (!player.truNeuDu(
+                            () -> player.potions[71] >= 10 && player.getxu() >= 3000L,
+                            () -> { player.subXu(3000L, true, "map 62"); player.potions[71] -= 10; })) {
+                        if (player.potions[71] < 10) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ kẹo", ""));
+                        } else {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
+                        }
                         return;
                     }
 
                     addXpCharEvent(player, 50000L, false, "doMenuNpcNoel1");
-                    player.subXu(3000L, true, "map 62");
-                    player.potions[71] = player.potions[71] - 10;
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     Database.instance.saveOrtherLog("", player.charname, "Nhan 50k exp", "50kexp");
                 } else if (idOptionMenu == 1) {
-                    if (player.potions[71] < 20) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ kẹo", ""));
-                        return;
-                    }
-
-                    if (player.getxu() < 6000L) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
+                    if (!player.truNeuDu(
+                            () -> player.potions[71] >= 20 && player.getxu() >= 6000L,
+                            () -> { player.subXu(6000L, true, "map 61"); player.potions[71] -= 20; })) {
+                        if (player.potions[71] < 20) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ kẹo", ""));
+                        } else {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
+                        }
                         return;
                     }
 
                     addXpCharEvent(player, 120000L, false, "doMenuNpcNoel2");
-                    player.subXu(6000L, true, "map 61");
-                    player.potions[71] = player.potions[71] - 20;
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     Database.instance.saveOrtherLog("", player.charname, "Nhan 120k exp", "120kexp");
                 } else if (idOptionMenu == 2) {
@@ -2605,20 +2754,18 @@ class MapSuKien {
                 } else if (idOptionMenu == 3) {
                     player.sendMessage(MessageCreator.createMsgInputText(-32016, idMenu, "Nhập số túi đổi", 1));
                 } else if (idOptionMenu == 4) {
-                    if (player.getLuong() < 300) {
+                    if (!player.truLuongNeuDu(300L)) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
                         return;
                     }
 
-                    player.subLuong(300L);
                     player.createTuanLoc(15L);
                 } else if (idOptionMenu == 5) {
-                    if (player.getLuong() < 500) {
+                    if (!player.truLuongNeuDu(500L)) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
                         return;
                     }
 
-                    player.subLuong(500L);
                     player.createTuanLoc(30L);
                 } else if (idOptionMenu == 6) {
                     if (!player.gifMoonFestival) {
@@ -2636,7 +2783,10 @@ class MapSuKien {
                     player.doReceiveGif35Offline(1);
                 }
             } else if (idMenu == 1) {
-                if (player.potions[117] <= 0) {
+                // Tru truoc khi phat thuong: ban cu chi kiem potions[117]<=0 o day roi tru DUY
+                // NHAT o cuoi nhanh (sau khi da roll thuong ngau nhien + doAddGemItem) - cua so
+                // dua giua kiem tra va tru la toan bo qua trinh roll thuong, dai nhat trong file.
+                if (!player.truNeuDu(() -> player.potions[117] > 0, () -> player.potions[117]--)) {
                     return;
                 }
 
@@ -2680,12 +2830,13 @@ class MapSuKien {
                 }
 
                 player.slNgLieuDoi = 0;
-                player.potions[117]--;
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn nhận được " + info, ""));
                 Database.instance.saveOrtherLog("", player.charname, "Chúc mừng bạn nhận được " + info, "otuinho");
             } else if (idMenu == 2) {
-                if (player.potions[118] <= 0) {
+                // Cung mau voi idMenu==1 o tren: tru truoc khi phat thuong thay vi tru DUY NHAT
+                // o cuoi nhanh sau khi da roll thuong ngau nhien.
+                if (!player.truNeuDu(() -> player.potions[118] > 0, () -> player.potions[118]--)) {
                     return;
                 }
 
@@ -2729,7 +2880,6 @@ class MapSuKien {
                 }
 
                 player.slNgLieuDoi = 0;
-                player.potions[118]--;
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn nhận được " + info, ""));
                 Database.instance.saveOrtherLog("", player.charname, "Chúc mừng bạn nhận được " + info, "otuilon");
@@ -2773,23 +2923,25 @@ class MapSuKien {
 
                     player.sendMessage(MessageCreator.createMsgMenu(mmenu, idNpc, idOptionMenu));
                 } else if (idOptionMenu == 5) {
-                    if (player.potions[117] < 1
-                            || player.potions[118] < 1
-                            || player.potions[119] < 1
-                            || player.potions[125] < 1
-                            || player.potions[121] < 1
-                            || player.potions[122] < 1) {
+                    if (!player.truNeuDu(
+                            () -> player.potions[117] >= 1
+                                    && player.potions[118] >= 1
+                                    && player.potions[119] >= 1
+                                    && player.potions[125] >= 1
+                                    && player.potions[121] >= 1
+                                    && player.potions[122] >= 1,
+                            () -> {
+                                player.potions[35]++;
+                                player.potions[117]--;
+                                player.potions[118]--;
+                                player.potions[119]--;
+                                player.potions[125]--;
+                                player.potions[121]--;
+                                player.potions[122]--;
+                            })) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Bạn chưa tập hợp đủ chữ HE 2014", ""));
                         return;
                     }
-
-                    player.potions[35]++;
-                    player.potions[117]--;
-                    player.potions[118]--;
-                    player.potions[119]--;
-                    player.potions[125]--;
-                    player.potions[121]--;
-                    player.potions[122]--;
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã đổi được 1 hộp quà", ""));
                     Database.instance.saveOrtherLog("", player.charname, player.potions[35] + " doi duoc 1 hop qua", "quahe");
@@ -2816,24 +2968,26 @@ class MapSuKien {
                 int[] slx = new int[]{0, 3, 5, 7, 10};
                 int[] slkemx = new int[]{0, 20, 30, 40, 50};
                 int[] pricex = new int[]{0, 70, 100, 130, 180};
-                if (player.getLuong() < pricex[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + pricex[idMenu] + " lượng mới có thể đổi được " + slx[idMenu] + " nguyên liệu", "")
-                    );
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= pricex[idMenu] && player.potions[116] >= slkemx[idMenu],
+                        () -> {
+                            player.potions[116] = player.potions[116] - slkemx[idMenu];
+                            player.subLuong((long) pricex[idMenu]);
+                        })) {
+                    if (player.getLuong() < pricex[idMenu]) {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage("Bạn phải có đủ " + pricex[idMenu] + " lượng mới có thể đổi được " + slx[idMenu] + " nguyên liệu", "")
+                        );
+                    } else {
+                        player.sendMessage(
+                                MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slkemx[idMenu] + " kem mới có thể đổi được " + slx[idMenu] + " nguyên liệu", "")
+                        );
+                    }
                     return;
                 }
 
-                if (player.potions[116] < slkemx[idMenu]) {
-                    player.sendMessage(
-                            MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slkemx[idMenu] + " kem mới có thể đổi được " + slx[idMenu] + " nguyên liệu", "")
-                    );
-                    return;
-                }
-
-                player.potions[116] = player.potions[116] - slkemx[idMenu];
                 player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], slx[idMenu], true);
                 player.sendMessage(MessageCreator.createCharGemItem(player));
-                player.subLuong((long) pricex[idMenu]);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(
                         MessageCreator.createServerAlertMessage(
@@ -2896,32 +3050,32 @@ class MapSuKien {
         int percent = r.nextInt(100);
         String info = "";
         if (percent >= 0) {
-            if (percent < 80) {
-                int xpRan = 0;
-                int totalXp = 0;
-                if (percent < 90) {
-                    xpRan = r.nextInt(450000) + 1000;
-                    addXpCharEvent(p, (long) (50000 + xpRan), false, "addGifEventGioTo1");
-                    totalXp = 50000 + xpRan;
-                } else if (percent < 95) {
-                    xpRan = r.nextInt(1000000) + 1000;
-                    addXpCharEvent(p, (long) (500000 + xpRan), false, "addGifEventGioTo2");
-                    totalXp = 500000 + xpRan;
-                } else if (percent <= 97) {
-                    xpRan = r.nextInt(1500000) + 1000;
-                    addXpCharEvent(p, (long) (1500000 + xpRan), false, "addGifEventGioTo3");
-                    totalXp = 1500000 + xpRan;
-                } else if (percent < 100) {
-                    xpRan = r.nextInt(2000000) + 1000;
-                    addXpCharEvent(p, (long) (3000000 + xpRan), false, "addGifEventGioTo3");
-                    totalXp = 3000000 + xpRan;
-                }
+            int xpRan = 0;
+            int totalXp = 0;
+            if (percent < 90) {
+                xpRan = r.nextInt(450000) + 1000;
+                addXpCharEvent(p, (long) (50000 + xpRan), false, "addGifEventGioTo1");
+                totalXp = 50000 + xpRan;
+            } else if (percent < 95) {
+                xpRan = r.nextInt(1000000) + 1000;
+                addXpCharEvent(p, (long) (500000 + xpRan), false, "addGifEventGioTo2");
+                totalXp = 500000 + xpRan;
+            } else if (percent <= 97) {
+                xpRan = r.nextInt(1500000) + 1000;
+                addXpCharEvent(p, (long) (1500000 + xpRan), false, "addGifEventGioTo3");
+                totalXp = 1500000 + xpRan;
+            } else if (percent < 100) {
+                xpRan = r.nextInt(2000000) + 1000;
+                addXpCharEvent(p, (long) (3000000 + xpRan), false, "addGifEventGioTo3");
+                totalXp = 3000000 + xpRan;
+            }
 
-                Database.instance.saveOrtherLog("", p.charname, "nhận được " + totalXp + " exp", "giftgioto3");
-                p.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + totalXp + " exp", ""));
-            } else if (percent < 90) {
+            Database.instance.saveOrtherLog("", p.charname, "nhận được " + totalXp + " exp", "giftgioto3");
+            p.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + totalXp + " exp", ""));
+
+            if (percent >= 80 && percent < 90) {
                 giveItemAnimalGioto(map, p, (byte) r.nextInt(2));
-            } else if (percent <= 95) {
+            } else if (percent >= 90 && percent <= 95) {
                 int idgem = r.nextInt(18) + 137;
                 int n = r.nextInt(100) < 3 ? 2 : 1;
                 p.doAddGemItem(idgem, n, true);
@@ -2929,7 +3083,7 @@ class MapSuKien {
                 p.sendMessage(MessageCreator.createCharGemItem(p));
                 p.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
                 Database.instance.saveOrtherLog("", p.charname, info, "giftgioto2");
-            } else if (percent < 100) {
+            } else if (percent >= 96) {
                 int[] idGemTemplate = new int[]{
                     68, 69, 70, 71, 72, 73, 75, 76, 77, 78, 79, 80, 82, 83, 84, 85, 86, 87, 89, 90, 91, 92, 93, 94, 96, 97, 98, 99, 100, 101
                 };

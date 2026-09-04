@@ -130,12 +130,22 @@ class CharVongLap {
             ++self.minuteOnline;
             if (self.minuteOnline > 120) {
                 self.minuteOnline = 0;
-                if (Char.TOTAL_FANCUNG > 0) {
+                boolean conSuatFanCung;
+                synchronized (Char.KHOA_FAN_CUNG) {
+                    conSuatFanCung = Char.TOTAL_FANCUNG > 0;
+                    if (conSuatFanCung) {
+                        --Char.TOTAL_FANCUNG;
+                    }
+                }
+                if (conSuatFanCung) {
                     // TODO thêm danh hiệu fan cứng ở đây
                     final boolean isNew = self.addDanhHieu(8788, 1440L);
                     if (isNew) {
-                        --Char.TOTAL_FANCUNG;
                         self.sendMessage(MessageCreator.createMsgChat(self.id, "Nhận được danh hiệu Fan cứng"));
+                    } else {
+                        synchronized (Char.KHOA_FAN_CUNG) {
+                            ++Char.TOTAL_FANCUNG;
+                        }
                     }
                 }
             }
@@ -1477,6 +1487,7 @@ class CharVongLap {
     }
 
     static boolean checkReceiveTrungLinhThuRuongBatbao(final Char p) {
+        synchronized (Char.KHOA_MO_RUONG) {
         ++Char.total_open;
         System.out.println("check trung trung: nblucky: " + Char.numberLucky + ", nbrandom= " + Char.numberRandom + ", totalopen= " + Char.total_open);
         if (TeamServer.isServerKinhMon()) {
@@ -1583,6 +1594,7 @@ class CharVongLap {
             return false;
         }
         return false;
+        }
     }
 
     static void startThreadXoso() {
@@ -1642,9 +1654,18 @@ class CharVongLap {
                                 if (tax > 10) {
                                     tax = 10;
                                 }
-                                final long moneyWin = Char.MONEY_XOSO - Char.MONEY_XOSO * tax / 100L;
+                                // Chup lai hu tien va DONG VONG NGAY, truoc khi phat thuong - xem
+                                // chu thich day du o Char.startThreadXosoLow (ban thuong) cho cung
+                                // loi: saveCharAuto co the nem loi tu doan dau ham khong boc
+                                // try/catch, catch cua vong lap nuot loi ma khong dong vong, va
+                                // 100ms sau lai addXu them mot lan nua cho cung nguoi thang.
+                                final long huTien = Char.MONEY_XOSO;
+                                final long moneyWin = huTien - huTien * tax / 100L;
                                 final long moneytest = value[index];
-                                final long tl = moneytest * 100L / Char.MONEY_XOSO;
+                                final long tl = moneytest * 100L / huTien;
+                                Char.MONEY_XOSO = 0L;
+                                Char.timeXoso = System.currentTimeMillis();
+                                Char.ALL_PLAYER_XOSO.clear();
                                 String info = "Không tìm thấy người chiến thắng";
                                 if (pwin != null) {
                                     info = "Chúc mừng " + namexoso[index].toUpperCase() + " đã chiến thắng " + Map.getDotNumber(moneyWin) + " vàng trong trò chơi Vòng xoay may mắn";
@@ -1652,7 +1673,7 @@ class CharVongLap {
                                         info = "Chúc mừng " + namexoso[index].toUpperCase() + " đặt " + Map.getDotNumber(moneytest) + " vàng và chiến thắng " + Map.getDotNumber(moneyWin) + " vàng trong trò chơi Vòng xoay may mắn";
                                     }
                                     Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(info));
-                                    Database.instance.resetXoso(namexoso[index], value[index], moneyWin, Char.MONEY_XOSO * tax / 100L);
+                                    Database.instance.resetXoso(namexoso[index], value[index], moneyWin, huTien * tax / 100L);
                                     Char.charNameXosoWin = namexoso[index];
                                     Char.moneyCharXosowin = moneyWin;
                                     Char.moneyCharXosoBid = value[index];
@@ -1664,11 +1685,8 @@ class CharVongLap {
                                     Char.charNameXosoWin = "";
                                     Char.moneyCharXosowin = 0;
                                     Char.moneyCharXosoBid = 0;
-                                    Database.instance.resetXoso("ko char win", value[index], moneyWin, Char.MONEY_XOSO * tax / 100L);
+                                    Database.instance.resetXoso("ko char win", value[index], moneyWin, huTien * tax / 100L);
                                 }
-                                Char.MONEY_XOSO = 0L;
-                                Char.timeXoso = System.currentTimeMillis();
-                                Char.ALL_PLAYER_XOSO.clear();
                             } else {
                                 Char.timeXoso = System.currentTimeMillis();
                             }

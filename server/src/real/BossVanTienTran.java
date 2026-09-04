@@ -142,7 +142,6 @@ public class BossVanTienTran extends Boss {
                     demi = true;
                 }
 
-                demi = false;
                 boolean crit = false;
                 if (Map.r.nextInt(100) <= 20) {
                     crit = true;

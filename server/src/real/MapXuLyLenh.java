@@ -30,8 +30,16 @@ class MapXuLyLenh {
 
     static void addXpCharEvent(Char p, long dxp, boolean isNhansam, String pos) {
         try {
+            if (dxp < 0L) {
+                // Exp AM lam tut cap (va exp co the thanh am -> LevelDetail nem loi ngay giua
+                // khoi synchronized, de lai nhan vat lv 0). Khong nguoi goi nao co y truyen so
+                // am; duong sinh ra no la phep tinh tran int (xem Map.calculatorXpParty). Chan
+                // va ghi lai de con biet neu con duong khac.
+                Database.instance.saveOrtherLog("", p.charname, "bo qua exp am " + dxp + " tu " + pos, "expam");
+                return;
+            }
             synchronized (p.lvDetail) {
-                
+
                 if (Map.checkRcvXP) {
                     if (p.receiveXP() == 3) {
                         return;
@@ -148,6 +156,13 @@ class MapXuLyLenh {
     }
 
     static void addXPForChar(Char p, long dxp, boolean isNhansam, String pos) throws IOException {
+        if (dxp < 0L) {
+            // Xem chu thich o addXpCharEvent. Moi nguoi goi (ke ca LenhWeb dat cap tu web) deu
+            // chi truyen so duong - LenhWeb.apDungOnline nem loi truoc khi goi neu khong phai
+            // nang cap.
+            Database.instance.saveOrtherLog("", p.charname, "bo qua exp am " + dxp + " tu " + pos, "expam");
+            return;
+        }
         synchronized (p.lvDetail) {
             boolean isAdminBuff = pos != null && pos.contains("adminpanel");
             if (!isAdminBuff && Map.checkRcvXP) {
@@ -282,7 +297,13 @@ class MapXuLyLenh {
                 return;
             }
     
-            map.removeItem(item, player.inCountry);
+            // Chiem nguyen tu truoc khi cho vao tui: ham nay duoc goi CA tu goi 18 (luong phien)
+            // CA tu vong tu dong nhat trong CharVongLap (luong ban do). Ban cu chi remove roi
+            // cap luon -> hai luong cung nhat mot mon = mon do nam trong tui hai nguoi (hoac hai
+            // lan trong mot nguoi) va duoc luu that xuong DB. Xem Map.chiemItem.
+            if (!map.chiemItem(item, player.inCountry)) {
+                return;
+            }
             item.owner = player.charDBID;
             short oldid = item.id;
             item.id = player.getIDItem();
@@ -822,6 +843,34 @@ class MapXuLyLenh {
                             );
                 }
 
+                // Kiem-va-tru NGUYEN TU ngay luc chap nhan, khong tin vao so du da kiem luc
+                // moi (MapXaHoi.doSendChallenParty) - giua hai moc do co the da tieu xu (mua
+                // do, giao dich...), va nhanh moi cung KHONG he kiem lai so du cua CHINH nguoi
+                // moi (chi kiem doi phuong). subXu cu chi chan ve 0 ma khong bao loi, nen mot
+                // hoac ca hai ben tra it hon/khong tra gi trong khi arena van tra thuong DUNG
+                // gap doi so cuoc goc cho nguoi thang - sinh xu tu khong khi. Hoan lai ben da
+                // tru neu ben kia thieu, huy tran dau thay vi tao arena.
+                final long cuoc = (long) p.moneyThachdau;
+                if (!p.truXuNeuDu(cuoc, false, "map 32")) {
+                    p.nameCompetitor = "";
+                    p.moneyThachdau = 0;
+                    player.nameCompetitor = "";
+                    player.moneyThachdau = 0;
+                    p.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu để thách đấu, trận đấu đã huỷ.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Đối thủ không đủ xu, trận đấu đã huỷ.", ""));
+                    return;
+                }
+                if (!player.truXuNeuDu(cuoc, false, "map 33")) {
+                    p.addXu(cuoc, "map 32 hoan lai");
+                    p.nameCompetitor = "";
+                    p.moneyThachdau = 0;
+                    player.nameCompetitor = "";
+                    player.moneyThachdau = 0;
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu để thách đấu, trận đấu đã huỷ.", ""));
+                    p.sendMessage(MessageCreator.createServerAlertMessage("Đối thủ không đủ xu, trận đấu đã huỷ.", ""));
+                    return;
+                }
+
                 TeamArena team1 = new TeamArena(TeamArena.genIDTeam());
                 TeamArena team2 = new TeamArena(TeamArena.genIDTeam());
                 ArenaMap mm = (ArenaMap) RealController.mapList.get(205);
@@ -836,8 +885,6 @@ class MapXuLyLenh {
                 player.idArena = Map.IDARENA;
                 arena.moneyThachdau = p.moneyThachdau * 2;
                 arena.moneyThachdau = arena.moneyThachdau - arena.moneyThachdau / 5;
-                p.subXu((long) p.moneyThachdau, false, "map 32");
-                player.subXu((long) p.moneyThachdau, false, "map 33");
                 team1.addMember(p);
                 team2.addMember(player);
                 Message m = null;

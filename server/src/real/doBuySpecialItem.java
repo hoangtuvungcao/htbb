@@ -93,9 +93,14 @@ public class doBuySpecialItem {
                     int[] var10000;
                     int var10002;
                     Message m;
-                   
+
                     if (player.map.isItemLock(item.id)) {
-                        if (player.getLuongLock() < item.getPrice(isSale)) {
+                        // Kiem-va-tru luong khoa trong MOT buoc (truLuongKhoaNeuDu) thay vi
+                        // kiem roi tru rieng: nhanh nay luon di tiep xuong dung MOT nhanh con
+                        // (126/127/128 hoac 116..125/150/176) va nhanh do luon co dung mot
+                        // lan subLuongLock, nen gop check+tru vao day la an toan, khong doi
+                        // hanh vi khi du tien.
+                        if (!player.truLuongKhoaNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng khoá.", ""));
                             return;
                         }
@@ -104,19 +109,16 @@ public class doBuySpecialItem {
                         if ((item.id < 116 || item.id > 125) && item.id != 150 && item.id != 176) {
                             if (item.id == 126) {
                                 var10002 = player.potions[35]++;
-                                player.subLuongLock((long) item.getPrice(isSale));
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                 nameItem = item.name + "_khoa";
                             } else if (item.id == 127) {
                                 var10000 = player.potions;
                                 var10000[94] += item.value;
-                                player.subLuongLock((long) item.getPrice(isSale));
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                 nameItem = item.name + "_khoa";
                             } else if (item.id == 128) {
                                 var10000 = player.potions;
                                 var10000[96] += item.value;
-                                player.subLuongLock((long) item.getPrice(isSale));
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                 nameItem = item.name + "_khoa";
                             }
@@ -134,18 +136,16 @@ public class doBuySpecialItem {
                                 nameItem = item.name;
                             }
 
-                            player.subLuongLock((long) item.getPrice(isSale));
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             player.sendMessage(MessageCreator.createCharGemItem(player));
                         }
                     } else if (item.id == 172) {
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
                         nameItem = item.name;
-                        player.subLuong((long) item.getPrice(isSale));
                         var10000 = player.potions;
                         var10000[77] += item.value;
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -156,12 +156,11 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
-                        player.subLuong((long) item.getPrice(isSale));
                         doBuyModelClothe(player, 736, 1, 0);
                         nameItem = "Ao Son Tinh_luong";
                     } else if (item.id == 167) {
@@ -172,12 +171,11 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getxu() < (long) item.getPrice(isSale)) {
+                        if (!player.truXuNeuDu((long) item.getPrice(isSale), false, "map 65")) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
-                        player.subXu((long) item.getPrice(isSale), false, "map 65");
                         doBuyModelClothe(player, 736, 1, 0);
                         nameItem = "Ao Son Tinh_xu";
                     } else if (item.id == 168) {
@@ -187,12 +185,11 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
-                        player.subLuong((long) item.getPrice(isSale));
                         doBuyModelClothe(player, 737, 1, 0);
                         nameItem = "Ao Thuy Tinh_luong";
                     } else if (item.id == 169) {
@@ -203,12 +200,11 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getxu() < (long) item.getPrice(isSale)) {
+                        if (!player.truXuNeuDu((long) item.getPrice(isSale), false, "map 71")) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
-                        player.subXu((long) item.getPrice(isSale), false, "map 71");
                         doBuyModelClothe(player, 737, 1, 0);
                         nameItem = "Ao Thuy Tinh_xu";
                     } else if (item.id == 170) {
@@ -218,12 +214,11 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
-                        player.subLuong((long) item.getPrice(isSale));
                         doBuyModelClothe(player, 740, Char.isSuKienBlackFriday() ? 60 : 1, 0);
                         nameItem = "Ao Tieu long nu";
                     } else if (item.id == 171) {
@@ -233,12 +228,11 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
-                        player.subLuong((long) item.getPrice(isSale));
                         doBuyModelClothe(player, 741, Char.isSuKienBlackFriday() ? 60 : 1, 0);
                         nameItem = "Ao Duong qua";
                     } else if (item.id == 174) {
@@ -248,12 +242,11 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
-                        player.subLuong((long) item.getPrice(isSale));
                         doBuyModelClothe(player, 744, 7, 0);
                         nameItem = "Ao tinh quan";
                     } else if (item.id == Map.SHOP_BONG_DA_NAM || item.id == Map.SHOP_BONG_DA_NU) {
@@ -268,12 +261,11 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng.", ""));
                             return;
                         }
 
-                        player.subLuong((long) item.getPrice(isSale));
                         doBuyModelClothe(player, laNam ? 791 : 792, Map.SO_NGAY_BONG_DA, 0);
                         nameItem = laNam ? "Thoi trang bong da nam" : "Thoi trang bong da nu";
                     } else if (item.id == 175) {
@@ -283,12 +275,11 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
-                        player.subLuong((long) item.getPrice(isSale));
                         doBuyModelClothe(player, 743, 7, 0);
                         nameItem = "Ao tien nu";
                     } else if (item.id == 178) {
@@ -298,12 +289,11 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
-                        player.subLuong((long) item.getPrice(isSale));
                         doBuyModelClothe(player, 754, 7, 0);
                         nameItem = "Ao dai nam 2021";
                     } else if (item.id == 179) {
@@ -313,20 +303,18 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
-                        player.subLuong((long) item.getPrice(isSale));
                         doBuyModelClothe(player, 755, 7, 0);
                         nameItem = "Ao dai nu 2021";
                     } else if (item.id >= 154 && item.id <= 164) {
-                        if (player.getLuong() < item.getPrice(isSale)) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
-                            return;
-                        }
-
+                        // Kiem gioi tinh TRUOC khi dung tien: neu de kiem tien len truoc va
+                        // gop tien vao buoc atomiv o day thi mua sai gioi tinh se bi tru tien
+                        // oan (kiem qua roi moi tru tien that, khong the hoan lai trong
+                        // Runnable). Doi cho khong doi y nghia, chi doi thu tu bao loi.
                         if (player.gender == 1) {
                             if (item.id < 161) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Kiểu tóc chỉ dùng cho nữ", ""));
@@ -337,9 +325,13 @@ public class doBuySpecialItem {
                             return;
                         }
 
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
+                            return;
+                        }
+
                         soluong = 1;
                         int oldhead = player.headStyle;
-                        player.subLuong((long) item.getPrice(isSale));
                         player.headStyle = (byte) item.value;
                         player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                         player.sendToNearPlayer(MessageCreator.createCharInfo(player));
@@ -351,6 +343,8 @@ public class doBuySpecialItem {
                             return;
                         }
 
+                        // Khong doi: nhanh nay chua bao gio thuc su subXu (doCreateHuyetLinhThao
+                        // khong tru tien), nen khong co cap kiem-roi-tru can lam atomic o day.
                         if (player.getxu() < (long) item.getPrice(isSale)) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
@@ -369,24 +363,22 @@ public class doBuySpecialItem {
                         Database.instance.saveOrtherLog("", player.charname, "mua hlt,sl con lai co the mua: " + player.hlt_buy, "bhlt");
                     } else if (item.id == 129) {
                         moneyType = "xu";
-                        if (player.getxu() < (long) item.getPrice(isSale)) {
+                        if (!player.truXuNeuDu((long) item.getPrice(isSale), true, "map 66")) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
                         nameItem = item.name;
-                        player.subXu((long) item.getPrice(isSale), true, "map 66");
                         var10000 = player.potions;
                         var10000[97] += item.value;
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     } else if (item.id == 130) {
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
                         nameItem = item.name;
-                        player.subLuong((long) item.getPrice(isSale));
                         var10000 = player.potions;
                         var10000[116] += item.value;
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -397,46 +389,41 @@ public class doBuySpecialItem {
                             return;
                         }
 
-                        if (player.getxu() < (long) item.getPrice(isSale)) {
+                        if (!player.truXuNeuDu((long) item.getPrice(isSale), true, "map 67")) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
                         nameItem = item.name;
                         --player.buy_luot_van_tieu;
-                        player.subXu((long) item.getPrice(isSale), true, "map 67");
                         var10000 = player.potions;
                         var10000[82] += item.value;
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     } else if (item.id == 135) {
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
                         nameItem = nameItem + item.name;
-                        player.subLuong((long) item.getPrice(isSale));
                         var10000 = player.potions;
                         var10000[142] += item.value;
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     } else if (item.id == 177) {
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
                         nameItem = nameItem + item.name;
-                        player.subLuong((long) item.getPrice(isSale));
                         var10000 = player.potions;
                         var10000[105] += item.value;
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     } else if (item.id == 148) {
-                        if (player.getLuong() < item.getPrice(isSale)) {
+                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
-
-                        player.subLuong((long) item.getPrice(isSale));
 
                         if (Char.isSuKienTrungThul2016()) {
                             var10000 = player.potions;
@@ -445,13 +432,13 @@ public class doBuySpecialItem {
                             var10000 = player.potions;
                             var10000[139] += item.value;
                         } else if (Char.isSuKienHe2017()) {
-                       
+
                             var10000 = player.potions;
                             var10000[155] += item.value;
                         } else if (Char.isSuKienTet2017()) {
-                       
+
                             var10000 = player.potions;
-                            var10000[155] += item.value;    
+                            var10000[155] += item.value;
                         }else if (Char.isSuKienWordcup2017()) {
                             var10000 = player.potions;
                             var10000[161] += item.value;
@@ -459,13 +446,12 @@ public class doBuySpecialItem {
 
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     } else if (item.id == 149) {
-                        if (player.getxu() < item.getPrice(isSale)) {
+                        if (!player.truXuNeuDu((long) item.getPrice(isSale), true, "shop cá nhân")) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                             return;
                         }
 
                         nameItem = item.name;
-                        player.subXu((long) item.getPrice(isSale), true, "shop cá nhân");
                         if (Char.isSuKienHe2017()) {
                             var10000 = player.potions;
                             var10000[155] += item.value;
@@ -480,54 +466,54 @@ public class doBuySpecialItem {
                         int hour;
                         if (item.id == 151) {
                             moneyType = "xu";
-                            if (player.getxu() < (long) item.getPrice(isSale)) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
-                                return;
-                            }
-
+                            // isFullInventory dua len TRUOC buoc tru tien atomic: giu nguyen
+                            // dieu kien/thong bao, chi doi thu tu de khong tru tien roi moi
+                            // phat hien het cho (khong the hoan lai trong truXuNeuDu).
                             if (player.isFullInventory()) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
                                 return;
                             }
 
+                            if (!player.truXuNeuDu((long) item.getPrice(isSale), false, "map 73")) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
+                                return;
+                            }
+
                             nameItem = item.name;
                             soluong = 1;
-                            player.subXu((long) item.getPrice(isSale), false, "map 73");
                             hour = 24 - UtilKPAH.getHour();
                             minute = UtilKPAH.getMinute();
                             value = hour * 60 - minute;
                             player.map.doBuyGayGiangSinh(player, value);
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                         } else if (item.id == 173) {
-                            if (player.getLuong() < item.getPrice(isSale)) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
-                                return;
-                            }
-
                             if (player.isFullInventory()) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
                                 return;
                             }
 
+                            if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
+                                return;
+                            }
+
                             soluong = 1;
-                            player.subLuong((long) item.getPrice(isSale));
                             value = 10080; // thời gian
                             player.createLan((long) value, true, 95);
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             nameItem = item.name;
                         } else if (item.id == 152) {
-                            if (player.getLuong() < item.getPrice(isSale)) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
-                                return;
-                            }
-
                             if (player.isFullInventory()) {
                                 player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
                                 return;
                             }
 
+                            if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
+                                return;
+                            }
+
                             soluong = 1;
-                            player.subLuong((long) item.getPrice(isSale));
                             hour = 24 - UtilKPAH.getHour();
                             minute = UtilKPAH.getMinute();
                             value = hour * 60 - minute;
@@ -545,36 +531,33 @@ public class doBuySpecialItem {
 
                             if (item.id == 136) {
                                 moneyType = "xu";
-                                if (player.getxu() < (long) item.getPrice(isSale)) {
+                                if (!player.truXuNeuDu((long) item.getPrice(isSale), true, "map 68")) {
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                     return;
                                 }
 
                                 nameItem = item.name;
-                                player.subXu((long) item.getPrice(isSale), true, "map 68");
                                 var10000 = player.potions;
                                 var10000[77] += item.value;
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             } else if (item.id == 146) {
-                                if (player.getLuong() < item.getPrice(isSale)) {
+                                if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                     return;
                                 }
 
                                 nameItem = item.name + "_luong";
-                                player.subLuong((long) item.getPrice(isSale));
                                 var10000 = player.potions;
                                 var10000[104] += item.value;
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             } else if (item.id == 147) {
                                 moneyType = "xu";
-                                if (player.getxu() < (long) item.getPrice(isSale)) {
+                                if (!player.truXuNeuDu((long) item.getPrice(isSale), true, "map 69")) {
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                     return;
                                 }
 
                                 nameItem = item.name + "_xu";
-                                player.subXu((long) item.getPrice(isSale), true, "map 69");
                                 if (Char.isSuKienHe2017()) {
                                     var10000 = player.potions;
                                     var10000[104] += item.value;
@@ -585,17 +568,22 @@ public class doBuySpecialItem {
 
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             } else if (item.id == 141) {
-                                if (player.getLuong() < item.getPrice(isSale)) {
+                                if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                     return;
                                 }
 
                                 soluong = 1;
                                 nameItem = item.name;
-                                player.subLuong((long) item.getPrice(isSale));
                                 player.createPet(21, petTemplate[21].timeExpire);
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                             } else if (item.id == 132) {
+                                // Khong doi: subLuong o day chi chay khi doCreateHuyetBoDe(...)
+                                // tra ve true (con cho trong hanh trang). Neu gop check+tru
+                                // len truoc bang truLuongNeuDu thi luc het cho se tru tien ma
+                                // khong co do, va khong the hoan lai trong nhanh nay ma khong
+                                // bay them logic hoan tien moi (ngoai pham vi doi mang tinh
+                                // co hoc cua dot sua nay).
                                 if (player.getLuong() < item.getPrice(isSale)) {
                                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                     return;
@@ -616,18 +604,21 @@ public class doBuySpecialItem {
                                             if (item.id != 92 && item.id != 107 && item.id != 110 && item.id != 111 && item.id != 133) {
                                                 int var10001;
                                                 if (item.id >= 83 && item.id <= 85) {
-                                                    if (player.potions[item.id - 93 + 112] + item.value > 5) {
+                                                    // Kiem tra va cong don PHAI cung mot o potions[] - ban cu kiem o
+                                                    // item.id-93+112 (=id+19) nhung lai cong don o item.id-83+112
+                                                    // (=id+29), lech 10 chi so, nen gioi han "toi da 5" khong bao
+                                                    // gio chan duoc so luong that su da mua.
+                                                    if (player.potions[item.id - 83 + 112] + item.value > 5) {
                                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mua thêm.", ""));
                                                         return;
                                                     }
 
-                                                    if (player.getLuong() < item.getPrice(isSale)) {
+                                                    if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                                         return;
                                                     }
 
                                                     nameItem = item.name;
-                                                    player.subLuong((long) item.getPrice(isSale));
                                                     var10000 = player.potions;
                                                     var10001 = item.id - 83 + 112;
                                                     var10000[var10001] += item.value;
@@ -637,80 +628,71 @@ public class doBuySpecialItem {
                                                 }
 
                                                 if (item.id == 108) {
-                                                    if (player.getLuong() < item.getPrice(isSale)) {
+                                                    if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                                         return;
                                                     }
 
                                                     nameItem = item.name;
-                                                    player.subLuong((long) item.getPrice(isSale));
                                                     var10000 = player.potions;
                                                     var10000[13] += item.value;
                                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                                     Database.instance.saveLogBuyItemShop(player.charname, item.name, item.type, item.getPrice(isSale), "Xu_" + oldXu + "_" + player.getxu() + "_Luong_" + oldLuong + "_" + player.getLuong());
                                                 } else if (item.id == 134) {
-                                                    if (player.getLuong() < item.getPrice(isSale)) {
+                                                    if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                                         return;
                                                     }
 
                                                     nameItem = item.name;
-                                                    player.subLuong((long) item.getPrice(isSale));
                                                     var10000 = player.potions;
                                                     var10000[77] += item.value;
                                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                                     Database.instance.saveLogBuyItemShop(player.charname, item.name, item.type, item.getPrice(isSale), "Xu_" + oldXu + "_" + player.getxu() + "_Luong_" + oldLuong + "_" + player.getLuong());
                                                 } else if (item.id == 109) {
-                                                    if (player.getLuong() < item.getPrice(isSale)) {
+                                                    if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                                         return;
                                                     }
 
                                                     nameItem = item.name;
-                                                    player.subLuong((long) item.getPrice(isSale));
                                                     var10000 = player.potions;
                                                     var10000[8] += item.value;
                                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                                     Database.instance.saveLogBuyItemShop(player.charname, item.name, item.type, item.getPrice(isSale), "Xu_" + oldXu + "_" + player.getxu() + "_Luong_" + oldLuong + "_" + player.getLuong());
                                                 } else if (item.id == 112) {
-                                                    if (player.getLuong() < item.getPrice(isSale)) {
+                                                    if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                                         return;
                                                     }
 
                                                     soluong = 1;
                                                     nameItem = item.name;
-                                                    player.subLuong((long) item.getPrice(isSale));
                                                     player.genItemPhiPhong(608, true, 0, 43200000);
                                                     Database.instance.saveLogBuyItemShop(player.charname, item.name, item.type, item.getPrice(isSale), "Xu_" + oldXu + "_" + player.getxu() + "_Luong_" + oldLuong + "_" + player.getLuong());
                                                 } else if (item.id == 115) {
-                                                    if (player.getLuong() < item.getPrice(isSale)) {
+                                                    if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                                         return;
                                                     }
 
                                                     soluong = 1;
                                                     nameItem = item.name;
-                                                    player.subLuong((long) item.getPrice(isSale));
                                                     player.genItemPhiPhong(608, true, 1, 43200000);
                                                     Database.instance.saveLogBuyItemShop(player.charname, item.name, item.type, item.getPrice(isSale), "Xu_" + oldXu + "_" + player.getxu() + "_Luong_" + oldLuong + "_" + player.getLuong());
                                                 } else if (player.potions[item.id + 19] + item.value <= 800) {
                                                     nameItem = item.name;
                                                     if (item.type == 0) {
-                                                        if (player.getLuong() < item.getPrice(isSale)) {
+                                                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                                             return;
                                                         }
-
-                                                        player.subLuong((long) item.getPrice(isSale));
                                                     } else if (item.type == 1) {
                                                         moneyType = "xu";
-                                                        if (player.getxu() < (long) item.getPrice(isSale)) {
+                                                        if (!player.truXuNeuDu((long) item.getPrice(isSale), true, "map 74")) {
                                                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu.", ""));
                                                             return;
                                                         }
-
-                                                        player.subXu((long) item.getPrice(isSale), true, "map 74");
                                                     }
 
                                                     var10000 = player.potions;
@@ -723,12 +705,11 @@ public class doBuySpecialItem {
                                                 break label838;
                                             }
 
-                                            if (player.getLuong() < item.getPrice(isSale)) {
+                                            if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                                 return;
                                             }
 
-                                            player.subLuong((long) item.getPrice(isSale));
                                             soluong = 1;
                                             spItem = null;
                                             if (item.id == 92) {
@@ -756,14 +737,13 @@ public class doBuySpecialItem {
                                             return;
                                         }
 
-                                        if (player.getLuong() < item.getPrice(isSale)) {
+                                        if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
                                             player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                                             return;
                                         }
 
                                         soluong = 1;
                                         nameItem = item.name;
-                                        player.subLuong((long) item.getPrice(isSale));
                                         if ((item.id == 139 || item.id == 140) && Char.isSuKienBlackFriday()) {
                                             doBuyModelClothe(player, item, 60);
                                         } else if (item.id != 90 && item.id != 91) {
@@ -778,11 +758,10 @@ public class doBuySpecialItem {
                                         return;
                                     }
                                 } else {
-                                    if (player.getLuong() < item.getPrice(isSale)) {
-                                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
-                                        return;
-                                    }
-
+                                    // listSpItem/getAllSP dua len TRUOC buoc tru tien atomic
+                                    // (cung ly do voi nhanh 151/173/152 o tren): tranh tru tien
+                                    // roi moi phat hien da mua toi da / het ve, vi truLuongNeuDu
+                                    // khong the hoan lai sau khi da tru.
                                     if (player.listSpItem[item.id] >= 3) {
                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mua thêm.", ""));
                                         return;
@@ -793,8 +772,12 @@ public class doBuySpecialItem {
                                         return;
                                     }
 
+                                    if (!player.truLuongNeuDu((long) item.getPrice(isSale))) {
+                                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
+                                        return;
+                                    }
+
                                     nameItem = item.name;
-                                    player.subLuong((long) item.getPrice(isSale));
                                     if (player.listSpItem[item.id] == 0) {
                                         spItem = new ShopTemplate();
                                         spItem.coppy(spItem, item);

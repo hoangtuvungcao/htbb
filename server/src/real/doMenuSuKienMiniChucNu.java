@@ -57,47 +57,53 @@ public class doMenuSuKienMiniChucNu {
                 player.sendMessage(MessageCreator.createMsgMenu((String[]) (new String[]{"3 ng.liệu sc 6", "5 ng.liệu sc 6", "7 ng.liệu sc 6", "10 ng.liệu sc 6", "1 ng.liệu sc 6(1s+10l)"}), idNpc, 2));
 
             } else if (idOptionMenu == 2) { // pp ma
-                if (player.getLuong() < 3500) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 3500  lượng mới có thể đổi được 1 nguyên liệu", ""));
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= 3500 && player.potions[105] >= 5,
+                        () -> {
+                            player.subLuong((long) 3500);
+                            player.potions[105] -= 5;
+                        })) {
+                    if (player.getLuong() < 3500) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 3500  lượng mới có thể đổi được 1 nguyên liệu", ""));
+                    } else {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 5 sao mới có thể đổi được 1 nguyên liệu", ""));
+                    }
                     return;
                 }
 
-                if (player.potions[105] < 5) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 5 sao mới có thể đổi được 1 nguyên liệu", ""));
-                    return;
-                }
-                player.potions[105] -= 5;
-
-                player.subLuong((long) 3500);
                 ItemLuckyDraw.createtemCoat(742, player, 0, true, 43200);
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được phi phong khổng tước (Ma pháp)", ""));
 
             } else if (idOptionMenu == 3) { // pp vật
-                if (player.getLuong() < 3500) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 3500  lượng mới có thể đổi được 1 nguyên liệu", ""));
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= 3500 && player.potions[105] >= 5,
+                        () -> {
+                            player.subLuong((long) 3500);
+                            player.potions[105] -= 5;
+                        })) {
+                    if (player.getLuong() < 3500) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 3500  lượng mới có thể đổi được 1 nguyên liệu", ""));
+                    } else {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 5 sao mới có thể đổi được 1 nguyên liệu", ""));
+                    }
                     return;
                 }
-
-                if (player.potions[105] < 5) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 5 sao mới có thể đổi được 1 nguyên liệu", ""));
-                    return;
-                }
-                player.potions[105] -= 5;
-                player.subLuong((long) 3500);
                 ItemLuckyDraw.createtemCoat(742, player, 1, true, 43200);
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được phi phong khổng tước (vật lý)", ""));
             } else if (idOptionMenu == 4) { // bạch thử 7 ngày
-                if (player.getLuong() < 2500) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 2500  lượng mới có thể đổi được 1 nguyên liệu", ""));
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= 2500 && player.potions[105] >= 5,
+                        () -> {
+                            player.subLuong((long) 2500);
+                            player.potions[105] -= 5;
+                        })) {
+                    if (player.getLuong() < 2500) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 2500  lượng mới có thể đổi được 1 nguyên liệu", ""));
+                    } else {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 5 sao mới có thể đổi được 1 nguyên liệu", ""));
+                    }
                     return;
                 }
-                if (player.potions[105] < 5) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 5 sao mới có thể đổi được 1 nguyên liệu", ""));
-                    return;
-                }
-                player.potions[105] -= 5;
-
-                player.subLuong((long) 2500);
                 player.doCreatePetBachThu(10080, false);
                 player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Nhận được bạch thử (7 ngày)", ""));
             }
@@ -107,20 +113,22 @@ public class doMenuSuKienMiniChucNu {
             int[] var10000;
             if (idMenu == 2) {
                 if (idOptionMenu == 4) {
-                    if (player.getLuong() < 10) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 10 lượng mới có thể đổi được 1 nguyên liệu", ""));
-                        return;
-                    }
-
-                    if (player.potions[105] < 1) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 1 sao mới có thể đổi được 1 nguyên liệu", ""));
+                    if (!player.truNeuDu(
+                            () -> player.getLuong() >= 10 && player.potions[105] >= 1,
+                            () -> {
+                                player.subLuong(10L);
+                                player.potions[105]--;
+                            })) {
+                        if (player.getLuong() < 10) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 10 lượng mới có thể đổi được 1 nguyên liệu", ""));
+                        } else {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ 1 sao mới có thể đổi được 1 nguyên liệu", ""));
+                        }
                         return;
                     }
 
                     int idgem = r.nextInt(GemTemplate.ID_MATERIAL_LOW[5].length);
                     Database.instance.saveLogThongKeChiTieu(GemTemplate.ID_MATERIAL_LOW[5][idgem] + "_doi_" + 1, 0, 1, 10L, "luong");
-                    player.subLuong(10L);
-                    int var10002 = player.potions[105]--;
                     player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idgem], 1, true);
                     player.sendMessage(MessageCreator.createCharGemItem(player));
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -144,20 +152,23 @@ public class doMenuSuKienMiniChucNu {
                 sl = new int[]{0, 0, 0, 3, 5, 7, 10};
                 slCaudoi = new int[]{0, 0, 0, 5, 5, 5, 5};
                 int[] price = new int[]{0, 0, 0, 50, 70, 100, 120};
-                if (player.getLuong() < price[idMenu]) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""));
+                final int priceCanDoi = price[idMenu];
+                final int slCaudoiCanDoi = slCaudoi[idMenu];
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= priceCanDoi && player.potions[105] >= slCaudoiCanDoi,
+                        () -> {
+                            player.subLuong((long) priceCanDoi);
+                            player.potions[105] -= slCaudoiCanDoi;
+                        })) {
+                    if (player.getLuong() < priceCanDoi) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + priceCanDoi + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""));
+                    } else {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slCaudoiCanDoi + " sao mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""));
+                    }
                     return;
                 }
 
-                if (player.potions[105] < slCaudoi[idMenu]) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slCaudoi[idMenu] + " sao mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""));
-                    return;
-                }
-
-                Database.instance.saveLogThongKeChiTieu(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu] + "_doi_" + sl[idMenu], 0, 1, (long) price[idMenu], "luong");
-                player.subLuong((long) price[idMenu]);
-                var10000 = player.potions;
-                var10000[105] -= slCaudoi[idMenu];
+                Database.instance.saveLogThongKeChiTieu(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu] + "_doi_" + sl[idMenu], 0, 1, (long) priceCanDoi, "luong");
                 player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 var10000 = new int[]{0, 0, 0, 1, 2, 5, 10};

@@ -60,8 +60,21 @@ public class ItemChangeColor {
     }
 
     public static String doUpColorItem(Char p, Vector<Short> item, byte[] material, int materialUse) {
+        // material[i] am (client tu gui, doc bang message.dis.read() trong Map.doProcessItemAnimal
+        // nen la byte co dau -128..127): (1) cac phep kiem ton kho ben duoi deu dang "hienCo -
+        // material[i] < 0" nen so am luon qua ai; (2) delGemItem tru bang "kho -= material[i]",
+        // material am -> CONG nguoc ngoc vao kho. Chan ngay tai day, truoc khi tinh total.
+        for (byte v : material) {
+            if (v < 0) {
+                NghiVanGianLan.ghiVatPham(p, "hackngl", "gui so luong nguyen lieu doi mau AM: " + java.util.Arrays.toString(material));
+                return "Số lượng nguyên liệu không hợp lệ";
+            }
+        }
+
         short idStartGem = startIDMaterialAnimal[p.itChangeColor.idColor][0];
-        byte total = 0;
+        // KHONG duoc la byte: tong 6 gia tri 0..127 vuot 127 la QUAY VONG so am, lam total
+        // trong bien nho hon thuc te va di qua duoc chot "total < ALL_MATERIAL[...]" ben duoi.
+        int total = 0;
         (new StringBuilder("ngsd ")).append(materialUse).toString();
         boolean haveLock = false;
 

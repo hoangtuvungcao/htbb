@@ -621,7 +621,12 @@ public class MapTown extends Map {
                   }
 
                   if (mt.isDead) {
+                     // Xem chu thich o Region.java cho cung ham nay: thieu continue o day cho phep
+                     // mot goi 106 quay drop/cong exp nhieu lan tren mot con quai da chet (ke ca
+                     // Rong lon id 36) bang cach gui trung id.
                      onMosterDie(p, mt, skill, damage, effect, (byte)0);
+                     i++;
+                     continue;
                   } else {
                      if (mt.getIDClan() == p.idClan) {
                         i++;
@@ -642,10 +647,12 @@ public class MapTown extends Map {
                   dxp = 1;
                }
 
-               int[] downPercent = new int[]{1, 5, 10, dxp};
+               // Truoc day phan tu cuoi la "dxp" (tu chia cho chinh no -> luon = 1
+               // bat ke dxp ban dau la bao nhieu). Doi thanh so cu the.
+               int[] downPercent = new int[]{1, 5, 10, 20};
                int targetLv = p.getLevel();
                if (targetLv < 40) {
-                  downPercent = new int[]{1, 2, 3, dxp};
+                  downPercent = new int[]{1, 2, 3, 4};
                }
 
                int delta = targetLv - mt.level;
@@ -1010,10 +1017,12 @@ public class MapTown extends Map {
                                              dxp = 1;
                                           }
 
-                                          int[] downPercent = new int[]{1, 5, 10, dxp};
+                                          // Truoc day phan tu cuoi la "dxp" (tu chia cho chinh no -> luon = 1
+                                          // bat ke dxp ban dau la bao nhieu). Doi thanh so cu the.
+                                          int[] downPercent = new int[]{1, 5, 10, 20};
                                           int targetLv = p.getLevel();
                                           if (targetLv < 40) {
-                                             downPercent = new int[]{1, 2, 3, dxp};
+                                             downPercent = new int[]{1, 2, 3, 4};
                                           }
 
                                           int delta = targetLv - mt.level;

@@ -470,10 +470,12 @@ class CharChiSo {
                 upvP += 8;
                 upmP += 8;
             }
+            final int defThumaGocTruocThuCuoi = defThuma;
+            final int defThuvatGocTruocThuCuoi = defThuvat;
             defThuma += defThuma * (animalRide.att[1] + animalRide.attUp[1] + upMa + upm) / 100;
             defThuvat += defThuvat * (animalRide.att[0] + animalRide.attUp[0] + upVat + upv) / 100;
-            defThumaP += defThuma * (animalRide.att[1] + animalRide.attUp[1] + upmap + upm) / 100;
-            defThuvatP += defThuvat * (animalRide.att[0] + animalRide.attUp[0] + upvatp + upv) / 100;
+            defThumaP += defThumaGocTruocThuCuoi * (animalRide.att[1] + animalRide.attUp[1] + upmap + upm) / 100;
+            defThuvatP += defThuvatGocTruocThuCuoi * (animalRide.att[0] + animalRide.attUp[0] + upvatp + upv) / 100;
         }
         int upfullset = 0;
         if (self.married == 1) {
@@ -904,9 +906,6 @@ class CharChiSo {
                     if (petUsing != null && petUsing.isPetKhi() && self.idNgtuyet == 5 && self.isCrazy == -1) {
                         finalDame *= 3;
                     }
-                    if (petUsing != null && petUsing.isPetKhi() && self.idNgtuyet == 5 && self.isCrazy == -1) {
-                        finalDame *= 3;
-                    }
                     if (petUsing != null && ((self.map.isMapChienTruongMoba() && c2.getNoiLuc() >= 5) || !self.map.isMapChienTruongMoba())) {
                         finalDame += petUsing.getSatThuong();
                     }
@@ -1190,7 +1189,7 @@ class CharChiSo {
                 if (self.isSaTang() && (self.charClass == 4 )) {
                     int lv = self.getLevelCaiTrang();
                     if (lv >= 1 && lv <= 15) {
-                        attack1 += (short) (((self.agitity + self.tnKheoLeo()) + lv+ self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[1] + self.abilityKham[1]) * 5 / 3);
+                        attack1 += (short) (((self.agitity + self.tnKheoLeo()) + lv+ self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[1] + ((animalRide != null) ? animalRide.att[7] : 0) + self.abilityKham[1]) * 5 / 3);
                     }
                 } else {
                     attack1 += (short) (((self.agitity + self.tnKheoLeo()) + self.getEffSkillClan(3) + self.newAtb[3] + self.upAbility[1] + ((animalRide != null) ? animalRide.att[7] : 0) + self.abilityKham[1]) * 5 / 3);

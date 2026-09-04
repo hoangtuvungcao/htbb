@@ -440,13 +440,12 @@ class MapNhapText {
                     return;
                 }
 
-                if (player.getLuong() < 10) {
+                if (!player.truNeuDu(() -> player.getLuong() >= 10L, () -> player.subLuongTang(10L))) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng.", ""));
                     return;
                 }
 
                 int old = player.vetangluong--;
-                player.subLuongTang(10L);
                 p.addLuong(10);
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -719,25 +718,26 @@ class MapNhapText {
                     return;
                 }
 
-                if ((long) player.getLuong() < sl * 5L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
+                if (!player.truNeuDu(
+                        () -> (long) player.getLuong() >= sl * 5L
+                                && (long) player.potions[125] >= sl * 10L
+                                && (long) player.potions[124] >= sl * 10L,
+                        () -> {
+                            player.subLuong(sl * 5L);
+                            player.potions[125] = (int) ((long) player.potions[125] - sl * 10L);
+                            player.potions[124] = (int) ((long) player.potions[124] - sl * 10L);
+                            player.potions[134] = (int) ((long) player.potions[134] + sl);
+                        })) {
+                    if ((long) player.getLuong() < sl * 5L) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
+                    } else if ((long) player.potions[125] < sl * 10L) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh nướng", ""));
+                    } else {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
+                    }
                     return;
                 }
 
-                if ((long) player.potions[125] < sl * 10L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh nướng", ""));
-                    return;
-                }
-
-                if ((long) player.potions[124] < sl * 10L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
-                    return;
-                }
-
-                player.subLuong(sl * 5L);
-                player.potions[125] = (int) ((long) player.potions[125] - sl * 10L);
-                player.potions[124] = (int) ((long) player.potions[124] - sl * 10L);
-                player.potions[134] = (int) ((long) player.potions[134] + sl);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 Database.instance.saveOrtherLog("", player.charname, "doi  " + sl + " hop banh db", "banhdb");
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã đổi được " + sl + " hộp bánh đặc biệt", ""));
@@ -752,25 +752,26 @@ class MapNhapText {
                     return;
                 }
 
-                if (player.getxu() < slx * 5000L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
+                if (!player.truNeuDu(
+                        () -> player.getxu() >= slx * 5000L
+                                && (long) player.potions[125] >= slx * 10L
+                                && (long) player.potions[124] >= slx * 10L,
+                        () -> {
+                            player.subXu(slx * 5000L, false, "32017");
+                            player.potions[125] = (int) ((long) player.potions[125] - slx * 10L);
+                            player.potions[124] = (int) ((long) player.potions[124] - slx * 10L);
+                            player.potions[133] = (int) ((long) player.potions[133] + slx);
+                        })) {
+                    if (player.getxu() < slx * 5000L) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
+                    } else if ((long) player.potions[125] < slx * 10L) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh nướng", ""));
+                    } else {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
+                    }
                     return;
                 }
 
-                if ((long) player.potions[125] < slx * 10L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh nướng", ""));
-                    return;
-                }
-
-                if ((long) player.potions[124] < slx * 10L) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
-                    return;
-                }
-
-                player.subXu(slx * 5000L, false, "32017");
-                player.potions[125] = (int) ((long) player.potions[125] - slx * 10L);
-                player.potions[124] = (int) ((long) player.potions[124] - slx * 10L);
-                player.potions[133] = (int) ((long) player.potions[133] + slx);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 Database.instance.saveOrtherLog("", player.charname, "doi  " + slx + " hop banh thap cam", "banhtc");
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã đổi được " + slx + " hộp bánh thập cẩm", ""));

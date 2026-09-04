@@ -853,10 +853,12 @@ public class RegionVantienTran implements Runnable {
                         dxp = 1;
                     }
 
-                    int[] downPercent = new int[]{1, 5, 10, dxp};
+                    // Truoc day phan tu cuoi la "dxp" (tu chia cho chinh no -> luon = 1
+                    // bat ke dxp ban dau la bao nhieu). Doi thanh so cu the.
+                    int[] downPercent = new int[]{1, 5, 10, 20};
                     int targetLv = p.getLevel();
                     if (targetLv < 40) {
-                        downPercent = new int[]{1, 2, 3, dxp};
+                        downPercent = new int[]{1, 2, 3, 4};
                     }
 
                     int delta = targetLv - mt.level;
@@ -1242,10 +1244,12 @@ public class RegionVantienTran implements Runnable {
                                                                                         dxp = 1;
                                                                                     }
 
-                                                                                    int[] downPercent = new int[]{1, 5, 10, dxp};
+                                                                                    // Truoc day phan tu cuoi la "dxp" (tu chia cho chinh no -> luon = 1
+                                                                                    // bat ke dxp ban dau la bao nhieu). Doi thanh so cu the.
+                                                                                    int[] downPercent = new int[]{1, 5, 10, 20};
                                                                                     int targetLv = p.getLevel();
                                                                                     if (targetLv < 40) {
-                                                                                        downPercent = new int[]{1, 2, 3, dxp};
+                                                                                        downPercent = new int[]{1, 2, 3, 4};
                                                                                     }
 
                                                                                     int delta = targetLv - mt.level;
@@ -1363,10 +1367,12 @@ public class RegionVantienTran implements Runnable {
                                                                                         dxp = 1;
                                                                                     }
 
-                                                                                    int[] downPercent = new int[]{1, 5, 10, dxp};
+                                                                                    // Truoc day phan tu cuoi la "dxp" (tu chia cho chinh no -> luon = 1
+                                                                                    // bat ke dxp ban dau la bao nhieu). Doi thanh so cu the.
+                                                                                    int[] downPercent = new int[]{1, 5, 10, 20};
                                                                                     int targetLv = p.getLevel();
                                                                                     if (targetLv < 40) {
-                                                                                        downPercent = new int[]{1, 2, 3, dxp};
+                                                                                        downPercent = new int[]{1, 2, 3, 4};
                                                                                     }
 
                                                                                     int delta = targetLv - mt.level;

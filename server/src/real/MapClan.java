@@ -195,7 +195,9 @@ public class MapClan extends Map {
             Item item = this.getItem(id, player.inCountry);
             if (item != null) {
                 if ((item.belongUser == player.charDBID || item.belongUser == 0) && inRangeActor(player, item, 64)) {
-                    this.removeItem(item, player.inCountry);
+                    if (!this.chiemItem(item, player.inCountry)) {
+                        return; // luong khac vua nhat mon nay - xem Map.chiemItem
+                    }
                     item.owner = player.charDBID;
                     short oldid = item.id;
                     item.id = player.getIDItem();
@@ -244,7 +246,9 @@ public class MapClan extends Map {
         } else {
             if (pt != null) {
                 if ((pt.getType() == 0 || isPotionUnlimit(pt.getType()) || player.potions[pt.getType()] < 999 && pt.getType() != 78 && pt.getType() != 85 && pt.getType() != 80 && pt.getType() != 35 || pt.getType() == 78 || pt.getType() == 80 || pt.getType() == 35) && (pt.belongUser == player.charDBID || pt.belongUser == 0)) {
-                    this.removePotion(pt, player.inCountry);
+                    if (!this.chiemPotion(pt, player.inCountry)) {
+                        return;
+                    }
                     int[] var10000 = player.potions;
                     short var10001 = pt.getType();
                     var10000[var10001] += pt.quantity;
@@ -306,7 +310,9 @@ public class MapClan extends Map {
 
                     if (gem.isBoss) {
                         if (gem.idPartyBoss != 0 && (gem.belongParty != 0 && gem.belongParty == player.partyID || gem.belongParty == player.charDBID)) {
-                            this.removeGem(gem, player.inCountry);
+                            if (!this.chiemGem(gem, player.inCountry)) {
+                                return;
+                            }
                             player.doAddGemItem(gem.idGemTemplate);
                             player.sendMessage(MessageCreator.createCharGemItem(player));
                             int var8 = player.allGemGet[gem.idGemTemplate]++;
@@ -317,7 +323,9 @@ public class MapClan extends Map {
                         }
 
                         if (inRangeActor(player, gem, 48)) {
-                            this.removeGem(gem, player.inCountry);
+                            if (!this.chiemGem(gem, player.inCountry)) {
+                                return;
+                            }
                             player.doAddGemItem(gem.idGemTemplate);
                             player.sendMessage(MessageCreator.createCharGemItem(player));
                             int var10002 = player.allGemGet[gem.idGemTemplate]++;
@@ -687,10 +695,11 @@ public class MapClan extends Map {
                                                                     dxp = 1;
                                                                 }
 
-                                                                int[] downPercent = new int[]{1, 5, 10, dxp};
+                                                                // So cu the thay vi dxp (tu chia cho chinh no -> luon = 1).
+                                                                int[] downPercent = new int[]{1, 5, 10, 20};
                                                                 int targetLv = p.getLevel();
                                                                 if (targetLv < 40) {
-                                                                    downPercent = new int[]{1, 2, 3, dxp};
+                                                                    downPercent = new int[]{1, 2, 3, 4};
                                                                 }
 
                                                                 int delta = targetLv - mt.level;
@@ -819,10 +828,11 @@ public class MapClan extends Map {
                                                                         dxp = 1;
                                                                     }
 
-                                                                    int[] downPercent = new int[]{1, 5, 10, dxp};
+                                                                    // So cu the thay vi dxp (tu chia cho chinh no -> luon = 1).
+                                                                    int[] downPercent = new int[]{1, 5, 10, 20};
                                                                     int targetLv = p.getLevel();
                                                                     if (targetLv < 40) {
-                                                                        downPercent = new int[]{1, 2, 3, dxp};
+                                                                        downPercent = new int[]{1, 2, 3, 4};
                                                                     }
 
                                                                     int delta = targetLv - mt.level;

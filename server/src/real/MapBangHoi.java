@@ -161,7 +161,10 @@ class MapBangHoi {
                 return;
             }
 
-            if (player.idClan > 0) {
+            if (player.idClan != -1) {
+                // != -1, khong phai > 0: bang id 0 la id hop le dau tien duoc phat
+                // (idIconClan nap tu 0..MAX_CLAN-1), "> 0" cho thanh vien/bang chu cua
+                // bang id 0 lap them mot bang thu hai ma khong roi bang cu.
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tạo bang khi đang ở trong bang khác", ""));
                 return;
             }
@@ -808,6 +811,10 @@ class MapBangHoi {
                             return;
                         }
 
+                        // Ghi lai loi moi phia server: type==1 (chap nhan/tu choi) o duoi phai
+                        // doi chieu voi dung dong nay, khong duoc tin idCharx client tu gui.
+                        p.idClanVuaDuocMoi = clan.id;
+                        p.timeHetHanMoiClan = System.currentTimeMillis() + 120000L;
                         Message m = new Message(-11);
                         m.dos.writeByte(type);
                         m.dos.writeShort(player.id);
@@ -833,6 +840,20 @@ class MapBangHoi {
 
                 NewClan clanx = NewClan.getClan(p.idClan);
                 if (clanx == null) {
+                    return;
+                }
+
+                // "player" (nguoi goi goi -11 type=1 nay) phai la nguoi VUA DUOC MOI vao DUNG
+                // bang cua p, va loi moi con hieu luc. Truoc day khong co dieu kien nao o day:
+                // client tu gui idCharx tro toi BAT KY thanh vien nao cua bang muon vao la du,
+                // bo qua het quyen si quan/dieu kien cua nhanh type==0 phia tren.
+                if (player.idClanVuaDuocMoi != clanx.id || System.currentTimeMillis() > player.timeHetHanMoiClan) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Lời mời đã hết hạn hoặc không hợp lệ", ""));
+                    return;
+                }
+                player.idClanVuaDuocMoi = -1;
+                if (clanx.isDel) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tham gia khi bang đang trong thời gian chờ giải tán", ""));
                     return;
                 }
 
@@ -930,7 +951,10 @@ class MapBangHoi {
         int price = 100000000;
 
         try {
-            if (player.idClan > 0) {
+            if (player.idClan != -1) {
+                // != -1, khong phai > 0: bang id 0 la id hop le dau tien duoc phat
+                // (idIconClan nap tu 0..MAX_CLAN-1), "> 0" cho thanh vien/bang chu cua
+                // bang id 0 lap them mot bang thu hai ma khong roi bang cu.
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tạo bang khi đang ở trong bang khác", ""));
                 return;
             }
@@ -986,6 +1010,17 @@ class MapBangHoi {
                 return;
             }
 
+            // Kiem-va-tru NGUYEN TU truoc khi ghi CSDL, khong tin vao lan kiem getxu() o dau
+            // ham: gói -10 KHONG nam trong privateCmd nen chay tren LUONG BAN DO, trong khi
+            // hau het duong tieu xu khac chay tren LUONG PHIEN - giua lan kiem do va toi day
+            // da di qua hai luot round-trip CSDL (checkClanName, sap toi la addNewClan), du
+            // thoi gian de luong phien tieu het xu. Chot cu "getxu() > 0" con sai hon nua:
+            // CHI CAN CON 1 XU la qua, subXu(price) roi chan ve 0 - lap bang gan nhu mien phi.
+            if (!player.truXuNeuDu((long) price, true, "map 79")) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có " + price + " xu mới có thể lập bang", ""));
+                return;
+            }
+
             NewClan clan = new NewClan();
             clan.id = cID;
             clan.master = player.charname;
@@ -1001,9 +1036,6 @@ class MapBangHoi {
                 player.sendMessage(msg);
                 player.idClan = cID;
                 idIconClan.remove(new Integer(cID));
-                if (player.getxu() > 0L) {
-                    player.subXu((long) price, true, "map 79");
-                }
 
                 if (player.potions[31] > 0) {
                     player.potions[31]--;
@@ -1018,6 +1050,9 @@ class MapBangHoi {
                 player.rankClan = 0;
                 Database.instance.updateRankClan(player.charname, 0);
             } else {
+                // addNewClan that bai SAU khi da tru xu (o tren) - hoan lai, khong de nguoi
+                // choi mat xu ma khong nhan duoc gi.
+                player.addXu((long) price, "map 79 hoan lai");
                 player.sendMessage(MessageCreator.createServerAlertMessage("Tạo bang thất bại. Xin thử lại", ""));
                 if (clan.id != -1) {
                     idIconClan.remove(new Integer(cID));

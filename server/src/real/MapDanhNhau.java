@@ -1351,7 +1351,14 @@ class MapDanhNhau {
                                     }
 
                                     if (mt.isDead) {
+                                        // Quai da chet (thuong do mot id trung lap trong cung goi 106 -
+                                        // xem Region.java cho phan tich day du): PHAI bo qua ngay, khong
+                                        // duoc de roi xuong tinh sat thuong/onDropItem lai. Thieu continue
+                                        // o day la ke ho cho phep mot goi tin quay drop + cong exp nhieu
+                                        // lan tren MOT con quai (gui trung id lien tiep).
                                         Map.onMosterDie(p, mt, skill, damage, effect, (byte) 0);
+                                        i++;
+                                        continue;
                                     } else {
                                         mst.add(mt);
                                     }

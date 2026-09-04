@@ -82,20 +82,21 @@ public class doMenuSuKienHe2017 {
                 sl = new int[]{0, 0, 0, 3, 5, 7, 10};
                 slCaudoi = new int[]{0, 0, 0, 100, 150, 200, 250};
                 int[] price = new int[]{0, 0, 0, 50, 70, 100, 120};
-                if (player.getLuong() < price[idMenu]) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""));
-                    return;
-                }
-
-                if (player.potions[105] < slCaudoi[idMenu]) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slCaudoi[idMenu] + " kem mới có thể đổi được " + sl[idMenu] + " nguyên liệu1", ""));
+                if (!player.truNeuDu(
+                        () -> player.getLuong() >= price[idMenu] && player.potions[105] >= slCaudoi[idMenu],
+                        () -> {
+                            player.subLuong((long) price[idMenu]);
+                            player.potions[105] -= slCaudoi[idMenu];
+                        })) {
+                    if (player.getLuong() < price[idMenu]) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", ""));
+                    } else {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải có đủ " + slCaudoi[idMenu] + " kem mới có thể đổi được " + sl[idMenu] + " nguyên liệu1", ""));
+                    }
                     return;
                 }
 
                 Database.instance.saveLogThongKeChiTieu(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu] + "_doi_" + sl[idMenu], 0, 1, (long) price[idMenu], "luong");
-                player.subLuong((long) price[idMenu]);
-                var10000 = player.potions;
-                var10000[105] -= slCaudoi[idMenu];
                 player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 int[] pc = new int[]{0, 0, 0, 1, 2, 5, 10};

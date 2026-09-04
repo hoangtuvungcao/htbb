@@ -8,6 +8,18 @@ require_once __DIR__ . '/inc/functions.php';
 $page = 'admin_naptien';
 $errors = [];
 
+// FAIL CLOSED: 'doi-mat-khau-nay' la gia tri MAC DINH cong khai trong config.php (va lap lai
+// trong config.local.php.example) - khong phai mat khau that. Truoc day trang nay dung thang
+// no de so sanh neu ai quen dat ADMIN_NAPTIEN_PASSWORD rieng trong config.local.php, nghia la
+// BAT KY AI cung dang nhap duoc bang chuoi nay va tu xac nhan don nap tien cua chinh minh ma
+// khong tra dong nao (grantMocNapReward cap thang 100.000 luong + 200.000 luong khoa + pet).
+// Cung mot trieu ly nhu ADMIN_ACCOUNTS de trong o config.php: quen cau hinh phai TU DONG
+// tu khoa, khong duoc mo toang.
+if (!defined('ADMIN_NAPTIEN_PASSWORD') || ADMIN_NAPTIEN_PASSWORD === 'doi-mat-khau-nay') {
+    http_response_code(404);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'login') {
     if (!csrfCheck($_POST['csrf'] ?? null)) {
         $errors[] = 'Phiên làm việc hết hạn, vui lòng thử lại.';

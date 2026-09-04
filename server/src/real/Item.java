@@ -1880,7 +1880,7 @@ public class Item extends Actor {
             case 4:
             case 5:
             case 6: {
-                info = String.valueOf(info) + Item.COST_RESET_SOCK[index][0] + " xu ";
+                info = String.valueOf(info) + Item.COST_RESET_SOCK[index][1] + " xu ";
                 info = String.valueOf(info) + Item.COST_RESET_SOCK[index][2] + " lượng";
                 break;
             }
@@ -1904,14 +1904,14 @@ public class Item extends Actor {
                 case 1:
                 case 2:
                 case 3: {
-                    if (p.getxu() < Item.COST_RESET_SOCK[index][0]) {
+                    if (!p.truNeuDu(
+                            () -> p.getxu() >= Item.COST_RESET_SOCK[index][0] && p.getLuong() >= Item.COST_RESET_SOCK[index][2],
+                            () -> {
+                                p.subXu(Item.COST_RESET_SOCK[index][0], true, "item 1");
+                                p.subLuong(Item.COST_RESET_SOCK[index][2]);
+                            })) {
                         return;
                     }
-                    if (p.getLuong() < Item.COST_RESET_SOCK[index][2]) {
-                        return;
-                    }
-                    p.subXu(Item.COST_RESET_SOCK[index][0], true, "item 1");
-                    p.subLuong(Item.COST_RESET_SOCK[index][2]);
                     p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                     Database.instance.saveLogThongKeChiTieu("Thao ngoc kham_luong", 0, 1, Item.COST_RESET_SOCK[index][2], "luong");
                     Database.instance.saveLogThongKeChiTieu("Thao ngoc kham_xu", 0, 1, Item.COST_RESET_SOCK[index][0], "xu");
@@ -1920,14 +1920,14 @@ public class Item extends Actor {
                 case 4:
                 case 5:
                 case 6: {
-                    if (p.getxu() < Item.COST_RESET_SOCK[index][1]) {
+                    if (!p.truNeuDu(
+                            () -> p.getxu() >= Item.COST_RESET_SOCK[index][1] && p.getLuong() >= Item.COST_RESET_SOCK[index][2],
+                            () -> {
+                                p.subXu(Item.COST_RESET_SOCK[index][1], true, "item 2");
+                                p.subLuong(Item.COST_RESET_SOCK[index][2]);
+                            })) {
                         return;
                     }
-                    if (p.getLuong() < Item.COST_RESET_SOCK[index][2]) {
-                        return;
-                    }
-                    p.subXu(Item.COST_RESET_SOCK[index][1], true, "item 2");
-                    p.subLuong(Item.COST_RESET_SOCK[index][2]);
                     p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                     Database.instance.saveLogThongKeChiTieu("Thao ngoc kham_luong", 0, 1, Item.COST_RESET_SOCK[index][2], "luong");
                     Database.instance.saveLogThongKeChiTieu("Thao ngoc kham_xu", 0, 1, Item.COST_RESET_SOCK[index][1], "xu");
@@ -2451,11 +2451,11 @@ public class Item extends Actor {
     }
 
     public boolean isTieuLongNu() {
-        return this.getTemplate().id == 723;
+        return this.getTemplate().id == Item.AO_TIEU_LONG_NU;
     }
 
     public boolean isDuongQua() {
-        return this.getTemplate().id == 724 || this.getTemplate().id == 728 || (this.getTemplate().id >= 745 && this.getTemplate().id <= 748);
+        return this.getTemplate().id == Item.AO_DUONG_QUA || this.getTemplate().id == 728 || (this.getTemplate().id >= 745 && this.getTemplate().id <= 748);
     }
 
     public boolean isTienNu() {
@@ -2949,8 +2949,8 @@ public class Item extends Actor {
         if (this.plus > 0) {
             name = String.valueOf(name) + " +" + this.plus;
         }
-        // Doi ten khi da cai tao (giu mo ta), con lai tra ten template nhu truoc.
-        return tenHienThiSauCaiTao(this.getTemplate().name, this.tempateID, this.CaiTao);
+        // Doi ten khi da cai tao (giu mo ta), con lai tra ten da ghep suffix o tren.
+        return tenHienThiSauCaiTao(name, this.tempateID, this.CaiTao);
     }
 
     @Override
@@ -3490,9 +3490,9 @@ public class Item extends Actor {
                     break;
                 case 15:
                     this.otherAtt[50] = 30;
-                    this.otherAtt[78] = (byte) 10000;
+                    this.otherAtt[78] = 10000;
                     this.level = 70;
-                    break;                            
+                    break;
                 }   
         }
         public void setAttributeBySaTang( ) {

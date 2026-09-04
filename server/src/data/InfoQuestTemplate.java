@@ -91,11 +91,9 @@ public class InfoQuestTemplate {
                 item.plus = (byte) this.idItemgift[5];
                 if (this.idItemgift[5] > 0) {
                     final int[] plus = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 10};
-                    for (int j = 0; j < this.idItemgift[5]; ++j) {
-                        for (int i = 0; i < this.idItemgift[5]; ++i) {
-                            final short[] atb = item.atb;
-                            atb[i] += (short) ((i > 0) ? 1 : plus[item.plus]);
-                        }
+                    for (int i = 0; i < 10; ++i) {
+                        final short[] atb = item.atb;
+                        atb[i] += (short) ((i > 0) ? 1 : plus[item.plus]);
                     }
                 }
                 p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));

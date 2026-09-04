@@ -333,14 +333,34 @@ public class OfflineMap extends Map {
                }
 
                if ((item = npcSell[player.inCountry][idNpc - 11].getOneItemOfUser(shopId, p, itemID, type)) != null) {
-                  if (type == 0 && !item.getCharcanBuy().equals("") && !item.getCharcanBuy().equals(player.charname)) {
+                  // Bo "type == 0 &&": ngoc (type == 1) dat rieng cho mot nguoi cung phai duoc
+                  // kiem lai o day, khong chi luc gui yeu cau ban dau (doBuyItemOfUser) - truoc
+                  // day dieu kien nay chi ap cho vat pham thuong nen mua duoc ngoc dang giu rieng
+                  // cho nguoi khac mien la gui dung goi -32 xac nhan.
+                  if (!item.getCharcanBuy().equals("") && !item.getCharcanBuy().equals(player.charname)) {
                      player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm chỉ bán cho " + item.getCharcanBuy(), ""));
                      return;
                   }
 
-                  if ((type == 0 ? p.getItemFormVector(p.iItems, itemID) : p.getItemFormVector(((GemItem)item).idOffGemPlayer, p.gemItem)) == null) {
+                  // Voi vat pham (type 0): RUT NGAY khoi hanh trang nguoi ban bang mot phep remove
+                  // (Vector.remove la nguyen tu) thay cho "tim thay roi lat sau moi remove". Nguoi
+                  // ban dang chay tren luong phien rieng cua ho: giua hai buoc do ho co the da tieu
+                  // mon nay o NPC (nghien, nang cap... - cac duong nay khong kiem isSelling) ma
+                  // nguoi mua van nhan ban sao. Khong con trong tui = huy ban, khong ai mat tien.
+                  // Voi ngoc (type 1): ban ghi trong p.gemItem con ton tai khong co nghia con
+                  // ngoc MO de ban - ban ghi chi bi xoa khi CA listGemitem LAN listGemitemLock
+                  // ve 0 (xem Char.delGem), nen nguoi ban tieu het ngoc mo o mot duong khac
+                  // (ep ngoc, che tao...) ma van con ngoc KHOA cung loai thi ban ghi van con,
+                  // "conHang" truoc day chi kiem su ton tai cua ban ghi la sai: ban van "ban
+                  // duoc" 1 vien du listGemitem = 0, nguoi mua nhan ngoc tu khong khi.
+                  boolean conHang = (type == 0)
+                        ? p.iItems.remove((Item)item)
+                        : (p.getItemFormVector(((GemItem)item).idOffGemPlayer, p.gemItem) != null
+                                && p.listGemitem[((GemItem)item).idGemTemplate] > 0);
+                  if (!conHang) {
                      npcSell[player.inCountry][idNpc - 11].removeItem(shopId, p, item, type, type == 0 ? 0 : ((GemItem)item).realId);
                      item.isSelling = false;
+                     player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không còn trong hành trang người bán.", ""));
                      return;
                   }
 
@@ -411,7 +431,7 @@ public class OfflineMap extends Map {
                      }
 
                      ((Item)item).prizeSell = 0;
-                     p.iItems.remove((Item)item);
+                     // (da rut khoi hanh trang nguoi ban o buoc kiem tra "conHang" ben tren)
                      Item newItem = null;
                      newItem = ((Item)item).cloneItem();
                      newItem.owner = player.charDBID;
@@ -614,12 +634,18 @@ public class OfflineMap extends Map {
                      return;
                   }
 
-                  player.sellerInfo = new SellerInfo(charID, itemID, idNpc, shopId, type);
                   if (!item.getCharcanBuy().equals("") && !item.getCharcanBuy().equals(player.charname)) {
                      player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này chỉ bán cho " + item.getCharcanBuy(), ""));
                      return;
                   }
 
+                  // player.sellerInfo CHI duoc gan SAU khi qua het moi chot (khong con return
+                  // som phia truoc): SellerInfo() khoi tao priceSell = 0, va gia that chi duoc
+                  // gan o hai nhanh type==0/type==1 ben duoi. Truoc day gan NGAY o day, TRUOC
+                  // chot charcanBuy - mon dat rieng cho nguoi khac bi return som van de lai
+                  // sellerInfo voi priceSell = 0 tren doi tuong player, roi popup xac nhan
+                  // (Map.doPopup -> buyItemOfUser) doc dung sellerInfo do va ban voi gia 0.
+                  player.sellerInfo = new SellerInfo(charID, itemID, idNpc, shopId, type);
                   if (type == 0) {
                      player.sendMessage(
                         MessageCreator.createMsgPopUp(
@@ -1290,9 +1316,27 @@ public class OfflineMap extends Map {
                   short quantity = message.dis.readShort();
                   if (quantity > 0) {
                      if (catagory == 4) {
-                        long price = (long)(Map.potionTemplates2.get(var32).getPrice() * quantity);
+                        if (var32 < 0 || var32 >= player.potions.length || var32 >= Map.potionTemplates2.size()) {
+                           continue;
+                        }
+                        // Nhan bang long. Ban cu nhan gia (int) voi so luong (short) o 32-bit roi moi
+                        // ep sang long: mua vai chuc nghin binh la tong tien tran, quay ve mot so nho
+                        // (hoac am -> bi bo qua) trong khi so binh van duoc cong du.
+                        long price = (long) Map.potionTemplates2.get(var32).getPrice() * (long) quantity;
                         if (price <= 0L) {
                            continue;
+                        }
+                        // Mot o thuoc toi da 999 nhu luc nhat / luc giao dich, tru cac loai khong gioi han.
+                        if (!MapMuaBan.LUAT_THUOC.khongGioiHan(var32)) {
+                           int conChua = GiaoDichThuoc.TOI_DA_MOT_O - player.potions[var32];
+                           if (conChua <= 0) {
+                              player.sendMessage(MessageCreator.createServerAlertMessage("Ô thuốc này đã đủ " + GiaoDichThuoc.TOI_DA_MOT_O + ", không mua thêm được.", ""));
+                              continue;
+                           }
+                           if (quantity > conChua) {
+                              quantity = (short) conChua;
+                              price = (long) Map.potionTemplates2.get(var32).getPrice() * (long) quantity;
+                           }
                         }
 
                         if (price + (maptrongthanh ? price * (long)taxOfClan[player.inCountry] / 100L : 0L) > player.getxu()

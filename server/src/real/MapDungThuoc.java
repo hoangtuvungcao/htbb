@@ -562,18 +562,18 @@ class MapDungThuoc {
                                     return;
                                 }
 
-                                if (!p1.map.isMapTrain() && !Map.isMapLang(p1.map) && !Map.isMapThanh(p1.map)) {
-                                    player.sendMessage(
-                                            MessageCreator.createServerAlertMessage("Chỉ có thể dịch chuyển khi người chơi đang ở làng hoặc map luyện quái.", "")
-                                    );
+                                String[] namnu = new String[]{"Phu nhân", "Phu quân"};
+                                if (p1 == null) {
+                                    player.sendMessage(MessageCreator.createServerAlertMessage(namnu[player.gender - 1] + " của bạn hiện tại không online.", ""));
                                     player.potions[potionType]++;
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;
                                 }
 
-                                String[] namnu = new String[]{"Phu nhân", "Phu quân"};
-                                if (p1 == null) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage(namnu[player.gender - 1] + " của bạn hiện tại không online.", ""));
+                                if (!p1.map.isMapTrain() && !Map.isMapLang(p1.map) && !Map.isMapThanh(p1.map)) {
+                                    player.sendMessage(
+                                            MessageCreator.createServerAlertMessage("Chỉ có thể dịch chuyển khi người chơi đang ở làng hoặc map luyện quái.", "")
+                                    );
                                     player.potions[potionType]++;
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                     return;

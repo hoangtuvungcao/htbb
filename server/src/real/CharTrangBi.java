@@ -104,9 +104,9 @@ class CharTrangBi {
                             {
                                 d = 1;
                             }
-                            d += d * self.getUpDamBangSetDocLuaLan(2) / 100;
+                            d += d * self.getUpDamBangSetDocLuaLan(1) / 100;
                             dam.add(d);
-                            if (cat == 1) 
+                            if (cat == 1)
                             {
                                 totalxp += actor.getXpReceive(d);
                                 final Monster ms = (Monster) actor;
@@ -114,7 +114,7 @@ class CharTrangBi {
                                     ms.target = self;
                                 }
                             }
-                            if (!self.isBatTu()) 
+                            if (!self.isBatTu())
                             {
                                 final LiveActor liveActor = actor;
                                 liveActor.hp -= d;

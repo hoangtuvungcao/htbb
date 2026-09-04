@@ -368,21 +368,40 @@ class DatabaseXepHang {
             } catch (Exception ignored) {
             }
             if (rs.next()) {
-                int xu = rs.getInt("xu");
+                // Doc HET cot ra bien va XOA HANG TRUOC KHI TRAO THUONG - cung mau da vá o
+                // getBoardNapTien ngay tren (xem chu thich day du o do). Truoc day thu tu
+                // nguoc lai: addXu/addLuong chay xong roi moi DELETE o cuoi; bat ky ngoai le
+                // nao xen giua (vd loi ket noi luc DELETE) bi catch ngoai cung nuot, hang
+                // board_created KHONG bi xoa -> lan chon nhan vat/dang nhap KE TIEP lai duoc
+                // cong y het mot lan nua, khong gioi han so lan.
+                final int idHang = rs.getInt("id");
+                final int xu = rs.getInt("xu");
+                final int luong = rs.getInt("luong");
+                final int luongKRaw = rs.getInt("luongK");
+                final int ve = rs.getInt("ve");
+
+                // executeUpdate + kiem so dong: "gianh" duoc dung 1 lan. Bang nay loc theo
+                // username=userID (khong co cot may chu) nen mot tai khoan co nhan vat o hai
+                // may chu, dang nhap hai ben gan nhu cung luc, ca hai co the cung SELECT thay
+                // dong nay - chi ben nao XOA duoc that su (executeUpdate tra 1) moi duoc thuong.
+                int soDongXoa = stm.executeUpdate("DELETE FROM `board_created` WHERE `id` ='" + idHang + "'");
+                if (soDongXoa != 1) {
+                    return;
+                }
+
                 player.addXu(xu, "board_created db");
                 if (xu > 0) {
                     info = "SV Get xu: " + xu + " | ";
                 }
-                int luong = rs.getInt("luong");
                 player.addLuong(luong);
                 if (true) { // Khuyến mãi lượng khoá.
-                    int lk = rs.getInt("luongK");
+                    int lk = luongKRaw;
                     if (lk <= 0) {
                         lk = 1;
                     }
-                    player.lockLuong += lk;
+                    player.addLuongLock(lk);
                 }
-                //player.vetangluong += rs.getInt("ve");
+                //player.vetangluong += ve;
                 //player.luongNap += luong / 2;
 
                 //Database.instance.updateLuongNap(luong, player);
@@ -391,11 +410,9 @@ class DatabaseXepHang {
                 if (luong > 0) {
                     info = info + "SV Get luong: " + luong;
                 }
-                if (rs.getInt("ve") > 0) {
-                    info = info + "| SV Get ve: " + rs.getInt("ve");
+                if (ve > 0) {
+                    info = info + "| SV Get ve: " + ve;
                 }
-                String sqlUpdate = "DELETE FROM `board_created` WHERE `id` ='" + rs.getInt("id") + "'";
-                stm.execute(sqlUpdate);
 //                if (luong >= 10) {
 //                    Database.instance.saveLogThongKeChiTieu("nap luong", 0, 1, luong, "luong nap");
 //                }

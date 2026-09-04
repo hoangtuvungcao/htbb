@@ -332,6 +332,38 @@ class DatabaseGiftCode {
                     return;
                 }
 
+                // GHI NHAN DA DUNG + TRU LUOT TRUOC, cap thuong SAU. Truoc day thu tu nguoc
+                // lai: neu bat ky buoc cap thuong nao o duoi nem ngoai le (id vat pham khong
+                // ton tai trong Map.itemTemplates -> NPE, chuoi cau hinh thieu truong ->
+                // ArrayIndexOutOfBounds, id thuoc >= 162 -> AIOOBE tren potions[]...) thi khoi
+                // catch cuoi ham nuot loi, dong giftcode_log KHONG duoc ghi va limit_use KHONG
+                // giam - nguoi choi da nhan xu/luong/vat phamma van nhap lai duoc VO HAN LAN.
+                // Cau UPDATE co "AND limit_use > 0" va kiem so dong sua duoc: hai nguoi cung
+                // nhap mot ma chi con 1 luot trong cung khoanh khac (hai session khac nhau,
+                // -31 la lenh rieng nen chay tren luong phien cua tung nguoi) khong the ca hai
+                // cung tru thanh cong.
+                if (limit >= 1) {
+                    String sql_updatelimit = "UPDATE giftcode SET limit_use = limit_use - 1 WHERE giftcode = ? AND limit_use > 0";
+                    PreparedStatement preLimit = conn.prepareStatement(sql_updatelimit);
+                    preLimit.setString(1, code);
+                    int soDongSua = preLimit.executeUpdate();
+                    preLimit.close();
+                    if (soDongSua != 1) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Mã Quà Tặng đã hết lượt sử dụng.", ""));
+                        return;
+                    }
+                }
+                PreparedStatement preLog = conn.prepareStatement(
+                        "insert into giftcode_log set player = ?, giftcode = ?, item = ?, xu = ?, luong = ?, luongK = ?");
+                preLog.setString(1, player.charname);
+                preLog.setString(2, text);
+                preLog.setString(3, item);
+                preLog.setInt(4, xu);
+                preLog.setInt(5, luong);
+                preLog.setInt(6, luongkhoa);
+                preLog.execute();
+                preLog.close();
+
                 if (xu != 0) {
                     player.addXu(xu, "nhan tu giftcode" + code);
                 }
@@ -622,14 +654,7 @@ class DatabaseGiftCode {
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được phần quà từ: " + code + ".", ""));
                 Database.instance.saveOrtherLog("", player.charname, "CODE: " + code, "putGiftCode");
-                sql = "insert into giftcode_log set player = '" + player.charname + "', giftcode = '" + text + "', item = '" + item + "', xu = " + xu + ", luong = " + luong + ", luongK = " + luongkhoa + ";";
-                pre1.execute(sql);
-
-                if (limit >= 1) {
-                    String sql_updatelimit = "UPDATE giftcode SET limit_use = limit_use - '1' WHERE giftcode = '" + code + "'";
-                    pre1.execute(sql_updatelimit);
-                }
-                System.out.println(limit);
+                // (giftcode_log da ghi va limit_use da giam - neu co - NGAY TRUOC khi cap thuong o tren)
             } else {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Mã quà tặng không tồn tại.", ""));
             }

@@ -236,7 +236,7 @@ public class BossSkelonton extends Boss {
                                         }
 
                                         damAttack.add(dam);
-                                        if (freezz <= 10 && this.idTemplate == 115 && Map.r.nextInt(100) > c.khamKhangBang()) {
+                                        if (freezz <= 10 && this.idTemplate != 115 && Map.r.nextInt(100) > c.khamKhangBang()) {
                                             c.khamEff[4] = System.currentTimeMillis() / 1000L;
                                         }
                                     }

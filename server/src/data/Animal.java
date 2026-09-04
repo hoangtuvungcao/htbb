@@ -44,9 +44,17 @@ public class Animal extends Actor {
     // cooldown dung chung nao khac (khac Pet co timeBienHinh), nhung van tach
     // rieng de khoi phai kiem tra lai moi khi Animal them ky nang moi sau nay.
     private long timeKhangXuyenGiap = 0L;
+    // Moc het hieu luc cua lan kich hoat hien tai (cua so duy tri 3-8s, xem
+    // applyKhangXuyenGiap): trong cua so nay MOI don nhan vao deu duoc giam. Khong luu CSDL.
+    // Them 04/09/2026 - khop fix da lam cho data.Pet.applyKhangXuyenGiap() (xem comment o do).
+    private long timeKhangXuyenGiapHetHieuLuc = 0L;
     public String name = "";
-    static byte[] addMoreSP = new byte[]{0, 0, 0, 0, 0, 2, 3, 0, 3, 3, 3, 3, 3, 3, 3}; // Thêm giá trị cho index 14
-static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6, 6}; // Thêm giá trị cho index 14
+    // Index 15-20 (PHUONG_HOANG_MOC/KIM/THO, HEO_BANG, SU_TU, SU_TU_BANG) noi dai gia tri
+    // phang cua index 8-14 (tat ca cung bang 3/6) - cac thu moi nay cung thuoc nhom "cao
+    // cap" nhu Phuong Hoang tro di, chua tung duoc them vao bang nay nen upAttribute() nem
+    // ArrayIndexOutOfBoundsException khi luyen thu cho chung.
+    static byte[] addMoreSP = new byte[]{0, 0, 0, 0, 0, 2, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3}; // Thêm giá trị cho index 14
+static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6}; // Thêm giá trị cho index 14
     static byte[][] pcBasic = new byte[][]{{3, 5, 8, 10}, {3, 5, 8, 10}, {3, 5, 8, 10}, {2, 3, 4, 5}, {2, 3, 4, 5}};
     static byte[][][] pcTN = new byte[][][]{
         {{5, 9, 14, 18}, {5, 9, 14, 18}, {4, 8, 12, 16}, {4, 8, 12, 16}},          // index 0
@@ -63,7 +71,13 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
         {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}},      // index 11
         {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}},     // index 12
         {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}},      // index 13 (new)
-    {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}}};
+    {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}},          // index 14
+    {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}},          // index 15 PHUONG_HOANG_MOC
+    {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}},          // index 16 PHUONG_HOANG_KIM
+    {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}},          // index 17 PHUONG_HOANG_THO
+    {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}},          // index 18 HEO_BANG
+    {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}},          // index 19 SU_TU
+    {{6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}, {6, 12, 16, 20}}};         // index 20 SU_TU_BANG
         static byte[][] pcSP = new byte[][]{{5, 10, 15, 20}, {3, 5, 8, 10}, {1, 2, 3, 4}, {2, 4, 6, 8}, {5, 10, 15, 20}};
 
     public final static byte SOI = 3;
@@ -1224,51 +1238,73 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
      * linh thu nay bi tan cong. KHONG lien quan hieu ung "Lua thuong co" cu
      * (do la hieu ung TAN CONG lam giam giap doi phuong, con day la hieu ung
      * PHONG THU giam sat thuong nhan vao) - ca hai cung ton tai song song.
+     *
+     * Sua 04/09/2026: ban truoc chi giam MOT don roi khoa het toan bo co che cho
+     * den khi het hoi chieu day du (60-100s) - khong dung "duy tri 3-8s" nhu mo ta
+     * o thongSoKhangXuyenGiap()/getInfoSendUser() ben Pet. Nay dung dung co che cua
+     * Pet.applyKhangXuyenGiap(): kich hoat mo mot CUA SO DUY TRI (3-8s tuy cap), moi
+     * don trong cua so deu duoc giam, khong quay lai ti le; hoi chieu (60-100s) tinh
+     * tu luc kich hoat song song voi cua so do. Ngoai cua so va da het hoi chieu thi
+     * moi quay ti le kich hoat lan nua.
      */
     public int applyKhangXuyenGiap(int finalDame) {
         if (this.khangXuyenGiapCap <= 0 || this.isHoaHinh != 1 || System.currentTimeMillis() - this.timeHoaHinh > 0L) {
             return finalDame;
         }
-        if (System.currentTimeMillis() < this.timeKhangXuyenGiap) {
-            return finalDame;
-        }
 
         int reducePercent;
         int chance;
+        int durationSec;
         long cooldownMs;
         switch (this.khangXuyenGiapCap) {
             case 1:
                 reducePercent = 5;
                 chance = 10;
+                durationSec = 3;
                 cooldownMs = 100000L;
                 break;
             case 2:
                 reducePercent = 10;
                 chance = 10;
+                durationSec = 3;
                 cooldownMs = 100000L;
                 break;
             case 3:
                 reducePercent = 15;
                 chance = 20;
+                durationSec = 5;
                 cooldownMs = 80000L;
                 break;
             case 4:
                 reducePercent = 20;
                 chance = 20;
+                durationSec = 5;
                 cooldownMs = 80000L;
                 break;
             default:
                 reducePercent = 25;
                 chance = 30;
+                durationSec = 8;
                 cooldownMs = 60000L;
                 break;
+        }
+
+        final long now = System.currentTimeMillis();
+        // Con trong cua so duy tri cua lan kich hoat truoc: giam MOI don, khong quay ti le.
+        if (now < this.timeKhangXuyenGiapHetHieuLuc) {
+            return finalDame - finalDame * reducePercent / 100;
+        }
+        // Da het cua so duy tri nhung con hoi chieu: chua duoc quay ti le kich hoat moi.
+        if (now < this.timeKhangXuyenGiap) {
+            return finalDame;
         }
 
         if (Map.r.nextInt(100) >= chance) {
             return finalDame;
         }
 
-        this.timeKhangXuyenGiap = System.currentTimeMillis() + cooldownMs;
+        this.timeKhangXuyenGiapHetHieuLuc = now + durationSec * 1000L;
+        this.timeKhangXuyenGiap = now + cooldownMs;
         return finalDame - finalDame * reducePercent / 100;
     }
 

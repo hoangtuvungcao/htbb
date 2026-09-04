@@ -343,10 +343,10 @@ public class BossSonTinhThuyTinh extends BossSkelonton {
                                     damAttack.add(dam);
                                     if (freezz <= 20) {
                                         if (this.idTemplate == 129) {
-                                            if (Map.r.nextInt(100) > this.target.khamKhangBang()) {
+                                            if (Map.r.nextInt(100) > c.khamKhangBang()) {
                                                 c.khamEff[Char.KHAM_BANG] = System.currentTimeMillis() / 1000L;
                                             }
-                                        } else if (this.idTemplate == 130 && Map.r.nextInt(100) > this.target.khamKhangHoathach()) {
+                                        } else if (this.idTemplate == 130 && Map.r.nextInt(100) > c.khamKhangHoathach()) {
                                             c.khamEff[Char.KHAM_HOA_DA] = System.currentTimeMillis() / 1000L;
                                         }
                                     }

@@ -81,7 +81,6 @@ public class BossThanLan extends Boss {
                     crit = true;
                 }
 
-                demi = false;
                 if (crit) {
                     ahp *= 2;
                 }

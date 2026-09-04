@@ -303,7 +303,7 @@ public class Monster extends LiveActor {
                 ahp = this.target.checkHapthuSatThuong(ahp, this);
                 ahp = this.target.checkGiamSatThuong(ahp);
                 ahp = this.target.checkPassAttack(this, ahp);
-                final int[] downPercent = {1, 2, 3, ahp};
+                final int[] downPercent = {1, 2, 3, 4};
                 final int targetLv = this.target.getLevel();
                 final int delta = targetLv - this.level;
                 if (delta > 0) {

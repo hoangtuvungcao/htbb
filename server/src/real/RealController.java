@@ -1031,7 +1031,14 @@ public class RealController extends ServerController {
                                                 if (idOptionMenu == 4) {
                                                     if (p.potions[136] < 20) {
                                                         p.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nến.", ""));
-                                                    } else if (p.getLuong() < 10000) {   
+                                                    } else if (p.isFullInventory()) {
+                                                        p.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
+                                                    // truLuongNeuDu (kiem-va-tru nguyen tu) THAY the cap "getLuong() < 10000"
+                                                    // + subLuong o cuoi: gói -30 nay chay tren luong phien, mot lenh tieu
+                                                    // luong khac (vd -76 mua shop) chay tren luong ban do co the xen vao
+                                                    // giua - ban cu tru nen SAU khi da cap vu khi, subLuong lai chan ve 0
+                                                    // ma khong bao loi nen nhan duoc ca hai ma chi tra mot lan.
+                                                    } else if (!p.truLuongNeuDu(10000L)) {
                                                         p.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng.", ""));
                                                     } else {
                                                         p.potions[136] = p.potions[136] - 20;
@@ -1039,7 +1046,6 @@ public class RealController extends ServerController {
                                                         String info = "Chúc mừng bạn nhận được Nguyệt Linh Trượng 7 ngày";
                                                         p.sendMessage(MessageCreator.createMsgChat(p.id, info));
                                                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
-                                                        p.subLuong(10000L);
                                                         Database.instance.saveLogThongKeChiTieu("doiNLT", 0, 1, 10000L, "luong");
 
                                                     }
@@ -1327,9 +1333,14 @@ public class RealController extends ServerController {
                                         }
                                         long giatien = quantity * 2L;
 
-                                        if (p.getLuong() >= giatien) {
+                                        // truLuongNeuDu: kiem-va-tru nguyen tu, TRU TRUOC roi moi cap nen. Gói -31
+                                        // nam trong privateCmd nen chay tren luong phien; mot lenh tieu luong khac
+                                        // (vd -76 mua shop) chay tren luong ban do co the xen giua "kiem" va "tru"
+                                        // cu, khien ca hai deu qua duoc kiem va cung tru tren mot so luong - o day
+                                        // con nang hon vi ban cu CONG nen TRUOC roi moi tru, nen subLuong chan ve 0
+                                        // (het luong giua chung) van khong lam mat so nen da nhan.
+                                        if (p.truLuongNeuDu(giatien)) {
                                             p.potions[136] = p.potions[136] + quantity;
-                                            p.subLuong(giatien);
 
                                             p.sendMessage(MessageCreator.createServerAlertMessage("Mua nến thành công " + quantity + " nến.", ""));
                                             p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
@@ -1997,7 +2008,7 @@ public class RealController extends ServerController {
                             }
                             // thêm quà ?????? ok để nghĩ mai thêm :v
                             player.sendMessage(MessageCreator.createServerAlertMessage("Tính năng đang được cập nhật.", ""));
-                            player.runtimeCharProperties.doNhanQuaOnline(idMenu, idOptionMenu);
+                            player.runtimeCharProperties.doNhanQuaOnline(player.charDBID, idOptionMenu);
                             break;
                         case 1:
                             if (player.runtimeCharProperties.isNhanQua3h()) {
@@ -2010,7 +2021,7 @@ public class RealController extends ServerController {
                             }
                             player.sendMessage(MessageCreator.createServerAlertMessage("Tính năng đang được cập nhật.", ""));
 
-                            player.runtimeCharProperties.doNhanQuaOnline(idMenu, idOptionMenu);
+                            player.runtimeCharProperties.doNhanQuaOnline(player.charDBID, idOptionMenu);
                             break;
                         case 2:
                             if (player.runtimeCharProperties.isNhanQua5h()) {
@@ -2023,7 +2034,7 @@ public class RealController extends ServerController {
                             }
                             player.sendMessage(MessageCreator.createServerAlertMessage("Tính năng đang được cập nhật.", ""));
 
-                            player.runtimeCharProperties.doNhanQuaOnline(idMenu, idOptionMenu);
+                            player.runtimeCharProperties.doNhanQuaOnline(player.charDBID, idOptionMenu);
                             break;
                         case 3:
                             if (player.runtimeCharProperties.isNhanQua10h()) {
@@ -2036,7 +2047,7 @@ public class RealController extends ServerController {
                             }
                             player.sendMessage(MessageCreator.createServerAlertMessage("Tính năng đang được cập nhật.", ""));
 
-                            player.runtimeCharProperties.doNhanQuaOnline(idMenu, idOptionMenu);
+                            player.runtimeCharProperties.doNhanQuaOnline(player.charDBID, idOptionMenu);
                             break;
                         default:
                             break;

@@ -561,7 +561,10 @@ class MapMuaBan {
                                         && item.id != 140) {
                                     if (item.id != 92 && item.id != 107 && item.id != 110 && item.id != 111 && item.id != 133) {
                                         if (item.id >= 83 && item.id <= 85) {
-                                            if (player.potions[item.id - 93 + 112] + item.value > 5) {
+                                            // Cung mot loi lech chi so nhu doBuySpecialItem.java (ban song) - vá
+                                            // cho nhat quan du nhanh nay hien la ma chet (lenh 85 luon bi
+                                            // RealController.privateCmd chan truoc, khong con toi day).
+                                            if (player.potions[item.id - 83 + 112] + item.value > 5) {
                                                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mua thêm.", ""));
                                                 return;
                                             }
@@ -826,299 +829,443 @@ class MapMuaBan {
         }
     }
 
+    // ------------------------------------------------------------------ GIAO DICH THUOC (goi 66)
+    //
+    // Toan bo than ham chay duoi Char.KHOA_GIAO_DICH. Goi 66 KHONG phai lenh rieng
+    // (RealController.privateCmd) nen no chay tren luong cua ban do nguoi gui; hai ben o hai ban
+    // do (hai khu) khac nhau la hai luong cung sua mot bo trang thai chung - khong khoa thi hai
+    // lan "case 5" chay song song va thuoc duoc cong hai lan. Ngoai khoa, moi buoc con doi hai
+    // ben dung CUNG ban do / nuoc / khu va gan nhau; luc hoan tat kiem lai toan bo bang
+    // real/GiaoDichThuoc (so thuoc con du khong, hai ben co khop nhau khong, thuoc co duoc phep
+    // giao dich khong). Cac duong huy (Map.checkTrade, doi map, chet, thoat) deu di qua
+    // Char.huyGiaoDich de xoa SACH ca tPotions/rPotions - ban cu de sot hai mang nay.
+
+    /** Loi moi giao dich chi co gia tri trong khoang nay. */
+    static final long HAN_LOI_MOI_MS = 60000L;
+
+    /** Doi phuong hop le: co trong userTrade cua minh va ho cung dang tro ve minh. */
+    private static Char doiPhuongHopLe(Char player) {
+        Char dp = player.doiPhuongGiaoDich();
+        if (dp == null || dp == player) {
+            return null;
+        }
+        return (dp.doiPhuongGiaoDich() == player) ? dp : null;
+    }
+
+    /** Hai ben phai con song, dung cung ban do, cung nuoc, cung khu va gan nhau. */
+    private static boolean cungChoDung(Char a, Char b) {
+        try {
+            return a.map != null && a.map == b.map && a.inCountry == b.inCountry && a.region == b.region
+                    && a.hp > 0 && b.hp > 0 && Map.inRangeActor(a, b, 640);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /** Huy giao dich, dong cua so ca hai ben (66/3) va bao mot dong. */
+    private static void huyVaBao(Char player, String lyDo) {
+        try {
+            Char dp = player.doiPhuongGiaoDich();
+            player.huyGiaoDich(true, true);
+            player.sendMessage(MessageCreator.createServerAlertMessage(lyDo, ""));
+            if (dp != null && dp != player) {
+                dp.sendMessage(MessageCreator.createServerAlertMessage(lyDo, ""));
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    /**
+     * Luat thuoc lay tu bang data_potion (isTrade) va danh sach thuoc khong gioi han. Dung chung
+     * cho buoc bo thuoc vao, buoc hoan tat va cho gian hang Phu ong (OfflineMap.doBuyItem).
+     */
+    static final GiaoDichThuoc.LuatThuoc LUAT_THUOC = new GiaoDichThuoc.LuatThuoc() {
+        @Override
+        public boolean giaoDichDuoc(int idThuoc) {
+            try {
+                if (idThuoc <= 0 || idThuoc >= Map.potionTemplates2.size()) {
+                    return false;
+                }
+                PotionTemplate2 pt = Map.potionTemplates2.get(idThuoc);
+                return pt != null && pt.isTrade;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        @Override
+        public boolean khongGioiHan(int idThuoc) {
+            // Dung danh sach ma buoc bo thuoc vao (case 2) va luc nhat (Map.doGetPotion) dang mien tran 999.
+            return idThuoc == 85 || idThuoc == 79 || idThuoc == 82 || idThuoc == 80 || idThuoc == 81 || idThuoc == 88
+                    || Map.isPotionUnlimit((short) idThuoc);
+        }
+    };
+
     static void doTrade(Map map, Char player, Message msg, int from) {
         if (pause) {
             player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng đang bảo trì.", ""));
-        } else {
-            Message m = null;
+            return;
+        }
+        synchronized (Char.KHOA_GIAO_DICH) {
+            doTradeDuoiKhoa(map, player, msg, from);
+        }
+    }
 
+    private static void doTradeDuoiKhoa(Map map, Char player, Message msg, int from) {
+        Message m = null;
+
+        try {
             try {
-                try {
-                    if (player.isKiller) {
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không thể sử dụng chức năng này khi đang ở chế độ PK", ""));
-                        return;
-                    }
+                if (player.isKiller) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không thể sử dụng chức năng này khi đang ở chế độ PK", ""));
+                    return;
+                }
 
-                    short userId = 0;
-                    int cmd = msg.dis.readByte();
-                    Char p = null;
-                    int itemId = 0;
-                    switch (cmd) {
-                        case -1:
-                            userId = msg.dis.readShort();
-                            p = player.getCharFromNearChar(userId);
-                            if (p != null) {
-                                p.userTrade.removeAllElements();
-                                player.userTrade.removeAllElements();
-                                m = new Message(66);
-                                m.dos.writeByte(-1);
-                                m.dos.writeShort(player.id);
-                                p.sendMessage(m);
-                                return;
+                short userId = 0;
+                int cmd = msg.dis.readByte();
+                Char p = null;
+                Char dp = null;
+                switch (cmd) {
+                    case -1:
+                        // Tu choi loi moi. Chi dong den ai KHONG dang giao dich voi nguoi thu ba.
+                        userId = msg.dis.readShort();
+                        p = player.getCharFromNearChar(userId);
+                        if (p != null) {
+                            if (p.doiPhuongGiaoDich() == null || p.doiPhuongGiaoDich() == player) {
+                                p.datLaiTrangThaiGiaoDich();
                             }
-
-                            return;
-                        case 0:
-                            if (map.checkTrade(player)) {
-                                return;
+                            if (player.doiPhuongGiaoDich() == null || player.doiPhuongGiaoDich() == p) {
+                                player.datLaiTrangThaiGiaoDich();
                             }
-
-                            userId = msg.dis.readShort();
-                            p = player.getCharFromNearChar(userId);
-                            if (p == null) {
-                                return;
-                            }
-
-                            if ((getTown[player.myCountry] || getTown[p.myCountry]) && player.mapID == 201) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mời trong thời gian chiếm thành", ""));
-                                return;
-                            }
-
-                            if (System.currentTimeMillis() - player.timeInviteTrade < 60000L) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mời quá 2 lần trong 1 phút", ""));
-                                return;
-                            }
-
-                            if (!p.rcvInviteVip) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Hiện tại người chơi không chấp nhận bất kỳ lời mời nào.", ""));
-                                return;
-                            }
-
-                            if (p.isKiller) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đề nghị khi người chơi đang ở chế độ PK", ""));
-                                return;
-                            }
-
-                            if (from == 1 && p.idWedding > -1) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Người bạn muốn mời đã đồng ý tham dự 1 tiệc cưới khác.", ""));
-                                return;
-                            }
-
-                            player.timeInviteTrade = System.currentTimeMillis();
                             m = new Message(66);
-                            m.dos.writeByte(0);
+                            m.dos.writeByte(-1);
                             m.dos.writeShort(player.id);
                             p.sendMessage(m);
                             return;
-                        case 1:
-                            userId = msg.dis.readShort();
-                            p = player.getCharFromNearChar(userId);
-                            if (p == null) {
-                                return;
-                            }
+                        }
 
-                            if (player.userTrade.size() <= 0 && p.userTrade.size() <= 0) {
-                                if (p.userTrade.size() == 0) {
-                                    p.userTrade.add(player);
-                                }
-
-                                if (player.userTrade.size() == 0) {
-                                    player.userTrade.add(p);
-                                }
-
-                                m = new Message(66);
-                                m.dos.writeByte(1);
-                                m.dos.writeShort(player.id);
-                                p.sendMessage(m);
-                                player.sendMessage(m);
-                                return;
-                            }
-
+                        return;
+                    case 0:
+                        if (map.checkTrade(player)) {
                             return;
-                        case 2:
-                            if (!player.isCorrectPass && !player.passWord.equals("")) {
-                                player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
+                        }
+
+                        userId = msg.dis.readShort();
+                        p = player.getCharFromNearChar(userId);
+                        if (p == null || p == player) {
+                            return;
+                        }
+
+                        if ((getTown[player.myCountry] || getTown[p.myCountry]) && player.mapID == 201) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mời trong thời gian chiếm thành", ""));
+                            return;
+                        }
+
+                        if (System.currentTimeMillis() - player.timeInviteTrade < 60000L) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mời quá 2 lần trong 1 phút", ""));
+                            return;
+                        }
+
+                        if (!p.rcvInviteVip) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Hiện tại người chơi không chấp nhận bất kỳ lời mời nào.", ""));
+                            return;
+                        }
+
+                        if (p.isKiller) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đề nghị khi người chơi đang ở chế độ PK", ""));
+                            return;
+                        }
+
+                        if (from == 1 && p.idWedding > -1) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Người bạn muốn mời đã đồng ý tham dự 1 tiệc cưới khác.", ""));
+                            return;
+                        }
+
+                        player.timeInviteTrade = System.currentTimeMillis();
+                        // Ghi lai ai moi ai: buoc nhan (case 1) chi chap nhan khi co loi moi that.
+                        p.idNguoiMoiGiaoDich = player.id;
+                        p.timeDuocMoiGiaoDich = player.timeInviteTrade;
+                        m = new Message(66);
+                        m.dos.writeByte(0);
+                        m.dos.writeShort(player.id);
+                        p.sendMessage(m);
+                        return;
+                    case 1:
+                        userId = msg.dis.readShort();
+                        p = player.getCharFromNearChar(userId);
+                        if (p == null || p == player) {
+                            return;
+                        }
+
+                        if (player.userTrade.size() > 0 || p.userTrade.size() > 0) {
+                            return;
+                        }
+
+                        {
+                            // Truoc day ai gui goi 66/1 voi id mot nguoi dung gan la mo duoc giao dich
+                            // voi ho, khong can loi moi. Nay phai co loi moi con han tu mot trong hai phia.
+                            long bayGio = System.currentTimeMillis();
+                            boolean coLoiMoi = player.idNguoiMoiGiaoDich == userId || p.idNguoiMoiGiaoDich == player.id;
+                            boolean duocMoi = (player.idNguoiMoiGiaoDich == userId && bayGio - player.timeDuocMoiGiaoDich <= HAN_LOI_MOI_MS)
+                                    || (p.idNguoiMoiGiaoDich == player.id && bayGio - p.timeDuocMoiGiaoDich <= HAN_LOI_MOI_MS);
+                            if (!duocMoi) {
+                                // Chi ghi nghi van khi KHONG HE co loi moi (goi 66/1 tu che). Loi moi co
+                                // nhung het han la nguoi choi bam cham - khong phai gian lan, im lang bo qua.
+                                if (!coLoiMoi) {
+                                    data.NghiVanGianLan.ghiVatPham(player, "hackgd",
+                                            "mo giao dich voi " + p.charname + " ma khong co loi moi");
+                                }
                                 return;
                             }
+                        }
 
-                            if (player.userTrade.size() == 0) {
+                        if (!cungChoDung(player, p)) {
+                            return;
+                        }
+
+                        // Xoa sach trang thai cu cua CA HAI truoc khi bat dau - phong tPotions/rPotions
+                        // con sot tu mot lan giao dich truoc bi huy ngang.
+                        player.datLaiTrangThaiGiaoDich();
+                        p.datLaiTrangThaiGiaoDich();
+                        p.userTrade.add(player);
+                        player.userTrade.add(p);
+                        m = new Message(66);
+                        m.dos.writeByte(1);
+                        m.dos.writeShort(player.id);
+                        p.sendMessage(m);
+                        player.sendMessage(m);
+                        return;
+                    case 2:
+                        if (!player.isCorrectPass && !player.passWord.equals("")) {
+                            player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
+                            return;
+                        }
+
+                        if (player.userTrade.size() == 0) {
+                            return;
+                        }
+
+                        dp = doiPhuongHopLe(player);
+                        if (dp == null) {
+                            huyVaBao(player, "Giao dịch không hợp lệ, đã huỷ.");
+                            return;
+                        }
+
+                        if (!cungChoDung(player, dp)) {
+                            huyVaBao(player, "Hai bên phải đứng gần nhau trên cùng bản đồ khi giao dịch.");
+                            return;
+                        }
+
+                        if (player.finishTrade) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bỏ thêm vật phẩm vào.", ""));
+                            return;
+                        }
+
+                        int type = msg.dis.readByte();
+                        if (type == 0) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trao đổi vật phẩm này.", ""));
+                            return;
+                        }
+
+                        if (type != 1) {
+                            if (type != 2) {
                                 return;
                             }
 
                             if (player.finishTrade) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bỏ thêm vật phẩm vào.", ""));
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể lấy vật phẩm ra.", ""));
                                 return;
                             }
 
-                            int type = msg.dis.readByte();
-                            if (type == 0) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể trao đổi vật phẩm này.", ""));
+                            int idpotion = msg.dis.readByte();
+                            if (idpotion < 0 || idpotion >= player.tPotions.length) {
                                 return;
                             }
-
-                            if (type != 1) {
-                                if (type != 2) {
-                                    return;
-                                }
-
-                                if (player.finishTrade) {
-                                    player.sendMessage(MessageCreator.createServerAlertMessage("Không thể lấy vật phẩm ra.", ""));
-                                    return;
-                                }
-
-                                int idpotion = msg.dis.readByte();
-                                if (player.tPotions[idpotion] <= 0) {
-                                    m = MessageCreator.createServerAlertMessage("Không thể lấy ra vật phẩm này", "");
-                                    player.sendMessage(m);
-                                    m.cleanup();
-                                    return;
-                                }
-
-                                player.tPotions[idpotion] = 0;
-                                ((Char) player.userTrade.get(0)).rPotions[idpotion] = 0;
-                                m = new Message(66);
-                                m.dos.writeByte(2);
-                                m.dos.writeByte(2);
-                                m.dos.writeShort(player.id);
-                                m.dos.writeByte(idpotion);
-                                player.sendMessage(m);
-                                ((Char) player.userTrade.get(0)).sendMessage(m);
-                                return;
-                            }
-
-                            if (!player.isCorrectPass && !player.passWord.equals("")) {
-                                player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
-                                return;
-                            }
-
-                            int idPotion = msg.dis.readByte();
-                            int soluong = msg.dis.readShort();
-                            if (soluong <= 0) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Không thể giao dịch với số lượng này", ""));
-                                return;
-                            }
-
-                            if (idPotion == 0) {
-                                return;
-                            }
-
-                            PotionTemplate2 potion = Map.potionTemplates2.get(idPotion);
-                            if (potion == null || !potion.isTrade) {
-                                return;
-                            }
-                            if (((Char) player.userTrade.get(0)).isFullInventory() && ((Char) player.userTrade.get(0)).potions[idPotion] <= 0) {
-                                m = MessageCreator.createServerAlertMessage("Hành trang người nhận đã đầy.", "");
+                            if (player.tPotions[idpotion] <= 0) {
+                                m = MessageCreator.createServerAlertMessage("Không thể lấy ra vật phẩm này", "");
                                 player.sendMessage(m);
                                 m.cleanup();
                                 return;
                             }
 
-                            if (player.potions[idPotion] < soluong) {
-                                m = MessageCreator.createServerAlertMessage("Chỉ có thể trao đổi " + player.potions[idPotion] + " vật phẩm", "");
-                                player.sendMessage(m);
-                                m.cleanup();
-                                return;
-                            }
+                            player.tPotions[idpotion] = 0;
+                            dp.rPotions[idpotion] = 0;
+                            m = new Message(66);
+                            m.dos.writeByte(2);
+                            m.dos.writeByte(2);
+                            m.dos.writeShort(player.id);
+                            m.dos.writeByte(idpotion);
+                            player.sendMessage(m);
+                            dp.sendMessage(m);
+                            return;
+                        }
 
-                            if (player.potions[idPotion] < player.tPotions[idPotion] + soluong) {
-                                m = MessageCreator.createServerAlertMessage(
-                                        "Chỉ có thể trao đổi thêm " + (player.potions[idPotion] - player.tPotions[idPotion]) + " vật phẩm", ""
-                                );
-                                player.sendMessage(m);
-                                m.cleanup();
-                                return;
-                            }
+                        if (!player.isCorrectPass && !player.passWord.equals("")) {
+                            player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
+                            return;
+                        }
 
-                            if (((Char) player.userTrade.get(0)).potions[idPotion]
-                                    + ((Char) player.userTrade.get(0)).rPotions[idPotion]
-                                    - player.rPotions[idPotion]
-                                    + soluong
-                                    <= 999
-                                    || idPotion == 85
-                                    || idPotion == 79
-                                    || idPotion == 82
-                                    || idPotion == 80
-                                    || idPotion == 81) {
-                                player.tPotions[idPotion] = player.tPotions[idPotion] + soluong;
-                                ((Char) player.userTrade.get(0)).rPotions[idPotion] += soluong;
-                                m = new Message(66);
-                                m.dos.writeByte(2);
-                                m.dos.writeByte(1);
-                                m.dos.writeShort(player.id);
-                                m.dos.writeByte(idPotion);
-                                m.dos.writeShort(soluong);
-                                player.sendMessage(m);
-                                ((Char) player.userTrade.get(0)).sendMessage(m);
-                                return;
-                            }
+                        int idPotion = msg.dis.readByte();
+                        int soluong = msg.dis.readShort();
+                        if (soluong <= 0) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể giao dịch với số lượng này", ""));
+                            return;
+                        }
 
+                        if (idPotion <= 0 || idPotion >= player.potions.length) {
+                            return;
+                        }
+
+                        if (!LUAT_THUOC.giaoDichDuoc(idPotion)) {
+                            return;
+                        }
+                        if (dp.isFullInventory() && dp.potions[idPotion] <= 0) {
+                            m = MessageCreator.createServerAlertMessage("Hành trang người nhận đã đầy.", "");
+                            player.sendMessage(m);
+                            m.cleanup();
+                            return;
+                        }
+
+                        if (player.potions[idPotion] < soluong) {
+                            m = MessageCreator.createServerAlertMessage("Chỉ có thể trao đổi " + player.potions[idPotion] + " vật phẩm", "");
+                            player.sendMessage(m);
+                            m.cleanup();
+                            return;
+                        }
+
+                        if (player.potions[idPotion] < player.tPotions[idPotion] + soluong) {
                             m = MessageCreator.createServerAlertMessage(
-                                    "Chỉ có thể trao đổi thêm "
-                                    + (999
-                                    - player.rPotions[idPotion]
-                                    - ((Char) player.userTrade.get(0)).potions[idPotion]
-                                    + ((Char) player.userTrade.get(0)).rPotions[idPotion])
-                                    + " vật phẩm",
-                                    ""
+                                    "Chỉ có thể trao đổi thêm " + (player.potions[idPotion] - player.tPotions[idPotion]) + " vật phẩm", ""
                             );
                             player.sendMessage(m);
                             m.cleanup();
                             return;
-                        case 3:
-                            player.finishTrade = false;
-                            player.lockTrade = false;
-                            player.tItems.removeAllElements();
-                            player.rItems.removeAllElements();
-                            ((Char) player.userTrade.get(0)).finishTrade = false;
-                            ((Char) player.userTrade.get(0)).lockTrade = false;
-                            ((Char) player.userTrade.get(0)).tItems.removeAllElements();
-                            ((Char) player.userTrade.get(0)).rItems.removeAllElements();
-                            ((Char) player.userTrade.get(0)).userTrade.removeAllElements();
-                            player.tPotions = null;
-                            player.rPotions = null;
-                            player.tPotions = new int[160];
-                            player.rPotions = new int[160];
-                            ((Char) player.userTrade.get(0)).tPotions = null;
-                            ((Char) player.userTrade.get(0)).rPotions = null;
-                            ((Char) player.userTrade.get(0)).tPotions = new int[160];
-                            ((Char) player.userTrade.get(0)).rPotions = new int[160];
+                        }
+
+                        if (dp.potions[idPotion] + dp.rPotions[idPotion] - player.rPotions[idPotion] + soluong <= GiaoDichThuoc.TOI_DA_MOT_O
+                                || LUAT_THUOC.khongGioiHan(idPotion)) {
+                            player.tPotions[idPotion] = player.tPotions[idPotion] + soluong;
+                            dp.rPotions[idPotion] += soluong;
                             m = new Message(66);
-                            m.dos.writeByte(3);
-                            ((Char) player.userTrade.get(0)).sendMessage(m);
-                            player.userTrade.removeAllElements();
-                            m.cleanup();
+                            m.dos.writeByte(2);
+                            m.dos.writeByte(1);
+                            m.dos.writeShort(player.id);
+                            m.dos.writeByte(idPotion);
+                            m.dos.writeShort(soluong);
+                            player.sendMessage(m);
+                            dp.sendMessage(m);
                             return;
-                        case 4:
-                            if (!player.finishTrade) {
-                                player.finishTrade = true;
-                                if (((Char) player.userTrade.get(0)).finishTrade) {
-                                    m = new Message(66);
-                                    m.dos.writeByte(5);
-                                    player.sendMessage(m);
-                                    ((Char) player.userTrade.get(0)).sendMessage(m);
-                                    return;
-                                }
+                        }
+
+                        m = MessageCreator.createServerAlertMessage(
+                                "Chỉ có thể trao đổi thêm "
+                                + (GiaoDichThuoc.TOI_DA_MOT_O
+                                - dp.potions[idPotion]
+                                - dp.rPotions[idPotion]
+                                + player.rPotions[idPotion])
+                                + " vật phẩm",
+                                ""
+                        );
+                        player.sendMessage(m);
+                        m.cleanup();
+                        return;
+                    case 3:
+                        // Nguoi choi tu huy: xoa sach ca hai ben, doi phuong nhan 66/3.
+                        player.huyGiaoDich(false, true);
+                        return;
+                    case 4:
+                        dp = doiPhuongHopLe(player);
+                        if (dp == null) {
+                            if (player.userTrade.size() > 0) {
+                                huyVaBao(player, "Giao dịch không hợp lệ, đã huỷ.");
                             }
-
                             return;
-                        case 5:
-                            if (player.finishTrade) {
-                                player.lockTrade = true;
-                                if (((Char) player.userTrade.get(0)).finishTrade && ((Char) player.userTrade.get(0)).lockTrade && player.finishTrade) {
-                                    player.doAddItemTrad2Inventory();
-                                    m = new Message(66);
-                                    m.dos.writeByte(4);
-                                    player.sendMessage(m);
-                                    ((Char) player.userTrade.get(0)).sendMessage(m);
-                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                                    Database.instance.saveCharAuto(player);
-                                    Database.instance.saveCharAuto((Char) player.userTrade.get(0));
-                                    ((Char) player.userTrade.get(0)).sendMessage(MessageCreator.createCharInventoryMessage((Char) player.userTrade.get(0), 0));
-                                    ((Char) player.userTrade.get(0)).sendMessage(MessageCreator.createCharInventoryMessage((Char) player.userTrade.get(0), 1));
-                                    ((Char) player.userTrade.get(0)).userTrade.removeAllElements();
-                                    player.userTrade.removeAllElements();
-                                }
+                        }
 
+                        if (!cungChoDung(player, dp)) {
+                            huyVaBao(player, "Hai bên phải đứng gần nhau trên cùng bản đồ khi giao dịch.");
+                            return;
+                        }
+
+                        if (!player.finishTrade) {
+                            player.finishTrade = true;
+                            if (dp.finishTrade) {
+                                m = new Message(66);
+                                m.dos.writeByte(5);
+                                player.sendMessage(m);
+                                dp.sendMessage(m);
                                 return;
                             }
-                    }
-                } catch (Exception var18) {
+                        }
+
+                        return;
+                    case 5:
+                        dp = doiPhuongHopLe(player);
+                        if (dp == null) {
+                            if (player.userTrade.size() > 0) {
+                                huyVaBao(player, "Giao dịch không hợp lệ, đã huỷ.");
+                            }
+                            return;
+                        }
+
+                        if (!cungChoDung(player, dp)) {
+                            huyVaBao(player, "Hai bên phải đứng gần nhau trên cùng bản đồ khi giao dịch.");
+                            return;
+                        }
+
+                        if (!player.finishTrade) {
+                            return;
+                        }
+
+                        player.lockTrade = true;
+                        if (dp.finishTrade && dp.lockTrade) {
+                            // Kiem lai TOAN BO ngay truoc khi cong/tru: so thuoc con du khong, hai ben co
+                            // khop nhau khong, thuoc co duoc phep giao dich khong, ben nhan co vuot 999 khong.
+                            int loi = GiaoDichThuoc.kiemTra(player.potions, player.tPotions, player.rPotions,
+                                    dp.potions, dp.tPotions, dp.rPotions, LUAT_THUOC);
+                            if (loi != GiaoDichThuoc.HOP_LE) {
+                                String chiTiet = GiaoDichThuoc.moTaLoi(loi) + " - voi " + dp.charname + " | "
+                                        + GiaoDichThuoc.tomTat(player.tPotions, player.rPotions, dp.tPotions, dp.rPotions);
+                                data.NghiVanGianLan.ghiVatPham(player, "hackgd", chiTiet);
+                                try {
+                                    Database.instance.saveOrtherLog("tob_log_other_item", player.charname, chiTiet, "hackgd");
+                                } catch (Exception e) {
+                                }
+                                huyVaBao(player, "Giao dịch không hợp lệ (" + GiaoDichThuoc.moTaLoi(loi) + "), đã huỷ.");
+                                return;
+                            }
+
+                            if (!player.doAddItemTrad2Inventory()) {
+                                // Khe giua kiemTra va luc tru: mot luong khac vua tieu thuoc. Khong
+                                // cong gi cho ai, huy va ghi lai.
+                                String chiTiet = "so thuoc doi ngay truoc luc tru - voi " + dp.charname + " | "
+                                        + GiaoDichThuoc.tomTat(player.tPotions, player.rPotions, dp.tPotions, dp.rPotions);
+                                data.NghiVanGianLan.ghiVatPham(player, "hackgd", chiTiet);
+                                huyVaBao(player, "Giao dịch không hợp lệ (số thuốc đã thay đổi), đã huỷ.");
+                                return;
+                            }
+                            m = new Message(66);
+                            m.dos.writeByte(4);
+                            player.sendMessage(m);
+                            dp.sendMessage(m);
+                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                            Database.instance.saveCharAuto(player);
+                            Database.instance.saveCharAuto(dp);
+                            dp.sendMessage(MessageCreator.createCharInventoryMessage(dp, 0));
+                            dp.sendMessage(MessageCreator.createCharInventoryMessage(dp, 1));
+                            // Xoa sach ca hai (thay cho chi userTrade.removeAllElements nhu truoc).
+                            dp.datLaiTrangThaiGiaoDich();
+                            player.datLaiTrangThaiGiaoDich();
+                        }
+
+                        return;
                 }
-            } finally {
-                if (m != null) {
-                    m.cleanup();
-                }
+            } catch (Exception var18) {
+            }
+        } finally {
+            if (m != null) {
+                m.cleanup();
             }
         }
     }

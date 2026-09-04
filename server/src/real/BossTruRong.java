@@ -66,7 +66,13 @@ public class BossTruRong extends Boss {
     public void setTarget(Actor ac) {
     }
 
-    public void attack() {
+    // synchronized(this): BossTruRong bi CA HAI luong cap nhat doc lap goi cung luc - luong
+    // Map/Region binh thuong (qua addMonsterDynamic, MapVongLap.update) VA mot Thread rieng
+    // MapTown tu khoi trong constructor cua no (goi dosendMoveAll+update moi 500ms, xem
+    // MapTown.java). Khong khoa se sinh tan cong kep (2 lan sat thuong trong 1 chu ky 3s do
+    // ca hai cung doc lastTimeAttack cu), hoi sinh kep (++wave 2 lan), va cua so hp<=0/isDead
+    // khong nguyen tu. Khoa tren this dong bo ca 4 diem vao/ra cua vong doi boss nay.
+    public synchronized void attack() {
         long now = System.currentTimeMillis();
         if (now - this.lastTimeAttack > this.attackDelay) {
             this.lastTimeAttack = now;
@@ -105,7 +111,6 @@ public class BossTruRong extends Boss {
                     demi = true;
                 }
 
-                demi = false;
                 boolean crit = false;
                 if (Map.r.nextInt(100) <= 20) {
                     crit = true;
@@ -290,7 +295,7 @@ public class BossTruRong extends Boss {
         return 0;
     }
 
-    public void dosendMoveAll(boolean isAdmin) {
+    public synchronized void dosendMoveAll(boolean isAdmin) {
         if (!Map.getTown[this.inCountry]) {
             this.actorDie();
         } else {
@@ -353,7 +358,7 @@ public class BossTruRong extends Boss {
         }
     }
 
-    public void update() {
+    public synchronized void update() {
         this.updateEffectBuff();
         if (!Map.getTown[this.inCountry]) {
             this.actorDie();
@@ -496,7 +501,7 @@ public class BossTruRong extends Boss {
         return super.getName();
     }
 
-    public Vector<Actor> onDropItem(Map m, Char p) {
+    public synchronized Vector<Actor> onDropItem(Map m, Char p) {
         Vector<Actor> droplist = new Vector();
         if ((!this.isBoss || this.isCopy()) && this.idTemplate == Map.idGhost) {
         }

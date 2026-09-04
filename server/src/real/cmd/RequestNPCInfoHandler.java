@@ -439,16 +439,17 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn phải đạt cấp độ 40 để nhận quà."));
                         return;
                     }
-                    if (p.potions[137] < 10) {
-                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn phải có ít nhất 10 kẹo để đổi quà"));
+                    final Char pKeoQua = p;
+                    if (!pKeoQua.truNeuDu(
+                            () -> pKeoQua.potions[137] >= 10 && pKeoQua.getLuong() >= 50,
+                            () -> { pKeoQua.subLuong(50); pKeoQua.potions[137] -= 10; })) {
+                        if (p.potions[137] < 10) {
+                            p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn phải có ít nhất 10 kẹo để đổi quà"));
+                        } else {
+                            p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn phải có ít nhất 50 lượng mở để đổi quà"));
+                        }
                         return;
                     }
-                    if (p.getLuong() < 50) {
-                        p.sendMessage(MessageCreator.createMsgChat(p.id, "Bạn phải có ít nhất 50 lượng mở để đổi quà"));
-                        return;
-                    }
-                    p.subLuong(50);
-                    p.potions[137] = p.potions[137] - 10;
                     int Qua = Map.ranDom(0, 20);
                     if (Qua == 9) {
                         long day = Map.ranDom(3, 7);

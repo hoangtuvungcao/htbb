@@ -1050,13 +1050,14 @@ class DatabaseNhanVat {
         }
         int charId = -1;
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement pre = null;
         try {
             conn = db.getConnection();
-            stmt = conn.createStatement();
-            String sql = "SELECT * FROM tob_char WHERE charname='" + charname + "'";
-            if (stmt.execute(sql)) {
-                ResultSet rs = stmt.getResultSet();
+            String sql = "SELECT * FROM tob_char WHERE charname=?";
+            pre = conn.prepareStatement(sql);
+            pre.setString(1, charname);
+            if (pre.execute()) {
+                ResultSet rs = pre.getResultSet();
                 boolean trungTen = rs.next();
                 try {
                     rs.close();
@@ -1064,18 +1065,24 @@ class DatabaseNhanVat {
                     e.printStackTrace();
                 }
                 if (trungTen) {
-                    // Khong tu dong dong stmt/conn o day, khoi finally ben duoi lo viec do.
+                    // Khong tu dong dong pre/conn o day, khoi finally ben duoi lo viec do.
                     // Neu dong 2 lan, cung 1 connection se bi tra ve pool 2 lan.
                     return -1;
                 }
             }
+            try {
+                pre.close();
+            } catch (Exception ignored) {
+            }
             // Chi dem nhan vat con song (del=1), khong bi ban va thuoc dung server dang choi,
             // dung mot server khac cua cung tai khoan lam het slot.
-            sql = "SELECT COUNT(*) FROM tob_char WHERE userId=" + userID
-                    + " AND idserver=" + s.idServer + " AND ban=0 AND del=1";
+            sql = "SELECT COUNT(*) FROM tob_char WHERE userId=? AND idserver=? AND ban=0 AND del=1";
             int countChar = 0;
             try {
-                ResultSet rs2 = stmt.executeQuery(sql);
+                pre = conn.prepareStatement(sql);
+                pre.setInt(1, userID);
+                pre.setInt(2, s.idServer);
+                ResultSet rs2 = pre.executeQuery();
                 if (rs2.next()) {
                     countChar = rs2.getInt(1);
                 }
@@ -1089,7 +1096,13 @@ class DatabaseNhanVat {
             // (ke ca da xoa / server khac) de khong the xoa char roi tao lai de an xu.
             boolean first = true;
             try {
-                ResultSet rs3 = stmt.executeQuery("SELECT COUNT(*) FROM tob_char WHERE userId=" + userID);
+                try {
+                    pre.close();
+                } catch (Exception ignored) {
+                }
+                pre = conn.prepareStatement("SELECT COUNT(*) FROM tob_char WHERE userId=?");
+                pre.setInt(1, userID);
+                ResultSet rs3 = pre.executeQuery();
                 if (rs3.next()) {
                     first = rs3.getInt(1) == 0;
                 }
@@ -1191,17 +1204,47 @@ class DatabaseNhanVat {
             vk.place = 1;
             String equip = ao.getInfoSave() + ">" + quan.getInfoSave() + ">" + vk.getInfoSave();
             String infoTop = nation + "," + idAo + "," + classID + ",1,0," + quanB + "," + classID + ",1,0," + vukhi + "," + classID + ",1,0";
-            sql = "INSERT INTO tob_char(charname,userId,headStyle,class,pInfo,potion,skill,basic,gender,infotop,gold,equip,idserver) VALUES('" + charname + "'," + userID + "," + headStyle + "," + classID + ",'" + pInfo + "','" + potion + "','" + skill + "','" + basic + "'," + (gender + 1) + ",'" + infoTop + "'," + xu + ",'" + equip + "'," + s.idServer + ")";
-            stmt.execute(sql);
+            sql = "INSERT INTO tob_char(charname,userId,headStyle,class,pInfo,potion,skill,basic,gender,infotop,gold,equip,idserver) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            try {
+                pre.close();
+            } catch (Exception ignored) {
+            }
+            pre = conn.prepareStatement(sql);
+            pre.setString(1, charname);
+            pre.setInt(2, userID);
+            pre.setInt(3, headStyle);
+            pre.setInt(4, classID);
+            pre.setString(5, pInfo);
+            pre.setString(6, potion.toString());
+            pre.setString(7, skill.toString());
+            pre.setString(8, basic);
+            pre.setInt(9, gender + 1);
+            pre.setString(10, infoTop);
+            pre.setLong(11, xu);
+            pre.setString(12, equip);
+            pre.setInt(13, s.idServer);
+            pre.execute();
             // Nhan vat dau tien va duy nhat cua tai khoan: tang 50000 luong mo + 250000 luong khoa,
             // cong qua hang doi board_created (nhu Nhan moc nap), Char se nhan khi vao game lan dau
             // qua Database.getBoardCreated(), khong dung sua truc tiep pInfo (fragile, xem [[feedback-kpah-safe-npc-edits]]).
             if (first) {
-                stmt.execute("INSERT INTO board_created(xu,luong,luongK,username) VALUES(50000000,50000,250000,'" + userID + "')");
+                try {
+                    pre.close();
+                } catch (Exception ignored) {
+                }
+                pre = conn.prepareStatement("INSERT INTO board_created(xu,luong,luongK,username) VALUES(50000000,50000,250000,?)");
+                pre.setString(1, String.valueOf(userID));
+                pre.execute();
             }
-            sql = "SELECT * FROM tob_char WHERE charname='" + charname + "'";
-            if (stmt.execute(sql)) {
-                ResultSet rs3 = stmt.getResultSet();
+            sql = "SELECT * FROM tob_char WHERE charname=?";
+            try {
+                pre.close();
+            } catch (Exception ignored) {
+            }
+            pre = conn.prepareStatement(sql);
+            pre.setString(1, charname);
+            if (pre.execute()) {
+                ResultSet rs3 = pre.getResultSet();
                 if (rs3.next()) {
                     charId = rs3.getInt("id");
                 }
@@ -1217,7 +1260,7 @@ class DatabaseNhanVat {
             ex.printStackTrace();
         } finally {
             try {
-                stmt.close();
+                pre.close();
             } catch (Exception e3) {
                 e3.printStackTrace();
             }
@@ -1227,7 +1270,7 @@ class DatabaseNhanVat {
             }
         }
         try {
-            stmt.close();
+            pre.close();
         } catch (Exception e3) {
             e3.printStackTrace();
         }
@@ -1403,17 +1446,18 @@ class DatabaseNhanVat {
         System.out.println("CHUAN BI DANG KY LIEN DAU " + charname);
         int charId = -1;
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement pre = null;
         try {
             conn = db.getConnection1();
-            stmt = conn.createStatement();
-            String sql = "SELECT * FROM tob_char WHERE charname='" + charname + "'";
-            if (stmt.execute(sql)) {
-                ResultSet rs = stmt.getResultSet();
+            String sql = "SELECT * FROM tob_char WHERE charname=?";
+            pre = conn.prepareStatement(sql);
+            pre.setString(1, charname);
+            if (pre.execute()) {
+                ResultSet rs = pre.getResultSet();
                 if (rs.next()) {
                     charId = rs.getInt("id");
                     try {
-                        stmt.close();
+                        pre.close();
                     } catch (Exception ignored) {
                     }
                     try {
@@ -1434,14 +1478,20 @@ class DatabaseNhanVat {
                     e.printStackTrace();
                 }
             }
-            sql = "SELECT * FROM tob_char WHERE userId=" + userID;
+            try {
+                pre.close();
+            } catch (Exception ignored) {
+            }
+            sql = "SELECT * FROM tob_char WHERE userId=?";
             final boolean first = false;
             try {
-                ResultSet rs2 = stmt.executeQuery(sql);
+                pre = conn.prepareStatement(sql);
+                pre.setInt(1, userID);
+                ResultSet rs2 = pre.executeQuery();
                 if (rs2.next()) {
                     charId = rs2.getInt("id");
                     try {
-                        stmt.close();
+                        pre.close();
                     } catch (Exception ignored) {
                     }
                     try {
@@ -1548,12 +1598,36 @@ class DatabaseNhanVat {
             vk.place = 1;
             String equip = ao.getInfoSave() + ">" + quan.getInfoSave() + ">" + vk.getInfoSave();
             String infoTop = nation + "," + idAo + "," + classID + ",1,0," + quanB + "," + classID + ",1,0," + vukhi + "," + classID + ",1,0";
-            sql = "INSERT INTO tob_char(charname,userId,headStyle,class,pInfo,potion,skill,basic,gender,infotop,gold,equip,idserver) VALUES('" + charname + "'," + userID + "," + headStyle + "," + classID + ",'" + pInfo + "','" + potion + "','" + skill + "','" + basic + "'," + (gender + 1) + ",'" + infoTop + "'," + xu + ",'" + equip + "'," + s.idServer + ")";
+            sql = "INSERT INTO tob_char(charname,userId,headStyle,class,pInfo,potion,skill,basic,gender,infotop,gold,equip,idserver) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            try {
+                pre.close();
+            } catch (Exception ignored) {
+            }
+            pre = conn.prepareStatement(sql);
+            pre.setString(1, charname);
+            pre.setInt(2, userID);
+            pre.setInt(3, headStyle);
+            pre.setInt(4, classID);
+            pre.setString(5, pInfo);
+            pre.setString(6, potion.toString());
+            pre.setString(7, skill.toString());
+            pre.setString(8, basic);
+            pre.setInt(9, gender + 1);
+            pre.setString(10, infoTop);
+            pre.setLong(11, xu);
+            pre.setString(12, equip);
+            pre.setInt(13, s.idServer);
             System.out.println(sql);
-            System.out.println("THUC THI CAU LENH: " + stmt.execute(sql));
-            sql = "SELECT * FROM tob_char WHERE charname='" + charname + "'";
-            if (stmt.execute(sql)) {
-                ResultSet rs3 = stmt.getResultSet();
+            System.out.println("THUC THI CAU LENH: " + pre.execute());
+            sql = "SELECT * FROM tob_char WHERE charname=?";
+            try {
+                pre.close();
+            } catch (Exception ignored) {
+            }
+            pre = conn.prepareStatement(sql);
+            pre.setString(1, charname);
+            if (pre.execute()) {
+                ResultSet rs3 = pre.getResultSet();
                 if (rs3.next()) {
                     charId = rs3.getInt("id");
                     System.out.println("CHAR DANG KY THANH CONG: " + charId);
@@ -1568,7 +1642,7 @@ class DatabaseNhanVat {
             ex.printStackTrace();
         } finally {
             try {
-                stmt.close();
+                pre.close();
             } catch (Exception e3) {
                 e3.printStackTrace();
             }
@@ -1578,7 +1652,7 @@ class DatabaseNhanVat {
             }
         }
         try {
-            stmt.close();
+            pre.close();
         } catch (Exception e3) {
             e3.printStackTrace();
         }

@@ -1035,50 +1035,86 @@ public class Map implements Runnable {
     public static byte tradePet;
 
     static {
+        // Luong tinh cua VAN TIEU: cu 300 ms cap nhat moi xe tieu va ket thuc xe da het gio.
+        //
+        // Truoc day than vong lap KHONG co try/catch va duyet ALL_MONSTER_VANTIEU theo chi so
+        // trong khi cac luong ban do them/bot xe (Char.doInitMonter, huy tieu). Vector rut mot
+        // phan tu giua size() va get(i) la ArrayIndexOutOfBoundsException -> luong nay CHET
+        // VINH VIEN cho toi khi restart: xe tieu khong update, khong bao gio isFinish, nguoi
+        // choi treo "chua hoan thanh chuyen tieu da nhan" mai. Nay: duyet tren ban sao, moi
+        // xe/moi vong co try/catch rieng, va chi xu ly xe con nam trong danh sach luc go
+        // (tranh tra id monster ve kho hai lan khi nguoi choi huy tieu cung luc).
         new Thread(() -> {
             while (!AdminHandler.isStopServer) {
-                Vector<MonsterVantieu> ms = new Vector();
+                try {
+                    Vector<MonsterVantieu> ms = new Vector();
+                    Object[] anh = MonsterVantieu.ALL_MONSTER_VANTIEU.toArray();
 
-                for (int i = 0; i < MonsterVantieu.ALL_MONSTER_VANTIEU.size(); i++) {
-                    MonsterVantieu mons = (MonsterVantieu) MonsterVantieu.ALL_MONSTER_VANTIEU.get(i);
-                    if (mons.isFinish()) {
-                        ms.add(mons);
-                    } else {
-                        mons.update();
-                    }
-                }
-
-                for (int ix = 0; ix < ms.size(); ix++) {
-                    MonsterVantieu mon = (MonsterVantieu) ms.get(ix);
-                    MonsterVantieu.removeMonster(mon);
-                    Char p = CharManager.instance.getCharByCharDbID(mon.charDbid);
-                    if (p != null) {
-                        if (p.monster != null && p.monster.isFinish) {
-                            try {
-                                p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Chúc mừng bạn đã có 1 chuyến tiêu thành công."));
-                            } catch (IOException var7) {
-                            }
-                        } else {
-                            p.sendMessage(MessageCreator.createServerAlertMessage("Chuyến tiêu của bạn đã kết thúc.", ""));
+                    for (int i = 0; i < anh.length; i++) {
+                        MonsterVantieu mons = (MonsterVantieu) anh[i];
+                        if (mons == null) {
+                            continue;
                         }
-
-                        p.monster = null;
-                        p.typeTieu = -1;
+                        try {
+                            if (mons.isFinish()) {
+                                ms.add(mons);
+                            } else {
+                                mons.update();
+                            }
+                        } catch (Throwable loiXe) {
+                            loiXe.printStackTrace();
+                        }
                     }
 
-                    ((MonsterVantieu) ms.get(ix)).map.removeMonster(mon.id, mon.inCountry, mon.region);
+                    for (int ix = 0; ix < ms.size(); ix++) {
+                        MonsterVantieu mon = (MonsterVantieu) ms.get(ix);
+                        try {
+                            boolean conTrongDanhSach = MonsterVantieu.ALL_MONSTER_VANTIEU.contains(mon);
+                            MonsterVantieu.removeMonster(mon);
+                            if (!conTrongDanhSach) {
+                                // Mot luong khac (huy tieu / nhan tieu moi) da go xe nay roi va da
+                                // tra id ve kho - khong lam lai lan hai.
+                                continue;
+                            }
+                            Char p = CharManager.instance.getCharByCharDbID(mon.charDbid);
+                            if (p != null) {
+                                if (p.monster != null && p.monster.isFinish) {
+                                    try {
+                                        p.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Chúc mừng bạn đã có 1 chuyến tiêu thành công."));
+                                    } catch (IOException var7) {
+                                    }
+                                } else {
+                                    p.sendMessage(MessageCreator.createServerAlertMessage("Chuyến tiêu của bạn đã kết thúc.", ""));
+                                }
 
-                    try {
-                        Message m = new Message(90);
-                        m.dos.writeShort(mon.id);
-                        m.dos.writeByte(mon.cat);
-                        Map.sendAllCharServerInMap(new int[]{0, 70, 301, 1701, 1, 2, 3, 4, 5, 6, 7, 8, 9, 118}, m);
-                    } catch (Exception var8) {
-                        var8.printStackTrace();
+                                if (p.monster == mon) {
+                                    p.monster = null;
+                                    p.typeTieu = -1;
+                                }
+                            }
+
+                            if (mon.map != null) {
+                                mon.map.removeMonster(mon.id, mon.inCountry, mon.region);
+                            }
+
+                            try {
+                                Message m = new Message(90);
+                                m.dos.writeShort(mon.id);
+                                m.dos.writeByte(mon.cat);
+                                Map.sendAllCharServerInMap(new int[]{0, 70, 301, 1701, 1, 2, 3, 4, 5, 6, 7, 8, 9, 118}, m);
+                            } catch (Exception var8) {
+                                var8.printStackTrace();
+                            }
+
+                            RealController.intance.idGen.putID(mon.id, 1, "xoa monster van tieu");
+                            Database.instance.saveOrtherLog("", mon.namemaster, mon.getName(), "hethan");
+                        } catch (Throwable loiGo) {
+                            loiGo.printStackTrace();
+                        }
                     }
-
-                    RealController.intance.idGen.putID(mon.id, 1, "xoa monster van tieu");
-                    Database.instance.saveOrtherLog("", mon.namemaster, mon.getName(), "hethan");
+                } catch (Throwable loiVong) {
+                    // Khong de bat ky loi nao giet luong nay.
+                    loiVong.printStackTrace();
                 }
 
                 try {
@@ -3189,8 +3225,13 @@ public class Map implements Runnable {
     }
 
     public static boolean canCreateBossCopy(int idTemplate, int incountry) {
+        // Phai loc theo CA HAI idTemplate va incountry - ban cu chi so idTemplate tren danh
+        // sach bossCopy DUNG CHUNG toan server (khong theo tung nuoc), nen ngay khi MOT nuoc
+        // tao ban sao thanh cong, canCreateBossCopy tra ve false cho CA 2 nuoc con lai dang
+        // cung danh boss cung idTemplate do, tuoc mat co hoi tao ban sao rieng cua ho.
         for (int i = 0; i < bossCopy.size(); i++) {
-            if (((Boss) bossCopy.get(i)).idTemplate == idTemplate) {
+            Boss b = (Boss) bossCopy.get(i);
+            if (b.idTemplate == idTemplate && b.getInCountry() == incountry) {
                 return false;
             }
         }
@@ -3503,6 +3544,16 @@ public class Map implements Runnable {
     }
 
     public void playerExit(Char player) {
+        // Roi ban do (cong dich chuyen, xa phu, than hanh phu, bi kick...) thi giao dich dang mo
+        // phai huy. Truoc day chi move2Map goi checkTrade, con doChangeMap (di qua cong) thi
+        // KHONG: hai ben giao dich tiep tren hai ban do khac nhau = hai luong xu ly goi 66 khac
+        // nhau, buoc hoan tat chay song song va thuoc duoc cong hai lan. Xem Char.KHOA_GIAO_DICH.
+        try {
+            if (player.userTrade.size() > 0) {
+                player.huyGiaoDich(true, true);
+            }
+        } catch (Exception e) {
+        }
         Message m = new Message(8);
 
         try {
@@ -3936,6 +3987,49 @@ public class Map implements Runnable {
 
     protected void addGemItem(GemItem pt, int country) {
         ((Vector) this.gemItem.get(country)).add(pt);
+    }
+
+    // ==================== CHIEM VAT ROI (nguyen tu) ====================
+    //
+    // Vector.remove(Object) la NGUYEN TU va tra ve true CHI cho luong that su rut duoc phan
+    // tu ra. Cac duong nhat cu deu theo mau "tim thay tren dat -> remove -> cap thuong", ma
+    // hai buoc dau khong nguyen tu voi nhau: goi 18/19/-41/-65 nam trong privateCmd nen chay
+    // tren LUONG PHIEN, con vong tu dong nhat (CharVongLap.update, idItem/idPotion/idGem/
+    // idItemQuest do Monster day vao khi quai chet) chay tren LUONG BAN DO. Hai luong cung
+    // thay mot vat -> ca hai remove (lan hai la no-op, ket qua bi bo qua) -> CA HAI cap
+    // thuong: mot vat roi thanh hai. Sau 5-10 giay belongUser ve 0 (deletePotionAndItemOnGround)
+    // nen hai NGUOI CHOI khac nhau cung dua duoc.
+    //
+    // Bon ham duoi day tra ve true = "toi da chiem duoc, duoc phep cap thuong". Moi duong nhat
+    // phai dung chung mau: if (!chiemX(...)) return;  TRUOC khi cong vao tui.
+    // Giu nguyen bon ham remove* (void) ben duoi: chung con duoc goi tu cac lop con nam trong
+    // lib/NQSH_5h.jar - doi chu ky la doi descriptor, lop trong jar se khong con ghi de dung.
+    protected boolean chiemGem(GemItem pt, int country) {
+        if (pt == null || country < 0 || country >= this.gemItem.size()) {
+            return false;
+        }
+        return ((Vector) this.gemItem.get(country)).remove(pt);
+    }
+
+    protected boolean chiemPotion(Potion pt, int country) {
+        if (pt == null || country < 0 || country >= this.potions.size()) {
+            return false;
+        }
+        return ((Vector) this.potions.get(country)).remove(pt);
+    }
+
+    protected boolean chiemItem(Item pt, int country) {
+        if (pt == null || country < 0 || country >= this.items.size()) {
+            return false;
+        }
+        return ((Vector) this.items.get(country)).remove(pt);
+    }
+
+    protected boolean chiemItemQuest(ItemQuest pt, int country) {
+        if (pt == null || country < 0 || country >= this.itemquests.size()) {
+            return false;
+        }
+        return ((Vector) this.itemquests.get(country)).remove(pt);
     }
 
     protected void removeGem(GemItem pt, int country) {
@@ -4680,8 +4774,11 @@ public class Map implements Runnable {
             }
 
             int percent = p.isFullParty() ? 400 : 300 + (nuser - 2) * 25;
-            int increaXp = xp * percent / 100;
-            xp += increaXp;
+            // Tinh bang long: quai co rcvxp toi 20.000.000 (Dracula, Bi ngo), xp * 400 tran int
+            // ngay tu ~5,4 trieu -> increaXp AM -> addXPForChar nhan dxp am (chi chan dxp == 0)
+            // -> ca to doi TUT CAP, exp co the am roi LevelDetail nem loi giua synchronized.
+            long tong = (long) xp + (long) xp * percent / 100L;
+            xp = (int) Math.min((long) Integer.MAX_VALUE, tong);
         }
 
         return xp;
@@ -4733,7 +4830,9 @@ public class Map implements Runnable {
 
                     if (gem.isBoss) {
                         if (gem.idPartyBoss != 0 && (gem.belongParty != 0 && gem.belongParty == player.partyID || gem.belongParty == player.charDBID)) {
-                            this.removeGem(gem, player.inCountry);
+                            if (!this.chiemGem(gem, player.inCountry)) {
+                                return; // luong khac vua nhat vien nay
+                            }
                             player.doAddGemItem(gem.idGemTemplate, 1, gem.islock);
                             player.sendMessage(MessageCreator.createCharGemItem(player));
                             player.allGemGet[gem.idGemTemplate]++;
@@ -4744,7 +4843,9 @@ public class Map implements Runnable {
                         }
 
                         if (inRangeActor(player, gem, 48)) {
-                            this.removeGem(gem, player.inCountry);
+                            if (!this.chiemGem(gem, player.inCountry)) {
+                                return;
+                            }
                             player.doAddGemItem(gem.idGemTemplate, 1, gem.islock);
                             player.sendMessage(MessageCreator.createCharGemItem(player));
                             player.allGemGet[gem.idGemTemplate]++;
@@ -4792,7 +4893,9 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    this.removeGem(gem, player.inCountry);
+                    if (!this.chiemGem(gem, player.inCountry)) {
+                        return;
+                    }
                     player.doAddGemItem(gem.idGemTemplate, 1, gem.islock);
                     player.sendMessage(MessageCreator.createCharGemItem(player));
                     player.allGemGet[gem.idGemTemplate]++;
@@ -4884,7 +4987,9 @@ public class Map implements Runnable {
             if (item != null) {
                 if (item.isBoss) {
                     if (item.idPartyBoss != 0 && (item.belongParty != 0 && item.belongParty == player.partyID || item.belongParty == player.charDBID)) {
-                        this.removeItem(item, player.inCountry);
+                        if (!this.chiemItem(item, player.inCountry)) {
+                            return; // luong khac vua nhat mon nay
+                        }
                         item.isBoss = false;
                         item.owner = player.charDBID;
                         short oldid = item.id;
@@ -4910,7 +5015,9 @@ public class Map implements Runnable {
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                     }
                 } else if ((item.belongUser == player.charDBID || item.belongUser == 0) && inRangeActor(player, item, 64)) {
-                    this.removeItem(item, player.inCountry);
+                    if (!this.chiemItem(item, player.inCountry)) {
+                        return;
+                    }
                     item.owner = player.charDBID;
                     short oldid = item.id;
                     boolean isOk = true;
@@ -5072,7 +5179,9 @@ public class Map implements Runnable {
                         || pt.getType() == 80
                         || pt.getType() == 35)
                         && (pt.belongUser == player.charDBID || pt.belongUser == 0)) {
-                    this.removePotion(pt, player.inCountry);
+                    if (!this.chiemPotion(pt, player.inCountry)) {
+                        return; // luong khac vua nhat binh nay
+                    }
                     player.potions[pt.getType()] += pt.quantity;
                     if (pt.getType() == 0) {
                         player.addXu((long) pt.quantity, "map 2");
@@ -5122,7 +5231,9 @@ public class Map implements Runnable {
         ItemQuest pt = this.getItemQuest(id, player.inCountry);
         if (pt != null) {
             if (pt.id_char == player.charDBID) {
-                this.removeItemQuest(pt, player.inCountry);
+                if (!this.chiemItemQuest(pt, player.inCountry)) {
+                    return; // luong khac (vong tu dong nhat) vua lay mon nay
+                }
                 player.itemquest[pt.getType()] += pt.quantity;
                 Message m = new Message(-65);
                 m.dos.writeShort(player.id);
@@ -5147,7 +5258,9 @@ public class Map implements Runnable {
         ItemQuest pt = this.getItemQuest(id, player.inCountry);
         if (pt != null) {
             if (pt.id_char == player.charDBID) {
-                this.removeItemQuest(pt, player.inCountry);
+                if (!this.chiemItemQuest(pt, player.inCountry)) {
+                    return;
+                }
                 player.itemquest[pt.getType()] += pt.quantity;
                 Message m = new Message(-65);
                 m.dos.writeShort(player.id);
@@ -5192,7 +5305,9 @@ public class Map implements Runnable {
                         || pt.getType() == 80
                         || pt.getType() == 35)
                         && (pt.belongUser == player.charDBID || pt.belongUser == 0)) {
-                    this.removePotion(pt, player.inCountry);
+                    if (!this.chiemPotion(pt, player.inCountry)) {
+                        return;
+                    }
                     player.potions[pt.getType()] += pt.quantity;
                     if (pt.getType() == 0) {
                         player.addXu((long) (pt.quantity + pt.quantity * player.getEffSkillClanMember(0) / 100), "map 4");
@@ -6312,6 +6427,19 @@ public class Map implements Runnable {
             }
             Item item = player.infoItemCreate.item;
             if (item != null) {
+                // player.infoItemCreate.item la tham chieu duoc giu tu luc "chon vat pham"
+                // (option 15, mo menu -502) qua nhieu goi tin, khong bao gio duoc xac thuc
+                // lai. Neu giua chung mon do bi MAC LEN NGUOI (MapMuaBan.exchangeItem rut no
+                // khoi iItems dua vao o trang bi) thi cac kiem duoi day (level/isSelling/lock)
+                // van qua vi day la thuoc tinh cua doi tuong Item, khong doi khi doi cho -
+                // doCreateNewItem van tao mon cap tren MOI, roi "player.iItems.remove(item)"
+                // o cuoi ham la no-op (mon dang o trang bi, khong o iItems) nen mon GOC van
+                // con nguyen tren nguoi: nhan doi trang bi. Bat buoc con nam trong iItems.
+                if (!player.iItems.contains(item)) {
+                    player.infoItemCreate = null;
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Hãy chọn lại vật phẩm cần nâng cấp.", ""));
+                    return;
+                }
                 if (item.level >= 81) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể nâng cấp thêm", ""));
                     return;
@@ -6381,6 +6509,12 @@ public class Map implements Runnable {
             }
             Item item = player.infoItemCreate.item;
             if (item != null) {
+                // Xem chu thich day du o doUserUpLevelItem (cung mot dang tham chieu treo).
+                if (!player.iItems.contains(item)) {
+                    player.infoItemCreate = null;
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Hãy chọn lại vật phẩm cần nâng cấp.", ""));
+                    return;
+                }
                 if (item.level >= 81) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể nâng cấp thêm", ""));
                     return;
@@ -6565,6 +6699,12 @@ public class Map implements Runnable {
 
             for (int i = 0; i < 6; i++) {
                 material[1][i] = message.dis.readByte();
+            }
+
+            if (MapEpNgoc.chanSoLuongAm(player, material, "doCreateNewItem")) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng nguyên liệu không hợp lệ", ""));
+                player.sendMessage(MessageCreator.createCharGemItem(player));
+                return null;
             }
 
             if (!this.enoughMaterial(
@@ -6796,7 +6936,7 @@ public class Map implements Runnable {
                     if (item.lock == 0) {
                         if (player.infoItemCreate.materialUse == 1) {
                             item.lock = 1;
-                        } else if (player.infoItemCreate.materialUse == 2) {
+                        } else if (player.infoItemCreate.materialUse != 0) { // != 0: deleteGemItem coi moi gia tri khac 0/1 la "tong hop" (uu tien tru kho khoa), phai khoa do trong CUNG dieu kien
                             try {
                                 if (material[0] != null) {
                                     for (int m = 0; m < material[0].length; m++) {
@@ -6968,6 +7108,11 @@ public class Map implements Runnable {
 
             if (fail) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể dùng nguyên liệu cấp 4 trở lên.", ""));
+                return;
+            }
+
+            if (MapEpNgoc.chanSoLuongAm(player, material, "doChangeLevelSkill")) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng nguyên liệu không hợp lệ", ""));
                 return;
             }
 
@@ -8394,6 +8539,7 @@ public class Map implements Runnable {
             try {
                 if (player.getxu() < 1000000L) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền", ""));
+                    return;
                 }
 
                 byte number = message.dis.readByte();
@@ -9241,13 +9387,19 @@ public class Map implements Runnable {
                                 player.itemVukhiThoiTrang.otherAtt = selectedItem.otherAtt.clone();
                                 
                                 //cho phép cộng dồn VKTB
-                                for (int k = 0; k < 33; k++) 
+                                for (int k = 0; k < 33; k++)
                                 {
-                                    if (player.itemVukhiThoiTrang.atb[k] > 0) 
+                                    if (player.itemVukhiThoiTrang.atb[k] > 0)
                                     {
                                         player.itemVukhiThoiTrang.atb[k] +=  player.itemVukhiThoiTrang.atb[k] * att55 / 1000;
                                     }
                                 }
+                                // Khoi phuc 3 chi so da luu TRUOC khi tinh cong don: phai lam truoc buoc
+                                // cong don ben duoi, khong phai sau - neu lam sau se GHI DE mat ket qua
+                                // vua cong don, bien phep tinh growth thanh vo nghia (ban cu).
+                                player.itemVukhiThoiTrang.otherAtt[54] = att54;
+                                player.itemVukhiThoiTrang.otherAtt[55] = att55;
+                                player.itemVukhiThoiTrang.otherAtt[56] = att56;
                                 // Cộng dồn 3 chỉ số đặc biệt (ID > 61) trong otherAtt[]
                                 short[] other = player.itemVukhiThoiTrang.otherAtt;
                                 if (other != null && other.length > 56) {
@@ -9293,11 +9445,6 @@ public class Map implements Runnable {
                                 player.itemVukhiThoiTrang.tempateID = (short)(oldId + 15);
                                 player.itemVukhiThoiTrang.colorName = 4;
                                 player.itemVukhiThoiTrang.minuteExist = 0;
-        
-                                // Khôi phục các giá trị otherAtt đã lưu
-                                player.itemVukhiThoiTrang.otherAtt[54] = att54;
-                                player.itemVukhiThoiTrang.otherAtt[55] = att55;
-                                player.itemVukhiThoiTrang.otherAtt[56] = att56;
                             }
                         }
         
@@ -10230,16 +10377,25 @@ public class Map implements Runnable {
                 } 
                 else if (idpopup >= 14 && idpopup < 24 && idActor == player.id) 
                 {
-                    if (player.itemLinhDanhThue == null) 
+                    if (player.itemLinhDanhThue == null)
                     {
                         return;
                     }
 
+                    // Giua luc dat itemLinhDanhThue (doUseItem, khi bam "Dung the bai") va luc
+                    // popup nay duoc xac nhan, the co the da roi tui (gui vao kho, ban, giao
+                    // dich). Truoc day RUT (tieu the) chay SAU khi CAP (trieu hoi ho ve) - phai
+                    // dao lai: tru truoc, chi cap khi tru thanh cong, khong thi mot the trieu
+                    // hoi duoc ho ve vo han lan.
+                    if (!player.iItems.remove(player.itemLinhDanhThue)) {
+                        player.itemLinhDanhThue = null;
+                        return;
+                    }
+                    player.removeIDItem(player.itemLinhDanhThue.id);
+
                     int clazz = (idpopup - 14) / 2;
                     int gender = (idpopup - 14) % 2;
                     player.doCreateCharHire(clazz, player.itemLinhDanhThue.level, gender, player.itemLinhDanhThue.getTemplate().atb[0]);
-                    player.iItems.remove(player.itemLinhDanhThue);
-                    player.removeIDItem(player.itemLinhDanhThue.id);
                     if (player.itemLinhDanhThue.minuteExist > 0) {
                         if (player.itemLinhDanhThue.timeLoan > 0L) 
                         {
@@ -15089,18 +15245,10 @@ public class Map implements Runnable {
 
             if (player.userTrade.size() > 0) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi đang trao đổi", ""));
-                player.finishTrade = false;
-                player.tItems.removeAllElements();
-                player.rItems.removeAllElements();
-                ((Char) player.userTrade.get(0)).finishTrade = false;
-                ((Char) player.userTrade.get(0)).tItems.removeAllElements();
-                ((Char) player.userTrade.get(0)).rItems.removeAllElements();
-                ((Char) player.userTrade.get(0)).userTrade.removeAllElements();
-                Message m = new Message(66);
-                m.dos.writeByte(3);
-                ((Char) player.userTrade.get(0)).sendMessage(m);
-                player.userTrade.removeAllElements();
-                m.cleanup();
+                // Huy cho CA HAI ben va xoa sach trang thai duoi Char.KHOA_GIAO_DICH. Ban cu chi
+                // xoa tItems/rItems/userTrade ma de lai tPotions/rPotions -> lan giao dich sau
+                // nhan them thuoc tu khong khi. Xem Char.datLaiTrangThaiGiaoDich, real/GiaoDichThuoc.
+                player.huyGiaoDich(false, true);
                 return true;
             }
         } catch (Exception var3) {
@@ -15258,7 +15406,7 @@ public class Map implements Runnable {
 
                                 if (sl5 > 0) {
                                     player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[4][index], sl5, true);
-                                    info = info + sl + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[4][index]].name + " khoá. ";
+                                    info = info + sl5 + " " + gemTemplate[GemTemplate.ID_MATERIAL_LOW[4][index]].name + " khoá. ";
                                 }
                             }
 
@@ -17626,7 +17774,10 @@ public class Map implements Runnable {
                 }
 
                 if (attacker.cat == 0 && actorGiveCard != null && actorGiveCard.id != attacker.id && actorGiveCard.hp > 0 && r.nextInt(100) < 50) {
-                    c.add(actorGiveCard);
+                    // Nhanh nay tra ve 'ac' (khong phai 'c') - phai them vao dung Vector duoc
+                    // tra ve, neu khong actorGiveCard khong bao gio xuat hien trong ket qua du
+                    // roll trung 50%.
+                    ac.add(actorGiveCard);
                 }
 
                 return ac;

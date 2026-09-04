@@ -209,10 +209,11 @@ public class CharCopy extends Char {
                     dxp = 1;
                 }
 
-                int[] downPercent = new int[]{1, 5, 10, dxp};
+                // So cu the thay vi dxp (tu chia cho chinh no -> luon = 1).
+                int[] downPercent = new int[]{1, 5, 10, 20};
                 int targetLv = this.owner.getLevel();
                 if (targetLv < 40) {
-                    downPercent = new int[]{1, 2, 3, dxp};
+                    downPercent = new int[]{1, 2, 3, 4};
                 }
 
                 int delta = targetLv - mt.level;
@@ -461,10 +462,11 @@ public class CharCopy extends Char {
                             dxp = 1;
                         }
 
-                        int[] downPercent = new int[]{1, 5, 10, dxp};
+                        // So cu the thay vi dxp (tu chia cho chinh no -> luon = 1).
+                        int[] downPercent = new int[]{1, 5, 10, 20};
                         int targetLv = this.owner.getLevel();
                         if (targetLv < 40) {
-                            downPercent = new int[]{1, 2, 3, dxp};
+                            downPercent = new int[]{1, 2, 3, 4};
                         }
 
                         int delta = targetLv - mt.level;
@@ -581,10 +583,11 @@ public class CharCopy extends Char {
                             dxp = 1;
                         }
 
-                        int[] downPercent = new int[]{1, 5, 10, dxp};
+                        // So cu the thay vi dxp (tu chia cho chinh no -> luon = 1).
+                        int[] downPercent = new int[]{1, 5, 10, 20};
                         int targetLv = this.owner.getLevel();
                         if (targetLv < 40) {
-                            downPercent = new int[]{1, 2, 3, dxp};
+                            downPercent = new int[]{1, 2, 3, 4};
                         }
 
                         int delta = targetLv - mt.level;

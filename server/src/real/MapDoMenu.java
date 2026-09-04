@@ -619,6 +619,11 @@ class MapDoMenu {
                                     }
 
                                     player.doNangCapHoaKyLan(player.itemTam, GemTemplate.HOA_THACH_C2);
+                                    // Bat buoc don itemTam sau khi da xu ly, du thanh cong hay
+                                    // that bai: giu lai tham chieu la cho phep gui lai DUNG goi
+                                    // -30 nay nhieu lan tren mot doi tuong Item da bi tieu (xem
+                                    // chot moi trong Char.doNangCapHoaKyLan/doTrangBiHoaKyLan).
+                                    player.itemTam = null;
                                 } else {
                                     if (player.listGemitem[GemTemplate.HOA_THACH_C1] < 1 && player.listGemitemLock[GemTemplate.HOA_THACH_C1] < 1) {
                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ hoả thạch", ""));
@@ -627,6 +632,7 @@ class MapDoMenu {
                                     }
 
                                     player.doNangCapHoaKyLan(player.itemTam, GemTemplate.HOA_THACH_C1);
+                                    player.itemTam = null;
                                 }
                             }
                         } else if (!daToiDaCap && idOptionMenu == 1) {
@@ -812,6 +818,15 @@ class MapDoMenu {
                     // do, luc ay khong con vat pham nao dang chon -> NPE.
                     if (player.infoItemCreate == null || player.infoItemCreate.item == null) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Hãy chọn lại vật phẩm cần nâng cấp.", ""));
+                        return;
+                    }
+                    // Menu chi co 3 muc (mo / khoa / tong hop) nhung idOptionMenu doc thang tu
+                    // goi tin. Gia tri ngoai 0..2 lam Map.java:6906 (chot khoa do khi dung
+                    // nguyen lieu khoa) khong nhan ra che do "tong hop" (chi so sanh == 1 / == 2)
+                    // trong khi deleteGemItem van coi moi gia tri khac 0/1 la "tong hop, uu tien
+                    // tru kho khoa" - do tao ra bang nguyen lieu khoa (khong giao dich duoc) ma
+                    // van khong bi khoa.
+                    if (idOptionMenu < 0 || idOptionMenu > 2) {
                         return;
                     }
                     player.infoItemCreate.materialUse = (byte) idOptionMenu;
@@ -1218,22 +1233,27 @@ class MapDoMenu {
 
                     if (!Char.isFinishAllSuKienNoel()) {
                         MapSuKien.doMenuNoel2016(map, player, idNpc, idMenu, idOptionMenu);
+                        return;
                     }
 
                     if (Char.isSuKienWordcup2017()) {
                         MapSuKien.domenuWorldcup2017(map, player, idNpc, idMenu, idOptionMenu);
+                        return;
                     }
 
                     if (!Char.isFinishAllSuKienHe2017()) {
                         MapSuKien.doMenuSuKienHe2017(map, player, idNpc, idMenu, idOptionMenu);
+                        return;
                     }
 
                     if (!Char.isFinishAllSuKienHaloween2016()) {
                         MapSuKien.doMenuHalloween2016(map, player, idNpc, idMenu, idOptionMenu);
+                        return;
                     }
 
                     if (!Char.isFinishAllSuKienTrungThul2016()) {
                         MapSuKien.doMenuTrungThu2016(map, player, idNpc, idMenu, idOptionMenu);
+                        return;
                     }
                     break;
                 case -101:
@@ -3012,13 +3032,22 @@ class MapDoMenu {
                                                                 return;
                                                             }
 
-                                                            int money = Database.instance.getMoneyDauGia(player.charname, 2);
-                                                            if (idOptionMenu == 1) {
-                                                                money = Database.instance.getMoneyDauGia2(player.charname, 2);
+                                                            // idOptionMenu chi hop le 0 (bang tob_dau_gia, do thoi trang) hoac 1
+                                                            // (bang tob_dau_gia2, long den). Truoc day doc theo "== 1" nhung xoa
+                                                            // co theo "!= 0": voi idOptionMenu = 2 (hay bat ky gia tri nao khac
+                                                            // 0/1), tien duoc DOC tu bang 1 (== 1 sai) nhung co "da nhan" lai bi
+                                                            // XOA o bang 2 (!= 0 dung) - bang 1 khong bao gio duoc dat lai, nen
+                                                            // goi lai voi idOptionMenu = 2 nhan duoc CHINH SO TIEN DO vo han lan.
+                                                            if (idOptionMenu != 0 && idOptionMenu != 1) {
+                                                                return;
                                                             }
+                                                            boolean laBang2 = idOptionMenu == 1;
+                                                            int money = laBang2
+                                                                    ? Database.instance.getMoneyDauGia2(player.charname, 2)
+                                                                    : Database.instance.getMoneyDauGia(player.charname, 2);
 
                                                             if (money > 0) {
-                                                                if (idOptionMenu != 0) {
+                                                                if (laBang2) {
                                                                     Database.instance.updateHangDauGia2(player.charname, 0);
                                                                 } else {
                                                                     Database.instance.updateHangDauGia(player.charname, 0);
@@ -3234,10 +3263,13 @@ class MapDoMenu {
                                         player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Thông tin", "Tham gia", "Hướng dẫn"}, idNpc, 5 + idOptionMenu));
                                     }
                                 } else {
-                                    player.type_luong_doi_he = (byte) idOptionMenu;
-                                    if (player.type_luong_doi_he > 0) {
-                                        player.type_luong_doi_he = 0;
-                                    }
+                                    // Chi hop le 0 (dung luong mo) hoac 1 (dung luong khoa). Ban cu
+                                    // chi chan gia tri DUONG vuot 1 ve 0 ("> 0 -> 0"), khong chan so
+                                    // AM: idOptionMenu = -1 giu nguyen -1, lam ca hai chot kiem so du
+                                    // luong o buoc xac nhan (== 0 va == 1) deu sai va bi bo qua, trong
+                                    // khi nhanh tru tien (!= 0) van chon tru luong khoa - doi he mien
+                                    // phi khi khong co lượng khoá.
+                                    player.type_luong_doi_he = (byte) (idOptionMenu == 1 ? 1 : 0);
 
                                     int gia = 100;
                                     if (idOptionMenu == 1) {

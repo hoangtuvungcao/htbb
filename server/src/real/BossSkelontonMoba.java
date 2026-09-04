@@ -56,6 +56,10 @@ public class BossSkelontonMoba extends Boss {
         } else {
             if (System.currentTimeMillis() - cbatk.timeBeAttack <= 8000L) {
                 cbatk.dam += 2;
+                // Chặn trần: dam nhân trực tiếp (dam *= cbatk.dam) nên không giới hạn thì đánh liên tục cùng 1 mục tiêu sẽ khiến sát thương tăng vô hạn, one-shot bất kỳ ai; cap=2 giữ hệ số nhân này tối đa gấp đôi
+                if (cbatk.dam > 2) {
+                    cbatk.dam = 2;
+                }
             } else {
                 cbatk.dam = 1;
             }
@@ -263,7 +267,7 @@ public class BossSkelontonMoba extends Boss {
                                         }
 
                                         damAttack.add(dam);
-                                        if (freezz <= 10 && this.idTemplate == 115 && Map.r.nextInt(100) > c.khamKhangBang()) {
+                                        if (freezz <= 10 && this.idTemplate != 115 && Map.r.nextInt(100) > c.khamKhangBang()) {
                                             c.khamEff[4] = System.currentTimeMillis() / 1000L;
                                         }
                                     }

@@ -44,18 +44,9 @@ public class doUsePotion {
 
             if (player.userTrade.size() > 0) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi đang trao đổi", ""));
-                player.finishTrade = false;
-                player.tItems.removeAllElements();
-                player.rItems.removeAllElements();
-                ((Char) player.userTrade.get(0)).finishTrade = false;
-                ((Char) player.userTrade.get(0)).tItems.removeAllElements();
-                ((Char) player.userTrade.get(0)).rItems.removeAllElements();
-                ((Char) player.userTrade.get(0)).userTrade.removeAllElements();
-                Message m = new Message(66);
-                m.dos.writeByte(3);
-                ((Char) player.userTrade.get(0)).sendMessage(m);
-                player.userTrade.removeAllElements();
-                m.cleanup();
+                // Ban sao cua Map.checkTrade: cung phai xoa sach tPotions/rPotions cua ca hai
+                // (ban cu de sot -> nhan doi thuoc o giao dich sau). Xem Char.huyGiaoDich.
+                player.huyGiaoDich(false, true);
                 return true;
             }
         } catch (Exception var3) {
@@ -613,16 +604,16 @@ public class doUsePotion {
 
                         Char p1 = CharManager.instance.getCharByCharName(player.nameHusband_wife);
                         if (player.mapID != 225 && player.mapID != 226) {
-                            if (!p1.map.isMapTrain() && !isMapLang(p1.map) && !isMapThanh(p1.map)) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể dịch chuyển khi người chơi đang ở làng hoặc map luyện quái.", ""));
+                            String[] namnu = new String[]{"Phu nhân", "Phu quân"};
+                            if (p1 == null) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage(namnu[player.gender - 1] + " của bạn hiện tại không online.", ""));
                                 var10002 = player.potions[potionType]++;
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                 return;
                             }
 
-                            String[] namnu = new String[]{"Phu nhân", "Phu quân"};
-                            if (p1 == null) {
-                                player.sendMessage(MessageCreator.createServerAlertMessage(namnu[player.gender - 1] + " của bạn hiện tại không online.", ""));
+                            if (!p1.map.isMapTrain() && !isMapLang(p1.map) && !isMapThanh(p1.map)) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể dịch chuyển khi người chơi đang ở làng hoặc map luyện quái.", ""));
                                 var10002 = player.potions[potionType]++;
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                 return;

@@ -173,7 +173,7 @@ public final class KiemAoHoaHoaKyLan {
         final String s = doc("src/real/Char.java");
         final int vt = s.indexOf("public void doAoHoaHoaKyLan(final Item item) {");
         Kiem.dung("tim thay doAoHoaHoaKyLan", vt > 0);
-        final String than = s.substring(vt, Math.min(s.length(), vt + 1900));
+        final String than = s.substring(vt, Math.min(s.length(), vt + 2300));
         Kiem.dung("tu choi item co thoi han (minuteExist > 0)", than.contains("if (item.minuteExist > 0) {"));
         Kiem.dung("kiem du GIA_LUONG_AO_HOA_HOA_KY_LAN luong", than.contains("this.getLuong() < GIA_LUONG_AO_HOA_HOA_KY_LAN"));
         Kiem.dung("tru dung GIA_LUONG_AO_HOA_HOA_KY_LAN luong", than.contains("this.subLuong((long) GIA_LUONG_AO_HOA_HOA_KY_LAN);"));
@@ -255,8 +255,11 @@ public final class KiemAoHoaHoaKyLan {
         Kiem.sai("khong con return actor.maxhp*20/100 hardcode", s.contains("return actor.maxhp * 20 / 100;"));
         Kiem.sai("khong con checkGiamSatThuongTong(att*20/100) hardcode", s.contains("actor.checkGiamSatThuongTong(att * 20 / 100)"));
         Kiem.sai("khong con checkGiamSatThuongTong(att*30/100) hardcode", s.contains("actor.checkGiamSatThuongTong(att * 30 / 100)"));
-        Kiem.bang("doc chiSoPhanTramHoaKyLan(38) (% tan cong chu) it nhat 3 lan (attackDamAuto, attackDam x2)",
-                Integer.valueOf(3), Integer.valueOf(dem(s, "this.owner.chiSoPhanTramHoaKyLan(38)")));
+        // 4 lan tu 04/09/2026: attackDamAuto duoc vá them deltalv/checkGiamSatThuongTong
+        // (thieu truoc do), nen gio co 2 nhanh rieng (cat==0 fallback, cat!=0) giong het
+        // attackDam - moi ham 2 lan, tong 4.
+        Kiem.bang("doc chiSoPhanTramHoaKyLan(38) (% tan cong chu) 4 lan (attackDamAuto x2, attackDam x2)",
+                Integer.valueOf(4), Integer.valueOf(dem(s, "this.owner.chiSoPhanTramHoaKyLan(38)")));
         Kiem.dung("doc chiSoPhanTramHoaKyLan(40) (% maxhp doi thu, chi trong attackDamAuto)",
                 s.contains("final int pcMaxHp = this.owner.chiSoPhanTramHoaKyLan(40);"));
     }
@@ -336,7 +339,7 @@ public final class KiemAoHoaHoaKyLan {
         final String s = doc("src/real/MapDoMenu.java");
         final int vtCase = s.indexOf("case -513:");
         Kiem.dung("tim thay case -513", vtCase > 0);
-        final String than = s.substring(vtCase, Math.min(s.length(), vtCase + 3200));
+        final String than = s.substring(vtCase, Math.min(s.length(), vtCase + 3800));
         Kiem.dung("tinh daToiDaCap tu idItemUpLevel == -1", than.contains("final boolean daToiDaCap = player.itemTam.getTemplate().idItemUpLevel == -1;"));
         Kiem.dung("menu con Nang cap (!daToiDaCap): idOptionMenu == 1 la Nang cap", than.contains("} else if (!daToiDaCap && idOptionMenu == 1) {"));
         Kiem.dung("Ao hoa ung voi idOptionMenu 1 (da toi da) hoac 2 (con nang cap), goi doAoHoaHoaKyLan",

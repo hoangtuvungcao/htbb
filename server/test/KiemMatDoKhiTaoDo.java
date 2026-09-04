@@ -313,7 +313,10 @@ public final class KiemMatDoKhiTaoDo {
         final String s = doc("src/real/CharCapNhat.java");
         Kiem.dung("co ham luu sau khi luyen", s.contains("private static void luuSauKhiLuyen(final Char self)"));
         Kiem.dung("luu qua saveCharAuto", s.contains("Database.instance.saveCharAuto(self);"));
-        Kiem.bang("goi o ca hai duong ket thuc phien", Integer.valueOf(2), Integer.valueOf(dem(s, "luuSauKhiLuyen(self);")));
+        // 3 duong tu 03-04/09/2026: hoan thanh, het xu/nguyen lieu phat hien SAU khi da roll
+        // (ban cu), va het xu/nguyen lieu phat hien TRUOC khi roll (vá them, tranh roll/tru
+        // gem mien phi mot nhip khi vua het xu/nguyen lieu dung luc do - xem Char.enoughtLkd).
+        Kiem.bang("goi o ca ba duong ket thuc phien", Integer.valueOf(3), Integer.valueOf(dem(s, "luuSauKhiLuyen(self);")));
     }
 
     // ---------------------------------------------------------------- tien ich

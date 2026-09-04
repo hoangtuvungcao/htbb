@@ -138,6 +138,10 @@ public class BossTruRongMoba extends BossTruRong {
                 } else {
                     if (System.currentTimeMillis() - cbatk.timeBeAttack <= 8000L) {
                         cbatk.dam += 2;
+                        // Chặn trần: không giới hạn thì đánh liên tục cùng 1 mục tiêu hàng chục phút sẽ khiến % sát thương tăng vô hạn, one-shot bất kỳ ai
+                        if (cbatk.dam > 100) {
+                            cbatk.dam = 100;
+                        }
                     } else {
                         cbatk.dam = 1;
                     }
@@ -155,7 +159,6 @@ public class BossTruRongMoba extends BossTruRong {
                     demi = true;
                 }
 
-                demi = false;
                 boolean crit = false;
                 if (Map.r.nextInt(100) <= 20) {
                     crit = true;
@@ -223,6 +226,10 @@ public class BossTruRongMoba extends BossTruRong {
                             } else {
                                 if (System.currentTimeMillis() - cbatk.timeBeAttack <= 8000L) {
                                     cbatk.dam += 2;
+                                    // Chặn trần: không giới hạn thì đánh liên tục cùng 1 mục tiêu hàng chục phút sẽ khiến % sát thương tăng vô hạn, one-shot bất kỳ ai
+                                    if (cbatk.dam > 100) {
+                                        cbatk.dam = 100;
+                                    }
                                 } else {
                                     cbatk.dam = 1;
                                 }

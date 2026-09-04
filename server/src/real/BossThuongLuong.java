@@ -45,7 +45,7 @@ public class BossThuongLuong extends Boss {
                         if (c.hp > 0 && this.near(c, 120)) {
                             charid.add(c);
                             int dam = this.attackDam(c);
-                            boolean miss = this.attackMiss(this.target);
+                            boolean miss = this.attackMiss(c);
                             if (miss) {
                                 dam = 0;
                             }

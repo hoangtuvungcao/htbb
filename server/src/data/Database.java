@@ -2085,7 +2085,7 @@ public class Database {
                 Connection conn = Database.connGiftCode.getConnection();
                 Statement stm = conn.createStatement();
                 respond = "1|0|0|0|GEM:249:50:-1|1|mốc nạp tích luỹ tuần.";
-                player.tichluy += 8000;
+                player.tichluy_tuan += 8000;
                 stm.execute("update `tob_char` set `tichluy_tuan` = `tichluy_tuan` + 8000 where charname = '" + player.charname + "'");
                 stm.close();
                 Database.connGiftCode.free(conn);
@@ -6427,18 +6427,16 @@ public class Database {
                 String info = rs.getString("wearing");
                 if (!info.equals("-1")) {
                     try {
-                        if (info == null || info.trim().equals("")) {
-                            String[] data = Char.split(info.trim(), ",");
-                            if (data.length > 0) {
-                                charinfo.country = Byte.parseByte(data[0]);
-                                for (short i = 1; i < data.length; i += 4) {
-                                    ItemInfo item = new ItemInfo();
-                                    item.idTemplate = Short.parseShort(data[i]);
-                                    item.charClass = Byte.parseByte(data[i + 1]);
-                                    item.level = Byte.parseByte(data[i + 2]);
-                                    item.plus = Byte.parseByte(data[i + 3]);
-                                    charinfo.wearingItem.add(item);
-                                }
+                        String[] data = Char.split(info.trim(), ",");
+                        if (data.length > 0) {
+                            charinfo.country = Byte.parseByte(data[0]);
+                            for (short i = 1; i < data.length; i += 4) {
+                                ItemInfo item = new ItemInfo();
+                                item.idTemplate = Short.parseShort(data[i]);
+                                item.charClass = Byte.parseByte(data[i + 1]);
+                                item.level = Byte.parseByte(data[i + 2]);
+                                item.plus = Byte.parseByte(data[i + 3]);
+                                charinfo.wearingItem.add(item);
                             }
                         }
                     } catch (Exception ignored) {
@@ -9000,7 +8998,7 @@ public void addCharXaiNapLuong(Char p, int type) {
         try {
             String sql = "insert into tob_top_event(charname,point1,timeupdate) values ('" + p.charname + "'," + p.banphaohoa + ",now()) ON DUPLICATE KEY UPDATE point1=" + p.banphaohoa + ",timeupdate=now()";
             if (type == 2) {
-                sql = "insert into tob_top_event(charname,luong,dateluong,point1) values ('" + p.charname + "'," + luong + ",now()) ON DUPLICATE KEY UPDATE luong=luong+" + luong + ",point1="+point+"dateluong=now()";
+                sql = "insert into tob_top_event(charname,luong,dateluong,point1) values ('" + p.charname + "'," + luong + ",now()," + point + ") ON DUPLICATE KEY UPDATE luong=luong+" + luong + ",point1=" + point + ",dateluong=now()";
             }
             
             conn = this.getConnection();
@@ -9048,7 +9046,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             if (type == 1) {
                 sql = "insert into tob_top_event(charname,xu,datexu) values ('" + p.charname + "'," + xu + ",now()) ON DUPLICATE KEY UPDATE xu=xu+" + xu + ",datexu=now()";
             } else if (type == 2) {
-                sql = "insert into tob_top_event(charname,luong,dateluong,point1) values ('" + p.charname + "'," + luong + ",now()) ON DUPLICATE KEY UPDATE luong=luong+" + luong + ",point1="+(luong/100)+"dateluong=now()";
+                sql = "insert into tob_top_event(charname,luong,dateluong,point1) values ('" + p.charname + "'," + luong + ",now()," + (luong / 100) + ") ON DUPLICATE KEY UPDATE luong=luong+" + luong + ",point1=" + (luong / 100) + ",dateluong=now()";
             } else if (type == 3) {
                 sql = "insert into tob_top_event(charname,xu,datexu,point1,timeupdate,luong,dateluong) values ('" + p.charname + "'," + xu + ",now()," + p.banphaohoa + "',now()," + luong + ",now()) ON DUPLICATE KEY UPDATE xu=xu+" + xu + ",datexu=now(),point1=" + p.banphaohoa + ",timeupdate=now(),luong=luong+" + luong + ",dateluong=now()";
             }

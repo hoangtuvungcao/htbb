@@ -70,33 +70,39 @@ public class ManagerGame {
             case 755:
                 template = (itemTemplates.get(5)).get((755));
                 newItem = new Item(template, false, -1, 0, 755);
-                
-                
-            // TODO THÊM ÁO THỜI TRANG (1)    
+                break;
+
+            // TODO THÊM ÁO THỜI TRANG (1)
             case 797:
                 template = (itemTemplates.get(5)).get((797));
                 newItem = new Item(template, false, -1, 0, 797);
+                break;
             case 798:
                 template = (itemTemplates.get(5)).get((798));
-                newItem = new Item(template, false, -1, 0, 798);                
+                newItem = new Item(template, false, -1, 0, 798);
+                break;
             case 799:
                 template = (itemTemplates.get(5)).get((799));
-                newItem = new Item(template, false, -1, 0, 799);                
+                newItem = new Item(template, false, -1, 0, 799);
+                break;
             case 800:
                 template = (itemTemplates.get(5)).get((800));
-                newItem = new Item(template, false, -1, 0, 800);                
+                newItem = new Item(template, false, -1, 0, 800);
+                break;
             case 801:
                 template = (itemTemplates.get(5)).get((801));
-                newItem = new Item(template, false, -1, 0, 801);                
-                
-         
-                
-                
-                
-                
+                newItem = new Item(template, false, -1, 0, 801);
+                break;
+
+
+
+
+
+
             case 834:
                 template = (itemTemplates.get(5)).get((834));
-                newItem = new Item(template, false, -1, 0, 834);       
+                newItem = new Item(template, false, -1, 0, 834);
+                break;
             case 839:
                 template = (itemTemplates.get(5)).get((839));
                 newItem = new Item(template, false, -1, 0, 839);
@@ -127,6 +133,7 @@ public class ManagerGame {
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
             Database.instance.saveOrtherLog("", player.charname, "mua  " + newItem.getName() + "|" + newItem.getInfoSave(), "dothoitrang");
             Database.instance.saveItem(newItem);
+            Database.instance.saveCharAuto(player);
         }
 
         return newItem;

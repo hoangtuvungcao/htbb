@@ -128,6 +128,23 @@ function kiemTraItem(string $item): array
         if (count($tach) < $toiThieu) {
             $loi[] = '“' . $mot . '” thiếu tham số — đúng phải là ' . $cuPhap
                    . ' (' . $toiThieu . ' phần, đang có ' . count($tach) . ').';
+        } else {
+            // Tung phan sau loai PHAI la so nguyen (co the am, vd GEM:...:khoa). Server doc
+            // bang Integer.parseInt(tachTime[i]) - mot phan khong phai so nem
+            // NumberFormatException giua luc phat thuong. Truoc day server tu tru han va ghi
+            // luot-da-dung TRUOC khi phat thuong (vá 03/09/2026) nen loi o day khong con lam
+            // nguoi choi nhan lai vo han duoc nua, nhung van lam CHINH ho mat quyen loi (ma
+            // coi nhu da dung ma khong nhan duoc gi) - bao ngay tu luc nhap de admin sua truoc.
+            for ($i = 1; $i < count($tach); $i++) {
+                if ($tach[$i] === '_') {
+                    continue; // cho phep dung "_" lam tham so bo qua, dung o nhieu cu phap tren
+                }
+                if (!preg_match('/^-?\d+$/', $tach[$i])) {
+                    $loi[] = '“' . $mot . '”: phần thứ ' . ($i + 1) . ' ("' . $tach[$i]
+                           . '") phải là số nguyên (hoặc "_" để bỏ qua nếu cú pháp cho phép) — đúng phải là '
+                           . $cuPhap . '.';
+                }
+            }
         }
         $tach[0] = $loaiPT;
         $phan[] = implode(':', $tach);

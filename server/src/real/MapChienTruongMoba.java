@@ -314,8 +314,12 @@ public class MapChienTruongMoba extends Map {
                 for (i = 0; i < POS_MID_MAIN.length; ++i) {
                     value = 43;
 
-                    for (i = 0; i < POS_MID_MAIN[i].length; i += 2) {
-                        m0 = new LienHoaTruMoba(this, (MonsterTemplate) monsterTemplates.get(Integer.valueOf(value)), POS_MID_MAIN[i][i] * 16, POS_MID_MAIN[i][i + 1] * 16, 1);
+                    // Dung bien lap RIENG (j) cho vong trong, khong dung lai i (bien lap ngoai
+                    // theo team) - dung lai i lam ca hai vong lap khien dieu kien "i <
+                    // POS_MID_MAIN[i].length" doc sai hang sau khi i bi vong trong tang len, nem
+                    // AIOOBE va huy toan bo phan khoi tao ban do con lai (xem loadTru()).
+                    for (j = 0; j < POS_MID_MAIN[i].length; j += 2) {
+                        m0 = new LienHoaTruMoba(this, (MonsterTemplate) monsterTemplates.get(Integer.valueOf(value)), POS_MID_MAIN[i][j] * 16, POS_MID_MAIN[i][j + 1] * 16, 1);
                         ((Monster) m0).level = ((Monster) m0).getMonsterTemplate().level;
                         ((Monster) m0).id = idMonster;
                         t = new byte[]{0, 1, 2, 3, 4};
@@ -338,8 +342,10 @@ public class MapChienTruongMoba extends Map {
                 for (i = 0; i < POS_MAIN.length; ++i) {
                     value = 120;
 
-                    for (i = 0; i < POS_MAIN[i].length; i += 2) {
-                        m0 = new BossTruRongMoba(this, (MonsterTemplate) monsterTemplates.get(Integer.valueOf(value)), POS_MAIN[i][i] * 16, POS_MAIN[i][i + 1] * 16, 1);
+                    // Cung loi/cung cach vá nhu khoi POS_MID_MAIN o tren: vong trong phai dung
+                    // bien rieng (j), khong dung lai i.
+                    for (j = 0; j < POS_MAIN[i].length; j += 2) {
+                        m0 = new BossTruRongMoba(this, (MonsterTemplate) monsterTemplates.get(Integer.valueOf(value)), POS_MAIN[i][j] * 16, POS_MAIN[i][j + 1] * 16, 1);
                         ((Monster) m0).level = ((Monster) m0).getMonsterTemplate().level;
                         ((Monster) m0).id = idMonster;
                         t = new byte[]{0, 1, 2, 3, 4};

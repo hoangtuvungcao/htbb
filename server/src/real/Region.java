@@ -1130,7 +1130,14 @@ public class Region {
                             continue;
                         }
                         if (mt.isDead) {
+                            // Client gui trung mot id quai nhieu lan trong CUNG mot goi 106 (skill dien
+                            // rong): getMonster van tra ve dung doi tuong da chet, va truoc day thieu
+                            // continue o day nen ma roi tiep xuong tinh sat thuong/onDropItem MOI LUOT -
+                            // mot goi tin quay drop + cong exp hang chuc/hang tram lan tren MOT con quai.
+                            // Dung mau da co san o RegionVantienTran.java cho cung ham nay.
                             Map.onMosterDie((Char)p, (LiveActor)mt, (byte)skill, (int)damage, (byte)effect, (byte)0);
+                            ++i;
+                            continue;
                         } else {
                             mst.add(mt);
                         }

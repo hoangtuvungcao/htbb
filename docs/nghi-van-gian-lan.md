@@ -67,6 +67,7 @@ báo động giả liên tục — độ trễ mạng, dữ liệu cũ — nó s
 | `hackbitem` | `real/OfflineMap.java` | Mua món không có trong danh sách bán của gian hàng |
 | `hackR` | `real/Map.java` | Gọi lệnh sửa đồ khi đang ở map online |
 | `ffbug` | `real/CharTrangBi.java` (4 chỗ) | Phi phong lỗi cũ / hết hạn còn trong túi hoặc rương |
+| `hackgd` | `real/MapMuaBan.java` | Giao dịch thuốc: nhận lời mời không tồn tại; hoặc lúc hoàn tất số thuốc hai bên không khớp, bên chuyển không còn đủ, thuốc không được phép giao dịch, vượt 999 (luật ở `real/GiaoDichThuoc.java`) |
 
 Việc ghi database (`saveOrtherLog(..., "hackc")`...) **giữ nguyên**. Database để
 thống kê và lọc theo nhân vật, file để đọc nhanh theo dòng thời gian.

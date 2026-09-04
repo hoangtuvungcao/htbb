@@ -43,6 +43,48 @@ class MapEpNgoc {
         return new GemItem(idTemplate);
     }
 
+    /**
+     * Chan so luong nguyen lieu AM ngay LUC DOC GOI, truoc bat ky hieu ung nao duoc ap dung
+     * (khoa do, dong dau, doi thuoc tinh, doi skill, tao do moi...).
+     *
+     * deleteGemItem (duoi day) da co chot tu choi so am tu 29/08/2026, nhung no la buoc
+     * CUOI CUNG cua moi duong che tao - moi nguoi goi deu da SUA DOI VAT PHAM (item.lock=1,
+     * item.charSeal=.., item.initAtt(...), item.changLevelSkill(), hoac tao han mot Item moi
+     * roi add vao iItems) TRUOC KHI goi no, va khong ai doc gia tri tra ve. Ket qua: hieu ung
+     * da cap, deleteGemItem tu choi tru, nguoi choi duoc nang cap/doi thuoc tinh/tao do MIEN
+     * PHI, lap lai vo han. Phai chan o day - noi DUY NHAT con kip, ngay sau khi doc material
+     * tu goi tin va truoc enoughMaterial lan hai / truoc khi ap bat ky hieu ung nao.
+     */
+    static boolean coSoLuongAm(int[][] material) {
+        if (material == null) {
+            return false;
+        }
+        for (int[] hang : material) {
+            if (hang == null) {
+                continue;
+            }
+            for (int v : hang) {
+                if (v < 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Kiem va ghi nghi van neu co so am. Goi NGAY sau khi doc material tu goi tin, truoc moi
+     * buoc khac. @return true neu PHAT HIEN so am (nguoi goi phai bao loi va return ngay).
+     */
+    static boolean chanSoLuongAm(Char player, int[][] material, String noiGoi) {
+        if (!coSoLuongAm(material)) {
+            return false;
+        }
+        data.NghiVanGianLan.ghiVatPham(player, "hackngl",
+                "gui so luong nguyen lieu AM khi che tao (" + noiGoi + ")");
+        return true;
+    }
+
     static String deleteGemItem(Map map, Char player, byte[] startID, int[][] material, int materialUse) {
         String gemUse = "ngL " + materialUse;
 
@@ -196,7 +238,7 @@ class MapEpNgoc {
                         }
 
                         int[] idDa = new int[]{175, 176, 177, 178};
-                        int idg = 0;
+                        int idg;
                         if (typeStone == 0) {
                             if (item.isWeapone()) {
                                 idg = idDa[(item.level - 51) / 10];
@@ -205,6 +247,15 @@ class MapEpNgoc {
                             }
                         } else if (typeStone == 1) {
                             idg = 178;
+                        } else {
+                            // Truoc day idg mac dinh = 0 (gem id 0 "Bao hiem 20%", 100 XU) khi
+                            // typeStone ngoai {0,1} - client tu gui idOptionMenu bat ky (menu -510)
+                            // la dung mot vien bao hiem re thay vi da tach that (175-178, 15-100
+                            // luong) de tach nguyen lieu. Chan han.
+                            data.NghiVanGianLan.ghiVatPham(player, "hacknl",
+                                    "gui typeStone=" + typeStone + " ngoai bien {0,1} khi tach nguyen lieu");
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Lựa chọn không hợp lệ", ""));
+                            return;
                         }
 
                         if (player.listGemitem[idg] <= 0 && player.listGemitemLock[idg] <= 0) {

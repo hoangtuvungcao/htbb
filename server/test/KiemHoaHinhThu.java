@@ -63,7 +63,9 @@ public final class KiemHoaHinhThu {
         krThuGiam(4, 20);
         krThuGiam(5, 25);
 
-        // ===== 5) Cooldown rieng: goi ngay sau proc phai bi chan =====
+        // ===== 5) Cua so duy tri: goi ngay sau proc VAN phai duoc giam (sua 04/09/2026 -
+        // ban cu chi co 1 moc cooldown nen don ke tiep khong duoc giam gi ca; gio khop voi
+        // Pet.applyKhangXuyenGiap: trong cua so duy tri 3-8s, MOI don deu duoc giam) =====
         boolean thayDoiCoDuocChanCooldown = false;
         for (int lan = 0; lan < 500 && !thayDoiCoDuocChanCooldown; lan++) {
             final Animal aCd = new Animal();
@@ -74,12 +76,12 @@ public final class KiemHoaHinhThu {
             final int lan1 = aCd.applyKhangXuyenGiap(1000);
             if (lan1 != 1000) {
                 final int lan2 = aCd.applyKhangXuyenGiap(1000);
-                Kiem.bang("cap 5: goi ngay sau khi proc bi chan boi cooldown (khong giam tiep)",
-                        Integer.valueOf(1000), Integer.valueOf(lan2));
+                Kiem.bang("cap 5: goi ngay sau khi proc VAN duoc giam (con trong cua so duy tri)",
+                        Integer.valueOf(lan1), Integer.valueOf(lan2));
                 thayDoiCoDuocChanCooldown = true;
             }
         }
-        Kiem.dung("kiem duoc it nhat mot lan proc trong 500 lan thu (cap 5, ty le 30%) de kiem tra cooldown",
+        Kiem.dung("kiem duoc it nhat mot lan proc trong 500 lan thu (cap 5, ty le 30%) de kiem tra cua so duy tri",
                 thayDoiCoDuocChanCooldown);
 
         // ===== 6) initAtt()/getAttribute() roundtrip - dung chung cot "att" co

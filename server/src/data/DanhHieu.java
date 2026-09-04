@@ -160,6 +160,9 @@ public class DanhHieu {
             case 8992:
                 return "Tung Hoành Thiên Hạ";
             case 8993:
+                // Dung ten trong web/admin/inc/danh_muc_danh_hieu.php (nguon chuan) - KHONG co
+                // hau to "2" du hang so TUYET_THE_VO_SONG_2 dat ten nhu vay (ten hang so chi de
+                // phan biet voi 8983 "Chien Than Bat Diet 2", khong phai ten hien thi that).
                 return "Tuyệt Thế Vô Song";
             case 8994:
                 return "Vinh Hoa Phú Qúy";
@@ -271,7 +274,10 @@ public class DanhHieu {
             case 8992:
                 return "Tung Hoành Thiên Hạ";
             case 8993:
-                return "Tuyệt Thế Vô Song 2";
+                // Dung ten trong web/admin/inc/danh_muc_danh_hieu.php (nguon chuan) - KHONG co
+                // hau to "2" du hang so TUYET_THE_VO_SONG_2 dat ten nhu vay (ten hang so chi de
+                // phan biet voi 8983 "Chien Than Bat Diet 2", khong phai ten hien thi that).
+                return "Tuyệt Thế Vô Song";
             case 8994:
                 return "Vinh Hoa Phú Qúy";
             case 8995:

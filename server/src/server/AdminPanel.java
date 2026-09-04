@@ -11,7 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.sql.Connection;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -458,18 +458,19 @@ controlsPanel.add(playerPanel);
                         }
 
                         Connection conn = Database.instance.getConnection();
-                        Statement stmt = conn.createStatement();
-                        
+
                         // Thu hồi từng gem
                         StringBuilder logMsg = new StringBuilder();
                         logMsg.append("Thu hồi ").append(isLockedGem ? "gem khóa" : "gem mở")
                               .append(" từ người chơi: ").append(charName).append("\n");
-                        
+
                         // Lấy dữ liệu gem hiện tại
-                        String sql = "SELECT listtemplate, soluong, slock FROM tob_gem_new WHERE owner IN (SELECT id FROM tob_char WHERE charname='" + charName + "')";
+                        String sql = "SELECT listtemplate, soluong, slock FROM tob_gem_new WHERE owner IN (SELECT id FROM tob_char WHERE charname=?)";
+                        PreparedStatement pre = conn.prepareStatement(sql);
+                        pre.setString(1, charName);
                         ResultSet rs = null;
                         try {
-                            rs = stmt.executeQuery(sql);
+                            rs = pre.executeQuery();
                             if (rs.next()) {
                                 String[] templates = rs.getString("listtemplate").split(",");
                                 String[] amounts = (isLockedGem ? rs.getString("slock") : rs.getString("soluong")).split(",");
@@ -493,12 +494,15 @@ controlsPanel.add(playerPanel);
                                 }
                                 
                                 // Cập nhật vào database
-                                String updateSql = "UPDATE tob_gem_new SET " + 
-                                                 (isLockedGem ? "slock" : "soluong") + 
-                                                 "='" + String.join(",", amounts) + 
-                                                 "' WHERE owner IN (SELECT id FROM tob_char WHERE charname='" + charName + "')";
-                                stmt.executeUpdate(updateSql);
-                                
+                                String updateSql = "UPDATE tob_gem_new SET " +
+                                                 (isLockedGem ? "slock" : "soluong") +
+                                                 "=? WHERE owner IN (SELECT id FROM tob_char WHERE charname=?)";
+                                PreparedStatement preUpdate = conn.prepareStatement(updateSql);
+                                preUpdate.setString(1, String.join(",", amounts));
+                                preUpdate.setString(2, charName);
+                                preUpdate.executeUpdate();
+                                preUpdate.close();
+
                                 // Log kết quả
                                 addLog(logMsg.toString());
                                 JOptionPane.showMessageDialog(this, "Đã thu hồi gem thành công!");
@@ -509,7 +513,7 @@ controlsPanel.add(playerPanel);
                             if (rs != null) {
                                 rs.close();
                             }
-                            stmt.close();
+                            pre.close();
                             Database.connPool.free(conn);
                         }
                         
@@ -624,9 +628,11 @@ controlsPanel.add(playerPanel);
             try {
                 String hash = sqlPassword(pass1);
                 Connection conn = Database.instance.getConnection();
-                Statement stmt = conn.createStatement();
-                int updated = stmt.executeUpdate("UPDATE account.team_user SET password='" + hash + "' WHERE username='" + username + "'");
-                stmt.close();
+                PreparedStatement pre = conn.prepareStatement("UPDATE account.team_user SET password=? WHERE username=?");
+                pre.setString(1, hash);
+                pre.setString(2, username);
+                int updated = pre.executeUpdate();
+                pre.close();
                 Database.connPool.free(conn);
                 if (updated > 0) {
                     addLog("Đã đổi mật khẩu cho tài khoản: " + username);
@@ -888,9 +894,10 @@ controlsPanel.add(playerPanel);
         if (playerName == null) return;
         try {
             Connection conn = Database.instance.getConnection();
-            Statement stmt = conn.createStatement();
-            String sql = "UPDATE tob_char SET ban=1 where charname='" + playerName + "'";
-            stmt.execute(sql);
+            String sql = "UPDATE tob_char SET ban=1 where charname=?";
+            PreparedStatement pre = conn.prepareStatement(sql);
+            pre.setString(1, playerName);
+            pre.execute();
 
             // Kick player if online
             Char player = CharManager.instance.getCharByCharName(playerName);
@@ -903,7 +910,7 @@ controlsPanel.add(playerPanel);
             }
 
             addLog("Đã khóa vĩnh viễn tài khoản: " + playerName);
-            stmt.close();
+            pre.close();
             Database.connPool.free(conn);
         } catch (Exception ex) {
             addLog("Lỗi khi khóa tài khoản: " + ex.getMessage());
@@ -915,11 +922,12 @@ controlsPanel.add(playerPanel);
         if (playerName == null) return;
         try {
             Connection conn = Database.instance.getConnection();
-            Statement stmt = conn.createStatement();
-            String sql = "UPDATE tob_char SET ban=0 where charname='" + playerName + "'";
-            stmt.execute(sql);
+            String sql = "UPDATE tob_char SET ban=0 where charname=?";
+            PreparedStatement pre = conn.prepareStatement(sql);
+            pre.setString(1, playerName);
+            pre.execute();
             addLog("Đã mở khóa tài khoản: " + playerName);
-            stmt.close();
+            pre.close();
             Database.connPool.free(conn);
         } catch (Exception ex) {
             addLog("Lỗi khi mở khóa tài khoản: " + ex.getMessage());

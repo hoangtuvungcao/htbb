@@ -97,7 +97,6 @@ public class BossDracula extends Boss {
                         demi = true;
                     }
 
-                    demi = false;
                     boolean crit = false;
                     if (Map.r.nextInt(100) <= 20) {
                         crit = true;
@@ -195,25 +194,29 @@ public class BossDracula extends Boss {
 
                                 if (idSkill == 1 && this.idTemplate == 117) {
                                     boolean issend = true;
-                                    if (this.target.addEffBuff(EffectBuff.EFF_RI_MAU, System.currentTimeMillis() + 5000L, EffectBuff.BY_ACTOR, 0) != null) {
-                                        this.target.sendEffToChar(this.target);
+                                    // Ap hieu ung len 'c' (nan nhan phu dang duyet trong vong lap
+                                    // AoE nay), khong phai this.target (muc tieu chinh, da xu ly
+                                    // rieng truoc do) - ban cu ap nham len this.target khien moi
+                                    // nan nhan phu mien nhiem CC nay.
+                                    if (c.addEffBuff(EffectBuff.EFF_RI_MAU, System.currentTimeMillis() + 5000L, EffectBuff.BY_ACTOR, 0) != null) {
+                                        c.sendEffToChar(c);
                                         issend = true;
                                     }
 
                                     if (issend) {
-                                        this.target.sendEffToNearChar();
+                                        c.sendEffToNearChar();
                                     }
                                 }
 
                                 if (idSkill == 0 && this.idTemplate == 117) {
                                     boolean issend = true;
-                                    if (this.target.addEffBuff(EffectBuff.TREE, System.currentTimeMillis() + 5000L, EffectBuff.BY_ACTOR, 0) != null) {
-                                        this.target.sendEffToChar(this.target);
+                                    if (c.addEffBuff(EffectBuff.TREE, System.currentTimeMillis() + 5000L, EffectBuff.BY_ACTOR, 0) != null) {
+                                        c.sendEffToChar(c);
                                         issend = true;
                                     }
 
                                     if (issend) {
-                                        this.target.sendEffToNearChar();
+                                        c.sendEffToNearChar();
                                     }
                                 }
 

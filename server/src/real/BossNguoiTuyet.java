@@ -208,7 +208,7 @@ public class BossNguoiTuyet extends Boss {
                                     }
 
                                     damAttack.add(dam);
-                                    if (freezz <= 20 && Map.r.nextInt(100) > this.target.khamKhangBang()) {
+                                    if (freezz <= 20 && Map.r.nextInt(100) > c.khamKhangBang()) {
                                         c.khamEff[Char.KHAM_BANG] = System.currentTimeMillis() / 1000L;
                                     }
                                 }

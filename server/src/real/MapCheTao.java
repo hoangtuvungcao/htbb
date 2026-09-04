@@ -206,6 +206,12 @@ class MapCheTao {
                 return;
             }
 
+            if (MapEpNgoc.chanSoLuongAm(player, material, "doUserLockItem")) {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng nguyên liệu không hợp lệ", ""));
+                player.sendMessage(MessageCreator.createCharGemItem(player));
+                return;
+            }
+
             if (!map.enoughMaterial(
                     player,
                     item.getType(),
@@ -287,6 +293,12 @@ class MapCheTao {
                     return;
                 }
 
+                if (MapEpNgoc.chanSoLuongAm(player, material, "doUserMakeSeal/doUserRepairAtt")) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng nguyên liệu không hợp lệ", ""));
+                    player.sendMessage(MessageCreator.createCharGemItem(player));
+                    return;
+                }
+
                 if (!map.enoughMaterial(
                         player,
                         item.getType(),
@@ -364,6 +376,12 @@ class MapCheTao {
 
                 if (fail) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể dùng nguyên liệu cấp 4 trở lên.", ""));
+                    player.sendMessage(MessageCreator.createCharGemItem(player));
+                    return;
+                }
+
+                if (MapEpNgoc.chanSoLuongAm(player, material, "doUserMakeSeal/doUserRepairAtt")) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng nguyên liệu không hợp lệ", ""));
                     player.sendMessage(MessageCreator.createCharGemItem(player));
                     return;
                 }
@@ -638,7 +656,7 @@ class MapCheTao {
         Item item = null;
         int[][] idTemplate = new int[][]{{214, 223}, {224, 233}, {234, 243}, {244, 253}, {254, 263}};
         int id = 0;
-        if (id < 26) {
+        if (lv < 26) {
             id = 0;
         } else {
             int[] mlv = new int[]{21, 26, 31, 36, 41, 46, 51, 56, 61, 66};
@@ -683,14 +701,21 @@ class MapCheTao {
             byte lock = msg.dis.readByte();
             short iddatiengiai = msg.dis.readShort();
             byte lockda = msg.dis.readByte();
+            // Chuan hoa ve boolean MOT LAN va dung dung bien nay cho ca kiem lan tru. Truoc day
+            // checkEnoughtGem(..., lock) coi "lock != 0" la kho KHOA (moi gia tri khac 0 deu vao
+            // nhanh khoa), con delGem(..., lock == 1) lai coi CHI "== 1" la khoa - gui lock = 2
+            // qua duoc kiem kho khoa nhung lai tru nham vao kho MO (0 vien, tu nhien clamp ve 0
+            // trong Char.delGem) -> reroll thuoc tinh mien phi bang nguyen lieu khoa.
+            boolean dungKhoaBot = lock == 1;
+            boolean dungKhoaDa = lockda == 1;
             Item item = player.getItemFormVector(player.iItems, idItem);
             if (item != null) {
-                if (!player.checkEnoughtGem(idMaterial, 1, lock) || gemTemplate[idMaterial].type != GemTemplate.TYPE_BOT) {
+                if (!player.checkEnoughtGem(idMaterial, 1, dungKhoaBot ? 1 : 0) || gemTemplate[idMaterial].type != GemTemplate.TYPE_BOT) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không có đủ bột", ""));
                     return;
                 }
 
-                if (!player.checkEnoughtGem(iddatiengiai, 1, lockda) || gemTemplate[iddatiengiai].type != GemTemplate.TYPE_DA_TIEN_GIAI) {
+                if (!player.checkEnoughtGem(iddatiengiai, 1, dungKhoaDa ? 1 : 0) || gemTemplate[iddatiengiai].type != GemTemplate.TYPE_DA_TIEN_GIAI) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không có đủ đá", ""));
                     return;
                 }
@@ -716,46 +741,50 @@ class MapCheTao {
                 }
 
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã tạo được thuộc tính " + info, ""));
-                player.delGem(idMaterial, 1, lock == 1);
-                player.delGem(iddatiengiai, 1, lockda == 1);
+                player.delGem(idMaterial, 1, dungKhoaBot);
+                player.delGem(iddatiengiai, 1, dungKhoaDa);
                 player.sendMessage(MessageCreator.createCharGemItem(player));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                 Database.instance.saveOrtherLog("", player.charname, item.getName() + "_" + item.getDBInfo() + "_" + item.getAttribute() + " > " + info, "themtt");
-            }
 
-            if (r.nextInt(100) < 1 && !player.isFullInventory()) {
-                int[] idthe = new int[]{678, 679, 680};
-                doAddItemIsNotWearing(player, idthe[r.nextInt(idthe.length)], 0);
-            }
-
-            if (Char.isSuKienTrungThul2016() && r.nextInt(100) < 40) {
-                player.potions[136]++;
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                Database.instance.saveOrtherLog("", player.getName(), "nhan dc nen khi tien giai", "nen");
-            }
-
-            if (Char.isSuKienHaloween2016() && r.nextInt(100) < 10) {
-                player.potions[144]++;
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                Database.instance.saveOrtherLog("", player.getName(), "nhan dc sao vang khi tien giai", "saovang");
-            }
-
-            Char.isSuKienHe2017();
-            if (Char.isSuKienGioTo2016() && r.nextInt(100) < 50) {
-                player.potions[117]++;
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                Database.instance.saveOrtherLog("", player.getName(), "nhan dc dua hau khi add them thuoc tinh", "trungdua");
-            }
-
-            if (Char.isSuKienVuLan2015()) {
-                int tlVuLan = 50;
-                if (player.wModel != null && (player.wModel.isBongDaNamAoCam() || player.wModel.isBongDaNuAoSoc())) {
-                    tlVuLan *= 2;
+                // Cac roll thuong (the dac biet + qua su kien) PHAI nam trong if(item!=null):
+                // truoc day nam ngoai khoi nay nen chay VO DIEU KIEN moi lan goi ham, ke ca khi
+                // idItem gui len khong khop item nao (item==null) - tuc khong can du bot/da
+                // tien giai/item hop le van roll duoc thuong mien phi, khong gioi han so lan.
+                if (r.nextInt(100) < 1 && !player.isFullInventory()) {
+                    int[] idthe = new int[]{678, 679, 680};
+                    doAddItemIsNotWearing(player, idthe[r.nextInt(idthe.length)], 0);
                 }
-                if (r.nextInt(100) < tlVuLan) {
-                    player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG]++;
+
+                if (Char.isSuKienTrungThul2016() && r.nextInt(100) < 40) {
+                    player.potions[136]++;
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                    Database.instance.saveOrtherLog("", player.getName(), "nhan dc nhanh hoa hong vang khi tien giai", "vulan");
+                    Database.instance.saveOrtherLog("", player.getName(), "nhan dc nen khi tien giai", "nen");
+                }
+
+                if (Char.isSuKienHaloween2016() && r.nextInt(100) < 10) {
+                    player.potions[144]++;
+                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                    Database.instance.saveOrtherLog("", player.getName(), "nhan dc sao vang khi tien giai", "saovang");
+                }
+
+                Char.isSuKienHe2017();
+                if (Char.isSuKienGioTo2016() && r.nextInt(100) < 50) {
+                    player.potions[117]++;
+                    player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                    Database.instance.saveOrtherLog("", player.getName(), "nhan dc dua hau khi add them thuoc tinh", "trungdua");
+                }
+
+                if (Char.isSuKienVuLan2015()) {
+                    int tlVuLan = 50;
+                    if (player.wModel != null && (player.wModel.isBongDaNamAoCam() || player.wModel.isBongDaNuAoSoc())) {
+                        tlVuLan *= 2;
+                    }
+                    if (r.nextInt(100) < tlVuLan) {
+                        player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG]++;
+                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                        Database.instance.saveOrtherLog("", player.getName(), "nhan dc nhanh hoa hong vang khi tien giai", "vulan");
+                    }
                 }
             }
         } catch (Exception var14) {
