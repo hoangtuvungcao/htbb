@@ -91,6 +91,13 @@ out_tools/
 # khong phai ma nguon. Truoc day bi commit nham, lam repo phinh ~4.5 MB jar trung lap.
 /KPAH2_NEW.jar
 /KPAH2_patched_backup_truoc_capnhat.jar
+# Jar TRUOC commit 2480c47, trich tu git (b87782e) de thu phan doi loi nhay 05/09/2026.
+# Da co san trong lich su git, khong can commit lai.
+/KPAH2_TRUOC_2480c47_de_thu.jar
+
+### Co bat/tat chan doan tren server dang chay ###
+# io.DemGoiTin doc tep nay moi 5 giay; chi ton tai luc dang chan doan, khong phai cau hinh.
+/debug_goi_tin.txt
 
 ### Cache cua Unity - thu muc rong, khong lien quan server Java ###
 /Library/

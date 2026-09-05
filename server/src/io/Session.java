@@ -192,6 +192,8 @@ public class Session extends Thread {
                     continue;
                 }
 
+                // Bo dem chan doan chieu client -> server (xem DemGoiTin).
+                DemGoiTin.ghiVao(this.charname, message.command);
                 try {
                     this.messageHandler.processMessage(this, message);
                 } catch (Exception var10) {
@@ -296,6 +298,8 @@ public class Session extends Thread {
     public void sendMessage(Message m) {
         try {
             if (m != null) {
+                // Bo dem chan doan - khong lam gi khi khong co tep debug_goi_tin.txt (xem DemGoiTin).
+                DemGoiTin.ghiRa(this.charname, m.command);
                 for(int i = 0; i < hasGroup.size(); ++i) {
                     if (((Hashtable)hasGroup.get(i)).get(m.command) != null) {
                         this.sender.sendMessage(m, i);
