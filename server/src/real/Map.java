@@ -2665,13 +2665,28 @@ public class Map implements Runnable {
             new PetTemplate((byte) 20, "Lồng đèn Trăng khuyết", 20160, (byte) 19, (byte) 2, (byte) 16, (byte) 16, 1000, (byte) 0, (byte) 27, Pet.TYPE_LANTERNS),
             new PetTemplate((byte) 21, "Lồng đèn Rồng xanh", 20160, (byte) 17, (byte) 2, (byte) 40, (byte) 40, 1000, (byte) 0, (byte) 28, Pet.TYPE_LANTERNS),
             new PetTemplate((byte) 22, "Khỉ vàng", 20160, (byte) 20, (byte) 12, (byte) 36, (byte) 32, 1000, (byte) 0, (byte) 29, Pet.TYPE_WALK),
-            new PetTemplate((byte) 23, "Cú", 20160, (byte) 21, (byte) 1, (byte) 1, (byte) 1, 1000, (byte) 0, (byte) 30, Pet.TYPE_WALK),
-            new PetTemplate((byte) 24, "Rồng", 20160, (byte) 21, (byte) 1, (byte) 1, (byte) 1, 1000, (byte) 0, (byte) 31, Pet.TYPE_WALK),
-            new PetTemplate((byte) 25, "Thỏ bay", 20160, (byte) 21, (byte) 1, (byte) 1, (byte) 1, 1000, (byte) 0, (byte) 32, Pet.TYPE_WALK),
-            new PetTemplate((byte) 26, "Dơi", 20160, (byte) 21, (byte) 1, (byte) 1, (byte) 1, 1000, (byte) 0, (byte) 33, Pet.TYPE_WALK),
-            new PetTemplate((byte) 27, "Đại bàng", 20160, (byte) 21, (byte) 1, (byte) 1, (byte) 1, 1000, (byte) 0, (byte) 34, Pet.TYPE_WALK),
+            // SAU MAU 23-27 VA 29 MUON ANH CUA MAU CO SAN - xem chu thich dai o Pet.apDungAnhTheoMau().
+            //
+            // Ban cu ghi idImg=21, nFrame=1, w=1, h=1, TYPE_WALK cho ca sau: toan gia tri GIU CHO,
+            // map/pet/21.png chua bao gio ton tai (ke ca fork KPAH-VER3 trong Downloads va lich su
+            // git). TYPE_WALK lai dung bang khung cua pet 12 khung (chi so khung toi 9), nen client
+            // ve khung 1..9 tren mot anh khai bao 1 khung -> vung ve NGOAI BIEN anh. Client J2ME
+            // (MIDP drawRegion) nem IllegalArgumentException -> gay ca vong ve actor cua khung hinh
+            // do -> moi actor ve sau pet bien mat, khung sau (idFrame ve 0) hien lai: nhan vat
+            // "luc an luc hien" ~1 lan/giay (05/09/2026, 338 pet cua 33 nguoi choi). Client Unity
+            // khong nem loi nhung pet vo hinh.
+            //
+            // Cot 4-7 va cot cuoi (idImg, nFrame, wFrame, hFrame, type_move) CHEP Y NGUYEN tu mau
+            // nguon ghi ben phai - do la bo tham so da chay dung tren san pham voi dung tam anh do.
+            // Ten, thoi han, gia, idImgPaint (icon) giu nguyen. Khi co anh rieng thi thay o day va
+            // xoa cap tuong ung trong KiemMauPetCoAnh.
+            new PetTemplate((byte) 23, "Cú", 20160, (byte) 1, (byte) 6, (byte) 10, (byte) 10, 1000, (byte) 0, (byte) 30, Pet.TYPE_FLY_2_FRAME),   // <- mau 1  Thanh tước
+            new PetTemplate((byte) 24, "Rồng", 20160, (byte) 16, (byte) 4, (byte) 22, (byte) 21, 1000, (byte) 0, (byte) 31, Pet.TYPE_FLY_2_FRAME), // <- mau 16 Phượng hoàng lửa
+            new PetTemplate((byte) 25, "Thỏ bay", 20160, (byte) 14, (byte) 12, (byte) 29, (byte) 30, 1000, (byte) 0, (byte) 32, Pet.TYPE_WALK),    // <- mau 14 Pet ất mùi
+            new PetTemplate((byte) 26, "Dơi", 20160, (byte) 3, (byte) 6, (byte) 16, (byte) 16, 1000, (byte) 0, (byte) 33, Pet.TYPE_FLY_2_FRAME),   // <- mau 3  Dơi quỷ
+            new PetTemplate((byte) 27, "Đại bàng", 20160, (byte) 17, (byte) 4, (byte) 22, (byte) 21, 1000, (byte) 0, (byte) 34, Pet.TYPE_FLY_2_FRAME), // <- mau 17 Phượng hoàng băng
             new PetTemplate((byte) 28, "Lồng đèn hoa sen", 20160, (byte) 5, (byte) 2, (byte) 14, (byte) 14, 1000, (byte) 0, (byte) 11, Pet.TYPE_LANTERNS),
-            new PetTemplate((byte) 29, "Bạch Thử", 20160, (byte) 21, (byte) 1, (byte) 1, (byte) 1, 1000, (byte) 0, (byte) 46, Pet.TYPE_WALK)
+            new PetTemplate((byte) 29, "Bạch Thử", 20160, (byte) 13, (byte) 12, (byte) 17, (byte) 29, 1000, (byte) 0, (byte) 46, Pet.TYPE_WALK)    // <- mau 13 Chim cánh cụt
         };
     }
 

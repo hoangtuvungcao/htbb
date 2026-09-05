@@ -134,6 +134,7 @@ public class Pet extends Actor {
         if (this.idTemplate == 21 && this.idImg != 17) {
             this.idImg = 17;
         }
+        this.apDungAnhTheoMau();
 
         name = this.getPetTemplate().name;
         if (stitem != null && !stitem.equals("")) {
@@ -207,6 +208,7 @@ public class Pet extends Actor {
         this.idDB = idDB;
         this.ownerid = ownerID;
         this.idTemplate = idtemplate;
+        this.apDungAnhTheoMau();
         name = this.getPetTemplate().name;
     }
 
@@ -217,8 +219,51 @@ public class Pet extends Actor {
         this.idDB = idDB;
         this.ownerid = ownerID;
         this.idTemplate = idtemplate;
+        this.apDungAnhTheoMau();
         name = this.getPetTemplate().name;
         this.itemPet = itemP;
+    }
+
+    /**
+     * Sau mau 23 Cú, 24 Rồng, 25 Thỏ bay, 26 Dơi, 27 Đại bàng, 29 Bạch Thử chua bao gio co anh
+     * rieng - Map.loadPetTemplate cho chung MUON bo anh/khung/kieu di chuyen cua mot mau co san.
+     */
+    static boolean laMauMuonAnh(final int idTemplate) {
+        return idTemplate >= 23 && idTemplate <= 29 && idTemplate != 28;
+    }
+
+    /**
+     * Voi sau mau muon anh, idImg va type LUON lay theo bang mau, bo qua gia tri trong DB.
+     *
+     * VI SAO. 338 dong tob_pet (33 nguoi choi, tinh den 05/09/2026) con luu idImg=21 va
+     * type=1 (TYPE_WALK) trong chuoi info - bo gia tri giu cho cua ban mau cu. map/pet/21.png
+     * khong ton tai nen server tra anh trong suot 32x96; TYPE_WALK lai bao client dung bang
+     * khung 12 khung (chi so toi 9) tren mot anh khai bao 1 khung -> vung ve NGOAI BIEN ->
+     * client J2ME nem IllegalArgumentException giua vong ve actor -> moi actor ve sau pet bien
+     * mat trong khung hinh do, khung sau hien lai. Do chinh la "nhan vat luc an luc hien ~1
+     * lan/giay, o moi ban do" nguoi choi bao ngay 05/09/2026 - bat dau dung luc ho nhan pet
+     * loai nay (13:50), khong lien quan ban deploy 02:29 cung ngay.
+     *
+     * Chi doi bang mau la KHONG DU: Pet.type doc tu info (initDbInfo, truong thu 4), idImg doc
+     * tu cot idImg - ca hai deu la du lieu cu. Nen ghi de ngay khi nap, dat sau cac phep ghi de
+     * 19/20/21 co san (cung y do, cung cach lam). getDBInfo() va UPDATE tob_pet ghi lai ca type
+     * va idImg, nen sau lan luu ke tiep DB tu lanh - khong can chay SQL tay.
+     *
+     * Goi ca o hai constructor tao pet MOI: chung khong gan type (mac dinh 0 = TYPE_FLY_1_FRAME,
+     * bang khung 9 chi so) va mot vai cho goi (Char.addPet) gan type cung sau do; voi sau mau nay
+     * gia tri theo mau la dung nhat.
+     */
+    private void apDungAnhTheoMau() {
+        if (!laMauMuonAnh(this.idTemplate)) {
+            return;
+        }
+        final PetTemplate mau = (Map.petTemplate != null && this.idTemplate < Map.petTemplate.length)
+                ? Map.petTemplate[this.idTemplate] : null;
+        if (mau == null) {
+            return;
+        }
+        this.idImg = mau.idImg;
+        this.type = mau.type_move;
     }
 
     /**

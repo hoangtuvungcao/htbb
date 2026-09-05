@@ -276,6 +276,12 @@ public class LoginHandler implements ICommandHandler {
         MessageCreator.version = version;
         session.version = version;
         session.firmWare = firmware;
+        // Mot dong moi lan dang nhap: biet nguoi choi dung client nao (J2ME / Unity / nen tang)
+        // - can khi soi loi hien thi ma khong the tai hien (05/09/2026: nhay man hinh chi xay ra
+        // voi client nem loi khi ve vung ngoai bien anh, tuc J2ME; Unity thi khong).
+        System.out.println("[CLIENT] " + uname + " ip=" + session.ip + " platf=" + platf
+                + " version=" + version + " agent=" + agent + " firmware=" + firmware
+                + " w=" + session.w + " vsTile=" + session.vsTile);
         uname = uname.replace('\'', ' ');
         pwd = pwd.replace('\'', ' ');
         final InfoClientConnect info = TeamServer.ALL_IPCONNECT.get(session.ip);
