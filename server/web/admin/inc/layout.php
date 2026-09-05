@@ -27,9 +27,10 @@ function adminMenu(): array
             'tongquan' => ['index.php', 'Tổng quan', 'bang'],
         ],
         'Người chơi' => [
-            'taikhoan' => ['taikhoan.php', 'Tài khoản', 'nguoi'],
-            'nhanvat'  => ['nhanvat.php',  'Nhân vật',  'khien'],
-            'cammay'   => ['cammay.php',   'Cấm theo máy', 'khoa'],
+            'taikhoan'     => ['taikhoan.php',     'Tài khoản',   'nguoi'],
+            'tao_hang_loat'=> ['tao_hang_loat.php', 'Tạo hàng loạt', 'nhieu'],
+            'nhanvat'      => ['nhanvat.php',       'Nhân vật',    'khien'],
+            'cammay'       => ['cammay.php',        'Cấm theo máy','khoa'],
         ],
         'Vận hành' => [
             'sukien'   => ['sukien.php',   'Sự kiện', 'lich'],
@@ -55,6 +56,8 @@ function bieuTuong(string $ten): string
         'bang'     => '<rect x="2" y="2" width="5" height="5" rx="1.2"/><rect x="9" y="2" width="5" height="5" rx="1.2"/>'
                     . '<rect x="2" y="9" width="5" height="5" rx="1.2"/><rect x="9" y="9" width="5" height="5" rx="1.2"/>',
         'nguoi'    => '<circle cx="8" cy="5.2" r="2.6"/><path d="M2.7 14c.5-2.8 2.6-4.3 5.3-4.3s4.8 1.5 5.3 4.3"/>',
+        'nhieu'    => '<circle cx="5.6" cy="5.4" r="2.3"/><path d="M1.4 14c.5-2.6 2.1-4 4.2-4s3.7 1.4 4.2 4"/>'
+                    . '<circle cx="11.4" cy="4.7" r="1.7"/><path d="M9.7 6.5c.6-.4 1.3-.6 2-.5 1.7.2 2.9 1.4 3.2 3.3"/>',
         'khien'    => '<path d="M8 1.7l5.2 2v4c0 3.2-2.1 6-5.2 6.9C4.9 13.7 2.8 10.9 2.8 7.7v-4l5.2-2z"/>',
         'qua'      => '<rect x="2.2" y="6.6" width="11.6" height="7.4" rx="1.1"/><rect x="1.3" y="3.9" width="13.4" height="2.7" rx=".9"/>'
                     . '<path d="M8 3.9V14"/><path d="M8 3.9S7 1.6 5.6 1.6a1.5 1.5 0 100 2.3"/><path d="M8 3.9s1-2.3 2.4-2.3a1.5 1.5 0 010 2.3"/>',

@@ -83,7 +83,7 @@ $TU_KHOA = array_flip(explode(' ', strtolower(
 $loi = 0;
 $soCau = 0;
 $FILE = [
-    'web/admin/index.php', 'web/admin/taikhoan.php', 'web/admin/nhanvat.php',
+    'web/admin/index.php', 'web/admin/taikhoan.php', 'web/admin/tao_hang_loat.php', 'web/admin/nhanvat.php',
     'web/admin/giftcode.php', 'web/admin/log.php', 'web/admin/nhatky.php',
     'web/admin/chandoan.php', 'web/admin/cammay.php', 'web/admin/sukien.php',
     'web/admin/inc/boot.php', 'web/admin/inc/vatpham.php',

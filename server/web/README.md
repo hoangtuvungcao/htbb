@@ -601,6 +601,7 @@ php web/admin/test/kiem_giao_dien.php  # mọi lớp CSS các trang dùng đều
 php web/admin/test/kiem_hai_buoc.php   # TOTP hai bước: đối chiếu vector chính thức RFC 6238
 php web/admin/test/kiem_danh_muc_thuong.php # bộ chọn vật phẩm: mọi chuỗi sinh ra phải qua kiemTraItem()
 php web/admin/test/kiem_capdo.php      # bảng cấp độ → kinh nghiệm dùng cho "Đặt cấp độ"
+php web/admin/test/kiem_tao_hang_loat.php   # tạo tài khoản hàng loạt: INSERT phải khớp register.php
 
 # Chẩn đoán lỗi kết nối database — chạy TRÊN MÁY CHỦ, chỉ bằng dòng lệnh
 sudo -u www-data php web/admin/test/chan_doan_ket_noi.php
@@ -618,6 +619,10 @@ sudo -u www-data php web/admin/test/chan_doan_ket_noi.php
   (không chép lại) rồi ném vào 24 đường dẫn độc — `../config.local.php`,
   `php://filter/...`, byte null, `%2F`… — khẳng định không cái nào lọt, và mọi
   file hợp lệ đều nằm trong `SERVER_DIR`.
+- `kiem_tao_hang_loat.php` đối chiếu câu `INSERT INTO team_user` của trang "Tạo
+  hàng loạt" với đúng câu của `register.php` — hai nơi tạo tài khoản (admin và
+  đăng ký công khai) lệch cột là một tài khoản không đăng nhập được vào game dù
+  tạo "thành công" trên web.
 
 ### Một lỗi sửa ở phía server Java
 
