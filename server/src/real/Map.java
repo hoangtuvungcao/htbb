@@ -6440,7 +6440,17 @@ public class Map implements Runnable {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Hãy chọn lại vật phẩm cần nâng cấp.", ""));
                     return;
                 }
-                if (item.level >= 81) {
+                // Vu khi (kiem/dao/but/bua/cung) la LOAI DUY NHAT co level = 81 (level
+                // trang bi/trang suc khac deu la boi so cua 5: 20,25,...,80,85 nen khong
+                // bao gio dung 81, cho nay khong doi hanh vi cua chung). Tran cu la 81
+                // vi getIdTemplateUpLevel() mac dinh tra ve id+1 khi idUpLevel chua dat -
+                // cong thuc nay dung cho CAC BAC THAP (400,401,...,412 la CHUOI kiem lien
+                // tuc), nhung 412+1=413 lai la dao (dau day mot khoi id khac), khong phai
+                // kiem bac 86 (893) - phai chan lai o day de khoi tao nham do. Da sua bang
+                // cach dat idUpLevel=893/894/895/896/897 cho 412/425/438/451/464 trong
+                // sql/gamedb7_clean.sql (05/09/2026), nen gio nang duoc them mot bac (86)
+                // truoc khi cham tran that su.
+                if (item.level >= 86) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể nâng cấp thêm", ""));
                     return;
                 }
@@ -6509,13 +6519,14 @@ public class Map implements Runnable {
             }
             Item item = player.infoItemCreate.item;
             if (item != null) {
-                // Xem chu thich day du o doUserUpLevelItem (cung mot dang tham chieu treo).
+                // Xem chu thich day du o doUserUpLevelItem (cung mot dang tham chieu treo,
+                // va cung ly do tran 86 chu khong phai 81 nua).
                 if (!player.iItems.contains(item)) {
                     player.infoItemCreate = null;
                     player.sendMessage(MessageCreator.createServerAlertMessage("Hãy chọn lại vật phẩm cần nâng cấp.", ""));
                     return;
                 }
-                if (item.level >= 81) {
+                if (item.level >= 86) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể nâng cấp thêm", ""));
                     return;
                 }

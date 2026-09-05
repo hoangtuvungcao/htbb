@@ -4,32 +4,40 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * CHARACTERIZATION TEST (xem chu thich dau test/Kiem.java): chot lai fix cho loi "nang cap
- * vu khi tu lv81 len lv86 khong duoc". Phat hien 05/09/2026 tu anh chup man hinh cua nguoi
- * choi (vu khi "Anh Vu Cung" - id 464, level 81, la item CAO NHAT hang cung o NPC "Tho Ren
- * Than Bi", npcType -8).
+ * CHARACTERIZATION TEST (xem chu thich dau test/Kiem.java): chot lai HAI fix rieng biet cho
+ * cung MOT trieu chung nguoi choi bao "nang cap vu khi tu lv81 len lv86 khong duoc" (anh chup
+ * man hinh vu khi "Anh Vu Cung" - id 464, level 81, item CAO NHAT hang cung).
  *
- * GOC RE: he thong "che tao vu khi" (Kiem/Dai dao/But/Bua/Cung) bi COPY thanh HAI ban gan
- * giong het nhau, ca hai deu xu ly cung npcType -8:
- * - RealController.doCreateItem() + RealController.getTemplateItemCreate() (rieng, private) -
- * ban NAY da duoc cap nhat them cap 86 tu truoc (menu 14 muc, bang tra 14 phan tu/hang).
- * - MapCheTao.doCreateItem() (goi qua MapDoMenu.java case -8) + Map.getTemplateItemCreate() -
- * ban NAY la ban CU, quen cap nhat: menu chi co 13 muc (dung lv21..81, KHONG BAO GIO hien
- * "Cap do 86" de nguoi choi chon), va bang tra idTempateItemCreate cho 5 hang vu khi (kiem/
- * dao/but/bua/cung, type 3-7) cung chi co 13 phan tu (thieu id level-86: 893/894/895/896/897).
- * Neu ai do lam menu co 14 muc ma quen sua bang tra (hoac nguoc lai), chon "Cap do 86" se nem
- * ArrayIndexOutOfBoundsException ngay tai idTempateItemCreate[type][13] - loi nay bi nuot boi
- * catch (Exception) bao quanh ca ham (MapCheTao.doCreateItem dong cuoi), nen nguoi choi khong
- * thay thong bao loi nao ca, chi thay khong co phan ung.
+ * FIX 1 - "Che do" (tao vu khi MOI tu dau qua NPC "Tho Ren Than Bi", npcType -8): he thong
+ * nay bi COPY thanh hai ban gan giong het nhau (RealController.doCreateItem() da duoc cap
+ * nhat them cap 86 tu truoc; MapCheTao.doCreateItem()/Map.getTemplateItemCreate(), goi qua
+ * MapDoMenu.java, la ban CU quen cap nhat - menu chi co 13 muc, bang tra cung chi co 13 phan
+ * tu/hang). Da dong bo ca hai. NHUNG day KHONG PHAI tinh nang nguoi choi dang hoi - "che do"
+ * la tao mon MOI ngau nhien, khong giu duoc plus/phẩm/he cua mon dang mac.
  *
- * Fix: dong bo CA HAI cho nay khop voi ban RealController da dung san - menu 14 muc (khong
- * phai 13) va bang tra 14 phan tu/hang voi id level-86 dung o cuoi.
+ * FIX 2 - "Nâng cấp" THAT (nut chuot phai tren item co san, colorName=='Hoan my': "Thang cap
+ * thuong"/"Thang cap giu thuoc tinh", client goi doRequestActionCheDo(10/11,...) -> server
+ * MapCheTao.doUserCreateItem -> Map.doUserUpLevelItem/doUserUpLevelItemSpecial). Day moi la
+ * tinh nang nguoi dung hoi ("nâng cấp vũ khí từ lv81 lên lv86"), va no co HAI loi khac:
+ * a) Ca hai ham chan cung "if (item.level >= 81) { ...\"khong the nang cap them\"... }" - tuc
+ * CHUA BAO GIO cho nang qua 81 du item level-86 (893-897) da co san trong DB.
+ * b) Item.getIdTemplateUpLevel() mac dinh tra ve "id + 1" khi cot idUpLevel trong data_item
+ * chua dat (== -1) - cong thuc nay DUNG cho cac bac thap (vd kiem 400->401->...->412, la
+ * MOT KHOI id lien tuc 400-412 cho 13 bac 21..81), nhung 412+1=413 lai la DAO (khoi id khac,
+ * "Gia cat dao"), khong phai kiem bac 86 (893) - 5 khoi vu khi (kiem/dao/but/bua/cung) deu
+ * xep LIEN TIEP nhau (400-412,413-425,426-438,439-451,452-464) roi moi toi khoi rieng 893-897,
+ * nen "+1" luon sai dung tai ranh gioi 81->86 cho CA NAM loai. Neu chan (a) khong co, nang
+ * cap se am tham tao ra vat pham SAI (vd "Cuoc thuong" id465 thay vi "Phuong Thien Cung" 897).
+ *
+ * Fix: sua ca hai cho chan tu ">= 81" thanh ">= 86", VA dat idUpLevel=893/894/895/896/897 cho
+ * 412/425/438/451/464 trong sql/gamedb7_clean.sql (05/09/2026).
  */
 public final class KiemNangCapVuKhiLv86 {
 
     private static final String F_MAP = "src/real/Map.java";
     private static final String F_CHETAO = "src/real/MapCheTao.java";
     private static final String F_REALCTRL = "src/real/RealController.java";
+    private static final String F_SQL = "sql/gamedb7_clean.sql";
 
     public static void chay() {
         Kiem.nhom("Nang cap vu khi lv81 -> lv86 (NPC Tho Ren Than Bi, npcType -8)");
@@ -37,10 +45,12 @@ public final class KiemNangCapVuKhiLv86 {
         final String map = doc(F_MAP);
         final String cheTao = doc(F_CHETAO);
         final String realCtrl = doc(F_REALCTRL);
+        final String sql = doc(F_SQL);
         Kiem.dung("doc duoc " + F_MAP, !map.isEmpty());
         Kiem.dung("doc duoc " + F_CHETAO, !cheTao.isEmpty());
         Kiem.dung("doc duoc " + F_REALCTRL, !realCtrl.isEmpty());
-        if (map.isEmpty() || cheTao.isEmpty() || realCtrl.isEmpty()) {
+        Kiem.dung("doc duoc " + F_SQL, !sql.isEmpty());
+        if (map.isEmpty() || cheTao.isEmpty() || realCtrl.isEmpty() || sql.isEmpty()) {
             return;
         }
 
@@ -91,6 +101,49 @@ public final class KiemNangCapVuKhiLv86 {
                     doan.contains("i < 14"));
             Kiem.sai("MapCheTao.java: KHONG con new String[13] o day (ban cu, thieu muc lv86)",
                     doan.contains("new String[13]"));
+        }
+
+        // ---- 4. Map.java: doUserUpLevelItem/doUserUpLevelItemSpecial (nut "nâng cấp" THAT
+        // tren item co san) phai chan o ">= 86", khong con ">= 81". ----
+        final int mocUpLevel = map.indexOf("void doUserUpLevelItem(Char player, Message message)");
+        Kiem.dung("tim thay doUserUpLevelItem", mocUpLevel > 0);
+        if (mocUpLevel > 0) {
+            final int mocKetUpLevel = map.indexOf("void doUserUpLevelItemSpecial(Char player, Message message)", mocUpLevel);
+            final String than = map.substring(mocUpLevel, mocKetUpLevel > mocUpLevel ? mocKetUpLevel : map.length());
+            Kiem.dung("doUserUpLevelItem: chan o item.level >= 86 (khong phai 81)",
+                    than.contains("item.level >= 86"));
+            Kiem.sai("doUserUpLevelItem: KHONG con chan o item.level >= 81",
+                    than.contains("item.level >= 81"));
+        }
+        final int mocUpLevelSp = map.indexOf("void doUserUpLevelItemSpecial(Char player, Message message)");
+        Kiem.dung("tim thay doUserUpLevelItemSpecial", mocUpLevelSp > 0);
+        if (mocUpLevelSp > 0) {
+            final int mocKetSp = map.indexOf("void doSendIfoMaterial2Client(Char player, int type)", mocUpLevelSp);
+            final String than = map.substring(mocUpLevelSp, mocKetSp > mocUpLevelSp ? mocKetSp : map.length());
+            Kiem.dung("doUserUpLevelItemSpecial: chan o item.level >= 86 (khong phai 81)",
+                    than.contains("item.level >= 86"));
+            Kiem.sai("doUserUpLevelItemSpecial: KHONG con chan o item.level >= 81",
+                    than.contains("item.level >= 81"));
+        }
+
+        // ---- 5. sql/gamedb7_clean.sql: 5 vu khi bac 81 (kiem/dao/but/bua/cung) phai co
+        // idUpLevel tro DUNG toi id level-86 tuong ung, khong con -1 (mac dinh id+1 SAI). ----
+        final String[][] chuoiNangCap = {
+            {"(412,'Phá giáp kiếm'", "893"},
+            {"(425,'Gia cát đao'", "894"},
+            {"(438,'Y tơ bút'", "895"},
+            {"(451,'Viên đỉnh búa'", "896"},
+            {"(464,'Anh vũ cung'", "897"},
+        };
+        for (final String[] dong : chuoiNangCap) {
+            final int mocDong = sql.indexOf(dong[0]);
+            Kiem.dung("sql: tim thay dong " + dong[0], mocDong > 0);
+            if (mocDong > 0) {
+                final int mocHetDong = sql.indexOf('\n', mocDong);
+                final String dongDay = sql.substring(mocDong, mocHetDong > mocDong ? mocHetDong : sql.length());
+                Kiem.dung("sql: " + dong[0] + " co idUpLevel=" + dong[1] + " (khong con -1)",
+                        dongDay.contains("," + dong[1] + ",NULL,-1,0)"));
+            }
         }
     }
 
