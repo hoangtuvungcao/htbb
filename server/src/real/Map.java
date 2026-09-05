@@ -2680,13 +2680,19 @@ public class Map implements Runnable {
             // nguon ghi ben phai - do la bo tham so da chay dung tren san pham voi dung tam anh do.
             // Ten, thoi han, gia, idImgPaint (icon) giu nguyen. Khi co anh rieng thi thay o day va
             // xoa cap tuong ung trong KiemMauPetCoAnh.
-            new PetTemplate((byte) 23, "Cú", 20160, (byte) 1, (byte) 6, (byte) 10, (byte) 10, 1000, (byte) 0, (byte) 30, Pet.TYPE_FLY_2_FRAME),   // <- mau 1  Thanh tước
-            new PetTemplate((byte) 24, "Rồng", 20160, (byte) 16, (byte) 4, (byte) 22, (byte) 21, 1000, (byte) 0, (byte) 31, Pet.TYPE_FLY_2_FRAME), // <- mau 16 Phượng hoàng lửa
+            //
+            // CHON MAU NGUON THE NAO: bang khung cua client (AnimalMove.cs arrFrameStand/arrFrameMove)
+            // theo type_move, tinh CA BON HUONG, yeu cau chi so khung toi: type 0 FLY_1_FRAME -> 8,
+            // type 1 WALK -> 11, type 3 FLY_2_FRAME -> 5. Nen chi muon sheet co nFrame >= 9 / 12 / 6
+            // tuong ung. Phuong hoang 16/17 (FLY_2_FRAME nhung chi 4 khung) KHONG dung: huong 2/3
+            // yeu cau khung 4-5 -> lai ngoai bien y nhu loi dang sua.
+            new PetTemplate((byte) 23, "Cú", 20160, (byte) 13, (byte) 12, (byte) 17, (byte) 29, 1000, (byte) 0, (byte) 30, Pet.TYPE_WALK),        // <- mau 13 Chim cánh cụt
+            new PetTemplate((byte) 24, "Rồng", 20160, (byte) 8, (byte) 9, (byte) 26, (byte) 19, 1000, (byte) 0, (byte) 31, Pet.TYPE_FLY_1_FRAME), // <- mau 8  Pet Giáp Ngọ
             new PetTemplate((byte) 25, "Thỏ bay", 20160, (byte) 14, (byte) 12, (byte) 29, (byte) 30, 1000, (byte) 0, (byte) 32, Pet.TYPE_WALK),    // <- mau 14 Pet ất mùi
             new PetTemplate((byte) 26, "Dơi", 20160, (byte) 3, (byte) 6, (byte) 16, (byte) 16, 1000, (byte) 0, (byte) 33, Pet.TYPE_FLY_2_FRAME),   // <- mau 3  Dơi quỷ
-            new PetTemplate((byte) 27, "Đại bàng", 20160, (byte) 17, (byte) 4, (byte) 22, (byte) 21, 1000, (byte) 0, (byte) 34, Pet.TYPE_FLY_2_FRAME), // <- mau 17 Phượng hoàng băng
+            new PetTemplate((byte) 27, "Đại bàng", 20160, (byte) 1, (byte) 6, (byte) 10, (byte) 10, 1000, (byte) 0, (byte) 34, Pet.TYPE_FLY_2_FRAME), // <- mau 1  Thanh tước
             new PetTemplate((byte) 28, "Lồng đèn hoa sen", 20160, (byte) 5, (byte) 2, (byte) 14, (byte) 14, 1000, (byte) 0, (byte) 11, Pet.TYPE_LANTERNS),
-            new PetTemplate((byte) 29, "Bạch Thử", 20160, (byte) 13, (byte) 12, (byte) 17, (byte) 29, 1000, (byte) 0, (byte) 46, Pet.TYPE_WALK)    // <- mau 13 Chim cánh cụt
+            new PetTemplate((byte) 29, "Bạch Thử", 20160, (byte) 9, (byte) 12, (byte) 29, (byte) 30, 1000, (byte) 0, (byte) 46, Pet.TYPE_WALK)     // <- mau 9  Pet Armadillo băng
         };
     }
 

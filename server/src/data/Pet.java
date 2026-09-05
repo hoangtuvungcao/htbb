@@ -311,12 +311,20 @@ public class Pet extends Actor {
             if (this.idHoaHinhPet != -1 && !this.endHoaHinhPet()) {
                 return idHieuUngHoaHinhTheoCap();
             }
+            // Level >= 2 dung chung ma cap 2 (truoc day la "== 2"): tool cap 3-5 roi xuong dong
+            // "return atb[1]" ben duoi = 24..28, ma client KHONG co bang khung (khong nam trong
+            // MessageCreator.id_eff_pet_tool, va map/d_effect/24-28 chi co bang dang hieu ung -
+            // dua vao goi 26 la client chia cho 0, xem sự cố 01/09/2026 voi id 69). Pet.paint tren
+            // client co kiem null nen pet chi VO HINH chu khong crash - log VPS 05/09/2026 thay
+            // client xin 8725/8728 (Rong/Dai bang cap 3-5) 15 lan. Cho toi khi co bang khung
+            // rieng cho 24-28, hien cap 3-5 bang anh cap 2 con hon vo hinh. Voi pet-tool,
+            // getIdEffPet() chi dung de hien thi (moi cho buff deu co !isPetTool()).
             if (this.isPetCu()) {
                 if (this.itemPet.level == 1) {
                     return 37;
                 }
 
-                if (this.itemPet.level == 2) {
+                if (this.itemPet.level >= 2) {
                     return 38;
                 }
             } else if (this.isPetDaiBang()) {
@@ -324,7 +332,7 @@ public class Pet extends Actor {
                     return 43;
                 }
 
-                if (this.itemPet.level == 2) {
+                if (this.itemPet.level >= 2) {
                     return 44;
                 }
             } else if (this.isPetDoi()) {
@@ -332,7 +340,7 @@ public class Pet extends Actor {
                     return 41;
                 }
 
-                if (this.itemPet.level == 2) {
+                if (this.itemPet.level >= 2) {
                     return 42;
                 }
             } else if (this.isPetYeuTinh()) {
@@ -340,7 +348,7 @@ public class Pet extends Actor {
                     return 39;
                 }
 
-                if (this.itemPet.level == 2) {
+                if (this.itemPet.level >= 2) {
                     return 40;
                 }
             } else if (this.isPetRong()) {
@@ -348,7 +356,7 @@ public class Pet extends Actor {
                     return 36;
                 }
 
-                if (this.itemPet.level == 2) {
+                if (this.itemPet.level >= 2) {
                     return 35;
                 }
             }
@@ -1217,9 +1225,28 @@ public class Pet extends Actor {
         return this.idTemplate == 27;
     }
 
+    /**
+     * So khung client dung de cat anh pet trong AnimalMove.paint (hImg = anh.cao / sumFrame).
+     * Chi duoc ghi vao goi cmd 15 (MessageCreator, hai cho).
+     */
     public byte getTotalFrame() {
+        if (this.getType() == TYPE_PET_TOOL) {
+            return SO_KHUNG_GUI_CHO_PET_TOOL;
+        }
         return Map.petTemplate[this.idTemplate].nFrame;
     }
+
+    /**
+     * Pet co tool (getType() == TYPE_PET_TOOL) duoc gui type=5 va imgID = getIdEffPet(). Client ve
+     * no bang lop Pet (anh 8700+idEff, bang khung rieng tu goi 26) - nhung van dung them mot
+     * AnimalMove cung imgID do, va AnimalMove.paint xin anh 5200+idEff (log VPS 05/09/2026: 5235,
+     * 5236, 5243, 5260, 5269 = dung cac ma hieu ung). map/pet/<idEff>.png khong ton tai nen server
+     * tra anh trong suot 32x96; AnimalMove cat anh do theo bang khung type 5 (chi so toi 11). Neu
+     * sumFrame la nFrame cua mau (4-12) thi khung >= nFrame roi ra NGOAI BIEN -> client J2ME nem
+     * IllegalArgumentException giua vong ve. Gui 12 (= chi so toi da + 1) thi hImg = 96/12 = 8 va
+     * moi khung 0..11 deu nam trong 96 diem cao. Lop Pet khong doc sumFrame nen khong anh huong.
+     */
+    static final byte SO_KHUNG_GUI_CHO_PET_TOOL = 12;
 
     public boolean CanUseNoiTai() {
         if (this.itemPet == null) {
