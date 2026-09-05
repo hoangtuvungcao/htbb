@@ -12,6 +12,7 @@
  * game đang chạy. Muốn đá ra ngay thì dùng bảng điều khiển trong game.
  */
 require_once __DIR__ . '/inc/layout.php';
+require_once __DIR__ . '/inc/lenh_nhan_vat.php';
 requireAdmin();
 
 $TRANG = 'taikhoan.php';
@@ -109,6 +110,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 veLai($ve, 'error', 'Không đổi được mật khẩu. Nếu máy chủ chạy MySQL 8 thì hàm PASSWORD() đã bị gỡ '
                     . 'và cả login server lẫn trang này đều phải đổi cách băm. Lỗi: ' . $ex->getMessage());
             }
+            break;
+
+        case 'xoa_tai_khoan':
+            // XOA VINH VIEN - khong hoan tac duoc. Chan tai khoan quan tri giong het "khoa"
+            // o tren, cong them go dung ten de xac nhan (JS chi bat nut, kiem tra that o
+            // day - phong khi ai do POST thang khong qua giao dien).
+            if ($laAdmin) {
+                veLai($ve, 'error', 'Không xoá được tài khoản quản trị. Gỡ tên khỏi ADMIN_ACCOUNTS trước nếu thật sự cần.');
+            }
+            if (p('xac_nhan_ten') !== $ten) {
+                veLai($ve, 'error', 'Gõ đúng tên tài khoản "' . $ten . '" để xác nhận xoá.');
+            }
+
+            // Xoa VINH VIEN tung nhan vat truoc (di qua bang lenh vi co the dang online -
+            // xem inc/lenh_nhan_vat.php). Cho toi da 2 giay/nhan vat de tong thoi gian mot
+            // yeu cau web khong qua lau; con nhan vat nao chua xong thi tai khoan CHUA bi
+            // xoa, bam lai nut nay sau se tiep tuc (moi buoc deu idempotent).
+            $dsNV = dbGame()->prepare('SELECT id, charname FROM tob_char WHERE userId = ?');
+            $dsNV->execute([$id]);
+            $dsNV = $dsNV->fetchAll();
+
+            $chiTietLenh = [];
+            foreach ($dsNV as $nv2) {
+                $idLenh = guiLenhXoaNhanVat(dbGame(), (int)$nv2['id'], (string)$nv2['charname'], adminName());
+                $lenh   = choKetQuaLenh(dbGame(), $idLenh, 2.0);
+                $chiTietLenh[] = (string)$nv2['charname'] . ': ' . tenTrangThaiLenh((int)($lenh['trang_thai'] ?? -1));
+            }
+
+            $conLai = dbGame()->prepare('SELECT COUNT(*) FROM tob_char WHERE userId = ?');
+            $conLai->execute([$id]);
+            $soConLai = (int)$conLai->fetchColumn();
+
+            if ($soConLai > 0) {
+                ghiNhatKy('xoa_tai_khoan_tam_dung', $ten,
+                    'còn ' . $soConLai . '/' . count($dsNV) . ' nhân vật chưa xoá xong: ' . implode('; ', $chiTietLenh));
+                veLai($ve, 'warning', 'Còn ' . $soConLai . ' nhân vật chưa xoá xong (' . implode('; ', $chiTietLenh)
+                    . ') — có thể server game đang tắt hoặc chậm. Tài khoản CHƯA bị xoá; bấm "Xoá vĩnh viễn" lại '
+                    . 'để tiếp tục khi tất cả nhân vật đã xoá xong.');
+            }
+
+            // Toan bo nhan vat da xoa xong -> xoa 5h_active (giong huy_kich_hoat) roi xoa
+            // that tai khoan. team_user o DB rieng (account) ma server game khong dung toi
+            // ngoai luc dang nhap, nen xoa thang o day an toan - giong cach "khoa" da lam.
+            dbGame()->prepare('DELETE FROM `5h_active` WHERE username = ? OR userID = ?')->execute([$ten, $id]);
+            dbAccount()->prepare('DELETE FROM team_user WHERE id = ?')->execute([$id]);
+
+            ghiNhatKy('xoa_tai_khoan', $ten, 'đã xoá vĩnh viễn tài khoản (' . count($dsNV) . ' nhân vật đã xoá cùng lúc)');
+            veLai($TRANG, 'success', 'Đã xoá vĩnh viễn tài khoản ' . $ten . ' và toàn bộ ' . count($dsNV) . ' nhân vật của nó.');
             break;
 
         default:
@@ -281,6 +330,34 @@ adminHead('taikhoan', 'Tài khoản');
                             <button class="btn btn-primary btn-nho">Đổi mật khẩu</button>
                         </div>
                         <p class="muted small" style="margin-top:8px;">Băm bằng <code>PASSWORD()</code> để khớp login server.</p>
+                    </form>
+                <?php endif; ?>
+            </div>
+
+            <div class="card">
+                <h3 style="color:#c0392b;">Xoá vĩnh viễn</h3>
+                <?php if ($laAdmin): ?>
+                    <p class="muted small">Không xoá được tài khoản quản trị.</p>
+                <?php else: ?>
+                    <div class="luuy">
+                        <p><strong>KHÔNG THỂ HOÀN TÁC.</strong> Khác hẳn "Khoá đăng nhập" ở trên (chỉ chặn
+                           đăng nhập, mở lại được) — xoá vĩnh viễn xoá hẳn tài khoản này khỏi cơ sở dữ
+                           liệu, cùng với <strong>toàn bộ <?= count($nhanVat) ?> nhân vật</strong> của nó
+                           (và dữ liệu riêng của từng nhân vật: thú nuôi, trang trại, đá quý...). Nhân vật
+                           đang online sẽ bị đẩy ra khỏi game trước khi xoá. Nhật ký giao dịch/log vẫn
+                           được giữ lại để tra cứu.</p>
+                    </div>
+                    <form method="post" action="taikhoan.php" class="ngang" style="margin-top:12px;"
+                          onsubmit="return confirm('XOÁ VĨNH VIỄN tài khoản <?= e($ten) ?> và toàn bộ <?= count($nhanVat) ?> nhân vật của nó?\n\nKhông thể hoàn tác.');">
+                        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+                        <input type="hidden" name="id" value="<?= (int)$chiTiet['id'] ?>">
+                        <input type="hidden" name="viec" value="xoa_tai_khoan">
+                        <label class="o" style="min-width:220px;">
+                            <span>Gõ đúng tên "<?= e($ten) ?>" để xác nhận</span>
+                            <input type="text" name="xac_nhan_ten" autocomplete="off"
+                                   oninput="document.getElementById('nutXoaTK').disabled = this.value !== <?= json_encode($ten) ?>;">
+                        </label>
+                        <button type="submit" id="nutXoaTK" class="btn btn-do btn-nho" disabled style="align-self:flex-end;">Xoá vĩnh viễn</button>
                     </form>
                 <?php endif; ?>
             </div>

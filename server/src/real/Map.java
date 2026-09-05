@@ -6442,14 +6442,7 @@ public class Map implements Runnable {
                 }
                 // Vu khi (kiem/dao/but/bua/cung) la LOAI DUY NHAT co level = 81 (level
                 // trang bi/trang suc khac deu la boi so cua 5: 20,25,...,80,85 nen khong
-                // bao gio dung 81, cho nay khong doi hanh vi cua chung). Tran cu la 81
-                // vi getIdTemplateUpLevel() mac dinh tra ve id+1 khi idUpLevel chua dat -
-                // cong thuc nay dung cho CAC BAC THAP (400,401,...,412 la CHUOI kiem lien
-                // tuc), nhung 412+1=413 lai la dao (dau day mot khoi id khac), khong phai
-                // kiem bac 86 (893) - phai chan lai o day de khoi tao nham do. Da sua bang
-                // cach dat idUpLevel=893/894/895/896/897 cho 412/425/438/451/464 trong
-                // sql/gamedb7_clean.sql (05/09/2026), nen gio nang duoc them mot bac (86)
-                // truoc khi cham tran that su.
+                // bao gio dung 81, cho nay khong doi hanh vi cua chung).
                 if (item.level >= 86) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể nâng cấp thêm", ""));
                     return;
@@ -6462,6 +6455,10 @@ public class Map implements Runnable {
 
                 if (item.lock == 0) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể thăng cấp trang bị đã khoá", ""));
+                    return;
+                }
+
+                if (bacTrenKhongHopLe(player, item)) {
                     return;
                 }
 
@@ -6511,6 +6508,55 @@ public class Map implements Runnable {
         }
     }
 
+    /**
+     * "Bac tren" cua mon do co THAT SU la mot bac tren hop le khong.
+     *
+     * PHAI GOI TRUOC MOI LAN THANG CAP. Tra ve true (va da bao loi cho nguoi choi) khi
+     * KHONG hop le - nguoi goi phai dung lai ngay, khong duoc dung toi doCreateNewItem.
+     *
+     * VI SAO CAN (loi da xay ra that, 05/09/2026): Item.getIdTemplateUpLevel() khi cot
+     * data_item.idUpLevel chua dat (= -1) thi DOAN bang "id + 1". Cong thuc do dung cho
+     * cac bac thap vi chung xep lien nhau (kiem 400..412), NHUNG dut han o bac 81 - moi
+     * dong vu khi la mot khoi 13 id lien tiep roi sang khoi cua mon phai KHAC:
+     *
+     *     412 Pha giap kiem (kiem, lv81) + 1 = 413 Tram ma dao   (DAO,  lv21)
+     *     425 Gia cat dao   (dao,  lv81) + 1 = 426 Can quan but  (BUT,  lv21)
+     *     438 Y to but      (but,  lv81) + 1 = 439 Thon nhat bua (BUA,  lv21)
+     *     451 Vien dinh bua (bua,  lv81) + 1 = 452 Ke vi cung    (CUNG, lv21)
+     *     464 Anh vu cung   (cung, lv81) + 1 = 465 Cuoc thuong   (CUOC, lv1!)
+     *
+     * Khong co chot nay thi bon dong dau AM THAM AN MAT vu khi lv81 cua nguoi choi va tra
+     * lai mot mon lv21 SAI CA MON PHAI, kem thong bao "Chuc mung" - mat do that su, khong
+     * hoan tac duoc. Rieng dong cuoi (Cuoc thuong lv1) con lam getPointAddForRank tinh
+     * pcADD2RankItem[(1-20)/5] = chi so -3 -> ArrayIndexOutOfBounds, bi catch rong nuot,
+     * doCreateNewItem tra null va KHONG gui goi tin nao -> client treo o hop thoai
+     * "Xin chờ..." (dung trieu chung nguoi choi bao).
+     *
+     * Dat idUpLevel dung trong data_item la sua duoc goc, nhung KHONG DUOC trong cay vao
+     * do: co so du lieu that co the chua chay lenh cap nhat, hoac chay roi ma chua khoi
+     * dong lai may chu (Map.loadAllTemplate chi doc data_item MOT LAN luc khoi dong, nen
+     * ban trong RAM van la -1). Chot o day dung trong moi truong hop do.
+     */
+    private boolean bacTrenKhongHopLe(final Char player, final Item item) {
+        ItemTemplates bacTren = null;
+        try {
+            bacTren = (ItemTemplates) ((Hashtable) itemTemplates.get(5))
+                    .get(Integer.valueOf(item.getIdTemplateUpLevel()));
+        } catch (final Exception ex) {
+        }
+        final int typeCu = item.getTemplate().type;
+        // Bac tren phai: co that, CUNG loai do (khong the kiem hoa dao), va DUNG hon mot
+        // bac (5 cap). Sai bat ky dieu nao deu la "chua cau hinh", khong phai bac tren.
+        if (bacTren != null && bacTren.type == typeCu && bacTren.level == item.level + 5) {
+            return false;
+        }
+        player.sendMessage(MessageCreator.createServerAlertMessage(
+                "Vật phẩm này chưa được cấu hình bậc kế tiếp nên chưa nâng cấp được. "
+                + "Báo quản trị viên đặt cột idUpLevel cho vật phẩm #"
+                + item.getTemplate().id + " (" + item.getTemplate().name + ").", ""));
+        return true;
+    }
+
     void doUserUpLevelItemSpecial(Char player, Message message) {
         try {
             if (player.infoItemCreate == null) {
@@ -6538,6 +6584,10 @@ public class Map implements Runnable {
 
                 if (item.lock == 0) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể thăng cấp trang bị đã khoá", ""));
+                    return;
+                }
+
+                if (bacTrenKhongHopLe(player, item)) {
                     return;
                 }
 
@@ -15546,9 +15596,16 @@ public class Map implements Runnable {
                         // MapDoMenu.java (case -513) doc lai dung idItemUpLevel nay de biet
                         // "Ảo hóa" nam o idOptionMenu 1 hay 2 tuong ung.
                         player.itemTam = item;
+                        // VIET THUONG "ảo hóa", KHONG viet hoa chu "Ả" — font cua ban client
+                        // JAR KHONG CO chu HOA co dau thuoc khoi Unicode U+1EA0..U+1EF8, ve ra
+                        // la MAT HAN chu do: nguoi choi thay muc menu la "o hóa" (bao 05/09/2026).
+                        // Chu thuong cung khoi thi ve binh thuong — chinh muc "Sử dụng" ngay ben
+                        // canh co "ử" (U+1EED) va "ụ" (U+1EE5) van hien du.
+                        // Cac chuoi khac con dinh loi nay: xem MapChat "BẬT"/"TẮT",
+                        // MapXuLyLenh "TOP ĐẠI GIA"/"TOP CAO THỦ"/"TOP BANG HỘI", Pet "ĐÃ HẾT HẠN".
                         final String[] menuHoaKyLan = item.getTemplate().idItemUpLevel > -1
-                                ? new String[]{"Sử dụng", "Nâng cấp", "Ảo hóa"}
-                                : new String[]{"Sử dụng", "Ảo hóa"};
+                                ? new String[]{"Sử dụng", "Nâng cấp", "ảo hóa"}
+                                : new String[]{"Sử dụng", "ảo hóa"};
                         player.sendMessage(MessageCreator.createMsgMenu(menuHoaKyLan, -513, 0));
                         return;
                     }

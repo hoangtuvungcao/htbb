@@ -931,7 +931,7 @@ public class Pet extends Actor {
             // thongSoKhangXuyenGiap() voi applyKhangXuyenGiap() de hien dung so dang chay.
             if (this.capHoaHinh > 0) {
                 if (this.endHoaHinhPet()) {
-                    info = info + "\n- Hoá hình Lân cấp " + this.capHoaHinh + " ĐÃ HẾT HẠN, pet trở về hình cũ";
+                    info = info + "\n- Hoá hình Lân cấp " + this.capHoaHinh + " đã hết hạn, pet trở về hình cũ";
                 } else {
                     final int[] thongSo = thongSoKhangXuyenGiap(this.khangXuyenGiapCap);
                     final long conLaiNgay = (this.timeEndHoaHinhPet - System.currentTimeMillis()) / (24L * 60L * 60000L);

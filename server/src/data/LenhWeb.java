@@ -46,6 +46,11 @@ import server.TeamServer;
  *                  doi chieu RAM mot lan nua - neu mon van con (nhan vat duoc nap dung giua luc
  *                  web sua) thi go tiep. Khong con -> xong.
  *
+ *   xoa_nhan_vat (khong can cap_do/phan_nghin/tham_so, chi can char_id) - XOA VINH VIEN, khac
+ *   han del=0 nguoi choi tu xoa trong game (chi la an di, khoi phuc duoc 7 ngay). Luon xong
+ *   ngay o lan doc dau tien, khong co trang thai CHO_DANG_NHAP: online -> kickPlayer (luu ban
+ *   RAM cuoi + ngat ket noi) roi xoa; offline -> xoa thang.           -> XONG_ONLINE (hoac LOI)
+ *
  *   loi (sai cap, khong co nhan vat, ha cap, mon khong khop...) -> LOI, ket_qua ghi ly do.
  *
  * Web doi toi da vai giay roi doc trang_thai de bao lai cho nguoi bam. Server dang tat thi dong
@@ -71,6 +76,7 @@ public final class LenhWeb implements Runnable {
 
     public static final String LOAI_DAT_CAP_DO = "dat_cap_do";
     public static final String LOAI_XOA_VAT_PHAM = "xoa_vat_pham";
+    public static final String LOAI_XOA_NHAN_VAT = "xoa_nhan_vat";
 
     /** Cot vat pham web duoc xoa. Ten cot ghep thang vao SQL nen PHAI qua danh sach nay. */
     public static final String[] COT_VAT_PHAM = {"equip", "inven", "bag"};
@@ -292,6 +298,9 @@ public final class LenhWeb implements Runnable {
         if (LOAI_XOA_VAT_PHAM.equals(loai)) {
             return xuLyXoaVatPham(charId, thamSo, adminUser, trangThaiCu);
         }
+        if (LOAI_XOA_NHAN_VAT.equals(loai)) {
+            return xuLyXoaNhanVat(charId, adminUser);
+        }
         throw new IllegalArgumentException("khong hieu loai lenh \"" + loai + "\"");
     }
 
@@ -509,6 +518,144 @@ public final class LenhWeb implements Runnable {
             dong(rs);
             dong(ps);
             tra(conn);
+        }
+    }
+
+    /**
+     * XOA VINH VIEN nhan vat (khac han del=0 nguoi choi tu xoa trong game - do chi la
+     * an di, con khoi phuc 7 ngay; day la DELETE that, khong hoan tac duoc).
+     *
+     * Nhan vat dang online thi DUOI RA TRUOC (kickPlayer: luu lai ban RAM cuoi cung roi
+     * ngat ket noi va go khoi CharManager) roi moi xoa - tranh mot phien dang choi song
+     * song voi dong du lieu vua bi xoa that.
+     *
+     * GIOI HAN DA BIET (chua khoa, giong tinh than "khoa tai khoan khong da nguoi dang
+     * online ra ngay" da chap nhan o taikhoan.php): giua luc kickPlayer() ngat phien va
+     * cac cau DELETE ben duoi chay xong, khong co gi chan CharManager.put() dang ky lai
+     * mot phien MOI cho CUNG tai khoan neu ho dang nhap lai that nhanh dung luc do. Cua
+     * so nay rat hep (chi bang thoi gian chay ~20 cau DELETE) va hau qua toi da chi la
+     * mot lan tu luu khong lam gi (UPDATE khong khop dong nao, khong nem loi) chu khong
+     * lam sap server - chap nhan duoc thay vi them khoa moi ma codebase nay chua tung co.
+     */
+    static KetQua xuLyXoaNhanVat(final int charId, final String adminUser) throws Exception {
+        final Char p = timNguoiChoiOnline(charId);
+        final boolean daDuoiRa = p != null;
+        if (daDuoiRa) {
+            CharManager.instance.kickPlayer(p, "web-xoa-nhan-vat");
+        }
+        final String charname = xoaNhanVatThat(charId);
+        if (charname == null) {
+            throw new IllegalStateException("khong co nhan vat id " + charId + " trong tob_char (co the da bi xoa)");
+        }
+        try {
+            Database.instance.saveOrtherLog("", charname, adminUser + " (web) xoa vinh vien nhan vat"
+                    + (daDuoiRa ? " (dang online, da doi ra truoc khi xoa)" : " (offline)"), "adminset");
+        } catch (final Exception ignored) {
+        }
+        return new KetQua(XONG_ONLINE, daDuoiRa
+                ? "da doi " + charname + " ra khoi game va xoa vinh vien"
+                : "da xoa vinh vien " + charname + " (offline)");
+    }
+
+    /**
+     * XOA THAT tob_char + du lieu con truc tiep cua rieng nhan vat nay. Tra ve charname
+     * da xoa, hoac null neu khong co nhan vat id nay (da bi xoa truoc do, hoac id sai).
+     *
+     * Tat ca cac bang duoi day la MyISAM (xem sql/gamedb7_clean.sql) - KHONG ho tro giao
+     * dich/rollback. Vi vay xoa THEO THU TU: du lieu con (pet, thu, quest, farm...) TRUOC,
+     * tob_char (dong chinh) SAU CUNG. Neu mot buoc giua chung nem ngoai le thi tob_char
+     * VAN CON NGUYEN - nhan vat coi nhu chua xoa xong, an toan de bam lai (moi buoc deu
+     * idempotent: WHERE khong khop la khong lam gi, khong loi), khong bao gio con lai
+     * mot nhan vat "xoa nua chung" ma khong the biet.
+     *
+     * CO Y KHONG DONG DEN: tob_clan (cot member la chuoi tu serialize, sua sai co the
+     * hong ca bang hoi - can tu cho nhan vat roi bang hoi truoc khi xoa), danh sach ban
+     * be cua NGUOI KHAC (tob_friendlist cua ho van con giu ten nhan vat da xoa), thong
+     * tin "da cuoi" cua VO/CHONG con song (tob_wedding bi xoa nhung pInfo cua nguoi con
+     * lai co the con giu idWedding/married cu - giong ly do bo qua tob_clan, sua chuoi
+     * pInfo serialize sai co the hong ca nhan vat con lai), va moi bang log/lich su
+     * (tob_log_*, tob_nap_xai_luong*, tob_qua*, tob_top_event*, tob_dau_gia*, tob_chien_truong,
+     * tob_reg_chientruong...) - co y GIU LAI de con tra cuu duoc sau nay, giong cach
+     * giftcode.php giu nguyen giftcode_log khi xoa mot giftcode.
+     */
+    static String xoaNhanVatThat(final int charId) throws Exception {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = Database.instance.getConnection();
+            ps = conn.prepareStatement("SELECT charname FROM tob_char WHERE id = ? LIMIT 1");
+            ps.setInt(1, charId);
+            rs = ps.executeQuery();
+            if (!rs.next()) {
+                return null;
+            }
+            final String charname = rs.getString(1);
+            dong(rs);
+            dong(ps);
+            rs = null;
+            ps = null;
+
+            xoaTheoCotSo(conn, "tob_char_fruit", "id_char", charId);
+            xoaTheoCotSo(conn, "tob_char_quest", "id_char", charId);
+            xoaTheoCotSo(conn, "tob_char_tubinh", "id_char", charId);
+            xoaTheoCotSo(conn, "tob_animal", "owner", charId);
+            xoaTheoCotSo(conn, "tob_pet", "owner", charId);
+            xoaTheoCotSo(conn, "tob_gem_new", "owner", charId);
+            xoaTheoCotSo(conn, "tob_farm", "owner", charId);
+            xoaTheoCotSo(conn, "tob_sp_new", "owner", charId);
+            xoaTheoCotSo(conn, "tob_xoso", "owner", charId);
+            xoaTheoCotSo(conn, "tob_friendlist", "charId", charId);
+            xoaTheoCotSo(conn, "tob_quest", "idchar", charId);
+            xoaTheoCotSo(conn, "tob_quest_clan", "id_char", charId);
+            xoaTheoCotSo(conn, "top_char_quest", "id_char", charId);
+            xoaTheoCotSo(conn, "tob_vantieu", "idchar", charId);
+            // tob_wedding: mot dong co the khop CA HAI (idhusband va idwife khac nhau
+            // luon), nhung goi rieng tung cot van dung - cot con lai chi don gian khong
+            // khop, khong lam gi. Xoa CA DONG (khong chi mot nua) vi dong nay dai dien
+            // cho MOT CUOC HON NHAN, khong con y nghia khi mot ben da bi xoa.
+            xoaTheoCotSo(conn, "tob_wedding", "idhusband", charId);
+            xoaTheoCotSo(conn, "tob_wedding", "idwife", charId);
+            xoaTheoCotChuoi(conn, "tob_char_luong", "charname", charname);
+            xoaTheoCotChuoi(conn, "tob_char_thach_dau", "charname", charname);
+            xoaTheoCotChuoi(conn, "tob_char_vip", "charname", charname);
+            xoaTheoCotChuoi(conn, "tob_danh_hieu", "charname", charname);
+            xoaTheoCotChuoi(conn, "tob_web_info_char", "charname", charname);
+            xoaTheoCotChuoi(conn, "tob_market", "charname", charname);
+            xoaTheoCotChuoi(conn, "tob_inbox", "charname", charname);
+
+            ps = conn.prepareStatement("DELETE FROM tob_char WHERE id = ?");
+            ps.setInt(1, charId);
+            ps.executeUpdate();
+            return charname;
+        } finally {
+            dong(rs);
+            dong(ps);
+            tra(conn);
+        }
+    }
+
+    /** DELETE FROM `bang` WHERE `cot` = giaTri. bang/cot la hang so trong ma nguon, khong tu nguoi dung. */
+    private static void xoaTheoCotSo(final Connection conn, final String bang, final String cot, final int giaTri) throws Exception {
+        PreparedStatement ps = null;
+        try {
+            ps = conn.prepareStatement("DELETE FROM `" + bang + "` WHERE `" + cot + "` = ?");
+            ps.setInt(1, giaTri);
+            ps.executeUpdate();
+        } finally {
+            dong(ps);
+        }
+    }
+
+    /** Giong xoaTheoCotSo nhung khoa theo cot kieu chuoi (charname). */
+    private static void xoaTheoCotChuoi(final Connection conn, final String bang, final String cot, final String giaTri) throws Exception {
+        PreparedStatement ps = null;
+        try {
+            ps = conn.prepareStatement("DELETE FROM `" + bang + "` WHERE `" + cot + "` = ?");
+            ps.setString(1, giaTri);
+            ps.executeUpdate();
+        } finally {
+            dong(ps);
         }
     }
 

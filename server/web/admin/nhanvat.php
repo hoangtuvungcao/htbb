@@ -175,6 +175,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         veLai($ve, $loaiBao, $thongBao);
     }
 
+    if ($viec === 'xoa_nhan_vat') {
+        // XOA VINH VIEN - khong hoan tac duoc, khac han "Khoa" (chi an di). Chan tai khoan
+        // quan tri giong het "khoa" o duoi, cong them go dung ten de xac nhan (JS chi bat
+        // nut, kiem tra that o day - phong khi ai do POST thang khong qua giao dien).
+        $chu = chuNhan((int)$nv['userId']);
+        if ($chu !== '' && laTaiKhoanAdmin($chu)) {
+            veLai($ve, 'error', 'Nhân vật này thuộc tài khoản quản trị (' . $chu . ') nên không xoá được.');
+        }
+        if (p('xac_nhan_ten') !== $ten) {
+            veLai($ve, 'error', 'Gõ đúng tên nhân vật "' . $ten . '" để xác nhận xoá.');
+        }
+
+        $idLenh = guiLenhXoaNhanVat(dbGame(), $id, $ten, adminName());
+        $lenh   = choKetQuaLenh(dbGame(), $idLenh);
+        [$loaiBao, $thongBao] = moTaKetQuaLenh($lenh, $ten, 'xoá vĩnh viễn', LENH_LOAI_XOA_NHAN_VAT);
+
+        ghiNhatKy('xoa_nhan_vat', $ten,
+            'lệnh #' . $idLenh . ': ' . tenTrangThaiLenh((int)($lenh['trang_thai'] ?? -1))
+            . ($lenh && $lenh['ket_qua'] !== '' ? ' - ' . $lenh['ket_qua'] : ''));
+
+        // Xoa xong thi nhan vat khong con nua - ve danh sach, khong ve lai trang chi tiet
+        // id nay (se ra "khong tim thay nhan vat").
+        if ($lenh !== null && (int)$lenh['trang_thai'] === LENH_XONG_ONLINE) {
+            veLai($TRANG, $loaiBao, $thongBao);
+        }
+        veLai($ve, $loaiBao, $thongBao);
+    }
+
     if ($viec !== 'khoa' && $viec !== 'mo_khoa') {
         veLai($TRANG, 'error', 'Không hiểu thao tác.');
     }
@@ -506,7 +534,11 @@ adminHead('nhanvat', 'Nhân vật');
                             <td class="small"><?= e((string)$l['admin_user']) ?></td>
                             <td class="muted small"><?= e((string)$l['tao_luc']) ?><?= $l['xu_ly_luc'] ? ' → ' . e((string)$l['xu_ly_luc']) : '' ?></td>
                             <td>
-                                <?php if ($tt === LENH_CHO || $tt === LENH_CHO_DANG_NHAP): ?>
+                                <?php // xoa_nhan_vat khong bao gio huy duoc (xem huyLenh() trong
+                                      // inc/lenh_nhan_vat.php) - khong hien nut de tranh nguoi
+                                      // dung tuong huy duoc trong khi thao tac that ra khong the
+                                      // "huy tro" mot khi da xoa xong. ?>
+                                <?php if (($tt === LENH_CHO || $tt === LENH_CHO_DANG_NHAP) && (string)$l['loai'] !== LENH_LOAI_XOA_NHAN_VAT): ?>
                                     <form method="post" action="nhanvat.php" style="display:inline"
                                           onsubmit="return confirm('Huỷ lệnh #<?= (int)$l['id'] ?>?');">
                                         <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
@@ -524,6 +556,28 @@ adminHead('nhanvat', 'Nhân vật');
                 <p class="muted small" style="margin-top:6px;">"Chờ vào game" = nhân vật đang offline, server sẽ cộng ngay khi họ đăng nhập.
                    "Chờ server" quá lâu = server game đang tắt; lệnh sẽ chạy khi server lên.</p>
             <?php endif; ?>
+
+            <h4 style="margin:22px 0 10px;color:#c0392b;">Xoá vĩnh viễn</h4>
+            <div class="luuy">
+                <p><strong>KHÔNG THỂ HOÀN TÁC.</strong> Khác hẳn "Khoá" ở trên (chỉ ẩn đi, mở lại được) —
+                   xoá vĩnh viễn xoá hẳn dòng <code>tob_char</code> này khỏi cơ sở dữ liệu, cùng với thú
+                   nuôi, trang trại, đá quý, bạn bè, quest riêng của nhân vật. Nhân vật đang online sẽ bị
+                   đẩy ra khỏi game trước khi xoá. Nhật ký giao dịch/log vẫn được giữ lại để tra cứu.
+                   Nếu nhân vật đang trong bang hội, hãy tự rời bang trước — trang này không tự gỡ tên
+                   khỏi danh sách thành viên bang hội.</p>
+            </div>
+            <form method="post" action="nhanvat.php" class="ngang" style="margin-top:12px;"
+                  onsubmit="return confirm('XOÁ VĨNH VIỄN <?= e($ct['charname']) ?>?\n\nKhông thể hoàn tác.');">
+                <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+                <input type="hidden" name="viec" value="xoa_nhan_vat">
+                <input type="hidden" name="id" value="<?= (int)$ct['id'] ?>">
+                <label class="o" style="min-width:220px;">
+                    <span>Gõ đúng tên "<?= e($ct['charname']) ?>" để xác nhận</span>
+                    <input type="text" name="xac_nhan_ten" autocomplete="off"
+                           oninput="document.getElementById('nutXoaNV').disabled = this.value !== <?= json_encode($ct['charname']) ?>;">
+                </label>
+                <button type="submit" id="nutXoaNV" class="btn btn-do btn-nho" disabled style="align-self:flex-end;">Xoá vĩnh viễn</button>
+            </form>
         </div>
 
         <div class="card">

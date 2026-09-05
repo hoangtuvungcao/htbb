@@ -58,6 +58,7 @@ public final class KiemSkinLinhThu {
         kiemNoiTaiCoTiLe();
         kiemTinhLaiChiSo();
         kiemChiSoThucTe();
+        kiemTanCongKhongTutKhiChiSoCao();
         kiemMoTaVatPham();
         kiemMangTraTheoType();
         kiemSoTypeTrangBiThu();
@@ -1107,6 +1108,93 @@ public final class KiemSkinLinhThu {
         // Ne tranh cung co tran (299) va Tien Loc phai ton trong no y het.
         Kiem.dung("ne tranh cua nhan vat chi so cao khong vuot tran",
                 caoTienLoc[NT] <= 299);
+    }
+
+    /**
+     * MAC SKIN KHONG BAO GIO DUOC LAM TUT TAN CONG — o MOI muc chi so.
+     *
+     * LOI DA XAY RA THAT (05/09/2026, nguoi choi bao): Cung thu 49k tan cong, mac Tien Loc
+     * (+20% diem tiem nang) vao thi tan cong TUT XUONG 47k thay vi tang.
+     *
+     * Goc khong nam trong SkinLinhThu ma o CharChiSo.calculateAttack: bay cong thuc tan cong
+     * (ca nam mon phai) ep ket qua ve (short) — tran 32767 — trong khi attack1 va moi so hang
+     * deu la int. Kheo leo/suc manh la short (toi da 32767) nen sau khi nhan 5/3 hay 4/3 la
+     * vuot tran va QUAY VONG SANG AM. Hau qua: nhan vat cang manh tan cong cang tut, va cong
+     * them chi so (skin, buff, do moi) co the LAM GIAM tan cong dung luc vua vuot moc 32767.
+     *
+     * VI SAO BO KIEM CU KHONG BAT DUOC: doChiSo() dung chi so 200 va doChiSoCao() dung 5000 —
+     * ca hai deu nam DUOI moc tran, nen bay cong thuc chay dung va phep kiem "Tien Loc lam
+     * tang tan cong" van dat. Phep kiem duoi day quet dung KHOANG DA VO (16000..21000).
+     *
+     * Quet bang Char THAT + calculateAttrib() THAT, khong chep lai cong thuc: chep lai thi
+     * sua cong thuc that ma quen sua ban chep, phep kiem van dat.
+     */
+    private static void kiemTanCongKhongTutKhiChiSoCao() {
+        Kiem.nhom("Skin linh thu - mac skin khong duoc lam TUT tan cong (tran short cu)");
+
+        if (!buDuLieuAnhSkin()) {
+            Kiem.dung("bu duoc du lieu anh skin", false);
+            return;
+        }
+        buGemTemplate();
+
+        // Cung thu (mon phai 4) hop he voi Tien Loc (skin 2) — dung cap dang bi bao loi.
+        final int[] mucKheoLeo = {5000, 15000, 16000, 17000, 18000, 19000, 19600, 20000, 21000};
+        int soMucTut = 0;
+        int soMucAm = 0;
+        for (final int kl : mucKheoLeo) {
+            final Integer khongSkin = tanCongCungThu(kl, real.SkinLinhThu.KHONG_CO);
+            final Integer coTienLoc = tanCongCungThu(kl, 2);
+            if (khongSkin == null || coTienLoc == null) {
+                Kiem.dung("dung duoc Char that o muc kheo leo " + kl, false);
+                return;
+            }
+            if (coTienLoc.intValue() < khongSkin.intValue()) {
+                soMucTut++;
+            }
+            if (khongSkin.intValue() < 0 || coTienLoc.intValue() < 0) {
+                soMucAm++;
+            }
+        }
+        Kiem.bang("khong muc kheo leo nao ma mac Tien Loc lam TUT tan cong",
+                Integer.valueOf(0), Integer.valueOf(soMucTut));
+        Kiem.bang("khong muc kheo leo nao cho ra tan cong AM",
+                Integer.valueOf(0), Integer.valueOf(soMucAm));
+
+        // Chot thang o ma nguon: bay cong thuc tan cong khong duoc ep (short) nua.
+        final String chiSo = doc("src/real/CharChiSo.java");
+        final int mocHam = chiSo.indexOf("static void calculateAttack(Char self)");
+        Kiem.dung("tim thay calculateAttack", mocHam > 0);
+        if (mocHam > 0) {
+            final int mocKet = chiSo.indexOf("int attack2 = 0;", mocHam);
+            final String than = chiSo.substring(mocHam, mocKet > mocHam ? mocKet : chiSo.length());
+            Kiem.sai("khoi cong thuc tan cong theo mon phai KHONG con ep (short) (tran 32767)",
+                    than.contains("attack1 += (short)"));
+        }
+    }
+
+    /** Tan cong THAT su cua mot Cung thu co kheo leo = kl, mang skin nay. null neu dung hong. */
+    private static Integer tanCongCungThu(final int kheoLeo, final int skin) {
+        try {
+            final real.Char c = new real.Char(null);
+            c.charname = "KIEMTHUTC";
+            c.charClass = 4; // Cung thu — hop he voi Tien Loc
+            c.lastLV = 100;
+            c.strength = (short) kheoLeo;
+            c.agitity = (short) kheoLeo;
+            c.spirit = (short) kheoLeo;
+            c.health = (short) kheoLeo;
+            c.luck = (short) kheoLeo;
+            c.animalRide = taoThuCuoi();
+            if (c.animalRide == null) {
+                return null;
+            }
+            c.idSkinLinhThu = skin;
+            c.calculateAttrib();
+            return Integer.valueOf(c.getAttack());
+        } catch (final Throwable t) {
+            return null;
+        }
     }
 
     /** Nhu doChiSo nhung chi so du cao de cham tran chinh xac va ne tranh. */

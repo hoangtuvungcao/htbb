@@ -126,6 +126,41 @@ public final class KiemNangCapVuKhiLv86 {
                     than.contains("item.level >= 81"));
         }
 
+        // ---- 4b. CHOT AN TOAN: phai KIEM tra bac tren truoc khi thang cap, khong duoc
+        // trong cay vao cot idUpLevel trong CSDL.
+        //
+        // Neu CSDL that chua chay lenh cap nhat o MUC 5 (hoac chay roi ma chua khoi dong
+        // lai may chu - data_item chi doc mot lan luc khoi dong), getIdTemplateUpLevel()
+        // doan bang "id + 1" va tra ve mon cua MON PHAI KHAC:
+        //     412 kiem -> 413 DAO lv21 | 425 dao -> 426 BUT lv21 | 438 but -> 439 BUA lv21
+        //     451 bua  -> 452 CUNG lv21 | 464 cung -> 465 CUOC THUONG lv1
+        // Bon dong dau AN MAT vu khi lv81 va tra lai mon lv21 sai mon phai (mat do that);
+        // dong cuoi lam vo chi so mang (-3) roi treo client o "Xin chờ...".
+        Kiem.dung("Map.java: co ham chot bac tren (bacTrenKhongHopLe)",
+                map.contains("private boolean bacTrenKhongHopLe("));
+        for (final String ham : new String[]{
+                "void doUserUpLevelItem(Char player, Message message)",
+                "void doUserUpLevelItemSpecial(Char player, Message message)"}) {
+            final int mocH = map.indexOf(ham);
+            Kiem.dung("tim thay " + ham, mocH > 0);
+            if (mocH > 0) {
+                final int mocKetH = map.indexOf("doCreateNewItem(", mocH);
+                final String thanH = map.substring(mocH, mocKetH > mocH ? mocKetH : map.length());
+                Kiem.dung(ham + ": goi bacTrenKhongHopLe TRUOC khi tao mon moi",
+                        thanH.contains("bacTrenKhongHopLe(player, item)"));
+            }
+        }
+        final int mocChot = map.indexOf("private boolean bacTrenKhongHopLe(");
+        if (mocChot > 0) {
+            final int mocKetChot = map.indexOf("void doUserUpLevelItemSpecial(", mocChot);
+            final String thanChot = map.substring(mocChot, mocKetChot > mocChot ? mocKetChot : map.length());
+            Kiem.dung("chot: doi chieu DUNG LOAI do (type)", thanChot.contains("bacTren.type == typeCu"));
+            Kiem.dung("chot: doi chieu DUNG mot bac (level + 5)",
+                    thanChot.contains("bacTren.level == item.level + 5"));
+            Kiem.dung("chot: chan ca truong hop khong tim thay template (null)",
+                    thanChot.contains("bacTren != null"));
+        }
+
         // ---- 5. sql/gamedb7_clean.sql: 5 vu khi bac 81 (kiem/dao/but/bua/cung) phai co
         // idUpLevel tro DUNG toi id level-86 tuong ung, khong con -1 (mac dinh id+1 SAI). ----
         final String[][] chuoiNangCap = {

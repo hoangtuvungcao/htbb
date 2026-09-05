@@ -326,8 +326,11 @@ public final class KiemAoHoaHoaKyLan {
         final String s = doc("src/real/Map.java");
         final String than = doan(s, "if (isItemThanThu(t))", "player.sendMessage(MessageCreator.createMsgMenu(menuHoaKyLan, -513, 0));");
         Kiem.dung("tim thay nhanh isItemThanThu", !than.isEmpty());
-        Kiem.dung("con nang cap duoc (idItemUpLevel > -1) thi menu 3 muc", than.contains("new String[]{\"Sử dụng\", \"Nâng cấp\", \"Ảo hóa\"}"));
-        Kiem.dung("da toi da (idItemUpLevel == -1) thi menu chi con 2 muc, an Nang cap", than.contains("new String[]{\"Sử dụng\", \"Ảo hóa\"}"));
+        // "ảo hóa" VIET THUONG - font ban client JAR khong ve duoc chu HOA co dau khoi
+        // U+1EA0..U+1EF8, viet "Ảo hóa" thi nguoi choi thay "o hóa" (bao 05/09/2026).
+        // Xem test/KiemChuHoaCoDau.java.
+        Kiem.dung("con nang cap duoc (idItemUpLevel > -1) thi menu 3 muc", than.contains("new String[]{\"Sử dụng\", \"Nâng cấp\", \"ảo hóa\"}"));
+        Kiem.dung("da toi da (idItemUpLevel == -1) thi menu chi con 2 muc, an Nang cap", than.contains("new String[]{\"Sử dụng\", \"ảo hóa\"}"));
         Kiem.dung("re nhanh theo dung item.getTemplate().idItemUpLevel", than.contains("item.getTemplate().idItemUpLevel > -1"));
     }
 

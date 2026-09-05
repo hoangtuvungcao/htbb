@@ -17,6 +17,11 @@
  *                  ngay (1). Offline -> server xoa mau khoi cot trong CSDL, roi de dong o
  *                  "cho vao game" (4) de khi nhan vat dang nhap se doi chieu lai RAM mot lan
  *                  (dong cua so dua "dang nap nhan vat thi web sua CSDL").
+ *   xoa_nhan_vat : XOA VINH VIEN (khac han nut "Khoa" chi an di) - khong DELETE thang tu web
+ *                  vi nhan vat co the dang online (RAM cua tien trinh game). Online -> server
+ *                  duoi ra (luu ban cuoi + ngat ket noi) roi xoa that ca tob_char lan du lieu
+ *                  con (thu, quest, farm...); offline -> xoa that ngay. Luon xong (1) hoac loi
+ *                  (3) o lan doc dau tien - khong co trang thai "cho vao game" nhu hai loai tren.
  * Ham choKetQuaLenh() doi toi da vai giay roi doc lai de bao cho nguoi bam. Server dang tat
  * thi dong lenh van nam do (trang_thai 0) va duoc xu ly khi server chay lai - khong mat lenh.
  * Nguoi quan tri huy duoc dong con cho (trang_thai 5), server bo qua dong da huy.
@@ -30,6 +35,7 @@
 const LENH_BANG = 'web_lenh_nhan_vat';
 const LENH_LOAI_DAT_CAP_DO = 'dat_cap_do';
 const LENH_LOAI_XOA_VAT_PHAM = 'xoa_vat_pham';
+const LENH_LOAI_XOA_NHAN_VAT = 'xoa_nhan_vat';
 
 const LENH_CHO = 0;
 const LENH_XONG_ONLINE = 1;
@@ -100,6 +106,9 @@ function tachThamSoXoaVatPham(?string $thamSo): ?array
 /** Mo ta ngan mot dong lenh cho bang "Lenh da gui": "cấp 50 (12,5%)" / "xoá đồ #123 +5 (inven)". */
 function moTaYeuCauLenh(array $l): string
 {
+    if ((string)$l['loai'] === LENH_LOAI_XOA_NHAN_VAT) {
+        return 'xoá vĩnh viễn nhân vật';
+    }
     if ((string)$l['loai'] === LENH_LOAI_XOA_VAT_PHAM) {
         $ts = tachThamSoXoaVatPham((string)($l['tham_so'] ?? ''));
         if ($ts === null) {
@@ -221,6 +230,23 @@ function guiLenhXoaVatPham(PDO $db, int $charId, string $charname, string $cot, 
     return (int)$db->lastInsertId();
 }
 
+/** Chen lenh "xoa vinh vien nhan vat". Tra ve id dong lenh de doi ket qua. */
+function guiLenhXoaNhanVat(PDO $db, int $charId, string $charname, string $adminUser): int
+{
+    taoBangLenhNhanVat($db);
+    $st = $db->prepare(
+        'INSERT INTO web_lenh_nhan_vat (loai, char_id, charname, admin_user)
+         VALUES (?, ?, ?, ?)'
+    );
+    $st->execute([
+        LENH_LOAI_XOA_NHAN_VAT,
+        $charId,
+        substr($charname, 0, 50),
+        substr($adminUser, 0, 50),
+    ]);
+    return (int)$db->lastInsertId();
+}
+
 /** Mot dong lenh (id, trang_thai, ket_qua), hoac null neu khong co. */
 function docLenh(PDO $db, int $id): ?array
 {
@@ -266,14 +292,28 @@ function docLenhCuaNhanVat(PDO $db, int $charId, int $toiDa = 10): array
 /**
  * Huy mot dong con cho (LENH_CHO / LENH_CHO_DANG_NHAP). Tra ve true neu huy duoc; false neu
  * server da xu ly xong truoc do (khong huy duoc ket qua da co).
+ *
+ * KHONG BAO GIO huy duoc lenh xoa_nhan_vat (xem WHERE ben duoi). Ly do: doc dong con
+ * cho o Java (LenhWeb.xuLyMotVong) va UPDATE huy nay o day chay o HAI TIEN TRINH khac
+ * nhau, khong khoa gi ca - Java co the da doc dong (trang_thai van la CHO trong ban
+ * chup cua no) va dang XOA THAT giua luc admin bam Huy. Voi dat_cap_do/xoa_vat_pham,
+ * "huy tro" nhu vay chi la mot lan len cap/mat do dang tiec nhung con sua duoc; voi
+ * xoa_nhan_vat thi khong - "huy" mot lenh DA XOA XONG se hien "đã huỷ" tren man hinh
+ * trong khi nhan vat that ra da bien mat vinh vien. An toan hon la KHONG CHO HUY loai
+ * nay tu dau: server luon xong lenh xoa_nhan_vat ngay o vong doc dau tien no thay (xem
+ * LenhWeb, khong co trang thai CHO_DANG_NHAP cho loai nay), nen "huy" khong co tinh
+ * huong hop le nao de dung ca.
  */
 function huyLenh(PDO $db, int $id, string $adminUser): bool
 {
     $st = $db->prepare(
         'UPDATE web_lenh_nhan_vat SET trang_thai = ?, ket_qua = ?, xu_ly_luc = NOW()
-          WHERE id = ? AND trang_thai IN (?, ?)'
+          WHERE id = ? AND trang_thai IN (?, ?) AND loai != ?'
     );
-    $st->execute([LENH_HUY, substr('huy boi ' . $adminUser, 0, 255), $id, LENH_CHO, LENH_CHO_DANG_NHAP]);
+    $st->execute([
+        LENH_HUY, substr('huy boi ' . $adminUser, 0, 255), $id, LENH_CHO, LENH_CHO_DANG_NHAP,
+        LENH_LOAI_XOA_NHAN_VAT,
+    ]);
     return $st->rowCount() > 0;
 }
 
@@ -282,7 +322,7 @@ function huyLenh(PDO $db, int $id, string $adminUser): bool
  * $muc = mo ta viec vua yeu cau, vd 'cấp 50 (12,5%)' hay 'xoá "Hoả kỳ lân +3"'.
  * Thuan tuy, khong dong CSDL - de kiem thu duoc khong can MySQL.
  */
-function moTaKetQuaLenh(?array $r, string $ten, string $muc): array
+function moTaKetQuaLenh(?array $r, string $ten, string $muc, string $loai = ''): array
 {
     if ($r === null) {
         return ['error', 'Không đọc lại được lệnh vừa gửi cho ' . $ten . '. Kiểm tra bảng web_lenh_nhan_vat.'];
@@ -290,6 +330,11 @@ function moTaKetQuaLenh(?array $r, string $ten, string $muc): array
     $kq = trim((string)($r['ket_qua'] ?? ''));
     switch ((int)$r['trang_thai']) {
         case LENH_XONG_ONLINE:
+            // xoa_nhan_vat luon xong o trang thai nay du nhan vat dang online hay khong (xem
+            // LenhWeb.xuLyXoaNhanVat) - cau "đang online" chung se sai neu ho dang offline.
+            if ($loai === LENH_LOAI_XOA_NHAN_VAT) {
+                return ['success', 'Đã ' . $muc . ' cho ' . $ten . '.' . ($kq !== '' ? ' (' . $kq . ')' : '')];
+            }
             return ['success', 'Đã thực hiện NGAY cho ' . $ten . ' đang online: ' . $muc
                 . ($kq !== '' ? ' (' . $kq . ')' : '') . '. Server đã lưu lại, không bị ghi đè nữa.'];
         case LENH_CHO_DANG_NHAP:

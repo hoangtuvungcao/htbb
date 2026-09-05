@@ -229,7 +229,20 @@ public final class KiemLenhWeb {
                 && php.contains("const LENH_XONG_OFFLINE = 2;") && php.contains("const LENH_LOI = 3;")
                 && php.contains("const LENH_CHO_DANG_NHAP = 4;") && php.contains("const LENH_HUY = 5;"));
         Kiem.dung("web chi huy duoc dong con cho (CHO / CHO_DANG_NHAP), khong xoa ket qua da co",
-                php.contains("WHERE id = ? AND trang_thai IN (?, ?)") && php.contains("$id, LENH_CHO, LENH_CHO_DANG_NHAP]"));
+                php.contains("WHERE id = ? AND trang_thai IN (?, ?) AND loai != ?")
+                        && php.contains("$id, LENH_CHO, LENH_CHO_DANG_NHAP,"));
+        // xoa_nhan_vat khong bao gio huy duoc (05/09/2026): Java doc dong CHO va PHP UPDATE
+        // huy chay o hai tien trinh khac nhau, khong khoa gi - "huy" mot lenh da xoa xong se
+        // hien nham "đã huỷ" trong khi nhan vat that ra da mat vinh vien. Xem chu thich day
+        // du o huyLenh() trong inc/lenh_nhan_vat.php.
+        final int mocHuyLenh = php.indexOf("function huyLenh(PDO $db, int $id, string $adminUser): bool");
+        Kiem.dung("tim thay ham huyLenh", mocHuyLenh > 0);
+        if (mocHuyLenh > 0) {
+            final int mocKetHuyLenh = php.indexOf("function ", mocHuyLenh + 10);
+            final String thanHuyLenh = php.substring(mocHuyLenh, mocKetHuyLenh > mocHuyLenh ? mocKetHuyLenh : php.length());
+            Kiem.dung("huyLenh loai tru han loai xoa_nhan_vat khoi dieu kien huy duoc",
+                    thanHuyLenh.contains("LENH_LOAI_XOA_NHAN_VAT"));
+        }
         Kiem.bang("loai lenh", "dat_cap_do", LenhWeb.LOAI_DAT_CAP_DO);
         Kiem.dung("PHP gui cung loai lenh", php.contains("const LENH_LOAI_DAT_CAP_DO = 'dat_cap_do';"));
 

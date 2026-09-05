@@ -1040,7 +1040,7 @@ class MapChat {
                                             map.startWar();
                                         } else if (msgChat.startsWith("war2") && player.isAdmin) {
                                             MapTown.isSkipDayCheck = !MapTown.isSkipDayCheck;
-                                            String status = MapTown.isSkipDayCheck ? "BẬT" : "TẮT";
+                                            String status = MapTown.isSkipDayCheck ? "Bật" : "Tắt";
                                             player.sendMessage(MessageCreator.createServerAlertMessage(
                                                 "Đã " + status + " chế độ bỏ qua kiểm tra ngày đăng ký tấn công", 
                                                 ""

@@ -7155,12 +7155,37 @@ public int applyRongLonReleaseTo(int baseDamage) {
         this.session = s;
     }
 
+    /*
+     * DAU "!=" O VE CUNG KHONG DUOC DOI THANH "==" — DA HONG MOT LAN (05/09/2026).
+     *
+     * Hai ham duoi day gui goi tin cho NGUOI DUNG GAN. Dieu kien o day la dieu kien BO QUA
+     * (continue), nen no phai la phu dinh cua dieu kien GUI. Ban goc trong ban dich nguoc
+     * (bb83665) co than "if" RONG:
+     *
+     *     if (p == null || ... || p.region == this.region) {
+     *     }
+     *     s.sendMessage(m);          // -> thuc te gui cho TAT CA trong nearChars
+     *
+     * Commit 2480c47 ("fix isse") them "continue;" vao than rong do. Luc do dieu kien moi
+     * that su chay — va ve cuoi cua no BI NGUOC: "p.region == this.region" nghia la "bo qua
+     * nguoi CUNG khu vuc voi minh", tuc bo qua dung nhung nguoi le ra phai nhan. Ket qua:
+     * sendToNearPlayer() (305 cho goi) va sendEffToNearChar() (41 cho goi) gui cho KHONG AI
+     * — thong tin nhan vat, mau, hieu ung, vi tri thu cuoi... deu khong toi nguoi xung quanh
+     * nua, nen nhan vat "luc an luc hien" tren man hinh nguoi khac.
+     *
+     * Doi chieu voi ham song sinh KHONG bi sua — sendInfoMove2Near() o tren cung tep: no GUI
+     * khi "p.region == this.region". Nen ve BO QUA phai la "p.region != this.region". Moi ve
+     * khac trong dieu kien nay da phu dinh dung, chi rieng ve khu vuc thi khong.
+     *
+     * test/KiemGuiGoiNguoiGan.java chot lai chieu dau nay bang cach doi chieu thang voi
+     * sendInfoMove2Near().
+     */
     @Override
     public void sendEffToNearChar() {
         for (int j = this.nearChars.size() - 1; j >= 0; --j) {
             try {
                 final Char p = this.map.getPlayerByID(this.nearChars.get(j));
-                if (p == null || p.id == this.id || p.isBot != -1 || !this.near(p, this.rangeAddMonster[0]) || p.map != this.map || p.region == this.region) {
+                if (p == null || p.id == this.id || p.isBot != -1 || !this.near(p, this.rangeAddMonster[0]) || p.map != this.map || p.region != this.region) {
                     continue;
                 }
                 this.sendEffToChar(p);
@@ -7174,7 +7199,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             try {
                 final Char p = this.map.getPlayerByID(this.nearChars.get(j));
                 final Session s = p.session;
-                if (p == null || p.id == this.id || p.isBot != -1 || !this.near(p, this.rangeAddMonster[0]) || p.map != this.map || p.region == this.region) {
+                if (p == null || p.id == this.id || p.isBot != -1 || !this.near(p, this.rangeAddMonster[0]) || p.map != this.map || p.region != this.region) {
                     continue;
                 }
                 s.sendMessage(m);
@@ -9378,7 +9403,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
             } catch (final Exception ex) {
             }
         }
-        this.sendMessage(MessageCreator.createServerAlertMessage("Ảo hóa Hoả Kỳ Lân thành công, có tác dụng trong 7 ngày", ""));
+        // Dat "ảo hóa" vao GIUA cau de no viet thuong: font ban client JAR khong ve duoc
+        // chu HOA co dau khoi U+1EA0..U+1EF8 (chu "Ả" bi mat han) — xem Map.java, cho tao
+        // menu Hoa Ky Lan.
+        this.sendMessage(MessageCreator.createServerAlertMessage("Hoả Kỳ Lân đã được ảo hóa thành công, có tác dụng trong 7 ngày", ""));
         Database.instance.saveOrtherLog("", this.charname, item.getInfoSave(), "aohoahkl");
     }
 
@@ -9391,7 +9419,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
                 // Tui do tro ve so goc ngay (xem Item.getInfoAtbItem(Char)).
                 this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));
-                this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Ảo hóa Hoả Kỳ Lân đã hết hạn, chỉ số trở về ban đầu"));
+                // "ảo hóa" viet thuong, cung ly do font o cho tren.
+                this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Hiệu lực ảo hóa Hoả Kỳ Lân đã hết hạn, chỉ số trở về ban đầu"));
                 Database.instance.saveOrtherLog("", this.charname, "ao hoa hoa ky lan het han", "aohoahkl");
             }
         } catch (final Exception ex) {

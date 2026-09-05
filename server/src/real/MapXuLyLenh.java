@@ -1580,7 +1580,7 @@ class MapXuLyLenh {
             int end = page * 10 + 10;
             switch (type) {
                 case 3:
-                    m.dos.writeUTF("TOP ĐẠI GIA");
+                    m.dos.writeUTF("Top đại gia");
                     if (start >= Map.topRich.size()) {
                         start = Map.topRich.size();
                     }
@@ -1619,7 +1619,7 @@ class MapXuLyLenh {
                     }
                     break;
                 case 4:
-                    m.dos.writeUTF("TOP CAO THỦ");
+                    m.dos.writeUTF("Top cao thủ");
                     if (start >= Map.topLv.size()) {
                         start = Map.topLv.size();
                     }
@@ -1658,7 +1658,7 @@ class MapXuLyLenh {
                     }
                     break;
                 case 5:
-                    m.dos.writeUTF("TOP BANG HỘI");
+                    m.dos.writeUTF("Top bang hội");
                     if (start >= Map.topClan.size()) {
                         start = Map.topClan.size();
                     }
