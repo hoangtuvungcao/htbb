@@ -72,12 +72,45 @@ function loaiThuong(): array
         'TKMAX'     => [4, 'TKMAX:id:_:thoiHan',           'Thần khí max — cùng lưu ý id theo lớp như TK', 'TKMAX:890:_:0'],
         'TKF'       => [5, 'TKF:id:soLuong:mau:khoa',      'Thần khí full — id 890/891/892', 'TKF:890:1:0:0'],
         'TKMAXF'    => [6, 'TKMAXF:id:soLuong:soDong:he:khoa', 'Thần khí max full, số dòng 1–29, hệ -1..4', 'TKMAXF:890:1:9:-1:0'],
-        'PP'        => [4, 'PP:_:_:thoiHan',               'Phi phong max bạo kích (cả 2 hệ)', 'PP:_:_:0'],
-        'PP8X'      => [4, 'PP8X:_:_:thoiHan',             'Phi phong 8x max', 'PP8X:_:_:0'],
-        'PPR'       => [5, 'PPR:id:soLuong:_:_',           'Phi phong thường', 'PPR:584:1:0:0'],
-        'PPV'       => [5, 'PPV:id:soLuong:_:_',           'Phi phong vĩnh viễn', 'PPV:584:1:0:0'],
-        'PPRK'      => [6, 'PPRK:id:soLuong:_:_:khang',    'Phi phong chọn kháng', 'PPRK:584:1:0:0:2'],
-        'PPVK'      => [6, 'PPVK:id:soLuong:_:_:khang',    'Phi phong vĩnh viễn chọn kháng', 'PPVK:584:1:0:0:2'],
+        // GHI CHU (05/09/2026), tra loi cau hoi "nhap phi phong Huyen Vu the nao":
+        // - PP/PP8X TU CHON id trong danh sach co dinh {584..597,840} (PP8X ep ve 593) -
+        //   xem Char.createPhiPhongMaxBaoKich(): KHONG BAO GIO ra id 750, du "8x"/"max".
+        //   Muon tang dung Phi Phong Huyen Vu thi PHAI dung PPR/PPV/PPRK/PPVK voi id=750.
+        // - Ten "PPV" ("vinh vien") GAY HIEU SAI: doi chieu DatabaseGiftCode.java thi
+        //   PPR/PPV goi CUNG mot ham createtemCoat(), khac nhau DUY NHAT o co "ismax"
+        //   (chi so max hay ngau nhien) - KHONG lien quan vinh vien/co han. Vinh vien/co
+        //   han do rieng tham so thoiHan (phan thu 4) quyet dinh, GIONG HET nhau o ca hai:
+        //   thoiHan=0 la vinh vien du dung PPR hay PPV. Cu phap cu ghi "_" o vi tri
+        //   thoiHan/he la SAI - ca hai deu duoc Java doc that (Integer.parseInt), khong
+        //   phai bo qua.
+        // - "khang" (tham so cuoi cua PPRK/PPVK) CHI co tac dung that voi id=750: xem
+        //   Item.createAttributeItemCoat(), dong "if (this.getTemplate().id == 750)" la
+        //   noi DUY NHAT tham so khang duoc dung de ghi thuoc tinh. Voi bat ky id phi
+        //   phong nao khac, khang bi doc nhung khong dong nao dung toi no ca - im lang
+        //   khong co gi xay ra. Vi du cu dung id 584 cho PPRK/PPVK la VO NGHIA vi vay.
+        'PP'        => [4, 'PP:_:_:thoiHan',
+            'Phi phong max bạo kích (cả 2 hệ) — tự chọn 1 trong 15 id cố định theo cấp độ '
+            . '(584-597, 840), KHÔNG BAO GIỜ ra Phi Phong Huyền Vũ (id 750). Muốn tặng đúng '
+            . 'Huyền Vũ thì dùng PPV ở dưới với id=750', 'PP:_:_:0'],
+        'PP8X'      => [4, 'PP8X:_:_:thoiHan',
+            'Phi phong 8x max — CỐ ĐỊNH ra id 593, cũng không phải Huyền Vũ. Xem PPV:750 ở dưới',
+            'PP8X:_:_:0'],
+        'PPR'       => [5, 'PPR:id:soLuong:thoiHan:he',
+            'Phi phong theo id, chỉ số NGẪU NHIÊN — he: 0=phép, 1=vật lý; thoiHan 0=vĩnh viễn '
+            . '(không phải PPV mới vĩnh viễn — xem PPV). vd id 750 = Phi Phong Huyền Vũ',
+            'PPR:750:1:0:0'],
+        'PPV'       => [5, 'PPV:id:soLuong:thoiHan:he',
+            'Phi phong theo id, chỉ số MAX (khác PPR đúng một chỗ này, KHÔNG phải "vĩnh viễn" — '
+            . 'vĩnh viễn do thoiHan=0 quyết định, giống hệt PPR). vd id 750 = Phi Phong Huyền Vũ max chỉ số',
+            'PPV:750:1:0:0'],
+        'PPRK'      => [6, 'PPRK:id:soLuong:thoiHan:he:khang',
+            'Phi phong chọn hệ kháng, chỉ số ngẫu nhiên — LƯU Ý: khang CHỈ có tác dụng thật với '
+            . 'id=750 (Phi Phong Huyền Vũ); id khác thì bị bỏ qua hoàn toàn, không có gì xảy ra. '
+            . 'khang: 0=hoả,1=thuỷ,2=mộc,3=kim,4=thổ, -1=ngẫu nhiên',
+            'PPRK:750:1:0:0:2'],
+        'PPVK'      => [6, 'PPVK:id:soLuong:thoiHan:he:khang',
+            'Phi phong chọn hệ kháng, chỉ số MAX — cùng lưu ý như PPRK: chỉ có tác dụng thật '
+            . 'với id=750 (Phi Phong Huyền Vũ)', 'PPVK:750:1:0:0:2'],
         'PPLUCK'    => [5, 'PPLUCK:id:_:_:_',              'Phi phong may mắn', 'PPLUCK:593:1:1:1'],
         'HOVELAN'   => [4, 'HOVELAN:id:_:thoiHan',         'Hộ vệ lệnh lân', 'HOVELAN:882:5:0'],
         'CHOI'      => [5, 'CHOI:id:_:thoiHan:_',          'Chổi', 'CHOI:1:_:0:_'],
