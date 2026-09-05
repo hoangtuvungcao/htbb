@@ -682,17 +682,41 @@ adminHead('giftcode', 'Giftcode');
         <h3>Các loại phần thưởng server hiểu</h3>
         <p class="muted small">Rút thẳng từ <code>src/data/DatabaseGiftCode.java</code>. Phần ghi <code>_</code>
            là tham số server không dùng tới nhưng <strong>vẫn phải có</strong> — thiếu là server ném lỗi
-           giữa chừng, người chơi nhận nửa phần quà mà mã không bị trừ lượt.</p>
+           giữa chừng, người chơi nhận nửa phần quà mà mã không bị trừ lượt. Cột "Ví dụ" bấm
+           <strong>Chèn</strong> để nối thẳng vào ô "Phần thưởng vật phẩm" phía trên.</p>
         <div class="tbl-wrap">
         <table class="tbl">
-            <thead><tr><th>Cú pháp</th><th>Là gì</th></tr></thead>
+            <thead><tr><th>Cú pháp</th><th>Là gì</th><th>Ví dụ</th><th></th></tr></thead>
             <tbody>
-            <?php foreach (loaiThuong() as $loai => [$n, $cuPhap, $mota]): ?>
-                <tr><td class="nowrap"><code><?= e($cuPhap) ?></code></td><td class="muted small"><?= e($mota) ?></td></tr>
+            <?php foreach (loaiThuong() as $loai => [$n, $cuPhap, $mota, $viDu]): ?>
+                <tr>
+                    <td class="nowrap"><code><?= e($cuPhap) ?></code></td>
+                    <td class="muted small"><?= e($mota) ?></td>
+                    <td class="nowrap"><code><?= e($viDu) ?></code></td>
+                    <td class="nowrap"><button type="button" class="btn btn-xam btn-nho oChenVd" data-vd="<?= e($viDu) ?>">Chèn</button></td>
+                </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
         </div>
+        <script>
+        // Chen mot vi du co san vao ngay cuoi o "Phan thuong vat pham" — dung LAI y het
+        // logic noi chuoi cua bo chon phia tren (oThem.addEventListener), khong phai
+        // ghi de: nguoi dung co the chen nhieu vi du lien tiep de ghep mot ma nhieu quà.
+        (function () {
+            var oPT = document.getElementById('oPhanThuong');
+            if (!oPT) { return; }
+            document.querySelectorAll('.oChenVd').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var s = btn.getAttribute('data-vd') || '';
+                    if (s === '') { return; }
+                    var cu = (oPT.value || '').trim().replace(/,+\s*$/, '');
+                    oPT.value = (cu === '') ? s : (cu + ',' + s);
+                    oPT.focus();
+                });
+            });
+        })();
+        </script>
     </div>
 
 <?php else: ?>

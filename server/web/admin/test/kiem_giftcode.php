@@ -102,6 +102,38 @@ foreach (loaiThuong() as $loai => [$toiThieu, $cuPhap, $mota]) {
 $dat++;
 echo "  OK   da kiem $soLoaiKiemTra loai (moi loai: thieu 1 phan -> bao loi, du phan -> khong loi)\n";
 
+echo "\n== Vi du (cot thu 4) cua MOI loai phai la chinh chuoi that qua duoc kiemTraItem() ==\n";
+// Vi du trong bang giup nguoi tao ma co san mot dong dung cu phap de bam "Chen" (xem
+// giftcode.php) - neu vi du sai cu phap thi nguoi dung se bi day sang huong sai ngay
+// tu diem bat dau, con te hon la khong co vi du nao. Kiem qua CHINH kiemTraItem(), khong
+// tu viet lai dieu kien: day la ham THAT server dung de xac nhan chuoi truoc khi luu.
+$hongTruoc = $hong;
+$soViDu = 0;
+foreach (loaiThuong() as $loai => [$toiThieu, $cuPhap, $mota, $viDu]) {
+    $soViDu++;
+    if (!isset($viDu) || $viDu === '') {
+        $hong++;
+        echo "  HONG $loai: chua co vi du\n";
+        continue;
+    }
+    [, $loi] = kiemTraItem($viDu);
+    if (!empty($loi)) {
+        $hong++;
+        echo "  HONG $loai: vi du '$viDu' khong qua duoc kiemTraItem(): " . implode(' / ', $loi) . "\n";
+    }
+    // Vi du phai TU XUNG DANH dung loai cua chinh dong no dang o (vd viet nham
+    // 'ITEM:...' o dong 'DB' se lot qua kiemTraItem nhung day nguoi doc sang loai khac).
+    $tenTrongVd = strtoupper(explode(':', $viDu)[0]);
+    if ($tenTrongVd !== $loai) {
+        $hong++;
+        echo "  HONG $loai: vi du '$viDu' lai ghi ten loai '$tenTrongVd'\n";
+    }
+}
+if ($hong === $hongTruoc) {
+    $dat++;
+    echo "  OK   ca $soViDu vi du deu qua duoc kiemTraItem() va tu xung dung ten loai\n";
+}
+
 echo "\n== Bang loai thuong khop voi ma nguon Java ==\n";
 $java = file_get_contents(__DIR__ . '/../../../src/data/DatabaseGiftCode.java');
 preg_match_all('/tachTime\[0\]\.equals\("([A-Za-z0-9_]+)"\)/', $java, $m);
