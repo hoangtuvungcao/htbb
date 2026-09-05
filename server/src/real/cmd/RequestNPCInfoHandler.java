@@ -886,9 +886,11 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         (p.isTatPhiPhong() ? "Bật" : "Tắt") + " phi phong", 
                         (p.isTatMatNa() ? "Bật" : "Tắt") + " mặt nạ",
                         (p.isTatCanh() ? "Bật" : "Tắt") + " cánh",
-                        "Tinh Luyện Thần Binh","Gia Hạn VKTB(5000l 7n)","Thần Khí","Cải Tạo Cải Trang","Bộ Sưu Tập",
+                        // "Than Khi" doi xuong cuoi menu (05/09/2026) - moi muc tu day tro xuong
+                        // deu dich len 1 bac, doi case trong RealController.doCreateItem cho khop.
+                        "Tinh Luyện Thần Binh","Gia Hạn VKTB(5000l 7n)","Cải Tạo Cải Trang","Bộ Sưu Tập",
                         "Hoá Hình Pet" + (p.petUsing != null && p.petUsing.dangHoaHinh() ? " (Lân cấp " + p.petUsing.capHoaHinh + ")" : ""),
-                        (p.isTatSkinLinhThu() ? "Bật" : "Tắt") + " hiển thị skin thú"};
+                        (p.isTatSkinLinhThu() ? "Bật" : "Tắt") + " hiển thị skin thú", "Thần Khí"};
                     if (TeamServer.isServerLienDau()) {
                         menu = new String[]{"Vũ khí", "Trang bị", "Trang bị thú"};
                     }

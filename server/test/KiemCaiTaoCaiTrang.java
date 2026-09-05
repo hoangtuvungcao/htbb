@@ -198,9 +198,9 @@ public final class KiemCaiTaoCaiTrang {
         Kiem.sai("khong con doi 500 luong o menu", rc.contains("Bạn cần 500 lượng để cải tạo cải trang"));
         Kiem.sai("khong con showTrangPhucTinhHoaList", rc.contains("showTrangPhucTinhHoaList"));
         Kiem.sai("khong con mang validItemIDs (luat da gom ve CaiTaoCaiTrang)", rc.contains("validItemIDs"));
-        final String case11 = doan(rc, "// cải tạo cải trang\n                        case 11:", "case 12:");
-        Kiem.dung("case 11 mo thang danh sach qua player.map.showCaiTaoMaterialList",
-                case11.contains("player.map.showCaiTaoMaterialList(player);"));
+        final String case10 = doan(rc, "// cải tạo cải trang\n                        case 10:", "case 11:");
+        Kiem.dung("case 10 mo thang danh sach qua player.map.showCaiTaoMaterialList",
+                case10.contains("player.map.showCaiTaoMaterialList(player);"));
 
         final String menuNpc = doc("src/real/cmd/RequestNPCInfoHandler.java");
         Kiem.dung("menu NPC -8 van co muc \"Cải Tạo Cải Trang\"", menuNpc.contains("\"Cải Tạo Cải Trang\""));
