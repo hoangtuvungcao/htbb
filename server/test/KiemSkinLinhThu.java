@@ -947,6 +947,27 @@ public final class KiemSkinLinhThu {
         Kiem.dung("cuoi thu: tinh lai chi so SAU khi dong bo skin (khong phai truoc)",
                 cuoiTinh > cuoiDongBo);
 
+        // --- 2b. MAC / THAO skin o bang "Trang bi thu" (Map.exchangeItem) ---
+        //
+        // DUONG THU TU, BI SOT LUC DAU. Loi da xay ra that (05/09/2026): nguoi choi mac
+        // skin vao thi bang Tiem nang tang ma Tan cong dung im. O day calculateAttrib()
+        // nam TREN dong dongBoTheoTrangBi, nen no tinh bang idSkinLinhThu CU; con bang
+        // tiem nang thi MessageCreator cong tnKheoLeo() tai cho nen doc gia tri MOI ->
+        // lo ra dung mot nua. Day la duong nguoi choi dung NHIEU NHAT (mac/thao bang
+        // giao dien), nhung ba phep kiem tren khong cham toi no.
+        final String doiDo = doc("src/real/Map.java");
+        final int mocExDongBo = doiDo.indexOf("SkinLinhThu.dongBoTheoTrangBi(player)");
+        Kiem.dung("Map.exchangeItem co dong bo skin", mocExDongBo > 0);
+        if (mocExDongBo > 0) {
+            // Loi goi calculateAttrib GAN NHAT truoc/sau dong bo, trong cung khoi.
+            final int mocExTinh = doiDo.indexOf("player.calculateAttrib();", mocExDongBo);
+            final int mocExGui = doiDo.indexOf("createMainCharInfoMessage(player)", mocExDongBo);
+            Kiem.dung("mac/thao skin: tinh lai chi so SAU khi dong bo skin (khong phai truoc)",
+                    mocExTinh > mocExDongBo);
+            Kiem.dung("mac/thao skin: tinh lai TRUOC khi dung goi tin",
+                    mocExTinh > 0 && mocExGui > mocExTinh);
+        }
+
         // --- 3. Dang nhap ---
         final int dnDongBo = dangNhap.indexOf("SkinLinhThu.dongBoTheoTrangBi(p)");
         final int dnTinh = dangNhap.indexOf("p.calculateAttrib();", dnDongBo);

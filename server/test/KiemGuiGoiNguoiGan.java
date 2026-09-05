@@ -74,6 +74,24 @@ public final class KiemGuiGoiNguoiGan {
                     dk.contains("!this.near(p, this.rangeAddMonster[0])"));
         }
 
+        // --- Xoa khoi nearChars PHAI theo ID (Short), khong duoc truyen ca doi tuong Char ---
+        //
+        // LOI DA XAY RA THAT (05/09/2026): nearChars la Vector<Short> (them bang "p1.id"),
+        // nhung cho xoa lai truyen "p1" la Char -> khop vao Vector.remove(Object), tim mot
+        // Char trong danh sach toan Short nen KHONG BAO GIO xoa duoc, va im lang tra ve false.
+        // Id nguoi o xa khong bao gio roi danh sach -> server ban lai goi charOutRange ("xoa
+        // nhan vat nay") deu deu moi 300ms, con goi di chuyen lai ve lai ngay: nhan vat nhay
+        // ~3 lan/giay. Ngoai ra o "nguoi choi o gan" (nNearchar, mac dinh 8) khong bao gio
+        // duoc tra lai nen nguoi thu 9 tro di khong con duoc dang ky.
+        final String capNhat = doc("src/real/CharCapNhat.java");
+        Kiem.dung("doc duoc src/real/CharCapNhat.java", !capNhat.isEmpty());
+        if (!capNhat.isEmpty()) {
+            Kiem.sai("CharCapNhat: KHONG con xoa nearChars bang ca doi tuong Char (remove(p1))",
+                    capNhat.contains("nearChars.remove(p1)"));
+            Kiem.dung("CharCapNhat: xoa nearChars theo ID (Short.valueOf(p1.id))",
+                    capNhat.contains("nearChars.remove(Short.valueOf(p1.id))"));
+        }
+
         // Than "if" rong (ban truoc 2480c47) cung la loi - luc do dieu kien vo tac dung.
         // Chot rang hai ham VAN con "continue;" de dieu kien that su chay.
         for (final String ham : hamBoQua) {

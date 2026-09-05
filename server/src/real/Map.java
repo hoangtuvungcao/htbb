@@ -7617,6 +7617,30 @@ public class Map implements Runnable {
     };
 
     /**
+     * Nhân một chỉ số lên theo "Chỉ số vũ khí tăng" của thần binh, có CHẶN TRẦN.
+     *
+     * att55 là otherAtt[55] của cây thần binh, đơn vị PHẦN NGHÌN: 501 nghĩa là +50,1%,
+     * tức nhân 1,501. Chia số nguyên nên phần lẻ bị cắt cụt (giữ nguyên cách tính cũ
+     * của mảng atb[], để số liệu người chơi đang có không đổi).
+     *
+     * VÌ SAO PHẢI CHẶN TRẦN: newAtb[], lockAtb[], addMoreLevelSkill[] khai báo là
+     * byte[] (Item.java) nên chỉ chứa được -128..127. Một món "Tăng công 90%" nhân
+     * 1,501 ra 135, ép về byte thì QUAY VÒNG thành -121 - chỉ số dương biến thành âm,
+     * và không có lỗi nào được ném ra. atb[] là short[] (trần 32767) nên xa ngưỡng
+     * hơn nhiều, nhưng dùng chung một hàm cho khỏi phải nhớ mảng nào kiểu gì.
+     *
+     * Giá trị <= 0 trả về nguyên vẹn: 0 nhân lên vẫn là 0, còn số âm (nếu dữ liệu cũ
+     * lỡ có) thì nhân lên sẽ càng âm thêm.
+     */
+    private static int nhanTheoChiSoVuKhiTang(final int giaTri, final int att55, final int tran) {
+        if (giaTri <= 0) {
+            return giaTri;
+        }
+        final long ketQua = giaTri + (long) giaTri * att55 / 1000L;
+        return (ketQua > tran) ? tran : (int) ketQua;
+    }
+
+    /**
      * Lọc nguyên liệu tinh luyện hợp lệ trong hành trang.
      *
      * PHẢI dùng chung giữa lúc HIỆN danh sách cho người chơi chọn
@@ -9447,29 +9471,53 @@ public class Map implements Runnable {
                                 player.itemVukhiThoiTrang.lockAtb = selectedItem.lockAtb.clone();
                                 player.itemVukhiThoiTrang.otherAtt = selectedItem.otherAtt.clone();
                                 
-                                //cho phép cộng dồn VKTB
+                                // Cong don VKTB: chi so vu khi vua hut tu nguyen lieu duoc nhan len theo
+                                // "Chi so vu khi tang" (att55, don vi phan nghin) CUA CHINH cay than binh.
+                                // Vi du att55 = 501 -> x1,501.
+                                //
+                                // PHAM VI NHAN (chu server chot 05/09/2026) - dung 3 mang chi so:
+                                //   atb[]     Tan cong, Chinh xac, Giam st ma, Tang tan cong...  (short)
+                                //   newAtb[]  Tang HP, Tang MP, Cong suc manh/kheo leo/...       (byte)
+                                //   lockAtb[] Tang cong, Tang thu ma, Tang thu vat               (byte)
+                                // KHONG nhan:
+                                //   addMoreLevelSkill[]  la CAP KY NANG (vd "Ho doc tien: 1"), khong
+                                //                        phai chi so
+                                //   otherAtt[54/55/56]   xem chu thich ngay duoi khoi nay
+                                //   durable / mDurable   do ben, khong phai chi so
                                 for (int k = 0; k < 33; k++)
                                 {
-                                    if (player.itemVukhiThoiTrang.atb[k] > 0)
-                                    {
-                                        player.itemVukhiThoiTrang.atb[k] +=  player.itemVukhiThoiTrang.atb[k] * att55 / 1000;
-                                    }
+                                    player.itemVukhiThoiTrang.atb[k] = (short) nhanTheoChiSoVuKhiTang(
+                                            player.itemVukhiThoiTrang.atb[k], att55, Short.MAX_VALUE);
                                 }
-                                // Khoi phuc 3 chi so da luu TRUOC khi tinh cong don: phai lam truoc buoc
-                                // cong don ben duoi, khong phai sau - neu lam sau se GHI DE mat ket qua
-                                // vua cong don, bien phep tinh growth thanh vo nghia (ban cu).
-                                player.itemVukhiThoiTrang.otherAtt[54] = att54;
-                                player.itemVukhiThoiTrang.otherAtt[55] = att55;
-                                player.itemVukhiThoiTrang.otherAtt[56] = att56;
-                                // Cộng dồn 3 chỉ số đặc biệt (ID > 61) trong otherAtt[]
-                                short[] other = player.itemVukhiThoiTrang.otherAtt;
-                                if (other != null && other.length > 56) {
-                                if (other[54] > 0) other[54] += other[54] * att55 / 1000; // Sát thương chuẩn
-                                if (other[55] > 0) other[55] += other[55] * att55 / 1000; // Chỉ số vũ khí tăng
-                                if (other[56] > 0) other[56] += other[56] * att55 / 1000; // Tỷ lệ gây sát thương chuẩn
+                                for (int k = 0; k < player.itemVukhiThoiTrang.newAtb.length; k++)
+                                {
+                                    player.itemVukhiThoiTrang.newAtb[k] = (byte) nhanTheoChiSoVuKhiTang(
+                                            player.itemVukhiThoiTrang.newAtb[k], att55, Byte.MAX_VALUE);
                                 }
-                                
-                                
+                                for (int k = 0; k < player.itemVukhiThoiTrang.lockAtb.length; k++)
+                                {
+                                    player.itemVukhiThoiTrang.lockAtb[k] = (byte) nhanTheoChiSoVuKhiTang(
+                                            player.itemVukhiThoiTrang.lockAtb[k], att55, Byte.MAX_VALUE);
+                                }
+                                // Khoi phuc 3 chi so rieng cua than binh (otherAtt vua bi clone de len
+                                // bang cua nguyen lieu o tren). Ba chi so nay GIU NGUYEN, KHONG nhan
+                                // theo att55.
+                                //
+                                // Vi sao khong nhan (quyet dinh cua chu server, 05/09/2026):
+                                // otherAtt[55] khong phai chi so thuong ma la CHINH HE SO NHAN - no duoc
+                                // ap len vu khi that dang mac (Item.getValueUpByVuKhiThoiTrang va
+                                // getInfoAtbItemWearing). Cho no tu nhan chinh no la an hai lan: 50,1%
+                                // -> 75,2%, tuc cay vu khi that bong duoc cong them 25% nua ngoai du kien.
+                                //
+                                // LICH SU: ban goc (bb83665) dat khoi khoi phuc nay o SAU khoi cong don
+                                // nen ket qua cong don bi ghi de mat -> ba chi so giu nguyen. Commit
+                                // 2480c47 doi len TRUOC, vo tinh bat growth len that. Nay quay lai hanh
+                                // vi goc, nhung viet ro rang thay vi dua vao thu tu ghi de.
+                                player.itemVukhiThoiTrang.otherAtt[54] = att54; // Sát thương chuẩn
+                                player.itemVukhiThoiTrang.otherAtt[55] = att55; // Chỉ số vũ khí tăng
+                                player.itemVukhiThoiTrang.otherAtt[56] = att56; // Tỷ lệ gây sát thương chuẩn
+
+
                                 // Cập nhật allAtb
                                 Vector<InfoItemAttribute> attributes = selectedItem.getInfoAtbItem();
                                 player.itemVukhiThoiTrang.allAtb.clear();
@@ -15771,10 +15819,27 @@ public class Map implements Runnable {
                         }
                     }
 
-                    player.calculateAttrib();
                     // Vua doi trang bi thu: cap nhat skin dang mang TRUOC khi dung goi
                     // tin, vi ca ba goi ben duoi deu mang hinh con thu.
                     final boolean doiSkin = isItemAnimal && SkinLinhThu.dongBoTheoTrangBi(player);
+                    // TINH LAI CHI SO PHAI NAM SAU dongBoTheoTrangBi, KHONG duoc truoc.
+                    //
+                    // LOI DA XAY RA THAT (05/09/2026, nguoi choi bao "mac skin thi bang Tiem
+                    // nang tang ma Tan cong dung im"): day la duong MAC/THAO skin o bang
+                    // "Trang bi thu". Truoc day calculateAttrib() chay o TREN dong dong bo,
+                    // tuc no tinh bang idSkinLinhThu CU (chua co skin khi vua mac vao, hoac
+                    // van con skin khi vua thao ra).
+                    //
+                    // Hau qua chi lo ra mot nua: attack/maxhp/defend/accurate la TRUONG DUOC
+                    // LUU SAN, chi doi khi calculateAttrib() chay - nen chung giu so cu. Con
+                    // bang diem tiem nang thi MessageCreator cong p.tnSucManh()/tnKheoLeo()
+                    // TAI CHO luc dung goi tin, doc idSkinLinhThu vua moi cap nhat - nen no
+                    // tang ngay. Nguoi choi thay tiem nang nhay len ma tan cong dung im.
+                    //
+                    // Ba duong kia (dongBoVaGui, doRideAnimal, SelectCharHandler) da dat dung
+                    // thu tu tu truoc; rieng duong nay bi sot. Xem kiemTinhLaiChiSo() trong
+                    // test/KiemSkinLinhThu.java - da them phep kiem cho ca bon duong.
+                    player.calculateAttrib();
                     Message m = MessageCreator.createMainCharInfoMessage(player);
                     player.sendMessage(m);
                     m = MessageCreator.createCharWearingMessage(player, player);

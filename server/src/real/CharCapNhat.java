@@ -433,7 +433,27 @@ class CharCapNhat {
                                         }
                                     }
                                 } else if (!self.near(p1, self.rangeRemoveMonster[0]) && !self.checkInParty(p1) && p1.isBot == -1 && !givcard2) {
-                                    self.nearChars.remove(p1);
+                                    // PHAI xoa theo ID (Short), KHONG duoc truyen ca doi tuong Char.
+                                    //
+                                    // LOI DA XAY RA THAT (05/09/2026, nguoi choi bao "nhan vat cu
+                                    // an roi hien, 1 giay nhay 1-2 lan"): nearChars la Vector<Short>
+                                    // (dong 432 them "p1.id"), nhung o day truyen "p1" la mot Char.
+                                    // Java khop vao Vector.remove(Object) - tim mot Char trong danh
+                                    // sach toan Short nen KHONG BAO GIO tim thay, khong xoa gi ca,
+                                    // va lang le tra ve false (khong he bao loi).
+                                    //
+                                    // Hau qua: id nguoi choi o xa KHONG bao gio roi khoi nearChars,
+                                    // nen dieu kien nay dung MOI VONG - server ban lai goi "xoa nhan
+                                    // vat nay" (charOutRange) deu deu MOI 300ms (Map.DELAY_UPDATE_MAP),
+                                    // trong khi goi di chuyen cua ho lai lam client ve lai ngay. Do
+                                    // dung la nhip nhay ~3 lan/giay nguoi choi thay.
+                                    // Ba cho xoa khac trong tep nay (dong 315/318/334) dung dang chi
+                                    // so remove(j) nen van chay dung - chi rieng cho nay sai.
+                                    //
+                                    // Sua kem: vi id khong bao gio bi xoa, o "nguoi choi o gan"
+                                    // (nNearchar, mac dinh 8) cung khong bao gio duoc tra lai - di
+                                    // qua 8 nguoi la nguoi thu 9 tro di khong con duoc dang ky nua.
+                                    self.nearChars.remove(Short.valueOf(p1.id));
                                     self.charOutRange(p1);
                                 }
                             }
