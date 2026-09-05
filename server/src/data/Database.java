@@ -7432,9 +7432,21 @@ public class Database {
                 } catch (final Exception thieuCot) {
                     p.setBatCanh();
                 }
-                
-                 
-                
+
+                // Cong tac "Tat hien thi skin linh thu" (NPC Tho ren than bi). Cung mot loi,
+                // cung mot cach vá nhu isCT/isCanh o tren - xem Char.isTatSkinLinhThu.
+                try {
+                    if (rs.getByte("isSkinThu") == 0) {
+                        p.setBatSkinLinhThu();
+                    } else {
+                        p.setTatSkinLinhThu();
+                    }
+                } catch (final Exception thieuCot) {
+                    p.setBatSkinLinhThu();
+                }
+
+
+
                 p.setLuong(rs.getInt("luong"));
                 p.dbInfo = rs.getString("pInfo");
                 p.using = rs.getByte("del");
@@ -11589,8 +11601,9 @@ public void addCharXaiNapLuong(Char p, int type) {
     // ============ HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI (theo ngay, moi nhan vat) ============
 
     /**
-     * Them cot tob_char.isCT (cong tac "Tat cai trang") neu chua co. Goi 1 lan luc khoi
-     * dong server, TRUOC khi nhan nguoi choi vao.
+     * Them cac cot cong tac hien thi (isCT "Tat cai trang", isCanh "Tat canh", isSkinThu
+     * "Tat hien thi skin linh thu") vao tob_char neu chua co. Goi 1 lan luc khoi dong
+     * server, TRUOC khi nhan nguoi choi vao.
      *
      * VI SAO PHAI TU THEM CHU KHONG BAT NGUOI QUAN TRI CHAY SQL: cau UPDATE trong
      * DatabaseNhanVat.saveChar co ghi cot nay. Cot khong ton tai thi cau do nem loi, va
@@ -11606,6 +11619,7 @@ public void addCharXaiNapLuong(Char p, int type) {
     public void themCotCongTacHienThi() {
         themCotNeuThieu("isCT", "cong tac Tat cai trang");
         themCotNeuThieu("isCanh", "cong tac Tat canh");
+        themCotNeuThieu("isSkinThu", "cong tac Tat hien thi skin linh thu");
     }
 
     /** Them mot cot cong tac int NOT NULL DEFAULT 0 vao tob_char neu chua co. */

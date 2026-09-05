@@ -8,16 +8,22 @@
  *  người tạo mã phải tự nhớ id. Không nhớ được là không tạo được giftcode — và
  *  không nhớ được là chuyện bình thường, vì id nằm rải ở NĂM nguồn khác nhau:
  *
- *      data_item        (914 dòng)  -> ITEM, và cột atb9 lọc ra "thời trang" -> TT
+ *      data_item        (910 dòng)  -> ITEM, và cột atb9 lọc ra "thời trang" -> TT
  *      data_potion      (162 dòng)  -> PT
  *      Map.gemTemplate  (270 viên, GHI CỨNG TRONG JAVA, không trong CSDL)   -> GEM
  *      Map.petTemplate  (30 con,   GHI CỨNG TRONG JAVA, id = CHỈ SỐ MẢNG)   -> PET / PETV
  *      DanhHieu.getName (48 tên,   GHI CỨNG TRONG JAVA trong một switch)    -> DH
  *
  *  Riêng chuyện "trứng" đã nằm ở cả ba nguồn đầu: trứng thú là `data_item` type
- *  26, trứng linh thú là `data_item` type 21, còn trứng phượng hoàng / hoả kỳ
- *  lân / đương khang / bạch cốt / lân sư tử lại là `data_potion`. Không ai nhớ
- *  nổi.
+ *  26, trứng rồng băng (id 887, vật phẩm THẬT) là `data_item` type 21, còn trứng
+ *  phượng hoàng / hoả kỳ lân / đương khang / bạch cốt / lân sư tử lại là
+ *  `data_potion`. Không ai nhớ nổi.
+ *
+ *  05/09/2026: bốn dòng "trứng giả" 883-886 (cùng type 21, đổi tên từ Hộ vệ
+ *  lệnh nhưng ITEM: không hoạt động đúng — xem dmIdRac()) đã bị XOÁ khỏi
+ *  data_item sau khi xác nhận không nhân vật nào đang giữ (sql/don_data_item_
+ *  trung.sql mục 5). 910 dòng còn lại không còn "trùng tên khác nghĩa" nào ở
+ *  data_item nữa — id vẫn nằm trong dmIdRac() để phòng ai đó lỡ chèn lại.
  *
  *  MỞ RỘNG (đợt hai). Một đợt rà soát 69 agent kiểm chứng chéo tìm thêm 22 lỗi
  *  ở các loại thưởng còn lại — hầu hết là "id không phải id vật phẩm mà là một
@@ -116,7 +122,7 @@ function dmIdManhSuuTap(): array
  * **thợ rèn thần bí**.
  *
  * Vì sao loại: đó là trang bị người chơi làm ra bằng nguyên liệu, không phải thứ
- * đem phát bằng giftcode. Giữ lại thì danh sách phồng từ 183 lên 914 món và mấy
+ * đem phát bằng giftcode. Giữ lại thì danh sách phồng từ 183 lên 910 món và mấy
  * món thật sự cần phát bị chìm mất.
  *
  * Ba nhóm NPC đó chế, đọc từ `MapCheTao.doCreateItem` (src/real/MapCheTao.java)
@@ -161,21 +167,45 @@ function dmLoaiTypeDoChe(): array
  *     `GAY_GIANG_SINH = 728` và một nhánh `case 728: // gậy giáng sinh` xử lý
  *     nó như VŨ KHÍ dịp lễ, không đọc gì từ nhánh xử lý thú nuôi cả.
  *
+ *   883, 884, 885, 886  type 21 (Hộ vệ lệnh), tên "Trứng hoả kỳ lân" / "Trứng
+ *   đương khang" / "Trứng lân" / "Trứng bạch cốt" (05/09/2026, phát hiện khi rà
+ *   soát trùng tên `data_item` — xem sql/don_data_item_trung.sql)
+ *     Bốn dòng này là bản sao của "Hộ vệ lệnh" (Char.HO_VE_LENH_4x1..6x3 =
+ *     630-638), chỉ đổi tên, KHÔNG có nhánh code nào đọc bằng id của chúng
+ *     (`grep -w "883\|884\|885\|886" src/` chỉ ra 1 kết quả — hàm
+ *     `Map.isTheBaiLinhLanSu` chết, không nơi nào gọi). Phát bằng `ITEM:` thì
+ *     `Char.createItemSoLuong` tạo đúng một item type 21 hoàn toàn chung, khi
+ *     dùng sẽ rơi vào nhánh `isTheBaiLinhDanhThue` (mọi item type 21) và MỞ MENU
+ *     THUÊ HỘ VỆ NGẪU NHIÊN — không liên quan gì đến trứng linh thú.
+ *     Trứng THẬT của bốn cái tên này là bốn ô THUỐC (`data_potion`, đã có sẵn ở
+ *     nhóm "Trứng phượng hoàng / hoả kỳ lân / đương khang…" phía dưới, loại PT):
+ *     "Trứng hoả kỳ lân" = PT:71, "Trứng đương khang" = PT:72, "Trứng bạch cốt"
+ *     = PT:74; "Trứng lân" ghép với potion 115 "Trứng Lân sư tử" (tên không
+ *     khớp tuyệt đối nhưng cùng cơ chế NPC tạo thú, `Potion.TYPE_TRUNG_LAN_SU_TU`).
+ *     KHÔNG loại luôn 887 "Trứng rồng băng" cùng type 21: đây là trường hợp
+ *     NGƯỢC LẠI — `Item.isTrungRongBang()` bắt đúng id 887 và nó THẬT SỰ hoạt
+ *     động qua đường vật phẩm (mang tới NPC tạo thú, `Map.doApTrungRongBang`),
+ *     không có ô thuốc nào trùng tên để thay thế.
+ *
  * VÌ SAO LOẠI Ở TẦNG `dmVatPham()` CHỨ KHÔNG PHẢI Ở TỪNG NHÓM. Đặt ở đây thì
  * loại được khỏi MỌI nhóm cùng lúc — kể cả nhóm "Vật phẩm khác" bắt hết ở cuối,
  * nơi mà lọc theo type sẽ không chặn được (các id này vẫn mang type hợp lệ với
- * bộ lọc theo type). Không có danh sách này thì đúng type mà vẫn lọt hàng lỗi.
+ * bộ lọc theo type), và cả nhóm "Trứng linh thú" phía dưới (lọc theo TÊN trong
+ * `$vp[21]` — loại ở đây trước thì nhóm đó tự động chỉ còn lại 887). Không có
+ * danh sách này thì đúng type mà vẫn lọt hàng lỗi.
  *
  * Không tự động dò (ví dụ so `atb0` hay tên) vì sẽ bắt nhầm những món hợp lệ đặt
  * giá trị khác thường. Đây là danh sách CHỌN TAY, dựa trên bằng chứng đọc mã
  * nguồn cụ thể ở trên — xem `web/admin/test/kiem_danh_muc_thuong.php`, đối
  * chiếu lại đúng bằng chứng đó.
  *
- * Vẫn phát được nếu thật sự cần: gõ tay `ITEM:<id>:<số lượng>`.
+ * Vẫn phát được nếu thật sự cần: gõ tay `ITEM:<id>:<số lượng>` cho 728/950-954
+ * — RIÊNG 883/884/885/886 phải dùng `PT:<id potion>:<số lượng>:<phút>` (71/72/
+ * 115/74) như ghi ở trên, `ITEM:` không có tác dụng đúng cho bốn id này.
  */
 function dmIdRac(): array
 {
-    return [728, 950, 951, 952, 953, 954];
+    return [728, 883, 884, 885, 886, 950, 951, 952, 953, 954];
 }
 
 /**
@@ -448,7 +478,12 @@ function dmDanhMuc(PDO $game): array
     }
 
     // Trứng linh thú nằm lẫn trong type 21 (Hộ vệ lệnh). Lọc theo tên chứ không ghi
-    // cứng dải id 883-887: thêm trứng mới là nó tự hiện, không phải sửa tệp này.
+    // cứng id: thêm trứng mới là nó tự hiện, không phải sửa tệp này.
+    //
+    // 883-886 KHÔNG rơi vào đây nữa (05/09/2026): bốn dòng đó bị dmIdRac() loại
+    // ngay từ $vp trước khi tới hàm này — ITEM: của chúng không hoạt động như
+    // trứng (xem chú thích dmIdRac()). Còn lại đúng 887 "Trứng rồng băng", cái
+    // duy nhất trong nhóm này THẬT SỰ là vật phẩm.
     $trungLinh = [];
     foreach ($vp[21] ?? [] as $id => $ten) {
         if (dmCoTu($ten, 'rứng')) {

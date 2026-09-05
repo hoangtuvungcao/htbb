@@ -64,9 +64,13 @@ public final class KiemTatCaiTrang {
         // Chi so tham so phai dich theo. Them mot "?" ma quen doi chi so cua charDBID thi
         // cau UPDATE se sua NHAM NHAN VAT KHAC — hoac nem loi, ma nem loi o day nghia la
         // nhan vat bi khoa.
-        Kiem.dung("charDBID chuyen sang tham so 29", luu.contains("pre.setInt(29, p.charDBID)"));
+        //
+        // 05/09/2026: them cot isSkinThu (xem KiemSkinLinhThu) chen truoc charDBID, day
+        // charDBID tu tham so 29 sang 30.
+        Kiem.dung("charDBID chuyen sang tham so 30", luu.contains("pre.setInt(30, p.charDBID)"));
         Kiem.sai("khong con dat charDBID o tham so 27", luu.contains("pre.setInt(27, p.charDBID)"));
         Kiem.sai("khong con dat charDBID o tham so 28", luu.contains("pre.setInt(28, p.charDBID)"));
+        Kiem.sai("khong con dat charDBID o tham so 29", luu.contains("pre.setInt(29, p.charDBID)"));
 
         // ---- Nap lai luc dang nhap ----
         Kiem.dung("luc nap co doc cot isCT", db.contains("rs.getByte(\"isCT\")"));

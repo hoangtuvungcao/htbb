@@ -164,9 +164,9 @@ for ($t = 0; $t <= 30; $t++) {
 kt('moi type con lai deu co ten tieng Viet', $thieuTen, []);
 
 // ===========================================================================
-echo "\n== Cot 'type' KHONG khop hanh vi that - ba truong hop da xac minh\n";
+echo "\n== Cot 'type' KHONG khop hanh vi that - bon truong hop da xac minh\n";
 // ===========================================================================
-// Ca ba deu tim ra tu vong ra soat sau khi nguoi dung hoi "sao Skin thu lai nam
+// Ca bon deu tim ra tu vong ra soat sau khi nguoi dung hoi "sao Skin thu lai nam
 // trong Phi phong". Chung cung mot dang loi: id do that trong data_item, dung
 // type do that, nhung ma nguon Java xu ly id do khac han y nghia cua type.
 
@@ -175,7 +175,7 @@ echo "\n== Cot 'type' KHONG khop hanh vi that - ba truong hop da xac minh\n";
 // Van" (id 584) nen no chay duoc nhu mot phi phong THUONG. Van phai loai vi ten
 // hua doi hinh thu cuoi ma no khong lam.
 $rac = dmIdRac();
-kt('dmIdRac dung 6 id (5 skin gia + 1 gay giang sinh)', count($rac), 6);
+kt('dmIdRac dung 10 id (5 skin gia + 1 gay giang sinh + 4 trung gia)', count($rac), 10);
 foreach ([950, 951, 952, 953, 954] as $id) {
     ktDung("id $id (Skin gia trong Phi phong) nam trong danh sach loai", in_array($id, $rac, true));
 }
@@ -186,6 +186,22 @@ foreach ([950, 951, 952, 953, 954] as $id) {
 // khong doc gi tu nhanh xu ly thu nuoi ca.
 ktDung('id 728 (Gay Giang Sinh, vu khi le hoi) nam trong danh sach loai',
     in_array(728, $rac, true));
+
+// ---- 883-886: type 21 (Ho ve lenh) nhung ten la "Trung hoa ky lan/duong khang/
+// lan/bach cot" (05/09/2026) ----
+// Ban sao doi ten cua Ho ve lenh (630-638). ITEM: cua chung tao dung mot the bai
+// thue ho ve chung, KHONG lien quan trung linh thu - trung THAT la o thuoc PT:71/
+// 72/74/115 (nhom "trung_thuoc" da co san, gan loai PT). RIENG 887 "Trung rong
+// bang" van la ITEM that (Item.isTrungRongBang()) nen KHONG duoc co trong day.
+foreach ([883, 884, 885, 886] as $id) {
+    ktDung("id $id (trung gia, ban sao Ho ve lenh) nam trong danh sach loai", in_array($id, $rac, true));
+}
+ktDung('id 887 (Trung rong bang, ITEM that) KHONG nam trong danh sach loai',
+    !in_array(887, $rac, true));
+
+$itemJava = (string)@file_get_contents($GOC . 'src/real/Item.java');
+ktDung('Item.isTrungRongBang() van bat dung id 887',
+    (bool)preg_match('/isTrungRongBang\\(\\)\\s*\\{\\s*return this\\.tempateID == 887;/', $itemJava));
 
 // ---- 898-902: type 29 (chung voi Manh cai trang) nhung la "Canh" - he rieng ----
 // Item.isCanh() = id 898..902, KHONG lien quan cot type. Xac nhan bang so sanh

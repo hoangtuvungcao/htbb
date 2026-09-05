@@ -700,7 +700,7 @@ class DatabaseNhanVat {
         Connection conn = null;
         PreparedStatement pre = null;
         String sql = "UPDATE tob_char SET pInfo=?,basic=?,skill=?,potion=?,totalTimePlay=totalTimePlay+?, luong=?, lastLv=?,xp=?,gold=?,hp=?, idClan=?, reupclass=?,headStyle=?,ticket=?,x=?,y=?,book=?,lastLog=Now(),infotop=?,equip=?,"
-                + "inven=?,bag=?,killme=?,luonglock=?,tuido=?,isPP=?,isMN=?,isCT=?,isCanh=? where id=?";
+                + "inven=?,bag=?,killme=?,luonglock=?,tuido=?,isPP=?,isMN=?,isCT=?,isCanh=?,isSkinThu=? where id=?";
         try {
             conn = db.getConnection();
             pre = conn.prepareStatement(sql);
@@ -740,7 +740,9 @@ class DatabaseNhanVat {
             // chay migration, TOAN BO nguoi choi bi tat cai trang.
             pre.setByte(27, (byte) (p.isBatCaiTrang() ? 0 : 1));
             pre.setByte(28, (byte) (p.isTatCanh() ? 1 : 0));
-            pre.setInt(29, p.charDBID);
+            // Cot isSkinThu cung chieu voi isPP/isMN/isCanh: 1 = DA TAT hien thi skin thu.
+            pre.setByte(29, (byte) (p.isTatSkinLinhThu() ? 1 : 0));
+            pre.setInt(30, p.charDBID);
             try {
                 pre.execute();
             } catch (Exception e) {

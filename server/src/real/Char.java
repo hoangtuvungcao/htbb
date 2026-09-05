@@ -10916,8 +10916,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     /**
      * Bat/tat HIEN THI skin linh thu, chon o NPC Tho Ren Than Bi. CHI an hinh anh con thu
-     * (xem SkinLinhThu.hienThi) — khong dong toi chi so/noi tai da mac, va KHONG luu CSDL
-     * (giong hoi chieu skin: mat khi dang xuat la dung, nguoi choi bat lai duoc ngay).
+     * (xem SkinLinhThu.hienThi) — khong dong toi chi so/noi tai da mac.
+     *
+     * Luu xuong CSDL (cot tob_char.isSkinThu, cung khuon voi isCT/isCanh — xem
+     * DatabaseNhanVat.saveChar va Database.getChar/themCotCongTacHienThi). Ban dau (them
+     * 01/09/2026) cong tac nay CHU Y khong luu, coi nhu tam thoi giong hoi chieu noi tai co
+     * ti le — nhung nguoi choi bao tat xong dang xuat vao lai bi tu bat lai, gay kho chiu
+     * (khac voi hoi chieu 40s von ngan hon moi phien choi). Da doi sang luu ben 05/09/2026.
      */
     private boolean isTatSkinLinhThu = false;
 

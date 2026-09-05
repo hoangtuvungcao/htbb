@@ -295,9 +295,14 @@ public final class KiemSkinLinhThu {
     }
 
     /**
-     * Bat/tat HIEN THI skin linh thu o NPC Tho Ren Than Bi (them 01/09/2026). Cong tac nay
-     * CHI duoc phep an hinh anh, khong duoc dong toi chi so/noi tai da mac — xem
-     * SkinLinhThu.hienThi va Char.isTatSkinLinhThu.
+     * Bat/tat HIEN THI skin linh thu o NPC Tho Ren Than Bi (them 01/09/2026, luu CSDL tu
+     * 05/09/2026). Cong tac nay CHI duoc phep an hinh anh, khong duoc dong toi chi so/noi
+     * tai da mac — xem SkinLinhThu.hienThi va Char.isTatSkinLinhThu.
+     *
+     * LOI DA XAY RA THAT (nhu KiemTatCaiTrang): nguoi choi bao tat hien thi xong, dang
+     * xuat vao lai thi no TU BAT LAI. Ban dau cong tac nay CHU Y khong luu CSDL (coi nhu
+     * tam thoi giong hoi chieu noi tai co ti le), nhung nguoi choi thay day la bat tien nen
+     * da doi sang luu ben, cung khuon voi isCT/isCanh (cot tob_char.isSkinThu).
      */
     private static void kiemHienThiSkin() {
         Kiem.nhom("Skin linh thu - bat/tat hien thi");
@@ -320,13 +325,41 @@ public final class KiemSkinLinhThu {
         Kiem.bang("MessageCreator co du 6 cho goi SkinLinhThu.hienThi",
                 Integer.valueOf(6), Integer.valueOf(dem(mc, "SkinLinhThu.hienThi(")));
 
-        // Char: cong tac rieng cua nguoi choi, khong luu CSDL — giong hoi chieu cua noi tai
-        // co ti le (mat khi dang xuat la dung, bat lai duoc ngay o NPC).
+        // Char: cong tac cua nguoi choi, LUU CSDL (cot isSkinThu) tu 05/09/2026 - xem chu
+        // thich dau ham kiemHienThiSkin().
         final String ch = doc("src/real/Char.java");
         Kiem.dung("Char co truong isTatSkinLinhThu", ch.contains("private boolean isTatSkinLinhThu = false;"));
         Kiem.dung("Char co ham isTatSkinLinhThu()", ch.contains("public boolean isTatSkinLinhThu() {"));
         Kiem.dung("Char co ham setTatSkinLinhThu()", ch.contains("public void setTatSkinLinhThu() {"));
         Kiem.dung("Char co ham setBatSkinLinhThu()", ch.contains("public void setBatSkinLinhThu() {"));
+
+        // ---- Luu xuong CSDL (cung khuon voi isCT/isCanh - xem KiemTatCaiTrang) ----
+        final String luu = doc("src/data/DatabaseNhanVat.java");
+        Kiem.dung("cau UPDATE cua saveChar co ghi cot isSkinThu", luu.contains("isSkinThu=?"));
+        Kiem.dung("saveChar dat gia tri cho cot isSkinThu (1 = da tat)",
+                luu.contains("p.isTatSkinLinhThu() ? 1 : 0"));
+        Kiem.dung("charDBID chuyen sang tham so 30 (sau khi them isSkinThu)",
+                luu.contains("pre.setInt(30, p.charDBID)"));
+
+        // ---- Nap lai luc dang nhap ----
+        final String dbLoad = doc("src/data/Database.java");
+        Kiem.dung("luc nap co doc cot isSkinThu", dbLoad.contains("rs.getByte(\"isSkinThu\")"));
+        Kiem.dung("nap: 0 = dang bat hien thi", dbLoad.contains("p.setBatSkinLinhThu();"));
+        Kiem.dung("nap: khac 0 = da tat hien thi", dbLoad.contains("p.setTatSkinLinhThu();"));
+
+        // Phai doc trong try RIENG (cot moi - may chu chua chay themCotCongTacHienThi()
+        // thi rs.getByte nem SQLException giua ham nap nhan vat), va lui ve mac dinh BAT
+        // trong catch - giong het lo cot isCT/isCanh.
+        final int mocDocSkin = dbLoad.indexOf("if (rs.getByte(\"isSkinThu\") == 0) {");
+        final int mocTrySkin = dbLoad.lastIndexOf("try {", mocDocSkin);
+        final int mocCatchSkin = dbLoad.indexOf("catch", mocDocSkin);
+        Kiem.dung("doc isSkinThu nam trong mot try rieng, ngay sat truoc no",
+                mocDocSkin > 0 && mocTrySkin > 0 && mocDocSkin - mocTrySkin < 200);
+        Kiem.dung("co nhanh catch ngay sau, lui ve mac dinh dang bat",
+                mocCatchSkin > mocDocSkin && mocCatchSkin - mocDocSkin < 300);
+
+        // ---- Tu them cot luc khoi dong (khong ai bi khoa nhan vat vi thieu cot) ----
+        Kiem.dung("ham tu them cot co lo cot isSkinThu", dbLoad.contains("themCotNeuThieu(\"isSkinThu\""));
 
         // NPC Tho Ren Than Bi (npcType -8, menu dang co "Than Khi", "Trang bi thu"...):
         // them dong bat/tat ngay trong menu do, giong ba nut phi phong/mat na/canh co san.
