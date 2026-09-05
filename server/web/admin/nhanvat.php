@@ -231,12 +231,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ---------------------------------------------------------------------------
 $q     = g('q');
 $xemId = (int)g('id');
+$trang = max(1, (int)g('trang', '1'));
+$moi   = 30;
 $ketQua = [];
 $ct     = null;
 $chuTk  = '';
 $loiDoc = '';
 $vpRow  = [];
 $loiVatPham = '';
+$conTrangSau = false;
 
 $COT = 'id, charname, userId, lastLv, `class`, xp, gold, luong, luonglock, ban, del,
         lastLog, idserver, idClan, nhack, blacklist, tichluy, topNap';
@@ -290,7 +293,14 @@ try {
             list($ct, $chuTk, $vpRow, $loiVatPham) = docChiTiet((int)$ketQua[0]['id'], $COT);
         }
     } else {
-        $ketQua = dbGame()->query("SELECT $COT FROM tob_char ORDER BY lastLog DESC LIMIT 30")->fetchAll();
+        // Lay du 1 dong de biet con trang sau hay khong, khong COUNT(*) rieng (xem log.php).
+        $lay = $moi + 1;
+        $bo  = ($trang - 1) * $moi;
+        $ketQua = dbGame()->query("SELECT $COT FROM tob_char ORDER BY lastLog DESC LIMIT $lay OFFSET $bo")->fetchAll();
+        if (count($ketQua) > $moi) {
+            $conTrangSau = true;
+            array_pop($ketQua);
+        }
     }
 } catch (Throwable $ex) {
     $loiDoc = $ex->getMessage();
@@ -574,7 +584,7 @@ adminHead('nhanvat', 'Nhân vật');
                 <label class="o" style="min-width:220px;">
                     <span>Gõ đúng tên "<?= e($ct['charname']) ?>" để xác nhận</span>
                     <input type="text" name="xac_nhan_ten" autocomplete="off"
-                           oninput="document.getElementById('nutXoaNV').disabled = this.value !== <?= json_encode($ct['charname']) ?>;">
+                           oninput="document.getElementById('nutXoaNV').disabled = this.value !== <?= e(json_encode($ct['charname'])) ?>;">
                 </label>
                 <button type="submit" id="nutXoaNV" class="btn btn-do btn-nho" disabled style="align-self:flex-end;">Xoá vĩnh viễn</button>
             </form>
@@ -641,7 +651,7 @@ adminHead('nhanvat', 'Nhân vật');
 <?php else: ?>
 
     <div class="card">
-        <h3><?= $q === '' ? '30 nhân vật vào game gần nhất' : 'Kết quả cho “' . e($q) . '”' ?></h3>
+        <h3><?= $q === '' ? 'Danh sách nhân vật' : 'Kết quả cho “' . e($q) . '”' ?></h3>
         <p class="muted small" style="margin:0 0 12px;">
             Bấm <strong>tên nhân vật</strong> để mở trang chi tiết — ở đó mới có
             <strong>đồ đang mặc, thời trang, hành trang và rương</strong> của nhân vật đó.
@@ -672,7 +682,17 @@ adminHead('nhanvat', 'Nhân vật');
             </tbody>
         </table>
         </div>
-        <?php if (count($ketQua) >= 50): ?>
+        <?php if ($q === ''): ?>
+            <div class="phantrang">
+                <?php if ($trang > 1): ?>
+                    <a class="btn btn-xam btn-nho" href="nhanvat.php?trang=<?= $trang - 1 ?>">← Trang trước</a>
+                <?php endif; ?>
+                <span>Trang <?= $trang ?> · <?= count($ketQua) ?> dòng</span>
+                <?php if ($conTrangSau): ?>
+                    <a class="btn btn-xam btn-nho" href="nhanvat.php?trang=<?= $trang + 1 ?>">Trang sau →</a>
+                <?php endif; ?>
+            </div>
+        <?php elseif (count($ketQua) >= 50): ?>
             <p class="muted small" style="margin-top:10px;">Chỉ hiện 50 kết quả đầu — gõ cụ thể hơn để thu hẹp.</p>
         <?php endif; ?>
     </div>

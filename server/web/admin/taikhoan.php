@@ -171,10 +171,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ---------------------------------------------------------------------------
 $q      = g('q');
 $xemId  = (int)g('id');
+$trang  = max(1, (int)g('trang', '1'));
+$moi    = 30;
 $ketQua = [];
 $chiTiet = null;
 $nhanVat = [];
 $daKichHoat = false;
+$conTrangSau = false;
 $loiDoc = '';
 
 try {
@@ -209,8 +212,17 @@ try {
         }
         $ketQua = $st->fetchAll();
     } else {
-        $ketQua = dbAccount()->query('SELECT id, username, email, phone, regdate, ban FROM team_user
-                                       ORDER BY id DESC LIMIT 30')->fetchAll();
+        // Lay du 1 dong de biet con trang sau hay khong, khong COUNT(*) rieng (xem log.php).
+        $lay = $moi + 1;
+        $bo  = ($trang - 1) * $moi;
+        $ketQua = dbAccount()->query(
+            "SELECT id, username, email, phone, regdate, ban FROM team_user
+             ORDER BY id DESC LIMIT $lay OFFSET $bo"
+        )->fetchAll();
+        if (count($ketQua) > $moi) {
+            $conTrangSau = true;
+            array_pop($ketQua);
+        }
     }
 } catch (Throwable $ex) {
     $loiDoc = $ex->getMessage();
@@ -355,7 +367,7 @@ adminHead('taikhoan', 'Tài khoản');
                         <label class="o" style="min-width:220px;">
                             <span>Gõ đúng tên "<?= e($ten) ?>" để xác nhận</span>
                             <input type="text" name="xac_nhan_ten" autocomplete="off"
-                                   oninput="document.getElementById('nutXoaTK').disabled = this.value !== <?= json_encode($ten) ?>;">
+                                   oninput="document.getElementById('nutXoaTK').disabled = this.value !== <?= e(json_encode($ten)) ?>;">
                         </label>
                         <button type="submit" id="nutXoaTK" class="btn btn-do btn-nho" disabled style="align-self:flex-end;">Xoá vĩnh viễn</button>
                     </form>
@@ -400,7 +412,7 @@ adminHead('taikhoan', 'Tài khoản');
 <?php else: ?>
 
     <div class="card">
-        <h3><?= $q === '' ? '30 tài khoản mới nhất' : 'Kết quả cho “' . e($q) . '”' ?></h3>
+        <h3><?= $q === '' ? 'Danh sách tài khoản' : 'Kết quả cho “' . e($q) . '”' ?></h3>
         <div class="tbl-wrap">
         <table class="tbl">
             <thead><tr>
@@ -427,7 +439,17 @@ adminHead('taikhoan', 'Tài khoản');
             </tbody>
         </table>
         </div>
-        <?php if (count($ketQua) >= 50): ?>
+        <?php if ($q === ''): ?>
+            <div class="phantrang">
+                <?php if ($trang > 1): ?>
+                    <a class="btn btn-xam btn-nho" href="taikhoan.php?trang=<?= $trang - 1 ?>">← Trang trước</a>
+                <?php endif; ?>
+                <span>Trang <?= $trang ?> · <?= count($ketQua) ?> dòng</span>
+                <?php if ($conTrangSau): ?>
+                    <a class="btn btn-xam btn-nho" href="taikhoan.php?trang=<?= $trang + 1 ?>">Trang sau →</a>
+                <?php endif; ?>
+            </div>
+        <?php elseif (count($ketQua) >= 50): ?>
             <p class="muted small" style="margin-top:10px;">Chỉ hiện 50 kết quả đầu — gõ cụ thể hơn để thu hẹp.</p>
         <?php endif; ?>
     </div>
