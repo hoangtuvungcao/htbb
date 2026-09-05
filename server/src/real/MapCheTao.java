@@ -949,9 +949,13 @@ class MapCheTao {
                 }
 
                 if (!nameItem.equals("")) {
-                    String[] menu = new String[13];
+                    // 14, khong phai 13: cung phai khop voi idTempateItemCreate trong
+                    // Map.java (moi hang kiem/dao/but/bua/cung nay co 14 phan tu, phan tu
+                    // cuoi la level 86) - thieu 1 lua chon nay thi nguoi choi khong bao gio
+                    // thay duoc "Cap do 86" de chon, du du lieu da co san.
+                    String[] menu = new String[14];
 
-                    for (int i = 0; i < 13; i++) {
+                    for (int i = 0; i < 14; i++) {
                         byte[] id = CreateItemTemplate.getIDMAterial(player.infoItemCreate.typeItem, player.infoItemCreate.magic_physic, 0);
                         Vector<Byte> soluong = CreateItemTemplate.getTotalMaterial(i, 0);
                         String infoMaterial = "";

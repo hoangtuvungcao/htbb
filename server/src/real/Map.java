@@ -13415,15 +13415,24 @@ public class Map implements Runnable {
     short getTemplateItemCreate(int level, int type, int charClass, int gender) {
         short[] var10000 = new short[]{400, 413, 426, 439, 452};
         var10000 = new short[]{268, 292, 316, 340, 352, 364, 376, 388};
+        // Hang 3-7 (kiem/dao/but/bua/cung) thieu diem level 86 (893/894/895/896/897) so
+        // voi ban RealController.getTemplateItemCreate() da co san - hai noi ban dau la
+        // MOT ham duoc COPY ra hai lop (RealController.doCreateItem va MapCheTao.doCreateItem,
+        // deu xu ly cung npcType -8), ban RealController da duoc cap nhat rieng them cap 86
+        // nhung ban nay (goi tu MapCheTao qua MapDoMenu) thi khong. Thieu dong nay lam
+        // MapCheTao.doCreateItem (idMenu==11) nem ArrayIndexOutOfBoundsException ngay khi
+        // idTempateItemCreate[type][13] duoc doc - loi bi nuot boi catch(Exception) bao quanh
+        // nen nguoi choi khong thay gi ca, chi thay "nang cap len lv86" khong co phan ung
+        // (phat hien 05/09/2026, xem test/KiemNangCapVuKhiLv86.java).
         short[][] idTempateItemCreate = new short[][]{
             {268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 640, 639},
             {292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 644, 643},
             {316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 648, 647},
-            {400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412},
-            {413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425},
-            {426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438},
-            {439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451},
-            {452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464},
+            {400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 893},
+            {413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 894},
+            {426, 427, 428, 429, 430, 431, 432, 433, 434, 435, 436, 437, 438, 895},
+            {439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 896},
+            {452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 897},
             {364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 651},
             {376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 655},
             {340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 659},
