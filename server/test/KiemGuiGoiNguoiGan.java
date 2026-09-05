@@ -4,31 +4,32 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * CHARACTERIZATION TEST (xem chu thich dau test/Kiem.java): chot CHIEU DAU cua dieu kien
- * loc "nguoi choi o gan" trong Char.sendToNearPlayer / Char.sendEffToNearChar.
+ * CHARACTERIZATION TEST (xem chu thich dau test/Kiem.java): chot rang hai ham phat goi cho
+ * NGUOI DUNG GAN - Char.sendToNearPlayer va Char.sendEffToNearChar - KHONG loc lai theo ban
+ * do / khu vuc / tam nhin.
  *
- * LOI DA XAY RA THAT (05/09/2026, nguoi choi bao "hinh nhan vat cua toi va cua moi nguoi
- * khac luc an luc hien"):
+ * VI SAO. nearChars DA la danh sach da loc: CharCapNhat.updateNearChar chi them id nao qua
+ * duoc kiem tra ban do + quoc gia + khu vuc + tam nhin, va go ra khi ho roi di. Loc lan hai
+ * o cho gui chi co the LAM MAT nguoi nhan khi mot truong lo cu. Trong so goi di qua duong
+ * nay co MessageCreator.createCharInfo(this) - goi mo ta NGOAI HINH nhan vat; khong toi noi
+ * thi nguoi ben canh khong co gi de ve.
  *
- * Ban dich nguoc goc (commit bb83665) de than "if" RONG, nen dieu kien khong he chay va
- * goi tin duoc gui cho TAT CA trong nearChars:
+ * LOI DA XAY RA THAT - hong HAI lan lien tiep:
  *
- *     if (p == null || ... || p.region == this.region) {
- *     }
- *     s.sendMessage(m);
+ *   bb83665 (ban dich nguoc goc): than "if" RONG nen khong bo qua ai -> gui cho TAT CA
+ *       trong nearChars. Chay dung, khong ai bao loi.
  *
- * Commit 2480c47 ("fix isse", 05/09/2026 02:29) them "continue;" vao than rong do. Dieu
- * kien bat dau chay that — va ve cuoi cua no BI NGUOC: day la dieu kien BO QUA, ma
- * "p.region == this.region" lai co nghia "bo qua nguoi CUNG khu vuc", dung nhung nguoi le
- * ra phai nhan. Tu do sendToNearPlayer() (305 cho goi trong src/) va sendEffToNearChar()
- * (41 cho goi) gui cho KHONG AI.
+ *   2480c47 "fix isse" (05/09/2026 02:29): them "continue;" vao than rong. Phep loc bat dau
+ *       chay that, lay luon ve "p.region == this.region" - bo qua dung nguoi CUNG khu vuc,
+ *       tuc gui cho gan nhu khong ai. Nguoi choi bao nhan vat "luc an luc hien" ngay sau khi
+ *       ban nay len server.
  *
- * CHUAN DOI CHIEU la ham song sinh KHONG bi sua trong cung tep: sendInfoMove2Near() GUI
- * khi "p.region == this.region". Dieu kien bo qua vi vay phai la "p.region != this.region".
+ *   Lan sua dau: doi sang "p.region != this.region" cho khop huong voi sendInfoMove2Near().
+ *       Dung huong nhung VAN HEP HON ban goc. Nguoi choi bao VAN NHAY.
  *
- * Phep kiem duoi day khong chep lai dieu kien bang tay ma DOI CHIEU HAI HAM voi nhau, nen
- * neu sau nay ai doi luat "gan" (vd bo han ve khu vuc) thi sua o sendInfoMove2Near la hai
- * ben tu khop, khong phai sua ca test.
+ * Nay quay ve ngu nghia ban goc. sendInfoMove2Near() KHONG phai chuan doi chieu cho hai ham
+ * nay (no co phep loc region rieng, chua bao gio bi sua va chua bao gio bi bao loi) - dung
+ * no lam chuan chinh la sai lam cua lan sua dau.
  */
 public final class KiemGuiGoiNguoiGan {
 
@@ -43,35 +44,53 @@ public final class KiemGuiGoiNguoiGan {
             return;
         }
 
-        // --- Chuan doi chieu: ham GUI (dieu kien thuan) ---
+        // --- sendInfoMove2Near GIU phep loc region cua rieng no (ham nay chua bao gio hong) ---
         final String dkGui = dieuKienTrongHam(ch, "public void sendInfoMove2Near()");
         Kiem.dung("tim thay dieu kien loc trong sendInfoMove2Near", dkGui != null);
         if (dkGui != null) {
-            Kiem.dung("sendInfoMove2Near GUI khi cung khu vuc (p.region == this.region)",
+            Kiem.dung("sendInfoMove2Near VAN gui khi cung khu vuc (p.region == this.region)",
                     dkGui.contains("p.region == this.region"));
         }
 
-        // --- Hai ham BO QUA (dieu kien phu dinh) phai dung "!=" o ve khu vuc ---
-        final String[] hamBoQua = {
+        // --- Hai ham phat goi KHONG duoc loc lai ban do / khu vuc / tam nhin ---
+        final String[] hamPhat = {
             "public void sendEffToNearChar()",
             "public void sendToNearPlayer(final Message m)",
         };
-        for (final String ham : hamBoQua) {
-            final String dk = dieuKienTrongHam(ch, ham);
-            Kiem.dung("tim thay dieu kien loc trong " + ham, dk != null);
-            if (dk == null) {
+        for (final String ham : hamPhat) {
+            final String than = thanHam(ch, ham);
+            Kiem.dung("tim thay than ham " + ham, than != null);
+            if (than == null) {
                 continue;
             }
-            // Day la dieu kien BO QUA -> phai phu dinh tung ve so voi ham GUI.
-            Kiem.dung(ham + ": bo qua nguoi KHAC khu vuc (p.region != this.region)",
-                    dk.contains("p.region != this.region"));
-            Kiem.sai(ham + ": KHONG duoc bo qua nguoi CUNG khu vuc (chieu nguoc - loi 2480c47)",
-                    dk.contains("p.region == this.region"));
-            // Cac ve con lai da phu dinh dung tu dau, chot lai de khong ai "sua" nhâm tiep.
-            Kiem.dung(ham + ": bo qua khi khac ban do (p.map != this.map)",
-                    dk.contains("p.map != this.map"));
-            Kiem.dung(ham + ": bo qua khi ngoai tam nhin (!this.near(...))",
-                    dk.contains("!this.near(p, this.rangeAddMonster[0])"));
+            // nearChars da loc san o updateNearChar - loc lai chi lam MAT nguoi nhan.
+            Kiem.sai(ham + ": KHONG loc lai theo khu vuc (ca hai chieu deu sai - da hong 2 lan)",
+                    than.contains("p.region == this.region") || than.contains("p.region != this.region"));
+            Kiem.sai(ham + ": KHONG loc lai theo ban do",
+                    than.contains("p.map != this.map") || than.contains("p.map == this.map"));
+            Kiem.sai(ham + ": KHONG loc lai theo tam nhin",
+                    than.contains("this.near(p, this.rangeAddMonster[0])"));
+
+            // Ba phep bo qua that su can thi phai con.
+            Kiem.dung(ham + ": van bo qua id da roi map (p == null)",
+                    than.contains("p == null"));
+            Kiem.dung(ham + ": van bo qua chinh minh (p.id == this.id)",
+                    than.contains("p.id == this.id"));
+            Kiem.dung(ham + ": van bo qua bot (p.isBot != -1)",
+                    than.contains("p.isBot != -1"));
+        }
+
+        // Doc p.session phai nam SAU phep kiem null, neu khong phep kiem null la ma chet.
+        final String thanGui = thanHam(ch, "public void sendToNearPlayer(final Message m)");
+        if (thanGui != null) {
+            // Tim DONG MA that ("final Session s = p.session;"), khong tim chuoi "p.session"
+            // tran - chuoi do con xuat hien trong chu thich ngay phia tren nen se khop nham.
+            final int viTriKiemNull = thanGui.indexOf("p == null");
+            final int viTriDocSession = thanGui.indexOf("final Session s = p.session;");
+            Kiem.dung("sendToNearPlayer: doc p.session SAU khi da kiem p == null",
+                    viTriKiemNull >= 0 && viTriDocSession > viTriKiemNull);
+            Kiem.dung("sendToNearPlayer: kiem session != null truoc khi gui",
+                    thanGui.contains("if (s != null)"));
         }
 
         // --- Xoa khoi nearChars PHAI theo ID (Short), khong duoc truyen ca doi tuong Char ---
@@ -92,17 +111,28 @@ public final class KiemGuiGoiNguoiGan {
                     capNhat.contains("nearChars.remove(Short.valueOf(p1.id))"));
         }
 
-        // Than "if" rong (ban truoc 2480c47) cung la loi - luc do dieu kien vo tac dung.
-        // Chot rang hai ham VAN con "continue;" de dieu kien that su chay.
-        for (final String ham : hamBoQua) {
-            final int moc = ch.indexOf(ham);
-            if (moc < 0) {
+        // Than "if" KHONG duoc rong (ban truoc 2480c47): than rong thi phep bo qua p == null
+        // vo tac dung, va p null se nem NPE bi nuot lang le.
+        for (final String ham : hamPhat) {
+            final String than = thanHam(ch, ham);
+            if (than == null) {
                 continue;
             }
-            final String than = ch.substring(moc, Math.min(ch.length(), moc + 700));
-            Kiem.dung(ham + ": dieu kien co than \"continue;\" (khong phai than rong)",
+            Kiem.dung(ham + ": phep bo qua co than \"continue;\" (khong phai than rong)",
                     than.contains("continue;"));
         }
+    }
+
+    /**
+     * Rut than ham (tu chu ky den dau ham ke tiep, toi da 1200 ky tu). Du de soi cac phep
+     * kiem trong than ma khong nuot sang ham khac.
+     */
+    private static String thanHam(final String nguon, final String chuKy) {
+        final int moc = nguon.indexOf(chuKy);
+        if (moc < 0) {
+            return null;
+        }
+        return nguon.substring(moc, Math.min(nguon.length(), moc + 1200));
     }
 
     /**

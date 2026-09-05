@@ -314,7 +314,21 @@ class CharCapNhat {
                     if (c.exit) {
                         self.nearChars.remove(j);
                         self.charOutRange(c);
-                    } else if ((c.inCountry != self.inCountry && c.isBot == -1 && !self.isPublicMap()) || (c.mapID != self.mapID && c.isBot == -1) || (c.mapID == self.mapID && c.region != self.region)) {
+                    // "&& !c.hienThiMoiRegion" PHAI co o day, y het nhanh loc region cua vong
+                    // duoi (dong ~402). Hai vong nay noi ve CUNG mot danh sach nearChars:
+                    //   vong nay  : ai khac region -> xoa khoi nearChars + charOutRange (XOA hinh)
+                    //   vong duoi : ai khac region ma hienThiMoiRegion -> van them + writeActorPos (VE hinh)
+                    //
+                    // LOI DA XAY RA THAT (05/09/2026, nguoi choi bao "nhay, 1 giay 1-2 lan, cu an
+                    // roi hien"): ban va 02/09/2026 (xem KiemNpcHoaTieuNhieuKhu) them ngoai le
+                    // hienThiMoiRegion cho bot "hoa tieu"/"doi tieu" - nhung CHI them vao vong duoi.
+                    // Vong tren van xoa. Ket qua la moi tick 300ms (Map.DELAY_UPDATE_MAP): vong duoi
+                    // ve bot ra, vong tren xoa bot di, tick sau lai ve... dung nhip nhay nguoi choi
+                    // ta. Bot cang o gan cang de thay.
+                    //
+                    // Chi xay ra tren ban do nRegion = 0 (Char.getAllPlayerMap chi lay dung region
+                    // cua minh khi nRegion > 0, nen o do khong bao gio gap ai khac region).
+                    } else if ((c.inCountry != self.inCountry && c.isBot == -1 && !self.isPublicMap()) || (c.mapID != self.mapID && c.isBot == -1) || (c.mapID == self.mapID && c.region != self.region && !c.hienThiMoiRegion)) {
                         self.nearChars.remove(j);
                         self.charOutRange(c);
                     } else {
@@ -357,7 +371,17 @@ class CharCapNhat {
                     }
                     int xx = 0;
                     int yy = 0;
-                    if (aa.posNPCInVilage != null) {
+                    // Chan bien y het Char.writeActorPos - xem chu thich dai o ham do.
+                    // Vong lap NAY khong nam trong try/catch nao: mot ArrayIndexOutOfBounds
+                    // o day nem thang ra khoi updateNearChar, nen goi vi tri (mActor) khong
+                    // duoc gui VA ca vong quet nguoi choi o duoi cung khong chay not trong
+                    // tick do. posNPCInVilage luon dai 3 (MapNapTaiNguyen dat
+                    // "new short[][]{{..},{..},{..}}"), con inCountry thi khong chac.
+                    if (aa.posNPCInVilage != null
+                            && self.inCountry >= 0
+                            && self.inCountry < aa.posNPCInVilage.length
+                            && aa.posNPCInVilage[self.inCountry] != null
+                            && aa.posNPCInVilage[self.inCountry].length >= 2) {
                         xx = aa.posNPCInVilage[self.inCountry][0];
                         yy = aa.posNPCInVilage[self.inCountry][1];
                     }

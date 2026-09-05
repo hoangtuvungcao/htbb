@@ -7097,35 +7097,82 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return this.pk;
     }
 
+    /** Loi ghi actor da bao roi - moi loai bao mot lan, khong de log ngap moi 300ms. */
+    private static final java.util.Set<String> daBaoLoiGhiActor =
+            java.util.Collections.synchronizedSet(new java.util.HashSet<String>());
+
+    /**
+     * Ghi MOT ban ghi vi tri actor vao goi tin, KIEU "duoc an ca, nga ve khong".
+     *
+     * LOI DA XAY RA THAT (05/09/2026, nguoi choi bao "hinh nhan vat cua toi va cua moi
+     * nguoi khac luc an luc hien", 1 giay 1-2 lan, o MOI ban do): ban cu ghi thang vao
+     * m.dos va chi bat IOException. Nhung nhieu dong trong than ham co the nem loi KHAC
+     * ma khong ai bat:
+     *   - posNPCInVilage[this.inCountry]   mang luon dai 3 (MapNapTaiNguyen), inCountry
+     *                                      ra ngoai 0..2 -> ArrayIndexOutOfBounds
+     *   - ((Monster) a).getMonsterTemplate().isNewMonster   template null -> NPE
+     *   - a.getIdCharThanThu() / a.canFocus(this) / a.isMyHoVe(this)   NPE
+     *
+     * Khi do vai truong DAU da nam trong goi roi (cat, type, id, x, y...), con cac truong
+     * SAU thi khong. Goi van duoc gui di (updateNearChar bat Exception roi "continue", sau
+     * do van sendMessage). Client doc ban ghi do bi thieu byte nen LECH NHIP: no lay byte
+     * dau cua actor ke tiep lam toa do cua actor nay, roi ca phan con lai cua goi thanh
+     * rac. Ket qua khong phai "mat mot NPC" ma la MAT SACH moi thu trong goi - ke ca nhan
+     * vat cua chinh minh. Tick sau (300ms) neu khong dinh loi thi hien lai -> nhap nhay.
+     *
+     * Nay ghi vao bo dem tam truoc; chi khi ban ghi HOAN CHINH moi noi vao goi that. Hong
+     * thi mat dung mot actor do, goi van doc duoc binh thuong. Kem mot dong log (moi loai
+     * mot lan) de con lan ra nguyen nhan goc thay vi im lang.
+     */
     public Message writeActorPos(final Message m, final Actor a) {
+        final java.io.ByteArrayOutputStream dem = new java.io.ByteArrayOutputStream(24);
+        final java.io.DataOutputStream tam = new java.io.DataOutputStream(dem);
         try {
-            m.dos.writeByte(a.cat);
-            m.dos.writeByte(a.getType());
-            m.dos.writeShort(a.id);
+            tam.writeByte(a.cat);
+            tam.writeByte(a.getType());
+            tam.writeShort(a.id);
             short x = (short) a.x;
             short y = (short) a.y;
             if (a.cat == 0) {
                 final Char aa = (Char) a;
-                if (aa.posNPCInVilage != null) {
+                // Chan bien: mang nay luon dai 3 (mot o cho moi nuoc), con inCountry co
+                // the mang gia tri khac o ban do dau truong/cuoi. Ngoai bien thi giu
+                // nguyen toa do that cua actor thay vi nem loi.
+                if (aa.posNPCInVilage != null
+                        && this.inCountry >= 0
+                        && this.inCountry < aa.posNPCInVilage.length
+                        && aa.posNPCInVilage[this.inCountry] != null
+                        && aa.posNPCInVilage[this.inCountry].length >= 2) {
                     x = aa.posNPCInVilage[this.inCountry][0];
                     y = aa.posNPCInVilage[this.inCountry][1];
                 }
             }
-            m.dos.writeShort(x);
-            m.dos.writeShort(y);
-            m.dos.writeByte((a.cat == 0 && (this.isKiller || this.killer <= 0)) ? a.getTypePk() : -1);
-            m.dos.writeInt(a.getCharID());
+            tam.writeShort(x);
+            tam.writeShort(y);
+            tam.writeByte((a.cat == 0 && (this.isKiller || this.killer <= 0)) ? a.getTypePk() : -1);
+            tam.writeInt(a.getCharID());
             if (a.cat == 1) {
-                m.dos.writeByte(((Monster) a).getMonsterTemplate().isNewMonster);
+                tam.writeByte(((Monster) a).getMonsterTemplate().isNewMonster);
             }
             if (!TeamServer.isServerIndo()) {
-                m.dos.writeByte(a.getIdCharThanThu());
+                tam.writeByte(a.getIdCharThanThu());
                 if (a.isMyHoVe(this)) {
-                    m.dos.writeBoolean(false);
+                    tam.writeBoolean(false);
                 } else {
-                    m.dos.writeBoolean(a.canFocus(this));
+                    tam.writeBoolean(a.canFocus(this));
                 }
             }
+        } catch (final Exception ex) {
+            // Bo qua DUNG actor nay - khong ghi mot byte nao vao goi that.
+            final String khoa = ex.getClass().getName() + "|" + a.cat + "|" + ex.getMessage();
+            if (daBaoLoiGhiActor.add(khoa)) {
+                System.out.println("[ACTOR] bo qua actor cat=" + a.cat + " id=" + a.id
+                        + " vi loi ghi: " + ex + " (bao mot lan cho moi loai loi)");
+            }
+            return m;
+        }
+        try {
+            m.dos.write(dem.toByteArray());
         } catch (final IOException ex) {
             ex.printStackTrace();
         }
@@ -7156,36 +7203,52 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     /*
-     * DAU "!=" O VE CUNG KHONG DUOC DOI THANH "==" — DA HONG MOT LAN (05/09/2026).
+     * KHONG THEM LAI PHEP LOC BAN DO / KHU VUC / TAM NHIN VAO HAI HAM DUOI DAY.
      *
-     * Hai ham duoi day gui goi tin cho NGUOI DUNG GAN. Dieu kien o day la dieu kien BO QUA
-     * (continue), nen no phai la phu dinh cua dieu kien GUI. Ban goc trong ban dich nguoc
-     * (bb83665) co than "if" RONG:
+     * Hai ham nay phat goi tin cho NGUOI DUNG GAN - trong do co
+     * MessageCreator.createCharInfo(this), tuc goi mo ta NGOAI HINH nhan vat. Nguoi ben canh
+     * khong nhan duoc goi nay thi khong co gi de ve.
      *
-     *     if (p == null || ... || p.region == this.region) {
-     *     }
-     *     s.sendMessage(m);          // -> thuc te gui cho TAT CA trong nearChars
+     * DANH SACH nearChars DA LA DANH SACH DA LOC. CharCapNhat.updateNearChar chi them id nao
+     * qua duoc kiem tra ban do + quoc gia + khu vuc + tam nhin, va go id ra ngay khi ho roi
+     * di. Loc them mot lan nua o day la THUA, va chi co the LAM MAT nguoi nhan khi mot truong
+     * nao do lo cu: nguoi vua doi khu van con nam trong nearChars mot cach hop le cho toi luc
+     * updateNearChar don, trong khoang do ho van phai duoc nhan goi.
      *
-     * Commit 2480c47 ("fix isse") them "continue;" vao than rong do. Luc do dieu kien moi
-     * that su chay — va ve cuoi cua no BI NGUOC: "p.region == this.region" nghia la "bo qua
-     * nguoi CUNG khu vuc voi minh", tuc bo qua dung nhung nguoi le ra phai nhan. Ket qua:
-     * sendToNearPlayer() (305 cho goi) va sendEffToNearChar() (41 cho goi) gui cho KHONG AI
-     * — thong tin nhan vat, mau, hieu ung, vi tri thu cuoi... deu khong toi nguoi xung quanh
-     * nua, nen nhan vat "luc an luc hien" tren man hinh nguoi khac.
+     * LICH SU - da hong HAI lan lien tiep vi co gang "sua" cho nay:
      *
-     * Doi chieu voi ham song sinh KHONG bi sua — sendInfoMove2Near() o tren cung tep: no GUI
-     * khi "p.region == this.region". Nen ve BO QUA phai la "p.region != this.region". Moi ve
-     * khac trong dieu kien nay da phu dinh dung, chi rieng ve khu vuc thi khong.
+     *   bb83665 (ban dich nguoc goc): than "if" RONG, khong bo qua ai ca.
+     *       if (p == null || ... || p.region == this.region) {
+     *       }
+     *       s.sendMessage(m);      // -> gui cho TAT CA trong nearChars. CHAY DUNG.
      *
-     * test/KiemGuiGoiNguoiGan.java chot lai chieu dau nay bang cach doi chieu thang voi
-     * sendInfoMove2Near().
+     *   2480c47 "fix isse" (05/09/2026 02:29): them "continue;" vao than rong do. Phep loc
+     *       bat dau chay that va lay luon ve "p.region == this.region" - tuc bo qua dung
+     *       nhung nguoi CUNG khu vuc. Gui cho gan nhu khong ai. Nguoi choi bao nhan vat
+     *       "luc an luc hien" NGAY SAU khi ban nay len server.
+     *
+     *   Lan sua dau cua toi: doi thanh "p.region != this.region" cho khop huong voi ham song
+     *       sinh sendInfoMove2Near(). Dung huong nhung VAN HEP HON ban goc - gio chi gui cho
+     *       nguoi cung khu vuc. Nguoi choi bao VAN NHAY.
+     *
+     * Nay quay ve dung ngu nghia cua ban goc: gui cho moi id trong nearChars. Chi giu lai ba
+     * phep bo qua that su can:
+     *   p == null      id da roi map, khong con doi tuong
+     *   p.id == this.id  chinh minh (call site nao can thi da tu goi sendMessage rieng)
+     *   p.isBot != -1  bot khong co phien, Char.sendMessage cung tu thoat ngay
+     *
+     * Rieng sendInfoMove2Near() (o tren cung tep) VAN giu phep loc region cua no - ham do
+     * chua bao gio bi sua va chua bao gio bi bao loi, dung lam chuan doi chieu cho hai ham
+     * nay la SAI vi hai ham nay von khong loc gi ca.
+     *
+     * test/KiemGuiGoiNguoiGan.java chot lai dieu nay.
      */
     @Override
     public void sendEffToNearChar() {
         for (int j = this.nearChars.size() - 1; j >= 0; --j) {
             try {
                 final Char p = this.map.getPlayerByID(this.nearChars.get(j));
-                if (p == null || p.id == this.id || p.isBot != -1 || !this.near(p, this.rangeAddMonster[0]) || p.map != this.map || p.region != this.region) {
+                if (p == null || p.id == this.id || p.isBot != -1) {
                     continue;
                 }
                 this.sendEffToChar(p);
@@ -7198,11 +7261,16 @@ public int applyRongLonReleaseTo(int baseDamage) {
         for (int j = this.nearChars.size() - 1; j >= 0; --j) {
             try {
                 final Char p = this.map.getPlayerByID(this.nearChars.get(j));
-                final Session s = p.session;
-                if (p == null || p.id == this.id || p.isBot != -1 || !this.near(p, this.rangeAddMonster[0]) || p.map != this.map || p.region != this.region) {
+                // Doc p.session PHAI nam sau phep kiem null: ban cu doc "p.session" ngay
+                // truoc dong "if (p == null ...)" nen khi p null la nem NPE truoc khi kip
+                // kiem - phep kiem null do thuc te la ma chet.
+                if (p == null || p.id == this.id || p.isBot != -1) {
                     continue;
                 }
-                s.sendMessage(m);
+                final Session s = p.session;
+                if (s != null) {
+                    s.sendMessage(m);
+                }
             } catch (final Exception ex) {
             }
         }

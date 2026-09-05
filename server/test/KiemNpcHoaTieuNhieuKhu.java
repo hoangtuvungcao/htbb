@@ -37,8 +37,24 @@ public final class KiemNpcHoaTieuNhieuKhu {
 
         final String capNhat = doc("src/real/CharCapNhat.java");
         Kiem.dung("doc duoc CharCapNhat.java", !capNhat.isEmpty());
-        Kiem.dung("updateNearChar: phep loc region co ngoai le !p1.hienThiMoiRegion",
+        Kiem.dung("updateNearChar vong THEM (duoi): phep loc region co ngoai le !p1.hienThiMoiRegion",
                 capNhat.contains("p1.region != self.region && !p1.hienThiMoiRegion"));
+
+        // CA HAI vong phai co ngoai le, neu khong se ping-pong ve/xoa moi 300ms.
+        //
+        // LOI DA XAY RA THAT (05/09/2026, nguoi choi bao "nhay, 1 giay 1-2 lan"): ban va
+        // 02/09 chi them ngoai le vao vong THEM (bien p1), con vong QUET nearChars (bien c,
+        // dong ~317) van xoa bot khac region + gui charOutRange. Moi tick Map.DELAY_UPDATE_MAP
+        // = 300ms: vong duoi ve bot ra, vong tren xoa di -> nhay ~3 lan/giay.
+        Kiem.dung("updateNearChar vong QUET nearChars (tren): phep loc region cung co ngoai le !c.hienThiMoiRegion",
+                capNhat.contains("c.region != self.region && !c.hienThiMoiRegion"));
+        Kiem.sai("vong QUET KHONG con xoa thang moi bot khac region (thieu ngoai le -> ping-pong)",
+                capNhat.contains("c.mapID == self.mapID && c.region != self.region)"));
+
+        // Dem cho chac: moi phep so region trong tep deu phai kem ngoai le hienThiMoiRegion.
+        Kiem.bang("so phep so \"region != ...region\" khop so ngoai le hienThiMoiRegion",
+                Integer.valueOf(demSoLan(capNhat, ".region != self.region")),
+                Integer.valueOf(demSoLan(capNhat, ".hienThiMoiRegion")));
 
         final String napTaiNguyen = doc("src/real/MapNapTaiNguyen.java");
         Kiem.dung("doc duoc MapNapTaiNguyen.java", !napTaiNguyen.isEmpty());

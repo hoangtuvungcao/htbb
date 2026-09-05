@@ -126,6 +126,7 @@ public final class Kiem {
         KiemNangCapVuKhiLv86.chay();
         KiemXoaVinhVien.chay();
         KiemGuiGoiNguoiGan.chay();
+        KiemGoiViTriActor.chay();
         KiemChuHoaCoDau.chay();
 
         final int ma = tongKet();
