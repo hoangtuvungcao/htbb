@@ -768,7 +768,7 @@ class MapDoMenu {
                         return;
                     }
 
-                    int priceKham = 10000;
+                    int priceKham = MapEpNgoc.PRICE_KHAM;
                     Message m1 = new Message(-34);
                     m1.dos.writeShort(priceKham);
                     m1.dos.writeByte(idOptionMenu);

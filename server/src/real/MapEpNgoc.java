@@ -30,6 +30,18 @@ import static real.Map.random;
 
 class MapEpNgoc {
 
+    static final int PRICE_KHAM = 20000;
+
+    private static boolean isGemKham(GemItem gem) {
+        if (gem == null || gem.idGemTemplate < 12
+                || gem.idGemTemplate > GemTemplate.DUC_TUONG_KHAM_6) {
+            return false;
+        }
+        GemTemplate template = gem.getTemplate();
+        return template != null && (template.type == GemTemplate.TYPE_KHAM
+                || template.type == GemTemplate.TYPE_DUC_LO);
+    }
+
     static Vector<GemItem> dropGemMaterial(Map map) {
         int[] id = new int[]{71, 78, 85, 92, 99};
         Vector<GemItem> gem = new Vector();
@@ -433,6 +445,25 @@ class MapEpNgoc {
 
                 GemItem gem = player.getItemFormVector(id, player.gemItem);
                 if (gem != null) {
+                    // Goi them nguyen lieu dung chung cho cuong hoa va kham/duc lo.
+                    // Ngoc kham va duc phai kiem dung tui da chon o menu -506.
+                    if (isGemKham(gem)) {
+                        int mode = player.typeGemKham;
+                        if (mode < 0 || mode > 2) {
+                            return;
+                        }
+                        int normal = Math.max(0, player.listGemitem[gem.idGemTemplate]
+                                - player.listGemitemSell[gem.idGemTemplate]);
+                        int locked = player.listGemitemLock[gem.idGemTemplate];
+                        int available = mode == 0 ? normal : mode == 1 ? locked : normal + locked;
+                        if (available <= map.getToTalGem(gem.idGemTemplate, player)) {
+                            player.sendMessage(MessageCreator.createServerAlertMessage(
+                                    "Không đủ ngọc hoặc đục lỗ trong loại nguyên liệu đã chọn", ""));
+                            return;
+                        }
+                        player.gemItemImbue.add(gem);
+                        return;
+                    }
                     if (gem.isSelling && player.typeGemImbue == 0) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thêm vì bạn đang bán loại ngọc này", ""));
                         return;
@@ -500,7 +531,7 @@ class MapEpNgoc {
     static GemItem haveGemKham(Map map, Char player) {
         for (int i = 0; i < player.gemItemImbue.size(); i++) {
             GemItem gem = (GemItem) player.gemItemImbue.elementAt(i);
-            if (gem.idGemTemplate > 11) {
+            if (isGemKham(gem)) {
                 return gem;
             }
         }
@@ -891,153 +922,112 @@ class MapEpNgoc {
     }
 
     static void doFinishKhamItem(Map map, Char player, int ok) {
-        int prizeImbue = 20000;
         if (ok == -1) {
             player.itemImbue = 40000;
             player.gemItemImbue.removeAllElements();
-        } else if (player.getxu() < (long) prizeImbue) {
-            try {
-                player.itemImbue = 40000;
-                player.gemItemImbue.removeAllElements();
-                player.sendMessage(MessageCreator.createServerAlertMessage("Hết tiền", ""));
-            } catch (Exception var8) {
-                var8.printStackTrace();
-                System.out.println("LOI ROI NE");
+            return;
+        }
+        if (ok != 1) {
+            return;
+        }
+
+        Item item = player.itemImbue == 40000 ? null : player.getItemFormVector(player.iItems, (short) player.itemImbue);
+        if (item == null) {
+            finishKhamResult(player, "Không tìm thấy vật phẩm");
+            return;
+        }
+        if (isItemSelled(player, item.id, item)) {
+            finishKhamResult(player, "Không thể thực hiện khi vật phẩm đang được bán");
+            return;
+        }
+
+        GemItem gem = haveGemKham(map, player);
+        if (gem == null) {
+            finishKhamResult(player, "Chưa đặt ngọc hoặc đục lỗ.");
+            return;
+        }
+        int idGem = gem.idGemTemplate;
+        int mode = player.typeGemKham;
+        if (mode < 0 || mode > 2) {
+            finishKhamResult(player, "Lựa chọn nguyên liệu không hợp lệ");
+            return;
+        }
+
+        // Kiem lai ton kho luc bam Xong; nguyen lieu co the da dung/rao ban sau khi dat.
+        int normal = Math.max(0, player.listGemitem[idGem] - player.listGemitemSell[idGem]);
+        int locked = player.listGemitemLock[idGem];
+        boolean useLocked = mode == 1 || mode == 2 && locked > 0;
+        if (player.getItemFormVector(gem.realId, player.gemItem) != gem
+                || (useLocked ? locked : normal) <= 0) {
+            finishKhamResult(player, "Không đủ ngọc hoặc đục lỗ đã chọn");
+            return;
+        }
+
+        boolean drilling = gem.getTemplate().type == GemTemplate.TYPE_DUC_LO;
+        if (drilling) {
+            if (item.nSocAdd >= 6) {
+                finishKhamResult(player, "Không thể tạo thêm");
+                return;
+            }
+            if (idGem - GemTemplate.DUC_TUONG_KHAM_1 != item.nSocAdd) {
+                finishKhamResult(player, "Bạn phải dùng đục cấp " + (item.nSocAdd + 1));
+                return;
             }
         } else {
-            if (player.itemImbue != 40000) {
-                Item item = player.getItemFormVector(player.iItems, (short) player.itemImbue);
-
-                try {
-                    if (isItemSelled(player, item.id, item)) {
-                        return;
-                    }
-                } catch (Exception var17) {
-                }
-
-                player.subXu((long) prizeImbue, true, "map 75");
-                if (item != null) {
-                    GemItem gem = haveGemKham(map, player);
-                    if (gem == null) {
-                        try {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Chưa đặt ngọc.", ""));
-                        } catch (Exception var9) {
-                        }
-
-                        return;
-                    }
-
-                    if (gem.idGemTemplate >= 60 && item.nSocAdd >= 6) {
-                        try {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể tạo thêm", ""));
-                            player.sendMessage(MessageCreator.createCharGemItem(player));
-                        } catch (Exception var10) {
-                        }
-
-                        return;
-                    }
-
-                    if (item.nSocAdd <= 0 && gem.idGemTemplate < 60) {
-                        try {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không có chỗ để khảm vào.", ""));
-                            player.sendMessage(MessageCreator.createCharGemItem(player));
-                        } catch (Exception var11) {
-                        }
-
-                        return;
-                    }
-
-                    if (item.nSocAdd < 6 && gem.idGemTemplate >= 60) {
-                        int tempsoc = gem.idGemTemplate - 60;
-                        if (tempsoc != item.nSocAdd) {
-                            try {
-                                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải dùng đục cấp " + (item.nSocAdd + 1), ""));
-                                player.sendMessage(MessageCreator.createCharGemItem(player));
-                            } catch (Exception var12) {
-                            }
-
-                            return;
-                        }
-                    }
-
-                    if (item.nhadSock >= item.nSocAdd && gem.idGemTemplate < 60) {
-                        try {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không còn chỗ để khảm vào.", ""));
-                            player.sendMessage(MessageCreator.createCharGemItem(player));
-                        } catch (Exception var13) {
-                        }
-
-                        return;
-                    }
-
-                    if (gem.idGemTemplate < 60 && !gem.getTemplate().belongItem(item.getTemplate().type)) {
-                        try {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Không thể khảm vào vật phẩm này.", ""));
-                        } catch (Exception var14) {
-                        }
-
-                        return;
-                    }
-
-                    if (gem.idGemTemplate < 60) {
-                        item.nhadSock++;
-                        gem.getTemplate().khamItem(item);
-                        Message m = new Message(-35);
-
-                        try {
-                            m.dos.writeUTF("Khảm thành công");
-                            player.sendMessage(m);
-                            m.cleanup();
-                            String sub = item.getTemplate().name + "_" + item.plus + "_" + item.nhadSock + "|" + item.getAttribute() + "|" + item.getDBInfo();
-                            Database.instance.saveOrtherLog("tob_log_other_kham", player.charname, "kham " + sub + " >> " + player.typeGemKham, "kok");
-                        } catch (Exception var16) {
-                        }
-                    } else {
-                        item.nSocAdd++;
-                        Message m = new Message(-35);
-
-                        try {
-                            m.dos.writeUTF("Vật phẩm hiện có " + item.nSocAdd + " lỗ");
-                            player.sendMessage(m);
-                            m.cleanup();
-                            String sub = item.getTemplate().name + "_" + item.plus + "_" + item.nhadSock + "|" + item.getAttribute() + "|" + item.getDBInfo();
-                            Database.instance.saveOrtherLog("tob_log_other_kham", player.charname, "kham " + sub + " ", "sock");
-                        } catch (Exception var15) {
-                            var15.printStackTrace();
-                        }
-                    }
-                }
-
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-
-                for (int i = 0; i < player.gemItemImbue.size(); i++) {
-                    GemItem gemx = (GemItem) player.gemItemImbue.elementAt(i);
-                    if (player.typeGemKham == 0) {
-                        if (player.listGemitem[gemx.idGemTemplate] > 0) {
-                            player.listGemitem[gemx.idGemTemplate]--;
-                        }
-
-                        player.allGemUse[gemx.idGemTemplate]++;
-                    } else {
-                        if (player.listGemitemLock[gemx.idGemTemplate] > 0) {
-                            player.listGemitemLock[gemx.idGemTemplate]--;
-                        }
-
-                        player.allGemUseLock[gemx.idGemTemplate]++;
-                    }
-
-                    if (player.listGemitem[gemx.idGemTemplate] <= 0 && player.listGemitemLock[gemx.idGemTemplate] <= 0) {
-                        player.removeItemOutVector(gemx.realId, player.gemItem);
-                    }
-                }
-
-                player.gemItemImbue.removeAllElements();
-                Message m = MessageCreator.createCharGemItem(player);
-                player.sendMessage(m);
-                m.cleanup();
+            if (item.nSocAdd <= 0) {
+                finishKhamResult(player, "Vật phẩm không có chỗ để khảm vào.");
+                return;
+            }
+            if (item.nhadSock >= item.nSocAdd) {
+                finishKhamResult(player, "Vật phẩm không còn chỗ để khảm vào.");
+                return;
+            }
+            if (!gem.getTemplate().belongItem(item.getTemplate().type)) {
+                finishKhamResult(player, "Không thể khảm vào vật phẩm này.");
+                return;
             }
         }
+        if (player.getxu() < PRICE_KHAM) {
+            finishKhamResult(player, "Hết tiền");
+            return;
+        }
+
+        // Chi thu phi sau khi hop le, va chi tieu hao vien thuc su duoc ap dung.
+        player.subXu(PRICE_KHAM, true, "map 75");
+        player.delGem(idGem, 1, useLocked);
+        if (drilling) {
+            item.nSocAdd++;
+        } else {
+            item.nhadSock++;
+            gem.getTemplate().khamItem(item);
+        }
+        finishKhamResult(player, drilling ? "Vật phẩm hiện có " + item.nSocAdd + " lỗ" : "Khảm thành công");
+        player.sendMessage(MessageCreator.createMsgItemInfo(item));
+        try {
+            String sub = item.getTemplate().name + "_" + item.plus + "_" + item.nhadSock
+                    + "|" + item.getAttribute() + "|" + item.getDBInfo();
+            Database.instance.saveOrtherLog("tob_log_other_kham", player.charname,
+                    "kham " + sub + " >> " + mode, drilling ? "sock" : "kok");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void finishKhamResult(Char player, String text) {
+        // Goi -35 xoa nguyen lieu da dat tren client, ke ca khi that bai.
+        // Dong bo lai tui de client khong giu xu tru tam hoac nguyen lieu cu.
+        player.gemItemImbue.removeAllElements();
+        try {
+            Message m = new Message(-35);
+            m.dos.writeUTF(text);
+            player.sendMessage(m);
+            m.cleanup();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+        player.sendMessage(MessageCreator.createCharGemItem(player));
     }
 
     static void doImbue(Map map, Char player, int type) {

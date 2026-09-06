@@ -22,6 +22,12 @@ public final class KiemVatPham {
         Kiem.dung("isPotionUnlimit(74)", real.Map.isPotionUnlimit((short) 74));
         Kiem.sai("isPotionUnlimit(0)", real.Map.isPotionUnlimit((short) 0));
         Kiem.sai("isPotionUnlimit(999)", real.Map.isPotionUnlimit((short) 999));
+        // Nhanh hoa hong vang (Vu Lan) phai KHONG tran 999 - thieu muc nay lam doGetPotion
+        // (ca tu dong lan bam tay) chan im lang khi nhan vat da co qua 999 nhanh (boss/che
+        // do cong thang khong qua kiem tran nen vuot moc rat nhanh).
+        Kiem.dung("isPotionUnlimit(106) - nhanh hoa hong vang Vu Lan", real.Map.isPotionUnlimit((short) 106));
+        Kiem.dung("isPotionUnlimit(160) - bong bac World Cup", real.Map.isPotionUnlimit((short) 160));
+        Kiem.dung("isPotionUnlimit(161) - bong vang World Cup", real.Map.isPotionUnlimit((short) 161));
     }
 
     private KiemVatPham() {

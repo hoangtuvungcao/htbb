@@ -5176,7 +5176,18 @@ public class Map implements Runnable {
                 || id == 159
                 || id == 122
                 || id == 154
-                || id == 153;
+                || id == 153
+                // Nhanh hoa hong vang (Vu Lan, xem Potion.TYPE_NHANH_HOA_HONG_VANG): thieu
+                // trong danh sach nay lam doGetPotion chan nhat (ca tu dong lan bam tay) im
+                // lang khi da vuot 999 - trong khi boss/che do da cong thang qua duong khong
+                // kiem tran nen nhan vat vuot moc rat nhanh.
+                || id == 106
+                // Bong bac / bong vang (World Cup, SuKienWorldCup.ITEM_BONG_VANG = 161):
+                // cung roi qua duong nay (Monster.java, SuKienWorldCup.quaiRoiBongVang) va
+                // cung khong kiem tran o cho roi - boss "luon roi 20-50 qua" nen vuot 999
+                // trong vai chuc lan giet, dung loi voi Vu Lan.
+                || id == 160
+                || id == 161;
     }
 
     public void doGetPotion(Char player, short id) throws IOException {
