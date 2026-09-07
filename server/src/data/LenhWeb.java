@@ -75,6 +75,7 @@ public final class LenhWeb implements Runnable {
     public static final String TEN_BANG = "web_lenh_nhan_vat";
 
     public static final String LOAI_DAT_CAP_DO = "dat_cap_do";
+    public static final String LOAI_GIAM_CAP_DO = "giam_cap_do";
     public static final String LOAI_XOA_VAT_PHAM = "xoa_vat_pham";
     public static final String LOAI_XOA_NHAN_VAT = "xoa_nhan_vat";
 
@@ -292,6 +293,9 @@ public final class LenhWeb implements Runnable {
     public static KetQua xuLy(final String loai, final int charId, final int capDo,
             final int phanNghin, final String thamSo, final String adminUser, final int trangThaiCu)
             throws Exception {
+        if (LOAI_GIAM_CAP_DO.equals(loai)) {
+            return xuLyGiamCapDo(charId, capDo, adminUser, trangThaiCu);
+        }
         if (LOAI_DAT_CAP_DO.equals(loai)) {
             return xuLyDatCapDo(charId, capDo, phanNghin, adminUser, trangThaiCu);
         }
@@ -304,6 +308,54 @@ public final class LenhWeb implements Runnable {
         throw new IllegalArgumentException("khong hieu loai lenh \"" + loai + "\"");
     }
 
+    public static int capSauKhiGiam(int capHienTai, int soCap) {
+        if (soCap <= 0 || soCap >= capHienTai || capHienTai > LevelDetail.expMain.length) {
+            throw new IllegalArgumentException("So level giam phai duong va nho hon cap hien tai " + capHienTai);
+        }
+        return capHienTai - soCap;
+    }
+
+    static KetQua xuLyGiamCapDo(int charId, int soCap, String adminUser, int trangThaiCu) throws Exception {
+        if (soCap < 1 || soCap > CAP_TOI_DA) throw new IllegalArgumentException("So level giam khong hop le");
+        Char p = timNguoiChoiOnline(charId);
+        if (p == null) {
+            if (trangThaiCu == CHO_DANG_NHAP) return new KetQua(CHO_DANG_NHAP, "");
+            if (!coNhanVat(charId)) throw new IllegalStateException("Khong tim thay nhan vat");
+            return new KetQua(CHO_DANG_NHAP, "Offline: se giam " + soCap + " level khi vao game");
+        }
+        String result;
+        synchronized (p.KHOA_LUU) {
+            synchronized (p.lvDetail) {
+                int oldLevel = p.lvDetail.lv;
+                int newLevel = capSauKhiGiam(oldLevel, soCap);
+                long oldExp = p.lvDetail.getExp();
+                p.lvDetail.setExpNew(LevelDetail.expMain[newLevel - 1]);
+                // Preserve lastLV and awarded points: regaining old levels must not award them again.
+                boolean saved = false;
+                try {
+                    saved = Database.instance.saveCharAuto(p);
+                } finally {
+                    if (!saved) p.lvDetail.setExpNew(oldExp);
+                }
+                if (!saved) throw new IllegalStateException("Luu that bai, da khoi phuc EXP");
+                result = "Da giam " + soCap + " level: " + oldLevel + " -> " + newLevel + " (0% EXP)";
+                try {
+                    p.calculateAttrib();
+                    p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
+                    p.sendToNearPlayer(MessageCreator.createCharInfo(p));
+                    p.doSendProperties();
+                } catch (Exception ex) {
+                    result += "; da luu, dang nhap lai de cap nhat hien thi";
+                }
+            }
+        }
+        // Notification/log failures must not turn a saved reduction into a retryable failure.
+        try {
+            baoChoNguoiChoi(p, result);
+            ghiLog(p, adminUser + " (web) " + result);
+        } catch (Exception ignored) { }
+        return new KetQua(XONG_ONLINE, result);
+    }
     static KetQua xuLyDatCapDo(final int charId, final int capDo, final int phanNghin,
             final String adminUser, final int trangThaiCu) throws Exception {
         if (capDo < 1 || capDo > CAP_TOI_DA) {

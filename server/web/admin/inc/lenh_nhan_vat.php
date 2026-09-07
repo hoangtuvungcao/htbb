@@ -34,6 +34,7 @@
 
 const LENH_BANG = 'web_lenh_nhan_vat';
 const LENH_LOAI_DAT_CAP_DO = 'dat_cap_do';
+const LENH_LOAI_GIAM_CAP_DO = 'giam_cap_do';
 const LENH_LOAI_XOA_VAT_PHAM = 'xoa_vat_pham';
 const LENH_LOAI_XOA_NHAN_VAT = 'xoa_nhan_vat';
 
@@ -106,6 +107,7 @@ function tachThamSoXoaVatPham(?string $thamSo): ?array
 /** Mo ta ngan mot dong lenh cho bang "Lenh da gui": "cấp 50 (12,5%)" / "xoá đồ #123 +5 (inven)". */
 function moTaYeuCauLenh(array $l): string
 {
+    if ((string)$l['loai'] === LENH_LOAI_GIAM_CAP_DO) return 'giảm ' . (int)$l['cap_do'] . ' level';
     if ((string)$l['loai'] === LENH_LOAI_XOA_NHAN_VAT) {
         return 'xoá vĩnh viễn nhân vật';
     }
@@ -353,4 +355,18 @@ function moTaKetQuaLenh(?array $r, string $ten, string $muc, string $loai = ''):
                 . 'Lệnh vẫn nằm chờ và sẽ được thực hiện ngay khi server chạy lại; KHÔNG cần bấm lại. '
                 . 'Theo dõi hoặc huỷ ở bảng "Lệnh đã gửi" bên dưới.'];
     }
+}
+
+/** One name per line or separated by comma/semicolon; duplicates are ignored. */
+function tachTenGiamLevel(string $text): array
+{
+    $names = [];
+    foreach (preg_split('/[,;\r\n]+/', $text) as $entry) {
+        $name = trim($entry);
+        if ($name === '') continue;
+        if (strlen($name) > 50) throw new InvalidArgumentException('Tên nhân vật quá dài.');
+        $names[strtolower($name)] = $name;
+    }
+    if (!$names || count($names) > 100) throw new InvalidArgumentException('Nhập từ 1 đến 100 tên nhân vật.');
+    return array_values($names);
 }

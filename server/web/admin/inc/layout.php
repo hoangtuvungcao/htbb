@@ -27,6 +27,7 @@ function adminMenu(): array
             'tongquan' => ['index.php', 'Tổng quan', 'bang'],
         ],
         'Người chơi' => [
+            'giam_level' => ['giam_level.php', 'Giảm Level', 'nguoi'],
             'taikhoan'     => ['taikhoan.php',     'Tài khoản',   'nguoi'],
             'tao_hang_loat'=> ['tao_hang_loat.php', 'Tạo hàng loạt', 'nhieu'],
             'nhanvat'      => ['nhanvat.php',       'Nhân vật',    'khien'],

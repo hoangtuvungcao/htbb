@@ -2397,6 +2397,7 @@ class MapSuKien {
     static final int MENU_VU_LAN_DOI_NGUYEN_LIEU = 62;
     static final int MENU_VU_LAN_DOI_NGUYEN_LIEU_LOAI_BASE = 63; // +tier(0..3) = 63..66
     static final int MENU_VU_LAN_MAX = 66;
+    static final int INPUT_VU_LAN_DOI_NHIEU_HOA = -32110;
 
     static void doMenuDauTruongVuLan(Map map, Char player, int idNpc, int idMenu, int idOptionMenu) {
         if (idMenu == MENU_VU_LAN_DAU_TRUONG_GOC) {
@@ -2407,7 +2408,10 @@ class MapSuKien {
                         new String[]{
                                 "10 nhánh hoa hồng vàng + 15 lượng -> 1 bó hoa vàng",
                                 "50 nhánh hoa hồng vàng + " + TeamServer.giaXuBoHoaDoVuLan + " xu -> 1 bó hoa đỏ",
-                                "30 hoa hồng đỏ -> 1 bó hoa đỏ"
+                                "30 hoa hồng đỏ -> 1 bó hoa đỏ",
+                                "Đổi nhiều bó hoa vàng (10 nhánh vàng + 15 lượng/bó)",
+                                "Đổi nhiều bó hoa đỏ (50 nhánh vàng + " + TeamServer.giaXuBoHoaDoVuLan + " xu/bó)",
+                                "Đổi nhiều bó hoa đỏ (30 hoa hồng đỏ/bó)"
                         },
                         idNpc, MENU_VU_LAN_DOI_HOA
                 ));
@@ -2425,7 +2429,13 @@ class MapSuKien {
             return;
         }
         if (idMenu == MENU_VU_LAN_DOI_HOA) {
-            doVuLanDoiHoa(player, idOptionMenu);
+            if (!SuKien.bat(SuKien.VU_LAN)) return;
+            if (idOptionMenu >= 0 && idOptionMenu <= 2) {
+                doVuLanDoiHoa(player, idOptionMenu, 1);
+            } else if (idOptionMenu >= 3 && idOptionMenu <= 5) {
+                player.sendMessage(MessageCreator.createMsgInputText(INPUT_VU_LAN_DOI_NHIEU_HOA,
+                        idOptionMenu - 3, "Nhập số bó hoa muốn đổi", 1));
+            }
             return;
         }
         if (idMenu == MENU_VU_LAN_DOI_NGUYEN_LIEU) {
@@ -2445,72 +2455,52 @@ class MapSuKien {
         }
     }
 
-    private static void doVuLanDoiHoa(Char player, int idOptionMenu) {
-        if (idOptionMenu == 0) {
-            if (player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] < 10) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 10 nhánh hoa hồng vàng", ""));
-                return;
-            }
-            if (player.getLuong() < 15L) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 15 lượng", ""));
-                return;
-            }
-            if (!player.truNeuDu(
-                    () -> player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] >= 10 && player.getLuong() >= 15L,
-                    () -> {
-                        player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= 10;
-                        player.subLuong(15L);
-                        player.potions[Potion.TYPE_BO_HOA_VANG]++;
-                    })) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 10 nhánh hoa hồng vàng và 15 lượng", ""));
-                return;
-            }
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được 1 bó hoa vàng", ""));
-            Database.instance.saveOrtherLog("", player.charname, "doi 10 nhanh hoa hong vang + 15 luong lay 1 bo hoa vang", "vulan");
-        } else if (idOptionMenu == 1) {
-            long gia = TeamServer.giaXuBoHoaDoVuLan;
-            if (player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] < 50) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 50 nhánh hoa hồng vàng", ""));
-                return;
-            }
-            if (player.getxu() < gia) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ " + gia + " xu", ""));
-                return;
-            }
-            if (!player.truNeuDu(
-                    () -> player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] >= 50 && player.getxu() >= gia,
-                    () -> {
-                        player.potions[Potion.TYPE_NHANH_HOA_HONG_VANG] -= 50;
-                        player.subXu(gia, true, "map dautruong vulan");
-                        player.potions[Potion.TYPE_BO_HOA_DO]++;
-                    })) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 50 nhánh hoa hồng vàng và " + gia + " xu", ""));
-                return;
-            }
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được 1 bó hoa đỏ", ""));
-            Database.instance.saveOrtherLog("", player.charname, "doi 50 nhanh hoa hong vang + " + gia + " xu lay 1 bo hoa do", "vulan");
-        } else if (idOptionMenu == 2) {
-            if (player.potions[Potion.TYPE_HOA_HONG_DO] < 30) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 30 hoa hồng đỏ", ""));
-                return;
-            }
-            if (!player.truNeuDu(
-                    () -> player.potions[Potion.TYPE_HOA_HONG_DO] >= 30,
-                    () -> {
-                        player.potions[Potion.TYPE_HOA_HONG_DO] -= 30;
-                        player.potions[Potion.TYPE_BO_HOA_DO]++;
-                    })) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần đủ 30 hoa hồng đỏ", ""));
-                return;
-            }
-            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được 1 bó hoa đỏ", ""));
-            Database.instance.saveOrtherLog("", player.charname, "doi 30 hoa hong do lay 1 bo hoa do", "vulan");
+    static void nhapSoBoHoaVuLan(Char player, int recipe, String text) {
+        if (!SuKien.bat(SuKien.VU_LAN)) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Sự kiện Vu Lan đã kết thúc.", ""));
+            return;
+        }
+        try {
+            int quantity = Integer.parseInt(text.trim());
+            if (quantity <= 0) throw new NumberFormatException();
+            doVuLanDoiHoa(player, recipe, quantity);
+        } catch (NumberFormatException ex) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Số bó hoa phải là số nguyên dương hợp lệ.", ""));
         }
     }
 
+    private static void doVuLanDoiHoa(Char player, int recipe, int quantity) {
+        if (recipe < 0 || recipe > 2 || quantity <= 0) return;
+        final int material = recipe == 2 ? Potion.TYPE_HOA_HONG_DO : Potion.TYPE_NHANH_HOA_HONG_VANG;
+        final int reward = recipe == 0 ? Potion.TYPE_BO_HOA_VANG : Potion.TYPE_BO_HOA_DO;
+        final long flowers = (recipe == 0 ? 10L : recipe == 1 ? 50L : 30L) * quantity;
+        final long money = (recipe == 0 ? 15L : recipe == 1 ? (long) TeamServer.giaXuBoHoaDoVuLan : 0L) * quantity;
+        final String rewardName = recipe == 0 ? "bó hoa vàng" : "bó hoa đỏ";
+        final String cost = flowers + (recipe == 2 ? " hoa hồng đỏ" : " nhánh hoa hồng vàng")
+                + (recipe == 2 ? "" : " + " + money + (recipe == 0 ? " lượng" : " xu"));
+        if (flowers > Integer.MAX_VALUE || money < 0) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng đổi quá lớn hoặc giá đổi không hợp lệ.", ""));
+            return;
+        }
+        if (!player.truNeuDu(
+                () -> player.potions[material] >= flowers
+                        && player.potions[reward] >= 0
+                        && player.potions[reward] <= Integer.MAX_VALUE - quantity
+                        && (recipe == 0 ? player.getLuong() >= money : recipe == 1 ? player.getxu() >= money : true),
+                () -> {
+                    player.potions[material] -= (int) flowers;
+                    if (recipe == 0) player.subLuong(money);
+                    else if (recipe == 1) player.subXu(money, true, "map dautruong vulan");
+                    player.potions[reward] += quantity;
+                })) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Đổi " + quantity + " " + rewardName
+                    + " cần " + cost + ". Kiểm tra đủ nguyên liệu, tiền và giới hạn số bó đang có.", ""));
+            return;
+        }
+        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + quantity + " " + rewardName, ""));
+        Database.instance.saveOrtherLog("", player.charname, "doi " + cost + " lay " + quantity + " " + rewardName, "vulan");
+    }
     private static void doVuLanDoiNguyenLieu(Char player, int tier, int idOptionMenu) {
         if (idOptionMenu < 0 || idOptionMenu >= GemTemplate.ID_MATERIAL_LOW[5].length) {
             return;

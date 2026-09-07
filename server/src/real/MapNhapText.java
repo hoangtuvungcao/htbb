@@ -26,6 +26,10 @@ class MapNhapText {
             int idActor = message.dis.readShort();
             int idMenu = message.dis.readByte();
             String text = message.dis.readUTF().trim().toLowerCase();
+            if (idActor == MapSuKien.INPUT_VU_LAN_DOI_NHIEU_HOA) {
+                MapSuKien.nhapSoBoHoaVuLan(player, idMenu, text);
+                return;
+            }
             int n = 0;
             int m = 0;
             Char p = null;

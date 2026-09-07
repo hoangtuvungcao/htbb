@@ -940,7 +940,7 @@ controlsPanel.add(playerPanel);
                     player.lvDetail.setExpNew(real.LevelDetail.expMain[newLevel - 1]);
                     // Keep lastLV: previously awarded stat/skill points must not be awarded twice.
                     try {
-                        saved = Database.instance.saveChar(player, false);
+                        saved = Database.instance.saveCharAuto(player);
                     } finally {
                         if (!saved) player.lvDetail.setExpNew(oldExp);
                     }
