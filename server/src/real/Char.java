@@ -13184,6 +13184,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
         newItem.identify = p.charDBID;
         newItem.clazz = -1;
         newItem.lock = 1;
+        // Nhanh hoa dao giftcode: 24.1% ST chuan, 50.1% vu khi, 29.0% ty le.
+        if (idtemplate == 835) {
+            newItem.createAttributeVuKhiThoiTrangMax();
+        }
         newItem.dateCreate = getDayTime(0L);
         if (newItem.isManhSuuTap()) {
             boolean found = false;
@@ -13220,6 +13224,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 themItem.identify = p.charDBID;
                 themItem.clazz = -1;
                 themItem.lock = 1;
+                if (idtemplate == 835) {
+                    themItem.createAttributeVuKhiThoiTrangMax();
+                }
                 themItem.dateCreate = getDayTime(0L);
                 p.iItems.add(themItem);
                 daTao++;

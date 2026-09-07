@@ -466,7 +466,17 @@ function dmDanhMuc(PDO $game): array
     // ---- Trứng ----
     // Ba họ trứng nằm ở ba nguồn khác nhau, nên tách thành ba nhóm rõ ràng thay vì
     // gộp lại: gộp thì không biết món đang chọn sẽ sinh ra ITEM hay PT.
-    $vp = dmVatPham($game, [21, 26, 29, 30, 19, 27, 25]);
+    $vp = dmVatPham($game, [21, 26, 29, 30, 19, 27, 25, 28]);
+
+    // Nhanh hoa dao la data_item 835, khac Hoa dao trong o potion.
+    if (isset($vp[28][835])) {
+        $dm['nhanh_hoa_dao'] = [
+            'ten'    => 'Nhánh hoa đào',
+            'loai'   => 'ITEM',
+            'ghiChu' => 'Max chỉ số: sát thương chuẩn 24,1%; chỉ số vũ khí tăng 50,1%; tỷ lệ gây sát thương chuẩn 29,0%. Vật phẩm khóa, vĩnh viễn.',
+            'muc'    => [835 => $vp[28][835]],
+        ];
+    }
 
     if (!empty($vp[26])) {
         $dm['trung_thu'] = [

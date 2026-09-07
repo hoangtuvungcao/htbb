@@ -49,6 +49,7 @@ public class AdminPanel extends JFrame {
     private JButton gemManagerButton;
     private JButton listOnlineButton;
     private JButton changePasswordButton;
+    private JButton reduceLevelButton;
     
     // Log components
     private JTextArea logArea;
@@ -126,6 +127,7 @@ public class AdminPanel extends JFrame {
         gemManagerButton = createButton("Quản Lý Gem");
         listOnlineButton = createButton("Member Online");
         changePasswordButton = createButton("Đổi mật khẩu");
+        reduceLevelButton = createButton("Giảm Level");
         
         // Log area
         logArea = new JTextArea();
@@ -172,7 +174,7 @@ public class AdminPanel extends JFrame {
 
         JPanel serverPanel = createButtonPanel("Quản Lý Server", maintenanceButton, stopLoginButton, cleanMemoryButton, announceButton, updateButton, listOnlineButton);
         JPanel accountPanel = createButtonPanel("Tài Khoản", banAccountButton, unbanAccountButton, lockAccountButton, changePasswordButton);
-        JPanel playerPanel = createButtonPanel("Player", listOnlineButton, gemManagerButton);
+        JPanel playerPanel = createButtonPanel("Player", listOnlineButton, gemManagerButton, reduceLevelButton);
 
         // Đặt cùng chiều cao cho các panel
         Dimension panelSize = new Dimension(220, 220); // hoặc cao hơn nếu cần
@@ -290,6 +292,7 @@ controlsPanel.add(playerPanel);
             addLog("Đã cập nhật trạng thái máy chủ");
         });
 
+        reduceLevelButton.addActionListener(e -> handleReduceLevel());
         lockAccountButton.addActionListener(e -> handleKickPlayer());
 
         banAccountButton.addActionListener(e -> handleBanAccount());
@@ -867,6 +870,100 @@ controlsPanel.add(playerPanel);
             AdminPanel panel = new AdminPanel();
             panel.setVisible(true);
         });
+    }
+
+    private void handleReduceLevel() {
+        JTextArea namesField = new JTextArea(6, 32);
+        JTextField amountField = new JTextField("1", 8);
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.add(new JLabel("Tên nhân vật online (mỗi dòng một tên, hoặc ngăn bằng dấu phẩy/chấm phẩy):"), BorderLayout.NORTH);
+        panel.add(new JScrollPane(namesField), BorderLayout.CENTER);
+        JPanel details = new JPanel(new GridLayout(0, 1, 5, 5));
+        details.add(new JLabel("Số level cần giảm cho mỗi nhân vật:"));
+        details.add(amountField);
+        details.add(new JLabel("EXP về 0% cấp mới; bỏ qua nhân vật nếu giảm xuống dưới cấp 1."));
+        details.add(new JLabel("Giữ điểm đã nhận, không cộng lại khi lên cấp cũ. Tên trùng chỉ xử lý một lần."));
+        panel.add(details, BorderLayout.SOUTH);
+        if (JOptionPane.showConfirmDialog(this, panel, "Giảm Level nhiều nhân vật",
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) != JOptionPane.OK_OPTION) {
+            return;
+        }
+        Set<String> names = new java.util.LinkedHashSet<>();
+        for (String entry : namesField.getText().split("[,;\\r\\n]+")) {
+            String name = entry.trim().toLowerCase();
+            if (!name.isEmpty()) names.add(name);
+        }
+        int amount;
+        try {
+            amount = Integer.parseInt(amountField.getText().trim());
+            if (amount <= 0 || names.isEmpty()) throw new NumberFormatException();
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Nhập ít nhất một tên nhân vật và số level là số nguyên dương.");
+            return;
+        }
+        StringBuilder results = new StringBuilder();
+        for (String name : names) {
+            String result = reducePlayerLevel(name, amount);
+            addLog(result);
+            results.append(result).append('\n');
+        }
+        JTextArea resultArea = new JTextArea(results.toString(), Math.min(16, names.size() + 2), 65);
+        resultArea.setEditable(false);
+        resultArea.setLineWrap(true);
+        resultArea.setWrapStyleWord(true);
+        resultArea.setCaretPosition(0);
+        JOptionPane.showMessageDialog(this, new JScrollPane(resultArea),
+                "Kết quả giảm level - " + names.size() + " nhân vật", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private String reducePlayerLevel(String name, int amount) {
+        boolean saved = false;
+        String result = "";
+        try {
+            Char player = CharManager.instance.getCharByCharName(name);
+            if (player == null || player.getSession() == null || !player.getSession().isConnected()) {
+                return "Bỏ qua " + name + ": nhân vật không online.";
+            }
+            synchronized (player.KHOA_LUU) {
+                synchronized (player.lvDetail) {
+                    if (CharManager.instance.getCharByCharName(name) != player
+                            || player.getSession() == null || !player.getSession().isConnected()) {
+                        return "Bỏ qua " + name + ": nhân vật đã ngắt kết nối.";
+                    }
+                    int oldLevel = player.lvDetail.lv;
+                    if (amount >= oldLevel) {
+                        return "Bỏ qua " + name + ": cấp hiện tại " + oldLevel
+                                + ", chỉ giảm được tối đa " + Math.max(0, oldLevel - 1) + " level.";
+                    }
+                    long oldExp = player.lvDetail.getExp();
+                    int newLevel = oldLevel - amount;
+                    player.lvDetail.setExpNew(real.LevelDetail.expMain[newLevel - 1]);
+                    // Keep lastLV: previously awarded stat/skill points must not be awarded twice.
+                    try {
+                        saved = Database.instance.saveChar(player, false);
+                    } finally {
+                        if (!saved) player.lvDetail.setExpNew(oldExp);
+                    }
+                    if (!saved) {
+                        return "Thất bại " + name + ": không lưu được, đã khôi phục EXP.";
+                    }
+                    result = "Đã giảm " + amount + " level của " + player.charname
+                            + ": " + oldLevel + " → " + newLevel + " (0% EXP).";
+                    player.calculateAttrib();
+                    player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
+                    player.sendToNearPlayer(MessageCreator.createCharInfo(player));
+                    player.sendMessage(MessageCreator.createServerAlertMessage(result, ""));
+                }
+            }
+            return result;
+        } catch (Exception ex) {
+            if (saved) {
+                return result + " Đã lưu nhưng lỗi cập nhật hiển thị: " + ex.getMessage()
+                        + ". Đăng nhập lại để cập nhật; không giảm lại.";
+            }
+            return "Lỗi giảm level của " + name + ": " + ex.getMessage()
+                    + ". Kiểm tra cấp nhân vật trước khi thử lại.";
+        }
     }
 
     private void handleKickPlayer() {

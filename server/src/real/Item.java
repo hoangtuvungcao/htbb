@@ -2552,6 +2552,7 @@ public class Item extends Actor {
     public boolean isVukhiThoiTrang() {
 
         switch (this.getTemplate().id) {
+            case 835: // nhanh hoa dao
             case 728: // gậy giáng sinh
                 return true;
           
