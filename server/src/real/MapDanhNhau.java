@@ -435,6 +435,7 @@ class MapDanhNhau {
 
                 map.checkTrade(c);
                 if (c.mapID == Map.idMapTown && c.idClan != -1 && Map.getTown[p.inCountry] && Map.giveCardFail(c)) {
+                    Database.instance.saveLogClan(p.charname, "pcok", "Pha the cua " + c.charname);
                     map.doSend2AllChar(MessageCreator.createServerAlertAutoOffMessage("Bang " + Map.getClaninfoByID(c.idClan).name + " giao thẻ thất bại"), c.myCountry);
                     map.sendAllPlayer(MessageCreator.createMsgStartGetTown(p.inCountry), p.inCountry);
                 }

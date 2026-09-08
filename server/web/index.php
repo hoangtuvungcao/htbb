@@ -20,6 +20,32 @@ try {
     )->fetchAll();
 } catch (Throwable $ex) { $topNap = []; }
 
+// Moc khoi dau co dinh cua dot dua top moi, cung gio voi timeLog cua server.
+// Khong dung ngay hien tai dong: diem phai tiep tuc cong don vao cac ngay sau.
+$cardRankStart = '2026-09-08 00:00:00';
+$cardRanks = [
+    ['title' => 'Top Giao Thẻ', 'action' => 'gcok', 'rows' => [], 'error' => false],
+    ['title' => 'Top Phá Thẻ', 'action' => 'pcok', 'rows' => [], 'error' => false],
+];
+foreach ($cardRanks as &$rank) {
+    try {
+        // gcok luu charname kem "_idClan"; pcok luu ten nguoi pha the.
+        $nameExpr = $rank['action'] === 'gcok'
+            ? "LEFT(charname, CHAR_LENGTH(charname) - CHAR_LENGTH(SUBSTRING_INDEX(charname, '_', -1)) - 1)"
+            : 'charname';
+        $st = dbGame()->prepare(
+            "SELECT $nameExpr AS player_name, COUNT(*) AS total
+             FROM tob_log_clan WHERE actioninfo = ? AND timeLog >= ?
+             GROUP BY player_name ORDER BY total DESC, player_name ASC LIMIT 10"
+        );
+        $st->execute([$rank['action'], $cardRankStart]);
+        $rank['rows'] = $st->fetchAll();
+    } catch (Throwable $ex) {
+        $rank['error'] = true;
+        error_log('Card ranking ' . $rank['action'] . ': ' . $ex->getMessage());
+    }
+}
+unset($rank);
 // Tin tức tĩnh (bạn có thể sửa)
 $news = [
     ['date' => '20/07', 'title' => 'Khai mở máy chủ mới', 'body' => 'Chào mừng anh hùng đến với thế giới Khí Phách Anh Hùng. Đăng ký ngay để nhận quà tân thủ!'],
@@ -116,6 +142,30 @@ require __DIR__ . '/inc/header.php';
                 <p class="muted">Đang cập nhật...</p>
             <?php endif; ?>
         </div>
+        <?php foreach ($cardRanks as $rank): ?>
+        <div class="card">
+            <h3 class="card-head"><?= e($rank['title']) ?></h3>
+            <p class="muted">Chiếm thành · Tính từ 00:00 ngày 08/09/2026.</p>
+            <?php if ($rank['rows']): ?>
+                <table class="rank-table">
+                    <thead><tr><th>#</th><th>Nhân vật</th><th>Số lần</th></tr></thead>
+                    <tbody>
+                    <?php foreach ($rank['rows'] as $i => $c): ?>
+                        <tr>
+                            <td class="rank-no rank-<?= $i < 3 ? ($i + 1) : '' ?>"><?= $i + 1 ?></td>
+                            <td><?= e($c['player_name']) ?></td>
+                            <td><?= number_format((int)$c['total']) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php elseif ($rank['error']): ?>
+                <p class="muted">Tạm thời chưa tải được bảng xếp hạng.</p>
+            <?php else: ?>
+                <p class="muted">Chưa có lượt <?= $rank['action'] === 'gcok' ? 'giao thẻ thành công' : 'phá thẻ' ?> được ghi nhận.</p>
+            <?php endif; ?>
+        </div>
+        <?php endforeach; ?>
     </div>
 </section>
 
