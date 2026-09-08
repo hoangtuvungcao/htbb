@@ -33,7 +33,7 @@ public class ServerListScr : MyScreen
 	public static int index = -1;
 
 	// Doi IP/port server o day. loadSv() ben duoi dung lai 2 hang so nay.
-	public const string SERVER_HOST = "180.93.57.30";
+	public const string SERVER_HOST = "game.kpah-private.site";
 
 	public const short SERVER_PORT = 19129;
 

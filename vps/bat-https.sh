@@ -134,7 +134,7 @@ if [ "$DUNG_CERTBOT" = "0" ]; then
 <IfModule mod_ssl.c>
 <VirtualHost *:443>
     ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/html
+    DocumentRoot /opt/kpah/web
 
     SSLEngine on
     SSLCertificateFile    $CHUNG_CHI_DIR/kpah.crt
@@ -148,6 +148,9 @@ if [ "$DUNG_CERTBOT" = "0" ]; then
     Header always set X-Content-Type-Options "nosniff"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "same-origin"
+
+    # Link cu domain/kpah/xxx (tu hoi DocumentRoot con la /var/www/html) van chay.
+    RedirectMatch permanent "^/kpah/(.*)\$" "/\$1"
 
     ErrorLog \${APACHE_LOG_DIR}/kpah-ssl-error.log
     CustomLog \${APACHE_LOG_DIR}/kpah-ssl-access.log combined
