@@ -33,10 +33,11 @@ foreach ($cardRanks as &$rank) {
         $nameExpr = $rank['action'] === 'gcok'
             ? "LEFT(charname, CHAR_LENGTH(charname) - CHAR_LENGTH(SUBSTRING_INDEX(charname, '_', -1)) - 1)"
             : 'charname';
+        // Cung so lan: ai dat moc som hon dung truoc; cung giay thi theo ID log.
         $st = dbGame()->prepare(
             "SELECT $nameExpr AS player_name, COUNT(*) AS total
              FROM tob_log_clan WHERE actioninfo = ? AND timeLog >= ?
-             GROUP BY player_name ORDER BY total DESC, player_name ASC LIMIT 10"
+             GROUP BY player_name ORDER BY total DESC, MAX(timeLog) ASC, MAX(id) ASC, player_name ASC LIMIT 10"
         );
         $st->execute([$rank['action'], $cardRankStart]);
         $rank['rows'] = $st->fetchAll();
