@@ -66,16 +66,14 @@ class CharTrangBi {
                             dam.add(0);
                             hpLeft.add(actor.hp);
                         } 
-                        else if (id == 2) 
+                        else if (id == 2)
                         {
-                            dam.add(0);
                             int d = actor.hp / 2;
-                            if (actor.isBoss() || actor.isCongThanh()) 
+                            if (actor.isBoss() || actor.isCongThanh())
                             {
-                                dam.add(0);
-                                hpLeft.add(actor.hp);
+                                d = actor.hp / 100;
                             }
-                            if (d <= 0) 
+                            if (d <= 0)
                             {
                                 d = 1;
                             }

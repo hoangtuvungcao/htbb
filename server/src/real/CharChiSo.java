@@ -992,7 +992,11 @@ class CharChiSo {
             // ---------- BEN TAN CONG: cong them sat thuong ----------
             if (self.itemThanKhi != null) {
                 final int tkHp = self.getTkStTheoHp();
-                if (tkHp > 0 && actor.maxhp > 0) {
+                // Khong tinh vao Tru Rong: cong THANG theo % maxhp MUC TIEU, khong co tran, khong
+                // qua ti le proc nao - maxhp cang cao thi dam cang lon theo dung ti le, nen tang
+                // mau boss (VD 100 trieu -> 2 ty) chi lam dam nay tang theo chu khong lam boss
+                // song lau hon. Cung mot tinh than voi loai tru o "sat thuong chuan" (dong ~929).
+                if (tkHp > 0 && actor.maxhp > 0 && !actor.isBossTruRong()) {
                     finalDame += (int) ((long) actor.maxhp * tkHp / 1000L);
                 }
                 final int tkMp = self.getTkStTheoMp();
