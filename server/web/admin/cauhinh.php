@@ -33,9 +33,6 @@ const K_CHIA_XU = 'sv.chiaXuRoi';
 const K_GIO_CT = 'sv.gioChiemThanh';
 const K_PHUT_CT = 'sv.phutChiemThanh';
 const K_NGAY_CT = 'sv.ngayChiemThanh';
-const K_WC_BAT_DAU = 'sv.worldCupBatDau';
-const K_WC_KET_THUC = 'sv.worldCupKetThuc';
-const K_WC_HAN_NHAN_QUA = 'sv.worldCupHanNhanQua';
 const K_SK_TU_KHOI_DONG_LAI = 'sv.suKienTuKhoiDongLai';
 const K_SK_GOM_GIAY = 'sv.suKienGomGiay';
 const K_SK_BAO_TRUOC_GIAY = 'sv.suKienBaoTruocGiay';
@@ -84,18 +81,11 @@ function soKep(string $tho, int $min, int $max, int $macDinh): int
     return max($min, min($max, $n));
 }
 
-/** "yyyy-MM-dd HH:mm:ss" hoặc rỗng (= tắt). Trả về null nếu sai định dạng. */
-function docMocThoiGian(string $tho): ?string
-{
-    $tho = trim(str_replace('T', ' ', $tho));
-    if ($tho === '') {
-        return '';
-    }
-    if (!preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/', $tho)) {
-        return null;
-    }
-    return strlen($tho) === 16 ? $tho . ':00' : $tho;
-}
+/** Ten 7 thu trong tuan dung cho checkbox + Java Date.toString(), theo dung thu tu Thu Hai truoc. */
+const CAC_THU_TRONG_TUAN = [
+    'Mon' => 'Thứ Hai', 'Tue' => 'Thứ Ba', 'Wed' => 'Thứ Tư', 'Thu' => 'Thứ Năm',
+    'Fri' => 'Thứ Sáu', 'Sat' => 'Thứ Bảy', 'Sun' => 'Chủ Nhật',
+];
 
 // ---------------------------------------------------------------------------
 //  Thao tác
@@ -125,28 +115,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             case 'luu_chiemthanh': {
                 $gio = trim(p('gioChiemThanh'));
+                $ngayCuThe = trim(p('ngayCuThe'));
+                if ($ngayCuThe !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $ngayCuThe)) {
+                    veLai($TRANG, 'error', 'Ngày cụ thể phải đúng định dạng yyyy-MM-dd.');
+                }
+                if ($ngayCuThe !== '') {
+                    // Ngay cu the ghi de moi lua chon thu trong tuan - chi ap dung DUNG mot lan.
+                    $ngay = $ngayCuThe;
+                } else {
+                    $cacThu = [];
+                    foreach (array_keys(CAC_THU_TRONG_TUAN) as $thu) {
+                        if (p('thu_' . $thu) === '1') {
+                            $cacThu[] = $thu;
+                        }
+                    }
+                    $ngay = implode(',', $cacThu);
+                }
                 $m = [
                     K_GIO_CT => ($gio === '' ? -1 : soKep($gio, -1, 23, -1)),
                     K_PHUT_CT => soKep(p('phutChiemThanh'), 0, 59, 0),
-                    K_NGAY_CT => substr(trim(p('ngayChiemThanh')), 0, 20),
+                    K_NGAY_CT => substr($ngay, 0, 60),
                 ];
                 luuCauHinh($m);
                 ghiNhatKy('sua_cau_hinh', 'gio_chiem_thanh', json_encode($m, JSON_UNESCAPED_UNICODE));
                 veLai($TRANG, 'success', 'Đã lưu giờ chiếm thành. Server áp dụng trong tối đa 10 giây.');
-                break;
-            }
-
-            case 'luu_worldcup': {
-                $batDau = docMocThoiGian(p('worldCupBatDau'));
-                $ketThuc = docMocThoiGian(p('worldCupKetThuc'));
-                $hanNhanQua = docMocThoiGian(p('worldCupHanNhanQua'));
-                if ($batDau === null || $ketThuc === null || $hanNhanQua === null) {
-                    veLai($TRANG, 'error', 'Định dạng thời gian phải là "yyyy-MM-dd HH:mm:ss", hoặc để trống để tắt.');
-                }
-                $m = [K_WC_BAT_DAU => $batDau, K_WC_KET_THUC => $ketThuc, K_WC_HAN_NHAN_QUA => $hanNhanQua];
-                luuCauHinh($m);
-                ghiNhatKy('sua_cau_hinh', 'world_cup', json_encode($m, JSON_UNESCAPED_UNICODE));
-                veLai($TRANG, 'success', 'Đã lưu cấu hình World Cup. Server áp dụng trong tối đa 10 giây.');
                 break;
             }
 
@@ -275,7 +267,8 @@ adminHead('cauhinh', 'Cấu hình server');
 
 <div class="card">
     <h3>Giờ chiếm thành</h3>
-    <p class="muted small">Để trống giờ = dùng lịch chuẩn 21h thứ 3 và thứ 7.</p>
+    <p class="muted small">Để trống giờ = dùng lịch chuẩn 21h thứ 3 và thứ 7. Sự kiện World Cup nay bật/tắt
+       ở trang <a href="sukien.php">Sự kiện</a>, không còn ở đây nữa.</p>
     <form method="post" action="cauhinh.php">
         <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
         <input type="hidden" name="viec" value="luu_chiemthanh">
@@ -285,31 +278,32 @@ adminHead('cauhinh', 'Cấu hình server');
                        value="<?= (int)giaTri($gt, K_GIO_CT, '-1') < 0 ? '' : e(giaTri($gt, K_GIO_CT)) ?>"></label>
             <label class="o"><span>Phút (0-59)</span>
                 <input type="number" name="phutChiemThanh" min="0" max="59" value="<?= e(giaTri($gt, K_PHUT_CT, '0')) ?>"></label>
-            <label class="o"><span>Ngày (tuỳ chọn, ví dụ Sat hoặc 2026-10-25)</span>
-                <input type="text" name="ngayChiemThanh" maxlength="20" value="<?= e(giaTri($gt, K_NGAY_CT, '')) ?>"></label>
         </div>
+
+        <?php
+        $ngayHienTai = giaTri($gt, K_NGAY_CT, '');
+        $laNgayCuThe = (bool)preg_match('/^\d{4}-\d{2}-\d{2}$/', $ngayHienTai);
+        $thuDaChon = $laNgayCuThe ? [] : array_filter(array_map('trim', explode(',', $ngayHienTai)));
+        ?>
+        <label class="o" style="margin-top:12px;"><span>Lặp lại vào các thứ trong tuần (không chọn thứ nào = mọi ngày)</span></label>
+        <div class="ngang" style="flex-wrap:wrap;gap:14px;">
+            <?php foreach (CAC_THU_TRONG_TUAN as $ma => $ten): ?>
+                <label style="display:flex;align-items:center;gap:6px;">
+                    <input type="checkbox" name="thu_<?= e($ma) ?>" value="1" style="width:auto;"
+                           <?= in_array($ma, $thuDaChon, true) ? 'checked' : '' ?>>
+                    <?= e($ten) ?>
+                </label>
+            <?php endforeach; ?>
+        </div>
+
+        <label class="o" style="margin-top:12px;max-width:280px;">
+            <span>Hoặc một ngày cụ thể (yyyy-MM-dd) — điền vào đây thì bỏ qua các thứ chọn ở trên, chỉ chạy đúng 1 lần</span>
+            <input type="text" name="ngayCuThe" placeholder="2026-10-25" value="<?= $laNgayCuThe ? e($ngayHienTai) : '' ?>">
+        </label>
+
         <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu giờ chiếm thành</button></div>
     </form>
     <?php veSuaBoi($suaBoi, [K_GIO_CT, K_PHUT_CT, K_NGAY_CT]); ?>
-</div>
-
-<div class="card">
-    <h3>Sự kiện World Cup</h3>
-    <p class="muted small">Định dạng "yyyy-MM-dd HH:mm:ss". Để trống bất kỳ ô nào = sự kiện tắt.</p>
-    <form method="post" action="cauhinh.php">
-        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
-        <input type="hidden" name="viec" value="luu_worldcup">
-        <div class="form-grid">
-            <label class="o"><span>Bắt đầu</span>
-                <input type="text" name="worldCupBatDau" placeholder="2026-06-01 00:00:00" value="<?= e(giaTri($gt, K_WC_BAT_DAU)) ?>"></label>
-            <label class="o"><span>Kết thúc</span>
-                <input type="text" name="worldCupKetThuc" placeholder="2026-07-15 23:59:59" value="<?= e(giaTri($gt, K_WC_KET_THUC)) ?>"></label>
-            <label class="o"><span>Hạn nhận quà</span>
-                <input type="text" name="worldCupHanNhanQua" placeholder="2026-07-20 23:59:59" value="<?= e(giaTri($gt, K_WC_HAN_NHAN_QUA)) ?>"></label>
-        </div>
-        <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu cấu hình World Cup</button></div>
-    </form>
-    <?php veSuaBoi($suaBoi, [K_WC_BAT_DAU, K_WC_KET_THUC, K_WC_HAN_NHAN_QUA]); ?>
 </div>
 
 <div class="card">

@@ -46,7 +46,8 @@ public class MapTown extends Map {
    public static long[] timeBatDauChiemThanh = new long[]{0L, 0L, 0L};
    public static final long THOI_LUONG_CHIEM_THANH = 3600000L;
    // Ngay chiem thanh do admin set. "" = ap dung moi ngay.
-   // Nhan 2 dang: "yyyy-MM-dd" (dung 1 ngay cu the) hoac "Mon".."Sun" (thu trong tuan).
+   // Nhan 3 dang: "yyyy-MM-dd" (dung 1 ngay cu the), "Mon".."Sun" (1 thu trong tuan),
+   // hoac nhieu thu ngan cach bang dau phay "Mon,Tue,Wed,Thu,Fri,Sun" (lap lai hang tuan).
    public static String dayAdminCheat = "";
    public static int count_all_item_sell_per_day;
    public static boolean isSkipDayCheck = false;
@@ -1666,7 +1667,9 @@ public class MapTown extends Map {
 
    /**
     * Hom nay co khop ngay chiem thanh ma admin da set khong.
-    * dayAdminCheat = "" -> moi ngay; "yyyy-MM-dd" -> dung ngay do; "Mon".."Sun" -> thu trong tuan.
+    * dayAdminCheat = "" -> moi ngay; "yyyy-MM-dd" -> dung ngay do; "Mon".."Sun" -> thu trong
+    * tuan; "Mon,Tue,Wed,Thu,Fri,Sun" (nhieu thu, ngan cach dau phay) -> khop BAT KY thu nao
+    * trong danh sach, lap lai hang tuan.
     * nt la ket qua new Date(...).toString(), vi du "Mon Jul 27 00:05:00 GMT+07:00 2026".
     */
    public static boolean matchDayAdminCheat(String nt) {
@@ -1677,7 +1680,13 @@ public class MapTown extends Map {
       if (d.length() == 10) {
          return Char.getDayOpen(0L).equals(d);
       }
-      return nt.toLowerCase().startsWith(d.toLowerCase());
+      for (String thu : d.split(",")) {
+         thu = thu.trim();
+         if (!thu.isEmpty() && nt.toLowerCase().startsWith(thu.toLowerCase())) {
+            return true;
+         }
+      }
+      return false;
    }
 
    public boolean checkTimeGetTown(int j) {
