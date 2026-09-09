@@ -160,6 +160,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             veLai($TRANG, 'success', 'Đã xoá vĩnh viễn tài khoản ' . $ten . ' và toàn bộ ' . count($dsNV) . ' nhân vật của nó.');
             break;
 
+        case 'reset_trang':
+            // RESET VE TRANG: giong het xoa_tai_khoan o tren (cung di qua bang lenh vi nhan vat
+            // co the dang online) nhung KHONG dung toi 5h_active/team_user - tai khoan dang nhap
+            // giu nguyen, chi mat het nhan vat, de dang nhap lai la nhu vua dang ky.
+            if ($laAdmin) {
+                veLai($ve, 'error', 'Không reset được tài khoản quản trị. Gỡ tên khỏi ADMIN_ACCOUNTS trước nếu thật sự cần.');
+            }
+            if (p('xac_nhan_ten') !== $ten) {
+                veLai($ve, 'error', 'Gõ đúng tên tài khoản "' . $ten . '" để xác nhận reset.');
+            }
+
+            $dsNV = dbGame()->prepare('SELECT id, charname FROM tob_char WHERE userId = ?');
+            $dsNV->execute([$id]);
+            $dsNV = $dsNV->fetchAll();
+
+            if (!$dsNV) {
+                veLai($ve, 'success', 'Tài khoản ' . $ten . ' đã trắng sẵn, chưa có nhân vật nào.');
+            }
+
+            $chiTietLenh = [];
+            foreach ($dsNV as $nv2) {
+                $idLenh = guiLenhXoaNhanVat(dbGame(), (int)$nv2['id'], (string)$nv2['charname'], adminName());
+                $lenh   = choKetQuaLenh(dbGame(), $idLenh, 2.0);
+                $chiTietLenh[] = (string)$nv2['charname'] . ': ' . tenTrangThaiLenh((int)($lenh['trang_thai'] ?? -1));
+            }
+
+            $conLai = dbGame()->prepare('SELECT COUNT(*) FROM tob_char WHERE userId = ?');
+            $conLai->execute([$id]);
+            $soConLai = (int)$conLai->fetchColumn();
+
+            if ($soConLai > 0) {
+                ghiNhatKy('reset_tai_khoan_tam_dung', $ten,
+                    'còn ' . $soConLai . '/' . count($dsNV) . ' nhân vật chưa xoá xong: ' . implode('; ', $chiTietLenh));
+                veLai($ve, 'warning', 'Còn ' . $soConLai . ' nhân vật chưa xoá xong (' . implode('; ', $chiTietLenh)
+                    . ') — có thể server game đang tắt hoặc chậm. Tài khoản CHƯA reset xong; bấm "Reset về trắng" lại '
+                    . 'để tiếp tục khi tất cả nhân vật đã xoá xong.');
+            }
+
+            ghiNhatKy('reset_tai_khoan', $ten, 'đã xoá ' . count($dsNV) . ' nhân vật, đưa tài khoản về trắng');
+            veLai($ve, 'success', 'Đã reset tài khoản ' . $ten . ' về trắng (đã xoá ' . count($dsNV)
+                . ' nhân vật). Tài khoản vẫn đăng nhập được bình thường và có thể tạo nhân vật mới ngay.');
+            break;
+
         default:
             veLai($TRANG, 'error', 'Không hiểu thao tác.');
     }
@@ -342,6 +385,35 @@ adminHead('taikhoan', 'Tài khoản');
                             <button class="btn btn-primary btn-nho">Đổi mật khẩu</button>
                         </div>
                         <p class="muted small" style="margin-top:8px;">Băm bằng <code>PASSWORD()</code> để khớp login server.</p>
+                    </form>
+                <?php endif; ?>
+            </div>
+
+            <div class="card">
+                <h3 style="color:#c0392b;">Reset về trắng</h3>
+                <?php if ($laAdmin): ?>
+                    <p class="muted small">Không reset được tài khoản quản trị.</p>
+                <?php else: ?>
+                    <div class="luuy">
+                        <p><strong>KHÔNG THỂ HOÀN TÁC.</strong> Xoá vĩnh viễn toàn bộ
+                           <strong><?= count($nhanVat) ?> nhân vật</strong> của tài khoản này (cùng dữ liệu
+                           riêng của từng nhân vật: thú nuôi, trang trại, đá quý...) nhưng
+                           <strong>giữ nguyên tài khoản đăng nhập</strong> — khác với "Xoá vĩnh viễn" bên
+                           dưới. Đăng nhập lại được ngay và tạo nhân vật mới, y như tài khoản vừa đăng ký.
+                           Nhân vật đang online sẽ bị đẩy ra khỏi game trước khi xoá. Nhật ký giao dịch/log
+                           vẫn được giữ lại để tra cứu.</p>
+                    </div>
+                    <form method="post" action="taikhoan.php" class="ngang" style="margin-top:12px;"
+                          onsubmit="return confirm('RESET tài khoản <?= e($ten) ?> về trắng — xoá toàn bộ <?= count($nhanVat) ?> nhân vật của nó?\n\nKhông thể hoàn tác.');">
+                        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+                        <input type="hidden" name="id" value="<?= (int)$chiTiet['id'] ?>">
+                        <input type="hidden" name="viec" value="reset_trang">
+                        <label class="o" style="min-width:220px;">
+                            <span>Gõ đúng tên "<?= e($ten) ?>" để xác nhận</span>
+                            <input type="text" name="xac_nhan_ten" autocomplete="off"
+                                   oninput="document.getElementById('nutResetTK').disabled = this.value !== <?= e(json_encode($ten)) ?>;">
+                        </label>
+                        <button type="submit" id="nutResetTK" class="btn btn-do btn-nho" disabled style="align-self:flex-end;">Reset về trắng</button>
                     </form>
                 <?php endif; ?>
             </div>

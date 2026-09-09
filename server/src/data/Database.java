@@ -11598,6 +11598,15 @@ public void addCharXaiNapLuong(Char p, int type) {
         return DatabaseNhanVat.addChar(this, s,charname,headStyle,classID,gender,nation);
     }
 
+    /**
+     * Them cot giftcode_log.userId + doi chieu du lieu cu neu thieu, de chan nhan mot ma
+     * giftcode nhieu lan bang nhieu nhan vat cung tai khoan. Goi 1 lan luc khoi dong server,
+     * TRUOC khi nhan nguoi choi vao - cung nhom voi themCotCongTacHienThi(). Xem DatabaseGiftCode.
+     */
+    public void chuanBiGiftCodeUserId() {
+        DatabaseGiftCode.chuanBiCotUserId(this);
+    }
+
     // ============ HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI (theo ngay, moi nhan vat) ============
 
     /**

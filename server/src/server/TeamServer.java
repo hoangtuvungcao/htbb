@@ -781,6 +781,9 @@ public class TeamServer {
         // PHAI chay TRUOC khi nhan nguoi choi: saveChar ghi cot isCT, thieu cot thi lenh
         // luu nem loi va nhanh bat loi cua no KHOA NHAN VAT. Xem themCotCongTacHienThi().
         Database.instance.themCotCongTacHienThi();
+        // Cung phai chay TRUOC khi nhan nguoi choi: chan nhan giftcode nhieu lan qua nhieu
+        // nhan vat cung tai khoan. Xem Database.chuanBiGiftCodeUserId().
+        Database.instance.chuanBiGiftCodeUserId();
         Database.startSaveChar();
         TeamServer.timeRemovePool = System.currentTimeMillis();
         System.out.println("Starting server...");

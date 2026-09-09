@@ -32,6 +32,7 @@ function adminMenu(): array
             'tao_hang_loat'=> ['tao_hang_loat.php', 'Tạo hàng loạt', 'nhieu'],
             'nhanvat'      => ['nhanvat.php',       'Nhân vật',    'khien'],
             'cammay'       => ['cammay.php',        'Cấm theo máy','khoa'],
+            'reset_toanbo' => ['reset_toanbo.php',  'Reset toàn server', 'khoa'],
         ],
         'Vận hành' => [
             'sukien'   => ['sukien.php',   'Sự kiện', 'lich'],

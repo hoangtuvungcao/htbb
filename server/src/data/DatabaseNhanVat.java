@@ -1226,15 +1226,16 @@ class DatabaseNhanVat {
             pre.setString(12, equip);
             pre.setInt(13, s.idServer);
             pre.execute();
-            // Nhan vat dau tien va duy nhat cua tai khoan: tang 50000 luong mo + 250000 luong khoa,
-            // cong qua hang doi board_created (nhu Nhan moc nap), Char se nhan khi vao game lan dau
-            // qua Database.getBoardCreated(), khong dung sua truc tiep pInfo (fragile, xem [[feedback-kpah-safe-npc-edits]]).
+            // Nhan vat dau tien va duy nhat cua tai khoan: tang 10.000.000 xu + 5.000 luong mo
+            // + 100.000 luong khoa, cong qua hang doi board_created (nhu Nhan moc nap), Char se
+            // nhan khi vao game lan dau qua Database.getBoardCreated(), khong dung sua truc tiep
+            // pInfo (fragile, xem [[feedback-kpah-safe-npc-edits]]).
             if (first) {
                 try {
                     pre.close();
                 } catch (Exception ignored) {
                 }
-                pre = conn.prepareStatement("INSERT INTO board_created(xu,luong,luongK,username) VALUES(50000000,50000,250000,?)");
+                pre = conn.prepareStatement("INSERT INTO board_created(xu,luong,luongK,username) VALUES(10000000,5000,100000,?)");
                 pre.setString(1, String.valueOf(userID));
                 pre.execute();
             }

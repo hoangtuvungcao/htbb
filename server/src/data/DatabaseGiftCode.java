@@ -22,6 +22,62 @@ import real.plugins.GiftCode;
  */
 class DatabaseGiftCode {
 
+    /**
+     * Them cot `userId` vao giftcode_log neu chua co, roi doi chieu userId cho cac dong cu dua
+     * theo ten nhan vat con ton tai trong tob_char.
+     *
+     * VI SAO CAN: truoc day chan nhan lai mot ma tinh theo TEN NHAN VAT (cot `player`), nen mot
+     * tai khoan nhieu nhan vat nhan duoc nhieu lan cung mot ma giftcode - xem newDoGetGiftCode()
+     * duoi day. Sua lai chan theo `userId` (tai khoan), nhung bang cu chua co cot nay.
+     *
+     * Doi chieu (UPDATE ... WHERE userId = 0) la IDEMPOTENT nen goi lai nhieu lan khong hai gi;
+     * nhan vat da bi xoa thi dong log cu giu nguyen userId = 0 - khong con hai vi nhan vat do
+     * khong con ton tai de nhan lai. Goi 1 lan luc khoi dong server (xem TeamServer), TRUOC khi
+     * nhan nguoi choi vao, cung nhom voi Database.themCotCongTacHienThi().
+     */
+    static void chuanBiCotUserId(Database db) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = db.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SHOW COLUMNS FROM giftcode_log LIKE 'userId'");
+            final boolean daCo = rs.next();
+            rs.close();
+            rs = null;
+            if (!daCo) {
+                stmt.execute("ALTER TABLE giftcode_log ADD COLUMN userId INT(11) NOT NULL DEFAULT 0 AFTER player");
+                System.out.println("[GIFTCODE] Da them cot giftcode_log.userId.");
+            }
+            final int soDong = stmt.executeUpdate(
+                    "UPDATE giftcode_log gl JOIN tob_char tc ON tc.charname = gl.player"
+                    + " SET gl.userId = tc.userId WHERE gl.userId = 0");
+            if (soDong > 0) {
+                System.out.println("[GIFTCODE] Da doi chieu userId cho " + soDong + " dong giftcode_log cu.");
+            }
+        } catch (Exception e) {
+            System.out.println("[GIFTCODE] loi chuan bi cot userId cho giftcode_log: " + e);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     static void newDoGetGiftCode(Database db, String text, Char player) {
 
         // SECURITY: gift codes are alphanumeric only. Strip everything else to prevent SQL injection,
@@ -69,10 +125,15 @@ class DatabaseGiftCode {
         try {
             conn = db.getConnection();
 
-            pre1 = conn.prepareStatement("select * from giftcode_log where giftcode = '" + text + "' AND player = '" + player.charname + "';");
+            // Chan theo TAI KHOAN (userId), khong phai theo tung nhan vat: truoc day dieu kien
+            // la "player = charname" nen mot tai khoan nhieu nhan vat nhan duoc nhieu lan cung
+            // mot ma. Bang giftcode_log duoc tu them cot userId luc khoi dong, xem chuanBiCotUserId().
+            pre1 = conn.prepareStatement("select * from giftcode_log where giftcode = ? AND userId = ?");
+            pre1.setString(1, text);
+            pre1.setInt(2, userId);
             rs = pre1.executeQuery();
             if (rs.next()) {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã nhập mã quà tặng này rồi.", ""));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Tài khoản của bạn đã nhập mã quà tặng này rồi.", ""));
                 return;
             }
             // SECURITY: test/backdoor gift codes (petmax, xuluong, alldanhhieu, ...) permanently disabled.
@@ -354,13 +415,14 @@ class DatabaseGiftCode {
                     }
                 }
                 PreparedStatement preLog = conn.prepareStatement(
-                        "insert into giftcode_log set player = ?, giftcode = ?, item = ?, xu = ?, luong = ?, luongK = ?");
+                        "insert into giftcode_log set player = ?, userId = ?, giftcode = ?, item = ?, xu = ?, luong = ?, luongK = ?");
                 preLog.setString(1, player.charname);
-                preLog.setString(2, text);
-                preLog.setString(3, item);
-                preLog.setInt(4, xu);
-                preLog.setInt(5, luong);
-                preLog.setInt(6, luongkhoa);
+                preLog.setInt(2, userId);
+                preLog.setString(3, text);
+                preLog.setString(4, item);
+                preLog.setInt(5, xu);
+                preLog.setInt(6, luong);
+                preLog.setInt(7, luongkhoa);
                 preLog.execute();
                 preLog.close();
 

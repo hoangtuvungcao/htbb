@@ -8,8 +8,8 @@
  *      → type khác 0 là mã vô hình với người chơi.
  *   2. `limit_use` là số lượt CÒN LẠI. Bằng 0 thì báo hết lượt. Chỉ trừ đi khi
  *      `limit >= 1`, nên số âm là không giới hạn thật sự (không trừ tiếp).
- *   3. Chặn nhận lại tính theo TÊN NHÂN VẬT trong giftcode_log, không theo tài
- *      khoản → một tài khoản 3 nhân vật thì nhận được 3 lần cùng một mã.
+ *   3. Chặn nhận lại tính theo TÀI KHOẢN (cột `giftcode_log.userId`, sửa 09/09/2026) —
+ *      một tài khoản chỉ nhận được một mã đúng một lần dù có bao nhiêu nhân vật.
  *   4. Cột `expire` chưa bao giờ được đọc. Muốn hết hạn thì tự đặt limit_use = 0.
  *
  * VÌ SAO PHẢI LỌC KÝ TỰ CHẶT: server ghép thẳng cả tên mã lẫn chuỗi phần thưởng
@@ -190,13 +190,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             case 'cho_nhan_lai': {
+                // Chan theo TAI KHOAN (userId) tu 09/09/2026, khong con theo ten nhan vat — xoa
+                // theo userId de don sach het moi dong cua tai khoan do cho dung mot ma (ke ca
+                // khi tai khoan co nhieu nhan vat cung nhan truoc do, du hiem sau khi sua).
                 $ma     = p('ma');
+                $userId = (int)p('userId');
                 $player = p('player');
-                $st = dbGame()->prepare('DELETE FROM giftcode_log WHERE giftcode = ? AND player = ?');
-                $st->execute([$ma, $player]);
-                ghiNhatKy('cho_nhan_lai_giftcode', $ma, 'nhân vật ' . $player . ', xoá ' . $st->rowCount() . ' dòng');
+                $st = dbGame()->prepare('DELETE FROM giftcode_log WHERE giftcode = ? AND userId = ?');
+                $st->execute([$ma, $userId]);
+                ghiNhatKy('cho_nhan_lai_giftcode', $ma, 'tài khoản #' . $userId . ' (' . $player . '), xoá ' . $st->rowCount() . ' dòng');
                 veLai($TRANG . '?tab=log', 'success',
-                    'Nhân vật ' . $player . ' có thể nhận lại mã ' . $ma . ' (' . $st->rowCount() . ' dòng đã xoá).');
+                    'Tài khoản của ' . $player . ' có thể nhận lại mã ' . $ma . ' (' . $st->rowCount() . ' dòng đã xoá).');
                 break;
             }
 
@@ -251,7 +255,7 @@ try {
         // lập prepare nên tham số gửi đi dạng chuỗi và `LIMIT '41'` là lỗi cú pháp.
         $lay = $logMoi + 1;
         $bo  = ($logTrang - 1) * $logMoi;
-        $st = dbGame()->prepare("SELECT id, giftcode, player, item, xu, luong, luongK
+        $st = dbGame()->prepare("SELECT id, giftcode, player, userId, item, xu, luong, luongK
                                    FROM giftcode_log $where ORDER BY id DESC LIMIT $lay OFFSET $bo");
         $st->execute($thamSo);
         $logRows = $st->fetchAll();
@@ -565,8 +569,8 @@ adminHead('giftcode', 'Giftcode');
 
         <div class="luuy">
             <p><strong>Nhớ ba điều:</strong></p>
-            <p>· Mỗi <em>nhân vật</em> chỉ nhận một mã một lần — không phải mỗi tài khoản. Một tài khoản
-               ba nhân vật thì nhận được ba lần.</p>
+            <p>· Mỗi <em>tài khoản</em> chỉ nhận một mã một lần, dù có bao nhiêu nhân vật (chặn theo
+               <code>giftcode_log.userId</code>, không còn theo tên nhân vật).</p>
             <p>· Cột <code>expire</code> trong bảng không có tác dụng gì cả; muốn hết hạn thì tự bấm “Tắt”.</p>
             <p>· Mã cho quá nhiều món một lúc dễ làm hành trang phình to; trước đây từng có nhân vật
                bị server tự khoá vì lưu hỏng. Xem <code>vps/sql-giftcode.md</code>.</p>
@@ -756,10 +760,11 @@ adminHead('giftcode', 'Giftcode');
                     <td class="info"><?php oPhanThuongChiTiet((string)($r['item'] ?? '')); ?></td>
                     <td class="nowrap">
                         <form method="post" action="giftcode.php" class="inline"
-                              onsubmit="return confirm('Cho <?= e((string)$r['player']) ?> nhận lại mã <?= e((string)$r['giftcode']) ?>?');">
+                              onsubmit="return confirm('Cho tài khoản của <?= e((string)$r['player']) ?> nhận lại mã <?= e((string)$r['giftcode']) ?>?');">
                             <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
                             <input type="hidden" name="viec" value="cho_nhan_lai">
                             <input type="hidden" name="ma" value="<?= e((string)$r['giftcode']) ?>">
+                            <input type="hidden" name="userId" value="<?= (int)$r['userId'] ?>">
                             <input type="hidden" name="player" value="<?= e((string)$r['player']) ?>">
                             <button class="btn btn-xam btn-nho">Cho nhận lại</button>
                         </form>
@@ -785,8 +790,9 @@ adminHead('giftcode', 'Giftcode');
         </div>
 
         <p class="muted small" style="margin-top:10px;">
-            “Cho nhận lại” xoá dòng trong <code>giftcode_log</code> — đúng thứ server dùng để chặn nhận
-            trùng. Nó <strong>không</strong> cộng lại lượt cho mã.
+            “Cho nhận lại” xoá mọi dòng của <strong>tài khoản đó</strong> (theo <code>userId</code>, không
+            chỉ riêng nhân vật đang hiện ở dòng này) với mã này trong <code>giftcode_log</code> — đúng thứ
+            server dùng để chặn nhận trùng. Nó <strong>không</strong> cộng lại lượt cho mã.
         </p>
     </div>
 
