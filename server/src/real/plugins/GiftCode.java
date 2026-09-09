@@ -105,7 +105,10 @@ public class GiftCode {
                 newItem.createOptionCanh(4, 50);
             }
         }
-      
+        // Skin Kim Cang Long (911): roll ngau nhien 2-3 dong chi so - tu return neu
+        // khong phai id 911 nen goi vo dieu kien o day la an toan.
+        newItem.createAttributeSkinKimCangLong();
+
         newItem.dateCreate = Char.getDayTime(0L);
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
     }

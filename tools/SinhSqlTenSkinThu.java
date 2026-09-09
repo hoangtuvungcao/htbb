@@ -31,7 +31,7 @@ public final class SinhSqlTenSkinThu {
     public static void main(final String[] thamSo) throws Exception {
         final StringBuilder s = new StringBuilder();
         s.append("-- ==================================================================================\n");
-        s.append("--  TEN + MO TA cua 5 vat pham skin linh thu\n");
+        s.append("--  TEN + MO TA cua ").append(real.SkinLinhThu.SO_SKIN).append(" vat pham skin linh thu\n");
         s.append("-- ==================================================================================\n");
         s.append("--\n");
         s.append("--  TEP NAY DUOC SINH RA, DUNG SUA TAY.\n");
@@ -54,8 +54,15 @@ public final class SinhSqlTenSkinThu {
              .append("'\n WHERE `id` = ").append(real.SkinLinhThu.ID_ITEM[i]).append(";\n\n");
         }
 
-        s.append("-- Kiem tra: phai ra dung 5 dong, moi ten deu co dong \"[he ...]\".\n");
-        s.append("SELECT `id`, `name` FROM `data_item` WHERE `id` BETWEEN 905 AND 909 ORDER BY `id`;\n");
+        s.append("-- Kiem tra: phai ra dung ").append(real.SkinLinhThu.SO_SKIN).append(" dong.\n");
+        s.append("SELECT `id`, `name` FROM `data_item` WHERE `id` IN (");
+        for (int i = 0; i < real.SkinLinhThu.ID_ITEM.length; i++) {
+            if (i > 0) {
+                s.append(',');
+            }
+            s.append(real.SkinLinhThu.ID_ITEM[i]);
+        }
+        s.append(") ORDER BY `id`;\n");
 
         final Writer w = new OutputStreamWriter(new FileOutputStream(TEP), StandardCharsets.UTF_8);
         try {

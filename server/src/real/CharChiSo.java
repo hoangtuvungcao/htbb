@@ -449,6 +449,9 @@ class CharChiSo {
             upvP += pcThuSkin;
             upmP += pcThuSkin;
         }
+        // SKIN LINH THU (Kim Cang Long): "Bao kich" ngau nhien theo vat pham (khac ca bon
+        // skin tren, khong doc tu bang hang so) - xem SkinLinhThu.kimCangLongBaoKich.
+        self.baokich += (short) SkinLinhThu.kimCangLongBaoKich(self);
         self.defend_physic += upVat * self.defend_physic / 100;
         self.defend_magic += upMa * self.defend_magic / 100;
         if (animalRide != null) {
@@ -931,6 +934,17 @@ class CharChiSo {
                         final long st = self.itemVukhiThoiTrang.otherAtt[54] * mhp / 1000L;
                         finalDame += (int) st;
                     }
+                    // SKIN LINH THU (Kim Cang Long): "Sat thuong chuan" ngau nhien theo vat
+                    // pham, cong THANG moi don theo % maxHP MUC TIEU - CUNG loai tru Tru Rong
+                    // voi dong tren (xem CharChiSo.java:929, cung tinh than voi "sat thuong
+                    // chuan" cua vu khi thoi trang o dong 929-933, nhung day KHONG co ti le
+                    // proc rieng - luon cong khi da roll duoc dong nay).
+                    if (!actor.isBossTruRong()) {
+                        final int pcSTC = SkinLinhThu.kimCangLongSatThuongChuan(self);
+                        if (pcSTC > 0) {
+                            finalDame += (int) ((long) actor.maxhp * pcSTC / 100L);
+                        }
+                    }
                     if (actor.cat == 0) {
                         final Char p = (Char) actor;
                         if (p.getPetUsing() != null) {
@@ -1307,6 +1321,12 @@ class CharChiSo {
         if (self.vip > 0) {
             upAttack += 5;
         }
+        // SKIN LINH THU (Kim Cang Long): "Tang cong" ngau nhien theo vat pham - xem
+        // SkinLinhThu.kimCangLongTangCong. Cong vao ca hai bo dem % nhu cac dong tren, dung
+        // truoc khi nhan mot lan duy nhat o hai dong ke tiep.
+        final int pcTangCongSkin = SkinLinhThu.kimCangLongTangCong(self);
+        upAttack += pcTangCongSkin;
+        upatkP += pcTangCongSkin;
         self.attack += self.attack * upAttack / 100;
         if (self.fullSet15 >= 10) {
             self.attack += self.attack * 12 / 100;

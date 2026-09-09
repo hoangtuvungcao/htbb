@@ -2656,6 +2656,44 @@ public class Item extends Actor {
         }
     }
 
+    /**
+     * Skin thu Kim Cang Long (id 911, xem SkinLinhThu.KIM_CANG_LONG): chon NGAU NHIEN 2
+     * hoac 3 trong 3 dong duoi day, khong hoan lai - cung khuon rut pool voi
+     * createAttributeNguyetLinhTruong() o tren, nhung gia tri luu la % THAT (vd 3 nghia la
+     * 3%), khong phai thang do phan nghin/tier cua ham do.
+     *
+     *   otherAtt[4]  Bạo kích            1-5%
+     *   otherAtt[54] Sát thương chuẩn    1-5%   (doc lai qua SkinLinhThu.kimCangLongSatThuongChuan)
+     *   otherAtt[47] Gia tăng tc         3-15%  (doc lai qua SkinLinhThu.kimCangLongTangCong)
+     *
+     * Ba o nay TRUNG voi cac vat pham khac dang dung (vu khi thoi trang, pet rong) nhung
+     * KHONG dam vao nhau: moi noi doc tu MOT truong Char rieng (itemVukhiThoiTrang,
+     * itemPet, va o day la vat pham skin dang mac qua SkinLinhThu.timSkinDangMac) - dung
+     * quy uoc san co cua codebase nay (xem Pet.getbaoKich()/Pet.java:1110).
+     */
+    public void createAttributeSkinKimCangLong() {
+        if (this.tempateID != 911) {
+            return;
+        }
+        final ArrayList<Integer> possibleLines = new ArrayList<>();
+        possibleLines.add(4);
+        possibleLines.add(54);
+        possibleLines.add(47);
+        final int numLines = (Map.r.nextInt(100) < 50) ? 2 : 3;
+        for (int i = 0; i < numLines; i++) {
+            final int randomIndex = Map.r.nextInt(possibleLines.size());
+            final int lineId = possibleLines.get(randomIndex);
+            possibleLines.remove(randomIndex);
+            if (lineId == 4) {
+                this.otherAtt[4] = (short) (Map.r.nextInt(5) + 1);
+            } else if (lineId == 54) {
+                this.otherAtt[54] = (short) (Map.r.nextInt(5) + 1);
+            } else if (lineId == 47) {
+                this.otherAtt[47] = (short) (Map.r.nextInt(13) + 3);
+            }
+        }
+    }
+
     public void createAttributeNguyetLinhTruongMax() {
         if (!this.isNguyetLinhTruong()) {
             return;
@@ -3344,6 +3382,11 @@ public class Item extends Actor {
 
     public boolean isChoi() {
         return this.isChoiSell() || (this.tempateID >= 613 && this.tempateID <= 615);
+    }
+
+    /** Choi Set (614 anh/618 that) - dung cho dieu kien hieu ung "Set danh" cua skin Kim Cang Long. */
+    public boolean isChoiSet() {
+        return this.tempateID == 614 || this.tempateID == 618;
     }
 
     @Override

@@ -64,7 +64,7 @@ public class DataGame {
     // KHONG dung lai dai 855..859 nhu ban skin dau tien: sau khi tinh nang bi go, dung
     // nam id do da duoc giao cho canh (commit 2c651ce). Dat de len la o xem truoc cua
     // canh hien ra con thu.
-    static short nIconItem = 865; // update item moi
+    static short nIconItem = 866; // update item moi (865 = icon skin Kim Cang Long)
 //    static short nIconItem = 632;
     public static byte version = 1;
 
@@ -248,7 +248,10 @@ public class DataGame {
                 }
             }
             // TODO id lớn nhất trong d_effect
-            nMonster = 300;
+            // 301 (truoc la 300) de nap them map/d_effect/300 - "Set danh" cua skin Kim
+            // Cang Long (EffectBuff.SET_DANH = 300+8700), o hoan toan moi chua ton tai
+            // truoc do, khong dung lai bat ky file cu nao.
+            nMonster = 301;
             imgDynamicEffect = new byte[nMonster][];
             dataDynamicEffect = new byte[nMonster][];
             dataPetEffect = new byte[nMonster][];

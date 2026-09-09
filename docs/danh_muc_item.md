@@ -14,7 +14,7 @@ và mục 2 trong ghi chú icon của dự án) — đừng gán vật phẩm m�
 
 test/KiemDanhMucItem.java đối chiếu số lượng + vài id mốc với chính file SQL.
 
-Tổng: 914 vật phẩm (id 1-954).
+Tổng: 915 vật phẩm (id 1-954).
 
 | ID | Tên | type | Cấp | Giá | icon |
 |---:|---|---:|---:|---:|---:|
@@ -927,6 +927,7 @@ Tổng: 914 vật phẩm (id 1-954).
 | 908 | Skin linh thú Xích Dương\n[hệ Hỏa] - hợp Đấu sĩ\n- 5% đòn đánh xuyên toàn bộ giáp (khi hợp hệ)\n- Nội tại: khi máu xuống dưới 30%, tăng 50% tấn công trong 3 giây, hồi chiêu 40 giây | 30 | 1 | 0 | 863 |
 | 909 | Skin linh thú Chiến Lang\n[hệ Thổ] - hợp Kiếm khách\n- Cộng 20% phòng thủ (khi hợp hệ)\n- Hấp thụ 15% sát thương | 30 | 1 | 0 | 864 |
 | 910 | Phi phong vô hình | 19 | 0 | 0 | 829 |
+| 911 | Skin linh thú Kim Cang Long\n[hệ Kim]\n- Ngẫu nhiên 2 hoặc 3 trong: Bạo kích (1-5%), Sát thương chuẩn (1-5%), Tăng công (3-15%)\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng | 30 | 1 | 0 | 865 |
 | 950 | Skin Phúc Thú (hệ Kim) | 19 | 0 | 0 | 815 |
 | 951 | Skin Gấu Trúc (hệ Mộc) | 19 | 0 | 0 | 816 |
 | 952 | Skin Tiên Lộc (hệ Thủy) | 19 | 0 | 0 | 817 |

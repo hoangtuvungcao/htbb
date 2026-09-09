@@ -4926,6 +4926,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return 0;
     }
 
+    /** Dang deo Choi Set (614/618) o model, dung cho hieu ung "Set danh" cua skin Kim Cang Long. */
+    public boolean dangDeoChoiSet() {
+        return this.wModel != null && this.wModel.wpModel != null && this.wModel.wpModel.isChoiSet();
+    }
+
     public static int getIndexRandomXoso(final int... num) {
         try {
             final Random r = new Random(System.currentTimeMillis());

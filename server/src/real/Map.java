@@ -11268,7 +11268,8 @@ public class Map implements Runnable {
      */
 
     // ===== NPC Doi Thuong (diem tich tu van tieu/cuop tieu/danh quai) =====
-    // 28 vat pham co dinh, 2 trang 14 muc. Ten hien thi dung "diem" (khong con "sao vang").
+    // 31 vat pham co dinh, chia doi so trang tu dong (xem soMucMoiTrangDoiThuong).
+    // Ten hien thi dung "diem" (khong con "sao vang").
     static final String[] TEN_DOI_THUONG = {
             "Phi phong Huyền Vũ ma pháp random kháng 7 ngày",
             "Phi phong Huyền Vũ vật lý random kháng 7 ngày",
@@ -11301,11 +11302,16 @@ public class Map implements Runnable {
             "Skin linh thú Tiên Lộc",
             "Skin linh thú Xích Dương",
             "Skin linh thú Chiến Lang",
+            // Ho ve lenh: random lv1-lv3 CUNG mot cap (4x/5x/6x), 7 ngay.
+            "Hộ vệ lệnh 4x random lv1-3, 7 ngày",
+            "Hộ vệ lệnh 5x random lv1-3, 7 ngày",
+            "Hộ vệ lệnh 6x random lv1-3, 7 ngày",
     };
     static final int[] GIA_DOI_THUONG = {
             500, 500, 1200, 800, 1000, 1000, 1200, 1500, 1200, 800, 800, 1000, 1000,
             800, 800, 800, 800, 500, 500, 500, 500, 800, 800,
             2000, 2000, 2000, 2000, 2000,
+            2000, 2000, 2000,
     };
 
     public void showMenuDiemDoiThuong(Char player) {

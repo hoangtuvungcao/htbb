@@ -951,6 +951,15 @@ class MapQuaTang {
                 // vao o dau tien ben phai bang Trang bi thu.
                 GiftCode.AddItem(player, SkinLinhThu.ID_ITEM[idx - 23], 0, 0, 0);
                 break;
+            case 28: // Ho ve lenh 4x random lv1-3, 7 ngay
+                map.doCreateHoVeLenh(player, PHUT_7_NGAY, new int[]{630, 631, 632}[r.nextInt(3)]);
+                break;
+            case 29: // Ho ve lenh 5x random lv1-3, 7 ngay
+                map.doCreateHoVeLenh(player, PHUT_7_NGAY, new int[]{633, 634, 635}[r.nextInt(3)]);
+                break;
+            case 30: // Ho ve lenh 6x random lv1-3, 7 ngay
+                map.doCreateHoVeLenh(player, PHUT_7_NGAY, new int[]{636, 637, 638}[r.nextInt(3)]);
+                break;
             default:
                 return false;
         }

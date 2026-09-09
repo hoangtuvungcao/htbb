@@ -34,7 +34,7 @@ public final class KiemIconSkinThu {
     /** Buoc nhay giua hai o hanh trang. */
     private static final int BUOC_LUOI = 18;
     private static final int ID_DAU = 860;
-    private static final int SO_SKIN = 5;
+    private static final int SO_SKIN = 6;
 
     public static void chay() {
         Kiem.nhom("Icon skin linh thu - kich thuoc phai an toan voi client");

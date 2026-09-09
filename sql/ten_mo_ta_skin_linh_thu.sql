@@ -1,5 +1,5 @@
 -- ==================================================================================
---  TEN + MO TA cua 5 vat pham skin linh thu
+--  TEN + MO TA cua 6 vat pham skin linh thu
 -- ==================================================================================
 --
 --  TEP NAY DUOC SINH RA, DUNG SUA TAY.
@@ -47,5 +47,11 @@ UPDATE `data_item` SET `name` = 'Skin linh thú Chiến Lang
 - Hấp thụ 15% sát thương'
  WHERE `id` = 909;
 
--- Kiem tra: phai ra dung 5 dong, moi ten deu co dong "[he ...]".
-SELECT `id`, `name` FROM `data_item` WHERE `id` BETWEEN 905 AND 909 ORDER BY `id`;
+UPDATE `data_item` SET `name` = 'Skin linh thú Kim Cang Long
+[hệ Kim]
+- Ngẫu nhiên 2 hoặc 3 trong: Bạo kích (1-5%), Sát thương chuẩn (1-5%), Tăng công (3-15%)
+- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng'
+ WHERE `id` = 911;
+
+-- Kiem tra: phai ra dung 6 dong.
+SELECT `id`, `name` FROM `data_item` WHERE `id` IN (905,906,907,908,909,911) ORDER BY `id`;

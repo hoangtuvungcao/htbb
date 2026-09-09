@@ -11,16 +11,17 @@ public final class KiemSkinLinhThu {
     public static void chay() {
         Kiem.nhom("real.SkinLinhThu");
 
-        Kiem.bang("co dung 5 skin", Integer.valueOf(5), Integer.valueOf(real.SkinLinhThu.SO_SKIN));
-        Kiem.bang("mang TEN du 5 phan tu", Integer.valueOf(5), Integer.valueOf(real.SkinLinhThu.TEN.length));
-        Kiem.bang("mang ID_ITEM du 5 phan tu", Integer.valueOf(5), Integer.valueOf(real.SkinLinhThu.ID_ITEM.length));
-        Kiem.bang("mang BAY du 5 phan tu", Integer.valueOf(5), Integer.valueOf(real.SkinLinhThu.BAY.length));
+        Kiem.bang("co dung 6 skin", Integer.valueOf(6), Integer.valueOf(real.SkinLinhThu.SO_SKIN));
+        Kiem.bang("mang TEN du 6 phan tu", Integer.valueOf(6), Integer.valueOf(real.SkinLinhThu.TEN.length));
+        Kiem.bang("mang ID_ITEM du 6 phan tu", Integer.valueOf(6), Integer.valueOf(real.SkinLinhThu.ID_ITEM.length));
+        Kiem.bang("mang BAY du 6 phan tu", Integer.valueOf(6), Integer.valueOf(real.SkinLinhThu.BAY.length));
 
-        // hopLe: bien 0..4
+        // hopLe: bien 0..5 (them Kim Cang Long)
         Kiem.sai("hopLe(-1)", real.SkinLinhThu.hopLe(-1));
         Kiem.dung("hopLe(0)", real.SkinLinhThu.hopLe(0));
         Kiem.dung("hopLe(4)", real.SkinLinhThu.hopLe(4));
-        Kiem.sai("hopLe(5) - ngoai bien", real.SkinLinhThu.hopLe(5));
+        Kiem.dung("hopLe(5) - Kim Cang Long", real.SkinLinhThu.hopLe(5));
+        Kiem.sai("hopLe(6) - ngoai bien", real.SkinLinhThu.hopLe(6));
         Kiem.sai("hopLe(KHONG_CO)", real.SkinLinhThu.hopLe(real.SkinLinhThu.KHONG_CO));
 
         // skinCuaItem / laItemSkin: anh xa id vat pham -> so hieu skin
@@ -45,8 +46,9 @@ public final class KiemSkinLinhThu {
         // moTa: skin hop le tra ve ten, khong hop le tra ve "khong co"
         Kiem.bang("moTa(0)", real.SkinLinhThu.TEN[0], real.SkinLinhThu.moTa(0));
         Kiem.bang("moTa(4)", real.SkinLinhThu.TEN[4], real.SkinLinhThu.moTa(4));
+        Kiem.bang("moTa(5) - Kim Cang Long", real.SkinLinhThu.TEN[5], real.SkinLinhThu.moTa(5));
         Kiem.bang("moTa(-1)", "không có", real.SkinLinhThu.moTa(-1));
-        Kiem.bang("moTa(5)", "không có", real.SkinLinhThu.moTa(5));
+        Kiem.bang("moTa(6)", "không có", real.SkinLinhThu.moTa(6));
 
         kiemBoAnh();
         kiemCheChanNguoi();
@@ -670,6 +672,13 @@ public final class KiemSkinLinhThu {
         // chon nao, trung thi mot mon phai co hai con con mon khac khong co con nao.
         final int[] dem = new int[5];
         for (int s = 0; s < real.SkinLinhThu.SO_SKIN; s++) {
+            if (s == real.SkinLinhThu.KIM_CANG_LONG) {
+                // Kim Cang Long dung lai he Kim cua Phuc Thu (5 he da het cho 5 skin dau,
+                // khong con he trong) nhung KHONG co tac dung chi so hopHe nao - chi so cua
+                // no ngau nhien theo vat pham, khong doc qua noiTaiHopHe. Khong tinh vao
+                // dieu kien "moi mon phai dung 1 skin hop" ben duoi.
+                continue;
+            }
             final int mp = real.SkinLinhThu.monPhaiHopVoiSkin(s);
             Kiem.dung("skin " + s + " co mon phai hop hop le", mp >= 0 && mp < 5);
             if (mp >= 0 && mp < 5) {

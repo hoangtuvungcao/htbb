@@ -226,9 +226,25 @@ class CharTrangBi {
                                         self.sendEffToChar(self);
                                         self.sendEffToNearChar();
                                     }
-                                } else if (actor.addEffBuff(EffectBuff.CHOANG, System.currentTimeMillis() + 3000L, EffectBuff.BY_ACTOR, 0) != null && actor.cat == 0) {
-                                    actor.sendEffToChar((Char) actor);
-                                    actor.sendEffToNearChar();
+                                } else {
+                                    // SKIN LINH THU (Kim Cang Long) + Choi Set dang deo: 5% co hoi
+                                    // moi lan Set Lan phat dong se trieu hoi "Set danh", tang them
+                                    // 3 giay choang cho MUC TIEU. Chi ap dung nhanh choang thang
+                                    // nay, KHONG ap dung nhanh phan choang o tren (do la choang
+                                    // chinh chu tan cong, khong phai muc tieu).
+                                    long msChoang = 3000L;
+                                    if (SkinLinhThu.timSkinDangMac(self) != null && self.dangDeoChoiSet()
+                                            && Map.r.nextInt(100) < 5) {
+                                        msChoang += 3000L;
+                                        if (actor.addEffBuff(EffectBuff.SET_DANH, System.currentTimeMillis() + 800L, EffectBuff.BY_ACTOR, 0) != null) {
+                                            actor.sendEffToChar((Char) actor);
+                                            actor.sendEffToNearChar();
+                                        }
+                                    }
+                                    if (actor.addEffBuff(EffectBuff.CHOANG, System.currentTimeMillis() + msChoang, EffectBuff.BY_ACTOR, 0) != null) {
+                                        actor.sendEffToChar((Char) actor);
+                                        actor.sendEffToNearChar();
+                                    }
                                 }
                             }
                         } else if (id == 3) {

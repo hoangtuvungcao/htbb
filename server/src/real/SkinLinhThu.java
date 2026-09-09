@@ -61,10 +61,13 @@ public final class SkinLinhThu {
     }
 
     public static final int KHONG_CO = -1;
-    public static final int SO_SKIN = 5;
+    public static final int SO_SKIN = 6;
+
+    /** Chi so skin cua Kim Cang Long - chi so DUY NHAT chi so ngau nhien theo vat pham. */
+    public static final int KIM_CANG_LONG = 5;
 
     /** Ten skin, dung cho thong bao va mo ta vat pham. Thu tu khop ID_ITEM va file anh. */
-    public static final String[] TEN = {"Phúc Thú", "Gấu Trúc", "Tiên Lộc", "Xích Dương", "Chiến Lang"};
+    public static final String[] TEN = {"Phúc Thú", "Gấu Trúc", "Tiên Lộc", "Xích Dương", "Chiến Lang", "Kim Cang Long"};
 
     /**
      * Id anh con thu tren ban do. Skin thu n dung id ID_ANH_BAN_DO + n cho CA anh atlas
@@ -73,10 +76,16 @@ public final class SkinLinhThu {
     public static final int ID_ANH_BAN_DO = 13000;
 
     /**
-     * Id template cua 5 vat pham skin trong bang data_item, dung thu tu skin 0..4.
+     * Id template cua 6 vat pham skin trong bang data_item, dung thu tu skin 0..5.
      * Tao bang sql/skin_linh_thu.sql. Doi id trong SQL thi phai doi o day cho khop.
+     *
+     * Skin 5 (Kim Cang Long) KHONG di theo bang hang so noi tai o duoi (xem CONG_HP..
+     * BAO_KICH_HOAT) - chi so cua no la NGAU NHIEN THEO TUNG VAT PHAM, sinh luc tao bang
+     * Item.createAttributeSkinKimCangLong() va doc lai tu chinh item dang mac (xem
+     * timSkinDangMac). Vi vay tat ca bang hang so o duoi deu dat gia tri TRUNG LAP (0/false/
+     * -1/DK_KHONG) cho chi so 5, dung theo mau "khong noi tai" da co san cua Chien Lang (4).
      */
-    public static final int[] ID_ITEM = {905, 906, 907, 908, 909};
+    public static final int[] ID_ITEM = {905, 906, 907, 908, 909, 911};
 
     /**
      * Vat pham skin mang type 30.
@@ -129,7 +138,7 @@ public final class SkinLinhThu {
      * Gia tri nay di vao byte "fly" cua goi thong tin nhan vat; client dung no de quyet
      * dinh tu the ngoi, do cao va co ve bong cham dat hay khong (Client/Char.anmFly).
      */
-    public static final int[] BAY = {0, 0, 0, 0, 0};
+    public static final int[] BAY = {0, 0, 0, 0, 0, 0};
 
     // ====================================================================================
     //                              NOI TAI THUONG TRUC
@@ -162,8 +171,8 @@ public final class SkinLinhThu {
      */
 
     /** Phuc Thu: cong thang vao maxhp / maxmp cua chu nhan — "Buff bi dong", luon bat. */
-    public static final int[] CONG_HP = {2000, 0, 0, 0, 0};
-    public static final int[] CONG_MP = {3000, 0, 0, 0, 0};
+    public static final int[] CONG_HP = {2000, 0, 0, 0, 0, 0};
+    public static final int[] CONG_MP = {3000, 0, 0, 0, 0, 0};
 
     /**
      * Gau Truc: cong THANG vao diem chinh xac cuoi cung cua nhan vat — CHI KHI HOP HE (day
@@ -179,7 +188,7 @@ public final class SkinLinhThu {
      * vat chinh xac thap va gan nhu khong doi gi voi nhan vat da cao. Do la cach game
      * dung chinh xac tu truoc, khong phai rieng skin.
      */
-    public static final int[] CONG_CHINH_XAC = {0, 200, 0, 0, 0};
+    public static final int[] CONG_CHINH_XAC = {0, 200, 0, 0, 0, 0};
 
     /**
      * Xich Duong: xuyen giap, cong vao Char.attNguHanh[3] — CHI KHI HOP HE (dong "Tac dung
@@ -191,7 +200,7 @@ public final class SkinLinhThu {
      * BO QUA HOAN TOAN giap muc tieu (attackDam dat dam = att). Nen 5 = "5% so don bo
      * qua giap", khong phai "giam 5% giap moi don".
      */
-    public static final int[] PC_XUYEN_GIAP = {0, 0, 0, 5, 0};
+    public static final int[] PC_XUYEN_GIAP = {0, 0, 0, 5, 0, 0};
 
     /**
      * Tien Loc: cong phan tram vao BON diem tiem nang cua chu nhan
@@ -210,14 +219,14 @@ public final class SkinLinhThu {
      * tiem nang cua nhan vat cap cao vuot xa), con upAbility la byte[5] va khong he duoc
      * dat lai moi lan tinh — cong vao la don vo han roi tran kieu thanh so am.
      */
-    public static final int[] PC_TIEM_NANG = {0, 0, 20, 0, 0};
+    public static final int[] PC_TIEM_NANG = {0, 0, 20, 0, 0, 0};
 
     /**
      * Chien Lang: cong phan tram vao ca thu vat lan thu phep — CHI KHI HOP HE (dong "Tac
      * dung chi so" cua Chien Lang; sai he thi pcThu tra 0, chi con +15% hap thu o duoi vi
      * do la "Buff bi dong").
      */
-    public static final int[] PC_THU = {0, 0, 0, 0, 20};
+    public static final int[] PC_THU = {0, 0, 0, 0, 20, 0};
 
     /**
      * Chien Lang: phan tram sat thuong bi hap thu truoc khi tru mau — "Buff bi dong",
@@ -226,7 +235,7 @@ public final class SkinLinhThu {
      * CONG DON voi hap thu san co cua linh thu (Animal.att[9]) va voi noi tai 3% cua Lan
      * — xem Char.checkHapthuSatThuong. Khong thay the, khong lay so lon hon.
      */
-    public static final int[] PC_HAP_THU = {0, 0, 0, 0, 15};
+    public static final int[] PC_HAP_THU = {0, 0, 0, 0, 15, 0};
 
     // ------------------------------------------------------------------------------------
     //           HE NGU HANH — HOP HE MOI DUOC "TAC DUNG CHI SO", SAI HE CHI CON BUFF
@@ -245,11 +254,12 @@ public final class SkinLinhThu {
 
     /** He cua tung skin, theo thu tu skin 0..4. */
     public static final int[] HE = {
-        3, // Phuc Thu    - Kim
-        0, // Gau Truc    - Moc
-        4, // Tien Loc    - Thuy
-        1, // Xich Duong  - Hoa
-        2, // Chien Lang  - Tho
+        3, // Phuc Thu       - Kim
+        0, // Gau Truc       - Moc
+        4, // Tien Loc       - Thuy
+        1, // Xich Duong     - Hoa
+        2, // Chien Lang     - Tho
+        3, // Kim Cang Long  - Kim (dung ten, khong tao tac dung chi so gi - xem ID_ITEM)
     };
 
     /**
@@ -397,7 +407,8 @@ public final class SkinLinhThu {
         DK_BI_PHEP,   // 1 Gau Truc
         DK_BI_DANH,   // 2 Tien Loc
         DK_HP_THAP,   // 3 Xich Duong
-        DK_KHONG,     // 4 Chien Lang — noi tai cua no la 15% hap thu, luon bat, khong ti le
+        DK_KHONG,     // 4 Chien Lang       — noi tai cua no la 15% hap thu, luon bat, khong ti le
+        DK_KHONG,     // 5 Kim Cang Long    — khong dung he noi tai nay (xem ID_ITEM)
     };
 
     /**
@@ -405,13 +416,13 @@ public final class SkinLinhThu {
      * dong "Tac dung chi so" cua no theo ban mo ta. Bon skin con lai de false: noi tai co
      * ti le cua chung la "Buff bi dong", luon bat bat ke dung/sai he — xem thoaDieuKien().
      */
-    public static final boolean[] NOI_TAI_CAN_HOP_HE = {true, false, false, false, false};
+    public static final boolean[] NOI_TAI_CAN_HOP_HE = {true, false, false, false, false, false};
 
     /** Ti le kich hoat (phan tram). 100 = cu du dieu kien la kich hoat. */
-    public static final int[] PC_KICH_HOAT = {15, 15, 10, 100, 0};
+    public static final int[] PC_KICH_HOAT = {15, 15, 10, 100, 0, 0};
 
     /** Thoi gian hieu luc sau khi kich hoat (mili giay). */
-    public static final int[] MS_HIEU_LUC = {3000, 3000, 5000, 3000, 0};
+    public static final int[] MS_HIEU_LUC = {3000, 3000, 5000, 3000, 0, 0};
 
     /**
      * Hoi chieu (mili giay).
@@ -420,7 +431,7 @@ public final class SkinLinhThu {
      * thi "trong 3 giay" thanh vo nghia — cu o duoi 30% mau la no bat lai ngay, tuc buff
      * chay lien tuc. Dat 40 giay cho dong bo voi ba noi tai kia. Doi so o day la du.
      */
-    public static final int[] MS_HOI_CHIEU = {40000, 40000, 40000, 40000, 0};
+    public static final int[] MS_HOI_CHIEU = {40000, 40000, 40000, 40000, 0, 0};
 
     /**
      * Hieu ung hinh anh bao cho nguoi choi biet noi tai dang chay.
@@ -439,19 +450,20 @@ public final class SkinLinhThu {
         EffectBuff.BUFF_DAM_10,
         EffectBuff.BUFF_DAM_5,
         -1,
+        -1,
     };
 
     /** Phan tram sat thuong bi CHAN khi noi tai dang chay (Phuc Thu, Tien Loc). */
-    public static final int[] PC_CHAN_ST_NOI_TAI = {30, 0, 50, 0, 0};
+    public static final int[] PC_CHAN_ST_NOI_TAI = {30, 0, 50, 0, 0, 0};
 
     /** Diem phan tram cong vao PHAN SAT THUONG khi noi tai dang chay (Gau Truc). */
-    public static final int[] PC_CONG_PST_NOI_TAI = {0, 50, 0, 0, 0};
+    public static final int[] PC_CONG_PST_NOI_TAI = {0, 50, 0, 0, 0, 0};
 
     /** Tran phan sat thuong khi noi tai Gau Truc dang cong vao. */
     public static final int PC_TRAN_PST = 80;
 
     /** Phan tram TAN CONG cong them khi noi tai dang chay (Xich Duong). */
-    public static final int[] PC_CONG_TAN_CONG_NOI_TAI = {0, 0, 0, 50, 0};
+    public static final int[] PC_CONG_TAN_CONG_NOI_TAI = {0, 0, 0, 50, 0, 0};
 
     /** Nguong mau (phan tram) de noi tai DK_HP_THAP kich hoat. */
     public static final int PC_NGUONG_HP = 30;
@@ -462,6 +474,7 @@ public final class SkinLinhThu {
         "Gấu Trúc phản chấn: phản sát thương tăng mạnh trong 3 giây!",
         "Tiên Lộc dựng lá chắn: chặn 50% sát thương trong 5 giây!",
         "Xích Dương cuồng nộ: tăng 50% tấn công trong 3 giây!",
+        "",
         "",
     };
 
@@ -627,8 +640,18 @@ public final class SkinLinhThu {
         final StringBuilder s = new StringBuilder("Skin linh thú ").append(TEN[skin]);
         s.append("\n[hệ ").append(TEN_HE[HE[skin]]).append(']');
         final int mp = monPhaiHopVoiSkin(skin);
-        if (mp >= 0 && mp < CharManager.NAME_CLASS.length) {
+        // Kim Cang Long (5) khong co tac dung chi so theo he - bo dong "hop X" de khoi
+        // hua nham mot thu no khong lam (xem ID_ITEM).
+        if (mp >= 0 && mp < CharManager.NAME_CLASS.length && skin != KIM_CANG_LONG) {
             s.append(" - hợp ").append(CharManager.NAME_CLASS[mp]);
+        }
+        if (skin == KIM_CANG_LONG) {
+            // Chi so ngau nhien theo tung vat pham (Item.createAttributeSkinKimCangLong),
+            // hien qua tooltip chi so vat pham (otherAtt[4]/[47]/[54]) - khong ghi so cu
+            // the o day vi moi vat pham mot khac.
+            s.append("\n- Ngẫu nhiên 2 hoặc 3 trong: Bạo kích (1-5%), Sát thương chuẩn (1-5%), Tăng công (3-15%)");
+            s.append("\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng");
+            return s.toString();
         }
         if (CONG_HP[skin] > 0) {
             s.append("\n- Cộng ").append(CONG_HP[skin]).append(" HP");
@@ -861,6 +884,52 @@ public final class SkinLinhThu {
         item.idAnimal = -1;
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
         dongBoVaGui(p);
+    }
+
+    // ====================================================================================
+    //           KIM CANG LONG — CHI SO NGAU NHIEN THEO VAT PHAM (khong dung bang hang so)
+    // ====================================================================================
+
+    /**
+     * Vat pham Kim Cang Long dang mac VA dang mang (dangMang), null neu khong. Dung de doc
+     * lai chi so ngau nhien da roll luc tao vat pham (Item.createAttributeSkinKimCangLong,
+     * luu trong otherAtt[4]/[47]/[54]) — khac voi 5 skin con lai, khong doc tu bang hang so
+     * vi moi vat pham Kim Cang Long mot khac nhau.
+     */
+    public static Item timSkinDangMac(final Char p) {
+        if (p == null || !dangMang(p) || p.idSkinLinhThu != KIM_CANG_LONG || p.awItems == null) {
+            return null;
+        }
+        for (int i = 0; i < p.awItems.size(); i++) {
+            final Item it = p.awItems.get(i);
+            if (it != null && it.getTemplate() != null && it.getTemplate().id == ID_ITEM[KIM_CANG_LONG]) {
+                return it;
+            }
+        }
+        return null;
+    }
+
+    /** Bao kich (%) tu Kim Cang Long dang mang, 0 neu khong co - otherAtt[4] "Bạo kích". */
+    public static int kimCangLongBaoKich(final Char p) {
+        final Item it = timSkinDangMac(p);
+        return it != null ? it.otherAtt[4] : 0;
+    }
+
+    /** Tang cong (%) tu Kim Cang Long dang mang, 0 neu khong co - otherAtt[47] "Gia tăng tc". */
+    public static int kimCangLongTangCong(final Char p) {
+        final Item it = timSkinDangMac(p);
+        return it != null ? it.otherAtt[47] : 0;
+    }
+
+    /**
+     * He so sat thuong chuan tu Kim Cang Long dang mang, 0 neu khong co - otherAtt[54]
+     * "Sát thương chuẩn". Ap dung cong THANG moi don theo % maxHP MUC TIEU, cung tinh than
+     * voi otherAtt[54] cua vu khi thoi trang (CharChiSo.attackDam) nhung doc tu vat pham
+     * skin, khong phai self.itemVukhiThoiTrang.
+     */
+    public static int kimCangLongSatThuongChuan(final Char p) {
+        final Item it = timSkinDangMac(p);
+        return it != null ? it.otherAtt[54] : 0;
     }
 
     /**

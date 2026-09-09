@@ -33,6 +33,14 @@ public class EffectBuff {
    public static short BONG = 32;
    public static short TRUNG_DOC = 33;
    public static short SUY_YEU = 34;
+   /**
+    * "Set danh" - hieu ung trieu hoi cua skin Kim Cang Long khi Choi Set phat dong Set Lan
+    * (xem CharTrangBi.checkNewEffectItem, nhanh id==1). Nguon anh map/d_effect/300 - o
+    * HOAN TOAN MOI (DataGame.nMonster nang 300->301 de nap duoc), dang ky trong
+    * MessageCreator.id_eff_tool_ngu_long - mang do gui "+8700" nen id THAT dung o
+    * addEffBuff la 9000 (300+8700), khong phai 300.
+    */
+   public static short SET_DANH = 9000;
    public static short HOANG_LOAN = 8745;
    public static short BAT_TU = 8746;
    public static short YEM_BUA = 8747;
