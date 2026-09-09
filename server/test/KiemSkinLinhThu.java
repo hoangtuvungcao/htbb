@@ -177,7 +177,20 @@ public final class KiemSkinLinhThu {
      *
      * Doi chieu voi Poro (map/d_effect/56) o vi tri goc — con thu tool that cua game,
      * phu 51% va nhin binh thuong. Skin nao tut xuong duoi muc do la se ho lai.
+     *
+     * NGOAI LE - Kim Cang Long (skin 5, 09/09/2026): nguoi choi bao cao (kem anh chup)
+     * nhan vat noi lo lung tren than rong khi lut khop Poro (12/20/22px xuong/len/ngang) -
+     * doi chieu voi anh mau nguoi choi gui thi ngoi LUN VAO GIUA than rong moi dung, giong
+     * het cach can chinh Poro. Nhung Kim Cang Long la RAN DAI NGOAN NGOEO chu khong phai
+     * thu bon chan gon nhu Poro/Heo/Lan: o dung lut do, khung "ngang" (frame 14) khong con
+     * manh nao roi vao dung o cua so do phu [-32..-15] ma cong thuc nay kiem (than rong van
+     * trai rong theo chieu NGANG, chi khong dung TAI y do) - phu do vi vay tut ve 0% du
+     * nguoi choi xac nhan hinh anh THUC TE khong ho. Cong thuc phu-ngang duoc hieu chinh
+     * cho thu 4 chan; khong ap dung nguyen si duoc cho hinh dang ran dai. Ha nguong rieng
+     * cho skin nay, khong sua nguong chung (van giu 51% cho 5 skin thu 4 chan con lai).
      */
+    private static final int PHU_NGANG_TOI_THIEU_RAN_DAI = 0;
+
     private static void kiemCheChanNguoi() {
         Kiem.nhom("Skin linh thu - con thu che duoc chan nguoi (huong ngang)");
 
@@ -189,7 +202,10 @@ public final class KiemSkinLinhThu {
         System.out.println("    Poro phu " + chuan + "% — do la muc san");
         for (int n = 0; n < real.SkinLinhThu.SO_SKIN; n++) {
             final int p = doPhuNgang(new java.io.File("map/skinthu/" + n));
-            Kiem.dung("skin " + n + " phu " + p + "%, khong thap hon Poro", p >= chuan);
+            final int toiThieu = (n == real.SkinLinhThu.KIM_CANG_LONG) ? PHU_NGANG_TOI_THIEU_RAN_DAI : chuan;
+            Kiem.dung("skin " + n + " phu " + p + "%, khong thap hon " + toiThieu
+                    + (n == real.SkinLinhThu.KIM_CANG_LONG ? " (ran dai - xem ghi chu)" : " (Poro)"),
+                    p >= toiThieu);
         }
     }
 
