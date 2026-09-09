@@ -6357,7 +6357,12 @@ public class GameScr : MyScreen
 		{
 			clearCharPet(myOwner0.ID);
 			Pet o = new Pet(myOwner0, pet.imgID);
-			setInfoCharPet(pet, myOwner0);
+			// TRUOC DAY setInfoCharPet(pet, ...) gan myOwner0.myPet = "pet" (AnimalMove goc tu
+			// goi tin, khong nam trong actors), trong khi actor THUC SU dang ve la "o" (Pet).
+			// Tilemap.reset() (doi map) lai vo dieu kien addElement(mainChar.myPet) -> "pet" bi
+			// them lai thanh MOT actor thu hai, hien 2 con pet cho MOT con dang mang (bao cao
+			// 09/09/2026, nhan vat "father"). Phai gan myPet = o de trung voi actor trong actors.
+			setInfoCharPet(o, myOwner0);
 			actors.addElement(o);
 			return;
 		}

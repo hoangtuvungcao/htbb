@@ -1607,6 +1607,16 @@ public class Pet extends Actor {
         if (this.lvDetail.canUplevel()) {
             p.sendMessage(MessageCreator.createServerAlertMessage("Không thể cho ăn khi chưa nâng cấp pet", ""));
             return false;
+        } else if (this.itemPet.level >= 2 && this.lvDetail.lv >= LevelPet.expMain.length) {
+            // Da toi da CA cap do (lv = LevelPet.expMain.length, khong con muc tiep theo de
+            // tinh) LAN tien hoa (itemPet.level = 2, doTienHoa tu choi tien hoa them). O trang
+            // thai nay canUplevel() luon tra ve false (lv+1 khong chia het 10 o dinh mang), nen
+            // nhanh tren khong chan duoc: khong co gate nao khac, item cho an bi tru VO ICH moi
+            // lan (khong con exp/cap/tien hoa nao de nhan) ma khong co canh bao - day chinh la
+            // loi "cho an mat do, thu nuoi khong doi" nguoi choi bao cao (vd nhan vat "father"
+            // 08/09/2026, pet Rong da lv50/tien hoa 2).
+            p.sendMessage(MessageCreator.createServerAlertMessage("Thú nuôi đã đạt cấp độ và tiến hoá tối đa, không thể cho ăn thêm", ""));
+            return false;
         } else {
             this.lvDetail.addExpUpLevel(this.lvDetail.getExp() + dxp[0]);
             int newlevel = this.lvDetail.lv;

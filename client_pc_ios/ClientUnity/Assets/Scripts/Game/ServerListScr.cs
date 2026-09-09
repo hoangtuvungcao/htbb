@@ -33,7 +33,9 @@ public class ServerListScr : MyScreen
 	public static int index = -1;
 
 	// Doi IP/port server o day. loadSv() ben duoi dung lai 2 hang so nay.
-	public const string SERVER_HOST = "game.kpah-private.site";
+	// "game.kpah-private.site" cu KHONG con phan giai duoc (09/09/2026) -> doi sang
+	// "sv.kpah-private.site" (da tro dung ve VPS 180.93.57.30, xac minh bang nslookup).
+	public const string SERVER_HOST = "sv.kpah-private.site";
 
 	public const short SERVER_PORT = 19129;
 
@@ -45,7 +47,7 @@ public class ServerListScr : MyScreen
 
 	public static sbyte[] index_server = new sbyte[9] { 0, 0, 0, 0, 0, 3, 4, 1, 2 };
 
-	public static string linkGetHost = "http://" + SERVER_HOST + "/NQSH2.txt";
+	public static string linkGetHost = "http://" + SERVER_HOST + "/server.txt";
 
 	public static string nameSvAuto = string.Empty;
 
@@ -126,7 +128,7 @@ public class ServerListScr : MyScreen
 			nameServer = new string[9] { "Server 1", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test" };
 			address = new string[9] { SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST };
 			port = new short[9] { SERVER_PORT, SERVER_PORT, SERVER_PORT, SERVER_PORT, SERVER_PORT, SERVER_PORT, SERVER_PORT, SERVER_PORT, SERVER_PORT };
-			linkGetHost = "http://" + SERVER_HOST + "/NQSH2.txt";
+			linkGetHost = "http://" + SERVER_HOST + "/server.txt";
 			GameMidlet.numberSupport = "19006610";
 		}
 		else
