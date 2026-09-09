@@ -1,0 +1,369 @@
+<?php
+/**
+ * Cấu hình server (bảng kpah_db.cau_hinh) — 23 setting server.ini nạp lại được
+ * lúc đang chạy, xem src/server/CauHinh.java.
+ *
+ * TRƯỚC 09/09/2026: chỉ sửa được bằng cách SSH vào VPS sửa tay server.ini, hoặc
+ * vào game gõ chat "setting" (real/AdminMenu.java) — không sửa từ xa qua web được.
+ *
+ * NAY: trang này, bảng setting trong game, và server game đọc/ghi CHUNG một bảng SQL.
+ * Server tự đọc lại bảng này mỗi 10 giây (server.CauHinh.batDau()) nên sửa ở đây thì
+ * server áp dụng trong tối đa 10 giây — KHÔNG cần restart, không cần vào game gõ lệnh.
+ *
+ * KHÔNG PHẢI TOÀN BỘ server.ini nằm ở đây — chỉ đúng 23 khoá đã có sẵn cơ chế nạp lại
+ * (xem CauHinh.java). Khoảng 20 khoá bắt buộc để kết nối CSDL/mở cổng (db.host, sv.port,
+ * ...) và một số khoá gameplay khác vẫn đọc một lần lúc khởi động, buộc phải sửa qua
+ * server.ini + restart như trước.
+ */
+require_once __DIR__ . '/inc/layout.php';
+requireAdmin();
+
+const BANG_CAU_HINH = 'cau_hinh';
+
+$TRANG = 'cauhinh.php';
+
+/** Phải khớp K_* trong src/server/CauHinh.java. */
+const K_TILE_XU = 'sv.tileXu';
+const K_TILE_LUONG = 'sv.tileLuong';
+const K_TILE_SUKIEN = 'sv.tileItemSuKien';
+const K_TILE_POTION = 'sv.tilePotion';
+const K_TILE_NGOC = 'sv.tileNgoc';
+const K_TILE_ITEM = 'sv.tileItem';
+const K_CHIA_XU = 'sv.chiaXuRoi';
+const K_GIO_CT = 'sv.gioChiemThanh';
+const K_PHUT_CT = 'sv.phutChiemThanh';
+const K_NGAY_CT = 'sv.ngayChiemThanh';
+const K_WC_BAT_DAU = 'sv.worldCupBatDau';
+const K_WC_KET_THUC = 'sv.worldCupKetThuc';
+const K_WC_HAN_NHAN_QUA = 'sv.worldCupHanNhanQua';
+const K_SK_TU_KHOI_DONG_LAI = 'sv.suKienTuKhoiDongLai';
+const K_SK_GOM_GIAY = 'sv.suKienGomGiay';
+const K_SK_BAO_TRUOC_GIAY = 'sv.suKienBaoTruocGiay';
+const K_TAO_TEN_GM = 'sv.choPhepTaoTenGM';
+const K_MAX_CHAR = 'sv.maxCharPerAccount';
+const K_ADMIN_ACCOUNTS = 'sv.adminAccounts';
+const K_WEBSITE = 'sv.website';
+const K_LINK_TAI_GAME = 'sv.linkTaiGame';
+const K_TEST_MODE = 'sv.testMode';
+const K_TEST_CODE = 'sv.testCode';
+
+/** Tạo bảng nếu server game chưa từng khởi động (đúng định nghĩa CauHinh.taoBangNeuThieu). */
+function taoBangCauHinhNeuThieu(): void
+{
+    dbGame()->exec(
+        'CREATE TABLE IF NOT EXISTS `' . BANG_CAU_HINH . '` ('
+        . '`khoa` varchar(64) NOT NULL,'
+        . '`gia_tri` varchar(255) NOT NULL DEFAULT \'\','
+        . '`sua_boi` varchar(50) DEFAULT NULL,'
+        . '`sua_luc` datetime DEFAULT NULL,'
+        . 'PRIMARY KEY (`khoa`)'
+        . ') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+    );
+}
+
+/** Ghi nhiều khoá trong một lượt, sua_boi = admin đang đăng nhập. */
+function luuCauHinh(array $capGiaTri): void
+{
+    taoBangCauHinhNeuThieu();
+    $st = dbGame()->prepare(
+        'INSERT INTO `' . BANG_CAU_HINH . '` (khoa, gia_tri, sua_boi, sua_luc) VALUES (?, ?, ?, NOW())
+         ON DUPLICATE KEY UPDATE gia_tri = VALUES(gia_tri), sua_boi = VALUES(sua_boi), sua_luc = VALUES(sua_luc)'
+    );
+    foreach ($capGiaTri as $khoa => $giaTri) {
+        $st->execute([$khoa, (string)$giaTri, adminName()]);
+    }
+}
+
+/** int, kẹp trong khoảng, mặc định khi không đọc được. */
+function soKep(string $tho, int $min, int $max, int $macDinh): int
+{
+    $n = filter_var(trim($tho), FILTER_VALIDATE_INT);
+    if ($n === false) {
+        return $macDinh;
+    }
+    return max($min, min($max, $n));
+}
+
+/** "yyyy-MM-dd HH:mm:ss" hoặc rỗng (= tắt). Trả về null nếu sai định dạng. */
+function docMocThoiGian(string $tho): ?string
+{
+    $tho = trim(str_replace('T', ' ', $tho));
+    if ($tho === '') {
+        return '';
+    }
+    if (!preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/', $tho)) {
+        return null;
+    }
+    return strlen($tho) === 16 ? $tho . ':00' : $tho;
+}
+
+// ---------------------------------------------------------------------------
+//  Thao tác
+// ---------------------------------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    chanCsrf($TRANG);
+    $viec = p('viec');
+
+    try {
+        switch ($viec) {
+
+            case 'luu_drop': {
+                $m = [
+                    K_TILE_XU => soKep(p('tileXu'), 0, 100, 0),
+                    K_TILE_LUONG => soKep(p('tileLuong'), 0, 100, 0),
+                    K_TILE_SUKIEN => soKep(p('tileItemSuKien'), 0, 100, 0),
+                    K_TILE_POTION => soKep(p('tilePotion'), 0, 100, 0),
+                    K_TILE_NGOC => soKep(p('tileNgoc'), 0, 100, 0),
+                    K_TILE_ITEM => soKep(p('tileItem'), 0, 100, 0),
+                    K_CHIA_XU => soKep(p('chiaXuRoi'), 1, 1000000, 10),
+                ];
+                luuCauHinh($m);
+                ghiNhatKy('sua_cau_hinh', 'ti_le_drop', json_encode($m, JSON_UNESCAPED_UNICODE));
+                veLai($TRANG, 'success', 'Đã lưu tỷ lệ rơi đồ. Server áp dụng trong tối đa 10 giây.');
+                break;
+            }
+
+            case 'luu_chiemthanh': {
+                $gio = trim(p('gioChiemThanh'));
+                $m = [
+                    K_GIO_CT => ($gio === '' ? -1 : soKep($gio, -1, 23, -1)),
+                    K_PHUT_CT => soKep(p('phutChiemThanh'), 0, 59, 0),
+                    K_NGAY_CT => substr(trim(p('ngayChiemThanh')), 0, 20),
+                ];
+                luuCauHinh($m);
+                ghiNhatKy('sua_cau_hinh', 'gio_chiem_thanh', json_encode($m, JSON_UNESCAPED_UNICODE));
+                veLai($TRANG, 'success', 'Đã lưu giờ chiếm thành. Server áp dụng trong tối đa 10 giây.');
+                break;
+            }
+
+            case 'luu_worldcup': {
+                $batDau = docMocThoiGian(p('worldCupBatDau'));
+                $ketThuc = docMocThoiGian(p('worldCupKetThuc'));
+                $hanNhanQua = docMocThoiGian(p('worldCupHanNhanQua'));
+                if ($batDau === null || $ketThuc === null || $hanNhanQua === null) {
+                    veLai($TRANG, 'error', 'Định dạng thời gian phải là "yyyy-MM-dd HH:mm:ss", hoặc để trống để tắt.');
+                }
+                $m = [K_WC_BAT_DAU => $batDau, K_WC_KET_THUC => $ketThuc, K_WC_HAN_NHAN_QUA => $hanNhanQua];
+                luuCauHinh($m);
+                ghiNhatKy('sua_cau_hinh', 'world_cup', json_encode($m, JSON_UNESCAPED_UNICODE));
+                veLai($TRANG, 'success', 'Đã lưu cấu hình World Cup. Server áp dụng trong tối đa 10 giây.');
+                break;
+            }
+
+            case 'luu_lichhen': {
+                $m = [
+                    K_SK_TU_KHOI_DONG_LAI => (p('tuKhoiDongLai') === '1' ? '1' : '0'),
+                    K_SK_GOM_GIAY => soKep(p('gomGiay'), 30, 3600, 120),
+                    K_SK_BAO_TRUOC_GIAY => soKep(p('baoTruocGiay'), 10, 600, 60),
+                ];
+                luuCauHinh($m);
+                ghiNhatKy('sua_cau_hinh', 'lich_hen_su_kien', json_encode($m, JSON_UNESCAPED_UNICODE));
+                veLai($TRANG, 'success', 'Đã lưu lịch hẹn sự kiện. Server áp dụng trong tối đa 10 giây.');
+                break;
+            }
+
+            case 'luu_khac': {
+                $m = [
+                    K_TAO_TEN_GM => (p('choPhepTaoTenGM') === '1' ? '1' : '0'),
+                    K_MAX_CHAR => soKep(p('maxCharPerAccount'), 1, 3, 3),
+                    K_ADMIN_ACCOUNTS => substr(trim(p('adminAccounts')), 0, 255),
+                    K_WEBSITE => substr(trim(p('website')), 0, 255),
+                    K_LINK_TAI_GAME => substr(trim(p('linkTaiGame')), 0, 255),
+                    K_TEST_MODE => (p('testMode') === '1' ? '1' : '0'),
+                    K_TEST_CODE => strtolower(substr(trim(p('testCode')), 0, 50)),
+                ];
+                luuCauHinh($m);
+                ghiNhatKy('sua_cau_hinh', 'khac', json_encode($m, JSON_UNESCAPED_UNICODE));
+                veLai($TRANG, 'success', 'Đã lưu. Server áp dụng trong tối đa 10 giây.');
+                break;
+            }
+
+            default:
+                veLai($TRANG, 'error', 'Không hiểu thao tác.');
+        }
+    } catch (Throwable $ex) {
+        veLai($TRANG, 'error', 'Lỗi: ' . $ex->getMessage());
+    }
+    exit;
+}
+
+// ---------------------------------------------------------------------------
+//  Đọc dữ liệu
+// ---------------------------------------------------------------------------
+$gt = [];      // khoa => gia_tri
+$suaBoi = [];  // khoa => [sua_boi, sua_luc]
+$loiDoc = '';
+try {
+    taoBangCauHinhNeuThieu();
+    foreach (dbGame()->query('SELECT khoa, gia_tri, sua_boi, sua_luc FROM `' . BANG_CAU_HINH . '`')->fetchAll() as $r) {
+        $gt[$r['khoa']] = (string)$r['gia_tri'];
+        $suaBoi[$r['khoa']] = [(string)($r['sua_boi'] ?? ''), (string)($r['sua_luc'] ?? '')];
+    }
+} catch (Throwable $ex) {
+    $loiDoc = $ex->getMessage();
+}
+
+/** Giá trị hiện tại của một khoá, hoặc "" nếu chưa có (server chưa khởi động lần nào). */
+function giaTri(array $gt, string $k, string $macDinh = ''): string
+{
+    return array_key_exists($k, $gt) ? $gt[$k] : $macDinh;
+}
+
+/** Dòng nhỏ "sửa bởi X lúc Y" dưới một nhóm khoá, lấy mốc mới nhất trong nhóm. */
+function veSuaBoi(array $suaBoi, array $khoas): void
+{
+    $moiNhat = null;
+    foreach ($khoas as $k) {
+        if (isset($suaBoi[$k]) && $suaBoi[$k][1] !== '' && ($moiNhat === null || $suaBoi[$k][1] > $moiNhat[1])) {
+            $moiNhat = $suaBoi[$k];
+        }
+    }
+    if ($moiNhat === null) {
+        echo '<p class="muted small">Chưa từng sửa qua CSDL — đang dùng giá trị khởi tạo lần đầu từ server.ini.</p>';
+        return;
+    }
+    echo '<p class="muted small">Sửa lần cuối bởi <strong>' . e($moiNhat[0]) . '</strong> lúc ' . e($moiNhat[1]) . '.</p>';
+}
+
+adminHead('cauhinh', 'Cấu hình server');
+?>
+<div class="page-head">
+    <div>
+        <h1>Cấu hình server</h1>
+        <p>23 setting nạp lại được lúc đang chạy — sửa xong, server tự áp dụng trong tối đa 10 giây, không cần restart.</p>
+    </div>
+</div>
+
+<?php if ($loiDoc !== ''): ?>
+    <div class="flash flash-error">Lỗi đọc dữ liệu: <?= e($loiDoc) ?></div>
+<?php endif; ?>
+
+<div class="luuy">
+    <p>Đây <strong>không phải toàn bộ</strong> <code>server.ini</code> — chỉ 23 khoá đã có sẵn cơ chế nạp lại
+       (xem <code>src/server/CauHinh.java</code>). Các khoá kết nối CSDL, cổng mạng, đường dẫn máy... vẫn phải
+       sửa trực tiếp <code>server.ini</code> trên VPS rồi khởi động lại — không nằm ở đây vì bản thân chúng là
+       thứ server cần để kết nối được tới CSDL này.</p>
+</div>
+
+<div class="card">
+    <h3>Tỷ lệ rơi đồ khi train quái</h3>
+    <p class="muted small">Phần trăm so với tỷ lệ gốc. 100 = như cũ, 0 = tắt hẳn.</p>
+    <form method="post" action="cauhinh.php">
+        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+        <input type="hidden" name="viec" value="luu_drop">
+        <div class="form-grid">
+            <label class="o"><span>Xu (%)</span>
+                <input type="number" name="tileXu" min="0" max="100" value="<?= e(giaTri($gt, K_TILE_XU, '0')) ?>"></label>
+            <label class="o"><span>Lượng (%)</span>
+                <input type="number" name="tileLuong" min="0" max="100" value="<?= e(giaTri($gt, K_TILE_LUONG, '0')) ?>"></label>
+            <label class="o"><span>Đồ sự kiện (%)</span>
+                <input type="number" name="tileItemSuKien" min="0" max="100" value="<?= e(giaTri($gt, K_TILE_SUKIEN, '0')) ?>"></label>
+            <label class="o"><span>Bình thuốc (%)</span>
+                <input type="number" name="tilePotion" min="0" max="100" value="<?= e(giaTri($gt, K_TILE_POTION, '0')) ?>"></label>
+            <label class="o"><span>Ngọc (%)</span>
+                <input type="number" name="tileNgoc" min="0" max="100" value="<?= e(giaTri($gt, K_TILE_NGOC, '0')) ?>"></label>
+            <label class="o"><span>Đồ thường (%)</span>
+                <input type="number" name="tileItem" min="0" max="100" value="<?= e(giaTri($gt, K_TILE_ITEM, '0')) ?>"></label>
+            <label class="o"><span>Chia số xu rơi ra</span>
+                <input type="number" name="chiaXuRoi" min="1" value="<?= e(giaTri($gt, K_CHIA_XU, '10')) ?>">
+                <small>Số xu rơi ra = xu gốc chia cho số này. Càng lớn càng ít.</small></label>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu tỷ lệ rơi đồ</button></div>
+    </form>
+    <?php veSuaBoi($suaBoi, [K_TILE_XU, K_TILE_LUONG, K_TILE_SUKIEN, K_TILE_POTION, K_TILE_NGOC, K_TILE_ITEM, K_CHIA_XU]); ?>
+</div>
+
+<div class="card">
+    <h3>Giờ chiếm thành</h3>
+    <p class="muted small">Để trống giờ = dùng lịch chuẩn 21h thứ 3 và thứ 7.</p>
+    <form method="post" action="cauhinh.php">
+        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+        <input type="hidden" name="viec" value="luu_chiemthanh">
+        <div class="form-grid">
+            <label class="o"><span>Giờ (0-23, để trống = mặc định)</span>
+                <input type="text" name="gioChiemThanh" placeholder="mặc định"
+                       value="<?= (int)giaTri($gt, K_GIO_CT, '-1') < 0 ? '' : e(giaTri($gt, K_GIO_CT)) ?>"></label>
+            <label class="o"><span>Phút (0-59)</span>
+                <input type="number" name="phutChiemThanh" min="0" max="59" value="<?= e(giaTri($gt, K_PHUT_CT, '0')) ?>"></label>
+            <label class="o"><span>Ngày (tuỳ chọn, ví dụ Sat hoặc 2026-10-25)</span>
+                <input type="text" name="ngayChiemThanh" maxlength="20" value="<?= e(giaTri($gt, K_NGAY_CT, '')) ?>"></label>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu giờ chiếm thành</button></div>
+    </form>
+    <?php veSuaBoi($suaBoi, [K_GIO_CT, K_PHUT_CT, K_NGAY_CT]); ?>
+</div>
+
+<div class="card">
+    <h3>Sự kiện World Cup</h3>
+    <p class="muted small">Định dạng "yyyy-MM-dd HH:mm:ss". Để trống bất kỳ ô nào = sự kiện tắt.</p>
+    <form method="post" action="cauhinh.php">
+        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+        <input type="hidden" name="viec" value="luu_worldcup">
+        <div class="form-grid">
+            <label class="o"><span>Bắt đầu</span>
+                <input type="text" name="worldCupBatDau" placeholder="2026-06-01 00:00:00" value="<?= e(giaTri($gt, K_WC_BAT_DAU)) ?>"></label>
+            <label class="o"><span>Kết thúc</span>
+                <input type="text" name="worldCupKetThuc" placeholder="2026-07-15 23:59:59" value="<?= e(giaTri($gt, K_WC_KET_THUC)) ?>"></label>
+            <label class="o"><span>Hạn nhận quà</span>
+                <input type="text" name="worldCupHanNhanQua" placeholder="2026-07-20 23:59:59" value="<?= e(giaTri($gt, K_WC_HAN_NHAN_QUA)) ?>"></label>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu cấu hình World Cup</button></div>
+    </form>
+    <?php veSuaBoi($suaBoi, [K_WC_BAT_DAU, K_WC_KET_THUC, K_WC_HAN_NHAN_QUA]); ?>
+</div>
+
+<div class="card">
+    <h3>Lịch hẹn sự kiện tự khởi động lại</h3>
+    <p class="muted small">Khi bật/tắt sự kiện ở trang <a href="sukien.php">Sự kiện</a> cần khởi động lại, server tự
+       gom các thay đổi rồi tự restart — không cần SSH. Cấu hình ở đây quyết định cách gom đó.</p>
+    <form method="post" action="cauhinh.php">
+        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+        <input type="hidden" name="viec" value="luu_lichhen">
+        <div class="form-grid">
+            <label class="o" style="display:flex;flex-direction:row;align-items:center;gap:8px;"><span>Tự khởi động lại</span>
+                <input type="checkbox" name="tuKhoiDongLai" value="1" style="width:auto;" <?= giaTri($gt, K_SK_TU_KHOI_DONG_LAI, '1') === '1' ? 'checked' : '' ?>>
+            </label>
+            <label class="o"><span>Gom thay đổi trong (giây, 30-3600)</span>
+                <input type="number" name="gomGiay" min="30" max="3600" value="<?= e(giaTri($gt, K_SK_GOM_GIAY, '120')) ?>"></label>
+            <label class="o"><span>Báo trước (giây, 10-600)</span>
+                <input type="number" name="baoTruocGiay" min="10" max="600" value="<?= e(giaTri($gt, K_SK_BAO_TRUOC_GIAY, '60')) ?>"></label>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu lịch hẹn sự kiện</button></div>
+    </form>
+    <?php veSuaBoi($suaBoi, [K_SK_TU_KHOI_DONG_LAI, K_SK_GOM_GIAY, K_SK_BAO_TRUOC_GIAY]); ?>
+</div>
+
+<div class="card">
+    <h3>Khác</h3>
+    <form method="post" action="cauhinh.php">
+        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+        <input type="hidden" name="viec" value="luu_khac">
+        <div class="form-grid">
+            <label class="o"><span>Số nhân vật tối đa / tài khoản (1-3)</span>
+                <input type="number" name="maxCharPerAccount" min="1" max="3" value="<?= e(giaTri($gt, K_MAX_CHAR, '3')) ?>"></label>
+            <label class="o"><span>Tài khoản quản trị trong game (phân cách bằng dấu phẩy)</span>
+                <input type="text" name="adminAccounts" maxlength="255" value="<?= e(giaTri($gt, K_ADMIN_ACCOUNTS)) ?>">
+                <small>Đây là quyền GM trong game (chat lệnh, bảng setting...) — khác hẳn <code>ADMIN_ACCOUNTS</code>
+                       của trang quản trị web này, hai danh sách không liên quan nhau.</small></label>
+            <label class="o"><span>Website</span>
+                <input type="text" name="website" maxlength="255" value="<?= e(giaTri($gt, K_WEBSITE)) ?>"></label>
+            <label class="o"><span>Link tải game</span>
+                <input type="text" name="linkTaiGame" maxlength="255" value="<?= e(giaTri($gt, K_LINK_TAI_GAME)) ?>"></label>
+            <label class="o"><span>Mã test</span>
+                <input type="text" name="testCode" maxlength="50" value="<?= e(giaTri($gt, K_TEST_CODE)) ?>"></label>
+        </div>
+        <div class="luuy" style="margin-top:12px;">
+            <p><strong>Hai cờ dưới đây chỉ nên bật tạm thời rồi tắt lại ngay</strong> — để quên trên server thật
+               là lỗ hổng (cho phép tạo nhân vật trùng tên GM / mã test cấp xu-lượng miễn phí).</p>
+        </div>
+        <div class="form-grid" style="margin-top:8px;">
+            <label class="o" style="display:flex;flex-direction:row;align-items:center;gap:8px;"><span>Cho phép tạo tên trùng GM</span>
+                <input type="checkbox" name="choPhepTaoTenGM" value="1" style="width:auto;" <?= giaTri($gt, K_TAO_TEN_GM, '0') === '1' ? 'checked' : '' ?>></label>
+            <label class="o" style="display:flex;flex-direction:row;align-items:center;gap:8px;"><span>Bật testMode</span>
+                <input type="checkbox" name="testMode" value="1" style="width:auto;" <?= giaTri($gt, K_TEST_MODE, '0') === '1' ? 'checked' : '' ?>></label>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu</button></div>
+    </form>
+    <?php veSuaBoi($suaBoi, [K_MAX_CHAR, K_ADMIN_ACCOUNTS, K_WEBSITE, K_LINK_TAI_GAME, K_TEST_MODE, K_TEST_CODE, K_TAO_TEN_GM]); ?>
+</div>
+<?php adminFoot(); ?>

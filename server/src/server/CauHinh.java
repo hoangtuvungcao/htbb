@@ -1,34 +1,36 @@
 package server;
 
-import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
- * DOC / GHI server.ini LUC DANG CHAY
+ * DOC / GHI 23 SETTING NAP LAI DUOC LUC DANG CHAY - bang `kpah_db.cau_hinh`.
  *
- * Muc dich: bang setting cua admin trong game va file server.ini la CUNG MOT
- * nguon du lieu. Admin sua trong game -> ghi thang vao server.ini nen con
- * nguyen sau khi restart. Sua tay trong server.ini -> go lenh nap lai (hoac
- * restart) la co hieu luc.
+ * TRUOC 09/09/2026: nguon du lieu la file server.ini, sua qua bang setting trong game
+ * (real/AdminMenu.java) hoac sua tay file roi go lenh "nap lai". File rieng tren tung
+ * may (khong nam trong git), sua tu xa phai SSH.
  *
- * Cach ghi: doc file thanh tung dong, thay dung dong "key=..." roi ghi lai.
- * Khong dung Properties.store() vi ham do xoa sach comment va dao lon thu tu.
- * Dong nao khong lien quan duoc giu nguyen tung byte (doc/ghi bang ISO-8859-1,
- * la bang ma Properties dung, nen khong lam hong ky tu nao).
+ * NAY: nguon du lieu la bang SQL `cau_hinh` (khoa, gia_tri, sua_boi, sua_luc). Web
+ * (web/admin/cauhinh.php) va bang setting trong game GHI CHUNG mot bang. Server tu
+ * doc lai bang nay moi 10 giay (xem batDau()) nen admin sua tren web thi may chu ap
+ * dung trong toi da 10 giay, khong can restart, khong can go lenh "nap lai" trong game
+ * nua (van con dung duoc, chi la khong bat buoc).
+ *
+ * server.ini VAN GIU 23 khoa nay (xem vps/server.ini.tmpl) lam GIA TRI KHOI TAO LAN DAU
+ * - dungBoLucKhoiDong() chi INSERT IGNORE tu file vao SQL khi bang con thieu dong, roi
+ * KHONG DUNG TOI FILE NUA. Giu nguyen ten hang so K_* va gia tri chuoi cua chung de hai
+ * bai kiem tra test/KiemCauHinhPipeline.java va test/KiemTaiLieuCauHinh.java (doi chieu
+ * server.ini.tmpl <-> ma nguon <-> docs/cau-hinh-server-ini.md) khong bi vo.
  */
 public final class CauHinh {
 
-    public static final String FILE = "server.ini";
-    private static final Charset MA_HOA = Charset.forName("ISO-8859-1");
+    private static final String BANG = "cau_hinh";
 
-    /** Cac khoa server.ini dung cho bang setting. */
+    /** Cac khoa dung cho bang setting - TEN GIU NGUYEN, chi doi noi luu tru. */
     public static final String K_GIO_CT = "sv.gioChiemThanh";
     public static final String K_PHUT_CT = "sv.phutChiemThanh";
     public static final String K_NGAY_CT = "sv.ngayChiemThanh";
@@ -49,12 +51,63 @@ public final class CauHinh {
     public static final String K_SK_GOM_GIAY = "sv.suKienGomGiay";
     public static final String K_SK_BAO_TRUOC_GIAY = "sv.suKienBaoTruocGiay";
 
+    /** Tat ca 23 khoa, dung de dong bo luc khoi dong va de web biet liet ke gi. */
+    private static final String[] TAT_CA_KHOA = {
+        K_TILE_XU, K_TILE_LUONG, K_TILE_SUKIEN, K_TILE_POTION, K_TILE_NGOC, K_TILE_ITEM,
+        K_CHIA_XU, K_GIO_CT, K_PHUT_CT, K_NGAY_CT,
+        K_WC_BAT_DAU, K_WC_KET_THUC, K_WC_HAN_NHAN_QUA,
+        K_SK_TU_KHOI_DONG_LAI, K_SK_GOM_GIAY, K_SK_BAO_TRUOC_GIAY,
+        K_TAO_TEN_GM, "sv.maxCharPerAccount", "sv.adminAccounts",
+        "sv.website", "sv.linkTaiGame", "sv.testMode", "sv.testCode",
+    };
+
+    /** Giay giua hai lan tu doc lai bang cau_hinh. Xem batDau(). */
+    private static final long CHU_KY_NAP_LAI_MS = 10000L;
+
+    private static volatile boolean daBatDau = false;
+
     private CauHinh() {
+    }
+
+    // =========================== BANG SQL ===========================
+
+    private static void taoBangNeuThieu(final Connection conn) throws Exception {
+        final Statement stmt = conn.createStatement();
+        try {
+            stmt.execute(
+                    "CREATE TABLE IF NOT EXISTS `" + BANG + "` ("
+                    + "`khoa` varchar(64) NOT NULL,"
+                    + "`gia_tri` varchar(255) NOT NULL DEFAULT '',"
+                    + "`sua_boi` varchar(50) DEFAULT NULL,"
+                    + "`sua_luc` datetime DEFAULT NULL,"
+                    + "PRIMARY KEY (`khoa`)"
+                    + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        } finally {
+            stmt.close();
+        }
+    }
+
+    /** Doc toan bo bang cau_hinh thanh Properties (de tai dung nguyen cac ham apDung*). */
+    private static Properties docTuSql(final Connection conn) throws Exception {
+        final Properties p = new Properties();
+        final Statement stmt = conn.createStatement();
+        try {
+            final ResultSet rs = stmt.executeQuery("SELECT khoa, gia_tri FROM `" + BANG + "`");
+            try {
+                while (rs.next()) {
+                    p.setProperty(rs.getString("khoa"), rs.getString("gia_tri"));
+                }
+            } finally {
+                rs.close();
+            }
+        } finally {
+            stmt.close();
+        }
+        return p;
     }
 
     // ============================ GHI ============================
 
-    /** Ghi mot khoa. Tra ve true neu da ghi xuong file thanh cong. */
     public static boolean luu(final String key, final String value) {
         final LinkedHashMap<String, String> m = new LinkedHashMap<String, String>();
         m.put(key, value);
@@ -65,110 +118,133 @@ public final class CauHinh {
         return luu(key, String.valueOf(value));
     }
 
-    /**
-     * Ghi nhieu khoa trong mot lan mo file. Khoa da co thi thay gia tri (giu
-     * nguyen vi tri trong file), khoa chua co thi them vao cuoi.
-     */
+    /** Ghi nhieu khoa trong mot lan mo ket noi. "game" lam sua_boi (bang setting trong game). */
     public static synchronized boolean luuNhieu(final LinkedHashMap<String, String> capGiaTri) {
+        return luuNhieu(capGiaTri, "game");
+    }
+
+    /** Ghi nhieu khoa, ghi ro ai sua (web goi voi ten dang nhap admin). */
+    public static synchronized boolean luuNhieu(final LinkedHashMap<String, String> capGiaTri, final String nguoiSua) {
         if (capGiaTri == null || capGiaTri.isEmpty()) {
             return true;
         }
+        Connection conn = null;
+        PreparedStatement pre = null;
         try {
-            final File f = new File(FILE);
-            final String noiDung = f.exists() ? new String(Files.readAllBytes(f.toPath()), MA_HOA) : "";
-            // Giu nguyen kieu xuong dong cua file (LF hay CRLF) va viec file co
-            // ket thuc bang xuong dong hay khong, de ghi lai khong lam doi ca file.
-            final String xuongDong = noiDung.contains("\r\n") ? "\r\n" : "\n";
-            final boolean hetBangXuongDong = noiDung.endsWith("\n") || noiDung.endsWith("\r");
-            final List<String> dong = new ArrayList<String>();
-            if (!noiDung.isEmpty()) {
-                final String[] tach = noiDung.split("\r\n|\n|\r", -1);
-                for (int i = 0; i < tach.length; i++) {
-                    // Phan tu rong cuoi cung chi la he qua cua dau xuong dong cuoi file
-                    if (i == tach.length - 1 && tach[i].isEmpty() && hetBangXuongDong) {
-                        break;
-                    }
-                    dong.add(tach[i]);
-                }
-            }
-
-            final LinkedHashMap<String, String> conLai = new LinkedHashMap<String, String>(capGiaTri);
-            for (int i = 0; i < dong.size(); i++) {
-                final String l = dong.get(i);
-                final String trim = l.trim();
-                // Bo qua dong trong va dong chu thich (#, !, //)
-                if (trim.isEmpty() || trim.startsWith("#") || trim.startsWith("!") || trim.startsWith("//")) {
-                    continue;
-                }
-                final int dau = l.indexOf('=');
-                if (dau < 0) {
-                    continue;
-                }
-                final String key = l.substring(0, dau).trim();
-                if (conLai.containsKey(key)) {
-                    dong.set(i, key + "=" + conLai.remove(key));
-                }
-            }
-            if (!conLai.isEmpty()) {
-                dong.add("");
-                dong.add("# ==== Cac dong duoi day do bang setting trong game ghi ra ====");
-                for (final Map.Entry<String, String> e : conLai.entrySet()) {
-                    dong.add(e.getKey() + "=" + e.getValue());
-                }
-            }
-            final StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < dong.size(); i++) {
-                if (i > 0) {
-                    sb.append(xuongDong);
-                }
-                sb.append(dong.get(i));
-            }
-            if (hetBangXuongDong || noiDung.isEmpty()) {
-                sb.append(xuongDong);
-            }
-            final byte[] raBytes = sb.toString().getBytes(MA_HOA);
-
-            // Ghi ra file tam roi doi ten: mat dien giua luc ghi cung khong lam
-            // mat server.ini dang dung.
-            final File tam = new File(FILE + ".tmp");
-            Files.write(tam.toPath(), raBytes);
-            final File bak = new File(FILE + ".bak");
-            if (bak.exists()) {
-                bak.delete();
-            }
-            if (f.exists() && !f.renameTo(bak)) {
-                // Doi ten that bai (file dang bi mo) -> ghi truc tiep
-                Files.write(f.toPath(), raBytes);
-                tam.delete();
-                return true;
-            }
-            if (!tam.renameTo(f)) {
-                // Khong doi ten duoc thi tra lai ban cu
-                bak.renameTo(f);
-                return false;
+            conn = data.Database.instance.getConnection();
+            taoBangNeuThieu(conn);
+            pre = conn.prepareStatement(
+                    "INSERT INTO `" + BANG + "` (khoa, gia_tri, sua_boi, sua_luc) VALUES (?, ?, ?, NOW())"
+                    + " ON DUPLICATE KEY UPDATE gia_tri = VALUES(gia_tri), sua_boi = VALUES(sua_boi), sua_luc = VALUES(sua_luc)");
+            for (final java.util.Map.Entry<String, String> e : capGiaTri.entrySet()) {
+                pre.setString(1, e.getKey());
+                pre.setString(2, e.getValue());
+                pre.setString(3, nguoiSua);
+                pre.executeUpdate();
             }
             return true;
         } catch (final Exception e) {
-            System.out.println("LOI GHI " + FILE + ": " + e);
+            System.out.println("[CAUHINH] loi ghi " + BANG + ": " + e);
             return false;
+        } finally {
+            try {
+                if (pre != null) {
+                    pre.close();
+                }
+            } catch (final Exception ignored) {
+            }
+            try {
+                data.Database.connPool.free(conn);
+            } catch (final Exception ignored) {
+            }
         }
+    }
+
+    // ==================== DONG BO LUC KHOI DONG ====================
+
+    /**
+     * Goi 1 lan luc khoi dong server, SAU khi da ket noi duoc CSDL. Tao bang cau_hinh
+     * neu chua co, chep (INSERT IGNORE - khong ghi de dong da co) 23 gia tri dang doc
+     * duoc tu server.ini (Properties da nap o dau ham chinh cua TeamServer) vao SQL, roi
+     * ap dung ngay tu SQL. Tu lan khoi dong thu hai tro di bang da co du dong nen buoc
+     * chep khong lam gi ca - SQL la nguon that.
+     */
+    public static synchronized void dongBoLucKhoiDong(final Properties pFile) {
+        Connection conn = null;
+        PreparedStatement pre = null;
+        try {
+            conn = data.Database.instance.getConnection();
+            taoBangNeuThieu(conn);
+            pre = conn.prepareStatement(
+                    "INSERT IGNORE INTO `" + BANG + "` (khoa, gia_tri, sua_boi, sua_luc) VALUES (?, ?, 'khoi-dong-lan-dau', NOW())");
+            for (final String k : TAT_CA_KHOA) {
+                final String v = pFile.getProperty(k);
+                if (v != null) {
+                    pre.setString(1, k);
+                    pre.setString(2, v.trim());
+                    pre.executeUpdate();
+                }
+            }
+        } catch (final Exception e) {
+            System.out.println("[CAUHINH] loi dong bo lan dau: " + e);
+        } finally {
+            try {
+                if (pre != null) {
+                    pre.close();
+                }
+            } catch (final Exception ignored) {
+            }
+            try {
+                data.Database.connPool.free(conn);
+            } catch (final Exception ignored) {
+            }
+        }
+        System.out.println(napLai());
+    }
+
+    /**
+     * Vong lap nen: tu doc lai bang cau_hinh moi CHU_KY_NAP_LAI_MS, de thay doi tu trang
+     * quan tri web ap dung ma khong can restart. Goi 1 lan luc khoi dong (sau
+     * dongBoLucKhoiDong()); goi lai lan nua khong lam gi (chan boi daBatDau).
+     */
+    public static synchronized void batDau() {
+        if (daBatDau) {
+            return;
+        }
+        daBatDau = true;
+        final Thread t = new Thread(new Runnable() {
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(CHU_KY_NAP_LAI_MS);
+                    } catch (final InterruptedException ignored) {
+                        return;
+                    }
+                    napLai();
+                }
+            }
+        }, "CauHinh-napLai");
+        t.setDaemon(true);
+        t.start();
     }
 
     // =========================== NAP LAI ===========================
 
     /**
-     * Nap lai tu server.ini nhung THAM SO CO THE DOI LUC DANG CHAY.
+     * Nap lai tu bang cau_hinh nhung THAM SO CO THE DOI LUC DANG CHAY.
      *
-     * CO Y KHONG nap lai: cong, ket noi DB, duong dan log, gioi han CCU...
-     * doi cac thu do luc server dang chay se lam dut ket noi hoac tao pool DB
-     * thu hai. Muon doi chung thi restart.
+     * CO Y KHONG nap lai: cong, ket noi DB, duong dan log, gioi han CCU... doi cac thu
+     * do luc server dang chay se lam dut ket noi hoac tao pool DB thu hai. Muon doi
+     * chung thi restart (van nam trong server.ini).
      *
      * @return mo ta ket qua de hien cho admin
      */
     public static synchronized String napLai() {
+        Connection conn = null;
         try {
-            final Properties p = new Properties();
-            p.load(Files.newInputStream(Paths.get(FILE)));
+            conn = data.Database.instance.getConnection();
+            taoBangNeuThieu(conn);
+            final Properties p = docTuSql(conn);
 
             real.Monster.PC_TILE_XU = kep(p.getProperty(K_TILE_XU), real.Monster.PC_TILE_XU);
             real.Monster.PC_TILE_LUONG = kep(p.getProperty(K_TILE_LUONG), real.Monster.PC_TILE_LUONG);
@@ -211,9 +287,14 @@ public final class CauHinh {
             apDungSuKienWorldCup(p);
             apDungLichSuKien(p);
 
-            return "Đã nạp lại " + FILE + ".";
+            return "Đã nạp lại cấu hình từ CSDL.";
         } catch (final Exception e) {
-            return "Không nạp được " + FILE + ": " + e;
+            return "Không nạp được cấu hình: " + e;
+        } finally {
+            try {
+                data.Database.connPool.free(conn);
+            } catch (final Exception ignored) {
+            }
         }
     }
 
@@ -271,7 +352,7 @@ public final class CauHinh {
         }
     }
 
-    /** Ghi gio chiem thanh dang dat trong bo nho xuong file. */
+    /** Ghi gio chiem thanh dang dat trong bo nho xuong SQL. */
     public static boolean luuGioChiemThanh() {
         final LinkedHashMap<String, String> m = new LinkedHashMap<String, String>();
         m.put(K_GIO_CT, String.valueOf(real.MapTown.TimeAdminCheat));
@@ -280,7 +361,7 @@ public final class CauHinh {
         return luuNhieu(m);
     }
 
-    /** Ghi ti le drop dang dat trong bo nho xuong file. */
+    /** Ghi ti le drop dang dat trong bo nho xuong SQL. */
     public static boolean luuTiLeDrop() {
         final LinkedHashMap<String, String> m = new LinkedHashMap<String, String>();
         m.put(K_TILE_XU, String.valueOf(real.Monster.PC_TILE_XU));

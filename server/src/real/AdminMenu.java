@@ -14,9 +14,10 @@ import server.TeamServer;
  *   3) Map.doProcessInputText: dau ham    -> if (AdminMenu.xuLyNhapText(player, idMenu, text)) return;
  *
  * LUU VINH VIEN: moi thay doi o bang nay co hieu luc NGAY va duoc GHI THANG vao
- * server.ini, nen van con sau khi restart. Chieu nguoc lai cung dung: sua tay
- * trong server.ini roi go lenh 8 (nap lai) la ap dung ngay, khong can restart.
- * => Bang setting va server.ini luon la cung mot nguon du lieu.
+ * bang SQL `cau_hinh`, nen van con sau khi restart. Cung mot bang nay sua duoc tu xa
+ * qua web/admin/cauhinh.php - server tu doc lai moi 10 giay nen sua tren web cung ap
+ * dung duoc trong game ma khong can go lenh 8 (nap lai), chi la khong tuc thi bang.
+ * => Bang setting trong game, trang web, va server luon la cung mot nguon du lieu.
  * Xem server.CauHinh.
  */
 public class AdminMenu {
@@ -46,8 +47,8 @@ public class AdminMenu {
             + "3 = trả về lịch chuẩn 21h T3+T7\n"
             + "5 <xu> <lượng> <sựkiện> <bình> <ngọc> <đồ> <chiaXu>\n"
             + "6 = xem cấu hình hiện tại\n"
-            + "8 = nạp lại server.ini (sau khi sửa tay)\n"
-            + "(mọi thay đổi được ghi vào server.ini, còn sau restart)";
+            + "8 = nạp lại ngay từ CSDL (không cần chờ tối đa 10 giây)\n"
+            + "(mọi thay đổi được ghi vào CSDL, còn sau restart, sửa được cả trên trang quản trị web)";
 
     private AdminMenu() {
     }
@@ -197,11 +198,11 @@ public class AdminMenu {
                 moTaTiLeDrop() + ghiFile(server.CauHinh.luuTiLeDrop()), ""));
     }
 
-    /** Cau thong bao ket qua ghi file, gan vao cuoi thong bao cho admin. */
+    /** Cau thong bao ket qua ghi CSDL, gan vao cuoi thong bao cho admin. */
     private static String ghiFile(final boolean ok) {
         return ok
-                ? "\n(đã lưu vào server.ini - giữ nguyên sau restart)"
-                : "\n(CHƯA lưu được server.ini - kiểm tra quyền ghi file, thay đổi sẽ mất khi restart)";
+                ? "\n(đã lưu vào CSDL - giữ nguyên sau restart, cũng hiện trên trang quản trị web)"
+                : "\n(CHƯA lưu được vào CSDL - kiểm tra kết nối, thay đổi sẽ mất khi restart)";
     }
 
     private static void doiTiLe(final int nhan, final int chia) {

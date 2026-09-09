@@ -245,7 +245,7 @@ public const string SERVER_HOST = "180.93.57.30";
 ### C2. File danh sách server — đã sửa sẵn cả hai nơi
 
 - `C:\xampp\htdocs\NQSH2.txt`
-- [web/NQSH2.txt](../web/NQSH2.txt)
+- [web/server/NQSH2.txt](../web/server/NQSH2.txt) (`web/server.txt` là symlink trỏ tới đây)
 
 Nội dung, một dòng: `Server 1:180.93.57.30:19129:0`
 

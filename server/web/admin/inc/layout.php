@@ -37,6 +37,7 @@ function adminMenu(): array
         'Vận hành' => [
             'sukien'   => ['sukien.php',   'Sự kiện', 'lich'],
             'giftcode' => ['giftcode.php', 'Giftcode', 'qua'],
+            'cauhinh'  => ['cauhinh.php',  'Cấu hình server', 'nhip'],
         ],
         'Ghi chép' => [
             'log'      => ['log.php',      'Log game',      'danhsach'],

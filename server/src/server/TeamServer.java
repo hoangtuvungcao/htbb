@@ -784,6 +784,11 @@ public class TeamServer {
         // Cung phai chay TRUOC khi nhan nguoi choi: chan nhan giftcode nhieu lan qua nhieu
         // nhan vat cung tai khoan. Xem Database.chuanBiGiftCodeUserId().
         Database.instance.chuanBiGiftCodeUserId();
+        // 23 setting nap lai duoc chuyen tu server.ini sang bang cau_hinh (sua duoc qua
+        // web/admin/cauhinh.php). Dong bo mot lan tu file (INSERT IGNORE, khong ghi de
+        // dong da co) roi bat vong lap tu nap lai moi 10 giay. Xem server.CauHinh.
+        CauHinh.dongBoLucKhoiDong(p);
+        CauHinh.batDau();
         Database.startSaveChar();
         TeamServer.timeRemovePool = System.currentTimeMillis();
         System.out.println("Starting server...");

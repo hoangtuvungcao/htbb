@@ -97,10 +97,17 @@ Vẫn dùng được cho việc gấp, nhưng **lần deploy sau sẽ đặt l�
 | Cách | Khi nào dùng |
 |---|---|
 | Bảng `setting` trong game | đổi gấp tỉ lệ rơi / giờ chiếm thành giữa sự kiện |
-| Sửa `/opt/kpah/server.ini` rồi gõ `setting` → `8` | chỉ với 17 khoá ở mục 4 |
+| Trang quản trị `/admin/cauhinh.php` | sửa từ xa, không cần SSH — xem bên dưới |
+| Sửa `/opt/kpah/server.ini` rồi gõ `setting` → `8` | chỉ với 23 khoá ở mục 4 |
 
-Bảng `setting` ghi thẳng vào `server.ini`, cùng một nguồn dữ liệu với file (xem
-[`server/CauHinh.java`](../src/server/CauHinh.java)).
+**Từ 09/09/2026, cả ba cách trên đọc/ghi CHUNG một bảng SQL `kpah_db.cau_hinh`** (khoá,
+giá_trị, sửa_bởi, sửa_lúc) — không còn ghi thẳng vào `server.ini` nữa (xem
+[`server/CauHinh.java`](../src/server/CauHinh.java)). `server.ini` vẫn giữ 23 khoá này làm
+**giá trị khởi tạo lần đầu** (chép một lần vào bảng lúc server khởi động nếu bảng còn thiếu
+dòng, `INSERT IGNORE` nên không ghi đè giá trị đã có); từ đó về sau bảng SQL mới là nguồn
+thật. Server tự đọc lại bảng này mỗi 10 giây, nên sửa trên trang web thì trong game áp dụng
+sau tối đa 10 giây — không cần khởi động lại, không bắt buộc gõ `setting` → `8` (vẫn dùng
+được để nạp lại ngay lập tức thay vì chờ).
 
 Lệnh trong ô nhập của `setting`:
 

@@ -34,31 +34,6 @@ class CharTrangBi {
         if (pc > getindex[id]) {
             return;
         }
-        
-    
-//    /* ---------------- KIỂM TRA CHÊNH LỆCH LEVEL (±5 hoặc ±10) ---------------- */
-//    if (attacker != null && !self.isBoss() && !attacker.isBoss()) {
-//    int attackerLevel = -1;
-//
-//    if (attacker.cat == 0) { // Người chơi
-//        attackerLevel = ((Char) attacker).lvDetail.lv;
-//        if (attackerLevel != -1) {
-//            int diff = Math.abs(self.lvDetail.lv - attackerLevel);
-//            if (diff > 5) {
-//                return; // BỎ QUA nếu chênh >10 cấp (chỉ áp dụng nếu cả hai không phải boss)
-//            }
-//        }
-//    } else if (attacker.cat == 1) { // Quái
-//        attackerLevel = ((Monster) attacker).level;
-//        if (attackerLevel != -1) {
-//            int diff = Math.abs(self.lvDetail.lv - attackerLevel);
-//            if (diff > 5) {
-//                return; // BỎ QUA nếu chênh >5 cấp (chỉ áp dụng nếu cả hai không phải boss)
-//            }
-//        }
-//    }
-//}
-
 
         // tính toán giảm kháng từ pet cưỡi
         int giamKhangLan = self.animalRide == null ? 0 : self.animalRide.getGiamKhangLan(id);
@@ -81,7 +56,7 @@ class CharTrangBi {
                     if (!actor.isActiveTienKhi() || !actor.isActive8sRongLon()) 
                     {
 
-                        if (actor.isKhangLan(id, giamKhangLan))  
+                        if (chenhLechCapQuaXaLan(self, actor) || actor.isKhangLan(id, giamKhangLan))
                         {
                             if (actor.cat == 0 && ((Char) actor).timeGiveCardTown > 0L) 
                             {
@@ -347,6 +322,28 @@ class CharTrangBi {
                 }
             }
         }
+    }
+
+    /** Chenh lech cap toi da de con dinh hieu ung "lan" - ap dung CA nguoi lan quai. */
+    private static final int MUC_CHENH_LECH_CAP_LAN = 10;
+
+    /**
+     * True neu chenh lech cap giua nguoi gay lan (self) va muc tieu (actor) vuot qua
+     * MUC_CHENH_LECH_CAP_LAN - luc do coi nhu muc tieu khong dinh, GIONG HET nhanh "khang
+     * duoc" (dam=0, khong doi hp), du actor la nguoi choi (cat=0) hay quai (cat=1). Thay
+     * cho khoi kiem tra da bi comment truoc day (sai: chi ap dung khi khong ai la boss, va
+     * nguong lech khac nhau giua nhanh nguoi/quai du cung ghi 10 trong ten bien).
+     */
+    private static boolean chenhLechCapQuaXaLan(final Char self, final LiveActor actor) {
+        final int capActor;
+        if (actor.cat == 0) {
+            capActor = ((Char) actor).lvDetail.lv;
+        } else if (actor.cat == 1) {
+            capActor = ((Monster) actor).level;
+        } else {
+            return false;
+        }
+        return Math.abs(self.lvDetail.lv - capActor) > MUC_CHENH_LECH_CAP_LAN;
     }
 
     static void setitemInvenBag(Char self, final int place) {

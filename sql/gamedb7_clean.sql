@@ -1755,7 +1755,7 @@ INSERT INTO `data_monster` (`id`, `name`, `style`, `he`, `level`, `maxhp`, `atta
 (117, 'Bí ngô', 117, 0, 1, 500000000, 35000, 50000, 690, 20, 20000000, 10000000, 1, 92, 6, 2, 1, 1, 20, 20, 8, 8, 20, 0),
 (118, 'Nhện ma', 118, 0, 80, 900530, 25000, 25000, 690, 20, 32000, 15000, 1, 93, 0, 1, 1, 1, 20, 20, 8, 8, 20, 0),
 (119, 'cong thanh', 119, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 94, 0, 1, 1, 1, 20, 20, 8, 8, 20, 0),
-(120, 'Trụ rồng', 120, 0, 1, 2000000000, 35000, 50000, 690, 20, 1000000, 1, 1, 96, 7, 2, 1, 1, 20, 20, 8, 8, 20, 1),
+(120, 'Trụ rồng', 120, 0, 50, 2000000000, 35000, 150000, 690, 20, 1000000, 1, 1, 96, 7, 2, 1, 1, 20, 20, 8, 8, 20, 1),
 (121, 'Rương ma quái', 121, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 97, 8, 2, 0, 0, 20, 20, 8, 8, 30, 1),
 (122, 'Ngọc 1 sao', 122, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 98, 9, 2, 1, 1, 20, 20, 8, 8, 20, 1),
 (123, 'Ngọc 2 sao', 123, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 99, 9, 2, 1, 1, 20, 20, 8, 8, 20, 1),
@@ -4793,6 +4793,17 @@ CREATE TABLE `tob_may_dang_nhap` (
   KEY `k_username` (`username`),
   KEY `k_lan_cuoi` (`lan_cuoi`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Máy nào đã đăng nhập tài khoản nào';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `cau_hinh`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cau_hinh` (
+  `khoa` varchar(64) NOT NULL COMMENT 'ten setting, khop hang so K_* trong src/server/CauHinh.java',
+  `gia_tri` varchar(255) NOT NULL DEFAULT '',
+  `sua_boi` varchar(50) DEFAULT NULL COMMENT 'ten dang nhap admin (web) hoac "game" (bang setting trong game)',
+  `sua_luc` datetime DEFAULT NULL,
+  PRIMARY KEY (`khoa`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tob_su_kien`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
