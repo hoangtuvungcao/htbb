@@ -1654,15 +1654,22 @@ public final class KiemSkinLinhThu {
                 // (id anh 2 trong frame dung yen) bay cao han han THAN rong - khac han
                 // Poro/Lan/Heo la thu 4 chan gon, noi "tren" chinh la LUNG con vat, nen lut
                 // (tinh tu "tren" toi diem nguoi ngoi) cua rong tat yeu lon hon nhieu du
-                // nguoi ngoi dung cho. Bang chung: TRUOC sua, frame dung yen (khung 0) co
-                // duoi (diem thap nhat) o dy=76, trong khi ca 5 skin cu deu duoi <= 7 -
-                // tuc toan bo con rong dang nam CHET GIUA khong, treo lung lung duoi nguoi
-                // choi (dung anh nguoi choi bao cao). Da can lai theo DUOI (khop voi quy
-                // uoc 5 skin cu: duoi ~= 0..7, tuc chan/bong con thu cham dat) thay vi theo
-                // TREN, nen lut thuc te nhay len 85/70/53 (xuong/len/ngang) - qua xa khoang
-                // 9..21px cua thu tool. Khong ha lut de qua duoc bai test nay, vi ha lai la
-                // tai tao dung loi nguoi choi da xac nhan bang anh. Chi kiem con so khong
-                // vo ly (duong, va khong qua vai tram px).
+                // nguoi ngoi dung cho, va con so nay KHONG the chot bang cong thuc doi
+                // chieu voi thu tool (do la cho thu 4 chan).
+                //
+                // Da thu hai muc rieng, ca hai deu bi nguoi choi bao loi bang anh chup that:
+                //   - lut khop Poro (12/20/22, ban dau) -> nguoi noi hoan toan tren khong,
+                //     cach xa than rong (frame dung yen chi cao toi -26, duoi -32 cua CA
+                //     KHOI la o mot khung khac, khong phai khung dung yen hay gap).
+                //   - can DUOI (bong/chan) ve dung 0..7px nhu 5 skin cu -> lut nhay len
+                //     85/70/53, nguoi lai bi CHUI HAN vao dau rong (dau rong cao qua tam mat
+                //     nguoi choi, nhin nhu bi nuot).
+                // Da chon muc GIUA hai that bai do (47/44/37 xuong/len/ngang, dung composite
+                // dung frame+atlas that de dung thu truoc: chan nguoi vua lun vao mep dau/bom
+                // rong, mat rong con lo ro duoi tam nguoi) va CHUA co xac nhan cuoi cung tu
+                // nguoi choi luc viet dong nay - neu con sai tiep, sua o SHIFT trong script
+                // (khong phai sua nguong duoi day) roi lay lai 3 con so tren, KHONG doan mo.
+                // Chi kiem con so khong vo ly (duong, va khong qua vai tram px).
                 Kiem.dung("skin " + n + " lut " + l + "px, ran dai nen vuot khoang thu 4 chan (xem ghi chu)",
                         l != Integer.MIN_VALUE && l > 0 && l < 300);
                 continue;
