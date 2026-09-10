@@ -1627,12 +1627,11 @@ public class Pet extends Actor {
             //
             // Ban 09/09/2026 tung chan han o day de chua loi "cho an mat do, thu nuoi khong
             // doi". Do CSDL that ngay 10/09/2026: 53 pet dang mang dinh chan, 13 con da tut
-            // duoi nguong noi tai. Nen chi BAO cho nguoi choi biet phan exp khong con tac
-            // dung, con mieng an van phai vao de giu suc an.
+            // duoi nguong noi tai. Nay cho an binh thuong, KHONG chan va cung KHONG bao gi
+            // them (nguoi choi phai cho an deu de giu suc an, bao moi mieng an la phien).
             //
             // Truong hop cho an that su vo ich (suc an da day) van bi doEat tu choi truoc khi
             // toi day, kem thong bao "Vat pham cho an vuot qua suc an cua pet".
-            final boolean daKichTran = this.itemPet.level >= 2 && this.lvDetail.lv >= LevelPet.expMain.length;
             this.lvDetail.addExpUpLevel(this.lvDetail.getExp() + dxp[0]);
             int newlevel = this.lvDetail.lv;
             // limitLevel chi co 3 o (bac tien hoa 0/1/2), nhung itemPet.level KHONG phai luc nao
@@ -1652,12 +1651,6 @@ public class Pet extends Actor {
             this.powerEat = (short)((int)((long)this.powerEat + dxp[1]));
             this.lastlevel = (short)newlevel;
             p.sendMessage(MessageCreator.createCharWearingMessage(p, p));
-            if (daKichTran) {
-                // Bao bang dong chat, khong bung hop thoai: nguoi choi con phai cho an deu de
-                // giu suc an, bung hop thoai moi mieng an la phien.
-                p.sendMessage(MessageCreator.createMsgChat(p.id,
-                        this.getName() + " đã tối đa cấp độ và tiến hoá - miếng ăn chỉ còn hồi sức ăn để giữ nội tại"));
-            }
             if (this.lvDetail.canUplevel() && p != null) {
                 if (this.itemPet.getTemplate().atb[0] < 5) {
                     p.sendMessage(MessageCreator.createServerAlertMessage(this.getName() + " đã có thể nâng cấp lên " + ((this.lastlevel + 1) / 10 + 1), ""));

@@ -144,6 +144,9 @@ public final class KiemChoPetAn {
         Kiem.dung("doc duoc src/data/Pet.java", ma.length() > 0);
         Kiem.sai("KHONG con nhanh tu choi cho an vi pet da kich tran",
                 ma.contains("không thể cho ăn thêm"));
+        // Yeu cau 10/09/2026: cho an pet da kich tran thi im lang, khong bao gi them.
+        Kiem.sai("KHONG bao gi khi cho an pet da kich tran",
+                ma.contains("chỉ còn hồi sức ăn"));
         Kiem.dung("van con nhanh chan khi chua nang cap",
                 ma.contains("Không thể cho ăn khi chưa nâng cấp pet"));
     }
