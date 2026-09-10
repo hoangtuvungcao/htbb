@@ -111,6 +111,7 @@ public final class Kiem {
         KiemSuKienWorldCup.chay();
         KiemVongQuayThanTai.chay();
         KiemHoaHinhPet.chay();
+        KiemChoPetAn.chay();
         KiemHoaHinhThu.chay();
         KiemSoLuongItemGiftcode.chay();
         KiemTranXuRoi.chay();

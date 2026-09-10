@@ -912,7 +912,14 @@ public class Pet extends Actor {
                 info = info + "- Sức ăn : " + this.powerEat + "/" + MAX_POWER_EAT;
                 info = info + "\n- Trạng thái: " + (this.itemPet.level + 1) + "/3";
                 info = info + "\n- Phẩm chất: " + (this.phamchat == -1 ? "?" : tenPhamChat(this.phamchat));
-                info = info + "\n- Tiến hoá: " + this.lvDetail.lv + "+" + this.lvDetail.percent / 10 + "." + this.lvDetail.percent % 10 + "%";
+                // Nhan phai la "Cap do": so in ra la lvDetail.lv (1..LevelPet.expMain.length),
+                // con TIEN HOA la dong "Trang thai: x/3" ngay tren (itemPet.level + 1) - dung
+                // thuat ngu ma chinh game dung luc tien hoa xong ("...lên trạng thái N").
+                // De nhan "Tien hoa" o day thi bang thong tin pet KHONG CON dong nao ten "Cap
+                // do", ma ten pet lai la "Rồng cấp 1..5" (bac template) - nguoi choi doc con so
+                // "cap" trong ten roi tuong do la cap do. Da bao nham that ngay 10/09/2026:
+                // pet lv50 bi tu choi cho an, nguoi choi khang dinh "chua he len lv50".
+                info = info + "\n- Cấp độ: " + this.lvDetail.lv + "+" + this.lvDetail.percent / 10 + "." + this.lvDetail.percent % 10 + "%";
                 info = info + "\n- Kỹ năng có thể học: " + (this.phamchat > -1 ? this.maxSkill : 0);
                 if (this.id_skill1 > -1) {
                     info = info + "\n- Kỹ năng: " + ALL_SKILL[this.id_skill1].name;
@@ -1607,21 +1614,37 @@ public class Pet extends Actor {
         if (this.lvDetail.canUplevel()) {
             p.sendMessage(MessageCreator.createServerAlertMessage("Không thể cho ăn khi chưa nâng cấp pet", ""));
             return false;
-        } else if (this.itemPet.level >= 2 && this.lvDetail.lv >= LevelPet.expMain.length) {
-            // Da toi da CA cap do (lv = LevelPet.expMain.length, khong con muc tiep theo de
-            // tinh) LAN tien hoa (itemPet.level = 2, doTienHoa tu choi tien hoa them). O trang
-            // thai nay canUplevel() luon tra ve false (lv+1 khong chia het 10 o dinh mang), nen
-            // nhanh tren khong chan duoc: khong co gate nao khac, item cho an bi tru VO ICH moi
-            // lan (khong con exp/cap/tien hoa nao de nhan) ma khong co canh bao - day chinh la
-            // loi "cho an mat do, thu nuoi khong doi" nguoi choi bao cao (vd nhan vat "father"
-            // 08/09/2026, pet Rong da lv50/tien hoa 2).
-            p.sendMessage(MessageCreator.createServerAlertMessage("Thú nuôi đã đạt cấp độ và tiến hoá tối đa, không thể cho ăn thêm", ""));
-            return false;
         } else {
+            // Pet da kich tran CA cap do (lv = LevelPet.expMain.length) LAN tien hoa
+            // (itemPet.level = 2): phan EXP cua mieng an chac chan bo di.
+            //
+            // NHUNG KHONG DUOC CHAN CHO AN. Cho an la duong DUY NHAT nap powerEat (suc an,
+            // chi tang o dong "powerEat + dxp[1]" ben duoi), ma powerEat tut 5 diem moi 30
+            // phut trong doEat, va CanUseNoiTai() doi powerEat >= 20% MAX_POWER_EAT (>= 60)
+            // thi noi tai cua pet - Chua Tri, Phat Trien, Doat Menh... - moi chay. Chan cho
+            // an nghia la sau khoang mot ngay, dung nhung con pet dau tu nhat cua nguoi choi
+            // MAT HAN noi tai va khong con cach nao hoi lai.
+            //
+            // Ban 09/09/2026 tung chan han o day de chua loi "cho an mat do, thu nuoi khong
+            // doi". Do CSDL that ngay 10/09/2026: 53 pet dang mang dinh chan, 13 con da tut
+            // duoi nguong noi tai. Nen chi BAO cho nguoi choi biet phan exp khong con tac
+            // dung, con mieng an van phai vao de giu suc an.
+            //
+            // Truong hop cho an that su vo ich (suc an da day) van bi doEat tu choi truoc khi
+            // toi day, kem thong bao "Vat pham cho an vuot qua suc an cua pet".
+            final boolean daKichTran = this.itemPet.level >= 2 && this.lvDetail.lv >= LevelPet.expMain.length;
             this.lvDetail.addExpUpLevel(this.lvDetail.getExp() + dxp[0]);
             int newlevel = this.lvDetail.lv;
-            if (newlevel >= limitLevel[this.itemPet.level] && limitLevel[this.itemPet.level] > -1 && (this.itemPet.getTemplate().atb[0] < 5 || this.itemPet.getTemplate().atb[0] == 5 && this.itemPet.level == 1)) {
-                long[] data = LevelPet.getArrXpFromLevel(limitLevel[this.itemPet.level] - 1);
+            // limitLevel chi co 3 o (bac tien hoa 0/1/2), nhung itemPet.level KHONG phai luc nao
+            // cung nam trong 0..2: Char.doCreatePetMax dat thang level = 5, va Item.initInfoFromDB
+            // thay level == 0 thi lay getTemplate().level - ma data_item 727 Bach Thu, 790 Bong
+            // vang, 802 Kim ho bao bao, 873 Capybara deu ghi level = 5. Nhung con pet do vao day
+            // la limitLevel[5] -> ArrayIndexOutOfBounds, bi MapDoMenu nuot mat trong catch rong
+            // (~dong 2769) nen nguoi choi thay "cho an khong co gi xay ra" ma khong co bao loi.
+            // Kep ve o cuoi = coi nhu da tien hoa het, dung y voi loai pet khong co duong tien hoa.
+            final int bacTienHoa = Math.max(0, Math.min(this.itemPet.level, limitLevel.length - 1));
+            if (newlevel >= limitLevel[bacTienHoa] && limitLevel[bacTienHoa] > -1 && (this.itemPet.getTemplate().atb[0] < 5 || this.itemPet.getTemplate().atb[0] == 5 && this.itemPet.level == 1)) {
+                long[] data = LevelPet.getArrXpFromLevel(limitLevel[bacTienHoa] - 1);
                 this.lvDetail.setExp(data[0] + data[1] - 1L);
                 newlevel = this.lvDetail.lv;
             }
@@ -1629,6 +1652,12 @@ public class Pet extends Actor {
             this.powerEat = (short)((int)((long)this.powerEat + dxp[1]));
             this.lastlevel = (short)newlevel;
             p.sendMessage(MessageCreator.createCharWearingMessage(p, p));
+            if (daKichTran) {
+                // Bao bang dong chat, khong bung hop thoai: nguoi choi con phai cho an deu de
+                // giu suc an, bung hop thoai moi mieng an la phien.
+                p.sendMessage(MessageCreator.createMsgChat(p.id,
+                        this.getName() + " đã tối đa cấp độ và tiến hoá - miếng ăn chỉ còn hồi sức ăn để giữ nội tại"));
+            }
             if (this.lvDetail.canUplevel() && p != null) {
                 if (this.itemPet.getTemplate().atb[0] < 5) {
                     p.sendMessage(MessageCreator.createServerAlertMessage(this.getName() + " đã có thể nâng cấp lên " + ((this.lastlevel + 1) / 10 + 1), ""));
