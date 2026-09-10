@@ -1860,9 +1860,19 @@ public class RealController extends ServerController {
                             " thêm 7 ngày với giá " + giaLuong + " lượng không ?"
                         ));
                         return;  
-                    // Than Khi doi xuong cuoi menu (05/09/2026): case nay tu 10 doi thanh
-                    // 14 cho khop vi tri moi trong mang menu (RequestNPCInfoHandler case -8).
+                    // "Go skin thu" (them 11/09/2026, doi cho voi Than Khi 11/09/2026) - muc
+                    // rieng dat NGAY TRUOC "Than Khi" trong menu chinh NPC Tho Ren Than Bi,
+                    // bam la go luon, khong mo submenu. Goi lai dung ham dung cho lenh chat
+                    // "boskin": tu no da tu kiem khong co skin dang mac / hanh trang day va
+                    // bao loi phu hop.
                     case 14:
+                        SkinLinhThu.thaoSkin(player);
+                        return;
+
+                    // Than Khi doi xuong cuoi menu (05/09/2026), roi lui xuong case 15 khi
+                    // "Go skin thu" chen vao truoc no (11/09/2026) - case nay phai khop vi
+                    // tri trong mang menu (RequestNPCInfoHandler case -8).
+                    case 15:
                         String[] menu = new String[]
                         {
                             "Tạo","Nâng cấp","Đổi dòng","Tháo","Khóa"
@@ -1977,14 +1987,6 @@ public class RealController extends ServerController {
 
                     case 4:
                         player.sendMessage(MessageCreator.createServerAlertMessage("Sắp ra mắt.", ""));
-                        return;
-
-                    // "Go skin thu" (them 11/09/2026) - muc rieng ngang hang "Than Khi"
-                    // trong menu chinh NPC Tho Ren Than Bi, bam la go luon, khong mo
-                    // submenu. Goi lai dung ham dung cho lenh chat "boskin": tu no da tu
-                    // kiem khong co skin dang mac / hanh trang day va bao loi phu hop.
-                    case 15:
-                        SkinLinhThu.thaoSkin(player);
                         return;
 
 //                int gioHoatDong = player.runtimeCharProperties.getHourOnline();
