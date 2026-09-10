@@ -1979,6 +1979,14 @@ public class RealController extends ServerController {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Sắp ra mắt.", ""));
                         return;
 
+                    // "Go skin thu" (them 11/09/2026) - muc rieng ngang hang "Than Khi"
+                    // trong menu chinh NPC Tho Ren Than Bi, bam la go luon, khong mo
+                    // submenu. Goi lai dung ham dung cho lenh chat "boskin": tu no da tu
+                    // kiem khong co skin dang mac / hanh trang day va bao loi phu hop.
+                    case 15:
+                        SkinLinhThu.thaoSkin(player);
+                        return;
+
 //                int gioHoatDong = player.runtimeCharProperties.getHourOnline();
 //                String[] menu = new String[]{
 //                    String.format("Hoạt động 1 giờ (%s/1)", gioHoatDong),

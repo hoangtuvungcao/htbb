@@ -890,7 +890,10 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         // deu dich len 1 bac, doi case trong RealController.doCreateItem cho khop.
                         "Tinh Luyện Thần Binh","Gia Hạn VKTB(5000l 7n)","Cải Tạo Cải Trang","Bộ Sưu Tập",
                         "Hoá Hình Pet" + (p.petUsing != null && p.petUsing.dangHoaHinh() ? " (Lân cấp " + p.petUsing.capHoaHinh + ")" : ""),
-                        (p.isTatSkinLinhThu() ? "Bật" : "Tắt") + " hiển thị skin thú", "Thần Khí"};
+                        (p.isTatSkinLinhThu() ? "Bật" : "Tắt") + " hiển thị skin thú", "Thần Khí",
+                        // "Go skin thu" (11/09/2026) - muc rieng ngang hang Than Khi, bam la
+                        // go luon (khong mo submenu). Xem case 15 trong RealController.doCreateItem.
+                        "Gỡ skin thú"};
                     if (TeamServer.isServerLienDau()) {
                         menu = new String[]{"Vũ khí", "Trang bị", "Trang bị thú"};
                     }

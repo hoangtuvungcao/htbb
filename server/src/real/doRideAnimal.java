@@ -86,7 +86,13 @@ public class doRideAnimal {
                 player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                 player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
                 player.sendMessage(MessageCreator.createAnimalWearingMessage(player, player));
-                player.sendToNearPlayer(MessageCreator.createAnimalWearingMessage(player, player));
+                // KHONG gui createAnimalWearingMessage cho nguoi xung quanh - client hieu
+                // goi nay la "mo cua so Trang bi thu" (GameScr.onAnimalWearingInfo), charID
+                // khac nguoi nhan se hat man hinh ho sang xem trang bi thu cua nguoi vua len
+                // thu, cat ngang viec ho dang lam (xem docs/skin-linh-thu.md muc 10). Ho cung
+                // khong can goi do: du lieu duy nhat no mang la imgAnimal, chi dung ve trong
+                // cua so thong tin, khong dung ve con thu tren ban do (hinh tren ban do di
+                // bang createCharInfo, da gui vo dieu kien o dong tren).
                 MessageCreator.createMsgCharMonster(player, player);
             } else if (type == 1) {
                 idPet = id;

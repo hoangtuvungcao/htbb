@@ -606,7 +606,8 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
   qua lại sẽ thành công cụ phá người khác. Họ cũng không cần gói đó: dữ liệu duy nhất nó
   mang là `imgAnimal`, mà `imgAnimal` chỉ dùng vẽ trong cửa sổ thông tin chứ không dùng
   vẽ trên bản đồ. Hình trên bản đồ đi bằng `createCharInfo`.
-  *(Lưu ý: `doRideAnimal.java` vẫn còn một dòng như vậy từ trước — lỗi cũ, chưa đụng tới.)*
+  *(Đã gỡ dòng tương tự trong `doRideAnimal.java` — người chơi báo bị hất màn hình khi
+  đứng gần ai đó lên thú.)*
 - **Menu NPC đọc `idOptionMenu`, không phải `idMenu`.** `idMenu` là số hiệu **trang** menu,
   `idOptionMenu` mới là **dòng** người chơi chọn. Menu một dòng che mất lỗi này vì cả hai
   cùng bằng 0.
