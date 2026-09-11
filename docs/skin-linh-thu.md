@@ -408,15 +408,17 @@ trước khi sửa tệp:
 ```bash
 javac -encoding UTF-8 -d build/tools-classes tools/ThuChoNgoiSkinThu.java tools/DichSkinThu.java
 # ra.png  tep  dx(xuong,len,trai)  dy(xuong,len,trai)  dich-dy-khoi(xuong,len,ngang)  dich-dx-ngang  phong-to  [anh:dx]
-java -cp build/tools-classes ThuChoNgoiSkinThu thu.png map/skinthu/5 "0,0,1" "-23,-15,-15" "0,0,0" 0 5
-java -cp build/tools-classes ThuChoNgoiSkinThu thu.png map/skinthu/5 "0,0,1" "-23,-15,-15" "-24,0,0" 0 5 "2,5,10:20"
+java -cp build/tools-classes ThuChoNgoiSkinThu thu.png map/skinthu/5 "0,0,1" "-28,-10,-15" "0,0,0" 0 5
+# thử dời riêng vài ảnh con trong bộ nhớ (ví dụ đuôi Kim Cang Long +20px — đã thử rồi bỏ, xem mục 9):
+java -cp build/tools-classes ThuChoNgoiSkinThu thu.png map/skinthu/5 "0,0,1" "-28,-10,-15" "0,0,0" 0 5 "2,5,10:20"
 ```
 
-Ưng con số rồi thì ghi vào tệp bằng `tools/DichSkinThu` (dịch tương đối, sửa tại chỗ):
+Ưng con số rồi thì ghi vào tệp bằng `tools/DichSkinThu` (dịch tương đối, sửa tại chỗ — chạy
+lại với số đối dấu là hoàn tác):
 
 ```bash
 java -cp build/tools-classes DichSkinThu map/skinthu/5 khoi xuong dy -24
-java -cp build/tools-classes DichSkinThu map/skinthu/5 anh 2,5,10 dx 20
+java -cp build/tools-classes DichSkinThu map/skinthu/5 anh 2,5,10 dx 20    # rồi ... dx -20 để trả lại
 ```
 
 Còn **dòng bảng bù người ngồi** (`Char.dx_horse_tool` / `dy_horse_tool`, tra theo
@@ -572,19 +574,25 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
   |---|---|---|
   | Rồng đứng **chạm đất** ở khối xuống (trước đó lọt dưới vạch chân tới +27px) | `map/skinthu/5`, khung 0..6 dịch dy −24 | đáy +3 (Poro +5) |
   | Người đi theo **dòng 5** riêng của bảng | `Char.dx_horse_tool[5]` = `{0,0,+1,−1}`, `dy_horse_tool[5]` = `{−28,−10,−15,−15}`, `SkinLinhThu.INDEX_DXY[5] = 5` | ngang: người vào đúng tâm yên; xuống: người ngồi sau đầu rồng (bắt đầu từ −23 = quan hệ của Rồng Lớn dòng 3, rồi nâng thêm 5 theo ảnh chụp người chơi gửi); lên: hạ từ −15 xuống −10 để người lún vào yên đỏ khi nhìn từ lưng |
-  | **Sợi đuôi cuộn lên** ở khối xuống (ảnh con 2, 5, 10) dời sang phải +20px | `map/skinthu/5` | đuôi mọc từ mép phải thân, x ≥ 9 |
+  | **Sợi đuôi cuộn lên** ở khối xuống (ảnh con 2, 5, 10): 11/09 dời sang phải +20px, **12/09 trả về chỗ gốc** theo ý người chơi | `map/skinthu/5` | đuôi giữ nguyên như gốc, x < 7 (chạy xuyên cột người) |
 
-  Vì sao phải dời đuôi: client **luôn vẽ con thú SAU thân người** (`Char.cs` `paint`, nhánh
-  `orderPaint == 1`: `paintBody` rồi mới `paintTopHorse`/`paintBottomHorse`, chỉ hướng lên
-  là ngược lại) — không có cách nào cho một mảnh thú nằm *sau lưng* người ở hướng xuống. Đuôi
-  mọc giữa lưng thì vẽ đè ngang mặt người cưỡi; dời ra mép phải thân rồng thì không chạm
-  người nữa, nhìn như đuôi cuộn lên bên cạnh.
+  Vì sao từng dời đuôi, rồi vì sao trả lại: client **luôn vẽ con thú SAU thân người**
+  (`Char.cs` `paint`, nhánh `orderPaint == 1`: `paintBody` rồi mới `paintTopHorse`/
+  `paintBottomHorse`, chỉ hướng lên là ngược lại) — không có cách nào cho một mảnh thú nằm
+  *sau lưng* người ở hướng xuống. Đuôi mọc giữa lưng thì vẽ đè ngang thân người cưỡi (che
+  49% thân với người ở −20; dời +20px thì còn 18%). Nhưng người chơi nhìn bản đã dời và hỏi
+  *"sao đuôi lại bị thay đổi chứ không phải vị trí nhân vật"* — họ thích đuôi ở chỗ gốc hơn
+  là thân người lộ rõ, và chọn trả lại dù đã được báo trước là đuôi sẽ cắt ngang thân
+  (~65–74% với người ở −28, vì rồng đã nâng 24px còn người chỉ nhấc 8px). Đo các mức thử:
+  0px → 65–74%, +10 → 40–52%, +15 → 17–27%, +20 → 13–24%. **Bài học: dời một bộ phận của
+  con thú là đổi *hình dáng* nó — phải hỏi người chơi trước, kể cả khi số đo nói là tốt hơn.**
+  Chỉ hướng xuống dùng ba ảnh con này; hướng lên và ngang không hề đổi trong cả hai lần.
 
   Hai điều phải giữ khi thêm dòng: `dy` dòng mới **lệch dòng 0 không quá ~10px** vì
   `paintName` của client (`Char.cs:1520`, `Char.java:2081`) luôn đặt tên nhân vật theo dòng
   0, lệch xa là tên đè lên đầu người (ảnh chụp thực tế ở dy −23 tên còn cách đỉnh đầu ~14px);
   và dòng mới phải là **dòng cuối** để không ai chèn vào giữa mà quên đổi `INDEX_DXY`. `test/KiemSkinLinhThu.kiemChoNgoiKimCangLong` chốt cả bảng
-  lẫn dữ liệu (đáy chạm đất, đuôi nằm ngoài cột người).
+  lẫn dữ liệu (đáy chạm đất, đuôi ở đúng vị trí gốc — không ai "sửa giúp" lại mà không hỏi).
 
   Đo trước khi sửa bằng `tools/ThuChoNgoiSkinThu` (vẽ đúng thứ tự vẽ của client, kể cả
   hướng phải lật gương, kèm hình que người ngồi và dò yên đỏ bằng màu), dời số bằng

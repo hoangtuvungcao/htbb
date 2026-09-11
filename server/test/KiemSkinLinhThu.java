@@ -1687,10 +1687,13 @@ public final class KiemSkinLinhThu {
      *      ~14px). Bang nay server gui kem SO DONG, ca hai client doc theo do (Unity
      *      MessageHandler.cs:1795, JAR MessageHandler.java:1754) nen them dong khong can
      *      dong goi lai client.
-     *   3. Rieng khoi xuong, sợi duoi cuon len (anh con 2, 5, 10) doi sang phai 20px: client
-     *      luon ve con thu SAU than nguoi (Char.cs paint, orderPaint 1) nen bat cu manh nao
-     *      nam trong cot nguoi la ve DE LEN nguoi - duoi mọc giua lung thi cat ngang mat
-     *      nguoi cuoi. Doi sang mep phai than rong thi khong cham nguoi nua.
+     *   3. (DA THU ROI BO) Rieng khoi xuong, sợi duoi cuon len (anh con 2, 5, 10) tung doi
+     *      sang phai 20px ngay 11/09/2026: client luon ve con thu SAU than nguoi (Char.cs
+     *      paint, orderPaint 1) nen manh nao nam trong cot nguoi la ve DE LEN nguoi - duoi
+     *      moc giua lung che 49% than. Nhung nguoi choi (12/09/2026) hoi "sao doi duoi chu
+     *      khong phai vi tri nguoi" va chon TRA DUOI VE CHO GOC, chap nhan duoi cat ngang
+     *      than (~65-74% voi nguoi o -28). Du lieu duoi vi the phai GIU NGUYEN nhu goc -
+     *      muon dời lai thi hoi nguoi choi truoc, dung tu y.
      *
      * Do bang tools/ThuChoNgoiSkinThu (ve dung thu tu ve cua client + hinh que nguoi ngoi),
      * xem docs/skin-linh-thu.md muc 9.
@@ -1763,10 +1766,11 @@ public final class KiemSkinLinhThu {
         Kiem.dung("khoi xuong: day con rong o " + doDuoi[0] + "px, cham dat (0..8)",
                 doDuoi[0] >= 0 && doDuoi[0] <= 8);
         // [1] = dx nho nhat cua cac manh DUOI (anh con 2, 5, 10 - tia nuoc cuon len, ve TREN
-        // cung). Cot than nguoi la x -6..6 (+-6 quanh dx 0 cua dong KCL); duoi phai nam han
-        // ben phai cot do, khong thi no ve de ngang mat nguoi cuoi.
-        Kiem.dung("khoi xuong: duoi cuon (anh 2/5/10) bat dau tu x " + doDuoi[1] + " >= 7, khong de len nguoi",
-                doDuoi[1] >= 7);
+        // cung). Cot than nguoi la x -6..6 (+-6 quanh dx 0 cua dong KCL). Duoi GOC bat dau
+        // trong cot do (ve de len than nguoi); ban 11/09 tung doi ra x >= 7 roi nguoi choi
+        // chon tra lai 12/09/2026. Chot o day de khong ai "sua giup" lan nua ma khong hoi.
+        Kiem.dung("khoi xuong: duoi cuon (anh 2/5/10) o vi tri goc, bat dau tu x " + doDuoi[1] + " < 7 (nguoi choi chon giu)",
+                doDuoi[1] < 7);
         Kiem.dung("khoi xuong: co manh duoi de kiem (atlas chua doi)", doDuoi[2] > 0);
     }
 
