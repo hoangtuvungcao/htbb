@@ -86,7 +86,7 @@ phép kiểm tra khác (cửa sổ dài hơn) trên cùng hành động vẫn c�
 ### Bảo vệ khu quản trị
 
 Ẩn đường dẫn `/admin` **không phải** một lớp bảo vệ — máy quét thư mục tìm ra trong
-vài giây. Hai thứ thật sự chặn được:
+vài giây. Ba thứ thật sự chặn được:
 
 **1. HTTPS.** Nếu máy chủ chỉ mở cổng 80, mỗi lần đăng nhập admin thì tên và mật khẩu
 đi qua Internet dưới dạng chữ thường; ai trên đường truyền cũng đọc được. Đây là cách
@@ -100,7 +100,13 @@ sudo /opt/kpah/vps/bat-https.sh admin.abc.com    # chứng chỉ thật (Let's E
 Script chỉ **thêm** cổng 443 và chỉ ép HTTPS cho `/kpah/admin` — trang công khai của
 người chơi vẫn chạy cổng 80, nên không người chơi nào gặp cảnh báo chứng chỉ.
 
-**2. Xác thực hai bước (TOTP).** Biết mật khẩu vẫn chưa vào được: phải có thêm mã 6 số
+**2. Mật khẩu HTTP Basic Auth riêng** (`vps/mat-khau-admin.sh`) — chặn theo NGƯỜI thay
+vì theo IP: ai không biết mật khẩu này thì không thấy được cả màn hình đăng nhập admin,
+dù đứng ở IP/domain nào. Dùng khi whitelist IP (`vps/chi-cho-server-txt.sh`) không hợp —
+ví dụ IP người quản trị đổi liên tục (mạng di động/gia đình) nên không giữ cố định
+trong whitelist được. Mật khẩu này khác hoàn toàn mật khẩu tài khoản game, đổi riêng.
+
+**3. Xác thực hai bước (TOTP).** Biết mật khẩu vẫn chưa vào được: phải có thêm mã 6 số
 từ điện thoại, đổi 30 giây một lần, mỗi mã dùng **đúng một lần**.
 
 ```bash
