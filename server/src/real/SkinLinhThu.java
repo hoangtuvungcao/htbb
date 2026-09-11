@@ -123,14 +123,29 @@ public final class SkinLinhThu {
     public static final int TYPE_ITEM = 30;
 
     /**
-     * Dong bang bu toa do nguoi ngoi (Char.dx_horse_tool / dy_horse_tool), gui kem
-     * idThutool. Dong 0 = {0,0,7,-7} / {-20,-15,-15,-15}, dung dong ma con Poro dang
-     * dung: cac skin deu la thu bon chan co xap xi Poro nen ngoi vua.
+     * Dong bang bu toa do nguoi ngoi (Char.dx_horse_tool / dy_horse_tool) cua TUNG SKIN,
+     * gui kem idThutool. Dong 0 = {0,0,7,-7} / {-20,-15,-15,-15}, dung dong ma con Poro dang
+     * dung: 5 skin dau deu la thu bon chan co xap xi Poro nen ngoi vua.
      *
-     * Bang chi co 5 dong (Char.java:764) nen gia tri hop le la 0..4; -1 = khong bu.
-     * Gui -1 thi nguoi ngoi tut xuong sat dat, gui >= 5 thi client nem loi giua luc ve.
+     * Kim Cang Long (5) dung dong RIENG so 5 (Char.java, khai bao dx_horse_tool): no la rong
+     * dai, yen nam dung tam than khi quay ngang nen nguoi khong duoc day sang ben 7px nhu
+     * Poro (dx +1/-1), va huong xuong nguoi ngoi sau dau rong nen nhac -23 (khop Rong Lon
+     * -22). Truoc 11/09/2026 dung chung dong 0: nguoi lech 6px ve phia duoi khi quay ngang,
+     * con huong xuong thi noi lo lung tren dau rong (nguoi choi bao kem anh chup).
+     *
+     * Bang do server GUI CHO CLIENT kem SO DONG trong goi 26, ca ban Unity
+     * (MessageHandler.cs:1795) lan ban JAR (MessageHandler.java:1754) deu doc dong theo so
+     * do - nen them dong moi la du, KHONG phai dong goi lai client. Gia tri hop le la
+     * 0..dx_horse_tool.length-1; -1 = khong bu (nguoi ngoi tut xuong sat dat); gui so lon
+     * hon bang thi client nem loi giua luc ve. test/KiemSkinLinhThu.kiemChoNgoiSkin chot
+     * moi phan tu o day deu tro vao mot dong co that.
      */
-    public static final int INDEX_DXY = 0;
+    public static final int[] INDEX_DXY = {0, 0, 0, 0, 0, 5};
+
+    /** Dong bang bu toa do cho skin dang mang; 0 (dong Poro) neu khong xac dinh duoc. */
+    public static int indexDxy(final Char p) {
+        return (p != null && hopLe(p.idSkinLinhThu)) ? INDEX_DXY[p.idSkinLinhThu] : INDEX_DXY[0];
+    }
 
     /**
      * Cach di chuyen: 0 = di bo, 1 = bay. Ca 5 skin deu la thu bon chan di tren dat.

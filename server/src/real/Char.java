@@ -941,8 +941,22 @@ public class Char extends LiveActor {
         GENDER_OF_CLAZZ = new byte[]{1, 1, 2, 1, 2};
         Char.maxHit = 150;
         Char.maxHit4 = 200;
-        Char.dx_horse_tool = new byte[][]{{0, 0, 7, -7}, {0, 0, 5, -5}, {0, 0, 8, -8}, new byte[4],new byte[4]};
-        Char.dy_horse_tool = new byte[][]{{-20, -15, -15, -15}, {-25, -15, -15, -15}, {-20, -15, -15, -15}, {-22, -15, -16, -16},{ -22, -15, -17, -16 }};
+        // Bang bu toa do NGUOI NGOI tren thu cuoi tool, theo huong {xuong, len, trai, phai}.
+        // Gui nguyen bang cho client trong goi 26 (MessageCreator, "dx_horse_tool"), client
+        // doc SO DONG tu goi (Unity MessageHandler.cs:1795, JAR MessageHandler.java:1754) roi
+        // tra dong theo indexdxy (Char.typehorse) trong getdxHorse()/getdyParHorse(). Vi vay
+        // them dong o day la du, khong phai dong goi lai client nao.
+        //   0 Poro (va 5 skin thu bon chan)   1 Lan   2 Heo/Heo Bang   3 Rong Lon/Ngua Xuong
+        //   4 hoa hinh
+        //   5 SKIN KIM CANG LONG (11/09/2026): rong dai, yen o dung tam than khi quay ngang
+        //     (dx +1/-1 thay cho +7/-7 cua Poro), huong xuong nguoi ngoi sau dau rong nen
+        //     nhac -23 (khop Rong Lon -22). Xem SkinLinhThu.INDEX_DXY va docs/skin-linh-thu.md
+        //     muc 9. paintName cua client luon dung dong 0 de dat ten, nen dy cua dong moi
+        //     phai giu gan dong 0 (lech vai px) - khong thi ten de len dau nguoi.
+        Char.dx_horse_tool = new byte[][]{{0, 0, 7, -7}, {0, 0, 5, -5}, {0, 0, 8, -8}, new byte[4], new byte[4],
+            {0, 0, 1, -1}};
+        Char.dy_horse_tool = new byte[][]{{-20, -15, -15, -15}, {-25, -15, -15, -15}, {-20, -15, -15, -15}, {-22, -15, -16, -16}, {-22, -15, -17, -16},
+            {-23, -15, -15, -15}};
 
         Char.Dx_Dy_WP_tool = new byte[][]{
             {-35, -27, -30, -37, -26, -55, -55, -47, -35, -55,-46,-35},

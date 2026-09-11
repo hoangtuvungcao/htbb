@@ -1805,7 +1805,7 @@ public class MessageCreator {
                     idThutool = SkinLinhThu.idAnhBanDo(ch);
                     // Con thu that co the la ngua thuong (getIndexDxy tra -1 = khong bu
                     // toa do) nen phai dat lai, khong thi nguoi ngoi tut xuong sat dat.
-                    indexdxy = SkinLinhThu.INDEX_DXY;
+                    indexdxy = SkinLinhThu.indexDxy(ch);
                 }
             }
             m.dos.writeShort(idThutool);
@@ -2115,7 +2115,7 @@ public class MessageCreator {
             // nhin thay hai con thu khac nhau.
             if (SkinLinhThu.hienThi(p)) {
                 idThutool = SkinLinhThu.idAnhBanDo(p);
-                indexdxy = SkinLinhThu.INDEX_DXY;
+                indexdxy = SkinLinhThu.indexDxy(p);
             }
         }
         // CHAN DOAN linh thu: ghi lai server bao client ve anh nao. Doi chieu voi

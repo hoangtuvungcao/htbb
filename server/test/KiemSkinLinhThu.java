@@ -1650,32 +1650,179 @@ public final class KiemSkinLinhThu {
         for (int n = 0; n < real.SkinLinhThu.SO_SKIN; n++) {
             final int l = lutHuongXuong(new java.io.File("map/skinthu/" + n));
             if (n == real.SkinLinhThu.KIM_CANG_LONG) {
-                // Kim Cang Long (09/10/2026): "tren" cua khoi xuong la DAU VOI/TUA NUOC
-                // (id anh 2 trong frame dung yen) bay cao han han THAN rong - khac han
-                // Poro/Lan/Heo la thu 4 chan gon, noi "tren" chinh la LUNG con vat, nen lut
-                // (tinh tu "tren" toi diem nguoi ngoi) cua rong tat yeu lon hon nhieu du
-                // nguoi ngoi dung cho, va con so nay KHONG the chot bang cong thuc doi
-                // chieu voi thu tool (do la cho thu 4 chan).
-                //
-                // Da thu hai muc rieng, ca hai deu bi nguoi choi bao loi bang anh chup that:
-                //   - lut khop Poro (12/20/22, ban dau) -> nguoi noi hoan toan tren khong,
-                //     cach xa than rong (frame dung yen chi cao toi -26, duoi -32 cua CA
-                //     KHOI la o mot khung khac, khong phai khung dung yen hay gap).
-                //   - can DUOI (bong/chan) ve dung 0..7px nhu 5 skin cu -> lut nhay len
-                //     85/70/53, nguoi lai bi CHUI HAN vao dau rong (dau rong cao qua tam mat
-                //     nguoi choi, nhin nhu bi nuot).
-                // Da chon muc GIUA hai that bai do (47/44/37 xuong/len/ngang, dung composite
-                // dung frame+atlas that de dung thu truoc: chan nguoi vua lun vao mep dau/bom
-                // rong, mat rong con lo ro duoi tam nguoi) va CHUA co xac nhan cuoi cung tu
-                // nguoi choi luc viet dong nay - neu con sai tiep, sua o SHIFT trong script
-                // (khong phai sua nguong duoi day) roi lay lai 3 con so tren, KHONG doan mo.
-                // Chi kiem con so khong vo ly (duong, va khong qua vai tram px).
+                // Kim Cang Long: "tren" cua khoi xuong la DUOI/TIA NUOC bay cao han han THAN
+                // rong - khac han Poro/Lan/Heo la thu 4 chan gon, noi "tren" chinh la LUNG
+                // con vat, nen "lut" (tinh tu "tren" toi diem nguoi ngoi) cua rong tat yeu
+                // lon hon nhieu du nguoi ngoi dung cho. Con so nay KHONG chot duoc bang cong
+                // thuc doi chieu voi thu tool (do la cho thu 4 chan) - cho ngoi cua no duoc
+                // chot rieng o kiemChoNgoiKimCangLong() ben duoi. O day chi kiem con so
+                // khong vo ly (duong, va khong qua vai tram px).
                 Kiem.dung("skin " + n + " lut " + l + "px, ran dai nen vuot khoang thu 4 chan (xem ghi chu)",
                         l != Integer.MIN_VALUE && l > 0 && l < 300);
                 continue;
             }
             Kiem.dung("skin " + n + " lut " + l + "px, nam trong khoang thu tool cua game",
                     l != Integer.MIN_VALUE && l >= thap - bien && l <= cao + bien);
+        }
+
+        kiemChoNgoiKimCangLong();
+    }
+
+    /**
+     * Cho ngoi Kim Cang Long (skin 5) - 11/09/2026.
+     *
+     * LICH SU: ba lan chinh "lut" cua khoi xuong (khop Poro 12px -> nguoi noi lo lung; can
+     * day ve 0..7px -> nguoi chui han vao dau rong; muc giua 47px) deu bi nguoi choi bao loi
+     * kem anh chup, vi ca ba chi doi CON RONG len xuong ma van dung DONG 0 cua bang
+     * dx/dy_horse_tool (dong cua Poro): huong ngang nguoi bi day +7px ve phia duoi trong khi
+     * yen nam dung tam than; huong xuong thi dat rong cham dat la nguoi (nhac -20) chui vao
+     * dau rong, nang rong len thi chan rong roi mat dat.
+     *
+     * CACH SUA: hai viec tach nhau.
+     *   1. Con rong DUNG CHAM DAT o ca ba khoi nhu moi thu cuoi khac (khoi xuong truoc do
+     *      lot xuong duoi vach chan +27px, da nang len 24px bang tools/DichSkinThu).
+     *   2. NGUOI di theo DONG RIENG so 5 cua bang (SkinLinhThu.INDEX_DXY[5]): ngang dx +1/-1
+     *      (dung tam yen, thay cho +7/-7), xuong dy -23 - dung quan he cua Rong Lon (thu tool
+     *      rong to co san cua game, dong 3: nguoi ngoi sau dau rong, mong thap hon dinh dau
+     *      ~14px). Bang nay server gui kem SO DONG, ca hai client doc theo do (Unity
+     *      MessageHandler.cs:1795, JAR MessageHandler.java:1754) nen them dong khong can
+     *      dong goi lai client.
+     *   3. Rieng khoi xuong, sợi duoi cuon len (anh con 2, 5, 10) doi sang phai 20px: client
+     *      luon ve con thu SAU than nguoi (Char.cs paint, orderPaint 1) nen bat cu manh nao
+     *      nam trong cot nguoi la ve DE LEN nguoi - duoi mọc giua lung thi cat ngang mat
+     *      nguoi cuoi. Doi sang mep phai than rong thi khong cham nguoi nua.
+     *
+     * Do bang tools/ThuChoNgoiSkinThu (ve dung thu tu ve cua client + hinh que nguoi ngoi),
+     * xem docs/skin-linh-thu.md muc 9.
+     */
+    private static void kiemChoNgoiKimCangLong() {
+        Kiem.nhom("Skin linh thu - cho ngoi Kim Cang Long (dong bang rieng + du lieu khoi xuong)");
+
+        final int s = real.SkinLinhThu.KIM_CANG_LONG;
+        final byte[][] dx = real.Char.dx_horse_tool;
+        final byte[][] dy = real.Char.dy_horse_tool;
+        Kiem.bang("INDEX_DXY du " + real.SkinLinhThu.SO_SKIN + " phan tu",
+                Integer.valueOf(real.SkinLinhThu.SO_SKIN), Integer.valueOf(real.SkinLinhThu.INDEX_DXY.length));
+        Kiem.bang("dx_horse_tool va dy_horse_tool cung so dong",
+                Integer.valueOf(dx.length), Integer.valueOf(dy.length));
+        for (int r = 0; r < dx.length; r++) {
+            Kiem.dung("dong " + r + " du 4 huong (xuong, len, trai, phai)",
+                    dx[r].length == 4 && dy[r].length == 4);
+        }
+        // Moi skin phai tro vao mot dong CO THAT: gui so lon hon bang la client nem loi giua
+        // luc ve, gui -1 la nguoi ngoi tut xuong sat dat.
+        for (int i = 0; i < real.SkinLinhThu.SO_SKIN; i++) {
+            final int d = real.SkinLinhThu.INDEX_DXY[i];
+            Kiem.dung("INDEX_DXY[" + i + "] = " + d + " tro vao mot dong co that",
+                    d >= 0 && d < dx.length);
+        }
+        // 5 skin thu bon chan van dung dong 0 (Poro) - doi chung la doi cho ngoi ca 5 con.
+        for (int i = 0; i < s; i++) {
+            Kiem.bang("skin " + i + " (thu bon chan) van dung dong 0", Integer.valueOf(0),
+                    Integer.valueOf(real.SkinLinhThu.INDEX_DXY[i]));
+        }
+
+        final int d5 = real.SkinLinhThu.INDEX_DXY[s];
+        Kiem.dung("Kim Cang Long dung dong rieng, khong phai dong 0 cua Poro", d5 != 0);
+        if (d5 < 0 || d5 >= dx.length) {
+            return;
+        }
+        Kiem.bang("dong KCL: xuong dx 0 (nguoi giua dau rong)", Integer.valueOf(0), Integer.valueOf(dx[d5][0]));
+        Kiem.bang("dong KCL: len dx 0", Integer.valueOf(0), Integer.valueOf(dx[d5][1]));
+        Kiem.bang("dong KCL: trai dx +1 (yen o tam than, khong day 7px nhu Poro)",
+                Integer.valueOf(1), Integer.valueOf(dx[d5][2]));
+        Kiem.bang("dong KCL: phai dx -1 (doi dau cua trai - client lat guong)",
+                Integer.valueOf(-1), Integer.valueOf(dx[d5][3]));
+        Kiem.bang("dong KCL: xuong dy -23 (khop Rong Lon -22, nguoi sau dau rong)",
+                Integer.valueOf(-23), Integer.valueOf(dy[d5][0]));
+        // paintName cua client (Char.cs:1520, Char.java:2081) LUON dat ten theo dong 0,
+        // bat ke dong nao dang dung - dy dong moi lech xa dong 0 la ten de len dau nguoi.
+        for (int h = 0; h < 4; h++) {
+            Kiem.dung("dong KCL: dy huong " + h + " lech dong 0 khong qua 5px (ten nhan vat dat theo dong 0)",
+                    Math.abs(dy[d5][h] - dy[0][h]) <= 5);
+        }
+        // Dong 5 phai dung la dong CUOI: khong ai chen dong vao giua ma quen doi INDEX_DXY.
+        Kiem.bang("dong KCL la dong cuoi cua bang", Integer.valueOf(dx.length - 1), Integer.valueOf(d5));
+
+        // ---- Du lieu khung khoi xuong ----
+        final java.io.File tep = new java.io.File("map/skinthu/" + s);
+        final int[] doDuoi = doKhoiXuong(tep);
+        if (doDuoi == null) {
+            System.out.println("    (bo qua: khong doc duoc map/skinthu/" + s + ")");
+            return;
+        }
+        // [0] = diem mo duc thap nhat (day con rong, alpha >= 128) cua khoi xuong. Truoc
+        // 11/09/2026 la +27 (ca dau rong nam duoi vach chan); Poro +5, Rong Lon +15 (bong
+        // dam). Rong phai dung tren dat: day trong khoang 0..8.
+        Kiem.dung("khoi xuong: day con rong o " + doDuoi[0] + "px, cham dat (0..8)",
+                doDuoi[0] >= 0 && doDuoi[0] <= 8);
+        // [1] = dx nho nhat cua cac manh DUOI (anh con 2, 5, 10 - tia nuoc cuon len, ve TREN
+        // cung). Cot than nguoi la x -6..6 (+-6 quanh dx 0 cua dong KCL); duoi phai nam han
+        // ben phai cot do, khong thi no ve de ngang mat nguoi cuoi.
+        Kiem.dung("khoi xuong: duoi cuon (anh 2/5/10) bat dau tu x " + doDuoi[1] + " >= 7, khong de len nguoi",
+                doDuoi[1] >= 7);
+        Kiem.dung("khoi xuong: co manh duoi de kiem (atlas chua doi)", doDuoi[2] > 0);
+    }
+
+    /**
+     * Do khoi xuong (khung 0..6) cua mot tep thu cuoi: {day mo duc thap nhat (alpha >= 128),
+     * dx nho nhat cua cac manh dung anh con 2/5/10, so manh nhu vay}. null neu khong doc duoc.
+     */
+    private static int[] doKhoiXuong(final java.io.File tep) {
+        try {
+            final byte[] b = java.nio.file.Files.readAllBytes(tep.toPath());
+            final java.awt.image.BufferedImage at =
+                    javax.imageio.ImageIO.read(new java.io.File(tep.getPath() + ".png"));
+            final int soAnh = b[0] & 0xFF;
+            final int[] ix = new int[soAnh];
+            final int[] iy = new int[soAnh];
+            final int[] iw = new int[soAnh];
+            final int[] ih = new int[soAnh];
+            for (int i = 0; i < soAnh; i++) {
+                ix[i] = b[1 + i * 5 + 1] & 0xFF;
+                iy[i] = b[1 + i * 5 + 2] & 0xFF;
+                iw[i] = b[1 + i * 5 + 3] & 0xFF;
+                ih[i] = b[1 + i * 5 + 4] & 0xFF;
+            }
+            int vt = 1 + soAnh * 5;
+            final int soKhung = ((b[vt] & 0xFF) << 8) | (b[vt + 1] & 0xFF);
+            vt += 2;
+            int day = Integer.MIN_VALUE;
+            int dxDuoi = Integer.MAX_VALUE;
+            int soManhDuoi = 0;
+            for (int f = 0; f < soKhung; f++) {
+                final int soManh = b[vt] & 0xFF;
+                vt++;
+                for (int k = 0; k < soManh; k++) {
+                    final int ddx = (short) (((b[vt] & 0xFF) << 8) | (b[vt + 1] & 0xFF));
+                    final int ddy = (short) (((b[vt + 2] & 0xFF) << 8) | (b[vt + 3] & 0xFF));
+                    final int a = b[vt + 4] & 0xFF;
+                    vt += 7;
+                    if (f >= 7) {
+                        continue;
+                    }
+                    if (a == 2 || a == 5 || a == 10) {
+                        soManhDuoi++;
+                        dxDuoi = Math.min(dxDuoi, ddx);
+                    }
+                    for (int yy = ih[a] - 1; yy >= 0; yy--) {
+                        boolean coDiem = false;
+                        for (int xx = 0; xx < iw[a] && !coDiem; xx++) {
+                            if (ix[a] + xx < at.getWidth() && iy[a] + yy < at.getHeight()
+                                    && (at.getRGB(ix[a] + xx, iy[a] + yy) >>> 24) >= 128) {
+                                coDiem = true;
+                            }
+                        }
+                        if (coDiem) {
+                            day = Math.max(day, ddy + yy);
+                            break;
+                        }
+                    }
+                }
+            }
+            return new int[] { day, dxDuoi == Integer.MAX_VALUE ? 0 : dxDuoi, soManhDuoi };
+        } catch (final Exception e) {
+            return null;
         }
     }
 

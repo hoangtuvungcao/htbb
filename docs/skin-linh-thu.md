@@ -400,6 +400,28 @@ Muốn soi hình học trước khi dùng (con thú so với chỗ người ng�
 java -cp build/tools-classes XemSkinNhuTrongGame xem.png map/d_effect/56 map/skinthu/0
 ```
 
+Bản đầy đủ hơn — vẽ đúng thứ tự vẽ của client (thân người → thú → đầu người; hướng lên thì
+thú trước), lật gương hướng phải như client, kèm hình que người ngồi, dò yên đỏ bằng màu, và
+**thử tham số ngay trong bộ nhớ** (dòng bảng dx/dy, dịch cả khối, dịch riêng vài ảnh con)
+trước khi sửa tệp:
+
+```bash
+javac -encoding UTF-8 -d build/tools-classes tools/ThuChoNgoiSkinThu.java tools/DichSkinThu.java
+# ra.png  tep  dx(xuong,len,trai)  dy(xuong,len,trai)  dich-dy-khoi(xuong,len,ngang)  dich-dx-ngang  phong-to  [anh:dx]
+java -cp build/tools-classes ThuChoNgoiSkinThu thu.png map/skinthu/5 "0,0,1" "-23,-15,-15" "0,0,0" 0 5
+java -cp build/tools-classes ThuChoNgoiSkinThu thu.png map/skinthu/5 "0,0,1" "-23,-15,-15" "-24,0,0" 0 5 "2,5,10:20"
+```
+
+Ưng con số rồi thì ghi vào tệp bằng `tools/DichSkinThu` (dịch tương đối, sửa tại chỗ):
+
+```bash
+java -cp build/tools-classes DichSkinThu map/skinthu/5 khoi xuong dy -24
+java -cp build/tools-classes DichSkinThu map/skinthu/5 anh 2,5,10 dx 20
+```
+
+Còn **dòng bảng bù người ngồi** (`Char.dx_horse_tool` / `dy_horse_tool`, tra theo
+`SkinLinhThu.INDEX_DXY[skin]`) thì sửa trong mã nguồn — xem mục 9, phần Kim Cang Long.
+
 ### Kiểm bộ ảnh trước khi dùng
 
 Điều duy nhất phải kiểm bằng tay là **đúng 21 frame** và mọi ô nằm trong biên atlas. Đọc
@@ -529,6 +551,44 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
   **Tiên Lộc vẫn yếu nhất (55%)** vì là con nai mảnh; dịch hết giới hạn cũng chỉ tới đó,
   muốn hơn thì phải vẽ lại ảnh cho dày thân.
   `test/KiemSkinLinhThu.kiemCheChanNguoi` chốt lại mọi skin phải che ≥ mức của Poro.
+
+  ### Kim Cang Long (skin 5) — dòng bảng riêng, không dùng "lụt" của thú bốn chân
+
+  Ba lần chỉnh "lụt" khối xuống (12px như Poro → người nổi lơ lửng; căn đáy về 0..7px →
+  người chui hẳn vào đầu rồng; mức giữa 47px) đều bị người chơi báo lỗi kèm ảnh chụp, vì cả
+  ba chỉ dời **con rồng** mà vẫn dùng **dòng 0** của bảng `dx/dy_horse_tool` (dòng của Poro):
+  hướng ngang người bị đẩy +7px về phía đuôi trong khi yên nằm đúng tâm thân; hướng xuống
+  thì rồng chạm đất là người (nhấc −20) chui vào đầu rồng, nâng rồng thì chân rồng rời đất.
+
+  **Hoá ra bảng đó không cố định như hai chú thích cũ nói.** Server gửi nguyên bảng kèm
+  **số dòng** trong gói 26 (`MessageCreator`, khối `dx_horse_tool`), và cả bản Unity
+  (`MessageHandler.cs:1795`) lẫn bản JAR (`MessageHandler.java:1754`) đều đọc số dòng từ gói
+  rồi tra `dy_horse[typehorse][dir]` với `typehorse` = `indexdxy` server gửi. Rồng Lớn của
+  game vốn đã dùng dòng 3 riêng. Nên **thêm dòng là đủ, không phải đóng gói lại client nào.**
+
+  Sửa 11/09/2026, ba việc tách nhau:
+
+  | Việc | Ở đâu | Số |
+  |---|---|---|
+  | Rồng đứng **chạm đất** ở khối xuống (trước đó lọt dưới vạch chân tới +27px) | `map/skinthu/5`, khung 0..6 dịch dy −24 | đáy +3 (Poro +5) |
+  | Người đi theo **dòng 5** riêng của bảng | `Char.dx_horse_tool[5]` = `{0,0,+1,−1}`, `dy_horse_tool[5]` = `{−23,−15,−15,−15}`, `SkinLinhThu.INDEX_DXY[5] = 5` | ngang: người vào đúng tâm yên; xuống: người ngồi sau đầu rồng, mông thấp hơn đỉnh đầu ~14px — đúng quan hệ của Rồng Lớn (dòng 3, dy −22) |
+  | **Sợi đuôi cuộn lên** ở khối xuống (ảnh con 2, 5, 10) dời sang phải +20px | `map/skinthu/5` | đuôi mọc từ mép phải thân, x ≥ 9 |
+
+  Vì sao phải dời đuôi: client **luôn vẽ con thú SAU thân người** (`Char.cs` `paint`, nhánh
+  `orderPaint == 1`: `paintBody` rồi mới `paintTopHorse`/`paintBottomHorse`, chỉ hướng lên
+  là ngược lại) — không có cách nào cho một mảnh thú nằm *sau lưng* người ở hướng xuống. Đuôi
+  mọc giữa lưng thì vẽ đè ngang mặt người cưỡi; dời ra mép phải thân rồng thì không chạm
+  người nữa, nhìn như đuôi cuộn lên bên cạnh.
+
+  Hai điều phải giữ khi thêm dòng: `dy` dòng mới **lệch dòng 0 không quá vài px** vì
+  `paintName` của client (`Char.cs:1520`, `Char.java:2081`) luôn đặt tên nhân vật theo dòng
+  0, lệch xa là tên đè lên đầu người; và dòng mới phải là **dòng cuối** để không ai chèn vào
+  giữa mà quên đổi `INDEX_DXY`. `test/KiemSkinLinhThu.kiemChoNgoiKimCangLong` chốt cả bảng
+  lẫn dữ liệu (đáy chạm đất, đuôi nằm ngoài cột người).
+
+  Đo trước khi sửa bằng `tools/ThuChoNgoiSkinThu` (vẽ đúng thứ tự vẽ của client, kể cả
+  hướng phải lật gương, kèm hình que người ngồi và dò yên đỏ bằng màu), dời số bằng
+  `tools/DichSkinThu` — xem mục 7.
 - **Icon con thú nhỏ cạnh tên nhân vật vẫn là của linh thú thật** (`Animal.idImgIcon`).
   Cố ý: nó cho biết con linh thú thật là con gì, đúng tinh thần "chỉ số của con thú vẫn là
   của nó". Tên và chỉ số con thú trong bảng thông tin cũng vậy.

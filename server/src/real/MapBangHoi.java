@@ -37,6 +37,41 @@ import static real.Map.replaceStringWithSpace;
 import static real.Map.stopGiveMoney;
 
 class MapBangHoi {
+
+    /**
+     * Thoi gian cho "giai tan bang" ke tu luc bang chu bam lenh, tinh bang PHUT.
+     *
+     * `NewClan.timeDel()`/`timeExpire()` (lib/NQSH_5h.jar, khong co ma nguon trong src/ nen
+     * KHONG sua truc tiep duoc - xem [[project-kpah-nqsh-jar-khoa-ten-package]]) luon tinh
+     * "4320 - (now - timeStartDel)/60000", tuc CO DINH dem nguoc 4320 phut (3 ngay) ke tu
+     * moc `timeStartDel`. Muon rut ngan ma khong sua duoc cong thuc do, chi con cach LUI
+     * `timeStartDel` ve qua khu dung boi so phut can bot (xem datTimeStartDelGiaiTan) de
+     * cong thuc goc tra ve dung so phut minh muon ngay tu dau, roi tu no dem nguoc that.
+     */
+    private static final long PHUT_CHO_GIAI_TAN = 60L;
+
+    /** Hang so 4320 phut (3 ngay) ghi cung trong NewClan.timeDel()/timeExpire() - xem tren. */
+    private static final long PHUT_GIAI_TAN_GOC_TRONG_JAR = 4320L;
+
+    /**
+     * Dat lai `timeStartDel` sao cho `NewClan.timeDel()` tra ve dung PHUT_CHO_GIAI_TAN ngay
+     * lap tuc, roi dem nguoc that theo thoi gian thuc tu do - dung o moi cho "bat dau/lam
+     * moi dem nguoc giai tan" thay cho `System.currentTimeMillis()` truc tiep.
+     *
+     * CHI ap dung cho luong bang chu chu dong bam "giai tan bang" (doDelNewClan). Co che
+     * rieng "tu dong giai tan neu duoi 10 thanh vien qua 3 ngay" (o doUserOutNewClan, moi
+     * thanh vien, va ben trong chinh NewClan.removeMember() da khoa) dung CHUNG truong
+     * timeStartDel nay nhung KHONG duoc doi o day - neu bang chu huy giai tan dung luc bang
+     * dang duoi 10 nguoi, dong canh bao "giai tan sau X phut do thieu thanh vien" co the tam
+     * thoi hien so phut ngan hon that (con lai tu lan dat gio nay) cho toi lan bang duoi 10
+     * nguoi tiep theo tu dat lai dung 3 ngay - anh huong da biet, chap nhan duoc vi chi la
+     * hien thi tam thoi trong truong hop hiem, khong lam bang bi xoa sai.
+     */
+    private static void datTimeStartDelGiaiTan(NewClan clanInfo) {
+        clanInfo.timeStartDel = System.currentTimeMillis()
+                - (PHUT_GIAI_TAN_GOC_TRONG_JAR - PHUT_CHO_GIAI_TAN) * 60000L;
+    }
+
     static boolean doSetTitleClan(Map map, Char pMaster, Char player, boolean ordained) {
         try {
             NewClan clandata = NewClan.getClan(player.idClan);
@@ -387,7 +422,7 @@ class MapBangHoi {
             }
 
             if (System.currentTimeMillis() - clanInfo.timeStartDel >= 259200000L || clanInfo.member.size() >= 10) {
-                clanInfo.timeStartDel = System.currentTimeMillis();
+                datTimeStartDelGiaiTan(clanInfo);
             }
 
             clanInfo.isDel = !clanInfo.isDel;
@@ -396,12 +431,12 @@ class MapBangHoi {
                 Char p = CharManager.instance.getCharByCharName(c.charname);
                 if (p != null && p.charDBID != player.charDBID) {
                     p.sendMessage(
-                            MessageCreator.createServerAlertMessage("Bang " + clanInfo.name + (!clanInfo.isDel ? " đã được khôi phục" : " sẽ bị giải tán sau 3 ngày"), "")
+                            MessageCreator.createServerAlertMessage("Bang " + clanInfo.name + (!clanInfo.isDel ? " đã được khôi phục" : " sẽ bị giải tán sau " + PHUT_CHO_GIAI_TAN + " phút"), "")
                     );
                 } else if (p == null) {
                     CharInboxMessage newMsg = new CharInboxMessage();
                     newMsg.sender = player.charname;
-                    newMsg.info = "Bang " + clanInfo.name + (!clanInfo.isDel ? " được khôi phục" : " sẽ bị giải tán sau 3 ngày");
+                    newMsg.info = "Bang " + clanInfo.name + (!clanInfo.isDel ? " được khôi phục" : " sẽ bị giải tán sau " + PHUT_CHO_GIAI_TAN + " phút");
                     newMsg.idMsg = Database.instance.addNewMessage(c.charname, newMsg);
                 }
             }
@@ -480,7 +515,9 @@ class MapBangHoi {
 
             player.idClan = -1;
             player.rankClan = 3;
-            player.timeJoinClan = System.currentTimeMillis() + 86400000L;
+            // Tu roi bang (khac voi bi duoi o doKickMemberOutNewClan - cho gio 24h giu
+            // nguyen o do): cho vao lai chi 5 phut.
+            player.timeJoinClan = System.currentTimeMillis() + 300000L;
             Database.instance.updateRankClan(player.charname, -1);
             Char p = CharManager.instance.getCharByCharName(clanInfo.master);
             clanInfo.removeMember(player.charname);
@@ -636,7 +673,9 @@ class MapBangHoi {
                     Database.instance.updateCharIDClan(p.charname, -1);
                     p.skillClan = new short[20];
                     p.rankClan = 3;
-                    p.timeJoinClan = System.currentTimeMillis() + 86400000L;
+                    // Bi duoi - 11/09/2026 doi tu 24h xuong 5 phut, dong bo voi tu roi bang
+                    // o doUserOutNewClan.
+                    p.timeJoinClan = System.currentTimeMillis() + 300000L;
                     p.sendMessage(MessageCreator.createSkillClan(p));
                     MessageCreator.createMsgCharMonster(p, p);
                     MessageCreator.createMsgCharMonster(p, player);
