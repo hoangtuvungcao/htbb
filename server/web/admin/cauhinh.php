@@ -1,6 +1,6 @@
 <?php
 /**
- * Cấu hình server (bảng kpah_db.cau_hinh) — 23 setting server.ini nạp lại được
+ * Cấu hình server (bảng kpah_db.cau_hinh) — 26 setting server.ini nạp lại được
  * lúc đang chạy, xem src/server/CauHinh.java.
  *
  * TRƯỚC 09/09/2026: chỉ sửa được bằng cách SSH vào VPS sửa tay server.ini, hoặc
@@ -10,7 +10,7 @@
  * Server tự đọc lại bảng này mỗi 10 giây (server.CauHinh.batDau()) nên sửa ở đây thì
  * server áp dụng trong tối đa 10 giây — KHÔNG cần restart, không cần vào game gõ lệnh.
  *
- * KHÔNG PHẢI TOÀN BỘ server.ini nằm ở đây — chỉ đúng 23 khoá đã có sẵn cơ chế nạp lại
+ * KHÔNG PHẢI TOÀN BỘ server.ini nằm ở đây — chỉ đúng 26 khoá đã có sẵn cơ chế nạp lại
  * (xem CauHinh.java). Khoảng 20 khoá bắt buộc để kết nối CSDL/mở cổng (db.host, sv.port,
  * ...) và một số khoá gameplay khác vẫn đọc một lần lúc khởi động, buộc phải sửa qua
  * server.ini + restart như trước.
@@ -43,6 +43,9 @@ const K_WEBSITE = 'sv.website';
 const K_LINK_TAI_GAME = 'sv.linkTaiGame';
 const K_TEST_MODE = 'sv.testMode';
 const K_TEST_CODE = 'sv.testCode';
+const K_EXP_VANTIEU = 'sv.expvantieu';
+const K_LUCKY_EXP = 'sv.Luckyexp';
+const K_EXP_QUA = 'sv.ExpQua';
 
 /** Tạo bảng nếu server game chưa từng khởi động (đúng định nghĩa CauHinh.taoBangNeuThieu). */
 function taoBangCauHinhNeuThieu(): void
@@ -170,6 +173,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
             }
 
+            case 'luu_exp_phu': {
+                $m = [
+                    K_EXP_VANTIEU => (p('expVantieu') === '1' ? '1' : '0'),
+                    K_LUCKY_EXP => (p('luckyExp') === '1' ? '1' : '0'),
+                    K_EXP_QUA => (p('expQua') === '1' ? '1' : '0'),
+                ];
+                luuCauHinh($m);
+                ghiNhatKy('sua_cau_hinh', 'exp_phu', json_encode($m, JSON_UNESCAPED_UNICODE));
+                veLai($TRANG, 'success', 'Đã lưu. Server áp dụng trong tối đa 10 giây.');
+                break;
+            }
+
             default:
                 veLai($TRANG, 'error', 'Không hiểu thao tác.');
         }
@@ -222,7 +237,7 @@ adminHead('cauhinh', 'Cấu hình server');
 <div class="page-head">
     <div>
         <h1>Cấu hình server</h1>
-        <p>23 setting nạp lại được lúc đang chạy — sửa xong, server tự áp dụng trong tối đa 10 giây, không cần restart.</p>
+        <p>26 setting nạp lại được lúc đang chạy — sửa xong, server tự áp dụng trong tối đa 10 giây, không cần restart.</p>
     </div>
 </div>
 
@@ -231,7 +246,7 @@ adminHead('cauhinh', 'Cấu hình server');
 <?php endif; ?>
 
 <div class="luuy">
-    <p>Đây <strong>không phải toàn bộ</strong> <code>server.ini</code> — chỉ 23 khoá đã có sẵn cơ chế nạp lại
+    <p>Đây <strong>không phải toàn bộ</strong> <code>server.ini</code> — chỉ 26 khoá đã có sẵn cơ chế nạp lại
        (xem <code>src/server/CauHinh.java</code>). Các khoá kết nối CSDL, cổng mạng, đường dẫn máy... vẫn phải
        sửa trực tiếp <code>server.ini</code> trên VPS rồi khởi động lại — không nằm ở đây vì bản thân chúng là
        thứ server cần để kết nối được tới CSDL này.</p>
@@ -325,6 +340,39 @@ adminHead('cauhinh', 'Cấu hình server');
         <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu lịch hẹn sự kiện</button></div>
     </form>
     <?php veSuaBoi($suaBoi, [K_SK_TU_KHOI_DONG_LAI, K_SK_GOM_GIAY, K_SK_BAO_TRUOC_GIAY]); ?>
+</div>
+
+<div class="card">
+    <h3>Thưởng EXP phụ</h3>
+    <p class="muted small">Trước 11/09/2026 nằm trong <code>server.ini</code> (<code>sv.expvantieu</code>,
+       <code>sv.Luckyexp</code>, <code>sv.ExpQua</code>), phải SSH sửa tay + khởi động lại. Nay sửa ở đây,
+       server tự áp dụng trong tối đa 10 giây, không cần restart, không cần đụng tới <code>server.ini</code>
+       nữa.</p>
+    <form method="post" action="cauhinh.php">
+        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+        <input type="hidden" name="viec" value="luu_exp_phu">
+        <div class="form-grid">
+            <label class="o" style="display:flex;flex-direction:row;align-items:center;gap:8px;">
+                <span>EXP giao tiêu cá nhân</span>
+                <input type="checkbox" name="expVantieu" value="1" style="width:auto;" <?= giaTri($gt, K_EXP_VANTIEU, '0') === '1' ? 'checked' : '' ?>>
+            </label>
+            <label class="o" style="display:flex;flex-direction:row;align-items:center;gap:8px;">
+                <span>EXP trong Rương May Mắn (Bạc &amp; Vàng)</span>
+                <input type="checkbox" name="luckyExp" value="1" style="width:auto;" <?= giaTri($gt, K_LUCKY_EXP, '0') === '1' ? 'checked' : '' ?>>
+            </label>
+            <label class="o" style="display:flex;flex-direction:row;align-items:center;gap:8px;">
+                <span>EXP cây ăn quả</span>
+                <input type="checkbox" name="expQua" value="1" style="width:auto;" <?= giaTri($gt, K_EXP_QUA, '0') === '1' ? 'checked' : '' ?>>
+            </label>
+        </div>
+        <div class="luuy" style="margin-top:12px;">
+            <p><strong>Tắt "EXP cây ăn quả" còn khoá luôn nút "Tăng tốc" cho MỌI cây ăn quả</strong>
+               (kể cả cây ra đá quý/thuốc, không riêng cây EXP) — hiệu ứng phụ có sẵn trong mã nguồn
+               (<code>FruitTemplate.canTangToc</code>), không phải do đợt chuyển đổi này gây ra.</p>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu</button></div>
+    </form>
+    <?php veSuaBoi($suaBoi, [K_EXP_VANTIEU, K_LUCKY_EXP, K_EXP_QUA]); ?>
 </div>
 
 <div class="card">

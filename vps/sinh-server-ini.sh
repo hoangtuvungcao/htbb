@@ -100,11 +100,15 @@ TRUNG=$(grep -vE '^[[:space:]]*#' "$MOI" | grep -oE '^[^=]+=' | sed -E 's/=$//; 
 [ -z "$TRUNG" ] || loi "khoa bi khai hai lan: $TRUNG
   -> sua vps/server.ini.tmpl de moi khoa chi xuat hien MOT lan"
 
-# Dung 23 khoa nay di qua parseInt/parseByte/parseShort trong TeamServer. Thieu mot
+# Dung 20 khoa nay di qua parseInt/parseByte/parseShort trong TeamServer. Thieu mot
 # cai la ca khoi doc cau hinh nem loi va MOI DONG BEN DUOI bi bo qua, ma server
 # van khoi dong. Xem docs/cau-hinh-server-ini.md muc 10.
+#
+# sv.expvantieu/sv.Luckyexp/sv.ExpQua KHONG con trong danh sach nay tu 11/09/2026 -
+# da chuyen sang server.CauHinh (bang cau_hinh, sua qua admin/cauhinh.php), doc bang
+# gia tri mac dinh an toan chu khong con nem loi khi thieu dong nua.
 for k in api.sv sv.port sv.server sv.portnap sv.portlogin limit.ccu sv.LG sv.range \
-         sv.lang sv.me sv.createRace sv.expvantieu sv.Luckyexp sv.ExpQua sv.CodeTest \
+         sv.lang sv.me sv.createRace sv.CodeTest \
          sv.EnableAvtiveCheck db.hour db.minute sv.isSuKienTrungThul2016 \
          sv.isSuKienTet2017 sv.isSuKienGioTo2016 sv.isSuKienNoel2023 \
          sv.isSuKienTetduonglich2024; do

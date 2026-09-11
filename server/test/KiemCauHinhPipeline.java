@@ -54,7 +54,11 @@ public final class KiemCauHinhPipeline {
         // Lay thang tu ma nguon chu khong chep tay danh sach: them mot parseInt moi ma quen
         // them vao ban mau thi phep kiem nay hong ngay, khong cho toi luc deploy.
         final List<String> batBuoc = khoaParseX(sv);
-        Kiem.dung("tim duoc cac khoa parseX trong TeamServer (tren 20)", batBuoc.size() > 20);
+        // Nguong 15 (khong phai 20): tu 11/09/2026 con dung 20 khoa bat buoc (giam tu 23,
+        // xem docs/cau-hinh-server-ini.md muc 10) sau khi chuyen sv.expvantieu/sv.Luckyexp/
+        // sv.ExpQua sang CauHinh - day van la mot san sang chan hong regex ve 0, khong phai
+        // yeu cau phai co dung 23 khoa mai mai.
+        Kiem.dung("tim duoc cac khoa parseX trong TeamServer (tren 15)", batBuoc.size() > 15);
         for (final String k : batBuoc) {
             final String v = banMau.get(k);
             Kiem.dung("ban mau co khoa bat buoc " + k, v != null);

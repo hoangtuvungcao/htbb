@@ -633,10 +633,11 @@ public class TeamServer {
             TeamServer.minute = Integer.parseInt(p.getProperty("db.minute"));
             TeamServer.language = Byte.parseByte(p.getProperty("sv.lang"));
             Map.openLog = (Byte.parseByte(p.getProperty("sv.me")) == 1);
-            System.out.println("Luckyexp config: " + p.getProperty("sv.Luckyexp"));
-            TeamServer.ExpVantieu = Byte.parseByte(p.getProperty("sv.expvantieu")) == 1;
-            TeamServer.LuckyExp = Byte.parseByte(p.getProperty("sv.Luckyexp")) == 1;
-            TeamServer.ExpQua = Byte.parseByte(p.getProperty("sv.ExpQua")) == 1;
+            // sv.expvantieu / sv.Luckyexp / sv.ExpQua: chuyen sang server.CauHinh tu 11/09/2026
+            // (bang cau_hinh, nap lai duoc qua trang admin/cauhinh.php, khong con bat buoc phai
+            // co dong trong server.ini nua - xem CauHinh.napLai()). Ba dong trong server.ini van
+            // giu lai lam gia tri khoi tao lan dau (CauHinh.dongBoLucKhoiDong()), giong 26 khoa
+            // con lai cua CauHinh - KHONG doc truc tiep o day nua de tranh doc hai lan hai noi.
             TeamServer.CodeTest = Byte.parseByte(p.getProperty("sv.CodeTest")) == 1;
             Database.ENABLE_ACTIVE_CHECK = Byte.parseByte(p.getProperty("sv.EnableAvtiveCheck")) == 1;
             // ==== TI LE DROP KHI TRAIN QUAI (phan tram so voi ti le goc, 100 = nhu cu, 0 = tat) ====
@@ -784,7 +785,7 @@ public class TeamServer {
         // Cung phai chay TRUOC khi nhan nguoi choi: chan nhan giftcode nhieu lan qua nhieu
         // nhan vat cung tai khoan. Xem Database.chuanBiGiftCodeUserId().
         Database.instance.chuanBiGiftCodeUserId();
-        // 23 setting nap lai duoc chuyen tu server.ini sang bang cau_hinh (sua duoc qua
+        // 26 setting nap lai duoc chuyen tu server.ini sang bang cau_hinh (sua duoc qua
         // web/admin/cauhinh.php). Dong bo mot lan tu file (INSERT IGNORE, khong ghi de
         // dong da co) roi bat vong lap tu nap lai moi 10 giay. Xem server.CauHinh.
         CauHinh.dongBoLucKhoiDong(p);

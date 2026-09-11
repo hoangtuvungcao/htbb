@@ -49,7 +49,7 @@ sudo /opt/kpah/vps/sinh-server-ini.sh --thu
 ```
 
 **Bộ sinh không bao giờ cài một cấu hình hỏng.** Trước khi ghi đè nó kiểm: còn chỗ trống
-chưa thay không, đủ 23 khoá bắt buộc không, mật khẩu có còn là chuỗi mẫu không, và **thử kết
+chưa thay không, đủ 20 khoá bắt buộc không, mật khẩu có còn là chuỗi mẫu không, và **thử kết
 nối CSDL thật**. Sai bất kỳ điều nào thì báo lỗi, giữ nguyên file đang chạy, không khởi động
 lại. Bản cũ được lưu vào `/opt/kpah/backup/server.ini.<ngày giờ>` (giữ 10 bản gần nhất).
 
@@ -98,11 +98,11 @@ Vẫn dùng được cho việc gấp, nhưng **lần deploy sau sẽ đặt l�
 |---|---|
 | Bảng `setting` trong game | đổi gấp tỉ lệ rơi / giờ chiếm thành giữa sự kiện |
 | Trang quản trị `/admin/cauhinh.php` | sửa từ xa, không cần SSH — xem bên dưới |
-| Sửa `/opt/kpah/server.ini` rồi gõ `setting` → `8` | chỉ với 23 khoá ở mục 4 |
+| Sửa `/opt/kpah/server.ini` rồi gõ `setting` → `8` | chỉ với 26 khoá ở mục 4 |
 
 **Từ 09/09/2026, cả ba cách trên đọc/ghi CHUNG một bảng SQL `kpah_db.cau_hinh`** (khoá,
 giá_trị, sửa_bởi, sửa_lúc) — không còn ghi thẳng vào `server.ini` nữa (xem
-[`server/CauHinh.java`](../src/server/CauHinh.java)). `server.ini` vẫn giữ 23 khoá này làm
+[`server/CauHinh.java`](../src/server/CauHinh.java)). `server.ini` vẫn giữ 26 khoá này làm
 **giá trị khởi tạo lần đầu** (chép một lần vào bảng lúc server khởi động nếu bảng còn thiếu
 dòng, `INSERT IGNORE` nên không ghi đè giá trị đã có); từ đó về sau bảng SQL mới là nguồn
 thật. Server tự đọc lại bảng này mỗi 10 giây, nên sửa trên trang web thì trong game áp dụng
@@ -124,7 +124,7 @@ Gõ `6` trước khi sửa là cách nhanh nhất để biết đang đặt bao 
 
 ## 4. Khoá nào nạp lại được, khoá nào phải khởi động lại
 
-Chỉ **23 khoá** dưới đây được `CauHinh.napLai()` đọc lại. **Mọi khoá khác chỉ được đọc một
+Chỉ **26 khoá** dưới đây được `CauHinh.napLai()` đọc lại. **Mọi khoá khác chỉ được đọc một
 lần lúc bật máy** — sửa xong bắt buộc `systemctl restart kpah-game`.
 
 ```
@@ -135,7 +135,21 @@ sv.adminAccounts   sv.maxCharPerAccount   sv.choPhepTaoTenGM
 sv.website   sv.linkTaiGame   sv.testMode   sv.testCode
 sv.worldCupBatDau   sv.worldCupKetThuc   sv.worldCupHanNhanQua
 sv.suKienTuKhoiDongLai   sv.suKienGomGiay   sv.suKienBaoTruocGiay
+sv.expvantieu   sv.Luckyexp   sv.ExpQua
 ```
+
+### Thưởng EXP phụ (vận tiêu / rương may mắn / cây ăn quả)
+
+Từ 11/09/2026, ba khoá dưới đây đổi ở **trang quản trị `/admin/cauhinh.php`** thay vì sửa
+tay `server.ini` + restart. Trước đó chúng đi qua `Byte.parseByte` bắt buộc trong
+`TeamServer.java` (thiếu dòng là ném lỗi khi khởi động); nay đọc qua `CauHinh.napLai()`
+với giá trị mặc định an toàn, xoá dòng trong `server.ini` cũng không sao.
+
+| Khoá | Mặc định | Ý nghĩa |
+|---|---|---|
+| `sv.expvantieu` | `0` | EXP thưởng khi giao tiêu **cá nhân** (`CharSuKien.java`). Tắt thì vẫn nhận vật phẩm thưởng bình thường, chỉ mất phần EXP. |
+| `sv.Luckyexp` | `0` | Ô thưởng loại EXP trong **Rương May Mắn** Bạc &amp; Vàng (`InfoGifLucky.java`). Tắt thì ô đó ra 0, hiện "Không có EXP"; các loại thưởng khác (xu, đá quý, thuốc) không đổi. |
+| `sv.ExpQua` | `0` | EXP từ **cây ăn quả** loại EXP (`FruitTemplate.java`, `type == 0`). **Lưu ý tác dụng phụ**: `canTangToc()` (nút "Tăng tốc" dùng bình tăng tốc thường/bạc/vàng) cũng đọc đúng cờ này nhưng áp dụng cho **MỌI loại cây** — tắt cờ này khoá luôn nút Tăng tốc cả với cây ra đá quý/thuốc, không riêng cây EXP. Đây là hành vi có sẵn trong mã nguồn, không phải phát sinh từ việc chuyển sang CSDL. |
 
 ### Lịch hẹn sự kiện và tự khởi động lại
 
@@ -323,16 +337,18 @@ Không thấy dòng nào là đã đọc trọn file.
 ### Các khoá **bắt buộc phải có**
 
 Chỉ những khoá đi qua `parseInt` / `parseByte` / `parseShort` mới ném lỗi khi thiếu — và
-chính chúng kích hoạt cạm bẫy ở trên. Đúng 23 khoá:
+chính chúng kích hoạt cạm bẫy ở trên. Đúng 20 khoá:
 
 ```
 api.sv        sv.port      sv.server    sv.portnap   sv.portlogin
 limit.ccu     sv.LG        sv.range     sv.lang      sv.me
-sv.createRace sv.expvantieu sv.Luckyexp sv.ExpQua    sv.CodeTest
-sv.EnableAvtiveCheck        db.hour      db.minute
+sv.createRace sv.CodeTest  sv.EnableAvtiveCheck      db.hour      db.minute
 sv.isSuKienTrungThul2016    sv.isSuKienTet2017       sv.isSuKienGioTo2016
 sv.isSuKienNoel2023         sv.isSuKienTetduonglich2024
 ```
+
+`sv.expvantieu`, `sv.Luckyexp`, `sv.ExpQua` đã dời khỏi nhóm này từ 11/09/2026 — xem mục 4,
+"Thưởng EXP phụ".
 
 **Nhóm `db.*` thì khác**: chúng được đọc thô rồi truyền thẳng vào `Database.setLink(...)`,
 nên thiếu **không** ném lỗi ở đây — server vẫn bật, chỉ là không kết nối được CSDL. Triệu

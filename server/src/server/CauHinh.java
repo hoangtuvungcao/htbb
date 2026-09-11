@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Properties;
 
 /**
- * DOC / GHI 23 SETTING NAP LAI DUOC LUC DANG CHAY - bang `kpah_db.cau_hinh`.
+ * DOC / GHI 26 SETTING NAP LAI DUOC LUC DANG CHAY - bang `kpah_db.cau_hinh`.
  *
  * TRUOC 09/09/2026: nguon du lieu la file server.ini, sua qua bang setting trong game
  * (real/AdminMenu.java) hoac sua tay file roi go lenh "nap lai". File rieng tren tung
@@ -20,7 +20,7 @@ import java.util.Properties;
  * dung trong toi da 10 giay, khong can restart, khong can go lenh "nap lai" trong game
  * nua (van con dung duoc, chi la khong bat buoc).
  *
- * server.ini VAN GIU 23 khoa nay (xem vps/server.ini.tmpl) lam GIA TRI KHOI TAO LAN DAU
+ * server.ini VAN GIU 26 khoa nay (xem vps/server.ini.tmpl) lam GIA TRI KHOI TAO LAN DAU
  * - dungBoLucKhoiDong() chi INSERT IGNORE tu file vao SQL khi bang con thieu dong, roi
  * KHONG DUNG TOI FILE NUA. Giu nguyen ten hang so K_* va gia tri chuoi cua chung de hai
  * bai kiem tra test/KiemCauHinhPipeline.java va test/KiemTaiLieuCauHinh.java (doi chieu
@@ -50,8 +50,20 @@ public final class CauHinh {
     public static final String K_SK_TU_KHOI_DONG_LAI = "sv.suKienTuKhoiDongLai";
     public static final String K_SK_GOM_GIAY = "sv.suKienGomGiay";
     public static final String K_SK_BAO_TRUOC_GIAY = "sv.suKienBaoTruocGiay";
+    /**
+     * 3 co thuong EXP phu - truoc 11/09/2026 doc bang Byte.parseByte truc tiep tu server.ini
+     * trong TeamServer (bat buoc phai co dong, thieu la nem loi ngay luc khoi dong). Chuyen
+     * vao day de sua duoc qua trang admin/cauhinh.php, khong can restart. Xem noi dung tung
+     * co: CharSuKien.java (ExpVantieu - EXP giao tieu ca nhan), InfoGifLucky.java (LuckyExp -
+     * o thuong EXP trong Ruong May Man), FruitTemplate.java (ExpQua - EXP cay an qua; luu y
+     * canTangToc() cung dung co nay de khoa nut "tang toc" cho MOI loai cay, khong rieng cay
+     * EXP - hieu ung phu, khong phai loi cua lan chuyen doi nay).
+     */
+    public static final String K_EXP_VANTIEU = "sv.expvantieu";
+    public static final String K_LUCKY_EXP = "sv.Luckyexp";
+    public static final String K_EXP_QUA = "sv.ExpQua";
 
-    /** Tat ca 23 khoa, dung de dong bo luc khoi dong va de web biet liet ke gi. */
+    /** Tat ca 26 khoa, dung de dong bo luc khoi dong va de web biet liet ke gi. */
     private static final String[] TAT_CA_KHOA = {
         K_TILE_XU, K_TILE_LUONG, K_TILE_SUKIEN, K_TILE_POTION, K_TILE_NGOC, K_TILE_ITEM,
         K_CHIA_XU, K_GIO_CT, K_PHUT_CT, K_NGAY_CT,
@@ -59,6 +71,7 @@ public final class CauHinh {
         K_SK_TU_KHOI_DONG_LAI, K_SK_GOM_GIAY, K_SK_BAO_TRUOC_GIAY,
         K_TAO_TEN_GM, "sv.maxCharPerAccount", "sv.adminAccounts",
         "sv.website", "sv.linkTaiGame", "sv.testMode", "sv.testCode",
+        K_EXP_VANTIEU, K_LUCKY_EXP, K_EXP_QUA,
     };
 
     /** Giay giua hai lan tu doc lai bang cau_hinh. Xem batDau(). */
@@ -286,6 +299,10 @@ public final class CauHinh {
 
             apDungSuKienWorldCup(p);
             apDungLichSuKien(p);
+
+            TeamServer.ExpVantieu = "1".equals(nhan(p.getProperty(K_EXP_VANTIEU), "0"));
+            TeamServer.LuckyExp = "1".equals(nhan(p.getProperty(K_LUCKY_EXP), "0"));
+            TeamServer.ExpQua = "1".equals(nhan(p.getProperty(K_EXP_QUA), "0"));
 
             return "Đã nạp lại cấu hình từ CSDL.";
         } catch (final Exception e) {
