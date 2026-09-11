@@ -1,8 +1,10 @@
 <?php
 /**
  * RESET TOAN BO SERVER VE TRANG: xoá vĩnh viễn nhân vật của MỌI tài khoản (trừ
- * ADMIN_ACCOUNTS), giữ nguyên team_user/5h_active — cùng tinh thần với nút
- * "Reset về trắng" của một tài khoản trong taikhoan.php, nhưng áp dụng hàng loạt.
+ * ADMIN_ACCOUNTS) VÀ huỷ kích hoạt (xoá khỏi 5h_active) — KHÁC với nút "Reset về
+ * trắng" của một tài khoản trong taikhoan.php (nút đó vẫn giữ nguyên 5h_active).
+ * team_user (tài khoản đăng nhập) vẫn giữ nguyên — chỉ mất nhân vật và phải bấm
+ * "Kích hoạt ngay" ở kichhoat.php lại mới vào game được, y hệt tài khoản mới đăng ký.
  *
  * KHÁC VỚI reset TỪNG TÀI KHOẢN: không chờ kết quả từng nhân vật một
  * (choKetQuaLenh) vì có thể có hàng chục/hàng trăm nhân vật — chờ tuần tự sẽ
@@ -71,12 +73,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $insert->execute([LENH_LOAI_XOA_NHAN_VAT, (int)$nv['id'], substr((string)$nv['charname'], 0, 50), substr(adminName(), 0, 50)]);
         $taiKhoan[(int)$nv['userId']] = true;
     }
+
+    // Đưa tài khoản về CHƯA KÍCH HOẠT (xoá khỏi 5h_active), giống hệt thao tác
+    // "Huỷ kích hoạt" trong taikhoan.php nhưng áp dụng hàng loạt. Không đụng
+    // team_user nên tài khoản vẫn đăng nhập web/game bình thường, chỉ phải bấm
+    // "Kích hoạt ngay" ở kichhoat.php lại trước khi chơi tiếp.
+    $idsTaiKhoan = array_keys($taiKhoan);
+    $choHuyKichHoat = implode(',', array_fill(0, count($idsTaiKhoan), '?'));
+    $db->prepare("DELETE FROM `5h_active` WHERE userID IN ($choHuyKichHoat)")->execute($idsTaiKhoan);
+
     $db->commit();
 
-    ghiNhatKy('reset_toanbo', '', 'đã xếp hàng đợi xoá ' . count($dsNV) . ' nhân vật của ' . count($taiKhoan)
+    ghiNhatKy('reset_toanbo', '', 'đã xếp hàng đợi xoá ' . count($dsNV) . ' nhân vật và huỷ kích hoạt ' . count($taiKhoan)
         . ' tài khoản (loại trừ ' . count($idsAdmin) . ' tài khoản quản trị)');
-    veLai($TRANG, 'success', 'Đã xếp hàng đợi lệnh xoá cho ' . count($dsNV) . ' nhân vật của ' . count($taiKhoan)
-        . ' tài khoản. Server game sẽ tự xử lý dần ở nền (khoảng 1 nhân vật/giây) — tải lại trang này để xem tiến độ.');
+    veLai($TRANG, 'success', 'Đã xếp hàng đợi lệnh xoá cho ' . count($dsNV) . ' nhân vật và huỷ kích hoạt ' . count($taiKhoan)
+        . ' tài khoản (phải "Kích hoạt ngay" lại mới vào game được). Server game sẽ tự xử lý xoá nhân vật dần ở nền'
+        . ' (khoảng 1 nhân vật/giây) — tải lại trang này để xem tiến độ.');
 }
 
 // ---------------------------------------------------------------------------
@@ -143,9 +155,11 @@ adminHead('reset_toanbo', 'Reset toàn server');
     <div class="luuy">
         <p><strong>KHÔNG THỂ HOÀN TÁC.</strong> Xoá vĩnh viễn toàn bộ <strong><?= so($soNhanVat) ?> nhân vật</strong>
            của <strong><?= so($soTaiKhoan) ?> tài khoản</strong> (cùng dữ liệu riêng: thú nuôi, trang trại, đá
-           quý...). Các tài khoản trong <code>ADMIN_ACCOUNTS</code> được giữ nguyên, không tài khoản nào bị xoá —
-           chỉ nhân vật bị xoá, ai đăng nhập lại đều thấy tài khoản trắng như vừa đăng ký. Nhân vật đang online
-           sẽ bị đẩy ra khỏi game trước khi xoá. Nhật ký giao dịch/log vẫn được giữ lại để tra cứu.</p>
+           quý...) và đưa cả <?= so($soTaiKhoan) ?> tài khoản đó về <strong>CHƯA KÍCH HOẠT</strong>. Các tài khoản
+           trong <code>ADMIN_ACCOUNTS</code> được giữ nguyên, không tài khoản nào bị xoá — chỉ nhân vật bị xoá và
+           mất kích hoạt, ai đăng nhập lại đều thấy tài khoản trắng như vừa đăng ký và phải bấm "Kích hoạt ngay"
+           lại mới vào game được. Nhân vật đang online sẽ bị đẩy ra khỏi game trước khi xoá. Nhật ký giao dịch/log
+           vẫn được giữ lại để tra cứu.</p>
     </div>
     <?php if ($soNhanVat === 0): ?>
         <p class="muted small" style="margin-top:12px;">Không có nhân vật nào ngoài tài khoản quản trị — chưa
