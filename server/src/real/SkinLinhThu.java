@@ -129,9 +129,10 @@ public final class SkinLinhThu {
      *
      * Kim Cang Long (5) dung dong RIENG so 5 (Char.java, khai bao dx_horse_tool): no la rong
      * dai, yen nam dung tam than khi quay ngang nen nguoi khong duoc day sang ben 7px nhu
-     * Poro (dx +1/-1), va huong xuong nguoi ngoi sau dau rong nen nhac -23 (khop Rong Lon
-     * -22). Truoc 11/09/2026 dung chung dong 0: nguoi lech 6px ve phia duoi khi quay ngang,
-     * con huong xuong thi noi lo lung tren dau rong (nguoi choi bao kem anh chup).
+     * Poro (dx +1/-1); huong xuong nguoi ngoi sau dau rong, nhac -28; huong len nguoi lun
+     * vao yen, -10 (hai so nay chinh theo anh chup nguoi choi gui sau lan dau -23/-15).
+     * Truoc 11/09/2026 dung chung dong 0: nguoi lech 6px ve phia duoi khi quay ngang, con
+     * huong xuong thi noi lo lung tren dau rong (nguoi choi bao kem anh chup).
      *
      * Bang do server GUI CHO CLIENT kem SO DONG trong goi 26, ca ban Unity
      * (MessageHandler.cs:1795) lan ban JAR (MessageHandler.java:1754) deu doc dong theo so

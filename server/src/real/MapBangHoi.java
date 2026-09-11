@@ -54,18 +54,27 @@ class MapBangHoi {
     private static final long PHUT_GIAI_TAN_GOC_TRONG_JAR = 4320L;
 
     /**
-     * Dat lai `timeStartDel` sao cho `NewClan.timeDel()` tra ve dung PHUT_CHO_GIAI_TAN ngay
-     * lap tuc, roi dem nguoc that theo thoi gian thuc tu do - dung o moi cho "bat dau/lam
-     * moi dem nguoc giai tan" thay cho `System.currentTimeMillis()` truc tiep.
+     * Dat lai `timeStartDel` sao cho `NewClan.timeDel()`/`timeExpire()` tra ve dung
+     * PHUT_CHO_GIAI_TAN ngay lap tuc, roi dem nguoc that theo thoi gian thuc tu do - dung o
+     * moi cho "bat dau/lam moi dem nguoc giai tan" thay cho `System.currentTimeMillis()`
+     * truc tiep.
      *
-     * CHI ap dung cho luong bang chu chu dong bam "giai tan bang" (doDelNewClan). Co che
-     * rieng "tu dong giai tan neu duoi 10 thanh vien qua 3 ngay" (o doUserOutNewClan, moi
-     * thanh vien, va ben trong chinh NewClan.removeMember() da khoa) dung CHUNG truong
-     * timeStartDel nay nhung KHONG duoc doi o day - neu bang chu huy giai tan dung luc bang
-     * dang duoi 10 nguoi, dong canh bao "giai tan sau X phut do thieu thanh vien" co the tam
-     * thoi hien so phut ngan hon that (con lai tu lan dat gio nay) cho toi lan bang duoi 10
-     * nguoi tiep theo tu dat lai dung 3 ngay - anh huong da biet, chap nhan duoc vi chi la
-     * hien thi tam thoi trong truong hop hiem, khong lam bang bi xoa sai.
+     * Ap dung cho CA HAI luong dung chung truong timeStartDel va cong thuc khoa trong jar
+     * (xem NewClan.checkTimeClanExpired(), dieu kien OR giua hai nhanh):
+     *   - Bang chu chu dong bam "giai tan bang" (doDelNewClan, dat clanInfo.isDel = true).
+     *   - Tu dong canh bao/xoa khi duoi 10 thanh vien (doUserOutNewClan, doKickMemberOutNewClan,
+     *     va nhanh roi bang de vao bang khac o doJoinClan) - KHONG dat isDel nhung van tu xoa
+     *     qua nhanh `timeExpire() <= 0` rieng.
+     * Ca hai deu goi ham nay nen cung dem 60 phut nhu nhau.
+     *
+     * LUU Y quan trong: `NewClan.removeMember()` (khoa trong jar) tu dat
+     * `timeStartDel = System.currentTimeMillis()` THO (chua giam) ngay ben trong no, dung
+     * luc member.size() vua cat qua duoi 10 (dieu kien noi bo: size()==10 TRUOC khi xoa).
+     * Vi vay o moi noi goi `removeMember()`, phai bat so luong thanh vien TRUOC khi goi va
+     * tu sua lai timeStartDel qua ham nay NEU no dung 10 - khong the dua vao kieu kiem tra
+     * "if (timeStartDel == 0)" o phia sau vi luc do jar da gan roi (khac 0), guard se bo qua
+     * va bo sot lan dau tien nay (day chinh la nguyen nhan bang van dem ~3 ngay sau khi code
+     * moi da chay, phat hien 11/09/2026 tu anh chup man hinh nguoi dung gui).
      */
     private static void datTimeStartDelGiaiTan(NewClan clanInfo) {
         clanInfo.timeStartDel = System.currentTimeMillis()
@@ -515,12 +524,20 @@ class MapBangHoi {
 
             player.idClan = -1;
             player.rankClan = 3;
-            // Tu roi bang (khac voi bi duoi o doKickMemberOutNewClan - cho gio 24h giu
-            // nguyen o do): cho vao lai chi 5 phut.
+            // Tu roi bang: cho vao lai chi 5 phut (dong bo voi bi duoi o
+            // doKickMemberOutNewClan, 11/09/2026 ca hai deu doi tu 24h xuong 5 phut).
             player.timeJoinClan = System.currentTimeMillis() + 300000L;
             Database.instance.updateRankClan(player.charname, -1);
             Char p = CharManager.instance.getCharByCharName(clanInfo.master);
+            final int soLuongTruocKhiRoi = clanInfo.member.size();
             clanInfo.removeMember(player.charname);
+            // NewClan.removeMember() (khoa trong jar) tu dat timeStartDel = now() THO khi
+            // vua cat duoi 10 thanh vien (dieu kien noi bo: size()==10 truoc khi xoa), tuc
+            // gia tri CHUA giam - phai tu sua lai ngay, khong the dua vao "timeStartDel==0"
+            // o cac khoi duoi vi luc nay no da khac 0 (do jar vua gan) nen se bi bo qua.
+            if (soLuongTruocKhiRoi == 10) {
+                datTimeStartDelGiaiTan(clanInfo);
+            }
             if (p != null) {
                 for (CharClan c : clanInfo.member.values()) {
                     Char pp = CharManager.instance.getCharByCharName(c.charname);
@@ -537,7 +554,7 @@ class MapBangHoi {
                 Database.instance.updateCharNewClan(clanInfo);
                 if (clanInfo.member.size() < 10) {
                     if (clanInfo.timeStartDel == 0L) {
-                        clanInfo.timeStartDel = System.currentTimeMillis();
+                        datTimeStartDelGiaiTan(clanInfo);
                     }
 
                     Database.instance.updateTimeCheckDelClan(clanInfo.id, clanInfo.timeStartDel);
@@ -568,7 +585,7 @@ class MapBangHoi {
 
             if (clanInfo.member.size() < 10) {
                 if (clanInfo.timeStartDel == 0L) {
-                    clanInfo.timeStartDel = System.currentTimeMillis();
+                    datTimeStartDelGiaiTan(clanInfo);
                 }
 
                 Database.instance.updateTimeCheckDelClan(clanInfo.id, clanInfo.timeStartDel);
@@ -655,10 +672,16 @@ class MapBangHoi {
                 return;
             }
 
+            final int soLuongTruocKhiDuoi = clanInfo.member.size();
             boolean isexist = clanInfo.removeMember(name);
             if (!isexist) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể mời " + name + " ra khỏi bang", ""));
                 return;
+            }
+            // Xem giai thich o doUserOutNewClan: removeMember() (khoa trong jar) tu dat
+            // timeStartDel = now() THO khi vua cat duoi 10 nguoi, phai tu sua lai ngay.
+            if (soLuongTruocKhiDuoi == 10) {
+                datTimeStartDelGiaiTan(clanInfo);
             }
 
             Database.instance.updateCharNewClan(clanInfo);
@@ -693,7 +716,7 @@ class MapBangHoi {
             Database.instance.updateCharNewClan(clanInfo);
             if (clanInfo.member.size() < 10) {
                 if (clanInfo.timeStartDel == 0L) {
-                    clanInfo.timeStartDel = System.currentTimeMillis();
+                    datTimeStartDelGiaiTan(clanInfo);
                 }
 
                 Database.instance.updateTimeCheckDelClan(clanInfo.id, clanInfo.timeStartDel);
@@ -873,7 +896,15 @@ class MapBangHoi {
                 boolean ok = message.dis.readBoolean();
                 p = CharManager.instance.getByCharID(idCharx);
                 if (p == null) {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Có lỗi khi xảy ra", ""));
+                    // Nguoi moi (p) da thoat game truoc khi minh tra loi - khong con ai de
+                    // bao/cap nhat rank clan. TU CHOI trong truong hop nay khong phai loi
+                    // thuc su (khong can p ton tai de huy loi moi), chi DONG Y moi thuc su
+                    // khong hoan tat duoc nen moi bao "Co loi khi xay ra" (11/09/2026, truoc
+                    // day bao loi ca hai truong hop khien tu choi cung hien thi nham).
+                    player.idClanVuaDuocMoi = -1;
+                    if (ok) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Có lỗi khi xảy ra", ""));
+                    }
                     return;
                 }
 
@@ -940,7 +971,13 @@ class MapBangHoi {
                     if (player.idClan > -1) {
                         NewClan cl = NewClan.getClan(player.idClan);
                         cl.downRankMem(player.charname, 3);
+                        final int soLuongTruocKhiRoi2 = cl.member.size();
                         cl.removeMember(player.charname);
+                        // Xem giai thich o doUserOutNewClan: removeMember() (khoa trong jar)
+                        // tu dat timeStartDel = now() THO khi vua cat duoi 10 nguoi.
+                        if (soLuongTruocKhiRoi2 == 10) {
+                            datTimeStartDelGiaiTan(cl);
+                        }
                     }
                 } catch (Exception var12) {
                 }

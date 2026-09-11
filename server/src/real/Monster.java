@@ -78,7 +78,7 @@ public class Monster extends LiveActor {
         this.maxhp = maxhp;
         this.hp = maxhp;
         this.maxxp = template.rcvXp;
-        this.xp = template.rcvXp;
+        this.xp = Monster.rcvXpSauGiam(template);
         this.attack = template.attack;
         this.defend_physic = template.defend;
         this.accurate = template.accurate;
@@ -462,7 +462,7 @@ public class Monster extends LiveActor {
         try {
             this.maxhp = this.getMonsterTemplate().maxhp;
             this.hp = this.maxhp;
-            this.xp = this.getMonsterTemplate().rcvXp;
+            this.xp = Monster.rcvXpSauGiam(this.getMonsterTemplate());
         } catch (final Exception e) {
             e.printStackTrace();
             System.out.println(String.valueOf(this.idTemplate) + " >>> TEMPLATE GATE");
@@ -483,7 +483,7 @@ public class Monster extends LiveActor {
                 this.timeOutPoinson = 0L;
                 this.poinson = 0;
                 this.hp = this.maxhp;
-                this.xp = this.getMonsterTemplate().rcvXp;
+                this.xp = Monster.rcvXpSauGiam(this.getMonsterTemplate());
                 this.tDelay = 0;
                 this.target = null;
                 this.x = this.default_x;
@@ -728,6 +728,11 @@ public class Monster extends LiveActor {
     public static int PC_TILE_NGOC = 30;        // ngoc, ngoc tu binh
     public static int PC_TILE_ITEM = 20;        // do (trang bi) roi ra
 
+    // ================= GIAM EXP QUAI CAP CAO (level 60 tro len) =================
+    // 100 = giu nguyen, 60 = con 60% (giam 40%). Chi ap dung cho quai thuong (Monster),
+    // khong dung toi Boss - giong quy uoc cua khoi PC_TILE_* o tren.
+    public static int PC_TILE_EXP_LV60 = 60;
+
     /** Nhan ti le goc voi phan tram dieu chinh o tren. */
     public static int tile(final int tiLeGoc, final int pc) {
         if (pc <= 0) {
@@ -737,6 +742,11 @@ public class Monster extends LiveActor {
             return tiLeGoc;
         }
         return (int) ((long) tiLeGoc * pc / 100L);
+    }
+
+    /** Exp goc cua mot MonsterTemplate, da giam cho quai tu level 60 tro len (PC_TILE_EXP_LV60). */
+    public static int rcvXpSauGiam(final MonsterTemplate t) {
+        return (t.level >= 60) ? Monster.tile(t.rcvXp, Monster.PC_TILE_EXP_LV60) : t.rcvXp;
     }
 
     @Override

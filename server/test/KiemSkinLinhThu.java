@@ -1733,13 +1733,19 @@ public final class KiemSkinLinhThu {
                 Integer.valueOf(1), Integer.valueOf(dx[d5][2]));
         Kiem.bang("dong KCL: phai dx -1 (doi dau cua trai - client lat guong)",
                 Integer.valueOf(-1), Integer.valueOf(dx[d5][3]));
-        Kiem.bang("dong KCL: xuong dy -23 (khop Rong Lon -22, nguoi sau dau rong)",
-                Integer.valueOf(-23), Integer.valueOf(dy[d5][0]));
+        // Hai so duoi day chinh theo anh chup nguoi choi gui (11/09/2026): lan dau -23 (khop
+        // Rong Lon -22) / -15 -> "xuong cho cao len chut, len dich xuong chut nua" -> -28 / -10.
+        Kiem.bang("dong KCL: xuong dy -28 (nguoi ngoi sau dau rong, cao hon dinh horn)",
+                Integer.valueOf(-28), Integer.valueOf(dy[d5][0]));
+        Kiem.bang("dong KCL: len dy -10 (nguoi lun vao yen do khi nhin tu lung)",
+                Integer.valueOf(-10), Integer.valueOf(dy[d5][1]));
         // paintName cua client (Char.cs:1520, Char.java:2081) LUON dat ten theo dong 0,
         // bat ke dong nao dang dung - dy dong moi lech xa dong 0 la ten de len dau nguoi.
+        // Nguong 10px: anh chup thuc te o dy -23 (lech 3) ten con cach dinh dau ~14px, nen
+        // lech 8 (dy -28) van con ~9px; qua 10 la bat dau cham.
         for (int h = 0; h < 4; h++) {
-            Kiem.dung("dong KCL: dy huong " + h + " lech dong 0 khong qua 5px (ten nhan vat dat theo dong 0)",
-                    Math.abs(dy[d5][h] - dy[0][h]) <= 5);
+            Kiem.dung("dong KCL: dy huong " + h + " lech dong 0 khong qua 10px (ten nhan vat dat theo dong 0)",
+                    Math.abs(dy[d5][h] - dy[0][h]) <= 10);
         }
         // Dong 5 phai dung la dong CUOI: khong ai chen dong vao giua ma quen doi INDEX_DXY.
         Kiem.bang("dong KCL la dong cuoi cua bang", Integer.valueOf(dx.length - 1), Integer.valueOf(d5));

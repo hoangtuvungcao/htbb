@@ -571,7 +571,7 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
   | Việc | Ở đâu | Số |
   |---|---|---|
   | Rồng đứng **chạm đất** ở khối xuống (trước đó lọt dưới vạch chân tới +27px) | `map/skinthu/5`, khung 0..6 dịch dy −24 | đáy +3 (Poro +5) |
-  | Người đi theo **dòng 5** riêng của bảng | `Char.dx_horse_tool[5]` = `{0,0,+1,−1}`, `dy_horse_tool[5]` = `{−23,−15,−15,−15}`, `SkinLinhThu.INDEX_DXY[5] = 5` | ngang: người vào đúng tâm yên; xuống: người ngồi sau đầu rồng, mông thấp hơn đỉnh đầu ~14px — đúng quan hệ của Rồng Lớn (dòng 3, dy −22) |
+  | Người đi theo **dòng 5** riêng của bảng | `Char.dx_horse_tool[5]` = `{0,0,+1,−1}`, `dy_horse_tool[5]` = `{−28,−10,−15,−15}`, `SkinLinhThu.INDEX_DXY[5] = 5` | ngang: người vào đúng tâm yên; xuống: người ngồi sau đầu rồng (bắt đầu từ −23 = quan hệ của Rồng Lớn dòng 3, rồi nâng thêm 5 theo ảnh chụp người chơi gửi); lên: hạ từ −15 xuống −10 để người lún vào yên đỏ khi nhìn từ lưng |
   | **Sợi đuôi cuộn lên** ở khối xuống (ảnh con 2, 5, 10) dời sang phải +20px | `map/skinthu/5` | đuôi mọc từ mép phải thân, x ≥ 9 |
 
   Vì sao phải dời đuôi: client **luôn vẽ con thú SAU thân người** (`Char.cs` `paint`, nhánh
@@ -580,10 +580,10 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
   mọc giữa lưng thì vẽ đè ngang mặt người cưỡi; dời ra mép phải thân rồng thì không chạm
   người nữa, nhìn như đuôi cuộn lên bên cạnh.
 
-  Hai điều phải giữ khi thêm dòng: `dy` dòng mới **lệch dòng 0 không quá vài px** vì
+  Hai điều phải giữ khi thêm dòng: `dy` dòng mới **lệch dòng 0 không quá ~10px** vì
   `paintName` của client (`Char.cs:1520`, `Char.java:2081`) luôn đặt tên nhân vật theo dòng
-  0, lệch xa là tên đè lên đầu người; và dòng mới phải là **dòng cuối** để không ai chèn vào
-  giữa mà quên đổi `INDEX_DXY`. `test/KiemSkinLinhThu.kiemChoNgoiKimCangLong` chốt cả bảng
+  0, lệch xa là tên đè lên đầu người (ảnh chụp thực tế ở dy −23 tên còn cách đỉnh đầu ~14px);
+  và dòng mới phải là **dòng cuối** để không ai chèn vào giữa mà quên đổi `INDEX_DXY`. `test/KiemSkinLinhThu.kiemChoNgoiKimCangLong` chốt cả bảng
   lẫn dữ liệu (đáy chạm đất, đuôi nằm ngoài cột người).
 
   Đo trước khi sửa bằng `tools/ThuChoNgoiSkinThu` (vẽ đúng thứ tự vẽ của client, kể cả
