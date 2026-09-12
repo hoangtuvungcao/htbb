@@ -7,7 +7,8 @@ import javax.imageio.ImageIO;
  * Icon vat pham skin linh thu (map/icon/860..865.png).
  *
  * 860..864 ve CA CON THU, mot khung tinh 16x16. 865 (Kim Cang Long, vat pham 911) la DAI
- * BA KHUNG hoat anh: 16x48 = 3 khung 16x16 xep doc, moi khung la mot dau rong nhin nghieng
+ * BA KHUNG hoat anh: 18x54 = 3 khung 18x18 xep doc (DUNG co icon mat na 620..624, theo yeu
+ * cau nguoi dung), moi khung la mot dau rong nhin nghieng
  * co san trong atlas map/skinthu/5.png (anh con 25 / 28 / 31 - ba pha cua dau trong khung
  * ngang k14..20, KHONG phai cat tu than rong). Nguoi dung yeu cau 12/09/2026: "cat rieng 3
  * anh nay... ghep lai lam frame nhu cac loai mat na" - icon mat na 620..624 chinh la dai 3
@@ -76,8 +77,15 @@ public final class KiemIconSkinThu {
             }
             final int soKhung = baKhung ? SO_KHUNG_HOAT_ANH : 1;
             final int caoKhung = im.getHeight() / soKhung;
-            Kiem.dung("icon " + id + " khong lap kin o (moi khung <= " + (BUOC_LUOI - 2) + "px)",
-                    im.getWidth() <= BUOC_LUOI - 2 && caoKhung <= BUOC_LUOI - 2);
+            // Icon tinh 860..864 giu 16x16 (vien 1px). Dai 3 khung 865 lam DUNG co icon mat na
+            // 620..624 (18x54 = 3 khung 18x18) theo yeu cau nguoi dung 12/09/2026.
+            final int toiDa = baKhung ? BUOC_LUOI : BUOC_LUOI - 2;
+            Kiem.dung("icon " + id + " khong vuot o (moi khung <= " + toiDa + "px)",
+                    im.getWidth() <= toiDa && caoKhung <= toiDa);
+            if (baKhung) {
+                Kiem.dung("icon " + id + " dung co icon mat na 620 (18x54)",
+                        im.getWidth() == 18 && im.getHeight() == 54);
+            }
 
             for (int k = 0; k < soKhung; k++) {
                 final BufferedImage khung = im.getSubimage(0, k * caoKhung, im.getWidth(), caoKhung);

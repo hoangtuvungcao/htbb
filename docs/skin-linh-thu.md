@@ -288,8 +288,8 @@ không hứa.
 
 ### 5.6 Icon 865 của Kim Cang Long là dải 3 khung hoạt ảnh (12/09/2026)
 
-`map/icon/865.png` (icon của vật phẩm 911 — `data_item.xstart = 865`) là **16×48 = 3 khung
-16×16 xếp dọc**, mỗi khung một đầu rồng nhìn nghiêng: ảnh con 25 / 28 / 31 của
+`map/icon/865.png` (icon của vật phẩm 911 — `data_item.xstart = 865`) là **18×54 = 3 khung
+18×18 xếp dọc** (đúng cỡ icon mặt nạ 620..624), mỗi khung một đầu rồng nhìn nghiêng: ảnh con 25 / 28 / 31 của
 `map/skinthu/5.png` (atlas có sẵn đầu tách riêng cho hướng ngang — khung k14–20 ghép thân
 24/27/29/30/32 + đầu 25/28/31; ba mảnh là ba pha của cùng một cái đầu). Yêu cầu gốc: "cắt
 riêng 3 ảnh này… ghép lại để làm frame như các loại mặt nạ" — icon mặt nạ 620..624 chính là
@@ -306,11 +306,11 @@ chỉ ở phía client.
 
 Cách dựng (Python PIL, không giữ script trong repo): đặt ba mảnh lên một khung chung 45×40
 theo đúng `dy` của chúng trong bảng khung (−41 / −40 / −42, tức lệch 1 / 2 / 0 px — để ba pha
-không nhảy hình), thu LANCZOS vừa 16 px (→ 16×14, căn giữa 16×16), làm nét `UnsharpMask
-(radius 1, 200%)`, xoá alpha < 96 cho hết viền mờ. Chọn 16×16 mỗi khung chứ không 18×18
-như mặt nạ để giữ viền 1 px giống 5 icon skin còn lại (860..864). `test/KiemIconSkinThu`
-chốt: 865 cao > 25 và chia hết cho 3, mỗi khung ≤ 16 px, ba khung khác nhau nhưng vùng vẽ
-lệch nhau ≤ 2 px.
+không nhảy hình), thu LANCZOS vừa 18 px (→ 18×16, căn giữa 18×18), làm nét `UnsharpMask
+(radius 1, 200%)`, xoá alpha < 96 cho hết viền mờ. Cỡ khung 18×18 lấy đúng theo icon mặt nạ
+620..624 (yêu cầu người dùng — bản đầu làm 16×16 cho có viền 1 px như 860..864 và đã bị trả
+lại); 5 icon skin còn lại (860..864) vẫn là 16×16 tĩnh. `test/KiemIconSkinThu` chốt: 865
+đúng 18×54, cao > 25 và chia hết cho 3, ba khung khác nhau nhưng vùng vẽ lệch nhau ≤ 2 px.
 
 *Bẫy đã vấp — hai lần cùng một ngày.* (1) Hiểu "frame như mặt nạ" thành **lớp phủ đội trên
 đầu** (`map/d_effect/135` + nhánh trong `getIdHeadDynamic`), làm trọn bộ, đã lên server
