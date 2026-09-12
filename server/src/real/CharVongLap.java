@@ -945,6 +945,7 @@ class CharVongLap {
         pInfo = String.valueOf(pInfo) + "," + self.diemQuaiHomNay;
         pInfo = String.valueOf(pInfo) + "," + self.soQuaiHomNay;
         pInfo = String.valueOf(pInfo) + "," + self.timeAoHoaHoaKyLan;
+        pInfo = String.valueOf(pInfo) + "," + self.thuongLv35;
 
         return pInfo;
     }

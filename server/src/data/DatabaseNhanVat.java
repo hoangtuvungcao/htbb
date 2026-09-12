@@ -1285,16 +1285,20 @@ class DatabaseNhanVat {
             pre.setString(12, equip);
             pre.setInt(13, s.idServer);
             pre.execute();
-            // Nhan vat dau tien va duy nhat cua tai khoan: tang 10.000.000 xu + 5.000 luong mo
-            // + 100.000 luong khoa, cong qua hang doi board_created (nhu Nhan moc nap), Char se
+            // Nhan vat dau tien va duy nhat cua tai khoan: tang 40.000.000 xu + 20.000 luong mo
+            // + 30.000 luong khoa, cong qua hang doi board_created (nhu Nhan moc nap), Char se
             // nhan khi vao game lan dau qua Database.getBoardCreated(), khong dung sua truc tiep
-            // pInfo (fragile, xem [[feedback-kpah-safe-npc-edits]]).
+            // pInfo (fragile, xem [[feedback-kpah-safe-npc-edits]]). So doi 12/09/2026 theo yeu
+            // cau nguoi dung (thay the hoan toan bo cu 10tr/5k/100k). Trung Cu/Rong/Yeu Tinh/
+            // Doi/Dai bang x3 va Huyet linh thao x4 (khong the nhet vao bang nay - chi co cot
+            // so, khong co vat pham) duoc cong THEM ngay trong chinh getBoardCreated() ben duoi,
+            // cung mot lan nhan, dung luc con lai Char song de co the them vao tui.
             if (first) {
                 try {
                     pre.close();
                 } catch (Exception ignored) {
                 }
-                pre = conn.prepareStatement("INSERT INTO board_created(xu,luong,luongK,username) VALUES(10000000,5000,100000,?)");
+                pre = conn.prepareStatement("INSERT INTO board_created(xu,luong,luongK,username) VALUES(40000000,20000,30000,?)");
                 pre.setString(1, String.valueOf(userID));
                 pre.execute();
             }

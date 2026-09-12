@@ -738,6 +738,8 @@ public class Char extends LiveActor {
     short idGemBH;
     public byte receiveLG;
     public byte gif35;
+    /** Da nhan thuong len cap 35 chua (0 = chua, 1 = da) - xem MapXuLyLenh.thuongLenCap35(). */
+    public byte thuongLv35;
     public byte nHopMut;
     public int pArena;
     public byte buyAnimalArmor;

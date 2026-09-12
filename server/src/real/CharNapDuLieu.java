@@ -231,6 +231,10 @@ class CharNapDuLieu {
                 } catch (final Exception ex8c) {
                 }
                 try {
+                    self.thuongLv35 = Byte.parseByte(data[116]);
+                } catch (final Exception ex8d) {
+                }
+                try {
                     self.idAutoSkill = Byte.parseByte(data[30]);
                     self.idAutoGetitem = Byte.parseByte(data[31]);
                 } catch (final Exception ex9) {

@@ -72,6 +72,7 @@ class MapXuLyLenh {
                         p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được hộp quà trung thu"));
                         Database.instance.saveOrtherLog("", p.charname, "nhan qua trung thu khi len 20", "nhanhopquatt");
                     }
+                    thuongLenCap35(p);
 
                     Database.instance
                             .saveOrtherLog(
@@ -201,6 +202,7 @@ class MapXuLyLenh {
                     p.sendMessage(MessageCreator.createMsgChat(p.id, "Nhận được hộp quà trung thu"));
                     Database.instance.saveOrtherLog("", p.charname, "nhan qua trung thu khi len 20", "nhanhopquatt");
                 }
+                thuongLenCap35(p);
 
                 Database.instance
                         .saveOrtherLog(
@@ -270,6 +272,37 @@ class MapXuLyLenh {
             p.sendMessage(m);
             m.cleanup();
         }
+    }
+
+    /**
+     * Thuong len cap 35 (12/09/2026, yeu cau nguoi dung): 10.000.000 xu + 50 nguyen lieu
+     * KHOA moi loai cap 6 (ca nlsc GemTemplate.ID_MATERIAL_LOW[5] lan nlcc
+     * ID_MATERIAL_HIGHT[5], moi nhom 5 loai - xem dosetGiftCodeTrianNgude() o Map.java,
+     * cung mot cong thuc, chi khac so luong 2 -> 50).
+     *
+     * Goi tu NHANH LEN CAP (newlevel >= currentLevel + 1) cua CA HAI ham cong exp
+     * (addXpCharEvent - event/quest/qua, addXPForChar - danh quai/admin/lenh web dat cap):
+     * thieu mot ben la nguoi choi len 35 qua duong con lai se khong duoc thuong. Dung
+     * nguong ">= 35" + co mot lan (thuongLv35), KHONG dung "== 35" tuyet doi - nhay nhieu
+     * cap cung luc (lenh web dat cap, giftcode, admin buff) van phai duoc thuong. Day la
+     * bay da biet cua gif35 (dieu kien lastLV == 35 tuyet doi, bi bo lo vinh vien neu nhan
+     * vat nhay thang qua 35 trong mot lan cong exp) - KHONG lap lai loi do o day.
+     */
+    private static void thuongLenCap35(Char p) {
+        if (p.lvDetail.lv < 35 || p.thuongLv35 != 0) {
+            return;
+        }
+        p.thuongLv35 = 1;
+        p.addXu(10000000L, "thuong len cap 35");
+        for (int i = 0; i < GemTemplate.ID_MATERIAL_LOW[5].length; i++) {
+            p.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][i], 50, true);
+            p.doAddGemItem(GemTemplate.ID_MATERIAL_HIGHT[5][i], 50, true);
+        }
+        p.sendMessage(MessageCreator.createCharGemItem(p));
+        p.sendMessage(MessageCreator.createServerAlertMessage(
+                "Chúc mừng bạn đạt cấp 35! Nhận 10.000.000 xu + 50 nguyên liệu khoá mỗi loại cấp 6.", ""));
+        Database.instance.saveOrtherLog("", p.charname,
+                "thuong len cap 35: 10tr xu + 50 khoa moi loai nlsc/nlcc cap 6", "thuonglv35");
     }
 
     static void doGetItem(Map map, Char player, short id) {

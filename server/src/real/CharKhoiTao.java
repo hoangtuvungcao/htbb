@@ -303,6 +303,7 @@ class CharKhoiTao {
         self.idGemBH = -1;
         self.receiveLG = 64;
         self.gif35 = 0;
+        self.thuongLv35 = 0;
         self.nHopMut = -1;
         self.pArena = 1;
         self.buyAnimalArmor = -1;
