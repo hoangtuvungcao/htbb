@@ -670,11 +670,7 @@ public final class SkinLinhThu {
             // van ghi "Ngau nhien 2 hoac 3 trong..." la gay hieu nham (nguoi choi bao
             // 12/09/2026, kem anh chup) - dai ngau nhien la dac ta de server roll, chi con
             // trong chu thich ma nguon va docs/skin-linh-thu.md.
-            // Ghi ro dieu kien (12/09/2026): Set Lan la noi tai phong thu - phat dong khi
-            // minh BI danh - va cu choang chi co voi muc tieu la nguoi choi, nen Set danh chi
-            // xay ra trong PvP. Khong ghi thi nguoi choi danh quai roi bao "khong thay".
-            // KHONG dung chu HOA co dau (font client khong ve duoc, xem KiemChuHoaCoDau).
-            s.append("\n- Khi trang bị Chổi Sét, lúc bị người chơi khác đánh mà Sét Lan phát động: 5% triệu hồi Sét đánh, thêm 3 giây choáng (chỉ PvP)");
+            s.append("\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng");
             return s.toString();
         }
         if (CONG_HP[skin] > 0) {

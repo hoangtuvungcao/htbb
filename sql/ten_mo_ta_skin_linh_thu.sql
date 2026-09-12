@@ -49,7 +49,7 @@ UPDATE `data_item` SET `name` = 'Skin linh thú Chiến Lang
 
 UPDATE `data_item` SET `name` = 'Skin linh thú Kim Cang Long
 [hệ Kim]
-- Khi trang bị Chổi Sét, lúc bị người chơi khác đánh mà Sét Lan phát động: 5% triệu hồi Sét đánh, thêm 3 giây choáng (chỉ PvP)'
+- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng'
  WHERE `id` = 911;
 
 -- Kiem tra: phai ra dung 6 dong.
