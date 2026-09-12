@@ -138,6 +138,7 @@ public final class Kiem {
         KiemGiaiTanBangMoiTao.chay();
         KiemGoi26SetDanh.chay();
         KiemSaveCharAutoDuBangPhu.chay();
+        KiemDongBoMyCountryKhiVaoBang.chay();
 
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

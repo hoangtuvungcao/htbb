@@ -1020,6 +1020,15 @@ class MapBangHoi {
                     m.dos.writeShort(player.id);
                     m.dos.writeShort(clanx.id);
                     player.idClan = clanx.id;
+                    // Dong bo myCountry theo bang MOI ngay luc vao, khong doi den lan dang
+                    // nhap ke tiep: Char.setCountry() (dung o dang nhap) la duong DUY NHAT
+                    // cap nhat myCountry theo bang, nen truoc day nguoi vua duoc duyet vao
+                    // bang van giu myCountry CU (co the la -1 neu chua tung chon lang, hoac
+                    // lang cua bang truoc do) cho toi khi dang xuat/dang nhap lai. Trong luc
+                    // do, Char.kickOutTown() so sanh thang myCountry voi inCountry (khong
+                    // doc idClan) nen ho bi coi nhu dung sai lang va bi kick khoi thanh moi
+                    // khi buoc vao dung luc bang minh dang chiem thanh (bao 12/09/2026).
+                    player.setCountry();
                     clanx.addMember(player);
                     player.timeInClan = System.currentTimeMillis() + (long) (clanx.getTimePhatLuong() * 60 * 60000);
                     if (clanx.getAllMember().size() > 10) {
