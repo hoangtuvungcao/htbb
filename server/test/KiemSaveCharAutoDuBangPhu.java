@@ -4,32 +4,35 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Ghep manh tu binh (Mai/Lan/Cuc/Truc, Char.doAddManhTubinh) phai duoc luu ngay boi
- * saveCharAuto - khong duoc CHI cho saveChar (ban luu day du luc dang xuat that su).
+ * saveCharAuto (ban tu luu dinh ky/theo hanh dong) phai luu DAY DU moi bang PHU cua
+ * nhan vat - khong duoc de rieng cho saveChar (ban luu day du, CHI chay luc dang xuat
+ * that su hoac may chu tat, xem RealController.saveAllChar).
  *
- * VI SAO CAN (bao 12/09/2026: "dung tranh nhieu khi lai bi mat"). doAddManhTubinh khong
- * tu goi luu nao ca - no chi doi RAM (self.tubinh, listGemitem[]) roi gui goi tin cho
- * client, tin tuong mot lan luu SAU DO se ghi xuong CSDL. Manh gem (listGemitem/
- * listGemitemLock) DA duoc DatabaseNhanVat.saveCharAuto luu tu truoc (dinh ky 5-11 phut/
- * lan qua CharManager, va rat nhieu hanh dong khac goi ngay sau khi xong - xem
- * Char.java, doUsePotion.java, LenhWeb.java...), nhung tien do ghep tranh (bang
- * tob_char_tubinh, ham saveCharTubinh) truoc day CHI duoc DatabaseNhanVat.saveChar goi -
- * ham nay CHI chay luc nguoi choi dang xuat that su hoac may chu tat (RealController.
- * saveAllChar). Server crash / nguoi choi mat ket noi dot ngot GIUA luc ghep va luc dang
- * xuat that su: manh bi tru THAT (da luu tu lan saveCharAuto gan nhat) nhung tien do
- * ghep tranh thi mat vi chua tung duoc luu - dung nguyen nhan nguoi choi bao lai.
+ * VI SAO CAN (bao 12/09/2026: "dung tranh nhieu khi lai bi mat" - "tranh" = tu binh Mai/
+ * Lan/Cuc/Truc). Cac ham nhu Char.doAddManhTubinh() khong tu goi luu nao ca - chi doi RAM
+ * (mang dem: listGemitem[]/listSpItem[]/self.tubinh/self.fruit[]) roi gui goi tin cho
+ * client, tin tuong mot lan luu SAU DO se ghi xuong CSDL. Cac mang dem CHINH (listGemitem,
+ * listSpItem...) DA duoc saveCharAuto luu tu truoc (dinh ky 5-11 phut/lan qua
+ * CharManager, va rat nhieu hanh dong khac goi ngay sau khi xong), nhung BA bang PHU rieng
+ * (tob_char_tubinh, tob_sp_new, tob_char_fruit) truoc day CHI duoc saveChar goi. Server
+ * crash / nguoi choi mat ket noi dot ngot GIUA luc dung va luc dang xuat that su: mang
+ * dem chinh (vd so mon da mua, so manh) bi tru THAT (da luu tu lan saveCharAuto gan
+ * nhat) nhung du lieu trong bang phu (mon dac biet da mua, tien do ghep tranh, tien do
+ * cay an qua) thi mat vi chua tung duoc luu - dung nguyen nhan nguoi choi bao lai.
  *
- * Sua: them db.saveCharTubinh(...) vao than DatabaseNhanVat.saveCharAuto, ngay SAU
- * db.saveCharGem(...) (cung mot khoi if (p.charDBID > 0), giu nguyen thu tu de neu sau
- * nay ai doi lai thu tu thi test o duoi van bat duoc).
+ * Sua (12/09/2026): them ca ba loi goi (saveCharTubinh, saveCharSP, saveCharFruit) vao
+ * than DatabaseNhanVat.saveCharAuto, cung mot khoi voi saveCharGem (if (p.charDBID > 0)).
+ * Ba bang nay duoc phat hien bang cach doi chieu toan bo cac loi goi "db.saveXxx(...)"
+ * giua saveChar va saveCharAuto - bat ky ham save* nao CHI co trong saveChar ma khong co
+ * trong saveCharAuto la mot ung vien nghi ngo (savePet/saveCharSP1 khong tinh, xem duoi).
  */
-public final class KiemTuBinhKhongMatKhiAutoSave {
+public final class KiemSaveCharAutoDuBangPhu {
 
-    private KiemTuBinhKhongMatKhiAutoSave() {
+    private KiemSaveCharAutoDuBangPhu() {
     }
 
     public static void chay() {
-        Kiem.nhom("Tu binh (ghep manh tranh) - phai luu ngay boi saveCharAuto, khong doi den saveChar");
+        Kiem.nhom("saveCharAuto phai luu du cac bang phu (tu binh, vat pham dac biet, cay an qua)");
 
         final String noiDung = doc("src/data/DatabaseNhanVat.java");
         Kiem.dung("doc duoc src/data/DatabaseNhanVat.java", !noiDung.isEmpty());
@@ -48,16 +51,16 @@ public final class KiemTuBinhKhongMatKhiAutoSave {
         Kiem.dung("tim thay diem ket cua saveCharAuto (truoc ham addChar)", ketThucHam > viTriHam);
         final String thanHam = noiDung.substring(viTriHam, Math.max(viTriHam, ketThucHam));
 
-        Kiem.dung("saveCharAuto goi db.saveCharTubinh(...)", thanHam.contains("db.saveCharTubinh("));
-        Kiem.dung("saveCharAuto dung p.getInfoSaveTubinh() lam tham so (doc dung RAM hien tai)",
-                thanHam.contains("db.saveCharTubinh(p.charDBID, p.getInfoSaveTubinh());"));
-
         final int viTriGem = thanHam.indexOf("db.saveCharGem(soluong.toString()");
-        final int viTriTubinh = thanHam.indexOf("db.saveCharTubinh(");
-        Kiem.dung("tim thay ca hai cho goi (saveCharGem va saveCharTubinh)",
-                viTriGem >= 0 && viTriTubinh >= 0);
-        Kiem.dung("saveCharTubinh nam trong CUNG mot khoi voi saveCharGem (sau if (p.charDBID > 0))",
-                viTriGem >= 0 && viTriTubinh > viTriGem && viTriTubinh - viTriGem < 1000);
+        Kiem.dung("tim thay diem neo db.saveCharGem(...) (moc ban dau cua khoi if charDBID > 0)",
+                viTriGem >= 0);
+
+        kiemMotBangPhu(thanHam, viTriGem, "saveCharTubinh",
+                "db.saveCharTubinh(p.charDBID, p.getInfoSaveTubinh());", "tu binh (ghep tranh Mai/Lan/Cuc/Truc)");
+        kiemMotBangPhu(thanHam, viTriGem, "saveCharSP",
+                "db.saveCharSP(soluong3.toString(), p.charDBID);", "vat pham dac biet mua trong shop");
+        kiemMotBangPhu(thanHam, viTriGem, "saveCharFruit",
+                "db.saveCharFruit(p.charDBID, p.getInfoSaveFruit());", "cay an qua");
 
         // doAddManhTubinh (Char.java) KHONG can tu goi saveCharAuto rieng - viec luu da
         // duoc dam bao chung boi saveCharAuto (dinh ky) va saveChar (dang xuat). Chi kiem
@@ -72,6 +75,40 @@ public final class KiemTuBinhKhongMatKhiAutoSave {
             Kiem.dung("doAddManhTubinh van goi temp.addManh(...) de ghep manh",
                     thanDoAdd.contains(".addManh(indexManh, this)"));
         }
+
+        // Doi chieu TOAN BO cac loi goi "db.saveXxx(...)"/"Database.instance.saveXxx(...)"
+        // giua saveChar va saveCharAuto - phong khi sau nay lai co mot bang phu MOI duoc
+        // them vao saveChar ma quen them vao saveCharAuto (dung mot loi voi lan nay).
+        // savePet: KHONG tinh - da co rat nhieu loi goi truc tiep rai rac khap noi ngay
+        // sau moi hanh dong doi chi so pet (Char.java, Map.java, MapDoMenu.java...), nen
+        // KHONG can nam trong saveCharAuto. saveCharSP1/saveCharFruit1: ban "1" dung cho
+        // mot ket noi CSDL phu (getConnection1) rieng, khong lien quan saveCharAuto.
+        final String saveChar = noiDung.substring(
+                noiDung.indexOf("static boolean saveChar(Database db, Char p, boolean admindExit)"), viTriHam);
+        final java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("\\b(?:db|Database\\.instance)\\.(save\\w+)\\(").matcher(saveChar);
+        final java.util.Set<String> trongSaveChar = new java.util.TreeSet<>();
+        while (m.find()) {
+            trongSaveChar.add(m.group(1));
+        }
+        final java.util.Set<String> boQuaCoY = new java.util.HashSet<>(java.util.Arrays.asList(
+                "savePet", "saveCharSP1", "saveCharFruit1", "saveOrtherLog", "saveAnimal",
+                "saveFarm", "saveTrainLuong", "savecharLuong", "saveCharQuest"));
+        for (final String ten : trongSaveChar) {
+            if (boQuaCoY.contains(ten)) {
+                continue;
+            }
+            Kiem.dung("saveChar co goi " + ten + "(...) thi saveCharAuto CUNG phai co (tranh lo mot bang phu moi)",
+                    thanHam.contains("." + ten + "("));
+        }
+    }
+
+    private static void kiemMotBangPhu(final String thanHam, final int viTriGem,
+            final String tenHam, final String dongGoiDayDu, final String moTa) {
+        final int viTriGoi = thanHam.indexOf(dongGoiDayDu);
+        Kiem.dung("saveCharAuto goi db." + tenHam + "(...) - " + moTa, viTriGoi >= 0);
+        Kiem.dung(tenHam + " nam trong CUNG mot khoi voi saveCharGem (sau if (p.charDBID > 0))",
+                viTriGem >= 0 && viTriGoi > viTriGem && viTriGoi - viTriGem < 2000);
     }
 
     private static String doc(final String duong) {

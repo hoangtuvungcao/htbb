@@ -980,6 +980,19 @@ class DatabaseNhanVat {
                     // su: manh bi tru THAT (da luu) nhung tien do ghep tranh thi mat (chua tung
                     // duoc luu) - dung nguyen nhan bao cao "dung tranh nhieu khi lai bi mat".
                     db.saveCharTubinh(p.charDBID, p.getInfoSaveTubinh());
+                    // Vat pham dac biet mua trong shop (listSpItem[], bang tob_sp_new) - CUNG
+                    // MOT DANG loi voi tu binh o tren: truoc day chi saveChar goi, vang mat o
+                    // day. Tien mua (luong) da duoc luu ngay trong cau UPDATE chinh cua ham nay
+                    // (cot luong o tren), nen crash giua luc mua va luc dang xuat that su la
+                    // mat dung mon da mua du tien da tru that.
+                    StringBuilder soluong3 = new StringBuilder(String.valueOf(p.listSpItem[0]));
+                    for (int n = 1; n < p.listSpItem.length; ++n) {
+                        soluong3.append(",").append(p.listSpItem[n]);
+                    }
+                    db.saveCharSP(soluong3.toString(), p.charDBID);
+                    // Cay an qua (tien do trong/tuoi/thu hoach, bang tob_char_fruit) - CUNG mot
+                    // dang loi, vang mat o day truoc khi sua.
+                    db.saveCharFruit(p.charDBID, p.getInfoSaveFruit());
                 }
             } catch (Exception ignored) {
             }
