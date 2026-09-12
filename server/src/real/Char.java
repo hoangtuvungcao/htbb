@@ -948,18 +948,22 @@ public class Char extends LiveActor {
         // them dong o day la du, khong phai dong goi lai client nao.
         //   0 Poro (va 5 skin thu bon chan)   1 Lan   2 Heo/Heo Bang   3 Rong Lon/Ngua Xuong
         //   4 hoa hinh
-        //   5 SKIN KIM CANG LONG (11/09/2026): rong dai, yen o dung tam than khi quay ngang
+        //   5 SKIN KIM CANG LONG (11-12/09/2026): rong dai, yen o dung tam than khi quay ngang
         //     (dx +1/-1 thay cho +7/-7 cua Poro). Huong xuong nguoi ngoi sau dau rong: -28
         //     (bat dau tu -23 khop Rong Lon -22, roi nang them 5 theo anh chup nguoi choi
-        //     gui - "cho cao len chut"); huong len ha xuong -10 (tu -15, "dich xuong chut
-        //     nua") de nguoi lun vao yen do. Xem SkinLinhThu.INDEX_DXY va
-        //     docs/skin-linh-thu.md muc 9. paintName cua client luon dung dong 0 de dat ten,
-        //     nen dy cua dong moi chi duoc lech dong 0 chung 10px - khong thi ten de len dau
-        //     nguoi (anh chup thuc te o -23 con cach ten ~14px).
+        //     gui - "cho cao len chut"). Huong len: -15 -> -10 -> 0, hai lan theo anh chup -
+        //     o -10 than nguoi van "dau tren yen", ca yen do lo nguyen ben duoi (huong len
+        //     client ve thu TRUOC nguoi nen yen khong the che nguoi, chi co cach ha than
+        //     xuong che phan tren yen); o 0 con lai mep sau yen, giong huong ngang.
+        //     Xem SkinLinhThu.INDEX_DXY va docs/skin-linh-thu.md muc 9.
+        //     paintName cua client dat ten theo DONG 0 (Char.cs: num = dy_horse[0][dir]):
+        //     dong moi CAO hon dong 0 qua ~10px la ten de dau (anh chup o -23 con cach ~14px,
+        //     -28 con ~9px); THAP hon dong 0 thi vo hai, chi lam ten cach dau xa them (huong
+        //     len 0 thap hon dong 0 tro 15px la co y).
         Char.dx_horse_tool = new byte[][]{{0, 0, 7, -7}, {0, 0, 5, -5}, {0, 0, 8, -8}, new byte[4], new byte[4],
             {0, 0, 1, -1}};
         Char.dy_horse_tool = new byte[][]{{-20, -15, -15, -15}, {-25, -15, -15, -15}, {-20, -15, -15, -15}, {-22, -15, -16, -16}, {-22, -15, -17, -16},
-            {-28, -10, -15, -15}};
+            {-28, 0, -15, -15}};
 
         Char.Dx_Dy_WP_tool = new byte[][]{
             {-35, -27, -30, -37, -26, -55, -55, -47, -35, -55,-46,-35},
@@ -13210,6 +13214,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
         if (idtemplate == 835) {
             newItem.createAttributeVuKhiThoiTrangMax();
         }
+        // Skin Kim Cang Long (911): roll 2-3 dong chi so nhu duong GiftCode.AddItem (DB:).
+        // Truoc 12/09/2026 duong ITEM: (bo chon thuong tren web sinh ra cho nhom skin) tao
+        // mon voi 0 chi so. Ham tu return neu khong phai 911 nen goi vo dieu kien.
+        newItem.createAttributeSkinKimCangLong();
         newItem.dateCreate = getDayTime(0L);
         if (newItem.isManhSuuTap()) {
             boolean found = false;
@@ -13249,6 +13257,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 if (idtemplate == 835) {
                     themItem.createAttributeVuKhiThoiTrangMax();
                 }
+                // Moi ban sao roll rieng - khong chep chi so cua newItem.
+                themItem.createAttributeSkinKimCangLong();
                 themItem.dateCreate = getDayTime(0L);
                 p.iItems.add(themItem);
                 daTao++;

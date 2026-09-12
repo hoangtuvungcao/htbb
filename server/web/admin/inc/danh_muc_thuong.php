@@ -643,14 +643,21 @@ function dmDanhMuc(PDO $game): array
     }
 
     // ---- Các nhóm hay phát khác ----
+    // Skin linh thú đi loại DB (có ô thời hạn phút, qua GiftCode.AddItem) chứ không phải
+    // ITEM: trước 12/09/2026 nhóm này sinh "ITEM:911:1" -> Kim Cang Long về tay 0 chỉ số
+    // (Char.createItemSoLuong không roll) và không đặt được hạn. Java đã vá để ITEM cũng
+    // roll, nhưng ITEM vẫn không có thời hạn nên bộ chọn dùng DB.
+    $ghiChuSkin = 'Đổi hình thú cưỡi. 5 skin đầu (905–909) chỉ số cố định theo hệ; '
+                . 'Kim Cang Long (911) roll ngẫu nhiên 2–3 dòng (bạo kích / sát thương chuẩn / tăng công) '
+                . 'lúc phát. Thời hạn tính bằng PHÚT, 0 = vĩnh viễn (1 ngày = 1440, 7 ngày = 10080).';
     foreach ([
-        29 => ['manh_caitrang', 'Mảnh cải trang', 'Ghép thành bộ cải trang Bát Giới / Sa Tăng.'],
-        30 => ['skin_thu',      'Skin linh thú',  'Đổi hình thú cưỡi, không đổi chỉ số.'],
+        29 => ['manh_caitrang', 'Mảnh cải trang', 'Ghép thành bộ cải trang Bát Giới / Sa Tăng.', 'ITEM'],
+        30 => ['skin_thu', 'Skin linh thú', $ghiChuSkin, 'DB'],
         19 => ['phi_phong',     'Phi phong',      'Loại thưởng ITEM cho phi phong thường; '
-                                                . 'muốn chọn kháng thì dùng PPRK và gõ tay.'],
-        27 => ['thu_nuoi',      'Thú nuôi',       'Thú nuôi dạng vật phẩm trong hành trang.'],
-        25 => ['hoa_ky_lan',    'Hoả kỳ lân',     ''],
-    ] as $type => [$ma, $ten, $ghiChu]) {
+                                                . 'muốn chọn kháng thì dùng PPRK và gõ tay.', 'ITEM'],
+        27 => ['thu_nuoi',      'Thú nuôi',       'Thú nuôi dạng vật phẩm trong hành trang.', 'ITEM'],
+        25 => ['hoa_ky_lan',    'Hoả kỳ lân',     '', 'ITEM'],
+    ] as $type => [$ma, $ten, $ghiChu, $loai]) {
         $muc = $vp[$type] ?? [];
         if ($type === 29) {
             // Bỏ 5 món Cánh đã tách ra nhóm riêng ở trên — còn lại đúng 24 mảnh
@@ -660,7 +667,7 @@ function dmDanhMuc(PDO $game): array
             }
         }
         if ($muc) {
-            $dm[$ma] = ['ten' => $ten, 'loai' => 'ITEM', 'ghiChu' => $ghiChu, 'muc' => $muc];
+            $dm[$ma] = ['ten' => $ten, 'loai' => $loai, 'ghiChu' => $ghiChu, 'muc' => $muc];
         }
     }
 
@@ -739,6 +746,17 @@ function dmTruongCuaLoai(string $loai): array
             // vật phẩm sinh bằng đường này, nên quà ITEM luôn không giao dịch được —
             // đúng chính sách "quà giftcode là quà khoá". Không có tham số nào để mở.
             return [['ma' => 'sl', 'nhan' => 'Số lượng', 'macDinh' => '1']];
+
+        case 'DB':
+            // DB:id:soLuong:thoiHan(phút) -> vòng lặp soLuong lần GiftCode.AddItem(p, id, 0, 0, phút)
+            // (DatabaseGiftCode.java ~446). Khác ITEM ở hai điểm: có THỜI HẠN (phút, 0 = vĩnh
+            // viễn — AddItem chỉ đặt hạn khi > 0) và đi qua GiftCode.AddItem — đường mà mọi
+            // nguồn phát skin trong game (NPC đổi điểm) cũng dùng. Dùng cho nhóm "Skin linh
+            // thú" từ 12/09/2026 để admin đặt được hạn ngày. Khoá sẵn như ITEM (lock = 1).
+            return [
+                ['ma' => 'sl', 'nhan' => 'Số lượng', 'macDinh' => '1'],
+                ['ma' => 'phut', 'nhan' => 'Thời hạn (phút, 0 = vĩnh viễn)', 'macDinh' => '0', 'minSo' => '0'],
+            ];
 
         case 'PT':
             // PT:id:soLuong -> player.potions[id] += soLuong

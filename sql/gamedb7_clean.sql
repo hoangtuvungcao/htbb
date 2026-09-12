@@ -1597,7 +1597,7 @@ INSERT INTO `data_item` (`id`, `name`, `type`, `style`, `he`, `gender`, `level`,
 (910,'Phi phong vô hình',19,16,0,0,0,480,0,0,0,0,0,0,0,0,0,0,0,-1,829,0,-1,0,-1,'',-1,0),
 (905,'Skin linh thú Phúc Thú\n[hệ Kim] - hợp Pháp sư\n- Cộng 2000 HP\n- Cộng 3000 MP\n- Nội tại (khi hợp hệ): khi bị Kiếm khách, Chiến binh hoặc Đấu sĩ đánh, chặn 30% sát thương trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây',30,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,860,860,2,0,-1,NULL,-1,0),
 (909,'Skin linh thú Chiến Lang\n[hệ Thổ] - hợp Kiếm khách\n- Cộng 20% phòng thủ (khi hợp hệ)\n- Hấp thụ 15% sát thương',30,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,864,864,2,0,-1,NULL,-1,0),
-(911,'Skin linh thú Kim Cang Long\n[hệ Kim]\n- Ngẫu nhiên 2 hoặc 3 trong: Bạo kích (1-5%), Sát thương chuẩn (1-5%), Tăng công (3-15%)\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng',30,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,865,865,2,0,-1,NULL,-1,0);
+(911,'Skin linh thú Kim Cang Long\n[hệ Kim]\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng',30,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,-1,865,865,2,0,-1,NULL,-1,0);
 
 -- --------------------------------------------------------
 

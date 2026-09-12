@@ -233,7 +233,21 @@ if ($charJava === false) {
 echo "\n== Truong cua tung loai phan thuong\n";
 // ===========================================================================
 kt('ITEM co 1 truong (so luong)', count(dmTruongCuaLoai('ITEM')), 1);
+kt('DB co 2 truong (so luong + thoi han phut)', count(dmTruongCuaLoai('DB')), 2);
 kt('PT co 1 truong (so luong)',   count(dmTruongCuaLoai('PT')), 1);
+
+// DB: skin linh thu di duong nay tu 12/09/2026 - mac dinh phai ra dung 4 phan, vinh vien.
+$phanDb = ['DB', '911'];
+foreach (dmTruongCuaLoai('DB') as $t) {
+    $phanDb[] = $t['macDinh'];
+}
+kt('DB cho skin Kim Cang Long mac dinh sinh DB:911:1:0 (vinh vien)', implode(':', $phanDb), 'DB:911:1:0');
+$oPhutDb = null;
+foreach (dmTruongCuaLoai('DB') as $t) {
+    if ($t['ma'] === 'phut') { $oPhutDb = $t; }
+}
+ktDung('DB co o thoi han "phut" (server doc tachTime[3] la PHUT, khong phai ngay)', $oPhutDb !== null);
+kt('DB: o phut khong cho so am', $oPhutDb['minSo'] ?? null, '0');
 kt('GEM co 2 truong (so luong + khoa)', count(dmTruongCuaLoai('GEM')), 2);
 kt('loai la -> khong co truong nao', dmTruongCuaLoai('KHONGCO'), []);
 
@@ -267,7 +281,7 @@ echo "\n== MOI CHUOI BO CHON SINH RA DEU PHAI QUA kiemTraItem()\n";
 // Day la phep kiem chinh. Dung lai dung phep ghep chuoi cua JavaScript:
 //   phan = [loai, id, ...gia tri cac truong]  ->  noi bang dau hai cham
 $bangLoai = loaiThuong();
-foreach (['ITEM', 'PT', 'GEM', 'TT', 'PET', 'PETV', 'TK', 'TKMAX', 'DH'] as $loai) {
+foreach (['ITEM', 'DB', 'PT', 'GEM', 'TT', 'PET', 'PETV', 'TK', 'TKMAX', 'DH'] as $loai) {
     $phan = [$loai, '848'];
     foreach (dmTruongCuaLoai($loai) as $t) {
         $phan[] = $t['macDinh'];
@@ -380,6 +394,17 @@ $dmFile = (string)@file_get_contents($GOC . 'web/admin/inc/danh_muc_thuong.php')
 // ---- Canh PHAI dung TT, khong con la ITEM (loi tu dot truoc, da sua) ----
 ktDung("nhom canh dung loai 'TT' (KHONG con la 'ITEM')",
     (bool)preg_match("/'ten'\\s*=>\\s*'Cánh'\\s*,\\s*\\n\\s*'loai'\\s*=>\\s*'TT'/", $dmFile));
+
+// ---- Skin linh thu PHAI dung DB (co thoi han phut, qua GiftCode.AddItem), khong con ITEM ----
+// 12/09/2026: ITEM:911 tao Kim Cang Long 0 chi so (Char.createItemSoLuong khong roll) va
+// khong dat duoc han. So khop chuoi nguyen van dong khai bao, khong dung regex.
+ktDung("nhom skin linh thu dung loai 'DB' (KHONG con la 'ITEM')",
+    strpos($dmFile, '30 => [\'skin_thu\', \'Skin linh thú\', $ghiChuSkin, \'DB\']') !== false);
+ktDung('ghi chu nhom skin khong con noi "khong doi chi so" (sai voi Kim Cang Long)',
+    strpos($dmFile, 'không đổi chỉ số.\'],') === false);
+// Va ben Java, duong ITEM cung phai roll de ai go tay ITEM:911 khong bi 0 chi so.
+ktDung('Char.createItemSoLuong goi createAttributeSkinKimCangLong()',
+    strpos((string)$charJava, 'newItem.createAttributeSkinKimCangLong();') !== false);
 
 // ---- dmThoiTrang: dung atb9, dung type, LOAI type 29 (Canh) va 22/23/24 ----
 ktDung('dmThoiTrang loc bang atb9 IN (1, 2)', strpos($dmFile, 'atb9 IN (1, 2)') !== false);

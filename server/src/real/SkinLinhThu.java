@@ -129,8 +129,9 @@ public final class SkinLinhThu {
      *
      * Kim Cang Long (5) dung dong RIENG so 5 (Char.java, khai bao dx_horse_tool): no la rong
      * dai, yen nam dung tam than khi quay ngang nen nguoi khong duoc day sang ben 7px nhu
-     * Poro (dx +1/-1); huong xuong nguoi ngoi sau dau rong, nhac -28; huong len nguoi lun
-     * vao yen, -10 (hai so nay chinh theo anh chup nguoi choi gui sau lan dau -23/-15).
+     * Poro (dx +1/-1); huong xuong nguoi ngoi sau dau rong, nhac -28; huong len nguoi ha
+     * xuong 0 de than che phan tren yen (huong len client ve thu truoc nguoi, yen khong the
+     * che nguoi). Hai so nay chinh theo anh chup nguoi choi gui: -23/-15 -> -28/-10 -> -28/0.
      * Truoc 11/09/2026 dung chung dong 0: nguoi lech 6px ve phia duoi khi quay ngang, con
      * huong xuong thi noi lo lung tren dau rong (nguoi choi bao kem anh chup).
      *
@@ -662,10 +663,13 @@ public final class SkinLinhThu {
             s.append(" - hợp ").append(CharManager.NAME_CLASS[mp]);
         }
         if (skin == KIM_CANG_LONG) {
-            // Chi so ngau nhien theo tung vat pham (Item.createAttributeSkinKimCangLong),
-            // hien qua tooltip chi so vat pham (otherAtt[4]/[47]/[54]) - khong ghi so cu
-            // the o day vi moi vat pham mot khac.
-            s.append("\n- Ngẫu nhiên 2 hoặc 3 trong: Bạo kích (1-5%), Sát thương chuẩn (1-5%), Tăng công (3-15%)");
+            // Chi so ngau nhien theo tung vat pham (Item.createAttributeSkinKimCangLong: 2-3
+            // trong Bao kich 1-5% / Sat thuong chuan 1-5% / Tang cong 3-15%) hien qua tooltip
+            // chi so vat pham (otherAtt[4]/[47]/[54]). Ten template la MOT chuoi dung chung
+            // cho moi ban, nen KHONG ghi dai ngau nhien vao day: mon da roll roi ma tooltip
+            // van ghi "Ngau nhien 2 hoac 3 trong..." la gay hieu nham (nguoi choi bao
+            // 12/09/2026, kem anh chup) - dai ngau nhien la dac ta de server roll, chi con
+            // trong chu thich ma nguon va docs/skin-linh-thu.md.
             s.append("\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng");
             return s.toString();
         }

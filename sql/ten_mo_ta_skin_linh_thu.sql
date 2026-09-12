@@ -49,7 +49,6 @@ UPDATE `data_item` SET `name` = 'Skin linh thú Chiến Lang
 
 UPDATE `data_item` SET `name` = 'Skin linh thú Kim Cang Long
 [hệ Kim]
-- Ngẫu nhiên 2 hoặc 3 trong: Bạo kích (1-5%), Sát thương chuẩn (1-5%), Tăng công (3-15%)
 - Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng'
  WHERE `id` = 911;
 

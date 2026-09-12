@@ -60,6 +60,15 @@ public final class KiemSoLuongItemGiftcode {
         Kiem.dung("gan lai soLuong = daTao truoc khi bao 'Chuc mung' - thong bao khop dung so THAT tao ra",
                 nhanhElse.contains("soLuong = daTao;"));
 
+        // 2b) Skin Kim Cang Long (911) qua duong ITEM: phai duoc roll chi so nhu duong DB:
+        // (GiftCode.AddItem). Truoc 12/09/2026 bo chon thuong tren web sinh "ITEM:911:1" cho
+        // nhom skin -> mon ve tay 0 chi so. Ca ban goc lan tung ban sao trong vong lap deu
+        // phai goi (moi ban roll rieng), tuc >= 2 lan trong than ham.
+        Kiem.dung("createItemSoLuong goi createAttributeSkinKimCangLong() cho ca ban goc va ban sao (>= 2 lan)",
+                countSoLan(than, ".createAttributeSkinKimCangLong();") >= 2);
+        Kiem.dung("ban sao trong vong lap cung roll (themItem.createAttributeSkinKimCangLong)",
+                nhanhElse.contains("themItem.createAttributeSkinKimCangLong();"));
+
         // 3) Thong bao thanh cong phai dat SAU khi soLuong da duoc gan lai
         // dung (nam ngoai if/else, sau ca hai nhanh).
         final int viTriGanLaiSoLuong = than.indexOf("soLuong = daTao;");

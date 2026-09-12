@@ -59,13 +59,16 @@ thú**.
 
 ## 3. Nguồn phát skin
 
-| Nguồn | Cách |
-|---|---|
-| Đổi điểm | NPC đổi thưởng, 5 mục cuối danh sách, 2000 điểm mỗi skin |
-| Giftcode | `DB:905:1:0` … `DB:909:1:0` (id template : số lượng : số phút, 0 phút = vĩnh viễn) |
+| Nguồn | Cách | Hạn | Chỉ số |
+|---|---|---|---|
+| Đổi điểm | NPC đổi thưởng, 5 mục cuối danh sách, 2000 điểm mỗi skin — **chỉ 5 skin đầu**, không có Kim Cang Long | vĩnh viễn | cố định |
+| Giftcode / quà gõ tay `DB:<id>:1:<phút>` | `DB:905:1:0` … `DB:911:1:0` (id template : số lượng : số phút; 0 = vĩnh viễn, >0 thì hết hạn tự xoá như trang phục có hạn) | theo phút | 905–909 cố định; **911 roll 2–3 dòng** lúc phát (`GiftCode.AddItem`) |
+| Bộ chọn phần thưởng trên trang quản trị, nhóm "Skin linh thú" | sinh `DB:<id>:1:<phút>` (từ 12/09/2026; trước đó sinh `ITEM:<id>:1`) | theo ô "Thời hạn (phút)" | như trên |
+| `ITEM:<id>:1` gõ tay | `Char.createItemSoLuong` — từ 12/09/2026 cũng roll cho 911 (trước đó 0 chỉ số) | **luôn vĩnh viễn**, không đặt được hạn | 911 roll |
 
-Bản đầu tiên còn có lệnh admin `tangskin <tên> <0-4>`. Bản này **không có** — hai nguồn
-trên là đủ, và giftcode làm được đúng việc mà lệnh đó làm.
+Bản đầu tiên còn có lệnh admin `tangskin <tên> <0-4>`. Bản này **không có** — các nguồn
+trên là đủ, và giftcode làm được đúng việc mà lệnh đó làm. Bật/tắt sự kiện **không** phát
+skin nào: 33 sự kiện cũ dùng menu cứng, không có skin trong đó.
 
 ## 4. Năm skin
 
@@ -248,6 +251,20 @@ trong mã mà quên sinh lại SQL là nó báo.
 
 Chuỗi tiếng Việt đi **thẳng từ hằng số Java ra tệp UTF-8**, không qua `sed`/`perl`/heredoc —
 xem mục 10.
+
+**Riêng Kim Cang Long (911) — mô tả KHÔNG ghi dải chỉ số ngẫu nhiên.** Ba chỉ số của skin này
+do `Item.createAttributeSkinKimCangLong()` roll lúc phát (2–3 trong Bạo kích 1–5% /
+Sát thương chuẩn 1–5% / Tăng công 3–15%, lưu `otherAtt[4]/[54]/[47]`) và hiện trong tooltip
+chỉ số của từng món. Bản đầu (11/09/2026) ghi thêm dòng "Ngẫu nhiên 2 hoặc 3 trong: …" vào
+tên template; người chơi xem món **đã roll** vẫn thấy dòng đó ngay trên các con số thật và
+báo là gây hiểu nhầm (12/09/2026, kèm ảnh chụp). Vì `data_item.name` là **một chuỗi dùng chung
+cho mọi bản** của vật phẩm, không có cách nào hiện "dải ngẫu nhiên" cho món chưa nhận mà
+"số thật" cho món đã nhận — nên bỏ dòng đó khỏi tên: tooltip món đã nhận chỉ còn `[hệ Kim]`,
+dòng Chổi Sét và chỉ số thật. Dải ngẫu nhiên là đặc tả để server roll, chỉ còn ở chú thích
+`createAttributeSkinKimCangLong` và đoạn này. Skin này chỉ phát qua `GiftCode.AddItem`
+(giftcode / lệnh web), không có NPC giới thiệu trước khi nhận. Đổi tên template thì phải chạy
+lại `sql/ten_mo_ta_skin_linh_thu.sql` trên CSDL **và khởi động lại** máy chủ (bảng template
+nạp một lần lúc bật), đồng thời sửa `sql/gamedb7_clean.sql` + sinh lại `docs/danh_muc_item.md`.
 
 **Mô tả chỉ ghi thứ đang chạy.** Hứa với người chơi một thứ không tồn tại thì tệ hơn là
 không hứa.
@@ -573,7 +590,7 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
   | Việc | Ở đâu | Số |
   |---|---|---|
   | Rồng đứng **chạm đất** ở khối xuống (trước đó lọt dưới vạch chân tới +27px) | `map/skinthu/5`, khung 0..6 dịch dy −24 | đáy +3 (Poro +5) |
-  | Người đi theo **dòng 5** riêng của bảng | `Char.dx_horse_tool[5]` = `{0,0,+1,−1}`, `dy_horse_tool[5]` = `{−28,−10,−15,−15}`, `SkinLinhThu.INDEX_DXY[5] = 5` | ngang: người vào đúng tâm yên; xuống: người ngồi sau đầu rồng (bắt đầu từ −23 = quan hệ của Rồng Lớn dòng 3, rồi nâng thêm 5 theo ảnh chụp người chơi gửi); lên: hạ từ −15 xuống −10 để người lún vào yên đỏ khi nhìn từ lưng |
+  | Người đi theo **dòng 5** riêng của bảng | `Char.dx_horse_tool[5]` = `{0,0,+1,−1}`, `dy_horse_tool[5]` = `{−28,0,−15,−15}`, `SkinLinhThu.INDEX_DXY[5] = 5` | ngang: người vào đúng tâm yên; xuống: người ngồi sau đầu rồng (bắt đầu từ −23 = quan hệ của Rồng Lớn dòng 3, rồi nâng thêm 5 theo ảnh chụp người chơi gửi); lên: hạ từ −15 → −10 → **0** qua hai lần ảnh chụp — ở −10 thân người vẫn *đậu trên* yên, cả yên đỏ lộ nguyên bên dưới (hướng lên client vẽ thú trước nên yên không thể che người, cách duy nhất cho "ngồi trong yên" là hạ thân xuống che phần trên yên); ở 0 chỉ còn mép sau yên lộ ra, giống hướng ngang |
   | **Sợi đuôi cuộn lên** ở khối xuống (ảnh con 2, 5, 10): 11/09 dời sang phải +20px, **12/09 trả về chỗ gốc** theo ý người chơi | `map/skinthu/5` | đuôi giữ nguyên như gốc, x < 7 (chạy xuyên cột người) |
 
   Vì sao từng dời đuôi, rồi vì sao trả lại: client **luôn vẽ con thú SAU thân người**
@@ -588,9 +605,12 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
   con thú là đổi *hình dáng* nó — phải hỏi người chơi trước, kể cả khi số đo nói là tốt hơn.**
   Chỉ hướng xuống dùng ba ảnh con này; hướng lên và ngang không hề đổi trong cả hai lần.
 
-  Hai điều phải giữ khi thêm dòng: `dy` dòng mới **lệch dòng 0 không quá ~10px** vì
-  `paintName` của client (`Char.cs:1520`, `Char.java:2081`) luôn đặt tên nhân vật theo dòng
-  0, lệch xa là tên đè lên đầu người (ảnh chụp thực tế ở dy −23 tên còn cách đỉnh đầu ~14px);
+  Hai điều phải giữ khi thêm dòng: `dy` dòng mới **không được cao hơn dòng 0 quá ~10px**
+  (dy âm hơn dòng 0) vì `paintName` của client (`Char.cs:1520`: `num = dy_horse[0][dir]`,
+  `Char.java:2081`) luôn đặt tên nhân vật theo dòng 0 — người vẽ cao hơn dòng 0 bao nhiêu
+  thì tên sát đầu thêm bấy nhiêu (ảnh chụp thực tế ở dy −23 tên còn cách đỉnh đầu ~14px, −28
+  còn ~9px). Ngược lại **thấp hơn dòng 0 thì không sao**, chỉ làm tên cách đầu xa thêm —
+  Kim Cang Long hướng lên ở 0 thấp hơn dòng 0 (−15) tới 15px là cố ý, chấp nhận được;
   và dòng mới phải là **dòng cuối** để không ai chèn vào giữa mà quên đổi `INDEX_DXY`. `test/KiemSkinLinhThu.kiemChoNgoiKimCangLong` chốt cả bảng
   lẫn dữ liệu (đáy chạm đất, đuôi ở đúng vị trí gốc — không ai "sửa giúp" lại mà không hỏi).
 
