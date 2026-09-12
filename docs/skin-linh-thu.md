@@ -24,7 +24,7 @@ mysql -u root -p <ten_db> < sql/skin_linh_thu.sql
 mysql -u root -p <ten_db> < sql/ten_mo_ta_skin_linh_thu.sql
 ```
 
-Tệp thứ nhất tạo 5 vật phẩm với **tên ngắn**. Tệp thứ hai ghi đè bằng **tên đầy đủ kèm mô
+Tệp thứ nhất tạo 6 vật phẩm (905..909 + 911) với **tên ngắn**. Tệp thứ hai ghi đè bằng **tên đầy đủ kèm mô
 tả** (hệ + các dòng chỉ số + nội tại). Bỏ tệp thứ hai thì vật phẩm vẫn chạy đúng nhưng
 người chơi không đọc được nó làm gì.
 
@@ -37,7 +37,7 @@ bật máy):
 build.bat
 ```
 
-Ảnh đã có sẵn trong `map/skinthu/` và `map/icon/860..864.png`, không cần dựng lại.
+Ảnh đã có sẵn trong `map/skinthu/` và `map/icon/860..865.png`, không cần dựng lại.
 
 ## 2. Người chơi dùng thế nào
 
@@ -286,34 +286,39 @@ nên roll thẳng ở Kim Cang Long đã đúng từ đầu.
 **Mô tả chỉ ghi thứ đang chạy.** Hứa với người chơi một thứ không tồn tại thì tệ hơn là
 không hứa.
 
-### 5.6 Đầu rồng đội trên đầu khi mang Kim Cang Long (12/09/2026)
+### 5.6 Icon 865 của Kim Cang Long là dải 3 khung hoạt ảnh (12/09/2026)
 
-Đang **hiển thị** skin Kim Cang Long (`SkinLinhThu.hienThi`) thì nhân vật đội thêm đầu
-rồng — một **lớp phủ đầu** (`CharVongLap.getIdHeadDynamic` → `map/d_effect/135`, id gửi đi
-`8700 + 135`), cùng cơ chế với mặt nạ: client vẽ bằng `paintHair`, chọn khung bằng
-`getFrameHair()` = xuống `f`, lên `6 + f`, ngang `12 + f`, mỗi bộ 18 khung, 3 bộ là 3 pha
-xoay vòng mỗi 6 tick. Không có vật phẩm riêng — đầu rồng là một phần của chính skin 911.
-Yêu cầu gốc: "hoạt ảnh tương tự mặt nạ, còn khung là các ảnh đã gửi".
+`map/icon/865.png` (icon của vật phẩm 911 — `data_item.xstart = 865`) là **16×48 = 3 khung
+16×16 xếp dọc**, mỗi khung một đầu rồng nhìn nghiêng: ảnh con 25 / 28 / 31 của
+`map/skinthu/5.png` (atlas có sẵn đầu tách riêng cho hướng ngang — khung k14–20 ghép thân
+24/27/29/30/32 + đầu 25/28/31; ba mảnh là ba pha của cùng một cái đầu). Yêu cầu gốc: "cắt
+riêng 3 ảnh này… ghép lại để làm frame như các loại mặt nạ" — icon mặt nạ 620..624 chính là
+dải 18×54 (3 khung 18×18), và ý là **icon trong hành trang**.
 
-Ảnh: **chỉ 3 đầu rồng nhìn nghiêng** — ảnh con 25 / 28 / 31 của `map/skinthu/5.png` (atlas
-có sẵn đầu tách riêng cho hướng ngang: khung k14–20 ghép thân 24/27/29/30/32 + đầu
-25/28/31). Ba ảnh này là **3 pha**, và dùng chung cho **cả ba hướng** xuống/lên/ngang theo
-yêu cầu ("chỉ cần 3 ảnh ngang, 6 ảnh còn lại không cần"); quay phải thì client tự lật gương.
-Thu 0,6 lần (~23px cao).
+Client tự hiểu dải, không cần sửa client hay DB: `GameData.paintIcon` thấy ảnh cao hơn 25 px
+thì chia ba, đổi khung mỗi 5 tick (`Canvas.gameTick % 5`) và vẽ vùng `(0, indexFrame·h, w, h)`
+căn giữa ô. Server chỉ đọc `map/icon` lúc khởi động (`DataGame` nạp vào mảng tĩnh) nên **cần
+restart**, và người chơi vào lại (client giữ icon trong bộ nhớ, không lưu RMS). Một chỗ
+duy nhất không đi qua `paintIcon`: ô xem trước của cửa sổ ép ngọc/cường hoá
+(`WindowInfoScr.paintImbue`, `ShopNew.paintImbue`) vẽ nguyên `getImgIcon(id).img` nên hiện cả
+dải 3 khung xếp dọc — giống hệt mặt nạ 745..749 và các icon 18×54 khác từ trước, sửa được
+chỉ ở phía client.
 
-*Bẫy đã vấp: tưởng đầu nghiêng dính liền trong sảnh thân rồng (24/29/32) rồi cắt góc
-dưới-trái ra — đó là đuôi/chân, không phải đầu; phải đọc bảng khung (mảnh nào ghép vào khung
-nào, dx/dy) trước khi đoán mảnh nào là gì.* Bố cục tệp giống hệt mặt nạ 100–104: 3 ảnh con,
-54 khung, mỗi khung 1 mảnh, neo tâm (1, −20) như mặt nạ 20×20 tại (−9, −30), độ nhấp nhô theo
-6 khung thân chép từ mặt nạ 100. Ô 135 vốn không ai dùng (rà toàn repo + CSDL thật) và **đã nằm
-sẵn** trong `id_eff_tool_ngu_long`, nên ghi đè file cũ mà không tốn thêm chỗ nào của trần
-255 gói 26.
+Cách dựng (Python PIL, không giữ script trong repo): đặt ba mảnh lên một khung chung 45×40
+theo đúng `dy` của chúng trong bảng khung (−41 / −40 / −42, tức lệch 1 / 2 / 0 px — để ba pha
+không nhảy hình), thu LANCZOS vừa 16 px (→ 16×14, căn giữa 16×16), làm nét `UnsharpMask
+(radius 1, 200%)`, xoá alpha < 96 cho hết viền mờ. Chọn 16×16 mỗi khung chứ không 18×18
+như mặt nạ để giữ viền 1 px giống 5 icon skin còn lại (860..864). `test/KiemIconSkinThu`
+chốt: 865 cao > 25 và chia hết cho 3, mỗi khung ≤ 16 px, ba khung khác nhau nhưng vùng vẽ
+lệch nhau ≤ 2 px.
 
-Thứ tự ưu tiên trong `getIdHeadDynamic`: cải trang/cải tạo toàn thân → **mặt nạ đang đeo**
-→ đầu rồng → tóc của bộ thời trang. Nút "Tắt hiển thị skin thú" ẩn cả con rồng lẫn đầu
-rồng (dùng `hienThi`, không dùng `dangMang`). `test/KiemSkinLinhThu.kiemDauRongKimCangLong`
-chốt bố cục tệp, ô 135 trong gói 26 và thứ tự nhánh. Cần restart server (nạp d_effect lúc
-khởi động) và người chơi đăng nhập lại (gói 26 gửi khung hình lúc đăng nhập).
+*Bẫy đã vấp — hai lần cùng một ngày.* (1) Hiểu "frame như mặt nạ" thành **lớp phủ đội trên
+đầu** (`map/d_effect/135` + nhánh trong `getIdHeadDynamic`), làm trọn bộ, đã lên server
+(commit `21bb680`) rồi phải gỡ toàn bộ ở commit kế; ô 135 trong `id_eff_tool_ngu_long` trở lại
+là ô dự phòng như cũ. Người dùng đưa ảnh nhỏ và nói "frame"/"icon"/"hành trang" thì là icon —
+hỏi một câu trước khi dựng. (2) Tưởng đầu nghiêng dính liền trong sảnh thân rồng (24/29/32)
+rồi cắt góc dưới-trái ra — đó là đuôi/chân; phải đọc bảng khung (mảnh nào ghép vào khung
+nào, dx/dy) trước khi đoán mảnh nào là gì.
 
 ---
 
@@ -340,7 +345,7 @@ khôi phục được. Vì vậy skin chỉ sống trong `Char.idSkinLinhThu` v�
 Skin đi đường 2, và **phải tắt đường 1 cùng lúc** (gửi `userHorse = 0`) — không thì client
 vẽ cả hai, con thú thật và con skin chồng lên nhau.
 
-### 6.3 Dải id ảnh mới tinh 13000–13004
+### 6.3 Dải id ảnh mới tinh 13000–13005
 
 Client giữ ảnh theo id trong `GameData.listImgIcon` và **không hề có số phiên bản**; mục
 chỉ bị bỏ khi bảng quá 100 phần tử *và* rảnh quá 120 giây, nên thực tế nó sống đến lúc tắt
@@ -546,8 +551,8 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
 | File | Nối gì |
 |---|---|
 | `DataGame.load` | Nạp `map/skinthu/` (`napSkinThu`) |
-| `DataGame.sendByteImg` | Phục vụ dải id 13000..13004 |
-| `DataGame.nIconItem` | 860 → 865 để phục vụ icon 860..864 |
+| `DataGame.sendByteImg` | Phục vụ dải id 13000..13005 |
+| `DataGame.nIconItem` | 860 → 866 để phục vụ icon 860..865 (865 = Kim Cang Long, dải 3 khung — xem 5.6) |
 | `MessageCreator` gói 26 | Gửi kèm dữ liệu 21 frame của 5 skin (client chỉ có **một** chỗ ghi vào `DataSkillEff.ALL_DATA_EFF`, chính là vòng lặp đọc gói này) |
 | `MessageCreator.createCharInfo` | `userHorse = 0`, `fly`, `idThutool`, `indexdxy` |
 | `MessageCreator.createMainCharInfoMessage` | y hệt trên (phải giống nhau, không thì mình và người bên cạnh thấy hai con thú khác nhau) |
@@ -777,7 +782,7 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
 - **Icon không được đặt lại vào dải 855..859.** Bản skin đầu tiên dùng dải đó, nhưng sau
   khi tính năng bị gỡ, đúng năm id ấy đã được giao cho **Cánh** (commit `2c651ce`) làm ảnh
   ô xem trước cửa sổ Trang bị. Đặt đè lên là ô xem trước của Cánh hiện ra con thú. Bản này
-  dùng 860..864 và nâng `nIconItem` lên 865.
+  dùng 860..865 và nâng `nIconItem` lên 866.
 
 **Sửa văn bản tiếng Việt**
 
