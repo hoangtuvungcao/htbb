@@ -81,6 +81,28 @@ class MapBangHoi {
                 - (PHUT_GIAI_TAN_GOC_TRONG_JAR - PHUT_CHO_GIAI_TAN) * 60000L;
     }
 
+    /**
+     * TRUE khi dem nguoc CAN duoc dat/lam moi qua datTimeStartDelGiaiTan(): hoac dang o
+     * sentinel "chua bat dem nguoc" (`timeStartDel == 0L`, xem dong `clanx.timeStartDel =
+     * 0L;` khi bang du lai tren 10 thanh vien o doJoinClan), HOAC dang tra ve nhieu hon
+     * PHUT_CHO_GIAI_TAN phut that su con lai - tuc mot gia tri THO chua tung di qua ham
+     * lui moc (bang tao truoc 12/09/2026, du lieu dump/import, hoac mot nhanh code khac
+     * lo sot trong tuong lai).
+     *
+     * THAY THE toan bo kieu kiem "if (timeStartDel == 0L)" don le truoc day o cac nhanh
+     * roi/duoi thanh vien: kieu kiem do CHI bat duoc truong hop sentinel, bo qua CHINH
+     * XAC truong hop gay ra hai bao cao loi lien tiep (11/09 va 12/09/2026) - mot gia tri
+     * KHAC 0 nhung van la gia tri THO (dai hon that) lot qua ma khong duoc sua, vi "khac
+     * 0" khien guard cu tuong nham la da co dem nguoc dung dang chay.
+     *
+     * AN TOAN cho dem nguoc dang chay dung: neu con <= PHUT_CHO_GIAI_TAN phut (da qua ham
+     * lui moc truoc do), tra ve false - KHONG lam moi/keo dai them dem nguoc dang chay,
+     * chi keo NGAN lai neu no dang dai hon muc cho phep.
+     */
+    private static boolean canDatLaiDemNguocGiaiTan(NewClan clanInfo) {
+        return clanInfo.timeStartDel == 0L || clanInfo.timeDel() > PHUT_CHO_GIAI_TAN;
+    }
+
     static boolean doSetTitleClan(Map map, Char pMaster, Char player, boolean ordained) {
         try {
             NewClan clandata = NewClan.getClan(player.idClan);
@@ -430,7 +452,10 @@ class MapBangHoi {
                 return;
             }
 
-            if (System.currentTimeMillis() - clanInfo.timeStartDel >= 259200000L || clanInfo.member.size() >= 10) {
+            // canDatLaiDemNguocGiaiTan them dieu kien "dang thua PHUT_CHO_GIAI_TAN" so voi
+            // dieu kien 3-ngay-tho ban dau - bat duoc ca truong hop bang mang gia tri THO
+            // tu truoc khi co ham lui moc (vd. bang tao truoc 12/09/2026).
+            if (canDatLaiDemNguocGiaiTan(clanInfo) || clanInfo.member.size() >= 10) {
                 datTimeStartDelGiaiTan(clanInfo);
             }
 
@@ -553,7 +578,7 @@ class MapBangHoi {
 
                 Database.instance.updateCharNewClan(clanInfo);
                 if (clanInfo.member.size() < 10) {
-                    if (clanInfo.timeStartDel == 0L) {
+                    if (canDatLaiDemNguocGiaiTan(clanInfo)) {
                         datTimeStartDelGiaiTan(clanInfo);
                     }
 
@@ -584,7 +609,7 @@ class MapBangHoi {
             }
 
             if (clanInfo.member.size() < 10) {
-                if (clanInfo.timeStartDel == 0L) {
+                if (canDatLaiDemNguocGiaiTan(clanInfo)) {
                     datTimeStartDelGiaiTan(clanInfo);
                 }
 
@@ -715,7 +740,7 @@ class MapBangHoi {
             Database.instance.saveLogClan(name, "kicked", player.charname + "_kick_" + name + " khỏi clan " + clanInfo.name + " | " + clanInfo.id);
             Database.instance.updateCharNewClan(clanInfo);
             if (clanInfo.member.size() < 10) {
-                if (clanInfo.timeStartDel == 0L) {
+                if (canDatLaiDemNguocGiaiTan(clanInfo)) {
                     datTimeStartDelGiaiTan(clanInfo);
                 }
 
@@ -772,6 +797,14 @@ class MapBangHoi {
                 boolean isdel = clan.isDel;
                 if (clan.member.size() < 10) {
                     isdel = true;
+                    // Tu sua ngay khi co ai mo bang thong tin cua bang duoi 10 thanh vien -
+                    // khong bat bang chu phai chu dong bam "giai tan" thi moi duoc sua (xem
+                    // canDatLaiDemNguocGiaiTan). Ghi lai CSDL luon, khong chi sua trong RAM,
+                    // de gia tri dung con giu duoc qua lan restart ke tiep.
+                    if (canDatLaiDemNguocGiaiTan(clan)) {
+                        datTimeStartDelGiaiTan(clan);
+                        Database.instance.updateTimeCheckDelClan(clan.id, clan.timeStartDel);
+                    }
                 }
 
                 m.dos.writeBoolean(isdel);
