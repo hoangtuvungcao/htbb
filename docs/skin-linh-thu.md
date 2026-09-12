@@ -266,6 +266,23 @@ dòng Chổi Sét và chỉ số thật. Dải ngẫu nhiên là đặc tả đ�
 lại `sql/ten_mo_ta_skin_linh_thu.sql` trên CSDL **và khởi động lại** máy chủ (bảng template
 nạp một lần lúc bật), đồng thời sửa `sql/gamedb7_clean.sql` + sinh lại `docs/danh_muc_item.md`.
 
+**`otherAtt[54]` (Sát thương chuẩn) là một ngoại lệ về đơn vị lưu trữ — báo lỗi
+12/09/2026, kèm ảnh chụp tooltip hiện "0,2%" thay vì đúng khoảng 1–5%.** `Item.getInfoAtbItem()`
+gửi thẳng giá trị thô cho client, không quy đổi gì ở server; client tự định dạng theo **một
+bảng tra dùng chung cho mọi vật phẩm theo số hiệu `otherAtt`**, không phân biệt vật phẩm nào.
+Chỉ số 54 đã có "chủ" từ trước — vũ khí thời trang / Nguyệt Linh Trưởng (`createAttributeVuKhiThoiTrang`)
+lưu theo **phần mười phần trăm** (vd `160` nghĩa là 16,0%), nên bảng tra của client chia 10
+cho chỉ số này. Kim Cang Long roll thẳng "% thật" (vd `3` nghĩa là 3%) thì bị chia 10 oan,
+hiện thành "0,3%".
+
+Sửa: `Item.createAttributeSkinKimCangLong()` nhân 10 trước khi lưu vào `otherAtt[54]` (vd 3%
+→ lưu `30`), còn `SkinLinhThu.kimCangLongSatThuongChuan()` chia lại cho 10 khi đọc ra — nên
+công thức áp dụng vào nhân vật ở `CharChiSo.java` (nhân sát thương theo % maxHP mục tiêu)
+**không phải đổi gì**, vẫn nhận đúng "% thật" như trước. `otherAtt[4]` (Bạo kích) và
+`otherAtt[47]` (Tăng công) không dính lỗi này — hai chỉ số đó ở MỌI vật phẩm khác đang dùng
+(mặt nạ Bạo kích, pet rồng Tăng công) đều lưu % thật/giá trị thô, không qua bước chia nào,
+nên roll thẳng ở Kim Cang Long đã đúng từ đầu.
+
 **Mô tả chỉ ghi thứ đang chạy.** Hứa với người chơi một thứ không tồn tại thì tệ hơn là
 không hứa.
 

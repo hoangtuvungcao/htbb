@@ -69,6 +69,7 @@ public final class KiemSkinLinhThu {
         kiemOGiuaVeThuThat();
         kiemViTriIconTrangBiThu();
         kiemChoNgoiSkin();
+        kiemChiSoNgauNhienKimCangLong();
     }
 
     /**
@@ -1392,6 +1393,56 @@ public final class KiemSkinLinhThu {
         final String goc = doc("sql/skin_linh_thu.sql");
         Kiem.dung("skin_linh_thu.sql chi sang tep ten/mo ta",
                 goc.contains("ten_mo_ta_skin_linh_thu.sql"));
+    }
+
+    /**
+     * Kim Cang Long - otherAtt[54] (Sat thuong chuan) phai LUU theo phan muoi phan tram
+     * (nhan 10) va DOC lai chia 10, khac han otherAtt[4]/[47] (giu nguyen % that).
+     *
+     * VI SAO CAN. Item.getInfoAtbItem() gui THANG gia tri tho cho client, client dinh dang
+     * theo mot bang tra DUNG CHUNG cho moi vat pham theo so hieu otherAtt - chi so 54 da co
+     * "chu" tu truoc (vu khi thoi trang/Nguyet Linh Truong, luu phan muoi phan tram, vd 160
+     * = 16,0%) nen bang tra client chia 10 cho chi so nay. Kim Cang Long roll thang % that
+     * (vd 3) se bi chia 10 oan, hien "0,3%" thay vi "3%" (bao 12/09/2026, kem anh chup tooltip
+     * hien "0,2%"). Sua: nhan 10 luc roll, chia 10 luc doc - CharChiSo khong doi gi ca.
+     */
+    private static void kiemChiSoNgauNhienKimCangLong() {
+        Kiem.nhom("Skin linh thu - Kim Cang Long roll otherAtt[54] theo phan muoi phan tram");
+
+        final String item = doc("src/real/Item.java");
+        Kiem.dung("doc duoc src/real/Item.java", !item.isEmpty());
+        final String skinLinhThu = doc("src/real/SkinLinhThu.java");
+        Kiem.dung("doc duoc src/real/SkinLinhThu.java", !skinLinhThu.isEmpty());
+        if (item.isEmpty() || skinLinhThu.isEmpty()) {
+            return;
+        }
+
+        final int viTriHam = item.indexOf("public void createAttributeSkinKimCangLong()");
+        Kiem.dung("tim thay createAttributeSkinKimCangLong()", viTriHam >= 0);
+        if (viTriHam < 0) {
+            return;
+        }
+        final int ketThucHam = item.indexOf("\n    }", viTriHam);
+        final String thanHam = item.substring(viTriHam, Math.max(viTriHam, ketThucHam));
+
+        Kiem.dung("otherAtt[54] duoc NHAN 10 luc roll (phan muoi phan tram)",
+                thanHam.contains("this.otherAtt[54] = (short) ((Map.r.nextInt(5) + 1) * 10);"));
+        Kiem.sai("otherAtt[54] KHONG con roll % that truc tiep (khong nhan 10)",
+                thanHam.contains("this.otherAtt[54] = (short) (Map.r.nextInt(5) + 1);"));
+
+        // otherAtt[4] va otherAtt[47] KHONG duoc nhan 10 - hai chi so nay luu % that o moi
+        // vat pham khac dang dung (mat na Bao kich, pet rong Tang cong), roll thang la dung.
+        Kiem.dung("otherAtt[4] (Bao kich) giu nguyen % that, khong nhan 10",
+                thanHam.contains("this.otherAtt[4] = (short) (Map.r.nextInt(5) + 1);"));
+        Kiem.dung("otherAtt[47] (Tang cong) giu nguyen % that, khong nhan 10",
+                thanHam.contains("this.otherAtt[47] = (short) (Map.r.nextInt(13) + 3);"));
+
+        Kiem.dung("kimCangLongSatThuongChuan() chia lai cho 10 khi doc ra",
+                skinLinhThu.contains("it.otherAtt[54] / 10"));
+        Kiem.dung("kimCangLongBaoKich() KHONG chia 10 (giu % that)",
+                skinLinhThu.contains("it.otherAtt[4] : 0"));
+        Kiem.dung("kimCangLongTangCong() KHONG chia 10 (giu % that)",
+                skinLinhThu.contains("it.otherAtt[47] : 0"));
     }
 
     /** Dem so lan mot chuoi xuat hien. */

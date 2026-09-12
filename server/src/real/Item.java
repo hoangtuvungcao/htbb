@@ -2659,12 +2659,26 @@ public class Item extends Actor {
     /**
      * Skin thu Kim Cang Long (id 911, xem SkinLinhThu.KIM_CANG_LONG): chon NGAU NHIEN 2
      * hoac 3 trong 3 dong duoi day, khong hoan lai - cung khuon rut pool voi
-     * createAttributeNguyetLinhTruong() o tren, nhung gia tri luu la % THAT (vd 3 nghia la
-     * 3%), khong phai thang do phan nghin/tier cua ham do.
+     * createAttributeNguyetLinhTruong() o tren.
      *
-     *   otherAtt[4]  Bạo kích            1-5%
-     *   otherAtt[54] Sát thương chuẩn    1-5%   (doc lai qua SkinLinhThu.kimCangLongSatThuongChuan)
-     *   otherAtt[47] Gia tăng tc         3-15%  (doc lai qua SkinLinhThu.kimCangLongTangCong)
+     *   otherAtt[4]  Bạo kích            1-5%   luu % THAT (vd 3 nghia la 3%)
+     *   otherAtt[47] Gia tăng tc         3-15%  luu % THAT (doc lai qua SkinLinhThu.kimCangLongTangCong)
+     *   otherAtt[54] Sát thương chuẩn    1-5%   luu THEO PHAN MUOI PHAN TRAM (vd 3% luu la 30)
+     *
+     * otherAtt[54] la NGOAI LE duy nhat: getInfoAtbItem() gui thang gia tri tho cho client
+     * (khong qua buoc quy doi nao o server - xem vong lap chung o Item.java, dong ~903), va
+     * client dinh dang moi chi so theo BANG TRA RIENG cua NO theo so hieu otherAtt, dung
+     * chung cho MOI vat pham dung chi so 54 - vu khi thoi trang/Nguyet Linh Truong (xem
+     * createAttributeVuKhiThoiTrang o duoi) da luu san theo "phan muoi phan tram" (vd 160
+     * nghia la 16.0%) tu truoc gio, nen bang tra cua client chia 10 cho chi so nay. Neu luu
+     * % THAT (vd 3) o day, client se hien "0.3%" thay vi "3%" (da bao 12/09/2026, kem anh
+     * chup). Vi vay o day PHAI nhan 10 truoc khi luu, va SkinLinhThu.kimCangLongSatThuongChuan
+     * chia lai cho 10 khi doc ra cho code choi game dung - hai o nay la CAP DOI DUY NHAT
+     * phai giu dong bo, dung tu doi mot ben ma quen ben kia.
+     *
+     * otherAtt[4] va otherAtt[47] KHONG co van de nay: cac vat pham khac dung hai chi so do
+     * (mat na Bao kich, pet rong Tang cong) cung luu % THAT/gia tri tho khong qua /10, nen
+     * roll THANG o day khong can quy doi gi them.
      *
      * Ba o nay TRUNG voi cac vat pham khac dang dung (vu khi thoi trang, pet rong) nhung
      * KHONG dam vao nhau: moi noi doc tu MOT truong Char rieng (itemVukhiThoiTrang,
@@ -2687,7 +2701,10 @@ public class Item extends Actor {
             if (lineId == 4) {
                 this.otherAtt[4] = (short) (Map.r.nextInt(5) + 1);
             } else if (lineId == 54) {
-                this.otherAtt[54] = (short) (Map.r.nextInt(5) + 1);
+                // Nhan 10: client dinh dang chi so 54 theo "phan muoi phan tram" dung chung
+                // cho moi vat pham - xem chu thich dau ham. SkinLinhThu.kimCangLongSatThuongChuan
+                // chia lai cho 10 khi doc ra.
+                this.otherAtt[54] = (short) ((Map.r.nextInt(5) + 1) * 10);
             } else if (lineId == 47) {
                 this.otherAtt[47] = (short) (Map.r.nextInt(13) + 3);
             }

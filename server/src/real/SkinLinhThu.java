@@ -946,10 +946,15 @@ public final class SkinLinhThu {
      * "Sát thương chuẩn". Ap dung cong THANG moi don theo % maxHP MUC TIEU, cung tinh than
      * voi otherAtt[54] cua vu khi thoi trang (CharChiSo.attackDam) nhung doc tu vat pham
      * skin, khong phai self.itemVukhiThoiTrang.
+     *
+     * CHIA 10: Item.createAttributeSkinKimCangLong() luu otherAtt[54] theo "phan muoi phan
+     * tram" (vd 3% luu la 30) de khop bang dinh dang chung cua client cho chi so 54 - xem
+     * chu thich o do. Ham nay quy doi NGUOC lai ve % that (30 -> 3) truoc khi tra ve, de
+     * cong thuc o CharChiSo (nhan/100) khong phai doi gi ca.
      */
     public static int kimCangLongSatThuongChuan(final Char p) {
         final Item it = timSkinDangMac(p);
-        return it != null ? it.otherAtt[54] : 0;
+        return it != null ? it.otherAtt[54] / 10 : 0;
     }
 
     /**
