@@ -4806,11 +4806,18 @@ public class Database {
         PreparedStatement stmt = null;
         try {
             conn = this.getConnection();
-            final String sql = "update tob_char_tubinh set listid=?,listmanh=? where id_char=?";
+            // Upsert, KHONG phai update thuan: dong tob_char_tubinh chi duoc addCharTubinh
+            // tao o lan dang nhap dau tien co lv >= 40 (CharNapDuLieu). Nhan vat len 40 NGAY
+            // TRONG phien (len cap tu nhien, hay web "dat cap do" tu lv 2 len 90) roi ghep
+            // manh thi tubinh chi co trong RAM; "update ... where id_char" khong trung dong
+            // nao -> khong luu gi, thoat ra vao lai la mat sach (bao 12/09/2026: "dung xong,
+            // thoat ra vao lai la ve 0"). id_char la PRIMARY KEY nen upsert la du.
+            final String sql = "insert into tob_char_tubinh(id_char,listid,listmanh) values(?,?,?)"
+                    + " on duplicate key update listid=values(listid),listmanh=values(listmanh)";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, info[0]);
-            stmt.setString(2, info[1]);
-            stmt.setInt(3, idDBChar);
+            stmt.setInt(1, idDBChar);
+            stmt.setString(2, info[0]);
+            stmt.setString(3, info[1]);
             stmt.execute();
         } catch (Exception e) {
             e.printStackTrace();

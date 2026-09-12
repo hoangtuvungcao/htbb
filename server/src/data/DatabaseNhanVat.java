@@ -819,8 +819,15 @@ class DatabaseNhanVat {
                 db.updateCharRace(conn, p);
             }
             db.saveCharQuest(p.charDBID, p.getInfoQuestSave());
-            db.saveCharFruit(p.charDBID, p.getInfoSaveFruit());
-            db.saveCharTubinh(p.charDBID, p.getInfoSaveTubinh());
+            // Chi ghi hai bang phu nay khi du lieu THAT SU da co trong RAM (xem daNapCayAnQua
+            // va chu thich o saveCharAuto): nhan vat duoi cap, hay Char chua nap xong, co
+            // fruit toan null / tubinh rong - ghi xuong la de mot dong that thanh dong trang.
+            if (daNapCayAnQua(p)) {
+                db.saveCharFruit(p.charDBID, p.getInfoSaveFruit());
+            }
+            if (!p.tubinh.isEmpty()) {
+                db.saveCharTubinh(p.charDBID, p.getInfoSaveTubinh());
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             Logger.logError(ex, p.charname + ".txt");
@@ -853,6 +860,23 @@ class DatabaseNhanVat {
         }
         ++TeamServer.update;
         return true;
+    }
+
+    /**
+     * fruit[] chi duoc nap/tao luc dang nhap khi lv >= 34 (CharNapDuLieu: loadCharFruit +
+     * createFruit); truoc do toan null va getInfoSaveFruit tra ve toan chuoi rong. Ghi chuoi
+     * rong do xuong la xoa sach tien do cay cua mot dong that -> chi luu khi da nap.
+     */
+    static boolean daNapCayAnQua(Char p) {
+        if (p.fruit == null) {
+            return false;
+        }
+        for (int i = 0; i < p.fruit.length; ++i) {
+            if (p.fruit[i] != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static boolean saveCharAuto(Database db, Char p) {
@@ -979,20 +1003,33 @@ class DatabaseNhanVat {
                     // crash/nguoi choi mat ket noi dot ngot GIUA luc ghep va luc dang xuat that
                     // su: manh bi tru THAT (da luu) nhung tien do ghep tranh thi mat (chua tung
                     // duoc luu) - dung nguyen nhan bao cao "dung tranh nhieu khi lai bi mat".
-                    db.saveCharTubinh(p.charDBID, p.getInfoSaveTubinh());
+                    //
+                    // CHI ghi khi tubinh da co trong RAM. tubinh chi duoc nap luc dang nhap khi
+                    // lv >= 40 (CharNapDuLieu); nhan vat duoi 40, hay Char dang nap do (mid-
+                    // login), co tubinh RONG -> getInfoSaveTubinh tra ve "" -> ghi xuong la de
+                    // dong that thanh trang. Con "dong chua ton tai" (nhan vat len 40 ngay trong
+                    // phien roi ghep manh) thi Database.saveCharTubinh da la upsert.
+                    if (!p.tubinh.isEmpty()) {
+                        db.saveCharTubinh(p.charDBID, p.getInfoSaveTubinh());
+                    }
                     // Vat pham dac biet mua trong shop (listSpItem[], bang tob_sp_new) - CUNG
                     // MOT DANG loi voi tu binh o tren: truoc day chi saveChar goi, vang mat o
                     // day. Tien mua (luong) da duoc luu ngay trong cau UPDATE chinh cua ham nay
                     // (cot luong o tren), nen crash giua luc mua va luc dang xuat that su la
-                    // mat dung mon da mua du tien da tru that.
+                    // mat dung mon da mua du tien da tru that. listSpItem nap ngay trong getChar
+                    // (o tren, cung ham nay) va saveCharSP tu chen dong neu thieu -> khong can
+                    // dieu kien gi them.
                     StringBuilder soluong3 = new StringBuilder(String.valueOf(p.listSpItem[0]));
                     for (int n = 1; n < p.listSpItem.length; ++n) {
                         soluong3.append(",").append(p.listSpItem[n]);
                     }
                     db.saveCharSP(soluong3.toString(), p.charDBID);
                     // Cay an qua (tien do trong/tuoi/thu hoach, bang tob_char_fruit) - CUNG mot
-                    // dang loi, vang mat o day truoc khi sua.
-                    db.saveCharFruit(p.charDBID, p.getInfoSaveFruit());
+                    // dang loi, vang mat o day truoc khi sua. Chi ghi khi fruit[] da nap (lv >=
+                    // 34 luc dang nhap), xem daNapCayAnQua.
+                    if (daNapCayAnQua(p)) {
+                        db.saveCharFruit(p.charDBID, p.getInfoSaveFruit());
+                    }
                 }
             } catch (Exception ignored) {
             }

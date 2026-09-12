@@ -101,14 +101,51 @@ public final class KiemSaveCharAutoDuBangPhu {
             Kiem.dung("saveChar co goi " + ten + "(...) thi saveCharAuto CUNG phai co (tranh lo mot bang phu moi)",
                     thanHam.contains("." + ten + "("));
         }
+
+        // Lo hong thu hai (bao 12/09/2026 "dung xong, thoat ra vao lai la ve 0"): dong
+        // tob_char_tubinh chi duoc addCharTubinh tao o lan dang nhap dau tien co lv >= 40.
+        // Nhan vat len 40 ngay trong phien (web "dat cap do" tu lv 2 len 90, hay len cap tu
+        // nhien) roi ghep manh -> "update ... where id_char" khong trung dong nao -> khong
+        // luu gi. saveCharTubinh phai la upsert (id_char la PRIMARY KEY).
+        final String database = doc("src/data/Database.java");
+        final int viTriSaveTubinh = database.indexOf("public void saveCharTubinh(int idDBChar, String[] info)");
+        Kiem.dung("tim thay Database.saveCharTubinh", viTriSaveTubinh >= 0);
+        if (viTriSaveTubinh >= 0) {
+            final String thanSave = database.substring(viTriSaveTubinh,
+                    database.indexOf("public void addCharTubinh(", viTriSaveTubinh)).toLowerCase();
+            Kiem.dung("saveCharTubinh chen dong neu chua co (insert ... on duplicate key update)",
+                    thanSave.contains("insert into tob_char_tubinh") && thanSave.contains("on duplicate key update"));
+            Kiem.sai("saveCharTubinh khong con la update thuan (se im lang bo qua nhan vat chua co dong)",
+                    thanSave.contains("\"update tob_char_tubinh"));
+        }
+
+        // Nguoc lai, KHONG duoc ghi RAM trong len dong that: tubinh/fruit chi duoc nap luc
+        // dang nhap (lv >= 40 / >= 34), Char duoi cap hay dang nap do co tubinh rong, fruit
+        // toan null -> ca saveChar lan saveCharAuto phai co dieu kien truoc khi ghi.
+        final String saveCharDayDu = noiDung.substring(
+                noiDung.indexOf("static boolean saveChar(Database db, Char p, boolean admindExit)"), viTriHam);
+        for (final String[] ham : new String[][] {{"saveChar", saveCharDayDu}, {"saveCharAuto", thanHam}}) {
+            final int goiTubinh = ham[1].indexOf("db.saveCharTubinh(p.charDBID, p.getInfoSaveTubinh());");
+            final int goiFruit = ham[1].indexOf("db.saveCharFruit(p.charDBID, p.getInfoSaveFruit());");
+            Kiem.dung(ham[0] + ": chi saveCharTubinh khi !p.tubinh.isEmpty()", goiTubinh > 0
+                    && ham[1].lastIndexOf("if (!p.tubinh.isEmpty())", goiTubinh) > goiTubinh - 120);
+            Kiem.dung(ham[0] + ": chi saveCharFruit khi daNapCayAnQua(p)", goiFruit > 0
+                    && ham[1].lastIndexOf("if (daNapCayAnQua(p))", goiFruit) > goiFruit - 120);
+        }
+        Kiem.dung("daNapCayAnQua: co it nhat mot o fruit khac null moi coi la da nap",
+                noiDung.contains("static boolean daNapCayAnQua(Char p)")
+                        && noiDung.contains("if (p.fruit[i] != null) {"));
     }
 
     private static void kiemMotBangPhu(final String thanHam, final int viTriGem,
             final String tenHam, final String dongGoiDayDu, final String moTa) {
         final int viTriGoi = thanHam.indexOf(dongGoiDayDu);
         Kiem.dung("saveCharAuto goi db." + tenHam + "(...) - " + moTa, viTriGoi >= 0);
+        // Khoi if (p.charDBID > 0) gom ca chu thich giai thich hai lo hong (~3000 ky tu);
+        // "cung khoi" = nam sau saveCharGem va truoc khi khoi do dong (dau "}" + catch).
+        final int ketKhoi = thanHam.indexOf("} catch (Exception ignored)", viTriGem);
         Kiem.dung(tenHam + " nam trong CUNG mot khoi voi saveCharGem (sau if (p.charDBID > 0))",
-                viTriGem >= 0 && viTriGoi > viTriGem && viTriGoi - viTriGem < 2000);
+                viTriGem >= 0 && viTriGoi > viTriGem && ketKhoi > viTriGoi);
     }
 
     private static String doc(final String duong) {
