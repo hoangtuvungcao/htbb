@@ -1100,7 +1100,14 @@ class MapBangHoi {
             NewClan clan = new NewClan();
             clan.id = cID;
             clan.master = player.charname;
-            clan.timeStartDel = System.currentTimeMillis();
+            // KHONG gan truc tiep System.currentTimeMillis(): bang vua tao chi co 1 thanh
+            // vien (< 10), roi vao dung nhanh "duoi 10 thanh vien" ngay lap tuc - phai qua
+            // datTimeStartDelGiaiTan() de dem 60 phut nhu moi cho khac, khong phai 4320 phut
+            // (3 ngay) tho cua cong thuc goc trong jar. Thieu dong nay la nguyen nhan bang
+            // MOI TAO da hien "con ~4300 phut nua se giai tan" (bao 12/09/2026, cung mot loi
+            // voi cai da vet o cac nhanh roi/duoi thanh vien dem 11/09/2026, chi khac o cho
+            // goc: o day chua tung goi qua removeMember() nen khong nam trong pham vi lan sua do).
+            datTimeStartDelGiaiTan(clan);
             clan.name = clanName;
             clan.addMember(player);
             clan.country = player.myCountry;
