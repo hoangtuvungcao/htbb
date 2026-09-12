@@ -971,6 +971,15 @@ class DatabaseNhanVat {
                         soluong2.append(",").append(p.listGemitemLock[m]);
                     }
                     db.saveCharGem(soluong.toString(), p.charDBID, soluong2.toString());
+                    // Tu binh (Char.doAddManhTubinh ghep manh Mai/Lan/Cuc/Truc) truoc day CHI
+                    // duoc luu boi saveChar (ban luu day du luc THOAT that su) - hoan toan vang
+                    // mat o saveCharAuto, tuc ban tu luu dinh ky (5-11 phut/lan, xem
+                    // CharManager.java) va rat nhieu noi khac goi ngay sau moi hanh dong quan
+                    // trong. Manh gem thi DA duoc luu ngay tren (dong truoc), nen neu server
+                    // crash/nguoi choi mat ket noi dot ngot GIUA luc ghep va luc dang xuat that
+                    // su: manh bi tru THAT (da luu) nhung tien do ghep tranh thi mat (chua tung
+                    // duoc luu) - dung nguyen nhan bao cao "dung tranh nhieu khi lai bi mat".
+                    db.saveCharTubinh(p.charDBID, p.getInfoSaveTubinh());
                 }
             } catch (Exception ignored) {
             }
