@@ -114,6 +114,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser() && cho2fa() !== null) 
 // ---------------------------------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser() && cho2fa() === null) {
     if (!csrfCheck($_POST['csrf'] ?? null)) {
+        // TEMP DEBUG 12/09/2026 - dieu tra "Phien het han" xay ra lien tuc. Xoa khoi
+        // sau khi tim ra nguyen nhan. Chi ghi khi that bai, khong ghi moi request.
+        error_log(sprintf(
+            '[kpah-csrf-debug] host=%s uri=%s https=%s xfp=%s port=%s cookie=%s cookieVal=%s sessId=%s sessCsrf=%s postCsrf=%s ua=%s',
+            $_SERVER['HTTP_HOST'] ?? '?',
+            $_SERVER['REQUEST_URI'] ?? '?',
+            var_export($_SERVER['HTTPS'] ?? null, true),
+            var_export($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? null, true),
+            $_SERVER['SERVER_PORT'] ?? '?',
+            isset($_COOKIE['PHPSESSID']) ? 'yes' : 'NO',
+            substr((string)($_COOKIE['PHPSESSID'] ?? ''), 0, 10),
+            substr((string)session_id(), 0, 10),
+            $_SESSION['csrf'] ?? '(khong co)',
+            (string)($_POST['csrf'] ?? '(khong co)'),
+            substr((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 50)
+        ));
         $loi[] = 'Phiên làm việc hết hạn, hãy thử lại.';
     } elseif (dangBiChanDoSai()) {
         $loi[] = 'Đã gõ sai quá nhiều lần. Chờ 15 phút rồi thử lại.';
