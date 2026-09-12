@@ -88,24 +88,51 @@ cat > "$CONF" <<'EOF'
 # dang dong cua, khong nhan dang ky/dang nhap moi. Admin/doi tac (whitelist
 # ben duoi) khong bi anh huong, van vao duoc moi trang moi domain nhu cu.
 #
+# SUA LAI 12/09/2026 - LO HONG "moi nguoi vao duoc het, khong chi /server.txt":
+# ban dau whitelist ghi thang 7 "IP goc cua Nova WAF" (104.243.35.x/104.243.37.x),
+# tuong day la duong rieng cua admin. SAI: Nova WAF la proxy DUNG CHUNG cho MOI
+# khach cong khai, nen MOI nguoi choi (khong chi admin) deu toi Apache tu dung 7
+# IP do - kiem chung bang access.log that: moi IP nay mang 20-48 User-Agent khac
+# nhau (Windows/Mac/Linux/Android/iPhone dan xen) trong vai phut, tuc hang tram
+# nguoi that, khong phai mot may admin. Ket qua: whitelist "danh cho admin" vo
+# tinh mo toang ca site cho tat ca nguoi choi - dung ngay dieu ma lop nay sinh ra
+# de chan.
+#
+# CACH SUA: da tu kiem chung (curl qua chinh domain cong khai, doc $_SERVER cua
+# mot script PHP tam thoi) rang Nova WAF CO chuyen tiep dung IP khach that qua
+# hai header X-Forwarded-For/X-Real-IP (khong phai doan mo). Nen dung mod_remoteip
+# de Apache tu DOC LAI IP that tu header do MOI KHI ket noi truc tiep den tu dung
+# 7 IP goc cua Nova WAF (RemoteIPInternalProxy) - sau do %{REMOTE_ADDR}/Require ip
+# ben duoi se thay IP THAT cua khach, khong con thay IP cua Nova WAF nua. Nho vay
+# whitelist ben duoi chi con can liet ke IP THAT cua admin/doi tac (KHONG con 7 IP
+# Nova WAF trong do - de nguyen se vo nghia, vi gio khong con request nao con
+# REMOTE_ADDR la 7 IP do nua ca, tat ca da duoc thay bang IP that).
+#
 # Dung tach mot <Directory> rieng ("kpah-server-txt-only.conf") - conf-enabled
 # nap theo thu tu BANG CHU CAI, file do ("s") nap TRUOC file nay ("w"), nen
 # "Require all granted" ben duoi se GHI DE mat quyen han che. Phai gop chung
 # vao MOT <Directory> duy nhat o day moi an toan.
+
+# Doc IP that cua khach tu header Nova WAF gui, CHI khi ket noi TCP truc tiep
+# den Apache la dung tu 7 IP nay (khong tin header tu bat ky noi nao khac - tranh
+# gia mao X-Forwarded-For tu mot ket noi thang khong qua Nova WAF).
+RemoteIPHeader X-Forwarded-For
+RemoteIPInternalProxy 104.243.35.117 104.243.35.158 104.243.35.234 104.243.37.126 \
+                      104.243.37.140 104.243.37.171 104.243.35.97
+
 <Directory /opt/kpah/web>
     Options -Indexes +FollowSymLinks
     AllowOverride None
     <RequireAny>
         Require expr "%{REQUEST_URI} == '/server.txt'"
 
-        # Whitelist admin/doi tac (Nova WAF origin IPs) - khop voi
-        # /etc/kpah-cloudflare-web/apply.sh. Luon vao duoc MOI trang, MOI domain,
-        # kem ca domain cong khai o duoi sau khi domain do bi dong cho khach thuong.
-        Require ip 104.243.35.117 104.243.35.158 104.243.35.234 104.243.37.126 \
-                   104.243.37.140 104.243.37.171 104.243.35.97 59.153.228.236 \
-                   14.251.12.33 104.28.237.241 118.71.110.221 104.28.219.202 \
-                   171.224.54.169 117.0.168.6 171.255.70.12 1.52.142.229 59.153.225.73 \
-                   42.114.138.22
+        # Whitelist admin/doi tac - IP THAT (sau khi mod_remoteip da doc lai tu
+        # header, khong phai IP goc cua Nova WAF nua - xem giai thich o tren).
+        # Luon vao duoc MOI trang, MOI domain, ke ca domain cong khai o duoi sau
+        # khi domain do bi dong cho khach thuong.
+        Require ip 59.153.228.236 14.251.12.33 104.28.237.241 118.71.110.221 \
+                   104.28.219.202 171.224.54.169 117.0.168.6 171.255.70.12 \
+                   1.52.142.229 59.153.225.73 42.114.138.22
 
         # Dai IP Cloudflare (IPv4 + IPv6) - khop voi /etc/kpah-cloudflare-web/apply.sh.
         # CHI cho vao day du trang khi KHONG PHAI domain cong khai ben duoi - domain
@@ -125,6 +152,8 @@ cat > "$CONF" <<'EOF'
 </Directory>
 EOF
 
+a2enmod remoteip >/dev/null 2>&1
+echo "      Da bat mod_remoteip (doc IP that tu header Nova WAF gui)"
 a2enconf kpah-webroot >/dev/null 2>&1
 echo "      Da bat kpah-webroot"
 

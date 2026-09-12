@@ -152,6 +152,26 @@ Cloudflare/Nova WAF/whitelist (xem `vps/chi-cho-server-txt.sh`), ép sang đó s
 này — chấp nhận được cho một lối thoát dự phòng, không dùng làm đường vào chính hàng ngày
 nếu Nova WAF đã hết lỗi.
 
+**Nova WAF làm "đóng cửa website" vô tác dụng (12/09/2026) — whitelist admin vô tình trỏ
+đúng vào IP của chính Nova WAF.** `vps/chi-cho-server-txt.sh` đóng domain công khai
+`kpah-private.site` chỉ còn `/server.txt` mở cho khách thường, admin/đối tác vào bằng
+whitelist IP. Bản gốc ghi thẳng **7 IP gốc của Nova WAF** (104.243.35.x/104.243.37.x) vào
+whitelist đó — tưởng đây là "đường riêng của admin", nhưng Nova WAF là proxy DÙNG CHUNG
+cho MỌI khách công khai, nên `REMOTE_ADDR` mà Apache thấy luôn là 1 trong 7 IP đó bất kể ai
+đang truy cập. Xác nhận bằng access log thật: mỗi IP mang 20-48 User-Agent khác nhau
+(Windows/Mac/Linux/Android/iPhone xen kẽ) trong vài phút — hàng trăm người chơi thật, có cả
+`POST /login.php` — tức là website "đã đóng cửa" từ 11/09 chưa từng thực sự đóng, ai cũng
+đăng ký/đăng nhập được suốt từ đó tới giờ.
+
+Sửa: xác nhận Nova WAF CÓ chuyển tiếp IP khách thật qua header `X-Forwarded-For`/
+`X-Real-IP` (tự kiểm bằng một script PHP tạm thời đọc `$_SERVER`, không phải đoán), nên bật
+`mod_remoteip` (`RemoteIPHeader X-Forwarded-For`, `RemoteIPInternalProxy` = đúng 7 IP gốc
+Nova WAF) để Apache tự đọc lại IP thật mỗi khi kết nối trực tiếp đến từ 7 IP đó — từ đó
+`Require ip` trong whitelist chỉ còn cần liệt kê IP thật của admin/đối tác (đã gỡ 7 IP Nova
+WAF khỏi danh sách, vì để lại vô nghĩa: không request nào còn mang `REMOTE_ADDR` là IP đó
+nữa sau khi bật remoteip). Đã kiểm lại bằng chính domain thật: IP admin (đã whitelist) vẫn
+vào full trang qua Nova WAF, `/server.txt` vẫn 200 cho mọi người.
+
 **Mất điện thoại:** dùng một trong 8 mã dự phòng in ra lúc ghi danh (mỗi mã một lần).
 Hết mã thì vào máy chủ bằng SSH, `DELETE FROM web_admin_2fa WHERE admin_user='tên';`
 rồi ghi danh lại. Có SSH là luôn còn đường về, nên **không cần cửa hậu nào trên web**.
