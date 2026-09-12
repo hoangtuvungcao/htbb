@@ -102,7 +102,19 @@ public class MessageCreator {
         // chua tung ton tai file nao truoc do (khac voi cac o trong nhu 159/197/212 - nhung
         // o do van con PNG mo coi cu). Phai nang DataGame.nMonster (300 -> 301) de nap duoc
         // map/d_effect/300 + 300.png.
-        MessageCreator.id_eff_tool_ngu_long = new int[]{45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237,238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257,258,259,260,261,262,263,264, 265,266,267,268,269,270,271,272,273,276,274,275,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299, 300};
+        //
+        // TRAN 255 (12/09/2026): goi 26 = 6 skin + mang nay; client CU (< 2.7) doc so luong
+        // bang MOT byte nen createMsgMonsterTemplate cat con 255, cat tu CUOI - ma 300 nam
+        // cuoi nen chinh "Set danh" bi cat voi moi client cu (757/782 luot dang nhap la
+        // 2.0.9): server van kich hoat (+3s choang) nhung client khong co khung hinh de ve.
+        // Da GO 131 (sprite 39x24, 2 anh con) de con dung 255. Chon 131 sau khi ra soat
+        // TOAN BO repo + CSDL that (data_item.ideff, tob_danh_hieu, tob_animal): khong noi
+        // nao dung. 9 id khac cung khong dung, de danh cho lan sau can them hieu ung ma
+        // van phai giu <= 255: 135, 140, 141, 144, 168, 169, 219, 220, 221 (chi go MOT id
+        // moi lan them MOT hieu ung; test/KiemGoi26SetDanh.java chot tong <= 255). Go id
+        // khoi mang nay la client KHONG CON ve duoc id do (goi 26 la duong duy nhat cap
+        // khung hinh), nen id da go muon dung lai phai go id khac bu vao.
+        MessageCreator.id_eff_tool_ngu_long = new int[]{45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237,238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257,258,259,260,261,262,263,264, 265,266,267,268,269,270,271,272,273,276,274,275,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,299, 300};
     }
 
     public static Message createMsgChat(final int id, final String msg) {
@@ -138,8 +150,10 @@ public class MessageCreator {
     /** So sanh mot chuoi phien ban voi 1.62. Chuoi hong -> false. */
     /**
      * Client tu 2.7 tro len doc so luong hieu ung "ngu long" trong goi 26 bang
-     * SHORT, ban cu doc bang BYTE. Danh sach id_eff_tool_ngu_long da co 249 phan
-     * tu - sat tran 255 cua mot byte - nen ban client moi noi truong dem ra short.
+     * SHORT, ban cu doc bang BYTE. Goi 26 gui 6 skin + id_eff_tool_ngu_long (249 phan tu
+     * tu 12/09/2026, sau khi go 131 de vua khit 255 - xem chu thich tren mang) - sat tran
+     * 255 cua mot byte - nen ban client moi noi truong dem ra short. Da co lan tran 256
+     * lam mat hieu ung "Set danh" voi moi client cu, xem test/KiemGoi26SetDanh.java.
      *
      * Ghi sai kieu o day la lech 1 byte, va TAT CA du lieu phia sau truot theo:
      * client doc so luong sai roi doc lech toan bo bang frame cua thu cuoi tool

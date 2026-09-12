@@ -644,10 +644,12 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
 - **Thú đang hoá hình + mang skin**: skin thắng (đè lên hình hoá hình). Nhánh hoá hình
   ghi `-1` cho `userHorse`/`fly`/`idImgHorse` rồi bỏ qua, còn `idThutool` phía dưới vẫn
   đổi sang skin — an toàn vì bản thân hoá hình cũng đi đường thú cưỡi tool.
-- **Số hiệu ứng trong gói 26 chỉ còn dư 1 chỗ** (254/255). Dữ liệu skin đã được xếp
-  **trước** danh sách hiệu ứng nên nếu có ngày tràn thì bị cắt là hiệu ứng chứ không phải
-  skin — cắt hiệu ứng chỉ làm hiệu ứng đó không vẽ, còn cắt skin thì người đang mặc skin
-  sẽ cưỡi hư không.
+- **Số hiệu ứng trong gói 26 đã chạm đúng trần 255** (6 skin + 249 id, từ 12/09/2026).
+  Dữ liệu skin đã được xếp **trước** danh sách hiệu ứng nên nếu có ngày tràn thì bị cắt là
+  hiệu ứng chứ không phải skin — cắt hiệu ứng chỉ làm hiệu ứng đó không vẽ, còn cắt skin
+  thì người đang mặc skin sẽ cưỡi hư không. **Đã tràn thật một lần** (256 → cắt mất id
+  9000 "Sét đánh", xem mục 10). Muốn thêm hiệu ứng mới thì gỡ một id trong danh sách dự
+  phòng đã rà soát là không dùng (ghi ngay trên mảng `id_eff_tool_ngu_long`).
 - **Nội tại mất khi đăng xuất.** Cố ý — hồi chiêu 40 giây ngắn hơn mọi phiên chơi, xem
   mục 5.4.
 
@@ -723,10 +725,26 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
   theo nhân vật) phải bỏ điều kiện `idAnimal`, không thì món skin cũ đang dính vào con
   thú trước đó sẽ không bị gỡ — người chơi mặc skin mới mà không có gì xảy ra, cũng không
   có thông báo nào.
-- **Số hiệu ứng trong gói 26 tối đa 255** (client đọc `readUnsignedByte`). Hiện dùng 254
-  (249 cũ + 5 skin). Thêm skin thứ 6 là tràn — code đã có đoạn cắt bớt và in cảnh báo thay
-  vì để gói hỏng, nhưng muốn thêm nữa thì phải gỡ bớt id không dùng khỏi
-  `MessageCreator.id_eff_tool_ngu_long`.
+- **Số hiệu ứng trong gói 26 tối đa 255** với client cũ (< 2.7 đọc `readUnsignedByte`;
+  2.7+ đọc short nên không cắt). Skin thứ 6 (Kim Cang Long) + hiệu ứng "Sét đánh" (id
+  300 → 9000) đã đẩy lên **256**: đoạn cắt-bớt hoạt động đúng như thiết kế, cắt từ cuối —
+  và phần tử cuối chính là 300, nên **"Sét đánh" không bao giờ vẽ được trên client cũ**
+  (757/782 lượt đăng nhập là 2.0.9), server thì vẫn cộng 3 giây choáng. Log
+  `CANH BAO: goi 26 co 256 hieu ung ... Bo bot id 9000` xuất hiện 422 lần trước khi có
+  người báo (12/09/2026). Sửa: gỡ id 131 (không dùng — rà toàn repo + CSDL thật) để về đúng
+  255, và `test/KiemGoi26SetDanh.java` chốt tổng ≤ 255 để lần sau vượt là test đỏ ngay.
+  *Bài học: dòng cảnh báo trong log không thay được test — 422 lần in ra mà không ai đọc.*
+- **`EffectBuff.dyhore` phải dài đủ tới id d_effect lớn nhất** (`createMsgNewEffectSkill5Long`
+  tra `dyhore[idEff - 8700]`). Dài 300 thì id 300 (9000) tràn mảng, bị `catch` nuốt và gói
+  `-74` gửi thiếu byte cuối — nâng lên 301 cùng lúc với sửa trên. Thêm id d_effect mới
+  (301+) là phải nâng cả `dyhore` lẫn `DataGame.nMonster`.
+- **"Sét đánh" của Kim Cang Long chỉ phát động trong PvP, và khi mình BỊ đánh.** Không
+  phải lỗi — là hệ quả của cơ chế Sét Lan gốc: `checkNewEffectItem` chạy khi nhân vật
+  **nhận** đòn (từ người → lan sang người xung quanh; từ quái → lan sang quái), và nhánh
+  choáng của Sét Lan chỉ có cho mục tiêu là **người chơi** (`actor.cat == 0`) — quái
+  không có trạng thái choáng (`Monster` không đọc `CHOANG`). "Sét đánh" chỉ là "+3 giây
+  vào cú choáng đó" nên nó bám theo đúng giới hạn ấy. Đánh quái để test sẽ không bao giờ
+  thấy. Tỉ lệ thật mỗi lần bị đánh = P(Sét Lan phát động) × 5%.
 - **Icon không được đặt lại vào dải 855..859.** Bản skin đầu tiên dùng dải đó, nhưng sau
   khi tính năng bị gỡ, đúng năm id ấy đã được giao cho **Cánh** (commit `2c651ce`) làm ảnh
   ô xem trước cửa sổ Trang bị. Đặt đè lên là ô xem trước của Cánh hiện ra con thú. Bản này
