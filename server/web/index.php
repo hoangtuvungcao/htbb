@@ -22,7 +22,9 @@ try {
 
 // Moc khoi dau co dinh cua dot dua top moi, cung gio voi timeLog cua server.
 // Khong dung ngay hien tai dong: diem phai tiep tuc cong don vao cac ngay sau.
-$cardRankStart = '2026-09-08 00:00:00';
+// Reset 12/09/2026 theo yeu cau nguoi dung: dot dua truoc (tu 08/09) bi xoa, dot moi
+// tinh tu moc gio nay tro di.
+$cardRankStart = '2026-09-12 20:12:29';
 $cardRanks = [
     ['title' => 'Top Giao Thẻ', 'action' => 'gcok', 'rows' => [], 'error' => false],
     ['title' => 'Top Phá Thẻ', 'action' => 'pcok', 'rows' => [], 'error' => false],
@@ -146,7 +148,7 @@ require __DIR__ . '/inc/header.php';
         <?php foreach ($cardRanks as $rank): ?>
         <div class="card">
             <h3 class="card-head"><?= e($rank['title']) ?></h3>
-            <p class="muted">Chiếm thành · Tính từ 00:00 ngày 08/09/2026.</p>
+            <p class="muted">Chiếm thành · Tính từ 20:12 ngày 12/09/2026.</p>
             <?php if ($rank['rows']): ?>
                 <table class="rank-table">
                     <thead><tr><th>#</th><th>Nhân vật</th><th>Số lần</th></tr></thead>
