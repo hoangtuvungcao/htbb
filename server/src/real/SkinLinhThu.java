@@ -76,6 +76,25 @@ public final class SkinLinhThu {
     public static final int ID_ANH_BAN_DO = 13000;
 
     /**
+     * Dau rong doi tren dau nhan vat khi dang HIEN THI skin Kim Cang Long - la mot lop phu
+     * dau (getIdHeadDynamic -> map/d_effect/135, id gui di 8700 + 135), CUNG co che voi
+     * mat na (paintHair phia client, khung = getFrameHair: xuong f, len 6+f, ngang 12+f,
+     * moi bo 18 khung, 3 bo la 3 pha xoay vong moi 6 tick). 54 khung, 3 anh con lay tu
+     * map/skinthu/5.png: 3 dau nhin nghieng co san (anh con 25/28/31 - manh dau rieng cua
+     * khung ngang k14-20, KHONG phai cat tu than rong) = 3 pha, dung cho CA BA huong
+     * xuong/len/ngang; thu 0,6 lan, neo tam (1,-20) nhu mat na 100. Nguoi dung chot
+     * 12/09/2026: "hoat anh tuong tu mat na, chi can 3 anh ngang, 6 anh con lai (nhin
+     * thang/mat sau) khong can".
+     *
+     * O 135 von khong ai dung (da ra soat toan repo + CSDL that) va DA nam san trong
+     * MessageCreator.id_eff_tool_ngu_long, nen ghi de file cu ma khong ton them cho nao
+     * cua tran 255 goi 26. Khong tao vat pham rieng: dau rong la mot phan cua chinh skin
+     * 911. Mat na dang deo van UU TIEN hon (xem thu tu trong CharVongLap.getIdHeadDynamic);
+     * tat hien thi skin (isTatSkinLinhThu) thi cung an dau.
+     */
+    public static final int ID_D_EFFECT_DAU_KIM_CANG_LONG = 135;
+
+    /**
      * Id template cua 6 vat pham skin trong bang data_item, dung thu tu skin 0..5.
      * Tao bang sql/skin_linh_thu.sql. Doi id trong SQL thi phai doi o day cho khop.
      *

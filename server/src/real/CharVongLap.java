@@ -748,6 +748,15 @@ class CharVongLap {
         }
         
 
+        // SKIN LINH THU (Kim Cang Long): dang HIEN THI skin (dangMang + khong tat hien
+        // thi) thi doi dau rong - map/d_effect/135, xem SkinLinhThu.ID_D_EFFECT_DAU_KIM_CANG_LONG.
+        // Dat SAU khoi mat na (mat na dang deo uu tien) va TRUOC cac lop toc cua bo thoi
+        // trang ben duoi (dau rong trum len toc). Dung hienThi() chu khong dung dangMang():
+        // day la HINH, phai theo cong tac bat/tat hien thi skin.
+        if (self.idSkinLinhThu == SkinLinhThu.KIM_CANG_LONG && SkinLinhThu.hienThi(self)) {
+            return 8700 + SkinLinhThu.ID_D_EFFECT_DAU_KIM_CANG_LONG;
+        }
+
         if (self.wModel.isTieuLongNu()) {
             return Char.ID_HEAD_TIEU_LONG_NU;
         }

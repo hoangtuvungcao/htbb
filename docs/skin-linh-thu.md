@@ -286,6 +286,35 @@ nên roll thẳng ở Kim Cang Long đã đúng từ đầu.
 **Mô tả chỉ ghi thứ đang chạy.** Hứa với người chơi một thứ không tồn tại thì tệ hơn là
 không hứa.
 
+### 5.6 Đầu rồng đội trên đầu khi mang Kim Cang Long (12/09/2026)
+
+Đang **hiển thị** skin Kim Cang Long (`SkinLinhThu.hienThi`) thì nhân vật đội thêm đầu
+rồng — một **lớp phủ đầu** (`CharVongLap.getIdHeadDynamic` → `map/d_effect/135`, id gửi đi
+`8700 + 135`), cùng cơ chế với mặt nạ: client vẽ bằng `paintHair`, chọn khung bằng
+`getFrameHair()` = xuống `f`, lên `6 + f`, ngang `12 + f`, mỗi bộ 18 khung, 3 bộ là 3 pha
+xoay vòng mỗi 6 tick. Không có vật phẩm riêng — đầu rồng là một phần của chính skin 911.
+Yêu cầu gốc: "hoạt ảnh tương tự mặt nạ, còn khung là các ảnh đã gửi".
+
+Ảnh: **chỉ 3 đầu rồng nhìn nghiêng** — ảnh con 25 / 28 / 31 của `map/skinthu/5.png` (atlas
+có sẵn đầu tách riêng cho hướng ngang: khung k14–20 ghép thân 24/27/29/30/32 + đầu
+25/28/31). Ba ảnh này là **3 pha**, và dùng chung cho **cả ba hướng** xuống/lên/ngang theo
+yêu cầu ("chỉ cần 3 ảnh ngang, 6 ảnh còn lại không cần"); quay phải thì client tự lật gương.
+Thu 0,6 lần (~23px cao).
+
+*Bẫy đã vấp: tưởng đầu nghiêng dính liền trong sảnh thân rồng (24/29/32) rồi cắt góc
+dưới-trái ra — đó là đuôi/chân, không phải đầu; phải đọc bảng khung (mảnh nào ghép vào khung
+nào, dx/dy) trước khi đoán mảnh nào là gì.* Bố cục tệp giống hệt mặt nạ 100–104: 3 ảnh con,
+54 khung, mỗi khung 1 mảnh, neo tâm (1, −20) như mặt nạ 20×20 tại (−9, −30), độ nhấp nhô theo
+6 khung thân chép từ mặt nạ 100. Ô 135 vốn không ai dùng (rà toàn repo + CSDL thật) và **đã nằm
+sẵn** trong `id_eff_tool_ngu_long`, nên ghi đè file cũ mà không tốn thêm chỗ nào của trần
+255 gói 26.
+
+Thứ tự ưu tiên trong `getIdHeadDynamic`: cải trang/cải tạo toàn thân → **mặt nạ đang đeo**
+→ đầu rồng → tóc của bộ thời trang. Nút "Tắt hiển thị skin thú" ẩn cả con rồng lẫn đầu
+rồng (dùng `hienThi`, không dùng `dangMang`). `test/KiemSkinLinhThu.kiemDauRongKimCangLong`
+chốt bố cục tệp, ô 135 trong gói 26 và thứ tự nhánh. Cần restart server (nạp d_effect lúc
+khởi động) và người chơi đăng nhập lại (gói 26 gửi khung hình lúc đăng nhập).
+
 ---
 
 ## 6. Vì sao làm theo cách này (phần đổi hình)
