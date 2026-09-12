@@ -3,11 +3,22 @@ name: Deploy len VPS
 # Moi push len main se ssh vao VPS goi /opt/kpah/vps/deploy-auto.sh.
 # Script tu quyet dinh co can restart server hay khong: commit chi doi tai lieu thi
 # no chi git pull, khong ai bi kick. Doi KPAH2_patched.jar / lib / map / cMap /
-# loginServer thi bao truoc 60 giay trong game roi moi tat bat.
+# loginServer thi code van duoc keo ve NGAY, nhung restart thuc su doi toi lan bao
+# tri tu dong tiep theo cua server (gio ngau nhien 4:30-5:59, xem BaoTriDaily.java)
+# - tru khi chay tay qua workflow_dispatch va tick "deploy_now" de ep len ngay.
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      deploy_now:
+        description: >-
+          Ep ap dung ngay (bao nguoi choi 60s roi restart), bo qua viec cho gio
+          bao tri tu dong ngau nhien 4:30-5:59 cua BaoTriDaily. Chi tick khi can
+          deploy khan - binh thuong de trong, code se tu ap dung vao lan bao tri
+          tu dong tiep theo (xem vps/deploy-auto.sh).
+        type: boolean
+        default: false
 
 # Hai push lien tiep thi cho lan truoc xong, khong chay chong nhau.
 concurrency:
@@ -59,6 +70,11 @@ jobs:
         # sshd chi "AcceptEnv LANG LC_*", nen SendEnv khong toi noi. Stdin thi qua duoc.
         # Chua dat secret nao cung khong sao - vps/sinh-server-ini.sh se giu nguyen gia
         # tri dang chay tren VPS, khong lam sap server.
+        #
+        # DEPLOY_NOW di chung duong stdin nay (khong phai bi mat, nhung day la duong
+        # DUY NHAT truyen "bien moi truong" qua duoc khoa SSH bi ep lenh). Chi co gia
+        # tri khi chay workflow_dispatch va tick "deploy_now"; push thuong thi
+        # github.event.inputs rong nen luon la luong cho gio bao tri mac dinh.
         env:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -66,6 +82,7 @@ jobs:
           DB_PASS_NAP: ${{ secrets.DB_PASS_NAP }}
           DB_USER1: ${{ secrets.DB_USER1 }}
           DB_PASSWORD1: ${{ secrets.DB_PASSWORD1 }}
+          DEPLOY_NOW_INPUT: ${{ github.event.inputs.deploy_now }}
         run: |
           # Dung bien trung gian, KHONG echo gia tri ra log cua Actions.
           goi=""
@@ -75,5 +92,8 @@ jobs:
               goi="$goi$k=$v"$'\n'
             fi
           done
+          if [ "${DEPLOY_NOW_INPUT:-}" = "true" ]; then
+            goi="${goi}DEPLOY_NOW=1"$'\n'
+          fi
           printf '%s' "$goi" | ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 \
               -o StrictHostKeyChecking=yes root@180.93.57.30 deploy

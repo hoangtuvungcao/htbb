@@ -30,18 +30,29 @@ public class BaoTriDaily implements Runnable {
     // Thêm biến để lưu giờ và phút bảo trì
     private static int maintenanceHour;
     private static int maintenanceMinute;
+    // Gio:phut canh bao, dung 1 phut truoc gio bao tri (tinh theo tong so phut trong
+    // ngay de khoi le khi maintenanceMinute = 0).
+    private static int warnHour;
+    private static int warnMinute;
+    // Chi gui canh bao dung MOT lan - JVM nay chi trai qua dung mot lan bao tri ngau
+    // nhien roi thoat (xem cuoi run()), nen khong can dat lai ve false.
+    private static boolean daBaoTruoc = false;
 
     // Khởi tạo thời gian bảo trì random khi class được load
     static {
         Random r = new Random();
         // Random giờ từ 4-5
-        maintenanceHour = 4 + r.nextInt(2); 
+        maintenanceHour = 4 + r.nextInt(2);
         // Random phút từ 30-59 nếu là 4h, hoặc 0-30 nếu là 5h
         if (maintenanceHour == 4) {
             maintenanceMinute = 30 + r.nextInt(30);
         } else {
             maintenanceMinute = r.nextInt(31);
         }
+        final int tongPhutBaoTri = maintenanceHour * 60 + maintenanceMinute;
+        final int tongPhutCanhBao = (tongPhutBaoTri - 1 + 24 * 60) % (24 * 60);
+        warnHour = tongPhutCanhBao / 60;
+        warnMinute = tongPhutCanhBao % 60;
         System.out.println("Thời gian bảo trì được set: " + maintenanceHour + ":" + maintenanceMinute);
     }
 
@@ -104,6 +115,14 @@ public class BaoTriDaily implements Runnable {
                     if (Database.instance.baoTriThongBaoCMD()) {
                         baoTruocBaoTri(60);
                     }
+                }
+                // Bao truoc 60s cho DUNG gio bao tri ngau nhien hang ngay - nhanh nay truoc
+                // day khong bao gi ca (chi deploy moi tu bat co baotri_thongbao o tren), nen
+                // deploy-auto.sh "di nho" gio bao tri nay se lam mat luon canh bao nguoi choi
+                // dang duoc huong moi lan deploy. daBaoTruoc chan gui lap trong 5s dung.
+                if (!daBaoTruoc && d.getHours() == warnHour && d.getMinutes() == warnMinute && d.getSeconds() <= 5) {
+                    baoTruocBaoTri(60);
+                    daBaoTruoc = true;
                 }
                 if (d.getSeconds() == 0) {
                     // SECURITY: disabled external heartbeat call that sent online count to a remote server (api.url).

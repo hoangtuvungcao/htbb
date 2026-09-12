@@ -122,8 +122,11 @@ public final class KiemCauHinhPipeline {
         Kiem.dung("deploy coi vps/server.ini.tmpl la file doi hoi restart",
                 deploy.contains("vps/server\\.ini\\.tmpl"));
         Kiem.dung("deploy goi bo sinh", deploy.contains("sinh-server-ini.sh"));
-        Kiem.dung("deploy restart khi cau hinh doi du khong file nao khac doi",
-                deploy.contains("van phai khoi dong lai"));
+        // 12/09/2026: deploy khong con tu restart ngay (doi toi gio bao tri tu dong -
+        // xem BaoTriDaily.java), nhung cau hinh doi (RC=3) van phai duoc coi la
+        // "can restart" giong nhu file thuoc CAN_RESTART_REGEX, du khong co commit moi.
+        Kiem.dung("deploy coi cau hinh doi (RC=3) la can restart, du khong file nao khac doi",
+                deploy.contains("[ \"$RC\" = 3 ] && CAN_RESTART=1"));
         Kiem.dung("deploy doc bi mat qua stdin (khoa ssh bi ep lenh nen khong truyen env duoc)",
                 coTrongMaLenh(deploy, "doc_bi_mat", '#'));
         Kiem.dung("doc_bi_mat khong treo khi chay tay tu terminal",
@@ -136,8 +139,12 @@ public final class KiemCauHinhPipeline {
         // moi ma khac 0 va 3 deu phai la loi.
         Kiem.dung("deploy coi moi ma khac 0 va 3 la loi (khong doan mo)",
                 coTrongMaLenh(deploy, "[ \"$1\" != 0 ] && [ \"$1\" != 3 ]", '#'));
-        Kiem.dung("deploy dung la_loi_sinh o moi cho goi bo sinh",
-                demChuoi(deploy, "la_loi_sinh \"$RC\"") == 3);
+        // 12/09/2026: gop lam MOT cho goi bo sinh duy nhat (truoc la 3 nhanh rieng,
+        // moi nhanh tu goi + tu kiem) - it quan trong la CO kiem, khong phai so lan.
+        Kiem.dung("deploy goi sinh_cau_hinh dung MOT lan (khong con lap lai o nhieu nhanh)",
+                demChuoi(deploy, "\nsinh_cau_hinh\n") == 1);
+        Kiem.dung("deploy dung la_loi_sinh ngay sau lan goi bo sinh duy nhat",
+                demChuoi(deploy, "la_loi_sinh \"$RC\"") == 1);
         Kiem.sai("KHONG con nhanh cu chi bat rieng ma 1",
                 deploy.contains("[ \"$RC\" = 1 ] && exit 1"));
         // Goi qua "bash" thi bit thuc thi khong con quyet dinh duoc nua.
