@@ -221,6 +221,20 @@ fi
 chown -R "$USER_SV":"$USER_SV" "$DIR"
 chmod +x "$DIR"/vps/*.sh 2>/dev/null
 
+# DEPLOY_NOW=1 la lenh "restart NGAY", doc lap voi CAN_RESTART: mot lan chay TRUOC co
+# the da pull code roi ma CHUA restart (dung y thiet ke - xem GIO RESTART tren dau
+# file), nen lan chay NAY (vd. deploy-auto.sh chay tay lai de ep len ngay) hoan toan co
+# the thay CU = MOI (khong con commit "moi" nao vi da pull tu truoc) va CAN_RESTART=0 -
+# neu chi doc CAN_RESTART se ket luan nham "khong co gi de lam" va bo qua yeu cau ep.
+if [ "${DEPLOY_NOW:-}" = 1 ]; then
+    if [ "$CAN_RESTART" = 0 ]; then
+        echo "== DEPLOY_NOW=1: khong co gi moi/can restart, nhung van ep ap dung theo yeu cau"
+    else
+        echo "== DEPLOY_NOW=1: ep ap dung ngay, khong cho gio bao tri"
+    fi
+    restart_ngay
+fi
+
 if [ "$CAN_RESTART" = 0 ]; then
     if [ "$CO_COMMIT_MOI" = 1 ]; then
         echo "== Khong co file nao doi hoi restart -> xong, server khong bi gian doan"
@@ -230,22 +244,17 @@ if [ "$CAN_RESTART" = 0 ]; then
     exit 0
 fi
 
-if [ "${DEPLOY_NOW:-}" != 1 ]; then
-    # Doc gio bao tri ngau nhien gan nhat ma BaoTriDaily da tu random va in ra luc
-    # JVM hien tai khoi dong (xem src/real/BaoTriDaily.java). Chi de tham khao trong
-    # log - khong dung de dieu khien logic, BaoTriDaily tu lo lay gio no da chon.
-    GIO_DU_KIEN=$(grep -o 'Thời gian bảo trì được set: [0-9]*:[0-9]*' "$DIR/log/game.out" 2>/dev/null \
-                  | tail -1 | sed 's/^.*: //')
-    echo "== Code moi da san sang tren dia (commit $(sudo -u "$USER_SV" git -C "$DIR" log -1 --format='%h %s'))."
-    if [ -n "$GIO_DU_KIEN" ]; then
-        echo "   SE duoc ap dung vao lan bao tri tu dong tiep theo (gio da random gan nhat: $GIO_DU_KIEN)."
-    else
-        echo "   SE duoc ap dung vao lan bao tri tu dong tiep theo (khong doc duoc gio du kien tu log)."
-    fi
-    echo "   Muon len NGAY, khong cho: bam 'Bao Tri' tren web admin, hoac chay lai deploy"
-    echo "   voi DEPLOY_NOW=1 (tren GitHub Actions: workflow_dispatch, tick 'Deploy ngay')."
-    exit 0
+# Doc gio bao tri ngau nhien gan nhat ma BaoTriDaily da tu random va in ra luc JVM
+# hien tai khoi dong (xem src/real/BaoTriDaily.java). Chi de tham khao trong log -
+# khong dung de dieu khien logic, BaoTriDaily tu lo lay gio no da chon.
+GIO_DU_KIEN=$(grep -o 'Thời gian bảo trì được set: [0-9]*:[0-9]*' "$DIR/log/game.out" 2>/dev/null \
+              | tail -1 | sed 's/^.*: //')
+echo "== Code moi da san sang tren dia (commit $(sudo -u "$USER_SV" git -C "$DIR" log -1 --format='%h %s'))."
+if [ -n "$GIO_DU_KIEN" ]; then
+    echo "   SE duoc ap dung vao lan bao tri tu dong tiep theo (gio da random gan nhat: $GIO_DU_KIEN)."
+else
+    echo "   SE duoc ap dung vao lan bao tri tu dong tiep theo (khong doc duoc gio du kien tu log)."
 fi
-
-echo "== DEPLOY_NOW=1: ep ap dung ngay, khong cho gio bao tri"
-restart_ngay
+echo "   Muon len NGAY, khong cho: bam 'Bao Tri' tren web admin, hoac chay lai deploy"
+echo "   voi DEPLOY_NOW=1 (tren GitHub Actions: workflow_dispatch, tick 'Deploy ngay')."
+exit 0
