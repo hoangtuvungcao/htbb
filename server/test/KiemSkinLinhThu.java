@@ -1717,6 +1717,7 @@ public final class KiemSkinLinhThu {
         }
 
         kiemChoNgoiKimCangLong();
+        kiemChoNgoiTienLoc();
     }
 
     /**
@@ -1770,8 +1771,12 @@ public final class KiemSkinLinhThu {
             Kiem.dung("INDEX_DXY[" + i + "] = " + d + " tro vao mot dong co that",
                     d >= 0 && d < dx.length);
         }
-        // 5 skin thu bon chan van dung dong 0 (Poro) - doi chung la doi cho ngoi ca 5 con.
+        // 4/5 skin thu bon chan van dung dong 0 (Poro) - doi chung la doi cho ngoi ca 4 con.
+        // Tien Loc (2) dung dong rieng so 6 (than nai thap/gon hon Poro), xem kiemChoNgoiTienLoc.
         for (int i = 0; i < s; i++) {
+            if (i == real.SkinLinhThu.TIEN_LOC) {
+                continue;
+            }
             Kiem.bang("skin " + i + " (thu bon chan) van dung dong 0", Integer.valueOf(0),
                     Integer.valueOf(real.SkinLinhThu.INDEX_DXY[i]));
         }
@@ -1808,8 +1813,10 @@ public final class KiemSkinLinhThu {
             Kiem.dung("dong KCL: dy huong " + h + " khong thap hon dong 0 qua 15px (lech " + lech + ")",
                     lech <= 15);
         }
-        // Dong 5 phai dung la dong CUOI: khong ai chen dong vao giua ma quen doi INDEX_DXY.
-        Kiem.bang("dong KCL la dong cuoi cua bang", Integer.valueOf(dx.length - 1), Integer.valueOf(d5));
+        // Dong 5 khong con la dong cuoi tu khi them dong 6 cho Tien Loc (12/09/2026) - chi
+        // con kiem no la mot dong RIENG, khac dong 0 va khac dong cua Tien Loc. "La dong
+        // cuoi" gio la trach nhiem cua dong MOI NHAT, xem kiemChoNgoiTienLoc().
+        Kiem.dung("dong KCL khac dong cua Tien Loc", d5 != real.SkinLinhThu.INDEX_DXY[real.SkinLinhThu.TIEN_LOC]);
 
         // ---- Du lieu khung khoi xuong ----
         final java.io.File tep = new java.io.File("map/skinthu/" + s);
@@ -1830,6 +1837,60 @@ public final class KiemSkinLinhThu {
         Kiem.dung("khoi xuong: duoi cuon (anh 2/5/10) o vi tri goc, bat dau tu x " + doDuoi[1] + " < 7 (nguoi choi chon giu)",
                 doDuoi[1] < 7);
         Kiem.dung("khoi xuong: co manh duoi de kiem (atlas chua doi)", doDuoi[2] > 0);
+    }
+
+    /**
+     * Cho ngoi Tien Loc (skin 2) - 12/09/2026.
+     *
+     * BAO CAO: nguoi ngoi "cao qua" (kem anh chup) - than nai/hoai cua Tien Loc thap va gon
+     * hon han Poro (ca 5 skin thu bon chan dung CHUNG dong 0, vi 4 con con lai co than xap xi
+     * Poro nen ngoi vua), nen dung dong 0 lam nguoi noi han len tren dinh sung/canh, cach xa
+     * hong con thu o CA HAI huong xuong va len (huong ngang van on, khong doi).
+     *
+     * CACH SUA: dong RIENG so 6, chi doi hai so xuong/len; ngang giu y het dong 0 (dx 7/-7,
+     * dy -15) vi huong do von da khop. Do bang tools/ThuChoNgoiSkinThu (ve dung thu tu ve cua
+     * client, hinh que nguoi ngoi), chon muc nguoi long vao giua cum sung/canh - khop bo cuc
+     * cua Gau Truc/Phuc Thu/Xich Duong/Chien Lang o cung dong 0. Xem chu thich o
+     * Char.java (dy_horse_tool dong 6) va docs/skin-linh-thu.md muc 9.
+     */
+    private static void kiemChoNgoiTienLoc() {
+        Kiem.nhom("Skin linh thu - cho ngoi Tien Loc (dong bang rieng so 6)");
+
+        final int s = real.SkinLinhThu.TIEN_LOC;
+        final byte[][] dx = real.Char.dx_horse_tool;
+        final byte[][] dy = real.Char.dy_horse_tool;
+
+        final int d6 = real.SkinLinhThu.INDEX_DXY[s];
+        Kiem.dung("Tien Loc dung dong rieng, khong phai dong 0 cua Poro", d6 != 0);
+        if (d6 < 0 || d6 >= dx.length) {
+            return;
+        }
+        // Ngang giu nguyen nhu dong 0: huong do von da on, khong bao cao loi.
+        Kiem.bang("dong Tien Loc: trai dx +7 (y het dong 0, khong doi)",
+                Integer.valueOf(dx[0][2]), Integer.valueOf(dx[d6][2]));
+        Kiem.bang("dong Tien Loc: phai dx -7 (y het dong 0, khong doi)",
+                Integer.valueOf(dx[0][3]), Integer.valueOf(dx[d6][3]));
+        Kiem.bang("dong Tien Loc: trai dy -15 (y het dong 0, khong doi)",
+                Integer.valueOf(dy[0][2]), Integer.valueOf(dy[d6][2]));
+        Kiem.bang("dong Tien Loc: phai dy -15 (y het dong 0, khong doi)",
+                Integer.valueOf(dy[0][3]), Integer.valueOf(dy[d6][3]));
+        // Xuong/len: ha thap hon dong 0 (dy duong hon) de nguoi khong con noi tren dinh sung.
+        Kiem.dung("dong Tien Loc: xuong dy cao hon dong 0 (khop bo cuc, khong con noi)",
+                dy[d6][0] > dy[0][0]);
+        Kiem.dung("dong Tien Loc: len dy cao hon dong 0 (khop bo cuc, khong con noi)",
+                dy[d6][1] > dy[0][1]);
+        // paintName cua client LUON dat ten theo dong 0 (xem chu thich o kiemChoNgoiKimCangLong):
+        // dong moi CAO hon dong 0 (dy am hon) la ten sat dau; THAP hon chi lam ten cach dau xa
+        // them, vo hai. Dong Tien Loc chi ha thap hon (chua bao gio am hon) nen luon an toan,
+        // nhung van chot lai bang cong thuc chung phong sau nay ai do doi nham dau.
+        for (int h = 0; h < 4; h++) {
+            final int lech = dy[d6][h] - dy[0][h];
+            Kiem.dung("dong Tien Loc: dy huong " + h + " khong cao hon dong 0 qua 10px (lech " + lech + ")",
+                    lech >= -10);
+        }
+        // Dong nay them SAU dong Kim Cang Long nen phai la dong cuoi cung: khong ai chen dong
+        // vao giua ma quen doi INDEX_DXY.
+        Kiem.bang("dong Tien Loc la dong cuoi cua bang", Integer.valueOf(dx.length - 1), Integer.valueOf(d6));
     }
 
     /**

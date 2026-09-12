@@ -960,10 +960,17 @@ public class Char extends LiveActor {
         //     dong moi CAO hon dong 0 qua ~10px la ten de dau (anh chup o -23 con cach ~14px,
         //     -28 con ~9px); THAP hon dong 0 thi vo hai, chi lam ten cach dau xa them (huong
         //     len 0 thap hon dong 0 tro 15px la co y).
+        //   6 SKIN TIEN LOC (12/09/2026): nai/hoai nhon, than thap va gon hon Poro han han -
+        //     dung chung dong 0 (nguoi nhac -20/-15 nhu Poro) lam nguoi noi han len tren, cach
+        //     xa hong con thu, "ngoi lo lung tren khong" (nguoi choi bao kem anh chup). Chi ha
+        //     rieng hai huong xuong/len (-20->-9, -15->-7, do bang tools/ThuChoNgoiSkinThu roi
+        //     chon muc nguoi lot vao giua cum sung/canh, khop bo cuc cua 4 skin thu bon chan
+        //     con lai); ngang giu nguyen -15/dx 7 nhu dong 0 vi huong do von da on (khong noi).
+        //     Xem SkinLinhThu.INDEX_DXY va docs/skin-linh-thu.md muc 9.
         Char.dx_horse_tool = new byte[][]{{0, 0, 7, -7}, {0, 0, 5, -5}, {0, 0, 8, -8}, new byte[4], new byte[4],
-            {0, 0, 1, -1}};
+            {0, 0, 1, -1}, {0, 0, 7, -7}};
         Char.dy_horse_tool = new byte[][]{{-20, -15, -15, -15}, {-25, -15, -15, -15}, {-20, -15, -15, -15}, {-22, -15, -16, -16}, {-22, -15, -17, -16},
-            {-28, 0, -15, -15}};
+            {-28, 0, -15, -15}, {-9, -7, -15, -15}};
 
         Char.Dx_Dy_WP_tool = new byte[][]{
             {-35, -27, -30, -37, -26, -55, -55, -47, -35, -55,-46,-35},

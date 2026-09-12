@@ -622,6 +622,33 @@ nhất**. Cách này giữ *thân* đứng yên thay vì giữ *khung bao* đứ
   muốn hơn thì phải vẽ lại ảnh cho dày thân.
   `test/KiemSkinLinhThu.kiemCheChanNguoi` chốt lại mọi skin phải che ≥ mức của Poro.
 
+  Cột "che chân người" đo theo **hướng ngang**, và không phụ thuộc bảng `dx/dy_horse_tool`
+  (đo thẳng từ dữ liệu khung trong chính tệp `map/skinthu/<n>`). Nó **không** phát hiện được
+  lỗi lệch theo **hướng dọc** (xuống/lên) — xem mục Tiên Lộc ngay dưới đây, phát hiện sau bằng
+  ảnh chụp người chơi gửi, không phải bằng bảng số ở trên.
+
+  ### Tiên Lộc (skin 2) — dòng bảng riêng cho hướng dọc (12/09/2026)
+
+  Người chơi báo "vị trí skin Tiên Lộc đang bị cao quá" kèm ảnh chụp: người ngồi lửng lơ hẳn
+  trên đầu con thú, cách một khoảng trống rõ rệt — chỉ xảy ra với Tiên Lộc, không xảy ra với 4
+  skin thú bốn chân còn lại (đã dựng lại bằng `tools/ThuChoNgoiSkinThu` để xác nhận: Phúc Thú/
+  Gấu Trúc/Xích Dương/Chiến Lang ngồi khớp thân thú ở cùng dòng 0, chỉ Tiên Lộc nổi).
+
+  Nguyên nhân: Tiên Lộc là con nai/hoẵng, thân **thấp và gọn hơn hẳn** Poro (chỗ dựa của dòng
+  0), trong khi 4 skin còn lại có thân xấp xỉ Poro nên dùng chung dòng 0 vừa khít. Bảng
+  "lụt"/"che chân người" ở trên chỉ đo hướng **ngang** (vẫn ổn với Tiên Lộc, 55%) nên không hề
+  bắt được lỗi này — lỗi chỉ lộ ra ở hướng **xuống** và **lên**.
+
+  Sửa giống Kim Cang Long: thêm **dòng riêng số 6** vào `Char.dx_horse_tool`/`dy_horse_tool`,
+  chỉ đổi hai hướng xuống/lên (`-20`→`-9`, `-15`→`-7`, đo bằng `tools/ThuChoNgoiSkinThu` rồi
+  chọn mức người lọt vào giữa cụm sừng/cánh, khớp bố cục của 4 skin còn lại); hướng ngang giữ
+  y hệt dòng 0 (dx `±7`, dy `-15`) vì hướng đó vốn đã ổn, không ai báo lỗi. `SkinLinhThu.
+  INDEX_DXY[TIEN_LOC] = 6`. Dòng mới **thấp hơn** dòng 0 (dy dương hơn) ở cả hai hướng nên an
+  toàn với ràng buộc tên nhân vật (`paintName` theo dòng 0 — xem mục Kim Cang Long dưới đây,
+  chỉ nguy khi dòng mới **cao hơn** dòng 0 quá ~10px). Dòng 6 giờ là dòng cuối của bảng (dòng
+  5 của Kim Cang Long không còn là dòng cuối nữa). `test/KiemSkinLinhThu.kiemChoNgoiTienLoc`
+  chốt cả bảng lẫn dữ liệu.
+
   ### Kim Cang Long (skin 5) — dòng bảng riêng, không dùng "lụt" của thú bốn chân
 
   Ba lần chỉnh "lụt" khối xuống (12px như Poro → người nổi lơ lửng; căn đáy về 0..7px →

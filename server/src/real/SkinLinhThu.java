@@ -66,6 +66,9 @@ public final class SkinLinhThu {
     /** Chi so skin cua Kim Cang Long - chi so DUY NHAT chi so ngau nhien theo vat pham. */
     public static final int KIM_CANG_LONG = 5;
 
+    /** Chi so skin cua Tien Loc - dung dong RIENG so 6 cua bang cho ngoi, xem INDEX_DXY. */
+    public static final int TIEN_LOC = 2;
+
     /** Ten skin, dung cho thong bao va mo ta vat pham. Thu tu khop ID_ITEM va file anh. */
     public static final String[] TEN = {"Phúc Thú", "Gấu Trúc", "Tiên Lộc", "Xích Dương", "Chiến Lang", "Kim Cang Long"};
 
@@ -141,8 +144,12 @@ public final class SkinLinhThu {
      * 0..dx_horse_tool.length-1; -1 = khong bu (nguoi ngoi tut xuong sat dat); gui so lon
      * hon bang thi client nem loi giua luc ve. test/KiemSkinLinhThu.kiemChoNgoiSkin chot
      * moi phan tu o day deu tro vao mot dong co that.
+     *
+     * Tien Loc (2) dung dong RIENG so 6 (12/09/2026): than nai thap/gon hon Poro nen dung
+     * chung dong 0 la nguoi noi lo lung phia tren con thu (nguoi choi bao kem anh chup) -
+     * xem chu thich o Char.java, dy_horse_tool dong 6.
      */
-    public static final int[] INDEX_DXY = {0, 0, 0, 0, 0, 5};
+    public static final int[] INDEX_DXY = {0, 0, 6, 0, 0, 5};
 
     /** Dong bang bu toa do cho skin dang mang; 0 (dong Poro) neu khong xac dinh duoc. */
     public static int indexDxy(final Char p) {
