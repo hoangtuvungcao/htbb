@@ -193,15 +193,33 @@ cat > "$CONF_EP" <<'EOF'
 #
 #  Dieu kien %{HTTPS} != on chan vong lap chuyen huong vo tan: VirtualHost 443
 #  cung gop tep nay.
+#
+#  HAI NGOAI LE THEM SAU NAY (dung sua mat, chay lai script se giu nguyen vi
+#  chung nam trong chinh heredoc nay):
+#   - REMOTE_ADDR khop IP goc cua Nova WAF (104.243.35.x / 104.243.37.x): Nova
+#     WAF giai ma TLS o bien roi noi ve origin bang HTTP THUONG, nen ep https o
+#     day se tao vong lap chuyen huong vo tan cho chinh no.
+#   - HTTP_HOST bang dung IP may chu (180.93.57.30): duong vao thang bang IP
+#     tren cong 80, ne hoan toan Nova WAF, dung khi Nova WAF hong
+#     (khong chuyen Cookie/Set-Cookie qua origin - 12/09/2026, lam CSRF/session
+#     cua trang admin luon "het han"). Cong 443 chi mo cho Cloudflare/Nova WAF/
+#     whitelist (xem /etc/kpah-cloudflare-web/apply.sh) nen ep ve https o day se
+#     dua nguoi dung vao dung cai tuong lua do - mat luon con duong thoat.
 <IfModule mod_rewrite.c>
     <Directory /opt/kpah/web/admin>
         RewriteEngine On
         RewriteCond %{HTTPS} !=on
+        RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+        RewriteCond %{REMOTE_ADDR} !^104\.243\.(35|37)\.
+        RewriteCond %{HTTP_HOST} !=180.93.57.30
         RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
     </Directory>
     <Directory /var/www/html/kpah/admin>
         RewriteEngine On
         RewriteCond %{HTTPS} !=on
+        RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+        RewriteCond %{REMOTE_ADDR} !^104\.243\.(35|37)\.
+        RewriteCond %{HTTP_HOST} !=180.93.57.30
         RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
     </Directory>
 </IfModule>

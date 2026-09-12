@@ -130,6 +130,28 @@ Từ đó tài khoản nào chưa có khoá là **không vào được**, kể c
 dòng này thì người chưa ghi danh vẫn vào được chỉ bằng mật khẩu — **đừng dừng ở bước
 ghi danh**. Trang Tổng quan hiện cảnh báo đỏ cho tới khi cả hai việc trên xong.
 
+**Nova WAF chặn Cookie (12/09/2026) — đường vào thẳng bằng IP khi domain hỏng.** Nova
+WAF (reverse proxy trước VPS) không chuyển tiếp `Cookie`/`Set-Cookie` qua origin cho
+domain `kpah-private.site`, nên form đăng nhập admin (dựa vào session PHP + CSRF token
+trong cookie) báo "Phiên làm việc hết hạn" **mọi lần**, bất kể thử lại bao nhiêu. Đã xác
+nhận bằng log trực tiếp trên server, không phải lỗi code hay timeout. Đây là cấu hình
+phía dịch vụ Nova WAF, không sửa được từ repo này.
+
+Lối thoát: vào thẳng bằng IP máy chủ, cổng **80** (không phải domain, không phải 443):
+
+```
+http://180.93.57.30/admin/
+```
+
+Đường này né hoàn toàn Nova WAF (không qua DNS của domain) nên cookie/session hoạt động
+bình thường; Basic Auth vẫn chặn người lạ như cũ, không phụ thuộc IP nên không cần whitelist
+IP của người quản trị (IP đổi liên tục vẫn vào được). `vps/bat-https.sh` đã có ngoại lệ
+để đường IP:80 này **không bị ép chuyển sang HTTPS** — cổng 443 chỉ mở cho
+Cloudflare/Nova WAF/whitelist (xem `vps/chi-cho-server-txt.sh`), ép sang đó sẽ mất luôn
+đường thoát. Đổi lại: mật khẩu Basic Auth và session đi KHÔNG MÃ HOÁ trên đường IP:80
+này — chấp nhận được cho một lối thoát dự phòng, không dùng làm đường vào chính hàng ngày
+nếu Nova WAF đã hết lỗi.
+
 **Mất điện thoại:** dùng một trong 8 mã dự phòng in ra lúc ghi danh (mỗi mã một lần).
 Hết mã thì vào máy chủ bằng SSH, `DELETE FROM web_admin_2fa WHERE admin_user='tên';`
 rồi ghi danh lại. Có SSH là luôn còn đường về, nên **không cần cửa hậu nào trên web**.
