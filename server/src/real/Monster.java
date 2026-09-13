@@ -1018,9 +1018,9 @@ public class Monster extends LiveActor {
                 // Han muc duoc luu theo ngay trong bang tob_train_luong -> bao tri / restart
                 // khong lam reset. Xem Char.addLuongTrainQuai().
                 boolean DropLuong = true; // false = tat han viec train quai ra luong
-                if (DropLuong && p.getLevel() >= 35) {
+                if (DropLuong && p.getLevel() >= 40) {
                     final int deltalv = Map.abs(p.lvDetail.lv - this.level);
-                    if (deltalv <= 5) {
+                    if (deltalv <= 10) {
                         if (Map.randomMillion() < tile(250000, PC_TILE_LUONG)) { // goc 25% moi con quai: luong khoa
                             final int slKhoa = Map.r.nextInt(5); // 0..4
                             if (slKhoa > 0) {

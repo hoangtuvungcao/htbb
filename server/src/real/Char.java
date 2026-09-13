@@ -13987,9 +13987,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     // ==================== HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI ====================
     // Moi nhan vat, moi ngay: toi da MAX_LUONG_TRAIN_NGAY luong mo va MAX_LUONG_TRAIN_NGAY
-    // luong khoa. Khong phu thuoc so luong dang co trong nguoi. Han muc luu trong bang
-    // tob_train_luong kem ngay, nen bao tri / restart server khong lam reset.
-    public static final int MAX_LUONG_TRAIN_NGAY = 200000;
+    // luong khoa. Han muc luu trong bang tob_train_luong kem ngay, nen bao tri / restart
+    // server khong lam reset. Ngoai han muc ngay, con them nguong dang giu trong nguoi:
+    // qua MAX_LUONG_KHOA_DANG_GIU / MAX_LUONG_MO_DANG_GIU thi khong nhan them tu train quai
+    // nua (xem addLuongTrainQuai), du han muc ngay chua het.
+    public static final int MAX_LUONG_TRAIN_NGAY = 50000;
+    public static final int MAX_LUONG_KHOA_DANG_GIU = 50000;
+    public static final int MAX_LUONG_MO_DANG_GIU = 50000;
 
     public String ngayTrainLuong = "";
     public int luongMoTrainNgay = 0;
@@ -14033,6 +14037,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
     public int addLuongTrainQuai(int soluong, final boolean khoa) {
         if (soluong <= 0) {
             return 0;
+        }
+        final int dangGiu = khoa ? this.getLuongLock() : this.getLuong();
+        final int nguongDangGiu = khoa ? MAX_LUONG_KHOA_DANG_GIU : MAX_LUONG_MO_DANG_GIU;
+        final int conLaiDangGiu = nguongDangGiu - dangGiu;
+        if (conLaiDangGiu <= 0) {
+            return 0;
+        }
+        if (soluong > conLaiDangGiu) {
+            soluong = conLaiDangGiu;
         }
         final int conLai = conLaiLuongTrainNgay(khoa);
         if (conLai <= 0) {
