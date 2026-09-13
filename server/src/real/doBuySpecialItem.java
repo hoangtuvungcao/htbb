@@ -385,7 +385,7 @@ public class doBuySpecialItem {
                     } else if (item.id == 131) {
                         moneyType = "xu";
                         if (player.buy_luot_van_tieu <= 0) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Một ngày chỉ có thể mua 3 thẻ vận tiêu.", ""));
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Một ngày chỉ có thể mua 2 thẻ vận tiêu.", ""));
                             return;
                         }
 

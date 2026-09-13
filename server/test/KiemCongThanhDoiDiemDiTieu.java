@@ -67,8 +67,10 @@ public final class KiemCongThanhDoiDiemDiTieu {
         if (ma.isEmpty()) {
             return;
         }
-        Kiem.sai("KHONG con tran cung 'if (i == 10) break' (tung cat bot Set Lan sl[1]=15)",
-                ma.contains("if (i == 10"));
+        // Chi bat dung dong CODE cu (co khoang trang la "10 )" va chu thich tieng Viet cua no),
+        // khong bat vao chu thich giai thich moi co nhac lai chuoi "if (i == 10) break;".
+        Kiem.sai("KHONG con tran cung 'if (i == 10 ) break;' (tung cat bot Set Lan sl[1]=15)",
+                ma.contains("if (i == 10 ) break;") || ma.contains("Chỉ tính 10 mục tiêu"));
         Kiem.dung("dieu kien resist co them chan CHEO qua hetHanLan",
                 ma.contains("|| actor.hetHanLan > System.currentTimeMillis()"));
 
@@ -195,10 +197,11 @@ public final class KiemCongThanhDoiDiemDiTieu {
         }
         Kiem.bang("ca Canh va Choi cung dung nguong vinh vien 'pc1<50' tren thang 1 trieu (0.0001%)",
                 Integer.valueOf(2), Integer.valueOf(soLan));
-        Kiem.dung("dung thang nextInt(1000000) (khong con nextInt(100) cu)",
-                luckyDraw.contains("int pc1 = Map.r.nextInt(1000000);"));
-        Kiem.sai("KHONG con thang nextInt(100) cu cho pc1 (da doi het sang 1 trieu)",
-                luckyDraw.contains("int pc1 = Map.r.nextInt(100);"));
+        Kiem.bang("dung 2 cho (Canh + Choi) doi sang thang nextInt(1000000)",
+                Integer.valueOf(2), Integer.valueOf(demSoLan(luckyDraw, "int pc1 = Map.r.nextInt(1000000);")));
+        // Nhanh phi phong World Cup (id 616) van dung nextInt(100) - KHONG lien quan, giu nguyen.
+        Kiem.bang("chi con 1 cho dung nextInt(100) cho pc1 (nhanh phi phong 616, ngoai pham vi)",
+                Integer.valueOf(1), Integer.valueOf(demSoLan(luckyDraw, "int pc1 = Map.r.nextInt(100);")));
     }
 
     private static void kiemGioiHanDiTieuMoiNgay() {
@@ -231,8 +234,9 @@ public final class KiemCongThanhDoiDiemDiTieu {
         final String charJava = doc("src/real/Char.java");
         Kiem.dung("doc duoc src/real/Char.java", !charJava.isEmpty());
 
-        Kiem.bang("co dung 2 lan doi sang nextInt(100000) (doInitMonter + doChangeTieu)",
-                Integer.valueOf(2), Integer.valueOf(demSoLan(charJava, "Map.r.nextInt(100000)")));
+        // Char.java co nhieu cho khac dung nextInt(100000) tu truoc - chi dem dung dong roll mau tieu.
+        Kiem.bang("co dung 2 lan 'final int ran = Map.r.nextInt(100000);' (doInitMonter + doChangeTieu)",
+                Integer.valueOf(2), Integer.valueOf(demSoLan(charJava, "final int ran = Map.r.nextInt(100000);")));
         Kiem.dung("doInitMonter: Vang con 0.01% (nguong 99999, indexMons=4)",
                 charJava.contains("ran < 99999) {") && charJava.contains("indexMons = 4; // Vang 0.01%"));
         Kiem.dung("doInitMonter: Tim la nhanh else (khong con dieu kien rieng, ran==99999 la gia tri duy nhat con lai)",
