@@ -129,7 +129,16 @@ class CharSuKien {
                             }
                         }
                     } else if (lvOpen >= 70) {
-                        final int slBotXanh = Math.max(1, (Map.r.nextInt(3) + 1) / div);
+                        // Hoan My/Vang/Tim: muc CO DINH rieng tung mau (yeu cau nguoi dung
+                        // 13/09/2026 - truoc do ca 3 mau deu random 1-3 giong Trang/Xanh/Do).
+                        // Trang/Xanh/Do van giu nguyen random 1-3 cu, khong doi.
+                        final int slBotXanh;
+                        if (colortieu >= 3) {
+                            final int[] BOT_XANH_THEO_MAU = {10, 20, 30}; // [Hoan My, Vang, Tim]
+                            slBotXanh = Math.max(1, BOT_XANH_THEO_MAU[colortieu - 3] / div);
+                        } else {
+                            slBotXanh = Math.max(1, (Map.r.nextInt(3) + 1) / div);
+                        }
                         self.doAddGemItem(GemTemplate.BOT_XANH, slBotXanh, true);
                         info = String.valueOf(info) + " và " + slBotXanh + " " + Map.gemTemplate[GemTemplate.BOT_XANH].name;
                         self.sendMessage(MessageCreator.createCharGemItem(self));
@@ -157,13 +166,16 @@ class CharSuKien {
                         ++finish_TIEU[n2];
                     }
                     // Diem doi thuong: CHI tieu Hoan My/Vang/Tim (colortieu>=3) moi duoc,
-                    // van tieu thanh cong +50, cuop tieu thanh cong +25 (yeu cau nguoi dung
-                    // 13/09/2026 - truoc day tinh cho CA 6 mau). Khong tinh diem cho tieu
-                    // bang (typeTieu==CLAN, nhanh do khong vao day).
+                    // moi mau MOT muc rieng - Tim 50, Vang 30, Hoan My 15 (yeu cau nguoi
+                    // dung 13/09/2026 - truoc day ca 3 mau dung chung 50 diem). Bi cuop
+                    // (isThief) chi con MOT NUA - dung lai bien "div" da co san o dau ham,
+                    // giong cach exp/luong o tren cung chia cho div.
                     if (colortieu >= 3) {
-                        pReceive.diemDoiThuong += isThief ? 25 : 50;
+                        final int[] DIEM_DOI_THUONG = {15, 30, 50}; // [Hoan My, Vang, Tim]
+                        final int diem = DIEM_DOI_THUONG[colortieu - 3] / div;
+                        pReceive.diemDoiThuong += diem;
                         pReceive.sendMessage(MessageCreator.createServerAlertMessage(
-                                "Bạn nhận được " + (isThief ? 25 : 50) + " điểm đổi thưởng (tổng: " + pReceive.diemDoiThuong + " điểm).", ""));
+                                "Bạn nhận được " + diem + " điểm đổi thưởng (tổng: " + pReceive.diemDoiThuong + " điểm).", ""));
                     }
                 } else if (typeTieu != Char.CLAN) {
                 }

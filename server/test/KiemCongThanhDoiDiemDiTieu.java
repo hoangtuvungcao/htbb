@@ -37,9 +37,12 @@ import java.nio.file.Paths;
  *    - Cong thuc exp MOI (% cua exp can len cap) cho Hoan My/Vang/Tim tu lv50, giam dan
  *      theo moc cap (50-59: 5/7/9%, 60-69: 3.5/5.5/7.5%, 70+: 0.5/2.5/4.5%) - duoi lv50
  *      va Trang/Xanh/Do giu nguyen cong thuc cu.
- *    - Tu lv70: bo luong/luong khoa, thay bang bot xanh lam.
+ *    - Tu lv70: bo luong/luong khoa, thay bang bot xanh lam. Cap nhat cung ngay: Hoan
+ *      My/Vang/Tim doi tu random 1-3 sang muc CO DINH rieng (Hoan My 10/Vang 20/Tim 30,
+ *      Trang/Xanh/Do van giu random 1-3 cu); bi cuop chi con MOT NUA (chia cho div).
  *    - Diem doi thuong (diemDoiThuong): chi Hoan My/Vang/Tim moi duoc, khong con ap dung
- *      cho ca 6 mau nhu truoc.
+ *      cho ca 6 mau nhu truoc. Cap nhat cung ngay: moi mau mot muc rieng (Hoan My 15/Vang
+ *      30/Tim 50, truoc do ca 3 mau dung chung 50), bi cuop chi con MOT NUA.
  */
 public final class KiemCongThanhDoiDiemDiTieu {
 
@@ -276,9 +279,16 @@ public final class KiemCongThanhDoiDiemDiTieu {
                 suKien.contains("if (luongadd[colortieu] > 0 && lvOpen < 70) {"));
         Kiem.dung("tu lv70: cap bot xanh lam thay the (GemTemplate.BOT_XANH)",
                 suKien.contains("self.doAddGemItem(GemTemplate.BOT_XANH, slBotXanh, true);"));
+        Kiem.dung("bot xanh lam: Hoan My/Vang/Tim dung muc co dinh rieng (10/20/30), bi cuop chia div",
+                suKien.contains("final int[] BOT_XANH_THEO_MAU = {10, 20, 30}; // [Hoan My, Vang, Tim]")
+                        && suKien.contains("slBotXanh = Math.max(1, BOT_XANH_THEO_MAU[colortieu - 3] / div);"));
+        Kiem.dung("bot xanh lam: Trang/Xanh/Do van giu random 1-3 cu",
+                suKien.contains("slBotXanh = Math.max(1, (Map.r.nextInt(3) + 1) / div);"));
 
         Kiem.dung("diem doi thuong: chi ap dung tu Hoan My tro len (colortieu >= 3)",
-                suKien.contains("if (colortieu >= 3) {") && suKien.contains("pReceive.diemDoiThuong += isThief ? 25 : 50;"));
+                suKien.contains("if (colortieu >= 3) {") && suKien.contains("final int[] DIEM_DOI_THUONG = {15, 30, 50}; // [Hoan My, Vang, Tim]"));
+        Kiem.dung("diem doi thuong: moi mau mot muc rieng, bi cuop chi con mot nua (chia cho div)",
+                suKien.contains("final int diem = DIEM_DOI_THUONG[colortieu - 3] / div;"));
     }
 
     private static int demSoLan(final String noiDung, final String mau) {

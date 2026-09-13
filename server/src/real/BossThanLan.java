@@ -628,11 +628,6 @@ public class BossThanLan extends Boss {
 
     public Vector<Potion> dropPotion(Char p) {
         Vector<Potion> pt = new Vector();
-        // Nhan sam (potion 9) roi them voi ti le 1%, tinh rieng - khong dinh gi
-        // toi bo random co san ben duoi.
-        if (Map.r.nextInt(100) < 1) {
-            pt.add(new Potion((short) 9, 1, this.map));
-        }
         if (this.idTemplate == 39) {
             byte[] id = new byte[]{9, 10, 11, 7, 13};
             int[] sl = new int[]{1, 1, 1, 6, 2};
