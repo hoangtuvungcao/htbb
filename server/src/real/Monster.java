@@ -729,11 +729,11 @@ public class Monster extends LiveActor {
     public static int PC_TILE_ITEM = 20;        // do (trang bi) roi ra
 
     // ================= GIAM EXP QUAI (moi level, dong bo 13/09/2026) =================
-    // 100 = giu nguyen, 60 = con 60% (giam 40%). Ap dung DONG NHAT cho moi level cua
+    // 100 = giu nguyen, 30 = con 30% (giam 70%). Ap dung DONG NHAT cho moi level cua
     // quai thuong (Monster), khong dung toi Boss - giong quy uoc cua khoi PC_TILE_* o
     // tren. Truoc 13/09/2026 tach rieng hai nguong (>=50 va <50) voi ti le khac nhau,
-    // nay gop lai thanh mot theo yeu cau "giam het tat ca ve 60% cho dong bo".
-    public static int PC_TILE_EXP = 60;
+    // sau gop lai dong bo con 60% (giam 40%), roi giam tiep xuong 30% (giam 70%).
+    public static int PC_TILE_EXP = 30;
 
     /** Nhan ti le goc voi phan tram dieu chinh o tren. */
     public static int tile(final int tiLeGoc, final int pc) {
