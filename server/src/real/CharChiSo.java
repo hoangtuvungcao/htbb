@@ -562,7 +562,14 @@ class CharChiSo {
             }
         }
         try {
-            if (self.itemAx != null) {
+            // Cong thuc rieng cho cuoc (itemAx, item type 13) CHI ap dung trong khu mo
+            // (mapId == 17 - xem MapDanhNhau/MapTown/MapLienDau, deu bat buoc phai co
+            // cuoc moi danh duoc trong map nay). Truoc day khong kiem tra map: mac cuoc
+            // roi ra khoi khu mo (chet/hoi sinh/duoc keo di/GM warp...) ma quen thao ra
+            // thi MOI don danh o BAT KY dau (PK, dau truong, bang hoi, boss...) deu bi
+            // ep cung theo cong thuc nay, bo qua toan bo ne tranh/chi mang/phong thu/roi
+            // do khi trung boss ben duoi - loi nghiem trong, sua 13/09/2026.
+            if (self.itemAx != null && self.map != null && self.map.mapId == 17) {
                 return self.itemAx.atb[0] * 2;
             }
             if (actor.isMonsterMoba() && (actor.isLienHoaTru() || actor.isBossTruRong()) && !actor.canAttack(self)) {

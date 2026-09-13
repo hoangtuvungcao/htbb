@@ -18,7 +18,7 @@ import java.util.Set;
  * TIEU CHI GIU (yeu cau ngay 02/09/2026): chi con log phuc vu dung ba viec
  *   1. Truy vat pham hiem bi mat hay doi chu: nghien/ban tu dong/admin xoa (matdo), trao doi,
  *      ban gian hang, vut ra dat, het han, tich thu, thao do khi hanh trang day, chuyen giua
- *      tui va hanh trang.
+ *      tui va hanh trang, mo trung tao pet (itemtrungpet, them 13/09/2026).
  *   2. Loi va nghi van gian lan: dung danh sach web/admin/chandoan.php dang dem, cong cac cho
  *      ghi "hack..." trong ma nguon.
  *   3. Tai san tang bat thuong: nap tien, moc nap, giftcode, moi lan nhan xu, chuyen luong,
@@ -50,6 +50,9 @@ public final class LocLogVatPham {
             "uride",                    // xuong ngua khi hanh trang day
             "XOAPET",                   // xoa pet
             "XOATC",                    // xoa thoi trang
+            "itemtrungpet",             // mo trung tao pet (Map.java) - them 13/09/2026 de
+                                        // truy duoc cac ca "mo trung xong mat pet" (loi dua
+                                        // chay Char.doCreatePet, da va bang synchronized)
             "tichthu", "tichthuchoi", "logchoi", "thugay", // admin / server tich thu
             "downlv",                   // bi tut cap
             "caitaocaitrang",           // cai tao cai trang: tru diem xai/nap, doi % Tinh Hoa (real/CaiTaoCaiTrang)
