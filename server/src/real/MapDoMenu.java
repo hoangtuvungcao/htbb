@@ -1313,7 +1313,7 @@ class MapDoMenu {
                     }
                    long now = System.currentTimeMillis();
                       long last = player.timeNextRegion;
-                      final long COOLDOWN = 15_000L;
+                      final long COOLDOWN = 20_000L;
 
                       if (last != -1 && now - last < COOLDOWN) 
                       {
