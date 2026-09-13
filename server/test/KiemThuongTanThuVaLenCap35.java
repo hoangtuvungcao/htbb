@@ -16,11 +16,7 @@ import java.nio.file.Paths;
  * board_created co san; DatabaseXepHang.getBoardCreated (noi Char nhan hang doi do luc
  * dang nhap lan dau) duoc cong THEM phan vat pham, cung mot lan voi xu/luong.
  *
- * Qua (2) phai bat duoc luc LEN CAP, khong phai luc da o san cap 35: dung nguong ">= 35"
- * + co mot lan (Char.thuongLv35), KHONG dung "== 35" tuyet doi (bay da biet cua gif35 -
- * bi bo lo vinh vien khi nhan vat nhay nhieu cap cung luc qua giftcode/lenh web dat cap/
- * admin buff). Va phai goi tu CA HAI ham cong exp (addXpCharEvent, addXPForChar) - thieu
- * mot ben la mot duong len cap khong duoc thuong.
+ * Qua (2) chi nhan tai NPC tu cap 35, khong tu dong phat khi len cap.
  */
 public final class KiemThuongTanThuVaLenCap35 {
 
@@ -81,44 +77,25 @@ public final class KiemThuongTanThuVaLenCap35 {
         final int ketThucHam = ma.indexOf("\n    static void doGetItem(", viTriHam);
         final String thanHam = ma.substring(viTriHam, ketThucHam > viTriHam ? ketThucHam : ma.length());
 
-        // Nguong ">= 35" + co mot lan - KHONG duoc dung "== 35" tuyet doi (bay cua gif35).
-        Kiem.dung("dieu kien dung nguong 'lv < 35' (tuc >= 35 moi thuong), khong phai '== 35'",
-                thanHam.contains("p.lvDetail.lv < 35"));
-        Kiem.sai("KHONG dung dieu kien tuyet doi 'lv == 35' (bay cua gif35, bo lo khi nhay cap)",
-                thanHam.contains("p.lvDetail.lv == 35"));
-        Kiem.dung("co co mot lan rieng (thuongLv35 != 0 -> return, roi dat = 1)",
-                thanHam.contains("p.thuongLv35 != 0") && thanHam.contains("p.thuongLv35 = 1;"));
-
+        Kiem.dung("qua NPC kiem tra dieu kien va danh dau da nhan",
+                thanHam.contains("!p.canReceiveGif35()")
+                && thanHam.contains("p.thuongLv35 = 1;") && thanHam.contains("p.gif35 = 1;"));
         Kiem.dung("thuong 10.000.000 xu", thanHam.contains("p.addXu(10000000L,"));
         Kiem.dung("50 nlsc cap 6 (ID_MATERIAL_LOW[5]) khoa",
                 thanHam.contains("GemTemplate.ID_MATERIAL_LOW[5][i], 50, true"));
         Kiem.dung("50 nlcc cap 6 (ID_MATERIAL_HIGHT[5]) khoa",
                 thanHam.contains("GemTemplate.ID_MATERIAL_HIGHT[5][i], 50, true"));
 
-        // Phai duoc goi tu CA HAI ham cong exp - dem so lan goi trong toan file (ngoai
-        // chinh dinh nghia ham).
-        final String GOI = "thuongLenCap35(p);";
-        int soLan = 0;
-        int i = ma.indexOf(GOI);
-        while (i >= 0) {
-            soLan++;
-            i = ma.indexOf(GOI, i + GOI.length());
-        }
-        Kiem.bang("thuongLenCap35(p) duoc goi dung 2 lan (addXpCharEvent va addXPForChar)",
-                Integer.valueOf(2), Integer.valueOf(soLan));
-
-        final int viTriEvent = ma.indexOf("static void addXpCharEvent(");
-        final int viTriForChar = ma.indexOf("static void addXPForChar(");
-        Kiem.dung("tim thay ca hai ham cong exp", viTriEvent >= 0 && viTriForChar >= 0 && viTriEvent < viTriForChar);
-        if (viTriEvent >= 0 && viTriForChar > viTriEvent) {
-            final String thanEvent = ma.substring(viTriEvent, viTriForChar);
-            final String thanForChar = ma.substring(viTriForChar, viTriHam);
-            Kiem.dung("addXpCharEvent co goi thuongLenCap35(p)", thanEvent.contains(GOI));
-            Kiem.dung("addXPForChar co goi thuongLenCap35(p)", thanForChar.contains(GOI));
-        }
-
+        Kiem.sai("len cap khong tu dong phat qua", ma.contains("thuongLenCap35(p);"));
+        final String npc = doc("src/real/cmd/RequestNPCInfoHandler.java");
+        final String menu = doc("src/real/MapDoMenu.java");
+        Kiem.dung("menu va xu ly NPC dung chung dieu kien nhan qua",
+                npc.contains("p.canReceiveGif35()") && menu.contains("player.canReceiveGif35()"));
         // Truong luu tru: khai bao + khoi tao + luu + doc, chiu duoc save cu chua co cot nay.
         final String charJava = doc("src/real/Char.java");
+        Kiem.dung("NPC cho nhan tu cap 35, chan ca hai co da nhan",
+                charJava.contains("this.lvDetail.lv >= 35 && this.thuongLv35 == 0 && this.gif35 == 0"));
+        Kiem.dung("nhan qua qua NPC", charJava.contains("MapXuLyLenh.thuongLenCap35(this);"));
         Kiem.dung("Char.java khai bao truong thuongLv35", charJava.contains("public byte thuongLv35;"));
         final String khoiTao = doc("src/real/CharKhoiTao.java");
         Kiem.dung("CharKhoiTao khoi tao thuongLv35 = 0", khoiTao.contains("self.thuongLv35 = 0;"));

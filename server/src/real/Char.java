@@ -10521,7 +10521,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return info.equals("") ? info : info.substring(0, info.length() - 1);
     }
 
-    public void doReceiveGif35(final int magic) {
+    public boolean canReceiveGif35() {
+        return this.lvDetail.lv >= 35 && this.thuongLv35 == 0 && this.gif35 == 0;
+    }
+
+    public synchronized void doReceiveGif35(final int magic) {
+        if (!this.canReceiveGif35()) {
+            this.sendMessage(MessageCreator.createServerAlertMessage("Cần đạt cấp 35 và chưa nhận quà cấp 35 để nhận thưởng.", ""));
+            return;
+        }
         MapXuLyLenh.thuongLenCap35(this);
     }
 

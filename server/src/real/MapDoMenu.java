@@ -2369,7 +2369,7 @@ class MapDoMenu {
 //                                    break;
                 
                                 case 7:
-                                    if (player.lastLV == 35 && player.lvDetail.lv == 35 && player.gif35 != 1) {
+                                    if (player.canReceiveGif35()) {
                                         player.doReceiveGif35(0);
                                     } else if (!openLog) {
                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không thể nhận quà", ""));
@@ -2379,7 +2379,7 @@ class MapDoMenu {
                                     }
                                     break;
                                 case 8:
-                                    if (player.lastLV == 35 && player.lvDetail.lv == 35 && player.gif35 != 1) {
+                                    if (player.canReceiveGif35()) {
                                         player.doReceiveGif35(1);
                                     } else if (!openLog) {
                                         player.sendMessage(MessageCreator.createServerAlertMessage("Không thể nhận quà", ""));
@@ -2390,7 +2390,7 @@ class MapDoMenu {
                                     break;
                                 case 9:
                                     if (openLog) {
-                                        if (player.lastLV == 35 && player.lvDetail.lv == 35 && player.gif35 != 1) {
+                                        if (player.canReceiveGif35()) {
                                             player.sendMessage(MessageCreator.createMsgInputText(-32042, 0, "Mã quà tặng", 0));
                                         } else {
                                             String[] menusms = new String[]{"Nạp 20k", "Nạp 50k", "Nạp 100k"};
@@ -2401,7 +2401,7 @@ class MapDoMenu {
                 
                                 case 10:
                                     if (openLog) {
-                                        if (player.lastLV == 35 && player.lvDetail.lv == 35 && player.gif35 != 1) {
+                                        if (player.canReceiveGif35()) {
                                             String[] menu = new String[]{"Đổi qua lượng", "Tặng", "Xem kim cương", "Tạo đơn hàng", "Hướng dẫn"};
                                             player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 1));
                                         } else {

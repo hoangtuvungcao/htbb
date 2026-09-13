@@ -637,12 +637,12 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     if (p != null) {
                         if (!Map.openLog) {
                             menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10l)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)"};
-                            if (p.lastLV == 35 && p.gif35 == 0) {
+                            if (p.canReceiveGif35()) {
                                 menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10L)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)","Mua 1 Vé quay Phượng Hoàng(50l)", "Quà 35 ma", "Quà 35 vật"};
                             }
                         } else {
                             menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10l)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)","Mua 2 Vé quay Phượng Hoàng(50l)", "Nhập mã quà tặng", "Kim cương", "Nạp sms", "Tặng lượng(" + p.vetangluong + " vé)"};
-                            if (p.lastLV == 35 && p.gif35 == 0) {
+                            if (p.canReceiveGif35()) {
                                 menu = new String[]{"Mua vé số(1t xu)", "Số đã mua", "Quay số", "Mua 2 vé quay số(10L)", "Mua 2 vé quay số(10t xu)", "Mua 2 vé quay số đặc biệt(10l)", "Mua 2 Vé quay Phượng Hoàng(50l)", "Quà 35 ma", "Quà 35 vật", "Nhập mã quà tặng", "Kim cương", "Nạp sms", "Tặng lượng(" + p.vetangluong + " vé)"};
                             }
                         }
