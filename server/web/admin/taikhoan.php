@@ -13,6 +13,7 @@
  */
 require_once __DIR__ . '/inc/layout.php';
 require_once __DIR__ . '/inc/lenh_nhan_vat.php';
+require_once __DIR__ . '/inc/xoa_tai_khoan.php';
 requireAdmin();
 
 $TRANG = 'taikhoan.php';
@@ -24,6 +25,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     chanCsrf($TRANG);
 
     $viec = p('viec');
+    if ($viec === 'xoa_nhieu_tai_khoan') {
+        if (p('xac_nhan_xoa') !== 'XOA DA CHON') {
+            veLai($TRANG, 'error', 'Gõ XOA DA CHON để xác nhận xoá các tài khoản đã chọn.');
+        }
+        try {
+            $ids = idsTaiKhoanDaChon($_POST['ids'] ?? null);
+        } catch (InvalidArgumentException $ex) {
+            veLai($TRANG, 'error', $ex->getMessage());
+        }
+        $kq = xoaNhieuTaiKhoan(dbAccount(), dbGame(), $ids, adminName());
+        $msg = 'Đã xoá ' . count($kq['xoa']) . ' tài khoản';
+        if ($kq['xoa']) $msg .= ': ' . implode(', ', $kq['xoa']);
+        $msg .= '.';
+        if ($kq['cho']) $msg .= ' Đang chờ xoá nhân vật: ' . implode(', ', $kq['cho'])
+            . '. Khi server xử lý xong, chọn lại các tài khoản này và bấm xoá để hoàn tất.';
+        if ($kq['bo_qua']) $msg .= ' Bỏ qua: ' . implode(', ', $kq['bo_qua']) . '.';
+        if ($kq['loi']) $msg .= ' Chưa hoàn tất do lỗi: ' . implode(', ', $kq['loi']) . '. Có thể thử lại.';
+        veLai($TRANG, ($kq['cho'] || $kq['loi'] || $kq['bo_qua']) ? 'warning' : 'success', $msg);
+    }
     $id   = (int)p('id');
     $ve   = $TRANG . '?id=' . $id;
 
@@ -485,15 +505,30 @@ adminHead('taikhoan', 'Tài khoản');
 
     <div class="card">
         <h3><?= $q === '' ? 'Danh sách tài khoản' : 'Kết quả cho “' . e($q) . '”' ?></h3>
+        <form method="post" action="taikhoan.php" id="xoaNhieuTaiKhoan">
+            <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+            <input type="hidden" name="viec" value="xoa_nhieu_tai_khoan">
+            <p class="muted small">Chọn tài khoản cần xoá trên trang này. Xoá vĩnh viễn cả tài khoản và toàn bộ nhân vật; không thể hoàn tác.</p>
+            <div class="ngang" style="margin:12px 0;">
+                <label><input type="checkbox" id="chonTatCaTK"> Chọn tất cả trên trang</label>
+                <span id="soTaiKhoanChon" aria-live="polite">Đã chọn 0 tài khoản</span>
+                <label class="o"><span>Gõ XOA DA CHON để xác nhận</span>
+                    <input name="xac_nhan_xoa" id="xacNhanXoaNhieu" autocomplete="off" required pattern="XOA DA CHON">
+                </label>
+                <button type="submit" class="btn btn-do" id="nutXoaNhieu" disabled>Xoá tài khoản đã chọn</button>
+            </div>
         <div class="tbl-wrap">
         <table class="tbl">
             <thead><tr>
-                <th class="num">ID</th><th>Tài khoản</th><th>Email</th>
+                <th>Chọn</th><th class="num">ID</th><th>Tài khoản</th><th>Email</th>
                 <th>Đăng ký</th><th>Trạng thái</th><th></th>
             </tr></thead>
             <tbody>
             <?php foreach ($ketQua as $r): ?>
                 <tr>
+                    <td><input type="checkbox" name="ids[]" value="<?= (int)$r['id'] ?>"
+                        data-ten="<?= e($r['username']) ?>" aria-label="Chọn <?= e($r['username']) ?>"
+                        <?= laTaiKhoanAdmin($r['username']) || strcasecmp($r['username'], adminName()) === 0 ? 'disabled' : '' ?>></td>
                     <td class="num"><?= (int)$r['id'] ?></td>
                     <td><strong><?= e($r['username']) ?></strong>
                         <?php if (laTaiKhoanAdmin($r['username'])): ?>
@@ -506,11 +541,12 @@ adminHead('taikhoan', 'Tài khoản');
                 </tr>
             <?php endforeach; ?>
             <?php if (!$ketQua): ?>
-                <tr><td colspan="6" class="muted">Không có tài khoản nào khớp.</td></tr>
+                <tr><td colspan="7" class="muted">Không có tài khoản nào khớp.</td></tr>
             <?php endif; ?>
             </tbody>
         </table>
         </div>
+        </form>
         <?php if ($q === ''): ?>
             <div class="phantrang">
                 <?php if ($trang > 1): ?>
@@ -527,4 +563,33 @@ adminHead('taikhoan', 'Tài khoản');
     </div>
 
 <?php endif; ?>
+<script>
+(() => {
+    const form = document.getElementById('xoaNhieuTaiKhoan');
+    if (!form) return;
+    const boxes = Array.from(form.querySelectorAll('input[name="ids[]"]:not(:disabled)'));
+    const all = document.getElementById('chonTatCaTK');
+    const confirmText = document.getElementById('xacNhanXoaNhieu');
+    const button = document.getElementById('nutXoaNhieu');
+    const selected = () => boxes.filter(box => box.checked);
+    function update() {
+        const n = selected().length;
+        document.getElementById('soTaiKhoanChon').textContent = 'Đã chọn ' + n + ' tài khoản';
+        all.checked = n > 0 && n === boxes.length;
+        all.indeterminate = n > 0 && n < boxes.length;
+        all.disabled = boxes.length === 0;
+        button.disabled = n === 0 || confirmText.value !== 'XOA DA CHON';
+    }
+    all.addEventListener('change', () => { boxes.forEach(box => { box.checked = all.checked; }); update(); });
+    boxes.forEach(box => box.addEventListener('change', update));
+    confirmText.addEventListener('input', update);
+    form.addEventListener('submit', event => {
+        const chosen = selected();
+        if (!chosen.length || confirmText.value !== 'XOA DA CHON' || !window.confirm(
+            'Xoá vĩnh viễn ' + chosen.length + ' tài khoản và toàn bộ nhân vật của chúng?\n\n'
+            + chosen.map(box => box.dataset.ten).join(', ') + '\n\nKhông thể hoàn tác.')) event.preventDefault();
+    });
+    update();
+})();
+</script>
 <?php adminFoot(); ?>
