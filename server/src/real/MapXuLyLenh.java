@@ -288,11 +288,12 @@ class MapXuLyLenh {
      * bay da biet cua gif35 (dieu kien lastLV == 35 tuyet doi, bi bo lo vinh vien neu nhan
      * vat nhay thang qua 35 trong mot lan cong exp) - KHONG lap lai loi do o day.
      */
-    private static void thuongLenCap35(Char p) {
+    static void thuongLenCap35(Char p) {
         if (p.lvDetail.lv < 35 || p.thuongLv35 != 0) {
             return;
         }
         p.thuongLv35 = 1;
+        p.gif35 = 1;
         p.addXu(10000000L, "thuong len cap 35");
         for (int i = 0; i < GemTemplate.ID_MATERIAL_LOW[5].length; i++) {
             p.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][i], 50, true);

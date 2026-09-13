@@ -10522,42 +10522,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void doReceiveGif35(final int magic) {
-        final byte[] soluong = {(byte) ((magic == 0) ? 0 : 4), (byte) (4 + ((magic == 0) ? 4 : 0)), 4, (byte) (2 + ((magic == 0) ? 2 : 0)), (byte) ((magic == 0) ? 0 : 2), 2, 0, 0, 2, 2};
-        switch (this.charClass) {
-            case 0:
-            case 1:
-            case 3: {
-                final byte[] array = soluong;
-                final int n = 6;
-                array[n] += 4;
-                final byte[] array2 = soluong;
-                final int n2 = 4;
-                array2[n2] += 2;
-                break;
-            }
-            case 2:
-            case 4: {
-                final byte[] array3 = soluong;
-                final int n3 = 0;
-                array3[n3] += 4;
-                final byte[] array4 = soluong;
-                final int n4 = 7;
-                array4[n4] += 2;
-                break;
-            }
-        }
-        final int SO_LUONG_MOI_LOAI = 100;
-        String info = "";
-        for (byte i = 0; i < Char.idGif35.length; ++i) {
-            if (soluong[i] > 0) {
-                info = String.valueOf(info) + SO_LUONG_MOI_LOAI + " " + Map.gemTemplate[Char.idGif35[i]].name + " ";
-                this.doAddGemItem(Char.idGif35[i], SO_LUONG_MOI_LOAI, true);
-            }
-        }
-        this.gif35 = 1;
-        this.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được " + info.trim(), ""));
-        Database.instance.saveOrtherLog("", this.charname, info, "gif35");
-        this.sendMessage(MessageCreator.createCharGemItem(this));
+        MapXuLyLenh.thuongLenCap35(this);
     }
 
     public void doReceiveGif35Offline(final int magic) {

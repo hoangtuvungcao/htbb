@@ -73,7 +73,7 @@ public final class KiemThuongTanThuVaLenCap35 {
             return;
         }
 
-        final int viTriHam = ma.indexOf("private static void thuongLenCap35(Char p)");
+        final int viTriHam = ma.indexOf("static void thuongLenCap35(Char p)");
         Kiem.dung("tim thay dinh nghia thuongLenCap35()", viTriHam >= 0);
         if (viTriHam < 0) {
             return;
