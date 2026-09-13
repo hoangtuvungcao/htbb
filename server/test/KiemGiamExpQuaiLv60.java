@@ -12,6 +12,8 @@ import real.MonsterTemplate;
  * Diem chinh: Monster.rcvXpSauGiam(MonsterTemplate), goi tu ca 3 noi Monster gan lai
  * this.xp (constructor, initInfo(), update() luc hoi sinh) nen ap dung cho moi duong
  * spawn/hoi sinh, khong rieng mot map nao.
+ *
+ * 14/09/2026: giam tiep tu 30% xuong con 5% (giam 95%).
  */
 public final class KiemGiamExpQuaiLv60 {
 
@@ -23,25 +25,25 @@ public final class KiemGiamExpQuaiLv60 {
     }
 
     public static void chay() {
-        Kiem.nhom("Giam exp quai dong bo moi level (con 30%)");
+        Kiem.nhom("Giam exp quai dong bo moi level (con 5%)");
 
-        Kiem.bang("ti le con lai la 30% (giam 70%)",
-                Integer.valueOf(30), Integer.valueOf(Monster.PC_TILE_EXP));
+        Kiem.bang("ti le con lai la 5% (giam 95%)",
+                Integer.valueOf(5), Integer.valueOf(Monster.PC_TILE_EXP));
 
-        Kiem.bang("quai level 1: giam con 30%",
-                Integer.valueOf(300), Integer.valueOf(Monster.rcvXpSauGiam(tao(1, 1000))));
+        Kiem.bang("quai level 1: giam con 5%",
+                Integer.valueOf(50), Integer.valueOf(Monster.rcvXpSauGiam(tao(1, 1000))));
 
-        Kiem.bang("quai level 49: giam con 30%",
-                Integer.valueOf(300), Integer.valueOf(Monster.rcvXpSauGiam(tao(49, 1000))));
+        Kiem.bang("quai level 49: giam con 5%",
+                Integer.valueOf(50), Integer.valueOf(Monster.rcvXpSauGiam(tao(49, 1000))));
 
-        Kiem.bang("quai level 50: giam con 30%",
-                Integer.valueOf(300), Integer.valueOf(Monster.rcvXpSauGiam(tao(50, 1000))));
+        Kiem.bang("quai level 50: giam con 5%",
+                Integer.valueOf(50), Integer.valueOf(Monster.rcvXpSauGiam(tao(50, 1000))));
 
         Kiem.bang("quai level 100: van chi ap dung 1 lan giam (khong giam chong)",
-                Integer.valueOf(30), Integer.valueOf(Monster.rcvXpSauGiam(tao(100, 100))));
+                Integer.valueOf(5), Integer.valueOf(Monster.rcvXpSauGiam(tao(100, 100))));
 
         Kiem.bang("exp le (101) lam tron xuong dung cong thuc tile()",
-                Integer.valueOf(30), Integer.valueOf(Monster.rcvXpSauGiam(tao(50, 101))));
+                Integer.valueOf(5), Integer.valueOf(Monster.rcvXpSauGiam(tao(50, 101))));
     }
 
     private KiemGiamExpQuaiLv60() {
