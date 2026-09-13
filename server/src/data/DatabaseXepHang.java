@@ -404,16 +404,17 @@ class DatabaseXepHang {
                 // Qua nhan vat dau tien cua tai khoan (12/09/2026, yeu cau nguoi dung): kem 3
                 // trung MOI LOAI trong 5 trung pet thuong (Cu/Rong/Yeu Tinh/Doi/Dai bang, id
                 // 684-688 - createItemSoLuong tu khoa vat pham, khong can tham so lock rieng)
-                // va 2 Huyet linh thao (id 720, Map.doCreateHuyetLinhThao khong nhan so luong,
-                // phai goi lap). Ca hai chi cong THEM o day (khong nam trong bang board_created
-                // vi bang do chi co cot so, khong luu duoc vat pham) - cung mot lan nhan voi
+                // va 2 Huyet linh thao KHOA (id 720, Map.doCreateHuyetLinhThao khong nhan so
+                // luong, phai goi lap; tham so thu 2 = 1 la khoa). Ca hai chi cong THEM o day
+                // (khong nam trong bang board_created vi bang do chi co cot so, khong luu duoc
+                // vat pham) - cung mot lan nhan voi
                 // xu/luong o tren, dung luc con bien "player" song (vua qua getBoardCreated tu
                 // SelectCharHandler sau khi Char da nap xong, co the them vao tui).
                 for (int idTrung = 684; idTrung <= 688; ++idTrung) {
                     Char.createItemSoLuong(idTrung, 3, player);
                 }
                 for (int i = 0; i < 2; ++i) {
-                    Map.doCreateHuyetLinhThao(player, 0);
+                    Map.doCreateHuyetLinhThao(player, 1);
                 }
                 //player.vetangluong += ve;
                 //player.luongNap += luong / 2;
