@@ -87,18 +87,22 @@ public class ItemLuckyDraw {
                     newItem.createOptionCanh(4, Map.r.nextInt(91) + 10);
                 }
 
-                // Ti le vinh vien 0.1% (theo yeu cau) = pcWinLuckyDraw(2%) x 5%.
-                // 2% la ti le "trung" chung cho moi vat pham co the chon trong vong
-                // quay (xem Char.pcWinLuckyDraw, dung chung voi phi phong/vu khi
-                // choi), nen o day chi can 5/100 = 5% trong so lan trung la du.
-                int pc1 = Map.r.nextInt(100);
-                if (pc1 <= 4) {
-                    time = 0; // vinh vien
-                } else if (pc1 <= 6) {
+                // Ti le vinh vien 0.0001% (theo yeu cau nguoi dung 13/09/2026, giam 1000
+                // lan so voi 0.1% cu) = pcWinLuckyDraw(2%) x 0.005%. 2% la ti le "trung"
+                // chung cho moi vat pham co the chon trong vong quay (xem
+                // Char.pcWinLuckyDraw, dung chung voi phi phong/vu khi choi) - KHONG doi
+                // hang so do vi no anh huong ca cac muc khac, chi thu hep nhanh vinh vien
+                // rieng o day. Doi thang do tu nextInt(100) sang nextInt(1000000) de bieu
+                // dien duoc phan so nho nhu vay; cac moc thoi han con lai giu nguyen ti le
+                // tuong doi (2%/3%/3%), phan du ra don vao nhanh 1440 phut (ngan nhat).
+                int pc1 = Map.r.nextInt(1000000);
+                if (pc1 < 50) {
+                    time = 0; // vinh vien - 0.005% trong nhanh nay, x 2% ben ngoai = 0.0001%
+                } else if (pc1 < 20050) {
                     time = 43200;
-                } else if (pc1 <= 9) {
+                } else if (pc1 < 50050) {
                     time = 7200;
-                } else if (pc1 <= 12) {
+                } else if (pc1 < 80050) {
                     time = 4320;
                 } else {
                     time = 1440;
@@ -113,12 +117,18 @@ public class ItemLuckyDraw {
                 newItem.identify = p.charDBID;
                 newItem.clazz = p.charClass;
                 newItem.createAttChoi();
-                int pc1 = Map.r.nextInt(100);
-                if (pc1 <= 1) {
+                // Chổi truoc day khong co nhanh vinh vien - theo yeu cau nguoi dung
+                // "cánh + chổi... vĩnh viễn là 0.0001%" them nhanh vinh vien cho Choi
+                // GIONG HET cach tinh cua Canh o tren (0.005% trong nhanh nay x 2% ben
+                // ngoai = 0.0001%).
+                int pc1 = Map.r.nextInt(1000000);
+                if (pc1 < 50) {
+                    time = 0; // vinh vien
+                } else if (pc1 < 20050) {
                     time = 43200;
-                } else if (pc1 <= 4) {
+                } else if (pc1 < 50050) {
                     time = 7200;
-                } else if (pc1 <= 7) {
+                } else if (pc1 < 80050) {
                     time = 4320;
                 } else {
                     time = 1440;

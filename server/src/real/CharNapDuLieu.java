@@ -941,9 +941,12 @@ class CharNapDuLieu {
 //                if (self.luot_van_tieu >= 3) {
 //                    self.luot_van_tieu = 0;
 //                }
-                self.buy_luot_van_tieu = (byte) (3 + self.vip);
+                // Toi da 2 luot MUA/ngay (khong cong vip) + 3 mien phi = 5 tieu/ngay -
+                // xem giai thich day du o CharCapNhat.java (cung mot cap nhat, khong
+                // dung toi potions[82] vi trung index voi tre Trung Thu).
+                self.buy_luot_van_tieu = 2;
 //                self.buy_luot_van_tieu = 0;
-                self.cuop_tieu = 3;
+                self.cuop_tieu = 5;
                 self.countTime = 0;
                 if (self.lvDetail.lv >= 10) {
                     try {

@@ -463,8 +463,8 @@ public class MapLienDau extends Map {
                     toTY = 84;
                     toMapID = mapstart[r.nextInt(MessageCreator.nclone)];
                     checklocation = false;
-                } else if (player.lvDetail.lv < 50 && getTown[player.inCountry] && toMapID == idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn phải đạt cấp độ 50 trở lên mới có thể vào thành trong thời gian này."));
+                } else if (player.lvDetail.lv < 70 && getTown[player.inCountry] && toMapID == idMapTown) {
+                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn phải đạt cấp độ 70 trở lên mới có thể vào thành trong thời gian này."));
                     mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;

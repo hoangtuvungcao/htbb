@@ -479,8 +479,17 @@ public class doUsePotion {
                         Database.instance.saveOrtherLog("", player.charname, "Sử dụng vé h vàng 150%", "exp150");
                         break;
                     case 82:
-                        ++player.luot_van_tieu;
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Bạn có thêm 1 lượt vận tiêu", ""));
+                        // Toi da 5 tieu/ngay (ca luot mien phi lan the mua): chan luon o day
+                        // de ve tich tru tu truoc khong the vuot tran, khong chi dua vao
+                        // buy_luot_van_tieu (gioi han LUOT MUA, khong phai gioi han LUOT DUNG).
+                        if (player.luot_van_tieu < 5) {
+                            ++player.luot_van_tieu;
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn có thêm 1 lượt vận tiêu", ""));
+                        } else {
+                            var10002 = player.potions[potionType]++;
+                            player.sendMessage(MessageCreator.createServerAlertMessage("Một ngày chỉ được đi tối đa 5 tiêu, không thể dùng thêm vé.", ""));
+                            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                        }
                         break;
                     case 84:
                         if (player.timeCrazy != 0L) {

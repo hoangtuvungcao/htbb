@@ -46,6 +46,16 @@ public class LiveActor extends Actor {
    public byte totalTime = 36;
    public long[] khamEff = new long[6];
    public long timeOutKhamDoc = 0L;
+   /**
+    * Moc thoi gian (System.currentTimeMillis) con bi KHOA nhan hieu ung Lan MOI (Bang/Set/
+    * Doc/Lua) - chan CHEO ca 4 loai voi nhau, khong chi tu chan chinh no. Dat trong
+    * CharTrangBi.checkNewEffectItem() ngay luc mot lan THAT SU ap dung duoc (khong dat khi
+    * bi khang/resist), bang dung thoi gian ton tai cua hieu ung do (Doc 5s, Bang 3s, Set 3s/
+    * 6s neu co Set danh, Lua 5s). Trong luc con khoa, mot lan khac (ke ca cung mau) roi vao
+    * cung nhanh "resist" nhu isKhangLan - khong gay sat thuong, khong ap hieu ung. 12/09/2026,
+    * yeu cau nguoi dung: "dang bi bang lan thi khong nhan hieu ung lan khac cho toi khi het".
+    */
+   public long hetHanLan = 0L;
    static byte[] nh = new byte[]{1, 4, 0, 2, 3};
    public int percentDam = 100;
    public byte magic_physic = 0;

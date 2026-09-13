@@ -11275,43 +11275,42 @@ public class Map implements Runnable {
             "Phi phong Huyền Vũ vật lý random kháng 7 ngày",
             "Vũ khí thời trang random chỉ số 7 ngày",
             "Hoả thạch cấp 2 x20",
-            "Phượng Hoàng Lửa 7 ngày",
-            "Giáp Rồng 7 ngày",
             "Nghê Thường 7 ngày",
             "Xích Cước 7 ngày",
             "Nguyệt Linh Trượng random chỉ số 7 ngày",
-            "Cánh Hồng Vân bạo kích 7 ngày",
-            "Cánh Xích Vũ EXP 7 ngày",
-            "Cánh Tử ảnh thuộc tính lan 7 ngày",
-            "Cánh Lam Băng tăng công 7 ngày",
+            // Canh: random CA he (Bang/Set/Doc/Lua/EXP/bao kich...) LAN chi so, tru
+            // tier cao nhat (tier cao nhat chi danh cho quay so may man). Xem
+            // Item.createOptionCanhNgauNhien.
+            "Cánh ngẫu nhiên (hệ + chỉ số random) 7 ngày",
             "Mặt nạ Bí Ngô 7 ngày",
             "Mặt nạ Dạ Xoa 7 ngày",
             "Mặt nạ Thi Khiển 7 ngày",
             "Mặt nạ Ngạ Khuyển 7 ngày",
-            "Chổi Sét 7 ngày",
-            "Chổi Băng 7 ngày",
-            "Chổi Lửa 7 ngày",
-            "Chổi Độc 7 ngày",
+            // Choi: random CA he (Bang/Set/Doc/Lua) LAN chi so, tru tier cao nhat.
+            // Xem Item.createAttChoiNgauNhien.
+            "Chổi ngẫu nhiên (hệ + chỉ số random) 7 ngày",
             "Đầu Bí Ngô 7 ngày",
             "Nón Phù Thủy 7 ngày",
-            // 5 skin linh thu (vinh vien). Xem real.SkinLinhThu — skin chi doi hinh,
+            // 5 skin linh thu, 7 ngay. Xem real.SkinLinhThu — skin chi doi hinh,
             // hoat anh va cach di chuyen cua con linh thu, khong cong them chi so nao,
             // nen dat gia theo do hiem chu khong theo suc manh.
-            "Skin linh thú Phúc Thú",
-            "Skin linh thú Gấu Trúc",
-            "Skin linh thú Tiên Lộc",
-            "Skin linh thú Xích Dương",
-            "Skin linh thú Chiến Lang",
-            // Ho ve lenh: random lv1-lv3 CUNG mot cap (4x/5x/6x), 7 ngay.
-            "Hộ vệ lệnh 4x random lv1-3, 7 ngày",
+            "Skin linh thú Phúc Thú 7 ngày",
+            "Skin linh thú Gấu Trúc 7 ngày",
+            "Skin linh thú Tiên Lộc 7 ngày",
+            "Skin linh thú Xích Dương 7 ngày",
+            "Skin linh thú Chiến Lang 7 ngày",
+            // Ho ve lenh: random lv1-lv3 CUNG mot cap (5x/6x), 7 ngay. Da bo han muc 4x.
             "Hộ vệ lệnh 5x random lv1-3, 7 ngày",
             "Hộ vệ lệnh 6x random lv1-3, 7 ngày",
     };
     static final int[] GIA_DOI_THUONG = {
-            500, 500, 1200, 800, 1000, 1000, 1200, 1500, 1200, 800, 800, 1000, 1000,
-            800, 800, 800, 800, 500, 500, 500, 500, 800, 800,
+            500, 500, 1500, 800, 1200, 1500, 1500,
+            1000,
+            800, 800, 800, 800,
+            500,
+            2000, 2000,
             2000, 2000, 2000, 2000, 2000,
-            2000, 2000, 2000,
+            800, 800,
     };
 
     public void showMenuDiemDoiThuong(Char player) {

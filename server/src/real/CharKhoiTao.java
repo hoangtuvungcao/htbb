@@ -164,8 +164,8 @@ class CharKhoiTao {
         self.canGiveCard = -1;
         self.autoComeHome = 0;
         self.luot_van_tieu = 3;
-        self.buy_luot_van_tieu = 3;
-        self.cuop_tieu = 3;
+        self.buy_luot_van_tieu = 2;
+        self.cuop_tieu = 5;
         self.vip = 0;
         self.oldLv = -5;
         self.nHit = 0;

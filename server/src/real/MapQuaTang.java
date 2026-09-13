@@ -885,79 +885,85 @@ class MapQuaTang {
             case 3: // Hoa thach cap 2 x20
                 player.doAddGemItem(GemTemplate.HOA_THACH_C2, 20, true);
                 break;
-            case 4: // Phuong Hoang Lua 7 ngay
-                player.createPhuongHoang(7, Animal.PHUONG_HOANG, true);
-                break;
-            case 5: // Giap Rong 7 ngay
-                Char.doDropModelClothe(player, 839, 7);
-                break;
-            case 6: // Nghe Thuong 7 ngay
+            case 4: // Nghe Thuong 7 ngay
                 Char.doDropModelClothe(player, 797, 7);
                 break;
-            case 7: // Xich Cuoc 7 ngay
+            case 5: // Xich Cuoc 7 ngay
                 Char.doDropModelClothe(player, 799, 7);
                 break;
-            case 8: // Nguyet Linh Truong random chi so 7 ngay
+            case 6: // Nguyet Linh Truong random chi so 7 ngay
                 Char.createNguyetLinhTruong(player, Map.r.nextInt(2), PHUT_7_NGAY, null, false, true, 1, false);
                 break;
-            case 9: // Canh Hong Van bao kich 7 ngay
-                GiftCode.AddItem(player, 901, 0, 0, PHUT_7_NGAY);
+            case 7: { // Canh ngau nhien: random CA he lan chi so, TRU tier cao nhat
+                      // (tier cao nhat danh rieng cho quay so may man - xem
+                      // Item.createOptionCanhNgauNhien).
+                final int[] idsCanh = {898, 900, 901, 902};
+                final int idTemplate = idsCanh[Map.r.nextInt(idsCanh.length)];
+                final Item newItem = new Item((ItemTemplates) Map.itemTemplates.get(5).get(idTemplate), false, 0, 0, idTemplate);
+                newItem.id = player.getIDItem();
+                newItem.owner = player.charDBID;
+                newItem.level = newItem.getTemplate().level;
+                newItem.identify = player.charDBID;
+                newItem.clazz = player.charClass;
+                newItem.createOptionCanhNgauNhien(idTemplate - 898, true);
+                newItem.timeLoan = System.currentTimeMillis();
+                newItem.minuteExist = PHUT_7_NGAY;
+                newItem.dateCreate = Char.getDayTime(0L);
+                player.iItems.add(newItem);
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                 break;
-            case 10: // Canh Xich Vu EXP 7 ngay
-                GiftCode.AddItem(player, 900, 0, 0, PHUT_7_NGAY);
-                break;
-            case 11: // Canh Tu anh thuoc tinh lan 7 ngay
-                GiftCode.AddItem(player, 902, 0, 0, PHUT_7_NGAY);
-                break;
-            case 12: // Canh Lam Bang tang cong 7 ngay
-                GiftCode.AddItem(player, 898, 0, 0, PHUT_7_NGAY);
-                break;
-            case 13: // Mat na Bi Ngo 7 ngay
+            }
+            case 8: // Mat na Bi Ngo 7 ngay
                 Map.doCreateMatNa3(player, PHUT_7_NGAY, Char.ID_MAT_NA[0], 0, 5);
                 break;
-            case 14: // Mat na Da Xoa 7 ngay
+            case 9: // Mat na Da Xoa 7 ngay
                 Map.doCreateMatNa3(player, PHUT_7_NGAY, Char.ID_MAT_NA[4], 4, 50);
                 break;
-            case 15: // Mat na Thi Khien 7 ngay
+            case 10: // Mat na Thi Khien 7 ngay
                 Map.doCreateMatNa3(player, PHUT_7_NGAY, Char.ID_MAT_NA[3], 3, 30);
                 break;
-            case 16: // Mat na Nga Khuyen 7 ngay
+            case 11: // Mat na Nga Khuyen 7 ngay
                 Map.doCreateMatNa3(player, PHUT_7_NGAY, Char.ID_MAT_NA[2], 2, 10);
                 break;
-            case 17: // Choi Set 7 ngay
-                Char.createChoi(618, player, PHUT_7_NGAY, 1, false);
+            case 12: { // Choi ngau nhien: random CA he lan chi so, TRU tier cao nhat
+                       // (tier cao nhat danh rieng cho quay so may man - xem
+                       // Item.createAttChoiNgauNhien).
+                final int[] idsChoi = {617, 618, 619, 729};
+                final int idTemplate = idsChoi[Map.r.nextInt(idsChoi.length)];
+                final Item newItem = new Item((ItemTemplates) Map.itemTemplates.get(5).get(idTemplate), false, 0, 0, idTemplate);
+                newItem.id = player.getIDItem();
+                newItem.owner = player.charDBID;
+                newItem.level = newItem.getTemplate().level;
+                newItem.identify = player.charDBID;
+                newItem.clazz = player.charClass;
+                newItem.createAttChoiNgauNhien(true);
+                newItem.lock = 1;
+                newItem.timeLoan = System.currentTimeMillis();
+                newItem.minuteExist = PHUT_7_NGAY;
+                newItem.dateCreate = Char.getDayTime(0L);
+                player.iItems.add(newItem);
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                 break;
-            case 18: // Choi Bang 7 ngay
-                Char.createChoi(617, player, PHUT_7_NGAY, 1, false);
-                break;
-            case 19: // Choi Lua 7 ngay
-                Char.createChoi(729, player, PHUT_7_NGAY, 1, false);
-                break;
-            case 20: // Choi Doc 7 ngay
-                Char.createChoi(619, player, PHUT_7_NGAY, 1, false);
-                break;
-            case 21: // Dau Bi Ngo 7 ngay
+            }
+            case 13: // Dau Bi Ngo 7 ngay
                 Char.doDropModelClothe(player, 577, 7);
                 break;
-            case 22: // Non Phu Thuy 7 ngay
+            case 14: // Non Phu Thuy 7 ngay
                 Char.doDropModelClothe(player, 578, 7);
                 break;
-            case 23: // Skin linh thu Phuc Thu
-            case 24: // Skin linh thu Gau Truc
-            case 25: // Skin linh thu Tien Loc
-            case 26: // Skin linh thu Xich Duong
-            case 27: // Skin linh thu Chien Lang
-                // Thoi han 0 = vinh vien. Vat pham skin la trang bi thu (type 30), mac
-                // vao o dau tien ben phai bang Trang bi thu.
-                GiftCode.AddItem(player, SkinLinhThu.ID_ITEM[idx - 23], 0, 0, 0);
+            case 15: // Skin linh thu Phuc Thu
+            case 16: // Skin linh thu Gau Truc
+            case 17: // Skin linh thu Tien Loc
+            case 18: // Skin linh thu Xich Duong
+            case 19: // Skin linh thu Chien Lang
+                // 7 ngay (truoc day la 0 = vinh vien). Vat pham skin la trang bi thu
+                // (type 30), mac vao o dau tien ben phai bang Trang bi thu.
+                GiftCode.AddItem(player, SkinLinhThu.ID_ITEM[idx - 15], 0, 0, PHUT_7_NGAY);
                 break;
-            case 28: // Ho ve lenh 4x random lv1-3, 7 ngay
-                map.doCreateHoVeLenh(player, PHUT_7_NGAY, new int[]{630, 631, 632}[r.nextInt(3)]);
-                break;
-            case 29: // Ho ve lenh 5x random lv1-3, 7 ngay
+            case 20: // Ho ve lenh 5x random lv1-3, 7 ngay
                 map.doCreateHoVeLenh(player, PHUT_7_NGAY, new int[]{633, 634, 635}[r.nextInt(3)]);
                 break;
-            case 30: // Ho ve lenh 6x random lv1-3, 7 ngay
+            case 21: // Ho ve lenh 6x random lv1-3, 7 ngay
                 map.doCreateHoVeLenh(player, PHUT_7_NGAY, new int[]{636, 637, 638}[r.nextInt(3)]);
                 break;
             default:

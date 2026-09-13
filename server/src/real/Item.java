@@ -2410,6 +2410,63 @@ public class Item extends Actor {
         }
     }
 
+    /**
+     * Nhu createAttChoi() (chi so NGAU NHIEN, dung cho quay so may man) nhung cho NPC
+     * doi diem: co the LOAI TRU moc tier CAO NHAT (tier cao nhat danh rieng cho quay
+     * so, doi diem chi ra toi da tier ke duoi) - theo yeu cau nguoi dung 13/09/2026
+     * "muon co choi hoac canh 10% thi phai quay so con doi diem se la random".
+     */
+    public void createAttChoiNgauNhien(final boolean loaiTruTierCaoNhat) {
+        final int botDi = loaiTruTierCaoNhat ? 1 : 0;
+        if (this.tempateID == 613 || this.tempateID == 617) {
+            this.otherAtt[10] = (byte) ((Map.r.nextInt(5 - botDi) + 2) * 10);
+            this.atb[30] = 10;
+        } else if (this.tempateID == 614 || this.tempateID == 618) {
+            this.otherAtt[8] = (byte) ((Map.r.nextInt(4 - botDi) + 1) * 10);
+            this.atb[30] = 10;
+            this.otherAtt[12] = 10;
+        } else if (this.tempateID == 615 || this.tempateID == 619) {
+            this.otherAtt[9] = (byte) ((Map.r.nextInt(4 - botDi) + 1) * 10);
+            this.atb[30] = 10;
+            this.otherAtt[13] = 10;
+        } else if (this.tempateID == 729) {
+            this.otherAtt[29] = (byte) ((Map.r.nextInt(4 - botDi) + 1) * 10);
+            this.atb[30] = 10;
+            this.otherAtt[30] = 10;
+        }
+        if ((this.tempateID >= 617 && this.tempateID <= 619) || this.tempateID == 729) {
+            this.otherAtt[14] = 50;
+        }
+    }
+
+    /**
+     * Nhu createOptionCanh(id, value) nhung tu ROLL gia tri trong dung khoang ma
+     * ItemLuckyDraw.addGif (quay so) dang dung cho tung mau Canh 898-902, co the LOAI
+     * TRU moc cao nhat cua khoang do - dung cho NPC doi diem (xem createAttChoiNgauNhien).
+     * "id" la CHI SO createOptionCanh (0..4), giu dung phep anh xa hien co: 898->0,
+     * 899->1, 900->2, 901->3, 902->4 (= tempateID - 898).
+     */
+    public void createOptionCanhNgauNhien(final int id, final boolean loaiTruTierCaoNhat) {
+        final int botDi = loaiTruTierCaoNhat ? 1 : 0;
+        if (id == 0) {
+            this.lockAtb[0] = (byte) (Map.r.nextInt(10 - botDi) + 1);
+        } else if (id == 1) {
+            final byte value = (byte) (Map.r.nextInt(10 - botDi) + 1);
+            this.lockAtb[1] = value;
+            this.lockAtb[2] = value;
+        } else if (id == 2) {
+            this.otherAtt[50] = (short) (Map.r.nextInt(20 - botDi) + 1);
+        } else if (id == 3) {
+            this.otherAtt[4] = (short) (Map.r.nextInt(50 - botDi) + 1);
+        } else if (id == 4) {
+            final short value = (short) (Map.r.nextInt(91 - botDi) + 10);
+            this.otherAtt[9] = value;
+            this.otherAtt[10] = value;
+            this.otherAtt[29] = value;
+            this.otherAtt[8] = value;
+        }
+    }
+
     public boolean isPhiPhongKhongTuoc() {
         return this.getTemplate().id == 742;
     }

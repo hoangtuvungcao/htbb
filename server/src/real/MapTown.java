@@ -316,8 +316,8 @@ public class MapTown extends Map {
             return;
          }
 
-         if (player.lvDetail.lv < 50) {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải đạt cấp độ 50 trở lên mới có thể giao thẻ.", ""));
+         if (player.lvDetail.lv < 70) {
+            player.sendMessage(MessageCreator.createServerAlertMessage("Bạn phải đạt cấp độ 70 trở lên mới có thể giao thẻ.", ""));
             return;
          }
 

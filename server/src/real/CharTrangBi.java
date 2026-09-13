@@ -45,9 +45,13 @@ class CharTrangBi {
         final Vector<Integer> hpLeft = new Vector<Integer>();
         final Vector<LiveActor> allactordie = new Vector<LiveActor>();
         int totalxp = 0;
-        for (int i = 0; i < allnewar.size(); ++i) 
+        for (int i = 0; i < allnewar.size(); ++i)
         {
-            if (i == 10 ) break; // Chỉ tính 10 mục tiêu
+            // Truoc day co "if (i == 10) break;" gioi han cung 10 muc tieu bat ke sl[id] -
+            // voi Set Lan (sl[1]=15) dieu nay am tham cat bot nguoi bi lan VA lam mat luon
+            // attacker (Region.getAllNearActor luon gan attacker vao CUOI Vector). allnewar
+            // da duoc gioi han dung sl[id]+1 phan tu tu Map.getAllNearActor nen khong can
+            // gioi han lai o day nua.
             final LiveActor actor = allnewar.get(i);
             if (!actor.isRuongMaquai() && !actor.isNgocRong() && !actor.isBossSonTinh() && !actor.isBossThuyTinh() ) 
             {
@@ -56,7 +60,8 @@ class CharTrangBi {
                     if (!actor.isActiveTienKhi() || !actor.isActive8sRongLon()) 
                     {
 
-                        if (chenhLechCapQuaXaLan(self, actor) || actor.isKhangLan(id, giamKhangLan))
+                        if (chenhLechCapQuaXaLan(self, actor) || actor.isKhangLan(id, giamKhangLan)
+                                || actor.hetHanLan > System.currentTimeMillis())
                         {
                             if (actor.cat == 0 && ((Char) actor).timeGiveCardTown > 0L) 
                             {
@@ -125,6 +130,7 @@ class CharTrangBi {
                                     }
                                     actor.tDelay = 1;
                                     actor.totalTime = 5;
+                                    actor.hetHanLan = System.currentTimeMillis() + 5000L;
                                     final Message m = new Message(89);
                                     m.dos.writeShort(actor.id);
                                     m.dos.writeByte(actor.cat);
@@ -187,6 +193,7 @@ class CharTrangBi {
                                 }
                                 if (Map.r.nextInt(100) >= khangdongbang) {
                                     actor.khamEff[3] = System.currentTimeMillis() / 1000L;
+                                    actor.hetHanLan = System.currentTimeMillis() + 3000L;
                                     self.sendMessage(self.sendEffKham(actor));
                                     self.sendToNearPlayer(self.sendEffKham(actor));
                                 }
@@ -226,6 +233,7 @@ class CharTrangBi {
                                         self.sendEffToChar(self);
                                         self.sendEffToNearChar();
                                     }
+                                    actor.hetHanLan = System.currentTimeMillis() + 3000L;
                                 } else {
                                     // SKIN LINH THU (Kim Cang Long) + Choi Set dang deo: 5% co hoi
                                     // moi lan Set Lan phat dong se trieu hoi "Set danh", tang them
@@ -245,6 +253,7 @@ class CharTrangBi {
                                         actor.sendEffToChar((Char) actor);
                                         actor.sendEffToNearChar();
                                     }
+                                    actor.hetHanLan = System.currentTimeMillis() + msChoang;
                                 }
                             }
                         } else if (id == 3) {
@@ -299,6 +308,7 @@ class CharTrangBi {
                                                 c.sendEffToChar(c);
                                                 issend = true;
                                             }
+                                            c.hetHanLan = System.currentTimeMillis() + 5000L;
                                         }
                                         if (issend) {
                                             c.sendEffToNearChar();

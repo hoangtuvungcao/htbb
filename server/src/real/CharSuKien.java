@@ -38,7 +38,9 @@ class CharSuKien {
                     indexExp = 0;
                 }
                 final int[] idexp = {0, 0, 1, 2, 2, 2};
-                final int[] luongadd = {0, 0, 0, 0, 100 + Map.r.nextInt(11), 100 + Map.r.nextInt(11), 0};
+                // Them Hoan My (idx3) vao nhanh cap luong/luong khoa - truoc day chi
+                // Vang(4)/Tim(5) (yeu cau nguoi dung 13/09/2026).
+                final int[] luongadd = {0, 0, 0, 100 + Map.r.nextInt(11), 100 + Map.r.nextInt(11), 100 + Map.r.nextInt(11), 0};
                 final int random = Map.r.nextInt(100);
                 if (random >= 80) {
                     if (random < 89) {
@@ -59,9 +61,29 @@ class CharSuKien {
                 if (lvOpen > pReceive.lvDetail.lv) {
                     lvOpen = pReceive.lvDetail.lv;
                 }
+                // Tu lv50, RIENG 3 mau Hoan My(3)/Vang(4)/Tim(5): exp la % CUA exp can de
+                // len cap hien tai (LevelDetail.expRequire[lv]) thay vi bang tra
+                // EXP_NV_HANG_NGAY cu - giam dan theo moc cap (tru THEO MOC, khong tru
+                // luy tien tu goc). Don vi phan nghin (permille) de giu duoc so le 0.5%.
+                // Trang/Xanh/Do và duoi lv50 GIU NGUYEN cong thuc cu, khong doi.
+                // Yeu cau nguoi dung 13/09/2026: lv50-59 tim9%/vang7%/hoanmy5%, lv60-69
+                // tru 1.5% moi mau, lv70+ tru tiep 3% nua (so voi moc 60-69).
+                final int[][] PERMILLE_TIEU_CAO_CAP = {
+                        {50, 70, 90}, // lv 50-59: [Hoan My, Vang, Tim] = 5.0% / 7.0% / 9.0%
+                        {35, 55, 75}, // lv 60-69: 3.5% / 5.5% / 7.5%
+                        {5, 25, 45},  // lv 70+  : 0.5% / 2.5% / 4.5%
+                };
                 if (typeTieu == Char.INDIVITUAL) {
-                    long exp = Char.EXP_NV_HANG_NGAY[indexExp][idexp[colortieu]] * 2; // TangExpVanTieu
-                    exp = exp * pcExpAdd[colortieu] / 100L;
+                    long exp;
+                    if (lvOpen < 50 || colortieu < 3) {
+                        exp = Char.EXP_NV_HANG_NGAY[indexExp][idexp[colortieu]] * 2; // TangExpVanTieu
+                        exp = exp * pcExpAdd[colortieu] / 100L;
+                    } else {
+                        final int bracket = (lvOpen >= 70) ? 2 : ((lvOpen >= 60) ? 1 : 0);
+                        final int permille = PERMILLE_TIEU_CAO_CAP[bracket][colortieu - 3];
+                        final int lvExp = Math.min(lvOpen, LevelDetail.expRequire.length - 1);
+                        exp = LevelDetail.expRequire[lvExp] * permille / 1000L;
+                    }
                     exp /= div;
                     if (TeamServer.isServerHoaLu() && Char.isSuKienDuaTopHoaLu()) {
                         exp = 0L;
@@ -87,7 +109,10 @@ class CharSuKien {
                         self.sendMessage(MessageCreator.createCharInventoryMessage(pReceive, 1));
                         info = String.valueOf(info) + "," + it.getName();
                     }
-                    if (luongadd[colortieu] > 0) {
+                    // Tu lv70: bo luong/luong khoa, thay bang bot xanh lam (yeu cau nguoi
+                    // dung 13/09/2026 "chạm 7x thì đi tiêu ra tbt+exp+bột xanh lam+điểm
+                    // thưởng, bỏ lượng, bỏ lượng khóa").
+                    if (luongadd[colortieu] > 0 && lvOpen < 70) {
                         final boolean notlock = Map.r.nextInt(1000) < 5;
                         if (!notlock) {
                             self.addLuongLock(luongadd[colortieu] / div);
@@ -103,6 +128,11 @@ class CharSuKien {
                                 e.printStackTrace();
                             }
                         }
+                    } else if (lvOpen >= 70) {
+                        final int slBotXanh = Math.max(1, (Map.r.nextInt(3) + 1) / div);
+                        self.doAddGemItem(GemTemplate.BOT_XANH, slBotXanh, true);
+                        info = String.valueOf(info) + " và " + slBotXanh + " " + Map.gemTemplate[GemTemplate.BOT_XANH].name;
+                        self.sendMessage(MessageCreator.createCharGemItem(self));
                     }
                     final int[] pcAdd = {0, isThief ? 5 : 10, isThief ? 25 : 50, isThief ? 35 : 70, isThief ? 35 : 70, isThief ? 50 : 100};
                     final int pc = Map.r.nextInt(100);
@@ -126,11 +156,15 @@ class CharSuKien {
                         final int n2 = colortieu;
                         ++finish_TIEU[n2];
                     }
-                    // Diem doi thuong: van tieu thanh cong +50, cuop tieu thanh cong +25.
-                    // Khong tinh diem cho tieu bang (typeTieu==CLAN, nhanh do khong vao day).
-                    pReceive.diemDoiThuong += isThief ? 25 : 50;
-                    pReceive.sendMessage(MessageCreator.createServerAlertMessage(
-                            "Bạn nhận được " + (isThief ? 25 : 50) + " điểm đổi thưởng (tổng: " + pReceive.diemDoiThuong + " điểm).", ""));
+                    // Diem doi thuong: CHI tieu Hoan My/Vang/Tim (colortieu>=3) moi duoc,
+                    // van tieu thanh cong +50, cuop tieu thanh cong +25 (yeu cau nguoi dung
+                    // 13/09/2026 - truoc day tinh cho CA 6 mau). Khong tinh diem cho tieu
+                    // bang (typeTieu==CLAN, nhanh do khong vao day).
+                    if (colortieu >= 3) {
+                        pReceive.diemDoiThuong += isThief ? 25 : 50;
+                        pReceive.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Bạn nhận được " + (isThief ? 25 : 50) + " điểm đổi thưởng (tổng: " + pReceive.diemDoiThuong + " điểm).", ""));
+                    }
                 } else if (typeTieu != Char.CLAN) {
                 }
                 Char.isSuKienHe2017();

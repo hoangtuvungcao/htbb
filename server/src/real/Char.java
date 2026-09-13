@@ -5331,19 +5331,26 @@ public int applyRongLonReleaseTo(int baseDamage) {
             p.upSpeedNguaVanTieu = 1;
             final String[] name = {"Trắng", "Xanh", "Đỏ", "Hoàn mỹ", "Vàng", "Tím"};
             final int[][] idMonster = {{95, 96, 97, 98, 99, 100}, {101, 102, 103, 104, 105, 106}, {107, 108, 109, 110, 111, 112}};
-            final int ran = Map.r.nextInt(1000);
+            // Ha ti le Tim xuong thap nhat co the (0.001%) va Vang xuong con rat it
+            // (0.01%) - yeu cau nguoi dung 13/09/2026 "ae van di duoc vang tim nhung se
+            // rat it". Doi thang do tu nextInt(1000) (buoc 0.1%) sang nextInt(100000)
+            // (buoc 0.001%) de bieu dien duoc phan tram nho nhu vay. Do/Xanh/Trang giu
+            // NGUYEN ti le tuong doi cu (x100); phan xac suat rut tu Vang/Tim don het
+            // vao Trang (mau pho bien nhat, khong doi ty le giua Do/Xanh/HoanMy).
+            final int ran = Map.r.nextInt(100000);
             int indexMons = 5;
-            if (ran < 600) {
-                indexMons = 0;
-            } else if (ran < 892) {
-                indexMons = 1;
-            } else if (ran < 995) {
-                indexMons = 2;
-            } else if (ran < 998) {
-                indexMons = 3;
-            } else if (ran < 999) {
-                indexMons = 4;
+            if (ran < 60189) {
+                indexMons = 0; // Trang 60.189%
+            } else if (ran < 89389) {
+                indexMons = 1; // Xanh 29.2%
+            } else if (ran < 99689) {
+                indexMons = 2; // Do 10.3%
+            } else if (ran < 99989) {
+                indexMons = 3; // Hoan My 0.3%
+            } else if (ran < 99999) {
+                indexMons = 4; // Vang 0.01%
             }
+            // else: Tim (indexMons=5) - dung 1 gia tri (99999) = 0.001%
             p.typeTieu = (byte) (typetieu * 6 + indexMons);
             p.monster = new MonsterVantieu(p.map, Map.monsterTemplates.get(idMonster[typetieu][indexMons]), p.x, p.y, p.myCountry);
             p.monster.id = RealController.intance.idGen.getID(1, "");
@@ -5393,30 +5400,42 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.upSpeedNguaVanTieu = 1;
             final int oldColor = this.typeTieu % 6;
             final int[][] idMonster = {{95, 96, 97, 98, 99, 100}, {101, 102, 103, 104, 105, 106}, {107, 108, 109, 110, 111, 112}};
-            final int ran = Map.r.nextInt(1000);
+            // Doi tieu (reroll co tra phi) truoc day cho ti le Tim/Vang CAO HON han ca
+            // ti le goc (0.2%/1% Tim) - neu giu nguyen se lam vo nghia viec ha ti le goc
+            // xuong 0.001% o doInitMonter (nguoi choi chi can dung doi tieu de "cay" tim
+            // de dang). Ha tuong ung, nhung VAN giu reroll tot hon mot chut so voi ti le
+            // goc (5-10 lan) de dong tra phi con co gia tri: xu reroll Tim 0.005%/Vang
+            // 0.05%, luong reroll (dat hon) Tim 0.01%/Vang 0.1%. Doi thang do tu
+            // nextInt(1000) sang nextInt(100000) de bieu dien duoc; Do/Xanh/Trang/HoanMy
+            // giu nguyen ti le tuong doi cu (x100), phan rut ra don vao Trang.
+            final int ran = Map.r.nextInt(100000);
             int index = 5;
             if (xu_luong == 0) {
-                if (ran < 500) {
-                    index = 0;
-                } else if (ran < 850) {
-                    index = 1;
-                } else if (ran < 984) {
-                    index = 2;
-                } else if (ran < 994) {
-                    index = 3;
-                } else if (ran < 998) {
-                    index = 4;
+                if (ran < 50545) {
+                    index = 0; // Trang 50.545%
+                } else if (ran < 85545) {
+                    index = 1; // Xanh 35%
+                } else if (ran < 98945) {
+                    index = 2; // Do 13.4%
+                } else if (ran < 99945) {
+                    index = 3; // Hoan My 1%
+                } else if (ran < 99995) {
+                    index = 4; // Vang 0.05%
                 }
-            } else if (ran < 200) {
-                index = 0;
-            } else if (ran < 500) {
-                index = 1;
-            } else if (ran < 940) {
-                index = 2;
-            } else if (ran < 970) {
-                index = 3;
-            } else if (ran < 990) {
-                index = 4;
+                // else: Tim - 0.005%
+            } else {
+                if (ran < 22890) {
+                    index = 0; // Trang 22.89%
+                } else if (ran < 52890) {
+                    index = 1; // Xanh 30%
+                } else if (ran < 96890) {
+                    index = 2; // Do 44%
+                } else if (ran < 99890) {
+                    index = 3; // Hoan My 3%
+                } else if (ran < 99990) {
+                    index = 4; // Vang 0.1%
+                }
+                // else: Tim - 0.01%
             }
             try {
                 final Message m = new Message(90);
@@ -6285,7 +6304,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return false;
         }
         if (this.map.mapId == Map.idMapTown) {
-            if ((Map.getTown[this.inCountry] && this.myCountry != this.inCountry) || (Map.getTown[this.inCountry] && this.lvDetail.lv < 50)) {
+            if ((Map.getTown[this.inCountry] && this.myCountry != this.inCountry) || (Map.getTown[this.inCountry] && this.lvDetail.lv < 70)) {
                 return true;
             }
             if (Map.getTown[this.inCountry] && !MapTown.congthanh.get(this.inCountry).isDead && this.y < 1200) {

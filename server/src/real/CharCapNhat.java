@@ -584,9 +584,17 @@ class CharCapNhat {
             }
 
             self.luot_van_tieu = 3;
-            self.buy_luot_van_tieu = (byte) (3 + self.vip);
-            //self.buy_luot_van_tieu = 0;
-            self.cuop_tieu = 3;
+            // Toi da 2 luot MUA them the van tieu/ngay (khong cong them theo vip) + 3
+            // luot mien phi = 5 tieu/ngay. LUU Y: potions[82] (kho ve "the van tieu"
+            // chua dung) KHONG duoc reset/void o day du user muon "mua ngay nao dung
+            // het ngay do" - o cung index nay con dung chung cho nguyen lieu "tre" cua
+            // su kien Trung Thu (doMenuNpcHangNga/MapMenuNpc.java), reset nham se xoa
+            // mat tre cua nguoi choi dang giu cho su kien dang/sap dien ra. Thay vao do
+            // chan tran o DIEM DUNG (doUsePotion.java case 82: luot_van_tieu >= 5 thi
+            // tu choi + hoan lai ve) - ve co tich tru bao nhieu cung khong the vuot qua
+            // 5 tieu/ngay tren thuc te.
+            self.buy_luot_van_tieu = 2;
+            self.cuop_tieu = 5;
             if (self.lvDetail.lv >= 34) {
                 if (self.ntangtoc < 6) {
                     final int[] potions = self.potions;
