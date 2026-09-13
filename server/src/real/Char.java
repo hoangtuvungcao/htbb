@@ -9255,7 +9255,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
-    public void doCreatePet(final Item itemtrung) {
+    public synchronized void doCreatePet(final Item itemtrung) {
+        if (!this.iItems.contains(itemtrung)) {
+            return;
+        }
+
         final ItemTemplates template = (ItemTemplates) Map.itemTemplates.get(0).get(new Integer(itemtrung.getTemplate().idItemUpLevel));
         Item newItem = null;
         newItem = new Item(template, false, 0, 0, template.id);
