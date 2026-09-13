@@ -800,6 +800,26 @@ public class TeamServer {
 
         Database.addClanToMap();
         Map.getAllTopBegin();
+        // Lam moi top (cao thu/dai gia/bang hoi/theo phe) moi 60 giay - yeu cau
+        // nguoi dung 13/09/2026 dang trong luc dua top level, muon thay thu hang
+        // thay doi gan thoi gian thuc thay vi phai doi server restart moi cap nhat
+        // (truoc day getAllTopBegin() chi goi DUY NHAT o day, luc khoi dong).
+        new Thread(() -> {
+            Thread.currentThread().setName("LAM MOI TOP");
+            while (TeamServer.running) {
+                try {
+                    Thread.sleep(60_000L);
+                } catch (final InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                try {
+                    Map.getAllTopBegin();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         Map.startSendInfoAdv();
         Map.addWeddingToPrivateMap();
         new Thread(DBUserLogger.instance).start();

@@ -14862,25 +14862,30 @@ public class Map implements Runnable {
     }
 
 
+    /**
+     * Nap lai toan bo top (cao thu, dai gia, bang hoi, theo phe). AN TOAN de goi
+     * NHIEU LAN (khong chi luc server khoi dong) - moi lan tao Vector MOI roi gan
+     * de thay hang loat, giong topRich/topLv/topClan ngay tren, KHONG dung
+     * topLvNation.add()/set() nhu ban cu: goi lai add() nhieu lan se cong don thanh
+     * danh sach phinh to mai (add 3 phan tu moi lan, chi 3 phan tu dau con dung),
+     * ro ra khi them vong lap lam moi top dinh ky (xem TeamServer.batDau, moi 60s).
+     */
     public static void getAllTopBegin() {
         topRich = Database.instance.getTopRich();
         topLv = Database.instance.getTopLV();
         topClan = Database.instance.getTopClan();
-        topLvNation.add(new Vector());
-        topLvNation.add(new Vector());
-        topLvNation.add(new Vector());
-        topHonor.add(new Vector());
-        topHonor.add(new Vector());
-        topHonor.add(new Vector());
-        topPK.add(new Vector());
-        topPK.add(new Vector());
-        topPK.add(new Vector());
 
+        final Vector<Vector<CharInfo>> moiTopLvNation = new Vector<Vector<CharInfo>>();
+        final Vector<Vector<CharInfo>> moiTopHonor = new Vector<Vector<CharInfo>>();
+        final Vector<Vector<CharInfo>> moiTopPK = new Vector<Vector<CharInfo>>();
         for (int i = 0; i < 3; i++) {
-            topLvNation.set(i, Database.instance.getTopCountry(i, 0));
-            topHonor.set(i, Database.instance.getTopCountry(i, 1));
-            topPK.set(i, Database.instance.getTopCountry(i, 2));
+            moiTopLvNation.add(Database.instance.getTopCountry(i, 0));
+            moiTopHonor.add(Database.instance.getTopCountry(i, 1));
+            moiTopPK.add(Database.instance.getTopCountry(i, 2));
         }
+        topLvNation = moiTopLvNation;
+        topHonor = moiTopHonor;
+        topPK = moiTopPK;
     }
 
     public void doSendTopGroup(Char p) {
