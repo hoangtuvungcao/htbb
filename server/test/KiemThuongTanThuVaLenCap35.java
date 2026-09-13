@@ -7,7 +7,7 @@ import java.nio.file.Paths;
  * Hai qua moi theo yeu cau nguoi dung (12-13/09/2026):
  *   1. Nhan vat DAU TIEN cua tai khoan: 40.000.000 xu + 20.000 luong mo + 30.000 luong
  *      khoa (THAY THE hoan toan bo cu 10tr/5k/100k) + 3 trung MOI LOAI trong 5 trung pet
- *      thuong (Cu/Rong/Yeu Tinh/Doi/Dai bang, id 684-688) + 4 Huyet linh thao (id 720).
+ *      thuong (Cu/Rong/Yeu Tinh/Doi/Dai bang, id 684-688) + 2 Huyet linh thao (id 720).
  *   2. Len cap 35: 10.000.000 xu + 50 nguyen lieu KHOA moi loai cap 6 (ca nlsc va nlcc,
  *      moi nhom 5 loai - GemTemplate.ID_MATERIAL_LOW[5]/ID_MATERIAL_HIGHT[5]).
  *
@@ -51,8 +51,9 @@ public final class KiemThuongTanThuVaLenCap35 {
         Kiem.dung("getBoardCreated tao 5 trung pet thuong (684..688) qua vong lap",
                 thanHam.contains("for (int idTrung = 684; idTrung <= 688; ++idTrung)")
                         && thanHam.contains("Char.createItemSoLuong(idTrung, 3, player)"));
-        Kiem.dung("getBoardCreated tao 4 Huyet linh thao (Map.doCreateHuyetLinhThao)",
-                thanHam.contains("Map.doCreateHuyetLinhThao(player, 0)"));
+        Kiem.dung("getBoardCreated tao 2 Huyet linh thao (Map.doCreateHuyetLinhThao)",
+                thanHam.contains("for (int i = 0; i < 2; ++i)")
+                        && thanHam.contains("Map.doCreateHuyetLinhThao(player, 0)"));
         // Vat pham phai duoc cong SAU khi da "gianh" duoc hang (executeUpdate xoa thanh
         // cong), khong truoc - neu khong nguoi thua cuoc trong tranh chap hai may chu van
         // nhan duoc vat pham du khong nhan duoc xu/luong.
