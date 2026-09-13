@@ -728,16 +728,12 @@ public class Monster extends LiveActor {
     public static int PC_TILE_NGOC = 30;        // ngoc, ngoc tu binh
     public static int PC_TILE_ITEM = 20;        // do (trang bi) roi ra
 
-    // ================= GIAM EXP QUAI CAP CAO (level 50 tro len) =================
-    // 100 = giu nguyen, 60 = con 60% (giam 40%). Chi ap dung cho quai thuong (Monster),
-    // khong dung toi Boss - giong quy uoc cua khoi PC_TILE_* o tren.
-    public static int PC_TILE_EXP_LV50 = 60;
-
-    // ================= GIAM EXP QUAI CAP THAP (duoi level 50) =================
-    // Rieng bang, doc lap voi PC_TILE_EXP_LV50 o tren - yeu cau 13/09/2026: quai
-    // duoi level 50 giam 60% (con 40%), quai tu level 50 tro len GIU NGUYEN muc
-    // giam cu (PC_TILE_EXP_LV50), khong cong don hai lan giam.
-    public static int PC_TILE_EXP_DUOI_LV50 = 40;
+    // ================= GIAM EXP QUAI (moi level, dong bo 13/09/2026) =================
+    // 100 = giu nguyen, 60 = con 60% (giam 40%). Ap dung DONG NHAT cho moi level cua
+    // quai thuong (Monster), khong dung toi Boss - giong quy uoc cua khoi PC_TILE_* o
+    // tren. Truoc 13/09/2026 tach rieng hai nguong (>=50 va <50) voi ti le khac nhau,
+    // nay gop lai thanh mot theo yeu cau "giam het tat ca ve 60% cho dong bo".
+    public static int PC_TILE_EXP = 60;
 
     /** Nhan ti le goc voi phan tram dieu chinh o tren. */
     public static int tile(final int tiLeGoc, final int pc) {
@@ -750,13 +746,9 @@ public class Monster extends LiveActor {
         return (int) ((long) tiLeGoc * pc / 100L);
     }
 
-    /**
-     * Exp goc cua mot MonsterTemplate, da giam theo level: tu level 50 tro len giam
-     * theo PC_TILE_EXP_LV50, duoi level 50 giam theo PC_TILE_EXP_DUOI_LV50 - hai
-     * nguong doc lap, khong ap dung chong len nhau.
-     */
+    /** Exp goc cua mot MonsterTemplate, da giam dong nhat theo PC_TILE_EXP. */
     public static int rcvXpSauGiam(final MonsterTemplate t) {
-        return Monster.tile(t.rcvXp, (t.level >= 50) ? Monster.PC_TILE_EXP_LV50 : Monster.PC_TILE_EXP_DUOI_LV50);
+        return Monster.tile(t.rcvXp, Monster.PC_TILE_EXP);
     }
 
     @Override
