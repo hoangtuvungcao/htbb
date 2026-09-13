@@ -728,10 +728,10 @@ public class Monster extends LiveActor {
     public static int PC_TILE_NGOC = 30;        // ngoc, ngoc tu binh
     public static int PC_TILE_ITEM = 20;        // do (trang bi) roi ra
 
-    // ================= GIAM EXP QUAI CAP CAO (level 60 tro len) =================
+    // ================= GIAM EXP QUAI CAP CAO (level 50 tro len) =================
     // 100 = giu nguyen, 60 = con 60% (giam 40%). Chi ap dung cho quai thuong (Monster),
     // khong dung toi Boss - giong quy uoc cua khoi PC_TILE_* o tren.
-    public static int PC_TILE_EXP_LV60 = 60;
+    public static int PC_TILE_EXP_LV50 = 60;
 
     /** Nhan ti le goc voi phan tram dieu chinh o tren. */
     public static int tile(final int tiLeGoc, final int pc) {
@@ -744,9 +744,9 @@ public class Monster extends LiveActor {
         return (int) ((long) tiLeGoc * pc / 100L);
     }
 
-    /** Exp goc cua mot MonsterTemplate, da giam cho quai tu level 60 tro len (PC_TILE_EXP_LV60). */
+    /** Exp goc cua mot MonsterTemplate, da giam cho quai tu level 50 tro len (PC_TILE_EXP_LV50). */
     public static int rcvXpSauGiam(final MonsterTemplate t) {
-        return (t.level >= 60) ? Monster.tile(t.rcvXp, Monster.PC_TILE_EXP_LV60) : t.rcvXp;
+        return (t.level >= 50) ? Monster.tile(t.rcvXp, Monster.PC_TILE_EXP_LV50) : t.rcvXp;
     }
 
     @Override
