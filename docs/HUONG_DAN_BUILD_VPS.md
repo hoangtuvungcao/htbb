@@ -828,6 +828,31 @@ Thêm dòng:
 scp root@180.93.57.30:/opt/kpah/backup/kpah_db_*.sql.gz .
 ```
 
+### Bật/tắt server từ web admin (không cần SSH)
+
+Trang [web/admin/server.php](../web/admin/server.php) ghi "trạng thái mong muốn" vào bảng
+`dieu_khien_server` — cần một tiến trình canh gác riêng chạy **ngoài** JVM game để đọc bảng đó
+rồi tự gọi `systemctl start/stop kpah-game` thay bạn (bắt buộc phải tách riêng: lúc server đã tắt
+hẳn thì không còn gì bên trong Java để mà tự poll DB nữa). Cài một lần:
+
+```bash
+mysql -u root kpah_db < sql/them_bang_dieu_khien_server.sql
+crontab -e
+```
+
+Thêm dòng:
+
+```
+* * * * * /opt/kpah/vps/dieu-khien-server.sh >>/opt/kpah/log/dieu-khien-server.log 2>&1
+```
+
+Mỗi phút kiểm tra một lần — bấm nút trên web thì chậm nhất khoảng 1 phút mới có tác dụng. An toàn
+vì `vps/dieu-khien-server.sh` chỉ gọi đúng hai lệnh cố định (`systemctl start kpah-game` /
+`systemctl stop kpah-game`), tên service không bao giờ lấy từ dữ liệu đọc trong database. Cơ chế
+này **khác hẳn** cờ báo bảo trì phía trên: cờ đó chỉ hoạt động khi server đang sống (server tự
+thoát rồi để `Restart=always` của systemd bật lại), còn trang này điều khiển được cả lúc server đã
+tắt hẳn.
+
 ### Xem log
 
 | Cần gì | Lệnh |

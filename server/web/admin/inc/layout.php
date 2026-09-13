@@ -38,6 +38,7 @@ function adminMenu(): array
             'sukien'   => ['sukien.php',   'Sự kiện', 'lich'],
             'giftcode' => ['giftcode.php', 'Giftcode', 'qua'],
             'cauhinh'  => ['cauhinh.php',  'Cấu hình server', 'nhip'],
+            'server'   => ['server.php',   'Bật/tắt server', 'khoa'],
         ],
         'Ghi chép' => [
             'log'      => ['log.php',      'Log game',      'danhsach'],
