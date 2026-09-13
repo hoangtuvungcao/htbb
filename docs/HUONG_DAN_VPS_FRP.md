@@ -320,7 +320,7 @@ Kiểm tra: `netstat -an | findstr 19129` trên máy nhà.
 
 ```sql
 INSERT INTO kpah_db.5h_active (userID, username, time_end)
-SELECT id, username, '-1' FROM account.team_user
+SELECT id, username, UNIX_TIMESTAMP() + 2592000 FROM account.team_user
 WHERE id NOT IN (SELECT userID FROM kpah_db.5h_active);
 ```
 

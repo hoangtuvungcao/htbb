@@ -81,15 +81,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 'kich_hoat':
             try {
-                $ck = dbGame()->prepare('SELECT 1 FROM `5h_active` WHERE username = ? LIMIT 1');
-                $ck->execute([$ten]);
-                if ($ck->fetchColumn()) {
-                    veLai($ve, 'error', 'Tài khoản ' . $ten . ' đã kích hoạt rồi.');
+                if (!activateAccount($id, $ten)) {
+                    veLai($ve, 'error', 'Không kích hoạt được tài khoản ' . $ten . '.');
                 }
-                $in = dbGame()->prepare('INSERT INTO `5h_active` (userID, username) VALUES (?, ?)');
-                $in->execute([$id, $ten]);
-                ghiNhatKy('kich_hoat', $ten, 'thêm vào 5h_active');
-                veLai($ve, 'success', 'Đã kích hoạt tài khoản ' . $ten . '.');
+                ghiNhatKy('kich_hoat', $ten, 'cộng 30 ngày trong 5h_active');
+                veLai($ve, 'success', 'Đã cộng 30 ngày kích hoạt cho tài khoản ' . $ten . '.');
             } catch (Throwable $ex) {
                 veLai($ve, 'error', 'Không kích hoạt được: ' . $ex->getMessage());
             }
@@ -257,7 +253,13 @@ try {
             $st->execute([$xemId]);
             $nhanVat = $st->fetchAll();
 
-            $ck = dbGame()->prepare('SELECT 1 FROM `5h_active` WHERE username = ? OR userID = ? LIMIT 1');
+                        $ck = dbGame()->prepare(
+                                "SELECT 1 FROM `5h_active`
+                                 WHERE (username = ? OR userID = ?)
+                                     AND time_end <> '-1'
+                                     AND CAST(time_end AS UNSIGNED) > UNIX_TIMESTAMP()
+                                 LIMIT 1"
+                        );
             $ck->execute([$chiTiet['username'], $xemId]);
             $daKichHoat = (bool)$ck->fetchColumn();
         }

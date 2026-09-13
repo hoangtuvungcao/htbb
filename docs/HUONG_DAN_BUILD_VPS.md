@@ -477,7 +477,7 @@ xong vào game được luôn. Nếu bạn tạo tài khoản bằng tay trong D
 
 ```sql
 INSERT INTO kpah_db.5h_active (userID, username, time_end)
-SELECT id, username, '-1' FROM account.team_user
+SELECT id, username, UNIX_TIMESTAMP() + 2592000 FROM account.team_user
 WHERE id NOT IN (SELECT userID FROM kpah_db.5h_active);
 ```
 

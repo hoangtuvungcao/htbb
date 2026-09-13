@@ -1932,7 +1932,7 @@ public class Database {
         Connection conn = null;
         try {
             conn = Database.instance.getConnection();
-            try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM 5h_active WHERE username = ? LIMIT 1")) {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM 5h_active WHERE username = ? AND time_end <> '-1' AND CAST(time_end AS UNSIGNED) > UNIX_TIMESTAMP() LIMIT 1")) {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
                     return rs.next();
@@ -1954,7 +1954,7 @@ public class Database {
         Connection conn = null;
         try {
             conn = Database.instance.getConnection();
-            try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM 5h_active WHERE userID = ? LIMIT 1")) {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM 5h_active WHERE userID = ? AND time_end <> '-1' AND CAST(time_end AS UNSIGNED) > UNIX_TIMESTAMP() LIMIT 1")) {
                 ps.setInt(1, userID);
                 try (ResultSet rs = ps.executeQuery()) {
                     return rs.next();

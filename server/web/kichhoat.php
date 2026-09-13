@@ -6,13 +6,7 @@ $page = 'kichhoat';
 $u = currentUser();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'activate') {
-    if (!csrfCheck($_POST['csrf'] ?? null)) {
-        setFlash('error', 'Phiên làm việc hết hạn, vui lòng thử lại.');
-    } elseif (activateAccount((int)$u['id'], $u['username'])) {
-        setFlash('success', 'Kích hoạt tài khoản thành công! Bạn có thể vào game ngay.');
-    } else {
-        setFlash('error', 'Kích hoạt thất bại. Vui lòng thử lại sau.');
-    }
+    setFlash('error', 'Kích hoạt tài khoản do quản trị viên thực hiện.');
     header('Location: kichhoat.php');
     exit;
 }
@@ -35,12 +29,7 @@ require __DIR__ . '/inc/header.php';
             <p style="text-align:center;">
                 <span class="badge badge-warn">Chưa kích hoạt</span>
             </p>
-            <form method="post" action="kichhoat.php">
-                <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
-                <input type="hidden" name="action" value="activate">
-                <button class="btn btn-primary btn-block" type="submit">Kích hoạt ngay</button>
-            </form>
-            <p class="muted small" style="text-align:center;margin-top:10px;">Kích hoạt xong là vào game được luôn, không cần chờ.</p>
+            <p class="muted small" style="text-align:center;margin-top:10px;">Vui lòng liên hệ quản trị viên để kích hoạt tài khoản trong 30 ngày.</p>
         <?php endif; ?>
     </div>
 </section>

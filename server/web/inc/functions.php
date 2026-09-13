@@ -198,11 +198,16 @@ function biChanSpam(string $hanhDong, int $soLanToiDa, int $trongGiay): bool
     }
 }
 
-/** Tài khoản đã kích hoạt (có trong 5h_active) chưa? */
+/** Tài khoản còn hạn kích hoạt trong 5h_active hay không. */
 function isActivated(string $username): bool
 {
     try {
-        $st = dbGame()->prepare('SELECT 1 FROM `5h_active` WHERE username = ? LIMIT 1');
+                $st = dbGame()->prepare(
+                        "SELECT 1 FROM `5h_active`
+                         WHERE username = ? AND time_end <> '-1'
+                             AND CAST(time_end AS UNSIGNED) > UNIX_TIMESTAMP()
+                         LIMIT 1"
+                );
         $st->execute([$username]);
         return (bool)$st->fetchColumn();
     } catch (Throwable $ex) {
@@ -210,16 +215,31 @@ function isActivated(string $username): bool
     }
 }
 
-/** Kích hoạt tài khoản: thêm vào 5h_active (khớp hàm insert_active của server). */
+/** Admin gia hạn tài khoản 30 ngày; nếu còn hạn thì cộng nối tiếp từ hạn cũ. */
 function activateAccount(int $userId, string $username): bool
 {
-    if (isActivated($username)) {
-        return true;
-    }
+    $db = dbGame();
     try {
-        $st = dbGame()->prepare('INSERT INTO `5h_active` (userID, username) VALUES (?, ?)');
-        return $st->execute([$userId, $username]);
+        $db->beginTransaction();
+        $st = $db->prepare(
+            "SELECT MAX(CASE WHEN time_end <> '-1' THEN CAST(time_end AS UNSIGNED) ELSE 0 END)
+             FROM `5h_active` WHERE userID = ? OR username = ? FOR UPDATE"
+        );
+        $st->execute([$userId, $username]);
+        $cu = (int)$st->fetchColumn();
+        $batDau = max(time(), $cu);
+        $timeEnd = $batDau + 30 * 86400;
+
+        $del = $db->prepare('DELETE FROM `5h_active` WHERE userID = ? OR username = ?');
+        $del->execute([$userId, $username]);
+        $in = $db->prepare('INSERT INTO `5h_active` (userID, username, time_end) VALUES (?, ?, ?)');
+        $in->execute([$userId, $username, (string)$timeEnd]);
+        $db->commit();
+        return true;
     } catch (Throwable $ex) {
+        if ($db->inTransaction()) {
+            $db->rollBack();
+        }
         return false;
     }
 }

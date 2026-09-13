@@ -10526,12 +10526,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public boolean canReceiveGif35() {
-        return this.lvDetail.lv >= 35 && this.thuongLv35 == 0 && this.gif35 == 0;
+        return this.lvDetail.lv == 35 && this.thuongLv35 == 0 && this.gif35 == 0;
     }
 
     public synchronized void doReceiveGif35(final int magic) {
         if (!this.canReceiveGif35()) {
-            this.sendMessage(MessageCreator.createServerAlertMessage("Cần đạt cấp 35 và chưa nhận quà cấp 35 để nhận thưởng.", ""));
+            this.sendMessage(MessageCreator.createServerAlertMessage("Phải đúng cấp 35 và chưa nhận quà cấp 35 mới được nhận thưởng.", ""));
             return;
         }
         MapXuLyLenh.thuongLenCap35(this);

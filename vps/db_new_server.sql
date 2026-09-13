@@ -409,9 +409,9 @@ BEGIN
     EXECUTE st;
     DEALLOCATE PREPARE st;
 
-    -- Kich hoat tai khoan vua tao (time_end = '-1' la vinh vien)
+    -- Kich hoat tai khoan vua tao trong 30 ngay
     INSERT INTO `kpah_db`.`5h_active` (userID, username, time_end)
-    SELECT id, username, '-1' FROM `account`.`team_user` WHERE username = @admin_user;
+    SELECT id, username, UNIX_TIMESTAMP() + 2592000 FROM `account`.`team_user` WHERE username = @admin_user;
 END$$
 DELIMITER ;
 

@@ -108,11 +108,10 @@ const PASSWORD_MAX = 20;
 
 /**
  * Tự động kích hoạt tài khoản ngay khi đăng ký.
- *   true  = đăng ký xong đăng nhập game được luôn (tiện cho test / server nhỏ)
- *   false = phải bấm "Kích hoạt" ở trang tài khoản (giống trang gốc)
+ *   false = chỉ admin mới cấp gói kích hoạt 30 ngày
  * Lưu ý: chỉ có tác dụng khi game bật kiểm tra kích hoạt (sv.EnableAvtiveCheck=1).
  */
-const AUTO_ACTIVATE = true;
+const AUTO_ACTIVATE = false;
 
 /**
  * ============================================================

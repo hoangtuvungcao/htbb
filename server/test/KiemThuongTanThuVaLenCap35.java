@@ -93,8 +93,8 @@ public final class KiemThuongTanThuVaLenCap35 {
                 npc.contains("p.canReceiveGif35()") && menu.contains("player.canReceiveGif35()"));
         // Truong luu tru: khai bao + khoi tao + luu + doc, chiu duoc save cu chua co cot nay.
         final String charJava = doc("src/real/Char.java");
-        Kiem.dung("NPC cho nhan tu cap 35, chan ca hai co da nhan",
-                charJava.contains("this.lvDetail.lv >= 35 && this.thuongLv35 == 0 && this.gif35 == 0"));
+        Kiem.dung("NPC chi cho nhan dung cap 35, chan cap khac va ca hai co da nhan",
+                charJava.contains("this.lvDetail.lv == 35 && this.thuongLv35 == 0 && this.gif35 == 0"));
         Kiem.dung("nhan qua qua NPC", charJava.contains("MapXuLyLenh.thuongLenCap35(this);"));
         Kiem.dung("Char.java khai bao truong thuongLv35", charJava.contains("public byte thuongLv35;"));
         final String khoiTao = doc("src/real/CharKhoiTao.java");

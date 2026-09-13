@@ -5,15 +5,9 @@ requireLogin();
 $page = 'account';
 $u = currentUser();
 
-// Xử lý kích hoạt
+// Kích hoạt chỉ do admin cấp; tài khoản người chơi không tự gia hạn được.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'activate') {
-    if (!csrfCheck($_POST['csrf'] ?? null)) {
-        setFlash('error', 'Phiên làm việc hết hạn, vui lòng thử lại.');
-    } elseif (activateAccount((int)$u['id'], $u['username'])) {
-        setFlash('success', 'Kích hoạt tài khoản thành công! Bạn có thể vào game ngay.');
-    } else {
-        setFlash('error', 'Kích hoạt thất bại. Vui lòng thử lại sau.');
-    }
+    setFlash('error', 'Kích hoạt tài khoản do quản trị viên thực hiện.');
     header('Location: account.php');
     exit;
 }
@@ -47,12 +41,7 @@ require __DIR__ . '/inc/header.php';
                 <?php endif; ?>
             </p>
             <?php if (!$activated): ?>
-                <form method="post" action="account.php">
-                    <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
-                    <input type="hidden" name="action" value="activate">
-                    <button class="btn btn-primary" type="submit">Kích hoạt tài khoản</button>
-                </form>
-                <p class="muted small">Kích hoạt để có thể đăng nhập vào game.</p>
+                <p class="muted small">Vui lòng liên hệ quản trị viên để kích hoạt tài khoản trong 30 ngày.</p>
             <?php endif; ?>
         </div>
         <div class="card">
