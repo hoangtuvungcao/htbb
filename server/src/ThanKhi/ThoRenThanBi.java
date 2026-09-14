@@ -382,6 +382,11 @@ public class ThoRenThanBi
         // Dùng player.delGem() chứ không ghi thẳng vào listGemitem[]: delGem còn
         // cộng allGemUse và gỡ viên đá khỏi Vector gemItem khi về 0. Ghi thẳng
         // vào mảng thì Vector còn sót viên đá đã hết, hiện sai trong túi.
+        //
+        // Gom lai ten + so luong tung nguyen lieu de ghi log (taothankhi) - truoc day
+        // kho gem nay khong di qua log vat pham thuong nen khong biet duoc mot lan tao
+        // Than Khi da tieu dung nhung gi.
+        StringBuilder nguyenLieuDaDung = new StringBuilder();
         for (short matId : player.thanKhiCraftState.getRandomMaterials())
         {
             int offset = player.thanKhiCraftState.getMaterialLevel() - 1;
@@ -400,6 +405,9 @@ public class ThoRenThanBi
             }
             int required = amountMaterial[baseIdx];
             int materialMode = player.thanKhiCraftState.getMaterialMode();
+
+            if (nguyenLieuDaDung.length() > 0) nguyenLieuDaDung.append(", ");
+            nguyenLieuDaDung.append(Map.gemTemplate[matId].name).append(" x").append(required);
 
             if (materialMode == 0)
             {
@@ -498,7 +506,9 @@ public class ThoRenThanBi
         data.Database.instance.saveOrtherLog("", player.charname,
                 "tao than khi " + template.name
               + " (cap nguyen lieu " + player.thanKhiCraftState.getMaterialLevel()
-              + ", che do " + player.thanKhiCraftState.getMaterialMode() + ")", "taothankhi");
+              + ", che do " + player.thanKhiCraftState.getMaterialMode()
+              + ", mau " + color + ")"
+              + " - nguyen lieu da dung: " + nguyenLieuDaDung, "taothankhi");
 
         // Xoá lựa chọn: một lần đi menu chỉ tạo được MỘT món. Xem ThanKhiCraftState.datLai().
         player.thanKhiCraftState.datLai();
@@ -630,6 +640,8 @@ public class ThoRenThanBi
         }
 
         //  TRỪ NGUYÊN LIỆU theo chế độ (ưu tiên khóa khi hỗn hợp)
+        // Gom lai ten + so luong de ghi log (nangcapthankhi) cung luc.
+        StringBuilder nguyenLieuDaDung = new StringBuilder();
         for (java.util.Map.Entry<Short, Integer> e : matsToConsume.entrySet())
         {
             short matId = e.getKey();
@@ -637,6 +649,9 @@ public class ThoRenThanBi
 
             int normalHave = (matId >= 0 && matId < player.listGemitem.length) ? player.listGemitem[matId] : 0;
             int lockHave   = (matId >= 0 && matId < player.listGemitemLock.length) ? player.listGemitemLock[matId] : 0;
+
+            if (nguyenLieuDaDung.length() > 0) nguyenLieuDaDung.append(", ");
+            nguyenLieuDaDung.append(Map.gemTemplate[matId].name).append(" x").append(qtyNeed);
 
             if (materialMode == 0)
             {
@@ -805,6 +820,16 @@ public class ThoRenThanBi
             player.sendMessage(MessageCreator.createServerAlertMessage("Nâng cấp thất bại (tỉ lệ " + finalChance + "%)", ""));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1)); // refresh
         }
+
+        // Nguyen lieu bi tieu NGAY CA KHI THAT BAI (tru truoc khi roll o tren) - ghi
+        // log du thanh/bai de doi chieu duoc voi so lieu mua/con lai trong kho gem.
+        String tenThanKhi = "";
+        try { tenThanKhi = item.getTemplate().name; } catch (Exception ignored) { }
+        data.Database.instance.saveOrtherLog("", player.charname,
+                (success ? "nang cap thanh cong" : "nang cap that bai")
+              + " " + tenThanKhi + " +" + curPlus + " len +" + targetPlus
+              + " (ti le " + finalChance + "%, che do " + materialMode + ")"
+              + " - nguyen lieu da dung: " + nguyenLieuDaDung, "nangcapthankhi");
     }
     
     public static void RerollThanKhiAttribute(Char player, short selectedItemIndex) 

@@ -869,6 +869,10 @@ public class TeamServer {
         // Lay mau so nguoi online 5 phut/lan -> bang tob_log_online, cho trang Tong quan
         // ve bieu do. Tu tao bang va tu don dong cu hon 30 ngay.
         data.GhiSoOnline.batDau();
+        // Lay mau vi tri (map/toa do) cua TUNG nguoi choi online 30 giay/lan -> bang
+        // tob_vi_tri_online, cho trang quan tri xem "ai dang o dau". La snapshot (xoa het
+        // ghi lai moi chu ky), khong phai log lich su.
+        data.GhiViTriOnline.batDau();
         // Lenh tu trang quan tri web (dat cap do...) qua bang web_lenh_nhan_vat: doc moi giay,
         // nhan vat dang online thi cong thang vao RAM roi luu ngay, offline thi ghi CSDL.
         // Xem data/LenhWeb.

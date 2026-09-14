@@ -25,6 +25,7 @@ function adminMenu(): array
     return [
         'Theo dõi' => [
             'tongquan' => ['index.php', 'Tổng quan', 'bang'],
+            'online'   => ['online.php', 'Ai đang ở đâu', 'vitri'],
         ],
         'Người chơi' => [
             'giam_level' => ['giam_level.php', 'Giảm Level', 'nguoi'],
@@ -76,6 +77,7 @@ function bieuTuong(string $ten): string
                     . '<circle cx="8" cy="10.2" r="1.15" fill="currentColor" stroke="none"/>',
         'dongho'   => '<circle cx="8" cy="8" r="6.2"/><path d="M8 4.5V8l2.4 1.5"/>',
         'nha'      => '<path d="M2.4 7.3L8 2.7l5.6 4.6"/><path d="M3.9 8.4v5h8.2v-5"/>',
+        'vitri'    => '<path d="M8 14.4S3 9.7 3 6.4a5 5 0 1110 0c0 3.3-5 8-5 8z"/><circle cx="8" cy="6.3" r="1.7"/>',
         'ra'       => '<path d="M6.4 2.7H3.3a1.2 1.2 0 00-1.2 1.2v8.2a1.2 1.2 0 001.2 1.2h3.1"/>'
                     . '<path d="M10.6 11.2L13.8 8l-3.2-3.2"/><path d="M13.8 8H6.4"/>',
     ];

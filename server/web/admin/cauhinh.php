@@ -90,6 +90,16 @@ function soKep(string $tho, int $min, int $max, int $macDinh): int
     return max($min, min($max, $n));
 }
 
+/** float, kẹp trong khoảng, mặc định khi không đọc được. Cho phép số lẻ (vd 0.001). */
+function soThapPhan(string $tho, float $min, float $max, float $macDinh): float
+{
+    $n = filter_var(trim($tho), FILTER_VALIDATE_FLOAT);
+    if ($n === false) {
+        return $macDinh;
+    }
+    return max($min, min($max, $n));
+}
+
 /** Đọc một khoá dạng CSV "a,b,c" từ $gt thành int[]; sai số phần tử thì dùng $macDinh. */
 function mangTu(array $gt, string $k, array $macDinh): array
 {
@@ -145,37 +155,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             case 'luu_tieu': {
-                $nguong = [
-                    soKep(p('tieuNguong0'), 0, 100000, 60189),
-                    soKep(p('tieuNguong1'), 0, 100000, 89389),
-                    soKep(p('tieuNguong2'), 0, 100000, 99689),
-                    soKep(p('tieuNguong3'), 0, 100000, 99989),
-                    soKep(p('tieuNguong4'), 0, 100000, 99999),
+                // Nguoi dung nhap % rieng cho 5 mau dau (Trang..Vang) - Tim la PHAN CON LAI,
+                // khong nhap. Cong don thanh nguong (thang 100000) tu 5 % nay LUON tang dan
+                // vi la tong don dieu cua so khong am - khong con can kiem "phai tang dan"
+                // nhu truoc, chi can chan tong 5 mau khong vuot 100%.
+                $phanTramMau = [
+                    soThapPhan(p('tieuMau0'), 0, 100, 60.189),
+                    soThapPhan(p('tieuMau1'), 0, 100, 29.2),
+                    soThapPhan(p('tieuMau2'), 0, 100, 10.3),
+                    soThapPhan(p('tieuMau3'), 0, 100, 0.3),
+                    soThapPhan(p('tieuMau4'), 0, 100, 0.01),
                 ];
-                for ($i = 1; $i < count($nguong); $i++) {
-                    if ($nguong[$i] < $nguong[$i - 1]) {
-                        veLai($TRANG, 'error', 'Ngưỡng màu tiêu phải tăng dần (ngưỡng thứ '
-                            . ($i + 1) . ' đang nhỏ hơn ngưỡng thứ ' . $i . ').');
-                    }
+                $tongPhanTramMau = round(array_sum($phanTramMau), 3);
+                if ($tongPhanTramMau > 100) {
+                    veLai($TRANG, 'error', 'Tổng % của Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng đang vượt quá '
+                        . '100% (' . $tongPhanTramMau . '%) — không còn chỗ cho Tím. '
+                        . 'Giảm bớt một trong 5 màu rồi lưu lại.');
                 }
-                $pcExp = [
-                    soKep(p('tieuPc0'), 0, 100000, 50),
-                    soKep(p('tieuPc1'), 0, 100000, 100),
-                    soKep(p('tieuPc2'), 0, 100000, 150),
-                    soKep(p('tieuPc3'), 0, 100000, 250),
-                    soKep(p('tieuPc4'), 0, 100000, 250),
-                    soKep(p('tieuPc5'), 0, 100000, 500),
-                    0, // phan tu thu 7 - khong mau nao doc toi, giu 0 cho du do dai
+                $nguong = [];
+                $congDon = 0;
+                foreach ($phanTramMau as $pt) {
+                    $congDon += (int)round($pt * 1000);
+                    $nguong[] = min(100000, $congDon);
+                }
+
+                $heSoChung = soThapPhan(p('tieuHeSoChung'), 0, 10, 2.0);
+                $heSoMau = [
+                    soThapPhan(p('tieuHeSoMau0'), 0, 100, 0.5),
+                    soThapPhan(p('tieuHeSoMau1'), 0, 100, 1.0),
+                    soThapPhan(p('tieuHeSoMau2'), 0, 100, 1.5),
+                    soThapPhan(p('tieuHeSoMau3'), 0, 100, 2.5),
+                    soThapPhan(p('tieuHeSoMau4'), 0, 100, 2.5),
+                    soThapPhan(p('tieuHeSoMau5'), 0, 100, 5.0),
                 ];
+                $pcExp = array_map(static fn($h) => (int)round($h * 100), $heSoMau);
+                $pcExp[] = 0; // phan tu thu 7 - khong mau nao doc toi, giu 0 cho du do dai
+
                 $permille = [];
                 foreach ([0, 1, 2] as $khung) {
                     foreach ([0, 1, 2] as $mau) {
-                        $permille[] = soKep(p("tieuPer{$khung}_{$mau}"), 0, 1000, 0);
+                        $pcCaoCap = soThapPhan(p("tieuPhanTramCaoCap{$khung}_{$mau}"), 0, 100, 0);
+                        $permille[] = (int)round($pcCaoCap * 10);
                     }
                 }
+
                 $m = [
                     K_TIEU_NGUONG_MAU => implode(',', $nguong),
-                    K_TIEU_HE_SO_EXP => soKep(p('tieuHeSoExp'), 0, 1000, 200),
+                    K_TIEU_HE_SO_EXP => (int)round($heSoChung * 100),
                     K_TIEU_PC_EXP_THEO_MAU => implode(',', $pcExp),
                     K_TIEU_PERMILLE_CAO_CAP => implode(',', $permille),
                 ];
@@ -368,56 +394,82 @@ adminHead('cauhinh', 'Cấu hình server');
 </div>
 
 <?php
+// Doi tu dang luu (nguong cong don 0..100000 / % nguyen / phan nghin) sang dang de nhap
+// (% rieng tung mau / he so nhan x.xx / % thay phan nghin) - xem case 'luu_tieu' o tren
+// cho chieu nguoc lai.
 $tieuNguong = mangTu($gt, K_TIEU_NGUONG_MAU, [60189, 89389, 99689, 99989, 99999]);
 $tieuPc = mangTu($gt, K_TIEU_PC_EXP_THEO_MAU, [50, 100, 150, 250, 250, 500, 0]);
 $tieuPer = mangTu($gt, K_TIEU_PERMILLE_CAO_CAP, [50, 70, 90, 35, 55, 75, 5, 25, 45]);
+
+$phanTramMauHienThi = [];
+$truocDo = 0;
+foreach ($tieuNguong as $ng) {
+    $phanTramMauHienThi[] = round(($ng - $truocDo) / 1000, 3);
+    $truocDo = $ng;
+}
+$phanTramTim = round((100000 - $truocDo) / 1000, 3);
+$heSoChungHienThi = round((float)giaTri($gt, K_TIEU_HE_SO_EXP, '200') / 100, 2);
+$heSoMauHienThi = array_map(static fn($v) => round($v / 100, 2), array_slice($tieuPc, 0, 6));
+
 $TEN_MAU = ['Trắng', 'Xanh', 'Đỏ', 'Hoàn Mỹ', 'Vàng'];
+$TEN_MAU_DAY_DU = ['Trắng', 'Xanh', 'Đỏ', 'Hoàn Mỹ', 'Vàng', 'Tím'];
 $TEN_MAU_CAO_CAP = ['Hoàn Mỹ', 'Vàng', 'Tím'];
 $TEN_KHUNG_CAP = ['Cấp 50-59', 'Cấp 60-69', 'Cấp 70+'];
 ?>
 <div class="card">
     <h3>Tỉ lệ Vận Tiêu</h3>
-    <p class="muted small">Màu và EXP khi nhận / trả Vận Tiêu. Xem <code>Char.doInitMonter()</code>,
+    <p class="muted small">Khi nhận một con tiêu (Vận Tiêu) mới, server random ra 1 trong 6 màu theo % ở
+       phần 1 — Trắng phổ biến nhất, Tím hiếm nhất. Khi TRẢ tiêu thành công, người chơi nhận EXP theo
+       phần 2 (và phần 3 nếu là Hoàn Mỹ/Vàng/Tím từ cấp 50). Xem <code>Char.doInitMonter()</code>,
        <code>CharSuKien.doResponseTieu()</code>.</p>
-    <form method="post" action="cauhinh.php">
+    <form method="post" action="cauhinh.php" id="formTieu">
         <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
         <input type="hidden" name="viec" value="luu_tieu">
 
-        <label class="o" style="margin-top:4px;"><span>Ngưỡng màu khi nhận tiêu mới (cộng dồn, trên thang 100000 —
-            <strong>phải tăng dần</strong>; phần còn lại tự động là Tím)</span></label>
-        <div class="form-grid">
-            <?php foreach ($TEN_MAU as $i => $ten): ?>
-                <label class="o"><span><?= e($ten) ?></span>
-                    <input type="number" name="tieuNguong<?= $i ?>" min="0" max="100000" value="<?= e($tieuNguong[$i]) ?>"></label>
-            <?php endforeach; ?>
-        </div>
-
-        <label class="o" style="margin-top:12px;"><span>Hệ số EXP nhân trước (%, 200 = x2 — giá trị gốc)</span>
-            <input type="number" name="tieuHeSoExp" min="0" max="1000" style="max-width:160px;"
-                   value="<?= e(giaTri($gt, K_TIEU_HE_SO_EXP, '200')) ?>"></label>
-
-        <label class="o" style="margin-top:12px;"><span>% EXP theo màu (áp dụng khi cấp mở tiêu dưới 50, hoặc màu
-            Trắng/Xanh/Đỏ)</span></label>
+        <h4 style="margin:16px 0 4px;">1. Tỉ lệ ra màu khi nhận tiêu mới</h4>
+        <p class="muted small">Nhập % cho 5 màu đầu (được nhập số lẻ, vd <code>0.001</code> để ra tỉ lệ cực
+           hiếm) — <strong>Tím không nhập, tự động = phần trăm còn lại</strong> sau khi trừ 5 màu kia.</p>
         <div class="form-grid">
             <?php foreach ($TEN_MAU as $i => $ten): ?>
                 <label class="o"><span><?= e($ten) ?> (%)</span>
-                    <input type="number" name="tieuPc<?= $i ?>" min="0" value="<?= e($tieuPc[$i]) ?>"></label>
+                    <input type="number" name="tieuMau<?= $i ?>" min="0" max="100" step="0.001"
+                           class="jsMauNhap" value="<?= e((string)$phanTramMauHienThi[$i]) ?>"></label>
             <?php endforeach; ?>
-            <label class="o"><span>Tím (%)</span>
-                <input type="number" name="tieuPc5" min="0" value="<?= e($tieuPc[5]) ?>"></label>
+            <label class="o"><span>Tím (%) — tự tính</span>
+                <input type="text" id="jsMauTim" readonly value="<?= e((string)$phanTramTim) ?>"
+                       style="background:var(--muted-bg,#f3f3f3);"></label>
+        </div>
+        <p class="muted small" style="margin-top:6px;">Tổng Trắng→Vàng: <strong id="jsTongMau"><?= e((string)array_sum($phanTramMauHienThi)) ?></strong>%
+           — còn lại cho Tím: <strong id="jsConLaiMau"><?= e((string)$phanTramTim) ?></strong>%.
+           <span id="jsCanhBaoMau" style="color:#c00;display:none;">Tổng 5 màu đã vượt 100% — Tím sẽ về 0, lưu lại sẽ báo lỗi.</span></p>
+
+        <h4 style="margin:20px 0 4px;">2. Hệ số EXP khi trả tiêu thành công</h4>
+        <p class="muted small">Hệ số dạng "x lần" — 1 = giữ nguyên gốc, 2 = gấp đôi. Hai hệ số NHÂN VỚI
+           NHAU: EXP cuối = EXP gốc × hệ số chung × hệ số theo màu. Chỉ áp dụng khi cấp mở tiêu dưới 50,
+           hoặc màu Trắng/Xanh/Đỏ (Hoàn Mỹ/Vàng/Tím từ cấp 50 dùng công thức riêng ở phần 3).</p>
+        <label class="o" style="max-width:200px;"><span>Hệ số chung (x...)</span>
+            <input type="number" name="tieuHeSoChung" min="0" max="10" step="0.01"
+                   value="<?= e((string)$heSoChungHienThi) ?>"></label>
+        <div class="form-grid" style="margin-top:8px;">
+            <?php foreach ($TEN_MAU_DAY_DU as $i => $ten): ?>
+                <label class="o"><span>Hệ số <?= e($ten) ?> (x...)</span>
+                    <input type="number" name="tieuHeSoMau<?= $i ?>" min="0" max="100" step="0.01"
+                           value="<?= e((string)$heSoMauHienThi[$i]) ?>"></label>
+            <?php endforeach; ?>
         </div>
 
-        <label class="o" style="margin-top:12px;"><span>Phần nghìn EXP cần để lên cấp — riêng Hoàn Mỹ/Vàng/Tím từ
-            cấp 50 trở lên (vd 90 = 9.0%)</span></label>
+        <h4 style="margin:20px 0 4px;">3. % EXP cần để lên cấp (riêng Hoàn Mỹ/Vàng/Tím, từ cấp 50)</h4>
+        <p class="muted small">Vd 9.0 = trả tiêu xong được cộng thêm 9.0% lượng EXP cần để lên cấp kế
+           tiếp. Chỉ 3 màu hiếm mới dùng bảng này; Trắng/Xanh/Đỏ luôn dùng công thức ở phần 2.</p>
         <table class="table" style="max-width:640px;">
-            <thead><tr><th></th><?php foreach ($TEN_MAU_CAO_CAP as $ten): ?><th><?= e($ten) ?></th><?php endforeach; ?></tr></thead>
+            <thead><tr><th></th><?php foreach ($TEN_MAU_CAO_CAP as $ten): ?><th><?= e($ten) ?> (%)</th><?php endforeach; ?></tr></thead>
             <tbody>
             <?php foreach ($TEN_KHUNG_CAP as $khung => $tenKhung): ?>
                 <tr>
                     <td><?= e($tenKhung) ?></td>
                     <?php foreach ($TEN_MAU_CAO_CAP as $mau => $tenMau): ?>
-                        <td><input type="number" name="tieuPer<?= $khung ?>_<?= $mau ?>" min="0" max="1000"
-                                   style="max-width:90px;" value="<?= e($tieuPer[$khung * 3 + $mau]) ?>"></td>
+                        <td><input type="number" name="tieuPhanTramCaoCap<?= $khung ?>_<?= $mau ?>" min="0" max="100" step="0.1"
+                                   style="max-width:90px;" value="<?= e((string)round($tieuPer[$khung * 3 + $mau] / 10, 1)) ?>"></td>
                     <?php endforeach; ?>
                 </tr>
             <?php endforeach; ?>
@@ -427,6 +479,33 @@ $TEN_KHUNG_CAP = ['Cấp 50-59', 'Cấp 60-69', 'Cấp 70+'];
         <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu tỉ lệ Vận Tiêu</button></div>
     </form>
     <?php veSuaBoi($suaBoi, [K_TIEU_NGUONG_MAU, K_TIEU_HE_SO_EXP, K_TIEU_PC_EXP_THEO_MAU, K_TIEU_PERMILLE_CAO_CAP]); ?>
+    <script>
+    // Chi tinh Tim/tong hien thi cho de nhin - server luon tu tinh lai va chan tong > 100%
+    // khi luu (case 'luu_tieu'), script nay khong phai chot an toan.
+    (function () {
+        var oMau = Array.prototype.slice.call(document.querySelectorAll('.jsMauNhap'));
+        var oTim = document.getElementById('jsMauTim');
+        var oTong = document.getElementById('jsTongMau');
+        var oConLai = document.getElementById('jsConLaiMau');
+        var oCanhBao = document.getElementById('jsCanhBaoMau');
+        function capNhat() {
+            var tong = oMau.reduce(function (t, o) { return t + (parseFloat(o.value) || 0); }, 0);
+            tong = Math.round(tong * 1000) / 1000;
+            var conLai = Math.round((100 - tong) * 1000) / 1000;
+            oTong.textContent = String(tong);
+            if (conLai < 0) {
+                oTim.value = '0';
+                oConLai.textContent = '0';
+                oCanhBao.style.display = '';
+            } else {
+                oTim.value = String(conLai);
+                oConLai.textContent = String(conLai);
+                oCanhBao.style.display = 'none';
+            }
+        }
+        oMau.forEach(function (o) { o.addEventListener('input', capNhat); });
+    })();
+    </script>
 </div>
 
 <div class="card">

@@ -6645,6 +6645,13 @@ public int applyRongLonReleaseTo(int baseDamage) {
             newItem.level = template.level;
             newItem.clazz = 0;
             newItem.heItem = (byte) ((base + i) % 5);
+            // Trang bi thu tu giftcode phai la Hoan My (colorName=1) - Nhat pham
+            // (hangItem=1), giong duong duy nhat khac dang tao ra hang nay
+            // (ItemChangeColor.createItemColorAnimal, nang mau tu do roi) - khong
+            // chi doi ten hien thi ma con tinh lai dung atb/otherAtt theo dung cong
+            // thuc cua tier do. Goi SAU khi da gan heItem de giu dung he ngu hanh
+            // cua chuoi kich (ham nay chi tu random heItem khi dang -1).
+            data.ItemChangeColor.createItemColorAnimal(newItem, 1, 1);
             if (minute > 0) {
                 newItem.timeLoan = System.currentTimeMillis();
                 newItem.minuteExist = minute;

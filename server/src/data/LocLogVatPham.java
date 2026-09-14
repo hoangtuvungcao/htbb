@@ -80,7 +80,10 @@ public final class LocLogVatPham {
             "thuongchiemthanh",         // thuong chiem thanh: hang chuc nghin luong
             "salaryC", "salaryCN",      // luong bang hoi
             "txs", "xoso",              // thang cuoc
-            "idruongmm"                 // admin doi id ruong may man
+            "idruongmm",                // admin doi id ruong may man
+            // --- 4. Tieu nguyen lieu Than Khi (kho gem rieng, khong qua hanh trang) ---
+            "taothankhi",               // tao Than Khi: ghi ten vat pham, cap/che do, nguyen lieu da tieu (ThoRenThanBi.CreateThanKhi)
+            "nangcapthankhi"            // nang cap Than Khi: ghi +cu -> +moi, ti le, thanh/bai, nguyen lieu da tieu (ThoRenThanBi.UpgradeThanKhi)
     )));
 
     /** true = KHONG ghi. Chuoi la, null, hay khong nam trong GIU deu bi bo. */
