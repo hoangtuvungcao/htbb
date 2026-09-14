@@ -734,7 +734,13 @@ public class Monster extends LiveActor {
     // tren. Truoc 13/09/2026 tach rieng hai nguong (>=50 va <50) voi ti le khac nhau,
     // sau gop lai dong bo con 60% (giam 40%), roi giam tiep xuong 30% (giam 70%),
     // roi giam tiep xuong 5% (giam 95%) cung ngay 14/09/2026.
-    public static int PC_TILE_EXP = 5;
+    public static int PC_TILE_EXP_LV50 = 10;
+
+    // ================= GIAM EXP QUAI CAP THAP (duoi level 50) =================
+    // Rieng bang, doc lap voi PC_TILE_EXP_LV50 o tren - yeu cau 13/09/2026: quai
+    // duoi level 50 giam 60% (con 40%), quai tu level 50 tro len GIU NGUYEN muc
+    // giam cu (PC_TILE_EXP_LV50), khong cong don hai lan giam.
+    public static int PC_TILE_EXP_DUOI_LV50 = 50;
 
     /** Nhan ti le goc voi phan tram dieu chinh o tren. */
     public static int tile(final int tiLeGoc, final int pc) {
@@ -749,7 +755,7 @@ public class Monster extends LiveActor {
 
     /** Exp goc cua mot MonsterTemplate, da giam dong nhat theo PC_TILE_EXP. */
     public static int rcvXpSauGiam(final MonsterTemplate t) {
-        return Monster.tile(t.rcvXp, Monster.PC_TILE_EXP);
+        return Monster.tile(t.rcvXp, (t.level >= 50) ? Monster.PC_TILE_EXP_LV50 : Monster.PC_TILE_EXP_DUOI_LV50);
     }
 
     @Override
