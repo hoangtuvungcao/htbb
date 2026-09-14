@@ -235,6 +235,11 @@ class CharNapDuLieu {
                 } catch (final Exception ex8d) {
                 }
                 try {
+                    self.isNghienAuto = (Integer.parseInt(data[117]) == 1);
+                    self.isAutoBan = (Integer.parseInt(data[118]) == 1);
+                } catch (final Exception ex8e) {
+                }
+                try {
                     self.idAutoSkill = Byte.parseByte(data[30]);
                     self.idAutoGetitem = Byte.parseByte(data[31]);
                 } catch (final Exception ex9) {

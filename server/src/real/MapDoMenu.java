@@ -3634,7 +3634,7 @@ class MapDoMenu {
                                             "tob_log_other_kham",
                                             player.charname,
                                             n + "_" + player.listGemitem[gtempid] + "_" + player.listGemitem[gtempid - 1] + "_" + gemTemplate[gtempid].name,
-                                            "hop"
+                                            "hopnguyenlieu"
                                     );
                         }
                     } else {
@@ -3762,7 +3762,7 @@ class MapDoMenu {
                                             "tob_log_other_kham",
                                             player.charname,
                                             n + "_" + player.listGemitem[gtempidx] + "_" + player.listGemitem[gtempidx - 1] + "_" + gemTemplate[gtempidx].name,
-                                            "hop"
+                                            "hopnguyenlieu"
                                     );
                         }
                     } else {
@@ -3850,7 +3850,7 @@ class MapDoMenu {
                                             "tob_log_other_kham",
                                             player.charname,
                                             n + "_" + player.listGemitem[gid] + "_" + player.listGemitem[gid - 1] + "_" + gemTemplate[gid].name,
-                                            "hop"
+                                            "hopnguyenlieu"
                                     );
                             player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã hợp được " + n + " " + gemTemplate[gid].name, ""));
                         } else {

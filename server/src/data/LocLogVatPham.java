@@ -83,7 +83,17 @@ public final class LocLogVatPham {
             "idruongmm",                // admin doi id ruong may man
             // --- 4. Tieu nguyen lieu Than Khi (kho gem rieng, khong qua hanh trang) ---
             "taothankhi",               // tao Than Khi: ghi ten vat pham, cap/che do, nguyen lieu da tieu (ThoRenThanBi.CreateThanKhi)
-            "nangcapthankhi"            // nang cap Than Khi: ghi +cu -> +moi, ti le, thanh/bai, nguyen lieu da tieu (ThoRenThanBi.UpgradeThanKhi)
+            "nangcapthankhi",           // nang cap Than Khi: ghi +cu -> +moi, ti le, thanh/bai, nguyen lieu da tieu (ThoRenThanBi.UpgradeThanKhi)
+            // --- 5. Che tao trang bi thuong (vu khi/giap/nhan/day chuyen/ngoc...) ---
+            "chetaotrangbi",            // xac nhan tao do o Map.doCreateNewItem: nguyen lieu da tieu (gemUse) + vat pham ra doi;
+                                        // TRUOC la aclog "tao" chung, bi loai bo 02/09/2026 vi la nguon rac lon nhat -
+                                        // doi ten rieng de giu duoc CHI dong nay ma khong an rac "tao" khac
+            // --- 6. Hop nguyen lieu (5 vien cap thap -> 1 vien cap cao, NPC map 40/41/42) ---
+            "hopnguyenlieu"             // MapDoMenu.java (3 NPC: -10/-11/-12): ghi so luong hop + ten nguyen lieu ket qua;
+                                        // TRUOC la aclog "hop" chung, cung bi loai bo 02/09/2026 nhu "tao" - doi ten rieng
+                                        // vi day la buoc TRUNG GIAN de lam nguyen lieu bac cao (vd Ngoc cap 5 -> cap 6)
+                                        // truoc khi dem che trang bi - thieu dong nay thi khong biet nguyen lieu bac thap
+                                        // co bi hop len bac cao roi moi tieu hay khong
     )));
 
     /** true = KHONG ghi. Chuoi la, null, hay khong nam trong GIU deu bi bo. */

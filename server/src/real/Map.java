@@ -7062,6 +7062,10 @@ public class Map implements Runnable {
                     // (kich hoat boi hanh dong KHAC nhu ban do/dung thuoc, khong phai boi
                     // chinh viec che tao), nen mat het neu ngat ket noi truoc do. Luu ngay.
                     Database.instance.saveCharAuto(player);
+                    // aclog rieng "chetaotrangbi" (KHONG dung "tao" chung) - "tao" nam trong
+                    // danh sach loai bo tu 02/09/2026 (xem data.LocLogVatPham) vi la nguon rac
+                    // lon nhat luc do; doi ten o day de dong ghi CHI cho che tao trang bi nay
+                    // duoc giu lai ma khong keo theo cac cho "tao" khac (neu co sau nay).
                     Database.instance
                             .saveOrtherLog(
                                     "tob_log_other_item",
@@ -7079,7 +7083,7 @@ public class Map implements Runnable {
                                     + item.getAttribute()
                                     + "|"
                                     + item.getDBInfo(),
-                                    "tao"
+                                    "chetaotrangbi"
                             );
                     player.sendMessage(MessageCreator.createCharGemItem(player));
                     player.infoItemCreate.item = null;
