@@ -571,7 +571,7 @@ public class BossBachXa extends Boss {
             try {
                 this.isDead = true;
                 if (!this.isCopy) {
-                    this.bornTime = System.currentTimeMillis() + 86400000L;
+                    this.bornTime = System.currentTimeMillis() + 14400000L;
                     Map.event.timeBossAppear[2] = this.bornTime;
                     Database.instance.saveEvent(Map.event.getInfo());
                     EventGame.ALL_BOSS_DIE[0] = true;

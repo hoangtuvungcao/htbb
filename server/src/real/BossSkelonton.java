@@ -643,12 +643,11 @@ public class BossSkelonton extends Boss {
         try {
             try {
                 this.isDead = true;
-                this.bornTime = System.currentTimeMillis() + 86400000L;
+                this.bornTime = System.currentTimeMillis() + 14400000L;
                 if (this.randomMap) {
                     if (this.idTemplate == 113) {
                         Map.event.timeBossAppear[5] = this.bornTime;
                     } else if (this.idTemplate == 115) {
-                        this.bornTime = System.currentTimeMillis() + 28800000L;
                         Map.event.timeBossAppear[6] = this.bornTime;
                     } else {
                         Map.event.timeBossAppear[1] = this.bornTime;

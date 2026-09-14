@@ -6628,6 +6628,17 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
         final int n = (level - 30) / 5;
         final int base = Map.r.nextInt(5);
+        // Ca 5 mon PHAI CUNG mot magic_physic (0=Ma phap, 1=Vat ly - xem Item.java,
+        // Map.java:8768). Hai ly do:
+        // 1) createItemColorAnimal() doc magic_physic de chia atb[1]/atb[6] (Vat ly/Ma
+        //    phap) cho type 14/16/18 - de mac dinh (=2, khong phai 0/1) thi nhanh do bi
+        //    BO QUA HOAN TOAN, ca hai chi so cung giu nguyen ban goc chua ai chia 10 ->
+        //    mon do hien "vua day Vat ly vua day Ma phap" (dung bug nguoi dung bao).
+        // 2) checkKick5AttAnimal() chi kich duoc ngu hanh giua 2 mon CUNG magic_physic -
+        //    khac nhau la chuoi kich khong bao gio chay.
+        // Random MOT LAN cho ca bo, giong dung cach do tu nhien roi (Map.dropItemAnimalByLvChar
+        // r.nextInt(2)) nhung ap dung CHUNG cho 5 mon thay vi tung mon rieng le.
+        final byte magicPhysic = (byte) Map.r.nextInt(2);
         for (int i = 0; i < CHAIN_TYPE_TRANG_BI_THU.length; i++) {
             if (p.isFullInventory()) {
                 p.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy, không nhận thêm được.", ""));
@@ -6645,12 +6656,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
             newItem.level = template.level;
             newItem.clazz = 0;
             newItem.heItem = (byte) ((base + i) % 5);
+            newItem.magic_physic = magicPhysic;
             // Trang bi thu tu giftcode phai la Hoan My (colorName=1) - Nhat pham
             // (hangItem=1), giong duong duy nhat khac dang tao ra hang nay
             // (ItemChangeColor.createItemColorAnimal, nang mau tu do roi) - khong
             // chi doi ten hien thi ma con tinh lai dung atb/otherAtt theo dung cong
-            // thuc cua tier do. Goi SAU khi da gan heItem de giu dung he ngu hanh
-            // cua chuoi kich (ham nay chi tu random heItem khi dang -1).
+            // thuc cua tier do. Goi SAU khi da gan heItem/magic_physic de giu dung
+            // ca hai (ham nay chi tu random heItem khi dang -1, va can magic_physic
+            // dung 0/1 tu truoc de chia dung atb[1]/atb[6]).
             data.ItemChangeColor.createItemColorAnimal(newItem, 1, 1);
             if (minute > 0) {
                 newItem.timeLoan = System.currentTimeMillis();

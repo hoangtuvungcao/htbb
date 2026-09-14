@@ -57,20 +57,33 @@ class CharTrangBi {
             {
                 if (!actor.isBossSonTinhThuyTinh()) 
                 {
-                    if (!actor.isActiveTienKhi() || !actor.isActive8sRongLon()) 
+                    if (!actor.isActiveTienKhi() || !actor.isActive8sRongLon())
                     {
 
-                        if (chenhLechCapQuaXaLan(self, actor) || actor.isKhangLan(id, giamKhangLan)
-                                || actor.hetHanLan > System.currentTimeMillis())
+                        // DEBUG TAM THOI (go sau khi chan doan xong "lan khong chet mau quai gan cap") -
+                        // tach tung dieu kien ra bien de: (1) khong roll random 2 lan cho isKhangLan,
+                        // (2) in duoc chinh xac ly do vao game.out cho ca hai nhanh trung/khong trung dam.
+                        final boolean lanQuaXaCap = chenhLechCapQuaXaLan(self, actor);
+                        final boolean lanBiKhang = actor.isKhangLan(id, giamKhangLan);
+                        final boolean lanDangKhoa = actor.hetHanLan > System.currentTimeMillis();
+                        final int lvActorDebug = (actor.cat == 0) ? ((Char) actor).lvDetail.lv
+                                : (actor.cat == 1 ? ((Monster) actor).level : -1);
+                        System.out.println("[LAN-DEBUG] " + self.charname + "(lv" + self.lvDetail.lv + ") "
+                                + Char.namelan[id] + " -> " + actor.getName() + "(cat=" + actor.cat + ",lv=" + lvActorDebug + ") "
+                                + ((lanQuaXaCap || lanBiKhang || lanDangKhoa)
+                                    ? ("MIEN NHIEM qua_xa_cap=" + lanQuaXaCap + " bi_khang=" + lanBiKhang + " dang_khoa=" + lanDangKhoa)
+                                    : "TRUNG DAM"));
+
+                        if (lanQuaXaCap || lanBiKhang || lanDangKhoa)
                         {
-                            if (actor.cat == 0 && ((Char) actor).timeGiveCardTown > 0L) 
+                            if (actor.cat == 0 && ((Char) actor).timeGiveCardTown > 0L)
                             {
                                 infokhang = String.valueOf(actor.getName()) + " KHANG DC " + Char.namelan[id] + ",bl=" + self.khangbanglan + ",dl=" + self.khangsetlan + ",dl=" + self.khangdoclan + ",ll=" + self.khanglualan;
                                 Database.instance.saveOrtherLog("", actor.getName(), infokhang, "khanglan");
                             }
                             dam.add(0);
                             hpLeft.add(actor.hp);
-                        } 
+                        }
                         else if (id == 2)
                         {
                             int d = actor.hp / 2;

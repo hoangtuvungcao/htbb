@@ -576,7 +576,7 @@ public class BossLinhXa extends Boss {
             try {
                 this.isDead = true;
                 if (!this.isCopy) {
-                    this.bornTime = System.currentTimeMillis() + 86400000L;
+                    this.bornTime = System.currentTimeMillis() + 14400000L;
                     Map.event.timeBossAppear[2] = this.bornTime;
                     EventGame.ALL_BOSS_DIE[1] = true;
                     EventGame.checkBossDie();

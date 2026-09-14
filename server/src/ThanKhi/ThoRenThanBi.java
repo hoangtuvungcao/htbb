@@ -576,7 +576,7 @@ public class ThoRenThanBi
         }
 
         //  Bảng tỉ lệ cơ bản (targetPlus = curPlus+1 => index 0..9)
-        final int[] BASE_UPGRADE_RATE_BY_TARGET_PLUS = new int[] { 90, 80, 70, 60, 50, 40, 30, 25, 20, 15 };
+        final int[] BASE_UPGRADE_RATE_BY_TARGET_PLUS = new int[] { 72, 64, 56, 48, 40, 32, 24, 20, 16, 12 };
         int targetPlus = curPlus + 1;
         int baseChance = (targetPlus >= 1 && targetPlus <= 10) ? BASE_UPGRADE_RATE_BY_TARGET_PLUS[targetPlus - 1] : 50;
 
@@ -817,7 +817,7 @@ public class ThoRenThanBi
         }
         else
         {
-            player.sendMessage(MessageCreator.createServerAlertMessage("Nâng cấp thất bại (tỉ lệ " + finalChance + "%)", ""));
+            player.sendMessage(MessageCreator.createServerAlertMessage("Nâng cấp thất bại", ""));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1)); // refresh
         }
 
