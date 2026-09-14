@@ -4482,12 +4482,135 @@ public class Database {
     }
 
 
+    // ===== Gop log mua shop NPC (tob_log_buy_shop) theo cua so thoi gian =====
+    // Goi tin mua (lenh 85, xem MapMuaBan.doBuySpecialItem) KHONG mang so luong -
+    // moi lan bam mua la MOT goi tin rieng, nen mua vd 500 nguyen lieu la 500 goi
+    // tin lien tiep. Truoc day moi goi goi thang saveLogBuyItemShop() ghi THEM
+    // 1 dong -> 500 dong giong het nhau. Gop trong BO NHO Java: nhieu lan mua
+    // CUNG mon (cung info/type/price/money) LIEN TIEP trong vong
+    // CUA_SO_GOP_LOG_MUA_MS duoc cong don thanh MOT dong (cot soluong); chi
+    // "xa" (INSERT that su) khi doi sang mon khac hoac qua cua so thoi gian.
+    // Chu ky nguyen: moi lan xa CHI phat DUNG MOT cau INSERT, khong dung
+    // ON DUPLICATE KEY UPDATE nen khong can khoa/truy van rieng o tang SQL.
+    private static final long CUA_SO_GOP_LOG_MUA_MS = 5000L;
+
+    private static final class LogMuaChoGhi {
+        String info;
+        int type;
+        int price;
+        String money;
+        int soluong;
+        long lanCuoiMs;
+    }
+
+    private static final java.util.concurrent.ConcurrentHashMap<String, LogMuaChoGhi> CHO_GOP_LOG_MUA =
+            new java.util.concurrent.ConcurrentHashMap<String, LogMuaChoGhi>();
+
     public void saveLogBuyItemShop(String seller, String info, int type, int price, String money) {
+        synchronized (CHO_GOP_LOG_MUA) {
+            final long now = System.currentTimeMillis();
+            final LogMuaChoGhi dang = CHO_GOP_LOG_MUA.get(seller);
+            if (dang != null && dang.type == type && dang.price == price
+                    && dang.money.equals(money) && dang.info.equals(info)
+                    && now - dang.lanCuoiMs <= CUA_SO_GOP_LOG_MUA_MS) {
+                dang.soluong++;
+                dang.lanCuoiMs = now;
+                return;
+            }
+            if (dang != null) {
+                xaLogMuaShop(seller, dang);
+            }
+            final LogMuaChoGhi moi = new LogMuaChoGhi();
+            moi.info = info;
+            moi.type = type;
+            moi.price = price;
+            moi.money = money;
+            moi.soluong = 1;
+            moi.lanCuoiMs = now;
+            CHO_GOP_LOG_MUA.put(seller, moi);
+        }
+    }
+
+    private void xaLogMuaShop(final String seller, final LogMuaChoGhi dang) {
         try {
-            String sql = "insert into tob_log_buy_shop (charname,info,timeBuy,typeitem,price,money) values ('" + seller + "','" + info + "',Now()," + type + "," + price + ",'" + money + "')";
+            final String sql = "insert into tob_log_buy_shop (charname,info,timeBuy,typeitem,price,money,soluong) values ('"
+                    + seller + "','" + dang.info + "',Now()," + dang.type + "," + dang.price + ",'" + dang.money + "'," + dang.soluong + ")";
             Logdata.query.add(sql);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Quet dinh ky (TeamServer, vai giay/lan): xa nhung dong mua da qua
+     * CUA_SO_GOP_LOG_MUA_MS ma khong mua tiep cung mon - dam bao lan mua cuoi
+     * cung (khong co su kien "doi mon" nao xay ra sau do de trigger xa) van
+     * duoc ghi xuong DB, khong "treo" mai trong bo nho.
+     */
+    public void xaLogMuaShopHetHan() {
+        final long now = System.currentTimeMillis();
+        synchronized (CHO_GOP_LOG_MUA) {
+            final java.util.Iterator<java.util.Map.Entry<String, LogMuaChoGhi>> it = CHO_GOP_LOG_MUA.entrySet().iterator();
+            while (it.hasNext()) {
+                final java.util.Map.Entry<String, LogMuaChoGhi> e = it.next();
+                if (now - e.getValue().lanCuoiMs > CUA_SO_GOP_LOG_MUA_MS) {
+                    xaLogMuaShop(e.getKey(), e.getValue());
+                    it.remove();
+                }
+            }
+        }
+    }
+
+    /** Xa toan bo, khong loc thoi gian - goi luc shutdown de khong mat lan mua cuoi cung. */
+    public void xaTatCaLogMuaShop() {
+        synchronized (CHO_GOP_LOG_MUA) {
+            for (final java.util.Map.Entry<String, LogMuaChoGhi> e : CHO_GOP_LOG_MUA.entrySet()) {
+                xaLogMuaShop(e.getKey(), e.getValue());
+            }
+            CHO_GOP_LOG_MUA.clear();
+        }
+    }
+
+    /**
+     * Them cot `soluong` vao `tob_log_buy_shop` neu chua co (phuc vu gop log o
+     * tren). Goi 1 lan luc khoi dong server, TRUOC khi nhan nguoi choi vao -
+     * cung nhom voi chuanBiGiftCodeUserId(). Idempotent - chay lai nhieu lan
+     * khong sao, chi ALTER khi thieu cot.
+     */
+    public void chuanBiCotSoLuongLogBuyShop() {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SHOW COLUMNS FROM tob_log_buy_shop LIKE 'soluong'");
+            final boolean daCo = rs.next();
+            rs.close();
+            rs = null;
+            if (!daCo) {
+                stmt.execute("ALTER TABLE tob_log_buy_shop ADD COLUMN soluong INT(10) UNSIGNED NOT NULL DEFAULT 1 AFTER money");
+                System.out.println("[LOG MUA SHOP] Da them cot tob_log_buy_shop.soluong.");
+            }
+        } catch (final Exception e) {
+            System.out.println("[LOG MUA SHOP] loi chuan bi cot soluong: " + e);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (final Exception ignored) {
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (final Exception ignored) {
+            }
+            try {
+                connPool.free(conn);
+            } catch (final Exception ignored) {
+            }
         }
     }
 

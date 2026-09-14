@@ -1,6 +1,6 @@
 <?php
 /**
- * Cấu hình server (bảng kpah_db.cau_hinh) — 26 setting server.ini nạp lại được
+ * Cấu hình server (bảng kpah_db.cau_hinh) — 32 setting server.ini nạp lại được
  * lúc đang chạy, xem src/server/CauHinh.java.
  *
  * TRƯỚC 09/09/2026: chỉ sửa được bằng cách SSH vào VPS sửa tay server.ini, hoặc
@@ -10,7 +10,7 @@
  * Server tự đọc lại bảng này mỗi 10 giây (server.CauHinh.batDau()) nên sửa ở đây thì
  * server áp dụng trong tối đa 10 giây — KHÔNG cần restart, không cần vào game gõ lệnh.
  *
- * KHÔNG PHẢI TOÀN BỘ server.ini nằm ở đây — chỉ đúng 26 khoá đã có sẵn cơ chế nạp lại
+ * KHÔNG PHẢI TOÀN BỘ server.ini nằm ở đây — chỉ đúng 32 khoá đã có sẵn cơ chế nạp lại
  * (xem CauHinh.java). Khoảng 20 khoá bắt buộc để kết nối CSDL/mở cổng (db.host, sv.port,
  * ...) và một số khoá gameplay khác vẫn đọc một lần lúc khởi động, buộc phải sửa qua
  * server.ini + restart như trước.
@@ -30,6 +30,12 @@ const K_TILE_POTION = 'sv.tilePotion';
 const K_TILE_NGOC = 'sv.tileNgoc';
 const K_TILE_ITEM = 'sv.tileItem';
 const K_CHIA_XU = 'sv.chiaXuRoi';
+const K_TILE_EXP_LV50 = 'sv.tileExpLv50';
+const K_TILE_EXP_DUOI_LV50 = 'sv.tileExpDuoiLv50';
+const K_TIEU_NGUONG_MAU = 'sv.tieuNguongMau';
+const K_TIEU_HE_SO_EXP = 'sv.tieuHeSoExp';
+const K_TIEU_PC_EXP_THEO_MAU = 'sv.tieuPcExpTheoMau';
+const K_TIEU_PERMILLE_CAO_CAP = 'sv.tieuPermilleCaoCap';
 const K_GIO_CT = 'sv.gioChiemThanh';
 const K_PHUT_CT = 'sv.phutChiemThanh';
 const K_NGAY_CT = 'sv.ngayChiemThanh';
@@ -84,6 +90,17 @@ function soKep(string $tho, int $min, int $max, int $macDinh): int
     return max($min, min($max, $n));
 }
 
+/** Đọc một khoá dạng CSV "a,b,c" từ $gt thành int[]; sai số phần tử thì dùng $macDinh. */
+function mangTu(array $gt, string $k, array $macDinh): array
+{
+    $raw = trim(array_key_exists($k, $gt) ? (string)$gt[$k] : '');
+    if ($raw === '') {
+        return $macDinh;
+    }
+    $phan = array_map('intval', explode(',', $raw));
+    return count($phan) === count($macDinh) ? $phan : $macDinh;
+}
+
 /** Ten 7 thu trong tuan dung cho checkbox + Java Date.toString(), theo dung thu tu Thu Hai truoc. */
 const CAC_THU_TRONG_TUAN = [
     'Mon' => 'Thứ Hai', 'Tue' => 'Thứ Ba', 'Wed' => 'Thứ Tư', 'Thu' => 'Thứ Năm',
@@ -113,6 +130,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 luuCauHinh($m);
                 ghiNhatKy('sua_cau_hinh', 'ti_le_drop', json_encode($m, JSON_UNESCAPED_UNICODE));
                 veLai($TRANG, 'success', 'Đã lưu tỷ lệ rơi đồ. Server áp dụng trong tối đa 10 giây.');
+                break;
+            }
+
+            case 'luu_exp_quai': {
+                $m = [
+                    K_TILE_EXP_LV50 => soKep(p('tileExpLv50'), 0, 100, 10),
+                    K_TILE_EXP_DUOI_LV50 => soKep(p('tileExpDuoiLv50'), 0, 100, 50),
+                ];
+                luuCauHinh($m);
+                ghiNhatKy('sua_cau_hinh', 'ti_le_exp_quai', json_encode($m, JSON_UNESCAPED_UNICODE));
+                veLai($TRANG, 'success', 'Đã lưu tỉ lệ EXP quái. Server áp dụng trong tối đa 10 giây.');
+                break;
+            }
+
+            case 'luu_tieu': {
+                $nguong = [
+                    soKep(p('tieuNguong0'), 0, 100000, 60189),
+                    soKep(p('tieuNguong1'), 0, 100000, 89389),
+                    soKep(p('tieuNguong2'), 0, 100000, 99689),
+                    soKep(p('tieuNguong3'), 0, 100000, 99989),
+                    soKep(p('tieuNguong4'), 0, 100000, 99999),
+                ];
+                for ($i = 1; $i < count($nguong); $i++) {
+                    if ($nguong[$i] < $nguong[$i - 1]) {
+                        veLai($TRANG, 'error', 'Ngưỡng màu tiêu phải tăng dần (ngưỡng thứ '
+                            . ($i + 1) . ' đang nhỏ hơn ngưỡng thứ ' . $i . ').');
+                    }
+                }
+                $pcExp = [
+                    soKep(p('tieuPc0'), 0, 100000, 50),
+                    soKep(p('tieuPc1'), 0, 100000, 100),
+                    soKep(p('tieuPc2'), 0, 100000, 150),
+                    soKep(p('tieuPc3'), 0, 100000, 250),
+                    soKep(p('tieuPc4'), 0, 100000, 250),
+                    soKep(p('tieuPc5'), 0, 100000, 500),
+                    0, // phan tu thu 7 - khong mau nao doc toi, giu 0 cho du do dai
+                ];
+                $permille = [];
+                foreach ([0, 1, 2] as $khung) {
+                    foreach ([0, 1, 2] as $mau) {
+                        $permille[] = soKep(p("tieuPer{$khung}_{$mau}"), 0, 1000, 0);
+                    }
+                }
+                $m = [
+                    K_TIEU_NGUONG_MAU => implode(',', $nguong),
+                    K_TIEU_HE_SO_EXP => soKep(p('tieuHeSoExp'), 0, 1000, 200),
+                    K_TIEU_PC_EXP_THEO_MAU => implode(',', $pcExp),
+                    K_TIEU_PERMILLE_CAO_CAP => implode(',', $permille),
+                ];
+                luuCauHinh($m);
+                ghiNhatKy('sua_cau_hinh', 'ti_le_tieu', json_encode($m, JSON_UNESCAPED_UNICODE));
+                veLai($TRANG, 'success', 'Đã lưu tỉ lệ Vận Tiêu. Server áp dụng trong tối đa 10 giây.');
                 break;
             }
 
@@ -237,7 +306,7 @@ adminHead('cauhinh', 'Cấu hình server');
 <div class="page-head">
     <div>
         <h1>Cấu hình server</h1>
-        <p>26 setting nạp lại được lúc đang chạy — sửa xong, server tự áp dụng trong tối đa 10 giây, không cần restart.</p>
+        <p>32 setting nạp lại được lúc đang chạy — sửa xong, server tự áp dụng trong tối đa 10 giây, không cần restart.</p>
     </div>
 </div>
 
@@ -246,7 +315,7 @@ adminHead('cauhinh', 'Cấu hình server');
 <?php endif; ?>
 
 <div class="luuy">
-    <p>Đây <strong>không phải toàn bộ</strong> <code>server.ini</code> — chỉ 26 khoá đã có sẵn cơ chế nạp lại
+    <p>Đây <strong>không phải toàn bộ</strong> <code>server.ini</code> — chỉ 32 khoá đã có sẵn cơ chế nạp lại
        (xem <code>src/server/CauHinh.java</code>). Các khoá kết nối CSDL, cổng mạng, đường dẫn máy... vẫn phải
        sửa trực tiếp <code>server.ini</code> trên VPS rồi khởi động lại — không nằm ở đây vì bản thân chúng là
        thứ server cần để kết nối được tới CSDL này.</p>
@@ -278,6 +347,86 @@ adminHead('cauhinh', 'Cấu hình server');
         <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu tỷ lệ rơi đồ</button></div>
     </form>
     <?php veSuaBoi($suaBoi, [K_TILE_XU, K_TILE_LUONG, K_TILE_SUKIEN, K_TILE_POTION, K_TILE_NGOC, K_TILE_ITEM, K_CHIA_XU]); ?>
+</div>
+
+<div class="card">
+    <h3>Tỉ lệ EXP quái thường</h3>
+    <p class="muted small">Phần trăm so với EXP gốc của quái (không dùng cho Boss). 100 = như gốc, 0 = tắt hẳn.
+       Xem <code>Monster.rcvXpSauGiam()</code>.</p>
+    <form method="post" action="cauhinh.php">
+        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+        <input type="hidden" name="viec" value="luu_exp_quai">
+        <div class="form-grid">
+            <label class="o"><span>Quái cấp ≥ 50 (%)</span>
+                <input type="number" name="tileExpLv50" min="0" max="100" value="<?= e(giaTri($gt, K_TILE_EXP_LV50, '10')) ?>"></label>
+            <label class="o"><span>Quái cấp &lt; 50 (%)</span>
+                <input type="number" name="tileExpDuoiLv50" min="0" max="100" value="<?= e(giaTri($gt, K_TILE_EXP_DUOI_LV50, '50')) ?>"></label>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu tỉ lệ EXP quái</button></div>
+    </form>
+    <?php veSuaBoi($suaBoi, [K_TILE_EXP_LV50, K_TILE_EXP_DUOI_LV50]); ?>
+</div>
+
+<?php
+$tieuNguong = mangTu($gt, K_TIEU_NGUONG_MAU, [60189, 89389, 99689, 99989, 99999]);
+$tieuPc = mangTu($gt, K_TIEU_PC_EXP_THEO_MAU, [50, 100, 150, 250, 250, 500, 0]);
+$tieuPer = mangTu($gt, K_TIEU_PERMILLE_CAO_CAP, [50, 70, 90, 35, 55, 75, 5, 25, 45]);
+$TEN_MAU = ['Trắng', 'Xanh', 'Đỏ', 'Hoàn Mỹ', 'Vàng'];
+$TEN_MAU_CAO_CAP = ['Hoàn Mỹ', 'Vàng', 'Tím'];
+$TEN_KHUNG_CAP = ['Cấp 50-59', 'Cấp 60-69', 'Cấp 70+'];
+?>
+<div class="card">
+    <h3>Tỉ lệ Vận Tiêu</h3>
+    <p class="muted small">Màu và EXP khi nhận / trả Vận Tiêu. Xem <code>Char.doInitMonter()</code>,
+       <code>CharSuKien.doResponseTieu()</code>.</p>
+    <form method="post" action="cauhinh.php">
+        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+        <input type="hidden" name="viec" value="luu_tieu">
+
+        <label class="o" style="margin-top:4px;"><span>Ngưỡng màu khi nhận tiêu mới (cộng dồn, trên thang 100000 —
+            <strong>phải tăng dần</strong>; phần còn lại tự động là Tím)</span></label>
+        <div class="form-grid">
+            <?php foreach ($TEN_MAU as $i => $ten): ?>
+                <label class="o"><span><?= e($ten) ?></span>
+                    <input type="number" name="tieuNguong<?= $i ?>" min="0" max="100000" value="<?= e($tieuNguong[$i]) ?>"></label>
+            <?php endforeach; ?>
+        </div>
+
+        <label class="o" style="margin-top:12px;"><span>Hệ số EXP nhân trước (%, 200 = x2 — giá trị gốc)</span>
+            <input type="number" name="tieuHeSoExp" min="0" max="1000" style="max-width:160px;"
+                   value="<?= e(giaTri($gt, K_TIEU_HE_SO_EXP, '200')) ?>"></label>
+
+        <label class="o" style="margin-top:12px;"><span>% EXP theo màu (áp dụng khi cấp mở tiêu dưới 50, hoặc màu
+            Trắng/Xanh/Đỏ)</span></label>
+        <div class="form-grid">
+            <?php foreach ($TEN_MAU as $i => $ten): ?>
+                <label class="o"><span><?= e($ten) ?> (%)</span>
+                    <input type="number" name="tieuPc<?= $i ?>" min="0" value="<?= e($tieuPc[$i]) ?>"></label>
+            <?php endforeach; ?>
+            <label class="o"><span>Tím (%)</span>
+                <input type="number" name="tieuPc5" min="0" value="<?= e($tieuPc[5]) ?>"></label>
+        </div>
+
+        <label class="o" style="margin-top:12px;"><span>Phần nghìn EXP cần để lên cấp — riêng Hoàn Mỹ/Vàng/Tím từ
+            cấp 50 trở lên (vd 90 = 9.0%)</span></label>
+        <table class="table" style="max-width:640px;">
+            <thead><tr><th></th><?php foreach ($TEN_MAU_CAO_CAP as $ten): ?><th><?= e($ten) ?></th><?php endforeach; ?></tr></thead>
+            <tbody>
+            <?php foreach ($TEN_KHUNG_CAP as $khung => $tenKhung): ?>
+                <tr>
+                    <td><?= e($tenKhung) ?></td>
+                    <?php foreach ($TEN_MAU_CAO_CAP as $mau => $tenMau): ?>
+                        <td><input type="number" name="tieuPer<?= $khung ?>_<?= $mau ?>" min="0" max="1000"
+                                   style="max-width:90px;" value="<?= e($tieuPer[$khung * 3 + $mau]) ?>"></td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+
+        <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu tỉ lệ Vận Tiêu</button></div>
+    </form>
+    <?php veSuaBoi($suaBoi, [K_TIEU_NGUONG_MAU, K_TIEU_HE_SO_EXP, K_TIEU_PC_EXP_THEO_MAU, K_TIEU_PERMILLE_CAO_CAP]); ?>
 </div>
 
 <div class="card">

@@ -48,9 +48,11 @@ public final class KiemTaiLieuCauHinh {
             "sv.worldCupBatDau", "sv.worldCupKetThuc", "sv.worldCupHanNhanQua",
             "sv.suKienTuKhoiDongLai", "sv.suKienGomGiay", "sv.suKienBaoTruocGiay",
             "sv.expvantieu", "sv.Luckyexp", "sv.ExpQua",
+            "sv.tileExpLv50", "sv.tileExpDuoiLv50",
+            "sv.tieuNguongMau", "sv.tieuHeSoExp", "sv.tieuPcExpTheoMau", "sv.tieuPermilleCaoCap",
         };
-        Kiem.bang("tai lieu ghi dung 26 khoa nap lai duoc",
-                Integer.valueOf(26), Integer.valueOf(napLaiDuoc.length));
+        Kiem.bang("tai lieu ghi dung 32 khoa nap lai duoc",
+                Integer.valueOf(32), Integer.valueOf(napLaiDuoc.length));
         for (final String k : napLaiDuoc) {
             Kiem.dung("tai lieu co liet ke " + k, tl.contains(k));
             Kiem.dung(k + " that su nap lai duoc (co trong CauHinh)", ch.contains("\"" + k + "\""));

@@ -33,15 +33,24 @@ $BANG = [
     ],
     'tob_log_buy_shop' => [
         'ten'  => 'Mua ở shop',
-        'mota' => 'Giao dịch mua trong cửa hàng NPC.',
-        'cot'  => ['id' => 'ID', 'charname' => 'Nhân vật', 'info' => 'Món',
+        'mota' => 'Giao dịch mua trong cửa hàng NPC. Từ 14/09/2026: những lần mua CÙNG món '
+                . 'liên tiếp trong vòng 5 giây được gộp thành 1 dòng (xem cột Số lượng) — gói '
+                . 'tin mua không mang số lượng nên mỗi lần bấm mua vốn dĩ là 1 gói tin riêng.',
+        'cot'  => ['id' => 'ID', 'charname' => 'Nhân vật', 'info' => 'Món', 'soluong' => 'Số lượng',
                    'price' => 'Giá', 'money' => 'Trả bằng', 'timeBuy' => 'Lúc'],
         'loc'  => 'charname', 'loc2' => null, 'sap' => 'id DESC',
     ],
     'tob_log_buy_store' => [
-        'ten'  => 'Mua ở kho',
-        'mota' => 'Giao dịch ở cửa hàng người chơi.',
-        'cot'  => ['id' => 'ID', 'charname' => 'Nhân vật', 'info' => 'Chi tiết', 'timeBuy' => 'Lúc'],
+        'ten'  => 'Ký gửi qua NPC (Giáp/Ngưu)',
+        'mota' => 'Người chơi ký gửi đồ/ngọc qua 10 NPC ký gửi trong thành (Nhất..Ngũ Giáp, '
+                . 'Nhất..Ngũ Ngưu), người khác tới mua. Bảng gốc tob_log_buy_store đã KHÔNG còn '
+                . 'được server ghi từ lâu (chỉ còn dữ liệu cũ, nếu có) — mục này là view lọc sẵn '
+                . 'Loại = sitemu trên bảng tob_log_all_item, nơi log thật đang ghi cả người bán '
+                . 'VÀ người mua (xem src/data/Database.java saveLogSellItem()).',
+        'bangThat'  => 'tob_log_all_item',
+        'locCoDinh' => ['aclog' => 'sitemu'],
+        'cot'  => ['id' => 'ID', 'charname' => 'Người bán', 'charname2' => 'Người mua',
+                   'aclog' => 'Loại', 'info' => 'Chi tiết', 'timelog' => 'Lúc'],
         'loc'  => 'charname', 'loc2' => null, 'sap' => 'id DESC',
     ],
     'tob_log_clan' => [
@@ -88,9 +97,17 @@ $dong = [];
 $conTrangSau = false;
 $loiDoc = '';
 
+// Muc "view" (vd Ky gui qua NPC) doc tu MOT BANG THAT khac voi key hien thi/URL, kem
+// dieu kien co dinh nguoi dung khong bo duoc (vd Loai = sitemu) - xem 'bangThat'/'locCoDinh'.
+$bangThat = $cauHinh['bangThat'] ?? $bang;
+
 try {
     $dieuKien = [];
     $thamSo   = [];
+    foreach ($cauHinh['locCoDinh'] ?? [] as $cotCoDinh => $giaTriCoDinh) {
+        $dieuKien[] = '`' . $cotCoDinh . '` = ?';
+        $thamSo[]   = $giaTriCoDinh;
+    }
     if ($cauHinh['loc'] !== null && $loc !== '') {
         $dieuKien[] = '`' . $cauHinh['loc'] . '` = ?';
         $thamSo[]   = $loc;
@@ -106,7 +123,7 @@ try {
     $bo  = ($trang - 1) * $moi;
 
     $st = dbGame()->prepare(
-        "SELECT $cotSql FROM `$bang` $where ORDER BY {$cauHinh['sap']} LIMIT $lay OFFSET $bo"
+        "SELECT $cotSql FROM `$bangThat` $where ORDER BY {$cauHinh['sap']} LIMIT $lay OFFSET $bo"
     );
     $st->execute($thamSo);
     $dong = $st->fetchAll();
@@ -160,12 +177,12 @@ adminHead('log', 'Log game');
 
 <?php if ($loiDoc !== ''): ?>
     <div class="flash flash-error">
-        Không đọc được bảng <code><?= e($bang) ?></code>: <?= e($loiDoc) ?>
+        Không đọc được bảng <code><?= e($bangThat) ?></code>: <?= e($loiDoc) ?>
         <br><span class="small">Bảng này có thể chưa tồn tại trên máy chủ của bạn — không sao, chọn bảng khác.</span>
     </div>
 <?php endif; ?>
 
-<?php if ($bang === 'tob_log_all_item'): ?>
+<?php if ($bangThat === 'tob_log_all_item'): ?>
     <div class="luuy">
         <p>Cột <strong>Loại</strong> (<code>aclog</code>) là chỗ đáng soi nhất. Gõ <code>loiinvent</code>
            vào ô lọc để tìm những nhân vật lưu hành trang thất bại — đó là nguyên nhân khiến server
@@ -174,7 +191,7 @@ adminHead('log', 'Log game');
 <?php endif; ?>
 
 <div class="card">
-    <h3><?= e($cauHinh['ten']) ?> · <code><?= e($bang) ?></code></h3>
+    <h3><?= e($cauHinh['ten']) ?> · <code><?= e($bangThat) ?></code><?= $bangThat !== $bang ? ' <span class="muted small">(view lọc sẵn từ ' . e($bang) . ')</span>' : '' ?></h3>
     <div class="tbl-wrap">
     <table class="tbl">
         <thead><tr>

@@ -594,6 +594,7 @@ public class TeamServer {
                 try { Database.instance.saveCooking(Char.nauBanhChung, 1); } catch (Exception ignored) {}
                 try { Database.instance.saveCooking(Char.nauBanhTet, 2); } catch (Exception ignored) {}
                 try { Database.instance.saveEvent(Map.event.getInfo()); } catch (Exception ignored) {}
+                try { Database.instance.xaTatCaLogMuaShop(); } catch (Exception ignored) {}
                 try { Database.instance.saveAllLog(Logdata.query); } catch (Exception ignored) {}
                 try {
                     for (int i = 0; i < 3; ++i) {
@@ -785,6 +786,8 @@ public class TeamServer {
         // Cung phai chay TRUOC khi nhan nguoi choi: chan nhan giftcode nhieu lan qua nhieu
         // nhan vat cung tai khoan. Xem Database.chuanBiGiftCodeUserId().
         Database.instance.chuanBiGiftCodeUserId();
+        // Cot soluong cho gop log mua shop NPC (xem Database.saveLogBuyItemShop()).
+        Database.instance.chuanBiCotSoLuongLogBuyShop();
         // 26 setting nap lai duoc chuyen tu server.ini sang bang cau_hinh (sua duoc qua
         // web/admin/cauhinh.php). Dong bo mot lan tu file (INSERT IGNORE, khong ghi de
         // dong da co) roi bat vong lap tu nap lai moi 10 giay. Xem server.CauHinh.
@@ -815,6 +818,24 @@ public class TeamServer {
                 }
                 try {
                     Map.getAllTopBegin();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        // Xa cac dong log mua shop NPC da gop trong bo nho nhung qua cua so thoi
+        // gian ma khong mua tiep cung mon - xem Database.saveLogBuyItemShop().
+        new Thread(() -> {
+            Thread.currentThread().setName("XA LOG MUA SHOP");
+            while (TeamServer.running) {
+                try {
+                    Thread.sleep(2_000L);
+                } catch (final InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+                try {
+                    Database.instance.xaLogMuaShopHetHan();
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }

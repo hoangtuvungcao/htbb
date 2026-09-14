@@ -240,10 +240,15 @@ public final class KiemCongThanhDoiDiemDiTieu {
         // Char.java co nhieu cho khac dung nextInt(100000) tu truoc - chi dem dung dong roll mau tieu.
         Kiem.bang("co dung 2 lan 'final int ran = Map.r.nextInt(100000);' (doInitMonter + doChangeTieu)",
                 Integer.valueOf(2), Integer.valueOf(demSoLan(charJava, "final int ran = Map.r.nextInt(100000);")));
-        Kiem.dung("doInitMonter: Vang con 0.01% (nguong 99999, indexMons=4)",
-                charJava.contains("ran < 99999) {") && charJava.contains("indexMons = 4; // Vang 0.01%"));
-        Kiem.dung("doInitMonter: Tim la nhanh else (khong con dieu kien rieng, ran==99999 la gia tri duy nhat con lai)",
-                charJava.contains("// else: Tim (indexMons=5) - dung 1 gia tri (99999) = 0.001%"));
+        // 14/09/2026: 5 nguong doInitMonter chuyen tu literal hardcode sang truong static
+        // Char.TIEU_NGUONG_MAU de quan ly duoc qua SQL (server.CauHinh) - xem
+        // docs/cau-hinh-server-ini.md muc 5c. Gia tri GIU NGUYEN, chi doi CHO O.
+        Kiem.dung("Char khai bao TIEU_NGUONG_MAU giu nguyen 5 nguong cu (60189,89389,99689,99989,99999)",
+                charJava.contains("public static int[] TIEU_NGUONG_MAU = {60189, 89389, 99689, 99989, 99999};"));
+        Kiem.dung("doInitMonter: doc nguong tu Char.TIEU_NGUONG_MAU (khong con hardcode) - Vang la nguong[4]",
+                charJava.contains("ran < nguongMau[4]) {") && charJava.contains("indexMons = 4; // Vang"));
+        Kiem.dung("doInitMonter: Tim la nhanh else (ran >= nguongMau[4], gia tri con lai duy nhat)",
+                charJava.contains("// else: Tim (indexMons=5) - ran >= nguongMau[4]"));
 
         Kiem.dung("doChangeTieu: xu reroll Vang con 0.05% (nguong 99995, index=4)",
                 charJava.contains("ran < 99995) {") && charJava.contains("index = 4; // Vang 0.05%"));
@@ -259,17 +264,31 @@ public final class KiemCongThanhDoiDiemDiTieu {
         if (suKien.isEmpty()) {
             return;
         }
+        final String charJava2 = doc("src/real/Char.java");
+        Kiem.dung("doc duoc src/real/Char.java", !charJava2.isEmpty());
 
-        Kiem.dung("co bang % exp moi theo moc cap (PERMILLE_TIEU_CAO_CAP)",
-                suKien.contains("final int[][] PERMILLE_TIEU_CAO_CAP = {"));
-        Kiem.dung("moc lv50-59: hoan my 5%/vang 7%/tim 9% (permille 50,70,90)",
-                suKien.contains("{50, 70, 90}, // lv 50-59"));
-        Kiem.dung("moc lv60-69: giam 1.5% moi mau (permille 35,55,75)",
-                suKien.contains("{35, 55, 75}, // lv 60-69"));
-        Kiem.dung("moc lv70+: giam tiep 3% (permille 5,25,45)",
-                suKien.contains("{5, 25, 45},  // lv 70+"));
-        Kiem.dung("duoi lv50 HOAC mau Trang/Xanh/Do van dung cong thuc EXP_NV_HANG_NGAY cu",
-                suKien.contains("if (lvOpen < 50 || colortieu < 3) {"));
+        // 14/09/2026: PERMILLE_TIEU_CAO_CAP, pcExpAdd va "* 2" (TangExpVanTieu) chuyen tu
+        // bien LOCAL trong CharSuKien.doResponseTieu() sang truong static
+        // Char.TIEU_PERMILLE_CAO_CAP / TIEU_PC_EXP_THEO_MAU / TIEU_HE_SO_EXP de quan ly
+        // duoc qua SQL (server.CauHinh) - xem docs/cau-hinh-server-ini.md muc 5c. Gia tri
+        // GIU NGUYEN, chi doi CHO O: mang 2 chieu {{50,70,90},{35,55,75},{5,25,45}} gop
+        // phang thanh 1 chieu {50,70,90,35,55,75,5,25,45}, chi so tra = khung*3 + (mau-3).
+        Kiem.dung("Char khai bao TIEU_PERMILLE_CAO_CAP gop phang dung 9 gia tri cu (5.0/7.0/9.0, 3.5/5.5/7.5, 0.5/2.5/4.5%)",
+                charJava2.contains("public static int[] TIEU_PERMILLE_CAO_CAP = {50, 70, 90, 35, 55, 75, 5, 25, 45};"));
+        Kiem.dung("Char khai bao TIEU_PC_EXP_THEO_MAU giu nguyen 7 gia tri cu",
+                charJava2.contains("public static int[] TIEU_PC_EXP_THEO_MAU = {50, 100, 150, 250, 250, 500, 0};"));
+        Kiem.dung("Char khai bao TIEU_HE_SO_EXP = 200 (giu nguyen '* 2' TangExpVanTieu cu, dang % de quan ly qua SQL)",
+                charJava2.contains("public static int TIEU_HE_SO_EXP = 200;"));
+
+        Kiem.dung("CharSuKien doc bang tu Char.TIEU_PERMILLE_CAO_CAP (khong con khai bao rieng)",
+                suKien.contains("final int[] permilleCaoCap = Char.TIEU_PERMILLE_CAO_CAP;"));
+        Kiem.dung("CharSuKien tra chi so gop phang dung cong thuc khung*3 + (mau-3)",
+                suKien.contains("final int permille = permilleCaoCap[bracket * 3 + (colortieu - 3)];"));
+        Kiem.dung("CharSuKien doc pcExpAdd tu Char.TIEU_PC_EXP_THEO_MAU (khong con khai bao rieng)",
+                suKien.contains("final int[] pcExpAdd = Char.TIEU_PC_EXP_THEO_MAU;"));
+        Kiem.dung("duoi lv50 HOAC mau Trang/Xanh/Do van dung cong thuc EXP_NV_HANG_NGAY cu (nhan Char.TIEU_HE_SO_EXP/100 thay '* 2')",
+                suKien.contains("if (lvOpen < 50 || colortieu < 3) {")
+                        && suKien.contains("exp = Char.EXP_NV_HANG_NGAY[indexExp][idexp[colortieu]] * Char.TIEU_HE_SO_EXP / 100L;"));
         Kiem.dung("tu lv50 (Hoan My/Vang/Tim): exp = % cua LevelDetail.expRequire[lv]",
                 suKien.contains("exp = LevelDetail.expRequire[lvExp] * permille / 1000L;"));
 

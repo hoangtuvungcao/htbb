@@ -86,6 +86,7 @@ public class AdminHandler implements ICommandHandler {
             Database.instance.saveCooking(Char.nauBanhChung, 1);
             Database.instance.saveCooking(Char.nauBanhTet, 2);
             Database.instance.saveEvent(Map.event.getInfo());
+            Database.instance.xaTatCaLogMuaShop();
             Database.instance.saveAllLog(Logdata.query);
             System.out.println("save topLienTram");
             for (int i = 0; i < 3; ++i) {
@@ -132,6 +133,7 @@ public class AdminHandler implements ICommandHandler {
         Database.instance.saveCooking(Char.nauBanhChung, 1);
         Database.instance.saveCooking(Char.nauBanhTet, 2);
         Database.instance.saveEvent(Map.event.getInfo());
+        Database.instance.xaTatCaLogMuaShop();
         Database.instance.saveAllLog(Logdata.query);
         RealController.savingChar = false;
         System.out.println("CHUAN BI THOAT3");
@@ -169,6 +171,7 @@ public class AdminHandler implements ICommandHandler {
             Database.instance.saveCooking(Char.nauBanhChung, 1);
             Database.instance.saveCooking(Char.nauBanhTet, 2);
             Database.instance.saveEvent(Map.event.getInfo());
+            Database.instance.xaTatCaLogMuaShop();
             Database.instance.saveAllLog(Logdata.query);
             RealController.savingChar = false;
             System.out.println("CHUAN BI THOAT3");

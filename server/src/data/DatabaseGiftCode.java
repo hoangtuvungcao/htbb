@@ -709,6 +709,15 @@ class DatabaseGiftCode {
                             for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                                 Char.createItemCaiTrang(Integer.parseInt(tachTime[1]), player, Integer.parseInt(tachTime[3]));
                             }
+                        } else if (tachTime[0].equals("TBT")) {
+                            // TBT:<level>:<so bo>:<phut>   level PHAI dung 30/35/…/85 (khac thi
+                            // lang le khong tao gi). Moi bo du 5 mon Giap/Ho uyen/Non/Ban dap/Yen
+                            // cuong cung cap; he ngu hanh (heItem) tu gan theo dung chuoi
+                            // checkKick5AttAnimal() doc (groupKickAnimal) nen CA 5 MON deu kich
+                            // duoc ngu hanh cua mon truoc, khong mon nao bi bo sot.
+                            for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
+                                Char.createTrangBiThuFullHe(player, Integer.parseInt(tachTime[1]), Integer.parseInt(tachTime[3]));
+                            }
                         }
                     }
                 }

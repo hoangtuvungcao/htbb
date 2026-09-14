@@ -424,6 +424,7 @@ public class OfflineMap extends Map {
                                  + ((Item)item).getAttribute()
                                  + " | "
                                  + ((Item)item).getDBInfo()
+                                 + " | " + Char.moTaViTri(player)
                            );
                      } catch (Exception var19) {
                         var19.printStackTrace();
@@ -462,6 +463,7 @@ public class OfflineMap extends Map {
                                  + p.getxu()
                                  + " |bs: "
                                  + player.getxu()
+                                 + " | " + Char.moTaViTri(player)
                            );
                      } catch (Exception var17) {
                      }

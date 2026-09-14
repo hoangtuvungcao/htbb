@@ -124,12 +124,14 @@ Gõ `6` trước khi sửa là cách nhanh nhất để biết đang đặt bao 
 
 ## 4. Khoá nào nạp lại được, khoá nào phải khởi động lại
 
-Chỉ **26 khoá** dưới đây được `CauHinh.napLai()` đọc lại. **Mọi khoá khác chỉ được đọc một
+Chỉ **32 khoá** dưới đây được `CauHinh.napLai()` đọc lại. **Mọi khoá khác chỉ được đọc một
 lần lúc bật máy** — sửa xong bắt buộc `systemctl restart kpah-game`.
 
 ```
 sv.tileXu   sv.tileLuong   sv.tileItemSuKien   sv.tilePotion   sv.tileNgoc   sv.tileItem
 sv.chiaXuRoi
+sv.tileExpLv50   sv.tileExpDuoiLv50
+sv.tieuNguongMau   sv.tieuHeSoExp   sv.tieuPcExpTheoMau   sv.tieuPermilleCaoCap
 sv.gioChiemThanh   sv.phutChiemThanh   sv.ngayChiemThanh
 sv.adminAccounts   sv.maxCharPerAccount   sv.choPhepTaoTenGM
 sv.website   sv.linkTaiGame   sv.testMode   sv.testCode
@@ -220,6 +222,41 @@ Các số là **phần trăm so với bản gốc**: `100` = như gốc, `50` = 
 `sv.chiaXuRoi` khác `sv.tileXu`: một cái là **bao nhiêu lần** rơi, một cái là **mỗi lần bao
 nhiêu**. Thấy "rơi ít lần nhưng mỗi lần quá nhiều xu" thì **tăng** `sv.chiaXuRoi`
 (`30` = mỗi lần chỉ còn 1/3).
+
+## 5b. Tỉ lệ EXP quái thường (không dùng Boss)
+
+Từ 14/09/2026, chuyển từ hằng số hardcode (`Monster.PC_TILE_EXP_LV50` /
+`PC_TILE_EXP_DUOI_LV50`) sang bảng `cau_hinh`, sửa qua `/admin/cauhinh.php` không cần
+restart. Cũng là **phần trăm so với bản gốc**, giống mục 5. Xem
+[`Monster.rcvXpSauGiam()`](../src/real/Monster.java).
+
+| Khoá | Mặc định | Áp dụng cho |
+|---|---|---|
+| `sv.tileExpLv50` | `10` | quái từ cấp 50 trở lên |
+| `sv.tileExpDuoiLv50` | `50` | quái dưới cấp 50 |
+
+Hai khoá **độc lập nhau** — đổi một cái không đụng tới cái kia. Không áp dụng cho Boss.
+
+## 5c. Tỉ lệ màu + EXP Vận Tiêu
+
+Từ 14/09/2026, chuyển từ mảng hardcode trong `Char.doInitMonter()` /
+`CharSuKien.doResponseTieu()` sang bảng `cau_hinh`, sửa qua `/admin/cauhinh.php`. Xem
+[`Char.java`](../src/real/Char.java) (các trường `TIEU_*`) và
+[`docs/skin-linh-thu.md`](skin-linh-thu.md) là ví dụ khác của cùng cơ chế "quản lý qua SQL".
+
+| Khoá | Mặc định | Ý nghĩa |
+|---|---|---|
+| `sv.tieuNguongMau` | `60189,89389,99689,99989,99999` | 5 ngưỡng **cộng dồn** (Trắng/Xanh/Đỏ/Hoàn Mỹ/Vàng) trên thang 100000, roll khi nhận tiêu mới. Phần còn lại (roll ≥ ngưỡng cuối) là Tím. **Phải tăng dần**, server không tự kiểm tra thứ tự — nhập sai thứ tự thì một vài màu bị "nuốt" mất, không nhận được nữa. |
+| `sv.tieuHeSoExp` | `200` | % nhân trước khi áp tỉ lệ theo màu (mục dưới), `200` = x2 (giá trị cũ "TangExpVanTieu"). |
+| `sv.tieuPcExpTheoMau` | `50,100,150,250,250,500,0` | 7 % EXP theo màu (Trắng/Xanh/Đỏ/Hoàn Mỹ/Vàng/Tím/_ — phần tử cuối không dùng tới), áp dụng khi cấp mở tiêu dưới 50 hoặc màu Trắng/Xanh/Đỏ. |
+| `sv.tieuPermilleCaoCap` | `50,70,90,35,55,75,5,25,45` | 9 phần nghìn EXP cần để lên cấp, riêng Hoàn Mỹ/Vàng/Tím từ cấp 50 — gộp phẳng 3 khung cấp (50-59 / 60-69 / 70+) × 3 màu, chỉ số = khung×3 + (màu-3). |
+
+Bốn khoá đều là chuỗi **CSV** (phân cách bằng dấu phẩy, không có khoảng trắng thừa). Sai số
+lượng phần tử (khác đúng 5 / 7 / 9 như bảng trên) hoặc không phải số thì server **âm thầm bỏ
+qua**, giữ nguyên giá trị đang chạy — không có dòng log báo lỗi. Lệnh chat `setting` → `6`
+(mục 3b) **không** hiện được các khoá này (chỉ hiện giờ chiếm thành + tỉ lệ rơi đồ) — sửa
+xong thì mở lại trang `/admin/cauhinh.php`, giá trị đọc thẳng từ CSDL sẽ phản ánh đúng những
+gì server đang dùng.
 
 ## 6. Chiếm thành
 

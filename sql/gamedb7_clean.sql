@@ -3056,7 +3056,8 @@ CREATE TABLE `tob_log_buy_shop` (
   `timeBuy` datetime NOT NULL,
   `typeitem` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `price` int(10) UNSIGNED NOT NULL,
-  `money` varchar(450) NOT NULL DEFAULT '""'
+  `money` varchar(450) NOT NULL DEFAULT '""',
+  `soluong` int(10) UNSIGNED NOT NULL DEFAULT 1
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
 
 --

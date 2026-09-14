@@ -39,6 +39,11 @@ function loaiThuong(): array
         'TRANGPHUC' => [4, 'TRANGPHUC:id:soLuong:soNgay',  'Trang phục thời trang', 'TRANGPHUC:833:1:30'],
         'TT'        => [5, 'TT:id:soLuong:soNgay:khoa',    'Thời trang (0 ngày = vĩnh viễn)', 'TT:833:1:0:0'],
         'CAITRANG'  => [4, 'CAITRANG:id:soLuong:plus',     'Cải trang — 903 Bát Giới, 904 Sa Tăng', 'CAITRANG:903:1:10'],
+        'TBT'       => [4, 'TBT:level:soBo:thoiHan',
+            'Bộ 5 trang bị thú (Giáp/Hộ uyển/Nón/Bàn đạp/Yên cương) cùng cấp — level PHẢI đúng '
+            . '30/35/…/85 (khác thì lặng lẽ không tạo gì); hệ ngũ hành (heItem) tự gán theo đúng '
+            . 'chuỗi kích của checkKick5AttAnimal() (14→18→17→15→16→14) nên CẢ 5 MÓN đều kích '
+            . 'được ngũ hành của món trước, không món nào bị bỏ sót', 'TBT:60:1:0'],
         'AOTT'      => [4, 'AOTT:id:_:thoiHan',            'Áo thời trang mua ở shop', 'AOTT:265:_:0'],
         'AOSHOP'    => [4, 'AOSHOP:id:_:thoiHan',          'Áo thời trang rơi thẳng vào hành trang', 'AOSHOP:725:1:0'],
         'MATNA'     => [4, 'MATNA:option:_:thoiHan',       'Mặt nạ, option -1 = ngẫu nhiên', 'MATNA:-1:_:43200'],

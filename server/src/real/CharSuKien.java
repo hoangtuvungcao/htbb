@@ -57,7 +57,9 @@ class CharSuKien {
                         luongadd[5] = 170 + Map.r.nextInt(31);
                     }
                 }
-                final int[] pcExpAdd = {50, 100, 150, 250, 250, 500, 0};
+                // Ti le mau tieu + he so EXP tra tieu quan ly qua SQL (server.CauHinh) -
+                // xem Char.TIEU_HE_SO_EXP / TIEU_PC_EXP_THEO_MAU / TIEU_PERMILLE_CAO_CAP.
+                final int[] pcExpAdd = Char.TIEU_PC_EXP_THEO_MAU;
                 if (lvOpen > pReceive.lvDetail.lv) {
                     lvOpen = pReceive.lvDetail.lv;
                 }
@@ -66,21 +68,17 @@ class CharSuKien {
                 // EXP_NV_HANG_NGAY cu - giam dan theo moc cap (tru THEO MOC, khong tru
                 // luy tien tu goc). Don vi phan nghin (permille) de giu duoc so le 0.5%.
                 // Trang/Xanh/Do và duoi lv50 GIU NGUYEN cong thuc cu, khong doi.
-                // Yeu cau nguoi dung 13/09/2026: lv50-59 tim9%/vang7%/hoanmy5%, lv60-69
-                // tru 1.5% moi mau, lv70+ tru tiep 3% nua (so voi moc 60-69).
-                final int[][] PERMILLE_TIEU_CAO_CAP = {
-                        {50, 70, 90}, // lv 50-59: [Hoan My, Vang, Tim] = 5.0% / 7.0% / 9.0%
-                        {35, 55, 75}, // lv 60-69: 3.5% / 5.5% / 7.5%
-                        {5, 25, 45},  // lv 70+  : 0.5% / 2.5% / 4.5%
-                };
+                // TIEU_PERMILLE_CAO_CAP gop phang 3 khung cap (50-59/60-69/70+) x 3 mau
+                // (Hoan My/Vang/Tim) thanh 9 phan tu - chi so = khung*3 + (mau-3).
+                final int[] permilleCaoCap = Char.TIEU_PERMILLE_CAO_CAP;
                 if (typeTieu == Char.INDIVITUAL) {
                     long exp;
                     if (lvOpen < 50 || colortieu < 3) {
-                        exp = Char.EXP_NV_HANG_NGAY[indexExp][idexp[colortieu]] * 2; // TangExpVanTieu
+                        exp = Char.EXP_NV_HANG_NGAY[indexExp][idexp[colortieu]] * Char.TIEU_HE_SO_EXP / 100L; // TangExpVanTieu
                         exp = exp * pcExpAdd[colortieu] / 100L;
                     } else {
                         final int bracket = (lvOpen >= 70) ? 2 : ((lvOpen >= 60) ? 1 : 0);
-                        final int permille = PERMILLE_TIEU_CAO_CAP[bracket][colortieu - 3];
+                        final int permille = permilleCaoCap[bracket * 3 + (colortieu - 3)];
                         final int lvExp = Math.min(lvOpen, LevelDetail.expRequire.length - 1);
                         exp = LevelDetail.expRequire[lvExp] * permille / 1000L;
                     }

@@ -41,6 +41,18 @@ public final class CauHinh {
     public static final String K_TILE_NGOC = "sv.tileNgoc";
     public static final String K_TILE_ITEM = "sv.tileItem";
     public static final String K_CHIA_XU = "sv.chiaXuRoi";
+    /** % so voi ti le goc cua EXP quai thuong (Monster, khong dung Boss). Xem Monster.rcvXpSauGiam(). */
+    public static final String K_TILE_EXP_LV50 = "sv.tileExpLv50";
+    public static final String K_TILE_EXP_DUOI_LV50 = "sv.tileExpDuoiLv50";
+    /**
+     * Ti le mau + he so EXP khi nhan/tra Van Tieu. Xem Char.TIEU_NGUONG_MAU (CSV 5 gia tri
+     * cong don, tren thang 100000) / TIEU_HE_SO_EXP (% nhan, 200 = x2) / TIEU_PC_EXP_THEO_MAU
+     * (CSV 7 gia tri) / TIEU_PERMILLE_CAO_CAP (CSV 9 gia tri) va CharSuKien.doResponseTieu().
+     */
+    public static final String K_TIEU_NGUONG_MAU = "sv.tieuNguongMau";
+    public static final String K_TIEU_HE_SO_EXP = "sv.tieuHeSoExp";
+    public static final String K_TIEU_PC_EXP_THEO_MAU = "sv.tieuPcExpTheoMau";
+    public static final String K_TIEU_PERMILLE_CAO_CAP = "sv.tieuPermilleCaoCap";
     public static final String K_TAO_TEN_GM = "sv.choPhepTaoTenGM";
     /** Cua so thoi gian su kien World Cup, dinh dang "yyyy-MM-dd HH:mm:ss". */
     public static final String K_WC_BAT_DAU = "sv.worldCupBatDau";
@@ -63,7 +75,7 @@ public final class CauHinh {
     public static final String K_LUCKY_EXP = "sv.Luckyexp";
     public static final String K_EXP_QUA = "sv.ExpQua";
 
-    /** Tat ca 26 khoa, dung de dong bo luc khoi dong va de web biet liet ke gi. */
+    /** Tat ca 32 khoa, dung de dong bo luc khoi dong va de web biet liet ke gi. */
     private static final String[] TAT_CA_KHOA = {
         K_TILE_XU, K_TILE_LUONG, K_TILE_SUKIEN, K_TILE_POTION, K_TILE_NGOC, K_TILE_ITEM,
         K_CHIA_XU, K_GIO_CT, K_PHUT_CT, K_NGAY_CT,
@@ -72,6 +84,8 @@ public final class CauHinh {
         K_TAO_TEN_GM, "sv.maxCharPerAccount", "sv.adminAccounts",
         "sv.website", "sv.linkTaiGame", "sv.testMode", "sv.testCode",
         K_EXP_VANTIEU, K_LUCKY_EXP, K_EXP_QUA,
+        K_TILE_EXP_LV50, K_TILE_EXP_DUOI_LV50,
+        K_TIEU_NGUONG_MAU, K_TIEU_HE_SO_EXP, K_TIEU_PC_EXP_THEO_MAU, K_TIEU_PERMILLE_CAO_CAP,
     };
 
     /** Giay giua hai lan tu doc lai bang cau_hinh. Xem batDau(). */
@@ -270,6 +284,14 @@ public final class CauHinh {
                 real.Monster.PC_TILE_ITEM_SUKIEN, real.Monster.PC_TILE_POTION,
                 real.Monster.PC_TILE_NGOC, real.Monster.PC_TILE_ITEM, real.Map.DIV_DROP_XU};
 
+            real.Monster.PC_TILE_EXP_LV50 = kep(p.getProperty(K_TILE_EXP_LV50), real.Monster.PC_TILE_EXP_LV50);
+            real.Monster.PC_TILE_EXP_DUOI_LV50 = kep(p.getProperty(K_TILE_EXP_DUOI_LV50), real.Monster.PC_TILE_EXP_DUOI_LV50);
+
+            real.Char.TIEU_NGUONG_MAU = mang(p.getProperty(K_TIEU_NGUONG_MAU), real.Char.TIEU_NGUONG_MAU);
+            real.Char.TIEU_HE_SO_EXP = Math.max(0, so(p.getProperty(K_TIEU_HE_SO_EXP), real.Char.TIEU_HE_SO_EXP));
+            real.Char.TIEU_PC_EXP_THEO_MAU = mang(p.getProperty(K_TIEU_PC_EXP_THEO_MAU), real.Char.TIEU_PC_EXP_THEO_MAU);
+            real.Char.TIEU_PERMILLE_CAO_CAP = mang(p.getProperty(K_TIEU_PERMILLE_CAO_CAP), real.Char.TIEU_PERMILLE_CAO_CAP);
+
             apDungGioChiemThanh(p);
             data.Database.CHO_PHEP_TAO_TEN_GM = "1".equals(nhan(p.getProperty(K_TAO_TEN_GM), "0"));
 
@@ -391,6 +413,35 @@ public final class CauHinh {
         return luuNhieu(m);
     }
 
+    /** Ghi ti le EXP quai (theo level) dang dat trong bo nho xuong SQL. */
+    public static boolean luuTiLeExpQuai() {
+        final LinkedHashMap<String, String> m = new LinkedHashMap<String, String>();
+        m.put(K_TILE_EXP_LV50, String.valueOf(real.Monster.PC_TILE_EXP_LV50));
+        m.put(K_TILE_EXP_DUOI_LV50, String.valueOf(real.Monster.PC_TILE_EXP_DUOI_LV50));
+        return luuNhieu(m);
+    }
+
+    /** Ghi ti le mau + he so EXP Van Tieu dang dat trong bo nho xuong SQL. */
+    public static boolean luuTiLeTieu() {
+        final LinkedHashMap<String, String> m = new LinkedHashMap<String, String>();
+        m.put(K_TIEU_NGUONG_MAU, joinCSV(real.Char.TIEU_NGUONG_MAU));
+        m.put(K_TIEU_HE_SO_EXP, String.valueOf(real.Char.TIEU_HE_SO_EXP));
+        m.put(K_TIEU_PC_EXP_THEO_MAU, joinCSV(real.Char.TIEU_PC_EXP_THEO_MAU));
+        m.put(K_TIEU_PERMILLE_CAO_CAP, joinCSV(real.Char.TIEU_PERMILLE_CAO_CAP));
+        return luuNhieu(m);
+    }
+
+    private static String joinCSV(final int[] a) {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < a.length; i++) {
+            if (i > 0) {
+                sb.append(',');
+            }
+            sb.append(a[i]);
+        }
+        return sb.toString();
+    }
+
     // =========================== TIEN ICH ===========================
 
     private static String nhan(final String v, final String macDinh) {
@@ -414,5 +465,30 @@ public final class CauHinh {
             n = 100;
         }
         return n;
+    }
+
+    /**
+     * Doc chuoi CSV "a,b,c" thanh int[]. Sai dinh dang, rong, hoac SAI DO DAI (khac
+     * macDinh.length) thi giu nguyen macDinh - tranh mot mang ngan/dai lam lech chi
+     * so o noi doc (vd Char.TIEU_NGUONG_MAU can dung 5 phan tu, TIEU_PERMILLE_CAO_CAP
+     * can dung 9 phan tu).
+     */
+    private static int[] mang(final String v, final int[] macDinh) {
+        if (v == null || v.trim().isEmpty()) {
+            return macDinh;
+        }
+        final String[] phan = v.trim().split(",");
+        if (phan.length != macDinh.length) {
+            return macDinh;
+        }
+        final int[] ra = new int[phan.length];
+        try {
+            for (int i = 0; i < phan.length; i++) {
+                ra[i] = Integer.parseInt(phan[i].trim());
+            }
+        } catch (final Exception e) {
+            return macDinh;
+        }
+        return ra;
     }
 }

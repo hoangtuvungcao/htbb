@@ -96,6 +96,28 @@ sv.tileItem=10
 # So chia SO LUONG xu moi lan rot. 10 = nhu ban goc, 30 = chi con 1/3.
 sv.chiaXuRoi=30
 
+# ==== TI LE EXP QUAI THUONG (khong dung Boss) ====
+# Cung la GIA TRI KHOI TAO LAN DAU nhu khoi tren, sau do sua qua
+# /admin/cauhinh.php hoac bang "setting". 100 = nhu ban goc.
+# Xem Monster.rcvXpSauGiam(), src/server/CauHinh.java.
+sv.tileExpLv50=10
+sv.tileExpDuoiLv50=50
+
+# ==== TI LE MAU + HE SO EXP VAN TIEU ====
+# Cung la GIA TRI KHOI TAO LAN DAU, sua qua /admin/cauhinh.php sau do.
+# sv.tieuNguongMau: 5 nguong CONG DON (Trang/Xanh/Do/Hoan My/Vang) tren thang
+#   100000, PHAI tang dan; phan con lai la Tim. Xem Char.TIEU_NGUONG_MAU,
+#   Char.doInitMonter().
+# sv.tieuHeSoExp: % nhan truoc khi ap ti le theo mau, 200 = x2 (gia tri cu).
+# sv.tieuPcExpTheoMau: 7 % EXP theo mau (Trang/Xanh/Do/HoanMy/Vang/Tim/_),
+#   dung khi lvOpen<50 hoac mau Trang/Xanh/Do. Xem CharSuKien.doResponseTieu().
+# sv.tieuPermilleCaoCap: 9 phan nghin EXP can len cap, rieng Hoan My/Vang/Tim
+#   tu lv50, gop 3 khung cap (50-59/60-69/70+) x 3 mau.
+sv.tieuNguongMau=60189,89389,99689,99989,99999
+sv.tieuHeSoExp=200
+sv.tieuPcExpTheoMau=50,100,150,250,250,500,0
+sv.tieuPermilleCaoCap=50,70,90,35,55,75,5,25,45
+
 # Su kien Vu Lan (NPC Dau Truong, npcType -31): gia xu doi "50 hoa hong vang -> 1 bo hoa
 # do". Moi server tu dat rieng - Van Xuan dat thap hon cac server khac. Mac dinh 150000
 # neu khong co dong nay.

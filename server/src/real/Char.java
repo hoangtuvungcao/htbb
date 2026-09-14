@@ -1857,6 +1857,16 @@ public class Char extends LiveActor {
     }
 
     /**
+     * Mo ta vi tri chi tiet cua mot Char de ghi kem vao cac dong log giao dich/ky gui
+     * (14/09/2026): ten map + id map, khu/instance (region - 0 tru khi dang trong ban
+     * do tach nhieu khu nhu boss), toa do x,y luc ghi log.
+     */
+    public static String moTaViTri(final Char p) {
+        return "map:" + Map.getNameMap(p.mapID) + "(" + p.mapID + ") khu:" + p.region
+                + " xy:" + p.x + "," + p.y;
+    }
+
+    /**
      * Chuyen thuoc hai ben sau khi giao dich hoan tat. Tra ve false va KHONG DOI GI neu mot
      * ben khong con du thuoc nhu luc bo vao (ban cu tru ra am roi chan ve 0 - ben nhan van
      * nhan du -> thuoc tu khong khi khi mot luong khac vua tieu thuoc trong khe giua kiem tra
@@ -1925,7 +1935,10 @@ public class Char extends LiveActor {
         this.userTrade.get(0).rPotions = null;
         this.userTrade.get(0).rPotions = new int[162];
         try {
-            Database.instance.saveLogTradeItem(this.charname, this.userTrade.elementAt(0).charname, info);
+            // 14/09/2026: ghi kem vi tri chi tiet (map/khu/toa do) de biet giao dich xay ra
+            // o dau (vd "Thanh Tran Danh" idMapTown=201), doc duoc ngay tu tob_log_all_item.
+            Database.instance.saveLogTradeItem(this.charname, this.userTrade.elementAt(0).charname,
+                    info + " | " + Char.moTaViTri(this));
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -1971,7 +1984,10 @@ public class Char extends LiveActor {
             this.userTrade.get(0).iItems.add(item);
         }
         try {
-            Database.instance.saveLogTradeItem(this.charname, this.userTrade.elementAt(0).charname, info);
+            // 14/09/2026: ghi kem vi tri chi tiet (map/khu/toa do) de biet giao dich xay ra
+            // o dau (vd "Thanh Tran Danh" idMapTown=201), doc duoc ngay tu tob_log_all_item.
+            Database.instance.saveLogTradeItem(this.charname, this.userTrade.elementAt(0).charname,
+                    info + " | " + Char.moTaViTri(this));
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -5304,6 +5320,33 @@ public int applyRongLonReleaseTo(int baseDamage) {
     public void setCharHire(final boolean hire) {
     }
 
+    // ================= TI LE MAU TIEU + HE SO EXP TRA TIEU =================
+    // Quan ly qua SQL (bang cau_hinh, xem server.CauHinh) - sua qua
+    // web/admin/cauhinh.php, server tu nap lai toi da 10 giay, khong can restart.
+    /**
+     * Nguong CONG DON xac suat mau tieu khi nhan tieu moi (doInitMonter), tren
+     * thang Map.r.nextInt(100000). 5 gia tri cho Trang/Xanh/Do/Hoan My/Vang,
+     * phan con lai (ran >= gia tri cuoi) la Tim. PHAI tang dan, moi gia tri
+     * trong khoang 0..100000.
+     */
+    public static int[] TIEU_NGUONG_MAU = {60189, 89389, 99689, 99989, 99999};
+    /**
+     * He so % nhan truoc khi ap TIEU_PC_EXP_THEO_MAU (CharSuKien.doResponseTieu),
+     * mac dinh 200 = giu nguyen "x2" (TangExpVanTieu) cu.
+     */
+    public static int TIEU_HE_SO_EXP = 200;
+    /**
+     * % EXP theo mau tieu (chi so 0 Trang..5 Tim, phan tu thu 7 khong dung toi)
+     * khi lvOpen < 50 hoac mau Trang/Xanh/Do.
+     */
+    public static int[] TIEU_PC_EXP_THEO_MAU = {50, 100, 150, 250, 250, 500, 0};
+    /**
+     * Phan nghin EXP can de len cap cho rieng Hoan My/Vang/Tim tu lv50, gop
+     * phang 3 khung cap (50-59 / 60-69 / 70+) x 3 mau thanh 9 phan tu -
+     * chi so = khung*3 + (mau - 3).
+     */
+    public static int[] TIEU_PERMILLE_CAO_CAP = {50, 70, 90, 35, 55, 75, 5, 25, 45};
+
     public static synchronized void doInitMonter(final Char p, final int typetieu) {
         try {
             if (p.monster != null) {
@@ -5338,19 +5381,20 @@ public int applyRongLonReleaseTo(int baseDamage) {
             // NGUYEN ti le tuong doi cu (x100); phan xac suat rut tu Vang/Tim don het
             // vao Trang (mau pho bien nhat, khong doi ty le giua Do/Xanh/HoanMy).
             final int ran = Map.r.nextInt(100000);
+            final int[] nguongMau = TIEU_NGUONG_MAU;
             int indexMons = 5;
-            if (ran < 60189) {
-                indexMons = 0; // Trang 60.189%
-            } else if (ran < 89389) {
-                indexMons = 1; // Xanh 29.2%
-            } else if (ran < 99689) {
-                indexMons = 2; // Do 10.3%
-            } else if (ran < 99989) {
-                indexMons = 3; // Hoan My 0.3%
-            } else if (ran < 99999) {
-                indexMons = 4; // Vang 0.01%
+            if (ran < nguongMau[0]) {
+                indexMons = 0; // Trang
+            } else if (ran < nguongMau[1]) {
+                indexMons = 1; // Xanh
+            } else if (ran < nguongMau[2]) {
+                indexMons = 2; // Do
+            } else if (ran < nguongMau[3]) {
+                indexMons = 3; // Hoan My
+            } else if (ran < nguongMau[4]) {
+                indexMons = 4; // Vang
             }
-            // else: Tim (indexMons=5) - dung 1 gia tri (99999) = 0.001%
+            // else: Tim (indexMons=5) - ran >= nguongMau[4]
             p.typeTieu = (byte) (typetieu * 6 + indexMons);
             p.monster = new MonsterVantieu(p.map, Map.monsterTemplates.get(idMonster[typetieu][indexMons]), p.x, p.y, p.myCountry);
             p.monster.id = RealController.intance.idGen.getID(1, "");
@@ -6562,6 +6606,53 @@ public int applyRongLonReleaseTo(int baseDamage) {
         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
         Database.instance.saveItem(newItem);
         return newItem;
+    }
+
+    // Thu tu "chuoi kich" ma checkKick5AttAnimal() doc qua groupKickAnimal:
+    // 14(Giap) kich 18(Yen cuong) kich 17(Ban dap) kich 15(Ho uyen) kich 16(Non)
+    // kich lai 14 — dung 5 mat xich, khep vong. Id template moi cap: Giap=521+n,
+    // Yen cuong=533+n, Ban dap=545+n, Ho uyen=557+n, Non=509+n (n = (level-30)/5).
+    private static final byte[] CHAIN_TYPE_TRANG_BI_THU = {14, 18, 17, 15, 16};
+    private static final int[] CHAIN_BASE_ID_TRANG_BI_THU = {521, 533, 545, 557, 509};
+
+    /**
+     * Tao du 1 bo 5 mon trang bi thu (Giap/Ho uyen/Non/Ban dap/Yen cuong) cung
+     * mot cap level, gan heItem theo dung thu tu "chuoi kich" cua
+     * checkKick5AttAnimal() (Char.java, groupKickAnimal) — moi mon duoc gan
+     * heItem = he mon truoc + 1, nen CA 5 MON deu kich duoc ngu hanh cua mon
+     * truoc trong chuoi, khong mon nao bi bo sot ("full he" giftcode yeu cau).
+     */
+    public static void createTrangBiThuFullHe(final Char p, final int level, final int minute) {
+        if (level < 30 || level > 85 || (level - 30) % 5 != 0) {
+            return; // level khong hop le (phai 30,35,...,85) - im lang nhu VKTBLV
+        }
+        final int n = (level - 30) / 5;
+        final int base = Map.r.nextInt(5);
+        for (int i = 0; i < CHAIN_TYPE_TRANG_BI_THU.length; i++) {
+            if (p.isFullInventory()) {
+                p.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy, không nhận thêm được.", ""));
+                return;
+            }
+            final int idtemplate = CHAIN_BASE_ID_TRANG_BI_THU[i] + n;
+            final ItemTemplates template = (ItemTemplates) Map.itemTemplates.get(0).get(idtemplate);
+            if (template == null) {
+                continue;
+            }
+            final Item newItem = new Item(template, false, 0, 0, idtemplate);
+            newItem.id = p.getIDItem();
+            newItem.owner = p.charDBID;
+            newItem.identify = p.charDBID;
+            newItem.level = template.level;
+            newItem.clazz = 0;
+            newItem.heItem = (byte) ((base + i) % 5);
+            if (minute > 0) {
+                newItem.timeLoan = System.currentTimeMillis();
+                newItem.minuteExist = minute;
+            }
+            newItem.dateCreate = getDayTime(0L);
+            p.iItems.add(newItem);
+        }
+        p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
     }
 
     /**
