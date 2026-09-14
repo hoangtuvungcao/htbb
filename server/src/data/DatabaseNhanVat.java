@@ -1319,8 +1319,26 @@ class DatabaseNhanVat {
                 } catch (Exception e2) {
                     e2.printStackTrace();
                 }
-                String sqlCopy = "INSERT INTO tob_char2(id,charname,userId,headStyle,class,pInfo,potion,skill,basic,gender) VALUES(" + charId + ",'" + charname + "'," + userID + "," + headStyle + "," + classID + ",'" + pInfo + "','" + potion + "','" + skill + "','" + basic + "'," + (gender + 1) + ")";
-                db.addBackupChar(conn, sqlCopy);
+                // Truoc day noi chuoi truc tiep (charname/pInfo tu client) vao SQL roi
+                // dua cho addBackupChar chay bang Statement thuong - SQL injection neu
+                // charname/pInfo tung lot qua duoc dau nhay don o buoc tao nhan vat (lop
+                // loc duy nhat nam trong CreateCharHandler, khong co source o day). Dung
+                // PreparedStatement thay vi tin tuong hoan toan vao lop loc do.
+                try (PreparedStatement preCopy = conn.prepareStatement(
+                        "INSERT INTO tob_char2(id,charname,userId,headStyle,class,pInfo,potion,skill,basic,gender) VALUES(?,?,?,?,?,?,?,?,?,?)")) {
+                    preCopy.setInt(1, charId);
+                    preCopy.setString(2, charname);
+                    preCopy.setInt(3, userID);
+                    preCopy.setInt(4, headStyle);
+                    preCopy.setInt(5, classID);
+                    preCopy.setString(6, pInfo);
+                    preCopy.setString(7, potion.toString());
+                    preCopy.setString(8, skill.toString());
+                    preCopy.setString(9, basic);
+                    preCopy.setInt(10, gender + 1);
+                    preCopy.execute();
+                } catch (Exception ignored) {
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();

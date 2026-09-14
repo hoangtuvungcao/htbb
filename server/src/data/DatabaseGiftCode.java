@@ -78,6 +78,57 @@ class DatabaseGiftCode {
         }
     }
 
+    /**
+     * Them UNIQUE KEY(giftcode,userId) vao giftcode_log neu chua co - lam luoi an toan thu
+     * hai o tang DB cho cung dieu kien "da nhan chua" ma newDoGetGiftCode() da kiem bang
+     * SELECT-roi-INSERT (khong nguyen tu). Rui ro ly thuyet: hai phien REDEEM cung luc cho
+     * cung mot userId deu SELECT thay "chua dung" truoc khi ben nao kip INSERT. Thuc te hien
+     * bi chan o tang dang nhap (CharManager.put() tu choi mot userId online 2 lan), nhung
+     * khoa nay giu an toan ke ca sau nay logic do doi khac.
+     *
+     * Neu du lieu cu con dong trung (giftcode,userId) - vi du nhieu nhan vat DA BI XOA cung
+     * nhan mot ma, chuanBiCotUserId() doi chieu tat ca ve userId=0 - ALTER TABLE se bao loi
+     * duplicate entry va bi bat lai o day (khong lam sap server, chi log). Xem
+     * sql/them_khoa_duy_nhat_giftcode_log.sql de don du lieu trung roi them khoa bang tay.
+     */
+    static void chuanBiKhoaDuyNhatGiftCodeLog(Database db) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = db.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SHOW INDEX FROM giftcode_log WHERE Key_name = 'uk_giftcode_userid'");
+            final boolean daCo = rs.next();
+            rs.close();
+            rs = null;
+            if (!daCo) {
+                stmt.execute("ALTER TABLE giftcode_log ADD UNIQUE KEY uk_giftcode_userid (giftcode(191), userId)");
+                System.out.println("[GIFTCODE] Da them UNIQUE KEY(giftcode,userId) cho giftcode_log.");
+            }
+        } catch (Exception e) {
+            System.out.println("[GIFTCODE] Chua them duoc UNIQUE KEY(giftcode,userId) cho giftcode_log"
+                    + " (co the do du lieu cu con dong trung - xem sql/them_khoa_duy_nhat_giftcode_log.sql): " + e);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     static void newDoGetGiftCode(Database db, String text, Char player) {
 
         // SECURITY: gift codes are alphanumeric only. Strip everything else to prevent SQL injection,

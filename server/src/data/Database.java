@@ -3907,7 +3907,14 @@ public class Database {
         }
         try {
             info = BadWord.removeAccent(info.toLowerCase());
-            String sql = "insert into tob_log_all_item (charname,info,timelog,aclog) values ('" + charname + "','" + info + "',now(),'" + action + "')";
+            // SECURITY: info la text tu do (vd noi dung chat/mo ta) o mot so nguon goi -
+            // hien khong khai thac duoc vi LocLogVatPham.GIU (loc phia tren) chi cho qua vai
+            // action co dinh do server tu dat, nhung do la loc khoi luong log chu KHONG phai
+            // hang rao bao mat. sql o day duoc XEP HANG DOI (Logdata.query) de chay gop sau,
+            // khong di qua PreparedStatement nen phai tu lam sach truoc bang lamSachChoLog()
+            // (giong saveLogMatVatPham) thay vi tin CHI action hien tai luon an toan.
+            String sql = "insert into tob_log_all_item (charname,info,timelog,aclog) values ('"
+                    + lamSachChoLog(charname) + "','" + lamSachChoLog(info) + "',now(),'" + lamSachChoLog(action) + "')";
             Logdata.query.add(sql);
             UserLogger.addLog(charname, info, action);
         } catch (Exception e) {
@@ -4483,7 +4490,7 @@ public class Database {
 
 
     // ===== Gop log mua shop NPC (tob_log_buy_shop) theo cua so thoi gian =====
-    // Goi tin mua (lenh 85, xem MapMuaBan.doBuySpecialItem) KHONG mang so luong -
+    // Goi tin mua (lenh 85, xem real/doBuySpecialItem.java) KHONG mang so luong -
     // moi lan bam mua la MOT goi tin rieng, nen mua vd 500 nguyen lieu la 500 goi
     // tin lien tiep. Truoc day moi goi goi thang saveLogBuyItemShop() ghi THEM
     // 1 dong -> 500 dong giong het nhau. Gop trong BO NHO Java: nhieu lan mua
@@ -6318,9 +6325,17 @@ public class Database {
         Connection conn = null;
         PreparedStatement pre = null;
         try {
-            String sql = "insert into tob_clan_msg (charname,info,id_clan,dateSend) values ('" + player.charname + "','" + msg + "','" + player.idClan + "',Now())";
+            // SECURITY: msg la noi dung chat bang hoi go tay tu client (MapBangHoi.java,
+            // msg.dis.readUTF()), CHI loc bad-word/khoang trang/do dai - khong chan ky tu
+            // SQL. Truoc day noi thang vao chuoi sql roi moi prepareStatement(sql) nen
+            // PreparedStatement khong bao ve duoc gi (chuoi doc hai da bi nhiem tu truoc) ->
+            // SQL injection that qua bang thong bao bang hoi. Dung tham so ? thay vi noi chuoi.
+            String sql = "insert into tob_clan_msg (charname,info,id_clan,dateSend) values (?,?,?,Now())";
             conn = this.getConnection();
             pre = conn.prepareStatement(sql);
+            pre.setString(1, player.charname);
+            pre.setString(2, msg);
+            pre.setInt(3, player.idClan);
             pre.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -11735,6 +11750,7 @@ public void addCharXaiNapLuong(Char p, int type) {
      */
     public void chuanBiGiftCodeUserId() {
         DatabaseGiftCode.chuanBiCotUserId(this);
+        DatabaseGiftCode.chuanBiKhoaDuyNhatGiftCodeLog(this);
     }
 
     // ============ HAN MUC LUONG NHAT DUOC KHI TRAIN QUAI (theo ngay, moi nhan vat) ============

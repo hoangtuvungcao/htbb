@@ -1307,9 +1307,13 @@ class MapDoMenu {
                     map.doMenuTown(player, idNpc, idMenu, idOptionMenu);
                     break;
                 case -34:
-                    if (map.nRegion <= 0) 
+                    if (map.nRegion <= 0)
                     {
                         break;
+                    }
+                    if (idOptionMenu < 0 || idOptionMenu >= map.nRegion)
+                    {
+                        return;
                     }
                    long now = System.currentTimeMillis();
                       long last = player.timeNextRegion;
@@ -2566,7 +2570,23 @@ class MapDoMenu {
                         if (idMenu != 0) {
                             if (idMenu == 1) {
                                 byte[][] idCountry = new byte[][]{{1, 2}, {0, 2}, {1, 0}};
-                                player.myCountry = idCountry[player.myCountry][idOptionMenu];
+                                if (player.myCountry < 0 || player.myCountry >= idCountry.length
+                                        || idOptionMenu < 0 || idOptionMenu >= idCountry[player.myCountry].length) {
+                                    return;
+                                }
+                                byte targetCountry = idCountry[player.myCountry][idOptionMenu];
+                                // Day la noi DUY NHAT doi player.myCountry (quoc tich vinh vien,
+                                // khac inCountry tam thoi o nhanh idMenu==0 ben duoi) ma khong
+                                // qua checkFullNation nhu moi cho doi quoc tich khac. Them vao cho
+                                // nhat quan - hien khong doi hanh vi vi checkFullNation dang la
+                                // stub luon tra false (Map.java), nhung se tu dong duoc bao ve
+                                // ngay khi ham do duoc bat lai that.
+                                if (checkFullNation(targetCountry, 1, player.lvDetail.lv)) {
+                                    player.sendMessage(MessageCreator.createServerAlertMessage(
+                                            Map.nameCountry[targetCountry] + " đã có quá nhiều người. Vui lòng chọn lãnh thổ khác.", ""));
+                                    return;
+                                }
+                                player.myCountry = targetCountry;
                                 player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                                 player.sendToNearPlayer(MessageCreator.createCharInfo(player));
                                 MessageCreator.createMsgCharMonster(player, player);
@@ -2581,6 +2601,10 @@ class MapDoMenu {
                                     player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
                                 }
                             } else {
+                                if (player.inCountry < 0 || player.inCountry >= idCountry.length
+                                        || idOptionMenu < 0 || idOptionMenu >= idCountry[player.inCountry].length) {
+                                    return;
+                                }
                                 try {
                                     ((Vector) listKillPerson.get(player.inCountry)).remove(player.charname);
                                 } catch (Exception var39) {
@@ -4235,6 +4259,9 @@ class MapDoMenu {
                         if (abs(player.x / 16 - 99) <= rangeNpc && abs(player.y / 16 - 54) <= rangeNpc) {
                             int[][] vilage = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
                             int[] tmap = vilage[player.inCountry];
+                            if (idOptionMenu < 0 || idOptionMenu >= tmap.length) {
+                                return;
+                            }
                             int x = 16 + r.nextInt() % 5;
                             int y = 24 + r.nextInt(20);
                             player.x = x;

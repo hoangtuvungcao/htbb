@@ -1060,6 +1060,9 @@ public class RealController extends ServerController {
 
                                         case -800:
 
+                                            if (idMenu < 0 || idMenu >= p.animal.size()) {
+                                                return;
+                                            }
                                             if (idOptionMenu != 0) {
                                                 if (idOptionMenu == 1) {
                                                     if (!p.map.isMapOffline) {
@@ -1107,6 +1110,9 @@ public class RealController extends ServerController {
                                                 if (idMenu != 10) {
                                                     if (idMenu != 11) {
                                                         if (idMenu == 12) {
+                                                            if (idOptionMenu < 0 || idOptionMenu >= MapLoiDai.listMatch.size()) {
+                                                                return;
+                                                            }
                                                             MatchLoiDai match = (MatchLoiDai) MapLoiDai.listMatch.get(idOptionMenu);
                                                             p.idRegionLoidai = match.idRegion;
                                                             p.map.move2Map(p, 6, 10, Map.idMapLoiDai, 0);

@@ -964,7 +964,6 @@ public class TeamServer {
                 }
             }
         }).start();
-        new NapTien();
         readText("map/help.txt");
         new Thread(() -> {
             Thread.currentThread().setName("LOG CCU");

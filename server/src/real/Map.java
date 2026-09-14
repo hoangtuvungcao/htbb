@@ -6451,11 +6451,11 @@ public class Map implements Runnable {
         return type >= 3 && type <= 7;
     }
 
-    void doUserUpLevelItem(Char player, Message message) {
+    boolean doUserUpLevelItem(Char player, Message message) {
         try {
             if (player.infoItemCreate == null) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Hãy chọn lại vật phẩm cần nâng cấp.", ""));
-                return;
+                return false;
             }
             Item item = player.infoItemCreate.item;
             if (item != null) {
@@ -6470,28 +6470,28 @@ public class Map implements Runnable {
                 if (!player.iItems.contains(item)) {
                     player.infoItemCreate = null;
                     player.sendMessage(MessageCreator.createServerAlertMessage("Hãy chọn lại vật phẩm cần nâng cấp.", ""));
-                    return;
+                    return false;
                 }
                 // Vu khi (kiem/dao/but/bua/cung) la LOAI DUY NHAT co level = 81 (level
                 // trang bi/trang suc khac deu la boi so cua 5: 20,25,...,80,85 nen khong
                 // bao gio dung 81, cho nay khong doi hanh vi cua chung).
                 if (item.level >= 86) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể nâng cấp thêm", ""));
-                    return;
+                    return false;
                 }
 
                 if (item.isSelling) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi vật phẩm đang bán.", ""));
-                    return;
+                    return false;
                 }
 
                 if (item.lock == 0) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể thăng cấp trang bị đã khoá", ""));
-                    return;
+                    return false;
                 }
 
                 if (bacTrenKhongHopLe(player, item)) {
-                    return;
+                    return false;
                 }
 
                 int[][] var10000 = new int[][]{
@@ -6525,7 +6525,7 @@ public class Map implements Runnable {
                         true
                 );
                 if (newItem == null) {
-                    return;
+                    return false;
                 }
 
                 newItem.heItem = (byte) r.nextInt(5);
@@ -6535,9 +6535,11 @@ public class Map implements Runnable {
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                 Database.instance
                         .saveOrtherLog("tob_log_other_item", player.charname, item.getTemplate().name + "_" + item.getAttribute() + "|" + item.getDBInfo(), "uplvNM");
+                return true;
             }
         } catch (Exception var6) {
         }
+        return false;
     }
 
     /**
@@ -6589,11 +6591,11 @@ public class Map implements Runnable {
         return true;
     }
 
-    void doUserUpLevelItemSpecial(Char player, Message message) {
+    boolean doUserUpLevelItemSpecial(Char player, Message message) {
         try {
             if (player.infoItemCreate == null) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Hãy chọn lại vật phẩm cần nâng cấp.", ""));
-                return;
+                return false;
             }
             Item item = player.infoItemCreate.item;
             if (item != null) {
@@ -6602,25 +6604,25 @@ public class Map implements Runnable {
                 if (!player.iItems.contains(item)) {
                     player.infoItemCreate = null;
                     player.sendMessage(MessageCreator.createServerAlertMessage("Hãy chọn lại vật phẩm cần nâng cấp.", ""));
-                    return;
+                    return false;
                 }
                 if (item.level >= 86) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không thể nâng cấp thêm", ""));
-                    return;
+                    return false;
                 }
 
                 if (item.isSelling) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi vật phẩm đang bán.", ""));
-                    return;
+                    return false;
                 }
 
                 if (item.lock == 0) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể thăng cấp trang bị đã khoá", ""));
-                    return;
+                    return false;
                 }
 
                 if (bacTrenKhongHopLe(player, item)) {
-                    return;
+                    return false;
                 }
 
                 int var10007 = item.level + 5;
@@ -6640,7 +6642,7 @@ public class Map implements Runnable {
                 );
                 if (newItem == null) {
                     System.out.println("THANG CAP THAT BAI");
-                    return;
+                    return false;
                 }
 
                 for (int i = 28; i < Item.MAX_ATT; i++) {
@@ -6660,9 +6662,11 @@ public class Map implements Runnable {
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                 Database.instance
                         .saveOrtherLog("tob_log_other_item", player.charname, item.getTemplate().name + "_" + item.getAttribute() + "|" + item.getDBInfo(), "uplvSP");
+                return true;
             }
         } catch (Exception var6) {
         }
+        return false;
     }
 
 
@@ -7159,23 +7163,23 @@ public class Map implements Runnable {
         }
     }
 
-    void doChangeLevelSkill(Char player, Message message) {
+    boolean doChangeLevelSkill(Char player, Message message) {
         try {
             Item item = this.getItem(player, message);
             if (item == null) {
-                return;
+                return false;
             }
 
             if (item.isSelling) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi vật phẩm đang bán.", ""));
                 player.sendMessage(MessageCreator.createCharGemItem(player));
-                return;
+                return false;
             }
 
             if (!item.charSeal.toLowerCase().equals(player.charname.toLowerCase()) || item.lock == 0) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thay đổi", ""));
                 player.sendMessage(MessageCreator.createCharGemItem(player));
-                return;
+                return false;
             }
 
             if (!this.enoughMaterial(
@@ -7188,7 +7192,7 @@ public class Map implements Runnable {
             )) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu", ""));
                 player.sendMessage(MessageCreator.createCharGemItem(player));
-                return;
+                return false;
             }
 
             int n = 2;
@@ -7205,12 +7209,12 @@ public class Map implements Runnable {
 
             if (fail) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể dùng nguyên liệu cấp 4 trở lên.", ""));
-                return;
+                return false;
             }
 
             if (MapEpNgoc.chanSoLuongAm(player, material, "doChangeLevelSkill")) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng nguyên liệu không hợp lệ", ""));
-                return;
+                return false;
             }
 
             if (!this.enoughMaterial(
@@ -7224,13 +7228,13 @@ public class Map implements Runnable {
                     player.infoItemCreate.materialUse
             )) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu", ""));
-                return;
+                return false;
             }
 
             item.changLevelSkill();
             player.sendMessage(MessageCreator.createServerAlertMessage("Thay đổi thành công", ""));
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-            String gemUse = MapEpNgoc.deleteGemItem(this, 
+            String gemUse = MapEpNgoc.deleteGemItem(this,
                     player, CreateItemTemplate.getIDMAterial(item.getType(), item.magic_physic, 6), material, player.infoItemCreate.materialUse
             );
             Database.instance
@@ -7238,8 +7242,10 @@ public class Map implements Runnable {
                             "tob_log_other_item", player.charname, gemUse + "_" + item.getTemplate().name + "_" + item.getAttribute() + "|" + item.getDBInfo(), "skill"
                     );
             player.infoItemCreate = null;
+            return true;
         } catch (Exception var8) {
         }
+        return false;
     }
 
 
@@ -8980,9 +8986,13 @@ public class Map implements Runnable {
             int y = message.dis.readByte();
             int mapid = message.dis.readShort();
 
+            int rangeNpc = 5;
             for (int i = 0; i < bossLocation.size(); i++) {
                 BossLocaltion b = (BossLocaltion) bossLocation.get(i);
-                if (b.mapID == mapid && b.x == x && b.y == y) {
+                if (b.mapID == mapid && b.x == x && b.y == y
+                        && player.mapID == b.mapID
+                        && Math.abs(player.x / 16 - b.x) <= rangeNpc
+                        && Math.abs(player.y / 16 - b.y) <= rangeNpc) {
                     this.move2Map(player, b.tox, b.toy, b.type == 0 ? ((Boss) boss.get(0)).map.mapId : ((Boss) boss.get(player.inCountry)).map.mapId, player.inCountry);
                     break;
                 }

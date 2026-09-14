@@ -930,6 +930,9 @@ public class MapLienDau extends Map {
             int crit = 0;
             int buffAttack = 1;
             int _type = (byte) skill;
+            if (_type < 0 || _type >= p.skill.length) {
+                return;
+            }
             int _level = p.skill[_type] + p.addMoreLevelSkill[_type];
             if (_level <= 0) {
                 _level = p.addMoreLevelSkill[_type];
@@ -1794,6 +1797,9 @@ public class MapLienDau extends Map {
                                     if (mt.getIDClan() != p.myCountry) {
                                         if (mt.map.mapId == p.mapID) {
                                             int _type = (byte) skill;
+                                            if (_type < 0 || _type >= p.skill.length) {
+                                                return;
+                                            }
                                             _level = p.skill[_type] + p.addMoreLevelSkill[_type];
                                             if (_level <= 0) {
                                                 _level = p.addMoreLevelSkill[_type];

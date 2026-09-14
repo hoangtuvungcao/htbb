@@ -769,9 +769,9 @@ class MapXuLyLenh {
             case 82:
                 map.doUp2Board(player);
                 break;
-            case 85:
-                MapMuaBan.doBuySpecialItem(map, player, message);
-                break;
+            // case 85 (doBuySpecialItem) xoa 15/09/2026: lenh 85 nam trong
+            // RealController.privateCmd nen khong bao gio toi duoc switch nay - xem
+            // real/MapMuaBan.java cho chi tiet day du.
             case 86:
                 MapMuaBan.doUseSpecialITem(map, player, message);
                 break;
@@ -1597,6 +1597,12 @@ class MapXuLyLenh {
             m.dos.writeByte(type);
             int start = page * 10;
             int end = page * 10 + 10;
+            if (start < 0) {
+                start = 0;
+            }
+            if (end < 0) {
+                end = 0;
+            }
             switch (type) {
                 case 3:
                     m.dos.writeUTF("Top đại gia");
@@ -1997,6 +2003,18 @@ class MapXuLyLenh {
                     boolean except = false;
                     if ((player.map.mapIDLoadMap == 1 || player.map.mapIDLoadMap == 2 || player.map.mapIDLoadMap == 106 || player.map.mapIDLoadMap == 12)
                             && (toMap.mapIDLoadMap == 0 || toMap.mapIDLoadMap == 70 || toMap.mapIDLoadMap == 80)) {
+                        // Truoc day nhanh nay bo qua het kiem tra vi tri (checkChangeMap) va tin
+                        // toMapID/toTX/toTY client tu gui -> tu map luyen quai co the "ve lang"
+                        // toi bat ky toa do nao trong bat ky instance lang nao, khong can dung o
+                        // cong lang. Sua: server tu tinh diem ve lang (giong nhanh player.mapID
+                        // == 105 o tren), bo qua hoan toan toMapID/toTX/toTY client gui.
+                        int[][] mapstart = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
+                        int[][] pos = new int[][]{{10, 23, 14, 38, 30, 35, 21, 49}, {22, 41, 27, 32, 8, 30, 18, 11}, {10, 23, 14, 38, 30, 35, 21, 49}};
+                        int index = Map.r.nextInt(4);
+                        toTX = pos[player.myCountry][index * 2] + Map.r.nextInt() % 3;
+                        toTY = pos[player.myCountry][index * 2 + 1] + Map.r.nextInt() % 3;
+                        toMapID = mapstart[player.myCountry][Map.r.nextInt(mapstart[player.myCountry].length)];
+                        toMap = (Map) RealController.mapList.get(toMapID);
                         except = true;
                     }
 

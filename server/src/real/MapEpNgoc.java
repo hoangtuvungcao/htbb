@@ -377,7 +377,9 @@ class MapEpNgoc {
     }
 
     static void doAddItemImbue(Map map, Char player, short id) {
-        map.checkTrade(player);
+        if (map.checkTrade(player)) {
+            return;
+        }
         if (!isItemSelled(player, id, null)) {
             try {
                 Item it = player.getItemFormVector(player.iItems, id);
@@ -931,6 +933,11 @@ class MapEpNgoc {
             return;
         }
 
+        // synchronized (player): tu day tro xuong kiem lai ton kho ngoc/xu roi tru - gop
+        // thanh mot khoi nguyen tu (dung chung khoa voi Char.truGemNeuDu()) de 2 goi tin
+        // "Xong" gan dong thoi cho cung nhan vat khong the cung doc thay du truoc khi
+        // ben nao kip tru.
+        synchronized (player) {
         Item item = player.itemImbue == 40000 ? null : player.getItemFormVector(player.iItems, (short) player.itemImbue);
         if (item == null) {
             finishKhamResult(player, "Không tìm thấy vật phẩm");
@@ -1010,6 +1017,7 @@ class MapEpNgoc {
                     "kham " + sub + " >> " + mode, drilling ? "sock" : "kok");
         } catch (Exception e) {
             e.printStackTrace();
+        }
         }
     }
 
@@ -1118,6 +1126,10 @@ class MapEpNgoc {
                             player.specialItem.remove(shop);
                             player.removeIDItem(shop.realId);
                             Database.instance.deleteGemItem(shop.dbid);
+                            // Neu khong dat lai bo dem nay ve 0, doBuySpecialItem se nghi la
+                            // nguoi choi van con ve (listSpItem[id] > 0) sau khi da vut ve ra
+                            // dat, tu choi tao ve moi nhung VAN tru tien -> mat tien oan.
+                            player.listSpItem[shop.id] = 0;
                             info = i + " " + shop.name;
                         }
                     }

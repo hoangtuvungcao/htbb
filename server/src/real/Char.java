@@ -10710,6 +10710,22 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return this.listGemitemLock[idGem] >= sl;
     }
 
+    // synchronized tren chinh Char nay (giong doReceiveGif35/doStartLuckDraw): cung dang
+    // "kiem so luong roi tru" nhu KHOA_TIEN o tren nhung truoc day khong co khoa cho
+    // ngoc - checkEnoughtGem() roi delGem() la hai buoc tach roi, hai goi tin gan nhu
+    // dong thoi cho cung nhan vat co the cung doc thay du ngoc truoc khi ben nao kip tru
+    // (delGem tu kep ve 0 nen KHONG am, nhung phan thuong/ket qua phia sau co the duoc
+    // cap 2 lan cho 1 lan tra ngoc that). Noi nao can gop nhieu buoc kiem+tru+ap dung
+    // ket qua thanh MOT khoi nguyen tu thi tu bao "synchronized (player) { ... }" quanh
+    // ca khoi do - dung chung mot khoa voi ham nay.
+    public synchronized boolean truGemNeuDu(final int idGem, final int sl, final int lock) {
+        if (!checkEnoughtGem(idGem, sl, lock)) {
+            return false;
+        }
+        delGem(idGem, sl, lock != 0);
+        return true;
+    }
+
     public void doAddGemItem(final int id, final int soluong, final boolean lock) {
         if (this.listGemitem[id] == 0 && this.listGemitemLock[id] == 0) {
             final GemItem g = new GemItem(id);
@@ -11612,7 +11628,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
-    public void doStartLuckDraw(final byte index) {
+    // synchronized: kiem ve (potions[69]/[76]/[118]) roi tru la kiem-roi-tru khong
+    // nguyen tu. Neu khong khoa, 2 goi tin "quay so" gan nhu dong thoi cho cung nhan
+    // vat co the cung doc thay con ve truoc khi ben nao kip tru -> mat 1 ve nhung
+    // nhan thuong 2 lan.
+    public synchronized void doStartLuckDraw(final byte index) {
         if (this.indexItemLuckyDraw > -1) {
             return;
         }

@@ -229,6 +229,9 @@ class MapDanhNhau {
             int crit = 0;
             int buffAttack = -1;
             int _type = (byte) skill;
+            if (_type < 0 || _type >= p.skill.length) {
+                return;
+            }
             int _level = p.skill[_type] + p.addMoreLevelSkill[_type];
             if (_level <= 0) {
                 _level = p.addMoreLevelSkill[_type];
@@ -654,6 +657,9 @@ class MapDanhNhau {
                                                         if (mt.map.mapId == p.mapID) {
                                                             if (!mt.isMyMonster(p)) {
                                                                 int _type = (byte) skill;
+                                                                if (_type < 0 || _type >= p.skill.length) {
+                                                                    return;
+                                                                }
                                                                 int _level = p.skill[_type] + p.addMoreLevelSkill[_type];
                                                                 if (_level <= 0) {
                                                                     _level = p.addMoreLevelSkill[_type];

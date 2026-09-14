@@ -159,21 +159,21 @@ class MapCheTao {
         }
     }
 
-    static void doUserLockItem(Map map, Char player, Message message) {
+    static boolean doUserLockItem(Map map, Char player, Message message) {
         try {
             Item item = map.getItem(player, message);
             if (item == null) {
-                return;
+                return false;
             }
 
             if (item.isSelling) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi vật phẩm đang bán.", ""));
-                return;
+                return false;
             }
 
             if (!item.charSeal.toLowerCase().equals(player.charname.toLowerCase())) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thay đổi", ""));
-                return;
+                return false;
             }
 
             if (!map.enoughMaterial(
@@ -185,7 +185,7 @@ class MapCheTao {
                     player.infoItemCreate.materialUse
             )) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu", ""));
-                return;
+                return false;
             }
 
             int n = 2;
@@ -203,13 +203,13 @@ class MapCheTao {
             if (fail) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể dùng nguyên liệu cấp 4 trở lên.", ""));
                 player.sendMessage(MessageCreator.createCharGemItem(player));
-                return;
+                return false;
             }
 
             if (MapEpNgoc.chanSoLuongAm(player, material, "doUserLockItem")) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng nguyên liệu không hợp lệ", ""));
                 player.sendMessage(MessageCreator.createCharGemItem(player));
-                return;
+                return false;
             }
 
             if (!map.enoughMaterial(
@@ -224,14 +224,14 @@ class MapCheTao {
             )) {
                 player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu", ""));
                 player.sendMessage(MessageCreator.createCharGemItem(player));
-                return;
+                return false;
             }
 
             item.lockItem(material[1]);
             item.lock = 1;
             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
             player.sendMessage(MessageCreator.createServerAlertMessage("Khoá thành công.", ""));
-            String gemUse = MapEpNgoc.deleteGemItem(map, 
+            String gemUse = MapEpNgoc.deleteGemItem(map,
                     player, CreateItemTemplate.getIDMAterial(item.getType(), item.magic_physic, 3), material, player.infoItemCreate.materialUse
             );
             Database.instance
@@ -240,27 +240,29 @@ class MapCheTao {
                     );
             player.sendMessage(MessageCreator.createCharGemItem(player));
             player.infoItemCreate = null;
+            return true;
         } catch (Exception var8) {
             var8.printStackTrace();
         }
+        return false;
     }
 
-    static void doUserMakeSeal(Map map, Char player, Message message) {
+    static boolean doUserMakeSeal(Map map, Char player, Message message) {
         try {
             try {
                 Item item = map.getItem(player, message);
                 if (item == null) {
-                    return;
+                    return false;
                 }
 
                 if (item.isSelling) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi vật phẩm đang bán.", ""));
-                    return;
+                    return false;
                 }
 
                 if (item.charSeal.toLowerCase().equals(player.charname.toLowerCase())) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể đóng dấu lại", ""));
-                    return;
+                    return false;
                 }
 
                 if (!map.enoughMaterial(
@@ -272,7 +274,7 @@ class MapCheTao {
                         player.infoItemCreate.materialUse
                 )) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu", ""));
-                    return;
+                    return false;
                 }
 
                 int n = 2;
@@ -290,13 +292,13 @@ class MapCheTao {
                 if (fail) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể dùng nguyên liệu cấp 4 trở lên.", ""));
                     player.sendMessage(MessageCreator.createCharGemItem(player));
-                    return;
+                    return false;
                 }
 
                 if (MapEpNgoc.chanSoLuongAm(player, material, "doUserMakeSeal/doUserRepairAtt")) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng nguyên liệu không hợp lệ", ""));
                     player.sendMessage(MessageCreator.createCharGemItem(player));
-                    return;
+                    return false;
                 }
 
                 if (!map.enoughMaterial(
@@ -311,13 +313,13 @@ class MapCheTao {
                 )) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu", ""));
                     player.sendMessage(MessageCreator.createCharGemItem(player));
-                    return;
+                    return false;
                 }
 
                 item.charSeal = player.charname;
                 player.sendMessage(MessageCreator.createServerAlertMessage("Thay đổi thành công", ""));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                String gemUse = MapEpNgoc.deleteGemItem(map, 
+                String gemUse = MapEpNgoc.deleteGemItem(map,
                         player, CreateItemTemplate.getIDMAterial(item.getType(), item.magic_physic, 5), material, player.infoItemCreate.materialUse
                 );
                 Database.instance
@@ -325,29 +327,31 @@ class MapCheTao {
                                 "tob_log_other_item", player.charname, gemUse + "_" + item.getTemplate().name + "_" + item.getAttribute() + "|" + item.getDBInfo(), "seal"
                         );
                 player.infoItemCreate = null;
+                return true;
             } catch (Exception var8) {
             }
         } catch (Exception var9) {
         }
+        return false;
     }
 
-    static void doUserRepairAtt(Map map, Char player, Message message) {
+    static boolean doUserRepairAtt(Map map, Char player, Message message) {
         try {
             try {
                 Item item = map.getItem(player, message);
                 if (item == null) {
-                    return;
+                    return false;
                 }
 
                 if (item.isSelling) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thực hiện khi vật phẩm đang bán.", ""));
-                    return;
+                    return false;
                 }
 
                 if (!item.charSeal.toLowerCase().equals(player.charname.toLowerCase()) || item.lock == 0) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể thay đổi", ""));
                     System.out.println("KHONG THE THAY DOI 1");
-                    return;
+                    return false;
                 }
 
                 if (!map.enoughMaterial(
@@ -359,7 +363,7 @@ class MapCheTao {
                         player.infoItemCreate.materialUse
                 )) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu", ""));
-                    return;
+                    return false;
                 }
 
                 int n = 2;
@@ -377,13 +381,13 @@ class MapCheTao {
                 if (fail) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể dùng nguyên liệu cấp 4 trở lên.", ""));
                     player.sendMessage(MessageCreator.createCharGemItem(player));
-                    return;
+                    return false;
                 }
 
                 if (MapEpNgoc.chanSoLuongAm(player, material, "doUserMakeSeal/doUserRepairAtt")) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng nguyên liệu không hợp lệ", ""));
                     player.sendMessage(MessageCreator.createCharGemItem(player));
-                    return;
+                    return false;
                 }
 
                 if (!map.enoughMaterial(
@@ -398,13 +402,13 @@ class MapCheTao {
                 )) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nguyên liệu2", ""));
                     player.sendMessage(MessageCreator.createCharGemItem(player));
-                    return;
+                    return false;
                 }
 
                 item.initAtt(material[1]);
                 player.sendMessage(MessageCreator.createServerAlertMessage("Thay đổi thành công", ""));
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                String gemUse = MapEpNgoc.deleteGemItem(map, 
+                String gemUse = MapEpNgoc.deleteGemItem(map,
                         player, CreateItemTemplate.getIDMAterial(item.getType(), item.magic_physic, 4), material, player.infoItemCreate.materialUse
                 );
                 Database.instance
@@ -412,10 +416,12 @@ class MapCheTao {
                                 "tob_log_other_item", player.charname, gemUse + "_" + item.getTemplate().name + "_" + item.getAttribute() + "|" + item.getDBInfo(), "ratt"
                         );
                 player.infoItemCreate = null;
+                return true;
             } catch (Exception var8) {
             }
         } catch (Exception var9) {
         }
+        return false;
     }
 
     static void doUserCreateItem(Map map, Char player, Message message) {
@@ -430,45 +436,55 @@ class MapCheTao {
                 }
 
                 byte option = message.dis.readByte();
-              
+                // CHI tru 5000 xu khi ham con thuc su thanh cong (tra ve true). Truoc day
+                // luon subXu ngay sau khi goi, ke ca khi ham con return som vi thieu
+                // nguyen lieu/item khong hop le/goi tin sai - nguoi choi bi bao mon xu
+                // lien tuc ma khong nhan duoc ket qua gi, giong loi da vá o nhanh tao do moi
+                // (xem chu thich "CHI tru xu khi that su nhan duoc do" ben duoi).
                 if (option == 1) {
-                    map.doUserUpLevelItem(player, message);
-                    player.subXu(5000L, true, "map 17");
+                    if (map.doUserUpLevelItem(player, message)) {
+                        player.subXu(5000L, true, "map 17");
+                    }
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     return;
                 }
 
                 if (option == 2) {
-                    map.doUserUpLevelItemSpecial(player, message);
-                    player.subXu(5000L, true, "map 18");
+                    if (map.doUserUpLevelItemSpecial(player, message)) {
+                        player.subXu(5000L, true, "map 18");
+                    }
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     return;
                 }
 
                 if (option == 3) {
-                    doUserLockItem(map, player, message);
-                    player.subXu(5000L, true, "map 19");
+                    if (doUserLockItem(map, player, message)) {
+                        player.subXu(5000L, true, "map 19");
+                    }
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     return;
                 }
 
                 if (option == 4) {
-                    doUserRepairAtt(map, player, message);
-                    player.subXu(5000L, true, "map 20");
+                    if (doUserRepairAtt(map, player, message)) {
+                        player.subXu(5000L, true, "map 20");
+                    }
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     return;
                 }
 
                 if (option == 5) {
-                    doUserMakeSeal(map, player, message);
-                    player.subXu(5000L, true, "map 21");
+                    if (doUserMakeSeal(map, player, message)) {
+                        player.subXu(5000L, true, "map 21");
+                    }
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     return;
                 }
 
                 if (option == 6) {
-                    map.doChangeLevelSkill(player, message);
-                    player.subXu(5000L, true, "map 22");
+                    if (map.doChangeLevelSkill(player, message)) {
+                        player.subXu(5000L, true, "map 22");
+                    }
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                     return;
                 }
@@ -690,6 +706,12 @@ class MapCheTao {
             if (!player.map.isMapOffline) {
                 return;
             }
+            // synchronized (player): gop kiem ngoc (checkEnoughtGem) + kiem item hop le +
+            // tru ngoc (delGem) + ap dung ket qua thanh MOT khoi nguyen tu tren khoa dung
+            // chung voi Char.truGemNeuDu(). Truoc day 2 buoc kiem/tru nam tach roi, 2 goi
+            // tin gan dong thoi cho cung nhan vat co the cung doc thay du ngoc truoc khi
+            // ben nao kip tru.
+            synchronized (player) {
 
             if (!player.isCorrectPass && !player.passWord.equals("")) {
                 player.sendMessage(MessageCreator.createMsgInputText(player.id, 4, "Nhập mật khẩu", 0));
@@ -786,6 +808,7 @@ class MapCheTao {
                         Database.instance.saveOrtherLog("", player.getName(), "nhan dc nhanh hoa hong vang khi tien giai", "vulan");
                     }
                 }
+            }
             }
         } catch (Exception var14) {
             var14.printStackTrace();
