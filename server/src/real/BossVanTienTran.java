@@ -690,9 +690,11 @@ public class BossVanTienTran extends Boss {
             }
         }
 
-        GemItem g = new GemItem(GemTemplate.LKD_30);
-        g.islock = true;
-        gem.add(g);
+        for (int iLKD = 0; iLKD < 3; ++iLKD) {
+            GemItem g = new GemItem(GemTemplate.LKD_30);
+            g.islock = true;
+            gem.add(g);
+        }
         return gem;
     }
 
@@ -748,10 +750,12 @@ public class BossVanTienTran extends Boss {
 
     public Vector<Potion> dropPotion(Char p) {
         Vector<Potion> pt = new Vector();
-        pt.add(new Potion((short)123, 1, this.map));
-        pt.add(new Potion((short)114, 1, this.map));
-        pt.add(new Potion((short)7, 1, this.map));
-        pt.add(new Potion((short)10, 1, this.map));
+        pt.add(new Potion((short)123, 3, this.map));
+        // Tam tat: Thuc an tong hop (114) va Tien duoc thuong +100k exp (10).
+        // Mo lai bang cach bo comment 2 dong duoi khi duoc yeu cau.
+        // pt.add(new Potion((short)114, 3, this.map));
+        pt.add(new Potion((short)7, 3, this.map));
+        // pt.add(new Potion((short)10, 3, this.map));
         return pt;
     }
 

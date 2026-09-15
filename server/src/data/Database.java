@@ -3900,9 +3900,14 @@ public class Database {
     }
 
     public void saveOrtherLog(String table, String charname, String info, String action) {
-        // CHI ghi loai nam trong LocLogVatPham.GIU (mat do, gian lan, tai san tang bat thuong);
-        // loai khac bo ca bang lan UserLogger. Ca bay ham ghi vao tob_log_all_item deu gac nhu vay.
-        if (LocLogVatPham.boQua(action)) {
+        // CHI ghi loai nam trong LocLogVatPham.GIU (mat do, gian lan, tai san tang bat thuong)
+        // khi ghi vao tob_log_all_item; loai khac bo ca bang lan UserLogger. Rieng cac cho goi
+        // voi table="tob_log_other_gem" (nhan/bo ngoc dac biet) tach sang bang tob_log_all_gem
+        // rieng va KHONG qua bo loc nay - bo loc GIU chi lam de chan bloat cho tob_log_all_item
+        // (xem class LocLogVatPham), con tob_log_all_gem la bang moi, it dong, da duoc
+        // vps/don-log.sh don theo tuoi (15 ngay) ma khong can allow-list.
+        boolean laLogNgoc = "tob_log_other_gem".equals(table);
+        if (!laLogNgoc && LocLogVatPham.boQua(action)) {
             return;
         }
         try {
@@ -3913,9 +3918,15 @@ public class Database {
             // hang rao bao mat. sql o day duoc XEP HANG DOI (Logdata.query) de chay gop sau,
             // khong di qua PreparedStatement nen phai tu lam sach truoc bang lamSachChoLog()
             // (giong saveLogMatVatPham) thay vi tin CHI action hien tai luon an toan.
-            String sql = "insert into tob_log_all_item (charname,info,timelog,aclog) values ('"
-                    + lamSachChoLog(charname) + "','" + lamSachChoLog(info) + "',now(),'" + lamSachChoLog(action) + "')";
-            Logdata.query.add(sql);
+            if (laLogNgoc) {
+                String sql = "insert into tob_log_all_gem (charname,info,timelog,aclog) values ('"
+                        + lamSachChoLog(charname) + "','" + lamSachChoLog(info) + "',now(),'" + lamSachChoLog(action) + "')";
+                Logdata.query.add(sql);
+            } else {
+                String sql = "insert into tob_log_all_item (charname,info,timelog,aclog) values ('"
+                        + lamSachChoLog(charname) + "','" + lamSachChoLog(info) + "',now(),'" + lamSachChoLog(action) + "')";
+                Logdata.query.add(sql);
+            }
             UserLogger.addLog(charname, info, action);
         } catch (Exception e) {
             e.printStackTrace();

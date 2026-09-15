@@ -1558,21 +1558,26 @@ public class Monster extends LiveActor {
                         if (listGem == null) {
                             listGem = new Vector<GemItem>();
                         }
-                        final int soThuocHoaHinh = Map.r.nextInt(5) + 1;
-                        for (int iHH = 0; iHH < soThuocHoaHinh; ++iHH) {
-                            final GemItem thuocHoaHinh = new GemItem(268);
-                            thuocHoaHinh.isBoss = true;
-                            thuocHoaHinh.cat = 6;
-                            listGem.add(thuocHoaHinh);
-                        }
-                        // Luyen kim duoc 30% (gem 11): 3% moi boss, dung ti le cu cua
-                        // boss than lan. Da go hai lan roll rieng trong BossThanLan de
-                        // khong bi cong don thanh ~5.9%.
-                        if (Map.r.nextInt(100) < 3) {
-                            final GemItem lkd = new GemItem(11);
-                            lkd.isBoss = true;
-                            lkd.cat = 6;
-                            listGem.add(lkd);
+                        // Boss/tru cua Tran yeu tran (Van Tien Tran) khong an 2 khoan
+                        // chung nay: BossVanTienTran.dropListGemItem() da tu cho rieng
+                        // 1 nguyen lieu + 1 Luyen kim duoc co dinh moi lan chet roi.
+                        if (!this.isBossVanTienTran()) {
+                            final int soThuocHoaHinh = Map.r.nextInt(5) + 1;
+                            for (int iHH = 0; iHH < soThuocHoaHinh; ++iHH) {
+                                final GemItem thuocHoaHinh = new GemItem(268);
+                                thuocHoaHinh.isBoss = true;
+                                thuocHoaHinh.cat = 6;
+                                listGem.add(thuocHoaHinh);
+                            }
+                            // Luyen kim duoc 30% (gem 11): 3% moi boss, dung ti le cu cua
+                            // boss than lan. Da go hai lan roll rieng trong BossThanLan de
+                            // khong bi cong don thanh ~5.9%.
+                            if (Map.r.nextInt(100) < 3) {
+                                final GemItem lkd = new GemItem(11);
+                                lkd.isBoss = true;
+                                lkd.cat = 6;
+                                listGem.add(lkd);
+                            }
                         }
                         // Vu Lan (viet lai): moi boss chet roi han 2-4 nhanh hoa hong vang
                         // cho nguoi giet, x2 neu dang mac do bong da (item 791/792).
@@ -1621,7 +1626,9 @@ public class Monster extends LiveActor {
                             }
                         }
                     }
-                    if (this.idTemplate != Map.idGhost) {
+                    // Boss/tru cua Tran yeu tran (Van Tien Tran) khong roi 100k xu
+                    // (4x25000) chung nay - map da co phan thuong rieng.
+                    if (this.idTemplate != Map.idGhost && !this.isBossVanTienTran()) {
                         for (int j = 0; j < 4; ++j) {
                             final int totalQuantity2;
                             final int quantity2 = totalQuantity2 = 25000;
