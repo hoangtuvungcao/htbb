@@ -723,6 +723,7 @@ public class MapClan extends Map {
                                                                     int newxp = calculatorXpParty(p, dxp);
                                                                     if (newxp == dxp) {
                                                                         int var60 = dxp * doubleALL;
+                                                                        var60 = Monster.apDungGiamExpTheoCapNV(var60, p);
                                                                         var60 = p.expReceive(var60);
                                                                         addXPForChar(p, (long)(var60 + p.getEffSkillClan(0) * var60 / 100), false, "mapclan doAttackMonster3");
                                                                     } else {
@@ -757,6 +758,7 @@ public class MapClan extends Map {
 
                                                                                 if (pp.hp > 0) {
                                                                                     temp *= doubleALL;
+                                                                                    temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                                                                     temp = pp.expReceive(temp);
                                                                                     addXPForChar(pp, (long)(temp + pp.getEffSkillClan(0) * temp / 100), false, "mapclan doAttackMonster1");
                                                                                 }
@@ -764,6 +766,7 @@ public class MapClan extends Map {
                                                                         }
 
                                                                         xpReceive = newxp * 20 / 100 * doubleALL;
+                                                                        xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                         xpReceive = p.expReceive(xpReceive);
                                                                         addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "mapclan doAttackMonster2");
                                                                     }
@@ -856,6 +859,7 @@ public class MapClan extends Map {
                                                                         int newxp = calculatorXpParty(p, dxp);
                                                                         if (newxp == dxp) {
                                                                             int var64 = dxp * doubleALL;
+                                                                            var64 = Monster.apDungGiamExpTheoCapNV(var64, p);
                                                                             var64 = p.expReceive(var64);
                                                                             addXPForChar(p, (long)(var64 + p.getEffSkillClan(0) * var64 / 100), false, "mapclan doAttackMonster6");
                                                                         } else {
@@ -890,6 +894,7 @@ public class MapClan extends Map {
 
                                                                                     if (pp.hp > 0) {
                                                                                         temp *= doubleALL;
+                                                                                        temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                                                                         temp = pp.expReceive(temp);
                                                                                         addXPForChar(pp, (long)(temp + pp.getEffSkillClan(0) * temp / 100), false, "mapclan doAttackMonster4");
                                                                                     }
@@ -897,6 +902,7 @@ public class MapClan extends Map {
                                                                             }
 
                                                                             xpReceive = newxp * 20 / 100 * doubleALL;
+                                                                            xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                             xpReceive = p.expReceive(xpReceive);
                                                                             addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "mapclan doAttackMonster5");
                                                                         }

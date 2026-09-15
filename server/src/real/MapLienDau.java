@@ -1689,6 +1689,7 @@ public class MapLienDau extends Map {
                                                                     int newxp = calculatorXpParty(p, dxp);
                                                                     if (newxp == dxp) {
                                                                         int totalXp = dxp * doubleALL;
+                                                                        totalXp = Monster.apDungGiamExpTheoCapNV(totalXp, p);
                                                                         totalXp = p.expReceive(totalXp);
                                                                         addXPForChar(p, (long) (totalXp + p.getEffSkillClan(0) * totalXp / 100), false, "mapliendau doAttackMultiTarget3");
                                                                     } else {
@@ -1723,6 +1724,7 @@ public class MapLienDau extends Map {
 
                                                                                 if (pp.hp > 0) {
                                                                                     temp *= doubleALL;
+                                                                                    temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                                                                     temp = pp.expReceive(temp);
                                                                                     addXPForChar(pp, (long) (temp + pp.getEffSkillClan(0) * temp / 100), false, "mapliendau doAttackMultiTarget1");
                                                                                 }
@@ -1730,6 +1732,7 @@ public class MapLienDau extends Map {
                                                                         }
 
                                                                         xpReceive = newxp * 20 / 100 * doubleALL;
+                                                                        xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                         xpReceive = p.expReceive(xpReceive);
                                                                         addXPForChar(p, (long) (xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "mapliendau doAttackMultiTarget2");
                                                                     }
@@ -1946,6 +1949,7 @@ public class MapLienDau extends Map {
                                                                             totalXp = totalXp * 2 + exp50;
                                                                         }
 
+                                                                        totalXp = Monster.apDungGiamExpTheoCapNV(totalXp, p);
                                                                         addXPForChar(p, (long) (totalXp + p.getEffSkillClan(0) * totalXp / 100), false, "mapliendau doAttackMonster3");
                                                                     } else {
                                                                         exp50 = p.party.userParty.size();
@@ -1993,6 +1997,7 @@ public class MapLienDau extends Map {
                                                                                         temp = temp * 2 + exp50;
                                                                                     }
 
+                                                                                    temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                                                                     addXPForChar(pp, (long) (temp + pp.getEffSkillClan(0) * temp / 100), false, "mapliendau doAttackMonster1");
                                                                                 }
                                                                             }
@@ -2013,6 +2018,7 @@ public class MapLienDau extends Map {
                                                                             xpReceive = xpReceive * 2 + exp50;
                                                                         }
 
+                                                                        xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                         addXPForChar(p, (long) (xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "mapliendau doAttackMonster2");
                                                                     }
                                                                 }
@@ -2074,6 +2080,7 @@ public class MapLienDau extends Map {
                                                                     exp50 = calculatorXpParty(p, dxp);
                                                                     if (exp50 == dxp) {
                                                                         newxp = dxp * doubleALL;
+                                                                        newxp = Monster.apDungGiamExpTheoCapNV(newxp, p);
                                                                         newxp = p.expReceive(newxp);
                                                                         addXPForChar(p, (long) (newxp + p.getEffSkillClan(0) * newxp / 100), false, "mapliendau doAttackMonster6");
                                                                     } else {
@@ -2108,6 +2115,7 @@ public class MapLienDau extends Map {
 
                                                                                 if (pp.hp > 0) {
                                                                                     exp50 *= doubleALL;
+                                                                                    exp50 = Monster.apDungGiamExpTheoCapNV(exp50, pp);
                                                                                     exp50 = pp.expReceive(exp50);
                                                                                     addXPForChar(pp, (long) (exp50 + pp.getEffSkillClan(0) * exp50 / 100), false, "mapliendau doAttackMonster4");
                                                                                 }
@@ -2115,6 +2123,7 @@ public class MapLienDau extends Map {
                                                                         }
 
                                                                         xpReceive = exp50 * 20 / 100 * doubleALL;
+                                                                        xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                         xpReceive = p.expReceive(xpReceive);
                                                                         addXPForChar(p, (long) (xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "mapliendau doAttackMonster5");
                                                                     }

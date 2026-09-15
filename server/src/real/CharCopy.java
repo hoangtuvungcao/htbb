@@ -380,6 +380,7 @@ public class CharCopy extends Char {
 
                             if (pp.hp > 0) {
                                 temp *= Map.doubleALL;
+                                temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                 temp = pp.expReceive(temp);
                                 Map.addXPForChar(pp, (long)(temp + pp.getEffSkillClan(0) * temp / 100), false, "charcopy1");
                             }
@@ -387,10 +388,12 @@ public class CharCopy extends Char {
                     }
 
                     xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                    xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, this.owner);
                     xpReceive = this.owner.expReceive(xpReceive);
                     Map.addXPForChar(this.owner, (long)(xpReceive + this.owner.getEffSkillClan(0) * xpReceive / 100), false, "charcopy2");
                 } else {
                     int var30 = dxp * Map.doubleALL;
+                    var30 = Monster.apDungGiamExpTheoCapNV(var30, this.owner);
                     var30 = this.owner.expReceive(var30);
                     Map.addXPForChar(this.owner, (long)(var30 + this.owner.getEffSkillClan(0) * var30 / 100), false, "charcopy3");
                 }
@@ -490,6 +493,7 @@ public class CharCopy extends Char {
                             int newxp = Map.calculatorXpParty(this.owner, dxp);
                             if (newxp == dxp) {
                                 int var64 = dxp * Map.doubleALL;
+                                var64 = Monster.apDungGiamExpTheoCapNV(var64, this.owner);
                                 var64 = this.owner.expReceive(var64);
                                 Map.addXPForChar(this.owner, (long)(var64 + this.owner.getEffSkillClan(0) * var64 / 100), false, "charcopy6");
                             } else {
@@ -524,6 +528,7 @@ public class CharCopy extends Char {
 
                                         if (pp.hp > 0) {
                                             temp *= Map.doubleALL;
+                                            temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                             temp = pp.expReceive(temp);
                                             Map.addXPForChar(pp, (long)(temp + pp.getEffSkillClan(0) * temp / 100), false, "charcopy4");
                                         }
@@ -531,6 +536,7 @@ public class CharCopy extends Char {
                                 }
 
                                 xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, this.owner);
                                 xpReceive = this.owner.expReceive(xpReceive);
                                 Map.addXPForChar(this.owner, (long)(xpReceive + this.owner.getEffSkillClan(0) * xpReceive / 100), false, "charcopy5");
                             }
@@ -611,6 +617,7 @@ public class CharCopy extends Char {
                             int newxp = Map.calculatorXpParty(this.owner, dxp);
                             if (newxp == dxp) {
                                 int var67 = dxp * Map.doubleALL;
+                                var67 = Monster.apDungGiamExpTheoCapNV(var67, this.owner);
                                 var67 = this.owner.expReceive(var67);
                                 Map.addXPForChar(this.owner, (long)(var67 + this.owner.getEffSkillClan(0) * var67 / 100), false, "charcopy9");
                             } else {
@@ -645,6 +652,7 @@ public class CharCopy extends Char {
 
                                         if (pp.hp > 0) {
                                             temp *= Map.doubleALL;
+                                            temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                             temp = pp.expReceive(temp);
                                             Map.addXPForChar(pp, (long)(temp + pp.getEffSkillClan(0) * temp / 100), false, "charcopy7");
                                         }
@@ -652,6 +660,7 @@ public class CharCopy extends Char {
                                 }
 
                                 xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, this.owner);
                                 xpReceive = this.owner.expReceive(xpReceive);
                                 Map.addXPForChar(this.owner, (long)(xpReceive + this.owner.getEffSkillClan(0) * xpReceive / 100), false, "charcopy8");
                             }

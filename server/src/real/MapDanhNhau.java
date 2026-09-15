@@ -835,6 +835,7 @@ class MapDanhNhau {
                                                                                                     int newxp = Map.calculatorXpParty(p, dxp);
                                                                                                     if (newxp == dxp) {
                                                                                                         int var62 = dxp * Map.doubleALL;
+                                                                                                        var62 = Monster.apDungGiamExpTheoCapNV(var62, p);
                                                                                                         var62 = p.expReceive(var62);
                                                                                                         Map.addXPForChar(
                                                                                                                 p,
@@ -878,6 +879,7 @@ class MapDanhNhau {
 
                                                                                                                 if (pp.hp > 0) {
                                                                                                                     temp *= Map.doubleALL;
+                                                                                                                    temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                                                                                                     temp = pp.expReceive(temp);
                                                                                                                     Map.addXPForChar(
                                                                                                                             pp,
@@ -890,6 +892,7 @@ class MapDanhNhau {
                                                                                                         }
 
                                                                                                         xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                                                                                        xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                                                         xpReceive = p.expReceive(xpReceive);
                                                                                                         Map.addXPForChar(
                                                                                                                 p,
@@ -971,6 +974,7 @@ class MapDanhNhau {
                                                                                                     int newxp = Map.calculatorXpParty(p, dxpx);
                                                                                                     if (newxp == dxpx) {
                                                                                                         int var65 = dxpx * Map.doubleALL;
+                                                                                                        var65 = Monster.apDungGiamExpTheoCapNV(var65, p);
                                                                                                         var65 = p.expReceive(var65);
                                                                                                         Map.addXPForChar(
                                                                                                                 p,
@@ -1014,6 +1018,7 @@ class MapDanhNhau {
 
                                                                                                                 if (pp.hp > 0) {
                                                                                                                     tempx *= Map.doubleALL;
+                                                                                                                    tempx = Monster.apDungGiamExpTheoCapNV(tempx, pp);
                                                                                                                     tempx = pp.expReceive(tempx);
                                                                                                                     Map.addXPForChar(
                                                                                                                             pp,
@@ -1026,6 +1031,7 @@ class MapDanhNhau {
                                                                                                         }
 
                                                                                                         xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                                                                                        xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                                                                         xpReceive = p.expReceive(xpReceive);
                                                                                                         Map.addXPForChar(
                                                                                                                 p,
@@ -1553,6 +1559,7 @@ class MapDanhNhau {
                             int newxp = Map.calculatorXpParty(p, dxpx);
                             if (newxp == dxpx) {
                                 int var59 = dxpx * Map.doubleALL;
+                                var59 = Monster.apDungGiamExpTheoCapNV(var59, p);
                                 var59 = p.expReceive(var59);
                                 Map.addXPForChar(p, (long) (var59 + p.getEffSkillClan(0) * var59 / 100), false, "map doAttackMultiTarget3");
                             } else {
@@ -1587,6 +1594,7 @@ class MapDanhNhau {
 
                                         if (pp.hp > 0) {
                                             temp *= Map.doubleALL;
+                                            temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                             temp = pp.expReceive(temp);
                                             Map.addXPForChar(pp, (long) (temp + pp.getEffSkillClan(0) * temp / 100), false, "map doAttackMultiTarget1");
                                         }
@@ -1594,6 +1602,7 @@ class MapDanhNhau {
                                 }
 
                                 xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                                xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                 xpReceive = p.expReceive(xpReceive);
                                 Map.addXPForChar(p, (long) (xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "map doAttackMultiTarget2");
                             }

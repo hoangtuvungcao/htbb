@@ -1316,6 +1316,7 @@ public class Region {
                             }
                             if (pp.hp > 0) {
                                 temp *= Map.doubleALL;
+                                temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                 temp = pp.expReceive(temp);
                                 Map.addXPForChar((Char)pp, (long)(temp + pp.getEffSkillClan(0) * temp / 100), (boolean)false, (String)"Region1");
                             }
@@ -1323,10 +1324,12 @@ public class Region {
                         ++k;
                     }
                     xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                    xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                     xpReceive = p.expReceive(xpReceive);
                     Map.addXPForChar((Char)p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), (boolean)false, (String)"Region2");
                 } else {
                     totalXp *= Map.doubleALL;
+                    totalXp = Monster.apDungGiamExpTheoCapNV(totalXp, p);
                     totalXp = p.expReceive(totalXp);
                     Map.addXPForChar((Char)p, (long)(totalXp + p.getEffSkillClan(0) * totalXp / 100), (boolean)false, (String)"Region3");
                 }
@@ -1572,6 +1575,7 @@ public class Region {
                                 }
                                 if (pp.hp > 0) {
                                     temp *= Map.doubleALL;
+                                    temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                     temp = pp.expReceive(temp);
                                     Map.addXPForChar((Char)pp, (long)(temp + pp.getEffSkillClan(0) * temp / 100), (boolean)false, (String)"Region4");
                                 }
@@ -1579,10 +1583,12 @@ public class Region {
                             ++i;
                         }
                         xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                        xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                         xpReceive = p.expReceive(xpReceive);
                         Map.addXPForChar((Char)p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), (boolean)false, (String)"Region5");
                     } else {
                         totalXp *= Map.doubleALL;
+                        totalXp = Monster.apDungGiamExpTheoCapNV(totalXp, p);
                         totalXp = p.expReceive(totalXp);
                         Map.addXPForChar((Char)p, (long)(totalXp + p.getEffSkillClan(0) * totalXp / 100), (boolean)false, (String)"Region6");
                     }
@@ -1677,6 +1683,7 @@ public class Region {
                                 }
                                 if (pp.hp > 0) {
                                     temp *= Map.doubleALL;
+                                    temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                     temp = pp.expReceive(temp);
                                     Map.addXPForChar((Char)pp, (long)(temp + pp.getEffSkillClan(0) * temp / 100), (boolean)false, (String)"Region7");
                                 }
@@ -1684,10 +1691,12 @@ public class Region {
                             ++i;
                         }
                         xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                        xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                         xpReceive = p.expReceive(xpReceive);
                         Map.addXPForChar((Char)p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), (boolean)false, (String)"Region8");
                     } else {
                         totalXp *= Map.doubleALL;
+                        totalXp = Monster.apDungGiamExpTheoCapNV(totalXp, p);
                         totalXp = p.expReceive(totalXp);
                         Map.addXPForChar((Char)p, (long)(totalXp + p.getEffSkillClan(0) * totalXp / 100), (boolean)false, (String)"Region9");
                     }

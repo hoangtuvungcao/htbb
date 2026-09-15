@@ -377,15 +377,16 @@ adminHead('cauhinh', 'Cấu hình server');
 
 <div class="card">
     <h3>Tỉ lệ EXP quái thường</h3>
-    <p class="muted small">Phần trăm so với EXP gốc của quái (không dùng cho Boss). 100 = như gốc, 0 = tắt hẳn.
-       Xem <code>Monster.rcvXpSauGiam()</code>.</p>
+    <p class="muted small">Phần trăm so với EXP gốc, tính theo <strong>cấp NHÂN VẬT</strong> đang nhận EXP
+       (không phải cấp quái) — dù nhân vật ≥50 đi train ở quái cấp nào cũng bị giảm. Áp dụng cho cả Boss.
+       100 = như gốc, 0 = tắt hẳn. Xem <code>Monster.apDungGiamExpTheoCapNV()</code>.</p>
     <form method="post" action="cauhinh.php">
         <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
         <input type="hidden" name="viec" value="luu_exp_quai">
         <div class="form-grid">
-            <label class="o"><span>Quái cấp ≥ 50 (%)</span>
+            <label class="o"><span>Nhân vật cấp ≥ 50 (%)</span>
                 <input type="number" name="tileExpLv50" min="0" max="100" value="<?= e(giaTri($gt, K_TILE_EXP_LV50, '10')) ?>"></label>
-            <label class="o"><span>Quái cấp &lt; 50 (%)</span>
+            <label class="o"><span>Nhân vật cấp &lt; 50 (%)</span>
                 <input type="number" name="tileExpDuoiLv50" min="0" max="100" value="<?= e(giaTri($gt, K_TILE_EXP_DUOI_LV50, '50')) ?>"></label>
         </div>
         <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu tỉ lệ EXP quái</button></div>

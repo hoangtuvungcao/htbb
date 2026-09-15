@@ -814,6 +814,7 @@ public class MapTown extends Map {
             int newxp = calculatorXpParty(p, dxpx);
             if (newxp == dxpx) {
                int var59 = dxpx * doubleALL;
+               var59 = Monster.apDungGiamExpTheoCapNV(var59, p);
                var59 = p.expReceive(var59);
                addXPForChar(p, (long)(var59 + p.getEffSkillClan(0) * var59 / 100), false, "maptown doAttackMultiTarget3");
             } else {
@@ -848,6 +849,7 @@ public class MapTown extends Map {
 
                      if (pp.hp > 0) {
                         temp *= doubleALL;
+                        temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                         temp = pp.expReceive(temp);
                         addXPForChar(pp, (long)(temp + pp.getEffSkillClan(0) * temp / 100), false, "maptown doAttackMultiTarget1");
                      }
@@ -855,6 +857,7 @@ public class MapTown extends Map {
                }
 
                xpReceive = newxp * 20 / 100 * doubleALL;
+               xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                xpReceive = p.expReceive(xpReceive);
                addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "maptown doAttackMultiTarget2");
             }
@@ -1061,6 +1064,7 @@ public class MapTown extends Map {
                                                    var65 = var65 * 2 + exp50;
                                                 }
 
+                                                var65 = Monster.apDungGiamExpTheoCapNV(var65, p);
                                                 addXPForChar(p, (long)(var65 + p.getEffSkillClan(0) * var65 / 100), false, "maptown doAttackMonster3");
                                              } else {
                                                 int nUser = p.party.userParty.size();
@@ -1108,6 +1112,7 @@ public class MapTown extends Map {
                                                             temp = temp * 2 + exp50;
                                                          }
 
+                                                         temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
                                                          addXPForChar(pp, (long)(temp + pp.getEffSkillClan(0) * temp / 100), false, "maptown doAttackMonster1");
                                                       }
                                                    }
@@ -1128,6 +1133,7 @@ public class MapTown extends Map {
                                                    xpReceive = xpReceive * 2 + exp50;
                                                 }
 
+                                                xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                 addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "maptown doAttackMonster2");
                                              }
                                           }
@@ -1188,6 +1194,7 @@ public class MapTown extends Map {
                                              int newxp = calculatorXpParty(p, dxpx);
                                              if (newxp == dxpx) {
                                                 int var68 = dxpx * doubleALL;
+                                                var68 = Monster.apDungGiamExpTheoCapNV(var68, p);
                                                 var68 = p.expReceive(var68);
                                                 addXPForChar(p, (long)(var68 + p.getEffSkillClan(0) * var68 / 100), false, "maptown doAttackMonster6");
                                              } else {
@@ -1222,6 +1229,7 @@ public class MapTown extends Map {
 
                                                       if (pp.hp > 0) {
                                                          tempx *= doubleALL;
+                                                         tempx = Monster.apDungGiamExpTheoCapNV(tempx, pp);
                                                          tempx = pp.expReceive(tempx);
                                                          addXPForChar(
                                                             pp, (long)(tempx + pp.getEffSkillClan(0) * tempx / 100), false, "maptown doAttackMonster4"
@@ -1231,6 +1239,7 @@ public class MapTown extends Map {
                                                 }
 
                                                 xpReceive = newxp * 20 / 100 * doubleALL;
+                                                xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, p);
                                                 xpReceive = p.expReceive(xpReceive);
                                                 addXPForChar(p, (long)(xpReceive + p.getEffSkillClan(0) * xpReceive / 100), false, "maptown doAttackMonster5");
                                              }
