@@ -83,8 +83,18 @@ class CharTrangBi {
                         {
                             if (actor.cat == 0 && ((Char) actor).timeGiveCardTown > 0L)
                             {
-                                infokhang = String.valueOf(actor.getName()) + " KHANG DC " + Char.namelan[id] + ",bl=" + self.khangbanglan + ",dl=" + self.khangsetlan + ",dl=" + self.khangdoclan + ",ll=" + self.khanglualan;
-                                Database.instance.saveOrtherLog("", actor.getName(), infokhang, "khanglan");
+                                // 16/09/2026: lam chi tiet hon theo yeu cau nguoi dung - truoc day chi ghi
+                                // ten muc tieu + kham LAN CUA NGUOI TAN CONG (self.khang...), khong noi vi
+                                // sao lai mien nhiem (qua xa cap / dung bi khang / dang khoa cooldown) va
+                                // sai chu the: phai la kham cua MUC TIEU (actor) chu khong phai self.
+                                final Char actorChar = (Char) actor;
+                                infokhang = self.charname + "(lv" + self.lvDetail.lv + ") " + Char.namelan[id]
+                                        + " -> " + actorChar.charname + "(lv" + actorChar.lvDetail.lv + ") MIEN NHIEM"
+                                        + " map=" + self.map.mapId
+                                        + " qua_xa_cap=" + lanQuaXaCap + " bi_khang=" + lanBiKhang + " dang_khoa=" + lanDangKhoa
+                                        + " khang_muc_tieu(bl=" + actorChar.khangbanglan + ",sl=" + actorChar.khangsetlan
+                                        + ",dl=" + actorChar.khangdoclan + ",ll=" + actorChar.khanglualan + ")";
+                                Database.instance.saveOrtherLog("", actorChar.charname, infokhang, "khanglan");
                             }
                             dam.add(0);
                             hpLeft.add(actor.hp);
@@ -419,7 +429,8 @@ class CharTrangBi {
                     try {
                         self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng " + item.getTemplate().name + " đã hết"));
                         Database.instance.deleteItem(item.dbid);
-                        Database.instance.saveOrtherLog("tob_log_other_item", self.charname, String.valueOf(item.getTemplate().name) + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
+                        // 16/09/2026: them dbid (theo yeu cau "log chi tiet hon").
+                        Database.instance.saveOrtherLog("tob_log_other_item", self.charname, "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
                     } catch (final Exception ex2) {
                     }
                 } else if (Map.isPhiPhong(item.getTemplate().type) && item.minuteExist == 0 && item.dateCreate.equals("2016-09-15")) {
@@ -612,7 +623,8 @@ class CharTrangBi {
                         try {
                             self.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng " + item.getTemplate().name + " đã hết"));
                             Database.instance.deleteItem(item.dbid);
-                            Database.instance.saveOrtherLog("tob_log_other_item", self.charname, String.valueOf(item.getTemplate().name) + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
+                            // 16/09/2026: them dbid (theo yeu cau "log chi tiet hon").
+                            Database.instance.saveOrtherLog("tob_log_other_item", self.charname, "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
                         } catch (final Exception ex) {
                         }
                     } else if (item.isPhiPhongWordCupHetHan() && item.dateCreate.compareTo("2018-08-22") <= 0) {

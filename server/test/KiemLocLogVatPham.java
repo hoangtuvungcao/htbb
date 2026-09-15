@@ -36,12 +36,12 @@ public final class KiemLocLogVatPham {
         for (final String s : new String[]{"matdo", "trade", "sitemu", "delI", "timeout", "XOAPET",
                 "loiinvent", "hackc", "hackR", "hackbitem", "hackchonchar", "ffbug", "hklbug", "hcm",
                 "naptien", "nhanxu", "logxu", "autosave", "lenlv", "lenlevel", "putGiftCode",
-                "caitaocaitrang", "hoahinhpet"}) {
+                "caitaocaitrang", "hoahinhpet", "truxu", "truthieu"}) {
             Kiem.sai("van ghi '" + s + "'", data.LocLogVatPham.boQua(s));
         }
         // Rac da tat - nhung loai tung chiem hang trieu dong.
         for (final String s : new String[]{"luckGOLD", "luckSILV", "joinLucky", "hop", "vulan",
-                "gvang", "gbac", "sitems", "bossdie", "truxu", "delSP", "nhansam", "expdon", "petan",
+                "gvang", "gbac", "sitems", "bossdie", "delSP", "nhansam", "expdon", "petan",
                 "fruit", "hocskill", "delP", "themtt", "newatt", "tao", "die"}) {
             Kiem.dung("bo qua '" + s + "'", data.LocLogVatPham.boQua(s));
         }

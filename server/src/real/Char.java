@@ -1952,14 +1952,18 @@ public class Char extends LiveActor {
             final Item item = this.tItems.elementAt(i);
             this.iItems.remove(item);
             this.ALL_ID_USE.remove(item.id);
-            info = String.valueOf(info) + item.getTemplate().name + "_" + item.plus + "_" + item.getAttribute() + "_" + item.getDBInfo() + " | ";
+            // 16/09/2026: them "dbid=" (id dong DB rieng cua item, on dinh qua giao dich vi chi
+            // doi owner/dbowner chu khong tao dong moi) theo yeu cau "log chi tiet hon" - truoc
+            // day idTemplate nam chim khong nhan trong getDBInfo(), khong the tra dung MOT item
+            // cu the neu 2 nguoi cung trade nhieu mon giong het nhau.
+            info = String.valueOf(info) + "dbid" + item.dbid + "_" + item.getTemplate().name + "_" + item.plus + "_" + item.getAttribute() + "_" + item.getDBInfo() + " | ";
         }
         info = String.valueOf(info) + " >> " + this.userTrade.get(0).charname + " chuyển_";
         for (int i = 0; i < this.userTrade.get(0).tItems.size(); ++i) {
             final Item item = this.userTrade.get(0).tItems.elementAt(i);
             this.userTrade.get(0).iItems.remove(item);
             this.userTrade.get(0).ALL_ID_USE.remove(item.id);
-            info = String.valueOf(info) + item.getTemplate().name + "_" + item.plus + item.getAttribute() + "_" + item.getDBInfo() + " | ";
+            info = String.valueOf(info) + "dbid" + item.dbid + "_" + item.getTemplate().name + "_" + item.plus + item.getAttribute() + "_" + item.getDBInfo() + " | ";
         }
         this.tItems.removeAllElements();
         this.userTrade.get(0).tItems.removeAllElements();
@@ -3979,7 +3983,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
                     this.calculateAttrib();
                     this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
                     this.sendMessage(MessageCreator.createCharWearingMessage(this, this));
-                    Database.instance.saveOrtherLog("tob_log_other_item", this.charname, String.valueOf(item.getDBInfo()) + "|" + item.getAttribute(), "timeout");
+                    // 16/09/2026: them ten + dbid vao log (truoc day chi co idTemplate chim
+                    // trong getDBInfo(), phai tra data_item moi biet la mon gi).
+                    Database.instance.saveOrtherLog("tob_log_other_item", this.charname,
+                            "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
                 } catch (final Exception ex) {
                 }
             }
@@ -4002,7 +4009,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                         this.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Thời gian sử dụng " + item.getTemplate().name + " đã hết"));
                         this.iItems.remove(item);
                         Database.instance.deleteItem(item.dbid);
-                        Database.instance.saveOrtherLog("tob_log_other_item", this.charname, String.valueOf(item.getDBInfo()) + "|" + item.getAttribute(), "timeout");
+                        // 16/09/2026: them ten + dbid (theo yeu cau "log chi tiet hon").
+                        Database.instance.saveOrtherLog("tob_log_other_item", this.charname,
+                                "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
                         this.removeIDItem(item.id);
                     } catch (final Exception ex) {
                     }
@@ -4040,7 +4049,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                             this.calculateAttrib();
                             this.sendMessage(MessageCreator.createMainCharInfoMessage(this));
                             this.sendMessage(MessageCreator.createCharWearingMessage(this, this));
-                            Database.instance.saveOrtherLog("tob_log_other_item", this.charname, String.valueOf(item.getDBInfo()) + "|" + item.getAttribute(), "timeout");
+                            // 16/09/2026: them ten + dbid (theo yeu cau "log chi tiet hon").
+                            Database.instance.saveOrtherLog("tob_log_other_item", this.charname,
+                                    "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
                             if (t == 13) {
                                 this.itemAx = null;
                             }
@@ -14195,12 +14206,18 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void addXu(final long xu, final String vitri) {
+        // 16/09/2026: them so du TRUOC giao dich (truoc) theo yeu cau nguoi dung "log chi tiet
+        // hon" - truoc day chi co so du SAU, muon biet truoc phai tu tinh nguoc (this.xu - xu),
+        // khong an toan neu co nhieu luong cung cong/tru gan nhau (rang buoc chi trong KHOA_TIEN).
+        final long truoc;
         synchronized (KHOA_TIEN) {
+            truoc = this.xu;
             this.xu = congChanDai(this.xu, xu);
             this.xutim += xu;
         }
         if (xu != 0L) {
-            Database.instance.saveOrtherLog("", this.charname, String.valueOf(this.xu) + " nhan " + xu + " tu vi tri " + vitri, "nhanxu");
+            Database.instance.saveOrtherLog("", this.charname,
+                    truoc + " + " + xu + " = " + this.xu + " tu vi tri " + vitri, "nhanxu");
         }
     }
 
@@ -14209,7 +14226,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return;
         }
         boolean thieu = false;
+        final long truoc;
         synchronized (KHOA_TIEN) {
+            truoc = this.xu;
             thieu = this.xu < xu;
             this.xu -= xu;
             this.xumat += xu;
@@ -14218,7 +14237,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
             }
         }
         if (xu != 0L) {
-            Database.instance.saveOrtherLog("", this.charname, String.valueOf(this.xu) + " tru " + xu + " tu vi tri " + vitri, "truxu");
+            // 16/09/2026: them so du TRUOC (truoc), doi xung voi addXu - theo yeu cau nguoi
+            // dung "log chi tiet hon" cho xu (nhan xu VA tru xu).
+            Database.instance.saveOrtherLog("", this.charname,
+                    truoc + " - " + xu + " = " + this.xu + " tu vi tri " + vitri, "truxu");
         }
         if (thieu) {
             // Bi tru nhieu hon so dang co: noi goi khong kiem so du, hoac hai luong cung tieu.

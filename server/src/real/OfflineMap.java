@@ -407,7 +407,10 @@ public class OfflineMap extends Map {
                            .saveLogSellItem(
                               p.charname,
                               player.charname,
-                              ((Item)item).getTemplate().name
+                              // 16/09/2026: them dbid (id dong DB rieng, da xoa ngay tren nhung
+                              // truong o object van con gia tri cu) de tra dung MOT item cu the.
+                              "dbid" + ((Item)item).dbid + "_"
+                                 + ((Item)item).getTemplate().name
                                  + "_"
                                  + ((Item)item).plus
                                  + " | "
@@ -452,7 +455,11 @@ public class OfflineMap extends Map {
                            .saveLogSellItem(
                               p.charname,
                               player.charname,
-                              ((GemItem)item).getTemplate().name
+                              // 16/09/2026: them idTemplate (nhieu ngoc trung ten nhau - xem
+                              // khao sat data_item) va in loi neu ghi that bai (truoc day nuot
+                              // im lang, khac nhanh Item ben tren).
+                              "idTemplate" + ((GemItem)item).getTemplate().id + "_"
+                                 + ((GemItem)item).getTemplate().name
                                  + "_"
                                  + ((GemItem)item).prizeSell
                                  + " | bf: "
@@ -466,6 +473,8 @@ public class OfflineMap extends Map {
                                  + " | " + Char.moTaViTri(player)
                            );
                      } catch (Exception var17) {
+                        var17.printStackTrace();
+                        System.out.println("LOI SAVE GEMBUY");
                      }
 
                      GemItem gem = (GemItem)item;

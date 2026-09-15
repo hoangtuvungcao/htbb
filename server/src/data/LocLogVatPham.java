@@ -89,11 +89,24 @@ public final class LocLogVatPham {
                                         // TRUOC la aclog "tao" chung, bi loai bo 02/09/2026 vi la nguon rac lon nhat -
                                         // doi ten rieng de giu duoc CHI dong nay ma khong an rac "tao" khac
             // --- 6. Hop nguyen lieu (5 vien cap thap -> 1 vien cap cao, NPC map 40/41/42) ---
-            "hopnguyenlieu"             // MapDoMenu.java (3 NPC: -10/-11/-12): ghi so luong hop + ten nguyen lieu ket qua;
+            "hopnguyenlieu",            // MapDoMenu.java (3 NPC: -10/-11/-12): ghi so luong hop + ten nguyen lieu ket qua;
                                         // TRUOC la aclog "hop" chung, cung bi loai bo 02/09/2026 nhu "tao" - doi ten rieng
                                         // vi day la buoc TRUNG GIAN de lam nguyen lieu bac cao (vd Ngoc cap 5 -> cap 6)
                                         // truoc khi dem che trang bi - thieu dong nay thi khong biet nguyen lieu bac thap
                                         // co bi hop len bac cao roi moi tieu hay khong
+            // --- 7. PK trong Thanh: mien nhiem hieu ung lan (Bang/Set/Doc/Lua) ---
+            "khanglan",                 // CharTrangBi.checkNewEffectItem: nguoi choi bi lan nham vao MIEN NHIEM
+                                        // (qua xa cap / dung bi khang / dang khoa cooldown hetHanLan). Them
+                                        // 16/09/2026 - truoc do KHONG nam trong GIU nen saveOrtherLog() luon
+                                        // tra ve som, dong nay CHUA TUNG duoc ghi xuong DB dau, du code goi no.
+            // --- 8. Tru xu (doi xung voi "nhanxu") ---
+            "truxu", "truthieu"         // Char.subXu(): moi lan tru xu (mua do/nang cap/phi...) va truong hop
+                                        // tru nhieu hon so dang co. TUNG bi loai bo 02/09/2026 (nam trong
+                                        // nhom rac 5,6 trieu dong luc do) - bat lai 16/09/2026 theo yeu cau
+                                        // nguoi dung "log chi tiet hon" cho xu; day la tag TAN SUAT CAO NHAT
+                                        // dang bat (gan moi hanh dong ton xu deu goi subXu), nhung don-log.sh
+                                        // van tu xoa dong qua GIU_NGAY=15 ngay (xem BANG_LOG o tren) nen khong
+                                        // phinh vo han nhu truoc.
     )));
 
     /** true = KHONG ghi. Chuoi la, null, hay khong nam trong GIU deu bi bo. */

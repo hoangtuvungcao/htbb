@@ -4459,7 +4459,9 @@ public class Database {
                 ten = item.getTemplate().name;
             } catch (Exception ignored) {
             }
-            String info = lyDo + " | " + ten + " +" + item.plus + " | " + item.getInfoSave();
+            // 16/09/2026: them dbid (id dong DB rieng) o dau info theo yeu cau "log chi tiet
+            // hon" - sua o day la sua CHUNG cho moi loi goi ham (matdo la tag dung nhat).
+            String info = "dbid" + item.dbid + " | " + lyDo + " | " + ten + " +" + item.plus + " | " + item.getInfoSave();
             info = BadWord.removeAccent(info);
             String sql = "insert into tob_log_all_item (idchar,charname,info,timelog,aclog) values ("
                     + p.charDBID + ",'" + lamSachChoLog(p.charname) + "','" + lamSachChoLog(info)

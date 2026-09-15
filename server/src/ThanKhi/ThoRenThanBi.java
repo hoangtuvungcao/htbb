@@ -503,8 +503,10 @@ public class ThoRenThanBi
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
         player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng! Ngươi đã tạo thành công " + template.name, ""));
 
+        // 16/09/2026: them id (newItem.id; dbid chua co vi item chua duoc luu DB lan nao) de
+        // tra duoc dung mon vua tao trong tui do (theo yeu cau "log chi tiet hon").
         data.Database.instance.saveOrtherLog("", player.charname,
-                "tao than khi " + template.name
+                "tao than khi id" + newItem.id + " " + template.name
               + " (cap nguyen lieu " + player.thanKhiCraftState.getMaterialLevel()
               + ", che do " + player.thanKhiCraftState.getMaterialMode()
               + ", mau " + color + ")"
@@ -825,9 +827,12 @@ public class ThoRenThanBi
         // log du thanh/bai de doi chieu duoc voi so lieu mua/con lai trong kho gem.
         String tenThanKhi = "";
         try { tenThanKhi = item.getTemplate().name; } catch (Exception ignored) { }
+        // 16/09/2026: them dbid (item.dbid, item da co san trong DB tu truoc) de phan biet
+        // dung item dang nang cap khi nguoi choi co nhieu Than Khi cung ten (theo yeu cau
+        // "log chi tiet hon").
         data.Database.instance.saveOrtherLog("", player.charname,
                 (success ? "nang cap thanh cong" : "nang cap that bai")
-              + " " + tenThanKhi + " +" + curPlus + " len +" + targetPlus
+              + " dbid" + item.dbid + " " + tenThanKhi + " +" + curPlus + " len +" + targetPlus
               + " (ti le " + finalChance + "%, che do " + materialMode + ")"
               + " - nguyen lieu da dung: " + nguyenLieuDaDung, "nangcapthankhi");
     }

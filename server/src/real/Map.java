@@ -7074,7 +7074,11 @@ public class Map implements Runnable {
                             .saveOrtherLog(
                                     "tob_log_other_item",
                                     player.charname,
-                                    gemUse
+                                    // 16/09/2026: them "id<item.id>" de tra dung mon vua che tao
+                                    // trong tui do (theo yeu cau "log chi tiet hon").
+                                    "id" + item.id
+                                    + "_"
+                                    + gemUse
                                     + "_"
                                     + (oldItem == null ? "false" : "true")
                                     + "_"
@@ -9084,8 +9088,10 @@ public class Map implements Runnable {
                     player.animal.remove(targetAnimal);
                     Database.instance.delAnimal(targetAnimal.dbid);
                 
-                    // Thêm log xóa thú cưỡi
-                    String logInfo = String.format("Xóa thú cưỡi: %s (ID: %d)", targetAnimal.name, targetAnimal.dbid);
+                    // Thêm log xóa thú cưỡi - 16/09/2026: them so luong da tru + so du con lai
+                    // (theo yeu cau "log chi tiet hon").
+                    String logInfo = String.format("Xóa thú cưỡi: %s (ID: %d) - tru 500 luong, con lai %d",
+                            targetAnimal.name, targetAnimal.dbid, player.getLuong());
                     Database.instance.saveOrtherLog("", player.charname, logInfo, "XOATC");
                 
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
@@ -9150,8 +9156,10 @@ public class Map implements Runnable {
                     player.pet.remove(targetPet);
                     Database.instance.deletePet(targetPet.idDB);
             
-                    // Thêm log xóa pet
-                    String logInfo = String.format("Xóa pet: %s (ID: %d)", targetPet.getName(), targetPet.idDB);
+                    // Thêm log xóa pet - 16/09/2026: them so luong da tru + so du con lai
+                    // (theo yeu cau "log chi tiet hon").
+                    String logInfo = String.format("Xóa pet: %s (ID: %d) - tru 500 luong, con lai %d",
+                            targetPet.getName(), targetPet.idDB, player.getLuong());
                     Database.instance.saveOrtherLog("", player.charname, logInfo, "XOAPET");
             
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
@@ -15288,7 +15296,8 @@ public class Map implements Runnable {
                         item.owner = 0;
                         item.dbowner = 0;
                         if (player.iItems.remove(item)) {
-                            String sub = item.getTemplate().name + "_" + item.plus + "|" + item.getAttribute() + "|" + item.getDBInfo();
+                            // 16/09/2026: them dbid (theo yeu cau "log chi tiet hon").
+                            String sub = "dbid" + item.dbid + " " + item.getTemplate().name + "_" + item.plus + "|" + item.getAttribute() + "|" + item.getDBInfo();
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                             player.sendMessage(MessageCreator.createServerAlertMessage("Đã huỷ vật phẩm khi bỏ ra đất", ""));
                             Database.instance.saveOrtherLog("tob_log_other_item", player.charname, "Bỏ " + sub + " ra đất", "delI");
@@ -15553,7 +15562,9 @@ public class Map implements Runnable {
                             player.iItems.remove(item);
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                             Database.instance.deleteItem(item.dbid);
-                            Database.instance.saveOrtherLog("tob_log_other_item", player.charname, item.getDBInfo() + "|" + item.getAttribute(), "timeout");
+                            // 16/09/2026: them ten + dbid (theo yeu cau "log chi tiet hon").
+                            Database.instance.saveOrtherLog("tob_log_other_item", player.charname,
+                                    "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
                         } else if (player.isFullInventory()) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy", ""));
                         } else {
@@ -15601,7 +15612,9 @@ public class Map implements Runnable {
                             player.iItems.remove(item);
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                             Database.instance.deleteItem(item.dbid);
-                            Database.instance.saveOrtherLog("tob_log_other_item", player.charname, item.getDBInfo() + "|" + item.getAttribute(), "timeout");
+                            // 16/09/2026: them ten + dbid (theo yeu cau "log chi tiet hon").
+                            Database.instance.saveOrtherLog("tob_log_other_item", player.charname,
+                                    "dbid" + item.dbid + " " + item.getTemplate().name + "|" + item.getDBInfo() + "|" + item.getAttribute(), "timeout");
                         } else if (player.isFullInventory()) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đầy", ""));
                         } else {
