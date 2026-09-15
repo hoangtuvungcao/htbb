@@ -132,6 +132,7 @@ sv.tileXu   sv.tileLuong   sv.tileItemSuKien   sv.tilePotion   sv.tileNgoc   sv.
 sv.chiaXuRoi
 sv.tileExpLv50   sv.tileExpDuoiLv50
 sv.tieuNguongMau   sv.tieuHeSoExp   sv.tieuPcExpTheoMau   sv.tieuPermilleCaoCap
+sv.doiTieuNguongMauXu   sv.doiTieuNguongMauLuong
 sv.gioChiemThanh   sv.phutChiemThanh   sv.ngayChiemThanh
 sv.adminAccounts   sv.maxCharPerAccount   sv.choPhepTaoTenGM
 sv.website   sv.linkTaiGame   sv.testMode   sv.testCode
@@ -250,8 +251,10 @@ Từ 14/09/2026, chuyển từ mảng hardcode trong `Char.doInitMonter()` /
 | `sv.tieuHeSoExp` | `200` | % nhân trước khi áp tỉ lệ theo màu (mục dưới), `200` = x2 (giá trị cũ "TangExpVanTieu"). |
 | `sv.tieuPcExpTheoMau` | `50,100,150,250,250,500,0` | 7 % EXP theo màu (Trắng/Xanh/Đỏ/Hoàn Mỹ/Vàng/Tím/_ — phần tử cuối không dùng tới), áp dụng khi cấp mở tiêu dưới 50 hoặc màu Trắng/Xanh/Đỏ. |
 | `sv.tieuPermilleCaoCap` | `50,70,90,35,55,75,5,25,45` | 9 phần nghìn EXP cần để lên cấp, riêng Hoàn Mỹ/Vàng/Tím từ cấp 50 — gộp phẳng 3 khung cấp (50-59 / 60-69 / 70+) × 3 màu, chỉ số = khung×3 + (màu-3). |
+| `sv.doiTieuNguongMauXu` | `50545,85545,98945,99945,99995` | 5 ngưỡng **cộng dồn** (Trắng/Xanh/Đỏ/Hoàn Mỹ/Vàng) trên thang 100000, roll khi **đổi** tiêu (reroll trả phí) bằng xu — độc lập với `sv.tieuNguongMau` (đó là lúc nhận tiêu mới). Xem `Char.doChangeTieu()`. |
+| `sv.doiTieuNguongMauLuong` | `22890,52890,96890,99890,99990` | Như trên, dùng khi đổi tiêu trả phí bằng lượng (đắt hơn, tỉ lệ màu hiếm cao hơn hẳn so với đổi bằng xu). |
 
-Bốn khoá đều là chuỗi **CSV** (phân cách bằng dấu phẩy, không có khoảng trắng thừa). Sai số
+Sáu khoá đều là chuỗi **CSV** (phân cách bằng dấu phẩy, không có khoảng trắng thừa). Sai số
 lượng phần tử (khác đúng 5 / 7 / 9 như bảng trên) hoặc không phải số thì server **âm thầm bỏ
 qua**, giữ nguyên giá trị đang chạy — không có dòng log báo lỗi. Lệnh chat `setting` → `6`
 (mục 3b) **không** hiện được các khoá này (chỉ hiện giờ chiếm thành + tỉ lệ rơi đồ) — sửa

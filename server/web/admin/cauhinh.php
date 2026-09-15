@@ -36,6 +36,8 @@ const K_TIEU_NGUONG_MAU = 'sv.tieuNguongMau';
 const K_TIEU_HE_SO_EXP = 'sv.tieuHeSoExp';
 const K_TIEU_PC_EXP_THEO_MAU = 'sv.tieuPcExpTheoMau';
 const K_TIEU_PERMILLE_CAO_CAP = 'sv.tieuPermilleCaoCap';
+const K_DOI_TIEU_NGUONG_MAU_XU = 'sv.doiTieuNguongMauXu';
+const K_DOI_TIEU_NGUONG_MAU_LUONG = 'sv.doiTieuNguongMauLuong';
 const K_GIO_CT = 'sv.gioChiemThanh';
 const K_PHUT_CT = 'sv.phutChiemThanh';
 const K_NGAY_CT = 'sv.ngayChiemThanh';
@@ -98,6 +100,32 @@ function soThapPhan(string $tho, float $min, float $max, float $macDinh): float
         return $macDinh;
     }
     return max($min, min($max, $n));
+}
+
+/**
+ * Doi mang 5 % (Trang/Xanh/Do/Hoan My/Vang) sang 5 nguong CONG DON tren thang 100000
+ * (phan con lai la Tim). Dung chung cho ca "nhan tieu moi" va "doi tieu" (xu/luong).
+ */
+function phanTramSangNguongCongDon(array $phanTramMau): array
+{
+    $nguong = [];
+    $congDon = 0;
+    foreach ($phanTramMau as $pt) {
+        $congDon += (int)round($pt * 1000);
+        $nguong[] = min(100000, $congDon);
+    }
+    return $nguong;
+}
+
+/** null neu tong hop le (<=100%); nguoc lai tra ve thong bao loi de veLai(). */
+function tongQuaTramKhongDuoc100(array $phanTramMau, string $ten): ?string
+{
+    $tong = round(array_sum($phanTramMau), 3);
+    if ($tong > 100) {
+        return "Tổng % của {$ten} đang vượt quá 100% ({$tong}%) — không còn chỗ cho Tím. "
+            . 'Giảm bớt một trong 5 màu rồi lưu lại.';
+    }
+    return null;
 }
 
 /** Đọc một khoá dạng CSV "a,b,c" từ $gt thành int[]; sai số phần tử thì dùng $macDinh. */
@@ -166,18 +194,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     soThapPhan(p('tieuMau3'), 0, 100, 0.3),
                     soThapPhan(p('tieuMau4'), 0, 100, 0.01),
                 ];
-                $tongPhanTramMau = round(array_sum($phanTramMau), 3);
-                if ($tongPhanTramMau > 100) {
-                    veLai($TRANG, 'error', 'Tổng % của Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng đang vượt quá '
-                        . '100% (' . $tongPhanTramMau . '%) — không còn chỗ cho Tím. '
-                        . 'Giảm bớt một trong 5 màu rồi lưu lại.');
+                if (($tong = tongQuaTramKhongDuoc100($phanTramMau, 'Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng (nhận tiêu mới)')) !== null) {
+                    veLai($TRANG, 'error', $tong);
                 }
-                $nguong = [];
-                $congDon = 0;
-                foreach ($phanTramMau as $pt) {
-                    $congDon += (int)round($pt * 1000);
-                    $nguong[] = min(100000, $congDon);
+                $nguong = phanTramSangNguongCongDon($phanTramMau);
+
+                // Doi tieu (reroll tra phi) - bang RIENG cho xu va luong, cung dinh dang.
+                $phanTramDoiXu = [
+                    soThapPhan(p('doiTieuXuMau0'), 0, 100, 50.545),
+                    soThapPhan(p('doiTieuXuMau1'), 0, 100, 35),
+                    soThapPhan(p('doiTieuXuMau2'), 0, 100, 13.4),
+                    soThapPhan(p('doiTieuXuMau3'), 0, 100, 1),
+                    soThapPhan(p('doiTieuXuMau4'), 0, 100, 0.05),
+                ];
+                if (($tong = tongQuaTramKhongDuoc100($phanTramDoiXu, 'Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng (đổi tiêu bằng xu)')) !== null) {
+                    veLai($TRANG, 'error', $tong);
                 }
+                $nguongDoiXu = phanTramSangNguongCongDon($phanTramDoiXu);
+
+                $phanTramDoiLuong = [
+                    soThapPhan(p('doiTieuLuongMau0'), 0, 100, 22.89),
+                    soThapPhan(p('doiTieuLuongMau1'), 0, 100, 30),
+                    soThapPhan(p('doiTieuLuongMau2'), 0, 100, 44),
+                    soThapPhan(p('doiTieuLuongMau3'), 0, 100, 3),
+                    soThapPhan(p('doiTieuLuongMau4'), 0, 100, 0.1),
+                ];
+                if (($tong = tongQuaTramKhongDuoc100($phanTramDoiLuong, 'Trắng+Xanh+Đỏ+Hoàn Mỹ+Vàng (đổi tiêu bằng lượng)')) !== null) {
+                    veLai($TRANG, 'error', $tong);
+                }
+                $nguongDoiLuong = phanTramSangNguongCongDon($phanTramDoiLuong);
 
                 $heSoChung = soThapPhan(p('tieuHeSoChung'), 0, 10, 2.0);
                 $heSoMau = [
@@ -204,6 +249,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     K_TIEU_HE_SO_EXP => (int)round($heSoChung * 100),
                     K_TIEU_PC_EXP_THEO_MAU => implode(',', $pcExp),
                     K_TIEU_PERMILLE_CAO_CAP => implode(',', $permille),
+                    K_DOI_TIEU_NGUONG_MAU_XU => implode(',', $nguongDoiXu),
+                    K_DOI_TIEU_NGUONG_MAU_LUONG => implode(',', $nguongDoiLuong),
                 ];
                 luuCauHinh($m);
                 ghiNhatKy('sua_cau_hinh', 'ti_le_tieu', json_encode($m, JSON_UNESCAPED_UNICODE));
@@ -398,17 +445,32 @@ adminHead('cauhinh', 'Cấu hình server');
 // Doi tu dang luu (nguong cong don 0..100000 / % nguyen / phan nghin) sang dang de nhap
 // (% rieng tung mau / he so nhan x.xx / % thay phan nghin) - xem case 'luu_tieu' o tren
 // cho chieu nguoc lai.
+/** Chieu nguoc lai cua phanTramSangNguongCongDon(): tra ve [% tung mau..., % Tim]. */
+function nguongCongDonSangPhanTram(array $nguong): array
+{
+    $phanTram = [];
+    $truocDo = 0;
+    foreach ($nguong as $ng) {
+        $phanTram[] = round(($ng - $truocDo) / 1000, 3);
+        $truocDo = $ng;
+    }
+    $phanTram[] = round((100000 - $truocDo) / 1000, 3); // Tim, phan tu cuoi
+    return $phanTram;
+}
+
 $tieuNguong = mangTu($gt, K_TIEU_NGUONG_MAU, [60189, 89389, 99689, 99989, 99999]);
 $tieuPc = mangTu($gt, K_TIEU_PC_EXP_THEO_MAU, [50, 100, 150, 250, 250, 500, 0]);
 $tieuPer = mangTu($gt, K_TIEU_PERMILLE_CAO_CAP, [50, 70, 90, 35, 55, 75, 5, 25, 45]);
+$doiTieuNguongXu = mangTu($gt, K_DOI_TIEU_NGUONG_MAU_XU, [50545, 85545, 98945, 99945, 99995]);
+$doiTieuNguongLuong = mangTu($gt, K_DOI_TIEU_NGUONG_MAU_LUONG, [22890, 52890, 96890, 99890, 99990]);
 
-$phanTramMauHienThi = [];
-$truocDo = 0;
-foreach ($tieuNguong as $ng) {
-    $phanTramMauHienThi[] = round(($ng - $truocDo) / 1000, 3);
-    $truocDo = $ng;
-}
-$phanTramTim = round((100000 - $truocDo) / 1000, 3);
+$phanTramMauHT = nguongCongDonSangPhanTram($tieuNguong);
+$phanTramMauHienThi = array_slice($phanTramMauHT, 0, 5);
+$phanTramTim = $phanTramMauHT[5];
+
+$phanTramDoiXuHT = nguongCongDonSangPhanTram($doiTieuNguongXu);
+$phanTramDoiLuongHT = nguongCongDonSangPhanTram($doiTieuNguongLuong);
+
 $heSoChungHienThi = round((float)giaTri($gt, K_TIEU_HE_SO_EXP, '200') / 100, 2);
 $heSoMauHienThi = array_map(static fn($v) => round($v / 100, 2), array_slice($tieuPc, 0, 6));
 
@@ -421,8 +483,9 @@ $TEN_KHUNG_CAP = ['Cấp 50-59', 'Cấp 60-69', 'Cấp 70+'];
     <h3>Tỉ lệ Vận Tiêu</h3>
     <p class="muted small">Khi nhận một con tiêu (Vận Tiêu) mới, server random ra 1 trong 6 màu theo % ở
        phần 1 — Trắng phổ biến nhất, Tím hiếm nhất. Khi TRẢ tiêu thành công, người chơi nhận EXP theo
-       phần 2 (và phần 3 nếu là Hoàn Mỹ/Vàng/Tím từ cấp 50). Xem <code>Char.doInitMonter()</code>,
-       <code>CharSuKien.doResponseTieu()</code>.</p>
+       phần 2 (và phần 3 nếu là Hoàn Mỹ/Vàng/Tím từ cấp 50). Phần 4 là tỉ lệ RIÊNG khi ĐỔI tiêu
+       (reroll trả phí xu/lượng) — độc lập với phần 1. Xem <code>Char.doInitMonter()</code>,
+       <code>Char.doChangeTieu()</code>, <code>CharSuKien.doResponseTieu()</code>.</p>
     <form method="post" action="cauhinh.php" id="formTieu">
         <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
         <input type="hidden" name="viec" value="luu_tieu">
@@ -477,18 +540,52 @@ $TEN_KHUNG_CAP = ['Cấp 50-59', 'Cấp 60-69', 'Cấp 70+'];
             </tbody>
         </table>
 
+        <h4 style="margin:20px 0 4px;">4. Tỉ lệ ra màu khi ĐỔI tiêu (reroll trả phí)</h4>
+        <p class="muted small">Bảng RIÊNG, độc lập với phần 1 — dùng khi người chơi trả phí để đổi màu
+           con tiêu đang cầm. Có 2 giá riêng theo cách trả phí (xu rẻ hơn, lượng đắt hơn nhưng tỉ lệ
+           màu hiếm cao hơn). Cùng quy tắc nhập: 5 màu đầu nhập %, Tím tự tính phần còn lại.</p>
+        <p class="muted small" style="margin-top:-4px;"><strong>Đổi bằng Xu:</strong></p>
+        <div class="form-grid">
+            <?php foreach ($TEN_MAU as $i => $ten): ?>
+                <label class="o"><span><?= e($ten) ?> (%)</span>
+                    <input type="number" name="doiTieuXuMau<?= $i ?>" min="0" max="100" step="0.001"
+                           class="jsMauNhapDoiXu" value="<?= e((string)$phanTramDoiXuHT[$i]) ?>"></label>
+            <?php endforeach; ?>
+            <label class="o"><span>Tím (%) — tự tính</span>
+                <input type="text" id="jsMauTimDoiXu" readonly value="<?= e((string)$phanTramDoiXuHT[5]) ?>"
+                       style="background:var(--muted-bg,#f3f3f3);"></label>
+        </div>
+        <p class="muted small" style="margin-top:6px;">Tổng Trắng→Vàng: <strong id="jsTongMauDoiXu"><?= e((string)array_sum(array_slice($phanTramDoiXuHT, 0, 5))) ?></strong>%
+           — còn lại cho Tím: <strong id="jsConLaiMauDoiXu"><?= e((string)$phanTramDoiXuHT[5]) ?></strong>%.
+           <span id="jsCanhBaoMauDoiXu" style="color:#c00;display:none;">Tổng 5 màu đã vượt 100% — Tím sẽ về 0, lưu lại sẽ báo lỗi.</span></p>
+
+        <p class="muted small" style="margin-top:12px;"><strong>Đổi bằng Lượng:</strong></p>
+        <div class="form-grid">
+            <?php foreach ($TEN_MAU as $i => $ten): ?>
+                <label class="o"><span><?= e($ten) ?> (%)</span>
+                    <input type="number" name="doiTieuLuongMau<?= $i ?>" min="0" max="100" step="0.001"
+                           class="jsMauNhapDoiLuong" value="<?= e((string)$phanTramDoiLuongHT[$i]) ?>"></label>
+            <?php endforeach; ?>
+            <label class="o"><span>Tím (%) — tự tính</span>
+                <input type="text" id="jsMauTimDoiLuong" readonly value="<?= e((string)$phanTramDoiLuongHT[5]) ?>"
+                       style="background:var(--muted-bg,#f3f3f3);"></label>
+        </div>
+        <p class="muted small" style="margin-top:6px;">Tổng Trắng→Vàng: <strong id="jsTongMauDoiLuong"><?= e((string)array_sum(array_slice($phanTramDoiLuongHT, 0, 5))) ?></strong>%
+           — còn lại cho Tím: <strong id="jsConLaiMauDoiLuong"><?= e((string)$phanTramDoiLuongHT[5]) ?></strong>%.
+           <span id="jsCanhBaoMauDoiLuong" style="color:#c00;display:none;">Tổng 5 màu đã vượt 100% — Tím sẽ về 0, lưu lại sẽ báo lỗi.</span></p>
+
         <div class="form-actions"><button class="btn btn-primary btn-nho">Lưu tỉ lệ Vận Tiêu</button></div>
     </form>
-    <?php veSuaBoi($suaBoi, [K_TIEU_NGUONG_MAU, K_TIEU_HE_SO_EXP, K_TIEU_PC_EXP_THEO_MAU, K_TIEU_PERMILLE_CAO_CAP]); ?>
+    <?php veSuaBoi($suaBoi, [K_TIEU_NGUONG_MAU, K_TIEU_HE_SO_EXP, K_TIEU_PC_EXP_THEO_MAU, K_TIEU_PERMILLE_CAO_CAP, K_DOI_TIEU_NGUONG_MAU_XU, K_DOI_TIEU_NGUONG_MAU_LUONG]); ?>
     <script>
     // Chi tinh Tim/tong hien thi cho de nhin - server luon tu tinh lai va chan tong > 100%
     // khi luu (case 'luu_tieu'), script nay khong phai chot an toan.
-    (function () {
-        var oMau = Array.prototype.slice.call(document.querySelectorAll('.jsMauNhap'));
-        var oTim = document.getElementById('jsMauTim');
-        var oTong = document.getElementById('jsTongMau');
-        var oConLai = document.getElementById('jsConLaiMau');
-        var oCanhBao = document.getElementById('jsCanhBaoMau');
+    function wireNhomMauTieu(lopMauNhap, idTim, idTong, idConLai, idCanhBao) {
+        var oMau = Array.prototype.slice.call(document.querySelectorAll('.' + lopMauNhap));
+        var oTim = document.getElementById(idTim);
+        var oTong = document.getElementById(idTong);
+        var oConLai = document.getElementById(idConLai);
+        var oCanhBao = document.getElementById(idCanhBao);
         function capNhat() {
             var tong = oMau.reduce(function (t, o) { return t + (parseFloat(o.value) || 0); }, 0);
             tong = Math.round(tong * 1000) / 1000;
@@ -505,7 +602,10 @@ $TEN_KHUNG_CAP = ['Cấp 50-59', 'Cấp 60-69', 'Cấp 70+'];
             }
         }
         oMau.forEach(function (o) { o.addEventListener('input', capNhat); });
-    })();
+    }
+    wireNhomMauTieu('jsMauNhap', 'jsMauTim', 'jsTongMau', 'jsConLaiMau', 'jsCanhBaoMau');
+    wireNhomMauTieu('jsMauNhapDoiXu', 'jsMauTimDoiXu', 'jsTongMauDoiXu', 'jsConLaiMauDoiXu', 'jsCanhBaoMauDoiXu');
+    wireNhomMauTieu('jsMauNhapDoiLuong', 'jsMauTimDoiLuong', 'jsTongMauDoiLuong', 'jsConLaiMauDoiLuong', 'jsCanhBaoMauDoiLuong');
     </script>
 </div>
 

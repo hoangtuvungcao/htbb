@@ -250,12 +250,19 @@ public final class KiemCongThanhDoiDiemDiTieu {
         Kiem.dung("doInitMonter: Tim la nhanh else (ran >= nguongMau[4], gia tri con lai duy nhat)",
                 charJava.contains("// else: Tim (indexMons=5) - ran >= nguongMau[4]"));
 
-        Kiem.dung("doChangeTieu: xu reroll Vang con 0.05% (nguong 99995, index=4)",
-                charJava.contains("ran < 99995) {") && charJava.contains("index = 4; // Vang 0.05%"));
-        Kiem.dung("doChangeTieu: xu reroll Tim con 0.005%", charJava.contains("// else: Tim - 0.005%"));
-        Kiem.dung("doChangeTieu: luong reroll Vang con 0.1% (nguong 99990, index=4)",
-                charJava.contains("ran < 99990) {") && charJava.contains("index = 4; // Vang 0.1%"));
-        Kiem.dung("doChangeTieu: luong reroll Tim con 0.01%", charJava.contains("// else: Tim - 0.01%"));
+        // 15/09/2026: doChangeTieu (doi tieu tra phi) cung chuyen tu literal hardcode
+        // sang 2 truong static rieng (xu/luong), quan ly qua SQL giong TIEU_NGUONG_MAU -
+        // xem docs/cau-hinh-server-ini.md muc 5c. Gia tri GIU NGUYEN, chi doi CHO O.
+        Kiem.dung("Char khai bao DOI_TIEU_NGUONG_MAU_XU giu nguyen 5 nguong cu (50545,85545,98945,99945,99995)",
+                charJava.contains("public static int[] DOI_TIEU_NGUONG_MAU_XU = {50545, 85545, 98945, 99945, 99995};"));
+        Kiem.dung("Char khai bao DOI_TIEU_NGUONG_MAU_LUONG giu nguyen 5 nguong cu (22890,52890,96890,99890,99990)",
+                charJava.contains("public static int[] DOI_TIEU_NGUONG_MAU_LUONG = {22890, 52890, 96890, 99890, 99990};"));
+        Kiem.dung("doChangeTieu: chon bang xu/luong theo tham so xu_luong",
+                charJava.contains("final int[] nguongDoiMau = (xu_luong == 0) ? DOI_TIEU_NGUONG_MAU_XU : DOI_TIEU_NGUONG_MAU_LUONG;"));
+        Kiem.dung("doChangeTieu: doc nguong tu nguongDoiMau (khong con hardcode) - Vang la nguong[4]",
+                charJava.contains("ran < nguongDoiMau[4]) {") && charJava.contains("index = 4; // Vang"));
+        Kiem.dung("doChangeTieu: Tim la nhanh else (ran >= nguongDoiMau[4], gia tri con lai duy nhat)",
+                charJava.contains("// else: Tim (index=5) - ran >= nguongDoiMau[4]"));
     }
 
     private static void kiemCongThucExpVaThuongLv70() {

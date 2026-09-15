@@ -5347,6 +5347,17 @@ public int applyRongLonReleaseTo(int baseDamage) {
      */
     public static int[] TIEU_PERMILLE_CAO_CAP = {50, 70, 90, 35, 55, 75, 5, 25, 45};
 
+    /**
+     * Nguong CONG DON xac suat mau khi DOI tieu (doChangeTieu, reroll tra phi) - bang
+     * RIENG, doc lap voi TIEU_NGUONG_MAU (do la luc NHAN tieu moi). Cung dinh dang: 5
+     * gia tri cho Trang/Xanh/Do/Hoan My/Vang tren thang 100000, PHAI tang dan, phan con
+     * lai la Tim. Dung khi tra phi bang XU. Quan ly qua SQL (bang cau_hinh, xem
+     * server.CauHinh) - sua qua web/admin/cauhinh.php, server tu nap lai toi da 10 giay.
+     */
+    public static int[] DOI_TIEU_NGUONG_MAU_XU = {50545, 85545, 98945, 99945, 99995};
+    /** Nhu DOI_TIEU_NGUONG_MAU_XU, nhung dung khi tra phi bang LUONG (dat hon, ti le mau hiem cao hon). */
+    public static int[] DOI_TIEU_NGUONG_MAU_LUONG = {22890, 52890, 96890, 99890, 99990};
+
     public static synchronized void doInitMonter(final Char p, final int typetieu) {
         try {
             if (p.monster != null) {
@@ -5444,43 +5455,26 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.upSpeedNguaVanTieu = 1;
             final int oldColor = this.typeTieu % 6;
             final int[][] idMonster = {{95, 96, 97, 98, 99, 100}, {101, 102, 103, 104, 105, 106}, {107, 108, 109, 110, 111, 112}};
-            // Doi tieu (reroll co tra phi) truoc day cho ti le Tim/Vang CAO HON han ca
-            // ti le goc (0.2%/1% Tim) - neu giu nguyen se lam vo nghia viec ha ti le goc
-            // xuong 0.001% o doInitMonter (nguoi choi chi can dung doi tieu de "cay" tim
-            // de dang). Ha tuong ung, nhung VAN giu reroll tot hon mot chut so voi ti le
-            // goc (5-10 lan) de dong tra phi con co gia tri: xu reroll Tim 0.005%/Vang
-            // 0.05%, luong reroll (dat hon) Tim 0.01%/Vang 0.1%. Doi thang do tu
-            // nextInt(1000) sang nextInt(100000) de bieu dien duoc; Do/Xanh/Trang/HoanMy
-            // giu nguyen ti le tuong doi cu (x100), phan rut ra don vao Trang.
+            // Doi tieu (reroll co tra phi) dung bang ngoung RIENG (DOI_TIEU_NGUONG_MAU_XU/
+            // _LUONG), doc lap voi TIEU_NGUONG_MAU cua luc nhan tieu moi - sua qua
+            // web/admin/cauhinh.php (muc "Doi tieu"), khong con hardcode nhu truoc
+            // 15/09/2026. Y do goc: cho ti le Tim/Vang cao hon mot chut so voi ti le goc,
+            // de dong tra phi con co gia tri.
             final int ran = Map.r.nextInt(100000);
+            final int[] nguongDoiMau = (xu_luong == 0) ? DOI_TIEU_NGUONG_MAU_XU : DOI_TIEU_NGUONG_MAU_LUONG;
             int index = 5;
-            if (xu_luong == 0) {
-                if (ran < 50545) {
-                    index = 0; // Trang 50.545%
-                } else if (ran < 85545) {
-                    index = 1; // Xanh 35%
-                } else if (ran < 98945) {
-                    index = 2; // Do 13.4%
-                } else if (ran < 99945) {
-                    index = 3; // Hoan My 1%
-                } else if (ran < 99995) {
-                    index = 4; // Vang 0.05%
-                }
-                // else: Tim - 0.005%
-            } else {
-                if (ran < 22890) {
-                    index = 0; // Trang 22.89%
-                } else if (ran < 52890) {
-                    index = 1; // Xanh 30%
-                } else if (ran < 96890) {
-                    index = 2; // Do 44%
-                } else if (ran < 99890) {
-                    index = 3; // Hoan My 3%
-                } else if (ran < 99990) {
-                    index = 4; // Vang 0.1%
-                }
-                // else: Tim - 0.01%
+            if (ran < nguongDoiMau[0]) {
+                index = 0; // Trang
+            } else if (ran < nguongDoiMau[1]) {
+                index = 1; // Xanh
+            } else if (ran < nguongDoiMau[2]) {
+                index = 2; // Do
+            } else if (ran < nguongDoiMau[3]) {
+                index = 3; // Hoan My
+            } else if (ran < nguongDoiMau[4]) {
+                index = 4; // Vang
             }
+            // else: Tim (index=5) - ran >= nguongDoiMau[4]
             try {
                 final Message m = new Message(90);
                 m.dos.writeShort(this.monster.id);

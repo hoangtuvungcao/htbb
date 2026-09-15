@@ -53,6 +53,12 @@ public final class CauHinh {
     public static final String K_TIEU_HE_SO_EXP = "sv.tieuHeSoExp";
     public static final String K_TIEU_PC_EXP_THEO_MAU = "sv.tieuPcExpTheoMau";
     public static final String K_TIEU_PERMILLE_CAO_CAP = "sv.tieuPermilleCaoCap";
+    /**
+     * Ti le mau khi DOI tieu (reroll tra phi), doc lap voi K_TIEU_NGUONG_MAU (luc nhan
+     * tieu moi). Xem Char.DOI_TIEU_NGUONG_MAU_XU / _LUONG, Char.doChangeTieu().
+     */
+    public static final String K_DOI_TIEU_NGUONG_MAU_XU = "sv.doiTieuNguongMauXu";
+    public static final String K_DOI_TIEU_NGUONG_MAU_LUONG = "sv.doiTieuNguongMauLuong";
     public static final String K_TAO_TEN_GM = "sv.choPhepTaoTenGM";
     /** Cua so thoi gian su kien World Cup, dinh dang "yyyy-MM-dd HH:mm:ss". */
     public static final String K_WC_BAT_DAU = "sv.worldCupBatDau";
@@ -75,7 +81,7 @@ public final class CauHinh {
     public static final String K_LUCKY_EXP = "sv.Luckyexp";
     public static final String K_EXP_QUA = "sv.ExpQua";
 
-    /** Tat ca 32 khoa, dung de dong bo luc khoi dong va de web biet liet ke gi. */
+    /** Tat ca 34 khoa, dung de dong bo luc khoi dong va de web biet liet ke gi. */
     private static final String[] TAT_CA_KHOA = {
         K_TILE_XU, K_TILE_LUONG, K_TILE_SUKIEN, K_TILE_POTION, K_TILE_NGOC, K_TILE_ITEM,
         K_CHIA_XU, K_GIO_CT, K_PHUT_CT, K_NGAY_CT,
@@ -86,6 +92,7 @@ public final class CauHinh {
         K_EXP_VANTIEU, K_LUCKY_EXP, K_EXP_QUA,
         K_TILE_EXP_LV50, K_TILE_EXP_DUOI_LV50,
         K_TIEU_NGUONG_MAU, K_TIEU_HE_SO_EXP, K_TIEU_PC_EXP_THEO_MAU, K_TIEU_PERMILLE_CAO_CAP,
+        K_DOI_TIEU_NGUONG_MAU_XU, K_DOI_TIEU_NGUONG_MAU_LUONG,
     };
 
     /** Giay giua hai lan tu doc lai bang cau_hinh. Xem batDau(). */
@@ -291,6 +298,9 @@ public final class CauHinh {
             real.Char.TIEU_HE_SO_EXP = Math.max(0, so(p.getProperty(K_TIEU_HE_SO_EXP), real.Char.TIEU_HE_SO_EXP));
             real.Char.TIEU_PC_EXP_THEO_MAU = mang(p.getProperty(K_TIEU_PC_EXP_THEO_MAU), real.Char.TIEU_PC_EXP_THEO_MAU);
             real.Char.TIEU_PERMILLE_CAO_CAP = mang(p.getProperty(K_TIEU_PERMILLE_CAO_CAP), real.Char.TIEU_PERMILLE_CAO_CAP);
+
+            real.Char.DOI_TIEU_NGUONG_MAU_XU = mang(p.getProperty(K_DOI_TIEU_NGUONG_MAU_XU), real.Char.DOI_TIEU_NGUONG_MAU_XU);
+            real.Char.DOI_TIEU_NGUONG_MAU_LUONG = mang(p.getProperty(K_DOI_TIEU_NGUONG_MAU_LUONG), real.Char.DOI_TIEU_NGUONG_MAU_LUONG);
 
             apDungGioChiemThanh(p);
             data.Database.CHO_PHEP_TAO_TEN_GM = "1".equals(nhan(p.getProperty(K_TAO_TEN_GM), "0"));
