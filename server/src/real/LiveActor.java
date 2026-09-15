@@ -54,6 +54,11 @@ public class LiveActor extends Actor {
     * 6s neu co Set danh, Lua 5s). Trong luc con khoa, mot lan khac (ke ca cung mau) roi vao
     * cung nhanh "resist" nhu isKhangLan - khong gay sat thuong, khong ap hieu ung. 12/09/2026,
     * yeu cau nguoi dung: "dang bi bang lan thi khong nhan hieu ung lan khac cho toi khi het".
+    *
+    * CHI XET O THANH (16/09/2026): nguoi dung xac nhan khoa nay CHI danh cho PK trong Thanh,
+    * khong duoc chan lan tren quai/Boss ngoai map thuong. Diem doc thuc su (chi doc o day thi
+    * vo nghia) la CharTrangBi.checkNewEffectItem() - xem lanDangKhoa o do, gate bang
+    * self.map.mapId == Map.idMapTown truoc khi doc field nay.
     */
    public long hetHanLan = 0L;
    static byte[] nh = new byte[]{1, 4, 0, 2, 3};

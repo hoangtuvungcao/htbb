@@ -75,7 +75,11 @@ public final class KiemCongThanhDoiDiemDiTieu {
         Kiem.sai("KHONG con tran cung 'if (i == 10 ) break;' (tung cat bot Set Lan sl[1]=15)",
                 ma.contains("if (i == 10 ) break;") || ma.contains("Chỉ tính 10 mục tiêu"));
         Kiem.dung("dieu kien resist co them chan CHEO qua hetHanLan",
-                ma.contains("|| actor.hetHanLan > System.currentTimeMillis()"));
+                ma.contains("&& actor.hetHanLan > System.currentTimeMillis();"));
+        // 16/09/2026: nguoi dung xac nhan khoa hetHanLan CHI danh cho PK trong Thanh -
+        // khong duoc chan lan tren quai/Boss o map thuong (truoc day ap dung nham cho ca hai).
+        Kiem.dung("khoa hetHanLan chi xet khi dang o map Thanh (khong chan lan tren quai/Boss)",
+                ma.contains("self.map.mapId == Map.idMapTown"));
 
         // Dem so lan dat hetHanLan khi mot lan THAT SU ap dung (Doc/Bang/Set-heo/Set-thuong/Lua = 5).
         final String GAN = "hetHanLan = System.currentTimeMillis() + ";

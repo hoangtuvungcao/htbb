@@ -65,7 +65,12 @@ class CharTrangBi {
                         // (2) in duoc chinh xac ly do vao game.out cho ca hai nhanh trung/khong trung dam.
                         final boolean lanQuaXaCap = chenhLechCapQuaXaLan(self, actor);
                         final boolean lanBiKhang = actor.isKhangLan(id, giamKhangLan);
-                        final boolean lanDangKhoa = actor.hetHanLan > System.currentTimeMillis();
+                        // 16/09/2026: khoa lan (hetHanLan) chi danh cho PK trong Thanh - nguoi dung
+                        // xac nhan no KHONG duoc chan lan tren quai/Boss ngoai map thuong (truoc day
+                        // ap dung nham cho ca cat==1, khien "lan gan cap van khong trung" du dung
+                        // cap va khong bi khang, chi vi dang trong 3-5s khoa tu don truoc).
+                        final boolean lanDangKhoa = self.map.mapId == Map.idMapTown
+                                && actor.hetHanLan > System.currentTimeMillis();
                         final int lvActorDebug = (actor.cat == 0) ? ((Char) actor).lvDetail.lv
                                 : (actor.cat == 1 ? ((Monster) actor).level : -1);
                         System.out.println("[LAN-DEBUG] " + self.charname + "(lv" + self.lvDetail.lv + ") "
