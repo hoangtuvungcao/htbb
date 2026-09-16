@@ -700,7 +700,8 @@ class MapDungThuoc {
                                 }
 
                                 player.nBinhTra--;
-                                Map.addXpCharEvent(player, 500000L, false, "");
+                                // Trung Thu 2026: hop thap cam giam tu 500.000 xuong 300.000 exp.
+                                Map.addXpCharEvent(player, 300000L, false, "");
                                 Database.instance.saveOrtherLog("", player.charname, "dung hpo thap cam " + player.potions[133], "hoptc");
                                 break;
                             case 134:

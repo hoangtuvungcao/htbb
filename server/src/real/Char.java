@@ -844,6 +844,13 @@ public class Char extends LiveActor {
     public byte firstNapMoney;
     public byte new_search;
     public int banphaohoa;
+    /**
+     * Trung Thu 2026: het han buff "can moc tha den 300" (x2 exp 24h) - moc thoi gian
+     * System.currentTimeMillis(), giong cach hetHanLan/timeActive8sRongLon dang lam. KHONG
+     * luu DB (giong da so buff tam thoi khac trong code nay) - dang xuat trong 24h se mat
+     * buff som, chap nhan don gian hoa nay.
+     */
+    public long trungThuMoc300HetHan;
     public static Cooking nauBanhChung;
     public static Cooking nauBanhTet;
     public Vector<Item> itemPetEat;
@@ -10229,34 +10236,25 @@ public int applyRongLonReleaseTo(int baseDamage) {
         Database.instance.saveOrtherLog("", this.charname, "mo hop qua tet, nhan dc nglsc 6 moi loai 1 vien", "quatet");
     }
 
+    /**
+     * Trung Thu 2026: BO hoan toan phan cong cung 500.000 exp truoc day (nguoi dung xac nhan
+     * hop dac biet CHI con ngau nhien 1 trong bang qua duoi, khong cong them co dinh nua -
+     * rieng "EXP luon co" gio la MOT O ngau nhien trong bang, khong phai bonus ngoai bang).
+     * Bang qua doi lai theo dung danh sach spec moi; Ngo Khong/Duong Tang CHUA co item that
+     * trong du lieu nen tam thoi bo qua (chi dung Bat Gioi/Sa Tang), theo yeu cau nguoi dung.
+     */
     public void doOpenHopBanhTrungThuDacBiet() {
-        Map.addXpCharEvent(this, 500000L, false, "char doOpenHopBanhTrungThuDacBiet");
-        final int[] per = {500, 500, 0, 500, 500, 500, 500, 0, 500, 500, 500, 500, 500, 500, 500, 500, 500};
-        final int[] idgift = {GemTemplate.XUONG_C5, GemTemplate.XUONG_C6, GemTemplate.LKD_40, 117, 82, 123, 100, -1, -2, 676, 677, -3, 93, 95, 13, 7, 136};
-        final int[] typegift = {6, 6, 6, 4, 4, 4, 4, -1, -2, 3, 3, -3, 4, 4, 4, 4, 4};
-        final int[] soluongmax = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-        final int[] soluongmin = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        final int[] per      = {400, 400, 600, 600, 600, 600, 500, 500, 800, 500, 500, 500, 300, 700, 500, 700, 800, 800, 150, 150, 150, 150, 500, 500, 150, 150, 150, 150};
+        final int[] idgift   = {GemTemplate.XUONG_C5, GemTemplate.XUONG_C6, 123, 82, 7, 13, 676, 677, 136, 111, 156, 157, GemTemplate.LKD_40, 0, 117, 0, 93, 95, 12, 19, 20, 0, 119, 100, 851, 857, 850, 856};
+        final int[] typegift = {6, 6, 4, 4, 4, 4, 3, 3, 4, 4, 4, 4, 6, 7, 4, 8, 4, 4, 9, 9, 9, 10, 4, 4, 3, 3, 3, 3};
+        final int[] soluongmax = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        final int[] soluongmin = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
         if (this.isFullInventory()) {
             return;
         }
         String info = "Chúc mừng bạn nhận được: ";
         final int index = getIndexRandom(per);
-        if (typegift[index] == -1) {
-            final int[] minute = {-1};
-            final Item newItem = ItemLuckyDraw.createItemCoat(this, Map.r.nextInt(2), false, minute[Map.r.nextInt(minute.length)]);
-            this.iItems.add(newItem);
-            this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));
-            info = String.valueOf(info) + newItem.getName() + " vĩnh viễn";
-            this.sendMessage(MessageCreator.createMsgChat(this.id, info));
-            this.sendMessage(MessageCreator.createCharInventoryMessage(this, 0));
-        } else if (typegift[index] == -2) {
-            final int[] minute = {1440, 4320, 7200, 10080};
-            final Item newItem = ItemLuckyDraw.createItemCoat(this, Map.r.nextInt(2), false, minute[Map.r.nextInt(minute.length)]);
-            this.iItems.add(newItem);
-            this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));
-            info = String.valueOf(info) + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút";
-            this.sendMessage(MessageCreator.createMsgChat(this.id, info));
-        } else if (typegift[index] == 6) {
+        if (typegift[index] == 6) {
             int soluong = soluongmin[index];
             if (soluongmin[index] < soluongmax[index]) {
                 soluong += Map.r.nextInt(soluongmax[index] - soluongmin[index] + 1);
@@ -10276,12 +10274,6 @@ public int applyRongLonReleaseTo(int baseDamage) {
             info = String.valueOf(info) + soluong + " " + LoginHandler.PORTION_NAME[idgift[index]];
             this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
             this.sendMessage(MessageCreator.createCharInventoryMessage(this, 0));
-            if (idgift[index] == 9) {
-                try {
-                    Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(String.valueOf(this.charname) + " đã nhận được nhân sâm khi mở bao lì xì"));
-                } catch (final IOException ex) {
-                }
-            }
         } else if (typegift[index] == 3) {
             if (this.isFullInventory()) {
                 final int xu = 5000 + Map.r.nextInt(100000);
@@ -10300,6 +10292,25 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));
                 info = String.valueOf(info) + newItem.getName();
             }
+            this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        } else if (typegift[index] == 7) {
+            final long expGift = 200000L;
+            Map.addXpCharEvent(this, expGift, false, "char doOpenHopBanhTrungThuDacBiet");
+            info = String.valueOf(info) + expGift + " exp";
+            this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        } else if (typegift[index] == 8) {
+            final int xu = 10000 + Map.r.nextInt(40000);
+            this.addXu(xu, "hop banh trung thu dac biet");
+            info = String.valueOf(info) + xu + " xu";
+            this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+            this.sendMessage(MessageCreator.createCharInventoryMessage(this, 0));
+        } else if (typegift[index] == 9) {
+            this.createPet(idgift[index], 10080);
+            info = String.valueOf(info) + "lồng đèn (thú cưỡi thời hạn 7 ngày)";
+            this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        } else if (typegift[index] == 10) {
+            final Item hvl = Map.doCreateHoVeLenhByLevel(this, 10080);
+            info = String.valueOf(info) + (hvl != null ? hvl.getName() : "hộ vệ lệnh");
             this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
         }
         Database.instance.saveOrtherLog("", this.charname, info, "ohqtt");
@@ -11806,6 +11817,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
 
     public static boolean isBanLongDenHoaSen() {
         return SuKien.bat(SuKien.LONG_DEN_HOA_SEN);
+    }
+
+    /**
+     * Trung Thu 2026: true neu HOM NAY dung la ngay bo dem "can moc tha den" toan server
+     * (data.DatabaseCanMocThaDen) vua cham moc 10.000 lan dau tien - chi dung DUY NHAT trong
+     * ngay do, khong phai moi ngay sau khi da vuot moc.
+     */
+    public static boolean isTrungThuX2ExpHomNay() {
+        return data.DatabaseCanMocThaDen.homNayLaNgayDat10000();
     }
 
     // -------------------------------- Halloween --------------------------------

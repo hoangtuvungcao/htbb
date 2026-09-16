@@ -29,6 +29,7 @@ function adminMenu(): array
         ],
         'Người chơi' => [
             'giam_level' => ['giam_level.php', 'Giảm Level', 'nguoi'],
+            'nang_level_toanbo' => ['nang_level_toanbo.php', 'Nâng Level toàn bộ', 'nhieu'],
             'taikhoan'     => ['taikhoan.php',     'Tài khoản',   'nguoi'],
             'tao_hang_loat'=> ['tao_hang_loat.php', 'Tạo hàng loạt', 'nhieu'],
             'nhanvat'      => ['nhanvat.php',       'Nhân vật',    'khien'],

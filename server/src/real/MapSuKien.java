@@ -1925,6 +1925,108 @@ class MapSuKien {
                 }
 
                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 9));
+            } else if (idOptionMenu == 7) {
+                // Trung Thu 2026: menu nhan qua "can moc tha den" (server-wide, xem
+                // data.DatabaseCanMocThaDen) - moi nhan vat nhan duoc MOI moc TOI DA 1 lan.
+                final long tongThaDen = data.DatabaseCanMocThaDen.layTong();
+                final int[] cacMoc = data.DatabaseCanMocThaDen.CAC_MOC;
+                final String[] mmenu = new String[cacMoc.length];
+                for (int i = 0; i < cacMoc.length; i++) {
+                    final boolean daNhan = data.DatabaseCanMocThaDen.daNhan(player.charDBID, cacMoc[i]);
+                    final boolean daMo = tongThaDen >= cacMoc[i];
+                    mmenu[i] = "Cán mốc " + cacMoc[i]
+                            + (daNhan ? " (đã nhận)" : (daMo ? " (nhận ngay)" : " (" + tongThaDen + "/" + cacMoc[i] + ")"));
+                }
+                player.sendMessage(MessageCreator.createMsgMenu(mmenu, idNpc, 11));
+            } else if (idOptionMenu == 8) {
+                // Trung Thu 2026: Doi 20 banh deo + 100 luong = Long den rong (tang 100%
+                // bang/set/doc/lua lan + 10% exp, 7 ngay) - dung lai pet "Long den Rong xanh"
+                // (id 21) da co san trong doMenuTrungThu2015, KHONG the giao dich.
+                if (!player.truNeuDu(
+                        () -> player.potions[124] >= 20 && player.getLuong() >= 100,
+                        () -> {
+                            player.subLuong(100L);
+                            player.potions[124] = player.potions[124] - 20;
+                        })) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 20 bánh dẻo + 100 lượng", ""));
+                    return;
+                }
+                player.createPet(21, 10080);
+                Database.instance.saveOrtherLog("", player.charname, "doi long den rong (Trung Thu 2026)", "longdenrong2026");
+                Database.instance.saveLogThongKeChiTieu("long den rong", 0, 1, 100L, "luong");
+            } else if (idOptionMenu == 9) {
+                // Trung Thu 2026: Doi 20 banh deo + 150 luong = Linh Nguyet Truong (item 796,
+                // deo chong len vu khi che), 7 ngay, KHONG the giao dich.
+                if (player.isFullInventory()) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy", ""));
+                    return;
+                }
+                if (!player.truNeuDu(
+                        () -> player.potions[124] >= 20 && player.getLuong() >= 150,
+                        () -> {
+                            player.subLuong(150L);
+                            player.potions[124] = player.potions[124] - 20;
+                        })) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 20 bánh dẻo + 150 lượng", ""));
+                    return;
+                }
+                final ItemTemplates templateNLT = (ItemTemplates) Map.itemTemplates.get(5).get(796);
+                final Item nlt = new Item(templateNLT, false, 0, 0, templateNLT.id);
+                nlt.id = player.getIDItem();
+                nlt.owner = player.charDBID;
+                nlt.level = nlt.getTemplate().level;
+                nlt.lock = 1;
+                nlt.timeLoan = System.currentTimeMillis();
+                nlt.minuteExist = 10080;
+                player.iItems.add(nlt);
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Bạn nhận được Nguyệt Linh Trượng (7 ngày, khoá)", ""));
+                Database.instance.saveOrtherLog("", player.charname, "doi Linh Nguyet Truong (Trung Thu 2026)", "linhnguyettruong2026");
+                Database.instance.saveLogThongKeChiTieu("linh nguyet truong", 0, 1, 150L, "luong");
+            } else if (idOptionMenu == 10) {
+                // Trung Thu 2026: Doi 20 banh deo + 150 luong = 1 Lan Su Tu 7 ngay, KHONG the
+                // giao dich - dung player.createLan(minute, isAlert, khanghoatuyet) co san.
+                if (!player.truNeuDu(
+                        () -> player.potions[124] >= 20 && player.getLuong() >= 150,
+                        () -> {
+                            player.subLuong(150L);
+                            player.potions[124] = player.potions[124] - 20;
+                        })) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 20 bánh dẻo + 150 lượng", ""));
+                    return;
+                }
+                player.createLan(10080L, true, 95);
+                Database.instance.saveOrtherLog("", player.charname, "doi Lan Su Tu (Trung Thu 2026)", "lansutu2026");
+                Database.instance.saveLogThongKeChiTieu("lan su tu", 0, 1, 150L, "luong");
+            } else if (idOptionMenu == 11) {
+                // Trung Thu 2026: Doi 10 banh deo + 30 luong = 10 Tien dan + ngau nhien Manh
+                // Ban Do(1) - GIOI HAN TRON DOI 5 lan/nhan vat (data.DatabaseGioiHanTrungThu).
+                final int daDoi = data.DatabaseGioiHanTrungThu.laySoLanDoiTienDan(player.charDBID);
+                if (daDoi >= 5) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã đổi Tiên đan đủ 5 lần (giới hạn tối đa).", ""));
+                    return;
+                }
+                if (!player.truNeuDu(
+                        () -> player.potions[124] >= 10 && player.getLuong() >= 30,
+                        () -> {
+                            player.subLuong(30L);
+                            player.potions[124] = player.potions[124] - 10;
+                        })) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ 10 bánh dẻo + 30 lượng", ""));
+                    return;
+                }
+                player.potions[119] += 10;
+                final boolean nhanManhBanDoTienDan = Map.r.nextInt(100) < 10;
+                if (nhanManhBanDoTienDan) {
+                    player.potions[117]++;
+                }
+                data.DatabaseGioiHanTrungThu.tangSoLanDoiTienDan(player.charDBID);
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                player.sendMessage(MessageCreator.createServerAlertMessage(
+                        "Bạn nhận được 10 Tiên đan" + (nhanManhBanDoTienDan ? " và 1 Mảnh Bản Đồ" : "")
+                                + " (đã đổi " + (daDoi + 1) + "/5 lần)", ""));
+                Database.instance.saveOrtherLog("", player.charname, "doi tien dan lan " + (daDoi + 1) + "/5", "tiendan2026");
+                Database.instance.saveLogThongKeChiTieu("tien dan", 0, 10, 30L, "luong");
             }
         } else if (idMenu == 1) {
             player.sendMessage(MessageCreator.createMsgInputText(-32017 - idOptionMenu, 0, "Số hộp bánh", 1));
@@ -1946,7 +2048,8 @@ class MapSuKien {
                 int[] sl = new int[]{0, 0, 0, 0, 3, 5, 7, 10};
                 int[] slCaudoi = new int[]{0, 0, 0, 0, 20, 20, 20, 20};
                 int[] slCaudoi1 = new int[]{0, 0, 0, 0, 20, 20, 20, 20};
-                int[] price = new int[]{0, 0, 0, 0, 50, 70, 100, 120};
+                // Trung Thu 2026: gia lượng tăng tu 50/70/100/120 len 60/80/110/130.
+                int[] price = new int[]{0, 0, 0, 0, 60, 80, 110, 130};
                 if (player.getLuong() < price[idMenu]) {
                     player.sendMessage(
                             MessageCreator.createServerAlertMessage("Bạn phải có đủ " + price[idMenu] + " lượng mới có thể đổi được " + sl[idMenu] + " nguyên liệu", "")
@@ -1983,9 +2086,12 @@ class MapSuKien {
                     return;
                 }
 
-                boolean nhantuhondan = false;
-                if (r.nextInt(100) < 10 && doCreateHoVeLenhByLevel(player, 4320) != null) {
-                    nhantuhondan = true;
+                // Trung Thu 2026: doi qua tang kem theo hop nay tu "hộ vệ lệnh" sang "Mảnh Bản
+                // Đồ(1)" (potion 117) theo dung spec moi, giu nguyen ti le 10% cu.
+                boolean nhanManhBanDo = false;
+                if (r.nextInt(100) < 10) {
+                    player.potions[117]++;
+                    nhanManhBanDo = true;
                 }
 
                 player.doAddGemItem(GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu], sl[idMenu], true);
@@ -1998,7 +2104,7 @@ class MapSuKien {
                                 + " "
                                 + gemTemplate[GemTemplate.ID_MATERIAL_LOW[5][idOptionMenu]].name
                                 + " khóa"
-                                + (nhantuhondan ? " và hộ vệ lệnh" : ""),
+                                + (nhanManhBanDo ? " và 1 Mảnh Bản Đồ" : ""),
                                 ""
                         )
                 );
@@ -2014,6 +2120,48 @@ class MapSuKien {
                 player.createPet(id[idOptionMenu], 180);
                 player.receiveGiftEvent = 1;
                 Database.instance.saveOrtherLog("", player.charname, "doi long den " + idOptionMenu, "qualongden");
+            } else if (idMenu == 11) {
+                // Trung Thu 2026: nhan qua can moc tha den - idOptionMenu la CHI SO trong
+                // data.DatabaseCanMocThaDen.CAC_MOC (0 = moc 300, 1 = moc 3000).
+                final int[] cacMoc = data.DatabaseCanMocThaDen.CAC_MOC;
+                if (idOptionMenu < 0 || idOptionMenu >= cacMoc.length) {
+                    return;
+                }
+                final int moc = cacMoc[idOptionMenu];
+                final long tongThaDen = data.DatabaseCanMocThaDen.layTong();
+                if (tongThaDen < moc) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage(
+                            "Server chưa đạt mốc " + moc + " lượt thả đèn (hiện " + tongThaDen + ").", ""));
+                    return;
+                }
+                if (data.DatabaseCanMocThaDen.daNhan(player.charDBID, moc)) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn đã nhận quà mốc " + moc + " rồi.", ""));
+                    return;
+                }
+                if (moc == 300) {
+                    player.trungThuMoc300HetHan = System.currentTimeMillis() + 86400000L;
+                    player.sendMessage(MessageCreator.createServerAlertMessage(
+                            "Chúc mừng! Bạn nhận X2 EXP trong 24 giờ (mốc 300 lượt thả đèn).", ""));
+                } else if (moc == 3000) {
+                    if (player.isFullInventory()) {
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy, không nhận được quà mốc 3000.", ""));
+                        return;
+                    }
+                    // Chua co template rieng cho "mat na thoi trang trung thu" - tam dung
+                    // ItemLuckyDraw.createItemCoat (ao ngau nhien dong, ismax=true la "max chi
+                    // so" dung spec) lam hang thay the; ham nay LUON tu dat lock=1 (item.lock=1
+                    // o dong 242 cua no) nen khong can tu khoa them; thoi han 30 ngay=43200 phut.
+                    final Item newItem = ItemLuckyDraw.createItemCoat(player, Map.r.nextInt(2), true, 43200);
+                    if (newItem != null) {
+                        player.iItems.add(newItem);
+                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                    }
+                    Map.doCreateHoVeLenhByLevel(player, 10080);
+                    player.sendMessage(MessageCreator.createServerAlertMessage(
+                            "Chúc mừng! Bạn nhận mặt nạ thời trang Trung Thu (30 ngày, khoá) và hộ vệ lệnh (7 ngày, khoá).", ""));
+                }
+                data.DatabaseCanMocThaDen.danhDauDaNhan(player.charDBID, moc);
+                Database.instance.saveOrtherLog("", player.charname, "nhan qua can moc " + moc, "canmocthaden");
             }
         }
     }

@@ -945,6 +945,7 @@ public class RealController extends ServerController {
         commandHandler.put(100, new RequestTemplateInfo());
         Map.loadBoss(0);
         Map.loadBoss(1);
+        Map.loadBoss(2); // Trung Thu 2026 - Boss Truong Giang (real/BossTrungThu.java)
         Map.loadGhost();
     }
 
@@ -1413,39 +1414,44 @@ public class RealController extends ServerController {
                     if (idOptionMenu != 1 || player.getLuong() >= 50) {
                         if (idOptionMenu != 2 || player.getxu() >= 5000000L) {
                             addXpCharEvent(player, 100000L, false, "doDotDen");
+                            // Trung Thu 2026: HP/MP 7k tang tu 50~100 len 200~300 (idx 0/1) theo
+                            // spec moi; idx 26 (typegift -3, phi phong THOI HAN trung lap voi
+                            // idx 25, dang TAT vi per=0) doi thanh "phi phong VINH VIEN" va BAT
+                            // lai (per 0 -> 50); them 1 o moi idx 36 cho "Lan Su Tu thoi han"
+                            // (typegift -7, xem nhanh xu ly ben duoi).
                             int[] per = new int[]{
                                 5000, 5000, 5000, 300, 100, 100, 50, 3000, 3000, 100,
                                 100, 100, 100, 100, 100, 5000, 5000, 5000, 5000, 5000,
-                                500, 500, 500, 500, 500, 200, 0, 50, 5000, 5000,
-                                5000, 50, 50, 100, 10, 50
+                                500, 500, 500, 500, 500, 200, 50, 50, 5000, 5000,
+                                5000, 50, 50, 100, 10, 50, 30
                             };
 
                             int[] idgift = new int[]{
                                 93, 95, 117, 35, 75, 84, 100, GemTemplate.BOT_TRANG, GemTemplate.BOT_XANH, GemTemplate.BOT_DO,
                                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                                 -1, -1, -1, -1, -1, -2, -3, GemTemplate.BOT_XANH_LA, 114, 112, 113, 119,
-                                -4, -5, -6, Potion.TYPE_THE_THEM_LUOT_VAN_TIEU
+                                -4, -5, -6, Potion.TYPE_THE_THEM_LUOT_VAN_TIEU, -7
                             };
 
                             int[] typegift = new int[]{
                                 4, 4, 4, 4, 4, 4, 4, 6, 6, 6,
                                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                                 -1, -1, -1, -1, -1, -2, -3, 6, 4, 4, 4, 4,
-                                -4, -5, -6, 4
+                                -4, -5, -6, 4, -7
                             };
 
                             int[] soluongmax = new int[]{
-                                100, 100, 3, 1, 1, 1, 1, 3, 3, 3,
+                                300, 300, 3, 1, 1, 1, 1, 3, 3, 3,
                                 10000, 20000, 30000, 40000, 50000, 100, 200, 300, 400, 500,
                                 50, 60, 70, 80, 90, 1, 1, 3, 1, 1, 1, 1,
-                                1, 1, 1, 1, 1
+                                1, 1, 1, 1, 1, 1
                             };
 
                             int[] soluongmin = new int[]{
-                                50, 50, 1, 1, 1, 1, 1, 1, 1, 1,
+                                200, 200, 1, 1, 1, 1, 1, 1, 1, 1,
                                 10000, 20000, 30000, 40000, 50000, 100, 200, 300, 400, 500,
                                 50, 60, 70, 80, 90, 1, 1, 1, 1, 1, 1, 1,
-                                1, 1, 1, 1, 1
+                                1, 1, 1, 1, 1, 1
                             };
                             String info = "Chúc mừng bạn nhận được ";
                             int index = Char.getIndexRandom(per);
@@ -1464,13 +1470,13 @@ public class RealController extends ServerController {
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                 }
                             } else if (typegift[index] == -3) {
-                                // Phi Phong
+                                // Trung Thu 2026: doi tu "Phi Phong thoi han" (trung voi idx 25)
+                                // sang "Phi Phong VINH VIEN" (minute = -1) theo spec moi.
                                 if (!player.isFullInventory()) {
-                                    int[] minute = new int[]{1440, 4320, 7200, 10080};
-                                    Item newItem = ItemLuckyDraw.createItemCoat(player, r.nextInt(2), false, minute[r.nextInt(minute.length)]);
+                                    Item newItem = ItemLuckyDraw.createItemCoat(player, r.nextInt(2), false, -1);
                                     player.iItems.add(newItem);
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                                    info = info + newItem.getName() + " thời hạn " + newItem.minuteExist + " phút";
+                                    info = info + newItem.getName() + " vĩnh viễn";
                                     player.sendMessage(MessageCreator.createMsgChat(player.id, info));
                                 } else {
                                     player.addXu((long) (100 + r.nextInt(100)), "map 55");
@@ -1478,6 +1484,12 @@ public class RealController extends ServerController {
                                     player.sendMessage(MessageCreator.createMsgChat(player.id, info));
                                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                                 }
+                            } else if (typegift[index] == -7) {
+                                // Trung Thu 2026: "Thu cuoi Lan Su Tu thoi han" - them moi theo spec.
+                                int[] minute = new int[]{1440, 4320, 7200, 10080};
+                                player.createLan((long) minute[r.nextInt(minute.length)], true, 95);
+                                info = info + "Lân Sư Tử";
+                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
                             } else if (typegift[index] == -5) {
                                 // Phi Phong
                                 if (!player.isFullInventory()) {
@@ -1584,10 +1596,11 @@ public class RealController extends ServerController {
                             if (idOptionMenu == 1) {
                                 player.subLuong(50L);
                                 Database.instance.saveLogThongKeChiTieu("tha den luong", 0, 1, 50L, "luong");
+                                xuLyCanMocThaDen(player);
                             } else if (idOptionMenu == 2) {
                                 player.subXu(5000000L, false, "");
                                 Database.instance.saveLogThongKeChiTieu("tha den xu", 0, 1, 5000000L, "xu");
-
+                                xuLyCanMocThaDen(player);
                             }
 
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -1600,6 +1613,23 @@ public class RealController extends ServerController {
                 } else {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nến để đốt đèn bạn cần có ít nhất 1 nến.", ""));
                 }
+            }
+        }
+    }
+
+    /**
+     * Trung Thu 2026: tang bo dem "can moc tha den" DUNG CHUNG TOAN SERVER (data.DatabaseCanMocThaDen -
+     * khong phan biet lang/quoc gia, khong reset theo su kien bat/tat, nguoi dung xac nhan 16/09/2026).
+     * Chi goi cho THA DEN THANH CONG (idOptionMenu 1/2 - co tra phi), khong tinh nhanh dot den mien phi
+     * (idOptionMenu 0). Cac moc ca nhan (300/3000) duoc nhan tay tai NPC Hang Nga, khong tu dong phat o day.
+     */
+    private void xuLyCanMocThaDen(final Char player) {
+        final long tongMoi = data.DatabaseCanMocThaDen.tangVaLayTong();
+        if (tongMoi == data.DatabaseCanMocThaDen.MOC_TOAN_SERVER_X2_EXP) {
+            try {
+                Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(
+                        "Toàn server đã đốt/thả đủ 10.000 lượt đèn Trung Thu! Hôm nay toàn bộ nhân vật online được X2 EXP!"));
+            } catch (final java.io.IOException ex) {
             }
         }
     }

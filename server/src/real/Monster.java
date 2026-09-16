@@ -770,7 +770,10 @@ public class Monster extends LiveActor {
      * dung dong nhat cho ca Boss - khong mien tru.
      */
     public static int apDungGiamExpTheoCapNV(final int xp, final Char nguoiNhan) {
-        return Monster.tile(xp, (nguoiNhan.lvDetail.lv >= 50) ? Monster.PC_TILE_EXP_LV50 : Monster.PC_TILE_EXP_DUOI_LV50);
+        // Trung Thu 2026: buff ca nhan "can moc tha den 300" nhan doi exp trong 24h - ap
+        // dung TRUOC khi giam theo cap, giong cac nguon nhan exp khac (vd Ve gio vang).
+        final int xpSauBuff = (nguoiNhan.trungThuMoc300HetHan > System.currentTimeMillis()) ? xp * 2 : xp;
+        return Monster.tile(xpSauBuff, (nguoiNhan.lvDetail.lv >= 50) ? Monster.PC_TILE_EXP_LV50 : Monster.PC_TILE_EXP_DUOI_LV50);
     }
 
     @Override

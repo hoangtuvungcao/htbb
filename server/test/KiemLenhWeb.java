@@ -33,6 +33,7 @@ public final class KiemLenhWeb {
         baBenCungHopDong();
         apDungOnlineDungDuongTuNhienVaLuuNgay();
         xoaVatPhamQuaLenh();
+        tangCapDoHangLoat();
     }
 
     /**
@@ -106,6 +107,68 @@ public final class KiemLenhWeb {
                 xl.contains("trangThaiCu == CHO_DANG_NHAP") && xl.contains("xac nhan khi vao game: khong con mon do"));
         Kiem.dung("xoa offline chi dong dung cot trong danh sach (ten cot ghep vao SQL)",
                 than(java, "static int xoaVatPhamOffline").contains("if (!laCotVatPham(cot))"));
+    }
+
+    /**
+     * "Nang level toan bo" (web/admin/nang_level_toanbo.php, them cho chuc nang nang level
+     * hang loat toan server): loai lenh moi tang_cap_do CONG THEM cap tu cap HIEN TAI cua
+     * tung nhan vat, khac han dat_cap_do dat thang ve mot dich tuyet doi web da tinh san -
+     * can thiet vi web khong biet cap that cua nhan vat dang online (chi song trong RAM).
+     */
+    private static void tangCapDoHangLoat() {
+        // --- thuan toan: capSauKhiTang ---
+        for (int old = 1; old < LenhWeb.CAP_TOI_DA; old++) {
+            for (int amount = 1; amount <= LenhWeb.CAP_TOI_DA - old; amount++) {
+                Kiem.bang("cap " + old + " + " + amount + " level", old + amount, LenhWeb.capSauKhiTang(old, amount));
+            }
+            // vuot qua CAP_TOI_DA thi kep lai, khong nem loi (giong cach dat_cap_do/tinhExp kep bien)
+            Kiem.bang("cap " + old + " + qua nhieu level bi kep ve CAP_TOI_DA",
+                    LenhWeb.CAP_TOI_DA, LenhWeb.capSauKhiTang(old, LenhWeb.CAP_TOI_DA));
+        }
+        final int[][] bad = {{1, 0}, {1, -1}, {50, 0}, {LenhWeb.CAP_TOI_DA, 1}, {LenhWeb.CAP_TOI_DA + 1, 1}, {0, 1}};
+        for (final int[] input : bad) {
+            boolean tuChoi = false;
+            try {
+                LenhWeb.capSauKhiTang(input[0], input[1]);
+            } catch (final IllegalArgumentException expected) {
+                tuChoi = true;
+            }
+            Kiem.dung("tu choi cap " + input[0] + " + " + input[1] + " (da toi da hoac so level sai)", tuChoi);
+        }
+
+        // --- hop dong Java / PHP ---
+        final String java = doc("src/data/LenhWeb.java");
+        final String php = doc("web/admin/inc/lenh_nhan_vat.php");
+        Kiem.bang("loai lenh tang cap", "tang_cap_do", LenhWeb.LOAI_TANG_CAP_DO);
+        Kiem.dung("PHP gui cung loai lenh", php.contains("const LENH_LOAI_TANG_CAP_DO = 'tang_cap_do';"));
+        Kiem.dung("PHP mo ta duoc lenh tang cap trong bang lich su", php.contains("LENH_LOAI_TANG_CAP_DO) return 'tăng '"));
+        Kiem.dung("xuLy dispatch sang xuLyTangCapDo",
+                java.contains("LOAI_TANG_CAP_DO.equals(loai)") && java.contains("xuLyTangCapDo(charId, capDo, adminUser, trangThaiCu)"));
+
+        // --- xuLyTangCapDo dung lai apDungOnline (cung duong len cap tu nhien voi dat_cap_do) ---
+        final String xl = than(java, "static KetQua xuLyTangCapDo");
+        Kiem.dung("online: tinh cap moi bang capSauKhiTang tu cap HIEN TAI (khong phai dich co dinh)",
+                xl.contains("capSauKhiTang(p.lvDetail.lv, soCap)"));
+        Kiem.dung("online: giao lai cho apDungOnline (cong diem, saveCharAuto, thong bao, ghi log)",
+                xl.contains("apDungOnline(p, capMoi, p.lvDetail.percent, adminUser)"));
+        Kiem.dung("offline: KHONG doan cap, cho vao game moi tinh", xl.contains("se tang \" + soCap + \" level khi vao game"));
+
+        // --- trang web hang loat: chen thang vao hang doi, khong cho tung dong, khong UPDATE tob_char ---
+        final String tb = doc("web/admin/nang_level_toanbo.php");
+        Kiem.dung("nap inc/lenh_nhan_vat.php", tb.contains("require_once __DIR__ . '/inc/lenh_nhan_vat.php';"));
+        Kiem.dung("chi SELECT nhan vat con hoat dong (del = 1), khong dong den tob_char khac",
+                tb.contains("SELECT id, charname FROM tob_char WHERE del = 1"));
+        Kiem.sai("KHONG UPDATE tob_char (phai qua hang doi, giong giam_level/reset_toanbo)",
+                Pattern.compile("UPDATE\\s+tob_char", Pattern.CASE_INSENSITIVE).matcher(tb).find());
+        Kiem.dung("chen hang loat vao web_lenh_nhan_vat trong MOT transaction (khong cho tung dong)",
+                tb.contains("$db->beginTransaction();") && tb.contains("LENH_LOAI_TANG_CAP_DO")
+                && tb.contains("INSERT INTO web_lenh_nhan_vat"));
+        Kiem.sai("khong goi choKetQuaLenh (hang tram/nghin nhan vat se treo trang)", tb.contains("choKetQuaLenh"));
+        Kiem.dung("ghi nhat ky hanh dong nang_level_toanbo", tb.contains("ghiNhatKy('nang_level_toanbo'"));
+
+        // --- co trong menu quan tri ---
+        final String layout = doc("web/admin/inc/layout.php");
+        Kiem.dung("co muc menu tro toi nang_level_toanbo.php", layout.contains("'nang_level_toanbo.php'"));
     }
 
     /** Cong thuc exp phai la cong thuc cua LevelDetail: dat exp roi doc lai dung cap + %. */

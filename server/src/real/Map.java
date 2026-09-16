@@ -10738,19 +10738,21 @@ public class Map implements Runnable {
                     return;
                 }
 
-                if ((long) player.potions[125] < sl * 10L) {
+                // Trung Thu 2026: hop dac biet chi con can 5 banh nuong + 5 banh deo (truoc
+                // la 10+10) cho moi hop, theo dung cong thuc moi.
+                if ((long) player.potions[125] < sl * 5L) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh nướng", ""));
                     return;
                 }
 
-                if ((long) player.potions[124] < sl * 10L) {
+                if ((long) player.potions[124] < sl * 5L) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
                     return;
                 }
 
                 player.subLuong(sl * 5L);
-                player.potions[125] = (int) ((long) player.potions[125] - sl * 10L);
-                player.potions[124] = (int) ((long) player.potions[124] - sl * 10L);
+                player.potions[125] = (int) ((long) player.potions[125] - sl * 5L);
+                player.potions[124] = (int) ((long) player.potions[124] - sl * 5L);
                 player.potions[134] = (int) ((long) player.potions[134] + sl);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 Database.instance.saveOrtherLog("", player.charname, "doi  " + sl + " hop banh db", "banhdb");
@@ -10771,19 +10773,21 @@ public class Map implements Runnable {
                     return;
                 }
 
-                if ((long) player.potions[125] < slx * 10L) {
+                // Trung Thu 2026: hop thap cam chi con can 5 banh nuong + 5 banh deo (truoc
+                // la 10+10) cho moi hop, theo dung cong thuc moi.
+                if ((long) player.potions[125] < slx * 5L) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh nướng", ""));
                     return;
                 }
 
-                if ((long) player.potions[124] < slx * 10L) {
+                if ((long) player.potions[124] < slx * 5L) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ bánh dẻo", ""));
                     return;
                 }
 
                 player.subXu(slx * 5000L, false, "32017");
-                player.potions[125] = (int) ((long) player.potions[125] - slx * 10L);
-                player.potions[124] = (int) ((long) player.potions[124] - slx * 10L);
+                player.potions[125] = (int) ((long) player.potions[125] - slx * 5L);
+                player.potions[124] = (int) ((long) player.potions[124] - slx * 5L);
                 player.potions[133] = (int) ((long) player.potions[133] + slx);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
                 Database.instance.saveOrtherLog("", player.charname, "doi  " + slx + " hop banh thap cam", "banhtc");

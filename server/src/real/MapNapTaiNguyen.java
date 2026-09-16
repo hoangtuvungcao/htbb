@@ -1228,6 +1228,18 @@ class MapNapTaiNguyen {
                 }
 
                 Map.boss.add(var11);
+            } else if (type == 2) {
+                // Trung Thu 2026: 1 Boss rieng cho MOI quoc gia (inCountry 0/1/2), cung tren
+                // map Truong Giang (id 9) - xem real/BossTrungThu.java. Mau "Su Tu" (id 48)
+                // la do hoa TAM DUNG theo yeu cau nguoi dung, khong phai boss goc.
+                for (byte country = 0; country <= 2; country++) {
+                    final Boss boTrungThu = new BossTrungThu(null, (MonsterTemplate) Map.monsterTemplates.get(48), 432, 112, country);
+                    boTrungThu.isDead = true;
+                    boTrungThu.id = RealController.intance.idGen.getID(1, "new monster");
+                    boTrungThu.he = new byte[]{0, 1, 2, 3, 4}[Map.r.nextInt(5)];
+                    boTrungThu.level = boTrungThu.getMonsterTemplate().level;
+                    Map.boss.add(boTrungThu);
+                }
             }
         }
     }
