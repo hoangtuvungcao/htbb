@@ -361,6 +361,10 @@ public class Pet extends Actor {
                 }
             }
 
+            // Level 0 (trang thai 1) roi xuong day: atb1 = 24..28 (Cu/Rong/Yeu tinh/Doi/Dai bang).
+            // Tu 16/09/2026 day la MA ANH PET-TOOL cua trang thai 1 (ve bang bang khung <id>.pet),
+            // khong con la buff dan vao nhan vat - xem getType(). Bach Thu (727, level 5) cung roi
+            // xuong day: atb1 = 60.
             return this.itemPet.getTemplate().atb[1];
         } else {
             return -1;
@@ -1009,7 +1013,9 @@ public class Pet extends Actor {
     }
 
     public boolean canLearnSkill() {
-        if (!this.isPetBachThu() && this.isPetTool()) {
+        // level > 0: hoc ky nang chi mo tu trang thai 2 - luat cu. Giu rieng o day vi tu 16/09/2026
+        // isPetTool() da dung cho ca trang thai 1 (xem getType()).
+        if (!this.isPetBachThu() && this.isPetTool() && this.itemPet.level > 0) {
             if (this.phamchat != -1 && this.phamchat < NAME_PHAM_CHAT.length) {
                 if (this.maxSkill == 1 && this.id_skill1 > -1) {
                     return false;
@@ -1540,8 +1546,25 @@ public class Pet extends Actor {
         return this.getType() == TYPE_PET_TOOL;
     }
 
+    /**
+     * Pet co vat pham (no tu trung: Cu/Rong/Yeu tinh/Doi/Dai bang; Bach Thu 727) LUON di duong
+     * pet-tool: goi 15 gui type=5 + imgID = getIdEffPet(), client ve bang lop Pet voi bang khung
+     * lay tu goi 26 (khoi id_eff_pet_tool).
+     *
+     * TRUOC 16/09/2026 dieu kien la "itemPet.level > 0". Pet trung o TRANG THAI 1 (level 0 - "cap n"
+     * trong ten vat pham la atb0, KHONG phai level nay; ca 25 dong 689-713 deu level 0) bi coi la pet
+     * THUONG: server gui type/idImg cua MAU - mau 23-27 tu 05/09 (af1f096) muon bo anh mau co san
+     * (con de, canh cut, Giap Ngo, Doi quy, Thanh tuoc) - VA cong buff hieu ung atb1 = 24..28
+     * (EffectBuff.PET_1..5) dan vao nhan vat -> nguoi choi thay 2 con (bao 16/09/2026, VPS luc do
+     * 118 nhan vat dang mang). Nay level 0 cung la pet-tool: hinh 24..28 (dung con cu/rong/yeu
+     * tinh/doi/dai bang cua hieu ung cu) duoc ve nhu MOT con pet bay theo, qua bang khung rieng
+     * map/d_effect/24..28.pet (tools/TaoPetTrangThai1.java), va moi cho cong buff pet (deu co dieu
+     * kien !isPetTool()) tu dong khong chay nua -> dung 1 con. Nut "Thu cung" van co thong tin vi
+     * khoi pet van duoc gui. Luat "chi tu trang thai 2 moi hoc ky nang" giu rieng o canLearnSkill
+     * bang level > 0. Test: test/KiemPetTrangThai1LaPetTool.java.
+     */
     public short getType() {
-        return this.itemPet != null && this.itemPet.level > 0 ? TYPE_PET_TOOL : this.type;
+        return this.itemPet != null ? TYPE_PET_TOOL : this.type;
     }
 
     public Pet clone(int charid) {

@@ -94,7 +94,9 @@ public class MessageCreator {
 
         // 69 = pet Lan (hoa hinh pet, Pet.ID_HIEU_UNG_HOA_HINH_PET): dung anh 69.png cua danh hieu
         // 8769 nhung bang khung rieng 69.pet (xem DataGame.moTaPet, tools/TaoPetLan.java).
-        MessageCreator.id_eff_pet_tool = new int[]{35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 60, 67, 68, 69};
+        // 24-28: pet trung trang thai 1 (Cu/Rong/Yeu tinh/Doi/Dai bang) ve nhu pet-tool tu 16/09/2026,
+        // bang khung rieng map/d_effect/24..28.pet (tools/TaoPetTrangThai1.java) - xem Pet.getType().
+        MessageCreator.id_eff_pet_tool = new int[]{24, 25, 26, 27, 28, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 60, 67, 68, 69};
 
         // todo Thêm Danh Hiệu thì vào đây
         // 300 = "Set danh" (skin Kim Cang Long trieu hoi khi Set Lan phat dong voi Choi
@@ -1371,10 +1373,16 @@ public class MessageCreator {
                 } else {
                     m.dos.writeByte(p.petUsing.type);
                 }
-                if (p.petUsing.getType() == Pet.TYPE_PET_TOOL && charGet.getSession() != null && charGet.getSession().isVersion180()) {
-                    m.dos.writeByte(p.petUsing.getIdEffPet());
+                // imgID phai CUNG DO RONG voi createCharWearingMessage: client >= 2.2.5 (jar 2.7.x,
+                // Unity 2.3.2) doc readShort, client cu (2.0.9) doc readByte. Truoc 16/09/2026 ham nay
+                // luon ghi 1 byte -> client moi doc lech goi khi nhan vat duoc xem dang mang pet
+                // (phat hien khi doc bytecode client; ham nay duoc RequestCharInfoHandler trong jar goi).
+                final int imgIdPet = (p.petUsing.getType() == Pet.TYPE_PET_TOOL && charGet.getSession() != null && charGet.getSession().isVersion180())
+                        ? p.petUsing.getIdEffPet() : p.petUsing.idImg;
+                if (charGet.getSession() != null && charGet.getSession().version.compareTo("2.2.5") >= 0) {
+                    m.dos.writeShort(imgIdPet);
                 } else {
-                    m.dos.writeByte(p.petUsing.idImg);
+                    m.dos.writeByte(imgIdPet);
                 }
                 m.dos.writeByte(p.petUsing.getTotalFrame());
                 m.dos.writeUTF(String.valueOf(p.petUsing.getName()) + "\n" + p.petUsing.getInfoSendUser());
