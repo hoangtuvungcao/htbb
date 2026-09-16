@@ -4175,19 +4175,35 @@ public class Map implements Runnable {
         }
 
         Vector<ItemTemplates> a = new Vector();
+        // Du phong khi khong co mau nao roi vao khoang [lvChar-deltalv, lvChar+1] - vi
+        // du trang bi thu cap thap nhat trong game la lv30 (Giap/Non/Yen cuong/Ban
+        // dap/Ho uyen Vu Dung), nhan vat duoi ~lv29 luon roi vao khoang rong va TRUOC
+        // DAY tra ve null (van tieu mat trang tay du la mau Tim hiem nhat - yeu cau
+        // nguoi dung 16/09/2026: trang bi thu phai chac chan 100%, khong duoc trang
+        // tay). Lay mau GAN cap nhat lam du phong thay vi bo cuoc hoan toan.
+        ItemTemplates ganNhat = null;
+        int khoangCachGanNhat = Integer.MAX_VALUE;
 
         for (ItemTemplates e : itemTemplateCollection.get(5)) {
+            if (!isWearingAnimal(e.type)) {
+                continue;
+            }
             int lvfrom = lvChar - deltalv;
             int lvTo = lvChar + 1;
-            if (e.level <= lvTo && e.level >= lvfrom && isWearingAnimal(e.type)) {
+            if (e.level <= lvTo && e.level >= lvfrom) {
                 a.add(e);
+            }
+            final int khoangCach = Math.abs(e.level - lvChar);
+            if (khoangCach < khoangCachGanNhat) {
+                khoangCachGanNhat = khoangCach;
+                ganNhat = e;
             }
         }
 
-        if (a.size() == 0) {
+        if (a.size() == 0 && ganNhat == null) {
             return null;
         } else {
-            ItemTemplates itemtemplate = (ItemTemplates) a.get(random(a.size()));
+            ItemTemplates itemtemplate = (a.size() == 0) ? ganNhat : (ItemTemplates) a.get(random(a.size()));
             Item it = null;
             it = new Item(itemtemplate, true, 0, 0, itemtemplate.id);
             if (itemtemplate.type != 15 && itemtemplate.type != 17) {

@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.regex.Pattern;
 
 /**
  * Yeu cau nguoi dung 13/09/2026 - mot lan gui gom 3 mang gameplay khong lien quan:
@@ -93,6 +94,61 @@ public final class KiemCongThanhDoiDiemDiTieu {
         Kiem.dung("cac mau con lai (Xanh/Do/Hoan My/Vang/Tim) van chac chan co do nhu truoc, khong doi hanh vi",
                 than.contains("if (colorTieu == 1) {") && than.contains("else if (colorTieu == 2) {")
                 && than.contains("else if (colorTieu == 3 || colorTieu == 4) {") && than.contains("if (colorTieu == 5) {"));
+
+        kiemDuPhongMauCapThapNhatChoTrangBiThu();
+    }
+
+    /**
+     * Bug SAU hon, khong lien quan gi den mau tieu: Char.doAddItemVanTieu goi
+     * Map.dropItemAnimalByLvChar(lvOpen, 4) TRUOC KHI xet mau - ham nay chi tim mau
+     * trong khoang [lvChar-4, lvChar+1]. Trang bi thu THAP NHAT trong game la lv30
+     * (Giap/Non/Yen cuong/Ban dap/Ho uyen Vu Dung, xem docs/danh_muc_item.md), nen
+     * nhan vat duoi ~lv29 luon roi vao khoang RONG va truoc day return null - VAN
+     * TIEU MAT TRANG TAY DU LA MAU TIM (hiem nhat), vi day la buoc LOC MAU truoc khi
+     * doAddItemVanTieu kip re theo mau. Yeu cau nguoi dung 16/09/2026: phai chac chan
+     * 100% khong duoc trang tay. Sua bang cach lay mau GAN cap nhat lam du phong khi
+     * khong co mau nao roi dung vao khoang tren, thay vi bo cuoc tra ve null.
+     */
+    private static void kiemDuPhongMauCapThapNhatChoTrangBiThu() {
+        final String mapJava = doc("src/real/Map.java");
+        Kiem.dung("doc duoc src/real/Map.java", !mapJava.isEmpty());
+        if (mapJava.isEmpty()) {
+            return;
+        }
+        final int bd = mapJava.indexOf("public Item dropItemAnimalByLvChar(int lvChar, int deltalv) {");
+        Kiem.dung("tim thay ham dropItemAnimalByLvChar (dinh nghia goc trong Map.java)", bd >= 0);
+        if (bd < 0) {
+            return;
+        }
+        final int kt = mapJava.indexOf("\n    }\n", bd);
+        final String than = kt < 0 ? mapJava.substring(bd) : mapJava.substring(bd, kt);
+
+        Kiem.sai("KHONG con return null ngay khi khoang [lvChar-deltalv, lvChar+1] rong (bo qua du phong)",
+                than.contains("if (a.size() == 0) {\n            return null;\n        }"));
+        Kiem.dung("chi tra ve null khi CA khoang tren RONG lan khong con mau du phong nao (het sach mau thu)",
+                than.contains("if (a.size() == 0 && ganNhat == null) {\n            return null;\n        }"));
+        Kiem.dung("theo doi mau GAN cap nhat (khoang cach level nho nhat) trong luc quet",
+                than.contains("int khoangCachGanNhat = Integer.MAX_VALUE;")
+                && than.contains("final int khoangCach = Math.abs(e.level - lvChar);")
+                && than.contains("if (khoangCach < khoangCachGanNhat) {"));
+        Kiem.dung("khong co mau nao trong khoang thi dung mau du phong gan nhat thay the",
+                than.contains("ItemTemplates itemtemplate = (a.size() == 0) ? ganNhat : (ItemTemplates) a.get(random(a.size()));"));
+        Kiem.dung("van loc dung isWearingAnimal truoc khi xet khoang HAY du phong (khong lan sang trang bi nguoi)",
+                than.contains("if (!isWearingAnimal(e.type)) {\n                continue;\n            }"));
+
+        // MapClan co dinh nghia RIENG (luon tra ve null - map dac biet co y khong cho
+        // roi do thu), khong lien quan bug tren va KHONG duoc sua theo huong nay.
+        final String mapClan = doc("src/real/MapClan.java");
+        Kiem.dung("MapClan van co y luon tra ve null (map dac biet, khong dung du phong)",
+                mapClan.contains("public Item dropItemAnimalByLvChar(int lvChar, int deltalv) {\n        return null;\n    }"));
+
+        // Doi chieu voi danh muc item: trang bi thu THAP NHAT that su la lv30 (tien de
+        // cho ca bug tren) - neu ai do them mau thap hon 30 thi ham van an toan, nhung
+        // neu con so nay tang len (vd xoa het mau lv30) thi khoang trong con rong hon.
+        final String danhMuc = doc("docs/danh_muc_item.md");
+        Kiem.dung("(tien de) trang bi thu thap nhat trong danh muc la lv30 (Giap/Non/Yen cuong/Ban dap/Ho uyen Vu Dung)",
+                danhMuc.contains("| 521 | Giáp Vủ dũng | 14 | 30 |")
+                && !Pattern.compile("\\| \\d+ \\|[^|]*\\| (14|15|16|17|18) \\| ([12]?\\d) \\|").matcher(danhMuc).find());
     }
 
     private static void kiemLanChongLan() {
