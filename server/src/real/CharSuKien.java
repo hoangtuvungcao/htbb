@@ -107,10 +107,12 @@ class CharSuKien {
                         self.sendMessage(MessageCreator.createCharInventoryMessage(pReceive, 1));
                         info = String.valueOf(info) + "," + it.getName();
                     }
-                    // Tu lv70: bo luong/luong khoa, thay bang bot xanh lam (yeu cau nguoi
-                    // dung 13/09/2026 "chạm 7x thì đi tiêu ra tbt+exp+bột xanh lam+điểm
-                    // thưởng, bỏ lượng, bỏ lượng khóa").
-                    if (luongadd[colortieu] > 0 && lvOpen < 70) {
+                    // Tu lv65 (ha tu lv70 - yeu cau nguoi dung 16/09/2026): bo luong/luong
+                    // khoa, thay bang bot xanh lam. Tbt/exp/diem doi thuong KHONG doi -
+                    // van cho DEU o ca hai phia nguong nay (yeu cau nguoi dung 13/09/2026
+                    // "chạm 7x thì đi tiêu ra tbt+exp+bột xanh lam+điểm thưởng, bỏ lượng,
+                    // bỏ lượng khóa", nay chi doi moc tu 70 xuong 65).
+                    if (luongadd[colortieu] > 0 && lvOpen < 65) {
                         final boolean notlock = Map.r.nextInt(1000) < 5;
                         if (!notlock) {
                             self.addLuongLock(luongadd[colortieu] / div);
@@ -126,13 +128,14 @@ class CharSuKien {
                                 e.printStackTrace();
                             }
                         }
-                    } else if (lvOpen >= 70) {
+                    } else if (lvOpen >= 65) {
                         // Hoan My/Vang/Tim: muc CO DINH rieng tung mau (yeu cau nguoi dung
-                        // 13/09/2026 - truoc do ca 3 mau deu random 1-3 giong Trang/Xanh/Do).
+                        // 13/09/2026 - truoc do ca 3 mau deu random 1-3 giong Trang/Xanh/Do;
+                        // Tim tang 30 -> 35 theo yeu cau nguoi dung 16/09/2026).
                         // Trang/Xanh/Do van giu nguyen random 1-3 cu, khong doi.
                         final int slBotXanh;
                         if (colortieu >= 3) {
-                            final int[] BOT_XANH_THEO_MAU = {10, 20, 30}; // [Hoan My, Vang, Tim]
+                            final int[] BOT_XANH_THEO_MAU = {10, 20, 35}; // [Hoan My, Vang, Tim]
                             slBotXanh = Math.max(1, BOT_XANH_THEO_MAU[colortieu - 3] / div);
                         } else {
                             slBotXanh = Math.max(1, (Map.r.nextInt(3) + 1) / div);

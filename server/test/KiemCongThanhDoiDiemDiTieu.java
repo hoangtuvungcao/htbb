@@ -392,12 +392,18 @@ public final class KiemCongThanhDoiDiemDiTieu {
 
         Kiem.dung("luongadd them Hoan My (idx3, truoc day chi Vang/Tim)",
                 suKien.contains("final int[] luongadd = {0, 0, 0, 100 + Map.r.nextInt(11), 100 + Map.r.nextInt(11), 100 + Map.r.nextInt(11), 0};"));
-        Kiem.dung("tu lv70: khoa nhanh cap luong/luong khoa lai (lvOpen < 70)",
-                suKien.contains("if (luongadd[colortieu] > 0 && lvOpen < 70) {"));
-        Kiem.dung("tu lv70: cap bot xanh lam thay the (GemTemplate.BOT_XANH)",
-                suKien.contains("self.doAddGemItem(GemTemplate.BOT_XANH, slBotXanh, true);"));
-        Kiem.dung("bot xanh lam: Hoan My/Vang/Tim dung muc co dinh rieng (10/20/30), bi cuop chia div",
-                suKien.contains("final int[] BOT_XANH_THEO_MAU = {10, 20, 30}; // [Hoan My, Vang, Tim]")
+        // 16/09/2026: ha moc lv70 -> lv65 (yeu cau nguoi dung), Tim 30 -> 35. Tbt/exp/
+        // diem doi thuong KHONG doi, van cho DEU o ca hai phia moc nay - xem chu thich
+        // dau if/else o CharSuKien.
+        Kiem.dung("tu lv65: khoa nhanh cap luong/luong khoa lai (lvOpen < 65)",
+                suKien.contains("if (luongadd[colortieu] > 0 && lvOpen < 65) {"));
+        Kiem.sai("khong con moc cu lv70 cho luong/luong khoa", suKien.contains("lvOpen < 70) {"));
+        Kiem.dung("tu lv65: cap bot xanh lam thay the (GemTemplate.BOT_XANH)",
+                suKien.contains("} else if (lvOpen >= 65) {")
+                        && suKien.contains("self.doAddGemItem(GemTemplate.BOT_XANH, slBotXanh, true);"));
+        Kiem.sai("khong con moc cu lv70 cho bot xanh lam", suKien.contains("lvOpen >= 70) {"));
+        Kiem.dung("bot xanh lam: Hoan My/Vang/Tim dung muc co dinh rieng (10/20/35), bi cuop chia div",
+                suKien.contains("final int[] BOT_XANH_THEO_MAU = {10, 20, 35}; // [Hoan My, Vang, Tim]")
                         && suKien.contains("slBotXanh = Math.max(1, BOT_XANH_THEO_MAU[colortieu - 3] / div);"));
         Kiem.dung("bot xanh lam: Trang/Xanh/Do van giu random 1-3 cu",
                 suKien.contains("slBotXanh = Math.max(1, (Map.r.nextInt(3) + 1) / div);"));
