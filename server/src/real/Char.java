@@ -5557,7 +5557,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return null;
         }
         it.id = pRcv.getIDItem();
-        if (colorTieu == 0 && Map.r.nextInt(100) < 50) {
+        // Tieu Trang (mau thap nhat): truoc day 50% khong nhan duoc gi ca (ca nhan van
+        // vao "return null" o cuoi ham vi khong mau nao trong cac nhanh duoi khop 0).
+        // Yeu cau nguoi dung 16/09/2026: dam bao luon co trang bi thu, giong moi mau
+        // khac deu chac chan co do (chi khac nhau o mau/do hiem cua do).
+        if (colorTieu == 0) {
             pRcv.iItems.add(it);
             return it;
         }

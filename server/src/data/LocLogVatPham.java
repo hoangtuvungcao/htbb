@@ -81,6 +81,12 @@ public final class LocLogVatPham {
             "salaryC", "salaryCN",      // luong bang hoi
             "txs", "xoso",              // thang cuoc
             "idruongmm",                // admin doi id ruong may man
+            "tratieu", "motieu",        // hoan thanh van tieu (CharSuKien.doResponseTieu): ghi ro exp/
+                                        // do/luong/bot xanh lam/ngoc nhan duoc. Them 16/09/2026 - truoc do
+                                        // KHONG nam trong GIU nen saveOrtherLog() luon tra ve som, chua
+                                        // tung ghi xuong DB (giong ly do them "khanglan" cung ngay), nen
+                                        // khong tra cuu lai duoc nguoi choi da nhan gi khi bi bao "khong
+                                        // nhan duoc gi ca". "motieu" = bi cuop tieu, "tratieu" = tra tieu binh thuong.
             // --- 4. Tieu nguyen lieu Than Khi (kho gem rieng, khong qua hanh trang) ---
             "taothankhi",               // tao Than Khi: ghi ten vat pham, cap/che do, nguyen lieu da tieu (ThoRenThanBi.CreateThanKhi)
             "nangcapthankhi",           // nang cap Than Khi: ghi +cu -> +moi, ti le, thanh/bai, nguyen lieu da tieu (ThoRenThanBi.UpgradeThanKhi)

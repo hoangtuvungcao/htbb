@@ -62,6 +62,37 @@ public final class KiemCongThanhDoiDiemDiTieu {
         kiemGioiHanDiTieuMoiNgay();
         kiemTyLeMauTieu();
         kiemCongThucExpVaThuongLv70();
+        kiemDamBaoTrangBiThuTieuTrang();
+    }
+
+    /**
+     * Yeu cau nguoi dung 16/09/2026: tieu mau Trang (colorTieu=0) truoc day chi 50% nhan
+     * duoc trang bi thu (Char.doAddItemVanTieu, nhanh khong khop rot vao "return null" o
+     * cuoi ham) - gio PHAI luon chac chan co do, giong moi mau tieu khac (chi khac o mau/do
+     * hiem cua do duoc tang, khong con truong hop trang tay).
+     */
+    private static void kiemDamBaoTrangBiThuTieuTrang() {
+        final String charJava = doc("src/real/Char.java");
+        Kiem.dung("doc duoc src/real/Char.java", !charJava.isEmpty());
+
+        Kiem.sai("KHONG con dieu kien ngau nhien '50%' rieng cho tieu Trang (tung khien 50% trang tay)",
+                charJava.contains("if (colorTieu == 0 && Map.r.nextInt(100) < 50) {"));
+        Kiem.dung("tieu Trang: nhanh rieng, LUON them do vao tui va return ngay (khong con re nhanh RNG)",
+                charJava.contains("if (colorTieu == 0) {\n            pRcv.iItems.add(it);\n            return it;\n        }"));
+
+        // than ham: tu chu ky mo dau toi dau "}" cua method (thut 4 khoang trang).
+        final int bd = charJava.indexOf("public Item doAddItemVanTieu(");
+        Kiem.dung("tim thay ham doAddItemVanTieu", bd >= 0);
+        if (bd < 0) {
+            return;
+        }
+        final int kt = charJava.indexOf("\n    }\n", bd);
+        final String than = kt < 0 ? charJava.substring(bd) : charJava.substring(bd, kt);
+        Kiem.dung("van giu nguyen kiem tra 'khong ra duoc do nao (het bang mau cap nay)' truoc khi phan mau",
+                than.contains("if (it == null) {\n            return null;\n        }"));
+        Kiem.dung("cac mau con lai (Xanh/Do/Hoan My/Vang/Tim) van chac chan co do nhu truoc, khong doi hanh vi",
+                than.contains("if (colorTieu == 1) {") && than.contains("else if (colorTieu == 2) {")
+                && than.contains("else if (colorTieu == 3 || colorTieu == 4) {") && than.contains("if (colorTieu == 5) {"));
     }
 
     private static void kiemLanChongLan() {
