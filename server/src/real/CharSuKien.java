@@ -133,12 +133,16 @@ class CharSuKien {
                         // 13/09/2026 - truoc do ca 3 mau deu random 1-3 giong Trang/Xanh/Do;
                         // Tim tang 30 -> 35 theo yeu cau nguoi dung 16/09/2026).
                         // Trang/Xanh/Do van giu nguyen random 1-3 cu, khong doi.
+                        // CUOP TIEU: gap 1,5 lan (khong con giam mot nua qua "div" nhu truoc -
+                        // yeu cau nguoi dung 16/09/2026, giong cach doi voi diem doi thuong).
                         final int slBotXanh;
                         if (colortieu >= 3) {
                             final int[] BOT_XANH_THEO_MAU = {10, 20, 35}; // [Hoan My, Vang, Tim]
-                            slBotXanh = Math.max(1, BOT_XANH_THEO_MAU[colortieu - 3] / div);
+                            final int slGoc = BOT_XANH_THEO_MAU[colortieu - 3];
+                            slBotXanh = Math.max(1, isThief ? slGoc * 3 / 2 : slGoc);
                         } else {
-                            slBotXanh = Math.max(1, (Map.r.nextInt(3) + 1) / div);
+                            final int slGoc = Map.r.nextInt(3) + 1;
+                            slBotXanh = Math.max(1, isThief ? slGoc * 3 / 2 : slGoc);
                         }
                         self.doAddGemItem(GemTemplate.BOT_XANH, slBotXanh, true);
                         info = String.valueOf(info) + " và " + slBotXanh + " " + Map.gemTemplate[GemTemplate.BOT_XANH].name;
@@ -168,12 +172,14 @@ class CharSuKien {
                     }
                     // Diem doi thuong: CHI tieu Hoan My/Vang/Tim (colortieu>=3) moi duoc,
                     // moi mau MOT muc rieng - Tim 50, Vang 30, Hoan My 15 (yeu cau nguoi
-                    // dung 13/09/2026 - truoc day ca 3 mau dung chung 50 diem). Bi cuop
-                    // (isThief) chi con MOT NUA - dung lai bien "div" da co san o dau ham,
-                    // giong cach exp/luong o tren cung chia cho div.
+                    // dung 13/09/2026 - truoc day ca 3 mau dung chung 50 diem). CUOP TIEU
+                    // (isThief) duoc GAP 1,5 LAN diem cua van tieu thanh cong (yeu cau
+                    // nguoi dung 16/09/2026) - RIENG rieng voi bien "div" dung chung o tren
+                    // cho exp/luong (nhung do van con giam mot nua khi bi cuop, khong doi).
                     if (colortieu >= 3) {
                         final int[] DIEM_DOI_THUONG = {15, 30, 50}; // [Hoan My, Vang, Tim]
-                        final int diem = DIEM_DOI_THUONG[colortieu - 3] / div;
+                        final int diemGoc = DIEM_DOI_THUONG[colortieu - 3];
+                        final int diem = isThief ? diemGoc * 3 / 2 : diemGoc;
                         pReceive.diemDoiThuong += diem;
                         pReceive.sendMessage(MessageCreator.createServerAlertMessage(
                                 "Bạn nhận được " + diem + " điểm đổi thưởng (tổng: " + pReceive.diemDoiThuong + " điểm).", ""));

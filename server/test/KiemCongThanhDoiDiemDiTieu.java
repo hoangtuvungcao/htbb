@@ -402,16 +402,35 @@ public final class KiemCongThanhDoiDiemDiTieu {
                 suKien.contains("} else if (lvOpen >= 65) {")
                         && suKien.contains("self.doAddGemItem(GemTemplate.BOT_XANH, slBotXanh, true);"));
         Kiem.sai("khong con moc cu lv70 cho bot xanh lam", suKien.contains("lvOpen >= 70) {"));
-        Kiem.dung("bot xanh lam: Hoan My/Vang/Tim dung muc co dinh rieng (10/20/35), bi cuop chia div",
-                suKien.contains("final int[] BOT_XANH_THEO_MAU = {10, 20, 35}; // [Hoan My, Vang, Tim]")
-                        && suKien.contains("slBotXanh = Math.max(1, BOT_XANH_THEO_MAU[colortieu - 3] / div);"));
+        Kiem.dung("bot xanh lam: Hoan My/Vang/Tim dung muc co dinh rieng (10/20/35)",
+                suKien.contains("final int[] BOT_XANH_THEO_MAU = {10, 20, 35}; // [Hoan My, Vang, Tim]"));
         Kiem.dung("bot xanh lam: Trang/Xanh/Do van giu random 1-3 cu",
-                suKien.contains("slBotXanh = Math.max(1, (Map.r.nextInt(3) + 1) / div);"));
+                suKien.contains("final int slGoc = Map.r.nextInt(3) + 1;"));
+        // 16/09/2026: cuop tieu tu "giam mot nua qua div" doi thanh "gap 1,5 lan" cho ca
+        // diem doi thuong LAN bot xanh lam (yeu cau nguoi dung) - RIENG voi div (exp/luong
+        // van giam mot nua nhu cu, khong doi).
+        Kiem.sai("bot xanh lam KHONG con giam mot nua qua div khi bi cuop (da doi cong thuc)",
+                suKien.contains("slBotXanh = Math.max(1, BOT_XANH_THEO_MAU[colortieu - 3] / div);")
+                || suKien.contains("slBotXanh = Math.max(1, (Map.r.nextInt(3) + 1) / div);"));
+        Kiem.dung("bot xanh lam: cuop tieu duoc gap 1,5 lan (slGoc * 3 / 2), khong phai giam nua",
+                demSoLan(suKien, "slBotXanh = Math.max(1, isThief ? slGoc * 3 / 2 : slGoc);") == 2);
 
         Kiem.dung("diem doi thuong: chi ap dung tu Hoan My tro len (colortieu >= 3)",
                 suKien.contains("if (colortieu >= 3) {") && suKien.contains("final int[] DIEM_DOI_THUONG = {15, 30, 50}; // [Hoan My, Vang, Tim]"));
-        Kiem.dung("diem doi thuong: moi mau mot muc rieng, bi cuop chi con mot nua (chia cho div)",
+        Kiem.sai("diem doi thuong KHONG con giam mot nua qua div khi bi cuop (da doi cong thuc)",
                 suKien.contains("final int diem = DIEM_DOI_THUONG[colortieu - 3] / div;"));
+        Kiem.dung("diem doi thuong: cuop tieu duoc gap 1,5 lan diem cua van tieu thanh cong (diemGoc * 3 / 2)",
+                suKien.contains("final int diemGoc = DIEM_DOI_THUONG[colortieu - 3];")
+                        && suKien.contains("final int diem = isThief ? diemGoc * 3 / 2 : diemGoc;"));
+
+        // Xac nhan bang tay cong thuc gap 1,5 lan cho tung mau (khong lam tron sai):
+        // Hoan My 15->22 (truncation 22,5->22), Vang 30->45, Tim 35->52 (truncation 52,5->52).
+        Kiem.bang("diem Hoan My cuop tieu: 15 * 3 / 2 = 22 (truncation, khong lam tron)", 22, 15 * 3 / 2);
+        Kiem.bang("diem Vang cuop tieu: 30 * 3 / 2 = 45", 45, 30 * 3 / 2);
+        Kiem.bang("diem Tim cuop tieu: 50 * 3 / 2 = 75", 75, 50 * 3 / 2);
+        Kiem.bang("bot xanh lam Hoan My cuop tieu: 10 * 3 / 2 = 15", 15, 10 * 3 / 2);
+        Kiem.bang("bot xanh lam Vang cuop tieu: 20 * 3 / 2 = 30", 30, 20 * 3 / 2);
+        Kiem.bang("bot xanh lam Tim cuop tieu: 35 * 3 / 2 = 52 (truncation, khong lam tron)", 52, 35 * 3 / 2);
     }
 
     private static int demSoLan(final String noiDung, final String mau) {
