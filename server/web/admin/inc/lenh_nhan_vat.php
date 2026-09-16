@@ -35,7 +35,6 @@
 const LENH_BANG = 'web_lenh_nhan_vat';
 const LENH_LOAI_DAT_CAP_DO = 'dat_cap_do';
 const LENH_LOAI_GIAM_CAP_DO = 'giam_cap_do';
-const LENH_LOAI_TANG_CAP_DO = 'tang_cap_do';
 const LENH_LOAI_XOA_VAT_PHAM = 'xoa_vat_pham';
 const LENH_LOAI_XOA_NHAN_VAT = 'xoa_nhan_vat';
 
@@ -109,7 +108,6 @@ function tachThamSoXoaVatPham(?string $thamSo): ?array
 function moTaYeuCauLenh(array $l): string
 {
     if ((string)$l['loai'] === LENH_LOAI_GIAM_CAP_DO) return 'giảm ' . (int)$l['cap_do'] . ' level';
-    if ((string)$l['loai'] === LENH_LOAI_TANG_CAP_DO) return 'tăng ' . (int)$l['cap_do'] . ' level';
     if ((string)$l['loai'] === LENH_LOAI_XOA_NHAN_VAT) {
         return 'xoá vĩnh viễn nhân vật';
     }

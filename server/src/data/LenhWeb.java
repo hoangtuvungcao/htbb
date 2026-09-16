@@ -36,19 +36,10 @@ import server.TeamServer;
  *                  lai, he thay nhan vat vao game thi cong nhu tren.
  *     - chi NANG cap: exp moi phai lon hon exp hien tai (xem duoi).
  *
- *   tang_cap_do (cap_do = so level muon CONG THEM, tinh tu cap HIEN TAI luc xu ly - khac
- *   dat_cap_do dat thang ve MOT dich tuyet doi. Dung cho "nang level hang loat toan server":
- *   web khong biet truoc cap that cua tung nhan vat (dac biet nhan vat dang online chi song
- *   trong RAM), nen phai de server tu doc cap hien tai roi cong vao, giong het giam_cap_do
- *   nhung theo chieu nguoc lai)
- *     - online  -> cap moi = cap hien tai + cap_do (kep o CAP_TOI_DA), giu nguyen % dang co,
- *                  roi dung LAI apDungOnline (cung duong len cap tu nhien, cung ham voi
- *                  dat_cap_do: cong diem, goi tin, saveCharAuto). -> XONG_ONLINE
- *     - offline -> KHONG dong CSDL (cap that nam trong pInfo, khong doc dc tu ngoai). Chuyen
- *                  sang CHO_DANG_NHAP; cong khi nhan vat vao game, luc do server moi biet cap
- *                  that de tinh dich.
- *     - da o CAP_TOI_DA -> LOI rieng dong do, khong lam hong cac dong khac trong cung lenh
- *                  hang loat.
+ *   "nang level hang loat toan server" (web/admin/nang_level_toanbo.php) TAI SU DUNG dung
+ *   loai dat_cap_do o tren cho MOI nhan vat, danh dau rieng bang cot tham_so = 'toanbo' de
+ *   trang do liet ke dung lenh cua no (khong lan voi lenh dat_cap_do tung nhan vat mot cua
+ *   nhanvat.php) - khong can them loai lenh moi vi dat_cap_do von da CHI NANG cap san.
  *
  *   xoa_vat_pham (tham_so = "<cot>><mau>", cot = equip | inven | bag, mau = chuoi tho cua mon
  *   do dung nhu Item.getInfoSave() ghi xuong cot)
@@ -90,7 +81,6 @@ public final class LenhWeb implements Runnable {
 
     public static final String LOAI_DAT_CAP_DO = "dat_cap_do";
     public static final String LOAI_GIAM_CAP_DO = "giam_cap_do";
-    public static final String LOAI_TANG_CAP_DO = "tang_cap_do";
     public static final String LOAI_XOA_VAT_PHAM = "xoa_vat_pham";
     public static final String LOAI_XOA_NHAN_VAT = "xoa_nhan_vat";
 
@@ -311,9 +301,6 @@ public final class LenhWeb implements Runnable {
         if (LOAI_GIAM_CAP_DO.equals(loai)) {
             return xuLyGiamCapDo(charId, capDo, adminUser, trangThaiCu);
         }
-        if (LOAI_TANG_CAP_DO.equals(loai)) {
-            return xuLyTangCapDo(charId, capDo, adminUser, trangThaiCu);
-        }
         if (LOAI_DAT_CAP_DO.equals(loai)) {
             return xuLyDatCapDo(charId, capDo, phanNghin, adminUser, trangThaiCu);
         }
@@ -331,17 +318,6 @@ public final class LenhWeb implements Runnable {
             throw new IllegalArgumentException("So level giam phai duong va nho hon cap hien tai " + capHienTai);
         }
         return capHienTai - soCap;
-    }
-
-    /**
-     * Cap sau khi CONG THEM soCap level vao capHienTai, kep o CAP_TOI_DA. Nem loi khi
-     * soCap khong duong hoac nhan vat da o CAP_TOI_DA (khong con gi de tang).
-     */
-    public static int capSauKhiTang(int capHienTai, int soCap) {
-        if (soCap <= 0 || capHienTai < 1 || capHienTai >= CAP_TOI_DA) {
-            throw new IllegalArgumentException("So level tang phai duong va nhan vat chua dat cap toi da " + CAP_TOI_DA);
-        }
-        return Math.min(capHienTai + soCap, CAP_TOI_DA);
     }
 
     static KetQua xuLyGiamCapDo(int charId, int soCap, String adminUser, int trangThaiCu) throws Exception {
@@ -384,32 +360,6 @@ public final class LenhWeb implements Runnable {
             ghiLog(p, adminUser + " (web) " + result);
         } catch (Exception ignored) { }
         return new KetQua(XONG_ONLINE, result);
-    }
-
-    /**
-     * "Tang cap do": cong THEM soCap level vao cap HIEN TAI cua nhan vat (khac dat_cap_do
-     * dat thang ve mot dich tuyet doi web da tinh san). Dung cho nang level hang loat toan
-     * server - web khong biet truoc cap that cua tung nhan vat nen phai de server tu doc va
-     * cong. Giu nguyen % dang co, roi giao lai cho apDungOnline (cung duong len cap tu nhien
-     * voi dat_cap_do: cong diem qua Map.addXPForChar, saveCharAuto, thong bao, ghi log).
-     */
-    static KetQua xuLyTangCapDo(final int charId, final int soCap, final String adminUser,
-            final int trangThaiCu) throws Exception {
-        if (soCap < 1 || soCap > CAP_TOI_DA) {
-            throw new IllegalArgumentException("so level tang khong hop le");
-        }
-        final Char p = timNguoiChoiOnline(charId);
-        if (p != null) {
-            final int capMoi = capSauKhiTang(p.lvDetail.lv, soCap);
-            return new KetQua(XONG_ONLINE, apDungOnline(p, capMoi, p.lvDetail.percent, adminUser));
-        }
-        if (trangThaiCu == CHO_DANG_NHAP) {
-            return new KetQua(CHO_DANG_NHAP, ""); // van chua vao game
-        }
-        if (!coNhanVat(charId)) {
-            throw new IllegalStateException("khong co nhan vat id " + charId + " trong tob_char");
-        }
-        return new KetQua(CHO_DANG_NHAP, "offline: se tang " + soCap + " level khi vao game");
     }
 
     static KetQua xuLyDatCapDo(final int charId, final int capDo, final int phanNghin,
@@ -826,9 +776,7 @@ public final class LenhWeb implements Runnable {
             System.out.println("[LENH WEB] #" + id + " " + loai + " " + charname + " (id " + charId + ")"
                     + (LOAI_DAT_CAP_DO.equals(loai)
                             ? " cap " + capDo + " " + (kepPhanNghin(phanNghin) / 10.0) + "%"
-                            : LOAI_TANG_CAP_DO.equals(loai)
-                                    ? " tang " + capDo + " level"
-                                    : " " + cat(thamSo, 80))
+                            : " " + cat(thamSo, 80))
                     + " boi " + adminUser + " -> " + kq.moTa);
         }
     }
