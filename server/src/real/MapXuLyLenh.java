@@ -65,6 +65,13 @@ class MapXuLyLenh {
                 int newlevel = p.lvDetail.lv;
                 byte[] var10000 = new byte[]{5, 5, 5, 5, 5, 5, 5};
                 if (newlevel >= currentLevel + 1) {
+                    // An mung len cap tu 60 tro len bang mua hoa toan server, giong tinh
+                    // luyen than binh thanh cong (yeu cau nguoi dung 18/09/2026). Kich hoat
+                    // MOI LAN len cap ma ket qua >=60, khong chi lan dau dat moc.
+                    if (newlevel >= 60) {
+                        Map.muaHoaAnMungToanServer();
+                    }
+
                     if (Char.isDemTrungThu() && p.lvDetail.lv >= 20 && p.nBinhTra == 0) {
                         p.nBinhTra = 1;
                         p.potions[125]++;
@@ -194,6 +201,15 @@ class MapXuLyLenh {
             int newlevel = p.lvDetail.lv;
             byte[] var10000 = new byte[]{5, 5, 5, 5, 5, 5, 5};
             if (newlevel >= currentLevel + 1) {
+                // An mung len cap tu 60 tro len bang mua hoa toan server, giong tinh luyen
+                // than binh thanh cong (yeu cau nguoi dung 18/09/2026). Kich hoat MOI LAN
+                // len cap ma ket qua >=60, khong chi lan dau dat moc. Ham nay va
+                // addXpCharEvent la HAI cho DUY NHAT xu ly len cap (xem chu thich dau file
+                // ve viec them tinh nang phai vao ca hai).
+                if (newlevel >= 60) {
+                    Map.muaHoaAnMungToanServer();
+                }
+
                 if (Char.isDemTrungThu() && p.lvDetail.lv >= 20 && p.nBinhTra == 0) {
                     p.nBinhTra = 1;
                     p.potions[125]++;

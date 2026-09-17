@@ -9650,15 +9650,10 @@ public class Map implements Runnable {
                             e.printStackTrace();
                         }
 
-                        // An mung tinh luyen thanh cong: mua hoa hong (hieu ung thoi tiet,
-                        // id=5 - trung voi "hoa hong" trong co che tang hoa o MapNhapText.java,
-                        // idHoa={4,3,5} voi hoa hong la index 2) cho TOAN SERVER, 3 "goi" 99
-                        // hoa moi goi (yeu cau nguoi dung 18/09/2026). Chi la hieu ung hien thi,
-                        // KHONG cong potions[] cho ai - dung sendAllCharServer nhu vong lap
-                        // thoi tiet dinh ky co san (xem Map.java, ham chinh thoi tiet server).
-                        for (int lanMuaHoa = 0; lanMuaHoa < 3; lanMuaHoa++) {
-                            Map.sendAllCharServer(-1, MessageCreator.createMsgWeather(5, 99, 60000));
-                        }
+                        // An mung tinh luyen thanh cong: mua hoa cho TOAN SERVER (yeu cau nguoi
+                        // dung 18/09/2026). Dung chung ham voi thuong len cap 60+ - xem
+                        // muaHoaAnMungToanServer().
+                        Map.muaHoaAnMungToanServer();
                     } else {
                         // That bai: cong don so lan that bai LIEN TIEP (chi de bao cao, KHONG
                         // doi ti le thanh cong) - reset ve 0 khi tinh luyen thanh cong o tren.
@@ -17161,6 +17156,24 @@ public class Map implements Runnable {
             } catch (Exception var4) {
             }
         } catch (Exception var5) {
+        }
+    }
+
+    /**
+     * Mua 3 loai hoa (hong/mai-vang/dao) cho TOAN SERVER - hieu ung thoi tiet THUAN HIEN THI,
+     * KHONG cong potions[] cho ai. Dung chung cho tinh luyen than binh thanh cong VA len cap tu
+     * 60 tro len (yeu cau nguoi dung 18/09/2026). Moi loai hoa goi 3 "goi" x 99 hoa, giong het
+     * cach vong lap thoi tiet dinh ky cua server tu goi sendAllCharServer.
+     *
+     * ID hieu ung trung voi co che tang hoa thu cong o MapNhapText.java (idHoa={4,3,5} ung voi
+     * mai/dao/hong) - xem AnimateEffect.cs ben client, chi co dung 3 loai hoa roi nay.
+     */
+    public static void muaHoaAnMungToanServer() {
+        final int[] idHoaAnMung = {5, 4, 3}; // hoa hong, hoa mai (vang), hoa dao
+        for (int idHoa : idHoaAnMung) {
+            for (int lanMuaHoa = 0; lanMuaHoa < 3; lanMuaHoa++) {
+                Map.sendAllCharServer(-1, MessageCreator.createMsgWeather(idHoa, 99, 60000));
+            }
         }
     }
 
