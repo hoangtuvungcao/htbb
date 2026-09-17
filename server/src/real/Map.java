@@ -9629,12 +9629,44 @@ public class Map implements Runnable {
         
                         // Thông báo thành công
                         player.sendMessage(MessageCreator.createServerAlertMessage(
-                            "Tinh luyện thành công! Cấp tinh luyện hiện tại: " + 
+                            "Tinh luyện thành công! Cấp tinh luyện hiện tại: " +
                             player.itemVukhiThoiTrang.TinhLuyen, ""));
+
+                        // Bao toan server khi tinh luyen thanh cong, kem % tinh luyen dat duoc
+                        // va so lan that bai lien tiep TRUOC do (yeu cau nguoi dung 18/09/2026).
+                        // Lay so lan that bai TRUOC khi reset ve 0.
+                        final int soLanThatBaiTruocDo = player.itemVukhiThoiTrang.soLanTinhLuyenThatBai;
+                        player.itemVukhiThoiTrang.soLanTinhLuyenThatBai = 0;
+                        try {
+                            Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(
+                                    "Chúc mừng " + player.charname + " đã tinh luyện thành công "
+                                            + player.itemVukhiThoiTrang.getName() + " lên "
+                                            + player.itemVukhiThoiTrang.TinhLuyen + "%"
+                                            + (soLanThatBaiTruocDo > 0
+                                                    ? " sau " + soLanThatBaiTruocDo + " lần thất bại liên tiếp"
+                                                    : "")
+                                            + "!"));
+                        } catch (final IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        // An mung tinh luyen thanh cong: mua hoa hong (hieu ung thoi tiet,
+                        // id=5 - trung voi "hoa hong" trong co che tang hoa o MapNhapText.java,
+                        // idHoa={4,3,5} voi hoa hong la index 2) cho TOAN SERVER, 3 "goi" 99
+                        // hoa moi goi (yeu cau nguoi dung 18/09/2026). Chi la hieu ung hien thi,
+                        // KHONG cong potions[] cho ai - dung sendAllCharServer nhu vong lap
+                        // thoi tiet dinh ky co san (xem Map.java, ham chinh thoi tiet server).
+                        for (int lanMuaHoa = 0; lanMuaHoa < 3; lanMuaHoa++) {
+                            Map.sendAllCharServer(-1, MessageCreator.createMsgWeather(5, 99, 60000));
+                        }
                     } else {
+                        // That bai: cong don so lan that bai LIEN TIEP (chi de bao cao, KHONG
+                        // doi ti le thanh cong) - reset ve 0 khi tinh luyen thanh cong o tren.
+                        player.itemVukhiThoiTrang.soLanTinhLuyenThatBai++;
                         // Thông báo thất bại
                         player.sendMessage(MessageCreator.createServerAlertMessage(
-                            "Tinh luyện thất bại!", ""));
+                            "Tinh luyện thất bại! Đã thất bại " +
+                            player.itemVukhiThoiTrang.soLanTinhLuyenThatBai + " lần liên tiếp.", ""));
                     }
         
                     // Cập nhật giao diện

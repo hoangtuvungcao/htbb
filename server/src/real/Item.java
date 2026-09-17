@@ -302,6 +302,8 @@ public class Item extends Actor {
     public int TinhLuyen;
     public int GiaHan;
     public int CaiTao;
+    /** So lan tinh luyen that bai LIEN TIEP o cung 1 moc - reset ve 0 khi tinh luyen thanh cong. */
+    public int soLanTinhLuyenThatBai;
 
     static {
         Item.COLOR_WHITE = 0;
@@ -1236,6 +1238,7 @@ public class Item extends Actor {
                 this.TinhLuyen = Integer.parseInt(data[30]);
                 this.GiaHan = Integer.parseInt(data[31]);
                 this.CaiTao = Integer.parseInt(data[32]);
+                this.soLanTinhLuyenThatBai = Integer.parseInt(data[33]);
             } catch (final Exception ex) {
             }
             if (this.typetieu > 6) {
@@ -1821,6 +1824,7 @@ public class Item extends Actor {
         info = String.valueOf(info) + "," + this.TinhLuyen;
         info = String.valueOf(info) + "," + this.GiaHan;
         info = String.valueOf(info) + "," + this.CaiTao;
+        info = String.valueOf(info) + "," + this.soLanTinhLuyenThatBai;
         return info;
     }
 
