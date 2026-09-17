@@ -240,6 +240,9 @@ public final class KiemCongThanhDoiDiemDiTieu {
         Kiem.dung("Choi gop thanh 1 muc ngau nhien", thanMang.contains("Chổi ngẫu nhiên (hệ + chỉ số random) 7 ngày"));
         Kiem.dung("Skin linh thu doi sang 7 ngay (khong con vinh vien)",
                 thanMang.contains("Skin linh thú Phúc Thú 7 ngày") && !thanMang.contains("\"Skin linh thú Phúc Thú\","));
+        // 17/09/2026: them Tu hon dan khoa x100 (1000 diem) - yeu cau nguoi dung.
+        Kiem.dung("them Tu hon dan khoa x100, gia 1000 diem",
+                thanMang.contains("\"Tụ hồn đan khoá x100\",") && mapJava.contains("800, 800,\n            1000,\n    };"));
 
         Kiem.dung("gia VKTT/Hoa thach/Nghe Thuong/Xich Cuoc/NLT dung: 1500,800,1200,1500,1500",
                 mapJava.contains("500, 500, 1500, 800, 1200, 1500, 1500,"));
@@ -257,8 +260,8 @@ public final class KiemCongThanhDoiDiemDiTieu {
             soTen++;
             p = thanMang.indexOf('"', q + 1);
         }
-        Kiem.bang("con dung 22 ten vat pham doi diem (28 truoc khi gop Canh/Choi, tru 3 bo + 6 gop = 22)",
-                Integer.valueOf(22), Integer.valueOf(soTen));
+        Kiem.bang("con dung 23 ten vat pham doi diem (22 sau khi gop Canh/Choi + 1 Tu hon dan moi them 17/09)",
+                Integer.valueOf(23), Integer.valueOf(soTen));
 
         final String itemJava = doc("src/real/Item.java");
         Kiem.dung("Item co ham createAttChoiNgauNhien(boolean)", itemJava.contains("public void createAttChoiNgauNhien(final boolean loaiTruTierCaoNhat)"));
@@ -392,45 +395,58 @@ public final class KiemCongThanhDoiDiemDiTieu {
 
         Kiem.dung("luongadd them Hoan My (idx3, truoc day chi Vang/Tim)",
                 suKien.contains("final int[] luongadd = {0, 0, 0, 100 + Map.r.nextInt(11), 100 + Map.r.nextInt(11), 100 + Map.r.nextInt(11), 0};"));
-        // 16/09/2026: ha moc lv70 -> lv65 (yeu cau nguoi dung), Tim 30 -> 35. Tbt/exp/
-        // diem doi thuong KHONG doi, van cho DEU o ca hai phia moc nay - xem chu thich
-        // dau if/else o CharSuKien.
+        // 16/09/2026: ha moc lv70 -> lv65 (yeu cau nguoi dung). Tbt/exp KHONG doi, van
+        // cho DEU o ca hai phia moc nay - xem chu thich dau if/else o CharSuKien.
         Kiem.dung("tu lv65: khoa nhanh cap luong/luong khoa lai (lvOpen < 65)",
                 suKien.contains("if (luongadd[colortieu] > 0 && lvOpen < 65) {"));
         Kiem.sai("khong con moc cu lv70 cho luong/luong khoa", suKien.contains("lvOpen < 70) {"));
-        Kiem.dung("tu lv65: cap bot xanh lam thay the (GemTemplate.BOT_XANH)",
+        Kiem.dung("tu lv65: cap Bot xanh la thay the (GemTemplate.BOT_XANH_LA, id 249)",
                 suKien.contains("} else if (lvOpen >= 65) {")
-                        && suKien.contains("self.doAddGemItem(GemTemplate.BOT_XANH, slBotXanh, true);"));
+                        && suKien.contains("self.doAddGemItem(GemTemplate.BOT_XANH_LA, slBotXanh, true);"));
         Kiem.sai("khong con moc cu lv70 cho bot xanh lam", suKien.contains("lvOpen >= 70) {"));
-        Kiem.dung("bot xanh lam: Hoan My/Vang/Tim dung muc co dinh rieng (10/20/35)",
-                suKien.contains("final int[] BOT_XANH_THEO_MAU = {10, 20, 35}; // [Hoan My, Vang, Tim]"));
-        Kiem.dung("bot xanh lam: Trang/Xanh/Do van giu random 1-3 cu",
+        // 17/09/2026: yeu cau nguoi dung mo rong bot xanh lam sang ca mau Do (truoc chi
+        // Hoan My/Vang/Tim), Tim giam 35 -> 30. Cung ngay: doi item thuc te tu
+        // GemTemplate.BOT_XANH (id 247, "Bột xanh") sang GemTemplate.BOT_XANH_LA (id 249,
+        // "Bột xanh lá") - "bot xanh lam" chi la ten goi tat, khong phai ten item that.
+        Kiem.dung("bot xanh lam: Do/Hoan My/Vang/Tim dung muc co dinh rieng (5/10/20/30)",
+                suKien.contains("final int[] BOT_XANH_THEO_MAU = {5, 10, 20, 30}; // [Do, Hoan My, Vang, Tim]"));
+        Kiem.dung("bot xanh lam: chi so xet tu mau Do tro len (colortieu >= 2)",
+                suKien.contains("if (colortieu >= 2) {")
+                        && suKien.contains("final int slGoc = BOT_XANH_THEO_MAU[colortieu - 2];"));
+        Kiem.dung("bot xanh lam: Trang/Xanh van giu random 1-3 cu",
                 suKien.contains("final int slGoc = Map.r.nextInt(3) + 1;"));
         // 16/09/2026: cuop tieu tu "giam mot nua qua div" doi thanh "gap 1,5 lan" cho ca
         // diem doi thuong LAN bot xanh lam (yeu cau nguoi dung) - RIENG voi div (exp/luong
         // van giam mot nua nhu cu, khong doi).
         Kiem.sai("bot xanh lam KHONG con giam mot nua qua div khi bi cuop (da doi cong thuc)",
-                suKien.contains("slBotXanh = Math.max(1, BOT_XANH_THEO_MAU[colortieu - 3] / div);")
+                suKien.contains("slBotXanh = Math.max(1, BOT_XANH_THEO_MAU[colortieu - 2] / div);")
                 || suKien.contains("slBotXanh = Math.max(1, (Map.r.nextInt(3) + 1) / div);"));
         Kiem.dung("bot xanh lam: cuop tieu duoc gap 1,5 lan (slGoc * 3 / 2), khong phai giam nua",
                 demSoLan(suKien, "slBotXanh = Math.max(1, isThief ? slGoc * 3 / 2 : slGoc);") == 2);
 
-        Kiem.dung("diem doi thuong: chi ap dung tu Hoan My tro len (colortieu >= 3)",
-                suKien.contains("if (colortieu >= 3) {") && suKien.contains("final int[] DIEM_DOI_THUONG = {15, 30, 50}; // [Hoan My, Vang, Tim]"));
+        // 17/09/2026: yeu cau nguoi dung mo rong diem doi thuong sang ca Do/Xanh (truoc
+        // chi Hoan My/Vang/Tim), Tim giam 50 -> 40, Vang giam 30 -> 25. Diem van cap DEU
+        // o ca hai phia moc lv65 (song song voi bot xanh lam tu lv65).
+        Kiem.dung("diem doi thuong: ap dung tu Xanh tro len (colortieu >= 1, Trang khong duoc)",
+                suKien.contains("if (colortieu >= 1) {") && suKien.contains("final int[] DIEM_DOI_THUONG = {5, 10, 15, 25, 40}; // [Xanh, Do, Hoan My, Vang, Tim]"));
         Kiem.sai("diem doi thuong KHONG con giam mot nua qua div khi bi cuop (da doi cong thuc)",
-                suKien.contains("final int diem = DIEM_DOI_THUONG[colortieu - 3] / div;"));
+                suKien.contains("final int diem = DIEM_DOI_THUONG[colortieu - 1] / div;"));
         Kiem.dung("diem doi thuong: cuop tieu duoc gap 1,5 lan diem cua van tieu thanh cong (diemGoc * 3 / 2)",
-                suKien.contains("final int diemGoc = DIEM_DOI_THUONG[colortieu - 3];")
+                suKien.contains("final int diemGoc = DIEM_DOI_THUONG[colortieu - 1];")
                         && suKien.contains("final int diem = isThief ? diemGoc * 3 / 2 : diemGoc;"));
 
         // Xac nhan bang tay cong thuc gap 1,5 lan cho tung mau (khong lam tron sai):
-        // Hoan My 15->22 (truncation 22,5->22), Vang 30->45, Tim 35->52 (truncation 52,5->52).
+        // Xanh 5->7, Do 10->15, Hoan My 15->22 (truncation 22,5->22), Vang 25->37
+        // (truncation 37,5->37), Tim 40->60.
+        Kiem.bang("diem Xanh cuop tieu: 5 * 3 / 2 = 7 (truncation, khong lam tron)", 7, 5 * 3 / 2);
+        Kiem.bang("diem Do cuop tieu: 10 * 3 / 2 = 15", 15, 10 * 3 / 2);
         Kiem.bang("diem Hoan My cuop tieu: 15 * 3 / 2 = 22 (truncation, khong lam tron)", 22, 15 * 3 / 2);
-        Kiem.bang("diem Vang cuop tieu: 30 * 3 / 2 = 45", 45, 30 * 3 / 2);
-        Kiem.bang("diem Tim cuop tieu: 50 * 3 / 2 = 75", 75, 50 * 3 / 2);
+        Kiem.bang("diem Vang cuop tieu: 25 * 3 / 2 = 37 (truncation, khong lam tron)", 37, 25 * 3 / 2);
+        Kiem.bang("diem Tim cuop tieu: 40 * 3 / 2 = 60", 60, 40 * 3 / 2);
+        Kiem.bang("bot xanh lam Do cuop tieu: 5 * 3 / 2 = 7 (truncation, khong lam tron)", 7, 5 * 3 / 2);
         Kiem.bang("bot xanh lam Hoan My cuop tieu: 10 * 3 / 2 = 15", 15, 10 * 3 / 2);
         Kiem.bang("bot xanh lam Vang cuop tieu: 20 * 3 / 2 = 30", 30, 20 * 3 / 2);
-        Kiem.bang("bot xanh lam Tim cuop tieu: 35 * 3 / 2 = 52 (truncation, khong lam tron)", 52, 35 * 3 / 2);
+        Kiem.bang("bot xanh lam Tim cuop tieu: 30 * 3 / 2 = 45", 45, 30 * 3 / 2);
     }
 
     private static int demSoLan(final String noiDung, final String mau) {

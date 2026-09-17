@@ -1273,7 +1273,7 @@ public class Map implements Runnable {
         hashCodeValue = 24;
         versionPotion = 69;
         versionGem = 15;
-        MAX_CLAN = 1342;
+        MAX_CLAN = 1344; // them icon 1342 (logo Manchester United) + 1343 (co sao vang), 17/09/2026
 
         try {
             listKillPerson.add(new Vector());
@@ -11344,6 +11344,12 @@ public class Map implements Runnable {
             // Ho ve lenh: random lv1-lv3 CUNG mot cap (5x/6x), 7 ngay. Da bo han muc 4x.
             "Hộ vệ lệnh 5x random lv1-3, 7 ngày",
             "Hộ vệ lệnh 6x random lv1-3, 7 ngày",
+            // Tu hon dan la Potion (TYPE_TU_HON_DAN_C1=83, data_potion isTrade=0 - da luon
+            // KHONG giao dich duoc, khoa la ban chat san co chu khong phai lua chon rieng),
+            // dem qua player.potions[83] nen xep chong duoc (khac Item id 714 dung khi cho
+            // thu an - tempateID rieng, KHONG stack, moi cai chiem 1 o hanh trang). Yeu cau
+            // nguoi dung 17/09/2026: doi 1000 diem lay 100 tu hon dan khoa.
+            "Tụ hồn đan khoá x100",
     };
     static final int[] GIA_DOI_THUONG = {
             500, 500, 1500, 800, 1200, 1500, 1500,
@@ -11353,6 +11359,7 @@ public class Map implements Runnable {
             2000, 2000,
             2000, 2000, 2000, 2000, 2000,
             800, 800,
+            1000,
     };
 
     public void showMenuDiemDoiThuong(Char player) {

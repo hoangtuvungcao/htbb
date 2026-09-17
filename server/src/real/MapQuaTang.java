@@ -966,6 +966,10 @@ class MapQuaTang {
             case 21: // Ho ve lenh 6x random lv1-3, 7 ngay
                 map.doCreateHoVeLenh(player, PHUT_7_NGAY, new int[]{636, 637, 638}[r.nextInt(3)]);
                 break;
+            case 22: // Tu hon dan khoa x100 (Potion.TYPE_TU_HON_DAN_C1=83, xep chong qua
+                     // potions[], isTrade=0 nen da khoa san - xem chu thich TEN_DOI_THUONG)
+                player.potions[Potion.TYPE_TU_HON_DAN_C1] += 100;
+                break;
             default:
                 return false;
         }
