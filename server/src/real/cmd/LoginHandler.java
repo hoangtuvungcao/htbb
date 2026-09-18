@@ -664,8 +664,8 @@ public class LoginHandler implements ICommandHandler {
                 offlineMap.playerJoin(p);
             }
             m = MessageCreator.createMapMessage(p);
-            p.map.doSendDynamicObj(p);
             session.sendMessage(m);
+            p.map.doSendDynamicObj(p);
             p.map.sendInfoNpc(p);
             p.map.sendDynamicEff(p);
             try {

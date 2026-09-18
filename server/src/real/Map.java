@@ -3170,6 +3170,34 @@ public class Map implements Runnable {
 
     public void doSendDynamicObj(Char player) {
         try {
+            boolean laMapLang = player.mapID == 0 || player.mapID == 301 || player.mapID == 302 || player.mapID == 303 || player.mapID == 304
+                    || player.mapID == 70 || player.mapID == 1701 || player.mapID == 1702 || player.mapID == 1703 || player.mapID == 1704
+                    || player.mapID == 80 || player.mapID == 1901 || player.mapID == 1902 || player.mapID == 1903 || player.mapID == 1904;
+            boolean suKienTrungThu = Char.isSuKienTrungThul2016();
+            util.Logger.logString(player.charname + " mapID=" + player.mapID + " inCountry=" + player.inCountry
+                    + " laMapLang=" + laMapLang + " suKienTrungThu=" + suKienTrungThu
+                    + " playerX=" + player.x + " playerY=" + player.y + " tileX=" + (player.x / 16) + " tileY=" + (player.y / 16)
+                    + " imgDynamic=" + (imgDynamic == null ? "null" : ("len" + imgDynamic.length + (imgDynamic.length > 6 && imgDynamic[6] != null ? "/img6=" + imgDynamic[6].length + "B" : "/img6=null")))
+                    , "debug_trungthu.txt");
+
+            // Trung Thu: dau lan mua (longden.png, idImg=6 trong imgDynamic) dat o cac map lang,
+            // canh vi tri NPC "Long den keo quan" (xem Map.sendInfoNpc / addNPC.tien.nu), lech
+            // theo phe nhu cac NPC do. Cac field nay (idImgDynamic/idImg/xDynamic/...) da co san
+            // tu truoc nhung chua tung duoc gan o dau ca nen doSendDynamicObj luon la no-op.
+            if (laMapLang && suKienTrungThu) {
+                byte[] xTheoPhe = {23, 18, 35};
+                byte[] yTheoPhe = {38, 32, 44};
+                player.map.idImgDynamic = new byte[]{6};
+                player.map.idImg = new byte[]{6};
+                player.map.xDynamic = new byte[]{xTheoPhe[player.inCountry]};
+                player.map.yDynamic = new byte[]{yTheoPhe[player.inCountry]};
+                player.map.limX = new byte[]{0};
+                player.map.limY = new byte[]{0};
+                player.map.nFrame = new byte[]{6};
+            } else {
+                player.map.idImgDynamic = null;
+            }
+
             if (player.map.idImgDynamic != null) {
                 Message m = new Message(-43);
                 m.dos.writeByte(player.map.idImgDynamic.length);
@@ -3191,10 +3219,12 @@ public class Map implements Runnable {
                 }
 
                 player.sendMessage(m);
+                util.Logger.logString(player.charname + " DA GUI message -43, x=" + player.map.xDynamic[0] + " y=" + player.map.yDynamic[0], "debug_trungthu.txt");
             }
         } catch (Exception var4) {
             var4.printStackTrace();
             System.out.println("LOI GUI THONG TIN DYNAMIC OBJ");
+            util.Logger.logString("LOI: " + var4, "debug_trungthu.txt");
         }
     }
 
@@ -4615,15 +4645,11 @@ public class Map implements Runnable {
                     return false;
                 }
 
-                if (p.isKiller || p.myCountry != mt.inCountry) 
+                if (p.isKiller || p.myCountry != mt.inCountry)
                 {
-                    int dlv = 10;
-                    if (mt.getTypeTieu() >= 4) 
-                    {
-                        dlv = 15;
-                    }
-
-                    if (abs(mt.level - p.lvDetail.lv) > dlv) 
+                    // Gioi han cuop tieu +-5 lv (yeu cau nguoi dung 19/09/2026), thay cho
+                    // 10/15 truoc day (15 danh rieng cho tieu loai >=4).
+                    if (abs(mt.level - p.lvDetail.lv) > 5)
                     {
                         return false;
                     }
@@ -14098,7 +14124,7 @@ public class Map implements Runnable {
 
         try {
             Vector<Item> item = player.sellShopItem;
-            Vector<GemItem> gitem = new Vector();
+            Vector<GemSellEntry> gitem = new Vector();
             msg = new Message(94);
             msg.dos.writeByte(1);
             msg.dos.writeByte(-67);
@@ -14142,7 +14168,7 @@ public class Map implements Runnable {
             msg.dos.writeByte(gitem.size());
 
             for (int i = 0; i < gitem.size(); i++) {
-                GemItem gem = (GemItem) gitem.get(i);
+                GemSellEntry gem = gitem.get(i);
                 msg.dos.writeShort(gem.realId);
                 msg.dos.writeShort(gem.idGemTemplate);
                 msg.dos.writeInt(gem.prizeSell);
@@ -14158,7 +14184,7 @@ public class Map implements Runnable {
 
         try {
             Vector<Item> item = npcSell[country][npcType - 11].shop[shopID].getListItemSell(charID);
-            Vector<GemItem> gitem = npcSell[country][npcType - 11].shop[shopID].getListGemItemSell(charID);
+            Vector<GemSellEntry> gitem = npcSell[country][npcType - 11].shop[shopID].getListGemItemSell(charID);
             msg = new Message(94);
             msg.dos.writeByte(type);
             msg.dos.writeByte(npcType);
@@ -14198,10 +14224,14 @@ public class Map implements Runnable {
             msg.dos.writeByte(gitem.size());
 
             for (int i = 0; i < gitem.size(); i++) {
-                GemItem gem = (GemItem) gitem.get(i);
+                // 19/09/2026: ban theo so luong. Gui gia TONG (prizeSell * soLuong) o dung field
+                // "prizeSell" cu de KHONG doi dinh dang goi tin - client van doc dung 3 field cu,
+                // chi thay o dong danh sach hien "gia" la tong tien ca lo (khong phai gia 1 vien).
+                // So luong that duoc noi ro trong popup xac nhan khi bam mua (doBuyItemOfUser).
+                GemSellEntry gem = gitem.get(i);
                 msg.dos.writeShort(gem.realId);
                 msg.dos.writeShort(gem.idGemTemplate);
-                msg.dos.writeInt(gem.prizeSell);
+                msg.dos.writeInt(gem.prizeSell * gem.soLuong);
             }
 
             player.sendMessage(msg);
@@ -16642,9 +16672,13 @@ public class Map implements Runnable {
                 }
 
                 if (!Char.isFinishAllSuKienTrungThul2016()) {
+                    // Vi tri rieng theo phe (nameCountry = Thanh long/Hac ho/Huyen vu): Thanh
+                    // long doi sang o (22,36), Hac ho + Huyen vu giu nguyen toa do goc
+                    // posNpcVuLan (368,608)/(560,704) - xem addNPC.java.
+                    int[][] posLongDenKeoQuan = new int[][]{{22 * 16, 36 * 16}, {288, 512}, {560, 704}};
                     player.sendMessage(
                             MessageCreator.createMsgNpc(
-                                    "Lồng đèn kéo quân", posNpcVuLan[player.inCountry][0], posNpcVuLan[player.inCountry][1], 80, 120, 3, 21, -65, (byte) 1
+                                    "Lồng đèn kéo quân", posLongDenKeoQuan[player.inCountry][0], posLongDenKeoQuan[player.inCountry][1], 100, 150, 3, 21, -65, (byte) 1
                             )
                     );
                 }

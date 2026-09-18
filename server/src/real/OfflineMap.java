@@ -16,6 +16,13 @@ import real.cmd.LoginHandler;
 import util.Logger;
 
 public class OfflineMap extends Map {
+   // Gian hang ban ngoc theo so luong (19/09/2026, NPC Nhat Nguu/Tam Giap). Rieng cua
+   // buoc "nhap so luong" them vao giua "Ten nguoi mua" va luc niem yet that su - xem
+   // doUserSellItemAfterInputText (type==1) va doUserSellGemQuantity.
+   public static final int INPUT_SO_LUONG_BAN_NGOC = -32052;
+   /** Tran an toan cho 1 dong niem yet - qua so nay coi la nhap sai, khong phai gioi han thiet ke. */
+   public static final int MAX_SO_LUONG_BAN_NGOC = 2000000000;
+
    public Hashtable<Integer, Vector<CMLocation>> ALL_LOCATION_OFFLINE = new Hashtable();
 
    public OfflineMap(int id) {
@@ -347,18 +354,14 @@ public class OfflineMap extends Map {
                   // ban dang chay tren luong phien rieng cua ho: giua hai buoc do ho co the da tieu
                   // mon nay o NPC (nghien, nang cap... - cac duong nay khong kiem isSelling) ma
                   // nguoi mua van nhan ban sao. Khong con trong tui = huy ban, khong ai mat tien.
-                  // Voi ngoc (type 1): ban ghi trong p.gemItem con ton tai khong co nghia con
-                  // ngoc MO de ban - ban ghi chi bi xoa khi CA listGemitem LAN listGemitemLock
-                  // ve 0 (xem Char.delGem), nen nguoi ban tieu het ngoc mo o mot duong khac
-                  // (ep ngoc, che tao...) ma van con ngoc KHOA cung loai thi ban ghi van con,
-                  // "conHang" truoc day chi kiem su ton tai cua ban ghi la sai: ban van "ban
-                  // duoc" 1 vien du listGemitem = 0, nguoi mua nhan ngoc tu khong khi.
+                  // Voi ngoc (type 1, ban theo so luong tu 19/09/2026): kiem nguoi ban con SO HUU
+                  // du >= so luong dong niem yet nay hay khong (delGem/doAddGemItem se tinh lai
+                  // toan bo bang counter, khong con doi tuong GemItem rieng cho tung dong nua).
                   boolean conHang = (type == 0)
                         ? p.iItems.remove((Item)item)
-                        : (p.getItemFormVector(((GemItem)item).idOffGemPlayer, p.gemItem) != null
-                                && p.listGemitem[((GemItem)item).idGemTemplate] > 0);
+                        : p.listGemitem[((GemSellEntry)item).idGemTemplate] >= ((GemSellEntry)item).soLuong;
                   if (!conHang) {
-                     npcSell[player.inCountry][idNpc - 11].removeItem(shopId, p, item, type, type == 0 ? 0 : ((GemItem)item).realId);
+                     npcSell[player.inCountry][idNpc - 11].removeItem(shopId, p, item, type, type == 0 ? 0 : ((GemSellEntry)item).realId);
                      item.isSelling = false;
                      player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không còn trong hành trang người bán.", ""));
                      return;
@@ -366,7 +369,7 @@ public class OfflineMap extends Map {
 
                   long sf = p.getxu();
                   long bf = player.getxu();
-                  npcSell[player.inCountry][idNpc - 11].removeItem(shopId, p, item, type, type == 0 ? 0 : ((GemItem)item).realId);
+                  npcSell[player.inCountry][idNpc - 11].removeItem(shopId, p, item, type, type == 0 ? 0 : ((GemSellEntry)item).realId);
                   NewClan clan = NewClan.getClan(idClanTown[player.inCountry]);
                   if (clan != null) {
                      if (taxOfClan[player.inCountry] < 0) {
@@ -450,6 +453,7 @@ public class OfflineMap extends Map {
                      newItem.id = player.getIDItem();
                      player.iItems.add(newItem);
                   } else if (type == 1) {
+                     GemSellEntry entry = (GemSellEntry)item;
                      try {
                         Database.instance
                            .saveLogSellItem(
@@ -457,11 +461,12 @@ public class OfflineMap extends Map {
                               player.charname,
                               // 16/09/2026: them idTemplate (nhieu ngoc trung ten nhau - xem
                               // khao sat data_item) va in loi neu ghi that bai (truoc day nuot
-                              // im lang, khac nhanh Item ben tren).
-                              "idTemplate" + ((GemItem)item).getTemplate().id + "_"
-                                 + ((GemItem)item).getTemplate().name
-                                 + "_"
-                                 + ((GemItem)item).prizeSell
+                              // im lang, khac nhanh Item ben tren). 19/09/2026: them soLuong
+                              // (ban theo so luong, khong con luon la 1).
+                              "idTemplate" + entry.idGemTemplate + "_"
+                                 + Map.gemTemplate[entry.idGemTemplate].name
+                                 + "_soLuong" + entry.soLuong
+                                 + "_" + entry.prizeSell
                                  + " | bf: "
                                  + bf
                                  + " |sf: "
@@ -477,19 +482,12 @@ public class OfflineMap extends Map {
                         System.out.println("LOI SAVE GEMBUY");
                      }
 
-                     GemItem gem = (GemItem)item;
-                     ((GemItem)item).prizeSell = 0;
-                     if (p.listGemitem[gem.idGemTemplate] > 0) {
-                        p.listGemitem[gem.idGemTemplate]--;
-                     }
-
-                     p.allGemUse[gem.idGemTemplate]++;
-                     if (p.listGemitem[gem.idGemTemplate] <= 0 && p.listGemitemLock[gem.idGemTemplate] <= 0) {
-                        p.removeGemItem(gem.idOffGemPlayer);
-                     }
-
-                     p.removeIDItem(gem.idOffGemPlayer);
-                     player.doAddGemItem(gem.idGemTemplate);
+                     entry.prizeSell = 0;
+                     // delGem/doAddGemItem (co san, dung chung voi moi duong tru/cong ngoc
+                     // khac trong game) tu lo het: tru/cong counter, don marker rong, giai
+                     // phong id - khong con can dong tay tung buoc nhu ban goc 1-vien/lan.
+                     p.delGem(entry.idGemTemplate, entry.soLuong, false);
+                     player.doAddGemItem(entry.idGemTemplate, entry.soLuong, false);
                   }
 
                   m = new Message(95);
@@ -634,13 +632,18 @@ public class OfflineMap extends Map {
             if (p != null) {
                Actor item = null;
                if ((item = npcSell[player.inCountry][idNpc - 11].checkItemSell(shopId, charID, itemID, type)) != null) {
-                  if ((type == 0 ? p.getItemFormVector(p.iItems, itemID) : p.getItemFormVector(((GemItem)item).idOffGemPlayer, p.gemItem)) == null) {
-                     npcSell[player.inCountry][idNpc - 11].removeItem(shopId, p, item, type, type == 0 ? 0 : ((GemItem)item).realId);
+                  // type==1 (ngoc, ban theo so luong - 19/09/2026): khong con "1 dong = 1 vien"
+                  // co the doi chieu bang idOffGemPlayer nhu truoc, kiem tra thay bang so
+                  // luong nguoi ban con SO HUU >= so luong dang niem yet o dong nay.
+                  if (type == 0 ? p.getItemFormVector(p.iItems, itemID) == null
+                        : p.listGemitem[((GemSellEntry)item).idGemTemplate] < ((GemSellEntry)item).soLuong) {
+                     npcSell[player.inCountry][idNpc - 11].removeItem(shopId, p, item, type, type == 0 ? 0 : ((GemSellEntry)item).realId);
                      item.isSelling = false;
                      return;
                   }
 
-                  if (player.getxu() < (long)(type == 0 ? ((Item)item).prizeSell : ((GemItem)item).prizeSell)) {
+                  long tongGia = type == 0 ? (long)((Item)item).prizeSell : (long)((GemSellEntry)item).prizeSell * ((GemSellEntry)item).soLuong;
+                  if (player.getxu() < tongGia) {
                      player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ tiền.", ""));
                      return;
                   }
@@ -663,14 +666,16 @@ public class OfflineMap extends Map {
                            player.id, 2, "Bạn muốn mua " + ((Item)item).getTemplate().name + " với giá " + ((Item)item).prizeSell + " không?"
                         )
                      );
-                     player.sellerInfo.priceSell = (long)((Item)item).prizeSell;
+                     player.sellerInfo.priceSell = tongGia;
                   } else if (type == 1) {
+                     GemSellEntry entry = (GemSellEntry)item;
                      player.sendMessage(
                         MessageCreator.createMsgPopUp(
-                           player.id, 2, "Bạn muốn mua " + ((GemItem)item).getTemplate().name + " với giá " + ((GemItem)item).prizeSell + " không?"
+                           player.id, 2,
+                           "Bạn muốn mua " + Map.gemTemplate[entry.idGemTemplate].name + " (số lượng " + entry.soLuong + ") với giá " + tongGia + " không?"
                         )
                      );
-                     player.sellerInfo.priceSell = (long)((GemItem)item).prizeSell;
+                     player.sellerInfo.priceSell = tongGia;
                   }
                } else {
                   this.sendListItemToUser(player, charID, idNpc, shopId, 1, player.inCountry);
@@ -727,10 +732,26 @@ public class OfflineMap extends Map {
                      return;
                   }
 
-                  if (((GemItem)item).idGemTemplate < 11 || ((GemItem)item).idGemTemplate == 245) {
+                  if (item == null || ((GemItem)item).idGemTemplate < 11 || ((GemItem)item).idGemTemplate == 245) {
                      player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này không thể bán2", ""));
                      return;
                   }
+
+                  // Ngoc (type==1): thay vi niem yet ngay 1 vien, hoi them so luong muon ban
+                  // (ban gop nhieu vien thanh 1 dong, xem doUserSellGemQuantity). Danh ItemWaitSell
+                  // moi giu du du lieu (gom ca ten nguoi mua trong charBuy) cho buoc ke tiep.
+                  ItemWaitSell wait = new ItemWaitSell();
+                  wait.type = type;
+                  wait.sell = true;
+                  wait.seller = seller;
+                  wait.shopId = shopId;
+                  wait.itemID = itemID;
+                  wait.prize_sell = prize_sell;
+                  wait.charBuy = privatename;
+                  player.itemwait = wait;
+                  util.Logger.logString(player.charname + " da gui prompt nhap so luong, INPUT_SO_LUONG_BAN_NGOC=" + INPUT_SO_LUONG_BAN_NGOC, "debug_gian_hang.txt");
+                  player.sendMessage(MessageCreator.createMsgInputText(INPUT_SO_LUONG_BAN_NGOC, 0, "Nhập số lượng muốn bán", 1));
+                  return;
                }
 
                if (type == 0) {
@@ -866,6 +887,96 @@ public class OfflineMap extends Map {
                Logger.logString("ERRO_SELL_ITEM", "errorSellITem.txt");
             }
          }
+      }
+   }
+
+   /** Buoc cuoi cua "ban ngoc theo so luong": nguoi choi vua go so luong sau khi da chon gia + ten nguoi mua. */
+   public void doUserSellGemQuantity(Char player, String text) {
+      util.Logger.logString(player.charname + " doUserSellGemQuantity vao ham, text=" + text
+              + " itemwait=" + (player.itemwait == null ? "null" : ("type=" + player.itemwait.type + " sell=" + player.itemwait.sell)),
+              "debug_gian_hang.txt");
+      if (player.itemwait == null || player.itemwait.type != 1 || !player.itemwait.sell) {
+         return;
+      }
+
+      ItemWaitSell wait = player.itemwait;
+      player.itemwait = null;
+
+      // checkTrade tra ve TRUE khi CO van de (dang giao dich/da chet) - nguoc voi cach doc
+      // truoc do o day ("!checkTrade" o cac ham khac dung de BAO QUANH logic chinh, khong
+      // phai lam dieu kien return som). Dung nguoc cuc gay im lang khong loi, sua 19/09/2026.
+      if (this.checkTrade(player)) {
+         return;
+      }
+
+      if (player.myCountry != player.inCountry) {
+         player.sendMessage(MessageCreator.createServerAlertMessage("Chỉ có thể rao bán tại làng của mình.", ""));
+         return;
+      }
+
+      long soLuong;
+      try {
+         soLuong = Long.parseLong(text.trim());
+      } catch (Exception ignored) {
+         player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng không hợp lệ.", ""));
+         return;
+      }
+
+      if (soLuong <= 0L || soLuong > (long) MAX_SO_LUONG_BAN_NGOC) {
+         player.sendMessage(MessageCreator.createServerAlertMessage("Số lượng không hợp lệ.", ""));
+         return;
+      }
+
+      byte seller = (byte) wait.seller;
+      byte shopId = (byte) wait.shopId;
+      short itemID = (short) wait.itemID;
+      int prize_sell = wait.prize_sell;
+
+      Actor item = player.getItemFormVector(itemID, player.gemItem);
+      if (item == null) {
+         player.sendMessage(MessageCreator.createServerAlertMessage("Không tìm thấy vật phẩm.", ""));
+         return;
+      }
+
+      short idGemTemplate = ((GemItem) item).idGemTemplate;
+      if (idGemTemplate < 11 || idGemTemplate == 245) {
+         player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm này không thể bán2", ""));
+         return;
+      }
+
+      if (!npcSell[player.myCountry][seller - 11].canSellItem(-1)) {
+         player.sendMessage(MessageCreator.createServerAlertMessage(npcSell[player.myCountry][seller - 11].infoItemSell(), ""));
+         return;
+      }
+
+      int daNiemYet = player.listGemitemSell[idGemTemplate];
+      if ((long) player.listGemitem[idGemTemplate] - (long) daNiemYet < soLuong) {
+         player.sendMessage(
+            MessageCreator.createServerAlertMessage(
+               "Bạn chỉ còn " + (player.listGemitem[idGemTemplate] - daNiemYet) + " chưa niêm yết.", ""
+            )
+         );
+         return;
+      }
+
+      util.Logger.logString(player.charname + " sap goi addGemItemSellBulk idGemTemplate=" + idGemTemplate
+              + " soLuong=" + soLuong + " prize=" + prize_sell + " seller=" + seller + " shopId=" + shopId, "debug_gian_hang.txt");
+      boolean ok = npcSell[player.myCountry][seller - 11].addGemItemSellBulk(player, shopId, idGemTemplate, (int) soLuong, prize_sell, wait.charBuy);
+      util.Logger.logString(player.charname + " addGemItemSellBulk ket qua=" + ok, "debug_gian_hang.txt");
+      if (ok) {
+         try {
+            Message m = new Message(92);
+            m.dos.writeBoolean(true);
+            m.dos.writeShort(itemID);
+            m.dos.writeInt(prize_sell);
+            m.dos.writeByte(1);
+            m.dos.writeShort(idGemTemplate);
+            player.sendMessage(m);
+         } catch (Exception ignored) {
+         }
+         this.sendListItemToUser(player, player.id, seller, shopId, 1, player.myCountry);
+      } else {
+         player.sendMessage(MessageCreator.createServerAlertMessage("Không thể bán (gian hàng đã đầy 20 dòng niêm yết).", ""));
       }
    }
 
@@ -1008,7 +1119,7 @@ public class OfflineMap extends Map {
                   mx.dos.writeShort(itemID);
                   mx.dos.writeByte(type);
                   if (type == 1) {
-                     mx.dos.writeShort(((GemItem)item).idGemTemplate);
+                     mx.dos.writeShort(((GemSellEntry)item).idGemTemplate);
                   }
 
                   player.sendMessage(mx);

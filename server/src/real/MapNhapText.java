@@ -355,6 +355,15 @@ class MapNhapText {
                     return;
                 }
 
+                if (idActor == OfflineMap.INPUT_SO_LUONG_BAN_NGOC) {
+                    util.Logger.logString(player.charname + " MapNhapText nhan idActor=INPUT_SO_LUONG_BAN_NGOC text=" + text
+                            + " mapClass=" + map.getClass().getName(), "debug_gian_hang.txt");
+                    if (map instanceof OfflineMap) {
+                        ((OfflineMap) map).doUserSellGemQuantity(player, text);
+                    }
+                    return;
+                }
+
                 if (idActor == -32046) {
                     if (text.equals(player.charname)) {
                         return;
