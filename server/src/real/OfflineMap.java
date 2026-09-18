@@ -562,7 +562,7 @@ public class OfflineMap extends Map {
    protected void doPutItem2Bag(Char player, short itemID) {
       if (!this.checkTrade(player)) {
          if (player.isPutItem2Bag) {
-            if (player.bItem.size() >= 15) {
+            if (player.bItem.size() >= Char.MAX_KHO_DO) {
                try {
                   Message m = MessageCreator.createServerAlertMessage("Kho đồ đã đầy", "");
                   player.sendMessage(m);

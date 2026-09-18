@@ -8306,7 +8306,7 @@ public class Map implements Runnable {
                         return;
                     }
         
-                    if (player.bagItems.size() >= 42) {
+                    if (player.bagItems.size() >= Char.MAX_TUI_DO) {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Túi đồ đã đầy", ""));
                         return;
                     }
@@ -14636,7 +14636,7 @@ public class Map implements Runnable {
         if (player.isVip()) {
             if (!this.checkTrade(player)) {
                 if (player.isPutItem2Bag) {
-                    if (player.bItem.size() >= 15) {
+                    if (player.bItem.size() >= Char.MAX_KHO_DO) {
                         try {
                             Message m = MessageCreator.createServerAlertMessage("Kho đồ đã đầy", "");
                             player.sendMessage(m);

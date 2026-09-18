@@ -886,7 +886,13 @@ public class Char extends LiveActor {
     /** Moc thoi gian dung lan cuoi cua tung loai binh. */
     public long[] timeUsePotion = new long[200];
     /** So tui hanh trang toi da mo rong duoc (moi tui = MAX_INVENTORY o). */
+    // 19/09/2026: nang tran tang tui tu 5 len 6 (yeu cau nguoi dung) -> tong toi da
+    // MAX_INVENTORY * MAX_BAG_LIMIT = 42 * 6 = 252 o (truoc la 210).
     public static final byte MAX_BAG_LIMIT = 5;
+    /** Kho do NPC Anh bay (bItem) - truoc la 15 co dinh, +42 theo yeu cau nguoi dung 19/09/2026. */
+    public static final int MAX_KHO_DO = 57;
+    /** "Tui Do" (bagItems, menu NPC "Mo Tui Do"/"Bo do vao tui") - truoc la 42 co dinh, +42 theo yeu cau nguoi dung 19/09/2026. */
+    public static final int MAX_TUI_DO = 84;
     /** Tong so nguyen lieu (gem) toi da giu duoc khi mua tu Phu ong o lang. */
     public static final int MAX_GEM_TOTAL = 1000000;
     /** Vong quay vip (thay ngu hanh) — sua 4 hang so nay de chinh gioi han. */
