@@ -59,10 +59,12 @@ import static real.Map.ID_VU_KHI_THOI_TRANG;
 import static real.Map.TYPE_SHOP_NEW_BO_ITEM_VAO_TUI;
 import static real.Map.TYPE_SHOP_NEW_CUA_HANG_VIP;
 import static real.Map.TYPE_SHOP_NEW_TUI_DO;
+import static real.Map.TYPE_SHOP_NEW_TRUNG_THU;
 import static real.Map.abs;
 import static real.Map.allUser;
 import static real.Map.allWedding;
 import static real.Map.all_item_shop_special;
+import static real.Map.all_item_shop_trungthu;
 import static real.Map.checkCanReceiveLixi;
 import static real.Map.checkFullNation;
 import static real.Map.doTuoiNuocCayLixi;
@@ -319,6 +321,15 @@ class MapDoMenu {
                             player.isNghienAuto = true;
                             return;
                         }
+                        case 7:
+                            // Moi 19/09/2026: "Shop Trung Thu" - chi hien khi su kien dang
+                            // bat (menu da tu gate o Map.java dong ~8174), nhung kiem tra lai
+                            // o day cho chac neu client cache menu cu.
+                            if (Char.isFinishAllSuKienTrungThul2016()) {
+                                return;
+                            }
+                            player.sendMessage(MessageCreator.createMessageShopNew(player, all_item_shop_trungthu, "Mua", "Shop Trung Thu", TYPE_SHOP_NEW_TRUNG_THU));
+                            break;
                     }
                 }
                 return;

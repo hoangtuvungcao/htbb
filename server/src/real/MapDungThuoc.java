@@ -206,10 +206,14 @@ class MapDungThuoc {
                             case 109:
                             case 110:
                             case 111:
+                            default:
+                                break;
                             case 156:
                             case 157:
                             case 158:
-                            default:
+                                // Trung Thu 2026 (sua 19/09/2026): dong bo voi doUsePotion.java -
+                                // xem chu thich o do.
+                                map.doDotLua(player, potionType);
                                 break;
                             case 21:
                                 map.doUseHP(player, potionType, 1500);

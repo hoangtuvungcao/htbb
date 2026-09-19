@@ -143,10 +143,22 @@ public final class DatabaseCanMocThaDen {
         }
     }
 
-    /** True neu HOM NAY dung la ngay server vua cham moc 10.000 (chi dung 1 ngay duy nhat). */
+    private static volatile boolean capNhatHomNayLaNgayDat10000 = false;
+    private static volatile long lanCapNhatCuoiHomNayLaNgayDat10000 = 0L;
+
+    /**
+     * True neu HOM NAY dung la ngay server vua cham moc 10.000 (chi dung 1 ngay duy nhat).
+     * Sua 19/09/2026: ham nay duoc goi tu Monster.apDungGiamExpTheoCapNV() - TREN MOI LAN
+     * cong exp giet quai cua MOI nguoi choi (rat thuong xuyen) - ban cu truy DB THAT moi
+     * lan goi se lam qua tai DB duoi tai nang. Them cache bo nho, lam moi toi da 1 phut/lan.
+     */
     public static boolean homNayLaNgayDat10000() {
+        final long bayGio = System.currentTimeMillis();
+        if (bayGio - lanCapNhatCuoiHomNayLaNgayDat10000 < 60000L) {
+            return capNhatHomNayLaNgayDat10000;
+        }
         if (!taoBang()) {
-            return false;
+            return capNhatHomNayLaNgayDat10000;
         }
         Connection conn = null;
         PreparedStatement pre = null;
@@ -156,10 +168,12 @@ public final class DatabaseCanMocThaDen {
             pre = conn.prepareStatement(
                     "SELECT 1 FROM " + BANG_DEM + " WHERE id = 1 AND ngay_dat_10000 = CURDATE()");
             rs = pre.executeQuery();
-            return rs.next();
+            capNhatHomNayLaNgayDat10000 = rs.next();
+            lanCapNhatCuoiHomNayLaNgayDat10000 = bayGio;
+            return capNhatHomNayLaNgayDat10000;
         } catch (final Exception e) {
             System.out.println("[CANMOC_THADEN] loi kiem tra ngay dat 10000: " + e);
-            return false;
+            return capNhatHomNayLaNgayDat10000;
         } finally {
             dong(rs, pre, conn);
         }

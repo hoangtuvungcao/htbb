@@ -264,11 +264,17 @@ public class doUsePotion {
                     // rieng o cuoi switch nay. 109/110 (Bo hoa vang/do, su kien Vu Lan viet
                     // lai) cung xu ly rieng - xem case Potion.TYPE_BO_HOA_VANG/TYPE_BO_HOA_DO
                     // ben duoi, KHONG duoc de o day nua (trung nhan case).
+                    default:
+                        break;
                     case 156:
                     case 157:
                     case 158:
-
-                    default:
+                        // Trung Thu 2026 (sua 19/09/2026, yeu cau nguoi dung): truoc day 3 case
+                        // nay roi thang vao default (khong lam gi), nen dot Lua thuong/vua/to
+                        // khong co hieu ung gi ca du phan tieu thu buff (Char.getValueLua) da
+                        // dung san. Goi doDotLua() (moi sua lai dung id 156/157/158, xem
+                        // Map.java) de thuc su tao vung hieu ung tai vi tri nguoi choi dang dung.
+                        map.doDotLua(player, potionType);
                         break;
                     case 21:
                         map.doUseHP(player, potionType, 1500);

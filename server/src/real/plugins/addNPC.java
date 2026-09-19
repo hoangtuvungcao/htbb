@@ -50,10 +50,10 @@ public class addNPC {
                  player.sendMessage(MessageCreator.createMsgNpc("Phù Thủy Dễ Thương", posNpcVuLan[player.inCountry][0], posNpcVuLan[player.inCountry][1], 15, 31, 2, 20, -49, (byte) 1));
             }
         }
-        if (Char.isSuKienTrungThul2016() && player.getLevel() >= 40) {
-            if (player.mapID == 0 || player.mapID == 301 || player.mapID == 302 || player.mapID == 303 || player.mapID == 304 || player.mapID == 70 || player.mapID == 1701 || player.mapID == 1702 || player.mapID == 1703 || player.mapID == 1704 || player.mapID == 80 || player.mapID == 1901 || player.mapID == 1902 || player.mapID == 1903 || player.mapID == 1904) {
-                player.sendMessage(MessageCreator.createMsgNpc("tien.nu", posNpcSANTA[player.inCountry][0], posNpcSANTA[player.inCountry][1], 15, 31, 2, 14, -49, (byte) 1));
-            }
-        }
+        // NPC Trung Thu (truoc la "tien.nu" qua createMsgNpc don gian) da chuyen sang bot
+        // Char dang ky that su, mac dung "Ao Hang Nga" bang setInfoModelCharBot(0, 574) -
+        // xem MapNapTaiNguyen.loadNpcServer(). He createMsgNpc o day chi ve 1 sprite tinh
+        // theo idImg, KHONG the hien dung trang phuc "model clothes" nhieu manh nhu do
+        // nguoi choi mac, nen doi han sang bot dang ky de dung dung he thong.
     }
 }

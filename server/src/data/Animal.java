@@ -298,14 +298,12 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
     }
 
     public boolean isAnimalCanTang() {
-        return false;
-//        return (this.isHeo() 
-//                || this.isNguaXuong() 
-//                || this.isPhuongHoangBang() 
-//                || this.isPhuongHoangLua() 
-//                || this.isPoro()) 
-//                || this.level > 1;
-//                && this.texpire > 0L; 
+        // Sua 19/09/2026 (yeu cau nguoi dung): thu cuoi Lan Su Tu VA pet Dai Bach Thu
+        // (isPoro) tu thuong Tha den/Hop banh dac biet Trung Thu 2026 PHAI giao dich duoc.
+        // Chi mo rieng hai loai nay - KHONG khoi phuc lai toan bo danh sach cu (Heo/Ngua
+        // Xuong/Phuong Hoang...) da bi tat het truoc do (khong ro ly do goc, tranh anh
+        // huong ngoai y muon ra ngoai pham vi Trung Thu).
+        return this.isLan() || this.isPoro();
     }
 
     public boolean isRongLon() {

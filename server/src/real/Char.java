@@ -855,6 +855,18 @@ public class Char extends LiveActor {
      * buff som, chap nhan don gian hoa nay.
      */
     public long trungThuMoc300HetHan;
+    /** Lan dot den (thap nen) gan nhat - spec "thap nen se mat 3 phut" (them 19/09/2026,
+     * chi trong bo nho nhu trungThuMoc300HetHan ngay tren, khong luu DB). */
+    public long lanDotDenGanNhat;
+    /** Trung Thu 2026 (moi 19/09/2026): tong SO LUONG da tieu trong su kien, dung de tinh
+     * "diem tieu xai" (cu 2 luong = 1 diem, xem subLuong()) doi lay long den o NPC Hang
+     * Nga - KHAC voi luongxai/luongxainhanRuong (bi nhieu su kien khac DUNG CHUNG, doi diem
+     * rieng cho Trung Thu se lam nham voi cac su kien khac neu tai su dung). Co luu DB
+     * (pInfo, xem CharVongLap/CharNapDuLieu) vi qua trinh tieu luong thuong keo dai qua
+     * nhieu lan dang nhap, khac trungThuMoc300HetHan/lanDotDenGanNhat (chi mang tinh tam
+     * thoi trong 1 phien).
+     */
+    public long luongDaXaiTrungThu;
     public static Cooking nauBanhChung;
     public static Cooking nauBanhTet;
     public Vector<Item> itemPetEat;
@@ -1609,6 +1621,14 @@ public class Char extends LiveActor {
         int x2 = this.x2;
         if (Map.minuteX2Country[this.myCountry] > 0L) {
             x2 = Map.x2Country[this.myCountry];
+        }
+        if (x2 == 0 && this.trungThuMoc300HetHan > System.currentTimeMillis()) {
+            // Trung Thu 2026 - moc 300 lan tha den (yeu cau nguoi dung "tang vang up khi
+            // danh quai" trong 24h, xem MapSuKien.java doMenuTrungThu2016): tan dung lai
+            // bac x2=1 co san (+50% vang roi khi giet quai, xem Monster.java ~dong 882-883)
+            // thay vi lam rieng mot co che tang vang moi - khong ghi de neu nguoi choi dang
+            // co ve x2 vang khac manh hon (x2Country hoac x2 tu mua rieng).
+            x2 = 1;
         }
         return (this.x25Exp > 0) ? 3 : x2;
     }
@@ -9392,6 +9412,32 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
+    /**
+     * Trung Thu 2026 (moi 19/09/2026): pet Capybara - nhai y het doCreatePetBachThu() ben
+     * tren nhung dung item 873 ("Capybara", data_item) + petTemplate idTemplate=30 (Map.java).
+     */
+    public void doCreatePetCapybara(final int time, final boolean isShow) {
+        final ItemTemplates template = (ItemTemplates) Map.itemTemplates.get(0).get(873);
+        Item newItem = null;
+        newItem = new Item(template, false, 0, 0, template.id);
+        newItem.id = this.getIDItem();
+        newItem.owner = this.charDBID;
+        newItem.level = newItem.getTemplate().level;
+        if (time > 0) {
+            newItem.minuteExist = time;
+            newItem.timeLoan = System.currentTimeMillis();
+        }
+        newItem.identify = this.charDBID;
+        newItem.clazz = 0;
+        newItem.doAddOptionPet(template.atb[0]);
+        newItem.dateCreate = getDayTime(0L);
+        this.createPet(30, newItem.minuteExist, newItem);
+        this.sendMessage(MessageCreator.createCharInventoryMessage(this, 1));
+        if (isShow) {
+            this.sendMessage(MessageCreator.createServerAlertMessage("Nhận được Capybara", ""));
+        }
+    }
+
     public synchronized void doCreatePet(final Item itemtrung) {
         if (!this.iItems.contains(itemtrung)) {
             return;
@@ -10254,19 +10300,26 @@ public int applyRongLonReleaseTo(int baseDamage) {
      * Trung Thu 2026: BO hoan toan phan cong cung 500.000 exp truoc day (nguoi dung xac nhan
      * hop dac biet CHI con ngau nhien 1 trong bang qua duoi, khong cong them co dinh nua -
      * rieng "EXP luon co" gio la MOT O ngau nhien trong bang, khong phai bonus ngoai bang).
-     * Bang qua doi lai theo dung danh sach spec moi; Ngo Khong/Duong Tang CHUA co item that
-     * trong du lieu nen tam thoi bo qua (chi dung Bat Gioi/Sa Tang), theo yeu cau nguoi dung.
+     * Bang qua doi lai theo dung danh sach spec moi.
+     *
+     * Sua 19/09/2026 (yeu cau nguoi dung, 2 lan): (1) 4 o "manh" cuoi bang truoc day dung
+     * SAI loai (kim cang thay vi gang) VA lan sang Sa Tang - nguoi dung xac nhan HIEN CHUA
+     * co cac manh Sa Tang/Ngo Khong nen BO HET, chi giu dung 4 manh Bat Gioi da co san
+     * (kim co 851, gang 853, giay 852, quan 849) dung nhu spec "Manh Kim Co/Gang Bat Gioi".
      */
     public void doOpenHopBanhTrungThuDacBiet() {
         // Trong so dieu chinh 19/09/2026 (yeu cau nguoi dung): 200.000 exp (idx 13) len
         // 10%, Manh ban do 3 (idx 14) len 8%, Sach ky nang pet (idx 9) va Tien dan (idx
         // 22) giam xuong con 1% moi loai. 24 muc con lai GIU NGUYEN trong so cu (khong
         // dong, chi bi anh huong nhe do tong bang thay doi 12500 -> 12876).
-        final int[] per      = {400, 400, 600, 600, 600, 600, 500, 500, 800, 129, 500, 500, 300, 1288, 1030, 700, 800, 800, 150, 150, 150, 150, 129, 500, 150, 150, 150, 150};
-        final int[] idgift   = {GemTemplate.XUONG_C5, GemTemplate.XUONG_C6, 123, 82, 7, 13, 676, 677, 136, 111, 156, 157, GemTemplate.LKD_40, 0, 117, 0, 93, 95, 12, 19, 20, 0, 119, 100, 851, 857, 850, 856};
-        final int[] typegift = {6, 6, 4, 4, 4, 4, 3, 3, 4, 4, 4, 4, 6, 7, 4, 8, 4, 4, 9, 9, 9, 10, 4, 4, 3, 3, 3, 3};
-        final int[] soluongmax = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-        final int[] soluongmin = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        // Them idx 28 (Long den vinh vien, typegift 13) va idx 29 (Thuoc hoa hinh, typegift
+        // 14) 19/09/2026 - 2 muc spec doi hoi ma ban truoc dang thieu hoan toan.
+        // Them idx 30 (pet Capybara, typegift 15) 19/09/2026.
+        final int[] per      = {400, 400, 600, 600, 600, 600, 500, 500, 800, 129, 500, 500, 300, 1288, 1030, 700, 800, 800, 150, 150, 150, 150, 129, 500, 150, 150, 150, 150, 150, 150, 150};
+        final int[] idgift   = {GemTemplate.XUONG_C5, GemTemplate.XUONG_C6, 123, 82, 7, 13, 676, 677, 136, 111, 156, 157, GemTemplate.LKD_40, 0, 117, 0, 93, 95, 12, 19, 20, 0, 119, 100, 851, 853, 852, 849, 0, 0, 0};
+        final int[] typegift = {6, 6, 4, 4, 4, 4, 3, 3, 4, 4, 4, 4, 6, 7, 4, 8, 4, 4, 9, 9, 9, 10, 4, 4, 3, 3, 3, 3, 13, 14, 15};
+        final int[] soluongmax = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+        final int[] soluongmin = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
         if (this.isFullInventory()) {
             return;
         }
@@ -10329,6 +10382,24 @@ public int applyRongLonReleaseTo(int baseDamage) {
         } else if (typegift[index] == 10) {
             final Item hvl = Map.doCreateHoVeLenhByLevel(this, 10080);
             info = String.valueOf(info) + (hvl != null ? hvl.getName() : "hộ vệ lệnh");
+            this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        } else if (typegift[index] == 13) {
+            // Long den VINH VIEN (moi 19/09/2026, spec doi hoi rieng biet voi 3 o thoi han
+            // idx 18-20) - dung dung idTemplate=28 ("Long den hoa sen"), template DUY NHAT
+            // co Pet.isPetLongDenvinhVien()==true trong petTemplate.
+            this.createPetVinhVien(28);
+            info = String.valueOf(info) + "Lồng đèn hoa sen (vĩnh viễn)";
+            this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        } else if (typegift[index] == 14) {
+            // Thuoc hoa hinh (moi 19/09/2026, GemTemplate id 268).
+            this.doAddGemItem(268, 1, true);
+            info = String.valueOf(info) + "Thuốc hóa hình (khóa)";
+            this.sendMessage(MessageCreator.createCharGemItem(this));
+            this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+        } else if (typegift[index] == 15) {
+            // Pet Capybara thoi han 7 ngay, co the giao dich (moi 19/09/2026).
+            this.doCreatePetCapybara(10080, false);
+            info = String.valueOf(info) + "Capybara (7 ngày, có thể giao dịch)";
             this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
         }
         Database.instance.saveOrtherLog("", this.charname, info, "ohqtt");
@@ -14347,6 +14418,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.luongxai += l;
             this.luongxainhanRuong += l;
             Database.instance.addCharEvent_ND(this, 2, 0, (int) l);
+            // "Diem tieu xai" rieng cho Trung Thu (moi 19/09/2026, spec "cu xai 2 luong thi
+            // duoc 1 diem") - KHONG dung chung luongxai/luongxainhanRuong (bi cac su kien
+            // khac dung chung, xem chu thich khai bao luongDaXaiTrungThu).
+            this.luongDaXaiTrungThu += l;
         }
         if (((TeamServer.isServerHoaLu() || TeamServer.isServerLocal()) && isSuKienGioTo2016()) || isSuKienMini()) {
             this.luongxai += l;
@@ -14912,8 +14987,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
         return false;
     }
 
+    /** So phut toi da co the dong (Hat mam, Trung Thu 2026 - yeu cau nguoi dung). */
+    public static final int MAX_PHUT_HAT_MAM = 1080;
+
     public void setTimeEatSocola() {
-        this.minuteSocola = 180;
+        // Trung Thu 2026 (sua 19/09/2026): CONG DON voi thoi gian con lai thay vi luon
+        // dat cung = 180, nhung khong vuot tran MAX_PHUT_HAT_MAM (1080 phut) - truoc day
+        // dung hat mam moi luon ghi de = 180 du dang con du thoi gian tu truoc.
+        this.minuteSocola = (short) Math.min(MAX_PHUT_HAT_MAM, this.minuteSocola + 180);
         this.timeEatSocola = System.currentTimeMillis();
         this.sendMessage(MessageCreator.createServerAlertMessage("Thời gian sử dụng hạt mầm của bạn còn " + this.minuteSocola + " phút", ""));
     }

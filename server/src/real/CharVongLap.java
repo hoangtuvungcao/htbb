@@ -948,6 +948,7 @@ class CharVongLap {
         pInfo = String.valueOf(pInfo) + "," + self.thuongLv35;
         pInfo = String.valueOf(pInfo) + "," + (self.isNghienAuto ? 1 : 0);
         pInfo = String.valueOf(pInfo) + "," + (self.isAutoBan ? 1 : 0);
+        pInfo = String.valueOf(pInfo) + "," + self.luongDaXaiTrungThu;
 
         return pInfo;
     }

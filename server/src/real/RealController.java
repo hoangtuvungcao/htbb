@@ -1410,48 +1410,69 @@ public class RealController extends ServerController {
     public void doDotDen(Char player, int idOptionMenu) {
         if (!Char.isFinishAllSuKienTrungThul2016()) {
             if (idOptionMenu <= 2) {
-                if (player.potions[136] >= 1) {
+                // Sua 19/09/2026 (yeu cau nguoi dung): DOT den (idOptionMenu==0) tieu 1 Nen
+                // dung nhu truoc; THA den (1/2) phai tieu 1 BANH NUONG (khong phai Nen nua) -
+                // truoc day ca 3 lua chon deu doi hoi/tru Nen giong het nhau, sai voi spec
+                // "Tha den... mat luong + 1 banh nuong".
+                final boolean laThaDen = (idOptionMenu != 0);
+                // Sua 19/09/2026 (yeu cau nguoi dung, spec "Thap nen se mat 3 phut"): chi ap
+                // dung cooldown cho DOT den (khong anh huong Tha den, spec khong noi gi ve
+                // cooldown cho Tha den).
+                if (!laThaDen && System.currentTimeMillis() - player.lanDotDenGanNhat < 180000L) {
+                    final long conLai = (180000L - (System.currentTimeMillis() - player.lanDotDenGanNhat)) / 1000L;
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn cần chờ " + conLai + " giây nữa mới có thể thắp nến tiếp.", ""));
+                    return;
+                }
+                final boolean duNguyenLieu = laThaDen ? (player.potions[125] >= 1) : (player.potions[136] >= 1);
+                if (duNguyenLieu) {
                     if (idOptionMenu != 1 || player.getLuong() >= 50) {
                         if (idOptionMenu != 2 || player.getxu() >= 5000000L) {
-                            addXpCharEvent(player, 100000L, false, "doDotDen");
+                            // Sua 19/09/2026: 100.000 exp truoc day CONG THANG vo dieu kien moi lan
+                            // dot/tha den (khong loai tru voi thuong ngau nhien), sai voi spec "100.000
+                            // exp" la MOT trong cac phan thuong NGAU NHIEN - da bo dong cong thang nay,
+                            // chuyen thanh 1 o ngau nhien moi (typegift -8) trong bang duoi.
                             // Trung Thu 2026: HP/MP 7k tang tu 50~100 len 200~300 (idx 0/1) theo
                             // spec moi; idx 26 (typegift -3, phi phong THOI HAN trung lap voi
                             // idx 25, dang TAT vi per=0) doi thanh "phi phong VINH VIEN" va BAT
                             // lai (per 0 -> 50); them 1 o moi idx 36 cho "Lan Su Tu thoi han"
-                            // (typegift -7, xem nhanh xu ly ben duoi).
+                            // (typegift -7, xem nhanh xu ly ben duoi); them idx 37 cho "100.000 exp"
+                            // (typegift -8).
+                            // Them idx 38 (Thuoc hoa hinh KHOA, typegift -9, moi 19/09/2026) -
+                            // spec doi day PHAI luon khoa, khac voi cach typegift 6 (Bot tien
+                            // giai) dang random khoa/khong khoa 50-50.
                             int[] per = new int[]{
                                 5000, 5000, 5000, 300, 100, 100, 50, 3000, 3000, 100,
                                 100, 100, 100, 100, 100, 5000, 5000, 5000, 5000, 5000,
                                 500, 500, 500, 500, 500, 200, 50, 50, 5000, 5000,
-                                5000, 50, 50, 100, 10, 50, 30
+                                5000, 50, 50, 100, 10, 50, 30, 500, 100
                             };
 
                             int[] idgift = new int[]{
                                 93, 95, 117, 35, 75, 84, 100, GemTemplate.BOT_TRANG, GemTemplate.BOT_XANH, GemTemplate.BOT_DO,
                                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                                 -1, -1, -1, -1, -1, -2, -3, GemTemplate.BOT_XANH_LA, 114, 112, 113, 119,
-                                -4, -5, -6, Potion.TYPE_THE_THEM_LUOT_VAN_TIEU, -7
+                                -4, -5, -6, Potion.TYPE_THE_THEM_LUOT_VAN_TIEU, -7, -8, 268
                             };
 
                             int[] typegift = new int[]{
                                 4, 4, 4, 4, 4, 4, 4, 6, 6, 6,
                                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                                 -1, -1, -1, -1, -1, -2, -3, 6, 4, 4, 4, 4,
-                                -4, -5, -6, 4, -7
+                                -4, -5, -6, 4, -7, -8, -9
                             };
 
                             int[] soluongmax = new int[]{
                                 300, 300, 3, 1, 1, 1, 1, 3, 3, 3,
                                 10000, 20000, 30000, 40000, 50000, 100, 200, 300, 400, 500,
                                 50, 60, 70, 80, 90, 1, 1, 3, 1, 1, 1, 1,
-                                1, 1, 1, 1, 1, 1
+                                1, 1, 1, 1, 1, 1, 1, 1
                             };
 
                             int[] soluongmin = new int[]{
                                 200, 200, 1, 1, 1, 1, 1, 1, 1, 1,
                                 10000, 20000, 30000, 40000, 50000, 100, 200, 300, 400, 500,
                                 50, 60, 70, 80, 90, 1, 1, 1, 1, 1, 1, 1,
-                                1, 1, 1, 1, 1, 1
+                                1, 1, 1, 1, 1, 1, 1
                             };
                             String info = "Chúc mừng bạn nhận được ";
                             int index = Char.getIndexRandom(per);
@@ -1490,6 +1511,13 @@ public class RealController extends ServerController {
                                 player.createLan((long) minute[r.nextInt(minute.length)], true, 95);
                                 info = info + "Lân Sư Tử";
                                 player.sendMessage(MessageCreator.createMsgChat(player.id, info));
+                            } else if (typegift[index] == -8) {
+                                // Trung Thu 2026 (sua 19/09/2026): "100.000 exp" la MOT trong cac
+                                // phan thuong ngau nhien (xem chu thich o dau doDotDen), khong con
+                                // cong thang vo dieu kien nua.
+                                addXpCharEvent(player, 100000L, false, "doDotDen");
+                                info = info + "100.000 exp";
+                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
                             } else if (typegift[index] == -5) {
                                 // Phi Phong
                                 if (!player.isFullInventory()) {
@@ -1527,8 +1555,15 @@ public class RealController extends ServerController {
                                 info = info + soluongmax[index] + " xu";
                                 player.sendMessage(MessageCreator.createMsgChat(player.id, info));
                                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                            } else if (typegift[index] == -9) {
+                                // Thuoc hoa hinh KHOA (moi 19/09/2026) - luon khoa, khac voi
+                                // typegift 6 (Bot tien giai) dang random khoa/khong khoa.
+                                player.doAddGemItem(idgift[index], 1, true);
+                                info = info + "Thuốc hóa hình (khóa)";
+                                player.sendMessage(MessageCreator.createCharGemItem(player));
+                                player.sendMessage(MessageCreator.createMsgChat(player.id, info));
 
-                                // TYPEGIFT = 4 potion - TYPEGIFT = 6 gem, 
+                                // TYPEGIFT = 4 potion - TYPEGIFT = 6 gem,
                             } else if (typegift[index] == 4) {
                                 //  item Potion hp.mp-nhân sâm tùm lum
                                 int soluong = soluongmin[index];
@@ -1565,9 +1600,19 @@ public class RealController extends ServerController {
                                 }
                             }
 
-                            player.potions[136]--;
-                            if (player.potions[136] < 0) {
-                                player.potions[136] = 0;
+                            // Sua 19/09/2026: dot den (0) tru Nen, tha den (1/2) tru Banh nuong -
+                            // xem chu thich dau ham.
+                            if (laThaDen) {
+                                player.potions[125]--;
+                                if (player.potions[125] < 0) {
+                                    player.potions[125] = 0;
+                                }
+                            } else {
+                                player.potions[136]--;
+                                if (player.potions[136] < 0) {
+                                    player.potions[136] = 0;
+                                }
+                                player.lanDotDenGanNhat = System.currentTimeMillis();
                             }
 
                             Database.instance
@@ -1611,7 +1656,9 @@ public class RealController extends ServerController {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng để thực hiện.", ""));
                     }
                 } else {
-                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ nến để đốt đèn bạn cần có ít nhất 1 nến.", ""));
+                    player.sendMessage(MessageCreator.createServerAlertMessage(
+                            laThaDen ? "Không đủ bánh nướng để thả đèn, bạn cần có ít nhất 1 bánh nướng."
+                                    : "Không đủ nến để đốt đèn bạn cần có ít nhất 1 nến.", ""));
                 }
             }
         }

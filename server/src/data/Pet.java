@@ -1732,7 +1732,29 @@ public class Pet extends Actor {
         return this.idTemplate == 28;
     }
 
+    /** Trung Thu 2026 (moi 19/09/2026): co "diem tieu xai" doi lay long den TAI NPC Hang
+     * Nga (MapSuKien.java) phai KHONG THE giao dich - khac voi quy tac chung "moi long den
+     * deu giao dich duoc" ben duoi. Danh dau rieng luc tao thay vi tach idTemplate, vi cung
+     * dung chung id 12/19/20 voi duong "Nhan long den" mien phi (idMenu==8, CO giao dich). */
+    public boolean khongTheGiaoDichDuDaLaLongDen = false;
+
     public boolean canTrade() {
+        if (this.khongTheGiaoDichDuDaLaLongDen) {
+            return false;
+        }
+        // Trung Thu 2026 (sua 19/09/2026, yeu cau nguoi dung "tat ca long den deu co the
+        // giao dich"): moi long den (type_move == TYPE_LANTERNS, ke ca ban vinh vien id 28)
+        // deu giao dich duoc - truoc day chi 5 loai thu whitelist ben duoi (Dai Bang/Cu/
+        // Doi/Rong/Yeu Tinh) hoac co dung field canTrade=1 (khong noi nao gan gia tri nay
+        // cho long den) moi giao dich duoc, nen moi long den bi khoa cung.
+        if (this.type == Pet.TYPE_LANTERNS) {
+            return true;
+        }
+        // Trung Thu 2026 (moi 19/09/2026, yeu cau nguoi dung "pet Capybara... co the cho
+        // giao dich"): idTemplate 30 = Capybara (xem Map.java).
+        if (this.idTemplate == 30) {
+            return true;
+        }
         if ((this.isPetDaiBang() || this.isPetCu() || this.isPetDoi() || this.isPetRong() || this.isPetYeuTinh()) && this.ispetthoihan) {
             return true;
         } else {

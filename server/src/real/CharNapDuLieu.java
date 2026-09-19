@@ -240,6 +240,11 @@ class CharNapDuLieu {
                 } catch (final Exception ex8e) {
                 }
                 try {
+                    // Trung Thu 2026 (moi 19/09/2026) - "diem tieu xai", xem khai bao field.
+                    self.luongDaXaiTrungThu = Long.parseLong(data[119]);
+                } catch (final Exception ex8f) {
+                }
+                try {
                     self.idAutoSkill = Byte.parseByte(data[30]);
                     self.idAutoGetitem = Byte.parseByte(data[31]);
                 } catch (final Exception ex9) {

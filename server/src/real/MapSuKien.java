@@ -5,6 +5,7 @@ import data.CharCooking;
 import data.CharInfo;
 import data.Database;
 import data.ItemLuckyDraw;
+import data.Pet;
 import io.Message;
 import java.io.IOException;
 import java.util.Hashtable;
@@ -2027,6 +2028,16 @@ class MapSuKien {
                                 + " (đã đổi " + (daDoi + 1) + "/5 lần)", ""));
                 Database.instance.saveOrtherLog("", player.charname, "doi tien dan lan " + (daDoi + 1) + "/5", "tiendan2026");
                 Database.instance.saveLogThongKeChiTieu("tien dan", 0, 10, 30L, "luong");
+            } else if (idOptionMenu == 12) {
+                // "Diem tieu xai" (moi 19/09/2026, spec "cu xai 2 luong = 1 diem, du 100 diem
+                // doi long den 3 ngay khong mat them phi"). 100 diem = 200 luong da tieu.
+                if (player.luongDaXaiTrungThu < 200L) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage(
+                            "Bạn cần ít nhất 100 điểm tiêu xài (hiện có " + (player.luongDaXaiTrungThu / 2) + "đ).", ""));
+                    return;
+                }
+                final String[] mmenuDiem = new String[]{"Lồng đèn Cá chép", "Lồng đèn Ngôi sao", "Lồng đèn Trăng khuyết"};
+                player.sendMessage(MessageCreator.createMsgMenu(mmenuDiem, idNpc, 12));
             }
         } else if (idMenu == 1) {
             player.sendMessage(MessageCreator.createMsgInputText(-32017 - idOptionMenu, 0, "Số hộp bánh", 1));
@@ -2120,6 +2131,29 @@ class MapSuKien {
                 player.createPet(id[idOptionMenu], 180);
                 player.receiveGiftEvent = 1;
                 Database.instance.saveOrtherLog("", player.charname, "doi long den " + idOptionMenu, "qualongden");
+            } else if (idMenu == 12) {
+                // "Diem tieu xai" - xuLy lua chon cuoi cung (moi 19/09/2026). Kiem tra lai
+                // diem (nguoi choi co the da tieu bot giua luc mo submenu) truoc khi tru.
+                if (player.luongDaXaiTrungThu < 200L) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Bạn không đủ 100 điểm tiêu xài.", ""));
+                    return;
+                }
+                if (idOptionMenu < 0 || idOptionMenu > 2) {
+                    return;
+                }
+                final int[] idLongDenDiem = new int[]{12, 19, 20};
+                player.luongDaXaiTrungThu -= 200L;
+                player.createPet(idLongDenDiem[idOptionMenu], 4320); // 3 ngay
+                // Long den vua tao la PHAN TU CUOI trong player.pet (createPet() them vao
+                // ngay truoc khi tra ve) - danh dau KHONG THE GIAO DICH theo dung spec
+                // (khac voi long den mua/nhan tu nguon khac, spec khong noi gi ve khoa).
+                if (!player.pet.isEmpty()) {
+                    ((Pet) player.pet.lastElement()).khongTheGiaoDichDuDaLaLongDen = true;
+                }
+                player.sendMessage(MessageCreator.createServerAlertMessage(
+                        "Bạn đã đổi 100 điểm lấy " + new String[]{"Lồng đèn Cá chép", "Lồng đèn Ngôi sao", "Lồng đèn Trăng khuyết"}[idOptionMenu]
+                                + " (3 ngày, không giao dịch).", ""));
+                Database.instance.saveOrtherLog("", player.charname, "doi diem tieu xai lay long den " + idOptionMenu, "diemtieuxai2026");
             } else if (idMenu == 11) {
                 // Trung Thu 2026: nhan qua can moc tha den - idOptionMenu la CHI SO trong
                 // data.DatabaseCanMocThaDen.CAC_MOC (0 = moc 300, 1 = moc 3000).
@@ -2147,16 +2181,32 @@ class MapSuKien {
                         player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy, không nhận được quà mốc 3000.", ""));
                         return;
                     }
-                    // Chua co template rieng cho "mat na thoi trang trung thu" - tam dung
-                    // ItemLuckyDraw.createItemCoat (ao ngau nhien dong, ismax=true la "max chi
-                    // so" dung spec) lam hang thay the; ham nay LUON tu dat lock=1 (item.lock=1
-                    // o dong 242 cua no) nen khong can tu khoa them; thoi han 30 ngay=43200 phut.
-                    final Item newItem = ItemLuckyDraw.createItemCoat(player, Map.r.nextInt(2), true, 43200);
-                    if (newItem != null) {
-                        player.iItems.add(newItem);
+                    // Sua 19/09/2026 (yeu cau nguoi dung, 2 lan): (1) spec doi "mat na thoi
+                    // trang Trung Thu" that su, KHONG PHAI ao choang - truoc day dung tam
+                    // ItemLuckyDraw.createItemCoat (ao) la SAI loai vat pham hoan toan; (2)
+                    // "ngau nhien dong + max chi so + max 2 dong dac biet" CHINH LA option 10
+                    // ("mat na tho") / option 11 ("mat na cao") trong Item.createOptionMatNa -
+                    // hai option nay MOI la "max chi so" that (cac gia tri co dinh cao nhat,
+                    // vd Thuoc tinh Lan 50 thay vi 10/30 o option thap hon) VA gan cung luc
+                    // ~6-8 truong otherAtt khac nhau ("nhieu dong dac biet cung luc"), khac han
+                    // 5 option 0-4 (moi option 1 dong don) dang dung truoc do. Random 1 mau mat
+                    // na (745-749) doc lap voi random 1 trong 2 option nay, luon khoa, 30 ngay.
+                    final int[] mauMatNaTrungThu = {745, 746, 747, 748, 749};
+                    final int idMauMatNa = mauMatNaTrungThu[Map.r.nextInt(mauMatNaTrungThu.length)];
+                    final int optionMatNa = Map.r.nextInt(2) == 0 ? 10 : 11; // 10=mat na tho, 11=mat na cao
+                    final Item matNaTrungThu = Map.doCreateMatNa2(player, 43200, idMauMatNa, optionMatNa, 0, true);
+                    // doCreateMatNa2 dung chung Item(...) constructor tu dinh san 1 option rieng
+                    // (0-3) cho idtemplate 745-748 (xem DatabaseGiftCode.java MATNAID) - xoa vi
+                    // KHAC HAN option 10/11 vua chon, giong het cach lam voi giftcode MATNAID.
+                    if (matNaTrungThu != null && idMauMatNa >= 745 && idMauMatNa <= 748) {
+                        final int optionMacDinh = idMauMatNa - 745;
+                        matNaTrungThu.createOptionMatNa(optionMacDinh, 0);
                         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                     }
-                    Map.doCreateHoVeLenhByLevel(player, 10080);
+                    final Item hvl = Map.doCreateHoVeLenhByLevel(player, 10080);
+                    if (hvl != null) {
+                        hvl.lock = 1;
+                    }
                     player.sendMessage(MessageCreator.createServerAlertMessage(
                             "Chúc mừng! Bạn nhận mặt nạ thời trang Trung Thu (30 ngày, khoá) và hộ vệ lệnh (7 ngày, khoá).", ""));
                 }

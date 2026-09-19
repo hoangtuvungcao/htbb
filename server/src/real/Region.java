@@ -1179,11 +1179,13 @@ public class Region {
                     }
                     allXP += dxp;
                     mt.hp -= damage;
+                    BossTrungThu.ghiNhanSatThuong(mt, p, damage);
                     if (p.charthanthu != null && mt.hp > 0) {
                         muctieu.add(mt);
                         int damthanthu = p.getDamtThanThu((LiveActor)mt);
                         allXP += mt.getXpReceive(damthanthu);
                         mt.hp -= damthanthu;
+                        BossTrungThu.ghiNhanSatThuong(mt, p, damthanthu);
                     }
                     if (mt.hp <= 0) {
                         if (mt.isMonsterVantieu() && p.myCountry == mt.inCountry) {
@@ -1494,6 +1496,7 @@ public class Region {
         int getXp = mt.getXpReceive(damage);
         ahp = damage / CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
         mt.hp -= damage + hphut;
+        BossTrungThu.ghiNhanSatThuong(mt, p, damage + hphut);
         if (damage > 0 && mt.haveBackDam()) {
             int backdam = mt.getBackDam(damage);
             Message mbd = MessageCreator.createMsgBuffEffect((int)5, (int)mt.cat, (LiveActor)p, (int)backdam, (int)0, (int)-1);
@@ -1508,6 +1511,7 @@ public class Region {
             int damthanthu = p.getDamtThanThu((LiveActor)mt);
             getXp += mt.getXpReceive(damthanthu);
             mt.hp -= damthanthu;
+            BossTrungThu.ghiNhanSatThuong(mt, p, damthanthu);
         }
         if (mt.hp > 0) {
             if (mt.isMonsterVantieu() && p.myCountry == mt.inCountry && p.killer < 200) {

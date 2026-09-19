@@ -779,6 +779,9 @@ public class Map implements Runnable {
     static Vector<Char> npcGate;
     public Vector<Char> npcPrivateMap = new Vector();
     public static Vector<Item> all_item_shop_special;
+    /** Moi 19/09/2026: danh muc rieng cho "Shop Trung Thu" (menu Khac, idOptionMenu 7) -
+     * TACH voi all_item_shop_special vi shop kia bat buoc Vip, con shop nay thi khong. */
+    public static Vector<Item> all_item_shop_trungthu;
     public static short idNPC49;
     static Char botChuyenlanhtho;
     public byte nRegion = 0;
@@ -865,6 +868,13 @@ public class Map implements Runnable {
     public static short TYPE_SHOP_NEW_TUI_DO;
     public static short TYPE_SHOP_NEW_CUA_HANG_VIP;
     public static short TYPE_SHOP_NEW_BO_ITEM_VAO_TUI;
+    /** Moi 19/09/2026: "Shop Trung Thu" - dung chung UI createMessageShopNew nhung KHONG
+     * bat buoc Vip nhu TYPE_SHOP_NEW_CUA_HANG_VIP (xem nhanh rieng trong doBuyItemShopNew).
+     * Sua 19/09/2026: gia tri 3 BI TRUNG voi mot nhanh "type==3" co san (nang cap trang bi
+     * 860-871) NGAY TRONG CUNG ham doBuyItemShopNew - client gui type=3 bi nhanh do chan
+     * nham, bao "Vat pham khong hop le". Doi sang 8 (kiem tra het moi "type ==" trong ham
+     * do: 0,1,2,3,4,5,6,7,14,15,99 deu da dung, 8 con trong). */
+    public static short TYPE_SHOP_NEW_TRUNG_THU;
     public static short TYPE_NANG_CAP_THAN_KHI;
     public static short TYPE_DOI_DONG_THAN_KHI;
     public static short MAX_VIP1;
@@ -1261,6 +1271,7 @@ public class Map implements Runnable {
         npcHoatieu = new Vector();
         npcGate = new Vector();
         all_item_shop_special = new Vector();
+        all_item_shop_trungthu = new Vector();
         idNPC49 = -1;
         botChuyenlanhtho = null;
         ALL_CHAR_BUY_RUONG = new Hashtable();
@@ -1561,6 +1572,7 @@ public class Map implements Runnable {
         TYPE_SHOP_NEW_TUI_DO = 0;
         TYPE_SHOP_NEW_CUA_HANG_VIP = 1;
         TYPE_SHOP_NEW_BO_ITEM_VAO_TUI = 2;
+        TYPE_SHOP_NEW_TRUNG_THU = 8;
         TYPE_DOI_DONG_THAN_KHI = 14;
         TYPE_NANG_CAP_THAN_KHI = 15;
         MAX_VIP1 = 500;
@@ -2514,6 +2526,19 @@ public class Map implements Runnable {
             }
         }
 
+        // Trung Thu 2026 (sua 19/09/2026): o 148 dung chung nay THIEU nhanh rieng cho Trung
+        // Thu du doBuySpecialItem.java (item.id==148) da co san logic ban Hat mam
+        // (potions[135]) khi Char.isSuKienTrungThul2016() - vi thieu nhanh nay nen o 148
+        // luon bi cac khoi tren/duoi tat mat, khong mua duoc trong thuc te.
+        if (Char.isSuKienTrungThul2016()) {
+            int index = getIndexShopTemplate(148);
+            if (index != -1) {
+                // idImg=108 = map/images_potion/108.png, dung icon that cua Hat mam theo
+                // nguoi dung xac nhan 19/09/2026 (truoc do tam muon icon 35 cua Halloween).
+                Map.shop[index] = new ShopTemplate(148, 108, "Hạt mầm\n- Vật phẩm sự kiện Trung Thu", "", 1, 50, Map.SELL_LUONG, 0, Map.SELL, 50);
+            }
+        }
+
         // ---- Khong su kien nao dang bat thi phai TAT hai o dung chung 148/149 ----
         //
         // Bon khoi if o tren chi GHI DE hai o nay khi su kien tuong ung dang bat. Khi tat
@@ -2527,9 +2552,15 @@ public class Map implements Runnable {
         // ("Pháo hoa tết - Vật phẩm sự kiện"). Hai o 147 va 135 cung duoc su kien muon
         // nhung dong goc cua chung la "Dây thừng" va "Socola" - do that, khong duoc tu
         // dong tat.
+        // 148 con duoc Trung Thu dung rieng (Hat mam) nen tach dieu kien tat rieng voi 149
+        // (149 KHONG lien quan Trung Thu, giu nguyen dieu kien cu).
+        if (!Char.isSuKienWordcup2017() && !Char.isSuKienHe2017()
+                && !Char.isSuKienHaloween2016() && !Char.isSuKienTet2017()
+                && !Char.isSuKienTrungThul2016()) {
+            ngungBanOSuKien(148);
+        }
         if (!Char.isSuKienWordcup2017() && !Char.isSuKienHe2017()
                 && !Char.isSuKienHaloween2016() && !Char.isSuKienTet2017()) {
-            ngungBanOSuKien(148);
             ngungBanOSuKien(149);
         }
 
@@ -2543,6 +2574,16 @@ public class Map implements Runnable {
         // KHONG ghi de ten/gia: chi bat/tat co sell, giu nguyen moi thu khac trong DB.
         datOanhToggleSuKien(SHOP_BONG_DA_NAM, Char.isSuKienVuLan2015());
         datOanhToggleSuKien(SHOP_BONG_DA_NU, Char.isSuKienVuLan2015());
+
+        // Trung Thu 2026 (yeu cau nguoi dung 19/09/2026): 4 trang phuc chu de Trung Thu
+        // (Hang Nga/Chu Cuoi/Tinh Quan/Tien Nu) va gian mat na Ong Dia moi them - truoc
+        // day KHONG co doan nao tu bat/tat sell theo su kien, phai vao DB chinh tay. Ten
+        // nhan vat trong ten cac item nay (Hang Nga, Chu Cuoi...) la nhan vat than thoai
+        // RIENG cua Trung Thu, an toan de gate theo Char.isSuKienTrungThul2016().
+        datOanhToggleSuKien(87, Char.isSuKienTrungThul2016());
+        datOanhToggleSuKien(89, Char.isSuKienTrungThul2016());
+        datOanhToggleSuKien(174, Char.isSuKienTrungThul2016());
+        datOanhToggleSuKien(175, Char.isSuKienTrungThul2016());
     }
 
     /** O gian hang cua thoi trang Bóng đá nam (item 791), da co san trong data_shop. */
@@ -2692,7 +2733,12 @@ public class Map implements Runnable {
             new PetTemplate((byte) 26, "Dơi", 20160, (byte) 3, (byte) 6, (byte) 16, (byte) 16, 1000, (byte) 0, (byte) 33, Pet.TYPE_FLY_2_FRAME),   // <- mau 3  Dơi quỷ
             new PetTemplate((byte) 27, "Đại bàng", 20160, (byte) 1, (byte) 6, (byte) 10, (byte) 10, 1000, (byte) 0, (byte) 34, Pet.TYPE_FLY_2_FRAME), // <- mau 1  Thanh tước
             new PetTemplate((byte) 28, "Lồng đèn hoa sen", 20160, (byte) 5, (byte) 2, (byte) 14, (byte) 14, 1000, (byte) 0, (byte) 11, Pet.TYPE_LANTERNS),
-            new PetTemplate((byte) 29, "Bạch Thử", 20160, (byte) 9, (byte) 12, (byte) 29, (byte) 30, 1000, (byte) 0, (byte) 46, Pet.TYPE_WALK)     // <- mau 9  Pet Armadillo băng
+            new PetTemplate((byte) 29, "Bạch Thử", 20160, (byte) 9, (byte) 12, (byte) 29, (byte) 30, 1000, (byte) 0, (byte) 46, Pet.TYPE_WALK),    // <- mau 9  Pet Armadillo băng
+            // Trung Thu 2026 (moi 19/09/2026, yeu cau nguoi dung): pet Capybara - MUON tam
+            // anh/kich thuoc cua mau 9 "Pet Armadillo bang" (giong cach Bach Thu o tren da
+            // lam) vi CHUA co anh Capybara that. Se hien HINH GIONG Bach Thu cho toi khi co
+            // anh rieng - can sua idImg/nFrame/wFrame/hFrame o day khi co anh that.
+            new PetTemplate((byte) 30, "Capybara", 20160, (byte) 9, (byte) 12, (byte) 29, (byte) 30, 1000, (byte) 0, (byte) 47, Pet.TYPE_WALK)
         };
     }
 
@@ -5746,13 +5792,21 @@ public class Map implements Runnable {
     }
 
 
-    private void doDotLua(Char p, short potionType) {
+    /**
+     * Trung Thu 2026 (sua 19/09/2026, yeu cau nguoi dung): ham nay von co san nhung
+     * KHONG CON duoc goi o dau ca, va con dung SAI potionType cua nam truoc (124/122 la
+     * banh deo/dau xanh trong bang potions[] hien tai, khong phai Lua vua/Lua to nua) -
+     * nen dung potion Lua thuong/vua/to hien tai (156/157/158) khong co hieu ung gi. Sua
+     * lai dung 3 id hien hanh, doi thanh package-private de doUsePotion.java/
+     * MapDungThuoc.java goi duoc.
+     */
+    void doDotLua(Char p, short potionType) {
         int type = EffectBuff.LUA_NHO;
         p.idCuiDot = 0;
-        if (potionType == 124) {
+        if (potionType == 157) {
             p.idCuiDot = 1;
             type = EffectBuff.LUA_VUA;
-        } else if (potionType == 122) {
+        } else if (potionType == 158) {
             type = EffectBuff.LUA_TO;
             p.idCuiDot = 2;
         }
@@ -8128,7 +8182,12 @@ public class Map implements Runnable {
                 //     return;
                 // }
     
-                String[] menu = new String[]{"Mở Túi Đồ", "Bỏ đồ vào túi", "Mở Kho", "Shop Đặc Biệt", player.rcvInviteVip ? "Tắt lời mời" : "Bật lời mời",player.isAutoBan ? "Bật tự động bán đồ thường":"Tắt tự động bán đồ thường",player.isNghienAuto ? "Bật tự động nghiền bột thường" : "Tắt tự động nghiền bột thường"};
+                String[] menu = !Char.isFinishAllSuKienTrungThul2016()
+                        // Moi 19/09/2026 (yeu cau nguoi dung): them "Shop Trung Thu" (rieng,
+                        // KHONG yeu cau Vip nhu "Shop Dac Biet") vao dung menu "Khac" nay -
+                        // xem case moi trong MapDoMenu.java (idNpc==-516, idOptionMenu==7).
+                        ? new String[]{"Mở Túi Đồ", "Bỏ đồ vào túi", "Mở Kho", "Shop Đặc Biệt", player.rcvInviteVip ? "Tắt lời mời" : "Bật lời mời",player.isAutoBan ? "Bật tự động bán đồ thường":"Tắt tự động bán đồ thường",player.isNghienAuto ? "Bật tự động nghiền bột thường" : "Tắt tự động nghiền bột thường", "Shop Trung Thu"}
+                        : new String[]{"Mở Túi Đồ", "Bỏ đồ vào túi", "Mở Kho", "Shop Đặc Biệt", player.rcvInviteVip ? "Tắt lời mời" : "Bật lời mời",player.isAutoBan ? "Bật tự động bán đồ thường":"Tắt tự động bán đồ thường",player.isNghienAuto ? "Bật tự động nghiền bột thường" : "Tắt tự động nghiền bột thường"};
                 // if (player.vip > 0) {
                 //     if (player.rcvInviteVip) {
                 //         menu[4] = "Tắt lời mời";
@@ -8147,11 +8206,72 @@ public class Map implements Runnable {
             else if (type == 14)
             {
                 short shopIndex = (short)message.dis.readUnsignedByte();
-                ThoRenThanBi.RerollThanKhiAttribute(player, shopIndex); 
+                ThoRenThanBi.RerollThanKhiAttribute(player, shopIndex);
             }
-            else 
+            else if (type == TYPE_SHOP_NEW_TRUNG_THU)
             {
-                if (player.vip <= 0) 
+                // "Shop Trung Thu" (moi 19/09/2026) - KHONG doi hoi Vip (khac han nhanh
+                // TYPE_SHOP_NEW_CUA_HANG_VIP ben duoi), danh sach rieng all_item_shop_trungthu,
+                // logic mua don gian (khong can cac truong hop dac biet isPhuPhuThe/
+                // isRuongNguyenLieu... chi danh cho shop VIP).
+                int iditem = message.dis.readUnsignedByte();
+                if (iditem < 0 || iditem >= all_item_shop_trungthu.size()) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không còn bán. Hãy mở lại shop.", ""));
+                    return;
+                }
+                if (player.isFullInventory()) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Hành trang đã đầy.", ""));
+                    return;
+                }
+                Item mauShop = (Item) all_item_shop_trungthu.get(iditem);
+                int xu = mauShop.getXuSell();
+                int luong = mauShop.getLuongSell();
+                if (player.getxu() < (long) xu) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ xu", ""));
+                    return;
+                }
+                if (player.getLuong() < luong) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
+                    return;
+                }
+                if (luong > 0) {
+                    player.subLuong((long) luong);
+                }
+                if (xu > 0) {
+                    player.subXu((long) xu, false, "doBuyItemShopTrungThu");
+                }
+                ItemTemplates template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(mauShop.tempateID);
+                Item newItem = new Item(template, false, 0, 0, mauShop.tempateID);
+                newItem.id = player.getIDItem();
+                newItem.owner = player.charDBID;
+                newItem.level = newItem.getTemplate().level;
+                newItem.identify = player.charDBID;
+                // Sua 19/09/2026: clazz=-1 KHOP DUNG voi item xem truoc trong
+                // all_item_shop_trungthu (ItemShop tao voi clazz=-1, xem MapNapTaiNguyen.java)
+                // - createAttributeItemModel() truoc do KHONG lam gi cho mat na (chi xu ly
+                // rieng Tien Nu/Tinh Quan), gan clazz sai (0) moi la thu THAT SU lam getType()/
+                // attribShowedForType tra ve khac di so voi ban xem truoc, khien tooltip
+                // (getInfoAtbItem) thieu dong so voi khi con trong shop.
+                newItem.clazz = -1;
+                // "Sua thang mau goc" (yeu cau nguoi dung): thoi han 7 ngay co dinh cho MOI
+                // vat pham mua o Shop Trung Thu - mauShop.minuteExist LUON = 0 (ItemShop chi
+                // dung rieng field timeExpire qua setTimeExpire(), khong phai minuteExist,
+                // nen dieu kien cu ben duoi khong bao gio dung -> mua xong item KHONG BAO GIO
+                // het han). Dung thang mauShop.getTimeExpire() cho dung.
+                if (mauShop.getTimeExpire() > 0) {
+                    newItem.minuteExist = mauShop.getTimeExpire();
+                    newItem.timeLoan = System.currentTimeMillis();
+                }
+                player.iItems.add(newItem);
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Đã mua " + newItem.getName(), ""));
+                Database.instance.saveOrtherLog("", player.charname, "mua " + newItem.getName() + " gia " + xu + " xu " + luong + " luong", "shoptrungthu");
+                Database.instance.saveLogThongKeChiTieu(newItem.getName(), 0, 1, (long) (luong > 0 ? luong : xu), luong > 0 ? "luong" : "xu");
+            }
+            else
+            {
+                if (player.vip <= 0)
                 {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Cần Vip 1 Trở lên để thực hiện tính năng này", ""));
                     return;
@@ -16677,7 +16797,7 @@ public class Map implements Runnable {
                     int[][] posLongDenKeoQuan = new int[][]{{22 * 16, 36 * 16}, {288, 512}, {560, 704}};
                     player.sendMessage(
                             MessageCreator.createMsgNpc(
-                                    "Lồng đèn kéo quân", posLongDenKeoQuan[player.inCountry][0], posLongDenKeoQuan[player.inCountry][1], 100, 150, 3, 21, -65, (byte) 1
+                                    "Lồng đèn Lân Sư Tử", posLongDenKeoQuan[player.inCountry][0], posLongDenKeoQuan[player.inCountry][1], 100, 150, 3, 21, -65, (byte) 1
                             )
                     );
                 }

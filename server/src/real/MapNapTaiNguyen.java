@@ -896,6 +896,24 @@ class MapNapTaiNguyen {
             }
             Map.all_item_shop_special.add(newItem);
         }
+        // "Shop Trung Thu" (moi 19/09/2026, yeu cau nguoi dung - RIENG voi Shop Dac Biet o
+        // tren, khong bat buoc Vip, xem Map.java TYPE_SHOP_NEW_TRUNG_THU va doBuyItemShopNew).
+        // Danh sach nay nap MOI LAN khoi dong bat ke su kien dang bat/tat - client chi thay
+        // duoc menu "Shop Trung Thu" khi Char.isSuKienTrungThul2016() (xem Map.java dong
+        // ~8174), nen khong can loc rieng o day.
+        {
+            final Item matNaOngDia = new ItemShop(Map.itemTemplates.get(5).get(872), false, 0, 0, 872);
+            matNaOngDia.id = 0;
+            matNaOngDia.owner = 0;
+            matNaOngDia.level = matNaOngDia.getTemplate().level;
+            matNaOngDia.identify = 0;
+            matNaOngDia.clazz = -1;
+            matNaOngDia.setXuSell(0);
+            matNaOngDia.setLuongSell(800);
+            matNaOngDia.setSoluong(1);
+            matNaOngDia.setTimeExpire(10080);
+            Map.all_item_shop_trungthu.add(matNaOngDia);
+        }
         Map m = new Map();
         Char bot = new Char(null);
         // NPC "admin" chi admin thay (xem CharCapNhat.updateNearChar / Map.laNpcAnCuaAdmin).
@@ -909,6 +927,29 @@ class MapNapTaiNguyen {
 
         Map.npcVilage.add(bot);
         CharManager.instance.put(bot);
+        // NPC Trung Thu "Hang Nga" (moi 19/09/2026, yeu cau nguoi dung): truoc la 1 sprite
+        // tinh gui rieng qua addNPC.java (createMsgNpc, chi ve 1 anh don theo idImg), doi
+        // sang bot DANG KY that su de dung setInfoModelCharBot(0, 574) - CHINH co che
+        // "model clothes" nhieu manh (chan/than/dau/non) ma nguoi choi dung khi mac Ao Hang
+        // Nga that, xem Char.doInitCharCopy() dong ~5315 la vi du da chay dung truoc do.
+        // Cung npcType -49 nhu cu de RequestNPCInfoHandler.java (case -49) tiep tuc xu ly
+        // dung menu Trung Thu khi bam vao. Chi tao luc khoi dong NEU su kien dang bat -
+        // giong cac gian hang tu bat/tat khac, can KHOI DONG LAI server khi bat/tat su kien
+        // Trung Thu thi NPC nay moi xuat hien/bien mat dung (khong tu dong theo doi runtime).
+        if (Char.isSuKienTrungThul2016()) {
+            bot = new Char(null);
+            // Ten "Hang Nga" KHONG DAU (thay vi "Hằng Nga" co dau) - font rieng cua nhan
+            // (label noi tren dau NPC ngoai ban do) khong co ky tu "ằ" (a + dau moc + dau
+            // huyen), hien vo ra "OONG OGA" (nguoi dung xac nhan qua anh chup 19/09/2026).
+            // Cac cho khac (ten vat pham "Áo Hằng Nga", hop thoai...) dung font khac, van
+            // giu nguyen dau day du, KHONG doi.
+            bot.setInfoChar("hang nga", -49, 2, 0, m, 880, 672, -3090, 269, 293, 317);
+            bot.id = RealController.intance.idGen.getID(0, "Tao bot");
+            bot.posNPCInVilage = new short[][]{{880, 672}, {560, 816}, {560, 704}};
+            bot.setInfoModelCharBot(0, 574);
+            Map.npcVilage.add(bot);
+            CharManager.instance.put(bot);
+        }
 //        bot = new Char(null);
 //        bot.setInfoChar("chucmungnammoi", -39, 1, 2, new Map(), 800, 672, -3074, 269, 293, 317);
 //        bot.id = RealController.intance.idGen.getID(0, "Tao bot");

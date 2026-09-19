@@ -746,6 +746,7 @@ class MapDanhNhau {
                                                                                         int getXp = mt.getXpReceive(damage);
                                                                                         ahp = damage / CharManager.UP_DAMGE_SKILL[p.charClass][_type][_level - 1];
                                                                                         mt.hp -= damage + hphut;
+                                                                                        BossTrungThu.ghiNhanSatThuong(mt, p, damage + hphut);
                                                                                         if (damage > 0 && mt.haveBackDam()) {
                                                                                             int backdam = mt.getBackDam(damage);
                                                                                             Message mbd = MessageCreator.createMsgBuffEffect(5, mt.cat, p, backdam, 0, -1);
@@ -761,6 +762,7 @@ class MapDanhNhau {
                                                                                             int damthanthu = p.getDamtThanThu(mt);
                                                                                             getXp += mt.getXpReceive(damthanthu);
                                                                                             mt.hp -= damthanthu;
+                                                                                            BossTrungThu.ghiNhanSatThuong(mt, p, damthanthu);
                                                                                         }
                                                                                
 
@@ -1421,11 +1423,13 @@ class MapDanhNhau {
                                 }
 
                                 mt.hp -= s2dam;
+                                BossTrungThu.ghiNhanSatThuong(mt, p, s2dam);
                                 if (p.charthanthu != null && mt.hp > 0 && !mt.isBossSonTinhThuyTinh()) {
                                     target.add(mt);
                                     int damthanthu = p.getDamtThanThu(mt);
                                     allXP += mt.getXpReceive(damthanthu);
                                     mt.hp -= damthanthu;
+                                    BossTrungThu.ghiNhanSatThuong(mt, p, damthanthu);
                                 }
 
                                 if (mt.hp > 0 && mt.hp > 0 && damNguyetAnh > 0) {

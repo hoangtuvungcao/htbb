@@ -772,8 +772,14 @@ public class Monster extends LiveActor {
     public static int apDungGiamExpTheoCapNV(final int xp, final Char nguoiNhan) {
         // Trung Thu 2026: buff ca nhan "can moc tha den 300" nhan doi exp trong 24h - ap
         // dung TRUOC khi giam theo cap, giong cac nguon nhan exp khac (vd Ve gio vang).
-        final int xpSauBuff = (nguoiNhan.trungThuMoc300HetHan > System.currentTimeMillis()) ? xp * 2 : xp;
-        return Monster.tile(xpSauBuff, (nguoiNhan.lvDetail.lv >= 50) ? Monster.PC_TILE_EXP_LV50 : Monster.PC_TILE_EXP_DUOI_LV50);
+        long xpSauBuff = (nguoiNhan.trungThuMoc300HetHan > System.currentTimeMillis()) ? (long) xp * 2L : xp;
+        // Sua 19/09/2026: ca server dat moc 10.000 lan tha den thi CHONG THEM mot lan x2
+        // exp toan server trong ngay do (spec: "tinh luon ca x2 exp nhan vat dang dung") -
+        // truoc day co gui thong bao nhung KHONG co dong nao thuc su nhan doi exp.
+        if (data.DatabaseCanMocThaDen.homNayLaNgayDat10000()) {
+            xpSauBuff *= 2L;
+        }
+        return Monster.tile((int) Math.min(xpSauBuff, Integer.MAX_VALUE), (nguoiNhan.lvDetail.lv >= 50) ? Monster.PC_TILE_EXP_LV50 : Monster.PC_TILE_EXP_DUOI_LV50);
     }
 
     @Override
@@ -1242,9 +1248,19 @@ public class Monster extends LiveActor {
                     }
                 }
                 if (Char.isSuKienTrungThul2016()) {
-                    if (Map.randomMillion() < tile(160000, PC_TILE_ITEM_SUKIEN) && p.getLevel() >= 40) {
+                    // Trung Thu 2026 (sua 19/09/2026 theo dung spec nguoi dung gui): delta
+                    // level cho phep la +-5, RIENG nguoi choi cap 8x (>=80) tro len thi +-10 -
+                    // truoc day dung chung Map.deltaLVAttackMons (=10, hang so toan cuc dung
+                    // cho moi su kien/train, khong rieng cho Trung Thu). Mac do thoi trang co
+                    // "bong da" (item 791/792, dung chung logic voi Vu Lan) thi duoc TANG GAP
+                    // DOI ti le roi nguyen lieu (bot my/trung/thit VA dau xanh), giong cach
+                    // Vu Lan dang lam voi hoa hong vang o tren.
+                    final int deltaChoPhepTrungThu = p.getLevel() >= 80 ? 10 : 5;
+                    final boolean macBongDaTrungThu = p.wModel != null && (p.wModel.isBongDaNamAoCam() || p.wModel.isBongDaNuAoSoc());
+                    final int tlNguyenLieuTrungThu = macBongDaTrungThu ? 320000 : 160000;
+                    if (Map.randomMillion() < tile(tlNguyenLieuTrungThu, PC_TILE_ITEM_SUKIEN) && p.getLevel() >= 40) {
                         final int deltalv = Map.abs(p.lvDetail.lv - this.level);
-                        if (deltalv <= Map.deltaLVAttackMons) {
+                        if (deltalv <= deltaChoPhepTrungThu) {
                             final short[] idpt2 = {142, 121, 120};
                             // final short[] idpt2 = {136};
                             final short ptType3 = idpt2[Map.r.nextInt(idpt2.length)];
@@ -1280,9 +1296,9 @@ public class Monster extends LiveActor {
 //                            }
 //                        }
 //                    }
-                    if (Map.randomMillion() < tile(160000, PC_TILE_ITEM_SUKIEN) && p.getLevel() >= 40) {
+                    if (Map.randomMillion() < tile(tlNguyenLieuTrungThu, PC_TILE_ITEM_SUKIEN) && p.getLevel() >= 40) {
                         final int deltalv = Map.abs(p.lvDetail.lv - this.level);
-                        if (p.minuteSocola > 0 && deltalv <= Map.deltaLVAttackMons) {
+                        if (p.minuteSocola > 0 && deltalv <= deltaChoPhepTrungThu) {
                             final byte ptType = 122;
                             pt = new Potion(ptType, 1, m);
                             pt.id = RealController.intance.idGen.getID(4, "drop dua hau");
