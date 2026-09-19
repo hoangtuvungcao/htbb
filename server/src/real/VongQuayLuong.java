@@ -25,9 +25,9 @@ public final class VongQuayLuong {
     private VongQuayLuong() {
     }
 
-    public static void moMenuGoc(final Char player) {
+    public static void moMenuGoc(final Char player, final int idNpc) {
         player.sendMessage(MessageCreator.createMsgMenu(
-                new String[]{"Thông tin", "Tham gia", "Hướng dẫn"}, -10, MENU_GOC));
+                new String[]{"Thông tin", "Tham gia", "Hướng dẫn"}, idNpc, MENU_GOC));
     }
 
     public static void doMenu(final Char player, final int idOptionMenu) {

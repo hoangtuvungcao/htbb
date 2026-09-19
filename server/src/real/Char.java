@@ -133,9 +133,6 @@ public class Char extends LiveActor {
     // Vi tri (idOptionMenu) cua muc "Chuyen luong" trong menu NPC Tong Quan, gan lai moi
     // lan RequestNPCInfoHandler mo menu -10. Xem real/CharChuyenLuong.
     public int idxChuyenLuong = -1;
-    // Vi tri (idOptionMenu) cua muc "Vong quay luong" trong menu NPC Tong Quan, gan lai
-    // moi lan RequestNPCInfoHandler mo menu -10. Xem real/VongQuayLuong.
-    public int idxVongQuayLuong = -1;
     public short partyID;
     public int masterIDParty;
     public Vector<Short> idItem;

@@ -196,12 +196,9 @@ class MapDoMenu {
             }
             // NPC Tong Quan (-10), muc "Vong quay luong": cung la muc cuoi menu, vi tri
             // ghi trong player.idxVongQuayLuong. Xem real/VongQuayLuong.
-            if (idNpc == -10 && idMenu == 0 && player.idxVongQuayLuong >= 0
-                    && idOptionMenu == player.idxVongQuayLuong) {
-                VongQuayLuong.moMenuGoc(player);
-                return;
-            }
-            if (idNpc == -10 && idMenu == VongQuayLuong.MENU_GOC) {
+            // "Vong quay luong" mo tu nhanh idOptionMenu==2 cua muc "Vong quay" co san
+            // o NPC "-15" (thay ngu hanh/ruong) - xem case -15 ben duoi va real/VongQuayLuong.
+            if (idNpc == -15 && idMenu == VongQuayLuong.MENU_GOC) {
                 VongQuayLuong.doMenu(player, idOptionMenu);
                 return;
             }
@@ -3072,7 +3069,7 @@ class MapDoMenu {
                                                                             }
                                                                         } else {
                                                                             player.sendMessage(
-                                                                                    MessageCreator.createMsgMenu(new String[]{"Vòng quay", "Vòng quay thường"}, idNpc, 4)
+                                                                                    MessageCreator.createMsgMenu(new String[]{"Vòng quay", "Vòng quay thường", "Vòng quay lượng"}, idNpc, 4)
                                                                             );
                                                                         }
                                                                     } else if (!player.passWord.equals("")) {
@@ -3273,7 +3270,7 @@ class MapDoMenu {
                                                                         map.sendListItemSell2Shop(player);
                                                                     }
                                                                 } else {
-                                                                    player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Vòng quay", "Vòng quay thường"}, idNpc, 4));
+                                                                    player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Vòng quay", "Vòng quay thường", "Vòng quay lượng"}, idNpc, 4));
                                                                 }
                                                             } else if (!player.passWord.equals("")) {
                                                                 player.sendMessage(MessageCreator.createMsgInputText(player.id, 3, "Nhập mật khẩu", 0));
@@ -3326,6 +3323,14 @@ class MapDoMenu {
                                                 player.infoXoso(0);
                                             }
                                         }
+                                    } else if (idOptionMenu == 2) {
+                                        // "Vong quay luong" (them 19/09/2026, theo yeu cau nguoi dung):
+                                        // dung LAI dung menu con {"Thong tin","Tham gia","Huong dan"} +
+                                        // logic cua real/VongQuayLuong thay vi cong thuc "5+idOptionMenu"
+                                        // (idOptionMenu=2 se ra idMenu=7, TRUNG voi idMenu=7 co san o duoi
+                                        // (menu "Do thoi trang"/"Long den" cua Char.isOpenDauGiaChoiBlackFriday) -
+                                        // xem real/VongQuayLuong.MENU_GOC (103, khong trung idMenu nao khac).
+                                        VongQuayLuong.moMenuGoc(player, idNpc);
                                     } else {
                                         player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Thông tin", "Tham gia", "Hướng dẫn"}, idNpc, 5 + idOptionMenu));
                                     }
@@ -3503,7 +3508,7 @@ class MapDoMenu {
                                         map.sendListItemSell2Shop(player);
                                     }
                                 } else {
-                                    player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Vòng quay", "Vòng quay thường"}, idNpc, 4));
+                                    player.sendMessage(MessageCreator.createMsgMenu(new String[]{"Vòng quay", "Vòng quay thường", "Vòng quay lượng"}, idNpc, 4));
                                 }
                             } else if (!player.passWord.equals("")) {
                                 player.sendMessage(MessageCreator.createMsgInputText(player.id, 3, "Nhập mật khẩu", 0));
