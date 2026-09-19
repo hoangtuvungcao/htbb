@@ -38,13 +38,6 @@ public final class CharDoiTenNhanVat {
         final String tenMoi = tenMoiGoc == null ? "" : tenMoiGoc.trim();
         final String tenCu = player.charname;
 
-        // DEBUG TAM THOI 19/09/2026 (dang dieu tra bug "Ten nay khong the su dung" bao
-        // sai cho ten binh thuong) - se go sau khi tim ra nguyen nhan.
-        System.out.println("[DOI TEN DEBUG] tenCu='" + tenCu + "' tenMoiGoc='" + tenMoiGoc
-                + "' tenMoi='" + tenMoi + "' len=" + tenMoi.length()
-                + " laTenDanhRieng=" + Database.laTenDanhRieng(tenMoi)
-                + " luong=" + player.getLuong());
-
         if (tenMoi.length() < MIN_LEN || tenMoi.length() > MAX_LEN) {
             player.sendMessage(MessageCreator.createServerAlertMessage(
                     "Tên phải từ " + MIN_LEN + " đến " + MAX_LEN + " ký tự.", ""));

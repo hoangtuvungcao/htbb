@@ -106,7 +106,16 @@ public class TeamServer {
     // ==== TEST FLAGS (dùng cho phát triển/kiểm thử, mặc định tắt) ====
     public static boolean testMode = false;                 // sv.testMode: bật chế độ test
     public static String testCode = "";                     // sv.testCode: mã giftcode test (chỉ chạy khi testMode)
-    public static java.util.HashSet<String> adminAccounts = new java.util.HashSet<>(); // sv.adminAccounts: danh sách tài khoản admin test
+    // Sua 19/09/2026: HashSet thuong khong an toan luong - CauHinh.napLai() clear()+
+    // add() lai tap nay moi 10 giay tren 1 thread nen rieng (xem CauHinh.batDau()), trong
+    // khi laTenDanhRieng()/nhieu noi khac doc contains() tu bat ky thread request nao,
+    // KHONG qua khoa nao ca. Doc/ghi HashSet dong thoi khong dong bo la hanh vi khong xac
+    // dinh - da bat qua tay: nguoi choi doi ten sang "cungtien" (khong chua "admin", khong
+    // nam trong sv.adminAccounts) bi chan nham "Ten nay khong the su dung" dung luc trung
+    // vao cua so 10 giay do. CopyOnWriteArraySet doc luon an toan/khong khoa, ghi (hiem,
+    // 10s/lan) copy toan bo mang - dung API y het HashSet (clear/add/contains/isEmpty/
+    // for-each) nen khong can sua noi nao khac dang dung TeamServer.adminAccounts.
+    public static java.util.concurrent.CopyOnWriteArraySet<String> adminAccounts = new java.util.concurrent.CopyOnWriteArraySet<>(); // sv.adminAccounts: danh sách tài khoản admin test
     /** sv.reloginWaitSec: so giay phai cho truoc khi vao lai game sau khi thoat. 0 = vao lai ngay. */
     public static long RELOGIN_WAIT_MS = 0L;
 
