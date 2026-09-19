@@ -872,6 +872,7 @@ public class TeamServer {
         Map.ThreadProcessHoiSinh();
         Char.startThreadXoso();
         Char.startThreadXosoLow();
+        Char.startThreadXosoLuong();
         Char.startNauBanh();
         if (!real.BaoTriDaily.Running) {
             new Thread(new real.BaoTriDaily()).start();

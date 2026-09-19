@@ -370,6 +370,11 @@ class MapNhapText {
                     return;
                 }
 
+                if (idActor == VongQuayLuong.INPUT_SO_LUONG) {
+                    VongQuayLuong.doNhapSoLuong(player, text);
+                    return;
+                }
+
                 if (idActor == OfflineMap.INPUT_SO_LUONG_BAN_NGOC) {
                     if (map instanceof OfflineMap) {
                         ((OfflineMap) map).doUserSellGemQuantity(player, text);
