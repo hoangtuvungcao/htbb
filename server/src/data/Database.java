@@ -2393,6 +2393,7 @@ public class Database {
     public static void startSaveChar() {
         MessageCreator.doInitItemNpcSell();
         Database.instance.doAddNewColumInfoPart();
+        Database.instance.damBaoIdCharDanhHieu();
         Map.loadAllTemplate();
    
         if (Char.getDayTime(0L).compareTo("2020-10-28 10:30:00") <= 0) {
@@ -7454,14 +7455,81 @@ public class Database {
         return DatabaseNhanVat.getChar(this, p,charname,lastlog);
     }
 
+    /**
+     * Mot lan luc khoi dong: chuyen tob_danh_hieu tu khoa theo charname (chuoi, MAT theo
+     * khi doi ten nhan vat - xem real.CharDoiTenNhanVat) sang khoa theo id_char (id that
+     * cua tob_char, KHONG doi khi doi ten). Cot charname van giu lai de doc cho de/doi
+     * chieu, nhung khong con dung de tra cuu/UPDATE nua - addCharDanhHieu()/
+     * getCharDanhHieu() ben duoi da chuyen sang id_char.
+     *
+     * Backfill CHI khop duoc rong nhung dong ma charname luu trong bang con TRUNG voi ten
+     * HIEN TAI cua nhan vat do (tob_char.charname) - dong nao da doi ten TRUOC KHI ban vá
+     * nay len (vd nhan vat thu nghiem doi ten hom 19/09/2026) se can vas tay 1 lan (da lam
+     * cho truong hop biet truoc, xem ghi chu du an lien quan).
+     */
+    private void damBaoIdCharDanhHieu() {
+        Connection conn = null;
+        Statement st = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getConnection();
+            st = conn.createStatement();
+
+            rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.COLUMNS"
+                    + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_danh_hieu' AND COLUMN_NAME = 'id_char'");
+            final boolean coCotIdChar = rs.next() && rs.getInt(1) > 0;
+            rs.close();
+            if (!coCotIdChar) {
+                st.execute("ALTER TABLE tob_danh_hieu ADD COLUMN id_char INT NULL AFTER charname");
+                System.out.println("[DANH HIEU] da them cot id_char vao tob_danh_hieu");
+            }
+
+            st.execute("UPDATE tob_danh_hieu t JOIN tob_char c ON c.charname = t.charname"
+                    + " SET t.id_char = c.id WHERE t.id_char IS NULL");
+
+            rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.STATISTICS"
+                    + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_danh_hieu' AND INDEX_NAME = 'Index_2'");
+            final boolean coKhoaCuTheoTen = rs.next() && rs.getInt(1) > 0;
+            rs.close();
+            if (coKhoaCuTheoTen) {
+                st.execute("ALTER TABLE tob_danh_hieu DROP INDEX Index_2");
+            }
+
+            rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.STATISTICS"
+                    + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_danh_hieu' AND INDEX_NAME = 'idx_id_char'");
+            final boolean coKhoaMoiTheoId = rs.next() && rs.getInt(1) > 0;
+            rs.close();
+            rs = null;
+            if (!coKhoaMoiTheoId) {
+                st.execute("ALTER TABLE tob_danh_hieu ADD UNIQUE KEY idx_id_char (id_char)");
+            }
+        } catch (final Exception e) {
+            System.out.println("[DANH HIEU] loi migrate id_char - " + e);
+        } finally {
+            try { if (rs != null) { rs.close(); } } catch (final Exception ignored) { }
+            try { if (st != null) { st.close(); } } catch (final Exception ignored) { }
+            try { Database.connPool.free(conn); } catch (final Exception ignored) { }
+        }
+    }
+
     public void addCharDanhHieu(Char p) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "insert into tob_danh_hieu(charname,iddh) values ('" + p.charname + "','" + p.getAllDanhHieuSave() + "' )ON DUPLICATE KEY UPDATE iddh='" + p.getAllDanhHieuSave() + "'";
+            // Sua 19/09/2026: khoa theo id_char (id_char khong doi khi doi ten nhan vat),
+            // khong con khoa theo charname nua - xem damBaoIdCharDanhHieu(). charname van
+            // ghi kem de doc/doi chieu cho de, chi mang tinh hien thi.
+            final String danhHieu = p.getAllDanhHieuSave();
+            final String sql = "insert into tob_danh_hieu(charname,id_char,iddh) values (?,?,?)"
+                    + " ON DUPLICATE KEY UPDATE charname=?, iddh=?";
             conn = this.getConnection();
             pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, p.charname);
+            pstmt.setInt(2, p.charDBID);
+            pstmt.setString(3, danhHieu);
+            pstmt.setString(4, p.charname);
+            pstmt.setString(5, danhHieu);
             pstmt.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -7498,9 +7566,9 @@ public class Database {
         PreparedStatement pre = null;
         try {
             conn = this.getConnection();
-            final String sql = "SELECT * FROM tob_danh_hieu WHERE charname=?";
+            final String sql = "SELECT * FROM tob_danh_hieu WHERE id_char=?";
             pre = conn.prepareStatement(sql);
-            pre.setString(1, p.charname);
+            pre.setInt(1, p.charDBID);
             ResultSet rs = pre.executeQuery();
             if (rs.next()) {
                 p.setDanhHieu(rs.getString("iddh"));

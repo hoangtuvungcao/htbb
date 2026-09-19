@@ -74,7 +74,14 @@ public final class CharDoiTenNhanVat {
         player.subLuong(COST_LUONG);
         player.charname = tenMoi;
 
-        if (player.idClan > 0) {
+        // Sua 19/09/2026: "> 0" bo sot clan id = 0 (id_clan la so tu tang bat dau tu 0,
+        // clan DAU TIEN tren server nay dung la id 0 - -1 moi la "khong co bang", xem
+        // MapBangHoi.java:667 va CharNapDuLieu.java "self.idClan = -1"). Bo sot khien
+        // charMaster trong tob_clan/NewClan KHONG duoc dong bo ten moi cho bang chu cua
+        // dung CLAN 0 - lan dang nhap lai sau do so charMaster (ten CU) voi charname (ten
+        // MOI) khong khop, tuong nham la khong con la bang chu, giang xuong thanh vien
+        // (xem CharNapDuLieu.java ~dong 466). Bat gap tren VPS 19/09/2026.
+        if (player.idClan != -1) {
             suaTenTrongBang(player.idClan, tenCu, tenMoi);
         }
 
