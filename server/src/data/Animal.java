@@ -841,9 +841,22 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
                 // len den cap 4 (max) thi tang tan cong/thu ma/thu vat duoc DAY LEN
                 // random doc lap 20%-26% (vuot han tran luyen thuong ~10-16%) thay vi
                 // giu nguyen muc da luyen duoc.
-                this.att[0] = randomAttMax();
-                this.att[1] = randomAttMax();
-                this.att[2] = randomAttMax();
+                //
+                // TRU 5 loai co ban mua o cua hang (yeu cau nguoi dung 19/09/2026 lan 2 -
+                // day MOI la duong "luyen len cap 4 that su" qua NPC, khac voi
+                // createAttBasicMax() da sua truoc do chi dung cho tao thu san co san max):
+                // Bach ma/Manh ho/Hac nguu/Soi xam/Tien hac VAN giu co dinh 10%/10%/10%
+                // nhu cu, khong random.
+                if (this.idImg == BACH_MA || this.idImg == HO || this.idImg == TRAU
+                        || this.idImg == SOI || this.idImg == HAC) {
+                    this.att[0] = 10;
+                    this.att[1] = 10;
+                    this.att[2] = 10;
+                } else {
+                    this.att[0] = randomAttMax();
+                    this.att[1] = randomAttMax();
+                    this.att[2] = randomAttMax();
+                }
             }
             return true;
         }
