@@ -1412,8 +1412,168 @@ public class Database {
         }
     }
 
+    // ==================== VONG QUAY LUONG (them 19-20/09/2026) ====================
+    // Cung mot "benh" ma nin_xoso/nin_xoso_low giai quyet cho 2 vong quay xu: neu server
+    // restart GIUA luc nguoi choi da dat cuoc (luong da bi tru roi) ma khong co gi luu lai
+    // ngoai bo nho (Char.ALL_PLAYER_XOSO_LUONG), ho MAT TRANG so luong do - khong duoc
+    // hoan, khong duoc tinh vao vong quay tiep theo. Bang nin_xoso_luong (tu tao, KHONG
+    // co san trong dump goc nhu nin_xoso/nin_xoso_low) luu lai dung cuoc dang cho + thong
+    // tin nguoi thang gan nhat, nap lai luc khoi dong qua loadAllXosoLuong().
 
-  
+    public void createTableXosoLuong() {
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = this.getConnection();
+            stmt = conn.createStatement();
+            stmt.execute("CREATE TABLE IF NOT EXISTS nin_xoso_luong ("
+                    + "id int(10) unsigned NOT NULL AUTO_INCREMENT,"
+                    + "charname varchar(45) NOT NULL,"
+                    + "money bigint(20) unsigned NOT NULL DEFAULT 0,"
+                    + "win int(10) unsigned NOT NULL DEFAULT 0,"
+                    + "moneywin bigint(20) unsigned NOT NULL DEFAULT 0,"
+                    + "moneyBid bigint(20) unsigned NOT NULL DEFAULT 0,"
+                    + "PRIMARY KEY (id), UNIQUE KEY Index_2 (charname)"
+                    + ") ENGINE=MyISAM DEFAULT CHARSET=utf8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /** Nap cuoc dang cho + thong tin nguoi thang gan nhat luc khoi dong - xem chu thich dau nhom. */
+    public void loadAllXosoLuong() {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            final String sql = "select * from nin_xoso_luong";
+            conn = this.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("charname");
+                long money = rs.getLong("money");
+                int win = rs.getInt("win");
+                long moneyWin = rs.getLong("moneywin");
+                long moneyBid = rs.getLong("moneyBid");
+                if (money > 0) {
+                    PlayerXoso pxs = new PlayerXoso();
+                    pxs.name = name;
+                    pxs.money = (int) money;
+                    Char.ALL_PLAYER_XOSO_LUONG.put(name, pxs);
+                    Char.MONEY_XOSO_LUONG += money;
+                }
+                if (win == 1) {
+                    Char.luongCharXosoBid_luong = moneyBid;
+                    Char.luongCharXosowin_luong = moneyWin;
+                    Char.charNameXosoWin_luong = name;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) { rs.close(); }
+            } catch (Exception ignored) {
+            }
+            try {
+                pstmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /** Ghi/cap nhat cuoc dang cho cua 1 nguoi choi - goi ngay sau khi dat cuoc thanh cong. */
+    public void doAddUpdatePlayerXosoLuong(String charname, int money) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            String sql = "insert into nin_xoso_luong(charname,money) values (?,?) ON DUPLICATE KEY UPDATE money=?";
+            conn = this.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, charname);
+            pstmt.setInt(2, money);
+            pstmt.setInt(3, money);
+            pstmt.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                pstmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /** Dong vong: xoa het cuoc dang ghi (da tra thuong xong) va ghi lai nguoi thang gan nhat. */
+    public void resetXosoLuong(String charnameWin, long moneyBid, long moneyWin) {
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = this.getConnection();
+            stmt = conn.createStatement();
+            stmt.execute("update nin_xoso_luong set money=0, win=0");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+        this.updateWinXosoLuong(charnameWin, moneyBid, moneyWin);
+    }
+
+    public void updateWinXosoLuong(String charnameWin, long moneyBid, long moneyWin) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            conn = this.getConnection();
+            pstmt = conn.prepareStatement(
+                    "insert into nin_xoso_luong(charname,win,moneyBid,moneywin) values (?,1,?,?)"
+                            + " ON DUPLICATE KEY UPDATE win=1,moneyBid=?,moneywin=?");
+            pstmt.setString(1, charnameWin);
+            pstmt.setLong(2, moneyBid);
+            pstmt.setLong(3, moneyWin);
+            pstmt.setLong(4, moneyBid);
+            pstmt.setLong(5, moneyWin);
+            pstmt.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                pstmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+        this.saveOrtherLog("", charnameWin, "chien thang vong quay luong " + moneyWin, "xosoluong");
+    }
+
     public void loadAllXoso() {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -2450,9 +2610,11 @@ public class Database {
         }
 
         Database.instance.loadAllXoso();
-      
+
         Database.instance.loadAllXosoLow();
-        
+        Database.instance.createTableXosoLuong();
+        Database.instance.loadAllXosoLuong();
+
 
         Database.instance.loadCharChienTruong();
         for (int i = 0; i < 6; ++i) {

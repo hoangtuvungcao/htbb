@@ -15738,6 +15738,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                 Char.MONEY_XOSO_LUONG = 0L;
                                 Char.timeXoso_luong = System.currentTimeMillis();
                                 Char.ALL_PLAYER_XOSO_LUONG.clear();
+                                // Ghi lai vao DB (xoa het cuoc dang cho + luu nguoi thang gan nhat) -
+                                // giong het startThreadXosoLow(): luon goi DU pwin co null hay khong,
+                                // de bang nin_xoso_luong khong bao gio giu cuoc CU cua vong da xong.
                                 if (pwin != null) {
                                     final String info = "Chúc mừng " + namexoso[index].toUpperCase()
                                             + " đặt " + luongtest + " lượng và chiến thắng " + luongWin
@@ -15746,13 +15749,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                     Char.charNameXosoWin_luong = namexoso[index];
                                     Char.luongCharXosowin_luong = luongWin;
                                     Char.luongCharXosoBid_luong = value[index];
+                                    Database.instance.resetXosoLuong(namexoso[index], value[index], luongWin);
                                     pwin.addLuong((int) luongWin);
                                     pwin.sendMessage(MessageCreator.createCharInventoryMessage(pwin, 0));
-                                    Database.instance.saveOrtherLog("", pwin.charname,
-                                            "chien thang vong quay luong " + luongWin + ", dat " + luongtest
-                                                    + ", thue " + (huTien - luongWin), "xosoluong");
                                     Database.instance.saveCharAuto(pwin);
                                 } else {
+                                    Database.instance.resetXosoLuong("ko char win", value[index], luongWin);
                                     Char.charNameXosoWin_luong = "";
                                     Char.luongCharXosowin_luong = 0L;
                                     Char.luongCharXosoBid_luong = 0L;
@@ -15848,6 +15850,16 @@ public int applyRongLonReleaseTo(int baseDamage) {
         Char.ALL_PLAYER_XOSO_LUONG.put(this.charname.toLowerCase(), pxs);
         this.subLuong((long) money);
         this.sendMessage(MessageCreator.createCharInventoryMessage(this, 0));
+        // Ghi lai cuoc dang cho xuong DB (nin_xoso_luong) - de KHONG mat trang neu server
+        // restart giua luc dang cho quay, giong het doXosoLow() dang lam voi nin_xoso_low.
+        final Char p = this;
+        ThreadPool.instant.workList.add(new Runnable() {
+            @Override
+            public void run() {
+                Database.instance.doAddUpdatePlayerXosoLuong(p.charname, money);
+                Database.instance.saveCharAuto(p);
+            }
+        });
         this.infoXosoLuong();
         Database.instance.saveOrtherLog("", this.charname, "dat cuoc vong quay luong " + money, "bidxosoluong");
     }
