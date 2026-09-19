@@ -1816,7 +1816,15 @@ public class RealController extends ServerController {
                         }
                         player.sendMessage(MessageCreator.createServerAlertMessage(text, ""));
                         return;
+                        // Doi ten nhan vat (19/09/2026) - chen giua menu (sau "canh", truoc "Tinh
+                        // Luyen Than Binh") theo yeu cau nguoi dung, phai khop vi tri trong mang
+                        // menu (RequestNPCInfoHandler case -8).
                         case 8:
+                        player.sendMessage(MessageCreator.createMsgInputText(
+                                CharDoiTenNhanVat.INPUT_DOI_TEN, 0,
+                                "Nhập tên mới (phí " + CharDoiTenNhanVat.COST_LUONG + " lượng)", 0));
+                        return;
+                        case 9:
                         if (!player.checkVuKhiThanBinh()) {
                             // Vu khi tinh luyen du 100% duoc dat minuteExist = 0, tuc vinh
                             // vien - gia han khong con y nghia gi nua.
@@ -1852,7 +1860,7 @@ public class RealController extends ServerController {
                         vuKhiDangMac.addElement(player.itemVukhiThoiTrang);
                         player.sendMessage(MessageCreator.createMessageShopNew(player, vuKhiDangMac, "Tiếp tục", "Vũ Khí Thần Binh", 7));
                         return;
-                        case 9:
+                        case 10:
                         if (!player.checkVuKhiThanBinh()) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Không có vật phẩm để gia hạn", ""));
                             return;
@@ -1901,14 +1909,15 @@ public class RealController extends ServerController {
                     // bam la go luon, khong mo submenu. Goi lai dung ham dung cho lenh chat
                     // "boskin": tu no da tu kiem khong co skin dang mac / hanh trang day va
                     // bao loi phu hop.
-                    case 14:
+                    case 15:
                         SkinLinhThu.thaoSkin(player);
                         return;
 
                     // Than Khi doi xuong cuoi menu (05/09/2026), roi lui xuong case 15 khi
-                    // "Go skin thu" chen vao truoc no (11/09/2026) - case nay phai khop vi
-                    // tri trong mang menu (RequestNPCInfoHandler case -8).
-                    case 15:
+                    // "Go skin thu" chen vao truoc no (11/09/2026), roi lui tiep xuong case 16
+                    // khi "Doi ten nhan vat" chen vao giua menu (19/09/2026) - case nay phai
+                    // khop vi tri trong mang menu (RequestNPCInfoHandler case -8).
+                    case 16:
                         String[] menu = new String[]
                         {
                             "Tạo","Nâng cấp","Đổi dòng","Tháo","Khóa"
@@ -1918,13 +1927,13 @@ public class RealController extends ServerController {
 
                         return;
                         // cải tạo cải trang
-                        case 10:
+                        case 11:
                         // Cai Tao Cai Trang: mo thang danh sach bo thoi trang cai tao duoc (bo
                         // dang mac + hanh trang). Luat, gia theo nhom, ti le: xem real/CaiTaoCaiTrang.
                         // Submenu "tinh hoa bao dam" (idMenu 90) da bo ngay 02/09/2026.
                         player.map.showCaiTaoMaterialList(player);
                         return;
-                   case 11:
+                   case 12:
                             menu = new String[]{"Kho Mảnh", "Bộ Sưu Tập", "Cải Trang", player.isBatCaiTrang() ? "Tắt Cải Trang" : "Bật Cải Trang"};
                             player.sendMessage(MessageCreator.createMsgMenu(menu, -518, 0));
 
@@ -1934,7 +1943,7 @@ public class RealController extends ServerController {
                     // dieu kien theo pet da co san (itemPet.level>=2 = da sieu tien
                     // hoa qua doTienHoa()), dung lai item 268 (lo thuoc hoa hinh)
                     // dang dung cho hoa hinh Thu de khong phai tao vat pham moi.
-                    case 12:
+                    case 13:
                         // Hoa Hinh Pet -> pet Lan (luat 02/09/2026, xem data/Pet.java): pet nuoi VINH
                         // VIEN cap n + n x 10 binh hoa hinh (item 268) = pet Lan cap n, han 10 ngay,
                         // KHONG ton luong. Hoa hinh lai luc nao cung duoc: tinh lai 10 ngay, cap Lan
@@ -1999,7 +2008,7 @@ public class RealController extends ServerController {
                     // So case doi tu 15 xuong 14 (01/09/2026): gop "Tinh Hoa Trang Phuc"
                     // (case 14 cu) vao chung case 11 "Cai Tao Cai Trang" nen xoa mot muc
                     // menu rieng, muc nay tut xuong dung mot bac trong mang menu.
-                    case 13:
+                    case 14:
                         String textSkinThu = "Đã ";
                         if (player.isTatSkinLinhThu()) {
                             player.setBatSkinLinhThu();

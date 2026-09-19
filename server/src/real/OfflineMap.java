@@ -749,7 +749,6 @@ public class OfflineMap extends Map {
                   wait.prize_sell = prize_sell;
                   wait.charBuy = privatename;
                   player.itemwait = wait;
-                  util.Logger.logString(player.charname + " da gui prompt nhap so luong, INPUT_SO_LUONG_BAN_NGOC=" + INPUT_SO_LUONG_BAN_NGOC, "debug_gian_hang.txt");
                   player.sendMessage(MessageCreator.createMsgInputText(INPUT_SO_LUONG_BAN_NGOC, 0, "Nhập số lượng muốn bán", 1));
                   return;
                }
@@ -892,9 +891,6 @@ public class OfflineMap extends Map {
 
    /** Buoc cuoi cua "ban ngoc theo so luong": nguoi choi vua go so luong sau khi da chon gia + ten nguoi mua. */
    public void doUserSellGemQuantity(Char player, String text) {
-      util.Logger.logString(player.charname + " doUserSellGemQuantity vao ham, text=" + text
-              + " itemwait=" + (player.itemwait == null ? "null" : ("type=" + player.itemwait.type + " sell=" + player.itemwait.sell)),
-              "debug_gian_hang.txt");
       if (player.itemwait == null || player.itemwait.type != 1 || !player.itemwait.sell) {
          return;
       }
@@ -959,10 +955,7 @@ public class OfflineMap extends Map {
          return;
       }
 
-      util.Logger.logString(player.charname + " sap goi addGemItemSellBulk idGemTemplate=" + idGemTemplate
-              + " soLuong=" + soLuong + " prize=" + prize_sell + " seller=" + seller + " shopId=" + shopId, "debug_gian_hang.txt");
       boolean ok = npcSell[player.myCountry][seller - 11].addGemItemSellBulk(player, shopId, idGemTemplate, (int) soLuong, prize_sell, wait.charBuy);
-      util.Logger.logString(player.charname + " addGemItemSellBulk ket qua=" + ok, "debug_gian_hang.txt");
       if (ok) {
          try {
             Message m = new Message(92);

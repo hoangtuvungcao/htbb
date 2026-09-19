@@ -3174,11 +3174,6 @@ public class Map implements Runnable {
                     || player.mapID == 70 || player.mapID == 1701 || player.mapID == 1702 || player.mapID == 1703 || player.mapID == 1704
                     || player.mapID == 80 || player.mapID == 1901 || player.mapID == 1902 || player.mapID == 1903 || player.mapID == 1904;
             boolean suKienTrungThu = Char.isSuKienTrungThul2016();
-            util.Logger.logString(player.charname + " mapID=" + player.mapID + " inCountry=" + player.inCountry
-                    + " laMapLang=" + laMapLang + " suKienTrungThu=" + suKienTrungThu
-                    + " playerX=" + player.x + " playerY=" + player.y + " tileX=" + (player.x / 16) + " tileY=" + (player.y / 16)
-                    + " imgDynamic=" + (imgDynamic == null ? "null" : ("len" + imgDynamic.length + (imgDynamic.length > 6 && imgDynamic[6] != null ? "/img6=" + imgDynamic[6].length + "B" : "/img6=null")))
-                    , "debug_trungthu.txt");
 
             // Trung Thu: dau lan mua (longden.png, idImg=6 trong imgDynamic) dat o cac map lang,
             // canh vi tri NPC "Long den keo quan" (xem Map.sendInfoNpc / addNPC.tien.nu), lech
@@ -3219,12 +3214,10 @@ public class Map implements Runnable {
                 }
 
                 player.sendMessage(m);
-                util.Logger.logString(player.charname + " DA GUI message -43, x=" + player.map.xDynamic[0] + " y=" + player.map.yDynamic[0], "debug_trungthu.txt");
             }
         } catch (Exception var4) {
             var4.printStackTrace();
             System.out.println("LOI GUI THONG TIN DYNAMIC OBJ");
-            util.Logger.logString("LOI: " + var4, "debug_trungthu.txt");
         }
     }
 
