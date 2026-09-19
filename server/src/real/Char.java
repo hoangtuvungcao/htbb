@@ -10258,7 +10258,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
      * trong du lieu nen tam thoi bo qua (chi dung Bat Gioi/Sa Tang), theo yeu cau nguoi dung.
      */
     public void doOpenHopBanhTrungThuDacBiet() {
-        final int[] per      = {400, 400, 600, 600, 600, 600, 500, 500, 800, 500, 500, 500, 300, 700, 500, 700, 800, 800, 150, 150, 150, 150, 500, 500, 150, 150, 150, 150};
+        // Trong so dieu chinh 19/09/2026 (yeu cau nguoi dung): 200.000 exp (idx 13) len
+        // 10%, Manh ban do 3 (idx 14) len 8%, Sach ky nang pet (idx 9) va Tien dan (idx
+        // 22) giam xuong con 1% moi loai. 24 muc con lai GIU NGUYEN trong so cu (khong
+        // dong, chi bi anh huong nhe do tong bang thay doi 12500 -> 12876).
+        final int[] per      = {400, 400, 600, 600, 600, 600, 500, 500, 800, 129, 500, 500, 300, 1288, 1030, 700, 800, 800, 150, 150, 150, 150, 129, 500, 150, 150, 150, 150};
         final int[] idgift   = {GemTemplate.XUONG_C5, GemTemplate.XUONG_C6, 123, 82, 7, 13, 676, 677, 136, 111, 156, 157, GemTemplate.LKD_40, 0, 117, 0, 93, 95, 12, 19, 20, 0, 119, 100, 851, 857, 850, 856};
         final int[] typegift = {6, 6, 4, 4, 4, 4, 3, 3, 4, 4, 4, 4, 6, 7, 4, 8, 4, 4, 9, 9, 9, 10, 4, 4, 3, 3, 3, 3};
         final int[] soluongmax = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
