@@ -92,6 +92,8 @@ public final class CharDoiTenNhanVat {
             }
         }
 
+        capNhatCacBangPhuTheoTen(tenCu, tenMoi);
+
         Database.instance.saveOrtherLog("", tenCu, tenCu + " doi ten thanh " + tenMoi, "doitennhanvat");
 
         player.sendMessage(MessageCreator.createServerAlertMessage(
@@ -166,6 +168,43 @@ public final class CharDoiTenNhanVat {
             e.printStackTrace();
         } finally {
             traConnection(conn);
+        }
+    }
+
+    /**
+     * Cac bang phu con lai van dung charname LAM KHOA tra cuu rieng cho tung nhan vat
+     * (qua chua nhan, hop thu, tien cho trong sap ban do, gioi han nap/rut...) - CHUA
+     * chuyen sang id_char nhu tob_danh_hieu/tob_top_event (xem
+     * Database.damBaoIdCharDanhHieu/damBaoIdCharTopEvent - hai bang do dung nhieu, quan
+     * trong hon nen da lam rieng). Voi cac bang con lai, cach re va an toan hon la doi
+     * charname NGAY LUC DOI TEN thay vi doi schema tung bang - neu khong lam, du lieu do
+     * VAN CON trong DB, chi la khong con tra ra duoc boi ten cu lan ten moi nao ca (coi
+     * nhu mat voi nguoi choi). Loi o 1 bang (vd bang khong ton tai) khong lam hong cac
+     * bang con lai vi moi bang chay UPDATE rieng, tu bat loi cua no.
+     */
+    private static final String[] CAC_BANG_PHU_THEO_CHARNAME = {
+        "tob_qua", "tob_qua_loi_dai", "tob_get_board_nap", "ngude_giftcode",
+        "tob_nap_xai_luong", "tob_dau_gia", "tob_dau_gia2", "tob_buy_ruong",
+        "tob_qua_ct", "tob_qua_ct_top", "tob_char_vip", "tob_char_luong",
+        "tob_inbox", "tob_market"
+    };
+
+    private static void capNhatCacBangPhuTheoTen(final String tenCu, final String tenMoi) {
+        for (final String bang : CAC_BANG_PHU_THEO_CHARNAME) {
+            Connection conn = null;
+            try {
+                conn = Database.instance.getConnection();
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE `" + bang + "` SET charname=? WHERE charname=?")) {
+                    ps.setString(1, tenMoi);
+                    ps.setString(2, tenCu);
+                    ps.executeUpdate();
+                }
+            } catch (final Exception e) {
+                System.out.println("[DOI TEN] loi dong bo bang " + bang + " - " + e);
+            } finally {
+                traConnection(conn);
+            }
         }
     }
 

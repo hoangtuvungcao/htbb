@@ -2394,6 +2394,7 @@ public class Database {
         MessageCreator.doInitItemNpcSell();
         Database.instance.doAddNewColumInfoPart();
         Database.instance.damBaoIdCharDanhHieu();
+        Database.instance.damBaoIdCharTopEvent();
         Map.loadAllTemplate();
    
         if (Char.getDayTime(0L).compareTo("2020-10-28 10:30:00") <= 0) {
@@ -9139,14 +9140,66 @@ public void addCharXaiNapLuong(Char p, int type) {
         }
     }
 
+    /**
+     * Mot lan luc khoi dong: chuyen tob_top_event tu khoa theo charname (chuoi, MAT theo
+     * khi doi ten nhan vat) sang khoa theo id_char (id that cua tob_char) - cung mot benh
+     * voi tob_danh_hieu, xem damBaoIdCharDanhHieu(). charname van ghi kem de doc/hien thi
+     * (getTopEvent() doc lai charname de tra ve ten hien tai), chi khong con dung de tra
+     * cuu/khoa duy nhat nua.
+     */
+    private void damBaoIdCharTopEvent() {
+        Connection conn = null;
+        Statement st = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getConnection();
+            st = conn.createStatement();
+
+            rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.COLUMNS"
+                    + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_top_event' AND COLUMN_NAME = 'id_char'");
+            final boolean coCotIdChar = rs.next() && rs.getInt(1) > 0;
+            rs.close();
+            if (!coCotIdChar) {
+                st.execute("ALTER TABLE tob_top_event ADD COLUMN id_char INT NULL AFTER charname");
+                System.out.println("[TOP EVENT] da them cot id_char vao tob_top_event");
+            }
+
+            st.execute("UPDATE tob_top_event t JOIN tob_char c ON c.charname = t.charname"
+                    + " SET t.id_char = c.id WHERE t.id_char IS NULL");
+
+            rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.STATISTICS"
+                    + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_top_event' AND INDEX_NAME = 'charname'");
+            final boolean coKhoaCuTheoTen = rs.next() && rs.getInt(1) > 0;
+            rs.close();
+            if (coKhoaCuTheoTen) {
+                st.execute("ALTER TABLE tob_top_event DROP INDEX charname");
+            }
+
+            rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.STATISTICS"
+                    + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_top_event' AND INDEX_NAME = 'idx_id_char'");
+            final boolean coKhoaMoiTheoId = rs.next() && rs.getInt(1) > 0;
+            rs.close();
+            rs = null;
+            if (!coKhoaMoiTheoId) {
+                st.execute("ALTER TABLE tob_top_event ADD UNIQUE KEY idx_id_char (id_char)");
+            }
+        } catch (final Exception e) {
+            System.out.println("[TOP EVENT] loi migrate id_char - " + e);
+        } finally {
+            try { if (rs != null) { rs.close(); } } catch (final Exception ignored) { }
+            try { if (st != null) { st.close(); } } catch (final Exception ignored) { }
+            try { Database.connPool.free(conn); } catch (final Exception ignored) { }
+        }
+    }
+
     public void addCharEvent_ND(Char p, int type, int xu, int luong) {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "insert into tob_top_event(charname,point1,timeupdate) values ('" + p.charname + "'," + p.banphaohoa + ",now()) ON DUPLICATE KEY UPDATE point1=" + p.banphaohoa + ",timeupdate=now()";
+            String sql = "insert into tob_top_event(charname,id_char,point1,timeupdate) values ('" + p.charname + "'," + p.charDBID + "," + p.banphaohoa + ",now()) ON DUPLICATE KEY UPDATE charname='" + p.charname + "',point1=" + p.banphaohoa + ",timeupdate=now()";
             if (type == 1) {
-                sql = "insert into tob_top_event(charname,xu,datexu) values ('" + p.charname + "'," + xu + ",now()) ON DUPLICATE KEY UPDATE xu=xu+" + xu + ",datexu=now()";
+                sql = "insert into tob_top_event(charname,id_char,xu,datexu) values ('" + p.charname + "'," + p.charDBID + "," + xu + ",now()) ON DUPLICATE KEY UPDATE charname='" + p.charname + "',xu=xu+" + xu + ",datexu=now()";
             } else if (type == 2) {
                 // Sua 19/09/2026: truoc day chi cong "luong" ma KHONG dung "point1" - trong
                 // khi getTopEvent() (dung cho "Bang xep hang" Trung Thu, xem MapSuKien.java)
@@ -9155,9 +9208,9 @@ public void addCharXaiNapLuong(Char p, int type) {
                 // hang nhuc nhich vi point1 khong bao gio duoc ghi. Cho point1 cong dong bo
                 // CUNG luong (khong chia ty le nhu addCharEvent() type==2 dang lam cho Gio To)
                 // de "Bang xep hang" phan anh dung tong luong da tieu trong su kien.
-                sql = "insert into tob_top_event(charname,luong,dateluong,point1) values ('" + p.charname + "'," + luong + ",now()," + luong + ") ON DUPLICATE KEY UPDATE luong=luong+" + luong + ",dateluong=now(),point1=point1+" + luong + "";
+                sql = "insert into tob_top_event(charname,id_char,luong,dateluong,point1) values ('" + p.charname + "'," + p.charDBID + "," + luong + ",now()," + luong + ") ON DUPLICATE KEY UPDATE charname='" + p.charname + "',luong=luong+" + luong + ",dateluong=now(),point1=point1+" + luong + "";
             } else if (type == 3) {
-                sql = "insert into tob_top_event(charname,xu,datexu,point1,timeupdate,luong,dateluong) values ('" + p.charname + "'," + xu + ",now()," + p.banphaohoa + "',now()," + luong + ",now()) ON DUPLICATE KEY UPDATE xu=xu+" + xu + ",datexu=now(),point1=" + p.banphaohoa + ",timeupdate=now(),luong=luong+" + luong + ",dateluong=now()";
+                sql = "insert into tob_top_event(charname,id_char,xu,datexu,point1,timeupdate,luong,dateluong) values ('" + p.charname + "'," + p.charDBID + "," + xu + ",now()," + p.banphaohoa + "',now()," + luong + ",now()) ON DUPLICATE KEY UPDATE charname='" + p.charname + "',xu=xu+" + xu + ",datexu=now(),point1=" + p.banphaohoa + ",timeupdate=now(),luong=luong+" + luong + ",dateluong=now()";
             }
             conn = this.getConnection();
             pstmt = conn.prepareStatement(sql);
@@ -9200,7 +9253,7 @@ public void addCharXaiNapLuong(Char p, int type) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "insert into tob_top_event(charname,luong,dateluong) values ('" + p.charname + "'," + luong + ",now()) ON DUPLICATE KEY UPDATE luong=luong+" + luong + ",dateluong=now()";
+            String sql = "insert into tob_top_event(charname,id_char,luong,dateluong) values ('" + p.charname + "'," + p.charDBID + "," + luong + ",now()) ON DUPLICATE KEY UPDATE charname='" + p.charname + "',luong=luong+" + luong + ",dateluong=now()";
             conn = this.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.execute();
@@ -9241,9 +9294,9 @@ public void addCharXaiNapLuong(Char p, int type) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "insert into tob_top_event(charname,point1,timeupdate) values ('" + p.charname + "'," + p.banphaohoa + ",now()) ON DUPLICATE KEY UPDATE point1=" + p.banphaohoa + ",timeupdate=now()";
+            String sql = "insert into tob_top_event(charname,id_char,point1,timeupdate) values ('" + p.charname + "'," + p.charDBID + "," + p.banphaohoa + ",now()) ON DUPLICATE KEY UPDATE charname='" + p.charname + "',point1=" + p.banphaohoa + ",timeupdate=now()";
             if (type == 2) {
-                sql = "insert into tob_top_event(charname,luong,dateluong,point1) values ('" + p.charname + "'," + luong + ",now()," + point + ") ON DUPLICATE KEY UPDATE luong=luong+" + luong + ",point1=" + point + ",dateluong=now()";
+                sql = "insert into tob_top_event(charname,id_char,luong,dateluong,point1) values ('" + p.charname + "'," + p.charDBID + "," + luong + ",now()," + point + ") ON DUPLICATE KEY UPDATE charname='" + p.charname + "',luong=luong+" + luong + ",point1=" + point + ",dateluong=now()";
             }
             
             conn = this.getConnection();
@@ -9287,13 +9340,13 @@ public void addCharXaiNapLuong(Char p, int type) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            String sql = "insert into tob_top_event(charname,point1,timeupdate) values ('" + p.charname + "'," + p.banphaohoa + ",now()) ON DUPLICATE KEY UPDATE point1=" + p.banphaohoa + ",timeupdate=now()";
+            String sql = "insert into tob_top_event(charname,id_char,point1,timeupdate) values ('" + p.charname + "'," + p.charDBID + "," + p.banphaohoa + ",now()) ON DUPLICATE KEY UPDATE charname='" + p.charname + "',point1=" + p.banphaohoa + ",timeupdate=now()";
             if (type == 1) {
-                sql = "insert into tob_top_event(charname,xu,datexu) values ('" + p.charname + "'," + xu + ",now()) ON DUPLICATE KEY UPDATE xu=xu+" + xu + ",datexu=now()";
+                sql = "insert into tob_top_event(charname,id_char,xu,datexu) values ('" + p.charname + "'," + p.charDBID + "," + xu + ",now()) ON DUPLICATE KEY UPDATE charname='" + p.charname + "',xu=xu+" + xu + ",datexu=now()";
             } else if (type == 2) {
-                sql = "insert into tob_top_event(charname,luong,dateluong,point1) values ('" + p.charname + "'," + luong + ",now()," + (luong / 100) + ") ON DUPLICATE KEY UPDATE luong=luong+" + luong + ",point1=" + (luong / 100) + ",dateluong=now()";
+                sql = "insert into tob_top_event(charname,id_char,luong,dateluong,point1) values ('" + p.charname + "'," + p.charDBID + "," + luong + ",now()," + (luong / 100) + ") ON DUPLICATE KEY UPDATE charname='" + p.charname + "',luong=luong+" + luong + ",point1=" + (luong / 100) + ",dateluong=now()";
             } else if (type == 3) {
-                sql = "insert into tob_top_event(charname,xu,datexu,point1,timeupdate,luong,dateluong) values ('" + p.charname + "'," + xu + ",now()," + p.banphaohoa + "',now()," + luong + ",now()) ON DUPLICATE KEY UPDATE xu=xu+" + xu + ",datexu=now(),point1=" + p.banphaohoa + ",timeupdate=now(),luong=luong+" + luong + ",dateluong=now()";
+                sql = "insert into tob_top_event(charname,id_char,xu,datexu,point1,timeupdate,luong,dateluong) values ('" + p.charname + "'," + p.charDBID + "," + xu + ",now()," + p.banphaohoa + "',now()," + luong + ",now()) ON DUPLICATE KEY UPDATE charname='" + p.charname + "',xu=xu+" + xu + ",datexu=now(),point1=" + p.banphaohoa + ",timeupdate=now(),luong=luong+" + luong + ",dateluong=now()";
             }
             conn = this.getConnection();
             pstmt = conn.prepareStatement(sql);
