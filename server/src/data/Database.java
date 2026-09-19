@@ -8357,6 +8357,18 @@ public class Database {
     }
 
     public void savecharLuong(Connection conn, Char p) {
+        // Sua 19/09/2026: p ở đây không phải luôn là người chơi thật - "linh thuê"/hộ vệ
+        // (Char.charHire, tạo bằng "new CharCopy((Session) null)", KHÔNG đi qua
+        // DatabaseNhanVat.getChar() nên charDBID không bao giờ được gán, giữ nguyên mặc
+        // định 0) cũng đi qua saveChar() chung này. charname của charHire là
+        // "<tên chủ> lan su vu"/"<tên chủ> ho ve" (xem Char.java ~5225, chỉ để LÀM NHÃN
+        // NỔI TRÊN ĐẦU con hộ vệ) - lưu thẳng chuỗi đó vào tob_char_luong sinh ra hàng
+        // loạt dòng rác trong "Top cao thủ/Top công trạng/Top liên trảm" (vd "admin ho ve",
+        // "... lan su vu"). saveCharSP ngay bên trên đã có sẵn guard nay ("if (p.charDBID
+        // > 0)") - ham nay truoc day thieu, gio them vao cho dong bo.
+        if (p.charDBID <= 0) {
+            return;
+        }
         PreparedStatement pre = null;
         PreparedStatement pre2 = null;
         try {
