@@ -10220,7 +10220,18 @@ public class Map implements Runnable {
                     return;
                 }
 
-                player.infoXoso(idpopup - 100);
+                // Sua 20/09/2026: ca 3 popup "Thong tin" (vip/thuong/luong) deu dung CHUNG
+                // idpopup=100 nen khong the phan biet loai qua idpopup - phai dua vao
+                // player.tierVongQuayDangXem (Char tu ghi lai moi lan infoXoso/infoXosoLow/
+                // infoXosoLuong duoc goi) de lam moi DUNG loai nguoi choi dang xem, thay vi
+                // luon goi infoXoso(idpopup - 100) = infoXoso(0) = vip nhu truoc.
+                if (player.tierVongQuayDangXem == 2) {
+                    player.infoXosoLuong();
+                } else if (player.tierVongQuayDangXem == 1) {
+                    player.infoXosoLow();
+                } else {
+                    player.infoXoso(0);
+                }
             } else if (idpopup == 0 && idActor == player.id) {
                 if (player.idClan != -1) {
                     long moneyClan = NewClan.getMoneyClan(player.idClan);

@@ -3296,7 +3296,7 @@ class MapDoMenu {
                                                     return;
                                                 }
                                             } else {
-                                                String HD_VONG_XOAY_MAY_MAN_LOW = "Giá trị nhập vàng thấp nhất của mỗi người là 10.000 xu\nGiá trị nhập xu cao nhất của mỗi người là 100.000 xu\nMỗi người chơi chỉ được phép nhập xu 1 lần/ 1 lượt quay.\nMỗi 2 phút là bắt đầu vòng quay một lần.\nKhi có 2 người tham gia thì mới bắt đầu đếm ngược thời gian.\nCòn 10 giây cuối sẽ bắt đầu khóa không cho tham gia.\nNgười chiến thắng sẽ nhận hết tổng số tiền tất cả người chơi khác đặt cược sau khi đã trừ thuế.\nKhi người chơi ít hơn 10, thuế sẽ bằng số người chơi -1.nNgười chơi nhiều hơn 10 người thuế sẽ là 10%.";
+                                                String HD_VONG_XOAY_MAY_MAN_LOW = "Giá trị nhập vàng thấp nhất của mỗi người là 10.000 xu\nGiá trị nhập xu cao nhất của mỗi người là 100.000 xu\nMỗi người chơi chỉ được phép nhập xu 1 lần/ 1 lượt quay.\nMỗi 2 phút là bắt đầu vòng quay một lần.\nKhi có 2 người tham gia thì mới bắt đầu đếm ngược thời gian.\nCòn 10 giây cuối sẽ bắt đầu khóa không cho tham gia.\nNgười chiến thắng sẽ nhận hết tổng số tiền tất cả người chơi khác đặt cược sau khi đã trừ thuế cố định " + Char.TAX_PC_XOSO_XU + "%.";
                                                 if (idOptionMenu != 0) {
                                                     if (idOptionMenu != 1) {
                                                         if (idOptionMenu == 2) {
@@ -3310,7 +3310,7 @@ class MapDoMenu {
                                                 }
                                             }
                                         } else {
-                                            String HD_VONG_XOAY_MAY_MAN = "Giá trị nhập vàng thấp nhất của mỗi người là 1.000.000 xu\nGiá trị nhập xu cao nhất của mỗi người là 50.000.000 xu\nMỗi người chơi chỉ được phép nhập xu 1 lần/ 1 lượt quay.\nMỗi 2 phút là bắt đầu vòng quay một lần.\nKhi có 2 người tham gia thì mới bắt đầu đếm ngược thời gian.\nCòn 10 giây cuối sẽ bắt đầu khóa không cho tham gia.\nNgười chiến thắng sẽ nhận hết tổng số tiền tất cả người chơi khác đặt cược sau khi đã trừ thuế.\nKhi người chơi ít hơn 10, thuế sẽ bằng số người chơi -1.\nNgười chơi nhiều hơn 10 người thuế sẽ là 10%.";
+                                            String HD_VONG_XOAY_MAY_MAN = "Giá trị nhập vàng thấp nhất của mỗi người là 1.000.000 xu\nGiá trị nhập xu cao nhất của mỗi người là 50.000.000 xu\nMỗi người chơi chỉ được phép nhập xu 1 lần/ 1 lượt quay.\nMỗi 2 phút là bắt đầu vòng quay một lần.\nKhi có 2 người tham gia thì mới bắt đầu đếm ngược thời gian.\nCòn 10 giây cuối sẽ bắt đầu khóa không cho tham gia.\nNgười chiến thắng sẽ nhận hết tổng số tiền tất cả người chơi khác đặt cược sau khi đã trừ thuế cố định " + Char.TAX_PC_XOSO_XU + "%.";
                                             if (idOptionMenu != 0) {
                                                 if (idOptionMenu != 1) {
                                                     if (idOptionMenu == 2) {

@@ -919,6 +919,9 @@ public class Char extends LiveActor {
     public static final int  MIN_BID_XOSO    = 1000000;      // dat toi thieu: 1 trieu
     public static final int  MAX_PLAYER_XOSO = 20;           // so nguoi toi da moi luot
     public static final long MAX_POT_XOSO    = 20000000000L; // tran hu: 20 nguoi x 1 ty
+    /** Thue CO DINH cho CA HAI vong quay xu (thuong/vip) - sua 20/09/2026 theo yeu cau
+     * nguoi dung, truoc do thue scale theo so nguoi choi (playerCount-1, tran 10%). */
+    public static final int  TAX_PC_XOSO_XU  = 10;
     public static Hashtable<String, PlayerXoso> ALL_PLAYER_XOSO_low;
     public static long MONEY_XOSO_low;
     public static long timeXoso_low;
@@ -932,7 +935,7 @@ public class Char extends LiveActor {
     public static final int  MAX_BID_XOSO_LUONG    = 2000;
     public static final int  MAX_PLAYER_XOSO_LUONG = 20;
     public static final long MAX_POT_XOSO_LUONG    = 40000L; // tran hu: 20 nguoi x 2000
-    public static final int  TAX_PC_XOSO_LUONG     = 25;     // thue CO DINH 25%
+    public static final int  TAX_PC_XOSO_LUONG     = 15;     // thue CO DINH 15% (sua 20/09/2026, truoc la 25%)
     public static Hashtable<String, PlayerXoso> ALL_PLAYER_XOSO_LUONG;
     public static long MONEY_XOSO_LUONG;
     public static long timeXoso_luong;
@@ -15351,10 +15354,9 @@ public int applyRongLonReleaseTo(int baseDamage) {
                                     }
                                     index = allplayer.get(tempindex).index;
                                 }
-                                int tax = Char.ALL_PLAYER_XOSO_low.size() - 1;
-                                if (tax > 10) {
-                                    tax = 10;
-                                }
+                                // Sua 20/09/2026 (theo yeu cau nguoi dung): thue CO DINH
+                                // TAX_PC_XOSO_XU, khong con scale theo so nguoi choi nhu truoc.
+                                final int tax = TAX_PC_XOSO_XU;
                                 // Chup lai hu tien va DONG VONG NGAY - truoc ca khi phat thuong.
                                 // Truoc day dong vong (ba dong MONEY_XOSO_low=0/timeXoso_low=now/
                                 // ALL_PLAYER_XOSO_low.clear()) nam SAU addXu+saveCharAuto: neu
@@ -15406,7 +15408,19 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }.start();
     }
 
+    /**
+     * Loai vong quay ma popup "Thong tin" (idpopup=100) GAN NHAT gui cho nguoi choi nay
+     * la loai nao - 0=vip, 1=thuong, 2=luong. CAN co field nay vi ca 3 info popup
+     * (infoXoso/infoXosoLow/infoXosoLuong) deu dung CHUNG idpopup=100 (khong co id rieng
+     * tung loai), va client tu dong gui lai goi tin "OK" cho popup 100 de lam moi so lieu
+     * (xem Map.java, cho "idpopup==100 ... player.infoXoso(idpopup-100)") - truoc 20/09/2026
+     * cho nay LUON goi cung infoXoso(0) (vip) bat ke nguoi choi dang xem loai nao, lam
+     * popup luong/thuong bi ghi de sai thanh so lieu vip ngay sau khi mo.
+     */
+    public byte tierVongQuayDangXem = 0;
+
     public void infoXosoLow() {
+        this.tierVongQuayDangXem = 1;
         try {
             if (Char.ALL_PLAYER_XOSO_low.size() < 2) {
                 Char.timeXoso_low = System.currentTimeMillis();
@@ -15472,6 +15486,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.infoXosoLow();
             return;
         }
+        this.tierVongQuayDangXem = 0;
         try {
             if (Char.ALL_PLAYER_XOSO.size() < 2) {
                 Char.timeXoso = System.currentTimeMillis();
@@ -15759,6 +15774,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
     }
 
     public void infoXosoLuong() {
+        this.tierVongQuayDangXem = 2;
         try {
             if (Char.ALL_PLAYER_XOSO_LUONG.size() < 2) {
                 Char.timeXoso_luong = System.currentTimeMillis();

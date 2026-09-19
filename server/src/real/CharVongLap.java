@@ -1655,10 +1655,9 @@ class CharVongLap {
                                     }
                                     index = allplayer.get(tempindex).index;
                                 }
-                                int tax = Char.ALL_PLAYER_XOSO.size() - 1;
-                                if (tax > 10) {
-                                    tax = 10;
-                                }
+                                // Sua 20/09/2026 (theo yeu cau nguoi dung): thue CO DINH
+                                // Char.TAX_PC_XOSO_XU, khong con scale theo so nguoi choi nhu truoc.
+                                final int tax = Char.TAX_PC_XOSO_XU;
                                 // Chup lai hu tien va DONG VONG NGAY, truoc khi phat thuong - xem
                                 // chu thich day du o Char.startThreadXosoLow (ban thuong) cho cung
                                 // loi: saveCharAuto co the nem loi tu doan dau ham khong boc
