@@ -673,6 +673,35 @@ class DatabaseXepHang {
         return itemTemplates;
     }
 
+    /**
+     * Dieu kien loai cac nhan vat "admin an" khoi top cao thu/dai gia (yeu cau
+     * nguoi dung 19/09/2026: "bo cac nhan vat duoc set la admin an di trong
+     * top"). TeamServer.adminAccounts la danh sach ten (nhap sv.adminAccounts,
+     * so sanh khong phan biet hoa/thuong) - CUNG mot danh sach dung de cap
+     * quyen isAdmin cho nhan vat (xem CharNapDuLieu.java dong 91/395). Rong
+     * (mac dinh, khong cau hinh admin nao) thi tra ve chuoi rong - khong loc
+     * gi them, giu nguyen hanh vi cu.
+     */
+    private static String dieuKienLoaiAdmin() {
+        if (TeamServer.adminAccounts == null || TeamServer.adminAccounts.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(" and lower(charname) not in (");
+        boolean first = true;
+        for (String ten : TeamServer.adminAccounts) {
+            if (ten == null || ten.trim().isEmpty()) {
+                continue;
+            }
+            if (!first) {
+                sb.append(",");
+            }
+            sb.append("'").append(ten.trim().toLowerCase().replace("'", "''")).append("'");
+            first = false;
+        }
+        sb.append(")");
+        return first ? "" : sb.toString();
+    }
+
     static Vector<CharInfo> getTopLV(Database db) {
         Vector<CharInfo> top = new Vector<>();
         Connection conn = null;
@@ -681,7 +710,7 @@ class DatabaseXepHang {
         Statement stm = null;
         ResultSet rss = null;
         try {
-            String sql = "select charname,id,gold,lastLv,headStyle,idClan,luong,pInfo,infotop,xp from tob_char where ban=0 order by xp desc limit 100";
+            String sql = "select charname,id,gold,lastLv,headStyle,idClan,luong,pInfo,infotop,xp from tob_char where ban=0" + dieuKienLoaiAdmin() + " order by xp desc limit 100";
             conn = db.getConnection();
             pre = conn.prepareStatement(sql);
             rs = pre.executeQuery();
@@ -808,7 +837,7 @@ class DatabaseXepHang {
         Statement stm = null;
         ResultSet rss = null;
         try {
-            String sql = "select charname,id,gold,lastLv,headStyle,idClan,luong,pInfo,infotop from tob_char where ban=0 order by gold desc limit 100";
+            String sql = "select charname,id,gold,lastLv,headStyle,idClan,luong,pInfo,infotop from tob_char where ban=0" + dieuKienLoaiAdmin() + " order by gold desc limit 100";
             conn = db.getConnection();
             pre = conn.prepareStatement(sql);
             rs = pre.executeQuery();
