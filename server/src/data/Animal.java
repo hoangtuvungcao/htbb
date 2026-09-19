@@ -835,6 +835,16 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             Database.instance.saveOrtherLog("tob_log_other_animal", p.getName(), this.getAttribute() + " | " + i + " | " + this.level + " | " + this.name, "ulva");
             this.att[i] = (short) (Map.r.nextInt(pcTN[this.idImg][i - 5][this.level - 1]) + 1);
             ++this.level;
+            if (this.level >= 4) {
+                // Nang cap TOI DA (yeu cau nguoi dung 19/09/2026, ap dung cho MOI loai
+                // thu cuoi ke ca Lan Su Tu - nguoi dung xac nhan lai 19/09/2026): luc
+                // len den cap 4 (max) thi tang tan cong/thu ma/thu vat duoc DAY LEN
+                // random doc lap 20%-26% (vuot han tran luyen thuong ~10-16%) thay vi
+                // giu nguyen muc da luyen duoc.
+                this.att[0] = randomAttMax();
+                this.att[1] = randomAttMax();
+                this.att[2] = randomAttMax();
+            }
             return true;
         }
     }
@@ -957,7 +967,17 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
         if (this.idImg == PHUONG_HOANG_THO) {
             this.att[0] = 3;
         }
+    }
 
+    /**
+     * Ap dung cho MOI loai thu cuoi (ke ca Lan Su Tu - nguoi dung xac nhan lai
+     * 19/09/2026): moi chi so tang tan cong/thu ma/thu vat duoc ROLL RIENG ngau nhien
+     * 20%-26% (yeu cau nguoi dung 19/09/2026), thay cho muc co dinh 10% (hoac 15%/15%/10%
+     * rieng HEO_BANG/SU_TU_BANG) truoc day. Roll rieng tung chi so - KHONG dung chung 1
+     * lan roi gan cho ca ba, de khong bao gio ca ba cung ra dung 26% cung luc.
+     */
+    private short randomAttMax() {
+        return (short) (20 + Map.r.nextInt(7));
     }
 
     public void createAttBasicMax() {
@@ -967,25 +987,25 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
                 KHANG_HOA_TUYET = 30;
                 this.att[3] = 5500;
                 this.att[4] = 5500;
-                this.att[0] = 15;
-                this.att[1] = 15;
-                this.att[2] = 10;
+                this.att[0] = randomAttMax();
+                this.att[1] = randomAttMax();
+                this.att[2] = randomAttMax();
                 break;
             case SU_TU_BANG:
                 KHANG_HOA_TUYET = 95;
                 KHANG_BI_CHAY = 50;
                 this.att[3] = 5500;
                 this.att[4] = 5500;
-                this.att[0] = 15;
-                this.att[1] = 15;
-                this.att[2] = 10;
-                break;    
+                this.att[0] = randomAttMax();
+                this.att[1] = randomAttMax();
+                this.att[2] = randomAttMax();
+                break;
             default:
                 this.att[3] = 5000;
                 this.att[4] = 5000;
-                this.att[0] = 10;
-                this.att[1] = 10;
-                this.att[2] = 10;
+                this.att[0] = randomAttMax();
+                this.att[1] = randomAttMax();
+                this.att[2] = randomAttMax();
                 break;
         }
 
