@@ -8214,6 +8214,16 @@ public class Map implements Runnable {
                 // TYPE_SHOP_NEW_CUA_HANG_VIP ben duoi), danh sach rieng all_item_shop_trungthu,
                 // logic mua don gian (khong can cac truong hop dac biet isPhuPhuThe/
                 // isRuongNguyenLieu... chi danh cho shop VIP).
+                // Sua 19/09/2026 (audit): truoc day nhanh nay KHONG tu kiem tra su kien con
+                // dang mo hay khong o tang xu ly lenh - chi menu (MapDoMenu case 7) va danh
+                // sach hien thi bi an di khi het su kien, con goi tin -76/type=8 gui thang
+                // (vd replay/sua client) van mua duoc mat na VINH VIEN sau khi su kien da
+                // ket thuc. Chan ngay tai day cho chac, giong cach nhanh VIP ben duoi tu
+                // kiem tra player.vip cua no.
+                if (Char.isFinishAllSuKienTrungThul2016()) {
+                    player.sendMessage(MessageCreator.createServerAlertMessage("Sự kiện Trung Thu đã kết thúc.", ""));
+                    return;
+                }
                 int iditem = message.dis.readUnsignedByte();
                 if (iditem < 0 || iditem >= all_item_shop_trungthu.size()) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Vật phẩm không còn bán. Hãy mở lại shop.", ""));

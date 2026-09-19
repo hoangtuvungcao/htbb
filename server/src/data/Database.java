@@ -9080,7 +9080,14 @@ public void addCharXaiNapLuong(Char p, int type) {
             if (type == 1) {
                 sql = "insert into tob_top_event(charname,xu,datexu) values ('" + p.charname + "'," + xu + ",now()) ON DUPLICATE KEY UPDATE xu=xu+" + xu + ",datexu=now()";
             } else if (type == 2) {
-                sql = "insert into tob_top_event(charname,luong,dateluong) values ('" + p.charname + "'," + luong + ",now()) ON DUPLICATE KEY UPDATE luong=luong+" + luong + ",dateluong=now()";
+                // Sua 19/09/2026: truoc day chi cong "luong" ma KHONG dung "point1" - trong
+                // khi getTopEvent() (dung cho "Bang xep hang" Trung Thu, xem MapSuKien.java)
+                // luon SAP XEP theo point1 DESC. Nguoi choi (Noel 2023, Trung Thu - 2 su kien
+                // duy nhat goi type==2 o day) tieu bao nhieu luong cung khong lam bang xep
+                // hang nhuc nhich vi point1 khong bao gio duoc ghi. Cho point1 cong dong bo
+                // CUNG luong (khong chia ty le nhu addCharEvent() type==2 dang lam cho Gio To)
+                // de "Bang xep hang" phan anh dung tong luong da tieu trong su kien.
+                sql = "insert into tob_top_event(charname,luong,dateluong,point1) values ('" + p.charname + "'," + luong + ",now()," + luong + ") ON DUPLICATE KEY UPDATE luong=luong+" + luong + ",dateluong=now(),point1=point1+" + luong + "";
             } else if (type == 3) {
                 sql = "insert into tob_top_event(charname,xu,datexu,point1,timeupdate,luong,dateluong) values ('" + p.charname + "'," + xu + ",now()," + p.banphaohoa + "',now()," + luong + ",now()) ON DUPLICATE KEY UPDATE xu=xu+" + xu + ",datexu=now(),point1=" + p.banphaohoa + ",timeupdate=now(),luong=luong+" + luong + ",dateluong=now()";
             }
