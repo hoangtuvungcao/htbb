@@ -20,7 +20,7 @@ import real.plugins.GiftCode;
  * chu ky cu, chi than chuyen sang day.
  * Tham so "Database db" thay cho "this" truoc day.
  */
-class DatabaseGiftCode {
+public class DatabaseGiftCode {
 
     /**
      * Them cot `userId` vao giftcode_log neu chua co, roi doi chieu userId cho cac dong cu dua
@@ -488,11 +488,47 @@ class DatabaseGiftCode {
                     player.addLuongLock(luongkhoa);
                 }
 
-                if (item != null && !item.equals("NULL") && !item.isEmpty()) {
-                    String[] tachItem = item.trim().split(",");
-                    for (int i = 0; i < tachItem.length; i++) {
-                        String[] tachTime = tachItem[i].trim().split(":");
-                        if (tachTime[0].equals("DB")) {
+                applyItemString(player, item);
+
+                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
+                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được phần quà từ: " + code + ".", ""));
+                Database.instance.saveOrtherLog("", player.charname, "CODE: " + code, "putGiftCode");
+                // (giftcode_log da ghi va limit_use da giam - neu co - NGAY TRUOC khi cap thuong o tren)
+            } else {
+                player.sendMessage(MessageCreator.createServerAlertMessage("Mã quà tặng không tồn tại.", ""));
+            }
+            // System.out.println("\n" + rs.toString() + "\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception exception) {
+            }
+            try {
+                pre1.close();
+            } catch (Exception exception) {
+            }
+        }
+    }
+
+    /**
+     * Ap dung mot chuoi phan thuong (cu phap ITEM:id:soLuong, GEM:id:soLuong:khoa, ...
+     * xem web/admin/inc/thuong.php:loaiThuong()) cho mot nhan vat.
+     *
+     * TACH RA tu newDoGetGiftCode() (chinh xac cung ~60 nhanh if/else, khong sua logic
+     * nao) de dung lai cho cac nguon phat thuong KHAC ngoai giftcode - vd thuong dua
+     * top tu trang quan tri (xem real/SuKienDuaTop.java). Ham nay KHONG dung gi den
+     * giftcode/giftcode_log/limit_use - noi goi tu lo ghi log/tru luot rieng.
+     */
+    public static void applyItemString(final Char player, final String item) {
+        if (item == null || item.equals("NULL") || item.isEmpty()) {
+            return;
+        }
+        String[] tachItem = item.trim().split(",");
+        for (int i = 0; i < tachItem.length; i++) {
+            String[] tachTime = tachItem[i].trim().split(":");
+            if (tachTime[0].equals("DB")) {
                             for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                                 GiftCode.AddItem(player, Integer.parseInt(tachTime[1]), 0, 0, Integer.parseInt(tachTime[3]));
                             }
@@ -769,28 +805,6 @@ class DatabaseGiftCode {
                             for (int j = 0; j < Integer.parseInt(tachTime[2]); j++) {
                                 Char.createTrangBiThuFullHe(player, Integer.parseInt(tachTime[1]), Integer.parseInt(tachTime[3]));
                             }
-                        }
-                    }
-                }
-
-                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
-                player.sendMessage(MessageCreator.createServerAlertMessage("Chúc mừng bạn đã nhận được phần quà từ: " + code + ".", ""));
-                Database.instance.saveOrtherLog("", player.charname, "CODE: " + code, "putGiftCode");
-                // (giftcode_log da ghi va limit_use da giam - neu co - NGAY TRUOC khi cap thuong o tren)
-            } else {
-                player.sendMessage(MessageCreator.createServerAlertMessage("Mã quà tặng không tồn tại.", ""));
-            }
-            // System.out.println("\n" + rs.toString() + "\n");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                Database.connPool.free(conn);
-            } catch (Exception exception) {
-            }
-            try {
-                pre1.close();
-            } catch (Exception exception) {
             }
         }
     }

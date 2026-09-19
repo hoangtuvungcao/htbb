@@ -877,6 +877,9 @@ public class TeamServer {
         // nhan vat dang online thi cong thang vao RAM roi luu ngay, offline thi ghi CSDL.
         // Xem data/LenhWeb.
         data.LenhWeb.batDau();
+        // Phat qua đua top tu trang quan tri web: bang tob_top_thuong, doc luc nguoi choi
+        // mo menu NPC Tong Quan (khong can vong lap rieng). Xem real/SuKienDuaTop.
+        real.SuKienDuaTop.taoBang();
         // Lich hen mo/dong su kien + tu khoi dong lai khi thiet lap doi. PHAI chay SAU
         // BaoTriDaily: no bat co 5h_systems.restart cho vong lap ben do doc va tat may,
         // chu khong tu tat. Xem real/LichSuKien.

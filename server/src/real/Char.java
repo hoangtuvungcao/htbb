@@ -126,6 +126,10 @@ public class Char extends LiveActor {
     // Doc TRUOC bang remap VI_TRI_MENU_DAU_TRUONG trong MapDoMenu de khong bi bang do
     // chan nham (bang chi chap nhan vi tri no biet). Xem real/MapSuKien.doMenuDauTruongVuLan.
     public int idxSuKienVuLanDauTruong = -1;
+    // Vi tri (idOptionMenu) cua muc "Nhan thuong dua top" trong menu NPC Tong Quan, gan
+    // lai moi lan RequestNPCInfoHandler mo menu -10. -1 = nhan vat nay khong co thuong
+    // dua top nao dang cho nhan (menu khong co dong nay). Xem real/SuKienDuaTop.
+    public int idxThuongDuaTop = -1;
     public short partyID;
     public int masterIDParty;
     public Vector<Short> idItem;

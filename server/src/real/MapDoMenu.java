@@ -171,6 +171,13 @@ class MapDoMenu {
                     return;
                 }
             }
+            // NPC Tong Quan (-10), muc "Nhan thuong đua top": cung la muc cuoi menu, vi
+            // tri ghi trong player.idxThuongDuaTop. Xem real/SuKienDuaTop.
+            if (idNpc == -10 && idMenu == 0 && player.idxThuongDuaTop >= 0
+                    && idOptionMenu == player.idxThuongDuaTop) {
+                SuKienDuaTop.nhanThuong(player);
+                return;
+            }
             if (idNpc == -520) {
                 map.doChonMocNap(player, idOptionMenu);
                 return;

@@ -844,6 +844,17 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.idxSuKienWorldCup = menu.length;
                         menu = menuSuKien;
                     }
+                    // Thuong dua top (trang quan tri web): cung noi vao CUOI menu, CHI hien
+                    // voi nhan vat co ten trong bang tob_top_thuong va chua nhan. Xem
+                    // real/SuKienDuaTop.
+                    p.idxThuongDuaTop = -1;
+                    if (real.SuKienDuaTop.coThuongChoNhan(p.charname)) {
+                        String[] menuThuongTop = new String[menu.length + 1];
+                        System.arraycopy(menu, 0, menuThuongTop, 0, menu.length);
+                        menuThuongTop[menu.length] = "Nhận thưởng đua top";
+                        p.idxThuongDuaTop = menu.length;
+                        menu = menuThuongTop;
+                    }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }
