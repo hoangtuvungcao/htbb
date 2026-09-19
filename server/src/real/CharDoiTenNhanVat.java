@@ -93,6 +93,7 @@ public final class CharDoiTenNhanVat {
         }
 
         capNhatCacBangPhuTheoTen(tenCu, tenMoi);
+        capNhatTenTopEvent(player.charDBID, tenMoi);
 
         Database.instance.saveOrtherLog("", tenCu, tenCu + " doi ten thanh " + tenMoi, "doitennhanvat");
 
@@ -188,6 +189,29 @@ public final class CharDoiTenNhanVat {
         "tob_qua_ct", "tob_qua_ct_top", "tob_char_vip", "tob_char_luong",
         "tob_inbox", "tob_market"
     };
+
+    /**
+     * tob_top_event (Bang xep hang dua top) da chuyen sang khoa theo id_char (xem
+     * Database.damBaoIdCharTopEvent) - diem/tien do KHONG mat khi doi ten, nhung cot
+     * charname hien thi tren bang chi tu lam moi vao lan tieu luong/goi addCharEvent* KE
+     * TIEP. Cap nhat luon o day de bang xep hang hien dung ten moi NGAY, khong phai cho.
+     */
+    private static void capNhatTenTopEvent(final int charDBID, final String tenMoi) {
+        Connection conn = null;
+        try {
+            conn = Database.instance.getConnection();
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE tob_top_event SET charname=? WHERE id_char=?")) {
+                ps.setString(1, tenMoi);
+                ps.setInt(2, charDBID);
+                ps.executeUpdate();
+            }
+        } catch (final Exception e) {
+            System.out.println("[DOI TEN] loi dong bo tob_top_event - " + e);
+        } finally {
+            traConnection(conn);
+        }
+    }
 
     private static void capNhatCacBangPhuTheoTen(final String tenCu, final String tenMoi) {
         for (final String bang : CAC_BANG_PHU_THEO_CHARNAME) {
