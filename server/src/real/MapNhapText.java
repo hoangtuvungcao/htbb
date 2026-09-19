@@ -360,6 +360,16 @@ class MapNhapText {
                     return;
                 }
 
+                if (idActor == CharChuyenLuong.INPUT_TEN_NGUOI_NHAN) {
+                    CharChuyenLuong.doNhapTen(player, text);
+                    return;
+                }
+
+                if (idActor == CharChuyenLuong.INPUT_SO_LUONG) {
+                    CharChuyenLuong.doNhapSoLuong(player, text);
+                    return;
+                }
+
                 if (idActor == OfflineMap.INPUT_SO_LUONG_BAN_NGOC) {
                     if (map instanceof OfflineMap) {
                         ((OfflineMap) map).doUserSellGemQuantity(player, text);

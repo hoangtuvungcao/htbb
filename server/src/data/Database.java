@@ -12066,6 +12066,97 @@ public void addCharXaiNapLuong(Char p, int type) {
         }
     }
 
+    public void createTableNhanChuyenLuong() {
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            conn = this.getConnection();
+            stmt = conn.createStatement();
+            stmt.execute("CREATE TABLE IF NOT EXISTS tob_nhan_chuyen_luong ("
+                    + "charDBID int(10) unsigned NOT NULL,"
+                    + "ngay varchar(10) NOT NULL DEFAULT '',"
+                    + "tongnhan int(10) unsigned NOT NULL DEFAULT 0,"
+                    + "PRIMARY KEY (charDBID)) ENGINE=MyISAM DEFAULT CHARSET=utf8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                stmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /** Nap han muc da nhan tu chuyen khoan cua nhan vat. Neu ngay trong DB khac hom nay thi Char tu reset ve 0. */
+    public void loadNhanChuyenLuong(Char p) {
+        if (p == null || p.charDBID <= 0) {
+            return;
+        }
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getConnection();
+            pstmt = conn.prepareStatement("select ngay,tongnhan from tob_nhan_chuyen_luong where charDBID=?");
+            pstmt.setInt(1, p.charDBID);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                p.ngayNhanChuyenLuong = rs.getString("ngay");
+                p.luongNhanChuyenNgay = rs.getInt("tongnhan");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                rs.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                pstmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /** Luu han muc da nhan tu chuyen khoan. Duoc goi kem moi lan luu nhan vat (autosave / thoat game). */
+    public void saveNhanChuyenLuong(Char p) {
+        if (p == null || p.charDBID <= 0 || p.ngayNhanChuyenLuong == null || p.ngayNhanChuyenLuong.isEmpty()) {
+            return;
+        }
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+            conn = this.getConnection();
+            pstmt = conn.prepareStatement("INSERT INTO tob_nhan_chuyen_luong(charDBID,ngay,tongnhan) VALUES(?,?,?)"
+                    + " ON DUPLICATE KEY UPDATE ngay=?,tongnhan=?");
+            pstmt.setInt(1, p.charDBID);
+            pstmt.setString(2, p.ngayNhanChuyenLuong);
+            pstmt.setInt(3, p.luongNhanChuyenNgay);
+            pstmt.setString(4, p.ngayNhanChuyenLuong);
+            pstmt.setInt(5, p.luongNhanChuyenNgay);
+            pstmt.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                pstmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
     public void delQuest(int charDBID) {
         Connection conn = null;
         Statement stmt = null;

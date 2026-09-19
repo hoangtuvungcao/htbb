@@ -130,6 +130,9 @@ public class Char extends LiveActor {
     // lai moi lan RequestNPCInfoHandler mo menu -10. -1 = nhan vat nay khong co thuong
     // dua top nao dang cho nhan (menu khong co dong nay). Xem real/SuKienDuaTop.
     public int idxThuongDuaTop = -1;
+    // Vi tri (idOptionMenu) cua muc "Chuyen luong" trong menu NPC Tong Quan, gan lai moi
+    // lan RequestNPCInfoHandler mo menu -10. Xem real/CharChuyenLuong.
+    public int idxChuyenLuong = -1;
     public short partyID;
     public int masterIDParty;
     public Vector<Short> idItem;
@@ -14312,6 +14315,97 @@ public int applyRongLonReleaseTo(int baseDamage) {
         } catch (final Exception e) {
         }
         return soluong;
+    }
+
+    // ==================== HAN MUC LUONG NHAN CHUYEN KHOAN (NPC Tong Quan) ====================
+    // Moi nhan vat, moi ngay: toi da MAX_LUONG_NHAN_CHUYEN_NGAY luong NHAN duoc tu chuyen
+    // khoan cua nguoi khac, KHONG PHAN BIET nguoi gui - du nhieu nhan vat khac nhau cung
+    // gui toi trong ngay, tong nhan van bi khoa o muc nay (dem theo NGUOI NHAN). Luu trong
+    // bang tob_nhan_chuyen_luong kem ngay nen bao tri/restart server khong lam reset.
+    // Xem real/CharChuyenLuong.
+    public static final int MAX_LUONG_NHAN_CHUYEN_NGAY = 5000;
+
+    public String ngayNhanChuyenLuong = "";
+    public int luongNhanChuyenNgay = 0;
+    public boolean daLoadNhanChuyenLuong = false;
+    public boolean nhanChuyenLuongDirty = false;
+
+    /** Nap han muc tu DB (1 lan moi phien) va reset khi sang ngay moi. */
+    private void checkNgayNhanChuyenLuong() {
+        if (!this.daLoadNhanChuyenLuong) {
+            this.daLoadNhanChuyenLuong = true;
+            try {
+                Database.instance.loadNhanChuyenLuong(this);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+        final String homNay = getDayOpen(0L);
+        if (!homNay.equals(this.ngayNhanChuyenLuong)) {
+            this.ngayNhanChuyenLuong = homNay;
+            this.luongNhanChuyenNgay = 0;
+            this.nhanChuyenLuongDirty = true;
+        }
+    }
+
+    /** Con duoc nhan bao nhieu luong tu chuyen khoan trong hom nay. */
+    public int conLaiLuongNhanChuyenNgay() {
+        checkNgayNhanChuyenLuong();
+        final int conLai = MAX_LUONG_NHAN_CHUYEN_NGAY - this.luongNhanChuyenNgay;
+        return (conLai > 0) ? conLai : 0;
+    }
+
+    /**
+     * Cong luong nhan duoc tu chuyen khoan, tu dong cat theo han muc con lai cua ngay
+     * (KHONG chuyen mot phan - goi cho biet con lai bao nhieu qua conLaiLuongNhanChuyenNgay()
+     * TRUOC roi moi goi ham nay, xem real/CharChuyenLuong).
+     *
+     * @return so luong THUC SU duoc cong (co the < soluong neu vuot han muc, 0 neu da het)
+     */
+    public int addLuongNhanChuyen(int soluong) {
+        if (soluong <= 0) {
+            return 0;
+        }
+        final int conLai = conLaiLuongNhanChuyenNgay();
+        if (conLai <= 0) {
+            return 0;
+        }
+        if (soluong > conLai) {
+            soluong = conLai;
+        }
+        this.addLuong(soluong);
+        this.luongNhanChuyenNgay += soluong;
+        this.nhanChuyenLuongDirty = true;
+        try {
+            this.sendMessage(MessageCreator.createCharInventoryMessage(this, 0));
+        } catch (final Exception e) {
+        }
+        return soluong;
+    }
+
+    /**
+     * Tru luong THUAN TUY (khong tinh vao cac su kien "diem tieu xai"/luongxai... nhu
+     * subLuong() dang lam) - dung cho CHUYEN luong ngang hang giua nhan vat (xem
+     * real.CharChuyenLuong): day la CHUYEN chu khong phai TIEU, nguoi nhan van con giu
+     * nguyen so luong do nen khong tinh la "da tieu" cho nguoi gui (tranh 2 nhan vat cau
+     * ket chuyen qua lai de cay diem tieu xai/su kien ma khong thuc su mat luong nao).
+     * Kiem tra du tien VA tru trong CUNG mot khoa (KHOA_TIEN) de tranh 2 giao dich chuyen
+     * khoan chay dong thoi cung vuot qua kiem tra roi cung tru.
+     *
+     * @return true neu du tien va da tru xong, false neu khong du (khong tru gi ca)
+     */
+    public boolean truLuongChuyenKhoan(final long l) {
+        if (l <= 0L) {
+            return true;
+        }
+        synchronized (KHOA_TIEN) {
+            if ((long) this.luong < l) {
+                return false;
+            }
+            this.luong = truChan(this.luong, l);
+            this.luonglost += l;
+        }
+        return true;
     }
 
     public void addXu(final long xu, final String vitri) {

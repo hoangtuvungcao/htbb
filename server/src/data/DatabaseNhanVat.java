@@ -858,6 +858,14 @@ class DatabaseNhanVat {
             }
         } catch (Exception ignored) {
         }
+        // Han muc luong nhan tu chuyen khoan trong ngay (chi ghi khi co thay doi)
+        try {
+            if (p.nhanChuyenLuongDirty) {
+                db.saveNhanChuyenLuong(p);
+                p.nhanChuyenLuongDirty = false;
+            }
+        } catch (Exception ignored) {
+        }
         ++TeamServer.update;
         return true;
     }
@@ -1092,6 +1100,14 @@ class DatabaseNhanVat {
             if (p.trainLuongDirty) {
                 db.saveTrainLuong(p);
                 p.trainLuongDirty = false;
+            }
+        } catch (Exception ignored) {
+        }
+        // Han muc luong nhan tu chuyen khoan trong ngay (chi ghi khi co thay doi)
+        try {
+            if (p.nhanChuyenLuongDirty) {
+                db.saveNhanChuyenLuong(p);
+                p.nhanChuyenLuongDirty = false;
             }
         } catch (Exception ignored) {
         }

@@ -857,6 +857,15 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         p.idxThuongDuaTop = menu.length;
                         menu = menuThuongTop;
                     }
+                    // Chuyen luong (them 19/09/2026, theo yeu cau nguoi dung): cung noi vao
+                    // CUOI menu. Xem real/CharChuyenLuong.
+                    {
+                        String[] menuChuyenLuong = new String[menu.length + 1];
+                        System.arraycopy(menu, 0, menuChuyenLuong, 0, menu.length);
+                        menuChuyenLuong[menu.length] = "Chuyển lượng";
+                        p.idxChuyenLuong = menu.length;
+                        menu = menuChuyenLuong;
+                    }
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                 }

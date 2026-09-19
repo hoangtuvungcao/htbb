@@ -789,6 +789,7 @@ public class TeamServer {
         System.out.println("SU KIEN WORLD CUP -> " + real.SuKienWorldCup.moTa());
 
         Database.instance.createTableTrainLuong(); // bang luu han muc luong train quai theo ngay
+        Database.instance.createTableNhanChuyenLuong(); // bang luu han muc luong nhan tu chuyen khoan theo ngay
         // PHAI chay TRUOC khi nhan nguoi choi: saveChar ghi cot isCT, thieu cot thi lenh
         // luu nem loi va nhanh bat loi cua no KHOA NHAN VAT. Xem themCotCongTacHienThi().
         Database.instance.themCotCongTacHienThi();

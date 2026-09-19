@@ -187,6 +187,13 @@ class MapDoMenu {
                 SuKienDuaTop.doChonThuong(player, idOptionMenu);
                 return;
             }
+            // NPC Tong Quan (-10), muc "Chuyen luong": cung la muc cuoi menu, vi tri ghi
+            // trong player.idxChuyenLuong. Xem real/CharChuyenLuong.
+            if (idNpc == -10 && idMenu == 0 && player.idxChuyenLuong >= 0
+                    && idOptionMenu == player.idxChuyenLuong) {
+                CharChuyenLuong.moNhapTen(player);
+                return;
+            }
             if (idNpc == -520) {
                 map.doChonMocNap(player, idOptionMenu);
                 return;
