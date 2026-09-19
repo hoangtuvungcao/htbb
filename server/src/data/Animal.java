@@ -1006,6 +1006,22 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
                 this.att[1] = randomAttMax();
                 this.att[2] = randomAttMax();
                 break;
+            // 5 loai thu co ban mua o cua hang (yeu cau nguoi dung 19/09/2026: "toi muon
+            // hac nguu, manh ho, soi xam, tien hac va bach ma la chi so nhu cu. khong co
+            // random") - GIU NGUYEN muc co dinh 10%/10%/10% nhu truoc khi co randomAttMax(),
+            // KHONG ap dung random cho rieng 5 loai nay. Cac loai khac (phuong hoang, lan su
+            // tu, rong bang, bach cot, duong khang...) van random binh thuong qua default.
+            case BACH_MA:
+            case HO:
+            case TRAU:
+            case SOI:
+            case HAC:
+                this.att[3] = 5000;
+                this.att[4] = 5000;
+                this.att[0] = 10;
+                this.att[1] = 10;
+                this.att[2] = 10;
+                break;
             default:
                 this.att[3] = 5000;
                 this.att[4] = 5000;
