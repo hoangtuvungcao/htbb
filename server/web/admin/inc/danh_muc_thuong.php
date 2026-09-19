@@ -778,7 +778,7 @@ function dmTruongCuaLoai(string $loai): array
             // chỗ đó — nên bộ chọn luôn ghi đủ bốn phần.
             return [
                 ['ma' => 'sl', 'nhan' => 'Số lượng', 'macDinh' => '1'],
-                ['ma' => 'khoa', 'nhan' => 'Khoá', 'macDinh' => '-1', 'chon' => [
+                ['ma' => 'khoa', 'nhan' => 'Khoá', 'macDinh' => '-1', 'khongCheo' => true, 'chon' => [
                     '-1' => 'Khoá — không giao dịch được (nên dùng)',
                     '0'  => 'Không khoá',
                 ]],
@@ -794,7 +794,7 @@ function dmTruongCuaLoai(string $loai): array
             return [
                 ['ma' => 'sl', 'nhan' => 'Số lượng', 'macDinh' => '1'],
                 ['ma' => 'ngay', 'nhan' => 'Số ngày (0 = vĩnh viễn)', 'macDinh' => '0', 'minSo' => '0'],
-                ['ma' => 'khoa', 'nhan' => 'Khoá', 'macDinh' => '1', 'chon' => [
+                ['ma' => 'khoa', 'nhan' => 'Khoá', 'macDinh' => '1', 'khongCheo' => true, 'chon' => [
                     '1' => 'Khoá — không giao dịch được (nên dùng)',
                     '0' => 'Không khoá',
                 ]],
@@ -838,6 +838,52 @@ function dmTruongCuaLoai(string $loai): array
             return [
                 ['ma' => 'sl', 'nhan' => 'Số lượng', 'macDinh' => '1'],
                 ['ma' => 'phut', 'nhan' => 'Thời hạn (phút, 0 = vĩnh viễn)', 'macDinh' => '0', 'minSo' => '0'],
+            ];
+
+        case 'PPRK':
+        case 'PPVK':
+            // PPRK/PPVK:id:soLuong:thoiHan:he:khang -> id=750 (Phi Phong Huyền Vũ) là
+            // lựa chọn DUY NHẤT có tác dụng thật với tham số khang (xem PPRK/PPVK trong
+            // loaiThuong() — id khác vẫn tạo được phi phong nhưng khang bị bỏ qua hoàn
+            // toàn). PPRK = chỉ số ngẫu nhiên, PPVK = chỉ số max — khác đúng ismax.
+            return [
+                ['ma' => 'sl', 'nhan' => 'Số lượng', 'macDinh' => '1'],
+                ['ma' => 'phut', 'nhan' => 'Thời hạn (phút, 0 = vĩnh viễn)', 'macDinh' => '0', 'minSo' => '0'],
+                ['ma' => 'he', 'nhan' => 'Hệ', 'macDinh' => '0', 'chon' => [
+                    '0' => 'Phép', '1' => 'Vật lý',
+                ]],
+                ['ma' => 'khang', 'nhan' => 'Kháng', 'macDinh' => '-1', 'chon' => [
+                    '-1' => 'Ngẫu nhiên', '0' => 'Hoả', '1' => 'Thuỷ', '2' => 'Mộc', '3' => 'Kim', '4' => 'Thổ',
+                ]],
+            ];
+
+        case 'MATNA':
+            // MATNA:option:_:thoiHan -> Map.doCreateMatNa(). "option" CHÍNH LÀ id được
+            // chọn ở ô "Vật phẩm" phía trên (xem nhóm mặt nạ trong dmDanhMuc() gọi hàm
+            // này) — -1 = ngẫu nhiên trong 5 mặt. Phần thứ hai ("_") không được đọc
+            // nhưng vẫn phải có mặt vì server truy cập theo chỉ số mảng cố định.
+            return [
+                ['ma' => '_', 'an' => true, 'macDinh' => '_'],
+                ['ma' => 'phut', 'nhan' => 'Thời hạn (phút, 0 = vĩnh viễn)', 'macDinh' => '0', 'minSo' => '0'],
+            ];
+
+        case 'MATNAID':
+            // MATNAID:id:option:thoiHan:khoa -> Map.doCreateMatNa2(), id CHỌN Ở Ô "Vật
+            // phẩm" (mẫu mặt nạ thật) TÁCH RIÊNG khỏi "option" (hiệu ứng thuộc tính) —
+            // khác MATNA/MATNA2 vốn ép 2 thứ đi chung một chỉ số. option 0-4 dùng đúng
+            // mức %5/%5/%10/%30/%50 có sẵn (data.DatabaseGiftCode.applyItemString),
+            // riêng option 4 là "Thuộc tính Lân" (Item.createOptionMatNa). "khoá" cũng
+            // TỰ CHỌN được (MATNA/MATNA2 không có, luôn khoá).
+            return [
+                ['ma' => 'option', 'nhan' => 'Hiệu ứng (option)', 'macDinh' => '4', 'chon' => [
+                    '0' => 'Option 0 (+5%)', '1' => 'Option 1 (+5%)', '2' => 'Option 2 (+10%)',
+                    '3' => 'Option 3 (+30%)', '4' => 'Thuộc tính Lân (+50%)',
+                ]],
+                ['ma' => 'phut', 'nhan' => 'Thời hạn (phút, 0 = vĩnh viễn)', 'macDinh' => '0', 'minSo' => '0'],
+                ['ma' => 'khoa', 'nhan' => 'Khoá', 'macDinh' => '1', 'khongCheo' => true, 'chon' => [
+                    '1' => 'Khoá — không giao dịch được (nên dùng)',
+                    '0' => 'Không khoá',
+                ]],
             ];
     }
     return [];
@@ -924,7 +970,7 @@ function dmTenTheoLoaiKhongCache(PDO $game, string $loai, int $id): ?string
     switch ($loai) {
         // ---- data_item, tra thang bang id that ----
         case 'ITEM': case 'DB': case 'TT': case 'AOTT': case 'AOSHOP':
-        case 'TRANGPHUC': case 'MATNA2': case 'HLT': case 'VKID':
+        case 'TRANGPHUC': case 'MATNA2': case 'MATNAID': case 'HLT': case 'VKID':
         case 'PPR': case 'PPV': case 'PPRK': case 'PPVK': case 'PPLUCK':
         case 'HOVELAN': case 'CHOI': case 'TK': case 'TKMAX':
         case 'TKF': case 'TKMAXF':

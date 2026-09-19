@@ -971,13 +971,19 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
 
     /**
      * Ap dung cho MOI loai thu cuoi (ke ca Lan Su Tu - nguoi dung xac nhan lai
-     * 19/09/2026): moi chi so tang tan cong/thu ma/thu vat duoc ROLL RIENG ngau nhien
-     * 20%-26% (yeu cau nguoi dung 19/09/2026), thay cho muc co dinh 10% (hoac 15%/15%/10%
-     * rieng HEO_BANG/SU_TU_BANG) truoc day. Roll rieng tung chi so - KHONG dung chung 1
-     * lan roi gan cho ca ba, de khong bao gio ca ba cung ra dung 26% cung luc.
+     * 19/09/2026): moi chi so tang tan cong/thu ma/thu vat duoc ROLL RIENG ngau nhien,
+     * thay cho muc co dinh 10% (hoac 15%/15%/10% rieng HEO_BANG/SU_TU_BANG) truoc day.
+     * Roll rieng tung chi so - KHONG dung chung 1 lan roi gan cho ca ba.
+     *
+     * Phan phoi (giam tu 20%-26% deu, yeu cau nguoi dung 19/09/2026):
+     *   95% -> 15%-22% deu
+     *    5% -> 23%-25% deu (hiem hon, cao hon)
      */
     private short randomAttMax() {
-        return (short) (20 + Map.r.nextInt(7));
+        if (Map.r.nextInt(100) < 5) {
+            return (short) (23 + Map.r.nextInt(3)); // 23-25
+        }
+        return (short) (15 + Map.r.nextInt(8)); // 15-22
     }
 
     public void createAttBasicMax() {

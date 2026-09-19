@@ -50,6 +50,11 @@ function loaiThuong(): array
         'AOSHOP'    => [4, 'AOSHOP:id:_:thoiHan',          'Áo thời trang rơi thẳng vào hành trang', 'AOSHOP:725:1:0'],
         'MATNA'     => [4, 'MATNA:option:_:thoiHan',       'Mặt nạ, option -1 = ngẫu nhiên', 'MATNA:-1:_:43200'],
         'MATNA2'    => [4, 'MATNA2:id:_:thoiHan',          'Mặt nạ theo id, option ngẫu nhiên', 'MATNA2:837:_:43200'],
+        'MATNAID'   => [5, 'MATNAID:id:option:thoiHan:khoa',
+            'Mặt nạ theo id, TỰ CHỌN option (0-4, tương ứng mức +5%/+5%/+10%/+30%/+50% có sẵn '
+            . 'của MATNA/MATNA2 — option 4 là "Thuộc tính Lân", xem Item.createOptionMatNa) và '
+            . 'TỰ CHỌN khoá (1 = khoá, 0 = không khoá — MATNA/MATNA2 không có tuỳ chọn này, luôn khoá)',
+            'MATNAID:745:4:0:1'],
         'MNT'       => [2, 'MNT:thoiHan',                  'Mặt nạ thỏ (837)', 'MNT:30'],
         'MNC'       => [2, 'MNC:thoiHan',                  'Mặt nạ cáo (838)', 'MNC:30'],
         'VKTT'      => [4, 'VKTT:_:_:thoiHan',             'Vũ khí thời trang', 'VKTT:_:_:0'],

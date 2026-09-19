@@ -12305,6 +12305,12 @@ public class Map implements Runnable {
     }
 
      public static Item doCreateMatNa2(Char player, int minute, int idtemplate, int option, int valueOption) {
+        return doCreateMatNa2(player, minute, idtemplate, option, valueOption, true);
+    }
+
+     /** Nhu doCreateMatNa2() nhung cho chon KHOA hay khong (them 19/09/2026 cho MATNAID -
+      * ban cu (MATNA/MATNA2) luon khoa cung, giu nguyen qua overload phia tren). */
+     public static Item doCreateMatNa2(Char player, int minute, int idtemplate, int option, int valueOption, boolean khoa) {
         try {
             if (!player.isFullInventory()) {
                 // Lấy template trực tiếp từ ID mong muốn
@@ -12320,7 +12326,7 @@ public class Map implements Runnable {
                     newItem.minuteExist = minute;
                     newItem.timeLoan = System.currentTimeMillis();
                 }
-                newItem.lock = 1;
+                newItem.lock = (byte) (khoa ? 1 : 0);
                 newItem.createOptionMatNa(option, valueOption);
                 newItem.dateCreate = Char.getDayTime(0L);
                 player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));

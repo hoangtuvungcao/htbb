@@ -704,7 +704,45 @@ public class DatabaseGiftCode {
                         int option = randomIndex; // Option mặt nạ (0-4)
                         int value = optionValues[randomIndex];  // Giá trị option tương ứng
                         Item newitem = Map.doCreateMatNa2(player, Integer.parseInt(tachTime[3]), matnaID, option, value);
-                        player.sendMessage(MessageCreator.createServerAlertMessage("Nhận " + newitem.getName() + (Integer.parseInt(tachTime[3]) > 0 ? " " + Integer.parseInt(tachTime[3])/1440 + " ngày" : " vĩnh viễn"), ""));    
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Nhận " + newitem.getName() + (Integer.parseInt(tachTime[3]) > 0 ? " " + Integer.parseInt(tachTime[3])/1440 + " ngày" : " vĩnh viễn"), ""));
+                    } else if (tachTime[0].equals("MATNAID")) {
+                        // MATNAID:idtemplate:option:thoiHan:khoa - khac MATNA2: "option" (0..4,
+                        // dung muc %5/5/10/30/50 co san) duoc CHON THAT thay vi luon random,
+                        // cho ghep RIENG mau mat na (idtemplate) voi RIENG hieu ung (option) -
+                        // vd "Mat na bi ngo" + option 4 "Thuoc tinh Lan" (Item.createOptionMatNa).
+                        // "khoa" (them 19/09/2026): 1 = khoa (khong giao dich duoc, nhu MATNA2
+                        // luon lam), 0 = khong khoa - MATNA/MATNA2 KHONG co tham so nay, van
+                        // luon khoa cung nhu truoc.
+                        int[] giaTriTheoOptionMatNa = {5, 5, 10, 30, 50};
+                        int idTemplateMatNaId = Integer.parseInt(tachTime[1]);
+                        int optionMatNaId = Integer.parseInt(tachTime[2]);
+                        int valueMatNaId = (optionMatNaId >= 0 && optionMatNaId < giaTriTheoOptionMatNa.length)
+                                ? giaTriTheoOptionMatNa[optionMatNaId] : 0;
+                        boolean khoaMatNaId = tachTime.length <= 4 || !"0".equals(tachTime[4]);
+                        Item matNaId = Map.doCreateMatNa2(player, Integer.parseInt(tachTime[3]),
+                                idTemplateMatNaId, optionMatNaId, valueMatNaId, khoaMatNaId);
+                        // Item(...) (Item.java ~712) TU DONG dinh san 1 option rieng cho dung
+                        // idtemplate 745-748 (745->0, 746->1, 747->2, 748->3), doc lap voi
+                        // option nguoi choi vua chon o tren. MATNA/MATNA2 (id va option luon
+                        // random CUNG mot chi so) khong lo vi hai gia tri luon TRUNG nhau;
+                        // MATNAID cho chon RIENG id/option nen phai XOA option mac dinh nay
+                        // di neu no KHAC option da chon - neu khong se bi dinh them stat cu
+                        // (vd chon "Mat na bi ngo" + "Thuoc tinh Lan" (option 4) bi dinh them
+                        // ca "Tang cong" cua option 0 - dung id 745 tu dong gan san).
+                        if (matNaId != null && idTemplateMatNaId >= 745 && idTemplateMatNaId <= 748) {
+                            final int optionMacDinh = idTemplateMatNaId - 745;
+                            if (optionMacDinh != optionMatNaId) {
+                                matNaId.createOptionMatNa(optionMacDinh, 0);
+                                // QUAN TRONG: doCreateMatNa2() da GUI createCharInventoryMessage
+                                // cho client TU BEN TRONG no, TRUOC KHI dong xoa o tren kip chay -
+                                // client da nhan ban CON DINH stat cu roi. Phai gui lai lan nua
+                                // SAU KHI xoa xong thi client moi cap nhat dung; thieu dong nay la
+                                // client hien sai (van thay "Tang cong") du server/DB da dung.
+                                player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
+                            }
+                        }
+                        player.sendMessage(MessageCreator.createServerAlertMessage("Nhận " + matNaId.getName()
+                                + (Integer.parseInt(tachTime[3]) > 0 ? " " + Integer.parseInt(tachTime[3]) / 1440 + " ngày" : " vĩnh viễn"), ""));
                     } else if (tachTime[0].equals("RONGBANG")) {
                             player.createRongLon(Integer.parseInt(tachTime[1]), true);
                         } else if (tachTime[0].equals("SUTU")) {

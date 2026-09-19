@@ -178,6 +178,13 @@ class MapDoMenu {
                 SuKienDuaTop.nhanThuong(player);
                 return;
             }
+            // NPC Tong Quan (-10), menu con "chon 1 trong nhieu qua đua top" (mot so
+            // phan thuong de NGUOI CHOI tu chon, vd mat na/phi phong khang - xem cot
+            // item_chon trong real/SuKienDuaTop.java).
+            if (idNpc == -10 && idMenu == SuKienDuaTop.MENU_CHON_THUONG) {
+                SuKienDuaTop.doChonThuong(player, idOptionMenu);
+                return;
+            }
             if (idNpc == -520) {
                 map.doChonMocNap(player, idOptionMenu);
                 return;

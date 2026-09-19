@@ -42,6 +42,7 @@ function duaTopNhomChoPhep(): array
         'trung_linh'   => true, // Trứng linh thú (rồng băng...)
         'trung_thuoc'  => true, // Trứng phượng hoàng / hoả kỳ lân / đương khang... (trứng "pet")
         'danh_hieu'    => true, // Danh hiệu
+        'thoi_trang'   => true, // Áo/mặt nạ/nón/chổi thời trang - có danh sách id chọn thật
     ];
 }
 
@@ -58,20 +59,59 @@ function duaTopMaChenNhanh(): array
         // ---- Thú cưỡi có ngày ----
         'PHT', 'PHDST', 'PHMT', 'PHKT', 'PHTT', 'PHBT', 'PHDS',
         'RONGBANG', 'SUTU', 'SUTUBANG', 'LANT', 'DBT', 'DK', 'DKB', 'DKT', 'TL', 'HKL',
-        // ---- Phi phong kháng ----
-        'PPRK', 'PPVK',
         // ---- Vũ khí thời trang ----
         'VKTT', 'VKID', 'VKMAX',
         // ---- Vũ khí thần binh ----
         'VKTB', 'VKTBMAX', 'VKTBLV',
         // ---- Nguyệt linh trượng ----
         'NLT', 'NLTMAX',
-        // ---- Mặt nạ ----
-        'MATNA', 'MATNA2', 'MNT', 'MNC',
+        // ---- Mặt nạ theo hạn (khác 5 mặt ID_MAT_NA đã có danh sách chọn riêng) ----
+        'MATNA2', 'MNT', 'MNC',
     ];
 }
 
-/** Tự tạo bảng nếu chưa có — cùng định nghĩa với real/SuKienDuaTop.java:taoBang(). */
+/**
+ * "Mặt nạ" (MATNA) và "Phi phong kháng" (PPRK/PPVK) không có trong dmDanhMuc() dùng
+ * chung (xem inc/danh_muc_thuong.php) vì mỗi loại chỉ có ĐÚNG MỘT lựa chọn ý nghĩa
+ * (5 mặt nạ cố định Char.ID_MAT_NA, hoặc riêng id=750 cho kháng - xem loaiThuong()).
+ * Ghép tay 2 nhóm này vào bộ chọn của TRANG NÀY để admin chọn qua dropdown thay vì
+ * gõ tay - dmTruongCuaLoai() đã có sẵn field cho 'PPRK'/'PPVK'/'MATNA'.
+ */
+function duaTopNhomTuVe(): array
+{
+    return [
+        'mat_na' => [
+            'ten'    => 'Mặt nạ',
+            'loai'   => 'MATNAID',
+            'ghiChu' => 'Chọn ĐÚNG mẫu mặt nạ ở đây, rồi chọn RIÊNG hiệu ứng (option) ở ô bên dưới — '
+                      . 'hai thứ độc lập nhau (khác MATNA/MATNA2 vốn ép chung một chỉ số).',
+            'muc'    => [
+                '745' => 'Mặt nạ bí ngô',
+                '746' => 'Mặt nạ ngạ quỷ',
+                '747' => 'Mặt nạ ngạ khuyển',
+                '748' => 'Mặt nạ thi khiển',
+                '749' => 'Mặt nạ dạ xoa',
+            ],
+        ],
+        'pp_khang_ngau_nhien' => [
+            'ten'    => 'Phi phong kháng — chỉ số ngẫu nhiên',
+            'loai'   => 'PPRK',
+            'ghiChu' => 'Chỉ id=750 (Phi Phong Huyền Vũ) mới thật sự áp dụng được tham số Kháng.',
+            'muc'    => ['750' => 'Phi Phong Huyền Vũ'],
+        ],
+        'pp_khang_max' => [
+            'ten'    => 'Phi phong kháng — chỉ số max',
+            'loai'   => 'PPVK',
+            'ghiChu' => 'Chỉ id=750 (Phi Phong Huyền Vũ) mới thật sự áp dụng được tham số Kháng.',
+            'muc'    => ['750' => 'Phi Phong Huyền Vũ'],
+        ],
+    ];
+}
+
+/**
+ * Tự tạo bảng nếu chưa có — cùng định nghĩa với real/SuKienDuaTop.java:taoBang().
+ * Tự thêm cột `item_chon` (19/09/2026) nếu bảng đã tạo từ trước khi có cột này.
+ */
 function duaTopTaoBang(PDO $game): void
 {
     $game->exec(
@@ -80,6 +120,7 @@ function duaTopTaoBang(PDO $game): void
         . '`vi_tri` TINYINT NOT NULL,'
         . '`charname` VARCHAR(50) NOT NULL,'
         . '`item` TEXT NULL,'
+        . '`item_chon` TEXT NULL,'
         . '`da_nhan` TINYINT NOT NULL DEFAULT 0,'
         . '`admin_user` VARCHAR(50) NOT NULL DEFAULT \'\','
         . '`tao_luc` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,'
@@ -88,6 +129,103 @@ function duaTopTaoBang(PDO $game): void
         . 'KEY `idx_charname_da_nhan` (`charname`, `da_nhan`)'
         . ') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
     );
+    $co = $game->query(
+        'SELECT COUNT(*) FROM information_schema.COLUMNS'
+        . " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . TEN_BANG_DUA_TOP . "' AND COLUMN_NAME = 'item_chon'"
+    )->fetchColumn();
+    if (!$co) {
+        $game->exec('ALTER TABLE `' . TEN_BANG_DUA_TOP . '` ADD COLUMN `item_chon` TEXT NULL AFTER `item`');
+    }
+}
+
+/**
+ * Kiểm tra + chuẩn hoá chuỗi "cho người chơi tự chọn": "nhãn1=chuỗi1|nhãn2=chuỗi2|...".
+ * Mỗi đoạn là MỘT lựa chọn hiện ra trong menu NPC — "chuỗi" theo đúng cú pháp phần
+ * thưởng bình thường (đã qua kiemTraItem()), "nhãn" là tên hiển thị cho người chơi
+ * chọn. Trả về [chuoiDaChuan, mangLoi] giống kiểu trả về của kiemTraItem().
+ */
+function duaTopKiemTraItemChon(string $raw): array
+{
+    $raw = trim($raw);
+    if ($raw === '') {
+        return ['', []];
+    }
+    $loi = [];
+    $phan = [];
+    foreach (explode('|', $raw) as $doan) {
+        $doan = trim($doan);
+        if ($doan === '') {
+            continue;
+        }
+        $vt = strpos($doan, '=');
+        if ($vt === false || $vt === 0 || $vt === strlen($doan) - 1) {
+            $loi[] = '"' . $doan . '": phải đúng dạng "nhãn=phần thưởng" (có dấu "=").';
+            continue;
+        }
+        $nhan = trim(substr($doan, 0, $vt));
+        $chuoiTho = trim(substr($doan, $vt + 1));
+        if ($nhan === '' || strpbrk($nhan, '|=') !== false) {
+            $loi[] = '"' . $doan . '": nhãn không hợp lệ (không được rỗng hoặc chứa "|"/"=").';
+            continue;
+        }
+        [$chuoi, $loiItem] = kiemTraItem($chuoiTho);
+        if ($loiItem) {
+            $loi[] = '"' . $nhan . '": ' . implode(' | ', $loiItem);
+            continue;
+        }
+        if ($chuoi === '' || strpos($chuoi, ',') !== false) {
+            // Moi lua chon la MOT phan thuong duy nhat - tranh nham lan dau phay (ngan
+            // cach nhieu phan thuong trong "item" thuong) voi dau "|" (ngan cach cac
+            // LUA CHON) khi doc lai.
+            $loi[] = '"' . $nhan . '": mỗi lựa chọn chỉ được đúng MỘT phần thưởng (không dùng dấu phẩy).';
+            continue;
+        }
+        $phan[] = $nhan . '=' . $chuoi;
+    }
+    return [implode('|', $phan), $loi];
+}
+
+/** In các lựa chọn "cho người chơi tự chọn" (cột item_chon) dưới dạng danh sách nhãn + chuỗi thô. */
+function duaTopLuaChonChiTiet(string $raw): void
+{
+    $raw = trim($raw);
+    if ($raw === '') {
+        return;
+    }
+    // Gom theo "ten nhom::nhan con" - GIONG HET cach doc cua real/SuKienDuaTop.java
+    // (phanCapItemChon): nhom co >1 nhan con la menu 2 buoc that su (chon nhom truoc,
+    // roi moi chon chi so), nhom co dung 1 la ap dung thang khi chon (khong hoi them).
+    $nhom = [];
+    foreach (explode('|', $raw) as $doan) {
+        $doan = trim($doan);
+        if ($doan === '') {
+            continue;
+        }
+        $vt = strpos($doan, '=');
+        if ($vt === false) {
+            $nhom[$doan][] = ['', $doan];
+            continue;
+        }
+        $nhanGoc = substr($doan, 0, $vt);
+        $chuoi = substr($doan, $vt + 1);
+        $vt2 = strpos($nhanGoc, '::');
+        $tenNhom = $vt2 !== false ? substr($nhanGoc, 0, $vt2) : $nhanGoc;
+        $nhanCon = $vt2 !== false ? substr($nhanGoc, $vt2 + 2) : $nhanGoc;
+        $nhom[$tenNhom][] = [$nhanCon, $chuoi];
+    }
+    echo '<div class="muted small" style="margin-top:6px;"><strong>Người chơi tự chọn:</strong><ul class="chi-tiet-thuong">';
+    foreach ($nhom as $tenNhom => $con) {
+        if (count($con) === 1) {
+            echo '<li>' . e($tenNhom) . ' — <code>' . e($con[0][1]) . '</code></li>';
+            continue;
+        }
+        echo '<li>' . e($tenNhom) . ' (chọn tiếp 1 trong ' . count($con) . '):<ul class="chi-tiet-thuong">';
+        foreach ($con as [$nhanCon, $chuoi]) {
+            echo '<li>' . e($nhanCon) . ' — <code>' . e($chuoi) . '</code></li>';
+        }
+        echo '</ul></li>';
+    }
+    echo '</ul></div>';
 }
 
 /** In cột "Phần thưởng": chuỗi thô + bản dịch dễ đọc — giống oPhanThuongChiTiet() của giftcode.php. */
@@ -143,11 +281,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $loi[] = 'Hạng ' . $hang . ' (' . $ten . '): ' . implode(' | ', $loiItem);
                         continue;
                     }
-                    if ($item === '') {
+                    [$itemChon, $loiChon] = duaTopKiemTraItemChon(p('itemchon' . $hang));
+                    if ($loiChon) {
+                        $loi[] = 'Hạng ' . $hang . ' (' . $ten . ', tự chọn): ' . implode(' | ', $loiChon);
+                        continue;
+                    }
+                    if ($item === '' && $itemChon === '') {
                         $loi[] = 'Hạng ' . $hang . ' (' . $ten . '): chưa chọn phần thưởng nào.';
                         continue;
                     }
-                    $lam[] = [$hang, $ten, $item];
+                    $lam[] = [$hang, $ten, $item, $itemChon];
                 }
                 if ($loi) {
                     veLai($TRANG, 'error', 'Chưa lưu gì cả, sửa lỗi rồi lưu lại: ' . implode(' ', $loi));
@@ -156,11 +299,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     veLai($TRANG, 'error', 'Chưa điền hạng nào (cần tên nhân vật + phần thưởng).');
                 }
                 $ins = dbGame()->prepare(
-                    'INSERT INTO `' . TEN_BANG_DUA_TOP . '` (vi_tri, charname, item, admin_user) VALUES (?, ?, ?, ?)'
+                    'INSERT INTO `' . TEN_BANG_DUA_TOP . '` (vi_tri, charname, item, item_chon, admin_user) VALUES (?, ?, ?, ?, ?)'
                 );
-                foreach ($lam as [$hang, $ten, $item]) {
-                    $ins->execute([$hang, $ten, $item, adminName()]);
-                    ghiNhatKy('tao_thuong_duatop', $ten, 'hạng ' . $hang . ': ' . $item);
+                foreach ($lam as [$hang, $ten, $item, $itemChon]) {
+                    $ins->execute([$hang, $ten, $item, $itemChon, adminName()]);
+                    ghiNhatKy('tao_thuong_duatop', $ten, 'hạng ' . $hang . ': ' . $item
+                        . ($itemChon !== '' ? ' | tự chọn: ' . $itemChon : ''));
                 }
                 veLai($TRANG, 'success', 'Đã tạo phần thưởng cho ' . count($lam) . ' hạng. Nhân vật tương ứng sẽ '
                     . 'thấy mục "Nhận thưởng đua top" ở NPC Tổng Quản.');
@@ -211,7 +355,7 @@ try {
     $loiDoc = $ex->getMessage();
 }
 
-$dmuc = array_intersect_key(dmDanhMuc(dbGame()), duaTopNhomChoPhep());
+$dmuc = array_intersect_key(dmDanhMuc(dbGame()), duaTopNhomChoPhep()) + duaTopNhomTuVe();
 
 $maChenNhanh = array_intersect_key(loaiThuong(), array_flip(duaTopMaChenNhanh()));
 
@@ -266,9 +410,17 @@ adminHead('dua_top', 'Đua top');
         </div>
         <div class="bochon-chan">
             <button type="button" class="btn btn-nho btn-primary" id="bcThem">Thêm vào phần thưởng của hạng đã chọn</button>
+            <button type="button" class="btn btn-nho btn-xam" id="bcThemChon">Thêm vào "cho người chơi tự chọn"</button>
+            <button type="button" class="btn btn-nho btn-xam" id="bcThemCaNhom">Thêm CẢ NHÓM vào "cho người chơi tự chọn"</button>
             <code class="bochon-xem" id="bcXem">—</code>
         </div>
         <p class="muted small" id="bcGhiChu"></p>
+        <p class="muted small">"Cho người chơi tự chọn": nhân vật bấm "Nhận thưởng đua top" ở NPC Tổng Quản sẽ
+           thấy một menu để TỰ CHỌN 1 trong các món đã thêm vào đây, thay vì admin chọn sẵn một món cố định.
+           Nút "Thêm CẢ NHÓM" đưa HẾT các tổ hợp có thể có của nhóm đang chọn thành các lựa chọn trong một lần
+           bấm — không chỉ duyệt hết các món (vd 5 mặt nạ), mà còn duyệt hết CẢ các ô "Hệ"/"Kháng"... đang là
+           dropdown nhiều lựa chọn (vd Phi phong kháng ra đủ 2 Hệ × 6 Kháng = 12 lựa chọn); ô số lượng/thời hạn
+           thì giữ nguyên giá trị đang đặt cho mọi lựa chọn.</p>
     </div>
     <?php endif; ?>
 
@@ -324,7 +476,10 @@ adminHead('dua_top', 'Đua top');
 
         <div class="tbl-wrap" style="margin-top:12px;">
         <table class="tbl">
-            <thead><tr><th class="num">Hạng</th><th>Tên nhân vật</th><th>Phần thưởng</th></tr></thead>
+            <thead><tr>
+                <th class="num">Hạng</th><th>Tên nhân vật</th><th>Phần thưởng cố định</th>
+                <th>Cho người chơi tự chọn (tuỳ chọn)</th>
+            </tr></thead>
             <tbody>
             <?php for ($h = 1; $h <= SO_HANG_DUA_TOP; $h++): ?>
                 <tr>
@@ -332,6 +487,9 @@ adminHead('dua_top', 'Đua top');
                     <td><input type="text" name="ten<?= $h ?>" maxlength="50" placeholder="tên nhân vật"></td>
                     <td><textarea name="item<?= $h ?>" id="item<?= $h ?>" rows="2"
                                   placeholder="ITEM:848:1000,GEM:73:100:-1" onfocus="document.getElementById('bcHang').value='<?= $h ?>'"></textarea></td>
+                    <td><textarea name="itemchon<?= $h ?>" id="itemchon<?= $h ?>" rows="2"
+                                  placeholder="Mặt nạ bí ngô=MATNA:0:_:0|Mặt nạ dạ xoa=MATNA:4:_:0"
+                                  onfocus="document.getElementById('bcHang').value='<?= $h ?>'"></textarea></td>
                 </tr>
             <?php endfor; ?>
             </tbody>
@@ -375,9 +533,21 @@ adminHead('dua_top', 'Đua top');
         var oXem    = document.getElementById('bcXem');
         var oGhiChu = document.getElementById('bcGhiChu');
         var oThem   = document.getElementById('bcThem');
+        var oThemChon    = document.getElementById('bcThemChon');
+        var oThemCaNhom  = document.getElementById('bcThemCaNhom');
         if (!oNhom || !oMuc || !oHang) { return; }
 
         function oPTDich() { return document.getElementById('item' + oHang.value); }
+        function oPTChonDich() { return document.getElementById('itemchon' + oHang.value); }
+
+        /* Bo dau "|" / "=" trong nhan de khong pha dinh dang "nhan=chuoi|nhan=chuoi". */
+        function lamSachNhan(s) { return String(s || '').replace(/[|=]/g, ' ').trim(); }
+
+        function nhanHienTai() {
+            var n = nhomHienTai();
+            if (!n || !oMuc.value) { return ''; }
+            return lamSachNhan(n.muc[oMuc.value] || oMuc.value);
+        }
 
         function nhomHienTai() { return DM[oNhom.value] || null; }
 
@@ -487,6 +657,102 @@ adminHead('dua_top', 'Đua top');
             oPT.focus();
         });
 
+        /* "Cho nguoi choi tu chon": them DUNG mon dang chon vao o itemchonN, dang
+           "nhan=chuoi", noi cach nhau bang "|" - moi doan la MOT lua chon trong menu
+           NPC luc nguoi choi nhan thuong (xem real/SuKienDuaTop.doChonThuong). */
+        if (oThemChon) {
+            oThemChon.addEventListener('click', function () {
+                var s = chuoi();
+                if (s === '') { return; }
+                var oPT = oPTChonDich();
+                if (!oPT) { return; }
+                var doan = nhanHienTai() + '=' + s;
+                var cu = (oPT.value || '').trim().replace(/\|+\s*$/, '');
+                oPT.value = (cu === '') ? doan : (cu + '|' + doan);
+                oPT.focus();
+            });
+        }
+
+        /* Them HET to hop co the co lam cac lua chon cho nguoi choi:
+             - "chieu" dau tien la id (vat pham dang chon trong nhom, vd 5 mat na, hoac
+               chi 1 id nhu Phi Phong Huyen Vu) - LUON duyet het.
+             - moi truong (Truong) sau do: neu la o "chon" (dropdown) co NHIEU HON 1
+               gia tri (vd "Kháng" 6 lua chon, "Hệ" 2 lua chon) thi CUNG duyet het -
+               day chinh la cho truoc con thieu: nguoi choi se duoc tu chon ca Kháng
+               lan Hệ thay vi bi ap san 1 gia tri. O con lai (so luong/thoi han, hoac
+               chon chi co 1 gia tri) giu NGUYEN gia tri dang dat trong bo chon.
+           Ket qua la TICH DESCARTES cua tat ca cac chieu - vd Phi phong kháng: 1 id
+           x 2 hệ x 6 kháng = 12 lua chon trong 1 lan bam. */
+        if (oThemCaNhom) {
+            oThemCaNhom.addEventListener('click', function () {
+                var n = nhomHienTai();
+                if (!n) { return; }
+                var oPT = oPTChonDich();
+                if (!oPT) { return; }
+
+                var idList = [], idNhan = [];
+                for (var id in n.muc) {
+                    if (!Object.prototype.hasOwnProperty.call(n.muc, id)) { continue; }
+                    idList.push(id);
+                    idNhan.push(n.muc[id]);
+                }
+                if (!idList.length) { return; }
+                var chieu = [{giaTri: idList, nhan: idNhan}];
+
+                var truongDefs = TRUONG[n.loai] || [];
+                for (var i = 0; i < truongDefs.length; i++) {
+                    var t = truongDefs[i];
+                    if (t.an) {
+                        chieu.push({giaTri: [t.macDinh], nhan: [null]});
+                        continue;
+                    }
+                    // "khongCheo" (vd o "Khoá"): KHONG duoc coi la thu de nguoi choi tu
+                    // chon du la dropdown nhieu gia tri - khoa hay khong la admin dat san
+                    // cho ca phan thuong, khong hien ra cho nguoi choi (yeu cau nguoi dung
+                    // 19/09/2026). Doc dung gia tri dang chon, giu nguyen nhu o so/an.
+                    if (t.chon && !t.khongCheo && Object.keys(t.chon).length > 1) {
+                        var gts = Object.keys(t.chon);
+                        chieu.push({giaTri: gts, nhan: gts.map(function (gt) { return t.chon[gt]; })});
+                        continue;
+                    }
+                    var oHienTai = oTruong.querySelector('[data-ma="' + t.ma + '"]');
+                    var v = oHienTai ? (oHienTai.value || '').trim() : '';
+                    if (v === '') { return; } // chua dien du o, khong lam gi
+                    chieu.push({giaTri: [v], nhan: [null]});
+                }
+
+                var toHop = [{giaTri: [], nhan: []}];
+                chieu.forEach(function (c) {
+                    var moi = [];
+                    toHop.forEach(function (truoc) {
+                        for (var k = 0; k < c.giaTri.length; k++) {
+                            moi.push({
+                                giaTri: truoc.giaTri.concat([c.giaTri[k]]),
+                                nhan: truoc.nhan.concat([c.nhan[k]])
+                            });
+                        }
+                    });
+                    toHop = moi;
+                });
+
+                var doans = toHop.map(function (h) {
+                    // Nhan dau tien (id/vat pham, vd "Mat na bi ngo") la NHOM cap 1; cac nhan
+                    // con lai (tu truong nhieu lua chon, vd "Kháng") gop thanh nhan con cap 2,
+                    // noi bang "::" - server (SuKienDuaTop) tach theo dau nay de hien MENU 2
+                    // BUOC: chon nhom (vd chon loai mat na) TRUOC, roi moi chon dong chi so
+                    // trong nhom do (yeu cau nguoi dung 19/09/2026). Chi 1 nhan (khong co gi
+                    // de chon them, vd Phi phong kháng chi 1 id) thi khong can noi "::".
+                    var nhomLabel = lamSachNhan(h.nhan[0] || h.giaTri[0]);
+                    var conLai = h.nhan.slice(1).filter(function (x) { return x; }).map(lamSachNhan);
+                    var tenGop = conLai.length ? (nhomLabel + '::' + conLai.join(' - ')) : nhomLabel;
+                    return tenGop + '=' + [n.loai].concat(h.giaTri).join(':');
+                });
+                var cu = (oPT.value || '').trim().replace(/\|+\s*$/, '');
+                oPT.value = (cu === '') ? doans.join('|') : (cu + '|' + doans.join('|'));
+                oPT.focus();
+            });
+        }
+
         oNhom.addEventListener('change', doiNhom);
         oTim.addEventListener('input', function () { veDanhSach(); veXem(); });
         oMuc.addEventListener('change', veXem);
@@ -514,7 +780,10 @@ adminHead('dua_top', 'Đua top');
             <tr>
                 <td class="num"><strong>Top <?= (int)$r['vi_tri'] ?></strong></td>
                 <td><a href="nhanvat.php?q=<?= e(urlencode((string)$r['charname'])) ?>"><?= e((string)$r['charname']) ?></a></td>
-                <td class="info"><?php duaTopPhanThuongChiTiet((string)($r['item'] ?? '')); ?></td>
+                <td class="info">
+                    <?php duaTopPhanThuongChiTiet((string)($r['item'] ?? '')); ?>
+                    <?php duaTopLuaChonChiTiet((string)($r['item_chon'] ?? '')); ?>
+                </td>
                 <td><?= e((string)$r['admin_user']) ?></td>
                 <td class="num nowrap"><?= e((string)$r['tao_luc']) ?></td>
                 <td class="nowrap">
@@ -548,7 +817,10 @@ adminHead('dua_top', 'Đua top');
             <tr>
                 <td class="num">Top <?= (int)$r['vi_tri'] ?></td>
                 <td><a href="nhanvat.php?q=<?= e(urlencode((string)$r['charname'])) ?>"><?= e((string)$r['charname']) ?></a></td>
-                <td class="info"><?php duaTopPhanThuongChiTiet((string)($r['item'] ?? '')); ?></td>
+                <td class="info">
+                    <?php duaTopPhanThuongChiTiet((string)($r['item'] ?? '')); ?>
+                    <?php duaTopLuaChonChiTiet((string)($r['item_chon'] ?? '')); ?>
+                </td>
                 <td class="num nowrap"><?= e((string)$r['nhan_luc']) ?></td>
             </tr>
         <?php endforeach; ?>
