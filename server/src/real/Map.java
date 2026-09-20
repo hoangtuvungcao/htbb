@@ -7741,8 +7741,13 @@ public class Map implements Runnable {
     }
         
      
-    /** ID các nguyên liệu tinh luyện thần binh hợp lệ. */
-    private static final int[] ID_NGUYEN_LIEU_TINH_LUYEN = {
+    /**
+     * ID các nguyên liệu tinh luyện thần binh hợp lệ. Package-private (không còn
+     * private) để Char.CheckNguyenLieuTL()/getNguyenLieuTL() dùng chung, thay vì tự
+     * chép một bản riêng — hai bản chép tay trước đó (fix 20/09/2026) từng lệch nhau
+     * y hệt kiểu lỗi mà locNguyenLieuTinhLuyen() đã mô tả (thiếu 893-897, level sai).
+     */
+    static final int[] ID_NGUYEN_LIEU_TINH_LUYEN = {
         421, 408, 447, 434, 460,
         422, 409, 448, 435, 461,
         423, 410, 449, 436, 462,
@@ -7750,6 +7755,50 @@ public class Map implements Runnable {
         425, 412, 451, 438, 464,
         893, 894, 895, 896, 897
     };
+
+    /**
+     * Vật liệu (level/type) có hợp lệ để tinh luyện trang bị đang mang hay không.
+     *
+     * QUY TẮC (theo nội dung người dùng gửi 20/09/2026) — so theo CHỤC (decade), KHÔNG
+     * so theo hiệu số tuyệt đối:
+     *   - Mốc thường (0..98%): vật liệu phải CÙNG CHỤC hoặc THẤP HƠN ĐÚNG MỘT CHỤC so
+     *     với trang bị (vd trang bị 6x dùng được vật liệu 5x hoặc 6x).
+     *   - Mốc 99% (chuẩn bị lên 100%, sẽ HÚT NGUYÊN chỉ số của vật liệu): XIẾT LẠI, vật
+     *     liệu PHẢI CÙNG CHỤC với trang bị (vd trang bị 8x phải dùng vật liệu 8x như
+     *     "81"; 7x dùng "71" hoặc "76") — không được chục thấp hơn.
+     *
+     * Trước đây (bug) mốc thường cho cả HAI chiều (level chênh lệch tuyệt đối <=10,
+     * tức chấp nhận cả chục CAO hơn) và mốc 99 đòi vật liệu phải CAO HƠN trang bị —
+     * cả hai đều sai so với ví dụ người dùng đưa ra.
+     */
+    static boolean hopLeNguyenLieuTinhLuyen(final int matLevel, final int matType,
+            final int equipLevel, final int equipType, final boolean mocCuoi) {
+        if (matType != equipType) {
+            return false;
+        }
+        final int matDecade = matLevel / 10;
+        final int equipDecade = equipLevel / 10;
+        return mocCuoi ? (matDecade == equipDecade)
+                       : (matDecade == equipDecade || matDecade == equipDecade - 1);
+    }
+
+    /**
+     * Vk chế dùng để tinh luyện phải màu HOÀN MỸ và hạng TAM PHẨM TRỞ LÊN (Nhất/Nhị/Tam
+     * phẩm) - yêu cầu người dùng 21/09/2026. Đây là thuộc tính ROLL RIÊNG TỪNG VẬT PHẨM
+     * lúc chế tạo (xem Map.doCreateNewItem: màu Trắng/Xanh/Đỏ/Hoàn Mỹ, rồi nếu ra màu >
+     * Trắng mới roll tiếp hạng Nhất→Ngũ phẩm), KHÔNG PHẢI thuộc tính cố định theo
+     * template - nên chỉ kiểm được trên một Item cụ thể đã roll xong, không kiểm được
+     * trên ItemTemplates (xem Char.getNguyenLieuTL() dùng template, không gọi được hàm
+     * này).
+     *
+     * Item.colorName == COLOR_GREEN (1) chính là màu hiển thị "Hoàn Mỹ" - xem
+     * ItemChangeColor/MapCheTao: mảng colorName = {0,3,2,1} ứng với thứ tự hiển thị
+     * Trắng/Xanh/Đỏ/Hoàn Mỹ, nên "Hoàn Mỹ" (vị trí cuối) map sang giá trị 1. hangItem
+     * 1..5 = Nhất..Ngũ phẩm (số càng nhỏ càng cao), "tam phẩm trở lên" = 1..3.
+     */
+    static boolean laVkCheChatLuongDu(final Item item) {
+        return item.colorName == Item.COLOR_GREEN && item.hangItem >= 1 && item.hangItem <= 3;
+    }
 
     /**
      * Nhân một chỉ số lên theo "Chỉ số vũ khí tăng" của thần binh, có CHẶN TRẦN.
@@ -7808,15 +7857,9 @@ public class Map implements Runnable {
                     break;
                 }
             }
-            if (!hopLe || item.getTemplate().type != equipType) {
-                continue;
-            }
-            if (mocCuoi) {
-                // Ở mốc 99 nguyên liệu phải cao hơn trang bị, tối đa 10 cấp
-                if (item.level > equipLevel && item.level - equipLevel <= 10) {
-                    ra.addElement(item);
-                }
-            } else if (Math.abs(item.level - equipLevel) <= 10) {
+            if (hopLe && hopLeNguyenLieuTinhLuyen(
+                        item.level, item.getTemplate().type, equipLevel, equipType, mocCuoi)
+                    && laVkCheChatLuongDu(item)) {
                 ra.addElement(item);
             }
         }
@@ -8397,7 +8440,7 @@ public class Map implements Runnable {
                                         "shopvip"
                                 );
                         Database.instance.saveLogThongKeChiTieu(it.getName(), 0, it.getSoluong(), (long) (xu > 0 ? xu : (luong > 0 ? luong : 0)), money);
-                    } else if (it.isAoDai2021() || it.isTieuLongNu() || it.isDuongQua()) {
+                    } else if (it.isAoDai2021() || it.isTieuLongNu() || it.isDuongQua() || it.isHacLang() || it.isThanNu()) {
                         if (player.vip <= 0) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Cần Vip 1 Trở lên để thực hiện tính năng này.", ""));
                             return;
@@ -9621,7 +9664,19 @@ public class Map implements Runnable {
                     // Trừ chi phí
                     player.subLuong(1);
                     player.subXu(3000000, false, "tinh luyen");
-        
+
+                    // Khoa giao dich VINH VIEN ngay khi TIEN HANH tinh luyen LAN DAU (yeu cau
+                    // nguoi dung 21/09/2026: "Khi chua tinh luyen thi vu khi thoi trang co the
+                    // giao dich. Mot khi tien hanh tinh luyen se bi khoa va khong giao dich duoc
+                    // nua"). Dat KHONG DIEU KIEN thanh/bai - "tien hanh" la da tinh, khong doi
+                    // thanh cong lan dau. Co che giao dich THAT cua game nay la "bo do ra dat"
+                    // (Map.doGiveItemToGround) - ham do DA SAN CO chan theo item.lock != 0
+                    // ("Khong the bo vat pham da khoa ra dat"), nen chi can dat co nay la du,
+                    // khong can sua rieng cho giao dich.
+                    if (player.itemVukhiThoiTrang.lock == 0) {
+                        player.itemVukhiThoiTrang.lock = 1;
+                    }
+
                     // Tỷ lệ thành công TĂNG dần theo mốc: càng gần 0% càng khó, càng gần
                     // 100% càng dễ. Đường cong BẬC HAI nên đoạn đầu rất chậm rồi mới bứt
                     // lên ở đoạn cuối:
@@ -9662,15 +9717,20 @@ public class Map implements Runnable {
                     // Xóa nguyên liệu đã dùng
                     player.iItems.remove(selectedItem);
                     Database.instance.deleteItem(selectedItem.dbid);
-        
+
+                    // Luu ten TRUOC khi co the doi tempateID/chuyen o ben duoi - dung an toan
+                    // cho dong log cuoi ham (chay ke ca khi itemVukhiThoiTrang vua bi dat null).
+                    final String tenVuKhiTinhLuyenGoc = player.itemVukhiThoiTrang.getName();
+
                     if (success) {
                         // Tăng cấp tinh luyện
                         player.itemVukhiThoiTrang.TinhLuyen++;
         
-                        // Thêm thời hạn nếu item có hạn
-                        if (player.itemVukhiThoiTrang.minuteExist > 0 && 
+                        // Thêm thời hạn nếu item có hạn (yêu cầu người dùng 20/09/2026: mỗi lần
+                        // tinh luyện thành công tăng 15 ngày, không phải 1 ngày như trước).
+                        if (player.itemVukhiThoiTrang.minuteExist > 0 &&
                             player.itemVukhiThoiTrang.TinhLuyen <= 99) {
-                            player.itemVukhiThoiTrang.minuteExist += 24 * 60; // Thêm 1 ngày
+                            player.itemVukhiThoiTrang.minuteExist += 15 * 24 * 60; // Thêm 15 ngày
                         }
         
                         // Xử lý đặc biệt khi đạt cấp 100
@@ -9678,63 +9738,96 @@ public class Map implements Runnable {
                             int oldId = player.itemVukhiThoiTrang.tempateID;
                             
                             if (oldId >= 758 && oldId <= 772) {
-                                // Lưu các giá trị otherAtt cần giữ lại
+                                // Luu chi so HIEN CO cua otherAtt[54/55/56] TRUOC khi bi ghi de o duoi.
+                                // att54 (Sat thuong chuan) se duoc TRA LAI NGUYEN theo dung yeu cau rieng
+                                // cua nguoi dung ("% sat thuong chuan cua than binh phu thuoc % sat thuong
+                                // chuan cua cay vktt GOC"). att55/att56 se dung de CONG DON voi vk che
+                                // giong atb/newAtb/lockAtb - xem chu thich o duoi (sua 21/09/2026, nguoi
+                                // dung xac nhan lam dung theo dung noi dung da gui, khong loai tru rieng
+                                // hai chi so nay nhu ban truoc).
                                 short att54 = player.itemVukhiThoiTrang.otherAtt[54];
                                 short att55 = player.itemVukhiThoiTrang.otherAtt[55];
                                 short att56 = player.itemVukhiThoiTrang.otherAtt[56];
-        
+
+                                // Luu chi so CO SAN cua chinh than binh TRUOC khi bi ghi de o duoi -
+                                // can de CONG DON voi chi so cua vk che (yeu cau nguoi dung 20/09/2026:
+                                // "chi so than binh se lay chi so HIEN TAI cua no + chi so cua vu khi
+                                // che cuoi cung"), khac voi ban cu chi THAY THE hoan toan bang chi so
+                                // cua vk che.
+                                short[] atbCu = player.itemVukhiThoiTrang.atb.clone();
+                                byte[] newAtbCu = player.itemVukhiThoiTrang.newAtb.clone();
+                                byte[] lockAtbCu = player.itemVukhiThoiTrang.lockAtb.clone();
+
                                 // Copy toàn bộ thuộc tính từ nguyên liệu
                                 player.itemVukhiThoiTrang.atb = selectedItem.atb.clone();
                                 player.itemVukhiThoiTrang.newAtb = selectedItem.newAtb.clone();
                                 player.itemVukhiThoiTrang.addMoreLevelSkill = selectedItem.addMoreLevelSkill.clone();
                                 player.itemVukhiThoiTrang.lockAtb = selectedItem.lockAtb.clone();
                                 player.itemVukhiThoiTrang.otherAtt = selectedItem.otherAtt.clone();
-                                
-                                // Cong don VKTB: chi so vu khi vua hut tu nguyen lieu duoc nhan len theo
-                                // "Chi so vu khi tang" (att55, don vi phan nghin) CUA CHINH cay than binh.
-                                // Vi du att55 = 501 -> x1,501.
+
+                                // Cong don VKTB (sua 20/09/2026, chinh lai 21/09/2026 theo dung noi dung
+                                // nguoi dung gui): chi so CO BAN moi = (chi so HIEN CO cua than binh +
+                                // chi so vua hut tu vk che), roi cong them uu dai CO DINH THEO CHUC LEVEL
+                                // cua chinh trang bi - vd 6x (level 60) +6%, 7x (level 70) +7%, 8x
+                                // (level 80) +8%.
                                 //
-                                // PHAM VI NHAN (chu server chot 05/09/2026) - dung 3 mang chi so:
-                                //   atb[]     Tan cong, Chinh xac, Giam st ma, Tang tan cong...  (short)
-                                //   newAtb[]  Tang HP, Tang MP, Cong suc manh/kheo leo/...       (byte)
-                                //   lockAtb[] Tang cong, Tang thu ma, Tang thu vat               (byte)
-                                // KHONG nhan:
+                                // Dung lai nhanTheoChiSoVuKhiTang() voi "phan nghin" = level (level=60
+                                // -> nhan 1,060 tuc +6%; level=80 -> nhan 1,080 tuc +8%).
+                                //
+                                // PHAM VI CONG DON + TANG % - dung 3 mang chi so + otherAtt[55]/[56]:
+                                //   atb[0..9]   Tan cong, Chinh xac, Giam st ma, Tang tan cong...  (short)
+                                //   newAtb[]    Tang HP, Tang MP, Cong suc manh/kheo leo/...       (byte)
+                                //   lockAtb[]   Tang cong, Tang thu ma, Tang thu vat               (byte)
+                                //   otherAtt[55] Chi so vu khi tang, otherAtt[56] Ti le gay STC
+                                // CONG DON NHUNG KHONG TANG % (giu dung "luu y" cua nguoi dung: tang %
+                                // chi ap dung cho chi so CO BAN, dong an/ngoc kham khong tang):
+                                //   atb[10..27] CHI SO NGOC KHAM - xac nhan qua Item.resetAtbKham()
+                                //               (thao ngoc xoa dung dai 10..27).
+                                //   atb[28..32] DONG AN (Tang tan cong/Phan sat thuong/Giam sat thuong
+                                //               ma...) - xac nhan qua Char.java:3199 "attNguHanh[4] la
+                                //               dong Phan st, thuoc tinh so 32" va vong lap gan
+                                //               attNguHanh o Char.java "for (m = 28; m < 33; m++)".
+                                //               Van CONG DON voi vk che (khong bo qua hoan toan), chi
+                                //               khong nhan them % theo level.
+                                // KHONG cong don (giu nguyen tu vk che hoac tu than binh goc):
                                 //   addMoreLevelSkill[]  la CAP KY NANG (vd "Ho doc tien: 1"), khong
                                 //                        phai chi so
-                                //   otherAtt[54/55/56]   xem chu thich ngay duoi khoi nay
+                                //   otherAtt[54]         Sat thuong chuan - GIU NGUYEN theo vktt GOC
+                                //                        (yeu cau nguoi dung: "% sat thuong chuan cua
+                                //                        than binh phu thuoc % sat thuong chuan cua
+                                //                        cay vktt goc"), khac han 55/56 la khong co
+                                //                        quy tac rieng nen di theo cong thuc chung.
                                 //   durable / mDurable   do ben, khong phai chi so
+                                final int phanNghinTheoLevel = player.itemVukhiThoiTrang.level;
                                 for (int k = 0; k < 33; k++)
                                 {
-                                    player.itemVukhiThoiTrang.atb[k] = (short) nhanTheoChiSoVuKhiTang(
-                                            player.itemVukhiThoiTrang.atb[k], att55, Short.MAX_VALUE);
+                                    final int tongAtb = atbCu[k] + player.itemVukhiThoiTrang.atb[k];
+                                    final boolean laDongAnHayNgocKham = (k >= 10 && k <= 32);
+                                    player.itemVukhiThoiTrang.atb[k] = laDongAnHayNgocKham
+                                            ? (short) Math.min(tongAtb, Short.MAX_VALUE)
+                                            : (short) nhanTheoChiSoVuKhiTang(tongAtb, phanNghinTheoLevel, Short.MAX_VALUE);
                                 }
                                 for (int k = 0; k < player.itemVukhiThoiTrang.newAtb.length; k++)
                                 {
                                     player.itemVukhiThoiTrang.newAtb[k] = (byte) nhanTheoChiSoVuKhiTang(
-                                            player.itemVukhiThoiTrang.newAtb[k], att55, Byte.MAX_VALUE);
+                                            newAtbCu[k] + player.itemVukhiThoiTrang.newAtb[k], phanNghinTheoLevel, Byte.MAX_VALUE);
                                 }
                                 for (int k = 0; k < player.itemVukhiThoiTrang.lockAtb.length; k++)
                                 {
                                     player.itemVukhiThoiTrang.lockAtb[k] = (byte) nhanTheoChiSoVuKhiTang(
-                                            player.itemVukhiThoiTrang.lockAtb[k], att55, Byte.MAX_VALUE);
+                                            lockAtbCu[k] + player.itemVukhiThoiTrang.lockAtb[k], phanNghinTheoLevel, Byte.MAX_VALUE);
                                 }
-                                // Khoi phuc 3 chi so rieng cua than binh (otherAtt vua bi clone de len
-                                // bang cua nguyen lieu o tren). Ba chi so nay GIU NGUYEN, KHONG nhan
-                                // theo att55.
-                                //
-                                // Vi sao khong nhan (quyet dinh cua chu server, 05/09/2026):
-                                // otherAtt[55] khong phai chi so thuong ma la CHINH HE SO NHAN - no duoc
-                                // ap len vu khi that dang mac (Item.getValueUpByVuKhiThoiTrang va
-                                // getInfoAtbItemWearing). Cho no tu nhan chinh no la an hai lan: 50,1%
-                                // -> 75,2%, tuc cay vu khi that bong duoc cong them 25% nua ngoai du kien.
-                                //
-                                // LICH SU: ban goc (bb83665) dat khoi khoi phuc nay o SAU khoi cong don
-                                // nen ket qua cong don bi ghi de mat -> ba chi so giu nguyen. Commit
-                                // 2480c47 doi len TRUOC, vo tinh bat growth len that. Nay quay lai hanh
-                                // vi goc, nhung viet ro rang thay vi dua vao thu tu ghi de.
-                                player.itemVukhiThoiTrang.otherAtt[54] = att54; // Sát thương chuẩn
-                                player.itemVukhiThoiTrang.otherAtt[55] = att55; // Chỉ số vũ khí tăng
-                                player.itemVukhiThoiTrang.otherAtt[56] = att56; // Tỷ lệ gây sát thương chuẩn
+                                // otherAtt[55]/[56]: cong don + tang % giong 3 mang tren (sua 21/09/2026).
+                                // Truoc khi toi cac dong nay, player.itemVukhiThoiTrang.otherAtt[55/56]
+                                // dang la gia tri CUA VK CHE (vua clone o tren) - cong voi att55/att56
+                                // (gia tri GOC cua than binh, da luu truoc do) roi moi nhan theo level.
+                                player.itemVukhiThoiTrang.otherAtt[55] = (short) nhanTheoChiSoVuKhiTang(
+                                        att55 + player.itemVukhiThoiTrang.otherAtt[55], phanNghinTheoLevel, Short.MAX_VALUE);
+                                player.itemVukhiThoiTrang.otherAtt[56] = (short) nhanTheoChiSoVuKhiTang(
+                                        att56 + player.itemVukhiThoiTrang.otherAtt[56], phanNghinTheoLevel, Short.MAX_VALUE);
+                                // otherAtt[54] (Sat thuong chuan): GIU NGUYEN theo vktt GOC - quy tac
+                                // rieng nguoi dung neu ro, KHONG cong don voi vk che (khac 55/56 o tren).
+                                player.itemVukhiThoiTrang.otherAtt[54] = att54;
 
 
                                 // Cập nhật allAtb
@@ -9776,10 +9869,15 @@ public class Map implements Runnable {
                             }
                         }
         
+                        // Luu ten/% TRUOC khi co the chuyen o ben duoi - dung cho ca thong bao
+                        // lan bao toan server ngay sau day.
+                        final String tenVuKhiSauCung = player.itemVukhiThoiTrang.getName();
+                        final int capTinhLuyenSauCung = player.itemVukhiThoiTrang.TinhLuyen;
+
                         // Thông báo thành công
                         player.sendMessage(MessageCreator.createServerAlertMessage(
                             "Tinh luyện thành công! Cấp tinh luyện hiện tại: " +
-                            player.itemVukhiThoiTrang.TinhLuyen, ""));
+                            capTinhLuyenSauCung, ""));
 
                         // Bao toan server khi tinh luyen thanh cong, kem % tinh luyen dat duoc
                         // va so lan that bai lien tiep TRUOC do (yeu cau nguoi dung 18/09/2026).
@@ -9789,8 +9887,8 @@ public class Map implements Runnable {
                         try {
                             Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage(
                                     "Chúc mừng " + player.charname + " đã tinh luyện thành công "
-                                            + player.itemVukhiThoiTrang.getName() + " lên "
-                                            + player.itemVukhiThoiTrang.TinhLuyen + "%"
+                                            + tenVuKhiSauCung + " lên "
+                                            + capTinhLuyenSauCung + "%"
                                             + (soLanThatBaiTruocDo > 0
                                                     ? " sau " + soLanThatBaiTruocDo + " lần thất bại liên tiếp"
                                                     : "")
@@ -9803,6 +9901,26 @@ public class Map implements Runnable {
                         // dung 18/09/2026). Dung chung ham voi thuong len cap 60+ - xem
                         // muaHoaAnMungToanServer().
                         Map.muaHoaAnMungToanServer();
+
+                        // Sua 20/09/2026 (yeu cau nguoi dung, bao "Thêm dòng" khong thay than
+                        // binh vua tinh luyen xong): vu khi vua thanh than binh vinh vien
+                        // (TinhLuyen==100) KHONG CON la "vu khi thoi trang" nua (isVukhiThoiTrang()
+                        // loai tru dai 773-787) nhung code truoc day de nguyen no trong field
+                        // itemVukhiThoiTrang mai mai - khong o iItems (hanh trang) cung khong o
+                        // wItems (do dang mac that su), nen MOI he thong doc theo hai cho do
+                        // (vd MapEpNgoc.doAddItemImbue "Thêm dòng" chi quet player.iItems) khong
+                        // bao gio thay duoc no. Chuyen no ra hanh trang - nguoi choi tu mac lai
+                        // binh thuong qua thao tac mac vu khi thong thuong (tu thay the vu khi
+                        // chinh dang mac, dung tinh than "phai thao vu khi chinh" trong yeu cau).
+                        if (capTinhLuyenSauCung == 100) {
+                            final Item thanBinhVuaHoanThanh = player.itemVukhiThoiTrang;
+                            player.itemVukhiThoiTrang = null;
+                            player.iItems.add(thanBinhVuaHoanThanh);
+                            player.calculateAttrib();
+                            player.sendMessage(MessageCreator.createMainCharInfoMessage(player));
+                            player.sendMessage(MessageCreator.createCharWearingMessage(player, player));
+                            player.sendToNearPlayer(MessageCreator.createCharInfo(player));
+                        }
                     } else {
                         // That bai: cong don so lan that bai LIEN TIEP (chi de bao cao, KHONG
                         // doi ti le thanh cong) - reset ve 0 khi tinh luyen thanh cong o tren.
@@ -9818,10 +9936,12 @@ public class Map implements Runnable {
                     player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
                     showTinhLuyenMaterialList(player);
         
-                    // Lưu log
+                    // Lưu log. Dùng tenVuKhiTinhLuyenGoc (lưu từ đầu) thay vì đọc lại
+                    // player.itemVukhiThoiTrang.getName() - trường này bị đặt null ở trên khi
+                    // vừa hoàn thành 100% (chuyển ra hành trang), đọc thẳng sẽ NPE.
                     String logInfo = String.format("tinh_luyen_%s_cap_%d_%s",
-                        player.itemVukhiThoiTrang.getName(),
-                        player.itemVukhiThoiTrang.TinhLuyen,
+                        tenVuKhiTinhLuyenGoc,
+                        player.itemVukhiThoiTrang != null ? player.itemVukhiThoiTrang.TinhLuyen : 100,
                         success ? "thanh_cong" : "that_bai");
                     Database.instance.saveOrtherLog("", player.charname, logInfo, "tinhluyentb");
         

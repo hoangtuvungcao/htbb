@@ -1873,16 +1873,17 @@ public class RealController extends ServerController {
                         return;
                         case 9:
                         if (!player.checkVuKhiThanBinh()) {
-                            // Vu khi tinh luyen du 100% duoc dat minuteExist = 0, tuc vinh
-                            // vien - gia han khong con y nghia gi nua.
+                            // Sua 20/09/2026: thong bao cu cua nhanh nay ("khong can gia han")
+                            // copy nham tu case 10 (Gia Han) - day la case Tinh Luyen, dung sai
+                            // ngu canh. Ngoai ra khoi kiem tra GiaHan>=100 ngay duoi da bi xoa:
+                            // checkVuKhiThanBinh() da chan het truong hop TinhLuyen==100 (luc do
+                            // tempateID nhay sang dai 773-787 nen checkVuKhiThanBinh() tra ve
+                            // false), nen TinhLuyen luon < 100 tai day - kiem GiaHan (0..5) voi
+                            // nguong 100 la kiem SAI TRUONG va khong bao gio dung ca.
                             player.sendMessage(MessageCreator.createServerAlertMessage(
                                     player.daTinhLuyenToiDa()
-                                            ? "Vũ khí thần binh này đã tinh luyện tối đa 100% nên vĩnh viễn, không cần gia hạn."
+                                            ? "Vũ khí thần binh này đã tinh luyện tối đa 100%, không thể tinh luyện thêm."
                                             : "Bạn phải mặc vũ khí thần binh mới có thể tinh luyện", ""));
-                            return;
-                        }
-                        if (player.itemVukhiThoiTrang.GiaHan >= 100) {
-                            player.sendMessage(MessageCreator.createServerAlertMessage("Cấp độ tinh luyện đã đạt cấp tối đa", ""));
                             return;
                         }
                         if (player.getLuong() <1) {

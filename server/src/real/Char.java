@@ -3283,38 +3283,52 @@ public class Char extends LiveActor {
         return this.itemVukhiThoiTrang != null && this.itemVukhiThoiTrang.isVuKhiThanBinhNangCap();
     }
 
+    /**
+     * Vũ khí thần binh vĩnh viễn (773-787) đang mặc Ở Ô VŨ KHÍ CHÍNH hay không - khác
+     * với itemVukhiThoiTrang (758-772, ô "thời trang"). Dùng cho CharChiSo.attackDam
+     * để "sát thương chuẩn" (otherAtt[54]/[56]) không bỏ sót thần binh thật đang cầm
+     * (yêu cầu người dùng 20/09/2026: đeo cả thần binh lẫn vktt thì lấy % cao nhất,
+     * không cộng dồn - trước đó code chỉ đọc itemVukhiThoiTrang, bỏ qua hẳn thần binh
+     * thật nếu không có vktt nào khác đi kèm).
+     */
+    public Item getThanBinhDangMangOVuKhiChinh() {
+        final Vector<Item> witem = this.getCharWearing();
+        for (int i = 0; i < witem.size(); i++) {
+            final Item it = witem.get(i);
+            if (it != null && it.isVuKhiThanBinhNangCap()) {
+                return it;
+            }
+        }
+        return null;
+    }
+
     public boolean CheckNguyenLieuTL() {
         // Kiểm tra xem có đang mặc vũ khí thần binh không
         if (this.itemVukhiThoiTrang == null || !this.itemVukhiThoiTrang.isVuKhiThanTL()) {
             return false;
         }
-    
-        int[] validMaterialIDs = {421,408,447,434,460,422,409,448,435,461,423,410,449,436,462,424,411,450,437,463,425,412,451,438,464,893,894,895,896,897};
-        
-        // Lấy level và type của trang bị đang mặc
+
+        // Dùng CHUNG danh sách + quy tắc chục với Map.locNguyenLieuTinhLuyen() (sửa
+        // 20/09/2026) — trước đó hai nơi tự chép riêng và lệch quy tắc level.
         int equipLevel = this.itemVukhiThoiTrang.level;
         int equipType = this.itemVukhiThoiTrang.getTemplate().type;
-    
-        // Kiểm tra trong túi đồ
+        boolean mocCuoi = this.itemVukhiThoiTrang.TinhLuyen == 99;
+
         for (Item item : this.iItems) {
-            // Kiểm tra ID có trong danh sách nguyên liệu hợp lệ
             boolean isValidMaterial = false;
-            for (int materialID : validMaterialIDs) {
+            for (int materialID : Map.ID_NGUYEN_LIEU_TINH_LUYEN) {
                 if (item.tempateID == materialID) {
                     isValidMaterial = true;
                     break;
                 }
             }
-            if (isValidMaterial) {
-                // Kiểm tra level (phải < 11) và cùng type
-                if (Math.abs(item.level - equipLevel) <= 10 && 
-                    item.getTemplate().type == equipType) {
-                    
-                    return true; // Tìm thấy nguyên liệu hợp lệ
-                }
+            if (isValidMaterial
+                    && Map.hopLeNguyenLieuTinhLuyen(item.level, item.getTemplate().type, equipLevel, equipType, mocCuoi)
+                    && Map.laVkCheChatLuongDu(item)) {
+                return true;
             }
         }
-    
+
         return false; // Không tìm thấy nguyên liệu hợp lệ
     }
 
@@ -3326,29 +3340,37 @@ public class Char extends LiveActor {
         // Get equipment type and level
         int equipType = this.itemVukhiThoiTrang.getTemplate().type;
         int equipLevel = this.itemVukhiThoiTrang.level;
-        
+        boolean mocCuoi = this.itemVukhiThoiTrang.TinhLuyen == 99;
+
         // Get valid materials for this type
         StringBuilder materials = new StringBuilder("\n");
         boolean first = true;
-        
-        int[] validMaterialIDs = {421,408,447,434,460,422,409,448,435,461,423,410,449,436,462,424,411,450,437,463,425,412,451,438,464,893,894,895,896,897};
-        
-        for (int materialID : validMaterialIDs) {
+
+        // Dùng chung danh sách + quy tắc chục với Map.locNguyenLieuTinhLuyen() (sửa
+        // 20/09/2026) — xem Map.hopLeNguyenLieuTinhLuyen().
+        for (int materialID : Map.ID_NGUYEN_LIEU_TINH_LUYEN) {
             ItemTemplates template = (ItemTemplates)Map.itemTemplates.get(0).get(materialID);
-            if (template != null && template.type == equipType) {
-                if (Math.abs(template.level - equipLevel) <= 10) {  // Add level check
-                    if (!first) {
-                        materials.append(" hoặc ");
-                    }
-                    materials.append(template.name);
-                    if (equipLevel > 0) {
-                        materials.append("(lv ").append(template.level).append(")");
-                    }
-                    first = false;
+            if (template != null && Map.hopLeNguyenLieuTinhLuyen(
+                    template.level, template.type, equipLevel, equipType, mocCuoi)) {
+                if (!first) {
+                    materials.append(" hoặc ");
                 }
+                materials.append(template.name);
+                if (equipLevel > 0) {
+                    materials.append("(lv ").append(template.level).append(")");
+                }
+                first = false;
             }
         }
-        
+
+        // Mau/hang (Hoan My, Tam pham tro len) la thuoc tinh RIENG TUNG VAT PHAM da che
+        // (roll luc tao, xem Map.laVkCheChatLuongDu()), khong nam tren ItemTemplates nen
+        // khong loc duoc o day - chi ghi chu de nguoi choi hieu vi sao mon dung ten/level
+        // van co the bi tu choi luc chon that (sua 21/09/2026).
+        if (materials.length() > 1) {
+            materials.append(" (phải màu Hoàn Mỹ, hạng Tam phẩm trở lên)");
+        }
+
         return materials.toString();
     }
 
@@ -12691,10 +12713,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 newItem.doAddOptionThanThu(template.atb[0]);
             }
             if (newItem.isVukhiThoiTrang()) {
-                newItem.createAttributeNguyetLinhTruong();
+                // Nguyet Linh Truong nhan chi so theo CHUC LEVEL CUA NGUOI CHOI
+                // (p.getLevel(), tuc p.lvDetail.lv), KHONG phai level co dinh cua item
+                // (yeu cau nguoi dung 20/09/2026 - xac nhan qua vi du "khi toi lv8x thi
+                // chi so max la bao nhieu").
+                newItem.createAttributeNguyetLinhTruong(p.getLevel());
             }
             if (newItem.isVukhiThoiTrang() && isMax) {
-                newItem.createAttributeNguyetLinhTruongMax();
+                newItem.createAttributeNguyetLinhTruongMax(p.getLevel());
             }
             newItem.createAttChoi();
             newItem.dateCreate = Char.getDayTime(0L);

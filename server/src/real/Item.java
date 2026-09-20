@@ -2641,7 +2641,38 @@ public class Item extends Actor {
     }
 
     
-    public void createAttributeNguyetLinhTruong() {
+    /** Trần cũ (áp dụng như nhau cho MỌI level) của otherAtt[54]/[56] trước 20/09/2026 -
+     *  dùng làm mẫu số khi co giãn tỉ lệ sang trần mới theo chục level. */
+    private static final int TRAN_STC_CU = 81 + 160;
+    private static final int TRAN_TILE_CU = 98 + 192;
+
+    /**
+     * Trần sát thương chuẩn (otherAtt[54]) / tỉ lệ gây sát thương chuẩn (otherAtt[56])
+     * theo CHỤC LEVEL - đơn vị "phần mười phần trăm" (80 = 8,0%). Yêu cầu người dùng
+     * 20/09/2026: dưới 6x (chục &lt;= 6, gồm cả Nguyệt Linh Trượng level 10 và vũ khí
+     * thời trang level 40) nhận sàn 6x; 8x là trần cao nhất (25%/30%); 7x nội suy giữa
+     * hai đầu (thấp hơn 8x). "Chỉ số vũ khí tăng" (otherAtt[55]) KHÔNG đổi theo level -
+     * người dùng xác nhận cả 6x lẫn 8x đều là 50%, khớp sẵn với trần cũ (~50,1%).
+     */
+    private static int[] tranSTCTiLeTheoLevel(final int level) {
+        final int chuc = level / 10;
+        if (chuc <= 6) {
+            return new int[]{80, 100};
+        } else if (chuc == 7) {
+            return new int[]{165, 200};
+        }
+        return new int[]{250, 300};
+    }
+
+    /**
+     * @param levelNguoiChoi level NHÂN VẬT (không phải level của item - Nguyệt Linh
+     *                       Trượng chỉ có DUY NHẤT một template, level cố định 10, nên
+     *                       "lên chục" của nó phải lấy từ level người chơi đang cầm nó,
+     *                       khác với vũ khí thời trang tinh luyện vốn có level cố định
+     *                       riêng theo từng template 6x/7x/8x. Tham số này KHÔNG dùng
+     *                       tới ở nhánh Quạt bài tiêu/Gậy như ý/Lương nhật đao phía dưới.
+     */
+    public void createAttributeNguyetLinhTruong(final int levelNguoiChoi) {
         if (!this.isQuatBaiTieu() && !this.isGayNhuY() && !this.isLuongNhatDao() && !this.isNguyetLinhTruong()) {
             return;
         }
@@ -2697,24 +2728,32 @@ public class Item extends Actor {
             return;
         }
     
-        // Original NguyetLinhTruong logic - giữ nguyên không thay đổi
+        // Nguyet Linh Truong: gio nhan theo CHUC LEVEL NGUOI CHOI, giong vktt tinh luyen
+        // (yeu cau nguoi dung 20/09/2026) - xem tranSTCTiLeTheoLevel() va chu thich tham
+        // so levelNguoiChoi o dau ham. Van giu nguyen 3 dai xac suat cu (5%/25%/con lai),
+        // chi co gian ket qua sang tran moi theo level.
+        final int[] tranNLT = tranSTCTiLeTheoLevel(levelNguoiChoi);
+        int stcNLT;
         if (Map.r.nextInt(100) < 5) {
-            this.otherAtt[54] = (short) (Map.r.nextInt(81) + 160);
+            stcNLT = Map.r.nextInt(81) + 160;
         } else if (Map.r.nextInt(100) < 25) {
-            this.otherAtt[54] = (short) (Map.r.nextInt(81) + 80);
+            stcNLT = Map.r.nextInt(81) + 80;
         } else {
-            this.otherAtt[54] = (short) (Map.r.nextInt(71) + 10);
+            stcNLT = Map.r.nextInt(71) + 10;
         }
-        
+        this.otherAtt[54] = (short) (stcNLT * tranNLT[0] / TRAN_STC_CU);
+
         this.otherAtt[55] = (short) (Map.r.nextInt(491) + 10);
-        
+
+        int tiLeNLT;
         if (Map.r.nextInt(100) < 5) {
-            this.otherAtt[56] = (short) (Map.r.nextInt(98) + 192);
+            tiLeNLT = Map.r.nextInt(98) + 192;
         } else if (Map.r.nextInt(100) < 25) {
-            this.otherAtt[56] = (short) (Map.r.nextInt(97) + 96);
+            tiLeNLT = Map.r.nextInt(97) + 96;
         } else {
-            this.otherAtt[56] = (short) (Map.r.nextInt(86) + 10);
+            tiLeNLT = Map.r.nextInt(86) + 10;
         }
+        this.otherAtt[56] = (short) (tiLeNLT * tranNLT[1] / TRAN_TILE_CU);
     }
 
     /**
@@ -2772,7 +2811,8 @@ public class Item extends Actor {
         }
     }
 
-    public void createAttributeNguyetLinhTruongMax() {
+    /** @param levelNguoiChoi xem chú thích tham số cùng tên ở createAttributeNguyetLinhTruong(). */
+    public void createAttributeNguyetLinhTruongMax(final int levelNguoiChoi) {
         if (!this.isNguyetLinhTruong()) {
             return;
         }
@@ -2782,15 +2822,17 @@ public class Item extends Actor {
             this.otherAtt[54] = 50;
             this.otherAtt[56] = 30;
         } else {
-
-            this.otherAtt[54] = (short) (81 + 160);
-            this.otherAtt[56] = (short) (98 + 192);
+            // Sua 20/09/2026 (yeu cau nguoi dung): tran cua ban "Max" cung phai theo chuc
+            // level NGUOI CHOI, khong con dung mot tran duy nhat cho moi level nhu truoc.
+            final int[] tran = tranSTCTiLeTheoLevel(levelNguoiChoi);
+            this.otherAtt[54] = (short) tran[0];
+            this.otherAtt[56] = (short) tran[1];
             this.otherAtt[55] = (short) (491 + 10);
         }
     }
-    
-    
-    
+
+
+
     public void createAttributeVuKhiThoiTrang() {
         if (!this.isVukhiThoiTrang()) {
             return;
@@ -2801,20 +2843,29 @@ public class Item extends Actor {
             this.otherAtt[54] = 50;
             this.otherAtt[56] = 30;
         } else {
+            // Sua 20/09/2026 (yeu cau nguoi dung): STC/ti le gio co gian theo CHUC LEVEL
+            // cua chinh trang bi (xem tranSTCTiLeTheoLevel) - vd vktt level 40 (duoi 6x)
+            // nhan san 6x (8%/10%), vktt 8x nhan tran cao nhat (25%/30%). Van giu nguyen
+            // 3 dai xac suat cu (5%/25%/con lai), chi co gian ket qua sang tran moi.
+            final int[] tran = tranSTCTiLeTheoLevel(this.level);
+            int stc;
             if (Map.r.nextInt(100) < 5) {
-                this.otherAtt[54] = (short) (Map.r.nextInt(81) + 160);
+                stc = Map.r.nextInt(81) + 160;
             } else if (Map.r.nextInt(100) < 25) {
-                this.otherAtt[54] = (short) (Map.r.nextInt(81) + 80);
+                stc = Map.r.nextInt(81) + 80;
             } else {
-                this.otherAtt[54] = (short) (Map.r.nextInt(71) + 10);
+                stc = Map.r.nextInt(71) + 10;
             }
+            this.otherAtt[54] = (short) (stc * tran[0] / TRAN_STC_CU);
+            int tiLe;
             if (Map.r.nextInt(100) < 5) {
-                this.otherAtt[56] = (short) (Map.r.nextInt(98) + 192);
+                tiLe = Map.r.nextInt(98) + 192;
             } else if (Map.r.nextInt(100) < 25) {
-                this.otherAtt[56] = (short) (Map.r.nextInt(97) + 96);
+                tiLe = Map.r.nextInt(97) + 96;
             } else {
-                this.otherAtt[56] = (short) (Map.r.nextInt(86) + 10);
+                tiLe = Map.r.nextInt(86) + 10;
             }
+            this.otherAtt[56] = (short) (tiLe * tran[1] / TRAN_TILE_CU);
             this.otherAtt[55] = (short) (Map.r.nextInt(491) + 10);
         }
     }
@@ -2829,9 +2880,10 @@ public class Item extends Actor {
             this.otherAtt[54] = 50;
             this.otherAtt[56] = 30;
         } else {
-
-            this.otherAtt[54] = (short) (81 + 160);
-            this.otherAtt[56] = (short) (98 + 192);
+            // Sua 20/09/2026 (yeu cau nguoi dung): xem chu thich createAttributeNguyetLinhTruongMax().
+            final int[] tran = tranSTCTiLeTheoLevel(this.level);
+            this.otherAtt[54] = (short) tran[0];
+            this.otherAtt[56] = (short) tran[1];
             this.otherAtt[55] = (short) (491 + 10);
         }
     }

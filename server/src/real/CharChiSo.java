@@ -936,9 +936,23 @@ class CharChiSo {
                         final EffectBuff ef3 = actor.hashEffBuff.get(EffectBuff.BONG);
                         finalDame += finalDame * ef3.dam / 100;
                     }
-                    if (self.itemVukhiThoiTrang != null && Map.r.nextInt(1000) < self.itemVukhiThoiTrang.otherAtt[56] && !actor.isBossTruRong()) {
+                    // Sat thuong chuan: UU TIEN % CAO NHAT giua vktt dang mac o "thoi trang"
+                    // (itemVukhiThoiTrang, dai 758-772) VA than binh vinh vien dang la vu khi
+                    // CHINH (dai 773-787) - KHONG cong don ca hai khi cung mang (yeu cau nguoi
+                    // dung 20/09/2026). Truoc day chi doc itemVukhiThoiTrang nen than binh that
+                    // dang cam khong tu kich hoat duoc dong nay neu khong deo them mot vktt khac.
+                    final Item vktGoc = self.itemVukhiThoiTrang;
+                    final Item thanBinhThat = self.getThanBinhDangMangOVuKhiChinh();
+                    Item nguonSatThuongChuan = vktGoc;
+                    if (thanBinhThat != null
+                            && (vktGoc == null || thanBinhThat.otherAtt[54] > vktGoc.otherAtt[54])) {
+                        nguonSatThuongChuan = thanBinhThat;
+                    }
+                    if (nguonSatThuongChuan != null
+                            && Map.r.nextInt(1000) < nguonSatThuongChuan.otherAtt[56]
+                            && !actor.isBossTruRong()) {
                         final long mhp = actor.maxhp;
-                        final long st = self.itemVukhiThoiTrang.otherAtt[54] * mhp / 1000L;
+                        final long st = nguonSatThuongChuan.otherAtt[54] * mhp / 1000L;
                         finalDame += (int) st;
                     }
                     // SKIN LINH THU (Kim Cang Long): "Sat thuong chuan" ngau nhien theo vat
