@@ -15215,8 +15215,8 @@ public class Map implements Runnable {
 
                     m.dos.writeShort(charinfo.idClan);
                     m.dos.writeByte(charinfo.titlesClan);
-                    m.dos.writeLong(charinfo.money);
-                    m.dos.writeInt(charinfo.luong);
+                    m.dos.writeLong(SuKien.xuChoTop(charinfo.money));
+                    m.dos.writeInt(SuKien.luongChoTop(charinfo.luong));
                     m.dos.writeByte(charinfo.country);
                     m.dos.writeInt(charinfo.honor);
                     m.dos.writeInt(charinfo.pk);

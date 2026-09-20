@@ -88,6 +88,8 @@ public final class SuKien {
     public static final String WORLD_CUP_NHAN_QUA = "worldcupnhanqua";
     public static final String WORLD_CUP_2017 = "worldcup2017";
 
+    public static final String AN_XU_LUONG_TOP = "anxuluongtop";
+
     // ============================ DANH MUC ============================
 
     /** Mot dong trong danh muc su kien, dung ca cho trang quan tri. */
@@ -193,6 +195,10 @@ public final class SuKien {
                 + " mục trên được ưu tiên (vẫn đang bình chọn)."),
         new Muc(WORLD_CUP_2017, "World Cup 2017 (bản cũ)", "World Cup",
                 "Bản cũ: quái rơi Quả bóng bạc, NPC đổi nguyên liệu."),
+
+        new Muc(AN_XU_LUONG_TOP, "Ẩn xu/lượng trên bảng top", "Bảng xếp hạng",
+                "Bật thì mọi bảng top (đại gia, cao thủ, bang hội, top theo phe, top nhóm đua)"
+                + " không hiện số xu/lượng của từng người/bang nữa - thứ hạng vẫn giữ nguyên."),
     };
 
     // ============================ TRANG THAI ============================
@@ -228,6 +234,16 @@ public final class SuKien {
     public static boolean bat(final String ma) {
         final Boolean v = TRANG_THAI.get(ma);
         return (v == null) ? macDinh(ma) : v.booleanValue();
+    }
+
+    /** Xu that hay 0, tuy AN_XU_LUONG_TOP dang bat hay khong - dung khi ghi goi tin bang top. */
+    public static long xuChoTop(final long xuThat) {
+        return bat(AN_XU_LUONG_TOP) ? 0L : xuThat;
+    }
+
+    /** Tuong tu xuChoTop() nhung cho luong. */
+    public static int luongChoTop(final int luongThat) {
+        return bat(AN_XU_LUONG_TOP) ? 0 : luongThat;
     }
 
     /**

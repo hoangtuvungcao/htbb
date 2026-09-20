@@ -1654,8 +1654,8 @@ class MapXuLyLenh {
 
                         m.dos.writeShort(charinfo.idClan);
                         m.dos.writeByte(charinfo.titlesClan);
-                        m.dos.writeLong(charinfo.money);
-                        m.dos.writeInt(charinfo.luong);
+                        m.dos.writeLong(SuKien.xuChoTop(charinfo.money));
+                        m.dos.writeInt(SuKien.luongChoTop(charinfo.luong));
                         m.dos.writeByte(charinfo.country);
                     }
                     break;
@@ -1693,8 +1693,8 @@ class MapXuLyLenh {
 
                         m.dos.writeShort(charinfo.idClan);
                         m.dos.writeByte(charinfo.titlesClan);
-                        m.dos.writeLong(charinfo.money);
-                        m.dos.writeInt(charinfo.luong);
+                        m.dos.writeLong(SuKien.xuChoTop(charinfo.money));
+                        m.dos.writeInt(SuKien.luongChoTop(charinfo.luong));
                         m.dos.writeByte(charinfo.country);
                     }
                     break;
@@ -1717,7 +1717,7 @@ class MapXuLyLenh {
                         m.dos.writeUTF(clan.master);
                         m.dos.writeByte(clan.level);
                         m.dos.writeShort(clan.getAllMember().size());
-                        m.dos.writeLong(clan.money);
+                        m.dos.writeLong(SuKien.xuChoTop(clan.money));
                         m.dos.writeByte(clan.country);
                     }
                 case 6:
@@ -1774,8 +1774,8 @@ class MapXuLyLenh {
 
                         m.dos.writeShort(charinfo.idClan);
                         m.dos.writeByte(charinfo.titlesClan);
-                        m.dos.writeLong(charinfo.money);
-                        m.dos.writeInt(charinfo.luong);
+                        m.dos.writeLong(SuKien.xuChoTop(charinfo.money));
+                        m.dos.writeInt(SuKien.luongChoTop(charinfo.luong));
                         m.dos.writeByte(charinfo.country);
                     }
             }
