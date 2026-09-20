@@ -9566,8 +9566,10 @@ public int applyRongLonReleaseTo(int baseDamage) {
         }
     }
 
-    /** Gia (luong) va han (ms) cua "Ao hoa Hoa Ky Lan". Xem doAoHoaHoaKyLan. */
-    public static final int GIA_LUONG_AO_HOA_HOA_KY_LAN = 100;
+    /** Gia (luong + hoa thach cap 2) va han (ms) cua "Ao hoa Hoa Ky Lan". Xem doAoHoaHoaKyLan.
+     *  Sua 21/09/2026 theo yeu cau nguoi dung: truoc chi mat 100 luong, gio them 10 hoa thach C2. */
+    public static final int GIA_LUONG_AO_HOA_HOA_KY_LAN = 5000;
+    public static final int SO_HOA_THACH_C2_AO_HOA_HOA_KY_LAN = 10;
     public static final long HAN_AO_HOA_HOA_KY_LAN_MS = 7L * 24 * 60 * 60 * 1000L;
 
     public boolean dangAoHoaHoaKyLan() {
@@ -9742,7 +9744,29 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.sendMessage(MessageCreator.createServerAlertMessage("Không đủ lượng", ""));
             return;
         }
+        // Kiem hoa thach C2 (khoa + khong khoa cong lai) TRUOC khi tru bat cu thu gi - giu
+        // dung tinh than chu thich tren dau ham: khong de nguoi choi mat luong ma khong du
+        // hoa thach de hoan tat.
+        if (this.listGemitem[GemTemplate.HOA_THACH_C2] + this.listGemitemLock[GemTemplate.HOA_THACH_C2]
+                < SO_HOA_THACH_C2_AO_HOA_HOA_KY_LAN) {
+            this.sendMessage(MessageCreator.createServerAlertMessage("Không đủ Hoả thạch cấp 2", ""));
+            return;
+        }
         this.subLuong((long) GIA_LUONG_AO_HOA_HOA_KY_LAN);
+        // Tru hoa thach C2: uu tien phan KHONG KHOA truoc, thieu bao nhieu moi tru tiep sang
+        // phan da khoa (giu tai san khoa cua nguoi choi it bi dong toi nhat co the).
+        {
+            int conLai = SO_HOA_THACH_C2_AO_HOA_HOA_KY_LAN;
+            final int tuKhongKhoa = Math.min(conLai, this.listGemitem[GemTemplate.HOA_THACH_C2]);
+            if (tuKhongKhoa > 0) {
+                this.delGem(GemTemplate.HOA_THACH_C2, tuKhongKhoa, false);
+                conLai -= tuKhongKhoa;
+            }
+            if (conLai > 0) {
+                this.delGem(GemTemplate.HOA_THACH_C2, conLai, true);
+            }
+        }
+        this.sendMessage(MessageCreator.createCharGemItem(this));
         // Dat moc het han TRUOC khi mac (dong duoi): doTrangBiHoaKyLan -> doCreateCharThanThu
         // doc chiSoTuyetDoiHoaKyLan(39) NGAY luc tao Than Thu de lay suc khoe. Dat sau thi
         // Than Thu vua tao thieu +10% suc khoe cho toi lan mac lai ke tiep - da tung lam

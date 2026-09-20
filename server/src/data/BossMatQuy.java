@@ -634,7 +634,10 @@ public class BossMatQuy extends Boss {
             GemItem g = new GemItem(GemTemplate.ID_DUC[Map.r.nextInt(GemTemplate.ID_DUC.length)]);
             gem.add(g);
         }
-    
+
+        // Luon co 1 Luyen kim duoc 30 - yeu cau nguoi dung 21/09/2026.
+        gem.add(new GemItem(GemTemplate.LKD_30));
+
         return gem;
     }
 

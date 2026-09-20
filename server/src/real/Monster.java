@@ -1585,7 +1585,8 @@ public class Monster extends LiveActor {
                     }
                     GemItem gem4 = null;
                     Vector<GemItem> listGem = this.dropListGemItem();
-                    // Moi boss deu roi ngau nhien 1-5 Thuoc hoa hinh (gem 268).
+                    // Moi boss deu roi Thuoc hoa hinh (gem 268) - sua 21/09/2026 theo yeu cau
+                    // nguoi dung: CO DINH 1, khong con ngau nhien 1-5 nhu truoc.
                     // Dat o day de ap dung chung cho tat ca boss, thay vi khai bao rieng
                     // trong tung lop BossXxx.
                     if (this.isBoss) {
@@ -1596,22 +1597,14 @@ public class Monster extends LiveActor {
                         // chung nay: BossVanTienTran.dropListGemItem() da tu cho rieng
                         // 1 nguyen lieu + 1 Luyen kim duoc co dinh moi lan chet roi.
                         if (!this.isBossVanTienTran()) {
-                            final int soThuocHoaHinh = Map.r.nextInt(5) + 1;
-                            for (int iHH = 0; iHH < soThuocHoaHinh; ++iHH) {
-                                final GemItem thuocHoaHinh = new GemItem(268);
-                                thuocHoaHinh.isBoss = true;
-                                thuocHoaHinh.cat = 6;
-                                listGem.add(thuocHoaHinh);
-                            }
-                            // Luyen kim duoc 30% (gem 11): 3% moi boss, dung ti le cu cua
-                            // boss than lan. Da go hai lan roll rieng trong BossThanLan de
-                            // khong bi cong don thanh ~5.9%.
-                            if (Map.r.nextInt(100) < 3) {
-                                final GemItem lkd = new GemItem(11);
-                                lkd.isBoss = true;
-                                lkd.cat = 6;
-                                listGem.add(lkd);
-                            }
+                            final GemItem thuocHoaHinh = new GemItem(268);
+                            thuocHoaHinh.isBoss = true;
+                            thuocHoaHinh.cat = 6;
+                            listGem.add(thuocHoaHinh);
+                            // Da BO co hoi 3% roi Luyen kim duoc 30 (id 11) chung cho moi boss -
+                            // yeu cau nguoi dung 21/09/2026. Boss nao dang co dong LKD_30 co dinh
+                            // rieng (vd Tho Dia, BossSkelonton idTemplate 113) van giu nguyen,
+                            // khong dung nhanh nay nua.
                         }
                         // Vu Lan (viet lai): moi boss chet roi han 2-4 nhanh hoa hong vang
                         // cho nguoi giet, x2 neu dang mac do bong da (item 791/792).

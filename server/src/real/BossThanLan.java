@@ -629,8 +629,9 @@ public class BossThanLan extends Boss {
     public Vector<Potion> dropPotion(Char p) {
         Vector<Potion> pt = new Vector();
         if (this.idTemplate == 39) {
-            byte[] id = new byte[]{9, 10, 11, 7, 13};
-            int[] sl = new int[]{1, 1, 1, 6, 2};
+            // Bo Nhan sam (id 9) khoi pool ro Boss Than Lan - yeu cau nguoi dung 21/09/2026.
+            byte[] id = new byte[]{10, 11, 7, 13};
+            int[] sl = new int[]{1, 1, 6, 2};
             int oldId = -1;
 
             for(int i = 0; i < 2; ++i) {
