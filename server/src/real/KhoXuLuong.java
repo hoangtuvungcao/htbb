@@ -105,7 +105,13 @@ public final class KhoXuLuong {
         }
     }
 
-    /** Doc so nguyen duong tu chuoi nhap - null (kem gui thong bao loi) neu khong hop le. */
+    /**
+     * Doc so nguyen duong tu chuoi nhap - null (kem gui thong bao loi) neu khong hop le.
+     * KHONG chan tran o day: xu dung Char.xu/khoXu kieu long (co the vuot Integer.MAX_
+     * VALUE that su o nhan vat lau nam), luong moi la int nen phai tu chan tran RIENG o
+     * cac ham goi luong (xem docSoDuongLuong) - gop chung mot tran se lam gui/rut xu bi
+     * gioi han oan xuong ~2,1 ty du xu dang giu co the vuot moc do.
+     */
     private static Long docSoDuong(final Char player, final String text) {
         final String tho = (text == null) ? "" : text.trim();
         long so;
@@ -119,7 +125,16 @@ public final class KhoXuLuong {
             player.sendMessage(MessageCreator.createServerAlertMessage("Số phải lớn hơn 0.", ""));
             return null;
         }
-        if (so > (long) Integer.MAX_VALUE) {
+        return so;
+    }
+
+    /** Nhu docSoDuong() nhung chan them tran Integer.MAX_VALUE - danh cho luong (int). */
+    private static Long docSoDuongLuong(final Char player, final String text) {
+        final Long so = docSoDuong(player, text);
+        if (so == null) {
+            return null;
+        }
+        if (so.longValue() > (long) Integer.MAX_VALUE) {
             player.sendMessage(MessageCreator.createServerAlertMessage("Số quá lớn.", ""));
             return null;
         }
@@ -155,7 +170,7 @@ public final class KhoXuLuong {
     }
 
     public static void doNhapGuiLuong(final Char player, final String text, final boolean khoa) {
-        final Long soLuong = docSoDuong(player, text);
+        final Long soLuong = docSoDuongLuong(player, text);
         if (soLuong == null) {
             return;
         }
@@ -171,7 +186,7 @@ public final class KhoXuLuong {
     }
 
     public static void doNhapRutLuong(final Char player, final String text, final boolean khoa) {
-        final Long soLuong = docSoDuong(player, text);
+        final Long soLuong = docSoDuongLuong(player, text);
         if (soLuong == null) {
             return;
         }
