@@ -6282,7 +6282,14 @@ public int applyRongLonReleaseTo(int baseDamage) {
             if (type == 1 && ef.idEff == EffectBuff.LUA_VUA && ef.mapID == this.mapID && ef.idRegion == this.region && ef.idCountry == this.myCountry && Map.inRangeActor(ef, this, 120)) {
                 updef = 5;
             } else if (type == 0 && ef.idEff == EffectBuff.LUA_NHO && ef.mapID == this.mapID && ef.idRegion == this.region && ef.idCountry == this.myCountry && Map.inRangeActor(ef, this, 120)) {
-                updef = 2;
+                // Sua 22/09/2026 (yeu cau nguoi dung): Lua Nho ("Lua thuong") phai cho "x2 ti
+                // le roi vang + do" - Monster.java doc gia tri nay vao bien ten "x2Drop" roi
+                // ap theo cong thuc base + base*x2Drop/100 o hang chuc noi (rai xu, thuoc,
+                // ngoc, vat pham su kien...). Truoc day de 2 chi cong them 2% (gan nhu khong
+                // co tac dung), sai voi ten bien va mo ta - phai la 100 de base+base*100/100
+                // = base*2, dung nghia nhan doi. KHONG doi cong thuc o Monster.java, chi doi
+                // dung mot gia tri nay la du vi ca chuc noi dung deu chung mot khuon.
+                updef = 100;
             } else if (type == 2 && ef.idEff == EffectBuff.LUA_TO && ef.mapID == this.mapID && ef.idRegion == this.region && ef.idCountry == this.myCountry && Map.inRangeActor(ef, this, 120)) {
                 updef = 10;
             }
