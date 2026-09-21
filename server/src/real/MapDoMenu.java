@@ -194,6 +194,25 @@ class MapDoMenu {
                 CharChuyenLuong.moNhapTen(player);
                 return;
             }
+            // NPC Tong Quan (-10), muc "Kho xu/luong": cung la muc cuoi menu, vi tri ghi
+            // trong player.idxKhoXuLuong. Xem real/KhoXuLuong.
+            if (idNpc == -10 && idMenu == 0 && player.idxKhoXuLuong >= 0
+                    && idOptionMenu == player.idxKhoXuLuong) {
+                KhoXuLuong.mo(player);
+                return;
+            }
+            if (idNpc == KhoXuLuong.NPC_ID) {
+                KhoXuLuong.doMenu(player, idOptionMenu);
+                return;
+            }
+            if (idNpc == KhoXuLuong.NPC_ID_GUI) {
+                KhoXuLuong.doMenuGui(player, idOptionMenu);
+                return;
+            }
+            if (idNpc == KhoXuLuong.NPC_ID_RUT) {
+                KhoXuLuong.doMenuRut(player, idOptionMenu);
+                return;
+            }
             // NPC Tong Quan (-10), muc "Vong quay luong": cung la muc cuoi menu, vi tri
             // ghi trong player.idxVongQuayLuong. Xem real/VongQuayLuong.
             // "Vong quay luong" mo tu nhanh idOptionMenu==2 cua muc "Vong quay" co san

@@ -793,6 +793,18 @@ public class TeamServer {
         // PHAI chay TRUOC khi nhan nguoi choi: saveChar ghi cot isCT, thieu cot thi lenh
         // luu nem loi va nhanh bat loi cua no KHOA NHAN VAT. Xem themCotCongTacHienThi().
         Database.instance.themCotCongTacHienThi();
+        // Kho xu/luong o NPC Tong Quan (them 21/09/2026) - cung ly do PHAI chay TRUOC khi
+        // nhan nguoi choi, xem chu thich o Database.themCotKhoXuLuong().
+        try {
+            Database.instance.themCotKhoXuLuong();
+            System.out.println("[KHO] kiem tra/them cot tob_char.kho_xu,kho_luong,kho_luong_khoa xong.");
+        } catch (Exception exKho) {
+            // Khong duoc de loi o day chan ca qua trinh khoi dong server - in ra de biet
+            // ma khong lam gian doan cac buoc sau. Tinh nang moi (21/09/2026), de phong
+            // loi chua thay het.
+            System.out.println("[KHO] LOI kiem tra cot tob_char.kho_xu/kho_luong/kho_luong_khoa: " + exKho);
+            exKho.printStackTrace();
+        }
         // Cung phai chay TRUOC khi nhan nguoi choi: chan nhan giftcode nhieu lan qua nhieu
         // nhan vat cung tai khoan. Xem Database.chuanBiGiftCodeUserId().
         Database.instance.chuanBiGiftCodeUserId();

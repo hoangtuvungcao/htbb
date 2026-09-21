@@ -94,6 +94,13 @@ public class Char extends LiveActor {
     int luong;
     public int lockLuong;
     public int vetangluong;
+    // Kho xu/luong o NPC Tong Quan (them 21/09/2026, theo yeu cau nguoi dung): cho gui
+    // tien "dang giu" vao day de khong bi vuong tran MAX_LUONG_MO_DANG_GIU/
+    // MAX_LUONG_KHOA_DANG_GIU (50k) khi train quai - luong trong kho KHONG tinh vao
+    // "dang giu" nen khong bi tran nay chan nhat them. Xem real/KhoXuLuong.
+    public long khoXu;
+    public int khoLuong;
+    public int khoLuongKhoa;
     long xu;
     public long xutim;
     public long xumat;
@@ -133,6 +140,9 @@ public class Char extends LiveActor {
     // Vi tri (idOptionMenu) cua muc "Chuyen luong" trong menu NPC Tong Quan, gan lai moi
     // lan RequestNPCInfoHandler mo menu -10. Xem real/CharChuyenLuong.
     public int idxChuyenLuong = -1;
+    // Vi tri (idOptionMenu) cua muc "Kho xu/luong" trong menu NPC Tong Quan, gan lai moi
+    // lan RequestNPCInfoHandler mo menu -10. Xem real/KhoXuLuong.
+    public int idxKhoXuLuong = -1;
     public short partyID;
     public int masterIDParty;
     public Vector<Short> idItem;
@@ -14289,6 +14299,130 @@ public int applyRongLonReleaseTo(int baseDamage) {
     public void addLuongLock(final int luong) {
         synchronized (KHOA_TIEN) {
             this.lockLuong = congChan(this.lockLuong, luong);
+        }
+    }
+
+    // ==================== KHO XU/LUONG (NPC Tong Quan) ====================
+    // Gui/rut giua "dang giu" va "kho" - tat ca chay duoi KHOA_TIEN nhu moi phep doi
+    // xu/luong khac, de tranh dua giua luong phien (privateCmd) va luong ban do (goi
+    // 66) cung mot nhan vat (xem chu thich o KHOA_TIEN). Khong phi, khong han muc,
+    // theo yeu cau nguoi dung 21/09/2026.
+
+    public boolean guiKhoXu(final long soXu) {
+        if (soXu <= 0L) {
+            return false;
+        }
+        try {
+            synchronized (KHOA_TIEN) {
+                if (this.xu < soXu) {
+                    System.out.println("[KHO] " + this.charname + " gui xu THAT BAI (khong du) - dang giu "
+                            + this.xu + ", can gui " + soXu);
+                    return false;
+                }
+                this.xu -= soXu;
+                this.khoXu = congChanDai(this.khoXu, soXu);
+            }
+            System.out.println("[KHO] " + this.charname + " gui " + soXu + " xu vao kho, con lai kho " + this.khoXu);
+            Database.instance.saveOrtherLog("", this.charname,
+                    this.charname + " gui " + soXu + " xu vao kho, con lai kho " + this.khoXu, "khoxuluong");
+            return true;
+        } catch (final Exception e) {
+            System.out.println("[KHO] LOI guiKhoXu " + this.charname + " so=" + soXu + ": " + e);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean rutKhoXu(final long soXu) {
+        if (soXu <= 0L) {
+            return false;
+        }
+        try {
+            synchronized (KHOA_TIEN) {
+                if (this.khoXu < soXu) {
+                    System.out.println("[KHO] " + this.charname + " rut xu THAT BAI (kho khong du) - kho co "
+                            + this.khoXu + ", can rut " + soXu);
+                    return false;
+                }
+                this.khoXu -= soXu;
+                this.xu = congChanDai(this.xu, soXu);
+            }
+            System.out.println("[KHO] " + this.charname + " rut " + soXu + " xu tu kho, con lai kho " + this.khoXu);
+            Database.instance.saveOrtherLog("", this.charname,
+                    this.charname + " rut " + soXu + " xu tu kho, con lai kho " + this.khoXu, "khoxuluong");
+            return true;
+        } catch (final Exception e) {
+            System.out.println("[KHO] LOI rutKhoXu " + this.charname + " so=" + soXu + ": " + e);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /** @param khoa true = luong khoa, false = luong mo. */
+    public boolean guiKhoLuong(final int soLuong, final boolean khoa) {
+        if (soLuong <= 0) {
+            return false;
+        }
+        try {
+            synchronized (KHOA_TIEN) {
+                final int dangGiu = khoa ? this.lockLuong : this.luong;
+                if (dangGiu < soLuong) {
+                    System.out.println("[KHO] " + this.charname + " gui luong " + (khoa ? "khoa" : "mo")
+                            + " THAT BAI (khong du) - dang giu " + dangGiu + ", can gui " + soLuong);
+                    return false;
+                }
+                if (khoa) {
+                    this.lockLuong -= soLuong;
+                    this.khoLuongKhoa = congChan(this.khoLuongKhoa, soLuong);
+                } else {
+                    this.luong -= soLuong;
+                    this.khoLuong = congChan(this.khoLuong, soLuong);
+                }
+            }
+            System.out.println("[KHO] " + this.charname + " gui " + soLuong + " luong " + (khoa ? "khoa" : "mo")
+                    + " vao kho, con lai kho " + (khoa ? this.khoLuongKhoa : this.khoLuong));
+            Database.instance.saveOrtherLog("", this.charname,
+                    this.charname + " gui " + soLuong + " luong " + (khoa ? "khoa" : "mo")
+                            + " vao kho, con lai kho " + (khoa ? this.khoLuongKhoa : this.khoLuong), "khoxuluong");
+            return true;
+        } catch (final Exception e) {
+            System.out.println("[KHO] LOI guiKhoLuong " + this.charname + " so=" + soLuong + " khoa=" + khoa + ": " + e);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /** @param khoa true = luong khoa, false = luong mo. */
+    public boolean rutKhoLuong(final int soLuong, final boolean khoa) {
+        if (soLuong <= 0) {
+            return false;
+        }
+        try {
+            synchronized (KHOA_TIEN) {
+                final int dangCoTrongKho = khoa ? this.khoLuongKhoa : this.khoLuong;
+                if (dangCoTrongKho < soLuong) {
+                    System.out.println("[KHO] " + this.charname + " rut luong " + (khoa ? "khoa" : "mo")
+                            + " THAT BAI (kho khong du) - kho co " + dangCoTrongKho + ", can rut " + soLuong);
+                    return false;
+                }
+                if (khoa) {
+                    this.khoLuongKhoa -= soLuong;
+                    this.lockLuong = congChan(this.lockLuong, soLuong);
+                } else {
+                    this.khoLuong -= soLuong;
+                    this.luong = congChan(this.luong, soLuong);
+                }
+            }
+            System.out.println("[KHO] " + this.charname + " rut " + soLuong + " luong " + (khoa ? "khoa" : "mo")
+                    + " tu kho, con lai kho " + (khoa ? this.khoLuongKhoa : this.khoLuong));
+            Database.instance.saveOrtherLog("", this.charname,
+                    this.charname + " rut " + soLuong + " luong " + (khoa ? "khoa" : "mo")
+                            + " tu kho, con lai kho " + (khoa ? this.khoLuongKhoa : this.khoLuong), "khoxuluong");
+            return true;
+        } catch (final Exception e) {
+            System.out.println("[KHO] LOI rutKhoLuong " + this.charname + " so=" + soLuong + " khoa=" + khoa + ": " + e);
+            e.printStackTrace();
+            return false;
         }
     }
 

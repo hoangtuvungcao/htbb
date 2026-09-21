@@ -12094,6 +12094,25 @@ public void addCharXaiNapLuong(Char p, int type) {
 
     /** Them mot cot cong tac int NOT NULL DEFAULT 0 vao tob_char neu chua co. */
     private void themCotNeuThieu(final String tenCot, final String moTa) {
+        themCotNeuThieu(tenCot, "int(11)", moTa);
+    }
+
+    /**
+     * Kho xu/luong o NPC Tong Quan (them 21/09/2026). Cung ly do PHAI tu them nhu
+     * themCotCongTacHienThi(): DatabaseNhanVat.saveChar/saveCharAuto ghi thang cac cot
+     * nay, thieu cot thi UPDATE nem loi va saveChar KHOA NHAN VAT ngay lan luu dau tien.
+     * Goi 1 lan luc khoi dong server, TRUOC khi nhan nguoi choi vao - cung nhom voi
+     * themCotCongTacHienThi(). Xem sql/them_cot_kho_xu_luong.sql (chay tay cung duoc,
+     * ALTER TABLE ADD COLUMN chay lai lan hai chi bao loi vo hai, bang nay tu lam roi).
+     */
+    public void themCotKhoXuLuong() {
+        themCotNeuThieu("kho_xu", "bigint(20)", "kho xu o NPC Tong Quan");
+        themCotNeuThieu("kho_luong", "int(11)", "kho luong mo o NPC Tong Quan");
+        themCotNeuThieu("kho_luong_khoa", "int(11)", "kho luong khoa o NPC Tong Quan");
+    }
+
+    /** Them mot cot NOT NULL DEFAULT 0 kieu tuy y vao tob_char neu chua co. */
+    private void themCotNeuThieu(final String tenCot, final String kieuCot, final String moTa) {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -12109,7 +12128,7 @@ public void addCharXaiNapLuong(Char p, int type) {
             rs = null;
             if (!daCo) {
                 stmt.execute("ALTER TABLE tob_char ADD COLUMN " + tenCot
-                        + " int(11) NOT NULL DEFAULT 0");
+                        + " " + kieuCot + " NOT NULL DEFAULT 0");
                 System.out.println("[DB] Da them cot tob_char." + tenCot + " (" + moTa + ").");
             }
         } catch (Exception e) {

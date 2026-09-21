@@ -370,6 +370,36 @@ class MapNhapText {
                     return;
                 }
 
+                if (idActor == KhoXuLuong.INPUT_GUI_XU) {
+                    KhoXuLuong.doNhapGuiXu(player, text);
+                    return;
+                }
+
+                if (idActor == KhoXuLuong.INPUT_RUT_XU) {
+                    KhoXuLuong.doNhapRutXu(player, text);
+                    return;
+                }
+
+                if (idActor == KhoXuLuong.INPUT_GUI_LUONG_MO) {
+                    KhoXuLuong.doNhapGuiLuong(player, text, false);
+                    return;
+                }
+
+                if (idActor == KhoXuLuong.INPUT_RUT_LUONG_MO) {
+                    KhoXuLuong.doNhapRutLuong(player, text, false);
+                    return;
+                }
+
+                if (idActor == KhoXuLuong.INPUT_GUI_LUONG_KHOA) {
+                    KhoXuLuong.doNhapGuiLuong(player, text, true);
+                    return;
+                }
+
+                if (idActor == KhoXuLuong.INPUT_RUT_LUONG_KHOA) {
+                    KhoXuLuong.doNhapRutLuong(player, text, true);
+                    return;
+                }
+
                 if (idActor == VongQuayLuong.INPUT_SO_LUONG) {
                     VongQuayLuong.doNhapSoLuong(player, text);
                     return;

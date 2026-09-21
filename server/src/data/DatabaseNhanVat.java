@@ -276,6 +276,22 @@ class DatabaseNhanVat {
                 p.userID = charId;
                 p.setxu(rs.getLong("gold"));
                 p.setLuong(rs.getInt("luong"));
+                // Kho xu/luong (them 21/09/2026) - boc rieng vi cot moi, CSDL chua chay
+                // sql/them_cot_kho_xu_luong.sql thi vang cot nay, khong duoc lam hong ca
+                // vong doc phia sau (pInfo, hanh trang...).
+                try {
+                    p.khoXu = rs.getLong("kho_xu");
+                    p.khoLuong = rs.getInt("kho_luong");
+                    p.khoLuongKhoa = rs.getInt("kho_luong_khoa");
+                } catch (Exception ignoredKho) {
+                    // Chi rot vao day khi cot chua ton tai (Database.themCotKhoXuLuong()
+                    // chua chay hoac chay loi) - in ra de biet, khong thi mat kho am tham.
+                    System.out.println("[KHO] khong doc duoc cot kho_xu/kho_luong/kho_luong_khoa cho "
+                            + charname + ": " + ignoredKho);
+                    p.khoXu = 0L;
+                    p.khoLuong = 0;
+                    p.khoLuongKhoa = 0;
+                }
                 p.tichluy = rs.getInt("tichluy");
                 p.qua_npc = rs.getInt("qua_npc");
                 p.tichluy_tuan = rs.getInt("tichluy_tuan");
@@ -700,7 +716,7 @@ class DatabaseNhanVat {
         Connection conn = null;
         PreparedStatement pre = null;
         String sql = "UPDATE tob_char SET pInfo=?,basic=?,skill=?,potion=?,totalTimePlay=totalTimePlay+?, luong=?, lastLv=?,xp=?,gold=?,hp=?, idClan=?, reupclass=?,headStyle=?,ticket=?,x=?,y=?,book=?,lastLog=Now(),infotop=?,equip=?,"
-                + "inven=?,bag=?,killme=?,luonglock=?,tuido=?,isPP=?,isMN=?,isCT=?,isCanh=?,isSkinThu=? where id=?";
+                + "inven=?,bag=?,killme=?,luonglock=?,tuido=?,isPP=?,isMN=?,isCT=?,isCanh=?,isSkinThu=?,kho_xu=?,kho_luong=?,kho_luong_khoa=? where id=?";
         try {
             conn = db.getConnection();
             pre = conn.prepareStatement(sql);
@@ -742,7 +758,10 @@ class DatabaseNhanVat {
             pre.setByte(28, (byte) (p.isTatCanh() ? 1 : 0));
             // Cot isSkinThu cung chieu voi isPP/isMN/isCanh: 1 = DA TAT hien thi skin thu.
             pre.setByte(29, (byte) (p.isTatSkinLinhThu() ? 1 : 0));
-            pre.setInt(30, p.charDBID);
+            pre.setLong(30, p.khoXu);
+            pre.setInt(31, p.khoLuong);
+            pre.setInt(32, p.khoLuongKhoa);
+            pre.setInt(33, p.charDBID);
             try {
                 pre.execute();
             } catch (Exception e) {
@@ -945,7 +964,7 @@ class DatabaseNhanVat {
             }
             return false;
         }
-        final String sql = "UPDATE tob_char SET pInfo=?,basic=?,skill=?,potion=?,totalTimePlay=totalTimePlay+?, luong=?, lastLv=?,xp=?,gold=?,hp=?, idClan=?, reupclass=?,headStyle=?,ticket=?,x=?,y=?,book=?,lastLog=Now(),infotop=?,equip=?,inven=?,bag=?,luonglock=?,tuido=? where id=?";
+        final String sql = "UPDATE tob_char SET pInfo=?,basic=?,skill=?,potion=?,totalTimePlay=totalTimePlay+?, luong=?, lastLv=?,xp=?,gold=?,hp=?, idClan=?, reupclass=?,headStyle=?,ticket=?,x=?,y=?,book=?,lastLog=Now(),infotop=?,equip=?,inven=?,bag=?,luonglock=?,tuido=?,kho_xu=?,kho_luong=?,kho_luong_khoa=? where id=?";
         Connection conn = null;
         PreparedStatement pre = null;
         try {
@@ -978,7 +997,10 @@ class DatabaseNhanVat {
             pre.setString(21, bag.toString());
             pre.setInt(22, p.getLuongLock());
             pre.setString(23, tuido.toString());
-            pre.setInt(24, p.charDBID);
+            pre.setLong(24, p.khoXu);
+            pre.setInt(25, p.khoLuong);
+            pre.setInt(26, p.khoLuongKhoa);
+            pre.setInt(27, p.charDBID);
             try {
                 pre.execute();
             } catch (Exception e) {
