@@ -8239,6 +8239,21 @@ public class Map implements Runnable {
                 //     menu = new String[]{"Mở Túi Đồ", "Bỏ Đồ Vào Túi", "Mở Kho", "Shop Đặc Biệt"};
                 // }
 
+                // Bai luyen cong + Auto Ve Map Up (them 22/09/2026, theo yeu cau nguoi dung):
+                // noi vao CUOI menu (sau Shop Trung Thu neu co) - vi tri THAY DOI tuy su
+                // kien Trung Thu con bat hay khong, nen ghi lai vi tri thuc te vao Char de
+                // MapDoMenu doc dung, giong het idxChuyenLuong/idxKhoXuLuong. Xem
+                // real/BaiLuyenCong.java.
+                {
+                    final String[] menuBai = new String[menu.length + 2];
+                    System.arraycopy(menu, 0, menuBai, 0, menu.length);
+                    menuBai[menu.length] = "Bãi luyện công";
+                    player.idxBaiLuyenCong = menu.length;
+                    menuBai[menu.length + 1] = player.isAutoVeMapUp ? "Tắt auto về Map Up" : "Bật auto về Map Up";
+                    player.idxAutoVeMapUp = menu.length + 1;
+                    menu = menuBai;
+                }
+
                 player.sendMessage(MessageCreator.createMsgMenu(menu, -516, 0));
             } 
             else if (type == 15)

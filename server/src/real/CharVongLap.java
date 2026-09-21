@@ -84,6 +84,40 @@ class CharVongLap {
         if (self.map != null && (ccb = MapChauBau.all_char_nui_kho_bau.get(self.charname)) != null && ccb.getTimeNuiChauBau() <= 0L && (self.map.isMapChanNui() || self.map.isMapNuiChauBau())) {
             self.map.doReturnVillage(self);
         }
+        // "Auto Ve Map Up" (them 22/09/2026) - hai buoc doc lap, dat trong Char.actorDie()
+        // khi chet tai bai luyen cong (xem chu thich o do): buoc 1 (3s) dua ve lang VA hoi
+        // sinh luon (doReturnVillage khong tu hoi HP/MP, phai lam o day giong het cach
+        // nhanh timeHoiSinh phia duoi lam); buoc 2 (5s) bay lai dung vi tri up, tru phi
+        // theo hang Vip (mien phi rieng vip==3, xem BaiLuyenCong.PHI_AUTO_VE_MAP_UP).
+        if (self.timeVeLangSauChet > 0L && System.currentTimeMillis() >= self.timeVeLangSauChet) {
+            self.timeVeLangSauChet = 0L;
+            if (self.map != null) {
+                self.map.doReturnVillage(self);
+                self.hp = self.maxhp;
+                self.mp = self.maxmp;
+                self.desTroy();
+                try {
+                    self.sendMessage(MessageCreator.createMainCharInfoMessage(self));
+                    self.sendToNearPlayer(MessageCreator.createNew_HMP_Message(self, 0));
+                } catch (final Exception exVeLang) {
+                }
+            }
+        }
+        if (self.timeVeBaiSauChet > 0L && System.currentTimeMillis() >= self.timeVeBaiSauChet) {
+            self.timeVeBaiSauChet = 0L;
+            if (self.viTriUpMapId > 0) {
+                final boolean mienPhi = self.vip >= 3;
+                if (mienPhi || self.truXuNeuDu(BaiLuyenCong.PHI_AUTO_VE_MAP_UP, false, "auto ve map up")) {
+                    self.map.move2Map(self, self.viTriUpTileX, self.viTriUpTileY, self.viTriUpMapId, self.inCountry);
+                    self.sendMessage(MessageCreator.createServerAlertMessage(
+                            "Đã tự động đưa bạn về vị trí luyện công trước đó.", ""));
+                } else {
+                    self.sendMessage(MessageCreator.createServerAlertMessage(
+                            "Không đủ " + BaiLuyenCong.PHI_AUTO_VE_MAP_UP + " xu để tự động bay lại vị trí luyện công.", ""));
+                }
+                self.viTriUpMapId = -1;
+            }
+        }
         ++self.countSecond;
         if (self.map != null && (self.map.isMapTrain() || self.map.isMapBoss() || self.map.isMapChienTruongMoba()) && self.hp <= 0 && self.timeHoiSinh > 0L && self.countSecond % 5 == 0) {
             final int second = (int) ((self.timeHoiSinh - System.currentTimeMillis()) / 1000L);
@@ -949,6 +983,7 @@ class CharVongLap {
         pInfo = String.valueOf(pInfo) + "," + (self.isNghienAuto ? 1 : 0);
         pInfo = String.valueOf(pInfo) + "," + (self.isAutoBan ? 1 : 0);
         pInfo = String.valueOf(pInfo) + "," + self.luongDaXaiTrungThu;
+        pInfo = String.valueOf(pInfo) + "," + (self.isAutoVeMapUp ? 1 : 0);
 
         return pInfo;
     }

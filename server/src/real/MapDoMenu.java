@@ -89,6 +89,10 @@ import static real.Map.sendAllCharServer;
 
 class MapDoMenu {
 
+    /** Gia ve tau (Xa Phu, npc -9) tinh bang luong - them 22/09/2026, truoc day mien phi.
+     * Sua 22/09/2026 (yeu cau nguoi dung, 2 lan): 20 -> 50 -> 100 luong/chuyen. */
+    private static final long GIA_VE_TAU_LUONG = 100L;
+
     /**
      * NPC dau truong (-31): doi VI TRI HIEN THI tren menu ve VI TRI GOC trong ma.
      *
@@ -213,6 +217,10 @@ class MapDoMenu {
                 KhoXuLuong.doMenuRut(player, idOptionMenu);
                 return;
             }
+            if (idNpc == BaiLuyenCong.NPC_ID) {
+                BaiLuyenCong.doMenu(player, idOptionMenu);
+                return;
+            }
             // NPC Tong Quan (-10), muc "Vong quay luong": cung la muc cuoi menu, vi tri
             // ghi trong player.idxVongQuayLuong. Xem real/VongQuayLuong.
             // "Vong quay luong" mo tu nhanh idOptionMenu==2 cua muc "Vong quay" co san
@@ -279,6 +287,19 @@ class MapDoMenu {
 
             if (idNpc == -516) {
                 if (idMenu == 0) {
+                    // Bai luyen cong + Auto Ve Map Up (them 22/09/2026): vi tri trong menu
+                    // THAY DOI tuy Shop Trung Thu con bat hay khong nen kiem qua Char.idxXxx
+                    // truoc, KHONG dung switch case co dinh (xem Map.java case type==-10000).
+                    if (player.idxBaiLuyenCong >= 0 && idOptionMenu == player.idxBaiLuyenCong) {
+                        BaiLuyenCong.mo(player);
+                        return;
+                    }
+                    if (player.idxAutoVeMapUp >= 0 && idOptionMenu == player.idxAutoVeMapUp) {
+                        player.isAutoVeMapUp = !player.isAutoVeMapUp;
+                        player.sendMessage(MessageCreator.createServerAlertMessage(
+                                "Auto về Map Up: " + (player.isAutoVeMapUp ? "ĐANG BẬT" : "ĐANG TẮT"), ""));
+                        return;
+                    }
                     switch (idOptionMenu) {
                         case 0:
                             if (player.vip < 1) {
@@ -4337,6 +4358,13 @@ class MapDoMenu {
                             int[][] vilage = new int[][]{{70, 1701}, {0, 301}, {80, 1901}};
                             int[] tmap = vilage[player.inCountry];
                             if (idOptionMenu < 0 || idOptionMenu >= tmap.length) {
+                                return;
+                            }
+                            // Ve tau bang luong (them 22/09/2026, theo yeu cau nguoi dung):
+                            // truoc day di xa phu hoan toan mien phi, gio tru 20 luong/chuyen.
+                            if (!player.truLuongNeuDu(GIA_VE_TAU_LUONG)) {
+                                player.sendMessage(MessageCreator.createServerAlertMessage(
+                                        "Cần có " + GIA_VE_TAU_LUONG + " lượng để mua vé tàu.", ""));
                                 return;
                             }
                             int x = 16 + r.nextInt() % 5;

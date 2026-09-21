@@ -245,6 +245,11 @@ class CharNapDuLieu {
                 } catch (final Exception ex8f) {
                 }
                 try {
+                    // Bai luyen cong (moi 22/09/2026) - cong tac "Auto Ve Map Up".
+                    self.isAutoVeMapUp = (Integer.parseInt(data[120]) == 1);
+                } catch (final Exception ex8g) {
+                }
+                try {
                     self.idAutoSkill = Byte.parseByte(data[30]);
                     self.idAutoGetitem = Byte.parseByte(data[31]);
                 } catch (final Exception ex9) {

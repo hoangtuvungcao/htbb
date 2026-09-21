@@ -143,6 +143,11 @@ public class Char extends LiveActor {
     // Vi tri (idOptionMenu) cua muc "Kho xu/luong" trong menu NPC Tong Quan, gan lai moi
     // lan RequestNPCInfoHandler mo menu -10. Xem real/KhoXuLuong.
     public int idxKhoXuLuong = -1;
+    // Vi tri (idOptionMenu) cua muc "Bai luyen cong" / "Auto Ve Map Up" trong menu "Khac"
+    // cua NPC Tong Quan (idNpc=-516), gan lai moi lan Map.java build menu do (type==-10000).
+    // Xem real/BaiLuyenCong.java.
+    public int idxBaiLuyenCong = -1;
+    public int idxAutoVeMapUp = -1;
     public short partyID;
     public int masterIDParty;
     public Vector<Short> idItem;
@@ -991,6 +996,21 @@ public class Char extends LiveActor {
     public int isCaiTrang = 0;
     public boolean isNghienAuto = false;
     public boolean isAutoBan = false;
+
+    // ==================== BAI LUYEN CONG (them 22/09/2026) ====================
+    // Xem real/BaiLuyenCong.java. Cooldown giua hai lan bay - KHONG luu xuong DB (mat theo
+    // phien la dung y, giong het cach cac cooldown khac trong game xu ly).
+    public long timeCuoiBayBaiLuyenCong = 0L;
+    // "Auto Ve Map Up": bat/tat luu ben duoi (persist qua pInfo, xem CharVongLap.getDBInfo/
+    // CharNapDuLieu). Vi tri "up truoc do" + hai moc thoi gian cho 2 buoc tra ve KHONG luu
+    // DB (chi song trong 1 lan chet, mat khi dang xuat la dung y - giong het cac cooldown/
+    // hen gio tam thoi khac nhu timeHoiSinh).
+    public boolean isAutoVeMapUp = false;
+    public int viTriUpMapId = -1;
+    public int viTriUpTileX;
+    public int viTriUpTileY;
+    public long timeVeLangSauChet = 0L;
+    public long timeVeBaiSauChet = 0L;
 
 
     static {
@@ -4915,6 +4935,19 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.timedie = System.currentTimeMillis();
             if (this.timeWaitComeHome == 0L) {
                 this.timeWaitComeHome = this.timedie;
+            }
+            // "Auto Ve Map Up" (them 22/09/2026): chi ap dung cho NGUOI CHOI (khong phai
+            // quai/bot - this.cat==0) chet ngay tai mot trong 6 bai luyen cong, va da bat
+            // tinh nang trong menu NPC Tong Quan. Chup lai vi tri hien tai (chinh la vi tri
+            // up, vi con dang dung o day luc chet) truoc khi CharVongLap doi player.x/y qua
+            // buoc ve lang. Hai moc thoi gian duoc CharVongLap.update() doc va thuc thi -
+            // xem chu thich o do.
+            if (!this.isMonster && this.cat == 0 && this.isAutoVeMapUp && BaiLuyenCong.isMapBai(this.mapID)) {
+                this.viTriUpMapId = this.mapID;
+                this.viTriUpTileX = this.x / 16;
+                this.viTriUpTileY = this.y / 16;
+                this.timeVeLangSauChet = this.timedie + 3000L;
+                this.timeVeBaiSauChet = this.timedie + 5000L;
             }
             this.partyIsDie(this, this.mapID);
             if (this.isMonster || this.isNguoiTuyet()) 
