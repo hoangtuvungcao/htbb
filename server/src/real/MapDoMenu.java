@@ -700,6 +700,16 @@ class MapDoMenu {
                             return;
                         }
 
+                        // idOptionMenu tu goi tin - menu chon ho ve chi co 10 muc (5 he x 2
+                        // gioi tinh, xem Map.doUseItemLinhDanhThue). Thieu kiem tra nay se cho
+                        // gia tri ngoai bien lam chi so vao namehe[], nem lai ArrayIndexOutOf
+                        // BoundsException (giong lo hong da vay o nhanh -511 ngay duoi).
+                        if (idOptionMenu < 0 || idOptionMenu >= 10) {
+                            data.NghiVanGianLan.ghiVatPham(player, "hackruong",
+                                    "gui chi so chon ho ve ngoai bien: " + idOptionMenu);
+                            return;
+                        }
+
                         int clazz = idOptionMenu / 2;
                         int gender = idOptionMenu % 2;
                         String[] namehe = new String[]{"kim", "hoả", "thuỷ", "thổ", "mộc"};
@@ -709,7 +719,7 @@ class MapDoMenu {
                                             player.id,
                                             14 + idOptionMenu,
                                             "Hộ vệ hiện tại của bạn sẽ bị mất. Bạn có muốn triệu hồi hộ vệ "
-                                            + (gender != 0 ? "nữ " + namehe[clazz] + " không?" : "nam hệ " + namehe[clazz] + " không?")
+                                            + (gender != 0 ? "nữ hệ " + namehe[clazz] + " không?" : "nam hệ " + namehe[clazz] + " không?")
                                     )
                             );
                         } else {
@@ -717,7 +727,7 @@ class MapDoMenu {
                                     MessageCreator.createMsgPopUp(
                                             player.id,
                                             14 + idOptionMenu,
-                                            "Bạn có muốn triệu hồi hộ vệ " + (gender != 0 ? "nữ " + namehe[clazz] + " không?" : "nam hệ " + namehe[clazz] + " không?")
+                                            "Bạn có muốn triệu hồi hộ vệ " + (gender != 0 ? "nữ hệ " + namehe[clazz] + " không?" : "nam hệ " + namehe[clazz] + " không?")
                                     )
                             );
                         }

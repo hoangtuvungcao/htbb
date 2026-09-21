@@ -5287,6 +5287,15 @@ public int applyRongLonReleaseTo(int baseDamage) {
         this.charHire.setXtoYto(this.x, this.y);
         this.charHire.myCountry = this.myCountry;
         this.charHire.inCountry = this.inCountry;
+        // Ho ve thue di qua new CharCopy()+setInfoChar(), KHONG qua CharKhoiTao nen
+        // arrayBuff con null (khac nhan vat that, luon duoc gan {-1,...} o
+        // CharKhoiTao.initInfo). CharCapNhat.buffAttackSkill() doc self.arrayBuff[4]
+        // NHUNG CHI cho charClass==0 (Kiem khach = he Kim) - moi lan quai danh trung
+        // ho ve he Kim (Monster.buffAttackSkill -> target.buffAttackSkill) se nem
+        // NullPointerException, bi catch lang le, gay giat lag do ne exception lien
+        // tuc. 4 he con lai khong dung nhanh nay nen khong loi. Gan y het gia tri mac
+        // dinh cua CharKhoiTao (khong co buff nao dang mo) de vao dung nhanh an toan.
+        this.charHire.arrayBuff = new byte[]{-1, -1, -1, -1, -1, -1, -1};
         ((CharCopy) this.charHire).owner = this;
         ((CharCopy) this.charHire).setMaxHp();
         CharManager.instance.put(this.charHire);
@@ -10386,7 +10395,8 @@ public int applyRongLonReleaseTo(int baseDamage) {
         // dong, chi bi anh huong nhe do tong bang thay doi 12500 -> 12876).
         // Them idx 28 (Long den vinh vien, typegift 13) va idx 29 (Thuoc hoa hinh, typegift
         // 14) 19/09/2026 - 2 muc spec doi hoi ma ban truoc dang thieu hoan toan.
-        // Them idx 30 (pet Capybara, typegift 15) 19/09/2026.
+        // Them idx 30 (typegift 15) 19/09/2026, ban dau la pet Capybara - 21/09/2026 doi
+        // sang Huyet linh thao theo yeu cau nguoi dung (xem nhanh typegift==15 ben duoi).
         final int[] per      = {400, 400, 600, 600, 600, 600, 500, 500, 800, 129, 500, 500, 300, 1288, 1030, 700, 800, 800, 150, 150, 150, 150, 129, 500, 150, 150, 150, 150, 150, 150, 150};
         final int[] idgift   = {GemTemplate.XUONG_C5, GemTemplate.XUONG_C6, 123, 82, 7, 13, 676, 677, 136, 111, 156, 157, GemTemplate.LKD_40, 0, 117, 0, 93, 95, 12, 19, 20, 0, 119, 100, 851, 853, 852, 849, 0, 0, 0};
         final int[] typegift = {6, 6, 4, 4, 4, 4, 3, 3, 4, 4, 4, 4, 6, 7, 4, 8, 4, 4, 9, 9, 9, 10, 4, 4, 3, 3, 3, 3, 13, 14, 15};
@@ -10469,9 +10479,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
             this.sendMessage(MessageCreator.createCharGemItem(this));
             this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
         } else if (typegift[index] == 15) {
-            // Pet Capybara thoi han 7 ngay, co the giao dich (moi 19/09/2026).
-            this.doCreatePetCapybara(10080, false);
-            info = String.valueOf(info) + "Capybara (7 ngày, có thể giao dịch)";
+            // O idx 30: doi tu pet Capybara (moi 19/09/2026) sang Huyet linh thao (khoa)
+            // theo yeu cau nguoi dung 21/09/2026. Giu nguyen id typegift=15 va idgift[30]=0
+            // (khong doc idgift o nhanh nay) de khong dong ti trong per[] cua ca bang.
+            final Item hlt = Map.doCreateHuyetLinhThao(this, 1);
+            info = String.valueOf(info) + (hlt != null ? hlt.getName() : "Huyết linh thảo");
             this.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
         }
         Database.instance.saveOrtherLog("", this.charname, info, "ohqtt");

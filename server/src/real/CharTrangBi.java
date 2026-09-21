@@ -350,8 +350,74 @@ class CharTrangBi {
                 }
             }
         }
-        // Sat thuong lan (lua/set/bang/doc) van gay sat thuong + giet quai binh thuong,
-        // nhung khong cong exp cho nguoi choi/party (truoc day co cong qua "Exp Up lan").
+        // Khoi phuc cong exp cho lan (lua/set/bang/doc) - da bi tat 01/08/2026 (commit
+        // "update up quai"), phuc hoi 21/09/2026 theo yeu cau nguoi dung. Cong thuc GIU
+        // NGUYEN nhu ban goc (Map.calculatorXpParty, chia party theo chenh lech level,
+        // nguoi gay lan nhan rieng 20%), voi 2 cho SUA so voi ban goc de khop quy uoc hien
+        // tai cua codebase (doi chieu Region.java/MapTown.java... - cung mot cong thuc):
+        // (1) dieu kien loai tru CHINH MINH khoi vong lap party dung sai bien "id" (dung id
+        // CUA LOAI LAN 0-3 do bi che khuat boi bien local "id" cung ten trong method nay,
+        // thay vi self.id) - neu giu nguyen se gan nhu luon dung, khien nguoi gay lan dang
+        // trong party tu nhan CA phan chia party LAN phan 20% rieng, an exp gap doi.
+        // (2) THIEU Monster.apDungGiamExpTheoCapNV() truoc moi lan expReceive() - ham giam
+        // exp theo CAP NHAN VAT (>=lv50 dung PC_TILE_EXP_LV50, <lv50 PC_TILE_EXP_DUOI_LV50,
+        // xem Monster.java) chi doi sang goi truoc expReceive/addXPForChar tu 15/09/2026,
+        // SAU khi "Exp Up lan" da bi tat nen ban goc luc do khong co buoc nay - da them du
+        // 3 diem (2 nhanh party + 1 nhanh khong chia party) de dong bo voi moi luong exp khac.
+        if (totalxp > 0) {
+            try {
+                final int newxp = Map.calculatorXpParty(self, totalxp);
+                if (newxp != totalxp) {
+                    int nUser = self.party.userParty.size();
+                    if (nUser > 1) {
+                        nUser = 5;
+                    }
+
+                    int xpReceive = newxp * 80 / (100 * nUser);
+                    final int maxLv = self.lvDetail.lv;
+
+                    for (int j = 0; j < self.party.userParty.size(); ++j) {
+                        final Char pp = self.party.userParty.get(j);
+                        if (pp.id != self.id && self.near(pp, 320) && pp.mapID == self.mapID && pp.inCountry == self.inCountry && pp.region == self.region) {
+                            final int dlv = Map.abs(maxLv - pp.lvDetail.lv);
+                            int temp = 1;
+                            if (dlv <= 5) {
+                                temp = xpReceive;
+                            } else if (dlv <= 10) {
+                                temp = xpReceive / 5;
+                            } else if (dlv <= 20) {
+                                temp = xpReceive / 10;
+                            } else if (dlv <= 30) {
+                                temp = xpReceive / 15;
+                            } else {
+                                temp = xpReceive / 20;
+                            }
+                            if (temp == 0) {
+                                temp = 1;
+                            }
+
+                            if (pp.hp > 0) {
+                                temp /= self.party.userParty.size();
+                                temp *= Map.doubleALL;
+                                temp = Monster.apDungGiamExpTheoCapNV(temp, pp);
+                                temp = pp.expReceive(temp);
+                                Map.addXPForChar(pp, temp + pp.getEffSkillClan(0) * temp / 100, false, "char checkNewEffectItem1");
+                            }
+                        }
+                    }
+                    xpReceive = newxp * 20 / 100 * Map.doubleALL;
+                    xpReceive = Monster.apDungGiamExpTheoCapNV(xpReceive, self);
+                    xpReceive = self.expReceive(xpReceive);
+                    Map.addXPForChar(self, xpReceive + self.getEffSkillClan(0) * xpReceive / 100, false, "char checkNewEffectItem2");
+                } else {
+                    totalxp *= Map.doubleALL;
+                    totalxp = Monster.apDungGiamExpTheoCapNV(totalxp, self);
+                    totalxp = self.expReceive(totalxp);
+                    Map.addXPForChar(self, totalxp + self.getEffSkillClan(0) * totalxp / 100, false, "char checkNewEffectItem3");
+                }
+            } catch (final Exception ex3) {
+            }
+        }
 
         final Message k = MessageCreator.createMsgNewEffect(self, allnewar, cat, id, dam, hpLeft, 2000);
         self.sendMessage(k);

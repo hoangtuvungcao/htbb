@@ -112,22 +112,33 @@ public final class SuKien {
     /**
      * Thu tu o day la thu tu hien tren trang quan tri.
      *
-     * "Cong tong" dat dau tien vi no chan de len phan lon cac su kien khac: hon 70 cho
-     * trong ma nguon viet "if (!Char.isFinishAllSuKien())" TRUOC khi hoi tiep su kien cu
-     * the, nen de nguyen cong tong o trang thai tat thi bat rieng le mot su kien co the
-     * van khong thay gi.
+     * Don repo 21/09/2026 (yeu cau nguoi dung "xoa su kien trung lap + xoa het Trung Thu,
+     * chi giu ban da sua"): bo 6 muc KHONG con Char.isSuKienXxx() nao trong ma nguon doc
+     * toi (rieng biet voi chuyen "trung ten hien thi" - ten co "2015/2016/2017" da KIEM
+     * CHUNG tung cai, phan lon van song, khong xoa nham):
+     *   - TAT_CA ("Cong tong"): comment cu noi "hon 70 cho hoi isFinishAllSuKien() truoc"
+     *     nhung ra soat toan bo ma nguon KHONG thay mot loi goi nao - co tong khong con
+     *     chan gi ca, chi con la dong text mo ta cu.
+     *   - TET_2016, TRUNG_THU_2015: ban "cu" that su chet, khong con Char.isSuKienXxx()
+     *     nao goi toi (khac HALLOWEEN_2015/HE_2015/WORLD_CUP_2017 - ba cai nay TEN cung co
+     *     nam nhung VAN dang song, co giu nguyen).
+     *   - SINH_NHAT_NGUDE_QUA: Char.canReceiveGiftSNNgude() khong con noi nao goi - tinh
+     *     nang phat qua sinh nhat co ve bi bo do, khong chi la "ban cu".
+     *   - DEM_TRUNG_THU, LONG_DEN_HOA_SEN: THEO YEU CAU RIENG cua nguoi dung xoa toan bo
+     *     Trung Thu tru ban vua sua (TRUNG_THU) - CA HAI VAN DANG SONG that su (tang banh
+     *     nuong dang nhap/len cap, ban long den hoa sen qua NPC), khong phai code chet.
+     *     Xoa co y, khong phai do nham voi ban cu.
+     * Xoa Muc khoi DANH_MUC KHONG xoa dong cu con lai trong bang tob_su_kien (ghiAnhChup()
+     * chi INSERT/UPDATE cac ma con trong DANH_MUC, khong bao gio DELETE) - phai chay
+     * sql/xoa_su_kien_trung_lap.sql de don dong cu, khong thi trang admin van con hien
+     * (du bam nut cung khong con tac dung, vi SuKien.dat() da loai ma la khong con trong
+     * danh muc).
      */
     private static final Muc[] DANH_MUC = {
-        new Muc(TAT_CA, "Cổng tổng cho mọi sự kiện", "Cổng chung",
-                "Hơn 70 chỗ trong mã nguồn hỏi cổng này trước khi hỏi từng sự kiện."
-                + " Muốn bật bất kỳ sự kiện cũ nào thì thường phải bật cổng này trước."),
-
         new Muc(TET_2017, "Tết Nguyên Đán", "Tết",
                 "NPC lì xì, nấu bánh chưng, cây lì xì, top Tết."),
         new Muc(TET_DUONG_LICH, "Tết dương lịch", "Tết",
                 "NPC cây thông (npc -35): đổi 10 kẹo + 30 lượng lấy quà ngẫu nhiên."),
-        new Muc(TET_2016, "Tết 2016", "Tết",
-                "Bản Tết cũ: đổi bao lì xì."),
         new Muc(TET_123, "Ba ngày Tết", "Tết",
                 "Thưởng riêng ba ngày mùng 1-2-3."),
 
@@ -146,12 +157,6 @@ public final class SuKien {
 
         new Muc(TRUNG_THU, "Trung Thu", "Mùa",
                 "Bánh nướng / bánh dẻo, lồng đèn, NPC Hằng Nga, thả đèn."),
-        new Muc(DEM_TRUNG_THU, "Đêm rằm Trung Thu", "Mùa",
-                "Tặng 1 bánh nướng khi đăng nhập và khi lên cấp, mỗi nhân vật một lần."),
-        new Muc(TRUNG_THU_2015, "Trung Thu 2015", "Mùa",
-                "Bản Trung Thu cũ."),
-        new Muc(LONG_DEN_HOA_SEN, "Bán lồng đèn hoa sen", "Mùa",
-                "Mở bán lồng đèn hoa sen."),
         new Muc(HALLOWEEN, "Halloween", "Mùa",
                 "Bí ngô, mặt nạ, hộp quà Halloween, boss Dracula."),
         new Muc(DEM_HALLOWEEN, "Đêm Halloween", "Mùa",
@@ -182,8 +187,6 @@ public final class SuKien {
                 "Lồng đèn hoa sen, chổi băng / chổi độc / chổi điện ở NPC sự kiện."),
         new Muc(SINH_NHAT_NGUDE, "Sinh nhật Ngudẻ", "Kỷ niệm",
                 "NPC sinh nhật."),
-        new Muc(SINH_NHAT_NGUDE_QUA, "Sinh nhật Ngudẻ: phát quà", "Kỷ niệm",
-                "Cho nhận quà sinh nhật."),
         new Muc(DUA_TOP_HOA_LU, "Đua top Hoa Lư", "Kỷ niệm",
                 "Đợt đua top của server Hoa Lư."),
 
