@@ -14421,8 +14421,6 @@ public int applyRongLonReleaseTo(int baseDamage) {
             }
             System.out.println("[KHO] " + this.charname + " gui " + soLuong + " luong " + (khoa ? "khoa" : "mo")
                     + " vao kho, con lai kho " + (khoa ? this.khoLuongKhoa : this.khoLuong));
-            // DEBUG TAM THOI 22/09/2026 - dieu tra bug kho ve 0 sau logout/login. Xoa sau khi xong.
-            System.out.println("[KHO-DEBUG] guiKhoLuong " + this.charname + " id-obj=" + System.identityHashCode(this));
             Database.instance.saveOrtherLog("", this.charname,
                     this.charname + " gui " + soLuong + " luong " + (khoa ? "khoa" : "mo")
                             + " vao kho, con lai kho " + (khoa ? this.khoLuongKhoa : this.khoLuong), "khoxuluong");
@@ -14445,8 +14443,6 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 if (dangCoTrongKho < soLuong) {
                     System.out.println("[KHO] " + this.charname + " rut luong " + (khoa ? "khoa" : "mo")
                             + " THAT BAI (kho khong du) - kho co " + dangCoTrongKho + ", can rut " + soLuong);
-                    // DEBUG TAM THOI 22/09/2026 - dieu tra bug kho ve 0 sau logout/login. Xoa sau khi xong.
-                    System.out.println("[KHO-DEBUG] rutKhoLuong THAT BAI " + this.charname + " id-obj=" + System.identityHashCode(this));
                     return false;
                 }
                 if (khoa) {

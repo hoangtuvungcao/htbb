@@ -7853,6 +7853,24 @@ public class Database {
                 p.lastLog = rs.getString("lastlog");
                 p.giftTop = rs.getByte("nAr1");
                 p.setxu(rs.getLong("gold"));
+                // Kho xu/luong (them 21/09/2026) - day la getChar THAT SU duoc SelectCharHandler
+                // goi khi nguoi choi dang nhap binh thuong (qua charId), KHAC voi
+                // DatabaseNhanVat.getChar(charname) chi dung cho doLoginByAdmin. Commit
+                // luc them tinh nang kho quen mat ham nay, nen MOI lan dang nhap lai deu
+                // doc kho ve 0 du CSDL van dung - roi lan luu/kick ke tiep ghi de luon 0
+                // xuong CSDL that. Doc rieng trong try nhu tren, phong cot chua chay
+                // migration (Database.themCotKhoXuLuong()).
+                try {
+                    p.khoXu = rs.getLong("kho_xu");
+                    p.khoLuong = rs.getInt("kho_luong");
+                    p.khoLuongKhoa = rs.getInt("kho_luong_khoa");
+                } catch (Exception ignoredKho) {
+                    System.out.println("[KHO] khong doc duoc cot kho_xu/kho_luong/kho_luong_khoa cho charId="
+                            + charId + ": " + ignoredKho);
+                    p.khoXu = 0L;
+                    p.khoLuong = 0;
+                    p.khoLuongKhoa = 0;
+                }
                 if (!NewClan.isTimeOfferWages()) {
                     p.gotWages = false;
                 }

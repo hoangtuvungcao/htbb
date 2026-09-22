@@ -378,9 +378,6 @@ public class CharManager {
                 // ban cu vi ly do nao do con nam trong vector nguoi choi cua ban do thi
                 // dung 5 giay sau no tu goi lai kickPlayer va ghi de.
                 if (this.getByUserID(p.userID) == p) {
-                    // DEBUG TAM THOI 22/09/2026 - dieu tra bug kho ve 0 sau logout/login. Xoa sau khi xong.
-                    System.out.println("[KHO-DEBUG] kickPlayer(" + pos + ") luu " + p.getName() + " id-obj=" + System.identityHashCode(p)
-                            + " khoLuong=" + p.khoLuong + " khoLuongKhoa=" + p.khoLuongKhoa + " khoXu=" + p.khoXu);
                     Database.instance.saveChar(p, false);
                     Database.instance.addInfoWebChar(p);
                 } else {
