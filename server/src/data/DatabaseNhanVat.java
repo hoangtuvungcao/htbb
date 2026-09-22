@@ -292,6 +292,9 @@ class DatabaseNhanVat {
                     p.khoLuong = 0;
                     p.khoLuongKhoa = 0;
                 }
+                // DEBUG TAM THOI 22/09/2026 - dieu tra bug kho ve 0 sau logout/login. Xoa sau khi xong.
+                System.out.println("[KHO-DEBUG] getChar " + charname + " id-obj=" + System.identityHashCode(p)
+                        + " khoLuong=" + p.khoLuong + " khoLuongKhoa=" + p.khoLuongKhoa + " khoXu=" + p.khoXu);
                 p.tichluy = rs.getInt("tichluy");
                 p.qua_npc = rs.getInt("qua_npc");
                 p.tichluy_tuan = rs.getInt("tichluy_tuan");
