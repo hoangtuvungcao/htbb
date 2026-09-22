@@ -191,7 +191,7 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     session.sendMessage(msg);
                 }
                 if (!Char.isFinishAllSuKienTrungThul2016()) {
-                    menu = new String[]{"Đốt đèn", "Thả đèn(50L+1 nến)", "Thả đèn(5tr xu+1 nến)", "Mua nến", "Đổi NLT (20 nến + 10kL)"};
+                    menu = new String[]{"Đốt đèn", "Thả đèn(20L+1 nến)", "Thả đèn(10tr xu+1 nến)", "Mua nến", "Đổi NLT (20 nến + 10kL)"};
                     msg = MessageCreator.createMsgMenu(menu, npcType, 0);
                     session.sendMessage(msg);
                     break;

@@ -1425,8 +1425,8 @@ public class RealController extends ServerController {
                 }
                 final boolean duNguyenLieu = laThaDen ? (player.potions[125] >= 1) : (player.potions[136] >= 1);
                 if (duNguyenLieu) {
-                    if (idOptionMenu != 1 || player.getLuong() >= 50) {
-                        if (idOptionMenu != 2 || player.getxu() >= 5000000L) {
+                    if (idOptionMenu != 1 || player.getLuong() >= 20) {
+                        if (idOptionMenu != 2 || player.getxu() >= 10000000L) {
                             // Sua 19/09/2026: 100.000 exp truoc day CONG THANG vo dieu kien moi lan
                             // dot/tha den (khong loai tru voi thuong ngau nhien), sai voi spec "100.000
                             // exp" la MOT trong cac phan thuong NGAU NHIEN - da bo dong cong thang nay,
@@ -1639,12 +1639,12 @@ public class RealController extends ServerController {
                             }
 
                             if (idOptionMenu == 1) {
-                                player.subLuong(50L);
-                                Database.instance.saveLogThongKeChiTieu("tha den luong", 0, 1, 50L, "luong");
+                                player.subLuong(20L);
+                                Database.instance.saveLogThongKeChiTieu("tha den luong", 0, 1, 20L, "luong");
                                 xuLyCanMocThaDen(player);
                             } else if (idOptionMenu == 2) {
-                                player.subXu(5000000L, false, "");
-                                Database.instance.saveLogThongKeChiTieu("tha den xu", 0, 1, 5000000L, "xu");
+                                player.subXu(10000000L, false, "");
+                                Database.instance.saveLogThongKeChiTieu("tha den xu", 0, 1, 10000000L, "xu");
                                 xuLyCanMocThaDen(player);
                             }
 
