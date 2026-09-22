@@ -9694,21 +9694,22 @@ public class Map implements Runnable {
 
                     // Tỷ lệ thành công TĂNG dần theo mốc: càng gần 0% càng khó, càng gần
                     // 100% càng dễ. Đường cong BẬC HAI nên đoạn đầu rất chậm rồi mới bứt
-                    // lên ở đoạn cuối:
+                    // lên ở đoạn cuối. Giảm một nửa so với bản trước (5%->60%) theo yêu cầu
+                    // người dùng 22/09/2026:
                     //
-                    //    mốc   0 :  5%      mốc  30 : 10%      mốc  80 : 42%
-                    //    mốc  10 :  6%      mốc  50 : 19%      mốc  98 : 60%
-                    //    mốc  20 :  7%                         mốc  99 : 100%
+                    //    mốc   0 :  3%      mốc  30 :  6%      mốc  80 : 21%
+                    //    mốc  10 :  3%      mốc  50 : 10%      mốc  98 : 30%
+                    //    mốc  20 :  4%                         mốc  99 : 100%
                     //
-                    // Kỳ vọng cả chặng 0 -> 100 là ~771 lần đánh (~2,31 tỉ xu, 771 lượng,
-                    // 771 nguyên liệu), trong đó riêng đoạn 0 -> 30 đã chiếm ~478 lần.
+                    // Kỳ vọng cả chặng 0 -> 100 tăng khoảng gấp đôi so với bản trước (~771
+                    // lần đánh) vì mọi tỉ lệ đều giảm một nửa.
                     //
                     // Tính bằng SỐ NGUYÊN, không dùng số thực:
-                    //     tỉ lệ = 5 + làm_tròn( 55 * mốc^2 / 98^2 )
+                    //     tỉ lệ = 3 + làm_tròn( 27 * mốc^2 / 98^2 )
                     // 9604 = 98^2, cộng 4802 (một nửa) trước khi chia là để làm tròn thay
-                    // vì cắt cụt. Mốc 98 cho đúng 5 + 55 = 60.
-                    final int TI_LE_GOC = 5;    // ở mốc 0
-                    final int TI_LE_THEM = 55;  // cộng dồn tới mốc 98 -> 60%
+                    // vì cắt cụt. Mốc 98 cho đúng 3 + 27 = 30.
+                    final int TI_LE_GOC = 3;    // ở mốc 0
+                    final int TI_LE_THEM = 27;  // cộng dồn tới mốc 98 -> 30%
                     final int MOC_TRAN = 98;
                     int moc = player.itemVukhiThoiTrang.TinhLuyen;
                     if (moc < 0) {
