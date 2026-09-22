@@ -9694,22 +9694,23 @@ public class Map implements Runnable {
 
                     // Tỷ lệ thành công TĂNG dần theo mốc: càng gần 0% càng khó, càng gần
                     // 100% càng dễ. Đường cong BẬC HAI nên đoạn đầu rất chậm rồi mới bứt
-                    // lên ở đoạn cuối. Giảm một nửa so với bản trước (5%->60%) theo yêu cầu
-                    // người dùng 22/09/2026:
+                    // lên ở đoạn cuối.
                     //
-                    //    mốc   0 :  3%      mốc  30 :  6%      mốc  80 : 21%
-                    //    mốc  10 :  3%      mốc  50 : 10%      mốc  98 : 30%
-                    //    mốc  20 :  4%                         mốc  99 : 100%
+                    // Yêu cầu người dùng 22/09/2026: giảm một nửa (5%->60% thành 3%->30%),
+                    // sau đó yêu cầu tiếp giữ NGUYÊN tỉ lệ CŨ (5%->60%) từ mốc 50 trở lên,
+                    // chỉ đoạn mốc 0..49 dùng đường cong đã giảm một nửa. Có bước nhảy tại
+                    // mốc 50 (10% -> 19%) do ghép hai đường cong khác gốc/trần - đúng ý đồ
+                    // "giữ như cũ" chứ không nội suy mượt.
                     //
-                    // Kỳ vọng cả chặng 0 -> 100 tăng khoảng gấp đôi so với bản trước (~771
-                    // lần đánh) vì mọi tỉ lệ đều giảm một nửa.
+                    //    mốc   0 :  3% (mới)   mốc  49 : 10% (mới)   mốc  50 : 19% (CŨ)
+                    //    mốc  10 :  3% (mới)   mốc  80 : 42% (CŨ)    mốc  98 : 60% (CŨ)
+                    //    mốc  20 :  4% (mới)                         mốc  99 : 100%
                     //
                     // Tính bằng SỐ NGUYÊN, không dùng số thực:
-                    //     tỉ lệ = 3 + làm_tròn( 27 * mốc^2 / 98^2 )
+                    //     tỉ lệ = goc + làm_tròn( them * mốc^2 / 98^2 )
                     // 9604 = 98^2, cộng 4802 (một nửa) trước khi chia là để làm tròn thay
-                    // vì cắt cụt. Mốc 98 cho đúng 3 + 27 = 30.
-                    final int TI_LE_GOC = 3;    // ở mốc 0
-                    final int TI_LE_THEM = 27;  // cộng dồn tới mốc 98 -> 30%
+                    // vì cắt cụt.
+                    final int NGUONG_MOC_DUNG_TI_LE_CU = 50;
                     final int MOC_TRAN = 98;
                     int moc = player.itemVukhiThoiTrang.TinhLuyen;
                     if (moc < 0) {
@@ -9717,8 +9718,10 @@ public class Map implements Runnable {
                     } else if (moc > MOC_TRAN) {
                         moc = MOC_TRAN;
                     }
-                    int successRate = TI_LE_GOC
-                            + (TI_LE_THEM * moc * moc + (MOC_TRAN * MOC_TRAN) / 2)
+                    final int tiLeGoc = (moc >= NGUONG_MOC_DUNG_TI_LE_CU) ? 5 : 3;
+                    final int tiLeThem = (moc >= NGUONG_MOC_DUNG_TI_LE_CU) ? 55 : 27;
+                    int successRate = tiLeGoc
+                            + (tiLeThem * moc * moc + (MOC_TRAN * MOC_TRAN) / 2)
                               / (MOC_TRAN * MOC_TRAN);
 
                     // ✅ Nếu là Thần Binh và đang ở % tinh luyện là 99%
