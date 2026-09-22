@@ -142,15 +142,18 @@ public class NpcReceiveCard {
                         npc2.charGive = null;
                         npc3.charGive = null;
                         Map.idClanTown[this.inCountry] = (short) this.idClan;
-                        if (cinfo != null) {
-                            cinfo.giveGif();
-                        }
+                        // Thuong thuoc + vat pham dac biet cho thanh vien bang: BO theo yeu
+                        // cau nguoi dung 22/09/2026 - khong con thuong khi thang chiem thanh.
+                        // if (cinfo != null) {
+                        //     cinfo.giveGif();
+                        // }
 
                         NewClan.updateTown(this.idClan, 1, this.inCountry);
                         cinfo.updateNewClandata2DB();
                         Database.instance.saveLogClan(this.nameClan, "cgt", "đã chiếm thành " + Char.getDayTime(0L));
-                        // Thuong 10.000 luong + 50tr xu cho thanh vien bang, cua so nhan 1 gio
-                        ThuongChiemThanh.batDau(this.inCountry, this.idClan, this.nameClan);
+                        // Thuong 10.000 luong + 50tr xu cho thanh vien bang: BO theo yeu cau
+                        // nguoi dung 22/09/2026 - khong con thuong khi thang chiem thanh.
+                        // ThuongChiemThanh.batDau(this.inCountry, this.idClan, this.nameClan);
                         isFinish[this.inCountry] = true;
                         Map.getTown[this.inCountry] = false;
                         Char pmaster = CharManager.instance.getCharByCharName(cinfo.master.toLowerCase());

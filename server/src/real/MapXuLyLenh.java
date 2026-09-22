@@ -1961,8 +1961,8 @@ class MapXuLyLenh {
                     toTY = 84;
                     toMapID = mapstart[Map.r.nextInt(MessageCreator.nclone)];
                     checklocation = false;
-                } else if (player.lvDetail.lv < 70 && Map.getTown[player.inCountry] && toMapID == Map.idMapTown) {
-                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn phải đạt cấp độ 70 trở lên mới có thể vào thành trong thời gian này."));
+                } else if (player.lvDetail.lv < 60 && Map.getTown[player.inCountry] && toMapID == Map.idMapTown) {
+                    player.sendMessage(MessageCreator.createServerAlertAutoOffMessage("Bạn phải đạt cấp độ 60 trở lên mới có thể vào thành trong thời gian này."));
                     int[] mapstart = new int[]{9, 481, 482, 483, 484};
                     toTX = 16 + Database.r.nextInt() % 5;
                     toTY = 84;

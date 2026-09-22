@@ -1,5 +1,7 @@
 package real;
 
+import data.Database;
+
 /**
  * Kho xu/luong o NPC Tong Quan (them 21/09/2026, theo yeu cau nguoi dung): cho gui xu/
  * luong "dang giu" vao kho rieng cua nhan vat, rut ra lai bat cu luc nao. Ly do chinh:
@@ -153,6 +155,7 @@ public final class KhoXuLuong {
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
         player.sendMessage(MessageCreator.createServerAlertMessage(
                 "Đã gửi " + soXu + " xu vào kho. Kho hiện có " + player.khoXu + " xu.", ""));
+        luuNgay(player);
     }
 
     public static void doNhapRutXu(final Char player, final String text) {
@@ -167,6 +170,7 @@ public final class KhoXuLuong {
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
         player.sendMessage(MessageCreator.createServerAlertMessage(
                 "Đã rút " + soXu + " xu từ kho. Kho còn lại " + player.khoXu + " xu.", ""));
+        luuNgay(player);
     }
 
     public static void doNhapGuiLuong(final Char player, final String text, final boolean khoa) {
@@ -183,6 +187,7 @@ public final class KhoXuLuong {
         player.sendMessage(MessageCreator.createServerAlertMessage(
                 "Đã gửi " + soLuong + " lượng " + (khoa ? "khoá" : "mở") + " vào kho. Kho hiện có "
                         + (khoa ? player.khoLuongKhoa : player.khoLuong) + " lượng " + (khoa ? "khoá" : "mở") + ".", ""));
+        luuNgay(player);
     }
 
     public static void doNhapRutLuong(final Char player, final String text, final boolean khoa) {
@@ -199,5 +204,23 @@ public final class KhoXuLuong {
         player.sendMessage(MessageCreator.createServerAlertMessage(
                 "Đã rút " + soLuong + " lượng " + (khoa ? "khoá" : "mở") + " từ kho. Kho còn lại "
                         + (khoa ? player.khoLuongKhoa : player.khoLuong) + " lượng " + (khoa ? "khoá" : "mở") + ".", ""));
+        luuNgay(player);
+    }
+
+    /**
+     * Luu ngay sau khi gui/rut kho thanh cong - KHONG duoc de cho tu luu dinh ky (5-11
+     * phut/lan, xem CharManager). Truoc day thieu dong nay: nguoi choi gui/rut kho roi
+     * thoat/mat ket noi TRUOC lan tu luu ke tiep se mat trang thai kho vua doi (doc lai
+     * tu CSDL cu ở lan dang nhap sau, "kho ve 0" du chua he rut). Cac thao tac tien te
+     * nhay cam khac trong code (doUsePotion, Map.doCreateNewItem, tang luong o
+     * MapNhapText...) deu goi saveCharAuto ngay sau khi doi tien vi ly do nay.
+     */
+    private static void luuNgay(final Char player) {
+        try {
+            Database.instance.saveCharAuto(player);
+        } catch (final Exception e) {
+            System.out.println("[KHO] LOI luu ngay sau gui/rut kho cho " + player.charname + ": " + e);
+            e.printStackTrace();
+        }
     }
 }
