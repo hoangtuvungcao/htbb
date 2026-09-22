@@ -6501,7 +6501,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             return false;
         }
         if (this.map.mapId == Map.idMapTown) {
-            if ((Map.getTown[this.inCountry] && this.myCountry != this.inCountry) || (Map.getTown[this.inCountry] && this.lvDetail.lv < 70)) {
+            if ((Map.getTown[this.inCountry] && this.myCountry != this.inCountry) || (Map.getTown[this.inCountry] && this.lvDetail.lv < 60)) {
                 return true;
             }
             if (Map.getTown[this.inCountry] && !MapTown.congthanh.get(this.inCountry).isDead && this.y < 1200) {
