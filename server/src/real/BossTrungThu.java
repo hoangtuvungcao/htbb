@@ -37,6 +37,17 @@ public class BossTrungThu extends Boss {
 
     private static final int[] GIO_XUAT_HIEN = {9, 12, 23};
 
+    /**
+     * Danh dau "khung gio" (nam + ngay-trong-nam + gio) da tung xuat hien, tranh hoi
+     * sinh lap tuc trong CUNG mot khung gio. DA SUA (23/09/2026): checkTimeLife() chay
+     * lien tuc ~10ms/lan (TeamServer.java, vong lap chung moi boss) va truoc day chi
+     * kiem "dang chet + gio hien tai thuoc {9,12,23}" - khong co gi ngan no hoi sinh
+     * NGAY LAP TUC sau khi bi ha guc neu van con trong cung gio do, nen boss bi cay
+     * lien tuc thay vi xuat hien 1 lan/khung gio nhu spec dinh. -1 = chua tung xuat
+     * hien, khong the trung voi bat ky khung gio that nao.
+     */
+    private long khungGioDaXuatHien = -1L;
+
     private final Hashtable<String, Long> soDoSatThuong = new Hashtable<>();
 
     /** Goi TU BEN NGOAI (MapDanhNhau.java/Region.java) moi lan mot Char gay sat thuong len
@@ -85,9 +96,11 @@ public class BossTrungThu extends Boss {
         final Calendar cl = Calendar.getInstance();
         final int gioHienTai = cl.get(Calendar.HOUR_OF_DAY);
         final boolean dangTrongGioXuatHien = coTrongMang(gioHienTai);
+        final long khungGioHienTai = cl.get(Calendar.YEAR) * 10000L + cl.get(Calendar.DAY_OF_YEAR) * 100L + gioHienTai;
         if (this.isDead) {
             this.hp = this.maxhp;
-            if (dangTrongGioXuatHien) {
+            if (dangTrongGioXuatHien && khungGioHienTai != this.khungGioDaXuatHien) {
+                this.khungGioDaXuatHien = khungGioHienTai;
                 Map.createLocationGate(0);
                 this.isDead = false;
                 synchronized (this.soDoSatThuong) {
@@ -182,14 +195,17 @@ public class BossTrungThu extends Boss {
         String info = "Boss Trung Thu: bạn nhận được ";
         switch (typegift[index]) {
             case 3: {
-                final ItemTemplates template = (ItemTemplates) Map.itemTemplates.get(5).get(idgift[index]);
-                final Item newItem = new Item(template, false, 0, 0, template.id);
-                newItem.id = p.getIDItem();
-                newItem.owner = p.charDBID;
-                newItem.level = newItem.getTemplate().level;
-                p.iItems.add(newItem);
-                newItem.identify = p.charDBID;
-                p.sendMessage(MessageCreator.createCharInventoryMessage(p, 1));
+                // Ca 3 id o day (852, 848, 849) nam trong dai Item.isManhSuuTap() (848-859)
+                // - DA SUA (23/09/2026): truoc tao thang bang "new Item(...)" nen moi lan ha
+                // guc la THEM 1 item RIENG (khong cong don), lam hanh trang day rac item
+                // "So luong: 0" vo dung (otherAtt[65] khong bao gio duoc gan). Doi sang
+                // Char.createItemSoLuong nhu moi noi khac tao manh cai trang - tu cong don
+                // vao 1 item duy nhat qua otherAtt[65] neu nguoi choi da co san.
+                // createItemSoLuong tu gui createCharInventoryMessage + 1 thong bao rieng
+                // cua no ("Chuc mung. Ban da nhan duoc...") - nguoi choi se thay 2 thong
+                // bao (them thong bao "Boss Trung Thu: ..." o cuoi ham nay), chap nhan
+                // duoc de doi lay dung logic cong don co san, khong tu viet lai.
+                final Item newItem = Char.createItemSoLuong(idgift[index], 1, p);
                 info = String.valueOf(info) + newItem.getName();
                 break;
             }
