@@ -629,12 +629,20 @@ class CharTrangBi {
                             item.id = self.getIDItem();
                             if (place == 0) {
                                 if (item.place == 4) {
-                                    if (self.wModel != null) {
-                                        item.place = 0;
-                                        self.iItems.add(item);
-                                    } else {
-                                        (self.wModel = new ModelWearing()).setItemModel(self, item, item.getTemplate().atb[4]);
+                                    // DA SUA (23/09/2026): truoc chi khoi phuc DUNG 1 mon "dang
+                                    // mac" - mon DAU TIEN gap trong inven (dieu kien "self.wModel
+                                    // != null" coi wModel da co la "da mac roi, thoi"). Nhung
+                                    // ModelWearing co NHIEU o rieng biet cung luc (itemModel/
+                                    // headModel/hatModel/wpModel/matNa/CanhModel - vd ao+quan+non
+                                    // thoi trang+mat na+canh mac dong thoi that), nen moi lan
+                                    // dang nhap lai chi mon dau tien hien dung, cac mon con lai
+                                    // (vd mat na Ong Dia mua o Shop Trung Thu) bi dat lai place=0
+                                    // va bien mat khoi hinh anh du du lieu van ghi "dang mac".
+                                    // Phai goi setItemModel cho MOI item place==4 tim duoc.
+                                    if (self.wModel == null) {
+                                        self.wModel = new ModelWearing();
                                     }
+                                    self.wModel.setItemModel(self, item, item.getTemplate().atb[4]);
                                 } else {
                                     item.place = 0;
                                     self.iItems.add(item);

@@ -3013,6 +3013,17 @@ public class Item extends Actor {
             result.append("Không thể nâng cấp thêm").append("\n");
         }
 
+        // Mat na Ong Dia (id 872): +10% sat thuong (Char.getAttack) va +20% hieu qua hoi
+        // HP/MP khi HP<30% (Char.isBuffHoiMatNaOngDia) deu la code cung theo id, KHONG ghi
+        // vao atb/otherAtt cua item - nen khong co duong nao trong getInfoAtbItem() de hien
+        // dong "Tang hieu qua..." nay. Dong "Tang cong: 10%" da hien duoc la vi atb0=10 co
+        // san trong data_item (trung hop, khong lien quan toi code cung), nhung dong hieu qua
+        // hoi HP/MP thi hoan toan khong co cho nao de hien - DA SUA (23/09/2026, yeu cau
+        // nguoi dung, doi chieu popup xem truoc o Shop Trung Thu dang co dong nay).
+        if (this.isMatNaOngDia()) {
+            result.append("Tăng hiệu quả bình hp mp khi hp dưới 30%: 20.0%").append("\n");
+        }
+
         // Add original charSeal if exists
         if (!this.charSeal.equals("")) {
             result.append(this.charSeal);
