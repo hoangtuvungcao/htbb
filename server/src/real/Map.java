@@ -13354,13 +13354,19 @@ public class Map implements Runnable {
             }
         } else if (typegift == -15) {
             // Manh Bat Gioi/Sa Tang thay cho Ngo Khong/Duong Tang (chua co trong DB) -
-            // random 1 trong cac manh da co san (id 848-871).
+            // random 1 trong cac manh da co san (id 848-871). Day la VAT PHAM
+            // (data_item type 29), KHONG PHAI ngoc - DA SUA (23/09/2026): truoc goi
+            // doAddGemItem()/gemTemplate[idManh], nhung hai mang do chi co dung 268
+            // phan tu (Map.gemTemplate.length, chi so hop le 0-267 - xem GemTemplate.
+            // BAN_DO_KHO_BAU=267 la hang so cao nhat) nen id 848+ nem
+            // ArrayIndexOutOfBoundsException GIUA CHUNG ham, boi cac dong sendMessage
+            // ben duoi -> qua bien mat am tham (nguoi choi mat vat pham "Bo hoa" da
+            // dung ma khong nhan duoc gi). Dung Char.createItemSoLuong nhu cach tao
+            // manh cai trang o noi khac trong code (vd BossTrungThu.phatQuaTrungThu).
             int idManh = 848 + r.nextInt(871 - 848 + 1);
-            boolean lock = true;
-            player.doAddGemItem(idManh, 1, lock);
-            info = info + gemTemplate[idManh].name + " khoá";
-            player.sendMessage(MessageCreator.createCharGemItem(player));
-            player.sendMessage(MessageCreator.createServerAlertMessage(info, ""));
+            Item manh = Char.createItemSoLuong(idManh, 1, player);
+            info = info + manh.getName() + " (khoá)";
+            player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
         } else if (typegift == -17) {
             // Ngoc huyen minh tu chon cap: bo vang cap 5-6, bo do cap 4-5. ID_NGOC_HUYEN_MINH
             // = {235..240} ung voi cap 1..6, nen chi so cap N la N-1.

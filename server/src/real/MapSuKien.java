@@ -2728,11 +2728,18 @@ class MapSuKien {
         String info = "Bạn nhận được " + sl[tier] + " " + gemTemplate[idNlsc].name + " khóa";
         // Ngau nhien them 1 manh Bat Gioi/Sa Tang (thay cho Ngo Khong/Duong Tang - chua co
         // trong DB, theo quyet dinh khi lam yeu cau), ti le tang dan theo moc doi cao hon.
+        // Day la VAT PHAM (data_item type 29), KHONG PHAI ngoc - DA SUA (23/09/2026): truoc
+        // goi doAddGemItem()/gemTemplate[idManh] (chi co 268 phan tu, chi so hop le 0-267)
+        // nen id 848+ nem ArrayIndexOutOfBoundsException GIUA HAM, boi mat 3 dong sendMessage
+        // + saveOrtherLog phia duoi -> qua NLSC da nhan duoc nhung nguoi choi khong thay xac
+        // nhan/khong duoc log, con manh thi khong bao gio thanh cong. Dung Char.createItemSoLuong
+        // nhu cach tao manh cai trang o noi khac; them kiem tra day hanh trang vi day la vat
+        // pham that (ngoc thi khong can, ngoc khong chiem o hanh trang).
         int[] tlManh = new int[]{10, 20, 30, 50};
-        if (r.nextInt(100) < tlManh[tier]) {
+        if (r.nextInt(100) < tlManh[tier] && !player.isFullInventory()) {
             int idManh = 848 + r.nextInt(871 - 848 + 1);
-            player.doAddGemItem(idManh, 1, true);
-            info = info + ", và ngẫu nhiên 1 " + gemTemplate[idManh].name + " khóa";
+            Item manh = Char.createItemSoLuong(idManh, 1, player);
+            info = info + ", và ngẫu nhiên 1 " + manh.getName() + " (khoá)";
         }
         player.sendMessage(MessageCreator.createCharGemItem(player));
         player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
