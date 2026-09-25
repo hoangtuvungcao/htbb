@@ -2199,20 +2199,22 @@ class MapSuKien {
                     // hai option nay MOI la "max chi so" that (cac gia tri co dinh cao nhat,
                     // vd Thuoc tinh Lan 50 thay vi 10/30 o option thap hon) VA gan cung luc
                     // ~6-8 truong otherAtt khac nhau ("nhieu dong dac biet cung luc"), khac han
-                    // 5 option 0-4 (moi option 1 dong don) dang dung truoc do. Random 1 mau mat
-                    // na (745-749) doc lap voi random 1 trong 2 option nay, luon khoa, 30 ngay.
-                    final int[] mauMatNaTrungThu = {745, 746, 747, 748, 749};
-                    final int idMauMatNa = mauMatNaTrungThu[Map.r.nextInt(mauMatNaTrungThu.length)];
-                    final int optionMatNa = Map.r.nextInt(2) == 0 ? 10 : 11; // 10=mat na tho, 11=mat na cao
-                    final Item matNaTrungThu = Map.doCreateMatNa2(player, 43200, idMauMatNa, optionMatNa, 0, true);
-                    // doCreateMatNa2 dung chung Item(...) constructor tu dinh san 1 option rieng
-                    // (0-3) cho idtemplate 745-748 (xem DatabaseGiftCode.java MATNAID) - xoa vi
-                    // KHAC HAN option 10/11 vua chon, giong het cach lam voi giftcode MATNAID.
-                    if (matNaTrungThu != null && idMauMatNa >= 745 && idMauMatNa <= 748) {
-                        final int optionMacDinh = idMauMatNa - 745;
-                        matNaTrungThu.createOptionMatNa(optionMacDinh, 0);
-                        player.sendMessage(MessageCreator.createCharInventoryMessage(player, 1));
-                    }
+                    // 5 option 0-4 (moi option 1 dong don) dang dung truoc do.
+                    //
+                    // Sua 25/09/2026 (bao loi nguoi dung, kem anh chup "ra Mat na Nga Khuyen"):
+                    // mang id cu {745,746,747,748,749} la 5 MAT NA HALLOWEEN (bi ngo/nga quy/
+                    // nga khuyen/thi khien/da xoa - xac nhan qua data_item that), KHONG PHAI
+                    // Trung Thu - nham lan vi bien duoc dat ten "mauMatNaTrungThu" nhung id lai
+                    // sai. Mat na Trung Thu THAT la 837 (Mat na Tho) va 838 (Mat na Cao) - dung
+                    // dung cach real/Char.java createThoiTrang() da lam cho hai id nay (idx 745-748
+                    // moi can "xoa option mac dinh", 837/838 KHONG nam trong doan Item(...) tu
+                    // dong gan option o Item.java ~712 nen khong can buoc xoa nua). Id va option
+                    // (10=tho, 11=cao) PHAI DI CUNG CAP - chon 1 CAP ngau nhien, khong random rieng
+                    // tung ben (truoc day co the ra "mat na cao" nhung mang chi so cua "mat na tho").
+                    final boolean laMatNaTho = Map.r.nextInt(2) == 0;
+                    final int idMauMatNa = laMatNaTho ? 837 : 838;
+                    final int optionMatNa = laMatNaTho ? 10 : 11; // 10=mat na tho, 11=mat na cao
+                    Map.doCreateMatNa2(player, 43200, idMauMatNa, optionMatNa, 0, true);
                     final Item hvl = Map.doCreateHoVeLenhByLevel(player, 10080);
                     if (hvl != null) {
                         hvl.lock = 1;
