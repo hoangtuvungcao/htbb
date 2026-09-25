@@ -93,6 +93,15 @@ public final class LocLogVatPham {
                                         // "dotden" (KHONG nam trong GIU nen chua tung ghi xuong DB), tach
                                         // rieng ten de KHONG keo theo dot den mien phi (tan suat cao hon
                                         // nhieu, moi 3 phut/nguoi) vao cung mot loai duoc giu.
+            // --- 9. Doi qua rieng Trung Thu 2026 (NPC Hang Nga) - tan suat rat thap ---
+            "petbachthu", "longdenrong2026", "linhnguyettruong2026", "doiNLT", "lansutu2026",
+            "tiendan2026",              // Them 25/09/2026 theo yeu cau nguoi dung "biet duoc ai da tieu luong+
+                                        // xu vao dau" - ca 6 khoan nay truoc gio da co san saveOrtherLog() (rieng
+                                        // doiNLT phai them moi hoan toan) nhung KHONG nam trong GIU nen chua tung
+                                        // ghi xuong DB. Tan suat rat thap (1-8 lan/tuan/loai, xem tob_log_use_luong)
+                                        // nen khong lo phinh bang nhu cac loai rac da bo 02/09/2026. CO Y BO QUA
+                                        // "hatmam" (mua qua shop chung, 1000+ lan/tuan, dung chung duong voi hang
+                                        // tram vat pham khac trong toan bo game - nguoi dung tu chon khong bat).
             // --- 4. Tieu nguyen lieu Than Khi (kho gem rieng, khong qua hanh trang) ---
             "taothankhi",               // tao Than Khi: ghi ten vat pham, cap/che do, nguyen lieu da tieu (ThoRenThanBi.CreateThanKhi)
             "nangcapthankhi",           // nang cap Than Khi: ghi +cu -> +moi, ti le, thanh/bai, nguyen lieu da tieu (ThoRenThanBi.UpgradeThanKhi)

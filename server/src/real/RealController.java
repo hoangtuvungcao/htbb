@@ -1048,6 +1048,7 @@ public class RealController extends ServerController {
                                                         p.sendMessage(MessageCreator.createMsgChat(p.id, info));
                                                         p.sendMessage(MessageCreator.createCharInventoryMessage(p, 0));
                                                         Database.instance.saveLogThongKeChiTieu("doiNLT", 0, 1, 10000L, "luong");
+                                                        Database.instance.saveOrtherLog("", p.charname, "doi NLT 20 nen 10000 luong", "doiNLT");
 
                                                     }
                                                     return;

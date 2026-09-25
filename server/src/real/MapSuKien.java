@@ -1923,12 +1923,16 @@ class MapSuKien {
                 // rong, Nguyet Linh Truong...) va bo sot nguoi tra XU khi tha den (tob_top_event
                 // chi cong diem qua subLuong()). Doi sang data.DatabaseCanMocThaDen.layTopCaNhan()
                 // - dem DUNG so lan tha den thanh cong cua tung nguoi (ca hai duong tra phi).
+                // Sua 25/09/2026 (yeu cau nguoi dung, "sao lai ghi ca so luong tha ra?"): CHI hien
+                // thu hang + ten, KHONG hien so lan - giong dung cach ban goc (getTopEvent()) chi
+                // tra ve c.name, khong co diem so. So lan CU THE chi ai chinh chu moi xem duoc, qua
+                // dong rieng "So luot tha den cua toi" (RequestNPCInfoHandler case -49).
                 final java.util.List<data.DatabaseCanMocThaDen.TopCaNhan> top =
                         data.DatabaseCanMocThaDen.layTopCaNhan(10);
                 final String[] menu = new String[top.size()];
                 for (int i = 0; i < top.size(); i++) {
                     final data.DatabaseCanMocThaDen.TopCaNhan c = top.get(i);
-                    menu[i] = (i + 1) + ". " + c.charname + " (" + c.soLan + " lượt thả đèn)";
+                    menu[i] = (i + 1) + ". " + c.charname;
                 }
 
                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 9));
