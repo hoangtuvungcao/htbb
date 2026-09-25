@@ -307,7 +307,11 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                         menu = new String[]{"Làm bánh nướng", "Làm bánh dẻo", "Đổi hộp bánh", "Đổi nguyên liệu", "Nhận lồng đèn", "Đổi pet(20bd+70l)", "Bảng xếp hạng", "Cán mốc thả đèn",
                                 "Lồng đèn rồng(20bd+100l)", "Nguyệt Linh Trượng(20bd+150l)", "Lân Sư Tử(20bd+150l)", "Đổi Tiên đan(10bd+30l, tối đa 5 lần)",
                                 // Moi 19/09/2026: "diem tieu xai" (cu 2 luong = 1 diem, xem Char.subLuong).
-                                "Đổi điểm lấy lồng đèn(100đ, hiện có " + (p.luongDaXaiTrungThu / 2) + "đ)"};
+                                "Đổi điểm lấy lồng đèn(100đ, hiện có " + (p.luongDaXaiTrungThu / 2) + "đ)",
+                                // Moi 25/09/2026 (yeu cau nguoi dung "chi chinh nhan vat do moi biet duoc so
+                                // diem"): dong THONG TIN, khong lam gi khi bam - tinh RIENG cho p dang mo
+                                // menu nay nen tu nhien chi p moi thay duoc so cua chinh minh.
+                                "Số lượt thả đèn của tôi: " + data.DatabaseCanMocThaDen.layCaNhan(p.charDBID)};
                     }
                     if (!Char.isFinishAllSuKienHaloween2016()) {
                         menu = new String[]{"Làm hộp quà", "Đổi nguyên liệu", "Đổi điểm lượng(" + p.luongxainhanRuong + "đ)"};

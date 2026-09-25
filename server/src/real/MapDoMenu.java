@@ -1064,9 +1064,17 @@ class MapDoMenu {
                         map.doChamNuoc(player, idNpc, idMenu, idOptionMenu);
                     }
 
-                    if (!Char.isFinishAllSuKienTrungThul2016()) {
-                        map.doDotDen(player, idOptionMenu);
-                    }
+                    // Vo hieu hoa 25/09/2026 (yeu cau nguoi dung): day la duong goi tin 66
+                    // (luong map, xem real/Map.doDotDen -> MapXuLyLenh.doDotDen) cho NPC Hang
+                    // Nga - ban CU tu 2016, gia 4 luong/5tr xu KHONG khop menu that nguoi choi
+                    // thay ("Tha den 20L+1 nen"/"10tr xu+1 nen", RequestNPCInfoHandler case -65),
+                    // van con loi "100.000 exp cong thang vo dieu kien" da duoc ghi ro la sua o
+                    // ban Trung Thu 2026, va KHONG goi data.DatabaseCanMocThaDen.tangCaNhan() nen
+                    // se lam sai so dem "Bang xep hang" moi (xem MapSuKien.doMenuTrungThu2016).
+                    // Duong SONG duoc goi tin -30 (lenh rieng, luong phien) trong
+                    // RealController.doDotDen() moi la ban dang chay that (khop dung gia menu,
+                    // co tangCaNhan()). Giu lai than ham cu (Map.doDotDen/MapXuLyLenh.doDotDen)
+                    // de khong dong cham qua sau vao dispatch legacy, chi cat noi goi o day.
                     break;
                 case -64:
                     if (player.charCopy != null

@@ -22,6 +22,7 @@ public final class DatabaseCanMocThaDen {
 
     private static final String BANG_DEM = "tob_canmoc_thadeon";
     private static final String BANG_NHAN = "tob_canmoc_thadeon_nhan";
+    private static final String BANG_CA_NHAN = "tob_canmoc_thadeon_canhan";
 
     /** Cac moc ca nhan co qua - dung chung cho ca kiem tra "da qua moc" lan menu nhan qua. */
     public static final int[] CAC_MOC = {300, 3000};
@@ -59,6 +60,15 @@ public final class DatabaseCanMocThaDen {
             pre.close();
             pre = conn.prepareStatement(
                     "INSERT IGNORE INTO " + BANG_DEM + " (id, tong_tha_den) VALUES (1, 0)");
+            pre.executeUpdate();
+            pre.close();
+            pre = conn.prepareStatement(
+                    "CREATE TABLE IF NOT EXISTS " + BANG_CA_NHAN + " ("
+                            + "idchar INT NOT NULL,"
+                            + "so_lan INT NOT NULL DEFAULT 0,"
+                            + "cap_nhat_luc DATETIME NOT NULL,"
+                            + "PRIMARY KEY (idchar)"
+                            + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
             pre.executeUpdate();
             daTaoBang = true;
             return true;
@@ -100,6 +110,107 @@ public final class DatabaseCanMocThaDen {
         } finally {
             dong(rs, pre, conn);
         }
+    }
+
+    /**
+     * Tang so lan THA DEN THANH CONG cua RIENG mot nhan vat (moi 25/09/2026, theo yeu cau
+     * "top tha den dang sai thu tu" - Bang xep hang cu dung tob_top_event, sap theo TONG
+     * LUONG TIEU CA SU KIEN (dinh cac khoan doi pet/long den rong/... khong lien quan tha
+     * den, va tha den TRA XU khong duoc tinh vi tob_top_event chi cong diem qua subLuong()).
+     * Bang rieng nay dem DUNG so lan tha den, khong phan biet tra bang luong hay xu - goi tu
+     * RealController.xuLyCanMocThaDen() cung luc voi bo dem toan server, cho ca hai duong tra phi.
+     */
+    public static void tangCaNhan(final int idchar) {
+        if (!taoBang()) {
+            return;
+        }
+        Connection conn = null;
+        PreparedStatement pre = null;
+        try {
+            conn = Database.instance.getConnection();
+            pre = conn.prepareStatement(
+                    "INSERT INTO " + BANG_CA_NHAN + " (idchar, so_lan, cap_nhat_luc) VALUES (?, 1, NOW())"
+                            + " ON DUPLICATE KEY UPDATE so_lan = so_lan + 1, cap_nhat_luc = NOW()");
+            pre.setInt(1, idchar);
+            pre.executeUpdate();
+        } catch (final Exception e) {
+            System.out.println("[CANMOC_THADEN] loi tang ca nhan: " + e);
+        } finally {
+            dong(null, pre, conn);
+        }
+    }
+
+    /**
+     * So lan tha den cua RIENG mot nhan vat (moi 25/09/2026, theo yeu cau nguoi dung "chi
+     * chinh nhan vat do moi biet duoc so diem") - dung o menu NPC Hang Nga, chi hien cho
+     * chinh nguoi choi dang mo menu (xem RequestNPCInfoHandler case -49), khong lo cho ai
+     * khac xem duoc so lieu nay.
+     */
+    public static int layCaNhan(final int idchar) {
+        if (!taoBang()) {
+            return 0;
+        }
+        Connection conn = null;
+        PreparedStatement pre = null;
+        ResultSet rs = null;
+        try {
+            conn = Database.instance.getConnection();
+            pre = conn.prepareStatement("SELECT so_lan FROM " + BANG_CA_NHAN + " WHERE idchar = ?");
+            pre.setInt(1, idchar);
+            rs = pre.executeQuery();
+            return rs.next() ? rs.getInt(1) : 0;
+        } catch (final Exception e) {
+            System.out.println("[CANMOC_THADEN] loi lay so lan ca nhan: " + e);
+            return 0;
+        } finally {
+            dong(rs, pre, conn);
+        }
+    }
+
+    /** Mot dong trong top ca nhan - ten hien tai (doc lai tu tob_char) + so lan tha den. */
+    public static final class TopCaNhan {
+        public final String charname;
+        public final int soLan;
+
+        public TopCaNhan(final String charname, final int soLan) {
+            this.charname = charname;
+            this.soLan = soLan;
+        }
+    }
+
+    /**
+     * Top nhan vat tha den nhieu nhat (dem THAT, khong phan biet tra luong/xu), sap giam dan.
+     *
+     * Sua 25/09/2026 (yeu cau nguoi dung, "ai tha truoc thi dung truoc khi bang so"): them tieu
+     * chi phu cap_nhat_luc ASC. cap_nhat_luc duoc UPDATE = NOW() o MOI lan tang (tangCaNhan()),
+     * nen no chinh la thoi diem nhan vat DAT so_lan hien tai (vi so_lan chi tang, khong bao gio
+     * giam) - khong can them cot rieng de luu "luc dat moc X".
+     */
+    public static java.util.List<TopCaNhan> layTopCaNhan(final int gioiHan) {
+        final java.util.List<TopCaNhan> ket = new java.util.ArrayList<>();
+        if (!taoBang()) {
+            return ket;
+        }
+        Connection conn = null;
+        PreparedStatement pre = null;
+        ResultSet rs = null;
+        try {
+            conn = Database.instance.getConnection();
+            pre = conn.prepareStatement(
+                    "SELECT c.charname, t.so_lan FROM " + BANG_CA_NHAN + " t"
+                            + " JOIN tob_char c ON c.id = t.idchar"
+                            + " ORDER BY t.so_lan DESC, t.cap_nhat_luc ASC LIMIT ?");
+            pre.setInt(1, gioiHan);
+            rs = pre.executeQuery();
+            while (rs.next()) {
+                ket.add(new TopCaNhan(rs.getString(1), rs.getInt(2)));
+            }
+        } catch (final Exception e) {
+            System.out.println("[CANMOC_THADEN] loi lay top ca nhan: " + e);
+        } finally {
+            dong(rs, pre, conn);
+        }
+        return ket;
     }
 
     public static long layTong() {

@@ -87,6 +87,12 @@ public final class LocLogVatPham {
                                         // tung ghi xuong DB (giong ly do them "khanglan" cung ngay), nen
                                         // khong tra cuu lai duoc nguoi choi da nhan gi khi bi bao "khong
                                         // nhan duoc gi ca". "motieu" = bi cuop tieu, "tratieu" = tra tieu binh thuong.
+            "thaden",                   // Trung Thu 2026: THA DEN THANH CONG (tra luong hoac xu, khong tinh
+                                        // dot den mien phi - RealController.doDotDen). Them 25/09/2026 theo
+                                        // yeu cau nguoi dung "them log tha den" - truoc do dung chung aclog
+                                        // "dotden" (KHONG nam trong GIU nen chua tung ghi xuong DB), tach
+                                        // rieng ten de KHONG keo theo dot den mien phi (tan suat cao hon
+                                        // nhieu, moi 3 phut/nguoi) vao cung mot loai duoc giu.
             // --- 4. Tieu nguyen lieu Than Khi (kho gem rieng, khong qua hanh trang) ---
             "taothankhi",               // tao Than Khi: ghi ten vat pham, cap/che do, nguyen lieu da tieu (ThoRenThanBi.CreateThanKhi)
             "nangcapthankhi",           // nang cap Than Khi: ghi +cu -> +moi, ti le, thanh/bai, nguyen lieu da tieu (ThoRenThanBi.UpgradeThanKhi)

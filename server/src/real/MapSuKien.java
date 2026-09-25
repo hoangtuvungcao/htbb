@@ -1917,12 +1917,18 @@ class MapSuKien {
                 Database.instance.saveOrtherLog("", player.charname, "doi pet bach thu " + idOptionMenu, "petbachthu");
                 Database.instance.saveLogThongKeChiTieu("pet bach thu", 0, 1, 70L, "luong");
             } else if (idOptionMenu == 6) {
-                Vector<CharInfo> top = Database.instance.getTopEvent();
-                String[] menu = new String[top.size()];
-
+                // Sua 25/09/2026 (yeu cau nguoi dung, "top tha den dang sai thu tu"): truoc day
+                // dung Database.instance.getTopEvent() (bang tob_top_event) sap theo TONG LUONG
+                // TIEU CA SU KIEN - lan ca cac khoan khong lien quan tha den (doi pet, long den
+                // rong, Nguyet Linh Truong...) va bo sot nguoi tra XU khi tha den (tob_top_event
+                // chi cong diem qua subLuong()). Doi sang data.DatabaseCanMocThaDen.layTopCaNhan()
+                // - dem DUNG so lan tha den thanh cong cua tung nguoi (ca hai duong tra phi).
+                final java.util.List<data.DatabaseCanMocThaDen.TopCaNhan> top =
+                        data.DatabaseCanMocThaDen.layTopCaNhan(10);
+                final String[] menu = new String[top.size()];
                 for (int i = 0; i < top.size(); i++) {
-                    CharInfo c = (CharInfo) top.get(i);
-                    menu[i] = c.name;
+                    final data.DatabaseCanMocThaDen.TopCaNhan c = top.get(i);
+                    menu[i] = (i + 1) + ". " + c.charname + " (" + c.soLan + " lượt thả đèn)";
                 }
 
                 player.sendMessage(MessageCreator.createMsgMenu(menu, idNpc, 9));

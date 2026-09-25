@@ -1641,10 +1641,12 @@ public class RealController extends ServerController {
                             if (idOptionMenu == 1) {
                                 player.subLuong(20L);
                                 Database.instance.saveLogThongKeChiTieu("tha den luong", 0, 1, 20L, "luong");
+                                Database.instance.saveOrtherLog("", player.charname, "tha den tra 20 luong", "thaden");
                                 xuLyCanMocThaDen(player);
                             } else if (idOptionMenu == 2) {
                                 player.subXu(10000000L, false, "");
                                 Database.instance.saveLogThongKeChiTieu("tha den xu", 0, 1, 10000000L, "xu");
+                                Database.instance.saveOrtherLog("", player.charname, "tha den tra 10000000 xu", "thaden");
                                 xuLyCanMocThaDen(player);
                             }
 
@@ -1669,8 +1671,13 @@ public class RealController extends ServerController {
      * khong phan biet lang/quoc gia, khong reset theo su kien bat/tat, nguoi dung xac nhan 16/09/2026).
      * Chi goi cho THA DEN THANH CONG (idOptionMenu 1/2 - co tra phi), khong tinh nhanh dot den mien phi
      * (idOptionMenu 0). Cac moc ca nhan (300/3000) duoc nhan tay tai NPC Hang Nga, khong tu dong phat o day.
+     *
+     * Sua 25/09/2026: them tangCaNhan() dem RIENG so lan tha den cua nhan vat nay (khong phan
+     * biet tra luong/xu) - dung cho "Bang xep hang" o MapSuKien.doMenuTrungThu2016 (idOptionMenu 6),
+     * truoc day sap theo tong luong tieu ca su kien (sai voi ten "top tha den", bo qua nguoi tra xu).
      */
     private void xuLyCanMocThaDen(final Char player) {
+        data.DatabaseCanMocThaDen.tangCaNhan(player.charDBID);
         final long tongMoi = data.DatabaseCanMocThaDen.tangVaLayTong();
         if (tongMoi == data.DatabaseCanMocThaDen.MOC_TOAN_SERVER_X2_EXP) {
             try {
