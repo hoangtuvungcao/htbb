@@ -134,20 +134,23 @@ RemoteIPInternalProxy 104.243.35.117 104.243.35.158 104.243.35.234 104.243.37.12
                    104.28.219.202 171.224.54.169 117.0.168.6 171.255.70.12 \
                    1.52.142.229 59.153.225.73 42.114.138.22
 
+        # MO LAI WEB CHO KHACH THUONG (26/09/2026): khach di qua Nova WAF (domain
+        # kpah-private.site) vao duoc moi trang. Khong the dung "Require ip" cho
+        # viec nay: mod_remoteip da thay REMOTE_ADDR bang IP THAT cua khach, nen
+        # phai xet IP cua KET NOI TCP (CONN_REMOTE_ADDR) - chi Nova WAF moi co,
+        # khach goi thang vao IP la khong gia duoc. Dang ky van KHONG tu kich hoat
+        # (AUTO_ACTIVATE=false trong web/config.php) - admin kich hoat trong
+        # trang quan tri Tai khoan. Khu /admin van co Basic Auth rieng.
+        Require expr "%{CONN_REMOTE_ADDR} in {'104.243.35.117', '104.243.35.158', '104.243.35.234', '104.243.37.126', '104.243.37.140', '104.243.37.171', '104.243.35.97'}"
+
         # Dai IP Cloudflare (IPv4 + IPv6) - khop voi /etc/kpah-cloudflare-web/apply.sh.
-        # CHI cho vao day du trang khi KHONG PHAI domain cong khai ben duoi - domain
-        # do da dong cua cho khach thuong (chi con /server.txt, dieu kien tren cung).
-        <RequireAll>
-            <RequireAny>
-                Require ip 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 \
-                           141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 \
-                           197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 \
-                           104.24.0.0/14 172.64.0.0/13 131.0.72.0/22
-                Require ip 2400:cb00::/32 2606:4700::/32 2803:f800::/32 2405:b500::/32 \
-                           2405:8100::/32 2a06:98c0::/29 2c0f:f248::/32
-            </RequireAny>
-            Require expr "tolower(%{HTTP_HOST}) != 'kpah-private.site' && tolower(%{HTTP_HOST}) != 'www.kpah-private.site'"
-        </RequireAll>
+        # (Bo dieu kien chan HTTP_HOST cong khai them ngay 11/09/2026.)
+        Require ip 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 \
+                   141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 \
+                   197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 \
+                   104.24.0.0/14 172.64.0.0/13 131.0.72.0/22
+        Require ip 2400:cb00::/32 2606:4700::/32 2803:f800::/32 2405:b500::/32 \
+                   2405:8100::/32 2a06:98c0::/29 2c0f:f248::/32
     </RequireAny>
 </Directory>
 EOF
@@ -180,8 +183,8 @@ echo "$LOG_TAG === 4/4 Tu kiem bang IP that (127.0.0.1 khong nam trong whitelist
 # qua Cloudflare) KHONG tu kiem duoc tu localhost - curl tu chinh may khong gia
 # duoc IP Cloudflare that, va Host mac dinh cua curl la "127.0.0.1" chu khong
 # phai domain that. Kiem lop 2 bang tay TU BEN NGOAI sau khi chay xong:
-#   mo trinh duyet vao https://kpah-private.site/register.php -> phai ra 403
-#   (tru khi ban dang vao tu IP nam trong whitelist admin o tren).
+#   mo trinh duyet vao https://kpah-private.site/register.php -> phai ra trang
+#   dang ky (mo lai cho khach thuong tu 26/09/2026).
 MA_OK=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1/server.txt" 2>/dev/null)
 MA_CHAN=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1/" 2>/dev/null)
 if [ "$MA_OK" = "200" ] && [ "$MA_CHAN" = "403" ]; then
@@ -197,9 +200,9 @@ echo "============================================================"
 echo "  XONG."
 echo "  - Qua IP la (khong Cloudflare, khong whitelist): chi /server.txt con"
 echo "    truy cap duoc, moi duong dan khac tra ve 403."
-echo "  - Qua domain kpah-private.site / www.kpah-private.site (ke ca nguoi"
-echo "    choi thuong qua Cloudflare): cung chi /server.txt, TRU IP trong"
-echo "    whitelist admin/Nova WAF (van vao duoc moi trang nhu cu)."
+echo "  - Qua domain kpah-private.site (Nova WAF) hoac Cloudflare: MO moi trang"
+echo "    cho khach thuong (tu 26/09/2026). Dang ky KHONG tu kich hoat - admin"
+echo "    kich hoat o trang quan tri > Tai khoan."
 echo "  BAT BUOC kiem lai buoc 4/4 ghi o tren TU BEN NGOAI (trinh duyet that,"
 echo "  khong phai tu VPS) truoc khi coi la xong."
 echo "============================================================"

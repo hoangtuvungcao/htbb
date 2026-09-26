@@ -64,6 +64,9 @@ require __DIR__ . '/inc/header.php';
         <p class="hero-tagline"><?= e(SITE_TAGLINE) ?></p>
         <p class="hero-desc">Săn boss, lập bang hội, đua top và giao tranh PvP — huyền thoại nhập vai kiếm hiệp trở lại.</p>
         <div class="hero-actions">
+            <?php if (!currentUser()): ?>
+                <a href="register.php" class="btn btn-primary btn-lg">Đăng ký ngay</a>
+            <?php endif; ?>
             <a href="#download" class="btn btn-outline btn-lg">Tải game</a>
         </div>
     </div>

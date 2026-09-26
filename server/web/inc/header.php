@@ -32,6 +32,9 @@ $page = $page ?? '';
                 <a href="kichhoat.php" class="<?= $page === 'kichhoat' ? 'active' : '' ?>">Kích hoạt</a>
                 <a href="account.php" class="<?= $page === 'account' ? 'active' : '' ?>">Tài khoản</a>
                 <a href="logout.php" class="btn-nav ghost">Đăng xuất</a>
+            <?php else: ?>
+                <a href="login.php" class="btn-nav ghost <?= $page === 'login' ? 'active' : '' ?>">Đăng nhập</a>
+                <a href="register.php" class="btn-nav <?= $page === 'register' ? 'active' : '' ?>">Đăng ký</a>
             <?php endif; ?>
         </nav>
     </div>
