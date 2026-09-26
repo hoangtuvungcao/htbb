@@ -14,7 +14,9 @@ const DANG_KY_TOI_DA   = 5;
 const DANG_KY_TRONG_GIAY = 3600;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!csrfCheck($_POST['csrf'] ?? null)) {
+    // formTokenCheck chứ không csrfCheck: qua domain, Nova WAF nuốt cookie phiên
+    // (xem formToken() trong inc/functions.php).
+    if (!formTokenCheck('dang_ky', $_POST['csrf'] ?? null)) {
         $errors[] = 'Phiên làm việc hết hạn, vui lòng thử lại.';
     } elseif (biChanSpam('dang_ky', DANG_KY_TOI_DA, DANG_KY_TRONG_GIAY)) {
         // Token CSRF không chặn được việc này: script chỉ cần tải trang lấy token
@@ -101,7 +103,7 @@ require __DIR__ . '/inc/header.php';
         <?php endforeach; ?>
 
         <form method="post" action="register.php" autocomplete="off" novalidate>
-            <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+            <input type="hidden" name="csrf" value="<?= e(formToken('dang_ky')) ?>">
             <label>Tên tài khoản
                 <input type="text" name="username" value="<?= e($old['username']) ?>"
                        placeholder="4-20 ký tự, chữ thường + số" required>

@@ -57,6 +57,42 @@ function csrfCheck(?string $token): bool
     return is_string($token) && !empty($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $token);
 }
 
+/**
+ * Token form KHÔNG cần cookie phiên — chỉ dùng cho form đăng ký công khai.
+ *
+ * Nova WAF (proxy trước domain kpah-private.site) không chuyển tiếp Cookie /
+ * Set-Cookie về origin, nên csrfToken() dựa trên $_SESSION luôn thất bại qua
+ * domain: mỗi request là một phiên trắng mới, người chơi bấm Đăng ký bao nhiêu
+ * lần cũng chỉ nhận "Phiên làm việc hết hạn". Token này tự mang mốc thời gian
+ * và chữ ký HMAC (khoá suy ra từ mật khẩu DB — chỉ có trên máy chủ), gắn với IP
+ * khách, hết hạn sau FORM_TOKEN_HAN giây. Giới hạn số lần vẫn do biChanSpam().
+ */
+const FORM_TOKEN_HAN = 3600;
+
+function formTokenKhoa(): string
+{
+    return hash('sha256', 'kpah-form-token|' . (defined('DB_PASS') ? DB_PASS : '') . '|' . __DIR__);
+}
+
+function formToken(string $form): string
+{
+    $t = (string)time();
+    return $t . '.' . hash_hmac('sha256', $form . '|' . ipKhach() . '|' . $t, formTokenKhoa());
+}
+
+function formTokenCheck(string $form, ?string $token): bool
+{
+    if (!is_string($token) || !preg_match('/^(\d{1,12})\.([0-9a-f]{64})$/', $token, $m)) {
+        return false;
+    }
+    $tuoi = time() - (int)$m[1];
+    if ($tuoi < 0 || $tuoi > FORM_TOKEN_HAN) {
+        return false;
+    }
+    $dung = hash_hmac('sha256', $form . '|' . ipKhach() . '|' . $m[1], formTokenKhoa());
+    return hash_equals($dung, $m[2]);
+}
+
 /** Kiểm tra username: 4-20 ký tự, chỉ a-z 0-9 (khớp với server). */
 function validUsername(string $u): bool
 {
