@@ -54,26 +54,3 @@ rồi khởi động lại server/client để nạp lại ảnh. Không cần S
 Nếu ảnh còn bị cache, xóa bộ đệm tài nguyên của client rồi đăng nhập lại.
 Kiểm thử đối chiếu trực tiếp mọi delta vị trí/kích thước với tài nguyên bộ
 mẫu. Cần kiểm tra trong game khi chạy, đánh và cưỡi thú.
-
-## Căn kích thước và vị trí: bản đối chiếu đã sửa
-
-Bản xem trước dùng ô 128x144, điểm gốc (64,104), còn khoảng trống dưới y=0.
-Công cụ báo lỗi nếu bất kỳ pixel nhìn thấy nào ra ngoài ô, thay vì bỏ pixel.
-So sánh đồng thời Hắc Lang/Thần Nữ và Trung Thu cùng tỷ lệ, có dấu gốc.
-Có nút dừng và chuyển khung để kiểm tra cả bốn hướng.
-
-Số đo cũ 33/28 px bị ảnh hưởng bởi việc cắt mép dưới. Đo lại toàn thân đứng:
-Hắc Lang 36 px, Thần Nữ 31 px. Hình đi bộ Trung Thu được thu theo số đo mới.
-
-Khi cưỡi, đầu và thân được căn độc lập theo vùng nhìn thấy của từng phần
-bộ mẫu, gồm kích thước, điểm đặt và biến đổi theo khung. Không còn dịch toàn
-bộ đầu theo mép dưới áo. Bản đối chiếu cưỡi của cả hai bên đều chỉ vẽ đầu/thân,
-không có ngựa; không dùng hình toàn thân bộ mẫu để đối chiếu với nửa người mới.
-Hình bộ mới khác tỷ lệ nguyên bản: bước căn theo bộ mẫu có điều chỉnh tỷ lệ
-từng phần. Cần duyệt trực tiếp trong game với từng loại thú.
-
-Tài nguyên cưỡi: đầu 86/87, thân 83/84. Đi bộ: đầu 84/85, thân 81/82,
-chân 81/82. Server chọn tài nguyên riêng khi đang cưỡi và khôi phục khi xuống.
-Cần dùng bản JAR có hỗ trợ chuyển ID đã build ở bước trước cùng tài nguyên mới.
-Không thay SQL. Kiểm thử đối chiếu vùng pixel thật cả đầu/thân với bộ mẫu,
-cho phép sai số làm tròn 1 px, và kiểm tra lên/xuống thú.

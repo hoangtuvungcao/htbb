@@ -1,28 +1,20 @@
-<!doctype html><html lang="vi"><meta charset="utf-8"><title>Đối chiếu Trung Thu</title>
-<style>body{background:#20252d;color:#eee;font:16px system-ui;margin:24px}canvas{background:#343b47;image-rendering:pixelated;max-width:100%}select,button{font:inherit;padding:8px;margin:8px}</style>
-<h1>Đối chiếu vị trí trang phục</h1>
-<p>Mỗi cặp: bộ mẫu bên trái, Trung Thu bên phải. Cùng tỷ lệ 3×, cùng điểm gốc dấu +. Đường ngang là y=0.</p>
-<select id="state"><option value="cuoi">Đầu/thân khi cưỡi (chưa dựng ngựa)</option><option value="walk">Toàn thân đi bộ</option></select>
-<select id="mode"><option value="idle">Đứng</option><option value="walk">Di chuyển</option><option value="attack">Khung kỹ năng</option></select>
-<button id="pause">Tạm dừng</button><button id="next">Khung kế</button><span id="frame"></span>
-<canvas id="c" width="1536" height="960"></canvas>
-<p>Đây là đối chiếu tài nguyên; không mô phỏng độ che của ngựa hoặc hoạt ảnh kỹ năng đầy đủ.</p>
+<!doctype html><html lang="vi"><meta charset="utf-8"><title>Trung Thu 2026 — chuyển động</title>
+<style>body{background:#20252d;color:#eee;font:16px system-ui;margin:32px}canvas{image-rendering:pixelated;background:#343b47;border-radius:12px}button,select{font:inherit;padding:8px;margin:8px}p{max-width:850px}</style>
+<h1>Thời trang Trung Thu 2026</h1><p>Bản xem trước theo thứ tự khung của client: trước, sau, trái, phải. Hướng phải lật từ trái. Chuyển động nam theo Hắc Lang, nữ theo Thần Nữ, gồm nhịp nhún đầu và dịch chuyển thân/chân.</p>
+<label>Động tác <select id="mode"><option value="walk">Di chuyển</option><option value="idle">Đứng</option><option value="attack">Tư thế đánh / hồi</option></select></label>
+<button id="pause">Tạm dừng</button><br><canvas id="c" width="1120" height="740"></canvas>
+<p>Bản vẽ AI bổ sung từ ảnh gốc, cần kiểm tra trực tiếp trong game khi đánh theo từng phái và cưỡi thú.</p>
 <script>
-const g=document.querySelector('#c').getContext('2d');g.imageSmoothingEnabled=false;
-const cache={};for(const sex of ['nam','nu'])for(const suffix of ['','-mau','-cuoi','-mau-cuoi']){const im=new Image();im.src=sex+suffix+'-motion.png';cache[sex+suffix]=im;}
-let tick=0,paused=false;document.querySelector('#pause').onclick=()=>paused=!paused;
-document.querySelector('#next').onclick=()=>{paused=true;tick++;draw();};
-function draw(){g.clearRect(0,0,1536,960);const mode=document.querySelector('#mode').value;
-const seq=mode==='idle'?[0,1]:mode==='walk'?[2,2,0,3,3,0]:[0,4,5];const f=seq[tick%seq.length];
-document.querySelector('#frame').textContent='Frame '+f;
-['nam','nu'].forEach((sex,s)=>{for(let d=0;d<4;d++){
-const baseX=d*384,baseY=s*480;g.fillStyle='#fff';g.font='16px system-ui';g.fillText((s?'Nữ':'Nam')+' · '+['Trước','Sau','Trái','Phải'][d],baseX+12,baseY+24);
-for(let pair=0;pair<2;pair++){
-const key=sex+(pair===0?'-mau':'')+(document.querySelector('#state').value==='cuoi'?'-cuoi':'');
-const im=cache[key],x=baseX+pair*192,y=baseY+48;
-g.fillStyle=pair?'#ffc779':'#9ed2ff';g.fillText(pair?'Trung Thu':s?'Thần Nữ':'Hắc Lang',x+12,y);
-if(im.complete&&im.naturalWidth)g.drawImage(im,f*128,d*144,128,144,x-96,y+8,384,432);
-const ox=x+96,oy=y+8+104*3;g.strokeStyle='#7e899b';g.beginPath();g.moveTo(x,oy);g.lineTo(x+192,oy);g.moveTo(ox,oy-5);g.lineTo(ox,oy+5);g.stroke();
-}}});}
-setInterval(()=>{if(!paused)tick++;draw();},150);
+const canvas=document.querySelector('#c'),g=canvas.getContext('2d');g.imageSmoothingEnabled=false;
+const images=['nam','nu'].map(n=>{const i=new Image();i.src=n+'-motion.png';return i;});
+let paused=false,tick=0;document.querySelector('#pause').onclick=()=>paused=!paused;
+setInterval(()=>{if(!paused)tick++;g.clearRect(0,0,1120,740);
+const m=document.querySelector('#mode').value;
+const steps=m==='walk'?[2,2,2,0,0,3,3,3,0,0]:m==='attack'?[0,4,4,5,0]:[0,0,0,0,0,0,0,0,1,1,1,1];
+const pose=steps[tick%steps.length];
+images.forEach((img,sex)=>{if(!img.complete)return;for(let dir=0;dir<4;dir++){
+const x=35+dir*280,y=36+sex*360;g.fillStyle='#eee';g.font='16px system-ui';g.fillText((sex?'Nữ':'Nam')+' · '+['Trước','Sau','Trái','Phải'][dir],x,y);
+g.save();g.translate(x+10,y+14);
+g.drawImage(img,pose*85,dir*102,85,102,0,0,255,306);g.restore();
+}});},100);
 </script></html>

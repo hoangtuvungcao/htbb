@@ -45,7 +45,7 @@ public final class KiemTrungThu2026 {
                 c.wModel = after;
                 avt = c.getIdBigAoThoiTrang();
                 Kiem.bang("Avatar moi", 866 + sex, avt[0]);
-                Kiem.bang("So khung avatar", 2, avt[2]); KiemCuoiTrungThu2026.chay(sex,c);
+                Kiem.bang("So khung avatar", 2, avt[2]);
             }
         } catch (Exception e) { Kiem.dung("Trung Thu: " + e, false); }
     }
@@ -65,7 +65,7 @@ public final class KiemTrungThu2026 {
     }
     private static void checkPart(String type,int id,int count,byte[] unused) throws Exception {
         int sex=id-(type.equals("head")?84:81);
-        int donor=(type.equals("head")?76:73)+sex; double scale=Double.parseDouble(new String(Files.readAllBytes(Paths.get("map/trungthu2026/"+(sex==0?"nam":"nu")+"-scale.txt")),"UTF-8"));
+        int donor=(type.equals("head")?76:73)+sex;
         int baseY=type.equals("head")?0:type.equals("body")?52:76;
         int baseH=type.equals("head")?60:type.equals("body")?32:26;
         byte[] bytes=Files.readAllBytes(Paths.get("map/c/"+type+"/"+id));
@@ -99,8 +99,8 @@ public final class KiemTrungThu2026 {
                 int w=data.readUnsignedByte(),h=data.readUnsignedByte();
                 widths[pose]=w;heights[pose]=h;
                 Kiem.dung("Khung trong anh "+type+"/"+id,w>0 && h>0 && x+w<=image.getWidth() && y+h<=image.getHeight());
-                Kiem.dung("Chieu rong da thu nho",Math.abs(w-(85+oldRects[visible][pose][2]-oldRects[visible][0][2])*scale)<=1);
-                Kiem.dung("Chieu cao da thu nho",Math.abs(h-(baseH+oldRects[visible][pose][3]-oldRects[visible][0][3])*scale)<=1);
+                Kiem.bang("Bien doi ngang tu bo goc",oldRects[visible][pose][2]-oldRects[visible][0][2],w-85);
+                Kiem.bang("Bien doi doc tu bo goc",oldRects[visible][pose][3]-oldRects[visible][0][3],h-baseH);
                 long hash=1;
                 for(int yy=0;yy<h;yy++)for(int xx=0;xx<w;xx++) hash=31*hash+image.getRGB(x+xx,y+yy);
                 if(dir<3 && pose==0)signatures[dir]=hash;
@@ -108,12 +108,12 @@ public final class KiemTrungThu2026 {
             for(int frame=0;frame<6;frame++) {
                 int pose=count==1?0:poses[frame];
                 int dx=data.readByte(),dy=data.readByte();
-                int dw=oldRects[visible][pose][2]-oldRects[visible][0][2]; int expectedX=(int)Math.round((-42-dw/2+oldOffsets[dir][frame][0]-oldOffsets[dir][0][0])*scale); int recoveredX=dx;
-                int dh=oldRects[visible][pose][3]-oldRects[visible][0][3]; int expectedY=(int)Math.round((baseY-102-dh+oldOffsets[dir][frame][1]-oldOffsets[dir][0][1])*scale); int recoveredY=dy;
+                int recoveredX=dx+42+(widths[pose]-85)/2;
+                int recoveredY=dy-baseY+102+(heights[pose]-baseH);
                 Kiem.bang("Nhip ngang theo "+donor+" huong "+dir+" frame "+frame,
-                    expectedX,recoveredX);
+                    oldOffsets[dir][frame][0]-oldOffsets[dir][0][0],recoveredX);
                 Kiem.bang("Nhip doc theo "+donor+" huong "+dir+" frame "+frame,
-                    expectedY,recoveredY);
+                    oldOffsets[dir][frame][1]-oldOffsets[dir][0][1],recoveredY);
             }
         }
         Kiem.dung("Truoc/sau/ngang khac nhau "+type,
