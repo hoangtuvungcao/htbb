@@ -123,6 +123,8 @@ public final class LenhWeb implements Runnable {
 
     private static volatile boolean daChay = false;
     private static boolean daBaoLoi = false;
+    // Chi luong LENH WEB su dung. Quet het hang doi roi quay lai cac lenh offline.
+    private static long idLenhDaDoc = 0L;
 
     /** Ket qua xu ly mot dong lenh. */
     public static final class KetQua {
@@ -781,28 +783,39 @@ public final class LenhWeb implements Runnable {
         }
     }
 
-    /** Cac dong dang CHO hoac CHO_DANG_NHAP, cu nhat truoc. */
+    /** Doc trang ke tiep; khong de 50 lenh offline dau tien chan ca hang doi. */
     static List<Object[]> docLenhCho() throws Exception {
-        final List<Object[]> ds = new ArrayList<Object[]>();
         Connection conn = null;
+        try {
+            conn = Database.instance.getConnection();
+            return docLenhCho(conn);
+        } finally {
+            tra(conn);
+        }
+    }
+
+    static List<Object[]> docLenhCho(final Connection conn) throws Exception {
+        final List<Object[]> ds = new ArrayList<Object[]>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            conn = Database.instance.getConnection();
             ps = conn.prepareStatement("SELECT id, loai, char_id, charname, cap_do, phan_nghin, admin_user, trang_thai, tham_so FROM `"
-                    + TEN_BANG + "` WHERE trang_thai IN (?, ?) ORDER BY id LIMIT " + MOI_VONG_TOI_DA);
+                    + TEN_BANG + "` WHERE trang_thai IN (?, ?) AND id > ? ORDER BY id LIMIT " + MOI_VONG_TOI_DA);
             ps.setInt(1, CHO);
             ps.setInt(2, CHO_DANG_NHAP);
+            ps.setLong(3, idLenhDaDoc);
             rs = ps.executeQuery();
             while (rs.next()) {
                 ds.add(new Object[]{rs.getLong("id"), rs.getString("loai"), rs.getInt("char_id"),
                     rs.getString("charname"), rs.getInt("cap_do"), rs.getInt("phan_nghin"),
                     rs.getString("admin_user"), rs.getInt("trang_thai"), rs.getString("tham_so")});
             }
+            // Chi doi con tro sau khi doc thanh cong. Trang cuoi quay ve dau de
+            // nhan vat vua dang nhap van duoc xu ly o luot quet ke tiep.
+            idLenhDaDoc = ds.size() < MOI_VONG_TOI_DA ? 0L : (Long) ds.get(ds.size() - 1)[0];
         } finally {
             dong(rs);
             dong(ps);
-            tra(conn);
         }
         return ds;
     }
