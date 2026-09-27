@@ -99,7 +99,6 @@ public final class Kiem {
         KiemDanhMucThu.chay();
         KiemDanhMucDanhHieu.chay();
         KiemDanhMucItem.chay();
-        KiemTrungThu2026.chay();
         KiemBangThuocTinh.chay();
         KiemLienKetTaiLieu.chay();
         KiemAnhHieuUng.chay();

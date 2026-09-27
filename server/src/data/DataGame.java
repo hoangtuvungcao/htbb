@@ -64,7 +64,7 @@ public class DataGame {
     // KHONG dung lai dai 855..859 nhu ban skin dau tien: sau khi tinh nang bi go, dung
     // nam id do da duoc giao cho canh (commit 2c651ce). Dat de len la o xem truoc cua
     // canh hien ra con thu.
-    static short nIconItem = 870; // 866/867: avatar Trung Thu 2026; 868/869: icon hanh trang.
+    static short nIconItem = 866; // update item moi (865 = icon skin Kim Cang Long)
 //    static short nIconItem = 632;
     public static byte version = 1;
 
@@ -658,7 +658,7 @@ public class DataGame {
                 // Non nang 67 -> 75 de nap them 8 file map/c/hat/67..74 - do la
                 // "non mat na", chi hien o o xem truoc cua so Trang bi con tren ban
                 // do thi trong suot (xem Char.getIdHatMatNa).
-                byte[] n = new byte[]{83, 83, 86, 75, 16, 3};
+                byte[] n = new byte[]{81, 81, 84, 75, 16, 3};
                 String[] name = new String[]{"map/c/leg/", "map/c/body/", "map/c/head/", "map/c/hat/", "map/c/coat/", "map/c/flag/"};
 
                 for (i = 0; i < 6; ++i) {

@@ -1631,7 +1631,7 @@ public final class KiemSkinLinhThu {
 
         final String dg = doc("src/data/DataGame.java");
         Kiem.dung("nIconItem phu het dai icon skin (" + (lonNhat + 1) + ")",
-                iconCapacity(dg) > lonNhat);
+                dg.contains("nIconItem = " + (lonNhat + 1) + ";"));
     }
 
     /**
@@ -1996,9 +1996,5 @@ public final class KiemSkinLinhThu {
     }
 
     private KiemSkinLinhThu() {
-    }
-    private static int iconCapacity(String source) {
-        java.util.regex.Matcher m = java.util.regex.Pattern.compile("nIconItem\\s*=\\s*(\\d+)").matcher(source);
-        return m.find() ? Integer.parseInt(m.group(1)) : -1;
     }
 }

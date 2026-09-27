@@ -1146,7 +1146,7 @@ public class OfflineMap extends Map {
                         return;
                      }
 
-                     if (item.isHacLang() || item.isThanNu() || item.isTrungThu2026() || item.isChoiSell()) {
+                     if (item.isHacLang() || item.isThanNu() || item.isChoiSell()) {
                         return;
                      }
 

@@ -187,8 +187,6 @@ public class Item extends Actor {
     public static final int HO_VE_LENH_6x1 = 636;
     public static final int HO_VE_LENH_6x2 = 637;
     public static final int HO_VE_LENH_6x3 = 638;
-    public static final int TRUNG_THU_2026_NAM = 912;
-    public static final int TRUNG_THU_2026_NU = 913;
     public static final int HAC_LANG = 723;
     public static final int THAN_NU = 724;
     public static final int BACH_MI = 725;
@@ -2497,10 +2495,6 @@ public class Item extends Actor {
         return this.getTemplate().id == 608 && (this.timeLoan != 0L || this.minuteExist != 0);
     }
 
-    public boolean isTrungThu2026() {
-        return this.tempateID == TRUNG_THU_2026_NAM || this.tempateID == TRUNG_THU_2026_NU;
-    }
-
     public boolean isHacLang() {
         return this.getTemplate().id == 723;
     }
@@ -2561,7 +2555,7 @@ public class Item extends Actor {
 
     public boolean isItemThoiTrangCanSellTown() {
         return (
-                this.isTrungThu2026() || this.tempateID == 725 || this.tempateID == 726 || this.tempateID == 724 || this.tempateID == 723 ||
+                this.tempateID == 725 || this.tempateID == 726 || this.tempateID == 724 || this.tempateID == 723 ||
                 this.tempateID == 797 || this.tempateID == 798 || this.tempateID == 799 || this.tempateID == 800 || this.tempateID == 801
                 || this.tempateID == 833
                 || this.tempateID == 834
