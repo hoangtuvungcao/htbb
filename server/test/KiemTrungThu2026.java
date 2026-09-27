@@ -35,7 +35,7 @@ public final class KiemTrungThu2026 {
                 Kiem.dung("An non thuong " + fresh.id, after.doNotPaintHat());
                 BufferedImage icon = ImageIO.read(new File("map/icon/" + (868 + sex) + ".png"));
                 Kiem.dung("Icon 18x18", icon.getWidth() == 18 && icon.getHeight() == 18);
-                byte[] png = Files.readAllBytes(Paths.get("map/icon/" + (866 + sex) + ".png"));
+                byte[] png = Files.readAllBytes(Paths.get("map/trungthu2026/" + (sex == 0 ? "nam" : "nu") + "-frames.png"));
                 checkPart("head", 84 + sex, 1, png);
                 checkPart("body", 81 + sex, 5, png);
                 checkPart("leg", 81 + sex, 5, png);
@@ -63,24 +63,61 @@ public final class KiemTrungThu2026 {
         for (int i = 0; i < 10; i++) t.atb[i] = Short.parseShort(f[6+i]);
         t.idEff = Integer.parseInt(f[24]); return t;
     }
-    private static void checkPart(String type, int id, int count, byte[] expected) throws Exception {
-        DataInputStream in = new DataInputStream(new FileInputStream("map/c/" + type + "/" + id));
-        byte[] png = new byte[in.readUnsignedShort()]; in.readFully(png);
-        Kiem.dung("PNG goc " + type + "/" + id, Arrays.equals(expected, png));
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(png));
-        byte[] metadata = new byte[in.readUnsignedShort()]; in.readFully(metadata);
-        Kiem.bang("Khong byte thua", -1, in.read()); in.close();
-        DataInputStream data = new DataInputStream(new ByteArrayInputStream(metadata));
-        data.skipBytes(6);
-        for (int dir = 0; dir < 4; dir++) {
-            for (int frame = 0; frame < count; frame++) {
-                int x=data.readUnsignedByte(), y=data.readUnsignedByte();
-                int w=data.readUnsignedByte(), h=data.readUnsignedByte();
-                Kiem.dung("Khung trong anh " + type + "/" + id,
-                    w > 0 && h > 0 && x+w <= image.getWidth() && y+h <= image.getHeight());
+    private static void checkPart(String type,int id,int count,byte[] unused) throws Exception {
+        int sex=id-(type.equals("head")?84:81);
+        int donor=(type.equals("head")?76:73)+sex;
+        int baseY=type.equals("head")?0:type.equals("body")?52:76;
+        int baseH=type.equals("head")?60:type.equals("body")?32:26;
+        byte[] bytes=Files.readAllBytes(Paths.get("map/c/"+type+"/"+id));
+        DataInputStream file=new DataInputStream(new ByteArrayInputStream(bytes));
+        int length=file.readUnsignedShort();
+        Kiem.dung("PNG vua short client "+type+"/"+id,length>0 && length<=32767);
+        byte[] png=new byte[length];file.readFully(png);
+        BufferedImage image=ImageIO.read(new ByteArrayInputStream(png));
+        byte[] meta=new byte[file.readUnsignedShort()];file.readFully(meta);
+        Kiem.bang("Khong byte thua",-1,file.read());
+        int[][][] oldRects=new int[4][count][4], oldOffsets=new int[4][6][2];
+        try(DataInputStream original=new DataInputStream(new FileInputStream("map/c/"+type+"/"+donor))) {
+            original.skipBytes(original.readUnsignedShort());
+            byte[] originalMeta=new byte[original.readUnsignedShort()];original.readFully(originalMeta);
+            DataInputStream input=new DataInputStream(new ByteArrayInputStream(originalMeta));
+            input.skipBytes(6);
+            for(int dir=0;dir<4;dir++) {
+                for(int f=0;f<count;f++) for(int k=0;k<4;k++)oldRects[dir][f][k]=input.readUnsignedByte();
+                for(int f=0;f<6;f++) for(int k=0;k<2;k++)oldOffsets[dir][f][k]=input.readByte();
             }
-            data.skipBytes(12);
         }
-        Kiem.bang("Dung dinh dang client", -1, data.read());
+        DataInputStream data=new DataInputStream(new ByteArrayInputStream(meta));
+        data.skipBytes(6);
+        int[] poses={0,0,1,2,3,4};
+        long[] signatures=new long[3];
+        for(int dir=0;dir<4;dir++) {
+            int visible=Math.min(dir,2);
+            int[] widths=new int[count],heights=new int[count];
+            for(int pose=0;pose<count;pose++) {
+                int x=data.readUnsignedByte(),y=data.readUnsignedByte();
+                int w=data.readUnsignedByte(),h=data.readUnsignedByte();
+                widths[pose]=w;heights[pose]=h;
+                Kiem.dung("Khung trong anh "+type+"/"+id,w>0 && h>0 && x+w<=image.getWidth() && y+h<=image.getHeight());
+                Kiem.bang("Bien doi ngang tu bo goc",oldRects[visible][pose][2]-oldRects[visible][0][2],w-85);
+                Kiem.bang("Bien doi doc tu bo goc",oldRects[visible][pose][3]-oldRects[visible][0][3],h-baseH);
+                long hash=1;
+                for(int yy=0;yy<h;yy++)for(int xx=0;xx<w;xx++) hash=31*hash+image.getRGB(x+xx,y+yy);
+                if(dir<3 && pose==0)signatures[dir]=hash;
+            }
+            for(int frame=0;frame<6;frame++) {
+                int pose=count==1?0:poses[frame];
+                int dx=data.readByte(),dy=data.readByte();
+                int recoveredX=dx+42+(widths[pose]-85)/2;
+                int recoveredY=dy-baseY+102+(heights[pose]-baseH);
+                Kiem.bang("Nhip ngang theo "+donor+" huong "+dir+" frame "+frame,
+                    oldOffsets[dir][frame][0]-oldOffsets[dir][0][0],recoveredX);
+                Kiem.bang("Nhip doc theo "+donor+" huong "+dir+" frame "+frame,
+                    oldOffsets[dir][frame][1]-oldOffsets[dir][0][1],recoveredY);
+            }
+        }
+        Kiem.dung("Truoc/sau/ngang khac nhau "+type,
+            signatures[0]!=signatures[1] && signatures[1]!=signatures[2] && signatures[0]!=signatures[2]);
+        Kiem.bang("Dung dinh dang client",-1,data.read());
     }
 }

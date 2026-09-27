@@ -1,0 +1,20 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><title>Trung Thu 2026 — chuyển động</title>
+<style>body{background:#20252d;color:#eee;font:16px system-ui;margin:32px}canvas{image-rendering:pixelated;background:#343b47;border-radius:12px}button,select{font:inherit;padding:8px;margin:8px}p{max-width:850px}</style>
+<h1>Thời trang Trung Thu 2026</h1><p>Bản xem trước theo thứ tự khung của client: trước, sau, trái, phải. Hướng phải lật từ trái. Chuyển động nam theo Hắc Lang, nữ theo Thần Nữ, gồm nhịp nhún đầu và dịch chuyển thân/chân.</p>
+<label>Động tác <select id="mode"><option value="walk">Di chuyển</option><option value="idle">Đứng</option><option value="attack">Tư thế đánh / hồi</option></select></label>
+<button id="pause">Tạm dừng</button><br><canvas id="c" width="1120" height="740"></canvas>
+<p>Bản vẽ AI bổ sung từ ảnh gốc, cần kiểm tra trực tiếp trong game khi đánh theo từng phái và cưỡi thú.</p>
+<script>
+const canvas=document.querySelector('#c'),g=canvas.getContext('2d');g.imageSmoothingEnabled=false;
+const images=['nam','nu'].map(n=>{const i=new Image();i.src=n+'-motion.png';return i;});
+let paused=false,tick=0;document.querySelector('#pause').onclick=()=>paused=!paused;
+setInterval(()=>{if(!paused)tick++;g.clearRect(0,0,1120,740);
+const m=document.querySelector('#mode').value;
+const steps=m==='walk'?[2,2,2,0,0,3,3,3,0,0]:m==='attack'?[0,4,4,5,0]:[0,0,0,0,0,0,0,0,1,1,1,1];
+const pose=steps[tick%steps.length];
+images.forEach((img,sex)=>{if(!img.complete)return;for(let dir=0;dir<4;dir++){
+const x=35+dir*280,y=36+sex*360;g.fillStyle='#eee';g.font='16px system-ui';g.fillText((sex?'Nữ':'Nam')+' · '+['Trước','Sau','Trái','Phải'][dir],x,y);
+g.save();g.translate(x+10,y+14);
+g.drawImage(img,pose*85,dir*102,85,102,0,0,255,306);g.restore();
+}});},100);
+</script></html>
