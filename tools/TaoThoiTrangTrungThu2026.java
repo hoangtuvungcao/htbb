@@ -24,7 +24,7 @@ public final class TaoThoiTrangTrungThu2026 {
                 for(int yy=0;yy<H;yy++) for(int xx=0;xx<W;xx++)
                     sheet.setRGB(pose*W+xx,dir*H+yy,frames[dir][pose].getRGB(xx,yy));
             ImageIO.write(sheet, "png", ROOT.resolve(name + "-frames.png").toFile());
-            preview(sex,name); System.out.println(name + ": chuyen dong theo " + (sex==0 ? "Hac Lang" : "Than Nu"));
+            fitSize(sex,name); riding(sex,name); System.out.println(name + ": chuyen dong theo " + (sex==0 ? "Hac Lang" : "Than Nu"));
         }
     }
     private static Rectangle bounds(BufferedImage image) throws IOException {
@@ -220,12 +220,115 @@ public final class TaoThoiTrangTrungThu2026 {
             file.writeShort(buffer.size());file.write(buffer.toByteArray());
         }
     }
-    private static void preview(int sex,String name) throws Exception {
-        BufferedImage sheet=new BufferedImage(W*6,H*4,BufferedImage.TYPE_INT_ARGB);
+    private static void fitSize(int sex,String name) throws Exception {
+        preview(sex,name,false);
+        preview(sex,name+"-mau",true);
+        BufferedImage current=ImageIO.read(ROOT.resolve(name+"-motion.png").toFile());
+        BufferedImage model=ImageIO.read(ROOT.resolve(name+"-mau-motion.png").toFile());
+        int before=bounds(current.getSubimage(0,0,128,144)).height;
+        int target=bounds(model.getSubimage(0,0,128,144)).height;
+        double scale=(double)target/before;
+        for(String part:new String[]{"head","body","leg"})
+            shrink(Paths.get("map/c/"+part+"/"+((part.equals("head")?84:81)+sex)),
+                part.equals("head")?1:5,scale);
+        Files.write(ROOT.resolve(name+"-scale.txt"),Double.toString(scale).getBytes("UTF-8"));
+        System.out.println(name+": cao "+before+" -> muc tieu "+target+" px; scale="+scale);
+        preview(sex,name,false);
+    }
+    private static void shrink(Path path,int count,double scale) throws Exception {
+        byte[] metadata;
+        BufferedImage old;
+        try(DataInputStream in=new DataInputStream(Files.newInputStream(path))) {
+            byte[] png=new byte[in.readUnsignedShort()];in.readFully(png);
+            old=ImageIO.read(new ByteArrayInputStream(png));
+            metadata=new byte[in.readUnsignedShort()];in.readFully(metadata);
+        }
+        int nw=(int)Math.round(old.getWidth()*scale),nh=(int)Math.round(old.getHeight()*scale);
+        BufferedImage small=new BufferedImage(nw,nh,BufferedImage.TYPE_INT_ARGB);
+        for(int y=0;y<nh;y++)for(int x=0;x<nw;x++)
+            small.setRGB(x,y,old.getRGB(Math.min(old.getWidth()-1,(int)(x/scale)),
+                Math.min(old.getHeight()-1,(int)(y/scale))));
+        // Tat ca toa do/khung va diem neo cung mot ti le, khong chi thu PNG.
+        int pos=6;
+        for(int dir=0;dir<4;dir++) {
+            for(int frame=0;frame<count;frame++) {
+                int x=metadata[pos]&255,y=metadata[pos+1]&255,w=metadata[pos+2]&255,h=metadata[pos+3]&255;
+                int xx=(int)Math.round(x*scale),yy=(int)Math.round(y*scale);
+                metadata[pos++]=(byte)xx;metadata[pos++]=(byte)yy;
+                metadata[pos++]=(byte)((int)Math.round((x+w)*scale)-xx);
+                metadata[pos++]=(byte)((int)Math.round((y+h)*scale)-yy);
+            }
+            for(int i=0;i<12;i++,pos++)metadata[pos]=(byte)Math.round(metadata[pos]*scale);
+        }
+        for(int i=0;i<4;i++)metadata[i]=(byte)Math.round((metadata[i]&255)*scale);
+        for(int i=4;i<6;i++)metadata[i]=(byte)Math.round(metadata[i]*scale);
+        ByteArrayOutputStream png=new ByteArrayOutputStream();ImageIO.write(small,"png",png);
+        try(DataOutputStream out=new DataOutputStream(Files.newOutputStream(path))) {
+            out.writeShort(png.size());out.write(png.toByteArray());
+            out.writeShort(metadata.length);out.write(metadata);
+        }
+    }
+    private static BufferedImage partImage(Path path) throws IOException {
+        try(DataInputStream in=new DataInputStream(Files.newInputStream(path))) {
+            byte[] png=new byte[in.readUnsignedShort()];in.readFully(png);
+            return ImageIO.read(new ByteArrayInputStream(png));
+        }
+    }
+    private static int[] seat(Motion m,BufferedImage img,int dir,int frame) throws IOException {
+        int pose=new int[]{0,0,1,2,3,4}[frame];
+        int[] r=m.rect[dir][pose];
+        Rectangle box=bounds(img.getSubimage(r[0],r[1],r[2],r[3]));
+        return new int[]{m.offset[dir][frame][0]+box.x+box.width/2,
+            m.offset[dir][frame][1]+box.y+box.height-1};
+    }
+    private static void riding(int sex,String name) throws Exception {
+        for(String part:new String[]{"head","body"}) {
+            int id=(part.equals("head")?84:81)+sex,count=part.equals("head")?1:5;
+            Path source=Paths.get("map/c/"+part+"/"+id),reference=Paths.get("map/c/"+part+"/"+donor(part,sex));
+            Motion src=new Motion(source,count),ref=new Motion(reference,count);
+            BufferedImage srcImg=partImage(source),refImg=partImage(reference);
+            Rectangle[][] sb=new Rectangle[3][count],rb=new Rectangle[3][count];
+            int cw=0,ch=0;
+            for(int d=0;d<3;d++)for(int f=0;f<count;f++){
+                int[] a=src.rect[d][f],b=ref.rect[d][f];
+                sb[d][f]=bounds(srcImg.getSubimage(a[0],a[1],a[2],a[3]));
+                rb[d][f]=bounds(refImg.getSubimage(b[0],b[1],b[2],b[3]));
+                cw=Math.max(cw,rb[d][f].width);ch=Math.max(ch,rb[d][f].height);
+            }
+            BufferedImage atlas=new BufferedImage(cw*3,ch*count,BufferedImage.TYPE_INT_ARGB);
+            for(int d=0;d<3;d++)for(int f=0;f<count;f++){
+                Rectangle a=sb[d][f],b=rb[d][f];int[] r=src.rect[d][f];
+                for(int yy=0;yy<b.height;yy++)for(int xx=0;xx<b.width;xx++){
+                    int sx=b.width==1?0:(int)Math.round(xx*(a.width-1.0)/(b.width-1));
+                    int sy=b.height==1?0:(int)Math.round(yy*(a.height-1.0)/(b.height-1));
+                    atlas.setRGB(d*cw+xx,f*ch+yy,srcImg.getRGB(r[0]+a.x+sx,r[1]+a.y+sy));
+                }
+            }
+            ByteArrayOutputStream pb=new ByteArrayOutputStream();ImageIO.write(atlas,"png",pb);
+            ByteArrayOutputStream mb=new ByteArrayOutputStream();DataOutputStream m=new DataOutputStream(mb);
+            m.write(new byte[]{0,0,(byte)rb[0][0].width,(byte)rb[0][0].height,0,0});
+            int[] poses={0,0,1,2,3,4};
+            for(int d=0;d<4;d++){
+                int v=Math.min(d,2);
+                for(int f=0;f<count;f++){m.writeByte(v*cw);m.writeByte(f*ch);m.writeByte(rb[v][f].width);m.writeByte(rb[v][f].height);}
+                for(int f=0;f<6;f++){
+                    Rectangle b=rb[v][count==1?0:poses[f]];
+                    m.writeByte(ref.offset[v][f][0]+b.x);m.writeByte(ref.offset[v][f][1]+b.y);
+                }
+            }
+            try(DataOutputStream out=new DataOutputStream(Files.newOutputStream(Paths.get("map/c/"+part+"/"+(id+2))))){
+                out.writeShort(pb.size());out.write(pb.toByteArray());out.writeShort(mb.size());out.write(mb.toByteArray());
+            }
+        }
+        preview(sex,name+"-cuoi",false);
+        preview(sex,name+"-mau-cuoi",true);
+    }
+    private static void preview(int sex,String name,boolean original) throws Exception {
+        BufferedImage sheet=new BufferedImage(128*6,144*4,BufferedImage.TYPE_INT_ARGB);
         int[] poseOfFrame={0,0,1,2,3,4};
         for(String part:new String[]{"leg","body","head"}) {
-            int id=(part.equals("head")?84:81)+sex,count=part.equals("head")?1:5;
-            Path path=Paths.get("map/c/"+part+"/"+id);
+            int id=original ? donor(part,sex) : (part.equals("head")?84:81)+sex,count=part.equals("head")?1:5;
+            if(name.endsWith("-cuoi")) { if(part.equals("leg"))continue; if(!original)id+=2; } Path path=Paths.get("map/c/"+part+"/"+id);
             Motion motion=new Motion(path,count);
             BufferedImage atlas;
             try(DataInputStream in=new DataInputStream(Files.newInputStream(path))) {
@@ -239,9 +342,9 @@ public final class TaoThoiTrangTrungThu2026 {
                 if(dir==3) dx=-dx-rect[2];
                 for(int yy=0;yy<rect[3];yy++) for(int xx=0;xx<rect[2];xx++) {
                     int pixel=atlas.getRGB(rect[0]+(dir==3?rect[2]-1-xx:xx),rect[1]+yy);
-                    int x=W/2+dx+xx,y=H+dy+yy;
-                    if((pixel>>>24)>0 && x>=0 && x<W && y>=0 && y<H)
-                        sheet.setRGB(frame*W+x,dir*H+y,pixel);
+                    int x=64+dx+xx,y=104+dy+yy;
+                    if((pixel>>>24)>0)
+                        { if(x<0 || x>=128 || y<0 || y>=144)throw new IOException("Preview cat pixel"); sheet.setRGB(frame*128+x,dir*144+y,pixel); }
                 }
             }
         }

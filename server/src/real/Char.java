@@ -11572,6 +11572,12 @@ public int applyRongLonReleaseTo(int baseDamage) {
                 }
             }
         }
+        // Trung Thu: diem neo rieng khi cuoi; xuong thu tu dong ve bo di bo.
+        if (this.wModel.isTrungThu2026() && this.animalRide != null && !this.isMasterClanAndHaveTown()) {
+            final int sex = this.wModel.itemModel.tempateID - Item.TRUNG_THU_2026_NAM;
+            id[0] = (short) (86 + sex);
+            id[2] = (short) (83 + sex);
+        }
         // Do thoi trang DOI DAU va mat na deu ve len dau nen deo ca hai la chong
         // len nhau. Rieng "Dau bi ngo" (vat pham 577, bo phan dau 26) la mot cai
         // dau DAC chu khong phai toc, nen phan thoi ra ngoai mat na nhin rat xau.
