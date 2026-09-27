@@ -183,6 +183,10 @@ public class ModelWearing {
         return this.itemModel != null && this.itemModel.tempateID == 671;
     }
 
+    public boolean isTrungThu2026() {
+        return this.itemModel != null && this.itemModel.isTrungThu2026();
+    }
+
     public boolean isBachMi() {
         return this.itemModel != null && this.itemModel.getTemplate().id == 725;
     }
@@ -454,7 +458,7 @@ public class ModelWearing {
     }
 
     public boolean doNotPaintHat() {
-        return this.itemModel.getTemplate().id == 622 || this.itemModel.getTemplate().id == 623 || this.itemModel.getTemplate().id == 672 || this.itemModel.getTemplate().id == 673 || this.itemModel.getTemplate().id == 674 || this.isAoDaiNam() || this.isAoDaiNu();
+        return this.isTrungThu2026() || this.itemModel.getTemplate().id == 622 || this.itemModel.getTemplate().id == 623 || this.itemModel.getTemplate().id == 672 || this.itemModel.getTemplate().id == 673 || this.itemModel.getTemplate().id == 674 || this.isAoDaiNam() || this.isAoDaiNu();
     }
 
     public int getPCXbangSetDocLuaLan() {
@@ -470,6 +474,8 @@ public class ModelWearing {
                 case 580:
                 case 582:
                 case 583:
+                case Item.TRUNG_THU_2026_NAM:
+                case Item.TRUNG_THU_2026_NU:
                 case 723:
                 case 724:
                 case 725:

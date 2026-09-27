@@ -8455,7 +8455,7 @@ public class Map implements Runnable {
                                         "shopvip"
                                 );
                         Database.instance.saveLogThongKeChiTieu(it.getName(), 0, it.getSoluong(), (long) (xu > 0 ? xu : (luong > 0 ? luong : 0)), money);
-                    } else if (it.isAoDai2021() || it.isTieuLongNu() || it.isDuongQua() || it.isHacLang() || it.isThanNu()) {
+                    } else if (it.isAoDai2021() || it.isTieuLongNu() || it.isDuongQua() || it.isHacLang() || it.isThanNu() || it.isTrungThu2026()) {
                         if (player.vip <= 0) {
                             player.sendMessage(MessageCreator.createServerAlertMessage("Bạn Cần Vip 1 Trở lên để thực hiện tính năng này.", ""));
                             return;

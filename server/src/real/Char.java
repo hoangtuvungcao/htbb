@@ -1077,8 +1077,8 @@ public class Char extends LiveActor {
         Char.Dx_Dy_PP_tool = new byte[][]{{-26, -32, -32}, {-58, -58, -63}};
 
         Char.Dx_Dy_AVT_tool = new byte[][]{
-            {-44, -18, -44, -18, -18, -44, -44, -25, -20, -21, -20, -26, -28, -28,-22,-32},
-            {-63, -63, -67, -69, -70, -63, -63, -69, -64, -62, -69, -69, -69, -85,-75,-75}
+            {-44, -18, -44, -18, -18, -44, -44, -25, -20, -21, -20, -26, -28, -28,-22,-32,-42,-42},
+            {-63, -63, -67, -69, -70, -63, -63, -69, -64, -62, -69, -69, -69, -85,-75,-75,-102,-102}
         };
 
 
@@ -11264,6 +11264,11 @@ public int applyRongLonReleaseTo(int baseDamage) {
         else if (this.wModel.isCaiTaoMiNuong()) {
             a[0] = 833;
             a[1] = 10;
+            a[2] = 2;
+        }
+        else if (this.wModel.isTrungThu2026()) {
+            a[0] = 866 + this.wModel.itemModel.tempateID - Item.TRUNG_THU_2026_NAM;
+            a[1] = 16 + this.wModel.itemModel.tempateID - Item.TRUNG_THU_2026_NAM;
             a[2] = 2;
         }
         else if (this.wModel.isTienNu()) {
