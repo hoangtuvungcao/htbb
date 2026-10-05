@@ -1,0 +1,136 @@
+name: Build va deploy website
+
+# Moi push/PR: cai dat, build Nuxt.
+# Push len main: them buoc deploy len VPS:
+#   1. Gui BI MAT (GitHub Secrets) + BIEN (GitHub Variables) qua STDIN cua ssh ->
+#      VPS ghi thanh /etc/kpah-web.env (systemd nap bang EnvironmentFile).
+#   2. Gui ban build (.output nen tar.gz) qua STDIN -> VPS giai nen vao
+#      /opt/kpah-web/releases/<sha>, tro "current" sang do, restart kpah-web.
+#
+# Khoa SSH rieng cho web (secret VPS_SSH_KEY_WEB), bi ep chay DUNG MOT lenh
+# (command="/opt/kpah-web/deploy/deploy-web.sh" trong authorized_keys). Lenh ssh
+# chi chon "viec" (nhan-env / nhan-build) qua SSH_ORIGINAL_COMMAND, script tren VPS
+# chi nhan dung hai tu do. Xem deploy/deploy-web.sh.
+#
+# Secret nao DE TRONG thi VPS GIU NGUYEN gia tri dang co (khong xoa) - quen dat
+# mot secret khong lam sap website.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-web
+  cancel-in-progress: false
+
+env:
+  VPS_HOST: 180.93.57.30
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Cai dat
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Dong goi
+        run: tar -czf kpah-web-build.tgz .output
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kpah-web-build
+          path: kpah-web-build.tgz
+          retention-days: 7
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: kpah-web-build
+
+      - name: Cai khoa SSH
+        env:
+          KHOA: ${{ secrets.VPS_SSH_KEY_WEB }}
+        run: |
+          if [ -z "$KHOA" ]; then
+            echo "::error::Chua co secret VPS_SSH_KEY_WEB. Xem README muc 'Deploy len VPS'."
+            exit 1
+          fi
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$KHOA" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          if ! ssh-keygen -y -f ~/.ssh/deploy_key -P "" > /dev/null 2>&1; then
+            echo "::error::Secret VPS_SSH_KEY_WEB khong doc duoc (dinh dang private key bi hong - dan lai TOAN BO noi dung, giu nguyen xuong dong)."
+            exit 1
+          fi
+
+      - name: Gui bien moi truong
+        # Bi mat lay tu Settings > Secrets and variables > Actions > Secrets,
+        # gia tri khong nhay cam (link tai game...) lay tu tab Variables.
+        # KHONG echo gia tri ra log.
+        env:
+          KPAH_SECRET: ${{ secrets.KPAH_SECRET }}
+          KPAH_DB_HOST: ${{ secrets.KPAH_DB_HOST }}
+          KPAH_DB_PORT: ${{ secrets.KPAH_DB_PORT }}
+          KPAH_DB_USER: ${{ secrets.KPAH_DB_USER }}
+          KPAH_DB_PASS: ${{ secrets.KPAH_DB_PASS }}
+          KPAH_DB_GAME: ${{ secrets.KPAH_DB_GAME }}
+          KPAH_DB_ACCOUNT: ${{ secrets.KPAH_DB_ACCOUNT }}
+          KPAH_DB_ACCOUNT_USER: ${{ secrets.KPAH_DB_ACCOUNT_USER }}
+          KPAH_DB_ACCOUNT_PASS: ${{ secrets.KPAH_DB_ACCOUNT_PASS }}
+          KPAH_TPBANK_ACCOUNT_NO: ${{ secrets.KPAH_TPBANK_ACCOUNT_NO }}
+          KPAH_TPBANK_ACCOUNT_NAME: ${{ secrets.KPAH_TPBANK_ACCOUNT_NAME }}
+          KPAH_SEPAY_WEBHOOK_APIKEY: ${{ secrets.KPAH_SEPAY_WEBHOOK_APIKEY }}
+          KPAH_ADMIN_NAPTIEN_PASSWORD: ${{ secrets.KPAH_ADMIN_NAPTIEN_PASSWORD }}
+          KPAH_ADMIN_ACCOUNTS: ${{ secrets.KPAH_ADMIN_ACCOUNTS }}
+          KPAH_ADMIN_2FA_BAT_BUOC: ${{ vars.KPAH_ADMIN_2FA_BAT_BUOC }}
+          KPAH_ADMIN_IDLE_TIMEOUT: ${{ vars.KPAH_ADMIN_IDLE_TIMEOUT }}
+          KPAH_ADMIN_MAX_FAIL: ${{ vars.KPAH_ADMIN_MAX_FAIL }}
+          KPAH_ADMIN_FAIL_WINDOW: ${{ vars.KPAH_ADMIN_FAIL_WINDOW }}
+          KPAH_SERVER_DIR: ${{ vars.KPAH_SERVER_DIR }}
+          KPAH_TRUSTED_PROXIES: ${{ vars.KPAH_TRUSTED_PROXIES }}
+          KPAH_LINK_ANDROID: ${{ vars.KPAH_LINK_ANDROID }}
+          KPAH_LINK_PC: ${{ vars.KPAH_LINK_PC }}
+          KPAH_LINK_IOS: ${{ vars.KPAH_LINK_IOS }}
+          KPAH_LINK_GROUP: ${{ vars.KPAH_LINK_GROUP }}
+          KPAH_AUTO_ACTIVATE: ${{ vars.KPAH_AUTO_ACTIVATE }}
+        run: |
+          goi=""
+          for k in KPAH_SECRET KPAH_DB_HOST KPAH_DB_PORT KPAH_DB_USER KPAH_DB_PASS KPAH_DB_GAME \
+                   KPAH_DB_ACCOUNT KPAH_DB_ACCOUNT_USER KPAH_DB_ACCOUNT_PASS \
+                   KPAH_TPBANK_ACCOUNT_NO KPAH_TPBANK_ACCOUNT_NAME KPAH_SEPAY_WEBHOOK_APIKEY \
+                   KPAH_ADMIN_NAPTIEN_PASSWORD KPAH_ADMIN_ACCOUNTS KPAH_ADMIN_2FA_BAT_BUOC \
+                   KPAH_ADMIN_IDLE_TIMEOUT KPAH_ADMIN_MAX_FAIL KPAH_ADMIN_FAIL_WINDOW \
+                   KPAH_SERVER_DIR KPAH_TRUSTED_PROXIES \
+                   KPAH_LINK_ANDROID KPAH_LINK_PC KPAH_LINK_IOS KPAH_LINK_GROUP KPAH_AUTO_ACTIVATE; do
+            v=${!k-}
+            # Gia tri nhieu dong se pha dinh dang KEY=VALUE -> tu choi ngay o day.
+            case "$v" in *$'\n'*) echo "::error::$k chua xuong dong, khong hop le"; exit 1 ;; esac
+            if [ -n "$v" ]; then
+              goi="$goi$k=$v"$'\n'
+            fi
+          done
+          printf '%s' "$goi" | ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 \
+              -o StrictHostKeyChecking=yes root@"$VPS_HOST" nhan-env
+
+      - name: Gui ban build va khoi dong lai
+        run: |
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 \
+              -o StrictHostKeyChecking=yes root@"$VPS_HOST" "nhan-build ${GITHUB_SHA}" < kpah-web-build.tgz
