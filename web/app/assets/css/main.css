@@ -1,0 +1,175 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/*
+ * Bảng màu KPAH: vàng cổ (gold), ngọc bích (jade) và mực đêm (ink).
+ * Lấy cảm hứng từ logo gốc (vàng #f9cd44 / ngọc #139987 / nền #023e37).
+ */
+@theme static {
+  --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Noto Serif", Georgia, "Times New Roman", serif;
+
+  --color-gold-50: #fffbea;
+  --color-gold-100: #fff3c4;
+  --color-gold-200: #ffe58a;
+  --color-gold-300: #fdd352;
+  --color-gold-400: #f9c02a;
+  --color-gold-500: #e8a50f;
+  --color-gold-600: #c47f09;
+  --color-gold-700: #9c5a0c;
+  --color-gold-800: #804712;
+  --color-gold-900: #6c3b14;
+  --color-gold-950: #3f1e06;
+
+  --color-jade-50: #effefa;
+  --color-jade-100: #c8fff1;
+  --color-jade-200: #92fee4;
+  --color-jade-300: #53f5d4;
+  --color-jade-400: #20e0bf;
+  --color-jade-500: #07c4a6;
+  --color-jade-600: #029e89;
+  --color-jade-700: #077e6f;
+  --color-jade-800: #0b645a;
+  --color-jade-900: #0e534b;
+  --color-jade-950: #00302d;
+
+  --color-ink-50: #f5f6f6;
+  --color-ink-100: #e4e8e7;
+  --color-ink-200: #cbd3d1;
+  --color-ink-300: #a7b4b1;
+  --color-ink-400: #7b8d89;
+  --color-ink-500: #60726f;
+  --color-ink-600: #52615e;
+  --color-ink-700: #46514f;
+  --color-ink-800: #283130;
+  --color-ink-900: #141b1a;
+  --color-ink-950: #090e0d;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-shimmer: shimmer 3s linear infinite;
+  --animate-glow: glow 4s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes shimmer {
+    from { background-position: 0% 50%; }
+    to { background-position: 200% 50%; }
+  }
+  @keyframes glow {
+    0%, 100% { opacity: .55; }
+    50% { opacity: 1; }
+  }
+}
+
+:root {
+  --ui-radius: 0.75rem;
+}
+
+.dark {
+  --ui-bg: var(--color-ink-950);
+  --ui-bg-muted: #0f1615;
+  --ui-bg-elevated: #131c1b;
+  --ui-bg-accented: #1b2624;
+  --ui-border: #22302d;
+  --ui-border-muted: #1a2523;
+  --ui-border-accented: #2e3f3b;
+  --ui-text-muted: #8fa29d;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--ui-bg);
+}
+
+/* ---------- Tiện ích dùng chung cho trang công khai ---------- */
+
+/* Chữ vàng ánh kim, chạy ánh sáng nhẹ. */
+.text-gilded {
+  background: linear-gradient(110deg, #c47f09 0%, #ffe58a 25%, #f9c02a 45%, #fff3c4 55%, #e8a50f 75%, #c47f09 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: var(--animate-shimmer);
+}
+
+/* Kính mờ cho thẻ/khung nổi trên nền 3D. */
+.glass {
+  background: color-mix(in oklab, var(--color-ink-900) 62%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid color-mix(in oklab, var(--color-gold-300) 14%, transparent);
+}
+
+/* Viền ánh vàng chạy quanh khung (dùng với ::before). */
+.ring-gilded {
+  position: relative;
+  isolation: isolate;
+}
+.ring-gilded::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg, #fdd35288, transparent 35%, transparent 65%, #20e0bf66);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--color-gold-300);
+}
+.eyebrow::before {
+  content: "";
+  width: 2rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-gold-400), transparent);
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-weight: 800;
+  letter-spacing: -.01em;
+  line-height: 1.1;
+}
+
+/* Nền hoa văn mờ cho toàn site. */
+.bg-pattern {
+  background-image:
+    radial-gradient(ellipse at 15% 0%, #07c4a61f, transparent 45%),
+    radial-gradient(ellipse at 90% 20%, #f9c02a14, transparent 40%),
+    radial-gradient(circle at 1px 1px, #ffffff0a 1px, transparent 0);
+  background-size: auto, auto, 28px 28px;
+}
+
+/* Bảng số liệu của khu quản trị: số căn phải, chữ số đều nhau. */
+.num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
