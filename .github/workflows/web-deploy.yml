@@ -7,7 +7,15 @@ name: Build va deploy website
 #   2. Gui ban build (.output nen tar.gz) qua STDIN -> VPS giai nen vao
 #      /opt/kpah-web/releases/<sha>, tro "current" sang do, restart kpah-web.
 #
-# Khoa SSH rieng cho web (secret VPS_SSH_KEY_WEB), bi ep chay DUNG MOT lenh
+# Deploy SONG SONG len 2 VPS (matrix ben duoi, fail-fast: false - VPS nay loi khong
+# chan VPS kia):
+#   - VPS cu  180.93.57.30  : khoa VPS_SSH_KEY_WEB,   nhan ca bien moi truong + ban build.
+#   - VPS moi 180.93.127.26 : khoa VPS_SSH_KEY_WEB_2, CHI nhan ban build. Cac secret KPAH_*
+#     (mat khau CSDL, KPAH_SECRET...) la cua VPS cu - day sang VPS moi la web o do dung sai
+#     CSDL, nen VPS moi giu nguyen /etc/kpah-web.env cua no (sua tay tren VPS).
+#     Chua dat VPS_SSH_KEY_WEB_2 thi BO QUA VPS moi (canh bao), khong lam workflow do.
+#
+# Khoa SSH rieng cho web (secret VPS_SSH_KEY_WEB / _2), bi ep chay DUNG MOT lenh
 # (command="/opt/kpah-web/deploy/deploy-web.sh" trong authorized_keys). Lenh ssh
 # chi chon "viec" (nhan-env / nhan-build) qua SSH_ORIGINAL_COMMAND, script tren VPS
 # chi nhan dung hai tu do. Xem deploy/deploy-web.sh.
@@ -23,9 +31,6 @@ on:
 concurrency:
   group: deploy-web
   cancel-in-progress: false
-
-env:
-  VPS_HOST: 180.93.57.30
 
 jobs:
   build:
@@ -59,29 +64,57 @@ jobs:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ten: vps-cu
+            host: 180.93.57.30
+            khoa: VPS_SSH_KEY_WEB
+            gui_env: true
+            bat_buoc: true
+          - ten: vps-moi
+            host: 180.93.127.26
+            khoa: VPS_SSH_KEY_WEB_2
+            gui_env: false
+            bat_buoc: false
+    name: deploy (${{ matrix.ten }})
+    env:
+      VPS_HOST: ${{ matrix.host }}
     steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: kpah-web-build
-
       - name: Cai khoa SSH
+        id: khoa
         env:
-          KHOA: ${{ secrets.VPS_SSH_KEY_WEB }}
+          KHOA: ${{ secrets[matrix.khoa] }}
+          TEN_KHOA: ${{ matrix.khoa }}
+          BAT_BUOC: ${{ matrix.bat_buoc }}
         run: |
           if [ -z "$KHOA" ]; then
-            echo "::error::Chua co secret VPS_SSH_KEY_WEB. Xem README muc 'Deploy len VPS'."
-            exit 1
+            if [ "$BAT_BUOC" = "true" ]; then
+              echo "::error::Chua co secret $TEN_KHOA. Xem README muc 'Deploy len VPS'."
+              exit 1
+            fi
+            echo "::warning::Chua co secret $TEN_KHOA -> bo qua deploy len $VPS_HOST."
+            echo "co=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "$KHOA" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
           if ! ssh-keygen -y -f ~/.ssh/deploy_key -P "" > /dev/null 2>&1; then
-            echo "::error::Secret VPS_SSH_KEY_WEB khong doc duoc (dinh dang private key bi hong - dan lai TOAN BO noi dung, giu nguyen xuong dong)."
+            echo "::error::Secret $TEN_KHOA khong doc duoc (dinh dang private key bi hong - dan lai TOAN BO noi dung, giu nguyen xuong dong)."
             exit 1
           fi
+          echo "co=true" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        if: steps.khoa.outputs.co == 'true'
+        with:
+          name: kpah-web-build
 
       - name: Gui bien moi truong
+        if: steps.khoa.outputs.co == 'true' && matrix.gui_env
         # Bi mat lay tu Settings > Secrets and variables > Actions > Secrets,
         # gia tri khong nhay cam (link tai game...) lay tu tab Variables.
         # KHONG echo gia tri ra log.
@@ -131,6 +164,7 @@ jobs:
               -o StrictHostKeyChecking=yes root@"$VPS_HOST" nhan-env
 
       - name: Gui ban build va khoi dong lai
+        if: steps.khoa.outputs.co == 'true'
         run: |
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 \
               -o StrictHostKeyChecking=yes root@"$VPS_HOST" "nhan-build ${GITHUB_SHA}" < kpah-web-build.tgz

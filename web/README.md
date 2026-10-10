@@ -70,13 +70,21 @@ Mỗi lần push lên `main`, [.github/workflows/deploy.yml](.github/workflows/d
 
 | Tab **Secrets** (bí mật) | Tab **Variables** (không nhạy cảm) |
 |---|---|
-| `VPS_SSH_KEY_WEB` — **bắt buộc** | `KPAH_LINK_ANDROID`, `KPAH_LINK_PC`, `KPAH_LINK_IOS`, `KPAH_LINK_GROUP` |
+| `VPS_SSH_KEY_WEB` — **bắt buộc** (VPS cũ 180.93.57.30) | `KPAH_LINK_ANDROID`, `KPAH_LINK_PC`, `KPAH_LINK_IOS`, `KPAH_LINK_GROUP` |
+| `VPS_SSH_KEY_WEB_2` — VPS mới 180.93.127.26 (để trống = bỏ qua VPS mới) | |
 | `KPAH_SECRET` — **bắt buộc**, `openssl rand -hex 32` | `KPAH_AUTO_ACTIVATE` (`true`/`false`) |
 | `KPAH_ADMIN_ACCOUNTS` — vd `hoahv,admin` | `KPAH_ADMIN_2FA_BAT_BUOC` |
 | `KPAH_TPBANK_ACCOUNT_NO`, `KPAH_TPBANK_ACCOUNT_NAME` | `KPAH_ADMIN_IDLE_TIMEOUT`, `KPAH_ADMIN_MAX_FAIL`, `KPAH_ADMIN_FAIL_WINDOW` |
 | `KPAH_SEPAY_WEBHOOK_APIKEY` | `KPAH_SERVER_DIR` (mặc định `/opt/kpah`) |
 | `KPAH_ADMIN_NAPTIEN_PASSWORD` | `KPAH_TRUSTED_PROXIES` |
 | `KPAH_DB_*` — chỉ khi web không đọc được `server.ini` | |
+
+**Hai VPS.** Push lên `main` deploy song song lên cả hai (job `deploy (vps-cu)` và
+`deploy (vps-moi)`, một bên lỗi không chặn bên kia). VPS mới **chỉ nhận bản build**: các
+secret `KPAH_*` ở trên là của VPS cũ (mật khẩu CSDL, `KPAH_SECRET`...), đẩy sang VPS mới
+là web ở đó dùng sai CSDL - nên VPS mới giữ `/etc/kpah-web.env` riêng, sửa tay trên VPS.
+Lấy giá trị cho `VPS_SSH_KEY_WEB_2`: `ssh root@180.93.127.26 cat /root/.ssh/deploy_github_web`
+(khoá bị ép chạy đúng `deploy-web.sh`, tạo bởi `cai-dat-vps.sh`) - dán TOÀN BỘ, giữ xuống dòng.
 
 Thêm biến mới thì phải thêm ở **ba** chỗ: `deploy.yml` (env + vòng `for`),
 `KHOA_HOP_LE` trong `deploy/deploy-web.sh`, và `server/utils/config.ts`.
