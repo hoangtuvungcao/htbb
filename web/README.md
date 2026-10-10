@@ -104,7 +104,6 @@ request đã proxy — phải chuyển sang `<Location />` trước.
 
 Không phải đổi gì ở phía game:
 
-- `/server.txt` và `/server/NQSH2.txt` (client game đọc) nằm ở `public/`.
 - **Webhook SePay đổi địa chỉ**: vào SePay > Webhooks, đổi URL thành
   `https://<tên-miền>/api/nap/webhook-sepay` (API Key giữ nguyên). Chưa đổi thì
   tiền vẫn vào tài khoản nhưng đơn không tự xác nhận — phải bấm tay ở `/admin/naptien`.
@@ -161,6 +160,6 @@ server/
   api/                # API: auth, nap, ranking, site, admin/*
   utils/              # config, db, token, chặn spam, admin, ...
 shared/utils/         # dùng chung client + server: quy tắc tài khoản, mốc nạp, ...
-public/               # server.txt, logo, ảnh
+public/               # logo, ảnh
 deploy/               # deploy-web.sh, systemd, Apache, cài đặt VPS
 ```
