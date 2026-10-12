@@ -5,7 +5,7 @@
 Chép smali-src sang thư mục ra rồi:
 - thêm NqshMod (đã biên dịch ra smali) vào game/render/screen
 - chèn lời gọi NqshMod ở đầu ServerListScr.loadSv / doUpdateServer, GameService.login,
-  MessageHandler.onMessage
+  MessageHandler.onMessage, GameMidlet.platformRequest; đổi link IP ở GameMidlet.url
 - đổi package (cài song song với bản TeaMobi) và tên app
 """
 import os
@@ -36,7 +36,19 @@ VA = [
     ("game/networklogic/MessageHandler.smali", ".method public onMessage(Lnetwork/Message;)V",
      ["invoke-static {p1}, %s->goiGuard(Lnetwork/Message;)Z" % MOD,
       "move-result v0", "if-eqz v0, :nqsh_tiep", "return-void", ":nqsh_tiep"]),
+    ("com/teamobi/kpah/GameMidlet.smali", ".method public platformRequest(Ljava/lang/String;)V",
+     ["invoke-static {p1}, %s->suaLink(Ljava/lang/String;)Ljava/lang/String;" % MOD, "move-result-object p1"]),
 ]
+
+# Trang chủ server gửi lúc đăng nhập (GameMidlet.url): link trỏ thẳng IP -> tên miền
+p = os.path.join(S, "game", "networklogic", "MessageRecieve0.smali")
+s = open(p, encoding="utf-8").read()
+s, n = re.subn(r"\n    sput-object (v\d+), Lcom/teamobi/kpah/GameMidlet;->url:Ljava/lang/String;\n",
+              lambda m: "\n    invoke-static {%s}, %s->suaLink(Ljava/lang/String;)Ljava/lang/String;\n"
+                        "    move-result-object %s\n%s" % (m.group(1), MOD, m.group(1), m.group(0)[1:]), s)
+assert n == 1, n
+open(p, "w", encoding="utf-8").write(s)
+print("va", "game/networklogic/MessageRecieve0.smali", "GameMidlet.url")
 
 for rel, khai, chen in VA:
     p = os.path.join(S, rel)

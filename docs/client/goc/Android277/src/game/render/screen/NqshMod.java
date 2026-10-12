@@ -124,6 +124,37 @@ public final class NqshMod {
         return true;
     }
 
+    // ---------------------------------------------------------------- link web
+
+    private static final String WEB = "https://nqsh-h2.top";
+
+    /**
+     * Link server gửi xuống (trang chủ GameMidlet.url, link tải game qua platformRequest) mà
+     * trỏ thẳng IP thì đổi sang tên miền, giữ nguyên đường dẫn. Link khác để nguyên.
+     */
+    public static String suaLink(String s) {
+        if (s == null) {
+            return null;
+        }
+        String t = s.trim();
+        int a = t.indexOf("://");
+        int b = a < 0 ? 0 : a + 3;
+        int c = b;
+        while (c < t.length() && "/?#".indexOf(t.charAt(c)) < 0) {
+            c++;
+        }
+        String host = t.substring(b, c);
+        int hai = host.lastIndexOf(':');
+        if (hai >= 0) {
+            host = host.substring(0, hai);
+        }
+        if (host.length() == 0 || !host.matches("\\d{1,3}(\\.\\d{1,3}){3}")) {
+            return s;
+        }
+        String duong = t.substring(c);
+        return WEB + (duong.length() == 0 ? "/" : duong);
+    }
+
     // ---------------------------------------------------------------- đăng nhập + xác thực -88
 
     /** Đầu GameService.login: true = đã xử lý (đang xác thực, hoặc đã tự gửi gói đăng nhập). */
