@@ -9,6 +9,7 @@
  * của MariaDB ngay trong câu SQL để KHỚP với login server.
  */
 import mysql from 'mysql2/promise'
+import { bocPoolNovaDB } from './novadb'
 import type { Pool, PoolConnection, RowDataPacket, ResultSetHeader } from 'mysql2/promise'
 
 const pools = new Map<string, Pool>()
@@ -16,7 +17,8 @@ const pools = new Map<string, Pool>()
 function taoPool(dbName: string): Pool {
   const c = useKpahConfig()
   const laAccount = dbName === c.db.account && c.db.accountUser !== null
-  return mysql.createPool({
+  // CSDL là NovaDB thì SQL đi qua lớp đệm đổi giờ/PASSWORD()/collation (xem novadb.ts)
+  return bocPoolNovaDB(mysql.createPool({
     host: c.db.host,
     port: c.db.port,
     user: laAccount ? c.db.accountUser! : c.db.user,
@@ -32,7 +34,7 @@ function taoPool(dbName: string): Pool {
     supportBigNumbers: true,
     bigNumberStrings: false,
     decimalNumbers: true,
-  })
+  }))
 }
 
 export function db(dbName: string): Pool {

@@ -83,13 +83,18 @@ export default defineAdminHandler(async (event, admin) => {
     dem(acc, 'SELECT COUNT(*) FROM team_user WHERE regdate >= DATE_SUB(CURDATE(), INTERVAL 29 DAY)'),
   ])
 
-  // Chưa kích hoạt: cần đối chiếu hai database. Nếu tài khoản MySQL không có quyền
-  // đọc chéo thì lùi về phép trừ gần đúng.
-  const dbGameTen = cfg.db.game.replace(/[^A-Za-z0-9_]/g, '')
-  let tkChuaKH = await dem(acc, `SELECT COUNT(*) FROM team_user t
-                                  WHERE NOT EXISTS (SELECT 1 FROM \`${dbGameTen}\`.\`5h_active\` a WHERE a.username = t.username)`)
+  // Chưa kích hoạt: NovaDB dùng mỗi database một file, không hỗ trợ truy vấn chéo
+  // `account`.`kpah_db`. Đối chiếu hai tập ở application layer thay vì để câu SQL lỗi rồi
+  // mới rơi về phép trừ gần đúng (phép trừ sai khi có tài khoản bị xóa/kích hoạt mồ côi).
+  let tkChuaKH: number | null = null
   let tkChuaKHUocLuong = false
-  if (tkChuaKH === null) {
+  try {
+    const taiKhoan = await q<{ username: string }>(acc, 'SELECT username FROM team_user')
+    const daKichHoat = new Set((await q<{ username: string }>(game, 'SELECT DISTINCT username FROM `5h_active`'))
+      .map(r => String(r.username).toLowerCase()))
+    tkChuaKH = taiKhoan.filter(r => !daKichHoat.has(String(r.username).toLowerCase())).length
+  } catch {
+    // Bảng 5h_active có thể chưa tồn tại ở server mới; giữ fallback hiện tại.
     const daKH = await dem(game, 'SELECT COUNT(DISTINCT username) FROM `5h_active`')
     if (tkTong !== null && daKH !== null) {
       tkChuaKH = Math.max(0, tkTong - daKH)

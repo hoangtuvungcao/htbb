@@ -63,10 +63,7 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
   const c = useKpahConfig()
   const DB_GAME = c.db.game
   const DB_ACCOUNT = c.db.account
-  // Tên DB phải ghép thẳng vào câu SQL bắc cầu 2 database (không truyền qua `?`
-  // được) nên lọc chỉ còn chữ, số, gạch dưới.
   const DB_GAME_TEN = DB_GAME.replace(/[^A-Za-z0-9_]/g, '')
-  const DB_ACC_TEN = DB_ACCOUNT.replace(/[^A-Za-z0-9_]/g, '')
   const SERVER_DIR = c.serverDir
 
   const kiemTra: ChanDoanKetQua[] = []
@@ -257,12 +254,13 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
 
   // --- 8. Kích hoạt mồ côi (bắc cầu 2 database) --------------------------------
   await thu('Kích hoạt mồ côi', async () => {
-    const dong = await q(
-      game,
-      `SELECT a.username FROM \`5h_active\` a
-        WHERE NOT EXISTS (SELECT 1 FROM \`${DB_ACC_TEN}\`.team_user t WHERE t.username = a.username)
-        LIMIT 20`,
-    )
+    // Đối chiếu bằng JS chứ không NOT EXISTS sang `account`.team_user: NovaDB không cho truy
+    // vấn chéo database. So chữ thường cho khớp kiểu so không phân biệt hoa/thường của CSDL.
+    const coTen = new Set((await q(dbAccount(), 'SELECT username FROM team_user'))
+      .map(d => String(d.username).toLowerCase()))
+    const dong = (await q(game, 'SELECT DISTINCT username FROM `5h_active`'))
+      .filter(d => !coTen.has(String(d.username).toLowerCase()))
+      .slice(0, 20)
     if (!dong.length) {
       them('Kích hoạt mồ côi', 'ok', 'Mọi dòng kích hoạt đều trỏ tới một tài khoản có thật.')
       return
@@ -278,12 +276,11 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
 
   // --- 9. Nhân vật mồ côi tài khoản --------------------------------------------
   await thu('Nhân vật mồ côi tài khoản', async () => {
-    const dong = await q(
-      game,
-      `SELECT charname, userId, lastLv FROM tob_char c
-        WHERE NOT EXISTS (SELECT 1 FROM \`${DB_ACC_TEN}\`.team_user t WHERE t.id = c.userId)
-        ORDER BY lastLv DESC LIMIT 20`,
-    )
+    // Đối chiếu bằng JS: NovaDB không cho truy vấn chéo database (xem mục 8).
+    const coId = new Set((await q(dbAccount(), 'SELECT id FROM team_user')).map(d => Number(d.id)))
+    const dong = (await q(game, 'SELECT charname, userId, lastLv FROM tob_char ORDER BY lastLv DESC'))
+      .filter(d => !coId.has(Number(d.userId)))
+      .slice(0, 20)
     if (!dong.length) {
       them('Nhân vật mồ côi tài khoản', 'ok', 'Mọi nhân vật đều thuộc về một tài khoản có thật.')
       return

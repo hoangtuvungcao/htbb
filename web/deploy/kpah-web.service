@@ -3,7 +3,7 @@
 # (xem deploy/deploy-web.sh). Apache dung truoc, chuyen tiep ve 127.0.0.1:3000.
 [Unit]
 Description=Website KPAH (Nuxt)
-After=network.target mariadb.service mysql.service
+After=network.target novadb.service
 
 [Service]
 Type=simple
