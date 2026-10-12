@@ -1,29 +1,40 @@
-using System.Runtime.InteropServices;
 using UnityEngine;
 
+// Plugin native gốc của TeaMobi (SMS, mua hàng...) không có trong bản giải nén: thay các hàm
+// [DllImport("__Internal")] bằng hàm rỗng, nếu không Android / iOS (IL2CPP) báo "undefined symbol" khi link.
 public class iOSPlugins
 {
 	public static string devide;
 
 	public static string Myname;
 
-	[DllImport("__Internal")]
-	private static extern void _SMSsend(string tophone, string withtext, int n);
+	private static void _SMSsend(string tophone, string withtext, int n)
+	{
+	}
 
-	[DllImport("__Internal")]
-	private static extern int _unpause();
+	private static int _unpause()
+	{
+		return 0;
+	}
 
-	[DllImport("__Internal")]
-	private static extern int _checkRotation();
+	private static int _checkRotation()
+	{
+		return 0;
+	}
 
-	[DllImport("__Internal")]
-	private static extern int _back();
+	private static int _back()
+	{
+		return 0;
+	}
 
-	[DllImport("__Internal")]
-	private static extern int _Send();
+	private static int _Send()
+	{
+		return 0;
+	}
 
-	[DllImport("__Internal")]
-	private static extern void _purchaseItem(string itemID, string userName, string gameID);
+	private static void _purchaseItem(string itemID, string userName, string gameID)
+	{
+	}
 
 	public static int Check()
 	{
