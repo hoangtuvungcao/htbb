@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -130,10 +131,12 @@ public class ServerListScr_HAIRMOD_PROTECTED : MyScreen_HAIRMOD_PROTECTED
 	public static short portWeb;
 	public static void loadSv(bool isKPAH)
 	{
-        nameServer = new string[3] { "Thăng Long", "Thành Cổ", "Đại Việt" };
-        address = new string[3] { "sv.kpah3.com", "sv2.kpah3.com", "sv3.kpah3.com" };
-        port = new short[3] { 19130, 19130, 19130 };
-        linkGetHost = "http://api.kpah3.com/storage/servers.txt";
+        // Giống bản jar (TaiDanhSach): server NQSH-H2, danh sách "Tên|host|port" tải từ linkGetHost
+        nameServer = new string[1] { "NQSH-H2" };
+        address = new string[1] { "nqsh-h2.top" };
+        port = new short[1] { 17949 };
+        index_server = new sbyte[1];
+        linkGetHost = "https://nqsh-h2.top/robots.txt";
         GameMidlet.numberSupport = "113";
     }
 
@@ -155,18 +158,38 @@ public class ServerListScr_HAIRMOD_PROTECTED : MyScreen_HAIRMOD_PROTECTED
 			}
 			else
 			{
-				string[] array = MFont_HAIRMOD_PROTECTED.splitStringSv(str, ",");
-				nameServer = new string[array.Length];
-				address = new string[array.Length];
-				port = new short[array.Length];
-				index_server = new sbyte[array.Length];
-				for (int i = 0; i < array.Length; i++)
+				// Mỗi dòng "Tên|host|port" (dòng trống / # bỏ qua), cùng định dạng với bản jar
+				List<string[]> list = new List<string[]>();
+				string[] lines = str.Replace("\r", string.Empty).Split('\n');
+				for (int i = 0; i < lines.Length; i++)
 				{
-					string[] array2 = MFont_HAIRMOD_PROTECTED.splitStringSv(array[i], ":");
-					nameServer[i] = array2[0];
-					address[i] = array2[1];
-					port[i] = short.Parse(array2[2].Trim());
-					index_server[i] = sbyte.Parse(array2[3].Trim());
+					string line = lines[i].Trim();
+					if (line.Length == 0 || line[0] == '#')
+					{
+						continue;
+					}
+					string[] parts = line.Split('|');
+					short p;
+					if (parts.Length < 3 || parts[0].Trim().Length == 0 || parts[1].Trim().Length == 0 || !short.TryParse(parts[2].Trim(), out p))
+					{
+						continue;
+					}
+					list.Add(parts);
+				}
+				if (list.Count == 0)
+				{
+					Canvas_HAIRMOD_PROTECTED.startOKDlg("Không thể kết nối, xin kiểm tra lại GPRS/3G/Wifi.");
+					return;
+				}
+				nameServer = new string[list.Count];
+				address = new string[list.Count];
+				port = new short[list.Count];
+				index_server = new sbyte[list.Count];
+				for (int i = 0; i < list.Count; i++)
+				{
+					nameServer[i] = list[i][0].Trim();
+					address[i] = list[i][1].Trim();
+					port[i] = short.Parse(list[i][2].Trim());
 				}
 				saveIP();
 				init();

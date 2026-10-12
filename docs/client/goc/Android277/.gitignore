@@ -1,0 +1,6 @@
+work/
+out/
+*.apk
+*.keystore
+*.jks
+key.properties
