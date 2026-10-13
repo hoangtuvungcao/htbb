@@ -66,9 +66,23 @@ public class Main : MonoBehaviour
 		}
 	}
 
+	/// <summary>Số khung hình vẽ mỗi giây. Logic game chỉ chạy 25 lần/giây (FixedUpdate, Fixed Timestep 0.04) nên vẽ nhanh hơn là phí CPU.</summary>
+	private const int FPS = 30;
+
+	/// <summary>Cửa sổ không được chọn (thu nhỏ / chạy nền): vẽ chậm lại, mạng vẫn chạy.</summary>
+	private const int FPS_NEN = 10;
+
 	private void Start()
 	{
+		// PC dùng mức chất lượng "Fantastic" bật VSync: Unity bỏ qua targetFrameRate và vẽ theo tần số màn hình (144/165 Hz)
+		QualitySettings.vSyncCount = 0;
+		Application.targetFrameRate = FPS;
 		ScaleGUI.datCuaSo();
+	}
+
+	private void OnApplicationFocus(bool focus)
+	{
+		Application.targetFrameRate = focus ? FPS : FPS_NEN;
 	}
 
 	public void platformRequest(string url)
@@ -208,7 +222,7 @@ public class Main : MonoBehaviour
 		{
 			Screen.orientation = ScreenOrientation.LandscapeLeft;
 			Application.runInBackground = true;
-			Application.targetFrameRate = 30;
+			Application.targetFrameRate = FPS;
 			base.useGUILayout = false;
 			isCompactDevice = detectCompactDevice();
 			if (main == null)
