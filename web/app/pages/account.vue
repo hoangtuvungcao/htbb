@@ -4,6 +4,7 @@ useSeoMeta({ title: 'Tài khoản của tôi', robots: 'noindex' })
 
 interface AccountInfo {
   username: string
+  email: string | null
   activated: boolean
   chars: Array<{ charname: string, lastLv: number, xp: number, class: number }>
 }
@@ -15,6 +16,81 @@ const { data, error, refresh } = useAsyncData<AccountInfo>('kpah-account', () =>
 watch(error, (e: any) => {
   if (e?.statusCode === 401) navigateTo('/login')
 })
+
+// ---- Bảo mật: đổi mật khẩu ----
+const toast = useToast()
+const mk = reactive({ current: '', password: '', confirm: '' })
+const mkHien = ref(false)
+const mkDangGui = ref(false)
+const mkLoi = ref('')
+
+async function doiMatKhau() {
+  mkLoi.value = ''
+  // Kiểm tra trước đúng như server (doi-mat-khau.post.ts).
+  if (mk.current === '') {
+    mkLoi.value = 'Vui lòng nhập mật khẩu hiện tại.'
+    return
+  }
+  if (!matKhauGameHopLe(mk.password)) {
+    mkLoi.value = LOI_MAT_KHAU_GAME
+    return
+  }
+  if (mk.password !== mk.confirm) {
+    mkLoi.value = 'Mật khẩu nhập lại không khớp.'
+    return
+  }
+  if (mk.password === mk.current) {
+    mkLoi.value = 'Mật khẩu mới phải khác mật khẩu hiện tại.'
+    return
+  }
+  mkDangGui.value = true
+  try {
+    await api('/api/auth/doi-mat-khau', { method: 'POST', body: { ...mk } })
+    mk.current = ''
+    mk.password = ''
+    mk.confirm = ''
+    toast.add({ title: 'Đã đổi mật khẩu.', description: 'Lần sau vào game hãy dùng mật khẩu mới.', color: 'success', icon: 'i-lucide-shield-check' })
+  } catch (e) {
+    mkLoi.value = loiApi(e)
+  } finally {
+    mkDangGui.value = false
+  }
+}
+
+// ---- Bảo mật: thêm / đổi email ----
+const em = reactive({ email: '', current: '' })
+const emHien = ref(false)
+const emDangGui = ref(false)
+const emLoi = ref('')
+
+async function doiEmail() {
+  emLoi.value = ''
+  const email = em.email.trim()
+  if (email === '') {
+    emLoi.value = 'Vui lòng nhập email.'
+    return
+  }
+  if (!dangKyEmailHopLe(email)) {
+    emLoi.value = 'Email không hợp lệ.'
+    return
+  }
+  if (em.current === '') {
+    emLoi.value = 'Vui lòng nhập mật khẩu hiện tại.'
+    return
+  }
+  emDangGui.value = true
+  try {
+    const res = await api<{ email: string }>('/api/auth/doi-email', { method: 'POST', body: { email, current: em.current } })
+    if (data.value) data.value.email = res.email
+    em.email = ''
+    em.current = ''
+    toast.add({ title: 'Đã lưu email.', description: res.email, color: 'success', icon: 'i-lucide-mail-check' })
+  } catch (e) {
+    emLoi.value = loiApi(e)
+  } finally {
+    emDangGui.value = false
+  }
+}
 
 const columns = [
   { accessorKey: 'charname', header: 'Nhân vật' },
@@ -137,6 +213,158 @@ const columns = [
           </div>
         </FxReveal>
       </div>
+
+      <!-- Bảo mật -->
+      <FxReveal :delay="0.15">
+        <div class="mt-6 overflow-hidden rounded-3xl glass ring-gilded p-8">
+          <p class="eyebrow">
+            Bảo mật
+          </p>
+          <h2 class="section-title mt-2 text-2xl text-highlighted">
+            Giữ tài khoản an toàn
+          </h2>
+
+          <div class="mt-6 grid gap-8 lg:grid-cols-2">
+            <!-- Đổi mật khẩu -->
+            <form class="space-y-4" aria-labelledby="doi-mk-title" @submit.prevent="doiMatKhau">
+              <h3 id="doi-mk-title" class="flex items-center gap-2 font-semibold text-highlighted">
+                <UIcon name="i-lucide-lock-keyhole" class="size-5 text-primary" /> Đổi mật khẩu
+              </h3>
+              <UAlert
+                v-if="mkLoi"
+                color="error"
+                variant="subtle"
+                icon="i-lucide-circle-alert"
+                :description="mkLoi"
+                role="alert"
+              />
+              <UFormField label="Mật khẩu hiện tại" name="current" required>
+                <UInput
+                  v-model="mk.current"
+                  :type="mkHien ? 'text' : 'password'"
+                  autocomplete="current-password"
+                  size="lg"
+                  icon="i-lucide-lock-keyhole"
+                  class="w-full"
+                  required
+                />
+              </UFormField>
+              <UFormField label="Mật khẩu mới" name="password" required :help="`${PASSWORD_MIN}–${PASSWORD_MAX} ký tự, chỉ gồm chữ cái không dấu và số (game chỉ nhận như vậy).`">
+                <UInput
+                  v-model="mk.password"
+                  :type="mkHien ? 'text' : 'password'"
+                  autocomplete="new-password"
+                  :minlength="PASSWORD_MIN"
+                  :maxlength="PASSWORD_MAX"
+                  pattern="[A-Za-z0-9]+"
+                  size="lg"
+                  icon="i-lucide-key-round"
+                  class="w-full"
+                  required
+                  :ui="{ trailing: 'pe-1' }"
+                >
+                  <template #trailing>
+                    <UButton
+                      color="neutral"
+                      variant="link"
+                      size="sm"
+                      :icon="mkHien ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                      :aria-label="mkHien ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
+                      :aria-pressed="mkHien"
+                      @click="mkHien = !mkHien"
+                    />
+                  </template>
+                </UInput>
+              </UFormField>
+              <UFormField label="Nhập lại mật khẩu mới" name="confirm" required>
+                <UInput
+                  v-model="mk.confirm"
+                  :type="mkHien ? 'text' : 'password'"
+                  autocomplete="new-password"
+                  :minlength="PASSWORD_MIN"
+                  :maxlength="PASSWORD_MAX"
+                  size="lg"
+                  icon="i-lucide-key-round"
+                  class="w-full"
+                  required
+                  :color="mk.confirm && mk.confirm !== mk.password ? 'error' : undefined"
+                />
+              </UFormField>
+              <UButton type="submit" :loading="mkDangGui" icon="i-lucide-shield-check">
+                Đổi mật khẩu
+              </UButton>
+            </form>
+
+            <!-- Email -->
+            <form class="space-y-4" aria-labelledby="doi-email-title" @submit.prevent="doiEmail">
+              <h3 id="doi-email-title" class="flex items-center gap-2 font-semibold text-highlighted">
+                <UIcon name="i-lucide-mail" class="size-5 text-primary" /> {{ data?.email ? 'Đổi email' : 'Thêm email' }}
+              </h3>
+              <USkeleton v-if="!data && !error" class="h-6 w-56" />
+              <p v-else-if="data?.email" class="text-sm text-muted">
+                Email hiện tại: <strong class="break-all text-highlighted">{{ data.email }}</strong>
+              </p>
+              <UAlert
+                v-else-if="data"
+                color="warning"
+                variant="subtle"
+                icon="i-lucide-mail-warning"
+                description="Chưa có email — thêm email để dùng được Quên mật khẩu."
+              />
+              <UAlert
+                v-if="emLoi"
+                color="error"
+                variant="subtle"
+                icon="i-lucide-circle-alert"
+                :description="emLoi"
+                role="alert"
+              />
+              <UFormField :label="data?.email ? 'Email mới' : 'Email'" name="email" required>
+                <UInput
+                  v-model="em.email"
+                  type="email"
+                  placeholder="email@example.com"
+                  autocomplete="email"
+                  autocapitalize="none"
+                  :spellcheck="false"
+                  maxlength="254"
+                  size="lg"
+                  icon="i-lucide-mail"
+                  class="w-full"
+                  required
+                />
+              </UFormField>
+              <UFormField label="Mật khẩu hiện tại" name="email-current" required help="Nhập mật khẩu để xác nhận chính bạn đang đổi email.">
+                <UInput
+                  v-model="em.current"
+                  :type="emHien ? 'text' : 'password'"
+                  autocomplete="current-password"
+                  size="lg"
+                  icon="i-lucide-lock-keyhole"
+                  class="w-full"
+                  required
+                  :ui="{ trailing: 'pe-1' }"
+                >
+                  <template #trailing>
+                    <UButton
+                      color="neutral"
+                      variant="link"
+                      size="sm"
+                      :icon="emHien ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                      :aria-label="emHien ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'"
+                      :aria-pressed="emHien"
+                      @click="emHien = !emHien"
+                    />
+                  </template>
+                </UInput>
+              </UFormField>
+              <UButton type="submit" :loading="emDangGui" icon="i-lucide-mail-check">
+                Lưu email
+              </UButton>
+            </form>
+          </div>
+        </div>
+      </FxReveal>
     </UContainer>
   </div>
 </template>

@@ -1,6 +1,7 @@
 /**
  * Dữ liệu cho trang Tài khoản và trang Kích hoạt của người chơi đang đăng nhập.
- * -> { username, activated, chars: [{ charname, lastLv, xp, class }] }
+ * -> { username, email, activated, chars: [{ charname, lastLv, xp, class }] }
+ * email: email lưu ở team_user (null = chưa có, chưa dùng được Quên mật khẩu).
  *
  * Chỉ đọc theo id/username lấy từ token, không bao giờ từ tham số người gọi gửi lên.
  * Kích hoạt chỉ do admin cấp; người chơi không tự gia hạn được, nên cố ý không có
@@ -22,8 +23,18 @@ export default defineEventHandler(async (event) => {
     chars = []
   }
 
+  // Email của tài khoản (phòng thủ nếu lỗi: coi như chưa có)
+  let email: string | null = null
+  try {
+    const v = await qv<string | null>(dbAccount(), 'SELECT email FROM team_user WHERE id = ? LIMIT 1', [Math.trunc(u.id)])
+    email = typeof v === 'string' && v.trim() !== '' ? v.trim() : null
+  } catch {
+    email = null
+  }
+
   return {
     username: u.username,
+    email,
     activated,
     chars: chars.map(c => ({
       charname: String(c.charname),

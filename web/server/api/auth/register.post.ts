@@ -1,6 +1,7 @@
 /**
  * Đăng ký tài khoản.
- * Body: { username, password, confirm, email? } -> { username, autoActivate }
+ * Body: { username, password, confirm, email } -> { username, autoActivate }
+ * Email bắt buộc: là đường duy nhất để lấy lại mật khẩu (trang Quên mật khẩu).
  *
  * Không có token chống CSRF: đăng nhập bằng bearer token trong header nên trình
  * duyệt không tự gửi kèm phiên (xem server/utils/token.ts). Thứ chặn script tạo
@@ -29,8 +30,9 @@ export default defineEventHandler(async (event) => {
       const msg = 'Tên tài khoản đã tồn tại, vui lòng chọn tên khác.'
       throw apiLoi(409, msg, { errors: [msg] })
     }
-    // Lưu mật khẩu bằng PASSWORD() để KHỚP với login server của game
-    const res = await exec(acc, DANG_KY_INSERT_SQL, [d.username, d.password, d.email !== '' ? d.email : null])
+    // Lưu mật khẩu bằng PASSWORD() để KHỚP với login server của game. Email đã
+    // qua dangKyKiemTra nên luôn có giá trị hợp lệ.
+    const res = await exec(acc, DANG_KY_INSERT_SQL, [d.username, d.password, d.email])
     userId = Number(res.insertId)
   } catch (e: any) {
     if (e?.statusCode && e.statusCode < 500) throw e

@@ -98,6 +98,9 @@ async function submit() {
           </template>
         </UInput>
       </UFormField>
+      <p class="text-end text-sm">
+        <NuxtLink to="/quen-mat-khau" class="text-primary hover:underline">Quên mật khẩu?</NuxtLink>
+      </p>
       <p class="text-sm text-muted">
         Cần hỗ trợ tài khoản? <NuxtLink to="/download#support" class="text-primary hover:underline">Xem kênh hỗ trợ ↗</NuxtLink>
       </p>

@@ -1,7 +1,7 @@
 /**
  * Đăng ký tài khoản — quy tắc nhập liệu và các câu SQL dùng chung.
  */
-import { USERNAME_MIN, USERNAME_MAX, PASSWORD_MIN, PASSWORD_MAX, validUsername, validPassword } from '../../shared/utils/kpah'
+import { USERNAME_MIN, USERNAME_MAX, PASSWORD_MIN, PASSWORD_MAX, validUsername, matKhauGameHopLe, dangKyEmailHopLe } from '../../shared/utils/kpah'
 
 /**
  * Số tài khoản một địa chỉ IP được tạo trong một giờ. Người thật hiếm khi cần
@@ -22,20 +22,8 @@ export const DANG_KY_INSERT_SQL
 
 export const DANG_KY_TRUNG_TEN_SQL = 'SELECT 1 FROM team_user WHERE username = ? LIMIT 1'
 
-/**
- * Kiểm tra email ở mức hợp lý: một @, phần trước không rỗng và không có khoảng
- * trắng, tên miền có ít nhất một dấu chấm, nhãn chỉ gồm chữ/số/gạch ngang.
- */
-export function dangKyEmailHopLe(email: string): boolean {
-  if (email.length > 254) return false
-  const m = email.match(/^([A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]{1,64})@([A-Za-z0-9.-]+)$/)
-  if (!m) return false
-  const [, local, domain] = m as unknown as [string, string, string]
-  if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) return false
-  const nhan = domain.split('.')
-  if (nhan.length < 2) return false
-  return nhan.every(n => /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/.test(n))
-}
+// Kiểm tra email (dangKyEmailHopLe) nằm ở shared/utils/kpah.ts để form đăng ký
+// kiểm tra trước đúng như server.
 
 export interface DangKyInput {
   username: string
@@ -64,13 +52,18 @@ export function dangKyKiemTra(d: DangKyInput): string[] {
   if (!validUsername(d.username)) {
     loi.push(`Tên tài khoản phải từ ${USERNAME_MIN}-${USERNAME_MAX} ký tự, chỉ gồm chữ thường và số.`)
   }
-  if (!validPassword(d.password)) {
-    loi.push(`Mật khẩu phải từ ${PASSWORD_MIN}-${PASSWORD_MAX} ký tự.`)
+  // Login server của game chỉ nhận chữ cái không dấu + số (CreateCharHandler.checkInfoLogin) và bỏ
+  // qua "000000": đăng ký mật khẩu khác thì tài khoản tạo được nhưng không bao giờ vào được game.
+  if (!matKhauGameHopLe(d.password)) {
+    loi.push(`Mật khẩu phải từ ${PASSWORD_MIN}-${PASSWORD_MAX} ký tự, chỉ gồm chữ cái không dấu và số, và không được là 000000.`)
   }
   if (d.password !== d.confirm) {
     loi.push('Mật khẩu nhập lại không khớp.')
   }
-  if (d.email !== '' && !dangKyEmailHopLe(d.email)) {
+  // Email bắt buộc: là đường duy nhất để lấy lại mật khẩu (trang Quên mật khẩu).
+  if (d.email === '') {
+    loi.push('Vui lòng nhập email (dùng để lấy lại mật khẩu).')
+  } else if (!dangKyEmailHopLe(d.email)) {
     loi.push('Email không hợp lệ.')
   }
   return loi

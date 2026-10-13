@@ -22,6 +22,37 @@ export function validPassword(p: string): boolean {
   return len >= PASSWORD_MIN && len <= PASSWORD_MAX
 }
 
+/**
+ * Mật khẩu mà login server của game chấp nhận: chỉ chữ cái Latinh không dấu và số
+ * (CreateCharHandler.checkInfoLogin, gọi trong LoginHandler.process), và không được
+ * là "000000" (LoginHandler.passAdmin, so không phân biệt hoa thường — gặp là bỏ
+ * qua gói đăng nhập). Dùng cho đổi mật khẩu / mật khẩu sinh ra khi quên mật khẩu.
+ * Dùng cả cho form đăng ký.
+ */
+export function matKhauGameHopLe(p: string): boolean {
+  return validPassword(p) && /^[A-Za-z0-9]+$/.test(p) && p.toLowerCase() !== '000000'
+}
+
+/** Lỗi khi mật khẩu mới không đúng matKhauGameHopLe (dùng cả ở form lẫn server). */
+export const LOI_MAT_KHAU_GAME
+  = `Mật khẩu mới phải từ ${PASSWORD_MIN}-${PASSWORD_MAX} ký tự, chỉ gồm chữ cái không dấu và số, và không được là 000000.`
+
+/**
+ * Kiểm tra email ở mức hợp lý: một @, phần trước không rỗng và không có khoảng
+ * trắng, tên miền có ít nhất một dấu chấm, nhãn chỉ gồm chữ/số/gạch ngang.
+ * Dùng chung cho form (kiểm tra trước khi gửi) và server (kiểm tra thật).
+ */
+export function dangKyEmailHopLe(email: string): boolean {
+  if (email.length > 254) return false
+  const m = email.match(/^([A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]{1,64})@([A-Za-z0-9.-]+)$/)
+  if (!m) return false
+  const [, local, domain] = m as unknown as [string, string, string]
+  if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) return false
+  const nhan = domain.split('.')
+  if (nhan.length < 2) return false
+  return nhan.every(n => /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/.test(n))
+}
+
 /** Tên nghề theo cột tob_char.class (khớp Res.nameClazz của client, MapCheTao.java:930). */
 export const CLASS_NAMES = ['Kiếm khách', 'Chiến binh', 'Pháp sư', 'Đấu sĩ', 'Cung thủ'] as const
 

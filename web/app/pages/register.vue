@@ -15,8 +15,26 @@ const errors = ref<string[]>([])
 /** Tài khoản vừa tạo thành công (hiện kết quả ngay trên trang, không chuyển trang). */
 const daDangKy = ref<{ username: string, autoActivate: boolean } | null>(null)
 
+/** Kiểm tra email trước khi gửi, đúng như server (dangKyKiemTra). */
+function loiEmail(): string | null {
+  const email = form.email.trim()
+  if (email === '') return 'Vui lòng nhập email (dùng để lấy lại mật khẩu).'
+  if (!dangKyEmailHopLe(email)) return 'Email không hợp lệ.'
+  return null
+}
+
 async function submit() {
   errors.value = []
+  // Cùng quy tắc với server: login server của game chỉ nhận chữ cái không dấu + số.
+  if (!matKhauGameHopLe(form.password)) {
+    errors.value = [`Mật khẩu phải từ ${PASSWORD_MIN}-${PASSWORD_MAX} ký tự, chỉ gồm chữ cái không dấu và số, và không được là 000000.`]
+    return
+  }
+  const le = loiEmail()
+  if (le) {
+    errors.value = [le]
+    return
+  }
   loading.value = true
   try {
     const res = await api<{ username: string, autoActivate: boolean }>('/api/auth/register', {
@@ -118,7 +136,7 @@ async function submit() {
             @update:model-value="(v: string | number) => (form.username = String(v).toLowerCase())"
           />
         </UFormField>
-        <UFormField label="Mật khẩu" name="password" required :help="`Sử dụng từ ${PASSWORD_MIN}–${PASSWORD_MAX} ký tự.`">
+        <UFormField label="Mật khẩu" name="password" required :help="`Từ ${PASSWORD_MIN}–${PASSWORD_MAX} ký tự, chỉ chữ cái không dấu và số.`">
           <UInput
             v-model="form.password"
             :type="showPass ? 'text' : 'password'"
@@ -173,15 +191,19 @@ async function submit() {
             </template>
           </UInput>
         </UFormField>
-        <UFormField label="Email" name="email" hint="Không bắt buộc">
+        <UFormField label="Email" name="email" required help="Dùng để lấy lại mật khẩu khi bạn quên.">
           <UInput
             v-model="form.email"
             type="email"
             placeholder="email@example.com"
             autocomplete="email"
+            autocapitalize="none"
+            :spellcheck="false"
+            maxlength="254"
             size="xl"
             icon="i-lucide-mail"
             class="w-full"
+            required
           />
         </UFormField>
         <UButton type="submit" size="xl" block :loading="loading" label="Tạo tài khoản" trailing-icon="i-lucide-arrow-up-right" :ui="{ label: 'flex-1 text-center' }" />

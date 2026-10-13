@@ -78,6 +78,7 @@ Mỗi lần push lên `main`, [.github/workflows/deploy.yml](.github/workflows/d
 | `KPAH_SEPAY_WEBHOOK_APIKEY` | `KPAH_SERVER_DIR` (mặc định `/opt/kpah`) |
 | `KPAH_ADMIN_NAPTIEN_PASSWORD` | `KPAH_TRUSTED_PROXIES` |
 | `KPAH_DB_*` — chỉ khi web không đọc được `server.ini` | |
+| `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`, `KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` — gửi email, xem [Gửi email (Gmail API)](#gửi-email-gmail-api) | `KPAH_MAIL_FROM_NAME` (mặc định `Khí Phách Anh Hùng`) |
 
 **Hai VPS.** Push lên `main` deploy song song lên cả hai (job `deploy (vps-cu)` và
 `deploy (vps-moi)`, một bên lỗi không chặn bên kia). VPS mới **chỉ nhận bản build**: các
@@ -101,6 +102,60 @@ ssh root@180.93.57.30 'bash /root/kpah-web-deploy/cai-dat-vps.sh'
 Script kiểm Node ≥ 20, tạo user `kpah-web` (thêm vào nhóm `kpah` để đọc
 `server.ini` và log game), cài `kpah-web.service`, tạo khoá SSH bị ép lệnh và in
 private key ra để dán vào secret `VPS_SSH_KEY_WEB`. Rồi đặt các secret và push.
+
+## Gửi email (Gmail API)
+
+Website gửi thư bằng **Gmail API** (OAuth2 + refresh token, không dùng SMTP/mật khẩu
+Gmail) — [server/utils/guiMail.ts](server/utils/guiMail.ts). Dùng cho:
+
+- **Quên mật khẩu** (`/quen-mat-khau`): nhập tên tài khoản + email đã đăng ký → web
+  đặt mật khẩu mới ngẫu nhiên (8 ký tự chữ thường + số) và gửi về email. Gửi thư hỏng
+  thì trả lại mật khẩu cũ. Chưa cấu hình mail thì trang báo "chưa được bật".
+- Thư báo khi người chơi **đổi mật khẩu** / **đổi email** ở trang Tài khoản (mục Bảo mật).
+
+Thiếu một trong 4 biến `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`,
+`KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` = tắt gửi mail. `KPAH_MAIL_FROM_NAME` là
+tên người gửi (mặc định `Khí Phách Anh Hùng`).
+
+### Lấy thông tin (làm một lần)
+
+1. Vào [Google Cloud Console](https://console.cloud.google.com/), đăng nhập **đúng tài
+   khoản Gmail sẽ dùng để gửi thư**, tạo project mới (vd. `kpah-mail`).
+2. **APIs & Services → Library** → tìm **Gmail API** → **Enable**.
+3. **APIs & Services → OAuth consent screen** (Google Auth Platform):
+   - User type: **External**. Điền tên ứng dụng (vd. `KPAH Web`), email hỗ trợ, email liên hệ.
+   - **Data access / Scopes** → Add scope `https://www.googleapis.com/auth/gmail.send`
+     (chỉ quyền gửi thư, không đọc được hộp thư).
+   - **Audience → Publish app** → chuyển sang **In production**. Dùng cho chính mình thì
+     **không cần gửi Google xác minh**. Nếu để ở "Testing", refresh token **hết hạn sau
+     7 ngày** và web sẽ ngừng gửi được mail. Khi cấp quyền sẽ gặp cảnh báo "Google chưa
+     xác minh ứng dụng này" một lần: bấm **Nâng cao → Đi tới ... (không an toàn)**.
+4. **APIs & Services → Credentials → Create credentials → OAuth client ID**:
+   - Loại **Desktop app** (khuyên dùng — Google nhận mọi cổng `127.0.0.1`), hoặc
+   - Loại **Web application** với Authorized redirect URI đúng `http://127.0.0.1:8765/`
+     (đổi cổng thì đổi cả ở đây lẫn tham số cổng của script).
+   - Lưu lại **Client ID** và **Client secret**.
+5. Trên máy có trình duyệt, trong thư mục KPAH-Web:
+
+   ```bash
+   node scripts/lay-gmail-refresh-token.mjs <client_id> <client_secret> [cổng, mặc định 8765]
+   ```
+
+   Mở đường link script in ra, đăng nhập đúng tài khoản Gmail gửi thư, bấm Cho phép.
+   Script in ra `KPAH_GMAIL_REFRESH_TOKEN=...`.
+6. Đặt giá trị:
+   - **VPS cũ 180.93.57.30**: GitHub → Settings → Secrets and variables → Actions →
+     **Secrets**: `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`,
+     `KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` (địa chỉ Gmail ở bước 1). Tab
+     **Variables** (tuỳ chọn): `KPAH_MAIL_FROM_NAME`. Push / chạy lại workflow để deploy.
+   - **VPS mới 180.93.127.26**: CI **không** đẩy biến môi trường sang VPS này — thêm tay
+     các dòng trên vào `/etc/kpah-web.env` rồi `systemctl restart kpah-web`.
+
+Refresh token + client secret = gửi được thư dưới tên bạn: **không** dán vào chat, không
+commit. Bị lộ / web báo `invalid_grant` trong log (`journalctl -u kpah-web | grep '\[mail\]'`)
+thì vào [quyền của tài khoản Google](https://myaccount.google.com/permissions) gỡ quyền
+ứng dụng rồi chạy lại bước 5. Gmail thường giới hạn khoảng 500 thư/ngày cho tài khoản
+cá nhân — dư cho quên mật khẩu.
 
 ## Bật website trên VPS
 
@@ -142,13 +197,19 @@ Tắt proxy (trả Apache về website cũ): `a2disconf kpah-web-proxy && system
   (`KPAH_TRUSTED_PROXIES`, mặc định chỉ loopback), và lấy phần tử **cuối** — địa
   chỉ do chính Apache ghi sau khi mod_remoteip đã khôi phục IP thật. Kết nối thẳng
   từ Internet thì bỏ qua mọi header tự khai.
-- **Giới hạn số lần** theo IP: đăng ký, gõ sai mật khẩu người chơi, tạo đơn nạp, gõ
+- **Giới hạn số lần** theo IP: đăng ký, gõ sai mật khẩu người chơi, quên mật khẩu
+  (đếm mọi lần gửi), gõ sai mật khẩu hiện tại khi đổi mật khẩu/email, tạo đơn nạp, gõ
   sai mật khẩu trang xác nhận nạp (bảng `web_chan_spam`), gõ sai mật khẩu admin
   (bảng `web_admin_log`). Thiếu bảng thì lùi về đếm trong bộ nhớ của tiến trình
   (mất khi khởi động lại). Lỗi database khi đếm thì cho qua — thà bỏ lọt còn hơn
   chặn oan người chơi thật.
+- **Quên mật khẩu** trả cùng một câu cho mọi trường hợp (sai tên, sai email, tài khoản
+  bị khoá, đã cấp lại quá 3 lần/24 giờ cho tài khoản đó) — không dò được tài khoản nào
+  có thật hay email của ai. Hạn mức 3 lần/24 giờ theo tài khoản đếm trong bộ nhớ (mất khi
+  khởi động lại). Mật khẩu mới chỉ nằm trong thư, không hiện trên web.
 - **Không lộ dữ liệu.** Mọi câu SQL dùng tham số `?`; mật khẩu so bằng `PASSWORD()`
-  ngay trong SQL, không bao giờ đọc cột mật khẩu ra. API admin bọc bằng
+  ngay trong SQL, không bao giờ trả cột mật khẩu ra ngoài (Quên mật khẩu đọc bản băm
+  cũ chỉ để ghi trả lại khi gửi thư hỏng). API admin bọc bằng
   `defineAdminHandler` (bắt buộc token admin); chỉ admin đã đăng nhập mới thấy chi
   tiết lỗi, người khác chỉ nhận thông báo chung — thông báo lỗi của MySQL có thể
   chứa host, tên database, tên người dùng.

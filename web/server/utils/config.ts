@@ -138,6 +138,20 @@ export interface KpahConfig {
     failWindow: number
     batBuoc2fa: boolean
   }
+  /**
+   * Gửi email qua Gmail API (OAuth2 refresh token) — dùng cho Quên mật khẩu và
+   * thông báo đổi mật khẩu. Thiếu một trong bốn giá trị đầu = chưa bật gửi mail.
+   * Cách lấy: scripts/lay-gmail-refresh-token.mjs, README mục "Gửi email (Gmail API)".
+   */
+  mail: {
+    gmailClientId: string
+    gmailClientSecret: string
+    gmailRefreshToken: string
+    /** Địa chỉ Gmail gửi đi (chính tài khoản đã cấp quyền). */
+    gmailSender: string
+    /** Tên hiển thị ở ô "Người gửi". */
+    fromName: string
+  }
   /** Khoá ký token đăng nhập (HMAC). */
   secret: string
   /** Đọc IP thật từ X-Forwarded-For khi kết nối đến từ proxy tin cậy (Apache/Nginx cùng máy). */
@@ -239,6 +253,13 @@ export function useKpahConfig(): KpahConfig {
       maxFail: envInt('KPAH_ADMIN_MAX_FAIL', 8),
       failWindow: envInt('KPAH_ADMIN_FAIL_WINDOW', 900),
       batBuoc2fa: envBool('KPAH_ADMIN_2FA_BAT_BUOC', false),
+    },
+    mail: {
+      gmailClientId: (env('KPAH_GMAIL_CLIENT_ID') ?? '').trim(),
+      gmailClientSecret: (env('KPAH_GMAIL_CLIENT_SECRET') ?? '').trim(),
+      gmailRefreshToken: (env('KPAH_GMAIL_REFRESH_TOKEN') ?? '').trim(),
+      gmailSender: (env('KPAH_GMAIL_SENDER') ?? '').trim(),
+      fromName: env('KPAH_MAIL_FROM_NAME') || 'Khí Phách Anh Hùng',
     },
     secret,
     trustedProxies: (env('KPAH_TRUSTED_PROXIES') ?? '127.0.0.1,::1,::ffff:127.0.0.1')
