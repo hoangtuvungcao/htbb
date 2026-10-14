@@ -82,9 +82,12 @@ jobs:
       - name: Build APK
         run: |
           curl -sL -o /tmp/apktool.jar https://github.com/iBotPeaches/Apktool/releases/download/v3.0.3/apktool_3.0.3.jar
+          # dex2jar: lớp của APK gốc làm classpath để biên dịch code mod dùng chung với bản jar
+          curl -sL -o /tmp/d2j.zip https://github.com/pxb1988/dex2jar/releases/download/v2.4/dex-tools-v2.4.zip
+          unzip -q /tmp/d2j.zip -d /tmp/d2j
           cd Android277
           BAN=${{ needs.so-ban.outputs.android }} OUT=NQSH-H2-${{ needs.so-ban.outputs.android }}.apk \
-            KEY_DIR=/tmp/key APKTOOL=/tmp/apktool.jar sh build.sh
+            KEY_DIR=/tmp/key APKTOOL=/tmp/apktool.jar DEX2JAR=/tmp/d2j/dex-tools-v2.4 sh build.sh
           rm -rf /tmp/key
       - uses: actions/upload-artifact@v4
         with:
