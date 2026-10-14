@@ -3,7 +3,7 @@
 # (Khong can may: bam "Run workflow" o tab Actions, workflow "Phat hanh" - xem phat-hanh/README.md.)
 #   sh phat-hanh/phat-hanh.sh android ["ghi chu"]   -> APK tu Android277 (ban TeaMobi), tu cap nhat
 #   sh phat-hanh/phat-hanh.sh pc      ["ghi chu"]   -> ban PC tu Decompiled/KPAH_276 (Unity), tu cap nhat
-#   sh phat-hanh/phat-hanh.sh jar     ["ghi chu"]   -> jar J2ME tu Jar276 (ban -release), chi dat link
+#   sh phat-hanh/phat-hanh.sh jar     ["ghi chu"]   -> jar J2ME tu j2me/ (ban -release), chi dat link
 #   sh phat-hanh/phat-hanh.sh tat-ca  ["ghi chu"]   -> ca 3
 #   BAN=1425 sh phat-hanh/phat-hanh.sh android     -> tu dat so ban (mac dinh: ban dang phat hanh + 1)
 #   THU=1 sh phat-hanh/phat-hanh.sh jar            -> chi build vao phat-hanh/tam/, KHONG day len GitHub
@@ -25,8 +25,8 @@ python -I phat-hanh/phienban.py tai-ve $TAM/phienban.json 2>/dev/null || echo "{
 if [ -z "$BAN" ]; then
     BAN=$(python -I phat-hanh/phienban.py ban-ke-tiep $TAM/phienban.json $LOAI)
     if [ "$LOAI" = jar ]; then
-        # khong ghi de jar da build trong Jar276/out
-        CUOI=$(ls Jar276/out 2>/dev/null | sed -n 's/.*-v\([0-9]*\)-release\.jar$/\1/p' | sort -n | tail -1)
+        # khong ghi de jar da build trong j2me/out
+        CUOI=$(ls j2me/out 2>/dev/null | sed -n 's/.*-v\([0-9]*\)-release\.jar$/\1/p' | sort -n | tail -1)
         [ -n "$CUOI" ] && [ "$CUOI" -ge "$BAN" ] && BAN=$((CUOI + 1))
     fi
 fi
@@ -38,9 +38,9 @@ if [ "$LOAI" = android ]; then
     cp Android277/out/$TEN $TAM/$TEN
 elif [ "$LOAI" = jar ]; then
     TEN=NQSH-H2-v$BAN.jar
-    sh Jar276/build.sh $BAN | tail -2
+    sh j2me/build.sh $BAN | tail -2
     # ban -release (ProGuard); mapping-vNN.txt GIU KIN, khong day len
-    cp "Jar276/out/KPAH_276 (1)-automenu-v$BAN-release.jar" $TAM/$TEN
+    cp "j2me/out/KPAH_276 (1)-automenu-v$BAN-release.jar" $TAM/$TEN
 else
     TEN=NQSH-H2-PC-$BAN.zip
     KPAH_VERSION_CODE=$BAN KPAH_OUT="$(cygpath -w "$PWD/$TAM/pc")\\NQSH-H2.exe" "$UNITY" -batchmode -nographics -accept-apiupdate \

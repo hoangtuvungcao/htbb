@@ -20,7 +20,7 @@ JDK=${JDK:-$JMD}
 SDK=${SDK:-$SMD}
 APKTOOL=${APKTOOL:-"$HOME/Desktop/KPAH-All/_tmp_build/tools/apktool/apktool.jar"}
 DEX2JAR=${DEX2JAR:-"$HOME/Desktop/KPAH-All/_tmp_build/tools/dex2jar/dex-tools-v2.4"}   # thư mục có lib/*.jar
-JAR_SRC=${JAR_SRC:-../Jar276/src/game/render/screen}                    # code mod dùng chung (bản jar)
+JAR_SRC=${JAR_SRC:-../shared/mod/game/render/screen}   # code mod dùng chung (shared/mod)
 PKG=${PKG:-com.nqsh.h2}
 TEN=${TEN:-NQSH-H2}
 BAN=${BAN:-1419}                       # versionCode: phat-hanh.sh tu tang, ban goc TeaMobi = 1418

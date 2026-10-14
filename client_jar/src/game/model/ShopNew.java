@@ -1,0 +1,4588 @@
+package game.model;
+
+import game.model.skill.InfoSkillLearn;
+import game.model.skill.SkillManager;
+import game.networklogic.GameService;
+import game.render.Canvas;
+import game.render.Res;
+import game.render.Util;
+import game.render.screen.CreateCharScr;
+import game.render.screen.Font;
+import game.render.screen.GameData;
+import game.render.screen.GameScr;
+import game.render.screen.RMS;
+import game.render.screen.Screen;
+import game.render.screen.WindowInfoScr;
+import java.util.Vector;
+import javax.microedition.lcdui.Graphics;
+import javax.microedition.lcdui.Image;
+
+public class ShopNew extends Screen {
+    public static ShopNew me;
+    public int x;
+    public int y;
+    public int w;
+    public int h;
+    public int selected;
+    public int numH;
+    public int xShow;
+    public int yShow;
+    public int wShow;
+    public int hShow;
+    public int wSmall;
+    public int hSmall;
+    public int x0;
+    public int y0;
+    public int idFrame;
+    public int countFrame;
+    private String[] showText;
+    public Vector newSkill;
+    private boolean trans;
+    private int pb;
+    private int pa;
+    public static int cmtoY;
+    public static int cmy;
+    public static int cmdy;
+    public static int cmvy;
+    public static int cmyLim;
+    public static int cmtoYText;
+    public static int cmyText;
+    public static int cmdyText;
+    public static int cmvyText;
+    public static int cmyLimText;
+    public static int cmtoX;
+    public static int cmx;
+    public static int cmdx;
+    public static int cmvx;
+    public static int cmxLim;
+    public static int focusTab;
+    public static int cmtoXName;
+    public static int cmxname;
+    public static byte[] index;
+    private Vector questInfo;
+    public int idClass;
+    public int countPop;
+    public short idCharSell;
+    public Vector listEp;
+    public Vector listCheDo;
+    private short[][] posEpNgoc;
+    public static byte countR;
+    public static byte countL;
+    public static byte idColor;
+    public static byte lvThu;
+    public static byte slNLThu;
+    public static byte magicAnimal;
+    public static short numberQuestAll;
+    public static short idTemp;
+    public static Char charWearing;
+    private byte[] arrayKhamNgoc;
+    int limMyBag;
+    int excess;
+    int maxSize;
+    public static byte khoaCheDo;
+    public static byte khoaDoThu;
+    public static byte khoaImbue;
+    public static byte khoaKham;
+    public byte[] arrSell;
+    int numCell;
+    int saveFocusTab;
+    Image imgCharWear;
+    public int idSeller;
+    public int shopIdSell;
+    public int prizeImbue;
+    private String[] charInfo;
+    boolean isCmyTab3;
+    boolean isshowInfo;
+    boolean isTab3;
+    int transX;
+    int dirX;
+    public short typeshop;
+    public Image imgWeaponAvatar;
+    public static final short MAX_POTION = 999;
+    public static String[] infoMainCharServer = null;
+    public static int dir = 1;
+    public static byte idMonsterClanQuest = -1;
+    public static short numberQuestGet = 0;
+    public static boolean isKham = false;
+    public static String text = "";
+    public static byte optionCreateItem = 0;
+    public static String nameshop = "";
+    public static int[] posPaintWearingX = {9, 9, 9, 107, 107, 107, 107, 107, 107, 107, 9, 107, 9, 82, 9, 9, 9, 9, 9, 34};
+    public static int[] posPaintWearingY = {32, 73, 52, 11, 11, 11, 11, 11, 52, 32, 94, 94, 11, 92, 32, 52, 73, 94, 11, 92};
+    private static byte[] idWearChar = {12, -1, 0, 9, 2, 8, 1, 8, 10, 11};
+    private static byte[] idWearAnimal = {18, 19, 14, 20, 15, 21, 16, 22, 17, 23};
+    private static byte[][] posWearChar = {new byte[]{10, 11}, new byte[]{56, 11}, new byte[]{10, 32}, new byte[]{56, 32}, new byte[]{10, 52}, new byte[]{56, 52}, new byte[]{10, 73}, new byte[]{56, 94}, new byte[]{10, 94}, new byte[]{56, 94}};
+    public int numW = 7;
+    public int[][] arrFrame = {new int[]{0, 1, 2}, new int[]{0, 1}};
+    private String[] title = {"Hành trang", "Trang bị", "Tiềm năng", "Kỹ năng", "Thông tin", "Nhóm", "Nhiệm vụ", "Học kỹ năng", "Trao đổi", "Gian hàng", "Gian hàng", "Áo", "Quần", "Nón", "Nhẫn", "Dây chuyền", "Giày", "Găng tay", "Ngọc bội", "Gian hàng", "Gian hàng", "Luyện đồ", "Kho đồ", "Gian hàng", "Gian hàng", "Khảm", "Hợp thành", "Nhiệm vụ", "Chế đồ", "Kỹ năng bang hội", "Kỹ năng cá nhân", "Trang bị thú", "Hợp đồ thú"};
+    public String name = "";
+    public String firName = "";
+    public Vector list = new Vector();
+    public Vector readyBuy = new Vector();
+    public boolean isShowText = false;
+    public boolean isSell = false;
+    public boolean isChangeTab = false;
+    public boolean isPaintMoney = false;
+    public Vector sellItem = new Vector();
+    public Vector listTemp = new Vector();
+    public Vector listItemAnimal = new Vector();
+    private ItemInInventory[] itemEpdothu = new ItemInInventory[5];
+    public boolean isLoad = false;
+    public Vector ItemShopNew = new Vector();
+    int countTabMyitem = 0;
+    int xCus = -20;
+    private int idImbue = -1;
+    boolean first = false;
+    int cmyKeep = 0;
+    String[] mau = {"Trắng", "Hoàn mỹ", "Đỏ", "Xanh"};
+    public Vector potionShop = new Vector();
+
+    public static ShopNew gI() {
+        if (me != null) {
+            return me;
+        }
+        ShopNew shopNew = new ShopNew();
+        me = shopNew;
+        return shopNew;
+    }
+
+    @Override
+    public void switchToMe() {
+        super.switchToMe();
+        init();
+        this.isChangeTab = true;
+    }
+
+    @Override
+    public void init() {
+        this.x = Canvas.hw - 64;
+        this.y = Canvas.hh - 77;
+        setLim();
+    }
+
+    public ShopNew() {
+        this.dirX = 1;
+        init();
+        this.right = new Command("Đóng", new IAction() {
+            @Override
+            public void perform() {
+                if (ShopNew.this.isShowText) {
+                    ShopNew.this.closeText();
+                    return;
+                }
+                ShopNew.this.listTemp.removeAllElements();
+                ShopNew.this.listEp = null;
+                ShopNew.focusTab = ShopNew.this.saveFocusTab;
+                ShopNew.this.doBuyItem();
+                Canvas.gameScr.switchToMe();
+                ShopNew.this.list.removeAllElements();
+                ShopNew.this.charInfo = null;
+                ShopNew.this.questInfo = null;
+                ShopNew.this.imgCharWear = null;
+                ShopNew.charWearing = null;
+                ShopNew.this.transX = 0;
+                ShopNew.this.dirX = 1;
+                ShopNew.this.isSell = false;
+            }
+        });
+        this.selected = 0;
+        focusTab = 0;
+        this.transX = 0;
+        this.dirX = 1;
+    }
+
+    public void setInfo(Vector list) {
+        this.list = list;
+        this.numW = 7;
+        this.numH = list.size() / this.numW;
+        if (list.size() % this.numW != 0) {
+            this.numH++;
+        }
+        if (this.numH < 5) {
+            this.numH = 5;
+        }
+        setLim();
+        this.isChangeTab = true;
+        setCmdCenter();
+    }
+
+    public static int getIndex() {
+        return index[focusTab];
+    }
+
+    private void setLim() {
+        cmxLim = (this.numW * this.wSmall) - this.w;
+        cmyLim = (this.numH * this.hSmall) - this.h;
+        if (cmxLim < 0) {
+            cmxLim = 0;
+        }
+        if (cmyLim < 0) {
+            cmyLim = 0;
+        }
+    }
+
+    public void setCurTab() {
+        if (Canvas.currentScreen == gI() && focusTab == 0) {
+            setSelectTab();
+            this.isChangeTab = false;
+        }
+    }
+
+    public void setInfo(int focus, boolean isSell, byte[] in) {
+        this.isSell = isSell;
+        if (isSell) {
+            this.arrSell = in;
+        }
+        index = in;
+        focusTab = focus;
+        this.selected = 0;
+        setCmdCenter();
+        setSelectTab();
+        this.numCell = this.ItemShopNew.size() + 1;
+        if (this.numCell < 42) {
+            this.numCell = 42;
+        }
+    }
+
+    public void setSize(int wBig, int hBig, int numW, int numH, int wSmall, int hSmall) {
+        this.w = wBig;
+        this.h = hBig;
+        this.numW = numW;
+        this.numH = numH;
+        this.wSmall = wSmall;
+        this.hSmall = hSmall;
+        setLim();
+        cmtoY = 0;
+        cmtoX = 0;
+        cmy = 0;
+        cmx = 0;
+    }
+
+    @Override
+    public void updateKey() {
+        if (this.isShowText) {
+            if (Canvas.keyHold[2]) {
+                if (this.hShow >= 100) {
+                    cmtoYText -= 10;
+                    if (cmtoYText < 0) {
+                        cmtoYText = 0;
+                    }
+                } else {
+                    closeText();
+                }
+                Canvas.keyPressed[2] = false;
+            } else if (Canvas.keyHold[8]) {
+                if (this.hShow >= 100) {
+                    cmtoYText += 10;
+                    if (cmtoYText > cmyLimText) {
+                        cmtoYText = cmyLimText;
+                    }
+                } else {
+                    closeText();
+                }
+                Canvas.keyPressed[8] = false;
+            }
+            Canvas.isKeyPressed(2);
+            Canvas.isKeyPressed(8);
+            if (Canvas.isPointerDown && Canvas.isPointer(this.xShow, this.yShow, this.wShow - 1, (this.hShow - 1) + (this.countPop * 15))) {
+                if (!this.trans) {
+                    this.pa = cmyText;
+                    this.trans = true;
+                }
+                cmtoYText = this.pa + (Canvas.pyLast - Canvas.py);
+                if (cmtoYText < 0) {
+                    cmtoYText = 0;
+                }
+                if (cmtoYText > cmyLimText) {
+                    cmtoYText = cmyLimText;
+                }
+            }
+            if (Canvas.isPointerClick) {
+                this.trans = false;
+                Canvas.isPointerClick = false;
+                if (!Canvas.isPointer(this.xShow, this.yShow, this.wShow - 1, (this.hShow - 1) + (this.countPop * 15)) && Math.abs(Canvas.pyLast - Canvas.py) < 10 && Math.abs(Canvas.pxLast - Canvas.px) < 10) {
+                    closeText();
+                }
+            }
+        }
+        if (Canvas.keyPressed[4] || Canvas.keyPressed[6]) {
+            closeText();
+        }
+        if (Canvas.isPointerClick && Math.abs(Canvas.py - Canvas.pyLast) <= 10 && Math.abs(Canvas.px - Canvas.pxLast) <= 10) {
+            if (Canvas.isPointer(this.x - 5, this.y, 30, 35)) {
+                this.isChangeTab = true;
+                Canvas.keyPressed[4] = true;
+            }
+            if (Canvas.isPointer(this.x + 104, this.y, 30, 35)) {
+                this.isChangeTab = true;
+                Canvas.keyPressed[6] = true;
+            }
+        }
+        if (this.isChangeTab) {
+            if (Canvas.isKeyPressed(8)) {
+                this.isChangeTab = false;
+                setCmdCenter();
+                Canvas.keyHold[8] = false;
+                if (index[focusTab] == 1) {
+                    this.selected = 0;
+                }
+            } else if (!Canvas.isKeyPressed(4)) {
+                Canvas.isKeyPressed(6);
+            }
+        } else if (index[focusTab] != 26 && cmy == 0 && this.numW != 0 && this.selected / this.numW == 0 && Canvas.isKeyPressed(2) && index[focusTab] != 32) {
+            this.isChangeTab = true;
+            this.center = null;
+        }
+        updateKeyMain();
+        super.updateKey();
+    }
+
+    public void getItemAnimalFromList() {
+        this.listItemAnimal = new Vector();
+        int size0 = this.ItemShopNew.size();
+        for (int i = 0; i < size0; i++) {
+            ItemInInventory item = (ItemInInventory) this.ItemShopNew.elementAt(i);
+            ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
+            if ((it.type == 14 || it.type == 15 || it.type == 16 || it.type == 17 || it.type == 18) && item.colorName == idColor) {
+                this.listItemAnimal.addElement(item);
+            }
+        }
+    }
+
+    public void setSelectTab() {
+        cmxname = 0;
+        this.left = null;
+        this.isPaintMoney = false;
+        this.newSkill = null;
+        this.posEpNgoc = null;
+        this.list.removeAllElements();
+        this.x0 = 1;
+        this.y0 = 35;
+        if (index.length > 1) {
+            this.firName = this.name;
+            this.name = this.title[index[focusTab]];
+        }
+        this.countTabMyitem = 0;
+        if (index[focusTab] != 0) {
+            this.saveFocusTab = focusTab;
+        }
+        Cout.println(new StringBuffer("Tab duoc chon la tab : ").append((int) index[focusTab]).toString());
+        switch (index[focusTab]) {
+            case 0:
+                this.isPaintMoney = true;
+                setInfo(getInventori());
+                setSize(126, 90, 7, this.numH, 18, 18);
+                this.left = new Command(text, new AnonymousClass2());
+                break;
+            case 1:
+                this.x0 += 5;
+                this.y0 -= 2;
+                setSize(117, 104, 3, 5, 97, 21);
+                final Vector menu = new Vector();
+                if (Canvas.gameScr.mainChar.idFashion != -1) {
+                    menu.addElement(new Command("Thay đồ", new IAction() {
+                        @Override
+                        public void perform() {
+                            Canvas.startYesNoDlg("Bạn muốn bỏ đồ thời trang vào rương không ?", new IAction() {
+                                @Override
+                                public void perform() {
+                                    GameService.gI().unRideHorse((byte) 1);
+                                    Canvas.endDlg();
+                                    Canvas.gameScr.switchToMe();
+                                }
+                            });
+                        }
+                    }));
+                }
+                if (Canvas.gameScr.mainChar.isDoing) {
+                    menu.addElement(new Command("Cất cuốc", new IAction() {
+                        @Override
+                        public void perform() {
+                            Canvas.startYesNoDlg("Bạn muốn bỏ đồ thời trang vào rương không ?", new IAction() {
+                                @Override
+                                public void perform() {
+                                    GameService.gI().unRideHorse((byte) 2);
+                                    Canvas.endDlg();
+                                    Canvas.gameScr.switchToMe();
+                                }
+                            });
+                        }
+                    }));
+                }
+                if (menu.size() == 1) {
+                    this.left = (Command) menu.elementAt(0);
+                } else if (menu.size() == 2) {
+                    this.left = new Command("Chọn", new IAction() {
+                        @Override
+                        public void perform() {
+                            Canvas.menu.startAt(menu, 0);
+                        }
+                    });
+                }
+                break;
+            case 2:
+                this.y0 += 13;
+                setSize(124, 94, 1, 5, 125, 19);
+                break;
+            case 3:
+                this.left = null;
+                this.x0 += 5;
+                this.y0 += 7;
+                this.selected = 0;
+                setSize(114, 30, Canvas.gameScr.mainChar.getnSkill(), 1, 23, 20);
+                break;
+            case 4:
+                this.center = null;
+                this.isPaintMoney = true;
+                this.x0 -= 4;
+                this.y0 -= 2;
+                setSize(134, 95, 1, 10, 50, 12);
+                break;
+            case 5:
+                this.isPaintMoney = true;
+                this.x0 -= 4;
+                this.y0 -= 2;
+                setSize(134, 95, 1, Char.party.size(), 130, 32);
+                break;
+            case 6:
+                this.isPaintMoney = true;
+                this.x0 -= 4;
+                this.y0 -= 2;
+                setQuestInfo();
+                setSize(134, 95, 1, this.questInfo.size(), 130, 15);
+                this.questInfo.removeAllElements();
+                if (Canvas.gameScr.mainChar.receiveQuest) {
+                    this.left = new Command("Hủy", new IAction() {
+                        @Override
+                        public void perform() {
+                            GameService.gI().receiveQuest(0, 0, 3);
+                            ShopNew.this.questInfo.removeAllElements();
+                        }
+                    });
+                }
+                break;
+            case 7:
+                this.x0 += 5;
+                this.y0 += 7;
+                this.left = null;
+                setCmdCenter();
+                break;
+            case 8:
+                this.x0 += 9;
+                this.y0 -= 5;
+                this.name = "Trao đổi";
+                this.center = new Command("Chọn", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.doSelectedTrade();
+                    }
+                });
+                setCmdLeftTrade();
+                break;
+            case 9:
+                this.isPaintMoney = true;
+                setSize(126, 90, 1, 1, 18, 18);
+                setListSellItem(Canvas.gameScr.shop, -1);
+                setInfo(this.list);
+                doSetLeftSellWeapon(-1);
+                break;
+            case 10:
+                this.isPaintMoney = true;
+                setSize(126, 90, 1, 1, 18, 18);
+                setListSellGemItem(Canvas.gameScr.shop);
+                setInfo(this.list);
+                dosetLeftSellGemItem();
+                break;
+            case 11:
+            case 12:
+            case 13:
+                this.isPaintMoney = true;
+                setSize(126, 90, 1, 1, 18, 18);
+                setListSellItem(Canvas.gameScr.shop, index[focusTab] - 11);
+                setInfo(this.list);
+                doSetLeftSellWeapon(index[focusTab] - 11);
+                break;
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+                this.isPaintMoney = true;
+                setSize(126, 90, 1, 1, 18, 18);
+                setListSellItem(Canvas.gameScr.shop, index[focusTab] - 6);
+                setInfo(this.list);
+                doSetLeftSellWeapon(index[focusTab] - 6);
+                break;
+            case 19:
+                this.isPaintMoney = true;
+                setSize(126, 90, 1, 1, 18, 18);
+                setListPotion();
+                setInfo(this.list);
+                doSetLeftPotion();
+                break;
+            case 20:
+                this.isPaintMoney = true;
+                setSize(126, 90, 1, 1, 18, 18);
+                getShopTemplate();
+                setInfo(this.list);
+                doBuyShopSpecial();
+                this.name = new StringBuffer(String.valueOf(this.name)).append(" ").append(focusTab + 1).toString();
+                break;
+            case 21:
+                this.x0++;
+                this.y0 -= 6;
+                setInfo(this.list);
+                setSize(126, 110, 3, 5, 20, 23);
+                setCmdCenter();
+                doLeftImbue();
+                break;
+            case 22:
+            case 23:
+                this.isPaintMoney = true;
+                this.x0 += 9;
+                this.y0 += 0;
+                this.selected = 0;
+                setSizeKeepItem(0);
+                setSize(108, 90, 6, this.numH, 18, 18);
+                setCmdCenter();
+                setLeftKeepAndSellItem();
+                break;
+            case 24:
+                this.isPaintMoney = true;
+                setSize(126, 90, 7, this.numH, 18, 18);
+                setInfo(getListBuyItem());
+                setLeftBuyItem();
+                break;
+            case 25:
+                this.isChangeTab = false;
+                this.x0++;
+                this.y0 -= 4;
+                setInfo(this.list);
+                setSize(126, 110, 3, 5, 20, 23);
+                if (isKham) {
+                    setListImbue(false, 1, khoaKham);
+                } else {
+                    this.name = "Đục lỗ";
+                    setListImbue(false, 2, khoaKham);
+                }
+                this.center = new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.setSelectedImbue();
+                    }
+                });
+                doLeftImbue();
+                break;
+            case 26:
+                this.x0++;
+                this.y0 -= 4;
+                setSize(126, 108, 5, 1, 20, 18);
+                this.posEpNgoc = new short[][]{new short[]{(short) ((this.w / 2) - 44), 20}, new short[]{(short) ((this.w / 2) + 26), 20}, new short[]{(short) ((this.w / 2) - 10), 43}, new short[]{(short) ((this.w / 2) - 44), 65}, new short[]{(short) ((this.w / 2) + 26), 65}};
+                setListImbue(true, 1, 0);
+                this.listEp = new Vector();
+                this.center = new Command("Chọn", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.doSelectedEpNgoc();
+                    }
+                });
+                doLeftEpNgoc();
+                break;
+            case 27:
+                this.isPaintMoney = true;
+                this.x0 -= 4;
+                this.y0 -= 2;
+                if (this.questInfo == null) {
+                    this.questInfo = new Vector();
+                }
+                setSize(134, 95, 1, this.questInfo.size(), 130, 15);
+                this.left = new Command("Hủy", new IAction() {
+                    @Override
+                    public void perform() {
+                        GameService.gI().questClan(2);
+                        ShopNew.this.right.action.perform();
+                    }
+                });
+                break;
+            case 28:
+                this.x0++;
+                this.y0 -= 4;
+                int aa = this.listEp.size() / 2;
+                if (aa < 6) {
+                    aa = 6;
+                }
+                setSize(126, 108, aa, 3, 20, 18);
+                this.center = new Command("Chọn", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.doSelectedCheDo();
+                    }
+                });
+                this.left = new Command("Xong", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.doLeftCheDo();
+                    }
+                });
+                break;
+            case 29:
+                setInfo(setListGuildSkill());
+                int sizeaa = 0;
+                for (int a = 0; a < Canvas.gameScr.skillClan.length; a++) {
+                    if (Canvas.gameScr.skillClan[a].time > 0) {
+                        sizeaa++;
+                    }
+                }
+                for (int a2 = 0; a2 < Canvas.gameScr.skillClanPrivate.length; a2++) {
+                    if (Canvas.gameScr.skillClanPrivate[a2].time > 0) {
+                        sizeaa++;
+                    }
+                }
+                if (sizeaa < 5) {
+                    sizeaa = 5;
+                }
+                setSize(126, 100, 1, sizeaa, 126, 20);
+                this.isChangeTab = true;
+                break;
+            case 30:
+                setInfo(setListGuildSkill());
+                setSize(126, 100, 1, 6, 126, 20);
+                this.isChangeTab = true;
+                break;
+            case 31:
+                this.x0 += 5;
+                this.y0 -= 2;
+                setSize(117, 104, 2, 5, 97, 21);
+                break;
+            case 32:
+                this.x0++;
+                this.y0 -= 4;
+                setSize(126, 108, 5, 1, 20, 18);
+                this.posEpNgoc = new short[][]{new short[]{(short) ((this.w / 2) - 44), 0}, new short[]{(short) ((this.w / 2) + 26), 0}, new short[]{(short) ((this.w / 2) - 10), 20}, new short[]{(short) ((this.w / 2) - 44), (short) this.numCell}, new short[]{(short) ((this.w / 2) + 26), (short) this.numCell}};
+                for (int i = 0; i < this.itemEpdothu.length; i++) {
+                    this.itemEpdothu[i] = null;
+                }
+                getItemAnimalFromList();
+                this.listEp = new Vector();
+                this.center = new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.doSelectedEpDothu();
+                    }
+                });
+                doLeftEpDothu();
+                break;
+            case 127:
+                this.isPaintMoney = true;
+                setSize(126, 90, 1, 1, 18, 18);
+                setListSellItem(Canvas.gameScr.shop, -1);
+                setInfo(this.list);
+                doSetLeftPetEat(-1);
+                break;
+        }
+        if (this.selected >= (this.numH * this.numW) - 1) {
+            this.selected = 0;
+        }
+    }
+
+    class AnonymousClass2 implements IAction {
+        AnonymousClass2() {
+        }
+
+        @Override
+        public void perform() {
+            Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn ").append(ShopNew.text).append(" vật phẩm này không ?").toString(), new IAction() {
+                @Override
+                public void perform() {
+                    GameService.gI().buyItemShopnew((byte) ShopNew.this.selected, ShopNew.this.typeshop);
+                    Canvas.currentDialog = null;
+                }
+            }, new IAction() {
+                @Override
+                public void perform() {
+                    Canvas.currentDialog = null;
+                }
+            });
+        }
+    }
+
+    private Vector setListGuildSkill() {
+        Vector menu = new Vector();
+        int aa = 0;
+        int size0 = Canvas.gameScr.skillClan.length;
+        for (int i = 0; i < size0; i++) {
+            final int ii = i;
+            if (Canvas.gameScr.skillClan[i].time > 0) {
+                final int ind = aa;
+                menu.addElement(new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                    }
+                }) {
+                    @Override
+                    public void paint(Graphics g, int x, int y) {
+                        g.setClip(x - (ShopNew.this.wSmall / 2), y - (ShopNew.this.hSmall / 2), ShopNew.this.wSmall, ShopNew.this.hSmall);
+                        GameData.paintIcon(g, (short) (ii + 1600), (x - (ShopNew.this.wSmall / 2)) + 9, y);
+                        int aa2 = 0;
+                        if (ind == ShopNew.this.selected && !ShopNew.this.isChangeTab) {
+                            int ww = Font.arialFont.getWidth(Canvas.gameScr.skillClan[ii].info);
+                            if (ww > ShopNew.this.w - ((ShopNew.this.wSmall / 2) + 16)) {
+                                ShopNew.this.xCus += 2;
+                                if (ShopNew.this.xCus > ww - ((ShopNew.this.wSmall / 2) + 30)) {
+                                    ShopNew.this.xCus = -20;
+                                }
+                            }
+                            aa2 = ShopNew.this.xCus;
+                            if (ShopNew.this.xCus < 0) {
+                                aa2 = 0;
+                            }
+                        }
+                        g.setClip((x - (ShopNew.this.wSmall / 2)) + 18, y - (ShopNew.this.hSmall / 2), ShopNew.this.wSmall - 20, ShopNew.this.hSmall);
+                        Font.arialFont.drawString(g, Canvas.gameScr.skillClan[ii].info, ((x - (ShopNew.this.wSmall / 2)) + 18) - aa2, y - (Font.arialFont.getHeight() / 2), 0);
+                    }
+                });
+                aa++;
+            }
+        }
+        int size1 = Canvas.gameScr.skillClanPrivate.length;
+        for (int i2 = 0; i2 < size1; i2++) {
+            final int ii2 = i2;
+            if (Canvas.gameScr.skillClanPrivate[i2].time > 0) {
+                final int ind2 = aa;
+                menu.addElement(new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                    }
+                }) {
+                    @Override
+                    public void paint(Graphics g, int x, int y) {
+                        g.setClip(x - (ShopNew.this.wSmall / 2), y - (ShopNew.this.hSmall / 2), ShopNew.this.wSmall, ShopNew.this.hSmall);
+                        GameData.paintIcon(g, (short) (ii2 + 1600), (x - (ShopNew.this.wSmall / 2)) + 9, y);
+                        int aa2 = 0;
+                        if (ind2 == ShopNew.this.selected && !ShopNew.this.isChangeTab) {
+                            int ww = Font.arialFont.getWidth(Canvas.gameScr.skillClan[ii2].info);
+                            if (ww > ShopNew.this.w - ((ShopNew.this.wSmall / 2) + 16)) {
+                                ShopNew.this.xCus += 2;
+                                if (ShopNew.this.xCus > ww - ((ShopNew.this.wSmall / 2) + 30)) {
+                                    ShopNew.this.xCus = -20;
+                                }
+                            }
+                            aa2 = ShopNew.this.xCus;
+                            if (ShopNew.this.xCus < 0) {
+                                aa2 = 0;
+                            }
+                        }
+                        g.setClip((x - (ShopNew.this.wSmall / 2)) + 18, y - (ShopNew.this.hSmall / 2), ShopNew.this.wSmall - 20, ShopNew.this.hSmall);
+                        Font.arialFont.drawString(g, Canvas.gameScr.skillClanPrivate[ii2].info, (x - (ShopNew.this.wSmall / 2)) + 18 + aa2, y - (Font.arialFont.getHeight() / 2), 0);
+                    }
+                });
+                aa++;
+            }
+        }
+        return menu;
+    }
+
+    protected void doLeftCheDo() {
+        if (this.listEp.size() == 0) {
+            return;
+        }
+        final byte[][] arr = new byte[this.listCheDo.size()][6];
+        int size0 = this.listEp.size();
+        for (int i = 0; i < size0; i++) {
+            GemTemplate gem = (GemTemplate) this.listEp.elementAt(i);
+            int size1 = this.listCheDo.size();
+            for (int a = 0; a < size1; a++) {
+                Mineral mi = (Mineral) this.listCheDo.elementAt(a);
+                int count = gem.id - mi.idTemplate;
+                if (count <= 5) {
+                    arr[a][count] = (byte) gem.number;
+                    break;
+                }
+            }
+        }
+        Canvas.startYesNoDlg("Bạn có muốn hoàn thành không ?", new IAction() {
+            @Override
+            public void perform() {
+                int size2 = ShopNew.this.listEp.size();
+                for (int i2 = size2 - 1; i2 >= 0; i2--) {
+                    GemTemplate g = (GemTemplate) ShopNew.this.listEp.elementAt(i2);
+                    ShopNew.this.removeItemCheDo(g);
+                }
+                GameService.gI().doCheDo((short) ShopNew.this.listCheDo.size(), ShopNew.idTemp, arr);
+                ShopNew.this.right.action.perform();
+                Canvas.startWaitDlg();
+            }
+        });
+    }
+
+    public void removeItemCheDo(GemTemplate g) {
+        g.number--;
+        if (g.number <= 0) {
+            this.listEp.removeElement(g);
+        }
+        boolean aa = false;
+        int size0 = this.listTemp.size();
+        for (int i = 0; i < size0; i++) {
+            GemTemplate ge = (GemTemplate) this.listTemp.elementAt(i);
+            if (ge.id == g.id) {
+                ge.number++;
+                aa = true;
+                break;
+            }
+        }
+        if (!aa) {
+            GemTemplate ge2 = new GemTemplate(g.id);
+            GemTemplate.copyData(g, ge2);
+            ge2.number = 1;
+            this.listTemp.addElement(g);
+        }
+    }
+
+    protected void doSelectedCheDo() {
+        final boolean is = this.selected / this.numW < 2;
+        GemTemplate gem = null;
+        if (is) {
+            if (this.selected < this.listEp.size()) {
+                gem = (GemTemplate) this.listEp.elementAt(this.selected);
+            }
+        } else if (this.selected % this.numW < this.listTemp.size()) {
+            gem = (GemTemplate) this.listTemp.elementAt(this.selected % this.numW);
+        }
+        if (gem == null) {
+            return;
+        }
+        final GemTemplate g = gem;
+        final int xx = ((this.selected % this.numW) * this.wSmall) - cmx;
+        final int yy = (this.selected / this.numW) * this.wSmall;
+        final short idTem = gem.id;
+        Vector menu = new Vector();
+        menu.addElement(new Command(!is ? "Bỏ vào" : "Lấy ra", new IAction() {
+            @Override
+            public void perform() {
+                if (is) {
+                    ShopNew.this.removeItemCheDo(g);
+                } else {
+                    int number = 0;
+                    int size0 = ShopNew.this.listCheDo.size();
+                    for (int a = 0; a < size0; a++) {
+                        Mineral mineral = (Mineral) ShopNew.this.listCheDo.elementAt(a);
+                        if (g.id - mineral.idTemplate >= 0 && g.id - mineral.idTemplate <= 5) {
+                            int size1 = ShopNew.this.listEp.size();
+                            for (int i = 0; i < size1; i++) {
+                                GemTemplate gem2 = (GemTemplate) ShopNew.this.listEp.elementAt(i);
+                                if (gem2.id - mineral.idTemplate >= 0 && gem2.id - mineral.idTemplate <= 5) {
+                                    number += gem2.number;
+                                }
+                            }
+                            if (number >= mineral.number) {
+                                Canvas.startOKDlg("Đã đủ số lượng.");
+                                return;
+                            }
+                        }
+                    }
+                    boolean aa = false;
+                    int size2 = ShopNew.this.listEp.size();
+                    for (int i2 = 0; i2 < size2; i2++) {
+                        GemTemplate gem3 = (GemTemplate) ShopNew.this.listEp.elementAt(i2);
+                        if (gem3.id == g.id) {
+                            gem3.number++;
+                            aa = true;
+                            break;
+                        }
+                    }
+                    if (!aa) {
+                        GemTemplate ge = new GemTemplate(g.id);
+                        GemTemplate.copyData(g, ge);
+                        ge.number = 1;
+                        ShopNew.this.listEp.addElement(ge);
+                    }
+                    g.number--;
+                    if (g.number <= 0) {
+                        ShopNew.this.listTemp.removeElement(g);
+                    }
+                }
+                ShopNew.this.setLimitCheDo();
+            }
+        }));
+        menu.addElement(new Command("Thông tin", new IAction() {
+            @Override
+            public void perform() {
+                if (ShopNew.khoaCheDo == 0 || ShopNew.khoaCheDo == 2) {
+                    ShopNew.this.showGemItemInfo(idTem, xx, yy);
+                } else {
+                    ShopNew.this.showGemItemKhoaInfo(idTem, xx, yy);
+                }
+            }
+        }));
+        Canvas.menu.startAt(menu, 2);
+    }
+
+    public void setImageCharWear() {
+        int count = 0;
+        int size0 = charWearing.wearingItems.size();
+        for (int i = 0; i < size0; i++) {
+            ItemInInventory cwi = (ItemInInventory) charWearing.wearingItems.elementAt(i);
+            ItemTemplate item = Res.getItem(cwi.charClazz, cwi.idTemplate);
+            if (item.plus > 13) {
+                count++;
+            }
+        }
+        if (count < 3 || charWearing.idFashion != -1) {
+            return;
+        }
+        this.imgCharWear = Image.createImage(60, 100);
+        Graphics g = this.imgCharWear.getGraphics();
+        g.setColor(-65315);
+        g.fillRect(0, 0, 60, 100);
+        if (charWearing.legStyle != -1) {
+            Res.getCharPartInfo(0, charWearing.legStyle).paintAvatar(g, (short) 30, (short) 90, 0);
+        }
+        if (charWearing.bodyStyle != -1) {
+            Res.getCharPartInfo(1, charWearing.bodyStyle).paintAvatar(g, (short) 30, (short) 90, 0);
+        }
+        if (charWearing.hatStyle != -1) {
+            Res.getCharPartInfo(3, charWearing.hatStyle).paintAvatar(g, (short) 30, (short) 90, 0);
+        }
+        if (charWearing.weaponType != -1 && charWearing.weaponStyle != -1 && charWearing.imgWpa != null) {
+            g.drawImage(charWearing.imgWpa, 30 + charWearing.dxWear, 90 + charWearing.dyWear, 0);
+        }
+        this.imgCharWear = Res.transparentBG(this.imgCharWear);
+        int[] rgb = new int[6000];
+        this.imgCharWear.getRGB(rgb, 0, 60, 0, 0, 60, 100);
+        for (int i2 = 0; i2 < rgb.length; i2++) {
+            if (rgb[i2] != 16777215) {
+                if (i2 - 1 > 0 && rgb[i2 - 1] == 16777215) {
+                    rgb[i2] = -1;
+                } else if (i2 + 1 < rgb.length && rgb[i2 + 1] == 16777215) {
+                    rgb[i2] = -1;
+                }
+            }
+        }
+        this.imgCharWear = Image.createRGBImage(rgb, 60, 100, true);
+    }
+
+    public void doSelectedEpNgoc() {
+        Vector menu = new Vector();
+        if (this.numH != 1) {
+            if (this.selected % this.numW < this.listTemp.size()) {
+                final GemTemplate item = (GemTemplate) this.listTemp.elementAt(this.selected % this.numW);
+                menu.addElement(new Command("Bỏ vào", new IAction() {
+                    @Override
+                    public void perform() {
+                        if (ShopNew.this.listEp.size() < 5) {
+                            item.number--;
+                            if (item.number <= 0) {
+                                ShopNew.this.listTemp.removeElement(item);
+                            }
+                            RealID real = new RealID(item.rID);
+                            real.ID = item.id;
+                            ShopNew.this.listEp.addElement(real);
+                        }
+                    }
+                }));
+                menu.addElement(addGemInfo(item, ((this.selected % this.numW) * 20) + 4, 86));
+            }
+        } else if (this.selected < this.listEp.size()) {
+            final RealID real = (RealID) this.listEp.elementAt(this.selected);
+            menu.addElement(new Command("Lấy ra", new IAction() {
+                @Override
+                public void perform() {
+                    GemTemplate gem = GemTemplate.getGemByID(real.ID);
+                    gem.number++;
+                    ShopNew.this.listEp.removeElement(real);
+                }
+            }));
+            GemTemplate gem = new GemTemplate();
+            gem.id = real.ID;
+            menu.addElement(addGemInfo(gem, this.posEpNgoc[this.selected][0], this.posEpNgoc[this.selected][1]));
+        }
+        Canvas.menu.startAt(menu, 2);
+    }
+
+    private Command addGemInfo(final GemTemplate item, final int xx, final int yy) {
+        return new Command("Thông tin", new IAction() {
+            @Override
+            public void perform() {
+                if (ShopNew.khoaDoThu == 0 || ShopNew.khoaDoThu == 2) {
+                    ShopNew.this.showGemItemInfo(item.id, xx, yy);
+                } else {
+                    ShopNew.this.showGemItemKhoaInfo(item.id, xx, yy);
+                }
+            }
+        });
+    }
+
+    class AnonymousClass28 implements IAction {
+        AnonymousClass28() {
+        }
+
+        @Override
+        public void perform() {
+            if (ShopNew.this.listEp.size() < 3) {
+                Canvas.startOKDlg("Bạn phải ép ít nhất 3 vật phẩm.");
+            } else {
+                Canvas.startYesNoDlg(new StringBuffer("Bạn phải mất ").append(Canvas.getMoneys(ShopNew.this.prizeImbue)).append("Xu để hợp.").toString(), new IAction() {
+                    @Override
+                    public void perform() {
+                        GameService.gI().epNgoc(1, ShopNew.this.listEp);
+                        Canvas.startWaitDlg("Đang hợp..", false);
+                        ShopNew.this.listEp.removeAllElements();
+                    }
+                });
+            }
+        }
+    }
+
+    private void doLeftEpNgoc() {
+        this.left = new Command("Hợp", new AnonymousClass28());
+    }
+
+    class AnonymousClass30 implements IAction {
+        AnonymousClass30() {
+        }
+
+        @Override
+        public void perform() {
+            if (ShopNew.this.selected < ShopNew.this.sellItem.size()) {
+                Canvas.startYesNoDlg("Bạn có muốn mua không ?", new IAction() {
+                    @Override
+                    public void perform() {
+                        if (ShopNew.this.sellItem.elementAt(ShopNew.this.selected) instanceof ItemInInventory) {
+                            ItemInInventory item = (ItemInInventory) ShopNew.this.sellItem.elementAt(ShopNew.this.selected);
+                            GameService.gI().requestBuyItemUser(ShopNew.this.idCharSell, ShopNew.this.idSeller, ShopNew.this.shopIdSell, item.itemID, 0);
+                        } else {
+                            RealID real = (RealID) ShopNew.this.sellItem.elementAt(ShopNew.this.selected);
+                            GameService.gI().requestBuyItemUser(ShopNew.this.idCharSell, ShopNew.this.idSeller, ShopNew.this.shopIdSell, real.realID, 1);
+                        }
+                        Canvas.startWaitDlg();
+                    }
+                });
+            }
+        }
+    }
+
+    public void setLeftBuyItem() {
+        this.left = new Command("Mua", new AnonymousClass30());
+    }
+
+    public Vector getListBuyItem() {
+        Vector menu = new Vector();
+        int size0 = this.sellItem.size();
+        for (int i = 0; i < size0; i++) {
+            final int ii = i;
+            menu.addElement(new Command("", new IAction() {
+                @Override
+                public void perform() {
+                    if (!(ShopNew.this.sellItem.elementAt(ii) instanceof ItemInInventory)) {
+                        ShopNew.this.showRealIDInfo((RealID) ShopNew.this.sellItem.elementAt(ii), (ii % ShopNew.this.numW) * ShopNew.this.wSmall, (ii / ShopNew.this.numW) * ShopNew.this.wSmall);
+                    } else {
+                        ShopNew.this.setShowText(((ItemInInventory) ShopNew.this.sellItem.elementAt(ii)).getInfoItemUserSell(), (ii % ShopNew.this.numW) * ShopNew.this.wSmall, (ii / ShopNew.this.numW) * ShopNew.this.wSmall);
+                    }
+                }
+            }) {
+                @Override
+                public void paint(Graphics g, int x, int y) {
+                    if (ShopNew.this.sellItem.elementAt(ii) instanceof ItemInInventory) {
+                        ItemInInventory item = (ItemInInventory) ShopNew.this.sellItem.elementAt(ii);
+                        if (item.isSelling) {
+                            g.setColor(7706352);
+                            g.fillRect(x - 7, y - 7, 14, 14);
+                        }
+                        item.paint(g, x, y);
+                        return;
+                    }
+                    Res.paintGem(g, Res.getGemByID(((RealID) ShopNew.this.sellItem.elementAt(ii)).ID).idImage, x, y);
+                }
+            });
+        }
+        return menu;
+    }
+
+    private void setLeftKeepAndSellItem() {
+    }
+
+    protected void setLeftSellItem(final ItemInInventory item, final short gem) {
+        closeText();
+        Canvas.inputDlg.setInfo("Nhập giá muốn bán: ", new IAction() {
+            @Override
+            public void perform() {
+                int value;
+                try {
+                    String str = Canvas.inputDlg.tfInput.getText();
+                    if (str.equals("") || (value = Integer.parseInt(str)) < 0) {
+                        return;
+                    }
+                    ShopNew.this.doRequestSellItem(item, gem, value, true);
+                } catch (Exception e) {
+                    Canvas.startOKDlg("Vui lòng chỉ nhập số.");
+                }
+            }
+        }, 1, 10, true);
+        Canvas.inputDlg.show();
+    }
+
+    public void doRequestSellItem(ItemInInventory item, short gem, int prize, boolean sell) {
+        GameService.gI().requestSellItem(this.idSeller, this.shopIdSell, item, gem, prize, sell);
+        Canvas.startWaitDlg();
+    }
+
+    private void setSelectedKeepAndSellItem() {
+        this.center = new Command("", new IAction() {
+            @Override
+            public void perform() {
+                Vector ite;
+                int inde = ((ShopNew.this.selected / ShopNew.this.numW) * 3) + (ShopNew.this.selected % ShopNew.this.numW);
+                if (ShopNew.this.selected % ShopNew.this.numW < 3) {
+                    if (inde < ShopNew.this.ItemShopNew.size()) {
+                        ItemInInventory item = (ItemInInventory) ShopNew.this.ItemShopNew.elementAt(inde);
+                        if (item == null) {
+                            return;
+                        }
+                        ShopNew.this.showItemInventoryInfo(item, ShopNew.this.isSell, (ShopNew.this.selected % ShopNew.this.numW) * ShopNew.this.wSmall, ((ShopNew.this.selected / ShopNew.this.numW) * ShopNew.this.hSmall) - ShopNew.cmy);
+                        return;
+                    }
+                    if (inde < ShopNew.this.ItemShopNew.size() + MainChar.gemItem.size()) {
+                        GemTemplate gem = (GemTemplate) MainChar.gemItem.elementAt(inde - ShopNew.this.ItemShopNew.size());
+                        ShopNew.this.showGemItemInfo(gem.id, (ShopNew.this.selected % ShopNew.this.numW) * ShopNew.this.wSmall, ((ShopNew.this.selected / ShopNew.this.numW) * ShopNew.this.hSmall) - ShopNew.cmy);
+                        return;
+                    }
+                    return;
+                }
+                if (ShopNew.index[ShopNew.focusTab] == 22) {
+                    ite = Char.itembag;
+                } else {
+                    ite = ShopNew.this.sellItem;
+                }
+                if (inde - 3 < ite.size()) {
+                    if (ite.elementAt(inde - 3) instanceof ItemInInventory) {
+                        ShopNew.this.showItemInventoryInfo((ItemInInventory) ite.elementAt(inde - 3), ShopNew.this.isSell, (ShopNew.this.selected % ShopNew.this.numW) * ShopNew.this.wSmall, ((ShopNew.this.selected / ShopNew.this.numW) * ShopNew.this.hSmall) - ShopNew.cmy);
+                    } else {
+                        ShopNew.this.showRealIDInfo((RealID) ite.elementAt(inde - 3), (ShopNew.this.selected % ShopNew.this.numW) * ShopNew.this.wSmall, ((ShopNew.this.selected / ShopNew.this.numW) * ShopNew.this.hSmall) - ShopNew.cmy);
+                    }
+                }
+            }
+        });
+    }
+
+    public void setListImbue(boolean isEp, int type, int khoa) {
+        this.listTemp.removeAllElements();
+        Vector v = khoa == 0 ? MainChar.gemItem : MainChar.gemItemKhoa;
+        int size0 = v.size();
+        for (int i = 0; i < size0; i++) {
+            GemTemplate gem = (GemTemplate) v.elementAt(i);
+            GemTemp g = Res.getGemByID(gem.id);
+            if (!isEp) {
+                if (g.type == type) {
+                    this.listTemp.addElement(gem);
+                }
+            } else if (g.typeEp == type) {
+                this.listTemp.addElement(gem);
+            }
+        }
+        if (this.listTemp.size() == 0) {
+            Canvas.startOKDlg("Không có nguyên liệu.", new IAction() {
+                @Override
+                public void perform() {
+                    ShopNew.this.right.action.perform();
+                    Canvas.endDlg();
+                }
+            });
+        }
+    }
+
+    class AnonymousClass37 implements IAction {
+        AnonymousClass37() {
+        }
+
+        @Override
+        public void perform() {
+            if (Canvas.gameScr.mainChar.itemImbue != null) {
+                if (Canvas.gameScr.mainChar.hadPutItemImbue()) {
+                    Canvas.startYesNoDlg(new StringBuffer("Bạn phải mất ").append(ShopNew.this.prizeImbue).append(" ").append("xu").append(" để luyện.").toString(), new IAction() {
+                        @Override
+                        public void perform() {
+                            if (Canvas.gameScr.mainChar.charXu < ShopNew.this.prizeImbue) {
+                                Canvas.startOKDlg("Không đủ tiền");
+                                return;
+                            }
+                            Canvas.gameScr.mainChar.charXu -= (long) ShopNew.this.prizeImbue;
+                            if (ShopNew.index[ShopNew.focusTab] == 21) {
+                                GameService.gI().doImbueItem(1);
+                            } else {
+                                GameService.gI().doKhamItem(1);
+                            }
+                            Canvas.startWaitDlg();
+                        }
+                    }, new IAction() {
+                        @Override
+                        public void perform() {
+                            Canvas.currentDialog = null;
+                        }
+                    });
+                } else {
+                    Canvas.startOKDlg(ShopNew.index[ShopNew.focusTab] != 21 ? "Chưa đặt ngọc" : "Chưa đặt luyện kim dược");
+                }
+            }
+        }
+    }
+
+    private void doLeftImbue() {
+        this.left = new Command(index[focusTab] == 21 ? "Đập" : "Xong", new AnonymousClass37());
+    }
+
+    public void setSelectedImbue() {
+        Vector menuItem = new Vector();
+        final int index2 = this.selected / this.numW;
+        final int xx = this.selected % this.numW;
+        int siz = (index2 * 2) + (xx / 2);
+        if ((index2 == 4 && (this.idImbue == -1 || xx >= this.ItemShopNew.size())) || (index2 != 4 && ((xx == 1 && this.idImbue != -1) || (xx != 1 && siz < MainChar.gemitemImbue.size())))) {
+            menuItem.addElement(new Command(index2 != 4 ? "Lấy ra" : "Bỏ vào", new IAction() {
+                @Override
+                public void perform() {
+                    if (index2 == 4) {
+                        if (xx < ShopNew.this.ItemShopNew.size()) {
+                            ItemInInventory item = (ItemInInventory) ShopNew.this.ItemShopNew.elementAt(xx);
+                            if (item.dayUse > 0) {
+                                Canvas.startOKDlg("Không được đập đồ thuê.");
+                                return;
+                            }
+                            if (Canvas.gameScr.mainChar.itemImbue == null && !item.isSelling) {
+                                Canvas.gameScr.mainChar.itemImbue = item;
+                                ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
+                                if (it.type < 3 || it.type > 7) {
+                                    ShopNew.this.imgWeaponAvatar = GameData.getImgIcon(it.idIcon).img;
+                                } else if (it.type >= 3 && it.type < 8) {
+                                    GameService.gI().doRequestWeapone(2, it.type, it.style, (byte) it.index);
+                                    Canvas.startWaitDlg();
+                                }
+                            }
+                            ShopNew.this.idImbue = xx;
+                            GameService.gI().addItemImbue(item.itemID);
+                        } else {
+                            if (MainChar.gemitemImbue.size() >= 8) {
+                                Canvas.startOKDlg("Không thể thêm");
+                                return;
+                            }
+                            int id = xx - ShopNew.this.ItemShopNew.size();
+                            if (id < ShopNew.this.listTemp.size()) {
+                                GemTemplate gem = (GemTemplate) ShopNew.this.listTemp.elementAt(id);
+                                RealID real = new RealID(gem.rID);
+                                real.ID = gem.id;
+                                boolean isLKD = false;
+                                if (WindowInfoScr.index[ShopNew.focusTab] == 21 && MainChar.gemitemImbue.size() == 0 && (real.ID <= 7 || real.ID == 155 || real.ID == 156)) {
+                                    isLKD = true;
+                                }
+                                if (!isLKD) {
+                                    if (Canvas.gameScr.mainChar.countBaoHiem() >= 1 && gem.id < 5) {
+                                        Canvas.startOKDlg("Chỉ có thể sử dụng 1 loại bảo hiểm cho 1 lần luyện.");
+                                        return;
+                                    }
+                                    if (Canvas.gameScr.mainChar.countLKD() < 1 || gem.id < 8 || gem.id == 155 || gem.id == 156) {
+                                        MainChar.gemitemImbue.addElement(real);
+                                        gem.number--;
+                                        if (gem.number == 0) {
+                                            ShopNew.this.listTemp.removeElement(gem);
+                                        }
+                                        GameService.gI().addGemItemImbue(real.realID, (byte) 0);
+                                    } else {
+                                        Canvas.startOKDlg("Không thể sử dụng 2 loại ngọc cho 1 lần luyện.");
+                                        return;
+                                    }
+                                } else {
+                                    Canvas.startOKDlg("Phải đặt luyện kim dược trước.");
+                                }
+                            }
+                        }
+                    } else if (xx == 1) {
+                        if (ShopNew.this.idImbue != -1) {
+                            GameService.gI().addItemImbue(((ItemInInventory) ShopNew.this.ItemShopNew.elementAt(ShopNew.this.idImbue)).itemID);
+                            ShopNew.this.idImbue = -1;
+                            Canvas.gameScr.mainChar.itemImbue = null;
+                            ShopNew.this.imgWeaponAvatar = null;
+                        }
+                    } else {
+                        int size = (index2 * 2) + (xx / 2);
+                        if (size < MainChar.gemitemImbue.size()) {
+                            RealID gem2 = (RealID) MainChar.gemitemImbue.elementAt(size);
+                            MainChar.gemitemImbue.removeElement(gem2);
+                            int aa = 0;
+                            int size1 = ShopNew.this.listTemp.size();
+                            for (int i = 0; i < size1; i++) {
+                                GemTemplate g = (GemTemplate) ShopNew.this.listTemp.elementAt(i);
+                                if (g.id == gem2.ID) {
+                                    g.number++;
+                                    aa = 1;
+                                    break;
+                                }
+                            }
+                            if (aa == 0) {
+                                GemTemplate g2 = new GemTemplate(gem2.ID);
+                                g2.rID = gem2.realID;
+                                ShopNew.this.listTemp.addElement(g2);
+                            }
+                            GameService.gI().addGemItemImbue(gem2.realID, (byte) 1);
+                        }
+                    }
+                    int aa2 = ShopNew.this.selected % ShopNew.this.numW;
+                    int bb = ShopNew.this.selected / ShopNew.this.numW;
+                    ShopNew.this.numW = ShopNew.this.ItemShopNew.size() + ShopNew.this.listTemp.size();
+                    if (ShopNew.this.numW < 6) {
+                        ShopNew.this.numW = 6;
+                    }
+                    if (aa2 >= ShopNew.this.numW) {
+                        aa2 = ShopNew.this.numW - 1;
+                    }
+                    ShopNew.this.selected = (bb * ShopNew.this.numW) + aa2;
+                    ShopNew.cmxLim = ((ShopNew.this.numW * ShopNew.this.wSmall) - ShopNew.this.w) + 6;
+                    if (ShopNew.cmxLim < 0) {
+                        ShopNew.cmxLim = 0;
+                    }
+                    if (ShopNew.cmx > ShopNew.cmxLim) {
+                        int i2 = ShopNew.cmxLim;
+                        ShopNew.cmtoX = i2;
+                        ShopNew.cmx = i2;
+                    }
+                }
+            }));
+        }
+        if (index2 == 4 || ((xx != 1 && siz < MainChar.gemitemImbue.size()) || (this.idImbue != -1 && xx == 1))) {
+            menuItem.addElement(new Command("Thông tin", new IAction() {
+                @Override
+                public void perform() {
+                    ShopNew.this.doShowItemInfoImbue();
+                }
+            }));
+        }
+        Canvas.menu.startAt(menuItem, 3);
+    }
+
+    public void doShowItemInfoImbue() {
+        int index2 = this.selected / this.numW;
+        int xx = this.selected % this.numW;
+        if (index2 == 4) {
+            if (xx < this.ItemShopNew.size()) {
+                ItemInInventory item = (ItemInInventory) this.ItemShopNew.elementAt(xx);
+                showItemInventoryInfo(item, this.isSell, xx * this.wSmall, 4 * this.wSmall);
+                return;
+            }
+            int size0 = this.listTemp.size();
+            for (int i = 0; i < size0; i++) {
+                if (i == xx - this.ItemShopNew.size()) {
+                    GemTemplate gem = (GemTemplate) this.listTemp.elementAt(i);
+                    GemTemp g = Res.getGemByID(gem.id);
+                    String itemInfo = ItemInInventory.setTemp(g.name, "0");
+                    if ((khoaImbue == 1 && WindowInfoScr.index[focusTab] == 21) || (khoaKham == 1 && WindowInfoScr.index[focusTab] == 25)) {
+                        itemInfo = new StringBuffer(String.valueOf(itemInfo)).append(" - Đã khóa").toString();
+                    }
+                    setShowText(new StringBuffer(String.valueOf(itemInfo)).append(ItemInInventory.setTemp(g.decript, "0")).toString(), (xx * this.wSmall) - cmx, 4 * this.wSmall);
+                }
+            }
+            return;
+        }
+        if (xx == 1) {
+            ItemInInventory item2 = (ItemInInventory) this.ItemShopNew.elementAt(this.idImbue);
+            setShowText(item2.getDescription(this.isSell), 50, 2 * this.wSmall);
+            return;
+        }
+        int size = (index2 * 2) + (xx / 2);
+        RealID gem2 = (RealID) MainChar.gemitemImbue.elementAt(size);
+        GemTemp g2 = Res.getGemByID(gem2.ID);
+        String str = ItemInInventory.setTemp(g2.name, "0");
+        if ((khoaImbue == 1 && WindowInfoScr.index[focusTab] == 21) || (khoaKham == 1 && WindowInfoScr.index[focusTab] == 25)) {
+            str = new StringBuffer(String.valueOf(str)).append(" - Đã khóa").toString();
+        }
+        setShowText(new StringBuffer(String.valueOf(str)).append(ItemInInventory.setTemp(g2.decript, "0")).toString(), xx * 50, index2 * this.wSmall);
+    }
+
+    public boolean isBuffSkill() {
+        byte[][] skill = {new byte[]{4, 5}, new byte[]{4, 5}, new byte[]{4, 5, 6, 7}, new byte[]{4, 5}, new byte[]{4, 5}};
+        int size0 = skill[Canvas.gameScr.mainChar.clazz].length;
+        for (int i = 0; i < size0; i++) {
+            if (this.selected == skill[Canvas.gameScr.mainChar.clazz][i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void doSelectedSkill() {
+        if (Char.skillLevelLearnt[this.selected] == -1) {
+            Canvas.startOKDlg("Xin gặp Lâm tướng quân để học kỹ năng này");
+            return;
+        }
+        Vector menuItems = new Vector();
+        boolean buff2User = false;
+        final boolean isBuff = isBuffSkill();
+        if (isBuff) {
+            buff2User = SkillManager.SKILL_CAN_BUFF_TO_USER[Canvas.gameScr.mainChar.clazz][this.selected - 4] == -1;
+        }
+        if (isBuff && !buff2User) {
+            menuItems.addElement(new Command("Sử dụng", new IAction() {
+                @Override
+                public void perform() {
+                    if (Char.skillLevelLearnt[ShopNew.this.selected] > 0) {
+                        Canvas.menu.showMenu = false;
+                        byte b = SkillManager.EFF_BUFF_SKILL[Canvas.gameScr.mainChar.clazz][ShopNew.this.selected - 4];
+                        int mpLost = SkillManager.getSkillMP(ShopNew.this.selected, Char.skillLevelLearnt[ShopNew.this.selected - 4], Canvas.gameScr.mainChar.clazz);
+                        if (mpLost > Canvas.gameScr.mainChar.mp) {
+                            if (!ShopNew.this.first) {
+                                Canvas.gameScr.addChat(new ChatInfo("", "Không đủ MP", 0));
+                                ShopNew.this.first = true;
+                                return;
+                            }
+                            return;
+                        }
+                        ShopNew.this.first = false;
+                        if (Canvas.gameScr.focusedActor != null && Canvas.gameScr.focusedActor.catagory == 0) {
+                            if (ShopNew.this.selected == 6) {
+                                GameService.gI().useBuff(Canvas.gameScr.focusedActor.ID, (byte) 0, b, (short) 0);
+                                Canvas.gameScr.mainChar.mp -= mpLost;
+                                return;
+                            }
+                            Canvas.gameScr.mainChar.mp -= mpLost;
+                            if (isBuff && (Canvas.gameScr.indexBuff == -1 || Canvas.gameScr.indexBuff == ShopNew.this.selected)) {
+                                Canvas.gameScr.indexBuff = ShopNew.this.selected;
+                            }
+                            ShopNew.this.doCastBuffToActor(Canvas.gameScr.mainChar, Canvas.gameScr.focusedActor, b, SkillManager.SKILL_CAN_BUFF_TO_USER[Canvas.gameScr.mainChar.clazz][ShopNew.this.selected - 4] == 1);
+                            return;
+                        }
+                        if (ShopNew.this.selected != 6) {
+                            Canvas.gameScr.mainChar.mp -= mpLost;
+                            if (isBuff && (Canvas.gameScr.indexBuff == -1 || Canvas.gameScr.indexBuff == ShopNew.this.selected)) {
+                                Canvas.gameScr.indexBuff = ShopNew.this.selected;
+                            }
+                            GameService.gI().useBuff(Canvas.gameScr.mainChar.ID, (byte) 0, b, (short) 0);
+                            return;
+                        }
+                        Canvas.startOKDlg("Chỉ có thể hồi sinh cho người đã hết HP.");
+                        return;
+                    }
+                    Canvas.startOKDlg("Chưa học kỹ năng này");
+                }
+            }));
+        }
+        if (!buff2User) {
+            menuItems.addElement(new Command("Cho vào phím tắt", new IAction() {
+                @Override
+                public void perform() {
+                    if (Char.skillLevelLearnt[ShopNew.this.selected] > 0) {
+                        ShopNew.this.doGiveSkillToQuickSlot(ShopNew.this.selected, isBuff);
+                    } else {
+                        Canvas.startOKDlg("Chưa học kỹ năng này");
+                    }
+                }
+            }));
+        }
+        menuItems.addElement(new Command("Cộng", new IAction() {
+            @Override
+            public void perform() {
+                if (Canvas.gameScr.mainChar.skillPointLeft == 0) {
+                    Canvas.startOKDlg("Đã hết điểm kỹ năng để cộng. Xin đánh lên level để có điểm kỹ năng.");
+                } else if (Canvas.gameScr.mainChar.level < SkillManager.getLvAddSkill(Canvas.gameScr.mainChar.clazz, ShopNew.this.selected, Char.skillLevelLearnt[ShopNew.this.selected])) {
+                    Canvas.startOKDlg("Chưa đủ cấp độ để cộng. Xin đánh lên level yêu cầu để có thể cộng.");
+                } else {
+                    GameService.gI().addSkillPoint(ShopNew.this.selected);
+                    Canvas.startWaitDlg("Xin chờ..", true);
+                }
+            }
+        }));
+        Canvas.menu.startAt(menuItems, 2);
+    }
+
+    protected void doGiveSkillToQuickSlot(final int skillType, final boolean isBuff) {
+        Vector menuItems = new Vector();
+        for (int i = 0; i < 3; i++) {
+            final int ii = i;
+            menuItems.addElement(new Command(new StringBuffer("Phím số ").append(1 + (i * 2)).toString(), new IAction() {
+                @Override
+                public void perform() {
+                    MainChar.quickSlot[GameScr.indexTabSlot][ii].setIsSkill(skillType, Canvas.gameScr.mainChar.clazz, isBuff);
+                    RMS.saveQuickSlot();
+                }
+            }));
+        }
+        Canvas.menu.startAt(menuItems, 2);
+    }
+
+    public void doCastBuffToActor(final MainChar actor1, final Actor actor2, final int skillIdEff, boolean buff2Friend) {
+        Vector menu = new Vector();
+        if (buff2Friend) {
+            menu.addElement(new Command("Cho mình", new IAction() {
+                @Override
+                public void perform() {
+                    GameService.gI().useBuff(actor1.ID, (byte) 0, (byte) skillIdEff, (short) 0);
+                }
+            }));
+            menu.addElement(new Command("Cho bạn", new IAction() {
+                @Override
+                public void perform() {
+                    GameService.gI().useBuff(actor2.ID, (byte) 0, (byte) skillIdEff, (short) 0);
+                }
+            }));
+        } else {
+            GameService.gI().useBuff(actor1.ID, (byte) 0, (byte) skillIdEff, (short) 0);
+        }
+        Canvas.menu.startAt(menu, 2);
+    }
+
+    public void setCmdCenter() {
+        this.charInfo = null;
+        switch (index[focusTab]) {
+            case 1:
+                this.center = new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.showCharWearingInfo();
+                    }
+                });
+                break;
+            case 2:
+                this.center = new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.dofireBasePoint();
+                    }
+                });
+                break;
+            case 3:
+                cmyLim = ((Canvas.gameScr.mainChar.getInfoSkill(this.selected).length + 1) * 12) - 72;
+                if (cmyLim < 0) {
+                    cmyLim = 0;
+                }
+                this.center = new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.doSelectedSkill();
+                    }
+                });
+                break;
+            case 4:
+                setTextCharInfo();
+                break;
+            case 5:
+                this.center = new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.doSelectedParty();
+                    }
+                });
+                break;
+            case 6:
+                this.center = new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.doSelectedQuest();
+                    }
+                });
+                break;
+            case 7:
+                this.newSkill = new Vector();
+                Vector news = (Vector) GameScr.infoNewSkill.elementAt(Canvas.gameScr.mainChar.clazz);
+                byte skillLevel = Char.skillLevelLearnt[((InfoSkillLearn) news.elementAt(this.selected)).idSkill];
+                this.newSkill.addElement(new StringBuffer("`").append(((InfoSkillLearn) news.elementAt(this.selected)).name).toString());
+                if (skillLevel == -1) {
+                    this.newSkill.addElement(new StringBuffer("`Phí: ").append(((InfoSkillLearn) news.elementAt(this.selected)).price).append(" xu").toString());
+                }
+                String[] info = Font.arialFontW.splitFontBStrInLine(((InfoSkillLearn) news.elementAt(this.selected)).decript, 130);
+                for (String str : info) {
+                    this.newSkill.addElement(str);
+                }
+                setSize(114, 30, news.size(), 1, 23, 20);
+                cmyLim = (this.newSkill.size() * 12) - 72;
+                if (cmyLim < 0) {
+                    cmyLim = 0;
+                }
+                this.center = new Command("", new AnonymousClass53(news));
+                break;
+            case 8:
+            case 26:
+            case 27:
+            case 29:
+            case 30:
+            case 32:
+                break;
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+            case 16:
+            case 17:
+            case 18:
+            case 19:
+            case 20:
+            case 24:
+            default:
+                int element = this.selected + (index[focusTab] == 0 ? this.countTabMyitem * this.numCell : 0);
+                this.center = null;
+                if (!this.isChangeTab && element < this.list.size()) {
+                    this.center = (Command) this.list.elementAt(element);
+                    break;
+                }
+                break;
+            case 21:
+            case 25:
+                this.center = new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.setSelectedImbue();
+                    }
+                });
+                break;
+            case 22:
+            case 23:
+                setSelectedKeepAndSellItem();
+                break;
+            case 28:
+                setLimitCheDo();
+                break;
+            case 31:
+                this.center = new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        if (ShopNew.charWearing != null) {
+                            if (ShopNew.charWearing.useHorse == -1 && ShopNew.charWearing.idhorse <= -1) {
+                                return;
+                            }
+                            ShopNew.this.showInfoWearingAnimal();
+                        }
+                    }
+                });
+                break;
+        }
+    }
+
+    class AnonymousClass53 implements IAction {
+        private final Vector val$news;
+
+        AnonymousClass53(Vector vector) {
+            this.val$news = vector;
+        }
+
+        @Override
+        public void perform() {
+            InfoSkillLearn skill = (InfoSkillLearn) this.val$news.elementAt(ShopNew.this.selected);
+            Canvas.startYesNoDlg(new StringBuffer("Bạn muốn học kỹ năng ").append(skill.name).append(" với giá ").append(skill.price).append("xu không? ").toString(), new IAction() {
+                @Override
+                public void perform() {
+                    GameService.gI().learnSkill(Canvas.gameScr.mainChar.clazz, ShopNew.this.selected);
+                    Canvas.startWaitDlg();
+                }
+            });
+        }
+    }
+
+    public void setLimitCheDo() {
+        int bb = this.selected % this.numW;
+        if (this.selected / this.numW == 1) {
+            int aa = this.listEp.size() / 2;
+            if (aa < 6) {
+                aa = 6;
+            }
+            this.numW = aa;
+            if (this.numW < 6) {
+                this.numW = 6;
+            }
+            if (bb >= this.numW) {
+                bb = this.numW - 1;
+            }
+            this.selected = this.numW + bb;
+        } else if (this.selected / this.numW == 2) {
+            this.numW = this.listTemp.size();
+            if (this.numW < 6) {
+                this.numW = 6;
+            }
+            if (bb >= this.numW) {
+                bb = this.numW - 1;
+            }
+            this.selected = (2 * this.numW) + bb;
+        }
+        setLim();
+        if (cmx > cmxLim) {
+            int i = cmxLim;
+            cmtoX = i;
+            cmx = i;
+        }
+    }
+
+    protected void doSelectedTrade() {
+        if (this.isShowText) {
+            closeText();
+            return;
+        }
+        if ((this.selected / this.numW) + 1 == this.numH) {
+            Vector menuitem = new Vector();
+            if (this.selected % this.numW < this.ItemShopNew.size()) {
+                boolean isCo = false;
+                final ItemInInventory item = (ItemInInventory) this.ItemShopNew.elementAt(this.selected % this.numW);
+                Vector list = Canvas.gameScr.mainChar.tItems;
+                int size0 = list.size();
+                for (int i = 0; i < size0; i++) {
+                    if (list.elementAt(i) instanceof ItemInInventory) {
+                        ItemInInventory itm = (ItemInInventory) list.elementAt(i);
+                        if (itm.itemID == item.itemID) {
+                            isCo = true;
+                            break;
+                        }
+                    }
+                }
+                if (!isCo) {
+                    menuitem.addElement(new Command("Giao dịch", new IAction() {
+                        @Override
+                        public void perform() {
+                            if (Canvas.gameScr.mainChar.tItems.size() >= 12) {
+                                Canvas.startOKDlg("Không thể thêm.");
+                            } else {
+                                if (item.isSelling) {
+                                    return;
+                                }
+                                Canvas.gameScr.gameService.sendAddItemTrade(item.itemID, 0, 0);
+                            }
+                        }
+                    }));
+                }
+                menuitem.addElement(new Command("Thông tin", new IAction() {
+                    @Override
+                    public void perform() {
+                        if (!item.isEnoughData) {
+                            item.isEnoughData = true;
+                            GameService.gI().requestItemInfo(item.itemID, Canvas.gameScr.mainChar.ID);
+                        } else {
+                            ShopNew.this.setShowText(item.getDescription(false), ((ShopNew.this.selected % ShopNew.this.numW) * 18) - ShopNew.cmy, ShopNew.this.h);
+                        }
+                    }
+                }));
+            } else {
+                int inde = (this.selected % this.numW) - this.ItemShopNew.size();
+                int aa = 0;
+                int size1 = MainChar.listPotion.length;
+                for (int i2 = 0; i2 < size1; i2++) {
+                    final int ii = i2;
+                    if (MainChar.listPotion[i2].number - MainChar.listPotion[i2].numTrade > 0 && MainChar.listPotion[i2].isTrade) {
+                        final int bb = aa;
+                        if (aa == inde) {
+                            menuitem.addElement(new Command("Giao dịch", new IAction() {
+                                @Override
+                                public void perform() {
+                                    InputDlg inputDlg = Canvas.inputDlg;
+                                    final int i3 = ii;
+                                    inputDlg.setInfo("Số lượng", new IAction() {
+                                        @Override
+                                        public void perform() {
+                                            try {
+                                                int num = Integer.parseInt(Canvas.inputDlg.tfInput.getText());
+                                                if (num > 0 && num <= MainChar.listPotion[i3].number - MainChar.listPotion[i3].numTrade) {
+                                                    Canvas.gameScr.gameService.sendAddItemTrade((short) i3, 1, num);
+                                                    Canvas.endDlg();
+                                                }
+                                            } catch (Exception e) {
+                                            }
+                                        }
+                                    }, 3, 10, true);
+                                    Canvas.inputDlg.show();
+                                }
+                            }));
+                            menuitem.addElement(new Command("Thông tin", new IAction() {
+                                @Override
+                                public void perform() {
+                                    ShopNew.this.setShowText(ShopNew.this.getPotionInfo(ii), (bb % ShopNew.this.numW) * 18, (bb / ShopNew.this.numW) * 18);
+                                }
+                            }));
+                            break;
+                        }
+                        aa++;
+                    }
+                }
+            }
+            Canvas.menu.startAt(menuitem, 3);
+            return;
+        }
+        Vector menu = new Vector();
+        Object item2 = null;
+        int aa2 = this.selected % this.numW;
+        if (aa2 <= 2) {
+            int bb2 = this.selected / this.numW;
+            final int cc = (bb2 * 3) + aa2;
+            final Vector tItem = Canvas.gameScr.mainChar.tItems;
+            if (cc < tItem.size()) {
+                item2 = tItem.elementAt(cc);
+                final Object itemHuy = item2;
+                menu.addElement(new Command("Hủy", new IAction() {
+                    @Override
+                    public void perform() {
+                        if (tItem.elementAt(cc) instanceof ItemInInventory) {
+                            Canvas.gameScr.gameService.sendAddItemTrade(((ItemInInventory) itemHuy).itemID, 0, 0);
+                        } else {
+                            Canvas.gameScr.gameService.sendAddItemTrade(((Potion) itemHuy).id, 2, 0);
+                        }
+                    }
+                }));
+            }
+        } else {
+            int bb3 = this.selected / this.numW;
+            int cc2 = (bb3 * 3) + (aa2 - 3);
+            if (cc2 < Canvas.gameScr.mainChar.rItems.size()) {
+                item2 = Canvas.gameScr.mainChar.rItems.elementAt(cc2);
+            }
+        }
+        if (item2 != null) {
+            final int x1 = aa2 * 18;
+            final int y1 = (this.selected / this.numW) * 18;
+            final Object it = item2;
+            menu.addElement(new Command("Thông tin", new IAction() {
+                @Override
+                public void perform() {
+                    if (!(it instanceof ItemInInventory)) {
+                        int size2 = MainChar.listPotion.length;
+                        for (int i3 = 0; i3 < size2; i3++) {
+                            if (MainChar.listPotion[i3].index == ((Potion) it).index) {
+                                ShopNew.this.setShowText(ShopNew.this.getPotionInfo(i3), x1, y1);
+                                int i4 = 0 + 1;
+                                return;
+                            }
+                        }
+                        return;
+                    }
+                    ShopNew.this.showItemInventoryInfo((ItemInInventory) it, ShopNew.this.isSell, x1, y1);
+                }
+            }));
+        }
+        Canvas.menu.startAt(menu, 3);
+    }
+
+    protected void doSelectedQuest() {
+        if (Canvas.gameScr.mainChar.receiveQuest) {
+            Canvas.startYesNoDlg("Bạn thật sự muốn từ bỏ nhiệm vụ này?", new IAction() {
+                @Override
+                public void perform() {
+                    Canvas.gameScr.mainChar.resetQuest();
+                    Canvas.gameScr.dellPotionQuest();
+                    GameService.gI().receiveQuest(0, 0, 3);
+                    Canvas.startWaitDlg();
+                }
+            });
+        }
+    }
+
+    protected void doSelectedParty() {
+        if (Char.party.size() > 0) {
+            MainChar mc = Canvas.gameScr.mainChar;
+            Vector menuItems = new Vector();
+            if (mc.ID == mc.IDMasterParty) {
+                menuItems.addElement(new Command("Đuổi", new IAction() {
+                    @Override
+                    public void perform() {
+                        Canvas.gameScr.gameService.kickOutParty(((PartyInfo) Char.party.elementAt(ShopNew.this.selected)).id, (byte) 0);
+                    }
+                }));
+                menuItems.addElement(new Command("Giải tán", new IAction() {
+                    @Override
+                    public void perform() {
+                        Canvas.gameScr.gameService.kickOutParty(0, (byte) 1);
+                    }
+                }));
+            } else {
+                menuItems.addElement(new Command("Rời nhóm", new IAction() {
+                    @Override
+                    public void perform() {
+                        Canvas.gameScr.gameService.kickOutParty(Canvas.gameScr.mainChar.ID, (byte) 2);
+                    }
+                }));
+            }
+            Canvas.menu.startAt(menuItems, 2);
+        }
+    }
+
+    private void setTextCharInfo() {
+        this.charInfo = new String[17];
+        MainChar c = Canvas.gameScr.mainChar;
+        this.charInfo[0] = new StringBuffer("Nhân vật: ").append(c.name).toString();
+        this.charInfo[1] = new StringBuffer("Level: ").append((int) c.level).append("+").append(c.getPercent()).toString();
+        this.charInfo[2] = new StringBuffer("HP: ").append(c.hp).append("/").append(c.maxhp).toString();
+        this.charInfo[3] = new StringBuffer("MP: ").append(c.mp).append("/").append(c.maxmp).toString();
+        this.charInfo[4] = new StringBuffer("Tấn công: ").append(c.getAttack()).toString();
+        this.charInfo[5] = new StringBuffer("Thủ vật lý: ").append(c.defend).toString();
+        this.charInfo[6] = new StringBuffer("Thủ ma pháp: ").append(c.defend_magic).toString();
+        this.charInfo[7] = new StringBuffer("Chính xác: ").append((int) c.accurate).toString();
+        this.charInfo[8] = new StringBuffer("Né tránh: ").append((int) c.dodge).toString();
+        this.charInfo[9] = new StringBuffer("Bạo kích: ").append(c.baokich > 0 ? new StringBuffer(String.valueOf(c.baokich / 10)).append(".").append(c.baokich % 10).toString() : "0").append("%").toString();
+        this.charInfo[10] = new StringBuffer("Chí mạng: ").append((int) c.critical).toString();
+        this.charInfo[11] = new StringBuffer("Cống hiến: ").append(c.dedicationPoint).append(" điểm.").toString();
+        this.charInfo[12] = new StringBuffer("Liên trảm: ").append(c.lienTram).append(" điểm.").toString();
+        this.charInfo[13] = new StringBuffer("Công trạng: ").append(c.congTrang).append(" điểm.").toString();
+        this.charInfo[14] = new StringBuffer("Điểm hoạt động: ").append(c.hoatdong).append(" điểm.").toString();
+        this.charInfo[15] = new StringBuffer("Điểm đấu trường: ").append(c.pArena).append(" điểm.").toString();
+        this.charInfo[16] = c.nameHusband_wife.equals("") ? "Độc thân" : c.nameHusband_wife;
+        this.numH = this.charInfo.length + 1;
+        if (infoMainCharServer != null) {
+            this.numH += infoMainCharServer.length;
+        }
+        setLim();
+    }
+
+    private void setCamEpDoThu() {
+        if (Canvas.isPointerClick) {
+            int size0 = this.posEpNgoc.length;
+            for (int i = 0; i < size0; i++) {
+                if (Canvas.isPointer(((this.x + this.x0) + this.posEpNgoc[i][0]) - 3, ((this.y + this.y0) + this.posEpNgoc[i][1]) - 3, 23, 23)) {
+                    Canvas.isPointerClick = false;
+                    this.selected = i;
+                    if (this.numH != 1) {
+                        this.numH = 1;
+                        this.numW = 5;
+                        cmtoY = 0;
+                        cmtoX = 0;
+                        cmy = 0;
+                        cmx = 0;
+                    }
+                    doSelectedEpDothu();
+                }
+            }
+        }
+    }
+
+    private void setCamEpNgoc() {
+        if (Canvas.isPointerClick) {
+            int size0 = this.posEpNgoc.length;
+            for (int i = 0; i < size0; i++) {
+                if (Canvas.isPointer(((this.x + this.x0) + this.posEpNgoc[i][0]) - 3, ((this.y + this.y0) + this.posEpNgoc[i][1]) - 3, 23, 23)) {
+                    Canvas.isPointerClick = false;
+                    this.selected = i;
+                    if (this.numH != 1) {
+                        this.numH = 1;
+                        this.numW = 5;
+                        cmtoY = 0;
+                        cmtoX = 0;
+                        cmy = 0;
+                        cmx = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    private void updateKeyMain() {
+        boolean changeFocus = false;
+        if (Canvas.isPointer(this.x + this.x0, this.y + this.y0, this.w, this.h)) {
+            if (index[focusTab] == 26) {
+                setCamEpNgoc();
+            }
+            if (index[focusTab] == 32) {
+                if (Canvas.py >= this.y + this.y0 + this.posEpNgoc[1][1] && Canvas.py <= this.posEpNgoc[1][1] + 65 + this.y + this.y0) {
+                    setCamEpDoThu();
+                } else if (Canvas.isPointer(this.x0 + this.x, ((this.y + this.y0) + (4 * this.hSmall)) - 5, 120, 20)) {
+                    Canvas.isPointerClick = false;
+                    int aa = (Canvas.py - (((this.y + this.y0) + (4 * this.hSmall)) - 5)) / this.hSmall;
+                    int bb = (Canvas.px - ((this.x0 + this.x) + 5)) / 20;
+                    this.selected = (aa * 6) + bb + 6;
+                    if (this.selected < 6) {
+                        this.selected = 6;
+                    } else if (this.selected > 11) {
+                        this.selected = 11;
+                    }
+                    if (this.numH != 1) {
+                        this.numH = 1;
+                        this.numW = 6;
+                        cmtoY = 0;
+                        cmtoX = 0;
+                        cmy = 0;
+                        cmx = 0;
+                    }
+                    doSelectedEpDothu();
+                }
+            }
+            int i = Canvas.pyLast - Canvas.py;
+            int i2 = Canvas.pxLast - Canvas.px;
+            if (Canvas.isPointerDown && index[focusTab] != 1 && !this.isShowText) {
+                if (!this.trans) {
+                    this.pb = cmy;
+                    this.pa = cmx;
+                    this.trans = true;
+                    int aa2 = ((cmtoY + Canvas.py) - (this.y + this.y0)) / this.hSmall;
+                    int bb2 = ((cmtoX + Canvas.px) - (this.x + this.x0)) / this.wSmall;
+                    if (index[focusTab] != 3) {
+                        if (index[focusTab] != 32) {
+                            changeFocus = true;
+                        }
+                        setCmdCenter();
+                        if (aa2 == 5 && this.numH != 5 && index[focusTab] == 26) {
+                            this.selected = 3;
+                            setSizeEpNgoc(1, false);
+                        } else if (aa2 != 4 && (index[focusTab] == 21 || index[focusTab] == 25)) {
+                            setUpdatePointerImbue(bb2, aa2);
+                        } else if (aa2 == 5 && this.numH != 5 && index[focusTab] == 32) {
+                            this.selected = 3;
+                            setSizeEpNgoc(1, true);
+                        } else {
+                            if ((index[focusTab] == 21 || index[focusTab] == 25) && aa2 == 4 && this.selected / this.numW != 4) {
+                                this.selected = 10;
+                                setSizeImbue(1);
+                            }
+                            if (index[focusTab] != 32) {
+                                this.selected = (aa2 * this.numW) + bb2;
+                            }
+                        }
+                    }
+                } else {
+                    this.isCmyTab3 = true;
+                }
+                this.isTab3 = true;
+                this.isshowInfo = true;
+                cmtoY = this.pb + (Canvas.pyLast - Canvas.py);
+                if (index[focusTab] != 32 || Canvas.py >= this.posEpNgoc[1][1] + 70 + this.y + this.y0) {
+                    cmtoX = this.pa + (Canvas.pxLast - Canvas.px);
+                }
+                if (cmtoY < -10) {
+                    cmtoY = -10;
+                }
+                if (cmtoY > cmyLim + 10) {
+                    cmtoY = cmyLim + 10;
+                }
+                if (cmtoX < -10) {
+                    cmtoX = -10;
+                }
+                if (cmtoX > cmxLim + 10) {
+                    cmtoX = cmxLim + 10;
+                }
+            }
+            if (Canvas.isPointerClick) {
+                this.xCus = -20;
+                this.isChangeTab = false;
+                Canvas.isPointerClick = false;
+                this.trans = false;
+                if (index[focusTab] != 1) {
+                    if (index[focusTab] != 3) {
+                        if (index[focusTab] != 32) {
+                            setCmdCenter();
+                            if (this.center != null) {
+                                this.center.action.perform();
+                            }
+                        } else if (Canvas.py >= this.posEpNgoc[1][1] + 90 + this.y + this.y0 && Math.abs(Canvas.pxLast - Canvas.px) <= 10) {
+                            int aa3 = ((cmtoY + Canvas.py) - (this.y + this.y0)) / this.hSmall;
+                            int bb3 = ((cmtoX + Canvas.px) - (this.x + this.x0)) / this.wSmall;
+                            this.numW = this.listItemAnimal.size() + this.listTemp.size();
+                            if (this.numW < 6) {
+                                this.numW = 6;
+                            }
+                            this.numH = 5;
+                            cmxLim = (this.numW * 20) - (this.w - 8);
+                            if (cmxLim < 0) {
+                                cmxLim = 0;
+                            }
+                            this.selected = ((aa3 - 1) * this.numW) + bb3;
+                            if (this.center != null) {
+                                this.center.action.perform();
+                            }
+                        }
+                    } else {
+                        int fc = ((cmtoX + Canvas.px) - (this.x + this.x0)) / this.wSmall;
+                        if (fc < 0) {
+                            fc = 0;
+                        } else if (fc > SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz].length - 1) {
+                            fc = SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz].length - 1;
+                        }
+                        if (this.selected != fc) {
+                            this.selected = fc;
+                        } else {
+                            setCmdCenter();
+                            if (this.center != null) {
+                                this.center.action.perform();
+                            }
+                        }
+                    }
+                } else if (Canvas.px >= this.x + 33 && Canvas.px <= this.x + 53) {
+                    this.selected = 4;
+                    if (Math.abs(Canvas.pyLast - Canvas.py) < 10 && Math.abs(Canvas.pxLast - Canvas.px) < 10) {
+                        setCmdCenter();
+                        if (this.center != null) {
+                            this.center.action.perform();
+                        }
+                    }
+                } else if (Canvas.px > this.x + 80 && Canvas.px <= this.x + 96) {
+                    this.selected = 1;
+                    if (Math.abs(Canvas.pyLast - Canvas.py) < 10 && Math.abs(Canvas.pxLast - Canvas.px) < 10) {
+                        setCmdCenter();
+                        if (this.center != null) {
+                            this.center.action.perform();
+                        }
+                    }
+                } else if (Canvas.px > this.x && Canvas.px <= this.x + 30) {
+                    int yy = (Canvas.py - (this.y + this.y0)) / this.hSmall;
+                    int xx = (Canvas.px - (this.x + this.x0)) / this.wSmall;
+                    this.selected = (yy * this.numW) + xx;
+                    if (this.selected > 12) {
+                        this.selected = 12;
+                    }
+                    if (Math.abs(Canvas.pyLast - Canvas.py) < 10 && Math.abs(Canvas.pxLast - Canvas.px) < 10) {
+                        setCmdCenter();
+                        if (this.center != null) {
+                            this.center.action.perform();
+                        }
+                    }
+                } else if (Canvas.px > this.x + 100 && Canvas.px <= this.x + 120) {
+                    int yyy = (Canvas.py - (this.y + this.y0)) / this.hSmall;
+                    int xxx = (Canvas.px - (this.x + this.x0)) / this.wSmall;
+                    this.selected = (yyy * this.numW) + xxx + 1;
+                    if (this.selected > 14) {
+                        this.selected = 14;
+                    }
+                    if (Math.abs(Canvas.pyLast - Canvas.py) < 10 && Math.abs(Canvas.pxLast - Canvas.px) < 10) {
+                        setCmdCenter();
+                        if (this.center != null) {
+                            this.center.action.perform();
+                        }
+                    }
+                }
+            }
+        } else {
+            this.trans = false;
+            if (index[focusTab] == 3 && !this.isshowInfo && Canvas.isPointer(this.x + this.x0, this.y + this.y0 + 30, this.w, 65)) {
+                this.isCmyTab3 = false;
+                if (Canvas.isPointerDown) {
+                    if (!this.isTab3) {
+                        this.pb = cmy;
+                        this.isTab3 = true;
+                        setCmdCenter();
+                    }
+                    cmtoY = this.pb + (Canvas.pyLast - Canvas.py);
+                    if (cmtoY < -10) {
+                        cmtoY = -10;
+                    }
+                    if (cmtoY > cmyLim + 10) {
+                        cmtoY = cmyLim + 10;
+                    }
+                }
+                if (Canvas.isPointerClick) {
+                    Canvas.isPointerClick = false;
+                    this.isTab3 = false;
+                }
+            }
+        }
+        if (!Canvas.isPointerDown) {
+            this.isshowInfo = false;
+        }
+        if (Canvas.isKeyPressed(2)) {
+            this.xCus = -20;
+            if (index[focusTab] == 32) {
+                setSizeEpNgoc(-1, true);
+            } else if (index[focusTab] == 26) {
+                setSizeEpNgoc(-1, false);
+            } else {
+                if (index[focusTab] == 8) {
+                    setSizeTrade(-1);
+                } else if (index[focusTab] == 21 || index[focusTab] == 25) {
+                    setSizeImbue(-1);
+                }
+                if (index[focusTab] != 1) {
+                    if (this.selected / this.numW > 0) {
+                        changeFocus = true;
+                        this.selected -= this.numW;
+                        setCmdCenter();
+                    }
+                } else {
+                    byte[] arr = {0, 4, 2, 0, 12, 2, 3, 2, 5, 6, 6, 8, 9, 9, 11};
+                    this.selected = arr[this.selected];
+                    changeFocus = true;
+                    setCmdCenter();
+                }
+            }
+        } else if (Canvas.isKeyPressed(4)) {
+            if (index[focusTab] == 32) {
+                this.selected--;
+                changeFocus = true;
+                if (this.selected < 0) {
+                    this.selected = 0;
+                }
+                if (this.selected == 5) {
+                    this.selected = 6;
+                }
+                if (this.selected > 12 && this.selected < this.selected % this.numW) {
+                    this.selected = (this.numH * this.numW) - 1;
+                }
+            } else if (index[focusTab] != 1) {
+                if (this.numW > 1 && this.selected % this.numW > 0) {
+                    if ((index[focusTab] != 22 && index[focusTab] != 23) || !setSizeKeepItem(-1)) {
+                        changeFocus = true;
+                    }
+                    this.selected--;
+                    setCmdCenter();
+                }
+            } else {
+                byte[] arr4 = {0, 4, 1, 3, 12, 1, 6, 6, 1, 9, 9, 1, 12, 12, 1};
+                changeFocus = true;
+                this.selected = arr4[this.selected];
+                setCmdCenter();
+            }
+        } else if (Canvas.isKeyPressed(6)) {
+            if (index[focusTab] == 32) {
+                this.selected++;
+                changeFocus = true;
+                if (this.selected == 12) {
+                    this.selected = 11;
+                }
+                if (this.selected == 5) {
+                    this.selected = 4;
+                }
+                if (this.selected > 12 && this.selected > (this.numH * this.numW) - 1) {
+                    this.selected = (this.numH - 1) * this.numW;
+                }
+            } else if (index[focusTab] != 1) {
+                if (this.numW > 1 && this.selected < (this.numH * this.numW) - 1) {
+                    if ((index[focusTab] != 22 && index[focusTab] != 23) || !setSizeKeepItem(1)) {
+                        changeFocus = true;
+                    }
+                    this.selected++;
+                    setCmdCenter();
+                }
+            } else {
+                byte[] arr6 = {4, 2, 2, 4, 1, 5, 4, 4, 8, 4, 9, 11, 4, 12, 14};
+                changeFocus = true;
+                this.selected = arr6[this.selected];
+                setCmdCenter();
+            }
+        } else if (Canvas.isKeyPressed(8)) {
+            this.xCus = -20;
+            if (index[focusTab] == 32) {
+                setSizeEpNgoc(1, true);
+            } else if (index[focusTab] == 26) {
+                setSizeEpNgoc(1, false);
+            } else {
+                if (index[focusTab] == 8) {
+                    setSizeTrade(1);
+                }
+                if (index[focusTab] != 1) {
+                    if (this.selected / this.numW < this.numH - 1) {
+                        if (index[focusTab] == 21 || index[focusTab] == 25) {
+                            setSizeImbue(1);
+                        }
+                        changeFocus = true;
+                        this.selected += this.numW;
+                        setCmdCenter();
+                    }
+                } else {
+                    byte[] arr2 = {3, 2, 5, 6, 1, 8, 9, 2, 11, 12, 14, 14, 4, 13, 14};
+                    this.selected = arr2[this.selected];
+                    changeFocus = true;
+                    setCmdCenter();
+                }
+            }
+        }
+        if (this.list.size() == 0 && index[focusTab] != 22 && index[focusTab] != 23) {
+            if (Canvas.keyHold[2]) {
+                changeFocus = false;
+                cmtoY -= 10;
+                if (cmtoY < 0) {
+                    cmtoY = 0;
+                }
+            } else if (Canvas.keyHold[8]) {
+                changeFocus = false;
+                cmtoY += 10;
+                if (cmtoY > cmyLim) {
+                    cmtoY = cmyLim;
+                }
+            }
+        }
+        if (changeFocus) {
+            this.isCmyTab3 = false;
+            cmtoY = ((this.selected / this.numW) * this.hSmall) - (this.h / 2);
+            if (cmtoY < 0) {
+                cmtoY = 0;
+            }
+            if (cmtoY > cmyLim) {
+                cmtoY = cmyLim;
+            }
+            if (index[focusTab] != 32 || this.selected > 4) {
+                cmtoX = ((this.selected % this.numW) * this.wSmall) - (this.w / 2);
+            }
+            if (cmtoX < 0) {
+                cmtoX = 0;
+            }
+            if (cmtoX > cmxLim) {
+                cmtoX = cmxLim;
+            }
+        }
+    }
+
+    private void setUpdatePointerImbue(int bb, int aa) {
+        if (bb > 0 && bb < 5) {
+            this.selected = 1;
+            return;
+        }
+        if (bb == 5) {
+            bb = 2;
+        }
+        this.selected = (aa * this.numW) + bb;
+    }
+
+    private void setSizeEpNgoc(int i, boolean isAn) {
+        if (i == -1) {
+            if (this.numH != 1) {
+                this.numH = 1;
+                this.selected = 6;
+                this.numW = 5;
+                cmtoY = 0;
+                cmtoX = 0;
+                cmy = 0;
+                cmx = 0;
+                return;
+            }
+            if (this.selected == 2) {
+                this.selected = 0;
+                return;
+            }
+            if (this.selected == 3) {
+                this.selected = 2;
+                return;
+            }
+            if (this.selected == 4) {
+                this.selected = 1;
+                return;
+            } else {
+                if (this.selected >= 6 && this.selected < 12) {
+                    this.selected = 4;
+                    return;
+                }
+                return;
+            }
+        }
+        if (this.selected == 3 || this.selected == 4) {
+            if (!isAn) {
+                this.numW = this.listTemp.size();
+                if (this.numW < 6) {
+                    this.numW = 6;
+                }
+                this.numH = 5;
+                this.selected = (this.numH - 1) * this.numW;
+                cmxLim = (this.numW * 20) - (this.w - 8);
+                if (cmxLim < 0) {
+                    cmxLim = 0;
+                }
+                cmtoY = 0;
+                cmtoX = 0;
+                cmy = 0;
+                cmx = 0;
+                return;
+            }
+            this.selected = 6;
+            this.numW = 6;
+            cmtoY = 0;
+            cmtoX = 0;
+            cmy = 0;
+            cmx = 0;
+            return;
+        }
+        if (this.selected == 2) {
+            this.selected = 3;
+            return;
+        }
+        if (this.selected == 0) {
+            this.selected = 2;
+            return;
+        }
+        if (this.selected == 1) {
+            this.selected = 4;
+        } else if (this.selected >= 6 && this.selected < 12) {
+            resetEpdothu(-1);
+        }
+    }
+
+    public boolean setSizeKeepItem(int i) {
+        int size;
+        int cm = cmy;
+        if (index[focusTab] == 22) {
+            size = Char.itembag.size();
+        } else {
+            size = this.sellItem.size();
+        }
+        if (this.ItemShopNew.size() + MainChar.gemItem.size() < size) {
+            this.numH = (size / 3) + 1;
+        } else {
+            this.numH = ((this.ItemShopNew.size() + MainChar.gemItem.size()) / 3) + 1;
+        }
+        if (this.numH < 5) {
+            this.numH = 5;
+        }
+        if ((this.selected % this.numW == 2 && i == 1) || (this.selected % this.numW == 3 && i == -1)) {
+            if (i == -1) {
+                cmyLim = ((((this.ItemShopNew.size() + MainChar.gemItem.size()) / 3) + 1) * this.wSmall) - this.h;
+            } else {
+                cmyLim = (((size / 3) + 1) * this.wSmall) - this.h;
+            }
+            if (cmyLim < 0) {
+                cmyLim = 0;
+            }
+            int dd = (this.selected / this.numW) - (cmy / this.wSmall);
+            int i2 = this.cmyKeep;
+            cmtoY = i2;
+            cmy = i2;
+            this.selected = (((cmy / this.wSmall) + dd) * this.numW) + (this.selected % this.numW);
+            this.cmyKeep = cm;
+            return true;
+        }
+        cmyLim = (this.numH * this.wSmall) - this.h;
+        if (cmyLim < 0) {
+            cmyLim = 0;
+            return false;
+        }
+        return false;
+    }
+
+    private void setSizeTrade(int dir2) {
+        int aa = (this.selected % this.numW) - (cmx / 18);
+        if (aa < 0) {
+            aa = 0;
+        }
+        int bb = this.selected / this.numW;
+        if ((this.selected / this.numW) + 2 == this.numH && dir2 == 1) {
+            int size = 0;
+            for (int i = 0; i < MainChar.listPotion.length; i++) {
+                if (MainChar.listPotion[i].number - MainChar.listPotion[i].numTrade > 0 && MainChar.listPotion[i].isTrade) {
+                    size++;
+                }
+            }
+            this.numW = this.ItemShopNew.size() + size;
+            if (this.numW < 6) {
+                this.numW = 6;
+            }
+            cmxLim = (this.numW * 18) - this.w;
+        } else {
+            this.numW = 6;
+            cmxLim = 0;
+        }
+        if (aa >= this.numW) {
+            aa = this.numW - 1;
+        }
+        this.selected = (bb * this.numW) + aa;
+        cmtoY = 0;
+        cmtoX = 0;
+        cmy = 0;
+        cmx = 0;
+    }
+
+    private void setSizeImbue(int dir2) {
+        int aa = (this.selected % this.numW) - (cmx / 20);
+        if (aa < 0) {
+            aa = 0;
+        }
+        int bb = this.selected / this.numW;
+        if (bb + 2 == 5 && dir2 == 1) {
+            this.numW = this.ItemShopNew.size() + this.listTemp.size();
+            if (this.numW < 6) {
+                this.numW = 6;
+            }
+            cmxLim = ((this.numW * 20) - this.w) + 6;
+            if (cmxLim < 0) {
+                cmxLim = 0;
+            }
+        } else {
+            this.numW = 3;
+            cmxLim = 0;
+        }
+        if (aa >= this.numW) {
+            aa = this.numW - 1;
+        }
+        this.selected = (bb * this.numW) + aa;
+        cmtoY = 0;
+        cmtoX = 0;
+        cmy = 0;
+        cmx = 0;
+    }
+
+    @Override
+    public void update() {
+        Canvas.gameScr.update();
+        if (cmy != cmtoY) {
+            cmvy = (cmtoY - cmy) << 2;
+            cmdy += cmvy;
+            cmy += cmdy >> 4;
+            cmdy &= 15;
+        }
+        if (cmx != cmtoX) {
+            cmvx = (cmtoX - cmx) << 2;
+            cmdx += cmvx;
+            cmx += cmdx >> 4;
+            cmdx &= 15;
+        }
+        if (Math.abs(cmtoY - cmy) < 15 && cmy < 0) {
+            cmtoY = 0;
+        }
+        if (Math.abs(cmtoY - cmy) < 10 && cmy > cmyLim) {
+            cmtoY = cmyLim;
+        }
+        if (cmtoXName != cmxname) {
+            cmxname += (cmtoXName - cmxname) / 2;
+            if (Util.abs(cmxname) <= 1) {
+                cmxname = 0;
+            }
+        }
+        if (cmyText != cmtoYText) {
+            cmvyText = (cmtoYText - cmyText) << 2;
+            cmdyText += cmvyText;
+            cmyText += cmdyText >> 4;
+            cmdyText &= 15;
+        }
+        if (index[focusTab] == 31 && charWearing != null && charWearing.imgAnimal != null) {
+            if (Canvas.gameTick % charWearing.timeChangeFrame == 0) {
+                this.countFrame++;
+                if (this.countFrame > this.arrFrame[charWearing.numFrame == 3 ? (char) 0 : (char) 1].length - 1) {
+                    this.countFrame = 0;
+                }
+            }
+            this.idFrame = this.arrFrame[charWearing.numFrame == 3 ? (char) 0 : (char) 1][this.countFrame];
+        }
+        if (Canvas.menu.showMenu) {
+            closeText();
+        }
+        if (index[focusTab] == 0 && this.list != null && this.list.size() > 0) {
+            this.limMyBag = Canvas.gameScr.mainChar.limItemBag - 1;
+            if (this.limMyBag <= 0) {
+                this.limMyBag = 0;
+            }
+            this.excess = this.list.size() % this.numCell;
+            this.maxSize = this.list.size();
+        }
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        Canvas.gameScr.paint(g);
+        g.translate(this.x, this.y);
+        Res.paintDlgFull(g, -10, -10);
+        if (this.isPaintMoney) {
+            int hMoney = 139;
+            if (Canvas.h < 196) {
+                hMoney = 126;
+            }
+            Font.smallFontColor[0].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.charXu)).append("$").toString(), 122, hMoney, 1);
+            Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.luong)).append("l").toString(), 5, hMoney, 0);
+            if (Canvas.gameScr.mainChar.luongKhoa > -1) {
+                if (Canvas.h > 190) {
+                    Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.luongKhoa)).append("lk").toString(), 63, 130, 2);
+                } else {
+                    Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf(Canvas.gameScr.mainChar.luongKhoa)).append("lk").toString(), 5, 28, 0);
+                }
+            }
+        }
+        g.drawImage(Res.imgBar, 6 - countL, 18, 3);
+        g.drawRegion(Res.imgBar, 0, 0, 11, 7, 2, 122 + countR, 19, 3);
+        if (countL > 0) {
+            countL = (byte) (countL - 1);
+        }
+        if (countR > 0) {
+            countR = (byte) (countR - 1);
+        }
+        g.setColor(7961465);
+        g.fillRect(21, 11, 88, 16);
+        g.fillRect(20, 12, 90, 14);
+        g.setColor(this.isChangeTab ? 30611 : 2368548);
+        g.fillRect(21, 12, 88, 14);
+        g.setClip(21, 11, 88, 16);
+        g.translate(-cmxname, 0);
+        int wN = Font.normalFont[0].getWidth(this.name);
+        if (wN > 88) {
+            this.transX -= this.dirX;
+            if (Util.abs(this.transX) > ((wN - 88) / 2) + 5) {
+                this.dirX *= -1;
+            }
+        }
+        Font.normalFont[0].drawString(g, nameshop, 66 + this.transX, 12, 2);
+        if (cmxname != 0) {
+            Font.normalFont[0].drawString(g, this.firName, 66 + (100 * dir), 12, 2);
+        }
+        g.translate(cmxname, 0);
+        g.translate(this.x0, this.y0);
+        g.setClip(-100, -100, 300, 300);
+        g.setClip(0, 0, (this.numW * this.wSmall) + 1, (5 * this.hSmall) + 1);
+        g.translate(0, -cmy);
+        int xx = cmy / this.hSmall;
+        if (xx < 0) {
+            xx = 0;
+        }
+        int yy = xx + (this.w / this.hSmall);
+        if (index[focusTab] == 0 && yy > this.numCell) {
+            yy = this.numCell;
+        }
+        for (int i = xx; i < yy; i++) {
+            for (int j = 0; j < this.numW; j++) {
+                paintGrid(g, j * this.wSmall, i * this.hSmall);
+            }
+        }
+        if (!this.isChangeTab) {
+            g.setColor(10595790);
+            g.fillRect(((this.selected % this.numW) * this.wSmall) + 1, ((this.selected / this.numW) * this.hSmall) + 1, this.wSmall - 2, this.hSmall - 2);
+        }
+        paintBag(g);
+        if (this.isShowText) {
+            Canvas.resetTrans(g);
+            paintShowText(g);
+        }
+        super.paint(g);
+    }
+
+    int canPutItem() {
+        int count = -1;
+        for (int i = 0; i < this.itemEpdothu.length; i++) {
+            if (this.itemEpdothu[i] == null) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public void resetEpdothu(int saveIndex) {
+        this.numW = this.listItemAnimal.size() + this.listTemp.size();
+        if (this.numW < 6) {
+            this.numW = 6;
+        }
+        this.numH = 5;
+        if (saveIndex == -1) {
+            this.selected = (this.numH - 1) * this.numW;
+        } else {
+            this.selected -= this.numH;
+            if (this.selected > (this.numH * this.numW) - 1) {
+                this.selected = (this.numH * this.numW) - 1;
+            }
+            if (this.selected < (this.numH - 1) * this.numW) {
+                this.selected = (this.numH - 1) * this.numW;
+            }
+            cmtoX = ((this.selected % this.numW) * this.wSmall) - (this.w / 2);
+            if (cmtoX < 0) {
+                cmtoX = 0;
+            }
+            if (cmtoX > cmxLim) {
+                cmtoX = cmxLim;
+            }
+            cmx = cmtoX;
+        }
+        cmxLim = (this.numW * 20) - (this.w - 8);
+        if (cmxLim < 0) {
+            cmxLim = 0;
+        }
+        if (saveIndex == -1) {
+            cmtoY = 0;
+            cmtoX = 0;
+            cmy = 0;
+            cmx = 0;
+        }
+    }
+
+    public void doshowInfoEpdothu() {
+        ItemInInventory item = (ItemInInventory) this.listItemAnimal.elementAt(this.selected % this.numW);
+        showItemInventoryInfo(item, false, ((this.selected % this.numW) * 20) + 4, 86);
+    }
+
+    public void doSelectedEpDothu() {
+        final ItemInInventory real;
+        final GemTemplate g;
+        if (this.isShowText) {
+            return;
+        }
+        Vector menu = new Vector();
+        if (this.numH != 1) {
+            if (this.selected % this.numW >= 0 && this.selected % this.numW < this.listItemAnimal.size()) {
+                final ItemInInventory item = (ItemInInventory) this.listItemAnimal.elementAt(this.selected % this.numW);
+                if (canPutItem() > -1) {
+                    menu.addElement(new Command("Bỏ vào", new IAction() {
+                        @Override
+                        public void perform() {
+                            if (item.level >= 30 && item.level <= ShopNew.lvThu + 5 && item.level >= ShopNew.lvThu - 5 && item.colorName == ShopNew.idColor) {
+                                if (ShopNew.this.itemEpdothu[2] == null) {
+                                    if (ShopNew.magicAnimal == item.magic_physic) {
+                                        ShopNew.this.itemEpdothu[2] = item;
+                                        ShopNew.this.listItemAnimal.removeElement(item);
+                                    }
+                                } else {
+                                    for (int i = 0; i < ShopNew.this.itemEpdothu.length; i++) {
+                                        if (ShopNew.this.itemEpdothu[i] == null) {
+                                            ShopNew.this.itemEpdothu[i] = item;
+                                            ShopNew.this.listItemAnimal.removeElement(item);
+                                            break;
+                                        }
+                                    }
+                                }
+                            } else {
+                                Canvas.startOKDlg("Đồ ép phải cùng màu và chênh lệch +-5 level.");
+                            }
+                            ShopNew.this.resetEpdothu(1);
+                        }
+                    }));
+                }
+                menu.addElement(new Command("Thông tin ", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.doshowInfoEpdothu();
+                        Canvas.endDlg();
+                    }
+                }));
+            } else if ((this.selected - this.listItemAnimal.size()) % this.numW >= 0 && (this.selected - this.listItemAnimal.size()) % this.numW < this.listTemp.size()) {
+                final GemTemplate item2 = (GemTemplate) this.listTemp.elementAt((this.selected - this.listItemAnimal.size()) % this.numW);
+                menu.addElement(new Command("Bỏ vào", new IAction() {
+                    @Override
+                    public void perform() {
+                        if (ShopNew.this.listEp.size() < 6) {
+                            if (ShopNew.this.checkItem(false) >= ShopNew.slNLThu) {
+                                Canvas.startOKDlg("Nguyên liệu đã đủ số lượng.");
+                                return;
+                            }
+                            item2.number--;
+                            if (item2.number <= 0) {
+                                ShopNew.this.listTemp.removeElement(item2);
+                            }
+                            GemTemplate real2 = new GemTemplate(item2.rID);
+                            real2.id = item2.id;
+                            ShopNew.this.listEp.addElement(real2);
+                        }
+                        boolean aa = false;
+                        int bb = ShopNew.this.listEp.size();
+                        for (int i = 0; i < bb; i++) {
+                            GemTemplate real3 = (GemTemplate) ShopNew.this.listEp.elementAt(i);
+                            if (real3.id == item2.id) {
+                                real3.number++;
+                                aa = true;
+                                break;
+                            }
+                        }
+                        for (int i2 = 0; i2 < bb; i2++) {
+                            GemTemplate real4 = (GemTemplate) ShopNew.this.listEp.elementAt(i2);
+                            if (real4.number == 0) {
+                                ShopNew.this.listEp.removeElement(real4);
+                            }
+                        }
+                        if (!aa) {
+                            GemTemplate ge = new GemTemplate(item2.id);
+                            GemTemplate.copyData(item2, ge);
+                            ge.number = 1;
+                            ShopNew.this.listEp.addElement(ge);
+                        }
+                    }
+                }));
+                menu.addElement(addGemInfo(item2, ((this.selected % this.numW) * 20) + 4, 86));
+            }
+        } else if (this.selected > 5) {
+            if (this.selected % 6 >= 0 && this.selected % 6 < this.listEp.size() && (g = (GemTemplate) this.listEp.elementAt(this.selected % 6)) != null) {
+                menu.addElement(new Command("Lấy ra", new IAction() {
+                    @Override
+                    public void perform() {
+                        g.number--;
+                        if (g.number <= 0) {
+                            ShopNew.this.listEp.removeElement(g);
+                        }
+                        boolean aa = false;
+                        int leght = ShopNew.this.listTemp.size();
+                        for (int i = 0; i < leght; i++) {
+                            GemTemplate ge = (GemTemplate) ShopNew.this.listTemp.elementAt(i);
+                            if (ge.id == g.id) {
+                                ge.number++;
+                                aa = true;
+                                break;
+                            }
+                        }
+                        if (!aa) {
+                            new GemTemplate(g.id).number = 1;
+                            ShopNew.this.listTemp.addElement(g);
+                        }
+                        ShopNew.this.resetEpdothu(-1);
+                    }
+                }));
+            }
+        } else if (this.selected >= 0 && this.selected < this.itemEpdothu.length && (real = this.itemEpdothu[this.selected]) != null) {
+            menu.addElement(new Command("Lấy ra", new IAction() {
+                @Override
+                public void perform() {
+                    ShopNew.this.listItemAnimal.addElement(real);
+                    ShopNew.this.itemEpdothu[ShopNew.this.selected] = null;
+                    ShopNew.this.resetEpdothu(-1);
+                }
+            }));
+        }
+        Canvas.menu.startAt(menu, 2);
+    }
+
+    int checkItem(boolean isItem) {
+        int count = 0;
+        if (isItem) {
+            for (int i = 0; i < this.itemEpdothu.length; i++) {
+                if (this.itemEpdothu[i] != null) {
+                    count++;
+                }
+            }
+        } else {
+            int size0 = this.listEp.size();
+            for (int i2 = 0; i2 < size0; i2++) {
+                GemTemplate g = (GemTemplate) this.listEp.elementAt(i2);
+                count += g.number;
+            }
+        }
+        return count;
+    }
+
+    private void doLeftEpDothu() {
+        this.left = new Command("Hợp", new IAction() {
+            @Override
+            public void perform() {
+                if (ShopNew.this.checkItem(true) < 5) {
+                    Canvas.startOKDlg("Bạn phải sử dụng đủ 5 vật phẩm.");
+                    return;
+                }
+                if (ShopNew.this.checkItem(false) < ShopNew.slNLThu) {
+                    Canvas.startOKDlg(new StringBuffer("Nguyên liệu không đủ. Cần ").append((int) ShopNew.slNLThu).append(" nguyên liệu.").toString());
+                    return;
+                }
+                Vector data = new Vector();
+                if (ShopNew.this.itemEpdothu[2] != null) {
+                    data.addElement(ShopNew.this.itemEpdothu[2]);
+                }
+                for (int i = 0; i < ShopNew.this.itemEpdothu.length; i++) {
+                    if (i != 2 && ShopNew.this.itemEpdothu[i] != null) {
+                        data.addElement(ShopNew.this.itemEpdothu[i]);
+                    }
+                }
+                byte[] data1 = new byte[6];
+                int size0 = ShopNew.this.listEp.size();
+                for (int j = 0; j < size0; j++) {
+                    GemTemplate g = (GemTemplate) ShopNew.this.listEp.elementAt(j);
+                    GemTemp ge = Res.getGemByID(g.id);
+                    String str = ge.name.substring(ge.name.length() - 1);
+                    int ab = Integer.parseInt(str);
+                    data1[ab - 1] = (byte) g.number;
+                }
+                GameService.gI().epDothu(data, data1);
+                Canvas.startWaitDlg("Đang hợp..", false);
+                for (int i2 = 0; i2 < ShopNew.this.itemEpdothu.length; i2++) {
+                    ShopNew.this.itemEpdothu[i2] = null;
+                }
+                if (ShopNew.this.listEp != null) {
+                    ShopNew.this.listEp.removeAllElements();
+                }
+                ShopNew.this.right.action.perform();
+            }
+        });
+    }
+
+    public void paintListItemAnimal(Graphics g, int count) {
+        for (int i = 0; i < this.listItemAnimal.size(); i++) {
+            ItemInInventory item = (ItemInInventory) this.listItemAnimal.elementAt(i);
+            g.drawImage(Res.imgGrid, (count * 20) + 4, 5 * this.hSmall, 0);
+            item.paint(g, (count * 20) + 12, (this.hSmall * 5) + 8);
+            count++;
+        }
+    }
+
+    private void paintGemItemThu(Graphics g, int count, int y) {
+        int leght = this.listTemp.size();
+        for (int i = 0; i < leght; i++) {
+            if (khoaDoThu == 1) {
+                g.setColor(3276851);
+                g.fillRect(count * 20, y, 17, 17);
+            }
+            if (this.numH != 1 && this.selected % this.numW == count && khoaDoThu == 1) {
+                g.setColor(10595790);
+                g.fillRect((this.selected % this.numW) * 20, (5 * this.hSmall) + 1, 17, 16);
+            }
+            g.drawImage(Res.imgGrid, count * 20, y, 0);
+            GemTemplate item = (GemTemplate) this.listTemp.elementAt(i);
+            Res.paintGem(g, Res.getGemByID(item.id).idImage, (count * 20) + 10, y + 10);
+            GemTemp ge = Res.getGemByID(item.id);
+            String str = ge.name.substring(ge.name.length() - 1);
+            try {
+                int aa = Integer.parseInt(str);
+                Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(aa)).toString(), count * 20, y - 2, 0);
+            } catch (Exception e) {
+            }
+            Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(item.number)).toString(), (count * 20) + 14, y + 15, 1);
+            count++;
+        }
+    }
+
+    private void paintEpDothu(Graphics g) {
+        g.setClip(0, 0, this.w - 4, this.h + 4);
+        for (int i = 0; i < 5; i++) {
+            g.drawImage(Res.imgGrid, this.posEpNgoc[i][0], this.posEpNgoc[i][1], 0);
+        }
+        g.setColor(10595790);
+        if (this.numH == 1 && this.selected < 5) {
+            g.fillRect(this.posEpNgoc[this.selected][0] + 1, this.posEpNgoc[this.selected][1] + 1, 16, 16);
+        }
+        for (int i2 = 0; i2 < this.itemEpdothu.length; i2++) {
+            if (this.itemEpdothu[i2] != null) {
+                paintItemIcon(g, this.itemEpdothu[i2], this.posEpNgoc[i2][0] + 10, this.posEpNgoc[i2][1] + 10);
+            }
+        }
+        int cc = 3;
+        if (idColor == 3) {
+            cc = 2;
+        } else if (idColor == 2) {
+            cc = 1;
+        }
+        Font.normalFont[cc].drawString(g, new StringBuffer().append(this.mau[cc]).toString(), this.posEpNgoc[2][0] + 10, this.posEpNgoc[1][1], 2);
+        Font.normalFont[0].drawString(g, new StringBuffer("Số Đá: ").append((int) slNLThu).toString(), this.posEpNgoc[2][0] + 10, 3 * this.hSmall, 2);
+        if (this.numH == 1 && this.selected >= 6 && this.selected < 12) {
+            g.fillRect(((this.selected % 6) * 20) + 5, (4 * this.hSmall) - 4, 16, 16);
+        }
+        for (int i3 = 0; i3 < 6; i3++) {
+            g.drawImage(Res.imgGrid, (i3 * 20) + 4, (4 * this.hSmall) - 5, 0);
+        }
+        int leghtt = this.listEp.size();
+        for (int i4 = 0; i4 < leghtt; i4++) {
+            GemTemplate real = (GemTemplate) this.listEp.elementAt(i4);
+            GemTemp ge = Res.getGemByID(real.id);
+            String str = ge.name.substring(ge.name.length() - 1);
+            int ab = Integer.parseInt(str);
+            Res.paintGem(g, Res.getGemByID(real.id).idImage, ((i4 % 6) * 20) + (this.wSmall / 2) + 3, (4 * this.hSmall) + 3);
+            Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(ab)).toString(), ((i4 % 6) * 20) + 5, (4 * this.hSmall) - 7, 0);
+            Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(real.number)).toString(), ((i4 % 6) * 20) + (this.wSmall / 2) + 10, (4 * this.hSmall) + 8, 1);
+        }
+        g.translate(-cmx, 0);
+        if (this.numH != 1) {
+            g.fillRect((this.selected % this.numW) * 20, (5 * this.hSmall) + 1, 17, 16);
+        }
+        int count = 0;
+        for (int i5 = 0; i5 < this.listItemAnimal.size(); i5++) {
+            ItemInInventory item = (ItemInInventory) this.listItemAnimal.elementAt(i5);
+            g.drawImage(Res.imgGrid, count * 20, 5 * this.hSmall, 0);
+            item.paint(g, (count * 20) + 8, (this.hSmall * 5) + 8);
+            count++;
+        }
+        paintGemItemThu(g, count, 5 * this.hSmall);
+        for (int count2 = count + this.listTemp.size(); count2 < 6; count2++) {
+            g.drawImage(Res.imgGrid, count2 * 20, 5 * this.hSmall, 0);
+        }
+    }
+
+    private void paintGrid(Graphics g, int x, int y) {
+        g.setColor(6513507);
+        g.drawRect(x, y, this.wSmall, this.hSmall);
+        g.setColor(8684162);
+        g.drawRect(x + 1, y + 1, this.wSmall - 2, this.hSmall - 2);
+    }
+
+    private void paintCheDo(Graphics g) {
+        g.setClip(0, 0, this.w, this.h);
+        for (int i = 0; i < this.listCheDo.size(); i++) {
+            Mineral mi = (Mineral) this.listCheDo.elementAt(i);
+            Font.normalFont[0].drawString(g, new StringBuffer(String.valueOf(mi.name)).append(": ").append((int) mi.number).append(" Cái.").toString(), 0, (i * 13) + 2, 0);
+        }
+        g.setColor(16766498);
+        g.fillRect(0, 4 + (this.listCheDo.size() * 13), this.w, 2);
+        g.fillRect(0, 4 + (this.hSmall * 3) + (this.listCheDo.size() * 13), this.w, 2);
+        g.setColor(10595790);
+        if (this.selected / this.numW < 2) {
+            g.translate(-cmx, 0);
+            g.fillRect(((this.selected % this.numW) * this.wSmall) + 4, (this.listCheDo.size() * 13) + ((this.selected / this.numW) * this.wSmall) + 13, 17, 17);
+        }
+        int cou = 0;
+        int wLishEp = this.listEp.size() / 2;
+        if (wLishEp < 6) {
+            wLishEp = 6;
+        }
+        for (int i2 = 0; i2 < this.listEp.size(); i2++) {
+            GemTemplate gem = (GemTemplate) this.listEp.elementAt(i2);
+            g.drawImage(Res.imgGrid, ((i2 % wLishEp) * this.wSmall) + 4, (this.listCheDo.size() * 13) + ((i2 / wLishEp) * this.wSmall) + 13, 0);
+            Res.paintGem(g, Res.getGemByID(gem.id).idImage, ((i2 % wLishEp) * this.wSmall) + (this.wSmall / 2) + 4, (this.listCheDo.size() * 13) + 13 + ((i2 / wLishEp) * this.wSmall) + (this.wSmall / 2));
+            Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(gem.number)).toString(), ((i2 % wLishEp) * this.wSmall) + (this.wSmall / 2) + 4, (this.listCheDo.size() * 13) + 13 + ((i2 / wLishEp) * this.wSmall) + (this.wSmall / 2), 1);
+            cou++;
+        }
+        while (cou < 12) {
+            g.drawImage(Res.imgGrid, ((cou % 6) * this.wSmall) + 4, (this.listCheDo.size() * 13) + ((cou / 6) * this.wSmall) + 13, 0);
+            cou++;
+        }
+        if (this.selected / this.numW < 2) {
+            g.translate(cmx, 0);
+        }
+        if (this.selected / this.numW >= 2) {
+            g.translate(-cmx, 0);
+            g.fillRect(((this.selected % this.numW) * this.wSmall) + 4, this.hSmall * 5, 17, 17);
+        }
+        paintGemItem(g, 0, this.hSmall * 5);
+        for (int count = 0 + this.listTemp.size(); count < 6; count++) {
+            g.drawImage(Res.imgGrid, (count * 20) + 4, 5 * this.hSmall, 0);
+        }
+    }
+
+    private void paintSelected(Graphics g, int x, int y) {
+        g.setColor(10595790);
+        g.fillRect(x, y, 16, 16);
+    }
+
+    private void paintKeepAndSellItem(Graphics g) {
+        Vector li;
+        g.setClip(0, 0, this.w, this.h);
+        if (this.selected % this.numW < 3) {
+            g.translate(0, -cmy);
+            if (!this.isChangeTab) {
+                paintSelected(g, ((this.selected % this.numW) * 18) + 1, ((this.selected / this.numW) * 18) + 1);
+            }
+        } else {
+            g.translate(0, -this.cmyKeep);
+        }
+        for (int i = 0; i < this.numH; i++) {
+            for (int j = 0; j < 3; j++) {
+                g.drawImage(Res.imgGrid, j * 18, i * 18, 0);
+            }
+        }
+        for (int i2 = 0; i2 < this.ItemShopNew.size(); i2++) {
+            int xx = (i2 % 3) * 18;
+            int yy = (i2 / 3) * 18;
+            ItemInInventory item = (ItemInInventory) this.ItemShopNew.elementAt(i2);
+            if (item.isSelling) {
+                g.setColor(7706352);
+                g.fillRect(xx + 2, yy + 2, 14, 14);
+            }
+            item.paint(g, xx + 9, yy + 9);
+        }
+        int aa = this.ItemShopNew.size();
+        for (int i3 = 0; i3 < MainChar.gemItem.size(); i3++) {
+            int xx2 = (aa % 3) * 18;
+            int yy2 = (aa / 3) * 18;
+            GemTemplate gem = (GemTemplate) MainChar.gemItem.elementAt(i3);
+            Res.paintGem(g, Res.getGemByID(gem.id).idImage, xx2 + 9, yy2 + 9);
+            Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(gem.number)).toString(), xx2 + 18, (yy2 + 18) - Font.smallFontColor[3].getHeight(), 1);
+            aa++;
+        }
+        if (this.selected % this.numW > 2) {
+            g.translate(0, this.cmyKeep);
+            g.translate(0, -cmy);
+        } else {
+            g.translate(0, cmy);
+            g.translate(0, -this.cmyKeep);
+        }
+        for (int i4 = 0; i4 < this.numH; i4++) {
+            for (int j2 = 0; j2 < 3; j2++) {
+                g.setColor(6568449);
+                g.fillRect((j2 * 18) + 54, i4 * 18, 18, 18);
+                g.drawImage(Res.imgGrid, (j2 * 18) + 54, i4 * 18, 0);
+            }
+        }
+        if (this.selected % this.numW > 2 && !this.isChangeTab) {
+            paintSelected(g, ((this.selected % this.numW) * 18) + 1, ((this.selected / this.numW) * 18) + 1);
+        }
+        if (index[focusTab] == 22) {
+            li = Char.itembag;
+        } else {
+            li = this.sellItem;
+        }
+        for (int i5 = 0; i5 < li.size(); i5++) {
+            if (li.elementAt(i5) instanceof ItemInInventory) {
+                ((ItemInInventory) li.elementAt(i5)).paint(g, ((i5 % 3) * 18) + 54 + 9, ((i5 / 3) * 18) + 9);
+            } else {
+                Res.paintGem(g, Res.getGemByID(((RealID) li.elementAt(i5)).ID).idImage, ((i5 % 3) * 18) + 54 + 9, ((i5 / 3) * 18) + 9);
+            }
+        }
+    }
+
+    private void paintEpNgoc(Graphics g) {
+        g.setClip(4, 0, this.w - 8, this.h);
+        for (int i = 0; i < 5; i++) {
+            g.drawImage(Res.imgGrid, this.posEpNgoc[i][0], this.posEpNgoc[i][1], 0);
+        }
+        g.setColor(10595790);
+        if (this.numH == 1 && this.selected < 5) {
+            g.fillRect(this.posEpNgoc[this.selected][0] + 1, this.posEpNgoc[this.selected][1] + 1, 16, 16);
+        }
+        for (int i2 = 0; i2 < this.listEp.size(); i2++) {
+            RealID real = (RealID) this.listEp.elementAt(i2);
+            Res.paintGem(g, Res.getGemByID(real.ID).idImage, this.posEpNgoc[i2][0] + 10, this.posEpNgoc[i2][1] + 10);
+        }
+        g.translate(-cmx, 0);
+        if (this.numH != 1) {
+            g.fillRect(((this.selected % this.numW) * 20) + 4, (5 * this.hSmall) + 1, 16, 16);
+        }
+        paintGemItem(g, 0, this.hSmall * 5);
+        for (int count = 0 + this.listTemp.size(); count < 6; count++) {
+            g.drawImage(Res.imgGrid, (count * 20) + 4, 5 * this.hSmall, 0);
+        }
+    }
+
+    private void paintGemItem(Graphics g, int count, int y) {
+        for (int i = 0; i < this.listTemp.size(); i++) {
+            if ((khoaCheDo == 1 && index[focusTab] == 28) || ((khoaImbue == 1 && index[focusTab] == 21) || (khoaKham == 1 && index[focusTab] == 25))) {
+                g.setColor(3276851);
+                g.fillRect((count * 20) + 4, y, 17, 17);
+            }
+            if (khoaCheDo == 1 && this.selected / this.numW >= 2 && this.selected % this.numW == count) {
+                g.setColor(10595790);
+                g.fillRect(((this.selected % this.numW) * this.wSmall) + 4, this.hSmall * 5, 17, 17);
+            }
+            if (this.selected / this.numW == 4 && khoaImbue == 1 && index[focusTab] == 21 && this.selected % this.numW == count) {
+                g.setColor(10595790);
+                g.fillRect(((this.selected % this.numW) * this.wSmall) + 4, (4 * this.hSmall) + 1, 17, 17);
+            }
+            if (this.selected / this.numW == 4 && khoaKham == 1 && index[focusTab] == 25 && this.selected % this.numW == count) {
+                g.setColor(10595790);
+                g.fillRect(((this.selected % this.numW) * this.wSmall) + 4, (4 * this.hSmall) + 1, 17, 17);
+            }
+            g.drawImage(Res.imgGrid, (count * 20) + 4, y, 0);
+            GemTemplate item = (GemTemplate) this.listTemp.elementAt(i);
+            Res.paintGem(g, Res.getGemByID(item.id).idImage, (count * 20) + 10 + 4, y + 8);
+            if (index[focusTab] != 21) {
+                GemTemp ge = Res.getGemByID(item.id);
+                String str = ge.name.substring(ge.name.length() - 1);
+                try {
+                    int aa = Integer.parseInt(str);
+                    Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(aa)).toString(), (count * 20) + 4, y, 0);
+                } catch (Exception e) {
+                }
+            }
+            Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(item.number)).toString(), (count * 20) + 16 + 4, y + 10, 1);
+            count++;
+        }
+    }
+
+    private void paintImbue(Graphics g) {
+        paintDapBG(g, 0, 0);
+        g.setClip(4, 0, this.w - 8, this.h);
+        if (this.imgWeaponAvatar != null) {
+            g.drawImage(this.imgWeaponAvatar, 63, 43, 3);
+        }
+        for (int i = 0; i < MainChar.gemitemImbue.size(); i++) {
+            RealID item = (RealID) MainChar.gemitemImbue.elementAt(i);
+            Res.paintGem(g, Res.getGemByID(item.ID).idImage, ((i % 2) * 100) + 10 + 3, ((i / 2) * this.hSmall) + (this.hSmall / 2));
+        }
+        g.translate(-cmx, 0);
+        if (this.selected / this.numW == 4) {
+            g.fillRect(((this.selected % this.numW) * this.wSmall) + 4, (4 * this.hSmall) + 1, 17, 17);
+        }
+        int count = 0;
+        for (int i2 = 0; i2 < this.ItemShopNew.size(); i2++) {
+            g.drawImage(Res.imgGrid, (count * this.wSmall) + 4, 4 * this.hSmall, 0);
+            ItemInInventory item2 = (ItemInInventory) this.ItemShopNew.elementAt(i2);
+            item2.paint(g, (count * 20) + 10 + 4, (4 * this.hSmall) + 8);
+            count++;
+        }
+        paintGemItem(g, count, 4 * this.hSmall);
+        for (int count2 = count + this.listTemp.size(); count2 <= 6; count2++) {
+            g.drawImage(Res.imgGrid, (count2 * 20) + 4, 4 * this.hSmall, 0);
+        }
+    }
+
+    private void paintDapBG(Graphics g, int x, int y) {
+        if (!this.isChangeTab && Canvas.gameTick % 10 > 3 && this.selected / this.numW < 4) {
+            g.setColor(10595790);
+            if (this.selected % this.numW == 1 && this.selected / this.numW != 4) {
+                g.fillRect(25, 0, 75, 86);
+            } else {
+                g.fillRect(((this.selected % this.numW) * 50) + 4, ((this.selected / this.numW) * this.hSmall) + 1, 17, 17);
+            }
+        }
+        for (int i = 0; i < 8; i++) {
+            g.drawImage(Res.imgGrid, ((i / 4) * 5 * this.wSmall) + 4, (i % 4) * this.hSmall, 0);
+        }
+        g.setColor(10595790);
+        g.drawRect(25, 0, 75, 86);
+    }
+
+    private void paintGrid(Graphics g) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 6; j++) {
+                if (j > 2) {
+                    g.setColor(6568449);
+                    g.fillRect(j * 18, i * 18, 18, 18);
+                }
+                g.drawImage(Res.imgGrid, j * 18, i * 18, 0);
+            }
+        }
+    }
+
+    private void paintTrade(Graphics g) {
+        g.setClip(0, 0, this.w, this.h + 18);
+        paintGrid(g);
+        g.translate(-cmx, 0);
+        if (!this.isChangeTab) {
+            g.setColor(10595790);
+            g.fillRect(((this.selected % this.numW) * 18) + 1, ((this.selected / this.numW) * 18) + 1, 16, 16);
+        }
+        int xx = 0;
+        for (int i = 0; i < this.ItemShopNew.size(); i++) {
+            ItemInInventory item = (ItemInInventory) this.ItemShopNew.elementAt(i);
+            ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
+            g.drawImage(Res.imgGrid, xx, 90, 0);
+            if (item.isSelling) {
+                g.setColor(7706352);
+                g.fillRect(xx + 2, 92, 14, 14);
+            }
+            GameData.paintIcon(g, it.idIcon, 9 + xx, 99);
+            xx += 18;
+        }
+        for (int i2 = 0; i2 < MainChar.listPotion.length; i2++) {
+            if (MainChar.listPotion[i2].number - MainChar.listPotion[i2].numTrade > 0 && MainChar.listPotion[i2].isTrade) {
+                g.drawImage(Res.imgGrid, xx, 90, 0);
+                GameData.paintIcon(g, (short) (MainChar.listPotion[i2].index + 5500), xx + 9, 98);
+                Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(MainChar.listPotion[i2].number - MainChar.listPotion[i2].numTrade)).toString(), xx + 9, 99, 1);
+                xx += 18;
+            }
+        }
+        if (xx / 18 < 6) {
+            for (int i3 = 0; i3 < 6 - (xx / 18); i3++) {
+                g.drawImage(Res.imgGrid, xx + (i3 * 18), 90, 0);
+            }
+        }
+        g.translate(cmx, 0);
+        Vector tItemTrade = Canvas.gameScr.mainChar.tItems;
+        Vector rItemTrade = Canvas.gameScr.mainChar.rItems;
+        int size3 = tItemTrade.size();
+        for (int i4 = 0; i4 < size3; i4++) {
+            paintItemTrade(g, tItemTrade.elementAt(i4), (i4 % 3) * 18, (i4 / 3) * 18);
+        }
+        int size2 = rItemTrade.size();
+        for (int i5 = 0; i5 < size2; i5++) {
+            paintItemTrade(g, rItemTrade.elementAt(i5), 54 + ((i5 % 3) * 18), (i5 / 3) * 18);
+        }
+    }
+
+    private void paintItemTrade(Graphics g, Object item, int x, int y) {
+        if (item instanceof ItemInInventory) {
+            ((ItemInInventory) item).paint(g, x + 9, y + 9);
+            return;
+        }
+        Potion p = (Potion) item;
+        GameData.paintIcon(g, (short) (p.index + 5500), x + 9, y + 9);
+        Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(p.number)).toString(), x + 17, y + 9, 1);
+    }
+
+    private void paintNewSkillLearn(Graphics g) {
+        String[] nameChar = {"Kiếm sỹ", "Chiến binh", "Pháp sư", "Đấu sỹ", "Cung thủ"};
+        Font.normalFont[0].drawString(g, nameChar[Canvas.gameScr.mainChar.clazz], 60, -14, 2);
+        g.setColor(11908533);
+        g.fillRect(-8, 0, 133, 1);
+        g.fillRect(-8, 30, 133, 1);
+        g.setClip(0, 0, this.w, this.h);
+        g.translate(-cmx, 0);
+        for (int skillType = 0; skillType < this.numW; skillType++) {
+            InfoSkillLearn skillearn = (InfoSkillLearn) ((Vector) GameScr.infoNewSkill.elementAt(Canvas.gameScr.mainChar.clazz)).elementAt(skillType);
+            GameData.imgSkillIcon.drawFrame(skillearn.idSkill, (skillType * 23) + (this.wSmall / 2), this.h / 2, 0, 3, g);
+            g.drawImage(Res.imgKhung, (skillType * 23) + (this.wSmall / 2), this.h / 2, 3);
+        }
+        if (!this.isChangeTab && Canvas.gameTick % 10 > 3) {
+            g.setColor(14139920);
+            g.drawRect(this.selected * this.wSmall, 5, this.wSmall - 2, 20);
+        }
+        if (!this.isChangeTab) {
+            g.translate(cmx, 0);
+            g.setClip(-10, 28, 133, 72);
+            g.translate(0, -cmy);
+            if (this.newSkill != null) {
+                for (int i = 0; i < this.newSkill.size(); i++) {
+                    String str = (String) this.newSkill.elementAt(i);
+                    if (str.substring(0, 1).equals("`")) {
+                        Font.normalFont[0].drawString(g, str.substring(1, str.length()), -5, 30 + (i * 12), 0);
+                    } else {
+                        Font.arialFontW.drawString(g, str, -5, 30 + (i * 12), 0);
+                    }
+                }
+            }
+        }
+    }
+
+    private void paintKhung(Graphics g) {
+        g.setColor(11908533);
+        g.drawRect(0, 0, this.w, this.h + 1);
+        g.setClip(0, 0, this.w, this.h + 1);
+        g.translate(0, 1 - cmy);
+    }
+
+    private void paintQuestClan(Graphics g) {
+        paintKhung(g);
+        for (int i = 0; i < this.questInfo.size(); i++) {
+            String str = (String) this.questInfo.elementAt(i);
+            if (str.length() >= 2 && str.substring(0, 1).equals("`")) {
+                Font.normalFont[0].drawString(g, str.substring(1, str.length()), 4, i * 15, 0);
+            } else {
+                Font.arialFontW.drawString(g, str, 4, i * 15, 0);
+            }
+        }
+    }
+
+    public static String getInfoQuestPaint(int type) {
+        String info = "";
+        if (type == 0 && GameScr.mainQuest != null) {
+            info = GameScr.mainQuest.getInfoPaintScr().replace((char) 194, (char) 226).replace((char) 212, (char) 244);
+        }
+        if (GameScr.subQuest != null && type == 1) {
+            try {
+                info = GameScr.subQuest.getInfoPaintScr().replace((char) 194, (char) 226).replace((char) 212, (char) 244);
+            } catch (Exception e) {
+            }
+        }
+        if (GameScr.clanQuest != null && type == 2) {
+            try {
+                info = GameScr.clanQuest.getInfoPaintScr().replace((char) 194, (char) 226).replace((char) 212, (char) 244);
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+        return info;
+    }
+
+    private void paintQuest(Graphics g) {
+        paintKhung(g);
+        String infoMain = getInfoQuestPaint(0);
+        String infoSub = getInfoQuestPaint(1);
+        String infoClan = getInfoQuestPaint(2);
+        if (infoMain.equals("") && infoSub.equals("") && infoClan.equals("")) {
+            Font.arialFontW.drawString(g, "Chưa nhận nhiệm vụ", 8, 1, 0);
+            return;
+        }
+        String[] info = (String[]) null;
+        if (!infoMain.equals("")) {
+            String[] data = Util.split(infoMain, "|");
+            info = new String[data.length + 1];
+            info[0] = GameScr.mainQuest.name;
+            for (int i = 0; i < data.length; i++) {
+                info[i + 1] = data[i];
+            }
+        }
+        int ii = 0;
+        if (info != null) {
+            Font.normalFont[0].drawString(g, info[0], 4, 0 * 15, 0);
+            for (int i2 = 1; i2 < info.length; i2++) {
+                Font.arialFontW.drawString(g, info[i2], 4, i2 * 15, 0);
+            }
+            ii = info.length;
+        }
+        String[] info2 = (String[]) null;
+        if (!infoSub.equals("")) {
+            String[] data2 = Util.split(infoSub, "|");
+            info2 = new String[data2.length + 1];
+            info2[0] = GameScr.subQuest.name;
+            for (int i3 = 0; i3 < data2.length; i3++) {
+                info2[i3 + 1] = data2[i3];
+            }
+        }
+        if (info2 != null) {
+            Font.normalFont[0].drawString(g, info2[0], 4, ii * 15, 0);
+            for (int i4 = 1; i4 < info2.length; i4++) {
+                Font.arialFontW.drawString(g, info2[i4], 4, (i4 + ii) * 15, 0);
+            }
+            ii += info2.length;
+        }
+        String[] info3 = (String[]) null;
+        if (!infoClan.equals("")) {
+            String[] data3 = Util.split(infoClan, "|");
+            info3 = new String[data3.length + 1];
+            info3[0] = GameScr.clanQuest.name;
+            for (int i5 = 0; i5 < data3.length; i5++) {
+                info3[i5 + 1] = data3[i5];
+            }
+        }
+        if (info3 != null) {
+            Font.normalFont[0].drawString(g, info3[0], 4, ii * 15, 0);
+            for (int i6 = 1; i6 < info3.length; i6++) {
+                Font.arialFontW.drawString(g, info3[i6], 4, (i6 + ii) * 15, 0);
+            }
+            int length = info3.length;
+        }
+    }
+
+    private void paintParty(Graphics g) {
+        paintKhung(g);
+        int size = Char.party.size();
+        if (size > 0) {
+            if (!this.isChangeTab) {
+                g.setColor(6448384);
+                g.fillRect(2, this.selected * 32, 131, 32);
+            }
+            for (int i = 0; i < size; i++) {
+                PartyInfo ch = (PartyInfo) Char.party.elementAt(i);
+                Font.arialFontW.drawString(g, new StringBuffer("NV:").append(ch.name).toString(), 8, i * 33, 0);
+                Font.arialFontW.drawString(g, new StringBuffer("LV: ").append(ch.lv).toString(), 8, ((i * 2) + 1) * 16, 0);
+                g.setColor(16777215);
+                g.fillRect(2, (((i * 2) + 1) * 16) + 15, 131, 1);
+            }
+            return;
+        }
+        Font.arialFontW.drawString(g, "Chưa có nhóm", 8, 5, 0);
+    }
+
+    private void paintCharInfo(Graphics g) {
+        paintKhung(g);
+        if (this.charInfo != null) {
+            for (int i = 0; i < this.charInfo.length; i++) {
+                Font.arialFontW.drawString(g, this.charInfo[i], 4, 5 + (i * 12), 0);
+            }
+        }
+        if (infoMainCharServer != null) {
+            for (int i2 = 0; i2 < infoMainCharServer.length; i2++) {
+                Font.arialFontW.drawString(g, infoMainCharServer[i2], 4, 5 + ((i2 + this.charInfo.length + 1) * 12), 0);
+            }
+        }
+    }
+
+    private void paintSkill(Graphics g) {
+        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.skillPointLeft)).toString(), 105, -8, 2);
+        Font.normalFont[0].drawString(g, "Điểm kỹ năng: ", 60, -14, 2);
+        g.setColor(11908533);
+        g.fillRect(-8, 0, 133, 1);
+        g.fillRect(-8, 30, 133, 1);
+        g.setClip(-3, 0, this.w + 6, this.h);
+        g.translate(-cmx, 0);
+        for (int skillType = 0; skillType < this.numW; skillType++) {
+            GameData.imgSkillIcon.drawFrame(skillType, (skillType * 23) + (this.wSmall / 2), this.h / 2, 0, 3, g);
+            g.drawImage(Res.imgKhung, (skillType * 23) + (this.wSmall / 2), this.h / 2, 3);
+            Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf((int) Char.skillLevelLearnt[skillType])).toString(), ((skillType * 23) + this.wSmall) - 4, (this.h / 2) + 5, 1);
+        }
+        if (!this.isChangeTab && Canvas.gameTick % 10 > 3) {
+            g.setColor(14139920);
+            g.drawRect(this.selected * this.wSmall, 5, this.wSmall - 2, this.hSmall + 1);
+        }
+        if (!this.isChangeTab) {
+            if (this.selected < 0) {
+                this.selected = 0;
+            } else if (this.selected > SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz].length - 1) {
+                this.selected = SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz].length - 1;
+            }
+            g.translate(cmx, 0);
+            g.setClip(-11, 32, 138, 68);
+            String skName = SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz][this.selected];
+            byte skillLevel = Char.skillLevelLearnt[this.selected];
+            if (skillLevel == 9) {
+                skName = new StringBuffer(String.valueOf(skName)).append(" MAX").append((int) skillLevel).toString();
+            } else if (skillLevel >= 1) {
+                skName = new StringBuffer(String.valueOf(skName)).append(" lv ").append((int) skillLevel).toString();
+            }
+            String[] info = Canvas.gameScr.mainChar.getInfoSkill(this.selected);
+            g.translate(0, -cmy);
+            Font.normalFont[0].drawString(g, skName, -5, 29 + (this.isCmyTab3 ? cmy : 0), 0);
+            int yy = 40;
+            for (String str : info) {
+                Font.arialFontW.drawString(g, str, -5, yy + (this.isCmyTab3 ? cmy : 0), 0);
+                yy += 12;
+            }
+        }
+    }
+
+    private void paintFeatures(Graphics g) {
+        if (!this.isChangeTab) {
+            g.setColor(7278866);
+            g.fillRect(5, this.selected * 19, 119, 18);
+        }
+        g.drawImage(Res.imgInfoWindow[1], 0, -20, 0);
+        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.basePointLeft)).toString(), 107, -11, 2);
+        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.strength)).toString(), 107, 8, 2);
+        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.agility)).toString(), 107, 27, 2);
+        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.spirit)).toString(), 107, 46, 2);
+        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.health)).toString(), 107, 65, 2);
+        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.luck)).toString(), 107, 84, 2);
+    }
+
+    private void paintCharWearing(Graphics g) {
+        charWearing.paintAvatar(g, (short) 58, (short) 90);
+        if (this.imgCharWear != null && Canvas.gameTick % 16 >= 8) {
+            g.drawImage(this.imgCharWear, this.w / 2, 0, 17);
+        }
+        g.drawImage(Res.imgInfoWindow[0], 0, 0, 0);
+        g.drawImage(Res.imgCoatCell, 25, 83, 0);
+        if (!this.isChangeTab && Canvas.gameTick % 10 > 3) {
+            g.setColor(10595790);
+            if (this.selected % 3 != 1 && this.selected != 4) {
+                g.fillRect(3 + (((this.selected % this.numW) - (this.selected % this.numW > 0 ? 1 : 0)) * this.wSmall), 3 + ((this.selected / this.numW) * 21), 16, 16);
+            } else if (this.selected == 4) {
+                g.fillRect(26, 84, 16, 16);
+            } else {
+                g.fillRect(this.wSmall - 23, 84, 16, 16);
+            }
+        }
+        if (charWearing.wearingItems != null) {
+            int size0 = charWearing.wearingItems.size();
+            for (int i = 0; i < size0; i++) {
+                ItemInInventory item = (ItemInInventory) charWearing.wearingItems.elementAt(i);
+                ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
+                if (it.type == 8) {
+                    if (item.viTriVe == 1) {
+                        paintItemIcon(g, item, 107, 52);
+                    } else {
+                        paintItemIcon(g, item, 107, 73);
+                    }
+                } else {
+                    paintItemIcon(g, item, posPaintWearingX[it.type], posPaintWearingY[it.type]);
+                }
+            }
+        }
+        if (charWearing.idAnimal > -1 && !Canvas.gameScr.mainChar.isDoing) {
+            GameData.paintIcon(g, (short) (charWearing.idPaintIconAnimal + 7500), 82, 92);
+        }
+    }
+
+    private void paintAnimalWearing(Graphics g) {
+        ItemTemplate it;
+        if (charWearing != null && charWearing.imgAnimal != null && (charWearing.useHorse != -1 || charWearing.idhorse > -1)) {
+            g.drawRegion(charWearing.imgAnimal, 0, charWearing.himg * this.idFrame, charWearing.wimg, charWearing.himg, 0, Res.imgInfoWindow[0].getWidth() / 2, Res.imgInfoWindow[0].getHeight() / 2, 3);
+        }
+        g.drawImage(Res.imgInfoWindow[0], 0, 0, 0);
+        g.setColor(2368548);
+        for (int i = 0; i < 10; i++) {
+            g.fillRect(3 + ((i % 2) * this.wSmall), 3 + ((i / 2) * 21), 16, 16);
+        }
+        if (!this.isChangeTab && Canvas.gameTick % 10 > 3) {
+            g.setColor(10595790);
+            g.fillRect(3 + ((this.selected % this.numW) * this.wSmall), 3 + ((this.selected / this.numW) * 21), 16, 16);
+        }
+        if (charWearing != null) {
+            if (charWearing.wearingAnimal != null && (charWearing.useHorse != -1 || charWearing.idhorse > -1)) {
+                int size0 = charWearing.wearingAnimal.size();
+                for (int i2 = 0; i2 < size0; i2++) {
+                    ItemInInventory item = (ItemInInventory) charWearing.wearingAnimal.elementAt(i2);
+                    if (item != null && (it = Res.getItem(item.charClazz, item.idTemplate)) != null) {
+                        paintItemIcon(g, item, posPaintWearingX[it.type], posPaintWearingY[it.type]);
+                    }
+                }
+            }
+            if (charWearing.idAnimal > -1 && charWearing != null) {
+                if (charWearing.useHorse != -1 || charWearing.idhorse > -1) {
+                    GameData.paintIcon(g, (short) (charWearing.idPaintIconAnimal + 7500), 82, 92);
+                }
+            }
+        }
+    }
+
+    private void paintItemIcon(Graphics g, ItemInInventory item, int x, int y) {
+        ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
+        GameData.paintIcon(g, it.idIcon, x, y);
+    }
+
+    private void paintShowText(Graphics g) {
+        g.setColor(25695);
+        g.fillRect(this.xShow, this.yShow, this.wShow, this.hShow + (this.countPop * 15));
+        g.setColor(16774720);
+        g.drawRect(this.xShow, this.yShow, this.wShow - 1, (this.hShow - 1) + (this.countPop * 15));
+        int yy = 0;
+        g.setClip(this.xShow, this.yShow, this.wShow, (this.hShow + (this.countPop * 15)) - 2);
+        g.translate(0, -cmyText);
+        for (int i = 0; i < this.showText.length + this.countPop; i++) {
+            if (i == 1 && this.arrayKhamNgoc != null && this.arrayKhamNgoc.length > 0) {
+                for (int j = 0; j < this.arrayKhamNgoc.length; j++) {
+                    g.drawImage(Res.imgKham, this.xShow + 12 + (j * 20), this.yShow + 12 + yy, 3);
+                    if (this.arrayKhamNgoc[j] != -1) {
+                        Res.paintGem(g, this.arrayKhamNgoc[j], this.xShow + 12 + (j * 20), this.yShow + 12 + yy);
+                    }
+                }
+                yy += 18;
+            }
+            if (!this.showText[i].equals("")) {
+                byte color = (byte) (this.showText[i].charAt(0) - '0');
+                byte indexsub = 1;
+                if (!isDegit(this.showText[i].charAt(0))) {
+                    color = 0;
+                    indexsub = 0;
+                }
+                Font.normalFont[color >= 6 ? (byte) 0 : color].drawString(g, this.showText[i].substring(indexsub), this.xShow + 4, this.yShow + 4 + yy, 0);
+                yy += 15;
+            }
+        }
+        if (this.countPop < 0) {
+            this.countPop++;
+        }
+    }
+
+    public static boolean isDegit(char c) {
+        return c >= '0' && c <= '9';
+    }
+
+    private void paintBag(Graphics g) {
+        Command cmd;
+        try {
+            int xx = (cmy / this.hSmall) * this.numW;
+            if (xx < 0) {
+                xx = 0;
+            }
+            int yy = xx + (this.numW * this.numH);
+            if (yy > this.numCell) {
+                yy = this.numCell;
+            }
+            if ((this.countTabMyitem * this.numCell) + this.numCell > this.maxSize) {
+                yy = this.excess;
+            }
+            for (int i = xx; i < yy && !this.isLoad; i++) {
+                int element = i + (this.countTabMyitem * this.numCell);
+                if (element < this.list.size() && (cmd = (Command) this.list.elementAt(element)) != null) {
+                    cmd.paint(g, ((i % this.numW) * this.wSmall) + (this.wSmall / 2), ((i / this.numW) * this.hSmall) + (this.hSmall / 2));
+                }
+            }
+        } catch (Exception e) {
+            Cout.println("ERROR hanh trang ");
+        }
+    }
+
+    private void getShopTemplate() {
+    }
+
+    public void closeText() {
+        this.isShowText = false;
+        this.arrayKhamNgoc = null;
+    }
+
+    public void setShowText(String text2, int x1, int y1) {
+        if (!this.isShowText) {
+            this.isShowText = true;
+            String text3 = text2.replace((char) 194, (char) 226);
+            this.wShow = 125;
+            this.xShow = (((x1 + this.x) + this.x0) - (this.wShow / 2)) + 9;
+            this.yShow = y1 + this.y + this.y0 + 18;
+            this.showText = Font.borderFont.splitFontBStrInLine(text3, this.wShow - 10);
+            this.hShow = (this.showText.length * 15) + 8 + (this.arrayKhamNgoc != null ? 16 : 0);
+            this.xShow -= cmx;
+            if (1 + this.xShow + this.wShow > Canvas.w) {
+                this.xShow = (Canvas.w - this.wShow) - 1;
+            } else if (1 + this.xShow < 0) {
+                this.xShow = -1;
+            }
+            this.yShow -= cmy;
+            if (this.countPop == 0) {
+                this.countPop = -(this.showText.length - 1);
+            }
+            cmtoYText = 0;
+            cmyText = 0;
+            cmyLimText = 0;
+            if (this.hShow > 100) {
+                cmyLimText = this.hShow - 100;
+                if (cmyLimText < 0) {
+                    cmyLimText = 0;
+                }
+                this.hShow = 100;
+            }
+            if (this.yShow + this.hShow > Canvas.h - 20) {
+                this.yShow = (Canvas.h - 20) - this.hShow;
+                return;
+            }
+            return;
+        }
+        this.countPop = 0;
+        closeText();
+    }
+
+    public void doBuyShopSpecial() {
+        this.left = new Command("Mua", new IAction() {
+            @Override
+            public void perform() {
+                ShopNew.this.closeText();
+                if (ShopNew.this.selected >= Res.shopTemplate.size()) {
+                    return;
+                }
+                if (Canvas.gameScr.mainChar.isFullInventory()) {
+                    Canvas.startOKDlg("Hành trang đã đầy.");
+                    return;
+                }
+                int aa = 0;
+                int size0 = Res.shopTemplate.size();
+                for (int i = 0; i < size0; i++) {
+                    GemTemp gem = (GemTemp) Res.shopTemplate.elementAt(i);
+                    if (gem.shopType == ShopNew.focusTab && gem.isSell) {
+                        if (aa == ShopNew.this.selected) {
+                            final GemTemp item = (GemTemp) Res.shopTemplate.elementAt(i);
+                            Canvas.startYesNoDlg("Bạn có muốn mua vật phẩm này không ?", new IAction() {
+                                @Override
+                                public void perform() {
+                                    GameService.gI().buyItemShopSpecial(item.id);
+                                    Canvas.startWaitDlg();
+                                }
+                            });
+                            return;
+                        }
+                        aa++;
+                    }
+                }
+            }
+        });
+    }
+
+    public int getCountPotion(int i) {
+        return 0;
+    }
+
+    public Vector getInventori() {
+        Vector menu = new Vector();
+        int count = 0;
+        int size5 = this.ItemShopNew.size();
+        for (int i = 0; i < size5; i++) {
+            final int ii = count;
+            final ItemInInventory item = (ItemInInventory) this.ItemShopNew.elementAt(i);
+            menu.addElement(new Command("", new IAction() {
+                @Override
+                public void perform() {
+                    ShopNew.this.showItemInventoryInfo(item, ShopNew.this.isSell, (ii % ShopNew.this.numW) * 18, (ii / ShopNew.this.numW) * 18);
+                }
+            }) {
+                @Override
+                public void paint(Graphics g, int x, int y) {
+                    if (item.isSelling) {
+                        g.setColor(7706352);
+                        g.fillRect(x - 8, y - 8, 16, 16);
+                    }
+                    item.paint(g, x, y);
+                }
+            });
+            count++;
+        }
+        return menu;
+    }
+
+    protected void showGemItemInfo(short id, int xx, int yy) {
+        GemTemp g = Res.getGemByID(id);
+        String itemInfo = new StringBuffer(String.valueOf(ItemInInventory.setTemp(g.name, "0"))).append(ItemInInventory.setTemp(g.decript, "0")).toString();
+        if (this.isSell) {
+            itemInfo = new StringBuffer(String.valueOf(itemInfo)).append(ItemInInventory.setTemp(new StringBuffer("Giá bán lại: ").append(g.price / 5).toString(), "0")).toString();
+        }
+        setShowText(itemInfo, xx, yy);
+    }
+
+    protected void showGemItemKhoaInfo(short id, int xx, int yy) {
+        GemTemp g = Res.getGemByID(id);
+        String itemInfo = ItemInInventory.setTemp(g.name, "0");
+        String itemInfo2 = new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(itemInfo)).append(" - Đã khóa").toString())).append(ItemInInventory.setTemp(g.decript, "0")).toString();
+        if (this.isSell) {
+            itemInfo2 = new StringBuffer(String.valueOf(itemInfo2)).append(ItemInInventory.setTemp(new StringBuffer("Giá bán lại: ").append(g.price / 5).toString(), "0")).toString();
+        }
+        setShowText(itemInfo2, xx, yy);
+    }
+
+    protected void showRealIDInfo(RealID real, int xx, int yy) {
+        GemTemp g = Res.getGemByID(real.ID);
+        String itemInfo = new StringBuffer(String.valueOf(ItemInInventory.setTemp(g.name, "0"))).append(ItemInInventory.setTemp(g.decript, "0")).toString();
+        if (this.isSell) {
+            itemInfo = new StringBuffer(String.valueOf(itemInfo)).append(ItemInInventory.setTemp(new StringBuffer("Giá bán : ").append(real.price).toString(), "0")).toString();
+        }
+        setShowText(itemInfo, xx, yy);
+    }
+
+    protected void showShopItemInfo(short id, int count) {
+        GemTemp g = Res.getShopByID(id);
+        String itemInfo = new StringBuffer(String.valueOf(ItemInInventory.setTemp(g.name, "0"))).append(ItemInInventory.setTemp(g.decript, "0")).toString();
+        if (this.isSell) {
+            itemInfo = new StringBuffer(String.valueOf(itemInfo)).append(ItemInInventory.setTemp(new StringBuffer("Giá bán lại: ").append(Canvas.getMoneys(g.price / 5)).toString(), "0")).toString();
+        }
+        setShowText(itemInfo, (count % this.numW) * 18, (count / this.numW) * 18);
+    }
+
+    public String getInfoItemQuest(int id) {
+        String info = new StringBuffer("0").append(ItemQuest.NAME_ITEM[id]).toString();
+        return new StringBuffer(String.valueOf(info)).append("\nSố lượng: ").append((int) MainChar.itemQuest[id]).toString();
+    }
+
+    public String getPotionInfo(int aa) {
+        return "";
+    }
+
+    public void doSelectedInventori() {
+        if (!this.isChangeTab) {
+            closeText();
+            final int element = this.selected + (index[focusTab] == 0 ? this.countTabMyitem * this.numCell : 0);
+            int count = 0;
+            int size0 = Canvas.gameScr.mainChar.potions.length;
+            for (int i = 1; i < size0; i++) {
+                int num = Canvas.gameScr.mainChar.potions[i];
+                if (num > 0) {
+                    if (element == count) {
+                        showMenuForPotion(i);
+                        return;
+                    }
+                    count++;
+                }
+            }
+            int inde = element - count;
+            int size1 = MainChar.shopItem.size();
+            if (inde < size1) {
+                final GemTemplate shop = (GemTemplate) MainChar.shopItem.elementAt(inde);
+                Vector menuItems = new Vector();
+                menuItems.addElement(new Command("Sử dụng", new IAction() {
+                    @Override
+                    public void perform() {
+                        GameService.gI().doUseSpecialItem(shop.rID);
+                    }
+                }));
+                menuItems.addElement(cmdDelItem(shop, 1, MainChar.shopItem, (byte) 0));
+                Canvas.menu.startAt(menuItems, 2);
+                return;
+            }
+            int inde2 = inde - MainChar.shopItem.size();
+            int size2 = MainChar.gemItemKhoa.size();
+            if (inde2 < size2) {
+                final GemTemplate item = (GemTemplate) MainChar.gemItemKhoa.elementAt(inde2);
+                if (this.isSell) {
+                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn bán vật phẩm này với giá ").append(Res.getGemByID(item.id).price / 5).append("$ không?").toString(), new IAction() {
+                        @Override
+                        public void perform() {
+                            GameService.gI().sellGemItem(item.rID, (byte) 1);
+                            Canvas.startWaitDlg("Đang bán..", true);
+                            ShopNew.this.list.removeElementAt(element);
+                        }
+                    });
+                    return;
+                }
+                Vector menu = new Vector();
+                GemTemp g = Res.getGemByID(item.id);
+                if (g != null && g.type == 4) {
+                    Command cmd = new Command("Sử dụng", new IAction() {
+                        @Override
+                        public void perform() {
+                            GameService.gI().douseGemItem(item.id, (byte) 1);
+                        }
+                    });
+                    menu.addElement(cmd);
+                }
+                menu.addElement(cmdDelItem(item, 0, MainChar.gemItemKhoa, (byte) 1));
+                Canvas.menu.startAt(menu, 2);
+                return;
+            }
+            int inde3 = inde2 - MainChar.gemItemKhoa.size();
+            int size3 = MainChar.gemItem.size();
+            if (inde3 < size3) {
+                final GemTemplate item2 = (GemTemplate) MainChar.gemItem.elementAt(inde3);
+                if (this.isSell) {
+                    Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn bán vật phẩm này với giá ").append(Res.getGemByID(item2.id).price / 5).append("$ không?").toString(), new IAction() {
+                        @Override
+                        public void perform() {
+                            GameService.gI().sellGemItem(item2.rID, (byte) 0);
+                            Canvas.startWaitDlg("Đang bán..", true);
+                            ShopNew.this.list.removeElementAt(element);
+                        }
+                    });
+                    return;
+                }
+                Vector menu2 = new Vector();
+                GemTemp g2 = Res.getGemByID(item2.id);
+                if (g2 != null && g2.type == 4) {
+                    Command cmd2 = new Command("Sử dụng", new IAction() {
+                        @Override
+                        public void perform() {
+                            GameService.gI().douseGemItem(item2.id, (byte) 0);
+                        }
+                    });
+                    menu2.addElement(cmd2);
+                }
+                menu2.addElement(cmdDelItem(item2, 0, MainChar.gemItem, (byte) 0));
+                Canvas.menu.startAt(menu2, 2);
+                return;
+            }
+            int inde4 = inde3 - MainChar.gemItem.size();
+            int size4 = Char.animal.size();
+            if (inde4 < size4) {
+                final AnimalInfo shop2 = (AnimalInfo) Char.animal.elementAt(inde4);
+                Vector menuItems2 = new Vector();
+                menuItems2.addElement(new Command("Sử dụng", new IAction() {
+                    @Override
+                    public void perform() {
+                        if ((Canvas.gameScr.mainChar.useHorse > -1 || Canvas.gameScr.mainChar.idhorse > -1) && shop2.typeAnimal == 0) {
+                            Canvas.startOKDlg("Không thể cưỡi.");
+                        } else {
+                            GameService.gI().doRideAnimal(shop2.id, shop2.typeAnimal);
+                        }
+                    }
+                }));
+                Canvas.menu.startAt(menuItems2, 2);
+                return;
+            }
+            int inde5 = inde4 - Char.animal.size();
+            int size5 = this.ItemShopNew.size();
+            if (inde5 < size5) {
+                final ItemInInventory item3 = (ItemInInventory) this.ItemShopNew.elementAt(inde5);
+                if (!this.isSell) {
+                    Vector menu3 = new Vector();
+                    menu3.addElement(new Command("Sử dụng", new IAction() {
+                        @Override
+                        public void perform() {
+                            ShopNew.this.doUseItem(item3);
+                        }
+                    }));
+                    if (item3.colorName == 1 && item3.level >= 50 && !ItemInInventory.isAnimalArmor(item3.getTemplate().type)) {
+                        menu3.addElement(new Command("Tách trang bị", new IAction() {
+                            @Override
+                            public void perform() {
+                                final ItemInInventory itemInInventory = item3;
+                                Canvas.startYesNoDlg("Bạn có muốn tách nguyên liệu từ vật phẩm này không?", new IAction() {
+                                    @Override
+                                    public void perform() {
+                                        GameService.gI().doRequestTachNguyenLIeu(itemInInventory.itemID, 0, -1, 0);
+                                        Canvas.endDlg();
+                                    }
+                                });
+                            }
+                        }));
+                    }
+                    menu3.addElement(new Command("Bỏ ra đất", new IAction() {
+                        @Override
+                        public void perform() {
+                            final ItemInInventory itemInInventory = item3;
+                            Canvas.startYesNoDlg("Vật phẩm sẽ mất khi bạn bỏ ra đất. Bạn có muốn tiếp tục không?", new IAction() {
+                                @Override
+                                public void perform() {
+                                    GameService.gI().giveItemToGround(itemInInventory.itemID);
+                                    Canvas.endDlg();
+                                }
+                            });
+                        }
+                    }));
+                    if (item3.colorName != 0 && item3.colorName != 4) {
+                        if (item3.colorName == 1) {
+                            menu3.addElement(new Command("Thăng cấp thường", new IAction() {
+                                @Override
+                                public void perform() {
+                                    GameService.gI().doRequestActionCheDo(10, item3.itemID);
+                                }
+                            }));
+                            menu3.addElement(new Command("Thăng cấp giữ thuộc tính", new IAction() {
+                                @Override
+                                public void perform() {
+                                    GameService.gI().doRequestActionCheDo(11, item3.itemID);
+                                }
+                            }));
+                        }
+                        if (item3.nameCharSeal.equals("")) {
+                            menu3.addElement(new Command("Đóng dấu", new IAction() {
+                                @Override
+                                public void perform() {
+                                    GameService.gI().doRequestActionCheDo(14, item3.itemID);
+                                }
+                            }));
+                        }
+                        if (!item3.nameCharSeal.toLowerCase().equals(Canvas.gameScr.mainChar.name.toLowerCase())) {
+                            menu3.addElement(new Command("Đóng dấu lại", new IAction() {
+                                @Override
+                                public void perform() {
+                                    GameService.gI().doRequestActionCheDo(14, item3.itemID);
+                                }
+                            }));
+                        } else {
+                            ItemTemplate it = Res.getItem(item3.charClazz, item3.idTemplate);
+                            if ((it.type >= 3 && it.type <= 7) || it.type == 8 || it.type == 9) {
+                                menu3.addElement(new Command("Sửa thuộc tính kỹ năng", new IAction() {
+                                    @Override
+                                    public void perform() {
+                                        GameService.gI().doRequestActionCheDo(15, item3.itemID);
+                                    }
+                                }));
+                            }
+                        }
+                        if (item3.lock == 0) {
+                            menu3.addElement(new Command("Khoá", new IAction() {
+                                @Override
+                                public void perform() {
+                                    GameService.gI().doRequestActionCheDo(12, item3.itemID);
+                                }
+                            }));
+                        }
+                        if (item3.lock == 1) {
+                            menu3.addElement(new Command("Khoá lại", new IAction() {
+                                @Override
+                                public void perform() {
+                                    GameService.gI().doRequestActionCheDo(12, item3.itemID);
+                                }
+                            }));
+                        }
+                        menu3.addElement(new Command("Sửa thuộc tính khác", new IAction() {
+                            @Override
+                            public void perform() {
+                                GameService.gI().doRequestActionCheDo(13, item3.itemID);
+                            }
+                        }));
+                    }
+                    Canvas.menu.startAt(menu3, 2);
+                    return;
+                }
+                ItemTemplate it2 = Res.getItem(item3.charClazz, item3.idTemplate);
+                Canvas.startYesNoDlg(new StringBuffer("Bạn có muốn bán vật phẩm này với giá ").append((it2.price / 5) + (it2.plus * 1000)).append("$ không?").toString(), new IAction() {
+                    @Override
+                    public void perform() {
+                        GameService.gI().sellItem(item3.itemID);
+                        Canvas.startWaitDlg("Đang bán..", true);
+                        ShopNew.this.list.removeElementAt(element);
+                    }
+                });
+            }
+        }
+    }
+
+    protected void doSellItem() {
+    }
+
+    private Command cmdDelItem(final GemTemplate item, final int index2, Vector lit, final byte khoa) {
+        return new Command("Bỏ ra đất", new IAction() {
+            @Override
+            public void perform() {
+                final GemTemplate gemTemplate = item;
+                final int i = index2;
+                final byte b = khoa;
+                Canvas.startYesNoDlg("Bạn có muốn bỏ hết vật phẩm này không ?", new IAction() {
+                    @Override
+                    public void perform() {
+                        GameService.gI().dellGemItem(gemTemplate.id, i, b);
+                        Canvas.endDlg();
+                    }
+                });
+            }
+        });
+    }
+
+    private void showMenuForPotion(int potionType) {
+    }
+
+    protected void doUseItem(ItemInInventory item) {
+        ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
+        if (it.gender != 0 && it.gender != Canvas.gameScr.mainChar.gender) {
+            Canvas.startOKDlg(new StringBuffer("Vật phẩm này chỉ dành cho ").append(Res.GENDERNAME[it.gender]).append(".").toString());
+            return;
+        }
+        if (it.clazz != -1 && it.clazz != Canvas.gameScr.mainChar.clazz && isWeapone(it.type)) {
+            Canvas.startOKDlg(new StringBuffer("Vật phẩm này chỉ dành cho ").append(CreateCharScr.clazz[it.clazz][CreateCharScr.selectGender].name).append(".").toString());
+        } else if (it.level > Canvas.gameScr.mainChar.level) {
+            Canvas.startOKDlg(new StringBuffer("Bạn phải đạt cấp ").append((int) it.level).append(" để có thể dùng.").toString());
+        } else {
+            GameService.gI().useItem(item.itemID);
+        }
+    }
+
+    private boolean isWeapone(int type) {
+        return type >= 3 && type <= 7;
+    }
+
+    public void showCharWearingInfo() {
+        int aa = 0;
+        if (this.selected % 3 == 1) {
+            if (charWearing.isDoing && this.selected != 4) {
+                int bb = ((this.selected / 3) * 2) + ((this.selected % 3) - (this.selected % 3 > 0 ? 1 : 0));
+                int size0 = charWearing.wearingItems.size();
+                for (int i = 0; i < size0; i++) {
+                    ItemInInventory item = (ItemInInventory) charWearing.wearingItems.elementAt(i);
+                    if (Res.getItem(item.charClazz, item.idTemplate).type == 13) {
+                        showItemInventoryInfo(item, false, posWearChar[bb][0] + 5, posWearChar[bb][1] - 2);
+                    }
+                }
+                return;
+            }
+            if (index.length == 1) {
+                if (this.selected != 4) {
+                    Vector menu = new Vector();
+                    menu.addElement(new Command("Thông tin", new IAction() {
+                        @Override
+                        public void perform() {
+                            ShopNew.this.setShowText(ItemInInventory.setTemp(ShopNew.charWearing.infoAnimal, "0"), 80, 120);
+                            Canvas.endDlg();
+                        }
+                    }));
+                    menu.addElement(new Command("Trang bị linh thú", new IAction() {
+                        @Override
+                        public void perform() {
+                            Char c = (Char) Canvas.gameScr.findCharByID(Canvas.gameScr.saveIDViewInfoAnimal);
+                            if (c != null) {
+                                Canvas.gameScr.gameService.requestSomeOneInfo(c.ID, (byte) 1);
+                            } else {
+                                ShopNew.this.right.action.perform();
+                            }
+                            Canvas.endDlg();
+                        }
+                    }));
+                    Canvas.menu.startAt(menu, 3);
+                    return;
+                }
+                int size1 = charWearing.wearingItems.size();
+                for (int i2 = 0; i2 < size1; i2++) {
+                    ItemInInventory item2 = (ItemInInventory) charWearing.wearingItems.elementAt(i2);
+                    if (Res.getItem(item2.charClazz, item2.idTemplate).type == 19) {
+                        showItemInventoryInfo(item2, false, posWearChar[9][0] + 5, posWearChar[9][1] - 2);
+                        return;
+                    }
+                }
+                return;
+            }
+            if (this.selected != 4) {
+                Vector menu1 = new Vector();
+                menu1.addElement(new Command("Linh thú", new IAction() {
+                    @Override
+                    public void perform() {
+                        if (!ShopNew.charWearing.infoAnimal.equals("")) {
+                            ShopNew.this.setShowText(ItemInInventory.setTemp(ShopNew.charWearing.infoAnimal, "0"), 80, 120);
+                        }
+                    }
+                }));
+                menu1.addElement(new Command("Thú cưng", new IAction() {
+                    @Override
+                    public void perform() {
+                        if (ShopNew.charWearing.myPet != null) {
+                            ShopNew.this.setShowText(new StringBuffer(String.valueOf(ItemInInventory.setTemp(ShopNew.charWearing.myPet.infoPet, "0"))).append(ItemInInventory.setTemp(new StringBuffer("Còn lại: ").append(((long) ShopNew.charWearing.myPet.totalTime) - ((System.currentTimeMillis() - ShopNew.charWearing.myPet.timeStart) / 60000)).append(" phút").toString(), "0")).toString(), 80, 120);
+                        }
+                    }
+                }));
+                Canvas.menu.startAt(menu1, 3);
+                return;
+            }
+            int size2 = charWearing.wearingItems.size();
+            for (int i3 = 0; i3 < size2; i3++) {
+                ItemInInventory item3 = (ItemInInventory) charWearing.wearingItems.elementAt(i3);
+                if (Res.getItem(item3.charClazz, item3.idTemplate).type == 19) {
+                    showItemInventoryInfo(item3, false, posWearChar[9][0] + 5, posWearChar[9][1] - 2);
+                    return;
+                }
+            }
+            return;
+        }
+        int bb2 = ((this.selected / 3) * 2) + ((this.selected % 3) - (this.selected % 3 > 0 ? 1 : 0));
+        int size3 = charWearing.wearingItems.size();
+        for (int i4 = 0; i4 < size3; i4++) {
+            ItemInInventory item4 = (ItemInInventory) charWearing.wearingItems.elementAt(i4);
+            ItemTemplate it = Res.getItem(item4.charClazz, item4.idTemplate);
+            if (it.type == idWearChar[bb2] || (idWearChar[bb2] == -1 && it.type > 2 && it.type < 8)) {
+                aa++;
+                if (bb2 != 7 || aa != 1) {
+                    showItemInventoryInfo(item4, false, posWearChar[bb2][0] + 5, posWearChar[bb2][1] - 2);
+                    return;
+                }
+            }
+        }
+    }
+
+    public void showInfoWearingAnimal() {
+        if (charWearing.wearingAnimal != null && charWearing.wearingAnimal.size() > 0) {
+            int size0 = charWearing.wearingAnimal.size();
+            for (int i = 0; i < size0; i++) {
+                ItemInInventory item = (ItemInInventory) charWearing.wearingAnimal.elementAt(i);
+                ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
+                if (it.type == idWearAnimal[this.selected]) {
+                    int i2 = 0 + 1;
+                    showItemInventoryInfo(item, false, posWearChar[0][0] + 5, posWearChar[0][1] - 2);
+                    return;
+                }
+            }
+        }
+    }
+
+    public void showItemInventoryInfo(ItemInInventory item, boolean isSell, int x, int y) {
+        this.arrayKhamNgoc = null;
+        if (item.totalKham > 0) {
+            this.arrayKhamNgoc = new byte[item.totalKham];
+            for (int i = 0; i < item.totalKham; i++) {
+                this.arrayKhamNgoc[i] = -1;
+            }
+            byte k = 0;
+            for (int i2 = 0; i2 < item.allAttribute.size(); i2++) {
+                InfoAttributeItem name = (InfoAttributeItem) item.allAttribute.elementAt(i2);
+                if (name.getColorPaint(false) == 3) {
+                    for (int j = 0; j < item.numKham; j++) {
+                        byte b = k;
+                        k = (byte) (b + 1);
+                        this.arrayKhamNgoc[b] = Res.idNgocKham[name.getID() - 10];
+                    }
+                    break;
+                }
+            }
+        }
+        setShowText(item.getDescription(isSell), x, y);
+        if (!item.isEnoughData) {
+            item.isEnoughData = true;
+            GameService.gI().requestItemInfo(item.itemID, charWearing == null ? Canvas.gameScr.mainChar.ID : charWearing.ID);
+        }
+    }
+
+    public void dofireBasePoint() {
+        if (Canvas.gameScr.mainChar.basePointLeft == 0) {
+            Canvas.startOKDlg("Đã hết điểm tiềm năng để cộng. Xin đánh lên level để có điểm tiềm năng.");
+        } else {
+            Canvas.inputDlg.setInfo("Nhập số", new IAction() {
+                @Override
+                public void perform() {
+                    String str = Canvas.inputDlg.tfInput.getText();
+                    if (str.equals("")) {
+                        return;
+                    }
+                    try {
+                        int value = Integer.parseInt(str);
+                        if (value > Canvas.gameScr.mainChar.basePointLeft) {
+                            Canvas.startOKDlg(new StringBuffer("Bạn chỉ còn ").append((int) Canvas.gameScr.mainChar.basePointLeft).append(" điểm tiềm năng").toString());
+                        } else {
+                            GameService.gI().addBasePoint(ShopNew.this.selected, value);
+                            Canvas.startWaitDlg();
+                        }
+                    } catch (Exception e) {
+                        Canvas.startOKDlg("Có lỗi xảy ra. Vui lòng chỉ nhập số.");
+                    }
+                }
+            }, 1, 10, true);
+            Canvas.inputDlg.show();
+        }
+    }
+
+    public void setCmdLeftTrade() {
+        this.left = new Command("Xong", new IAction() {
+            @Override
+            public void perform() {
+                ShopNew.this.closeText();
+                Canvas.gameScr.gameService.sendOkTrade(Canvas.gameScr.mainChar.ID);
+                ShopNew.this.left = new Command("Xin chờ", new IAction() {
+                    @Override
+                    public void perform() {
+                        Canvas.gameScr.gameService.sendCancelTrade(Canvas.gameScr.mainChar.ID);
+                        Canvas.gameScr.mainChar.isTrade = false;
+                        Canvas.currentDialog = null;
+                    }
+                });
+            }
+        });
+    }
+
+    public void setListSellItem(Vector itemsSell, int type) {
+        this.list.removeAllElements();
+        int count = 0;
+        int size0 = itemsSell.size();
+        for (int i = 0; i < size0; i++) {
+            final ItemInInventory item = (ItemInInventory) Canvas.gameScr.shop.elementAt(i);
+            ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
+            if (it.type == type || type == -1) {
+                final int co = count;
+                count++;
+                this.list.addElement(new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        ShopNew.this.setShowText(item.getTemplateDescription(), (co % ShopNew.this.numW) * 18, (co / ShopNew.this.numW) * 18);
+                    }
+                }) {
+                    @Override
+                    public void paint(Graphics g, int x, int y) {
+                        item.paint(g, x, y);
+                    }
+                });
+            }
+        }
+    }
+
+    public boolean setMaxxreadyBuy() {
+        if (this.readyBuy.size() >= 100) {
+            Canvas.startOKDlg("Bạn chỉ được mua 100 vật phẩm một lần.");
+            return true;
+        }
+        return false;
+    }
+
+    class AnonymousClass109 implements IAction {
+        private final int val$type;
+
+        AnonymousClass109(int i) {
+            this.val$type = i;
+        }
+
+        @Override
+        public void perform() {
+            ShopNew.this.closeText();
+            if (ShopNew.this.setMaxxreadyBuy()) {
+                return;
+            }
+            ItemInInventory selectedItem = null;
+            int count = 0;
+            if (this.val$type != -1) {
+                int size0 = Canvas.gameScr.shop.size();
+                for (int i = 0; i < size0; i++) {
+                    ItemInInventory it = (ItemInInventory) Canvas.gameScr.shop.elementAt(i);
+                    ItemTemplate iti = Res.getItem(it.charClazz, it.idTemplate);
+                    if (iti.type == this.val$type) {
+                        if (count == ShopNew.this.selected) {
+                            selectedItem = it;
+                            break;
+                        }
+                        count++;
+                    }
+                }
+            } else {
+                selectedItem = (ItemInInventory) Canvas.gameScr.shop.elementAt(ShopNew.this.selected);
+            }
+            final ItemInInventory item = selectedItem;
+            final ItemTemplate it2 = Res.getItem(selectedItem.charClazz, selectedItem.idTemplate);
+            Canvas.startYesNoDlg("Bạn có muốn cho thú cưng ăn vật phẩm này không?", new IAction() {
+                @Override
+                public void perform() {
+                    Canvas.gameScr.mainChar.charXu -= (long) it2.price;
+                    ShopNew.this.readyBuy.addElement(item);
+                    Canvas.startOKDlg("Đã chọn vật phẩm cho thú cưng ăn.", false);
+                }
+            });
+        }
+    }
+
+    private void doSetLeftPetEat(int type) {
+        this.left = new Command("Mua", new AnonymousClass109(type));
+    }
+
+    class AnonymousClass111 implements IAction {
+        private final int val$type;
+
+        AnonymousClass111(int i) {
+            this.val$type = i;
+        }
+
+        @Override
+        public void perform() {
+            String str;
+            ShopNew.this.closeText();
+            if (ShopNew.this.setMaxxreadyBuy()) {
+                return;
+            }
+            ItemInInventory selectedItem = null;
+            int count = 0;
+            if (this.val$type != -1) {
+                int size0 = Canvas.gameScr.shop.size();
+                for (int i = 0; i < size0; i++) {
+                    ItemInInventory it = (ItemInInventory) Canvas.gameScr.shop.elementAt(i);
+                    ItemTemplate iti = Res.getItem(it.charClazz, it.idTemplate);
+                    if (iti.type == this.val$type) {
+                        if (count == ShopNew.this.selected) {
+                            selectedItem = it;
+                            break;
+                        }
+                        count++;
+                    }
+                }
+            } else {
+                selectedItem = (ItemInInventory) Canvas.gameScr.shop.elementAt(ShopNew.this.selected);
+            }
+            final ItemInInventory item = selectedItem;
+            if (Canvas.gameScr.mainChar.FullInventory() >= 42 * Canvas.gameScr.mainChar.limItemBag) {
+                ShopNew.this.setShowText("Hành trang đã đầy", (ShopNew.this.selected % ShopNew.this.numW) * 18, (ShopNew.this.selected / ShopNew.this.numW) * 18);
+                return;
+            }
+            final ItemTemplate it2 = Res.getItem(selectedItem.charClazz, selectedItem.idTemplate);
+            if (it2.price > Canvas.gameScr.mainChar.charXu) {
+                ShopNew.this.setShowText("Hết tiền", (ShopNew.this.selected % ShopNew.this.numW) * 18, (ShopNew.this.selected / ShopNew.this.numW) * 18);
+                return;
+            }
+            if (it2.ndayLoan == 0) {
+                str = new StringBuffer("Bạn có muốn mua ").append(it2.name).append(", Giá: ").append(it2.price).append("$ không?").toString();
+            } else {
+                str = new StringBuffer("Bạn có muốn thuê ").append(it2.name).append(", Giá: ").append(it2.price).append("Lượng không?").toString();
+            }
+            Canvas.startYesNoDlg(str, new IAction() {
+                @Override
+                public void perform() {
+                    Canvas.gameScr.mainChar.charXu -= (long) it2.price;
+                    ShopNew.this.readyBuy.addElement(item);
+                    Canvas.startOKDlg("Đã mua. Món đồ đang ở trong hành trang.", false);
+                }
+            });
+        }
+    }
+
+    private void doSetLeftSellWeapon(int type) {
+        this.left = new Command("Mua", new AnonymousClass111(type));
+    }
+
+    class AnonymousClass113 implements IAction {
+        AnonymousClass113() {
+        }
+
+        @Override
+        public void perform() {
+            ShopNew.this.closeText();
+            if (ShopNew.this.setMaxxreadyBuy()) {
+                return;
+            }
+            GemTemp selectedGemItem = (GemTemp) Canvas.gameScr.shop.elementAt(ShopNew.this.selected);
+            boolean is = false;
+            int num = 0;
+            GemTemplate ge = GemTemplate.getGemByID(selectedGemItem.id);
+            if (ge != null) {
+                num = ge.number;
+                is = true;
+            }
+            if (!is && Canvas.gameScr.mainChar.isFullInventory()) {
+                ShopNew.this.setShowText("Hành trang đã đầy", (ShopNew.this.selected % ShopNew.this.numW) * 18, (ShopNew.this.selected / ShopNew.this.numW) * 18);
+                return;
+            }
+            GemTemp g = Res.getGemByID(selectedGemItem.id);
+            int numm = num;
+            Canvas.inputDlg.setInfo("Số lượng: ", new AnonymousClass114(this, g, selectedGemItem, numm), 1, 4, true);
+            Canvas.inputDlg.show();
+        }
+    }
+
+    private void dosetLeftSellGemItem() {
+        this.left = new Command("Mua", new AnonymousClass113());
+    }
+
+    class AnonymousClass114 implements IAction {
+        final AnonymousClass113 this$1;
+        private final GemTemp val$g;
+        private final GemTemp val$selectedGemItem;
+        private final int val$numm;
+
+        AnonymousClass114(AnonymousClass113 anonymousClass113, GemTemp gemTemp, GemTemp gemTemp2, int i) {
+            this.this$1 = anonymousClass113;
+            this.val$g = gemTemp;
+            this.val$selectedGemItem = gemTemp2;
+            this.val$numm = i;
+        }
+
+        @Override
+        public void perform() {
+            try {
+                final int number = Integer.parseInt(Canvas.inputDlg.tfInput.getText());
+                if (number < 0) {
+                    return;
+                }
+                if ((this.val$g.typeMoney == 0 && this.val$g.price * number > Canvas.gameScr.mainChar.charXu) || (this.val$g.typeMoney == 1 && this.val$g.price * number > Canvas.gameScr.mainChar.luong)) {
+                    ShopNew.this.setShowText("Hết tiền", (ShopNew.this.selected % ShopNew.this.numW) * 18, (ShopNew.this.selected / ShopNew.this.numW) * 18);
+                    return;
+                }
+                String string = new StringBuffer("Bạn có muốn mua ").append(number).append(" ").append(this.val$g.name).append(", Giá: ").append(this.val$g.price * number).append(this.val$g.typeMoney == 0 ? "$" : "lượng").append(" không?").toString();
+                final GemTemp gemTemp = this.val$selectedGemItem;
+                final int i = this.val$numm;
+                final GemTemp gemTemp2 = this.val$g;
+                Canvas.startYesNoDlg(string, new IAction() {
+                    @Override
+                    public void perform() {
+                        int aa = 0;
+                        int size0 = ShopNew.this.readyBuy.size();
+                        for (int i2 = 0; i2 < size0; i2++) {
+                            GemTemp gem = (GemTemp) ShopNew.this.readyBuy.elementAt(i2);
+                            if (gem.id == gemTemp.id) {
+                                if (i + gem.number + number > 300) {
+                                    Canvas.startOKDlg("Không được mua nhiều hơn 300 cái.");
+                                    return;
+                                } else {
+                                    gem.number = (short) (gem.number + number);
+                                    aa = 1;
+                                    break;
+                                }
+                            }
+                        }
+                        if (aa == 0) {
+                            GemTemp ge = new GemTemp();
+                            ge.id = gemTemp.id;
+                            ge.number = (short) number;
+                            ShopNew.this.readyBuy.addElement(ge);
+                        }
+                        if (gemTemp2.typeMoney == 0) {
+                            Canvas.gameScr.mainChar.charXu -= (long) (gemTemp2.price * number);
+                        } else {
+                            Canvas.gameScr.mainChar.luong -= gemTemp2.price * number;
+                        }
+                        Canvas.startOKDlg("Đã mua. Món đồ đang ở trong hành trang.");
+                    }
+                });
+            } catch (Exception e) {
+                Canvas.startOKDlg("Chỉ được nhập số.");
+            }
+        }
+    }
+
+    private void setListSellGemItem(Vector shop) {
+        this.list.removeAllElements();
+        int size0 = shop.size();
+        for (int i = 0; i < size0; i++) {
+            final GemTemp gem = (GemTemp) shop.elementAt(i);
+            final int ii = i;
+            if (gem.isSell) {
+                this.list.addElement(new Command("", new IAction() {
+                    @Override
+                    public void perform() {
+                        String str = new StringBuffer(String.valueOf(ItemInInventory.setTemp(gem.name, "0"))).append(ItemInInventory.setTemp(gem.decript, "0")).append(ItemInInventory.setTemp(new StringBuffer("Giá: ").append(gem.price).append(gem.typeMoney == 0 ? " xu" : " lượng").toString(), "0")).toString();
+                        ShopNew.this.setShowText(str, (ii % ShopNew.this.numW) * 18, (ii / ShopNew.this.numW) * 18);
+                    }
+                }) {
+                    @Override
+                    public void paint(Graphics g, int x, int y) {
+                        Res.paintGem(g, gem.idImage, x, y);
+                    }
+                });
+            }
+        }
+    }
+
+    private void setListPotion() {
+        this.list.removeAllElements();
+        int size0 = Canvas.gameScr.shop.size();
+        for (int i = 0; i < size0; i++) {
+            final ItemInInventory item = (ItemInInventory) Canvas.gameScr.shop.elementAt(i);
+            this.list.addElement(new Command("", new IAction() {
+                @Override
+                public void perform() {
+                    ShopNew.this.setShowText(item.getTemplateDescription(), (ShopNew.this.selected % ShopNew.this.numW) * 18, (ShopNew.this.selected / ShopNew.this.numW) * 18);
+                }
+            }) {
+                @Override
+                public void paint(Graphics g, int x, int y) {
+                    GameData.paintIcon(g, (short) (MainChar.listPotion[item.potionType].index + 5500), x, y);
+                }
+            });
+        }
+    }
+
+    private void doSetLeftPotion() {
+    }
+
+    public void doBuyItem() {
+        if (this.readyBuy.size() > 0) {
+            if (index[focusTab] == 10) {
+                GameService.gI().buyGemItem(this.readyBuy);
+            } else if (index[focusTab] == 19) {
+                GameService.gI().buyPotion(this.readyBuy);
+            } else {
+                GameService.gI().buyItem(this.readyBuy);
+            }
+            this.readyBuy.removeAllElements();
+        }
+        if (index[focusTab] == 21 || index[focusTab] == 25) {
+            if (index[focusTab] == 21) {
+                GameService.gI().doImbueItem(-1);
+            } else {
+                GameService.gI().doKhamItem(-1);
+            }
+            int size0 = MainChar.gemitemImbue.size();
+            for (int i = 0; i < size0; i++) {
+                RealID real = (RealID) MainChar.gemitemImbue.elementAt(i);
+                GemTemplate item = GemTemplate.getGemByID(real.ID);
+                if (item != null) {
+                    item.number++;
+                    break;
+                }
+            }
+            MainChar.gemitemImbue.removeAllElements();
+            Canvas.gameScr.mainChar.itemImbue = null;
+            this.imgWeaponAvatar = null;
+            this.idImbue = -1;
+            return;
+        }
+        if (index[focusTab] == 22) {
+            Canvas.gameScr.gameService.finishPutItem2Bag();
+        } else if (index[focusTab] == 8) {
+            Canvas.gameScr.gameService.sendCancelTrade(Canvas.gameScr.mainChar.ID);
+            Canvas.gameScr.mainChar.isTrade = false;
+        }
+    }
+
+    public void resetImbue() {
+        MainChar.gemitemImbue.removeAllElements();
+    }
+
+    private void setQuestInfo() {
+        this.questInfo = new Vector();
+        String infoMain = getInfoQuestPaint(0);
+        String infoSub = getInfoQuestPaint(1);
+        String infoClan = getInfoQuestPaint(2);
+        if (!infoMain.equals("")) {
+            String[] data = Util.split(infoMain, "|");
+            this.questInfo.addElement(GameScr.mainQuest.name);
+            for (String str : data) {
+                this.questInfo.addElement(str);
+            }
+        }
+        if (!infoSub.equals("")) {
+            String[] data2 = Util.split(infoSub, "|");
+            this.questInfo.addElement(GameScr.subQuest.name);
+            for (String str2 : data2) {
+                this.questInfo.addElement(str2);
+            }
+        }
+        if (!infoClan.equals("")) {
+            String[] data3 = Util.split(infoClan, "|");
+            this.questInfo.addElement(GameScr.clanQuest.name);
+            for (String str3 : data3) {
+                this.questInfo.addElement(str3);
+            }
+        }
+    }
+
+    public void questClan(String text1, byte finishQ) {
+        this.questInfo = new Vector();
+        String[] title = Font.normalFont[0].splitFontBStrInLine(text1, 100);
+        for (String str : title) {
+            this.questInfo.addElement(str);
+        }
+        Canvas.endDlg();
+    }
+}

@@ -112,8 +112,8 @@ jobs:
           java-version: "21"
       - name: Build jar
         run: |
-          RT_JAR="$JAVA_HOME_8_X64/jre/lib/rt.jar" sh Jar276/build.sh ${{ needs.so-ban.outputs.jar }}
-          cp "Jar276/out/KPAH_276 (1)-automenu-v${{ needs.so-ban.outputs.jar }}-release.jar" NQSH-H2-v${{ needs.so-ban.outputs.jar }}.jar
+          RT_JAR="$JAVA_HOME_8_X64/jre/lib/rt.jar" sh j2me/build.sh ${{ needs.so-ban.outputs.jar }}
+          cp "j2me/out/KPAH_276 (1)-automenu-v${{ needs.so-ban.outputs.jar }}-release.jar" NQSH-H2-v${{ needs.so-ban.outputs.jar }}.jar
       - uses: actions/upload-artifact@v4
         with:
           name: jar

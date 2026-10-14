@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+MIDlet-Vendor: TeaM
+MIDlet-Version: 1.5.9
+MIDlet-1: Khi Phach Anh Hung,/icon.png,game.GameMidlet
+MicroEdition-Configuration: CLDC-1.0
+MIDlet-Name: Khi Phach Anh Hung 1
+MicroEdition-Profile: MIDP-2.0
+
