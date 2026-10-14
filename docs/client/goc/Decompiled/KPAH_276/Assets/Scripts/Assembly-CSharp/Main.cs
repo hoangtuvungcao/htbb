@@ -257,6 +257,8 @@ public class Main : MonoBehaviour
 			canvas = new Canvas();
 			canvas.start();
 			midlet.load();
+			// sau loadSv (danh sách ghi sẵn): tải danh sách server mới nhất một lần, ngầm
+			StartCoroutine(ServerListScr.taiDanhSachTuDong());
 			Res.load = new LoadData();
 			Res.load.isInitGame = true;
 			if (!isPC && Canvas.loginScr.isRememPass)

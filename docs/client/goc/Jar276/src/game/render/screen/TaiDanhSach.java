@@ -14,13 +14,15 @@ import javax.microedition.io.HttpConnection;
  * vẫn dùng danh sách đã lưu.
  */
 final class TaiDanhSach {
-    private static final String LINK = "https://nqsh-h2.top/robots.txt";
     /**
-     * Danh sách ghi sẵn: dùng khi không tải được LINK. Giả lập / máy J2ME (CoffeeCat...) không nói
-     * được TLS đời mới nên HTTPS luôn hỏng, còn http:// thì bị chuyển hướng sang https - không có
-     * bản ghi sẵn này thì client không biết vào server nào.
+     * Thử lần lượt: http trước (máy J2ME / giả lập như CoffeeCat không nói được TLS đời mới nên
+     * HTTPS hay hỏng), không được thì https (giả lập trên PC đọc được).
      */
-    private static final String MAC_DINH = "NQSH-H2|nqsh-h2.top|17949";
+    private static final String[] LINK = {"http://nqsh-h2.top/robots.txt", "https://nqsh-h2.top/robots.txt"};
+    /** Danh sách ghi sẵn: dùng khi không tải được LINK nào - không có thì client không biết vào server nào. */
+    private static final String MAC_DINH_HOST = "nqsh-h2.top";
+    private static final short MAC_DINH_CONG = 30774;
+    private static final String MAC_DINH = "NQSH-H2|" + MAC_DINH_HOST + "|" + MAC_DINH_CONG;
     private static boolean daTai;
     private static boolean dangTai;
 
@@ -60,11 +62,13 @@ final class TaiDanhSach {
 
             public void run() {
                 boolean bl2 = false;
-                try {
-                    bl2 = apDung(doc());
-                }
-                catch (Throwable throwable) {
-                    // giữ danh sách cũ
+                for (int i = 0; i < LINK.length && !bl2; ++i) {
+                    try {
+                        bl2 = apDung(doc(LINK[i]));
+                    }
+                    catch (Throwable throwable) {
+                        // link này hỏng (TLS / mạng / WAF): thử link kế, hết thì giữ danh sách cũ
+                    }
                 }
                 if (!bl2) {
                     try {
@@ -86,25 +90,29 @@ final class TaiDanhSach {
         }.start();
     }
 
-    /** Danh sách đang dùng đã có server ghi sẵn chưa (thì giữ nguyên, kể cả server khác đã lưu). */
+    /**
+     * Danh sách đang dùng đã có server ghi sẵn (đúng host VÀ cổng) chưa - thì giữ nguyên, kể cả server
+     * khác đã lưu. So cả cổng: danh sách cũ đã lưu "nqsh-h2.top|17949" phải được thay bằng cổng mới.
+     */
     private static boolean coMacDinh() {
         String[] stringArray = ServerListScr.address;
-        if (stringArray == null) {
+        short[] sArray = ServerListScr.port;
+        if (stringArray == null || sArray == null) {
             return false;
         }
-        for (int i = 0; i < stringArray.length; ++i) {
-            if ("nqsh-h2.top".equals(stringArray[i])) {
+        for (int i = 0; i < stringArray.length && i < sArray.length; ++i) {
+            if (MAC_DINH_HOST.equals(stringArray[i]) && sArray[i] == MAC_DINH_CONG) {
                 return true;
             }
         }
         return false;
     }
 
-    private static String doc() throws Exception {
+    private static String doc(String link) throws Exception {
         HttpConnection httpConnection = null;
         InputStream inputStream = null;
         try {
-            httpConnection = (HttpConnection)Connector.open(LINK);
+            httpConnection = (HttpConnection)Connector.open(link);
             if (httpConnection.getResponseCode() != 200) {
                 return null;
             }

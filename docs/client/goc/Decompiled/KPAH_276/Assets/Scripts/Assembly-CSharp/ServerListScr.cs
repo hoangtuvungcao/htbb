@@ -122,7 +122,7 @@ public class ServerListScr : MyScreen
 			// Giống bản jar (TaiDanhSach): server NQSH-H2, danh sách "Tên|host|port" tải từ linkGetHost
 			nameServer = new string[1] { "NQSH-H2" };
 			address = new string[1] { "nqsh-h2.top" };
-			port = new short[1] { 17949 };
+			port = new short[1] { 30774 };
 			index_server = new sbyte[1];
 			linkGetHost = "https://nqsh-h2.top/robots.txt";
 			GameMidlet.numberSupport = "19006610";
@@ -137,6 +137,77 @@ public class ServerListScr : MyScreen
 			GameMidlet.numberSupport = "19001530";
 		}
 		Debug.Log("Ban: " + ((!isKPAH) ? "-- ngu de" : "-- khi phach anh hung"));
+	}
+
+	/// <summary>
+	/// Áp danh sách server: mỗi dòng "Tên|host|port" (dòng trống / # bỏ qua), cùng định dạng với bản jar.
+	/// Đúng thì lưu RMS (lần sau không có mạng vẫn dùng được) và trả true.
+	/// </summary>
+	public static bool apDungDanhSach(string str)
+	{
+		if (str == null)
+		{
+			return false;
+		}
+		List<string[]> list = new List<string[]>();
+		string[] lines = str.Replace("\r", string.Empty).Split('\n');
+		for (int i = 0; i < lines.Length; i++)
+		{
+			string line = lines[i].Trim();
+			if (line.Length == 0 || line[0] == '#')
+			{
+				continue;
+			}
+			string[] parts = line.Split('|');
+			short p;
+			if (parts.Length < 3 || parts[0].Trim().Length == 0 || parts[1].Trim().Length == 0 || !short.TryParse(parts[2].Trim(), out p))
+			{
+				continue;
+			}
+			list.Add(parts);
+		}
+		if (list.Count == 0)
+		{
+			return false;
+		}
+		nameServer = new string[list.Count];
+		address = new string[list.Count];
+		port = new short[list.Count];
+		index_server = new sbyte[list.Count];
+		for (int i = 0; i < list.Count; i++)
+		{
+			nameServer[i] = list[i][0].Trim();
+			address[i] = list[i][1].Trim();
+			port[i] = short.Parse(list[i][2].Trim());
+		}
+		saveIP();
+		return true;
+	}
+
+	/// <summary>
+	/// Mỗi lần mở game tự tải danh sách server một lần (như bấm "Cập nhật" nhưng ngầm): đổi IP / cổng
+	/// server chỉ cần sửa robots.txt trên web, máy người chơi tự theo. Lỗi mạng thì giữ danh sách đang có.
+	/// </summary>
+	public static System.Collections.IEnumerator taiDanhSachTuDong()
+	{
+		using (UnityEngine.Networking.UnityWebRequest r = UnityEngine.Networking.UnityWebRequest.Get(linkGetHost))
+		{
+			r.timeout = 10;
+			yield return r.SendWebRequest();
+			if (r.result != UnityEngine.Networking.UnityWebRequest.Result.Success)
+			{
+				Debug.LogWarning("Danh sach server: khong tai duoc " + linkGetHost + " - " + r.error);
+				yield break;
+			}
+			if (apDungDanhSach(r.downloadHandler.text))
+			{
+				Debug.Log("Danh sach server: da cap nhat " + nameServer.Length + " server, " + address[0] + ":" + port[0]);
+				if (me != null)
+				{
+					me.init();
+				}
+			}
+		}
 	}
 
 	public override void switchToMe()
@@ -155,42 +226,12 @@ public class ServerListScr : MyScreen
 			{
 				Canvas.startOKDlg("Không thể kết nối, xin kiểm tra lại GPRS/3G/Wifi.");
 			}
+			else if (!apDungDanhSach(str))
+			{
+				Canvas.startOKDlg("Không thể kết nối, xin kiểm tra lại GPRS/3G/Wifi.");
+			}
 			else
 			{
-				// Mỗi dòng "Tên|host|port" (dòng trống / # bỏ qua), cùng định dạng với bản jar
-				List<string[]> list = new List<string[]>();
-				string[] lines = str.Replace("\r", string.Empty).Split('\n');
-				for (int i = 0; i < lines.Length; i++)
-				{
-					string line = lines[i].Trim();
-					if (line.Length == 0 || line[0] == '#')
-					{
-						continue;
-					}
-					string[] parts = line.Split('|');
-					short p;
-					if (parts.Length < 3 || parts[0].Trim().Length == 0 || parts[1].Trim().Length == 0 || !short.TryParse(parts[2].Trim(), out p))
-					{
-						continue;
-					}
-					list.Add(parts);
-				}
-				if (list.Count == 0)
-				{
-					Canvas.startOKDlg("Không thể kết nối, xin kiểm tra lại GPRS/3G/Wifi.");
-					return;
-				}
-				nameServer = new string[list.Count];
-				address = new string[list.Count];
-				port = new short[list.Count];
-				index_server = new sbyte[list.Count];
-				for (int i = 0; i < list.Count; i++)
-				{
-					nameServer[i] = list[i][0].Trim();
-					address[i] = list[i][1].Trim();
-					port[i] = short.Parse(list[i][2].Trim());
-				}
-				saveIP();
 				init();
 				Canvas.endDlg();
 			}

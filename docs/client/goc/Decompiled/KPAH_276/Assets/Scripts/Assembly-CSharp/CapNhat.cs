@@ -25,8 +25,6 @@ public class CapNhat : MonoBehaviour
 
 	private string thongBao = string.Empty;
 
-	private float tienDo;
-
 	[Serializable]
 	private class BanPc
 	{
@@ -98,30 +96,40 @@ public class CapNhat : MonoBehaviour
 		}
 
 		dangCapNhat = true;
-		thongBao = string.IsNullOrEmpty(moi.ghiChu) ? "Đang tải bản mới..." : moi.ghiChu;
+		// hiện bằng hộp thoại chờ của chính game (khung + biểu tượng xoay) nên phải đợi game dựng xong Canvas
+		while (!Main.started || Canvas.currentScreen == null)
+		{
+			yield return null;
+		}
+		thongBao = string.IsNullOrEmpty(moi.ghiChu) ? "Có bản cập nhật mới" : moi.ghiChu;
 		string zip = Path.Combine(Application.temporaryCachePath, "capnhat-" + moi.ban + ".zip");
 		using (UnityWebRequest r = new UnityWebRequest(moi.link, UnityWebRequest.kHttpVerbGET, new DownloadHandlerFile(zip), null))
 		{
 			r.SendWebRequest();
+			int daHien = -1;
 			while (!r.isDone)
 			{
-				tienDo = r.downloadProgress;
+				int pt = (int)(r.downloadProgress * 100f);
+				if (pt != daHien)
+				{
+					daHien = pt;
+					hienHop("Đang tải: " + pt + "%");
+				}
 				yield return null;
 			}
 			if (r.result != UnityWebRequest.Result.Success)
 			{
-				yield return baoLoi("Không tải được bản mới, game sẽ chạy bản hiện tại.");
+				baoLoi("Không tải được bản mới, game sẽ chạy bản hiện tại.");
 				yield break;
 			}
 		}
-		tienDo = 1f;
 		if (!string.IsNullOrEmpty(moi.sha256) && !string.Equals(sha256(zip), moi.sha256.Trim(), StringComparison.OrdinalIgnoreCase))
 		{
-			yield return baoLoi("File tải về bị lỗi, game sẽ chạy bản hiện tại.");
+			baoLoi("File tải về bị lỗi, game sẽ chạy bản hiện tại.");
 			yield break;
 		}
-		thongBao = "Đang cài bản mới, game sẽ tự mở lại...";
-		yield return null;
+		hienHop("Đang cài, game sẽ tự mở lại...");
+		yield return new WaitForSeconds(0.5f);
 		try
 		{
 			PlayerPrefs.SetInt(KHOA_DA_THU, moi.ban);
@@ -132,15 +140,27 @@ public class CapNhat : MonoBehaviour
 		catch (Exception ex)
 		{
 			UnityEngine.Debug.LogWarning("CapNhat: " + ex);
-			dangCapNhat = false;
+			baoLoi("Không cài được bản mới, game sẽ chạy bản hiện tại.");
 		}
 	}
 
-	private IEnumerator baoLoi(string s)
+	/// <summary>Hộp thoại chờ của game: ghi chú bản mới + dòng trạng thái, không có nút (đang cập nhật thì chặn bấm).</summary>
+	private void hienHop(string trangThai)
 	{
-		thongBao = s;
-		yield return new WaitForSeconds(3f);
+		string[] ghiChu = MFont.arialFont.splitFontBStrInLine(thongBao, Canvas.w / 2);
+		string[] dong = new string[ghiChu.Length + 1];
+		Array.Copy(ghiChu, dong, ghiChu.Length);
+		dong[ghiChu.Length] = trangThai;
+		Canvas.msgdlg.isIcon = true;
+		Canvas.msgdlg.setInfo(dong, null, null, null);
+		Canvas.msgdlg.show();
+	}
+
+	private void baoLoi(string s)
+	{
 		dangCapNhat = false;
+		Canvas.endDlg();
+		Canvas.startOKDlg(s);
 	}
 
 	private static string sha256(string file)
@@ -191,34 +211,5 @@ public class CapNhat : MonoBehaviour
 		p.UseShellExecute = false;
 		p.CreateNoWindow = true;
 		Process.Start(p);
-	}
-
-	private void OnGUI()
-	{
-		if (!dangCapNhat)
-		{
-			return;
-		}
-		GUI.depth = -100;
-		GUI.matrix = Matrix4x4.identity;
-		float w = Screen.width;
-		float h = Screen.height;
-		GUI.color = new Color(0f, 0f, 0f, 0.85f);
-		GUI.DrawTexture(new Rect(0f, 0f, w, h), Texture2D.whiteTexture);
-		GUI.color = Color.white;
-		GUIStyle st = new GUIStyle(GUI.skin.label);
-		st.fontSize = Mathf.Max(14, (int)(h / 30f));
-		st.alignment = TextAnchor.MiddleCenter;
-		st.wordWrap = true;
-		GUI.Label(new Rect(w * 0.1f, h * 0.38f, w * 0.8f, h * 0.12f), thongBao, st);
-		float bw = w * 0.6f;
-		float bh = Mathf.Max(8f, h / 40f);
-		Rect khung = new Rect((w - bw) / 2f, h * 0.52f, bw, bh);
-		GUI.color = new Color(1f, 1f, 1f, 0.25f);
-		GUI.DrawTexture(khung, Texture2D.whiteTexture);
-		GUI.color = new Color(0.95f, 0.75f, 0.2f, 1f);
-		GUI.DrawTexture(new Rect(khung.x, khung.y, khung.width * Mathf.Clamp01(tienDo), khung.height), Texture2D.whiteTexture);
-		GUI.color = Color.white;
-		GUI.Label(new Rect(w * 0.1f, h * 0.56f, w * 0.8f, h * 0.08f), (int)(Mathf.Clamp01(tienDo) * 100f) + "%", st);
 	}
 }

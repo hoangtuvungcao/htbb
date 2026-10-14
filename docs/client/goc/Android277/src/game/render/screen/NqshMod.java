@@ -11,7 +11,7 @@ import network.Message;
 
 /**
  * Mod NQSH-H2 cho APK KPAH_277 gốc của TeaMobi (chèn bằng smali, xem patch.py):
- * - ServerListScr.loadSv  -> apDungServer(): server nqsh-h2.top:17949, danh sách tải từ LINK
+ * - ServerListScr.loadSv  -> apDungServer(): server nqsh-h2.top:30774 + tự tải danh sách từ LINK (1 lần / lần mở game)
  * - ServerListScr.doUpdateServer -> capNhat(): đọc "Tên|host|port" như TaiDanhSach của bản jar
  * - GameService.login     -> loginGuard(): xác thực -88 trước (KiemServer của bản jar) + mã máy
  * - MessageHandler.onMessage -> goiGuard(): nhận gói -88
@@ -53,25 +53,49 @@ public final class NqshMod {
     public static void apDungServer() {
         ServerListScr.nameServer = new String[]{"NQSH-H2"};
         ServerListScr.address = new String[]{"nqsh-h2.top"};
-        ServerListScr.port = new short[]{17949};
+        ServerListScr.port = new short[]{30774};
         ServerListScr.index_server = new byte[]{0};
         ServerListScr.linkGetHost = LINK;
+        taiDanhSachNgam();
         NqshCapNhat.batDau();
+    }
+
+    private static boolean daTaiNgam;
+
+    /**
+     * Mỗi lần mở game tự tải danh sách server một lần (như bấm "Cập nhật" nhưng ngầm): đổi IP / cổng
+     * chỉ cần sửa robots.txt trên web. Lỗi mạng thì giữ danh sách đang có (đã lưu RMS "ipnqsh").
+     */
+    private static synchronized void taiDanhSachNgam() {
+        if (daTaiNgam) {
+            return;
+        }
+        daTaiNgam = true;
+        new Thread() {
+            public void run() {
+                try {
+                    boolean ok = apDung(GameMidlet.connectHTTP(LINK), false);
+                    System.out.println("NQSH: danh sach server tu dong " + (ok ? "OK " + ServerListScr.address[0] + ":" + ServerListScr.port[0] : "loi"));
+                } catch (Throwable t) {
+                    System.out.println("NQSH: danh sach server tu dong loi " + t);
+                }
+            }
+        }.start();
     }
 
     /** Thay thân ServerListScr.doUpdateServer (nút "Cập nhật"). */
     public static void capNhat() {
         GCanvas.startWaitDlg();
         String s = GameMidlet.connectHTTP(LINK);
-        if (!apDung(s)) {
+        if (!apDung(s, true)) {
             GCanvas.startOKDlg("Không thể kết nối, xin kiểm tra lại GPRS/3G/Wifi.");
             return;
         }
         GCanvas.endDlg();
     }
 
-    /** Mỗi dòng "Tên|host|port", dòng trống / # bỏ qua. */
-    private static boolean apDung(String s) {
+    /** Mỗi dòng "Tên|host|port", dòng trống / # bỏ qua. veLai = vẽ lại màn chọn server (chỉ khi đang ở màn đó). */
+    private static boolean apDung(String s, boolean veLai) {
         if (s == null) {
             return false;
         }
@@ -121,7 +145,9 @@ public final class NqshMod {
         ServerListScr.port = cong;
         ServerListScr.index_server = new byte[n];
         ServerListScr.saveIP();
-        ServerListScr.gI().init();
+        if (veLai) {
+            ServerListScr.gI().init();
+        }
         return true;
     }
 
