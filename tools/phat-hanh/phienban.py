@@ -34,23 +34,28 @@ Chỉ chứa bản build để tải (không có mã nguồn). Game PC / Android
 
 
 def gh_api(path, method="GET", fields=None):
-    """Gọi GitHub API qua gh; trả (mã thoát, json hoặc None)."""
+    """Gọi GitHub API qua gh; trả (mã thoát, json hoặc None, lỗi gh)."""
     cmd = [GH, "api", "-X", method, "repos/%s/%s" % (REPO, path)]
     for k, v in (fields or {}).items():
         cmd += ["-f", "%s=%s" % (k, v)]
     r = subprocess.run(cmd, capture_output=True)
+    loi = (r.stderr.decode("utf-8", "replace") + r.stdout.decode("utf-8", "replace")).strip()[:300]
     try:
-        return r.returncode, json.loads(r.stdout.decode("utf-8") or "null")
+        return r.returncode, json.loads(r.stdout.decode("utf-8") or "null"), loi
     except ValueError:
-        return r.returncode, None
+        return r.returncode, None, loi
 
 
 def doc_tep(ten):
-    """(nội dung bytes, sha) của file trên main, hoặc (None, None)."""
-    ma, d = gh_api("contents/" + ten)
-    if ma != 0 or not isinstance(d, dict) or "content" not in d:
+    """(nội dung bytes, sha) của file trên main; (None, None) nếu chưa có file.
+    Lỗi khác (token sai / không có quyền / mạng) thì dừng hẳn, không coi như chưa có."""
+    ma, d, loi = gh_api("contents/" + ten)
+    if ma == 0 and isinstance(d, dict) and "content" in d:
+        return base64.b64decode(d["content"]), d["sha"]
+    if "404" in loi or "Not Found" in loi or "empty" in loi.lower():
         return None, None
-    return base64.b64decode(d["content"]), d["sha"]
+    raise SystemExit("Khong doc duoc %s tren %s (token GH_TOKEN / NQSH_TAI_TOKEN sai hoac khong co quyen?): %s"
+                     % (ten, REPO, loi))
 
 
 def ghi_tep(ten, noi_dung, thong_diep):
@@ -58,9 +63,9 @@ def ghi_tep(ten, noi_dung, thong_diep):
     f = {"message": thong_diep, "content": base64.b64encode(noi_dung).decode("ascii"), "branch": "main"}
     if sha:
         f["sha"] = sha
-    ma, d = gh_api("contents/" + ten, "PUT", f)
+    ma, d, loi = gh_api("contents/" + ten, "PUT", f)
     if ma != 0:
-        raise SystemExit("Khong ghi duoc %s len %s: %s" % (ten, REPO, d))
+        raise SystemExit("Khong ghi duoc %s len %s: %s" % (ten, REPO, loi))
 
 
 def doc(p):

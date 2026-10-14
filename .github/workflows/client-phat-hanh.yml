@@ -31,6 +31,25 @@ jobs:
       jar: ${{ steps.b.outputs.jar }}
       pc: ${{ steps.b.outputs.pc }}
     steps:
+      - name: Kiểm tra secrets
+        env:
+          LOAI: ${{ inputs.loai }}
+          T: ${{ secrets.NQSH_TAI_TOKEN }}
+          KS: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KP: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          UL: ${{ secrets.UNITY_LICENSE }}
+          UE: ${{ secrets.UNITY_EMAIL }}
+          UP: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          thieu=""
+          [ -n "$T" ] || thieu="$thieu NQSH_TAI_TOKEN"
+          case "$LOAI" in tat-ca|android) [ -n "$KS" ] || thieu="$thieu ANDROID_KEYSTORE_B64"; [ -n "$KP" ] || thieu="$thieu ANDROID_KEY_PASSWORD" ;; esac
+          case "$LOAI" in tat-ca|pc) [ -n "$UL" ] || thieu="$thieu UNITY_LICENSE"; [ -n "$UE" ] || thieu="$thieu UNITY_EMAIL"; [ -n "$UP" ] || thieu="$thieu UNITY_PASSWORD" ;; esac
+          if [ -n "$thieu" ]; then
+            echo "::error::Thieu secret:$thieu (Settings -> Secrets and variables -> Actions, xem phat-hanh/README.md)"
+            exit 1
+          fi
+          echo "Du secrets cho: $LOAI"
       - uses: actions/checkout@v4
       - id: b
         env:
