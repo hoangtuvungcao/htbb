@@ -1,0 +1,4 @@
+# dữ liệu game nhị phân (tên không có đuôi / đuôi lạ) - giữ nguyên từng byte
+app/src/main/assets/** -text
+*.png binary
+*.jar binary

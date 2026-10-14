@@ -218,10 +218,6 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         isStart = true;
     }
 
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r0v23, types: [java.lang.Object] */
-    /* JADX WARN: Type inference failed for: r0v25, types: [java.lang.Throwable] */
-    /* JADX WARN: Type inference failed for: r0v27, types: [java.lang.Object] */
     @Override
     public void run() {
         bRun = true;
@@ -636,10 +632,6 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         g.setClip(0, 0, w, h);
     }
 
-    /* JADX WARN: Multi-variable type inference failed */
-    /* JADX WARN: Type inference failed for: r0v10, types: [java.lang.Object] */
-    /* JADX WARN: Type inference failed for: r0v11, types: [java.lang.Throwable] */
-    /* JADX WARN: Type inference failed for: r0v13 */
     protected void paint(Graphics g) {
         try {
             if (currentScreen != null) {

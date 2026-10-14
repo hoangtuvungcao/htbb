@@ -997,11 +997,6 @@ public class GameScr extends Screen {
         }
     }
 
-    /* JADX WARN: Code duplicated, block: B:105:0x0244  */
-    /* JADX WARN: Code duplicated, block: B:107:0x0279  */
-    /* JADX WARN: Code duplicated, block: B:109:0x0282  */
-    /* JADX WARN: Code duplicated, block: B:112:0x028f  */
-    /* JADX WARN: Code duplicated, block: B:169:0x0297 A[SYNTHETIC] */
     public Actor findFocusActor() {
         int distance;
         int left = this.mainChar.x + C[this.mainChar.dir][0];
@@ -1151,16 +1146,6 @@ public class GameScr extends Screen {
         ac.chat.setPos(ac.x, ac.y - ac.height);
     }
 
-    /* JADX WARN: Type inference fix 'apply assigned field type' failed
-    java.lang.UnsupportedOperationException: ArgType.getObject(), call class: class jadx.core.dex.instructions.args.ArgType$PrimitiveArg
-    	at jadx.core.dex.instructions.args.ArgType.getObject(ArgType.java:596)
-    	at jadx.core.dex.attributes.nodes.ClassTypeVarsAttr.getTypeVarsMapFor(ClassTypeVarsAttr.java:35)
-    	at jadx.core.dex.nodes.utils.TypeUtils.replaceClassGenerics(TypeUtils.java:177)
-    	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.insertExplicitUseCast(FixTypesVisitor.java:397)
-    	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.tryFieldTypeWithNewCasts(FixTypesVisitor.java:359)
-    	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.applyFieldType(FixTypesVisitor.java:309)
-    	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.visit(FixTypesVisitor.java:94)
-     */
     private boolean doTalkWithNPCQuest() {
         if (this.mainChar.receiveQuest && this.mainChar.typeQuest == 1 && this.receiveQuest) {
             if (Canvas.isKeyPressed(5) || Canvas.isKeyPressed(12)) {
@@ -1491,8 +1476,6 @@ public class GameScr extends Screen {
         }
     }
 
-    /* JADX WARN: Code duplicated, block: B:193:0x049b  */
-    /* JADX WARN: Code duplicated, block: B:195:0x04a2  */
     @Override
     public void updateKey() {
         if (this.chatMode && Canvas.isPointerClick) {
@@ -6077,16 +6060,6 @@ public class GameScr extends Screen {
         for (int i = 0; i < 3; i++) {
             final int ii = i;
             menu.addElement(new Command(new StringBuffer("Gian hàng ").append(i + 1).toString(), new IAction() {
-                /* JADX WARN: Type inference fix 'apply assigned field type' failed
-                java.lang.UnsupportedOperationException: ArgType.getObject(), call class: class jadx.core.dex.instructions.args.ArgType$PrimitiveArg
-                	at jadx.core.dex.instructions.args.ArgType.getObject(ArgType.java:596)
-                	at jadx.core.dex.attributes.nodes.ClassTypeVarsAttr.getTypeVarsMapFor(ClassTypeVarsAttr.java:35)
-                	at jadx.core.dex.nodes.utils.TypeUtils.replaceClassGenerics(TypeUtils.java:177)
-                	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.insertExplicitUseCast(FixTypesVisitor.java:397)
-                	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.tryFieldTypeWithNewCasts(FixTypesVisitor.java:359)
-                	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.applyFieldType(FixTypesVisitor.java:309)
-                	at jadx.core.dex.visitors.typeinference.FixTypesVisitor.visit(FixTypesVisitor.java:94)
-                 */
                 @Override
                 public void perform() {
                     GameScr.this.doActionShop(ii, idShop[idShop.length - 1], idShop[idShop.length - 2]);

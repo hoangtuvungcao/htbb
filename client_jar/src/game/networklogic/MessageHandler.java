@@ -95,11 +95,6 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         Canvas.gameScr.onDisconnect();
     }
 
-    /* JADX WARN: Can't fix incorrect switch cases order, some code will duplicate */
-    /* JADX WARN: Code duplicated, block: B:1243:0x2f96 A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Code duplicated, block: B:1255:0x2f3c A[EXC_TOP_SPLITTER, SYNTHETIC] */
-    /* JADX WARN: Code duplicated, block: B:658:0x2f55 A[Catch: Exception -> 0x2f7b, Exception -> 0x50bc, LOOP:66: B:659:0x2f68->B:658:0x2f55, LOOP_END, TryCatch #39 {Exception -> 0x2f7b, blocks: (B:657:0x2f3c, B:658:0x2f55, B:661:0x2f6f), top: B:1255:0x2f3c, outer: #44 }] */
-    /* JADX WARN: Code duplicated, block: B:669:0x2faf A[Catch: Exception -> 0x2fd5, Exception -> 0x50bc, LOOP:68: B:670:0x2fc2->B:669:0x2faf, LOOP_END, TryCatch #33 {Exception -> 0x2fd5, blocks: (B:668:0x2f96, B:669:0x2faf, B:672:0x2fc9), top: B:1243:0x2f96, outer: #44 }] */
     @Override
     public void onMessage(Message msg) {
         // mod: gói -88: server ký xác thực (KiemServer)
