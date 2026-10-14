@@ -14,6 +14,10 @@ on:
       ghi_chu:
         description: "Ghi chú hiện cho người chơi lúc cập nhật"
         default: ""
+      chi_build:
+        description: "Chỉ build thử (tải file ở Artifacts), KHÔNG phát hành"
+        type: boolean
+        default: false
 
 concurrency:
   group: phat-hanh
@@ -170,7 +174,7 @@ jobs:
     needs: [so-ban, android, jar, pc]
     # bản nào build xong thì phát hành bản đó (bản lỗi / không chọn thì không có file, bỏ qua);
     # job vẫn báo lỗi ở bước cuối nếu có bản build hỏng để bạn thấy
-    if: ${{ !cancelled() && needs.so-ban.result == 'success' }}
+    if: ${{ !cancelled() && needs.so-ban.result == 'success' && !inputs.chi_build }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
