@@ -475,7 +475,18 @@ final class AutoUp {
         if (Canvas.keyPressed[2] || Canvas.keyPressed[4] || Canvas.keyPressed[6] || Canvas.keyPressed[8]) {
             return true;
         }
-        return Canvas.isPointerDown || Canvas.isPointerClick;
+        // chạm vào nút UP nổi không tính (nút đó tự bật / tắt auto)
+        return (Canvas.isPointerDown || Canvas.isPointerClick) && !AutoGuard.trongNutUp(Canvas.px, Canvas.py);
+    }
+
+    /** Nút UP nổi (AutoGuard.nutUpTick): đang chạy thì tắt, không thì bật với cài đặt đã lưu. */
+    static void batTat() {
+        if (dang) {
+            AutoUp.tat();
+            return;
+        }
+        AutoUp.nap();
+        AutoUp.bat();
     }
 
     // ------------------------------------------------------------------ bình

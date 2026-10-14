@@ -83,27 +83,32 @@ public final class NqshMod {
         }.start();
     }
 
-    // ---------------------------------------------------------------- menu mod (tab "Khác" của MenuWindows)
+    // ---------------------------------------------------------------- tab "Auto" đầu tiên của MenuWindows
+    // "Tab ảo": chỉ thêm vào mảng tên tab (vẽ + bấm), số tab bên trong (focusTabChinh) giữ nguyên nên mọi
+    // tab gốc vẫn mở đúng nội dung. patch.py: tabName nối "Auto" ở đầu, paintTab cộng 1 khi tô tab đang
+    // chọn, updateTab qua tabAuto() trước khi gán tdx.
 
-    /** Tên mục mod thêm vào cuối tab "Khác" (đang 9 mục / 10 ô - ô thứ 10 còn trống). */
-    public static final String MUC_MOD = "Auto (mod)";
+    public static final String TAB_AUTO = "Auto";
 
-    /** Sau khi MenuWindows tạo tabKhac: nối thêm mục mod. */
-    public static String[] themMucMod(String[] goc) {
+    /** Sau khi MenuWindows tạo tabName: thêm "Auto" ở đầu. */
+    public static String[] themTabAuto(String[] goc) {
         String[] moi = new String[goc.length + 1];
-        System.arraycopy(goc, 0, moi, 0, goc.length);
-        moi[goc.length] = MUC_MOD;
+        moi[0] = TAB_AUTO;
+        System.arraycopy(goc, 0, moi, 1, goc.length);
         return moi;
     }
 
-    /** Bấm một ô tab "Khác": ô mục mod thì đóng MenuWindows, mở menu mod (PauseMenu.moMenuMod) và trả true. */
-    public static boolean moMucKhac(int chon) {
-        if (chon != 9) {
-            return false;
+    /**
+     * Bấm thanh tab (ô thứ o, tính cả tab Auto): ô 0 = Auto -> đóng MenuWindows, mở menu mod, trả -1 (bỏ
+     * phần còn lại); ô khác trả o - 1 = số ô của tab gốc, game xử lý như cũ.
+     */
+    public static int tabAuto(int o) {
+        if (o != 0) {
+            return o - 1;
         }
         GCanvas.gameScr.switchToMe();
         PauseMenu.moMenuMod();
-        return true;
+        return -1;
     }
 
     /** Thay thân ServerListScr.doUpdateServer (nút "Cập nhật"). */

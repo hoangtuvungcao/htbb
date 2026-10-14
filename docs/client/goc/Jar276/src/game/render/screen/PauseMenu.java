@@ -4968,6 +4968,7 @@ extends Screen {
      */
     public static void autoCheDoTick() {
         try {
+            AutoGuard.nutUpTick();
             AutoUp.tick();
             AutoVanTieu.tick();
             AutoVanMay.tick();

@@ -511,7 +511,20 @@ public sealed class AutoUp
 		{
 			return true;
 		}
-		return Canvas.isPointerDown || Canvas.isPointerClick;
+		// chạm vào nút UP nổi không tính (nút đó tự bật / tắt auto)
+		return (Canvas.isPointerDown || Canvas.isPointerClick) && !AutoGuard.trongNutUp(Canvas.px, Canvas.py);
+	}
+
+	/** Nút UP nổi (AutoGuard.nutUpTick): đang chạy thì tắt, không thì bật với cài đặt đã lưu. */
+	public static void batTat()
+	{
+		if (dang)
+		{
+			AutoUp.tat();
+			return;
+		}
+		AutoUp.nap();
+		AutoUp.bat();
 	}
 
 	// ------------------------------------------------------------------ bình

@@ -85,23 +85,22 @@ THAY = [
     ("game/render/screen/ScreenDapDo$3.smali",
      "invoke-virtual {v0, v1, v3}, Lgame/render/screen/Menu;->startAt(Ljava/util/Vector;I)V",
      "invoke-static {v0, v1, v3}, %s->startAtDapDo(Lgame/render/screen/Menu;Ljava/util/Vector;I)V" % AG),
-    # tab "Khác" của MenuWindows: thêm mục "Auto (mod)" (ô thứ 10 đang trống) ...
+    # tab "Auto" đầu tiên của MenuWindows ("tab ảo", xem NqshMod.themTabAuto / tabAuto):
+    # 1. tabName nối "Auto" ở đầu -> vẽ / cuộn / vạch ngăn tự tính thêm 1 tab
     ("game/render/screen/MenuWindows.smali",
-     "    iput-object v1, p0, Lgame/render/screen/MenuWindows;->tabKhac:[Ljava/lang/String;\n",
-     "    invoke-static {v1}, %s->themMucMod([Ljava/lang/String;)[Ljava/lang/String;\n\n"
+     "    iput-object v1, p0, Lgame/render/screen/MenuWindows;->tabName:[Ljava/lang/String;\n",
+     "    invoke-static {v1}, %s->themTabAuto([Ljava/lang/String;)[Ljava/lang/String;\n\n"
      "    move-result-object v1\n\n"
-     "    iput-object v1, p0, Lgame/render/screen/MenuWindows;->tabKhac:[Ljava/lang/String;\n" % MOD),
-    # ... và bấm ô đó thì mở menu mod (đọc lại selectClan vào v1 nên không đụng thanh ghi khác)
+     "    iput-object v1, p0, Lgame/render/screen/MenuWindows;->tabName:[Ljava/lang/String;\n" % MOD),
+    # 2. bấm thanh tab (updateTab): ô 0 = Auto mở menu mod; ô khác lùi 1 rồi game xử lý như cũ
     ("game/render/screen/MenuWindows.smali",
-     "    iget v1, v0, Lgame/render/screen/MenuWindows;->selectClan:I\n\n    packed-switch v1, :pswitch_data_0\n",
-     "    iget v1, v0, Lgame/render/screen/MenuWindows;->selectClan:I\n\n"
-     "    invoke-static {v1}, %s->moMucKhac(I)Z\n\n"
-     "    move-result v1\n\n"
-     "    if-eqz v1, :nqsh_khac\n\n"
+     "    iput v0, p0, Lgame/render/screen/MenuWindows;->tdx:I\n",
+     "    invoke-static {v0}, %s->tabAuto(I)I\n\n"
+     "    move-result v0\n\n"
+     "    if-gez v0, :nqsh_tab\n\n"
      "    return-void\n\n"
-     "    :nqsh_khac\n"
-     "    iget v1, v0, Lgame/render/screen/MenuWindows;->selectClan:I\n\n"
-     "    packed-switch v1, :pswitch_data_0\n" % MOD),
+     "    :nqsh_tab\n"
+     "    iput v0, p0, Lgame/render/screen/MenuWindows;->tdx:I\n" % MOD),
 ]
 for rel, cu, moi in THAY:
     p = os.path.join(S, rel)
@@ -109,6 +108,22 @@ for rel, cu, moi in THAY:
     assert s.count(cu) == 1, (rel, cu, s.count(cu))
     open(p, "w", encoding="utf-8").write(s.replace(cu, moi))
     print("thay", rel, cu.strip()[:60])
+
+# 3. paintTab: 2 lần đọc focusTabChinh đầu (chữ đậm + ô sáng của tab đang chọn) cộng 1 vì mảng tên tab
+#    đã có "Auto" ở đầu; lần đọc thứ 3 chọn NỘI DUNG tab nên giữ nguyên
+p = os.path.join(S, "game", "render", "screen", "MenuWindows.smali")
+s = open(p, encoding="utf-8").read()
+i = s.index(".method private paintTab(")
+j = s.index(".end method", i)
+than = s[i:j]
+doc = re.compile(r"\n    sget (v\d+), Lgame/render/screen/MenuWindows;->focusTabChinh:I\n")
+lan = list(doc.finditer(than))
+assert len(lan) >= 3, len(lan)
+for m in reversed(lan[:2]):
+    than = than[:m.end()] + "\n    add-int/lit8 %s, %s, 0x1\n" % (m.group(1), m.group(1)) + than[m.end():]
+s = s[:i] + than + s[j:]
+open(p, "w", encoding="utf-8").write(s)
+print("va", "game/render/screen/MenuWindows.smali", "paintTab: tab Auto")
 
 # cuối GCanvas.paint (một return-void duy nhất): vẽ thanh trạng thái các auto
 p = os.path.join(S, "game", "render", "GCanvas.smali")

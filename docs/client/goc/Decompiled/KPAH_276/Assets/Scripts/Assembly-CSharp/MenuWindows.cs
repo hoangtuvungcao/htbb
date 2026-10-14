@@ -116,7 +116,9 @@ public class MenuWindows : MyScreen
 
 	public static int focusTab;
 
-	private string[] tabName = new string[10] { "C.hàng", "H.trang", "Trang bị", "T.bị thú", "Kỹ năng", "T.năng", "N.vụ", "Cài đặt", "Bang hội", "Khác" };
+	// mod: "Auto" là "tab ảo" đầu tiên - chỉ có trong mảng tên (vẽ + bấm), focusTabChinh của các tab gốc
+	// giữ nguyên (paintTab cộng 1 khi tô tab đang chọn, resetMainTab lùi 1). Giống bản Android (patch.py).
+	private string[] tabName = new string[11] { "Auto", "C.hàng", "H.trang", "Trang bị", "T.bị thú", "Kỹ năng", "T.năng", "N.vụ", "Cài đặt", "Bang hội", "Khác" };
 
 	private string[] tabCuaHang = new string[3] { "Gian hàng 1", "Gian hàng 2", "Gian hàng 3" };
 
@@ -124,8 +126,7 @@ public class MenuWindows : MyScreen
 
 	private string[] tabCaiDat = new string[6] { "Bản đồ lớn", "Hướng dẫn", "Bật/tắt lời mời", "Bật/tắt giao diện", "Bật/tắt tự động đánh", "Chế độ focus" };
 
-	// mod: ô thứ 10 "Auto (mod)" mở menu mod (PauseMenu.moMenuMod) - giống bản jar / Android
-	private string[] tabKhac = new string[10] { "Tin nhắn", "Kênh thế giới", "Bạn bè", "Top cao thủ", "Top đại gia", "Bảng top", "Cây thần", "Cổ vật", "Khác", "Auto (mod)" };
+	private string[] tabKhac = new string[9] { "Tin nhắn", "Kênh thế giới", "Bạn bè", "Top cao thủ", "Top đại gia", "Bảng top", "Cây thần", "Cổ vật", "Khác" };
 
 	public bool isDefault;
 
@@ -1014,7 +1015,7 @@ public class MenuWindows : MyScreen
 		{
 			cmtoXTab = 0;
 		}
-		else if (focusTabChinh == tabName.Length)
+		else if (focusTabChinh == tabName.Length - 1) // mod: trừ tab ảo "Auto"
 		{
 			cmtoXTab = cmxLimTab;
 		}
@@ -1055,6 +1056,14 @@ public class MenuWindows : MyScreen
 		if (!isUseKey)
 		{
 			tdx = (cmtoXTab + Canvas.px - xKhung - xTr) / wTab;
+			// mod: ô 0 = tab "Auto" -> mở menu mod; ô khác lùi 1 về số ô của tab gốc
+			if (tdx == 0)
+			{
+				Canvas.gameScr.switchToMe();
+				PauseMenu.moMenuMod();
+				return;
+			}
+			tdx--;
 		}
 		else
 		{
@@ -1302,7 +1311,7 @@ public class MenuWindows : MyScreen
 		sbyte b = (sbyte)tabName.Length;
 		for (sbyte b2 = 0; b2 < b; b2++)
 		{
-			if (b2 == focusTabChinh - 1)
+			if (b2 == focusTabChinh)
 			{
 				MFont.normalFont[0].drawString(g, tabName[b2], x + wTab / 2 + (wTab - 1) * b2, y - 2, 2);
 			}
@@ -1312,7 +1321,7 @@ public class MenuWindows : MyScreen
 			}
 		}
 		g.setColor(9755120, 0.5f);
-		g.fillRect(x + (wTab - 1) * focusTabChinh - wTab + 1, y - 7, 69, hTab + 4);
+		g.fillRect(x + (wTab - 1) * (focusTabChinh + 1) - wTab + 1, y - 7, 69, hTab + 4);
 		g.setColor(10591392);
 		for (sbyte b3 = 0; b3 < b; b3++)
 		{
@@ -4456,10 +4465,6 @@ public class MenuWindows : MyScreen
 					break;
 				case 8:
 					GameService.gI().dosendKhacMenu();
-					break;
-				case 9:
-					Canvas.gameScr.switchToMe();
-					PauseMenu.moMenuMod();
 					break;
 				}
 				break;

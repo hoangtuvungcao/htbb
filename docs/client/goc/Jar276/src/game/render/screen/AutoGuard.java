@@ -1,5 +1,7 @@
 package game.render.screen;
 
+import game.render.Canvas;
+
 import game.networklogic.GameService;
 import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
@@ -285,7 +287,64 @@ public final class AutoGuard {
         }
     }
 
+    // ---------------------------------------------------------------- nút UP nổi trên màn game
+    // Bật/tắt Auto up không cần mở menu. Chỉ có ở bản cảm ứng (Android / PC): Nen.coNutUp().
+
+    static final int NUT_W = 46;
+    static final int NUT_H = 26;
+
+    static int nutX() {
+        return Canvas.w - NUT_W - 4;
+    }
+
+    static int nutY() {
+        return Canvas.h / 3;
+    }
+
+    /** Có nút và điểm (x, y) nằm trong nút. */
+    static boolean trongNutUp(int x, int y) {
+        return Nen.coNutUp() && Canvas.currentScreen == Canvas.gameScr
+                && x >= nutX() && x < nutX() + NUT_W && y >= nutY() && y < nutY() + NUT_H;
+    }
+
+    /**
+     * Đầu PauseMenu.autoCheDoTick (trước khi game xử lý chạm): chạm nút thì bật/tắt Auto up và nuốt cú
+     * chạm - nhân vật không chạy tới chỗ đó, AutoUp.nguoiBam không coi là người chơi chạm để dừng.
+     */
+    static void nutUpTick() {
+        if (!Nen.coNutUp() || Canvas.currentScreen != Canvas.gameScr || Canvas.menu.showMenu || Canvas.currentDialog != null) {
+            return;
+        }
+        if (Canvas.isPointerDown && trongNutUp(Canvas.px, Canvas.py)) {
+            Canvas.isPointerDown = false;
+        }
+        if (Canvas.isPointerClick && trongNutUp(Canvas.px, Canvas.py) && trongNutUp(Canvas.pxLast, Canvas.pyLast)) {
+            Canvas.isPointerClick = false;
+            AutoUp.batTat();
+        }
+    }
+
+    static void veNutUp(Graphics graphics) {
+        if (!Nen.coNutUp() || Canvas.currentScreen != Canvas.gameScr) {
+            return;
+        }
+        int x = nutX();
+        int y = nutY();
+        graphics.setClip(0, 0, Canvas.w, Canvas.h);
+        graphics.setColor(AutoUp.dang ? 0xFF0B2E1A : 0xFF202020);
+        graphics.fillRect(x, y, NUT_W, NUT_H);
+        graphics.setColor(AutoUp.dang ? 0xFF40C040 : 0xFF909090);
+        graphics.drawRect(x, y, NUT_W - 1, NUT_H - 1);
+        Font.normalFont[0].drawString(graphics, "UP", x + NUT_W / 2, y + (NUT_H - Font.normalFont[0].getHeight()) / 2, 2);
+    }
+
     public static void paint(Graphics graphics) {
+        try {
+            AutoGuard.veNutUp(graphics);
+        }
+        catch (Throwable throwable) {
+            // nút UP lỗi thì bỏ qua
+        }
         try {
             AutoUp.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);
             AutoVanTieu.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);

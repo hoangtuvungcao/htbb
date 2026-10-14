@@ -11,6 +11,11 @@ final class Nen {
     private Nen() {
     }
 
+    /** Nút UP nổi trên màn game (AutoGuard): bản cảm ứng -> có. */
+    static boolean coNutUp() {
+        return true;
+    }
+
     static boolean coAmThanh() {
         return true;
     }

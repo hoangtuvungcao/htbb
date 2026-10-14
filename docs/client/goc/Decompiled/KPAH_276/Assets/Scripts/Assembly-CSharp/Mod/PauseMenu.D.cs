@@ -1930,6 +1930,7 @@ public partial class PauseMenu
 	{
 		try
 		{
+			AutoGuard.nutUpTick();
 			AutoUp.tick();
 			AutoVanTieu.tick();
 			AutoVanMay.tick();

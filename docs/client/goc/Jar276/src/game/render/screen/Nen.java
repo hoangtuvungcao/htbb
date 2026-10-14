@@ -11,6 +11,11 @@ final class Nen {
     private Nen() {
     }
 
+    /** Nút UP nổi trên màn game (AutoGuard): máy J2ME bấm phím, không có màn cảm ứng -> không vẽ. */
+    static boolean coNutUp() {
+        return false;
+    }
+
     static boolean coAmThanh() {
         return Sound.me != null;
     }

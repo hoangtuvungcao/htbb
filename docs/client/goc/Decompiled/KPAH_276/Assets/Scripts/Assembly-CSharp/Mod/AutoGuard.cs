@@ -237,8 +237,75 @@ public sealed class AutoGuard
 		}
 	}
 
+	// ---------------------------------------------------------------- nút UP nổi trên màn game
+	// Bật/tắt Auto up không cần mở menu (bản jar: Nen.coNutUp() = false trên J2ME; Unity luôn có).
+
+	public const int NUT_W = 46;
+
+	public const int NUT_H = 26;
+
+	public static int nutX()
+	{
+		return Canvas.w - NUT_W - 4;
+	}
+
+	public static int nutY()
+	{
+		return Canvas.h / 3;
+	}
+
+	/** Điểm (x, y) nằm trong nút (đang ở màn game). */
+	public static bool trongNutUp(int x, int y)
+	{
+		return Canvas.currentScreen == Canvas.gameScr && x >= nutX() && x < nutX() + NUT_W && y >= nutY() && y < nutY() + NUT_H;
+	}
+
+	/**
+	 * Đầu PauseMenu.autoCheDoTick (trước khi game xử lý chạm): chạm nút thì bật/tắt Auto up và nuốt cú
+	 * chạm - nhân vật không chạy tới chỗ đó, AutoUp.nguoiBam không coi là người chơi chạm để dừng.
+	 */
+	public static void nutUpTick()
+	{
+		if (Canvas.currentScreen != Canvas.gameScr || Canvas.menu.showMenu || Canvas.currentDialog != null)
+		{
+			return;
+		}
+		if (Canvas.isPointerDown && trongNutUp(Canvas.px, Canvas.py))
+		{
+			Canvas.isPointerDown = false;
+		}
+		if (Canvas.isPointerClick && trongNutUp(Canvas.px, Canvas.py) && trongNutUp(Canvas.pxLast, Canvas.pyLast))
+		{
+			Canvas.isPointerClick = false;
+			AutoUp.batTat();
+		}
+	}
+
+	public static void veNutUp(MyGraphics graphics)
+	{
+		if (Canvas.currentScreen != Canvas.gameScr)
+		{
+			return;
+		}
+		int x = nutX();
+		int y = nutY();
+		graphics.setColor(AutoUp.dang ? 0x0B2E1A : 0x202020);
+		graphics.fillRect(x, y, NUT_W, NUT_H);
+		graphics.setColor(AutoUp.dang ? 0x40C040 : 0x909090);
+		graphics.drawRect(x, y, NUT_W - 1, NUT_H - 1);
+		MFont.normalFont[0].drawString(graphics, "UP", x + NUT_W / 2, y + (NUT_H - MFont.normalFont[0].getHeight()) / 2, 2);
+	}
+
 	public static void paint(MyGraphics graphics)
 	{
+		try
+		{
+			AutoGuard.veNutUp(graphics);
+		}
+		catch (System.Exception)
+		{
+			// nút UP lỗi thì bỏ qua
+		}
 		try
 		{
 			AutoUp.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);
