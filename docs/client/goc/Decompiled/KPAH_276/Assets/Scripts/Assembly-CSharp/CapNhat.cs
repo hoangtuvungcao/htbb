@@ -15,6 +15,9 @@ using UnityEngine.Networking;
 /// </summary>
 public class CapNhat : MonoBehaviour
 {
+	/// <summary>Số bản đã tải + cài gần nhất (chống vòng lặp cập nhật).</summary>
+	private const string KHOA_DA_THU = "capnhat_da_thu";
+
 	private const string LINK = "https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json";
 
 	/// <summary>Đang tải bản mới: Main bỏ qua chuột / phím của game.</summary>
@@ -86,6 +89,13 @@ public class CapNhat : MonoBehaviour
 		{
 			yield break;
 		}
+		// chống lặp: đã cài bản này một lần mà mở lại vẫn chưa lên số bản đó (bản build ghi sai số)
+		// thì không tải lại nữa, chạy bản đang có; bản phát hành sau (số lớn hơn) sẽ thử lại
+		if (PlayerPrefs.GetInt(KHOA_DA_THU, 0) >= moi.ban)
+		{
+			UnityEngine.Debug.LogWarning("CapNhat: da cai ban " + moi.ban + " mot lan nhung van la " + dangCai + " - bo qua");
+			yield break;
+		}
 
 		dangCapNhat = true;
 		thongBao = string.IsNullOrEmpty(moi.ghiChu) ? "Đang tải bản mới..." : moi.ghiChu;
@@ -114,6 +124,8 @@ public class CapNhat : MonoBehaviour
 		yield return null;
 		try
 		{
+			PlayerPrefs.SetInt(KHOA_DA_THU, moi.ban);
+			PlayerPrefs.Save();
 			chayCaiDat(zip);
 			Application.Quit();
 		}

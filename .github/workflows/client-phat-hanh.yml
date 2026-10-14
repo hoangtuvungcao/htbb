@@ -140,7 +140,6 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          KPAH_VERSION_CODE: ${{ needs.so-ban.outputs.pc }}
         with:
           projectPath: Decompiled/KPAH_276
           unityVersion: 6000.5.9f1
@@ -148,9 +147,20 @@ jobs:
           buildMethod: BuildCli.Win64
           buildName: NQSH-H2
           buildsPath: build
-      - name: Nén zip
+          # số bản qua tham số dòng lệnh: GameCI KHÔNG chuyển biến môi trường vào container Unity
+          customParameters: -kpahBan ${{ needs.so-ban.outputs.pc }}
+      - name: Kiểm tra số bản trong bản build
         run: |
           sudo chown -R "$(id -u)" build
+          ls build
+          that=$(cat build/kpah-ban.txt 2>/dev/null || echo "?")
+          echo "So ban trong ban build: $that, can: ${{ needs.so-ban.outputs.pc }}"
+          if [ "$that" != "${{ needs.so-ban.outputs.pc }}" ]; then
+            echo "::error::Ban build mang so $that, khac ${{ needs.so-ban.outputs.pc }} - KHONG phat hanh (client se cap nhat lap lai)"
+            exit 1
+          fi
+      - name: Nén zip
+        run: |
           python3 -I phat-hanh/nen-zip.py build/StandaloneWindows64 NQSH-H2-PC-${{ needs.so-ban.outputs.pc }}.zip
       - uses: actions/upload-artifact@v4
         with:

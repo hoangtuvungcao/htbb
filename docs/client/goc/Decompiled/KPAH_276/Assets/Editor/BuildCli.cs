@@ -7,9 +7,14 @@ public static class BuildCli
     /// <summary>Đường ra: biến KPAH_OUT (phat-hanh.sh trên máy) hoặc -customBuildPath (GameCI trên GitHub Actions).</summary>
     private static string duongRa()
     {
+        return thamSo("-customBuildPath") ?? System.Environment.GetEnvironmentVariable("KPAH_OUT");
+    }
+
+    private static string thamSo(string ten)
+    {
         string[] args = System.Environment.GetCommandLineArgs();
-        int i = System.Array.IndexOf(args, "-customBuildPath");
-        return i >= 0 && i + 1 < args.Length ? args[i + 1] : System.Environment.GetEnvironmentVariable("KPAH_OUT");
+        int i = System.Array.IndexOf(args, ten);
+        return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
     }
 
     public static void Win64()
@@ -17,12 +22,14 @@ public static class BuildCli
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
         string outPath = duongRa();
         PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
-        // số bản (CapNhat.cs so với "pc.ban" trong phienban.json) - phat-hanh.sh truyền vào
-        string ban = System.Environment.GetEnvironmentVariable("KPAH_VERSION_CODE");
+        // số bản (CapNhat.cs so với "pc.ban" trong phienban.json): tham số -kpahBan (GitHub Actions - GameCI
+        // KHÔNG chuyển biến môi trường vào container Unity) hoặc biến KPAH_VERSION_CODE (phat-hanh.sh trên máy)
+        string ban = thamSo("-kpahBan") ?? System.Environment.GetEnvironmentVariable("KPAH_VERSION_CODE");
         if (!string.IsNullOrEmpty(ban))
         {
             PlayerSettings.bundleVersion = ban;
         }
+        UnityEngine.Debug.Log("KPAH ban (bundleVersion): " + PlayerSettings.bundleVersion);
         AssetDatabase.ImportAsset("Assets/Icon/app_icon.png");
         UnityEngine.Texture2D icon = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>("Assets/Icon/app_icon.png");
         PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.Unknown, new UnityEngine.Texture2D[] { icon }, IconKind.Any);
@@ -31,6 +38,9 @@ public static class BuildCli
         PlayerSettings.allowFullscreenSwitch = true;
         BuildReport r = BuildPipeline.BuildPlayer(scenes, outPath, BuildTarget.StandaloneWindows64, BuildOptions.None);
         UnityEngine.Debug.Log("BUILD RESULT: " + r.summary.result + " errors=" + r.summary.totalErrors);
+        // số bản thật đã đóng vào bản build, ghi CẠNH thư mục build (không vào zip) để workflow kiểm tra
+        string thuMuc = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(outPath));
+        System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(thuMuc), "kpah-ban.txt"), PlayerSettings.bundleVersion);
         EditorApplication.Exit(r.summary.result == BuildResult.Succeeded ? 0 : 1);
     }
 
