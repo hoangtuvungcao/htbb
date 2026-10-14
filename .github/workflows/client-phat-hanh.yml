@@ -79,20 +79,14 @@ jobs:
           mkdir -p /tmp/key
           printf '%s' "$KS" | base64 -d > /tmp/key/nqsh-h2.keystore
           printf 'keystore=nqsh-h2.keystore\nalias=nqsh-h2\npassword=%s\n' "$PASS" > /tmp/key/key.properties
-      - name: Build APK
+      - name: Build APK (Gradle, từ source android/)
         run: |
-          curl -sL -o /tmp/apktool.jar https://github.com/iBotPeaches/Apktool/releases/download/v3.0.3/apktool_3.0.3.jar
-          # dex2jar: lớp của APK gốc làm classpath để biên dịch code mod dùng chung với bản jar
-          curl -sL -o /tmp/d2j.zip https://github.com/pxb1988/dex2jar/releases/download/v2.4/dex-tools-v2.4.zip
-          unzip -q /tmp/d2j.zip -d /tmp/d2j
-          cd Android277
-          BAN=${{ needs.so-ban.outputs.android }} OUT=NQSH-H2-${{ needs.so-ban.outputs.android }}.apk \
-            KEY_DIR=/tmp/key APKTOOL=/tmp/apktool.jar DEX2JAR=/tmp/d2j/dex-tools-v2.4 sh build.sh
+          BAN=${{ needs.so-ban.outputs.android }} OUT=NQSH-H2-${{ needs.so-ban.outputs.android }}.apk KEY_DIR=/tmp/key sh android/build.sh
           rm -rf /tmp/key
       - uses: actions/upload-artifact@v4
         with:
           name: android
-          path: Android277/out/NQSH-H2-${{ needs.so-ban.outputs.android }}.apk
+          path: android/out/NQSH-H2-${{ needs.so-ban.outputs.android }}.apk
           retention-days: 3
 
   jar:
@@ -135,8 +129,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
-          path: Decompiled/KPAH_276/Library
-          key: Library-Win64-${{ hashFiles('Decompiled/KPAH_276/Assets/**', 'Decompiled/KPAH_276/Packages/**', 'Decompiled/KPAH_276/ProjectSettings/**') }}
+          path: pc/Library
+          key: Library-Win64-${{ hashFiles('pc/Assets/**', 'pc/Packages/**', 'pc/ProjectSettings/**') }}
           restore-keys: Library-Win64-
       - uses: game-ci/unity-builder@v4
         env:
@@ -144,7 +138,7 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: Decompiled/KPAH_276
+          projectPath: pc
           unityVersion: 6000.5.9f1
           targetPlatform: StandaloneWindows64
           buildMethod: BuildCli.Win64

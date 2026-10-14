@@ -1,8 +1,8 @@
 #!/bin/sh
 # Build + phat hanh tren MAY NAY (Windows, Git Bash) len GitHub Releases cua kpah-server/nqsh-h2-tai.
 # (Khong can may: bam "Run workflow" o tab Actions, workflow "Phat hanh" - xem phat-hanh/README.md.)
-#   sh phat-hanh/phat-hanh.sh android ["ghi chu"]   -> APK tu Android277 (ban TeaMobi), tu cap nhat
-#   sh phat-hanh/phat-hanh.sh pc      ["ghi chu"]   -> ban PC tu Decompiled/KPAH_276 (Unity), tu cap nhat
+#   sh phat-hanh/phat-hanh.sh android ["ghi chu"]   -> APK tu android/ (Gradle), tu cap nhat
+#   sh phat-hanh/phat-hanh.sh pc      ["ghi chu"]   -> ban PC tu pc/ (Unity), tu cap nhat
 #   sh phat-hanh/phat-hanh.sh jar     ["ghi chu"]   -> jar J2ME tu j2me/ (ban -release), chi dat link
 #   sh phat-hanh/phat-hanh.sh tat-ca  ["ghi chu"]   -> ca 3
 #   BAN=1425 sh phat-hanh/phat-hanh.sh android     -> tu dat so ban (mac dinh: ban dang phat hanh + 1)
@@ -34,8 +34,8 @@ echo "== Phat hanh $LOAI ban $BAN"
 
 if [ "$LOAI" = android ]; then
     TEN=NQSH-H2-$BAN.apk
-    (cd Android277 && BAN=$BAN OUT=$TEN sh build.sh | grep -v WARNING)
-    cp Android277/out/$TEN $TAM/$TEN
+    BAN=$BAN OUT=$TEN sh android/build.sh
+    cp android/out/$TEN $TAM/$TEN
 elif [ "$LOAI" = jar ]; then
     TEN=NQSH-H2-v$BAN.jar
     sh j2me/build.sh $BAN | tail -2
@@ -44,7 +44,7 @@ elif [ "$LOAI" = jar ]; then
 else
     TEN=NQSH-H2-PC-$BAN.zip
     KPAH_VERSION_CODE=$BAN KPAH_OUT="$(cygpath -w "$PWD/$TAM/pc")\\NQSH-H2.exe" "$UNITY" -batchmode -nographics -accept-apiupdate \
-        -projectPath "$(cygpath -w "$PWD/Decompiled/KPAH_276")" -executeMethod BuildCli.Win64 \
+        -projectPath "$(cygpath -w "$PWD/pc")" -executeMethod BuildCli.Win64 \
         -logFile "$(cygpath -w "$PWD/$TAM/unity-build.log")" || true
     grep -q "BUILD RESULT: Succeeded" $TAM/unity-build.log || { grep -E "error CS|BUILD RESULT" $TAM/unity-build.log; echo "Build PC loi"; exit 1; }
     python -I phat-hanh/nen-zip.py $TAM/pc $TAM/$TEN

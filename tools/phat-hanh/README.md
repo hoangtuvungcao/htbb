@@ -6,11 +6,11 @@ Không qua Nova WAF (WAF chặn `/tai/` trên nqsh-h2.top bằng trang thử th�
 Lúc mở game, client đọc `https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json`
 (GitHub cache file này tối đa ~5 phút):
 
-- **PC** (`Decompiled/KPAH_276/.../CapNhat.cs`): có bản mới thì tự tải zip, kiểm sha256, tự giải nén đè
+- **PC** (`pc/Assets/.../CapNhat.cs`): có bản mới thì tự tải zip, kiểm sha256, tự giải nén đè
   và tự mở lại game. Người chơi không phải làm gì.
-- **Android** (`Android277/.../NqshCapNhat.java`): hỏi "Có phiên bản mới", tải APK (kiểm sha256)
+- **Android** (`android/app/src/main/java/.../NqshCapNhat.java`): hỏi "Có phiên bản mới", tải APK (kiểm sha256)
   rồi mở màn hình cài đặt, người chơi bấm **Cài đặt** một lần.
-- **Jar J2ME** (`_mod276/jar`): KHÔNG tự cập nhật (máy J2ME không tự thay jar, không đọc được HTTPS
+- **Jar J2ME** (`j2me/`): KHÔNG tự cập nhật (máy J2ME không tự thay jar, không đọc được HTTPS
   đời mới). Lệnh phát hành chỉ đưa jar lên link cố định + ghi số bản vào `phienban.json`.
 
 ## Cài một lần
@@ -47,8 +47,8 @@ Link cố định để gửi người chơi mới (luôn là bản mới nhất
 ```
 - PC: `ban` so với `Application.version` (đặt lúc build qua `KPAH_VERSION_CODE`).
 - Android: `ban` là versionCode (APK gốc TeaMobi = 1418, bản NQSH-H2 bắt đầu từ 1419).
-- Jar: `ban` là số vNN của `_mod276/jar/build.sh`; script lấy số lớn hơn cả bản đã phát hành và bản
-  đã build trong `_mod276/jar/out`. File `mapping-vNN.txt` của ProGuard giữ kín, không đẩy lên.
+- Jar: `ban` là số vNN của `j2me/build.sh`; script lấy số lớn hơn cả bản đã phát hành và bản
+  đã build trong `j2me/out`. File `mapping-vNN.txt` của ProGuard giữ kín, không đẩy lên.
 - Muốn **thu hồi** bản lỗi: phát hành lại bản tốt với số bản lớn hơn (client không bao giờ hạ cấp).
 
 ## Lưu ý
@@ -74,4 +74,4 @@ Secrets (repo `kpah-mod-pb` → Settings → Secrets and variables → Actions):
 | `UNITY_LICENSE` | Toàn bộ nội dung `C:\ProgramData\Unity\Unity_lic.ulf` (chỉ cần cho bản PC) |
 | `UNITY_EMAIL` / `UNITY_PASSWORD` | Tài khoản Unity (chỉ cần cho bản PC) |
 
-Jar build từ `Jar276/` (bản sao của `_mod276/jar`, chạy được trên Windows lẫn Linux); APK gốc ở `Android277/goc/`.
+Cả 3 bản build từ source trong repo (xem `README.md` ở gốc): `pc/` (Unity), `android/` (Gradle), `j2me/` (javac + ProGuard).

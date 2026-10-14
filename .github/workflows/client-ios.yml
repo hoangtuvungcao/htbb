@@ -1,8 +1,8 @@
-# Build IPA iOS cho Decompiled/KPAH_276 (chưa ký - ký bằng Sideloadly / AltStore / Apple Developer).
+# Build IPA iOS cho pc (chưa ký - ký bằng Sideloadly / AltStore / Apple Developer).
 # Bước 1 (Ubuntu, tính phút x1): Unity xuất project Xcode qua GameCI.
 # Bước 2 (macOS, tính phút x10 với repo private): xcodebuild -> .ipa.
 # Cần secrets: UNITY_LICENSE (nội dung Unity_lic.ulf), UNITY_EMAIL, UNITY_PASSWORD.
-name: Build iOS (KPAH_276)
+name: Build iOS (pc/)
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ on:
         default: "1"
 
 env:
-  PROJECT_PATH: Decompiled/KPAH_276
+  PROJECT_PATH: pc
   UNITY_VERSION: 6000.5.9f1
 
 jobs:
