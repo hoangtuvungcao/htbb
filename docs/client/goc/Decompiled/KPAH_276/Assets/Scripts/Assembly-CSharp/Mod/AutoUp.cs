@@ -1062,8 +1062,9 @@ public sealed class AutoUp
 			int n2 = actor2.catagory;
 			if (n2 == 3 ? !bangAuto.isAutoItem || mainChar.isFullInventory() : (n2 == 4 ? !bangAuto.isAutoPotion || ((Dropable)actor2).item_template_id == 0 && mainChar.charXu > 100000000L : !bangAuto.isAutoGemItem)) continue;
 			int n3 = Util.distance(mainChar.x, mainChar.y, actor2.x, actor2.y);
-			// đứng im: chỉ nhặt quanh điểm đứng; di chuyển: đồ trong 250px quanh mình
-			if (diChuyen ? n3 > 250 : Util.distance(neoX, neoY, actor2.x, actor2.y) > 80) continue;
+			// đứng im: chỉ nhặt quanh điểm đứng; di chuyển: đồ trong 160px quanh mình (xa hơn thì
+			// phải quay đầu đi nhặt rồi lại quay lại - đi tuần bị giật lùi)
+			if (diChuyen ? n3 > 160 : Util.distance(neoX, neoY, actor2.x, actor2.y) > 80) continue;
 			if (n3 >= n) continue;
 			n = n3;
 			actor = actor2;
@@ -1270,7 +1271,92 @@ public sealed class AutoUp
 		return false;
 	}
 
-	/** Không thấy quái: đi tuần tới một ô đi được ngẫu nhiên, cách >= 10 ô, tới nơi thì chọn ô khác. */
+	/** Hướng đi tuần lần trước (ô) - điểm tuần mới không quay ngược lại; 0,0 = chưa có. */
+	private static int huongX;
+	private static int huongY;
+	/** Ô xuất phát của chặng tuần hiện tại. */
+	private static int tuanTu = -1;
+	/** Lúc đi qua từng khối KHOI x KHOI ô gần nhất - ưu tiên tuần tới khối lâu chưa qua. */
+	private static long[] daQua;
+	private static int daQuaW;
+	private static object daQuaCua;
+	private const int KHOI = 6;
+	/** Khối đã qua trong ngần này ms coi như "vừa qua". */
+	private const long QUA_GAN = 90000L;
+
+	private static void ghiDaQua(MainChar mainChar, long l)
+	{
+		int n = Tilemap.w;
+		int n2 = Tilemap.h;
+		int n3 = (n + KHOI - 1) / KHOI;
+		int n4 = (n2 + KHOI - 1) / KHOI;
+		if (daQua == null || daQuaCua != Tilemap.type || daQuaW != n3 || daQua.Length != n3 * n4)
+		{
+			daQua = new long[n3 * n4];
+			daQuaW = n3;
+			daQuaCua = Tilemap.type;
+			huongX = 0;
+			huongY = 0;
+		}
+		int n5 = mainChar.x / 16 / KHOI;
+		int n6 = mainChar.y / 16 / KHOI;
+		if (n5 >= 0 && n6 >= 0 && n5 < n3 && n6 < n4)
+		{
+			daQua[n6 * n3 + n5] = l;
+		}
+	}
+
+	/**
+	 * Chấm điểm một ô làm điểm tuần (cao = tốt): có quái quanh đó, khối lâu chưa đi qua, cùng
+	 * hướng đang đi, vừa đủ xa. Quay ngược đầu / khối vừa qua bị trừ nặng.
+	 */
+	private static int diemTuan(GameScr gameScr, MainChar mainChar, int n, int n2, long l)
+	{
+		int n3 = mainChar.x / 16;
+		int n4 = mainChar.y / 16;
+		int n5 = n - n3;
+		int n6 = n2 - n4;
+		int n7 = Math.abs(n5) + Math.abs(n6);
+		int n8 = Math.min(n7, 30);
+		if (huongX != 0 || huongY != 0)
+		{
+			int n9 = n5 * huongX + n6 * huongY;
+			if (n9 < 0)
+			{
+				n8 -= 40;
+			}
+			else if (n9 > 0)
+			{
+				n8 += 10;
+			}
+		}
+		int n10 = n / KHOI;
+		int n11 = n2 / KHOI;
+		if (daQua != null && n10 < daQuaW && n11 * daQuaW + n10 < daQua.Length)
+		{
+			long l2 = daQua[n11 * daQuaW + n10];
+			if (l2 != 0L && l - l2 < QUA_GAN)
+			{
+				n8 -= 30;
+			}
+		}
+		int n12 = 0;
+		mVector vector = gameScr.actors;
+		for (int i = 0; i < vector.size() && n12 < 5; ++i)
+		{
+			Actor actor = (Actor)vector.elementAt(i);
+			if (!AutoUp.quaiSong(gameScr, actor) || AutoUp.dangBoQua(actor, l)) continue;
+			if (Math.abs(actor.x / 16 - n) + Math.abs(actor.y / 16 - n2) > 6) continue;
+			++n12;
+		}
+		return n8 + n12 * 12;
+	}
+
+	/**
+	 * Không có quái trong ô đánh: đi tuần. Điểm tuần chọn trong các ô đi được cách >= 12 ô, chấm điểm
+	 * (diemTuan) - ưu tiên chỗ có quái, chỗ lâu chưa qua, đi tiếp theo hướng cũ (không giật lùi
+	 * như chọn ngẫu nhiên). Tới nơi thì chọn điểm kế tiếp.
+	 */
 	private static void diTuan(MainChar mainChar, long l)
 	{
 		int n = Tilemap.w;
@@ -1279,21 +1365,27 @@ public sealed class AutoUp
 		{
 			return;
 		}
+		GameScr gameScr = Canvas.gameScr;
+		AutoUp.ghiDaQua(mainChar, l);
 		if (tuanTra < 0)
 		{
 			System.Random random = new System.Random((int)l);
 			AutoUp.napKhoangCach();
 			// điểm đi tuần: cách tường/địa hình >= 3 ô, cách cổng qua map >= 8 ô; không có thì nới dần
-			int[][] nArray = new int[][] { new int[] { 3, 8 }, new int[] { 2, 6 }, new int[] { 1, 4 }, new int[] { 1, 0 } };
+			int[][] nArray = new int[][] { new int[] { 3, 8, 12 }, new int[] { 2, 6, 10 }, new int[] { 1, 4, 8 }, new int[] { 1, 0, 6 } };
+			int n7 = int.MinValue;
 			for (int k = 0; k < nArray.Length && tuanTra < 0; ++k)
 			{
-				for (int i = 0; i < 80 && tuanTra < 0; ++i)
+				for (int i = 0; i < 120; ++i)
 				{
 					int n3 = (random.Next() & int.MaxValue) % n;
 					int n4 = (random.Next() & int.MaxValue) % n2;
 					int n6 = n4 * n + n3;
-					if (PauseMenu.laTuong(n3, n4) || Math.abs(n3 - mainChar.x / 16) + Math.abs(n4 - mainChar.y / 16) < 10) continue;
+					if (PauseMenu.laTuong(n3, n4) || Math.abs(n3 - mainChar.x / 16) + Math.abs(n4 - mainChar.y / 16) < nArray[k][2]) continue;
 					if (kcTuong[n6] < nArray[k][0] || kcCong[n6] < nArray[k][1]) continue;
+					int n8 = AutoUp.diemTuan(gameScr, mainChar, n3, n4, l);
+					if (n8 <= n7) continue;
+					n7 = n8;
 					tuanTra = n6;
 				}
 			}
@@ -1306,12 +1398,24 @@ public sealed class AutoUp
 				trangThai = "chờ quái";
 				return;
 			}
+			tuanTu = mainChar.y / 16 * n + mainChar.x / 16;
 		}
 		trangThai = "tìm quái";
 		int n5 = tuanTra;
-		if (AutoUp.diTheoDuong(mainChar, n5 % n, n5 / n, l, null) || duong == null && duongDich == n5 && lanKet == 0 && lucKet == 0L)
+		bool bl = AutoUp.diTheoDuong(mainChar, n5 % n, n5 / n, l, null);
+		if (bl || duong == null && duongDich == n5 && lanKet == 0 && lucKet == 0L)
 		{
-			// tới nơi (hoặc ô đó không có đường): lần sau chọn ô khác
+			// tới nơi: nhớ hướng vừa đi để điểm sau đi tiếp, không quay đầu; ô không có đường thì bỏ hướng
+			if (bl && tuanTu >= 0)
+			{
+				huongX = Math.max(-3, Math.min(3, n5 % n - tuanTu % n));
+				huongY = Math.max(-3, Math.min(3, n5 / n - tuanTu / n));
+			}
+			else
+			{
+				huongX = 0;
+				huongY = 0;
+			}
 			tuanTra = -1;
 		}
 	}
@@ -1536,6 +1640,8 @@ public sealed class AutoUp
 		if (actor == null)
 		{
 			tuanTra = -1;
+			huongX = 0;
+			huongY = 0;
 			return;
 		}
 		boQua.put(actor, l + 10000L);

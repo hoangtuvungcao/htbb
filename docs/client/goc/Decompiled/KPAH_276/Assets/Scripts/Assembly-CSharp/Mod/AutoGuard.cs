@@ -240,13 +240,13 @@ public sealed class AutoGuard
 	// ---------------------------------------------------------------- nút UP nổi trên màn game
 	// Bật/tắt Auto up không cần mở menu (bản jar: Nen.coNutUp() = false trên J2ME; Unity luôn có).
 
-	public const int NUT_W = 46;
+	public const int NUT_W = 52;
 
-	public const int NUT_H = 26;
+	public const int NUT_H = 52;
 
 	public static int nutX()
 	{
-		return Canvas.w - NUT_W - 4;
+		return Canvas.w - NUT_W - 6;
 	}
 
 	public static int nutY()
@@ -281,19 +281,60 @@ public sealed class AutoGuard
 		}
 	}
 
+	/** Hình tròn tâm (cx, cy) bán kính r tô dải màu dọc từ tren xuống duoi (0xRRGGBB) - vẽ từng hàng nên chạy cả 3 bản. */
+	private static void veTron(MyGraphics graphics, int cx, int cy, int r, int tren, int duoi)
+	{
+		for (int dy = -r; dy <= r; dy++)
+		{
+			int w = 0;
+			while ((w + 1) * (w + 1) <= r * r + r - dy * dy)
+			{
+				w++;
+			}
+			graphics.setColor(tronMau(tren, duoi, dy + r, 2 * r));
+			graphics.fillRect(cx - w, cy + dy, 2 * w + 1, 1);
+		}
+	}
+
+	private static int tronMau(int a, int b, int t, int n)
+	{
+		if (a == b || n <= 0)
+		{
+			return a;
+		}
+		int r = ((a >> 16) & 0xFF) + (((b >> 16) & 0xFF) - ((a >> 16) & 0xFF)) * t / n;
+		int g = ((a >> 8) & 0xFF) + (((b >> 8) & 0xFF) - ((a >> 8) & 0xFF)) * t / n;
+		int c = (a & 0xFF) + ((b & 0xFF) - (a & 0xFF)) * t / n;
+		return (r << 16) | (g << 8) | c;
+	}
+
+	/** Nút tròn: viền vàng nhấp nháy + nền xanh khi đang bật, viền bạc + nền xám khi tắt; chữ UP và BẬT/TẮT. */
 	public static void veNutUp(MyGraphics graphics)
 	{
 		if (Canvas.currentScreen != Canvas.gameScr)
 		{
 			return;
 		}
-		int x = nutX();
-		int y = nutY();
-		graphics.setColor(AutoUp.dang ? 0x0B2E1A : 0x202020);
-		graphics.fillRect(x, y, NUT_W, NUT_H);
-		graphics.setColor(AutoUp.dang ? 0x40C040 : 0x909090);
-		graphics.drawRect(x, y, NUT_W - 1, NUT_H - 1);
-		MFont.normalFont[0].drawString(graphics, "UP", x + NUT_W / 2, y + (NUT_H - MFont.normalFont[0].getHeight()) / 2, 2);
+		bool bat = AutoUp.dang;
+		int r = NUT_W / 2 - 3;
+		int cx = nutX() + NUT_W / 2;
+		int cy = nutY() + NUT_H / 2 - 1;
+		bool sang = mSystem.currentTimeMillis() / 500 % 2 == 0;
+		veTron(graphics, cx, cy + 2, r + 1, 0x000000, 0x000000);
+		int vien = bat ? (sang ? 0xFFD870 : 0xC8963A) : 0xB4B4B4;
+		veTron(graphics, cx, cy, r, vien, bat ? 0x8A5A10 : 0x5A5A5A);
+		veTron(graphics, cx, cy, r - 2, 0x141414, 0x141414);
+		if (bat)
+		{
+			veTron(graphics, cx, cy, r - 3, 0x5ED872, 0x0F5A22);
+		}
+		else
+		{
+			veTron(graphics, cx, cy, r - 3, 0x6A6A6A, 0x242424);
+		}
+		int h = MFont.normalFont[0].getHeight();
+		MFont.normalFont[0].drawString(graphics, "UP", cx, cy - h + 1, 2);
+		MFont.normalFont[0].drawString(graphics, bat ? "BẬT" : "TẮT", cx, cy, 2);
 	}
 
 	public static void paint(MyGraphics graphics)
