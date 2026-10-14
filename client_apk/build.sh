@@ -18,7 +18,7 @@ case "$(uname -s)" in
         ;;
 esac
 [ -f "$KEY_DIR/key.properties" ] || { echo "Khong thay $KEY_DIR/key.properties (dat KEY_DIR)"; exit 1; }
-./gradlew -q --no-daemon :app:assembleRelease -PkpahBan="$BAN" -PkpahTen="$TEN" -PkpahKeyDir="$KEY_DIR"
+sh ./gradlew -q --no-daemon :app:assembleRelease -PkpahBan="$BAN" -PkpahTen="$TEN" -PkpahKeyDir="$KEY_DIR"
 mkdir -p out
 cp app/build/outputs/apk/release/app-release.apk "out/$OUT"
 echo "OK out/$OUT"
