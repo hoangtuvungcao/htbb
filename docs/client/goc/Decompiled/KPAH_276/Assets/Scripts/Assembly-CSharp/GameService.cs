@@ -378,6 +378,12 @@ public class GameService : Cmd_message
 
 	public void login(string username, string pass, string version)
 	{
+		// mod: nhớ tài khoản cho "tự đăng nhập lại" / nuôi pet đăng nhập lại (như AutoGuard.loginGuard bản jar)
+		if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(pass))
+		{
+			AutoGuard.tkDangNhap = username;
+			AutoGuard.mkDangNhap = pass;
+		}
 		if (KiemServer.chanDangNhap(username, pass, version))
 		{
 			return;

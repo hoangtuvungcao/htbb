@@ -900,6 +900,9 @@ public class Canvas
 		{
 			Out.println(" Loi tai ham paint Can vas" + ex.ToString());
 		}
+		// mod: thanh trạng thái các auto
+		resetTrans(g);
+		AutoGuard.paint(g);
 		int x = 4;
 		int num = 4;
 		int width = MFont.smallFont.getWidth("18+ Chơi quá 180 phút một ngày sẽ ảnh hưởng xấu đến sức khỏe");
@@ -933,6 +936,11 @@ public class Canvas
 
 	public static void startOKDlg(string info, bool isIcon)
 	{
+		// mod: auto đọc kết quả / nuốt thông báo của server
+		if (AutoGuard.autoEatDlg(info))
+		{
+			return;
+		}
 		msgdlg.isIcon = isIcon;
 		Command command = new Command("OK");
 		ActionPerform action = () =>

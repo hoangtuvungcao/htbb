@@ -531,7 +531,7 @@ public class GameScr : MyScreen
 		84, 88, 89
 	};
 
-	private static int oldMap = -1;
+	public static int oldMap = -1;
 
 	public short xBeginFrame;
 
@@ -1077,6 +1077,8 @@ public class GameScr : MyScreen
 
 	public override void update()
 	{
+		// mod: tick mọi auto mỗi khung hình (giống bản jar: GameScr.update -> PauseMenu.autoCheDoTick)
+		PauseMenu.autoCheDoTick();
 		timeRemovePos--;
 		if (timeRemovePos < 0)
 		{
@@ -3042,7 +3044,7 @@ public class GameScr : MyScreen
 		}
 	}
 
-	protected mVector getNearMonster(Actor mt, int distance)
+	public mVector getNearMonster(Actor mt, int distance)
 	{
 		mVector mVector2 = new mVector();
 		mVector2.addElement(mt);
@@ -5143,6 +5145,10 @@ public class GameScr : MyScreen
 
 	public void onActorMove(sbyte actorCatagory, short type, short actorID, short x2, short y2, sbyte pk, int charid, sbyte isnewmonster, sbyte isThanthu, bool canfocus)
 	{
+		if (AutoGuard.viTriGuard(actorCatagory, type, actorID, x2, y2))
+		{
+			return;
+		}
 		if (!readyGetGameLogic)
 		{
 			return;
@@ -6032,6 +6038,10 @@ public class GameScr : MyScreen
 
 	public void onMap(short map, short toX, short toY, short mapLoad, string mapName, sbyte[] sbyteMap)
 	{
+		if (AutoGuard.mapGuard(map))
+		{
+			return;
+		}
 		btnFocus = 0;
 		Canvas.endDlg();
 		mainChar.posTransRoad = null;
@@ -7199,6 +7209,10 @@ public class GameScr : MyScreen
 
 	public void onAdd2Party(Message m)
 	{
+		if (AutoGuard.nhomGuard(m))
+		{
+			return;
+		}
 		try
 		{
 			sbyte b = m.reader().readByte();
@@ -8438,6 +8452,10 @@ public class GameScr : MyScreen
 
 	public void showWindow(int focus, bool isSell, sbyte[] index)
 	{
+		if (AutoGuard.cuaSoGuard(focus, isSell, index))
+		{
+			return;
+		}
 		WindowInfoScr.gI().setInfo(focus, isSell, index);
 		WindowInfoScr.gI().switchToMe();
 	}
@@ -9825,6 +9843,11 @@ public class GameScr : MyScreen
 
 	public void onMenuOption(int userId1, sbyte idMenu, string[] listStr)
 	{
+		// mod: nuôi pet / vận may đọc menu NPC; việc chế đồ ẩn menu
+		if (AutoGuard.menuGuard(userId1, idMenu, listStr) || AutoGuard.autoHideUi())
+		{
+			return;
+		}
 		Out.println("may lan nho");
 		if (Canvas.menu.showMenu)
 		{

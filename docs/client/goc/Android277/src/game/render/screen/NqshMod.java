@@ -83,6 +83,29 @@ public final class NqshMod {
         }.start();
     }
 
+    // ---------------------------------------------------------------- menu mod (tab "Khác" của MenuWindows)
+
+    /** Tên mục mod thêm vào cuối tab "Khác" (đang 9 mục / 10 ô - ô thứ 10 còn trống). */
+    public static final String MUC_MOD = "Auto (mod)";
+
+    /** Sau khi MenuWindows tạo tabKhac: nối thêm mục mod. */
+    public static String[] themMucMod(String[] goc) {
+        String[] moi = new String[goc.length + 1];
+        System.arraycopy(goc, 0, moi, 0, goc.length);
+        moi[goc.length] = MUC_MOD;
+        return moi;
+    }
+
+    /** Bấm một ô tab "Khác": ô mục mod thì đóng MenuWindows, mở menu mod (PauseMenu.moMenuMod) và trả true. */
+    public static boolean moMucKhac(int chon) {
+        if (chon != 9) {
+            return false;
+        }
+        GCanvas.gameScr.switchToMe();
+        PauseMenu.moMenuMod();
+        return true;
+    }
+
     /** Thay thân ServerListScr.doUpdateServer (nút "Cập nhật"). */
     public static void capNhat() {
         GCanvas.startWaitDlg();
@@ -186,6 +209,11 @@ public final class NqshMod {
 
     /** Đầu GameService.login: true = đã xử lý (đang xác thực, hoặc đã tự gửi gói đăng nhập). */
     public static boolean loginGuard(String u, String p, String v) {
+        // nhớ tài khoản cho "tự đăng nhập lại" (TienIch) / đăng nhập lại khi nuôi pet - như AutoGuard.loginGuard của jar
+        if (u != null && u.length() > 0 && p != null && p.length() > 0) {
+            AutoGuard.tkDangNhap = u;
+            AutoGuard.mkDangNhap = p;
+        }
         try {
             if (chanDangNhap(u, p, v)) {
                 return true;
@@ -202,6 +230,10 @@ public final class NqshMod {
     /** Đầu MessageHandler.onMessage: true = gói -88 đã xử lý ở đây. */
     public static boolean goiGuard(Message m) {
         try {
+            // Vận may: nuốt gói mở màn rương (-62) như AutoGuard.goiGuard của jar
+            if (AutoVanMay.anGoi(m.command)) {
+                return true;
+            }
             return nhan(m);
         } catch (Throwable t) {
             return false;

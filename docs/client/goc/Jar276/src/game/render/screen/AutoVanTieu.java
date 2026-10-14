@@ -829,9 +829,9 @@ final class AutoVanTieu {
         int n4 = (Canvas.w - n2) / 2;
         graphics.translate(-graphics.getTranslateX(), -graphics.getTranslateY());
         graphics.setClip(0, 0, Canvas.w, Canvas.h);
-        graphics.setColor(0x2E1A0B);
+        graphics.setColor(0xFF2E1A0B);
         graphics.fillRect(n4, n, n2, n3);
-        graphics.setColor(0xE08040);
+        graphics.setColor(0xFFE08040);
         graphics.drawRect(n4, n, n2 - 1, n3 - 1);
         font.drawString(graphics, string, Canvas.w / 2, n + 3, 2);
     }

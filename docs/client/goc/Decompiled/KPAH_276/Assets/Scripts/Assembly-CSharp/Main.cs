@@ -274,6 +274,8 @@ public class Main : MonoBehaviour
 			Res.load.run();
 		}
 		canvas.update();
+		// mod: viec cua thread nen (Tien ich, dang nhap lai) chay o luong chinh Unity
+		LuongChinh.chayHet();
 		RMS.update();
 		DataInputStream.update();
 		SMS.update();

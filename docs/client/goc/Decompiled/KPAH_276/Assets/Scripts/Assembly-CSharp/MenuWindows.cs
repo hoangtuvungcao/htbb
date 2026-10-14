@@ -124,7 +124,8 @@ public class MenuWindows : MyScreen
 
 	private string[] tabCaiDat = new string[6] { "Bản đồ lớn", "Hướng dẫn", "Bật/tắt lời mời", "Bật/tắt giao diện", "Bật/tắt tự động đánh", "Chế độ focus" };
 
-	private string[] tabKhac = new string[9] { "Tin nhắn", "Kênh thế giới", "Bạn bè", "Top cao thủ", "Top đại gia", "Bảng top", "Cây thần", "Cổ vật", "Khác" };
+	// mod: ô thứ 10 "Auto (mod)" mở menu mod (PauseMenu.moMenuMod) - giống bản jar / Android
+	private string[] tabKhac = new string[10] { "Tin nhắn", "Kênh thế giới", "Bạn bè", "Top cao thủ", "Top đại gia", "Bảng top", "Cây thần", "Cổ vật", "Khác", "Auto (mod)" };
 
 	public bool isDefault;
 
@@ -4455,6 +4456,10 @@ public class MenuWindows : MyScreen
 					break;
 				case 8:
 					GameService.gI().dosendKhacMenu();
+					break;
+				case 9:
+					Canvas.gameScr.switchToMe();
+					PauseMenu.moMenuMod();
 					break;
 				}
 				break;

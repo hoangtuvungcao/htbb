@@ -1478,9 +1478,9 @@ final class AutoUp {
         int n4 = (Canvas.w - n2) / 2;
         graphics.translate(-graphics.getTranslateX(), -graphics.getTranslateY());
         graphics.setClip(0, 0, Canvas.w, Canvas.h);
-        graphics.setColor(0x0B2E1A);
+        graphics.setColor(0xFF0B2E1A);
         graphics.fillRect(n4, n, n2, n3);
-        graphics.setColor(0x40C040);
+        graphics.setColor(0xFF40C040);
         graphics.drawRect(n4, n, n2 - 1, n3 - 1);
         font.drawString(graphics, string, Canvas.w / 2, n + 3, 2);
     }

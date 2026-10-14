@@ -38,11 +38,11 @@ public class Menu : MainJ2ME
 
 	private int cdyb;
 
-	private int ctoyBag;
+	public int ctoyBag;
 
-	private int cyBag;
+	public int cyBag;
 
-	private int cylim;
+	public int cylim;
 
 	public bool transYShowText;
 

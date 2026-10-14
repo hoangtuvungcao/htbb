@@ -37,6 +37,11 @@ public class MessageHandler : Cmd_message, IMessageHandler
 		{
 			return;
 		}
+		// mod: Vận may nuốt gói mở màn rương (-62) như AutoGuard.goiGuard bản jar
+		if (AutoVanMay.anGoi(msg.command))
+		{
+			return;
+		}
 		try
 		{
 			ItemDropInfo[] array = null;

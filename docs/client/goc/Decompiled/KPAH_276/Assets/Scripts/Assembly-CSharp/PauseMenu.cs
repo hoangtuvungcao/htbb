@@ -1,4 +1,4 @@
-public class PauseMenu : MyScreen
+public partial class PauseMenu : MyScreen
 {
 	public static PauseMenu me;
 

@@ -171,7 +171,7 @@ final class AutoVanMay {
             gameService.doMenuOption(NPC, (byte)0, 2);
             gameService.doMenuOption(NPC, (byte)2, 1);
             gameService.doMenuOption(NPC, (byte)3, 0);
-            gameService.playMiniGame((byte)2, (byte)100);
+            Nen.moRuongVanMay(gameService);
         }
         choKetQua = n2;
         lucDot = l;
@@ -188,7 +188,7 @@ final class AutoVanMay {
 
     private static void dongBang(GameScr gameScr) {
         Canvas.menu.showMenu = false;
-        if (Canvas.currentScreen == MiniGame.gI()) {
+        if (Nen.laManRuong(Canvas.currentScreen)) {
             gameScr.switchToMe();
         }
     }
@@ -207,9 +207,9 @@ final class AutoVanMay {
         int n4 = (Canvas.w - n2) / 2;
         graphics.translate(-graphics.getTranslateX(), -graphics.getTranslateY());
         graphics.setClip(0, 0, Canvas.w, Canvas.h);
-        graphics.setColor(0x2E2A0B);
+        graphics.setColor(0xFF2E2A0B);
         graphics.fillRect(n4, n, n2, n3);
-        graphics.setColor(0xE0D040);
+        graphics.setColor(0xFFE0D040);
         graphics.drawRect(n4, n, n2 - 1, n3 - 1);
         font.drawString(graphics, string, Canvas.w / 2, n + 3, 2);
     }

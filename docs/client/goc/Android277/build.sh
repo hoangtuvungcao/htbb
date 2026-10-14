@@ -19,6 +19,8 @@ KEY_DIR=${KEY_DIR:-"$HOME/Desktop/KPAH-All/_tmp_build/android-key"}   # key.prop
 JDK=${JDK:-$JMD}
 SDK=${SDK:-$SMD}
 APKTOOL=${APKTOOL:-"$HOME/Desktop/KPAH-All/_tmp_build/tools/apktool/apktool.jar"}
+DEX2JAR=${DEX2JAR:-"$HOME/Desktop/KPAH-All/_tmp_build/tools/dex2jar/dex-tools-v2.4"}   # thư mục có lib/*.jar
+JAR_SRC=${JAR_SRC:-../Jar276/src/game/render/screen}                    # code mod dùng chung (bản jar)
 PKG=${PKG:-com.nqsh.h2}
 TEN=${TEN:-NQSH-H2}
 BAN=${BAN:-1419}                       # versionCode: phat-hanh.sh tu tang, ban goc TeaMobi = 1418
@@ -31,21 +33,30 @@ PL=${PL:-$(ls -d "$SDK"/platforms/android-* | sort -V | tail -1)}
 PLW=$PL
 [ -n "$WIN" ] && PLW=$(cygpath -w "$PL")   # classpath "a;b" cho javac trên Windows cần đường dẫn Windows
 W=work
-rm -rf $W && mkdir -p $W/stubcls $W/cls $W/dex out
+rm -rf $W && mkdir -p $W/cls $W/dex $W/modsrc out
 
-# 1. NqshMod / NqshCapNhat -> dex -> smali (stub chỉ để biên dịch, không vào APK)
-"$JDK/javac" -nowarn --release 8 -encoding UTF-8 -cp "$PL/android.jar" -d $W/stubcls $(find stub -name "*.java")
-"$JDK/javac" -nowarn --release 8 -encoding UTF-8 -cp "$W/stubcls$S$PLW/android.jar" -d $W/cls $(find src -name "*.java")
+# 1. Lớp của APK gốc (dex2jar) làm classpath -> biên dịch mod dựa trên lớp thật của game
+$PY -I -c "import zipfile,sys;zipfile.ZipFile(sys.argv[1]).extract('classes.dex',sys.argv[2])" "$APK_GOC" $W
+D2J="$DEX2JAR/lib/*"
+[ -n "$WIN" ] && D2J="$(cygpath -w "$DEX2JAR/lib")\\*"
+"$JDK/java" -cp "$D2J" com.googlecode.dex2jar.tools.Dex2jarCmd -f -o $W/apk.jar $W/classes.dex >/dev/null 2>&1
+test -f $W/apk.jar
+
+# 2. Code mod: tính năng dùng chung chép từ bản jar (port-android.py đổi tên lớp) + phần riêng Android (src/)
+$PY -I port-android.py "$JAR_SRC" $W/modsrc
+printf 'package game.render.screen;\n\n/** Sinh boi build.sh - KHONG sua tay. */\nfinal class PhienBan {\n    static final int BAN = %s;\n}\n' "$BAN" > $W/modsrc/PhienBan.java
+"$JDK/javac" -nowarn --release 8 -encoding UTF-8 -cp "$W/apk.jar$S$PLW/android.jar" -d $W/cls \
+    $(find src $W/modsrc -name "*.java")
 "$JDK/java" -cp "$BT/lib/d8.jar" com.android.tools.r8.D8 --release --min-api 26 --lib "$PL/android.jar" \
-    --classpath $W/stubcls --output $W/dex $(find $W/cls -name "*.class")
+    --classpath $W/apk.jar --output $W/dex $(find $W/cls -name "*.class")
 (cd $W/dex && $PY -I -c "import zipfile;z=zipfile.ZipFile('../mod.apk','w');z.write('classes.dex');z.close()")
 "$JDK/java" -jar "$APKTOOL" d -f --no-res -o $W/modsmali $W/mod.apk >/dev/null
 
-# 2. giải nén APK gốc, vá smali + manifest
+# 3. giải nén APK gốc, vá smali + manifest
 "$JDK/java" -jar "$APKTOOL" d -f -o $W/smali-src "$APK_GOC" >/dev/null
 $PY -I patch.py $W/smali-src $W/build-src $W/modsmali "$PKG" "$TEN" "$BAN"
 
-# 3. đóng gói, căn chỉnh, ký
+# 4. đóng gói, căn chỉnh, ký
 "$JDK/java" -jar "$APKTOOL" b -o $W/unsigned.apk $W/build-src >/dev/null
 "$BT/zipalign$EXE" -f -p 4 $W/unsigned.apk $W/aligned.apk
 P=$(grep ^password= "$KEY_DIR/key.properties" | cut -d= -f2-)

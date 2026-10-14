@@ -24,7 +24,6 @@ import game.model.MainChar;
 import game.model.Mineral;
 import game.model.PageScr;
 import game.model.ShopNew;
-import game.model.Sound;
 import game.networklogic.GameService;
 import game.render.Canvas;
 import game.render.Res;
@@ -1829,6 +1828,81 @@ extends Screen {
         menu.cyBag = n3;
     }
 
+    /**
+     * Menu mod dạng popup - cùng mục và hành động với hàng mod (index 0) của doSelect. Bản jar mở hàng
+     * đó trong màn PauseMenu; Android / PC (menu thật là MenuWindows) mở popup này từ tab "Khác".
+     */
+    public static void moMenuMod() {
+        final PauseMenu pauseMenu = PauseMenu.gI();
+        Vector<Command> vector = new Vector<Command>();
+        vector.addElement(new Command("Xa phu", new IAction(){
+
+            public void perform() {
+                Canvas.gameScr.switchToMe();
+                TienIch.moXaPhu();
+            }
+        }));
+        vector.addElement(new Command("Chế đồ nhanh", new IAction(){
+
+            public void perform() {
+                Canvas.gameScr.switchToMe();
+                pauseMenu.showCheDoNhanhMenu();
+            }
+        }));
+        vector.addElement(new Command("Dòng ẩn", new IAction(){
+
+            public void perform() {
+                pauseMenu.moMenuDongAn(0);
+            }
+        }));
+        vector.addElement(new Command("Auto up", new IAction(){
+
+            public void perform() {
+                Canvas.gameScr.switchToMe();
+                AutoUp.moMenu(0);
+            }
+        }));
+        vector.addElement(new Command("Vận tiêu", new IAction(){
+
+            public void perform() {
+                Canvas.gameScr.switchToMe();
+                AutoVanTieu.moMenu(0);
+            }
+        }));
+        vector.addElement(new Command("Vận may", new IAction(){
+
+            public void perform() {
+                Canvas.gameScr.switchToMe();
+                AutoVanMay.moMenu(0);
+            }
+        }));
+        vector.addElement(new Command("Tiện ích", new IAction(){
+
+            public void perform() {
+                Canvas.gameScr.switchToMe();
+                TienIch.moMenu(0);
+            }
+        }));
+        PauseMenu.moMenuGiuChon(vector, 3, 0);
+    }
+
+    /** "Dòng ẩn" dạng popup bật/tắt (bản jar: hàng index 9 của màn PauseMenu). */
+    private void moMenuDongAn(int chon) {
+        Vector<Command> vector = new Vector<Command>();
+        for (int i = 0; i < this.dongAnChon.length; ++i) {
+            final int n = i;
+            vector.addElement(new Command(new StringBuilder().append(this.dongAnChon[i] ? "(x) " : "( ) ").append(this.dongAnLabel(i)).toString(), new IAction(){
+
+                public void perform() {
+                    PauseMenu.this.dongAnChon[n] = !PauseMenu.this.dongAnChon[n];
+                    PauseMenu.this.name[9][n + 1] = new StringBuilder().append(PauseMenu.this.dongAnChon[n] ? "(x) " : "( ) ").append(PauseMenu.this.dongAnLabel(n)).toString();
+                    PauseMenu.this.moMenuDongAn(n);
+                }
+            }));
+        }
+        PauseMenu.moMenuGiuChon(vector, 3, chon);
+    }
+
     private void showHocSkillMenu(int chon) {
         Vector<Command> vector = new Vector<Command>();
         vector.addElement(new Command(new StringBuilder().append("Skill slot 1: ").append(SK_TEN[this.autoSkMuon]).toString(), new IAction(){
@@ -3146,9 +3220,9 @@ extends Screen {
         int n3 = (Canvas.w - n) / 2;
         graphics.translate(-graphics.getTranslateX(), -graphics.getTranslateY());
         graphics.setClip(0, 0, Canvas.w, Canvas.h);
-        graphics.setColor(0x0B2E2E);
+        graphics.setColor(0xFF0B2E2E);
         graphics.fillRect(n3, 2, n, n2);
-        graphics.setColor(0xE0B000);
+        graphics.setColor(0xFFE0B000);
         graphics.drawRect(n3, 2, n - 1, n2 - 1);
         font.drawString(graphics, string, Canvas.w / 2, 5, 2);
     }
@@ -5260,15 +5334,8 @@ extends Screen {
                         break;
                     }
                     if (this.index == 1) {
-                        if (Sound.me == null) break;
-                        if (Sound.me.isPlaying != 0) {
-                            Sound.me.isPlaying = 0;
-                            Sound.me.setVolume(0);
-                            Canvas.gameScr.switchToMe();
-                            break;
-                        }
-                        Sound.me.isPlaying = 1;
-                        Sound.me.setVolume(7);
+                        if (!Nen.coAmThanh()) break;
+                        Nen.datAmThanh(!Nen.amThanhBat());
                         Canvas.gameScr.switchToMe();
                         break;
                     }
@@ -5509,8 +5576,8 @@ extends Screen {
         this.cmy = 0;
         this.cmtoY = 0;
         this.name[0][0] = Canvas.gameScr.mainChar.name;
-        if (Sound.me != null) {
-            this.name[1][5] = Sound.me.isPlaying == 1 ? "T\u1ea5t \u00e2m thanh" : "B\u1eadt \u00e2m thanh";
+        if (Nen.coAmThanh()) {
+            this.name[1][5] = Nen.amThanhBat() ? "T\u1ea5t \u00e2m thanh" : "B\u1eadt \u00e2m thanh";
         }
         super.switchToMe();
         this.init();
