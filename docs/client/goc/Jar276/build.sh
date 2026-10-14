@@ -21,9 +21,12 @@ OUT="out/KPAH_276 (1)-automenu-v$V.jar"
 
 rm -rf tcls cls45 stage && mkdir -p tcls cls45 stage out
 
+# so ban jar gui kem khi dang nhap (server real.BanMoiNhat bao khi co ban moi hon); file sinh ra, khong dua vao git
+printf 'package game.render.screen;\n\n/** Sinh boi build.sh - KHONG sua tay. */\nfinal class PhienBan {\n    static final int BAN = %s;\n}\n' "$V" > src/game/render/screen/PhienBan.java
+
 "$J/javac" -nowarn -encoding UTF-8 -d tcls -cp tools/asm.jar src/Down45.java src/InjectGuards.java src/InjectReplaceCall.java
 "$J/javac" -nowarn --release 8 -encoding UTF-8 -d stage -cp "$CP" \
-    src/game/render/screen/AutoGuard.java src/game/render/screen/PauseMenu.java src/game/render/screen/KiemServer.java src/game/render/screen/TaiDanhSach.java src/game/render/screen/AutoUp.java src/game/render/screen/AutoVanTieu.java src/game/render/screen/AutoVanMay.java src/game/render/screen/TienIch.java src/game/render/screen/LenThanh.java
+    src/game/render/screen/PhienBan.java src/game/render/screen/AutoGuard.java src/game/render/screen/PauseMenu.java src/game/render/screen/KiemServer.java src/game/render/screen/TaiDanhSach.java src/game/render/screen/AutoUp.java src/game/render/screen/AutoVanTieu.java src/game/render/screen/AutoVanMay.java src/game/render/screen/TienIch.java src/game/render/screen/LenThanh.java
 
 # Down45 nhan cap (vao, ra) - doi tung class moi build sang version 45
 ARGS=""

@@ -178,6 +178,8 @@ public final class AutoGuard {
             message.writer().writeByte(game.render.Canvas.isLoadTileServer ? -1 : 0);
             message.writer().writeByte(GameService.gI().getInDexServer(ServerListScr.index));
             message.writer().writeUTF(AutoGuard.maMay());
+            // số bản jar (build.sh sinh PhienBan.java): server (real.BanMoiNhat) báo khi có bản mới hơn
+            message.writer().writeInt(PhienBan.BAN);
             GameService.gI().session.sendMessage(message);
             message.cleanup();
             return true;
