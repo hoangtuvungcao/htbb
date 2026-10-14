@@ -63,6 +63,9 @@ public class MyGraphics
 
 	public static Hashtable cachedTextures = new Hashtable();
 
+	/** Ảnh 1x1 tô màu cho fillRect, theo màu. */
+	private static readonly System.Collections.Generic.Dictionary<Color, Texture2D> anhMau = new System.Collections.Generic.Dictionary<Color, Texture2D>();
+
 	private int clipTX;
 
 	private int clipTY;
@@ -290,17 +293,24 @@ public class MyGraphics
 			x += translateX;
 			y += translateY;
 		}
-		int num = 1;
-		int num2 = 1;
-		string key = "fr" + num + num2 + r + g + b + a;
-		Texture2D texture2D = (Texture2D)cachedTextures[key];
-		if (texture2D == null)
+		// mod: tìm ảnh 1x1 theo màu bằng Dictionary<Color> (trước: ghép chuỗi khóa từ 4 số thực MỖI lần
+		// fillRect - đổi số thực ra chữ rất tốn và sinh rác bộ nhớ)
+		Color color = new Color(r, g, b, a);
+		Texture2D texture2D;
+		if (!anhMau.TryGetValue(color, out texture2D) || texture2D == null)
 		{
-			texture2D = new Texture2D(num, num2);
-			Color color = new Color(r, g, b, a);
+			if (anhMau.Count > 400)
+			{
+				foreach (Texture2D cu in anhMau.Values)
+				{
+					UnityEngine.Object.Destroy(cu);
+				}
+				anhMau.Clear();
+			}
+			texture2D = new Texture2D(1, 1);
 			texture2D.SetPixel(0, 0, color);
 			texture2D.Apply();
-			cache(key, texture2D);
+			anhMau[color] = texture2D;
 		}
 		int num3 = 0;
 		int num4 = 0;

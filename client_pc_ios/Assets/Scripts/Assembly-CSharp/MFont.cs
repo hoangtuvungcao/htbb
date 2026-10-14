@@ -488,13 +488,57 @@ public class MFont
 		return getWidthExactOf(s);
 	}
 
+	// Tối ưu (mod): trước đây MỖI lần đo chiều rộng tạo GUIStyle + GUIContent mới - mỗi chuỗi trên màn hình
+	// bị đo 2 lần mỗi khung (bóng + chữ), chia dòng còn đo từng ký tự -> rác bộ nhớ liên tục, GC giật.
+	// Giờ dùng lại một GUIStyle/GUIContent và nhớ chiều rộng theo chuỗi (giới hạn số mục).
+	private GUIStyle styleDo;
+
+	private static readonly GUIContent noiDungDo = new GUIContent();
+
+	private readonly System.Collections.Generic.Dictionary<string, int> boNhoRong = new System.Collections.Generic.Dictionary<string, int>();
+
+	private GUIStyle styleVe;
+
 	public int getWidthExactOf(string s)
 	{
+		if (s == null)
+		{
+			return 0;
+		}
+		lock (boNhoRong)
+		{
+			int daDo;
+			if (boNhoRong.TryGetValue(s, out daDo))
+			{
+				return daDo;
+			}
+		}
 		try
 		{
-			GUIStyle gUIStyle = new GUIStyle();
-			gUIStyle.font = myFont;
-			return (int)gUIStyle.CalcSize(new GUIContent(s)).x;
+			if (styleDo == null || styleDo.font != myFont)
+			{
+				styleDo = new GUIStyle();
+				styleDo.font = myFont;
+				lock (boNhoRong)
+				{
+					boNhoRong.Clear();
+				}
+			}
+			int rong;
+			lock (noiDungDo)
+			{
+				noiDungDo.text = s;
+				rong = (int)styleDo.CalcSize(noiDungDo).x;
+			}
+			lock (boNhoRong)
+			{
+				if (boNhoRong.Count >= 4096)
+				{
+					boNhoRong.Clear();
+				}
+				boNhoRong[s] = rong;
+			}
+			return rong;
 		}
 		catch (Exception ex)
 		{
@@ -561,8 +605,13 @@ public class MFont
 
 	public void _drawString(MyGraphics g, string st, int x0, int y0, int align)
 	{
-		GUIStyle gUIStyle = new GUIStyle(GUI.skin.label);
-		gUIStyle.font = myFont;
+		// mod: dùng lại một GUIStyle cho mỗi font (trước: chép GUI.skin.label mới mỗi lần vẽ chuỗi)
+		if (styleVe == null || styleVe.font != myFont)
+		{
+			styleVe = new GUIStyle(GUI.skin.label);
+			styleVe.font = myFont;
+		}
+		GUIStyle gUIStyle = styleVe;
 		float num = 0f;
 		float num2 = 0f;
 		switch (align)
