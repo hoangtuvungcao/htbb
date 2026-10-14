@@ -281,8 +281,12 @@ public sealed class AutoGuard
 		}
 	}
 
-	/** Hình tròn tâm (cx, cy) bán kính r tô dải màu dọc từ tren xuống duoi (0xRRGGBB) - vẽ từng hàng nên chạy cả 3 bản. */
-	private static void veTron(MyGraphics graphics, int cx, int cy, int r, int tren, int duoi)
+	/**
+	 * Hình tròn tâm (cx, cy) bán kính r tô dải màu dọc từ tren xuống duoi (0xRRGGBB) vào mảng điểm ảnh
+	 * (gốc trên-trái, rộng NUT_W). Bản PC vẽ nút một lần vào ảnh rồi mỗi khung chỉ vẽ ảnh - vẽ từng hàng bằng
+	 * fillRect (như bản jar/Android) tốn ~190 lệnh vẽ IMGUI mỗi khung.
+	 */
+	private static void veTron(UnityEngine.Color32[] diem, int cx, int cy, int r, int tren, int duoi)
 	{
 		for (int dy = -r; dy <= r; dy++)
 		{
@@ -291,9 +295,51 @@ public sealed class AutoGuard
 			{
 				w++;
 			}
-			graphics.setColor(tronMau(tren, duoi, dy + r, 2 * r));
-			graphics.fillRect(cx - w, cy + dy, 2 * w + 1, 1);
+			int m = tronMau(tren, duoi, dy + r, 2 * r);
+			UnityEngine.Color32 c = new UnityEngine.Color32((byte)(m >> 16), (byte)(m >> 8), (byte)m, 255);
+			int y = cy + dy;
+			if (y < 0 || y >= NUT_H)
+			{
+				continue;
+			}
+			for (int x = System.Math.Max(0, cx - w); x <= System.Math.Min(NUT_W - 1, cx + w); x++)
+			{
+				diem[(NUT_H - 1 - y) * NUT_W + x] = c; // Texture2D: hàng 0 ở dưới
+			}
 		}
+	}
+
+	/** Ảnh nút: 0 = tắt, 1 = bật (viền sáng), 2 = bật (viền tối) - nhấp nháy giữa 1 và 2. */
+	private static Image[] anhNut = new Image[3];
+
+	private static Image taoAnhNut(bool bat, bool sang)
+	{
+		UnityEngine.Color32[] diem = new UnityEngine.Color32[NUT_W * NUT_H]; // mặc định trong suốt
+		int r = NUT_W / 2 - 3;
+		int cx = NUT_W / 2;
+		int cy = NUT_H / 2 - 1;
+		veTron(diem, cx, cy + 2, r + 1, 0x000000, 0x000000);
+		int vien = bat ? (sang ? 0xFFD870 : 0xC8963A) : 0xB4B4B4;
+		veTron(diem, cx, cy, r, vien, bat ? 0x8A5A10 : 0x5A5A5A);
+		veTron(diem, cx, cy, r - 2, 0x141414, 0x141414);
+		if (bat)
+		{
+			veTron(diem, cx, cy, r - 3, 0x5ED872, 0x0F5A22);
+		}
+		else
+		{
+			veTron(diem, cx, cy, r - 3, 0x6A6A6A, 0x242424);
+		}
+		UnityEngine.Texture2D t = new UnityEngine.Texture2D(NUT_W, NUT_H, UnityEngine.TextureFormat.RGBA32, false);
+		t.filterMode = UnityEngine.FilterMode.Point;
+		t.wrapMode = UnityEngine.TextureWrapMode.Clamp;
+		t.SetPixels32(diem);
+		t.Apply(false, true);
+		Image img = new Image();
+		img.texture = t;
+		img.w = NUT_W;
+		img.h = NUT_H;
+		return img;
 	}
 
 	private static int tronMau(int a, int b, int t, int n)
@@ -316,22 +362,15 @@ public sealed class AutoGuard
 			return;
 		}
 		bool bat = AutoUp.dang;
-		int r = NUT_W / 2 - 3;
 		int cx = nutX() + NUT_W / 2;
 		int cy = nutY() + NUT_H / 2 - 1;
 		bool sang = mSystem.currentTimeMillis() / 500 % 2 == 0;
-		veTron(graphics, cx, cy + 2, r + 1, 0x000000, 0x000000);
-		int vien = bat ? (sang ? 0xFFD870 : 0xC8963A) : 0xB4B4B4;
-		veTron(graphics, cx, cy, r, vien, bat ? 0x8A5A10 : 0x5A5A5A);
-		veTron(graphics, cx, cy, r - 2, 0x141414, 0x141414);
-		if (bat)
+		int loai = bat ? (sang ? 1 : 2) : 0;
+		if (anhNut[loai] == null)
 		{
-			veTron(graphics, cx, cy, r - 3, 0x5ED872, 0x0F5A22);
+			anhNut[loai] = taoAnhNut(bat, sang);
 		}
-		else
-		{
-			veTron(graphics, cx, cy, r - 3, 0x6A6A6A, 0x242424);
-		}
+		graphics.drawImage(anhNut[loai], nutX(), nutY());
 		int h = MFont.normalFont[0].getHeight();
 		MFont.normalFont[0].drawString(graphics, "UP", cx, cy - h + 1, 2);
 		MFont.normalFont[0].drawString(graphics, bat ? "BẬT" : "TẮT", cx, cy, 2);
