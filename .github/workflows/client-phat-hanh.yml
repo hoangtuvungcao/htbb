@@ -122,14 +122,14 @@ jobs:
     name: Build PC
     needs: so-ban
     if: inputs.loai == 'tat-ca' || inputs.loai == 'pc'
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
+    # máy Windows: build IL2CPP cho Windows (cần Visual Studio C++ - có sẵn trên windows-2022);
+    # máy Linux chỉ build được Mono cho Windows
+    runs-on: windows-2022
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
     steps:
-      - name: Dọn ổ đĩa (image Unity ~6 GB)
-        uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: false
-          large-packages: false
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
@@ -152,7 +152,6 @@ jobs:
           customParameters: -kpahBan ${{ needs.so-ban.outputs.pc }}
       - name: Kiểm tra số bản trong bản build
         run: |
-          sudo chown -R "$(id -u)" build
           ls build
           that=$(cat build/kpah-ban.txt 2>/dev/null || echo "?")
           echo "So ban trong ban build: $that, can: ${{ needs.so-ban.outputs.pc }}"
@@ -162,7 +161,7 @@ jobs:
           fi
       - name: Nén zip
         run: |
-          python3 -I phat-hanh/nen-zip.py build/StandaloneWindows64 NQSH-H2-PC-${{ needs.so-ban.outputs.pc }}.zip
+          python -I phat-hanh/nen-zip.py build/StandaloneWindows64 NQSH-H2-PC-${{ needs.so-ban.outputs.pc }}.zip
       - uses: actions/upload-artifact@v4
         with:
           name: pc

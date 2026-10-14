@@ -21,7 +21,24 @@ public static class BuildCli
     {
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
         string outPath = duongRa();
-        PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
+        // IL2CPP: C# dịch ra C++ rồi mã máy - chạy nhanh hơn Mono và khó dịch ngược hơn (DLL không còn mã C#).
+        // Cần module "Windows Build Support (IL2CPP)" của Unity + Visual Studio C++ (máy GitHub Windows có sẵn).
+        // Máy chưa cài module (hoặc truyền -kpahMono) thì build Mono như trước.
+        var standalone = UnityEditor.Build.NamedBuildTarget.Standalone;
+        bool coIl2cpp = System.IO.Directory.Exists(System.IO.Path.Combine(EditorApplication.applicationContentsPath,
+            "PlaybackEngines/windowsstandalonesupport/Variations/win64_player_nondevelopment_il2cpp"));
+        if (coIl2cpp && System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-kpahMono") < 0)
+        {
+            PlayerSettings.SetScriptingBackend(standalone, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetIl2CppCompilerConfiguration(standalone, Il2CppCompilerConfiguration.Release);
+            PlayerSettings.SetIl2CppCodeGeneration(standalone, UnityEditor.Build.Il2CppCodeGeneration.OptimizeSpeed);
+            PlayerSettings.SetManagedStrippingLevel(standalone, ManagedStrippingLevel.Low);
+        }
+        else
+        {
+            PlayerSettings.SetScriptingBackend(standalone, ScriptingImplementation.Mono2x);
+        }
+        UnityEngine.Debug.Log("KPAH scripting backend: " + PlayerSettings.GetScriptingBackend(standalone));
         // số bản (CapNhat.cs so với "pc.ban" trong phienban.json): tham số -kpahBan (GitHub Actions - GameCI
         // KHÔNG chuyển biến môi trường vào container Unity) hoặc biến KPAH_VERSION_CODE (phat-hanh.sh trên máy)
         string ban = thamSo("-kpahBan") ?? System.Environment.GetEnvironmentVariable("KPAH_VERSION_CODE");
