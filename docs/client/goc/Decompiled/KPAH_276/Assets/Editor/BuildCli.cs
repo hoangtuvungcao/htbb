@@ -4,10 +4,18 @@ using UnityEditor.Build.Reporting;
 
 public static class BuildCli
 {
+    /// <summary>Đường ra: biến KPAH_OUT (phat-hanh.sh trên máy) hoặc -customBuildPath (GameCI trên GitHub Actions).</summary>
+    private static string duongRa()
+    {
+        string[] args = System.Environment.GetCommandLineArgs();
+        int i = System.Array.IndexOf(args, "-customBuildPath");
+        return i >= 0 && i + 1 < args.Length ? args[i + 1] : System.Environment.GetEnvironmentVariable("KPAH_OUT");
+    }
+
     public static void Win64()
     {
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
-        string outPath = System.Environment.GetEnvironmentVariable("KPAH_OUT");
+        string outPath = duongRa();
         PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
         // số bản (CapNhat.cs so với "pc.ban" trong phienban.json) - phat-hanh.sh truyền vào
         string ban = System.Environment.GetEnvironmentVariable("KPAH_VERSION_CODE");

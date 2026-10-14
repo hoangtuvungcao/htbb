@@ -4,3 +4,4 @@ out/
 *.keystore
 *.jks
 key.properties
+!goc/KPAH_277.apk

@@ -17,13 +17,13 @@ import java.security.MessageDigest;
 import org.json.JSONObject;
 
 /**
- * Tự cập nhật: lúc mở game đọc https://nqsh-h2.top/tai/phienban.json (do phat-hanh.sh ghi),
+ * Tự cập nhật: lúc mở game đọc https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json (repo public kpah-server/nqsh-h2-tai, do phat-hanh.sh ghi; không qua Nova WAF),
  * mục "android": {"ban": versionCode, "link": ..., "sha256": ...}. Bản mới hơn versionCode đang
  * cài thì hỏi người chơi, tải APK (kiểm sha256) rồi mở màn hình cài đặt của Android.
  * Không có mạng / file hỏng thì bỏ qua, game chạy bình thường.
  */
 public final class NqshCapNhat {
-    private static final String LINK = "https://nqsh-h2.top/tai/phienban.json";
+    private static final String LINK = "https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json";
     private static final String AUTHORITY_DUOI = ".capnhat";
     private static boolean daChay;
 

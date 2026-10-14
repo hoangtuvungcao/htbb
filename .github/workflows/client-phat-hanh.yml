@@ -1,0 +1,164 @@
+# Phát hành bản mới (PC / Android / jar) lên GitHub Releases của repo public kpah-server/nqsh-h2-tai
+# bằng nút "Run workflow" - không cần máy tính. Máy người chơi PC / Android tự cập nhật.
+# Secrets cần có: xem phat-hanh/README.md (mục "GitHub Actions").
+name: Phát hành
+
+on:
+  workflow_dispatch:
+    inputs:
+      loai:
+        description: "Phát hành bản nào"
+        type: choice
+        options: [tat-ca, android, pc, jar]
+        default: tat-ca
+      ghi_chu:
+        description: "Ghi chú hiện cho người chơi lúc cập nhật"
+        default: ""
+
+concurrency:
+  group: phat-hanh
+  cancel-in-progress: false
+
+env:
+  REPO: kpah-server/nqsh-h2-tai
+
+jobs:
+  so-ban:
+    name: Lấy số bản kế tiếp
+    runs-on: ubuntu-latest
+    outputs:
+      android: ${{ steps.b.outputs.android }}
+      jar: ${{ steps.b.outputs.jar }}
+      pc: ${{ steps.b.outputs.pc }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: b
+        env:
+          GH_TOKEN: ${{ secrets.NQSH_TAI_TOKEN }}
+        run: |
+          python3 -I phat-hanh/phienban.py tai-ve /tmp/pb.json
+          cat /tmp/pb.json
+          for l in android jar pc; do echo "$l=$(python3 -I phat-hanh/phienban.py ban-ke-tiep /tmp/pb.json $l)" >> "$GITHUB_OUTPUT"; done
+          cat "$GITHUB_OUTPUT"
+
+  android:
+    name: Build Android
+    needs: so-ban
+    if: inputs.loai == 'tat-ca' || inputs.loai == 'android'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Khóa ký APK (từ secrets)
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          mkdir -p /tmp/key
+          printf '%s' "$KS" | base64 -d > /tmp/key/nqsh-h2.keystore
+          printf 'keystore=nqsh-h2.keystore\nalias=nqsh-h2\npassword=%s\n' "$PASS" > /tmp/key/key.properties
+      - name: Build APK
+        run: |
+          curl -sL -o /tmp/apktool.jar https://github.com/iBotPeaches/Apktool/releases/download/v3.0.3/apktool_3.0.3.jar
+          cd Android277
+          BAN=${{ needs.so-ban.outputs.android }} OUT=NQSH-H2-${{ needs.so-ban.outputs.android }}.apk \
+            KEY_DIR=/tmp/key APKTOOL=/tmp/apktool.jar sh build.sh
+          rm -rf /tmp/key
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: Android277/out/NQSH-H2-${{ needs.so-ban.outputs.android }}.apk
+          retention-days: 3
+
+  jar:
+    name: Build jar
+    needs: so-ban
+    if: inputs.loai == 'tat-ca' || inputs.loai == 'jar'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4    # JRE 8: rt.jar cho ProGuard
+        with:
+          distribution: temurin
+          java-version: "8"
+      - uses: actions/setup-java@v4    # JDK dùng để biên dịch (--release 8)
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Build jar
+        run: |
+          RT_JAR="$JAVA_HOME_8_X64/jre/lib/rt.jar" sh Jar276/build.sh ${{ needs.so-ban.outputs.jar }}
+          cp "Jar276/out/KPAH_276 (1)-automenu-v${{ needs.so-ban.outputs.jar }}-release.jar" NQSH-H2-v${{ needs.so-ban.outputs.jar }}.jar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jar
+          path: NQSH-H2-v${{ needs.so-ban.outputs.jar }}.jar
+          retention-days: 3
+
+  pc:
+    name: Build PC
+    needs: so-ban
+    if: inputs.loai == 'tat-ca' || inputs.loai == 'pc'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Dọn ổ đĩa (image Unity ~6 GB)
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          large-packages: false
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: Decompiled/KPAH_276/Library
+          key: Library-Win64-${{ hashFiles('Decompiled/KPAH_276/Assets/**', 'Decompiled/KPAH_276/Packages/**', 'Decompiled/KPAH_276/ProjectSettings/**') }}
+          restore-keys: Library-Win64-
+      - uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          KPAH_VERSION_CODE: ${{ needs.so-ban.outputs.pc }}
+        with:
+          projectPath: Decompiled/KPAH_276
+          unityVersion: 6000.5.9f1
+          targetPlatform: StandaloneWindows64
+          buildMethod: BuildCli.Win64
+          buildName: NQSH-H2
+          buildsPath: build
+      - name: Nén zip
+        run: |
+          sudo chown -R "$(id -u)" build
+          python3 -I phat-hanh/nen-zip.py build/StandaloneWindows64 NQSH-H2-PC-${{ needs.so-ban.outputs.pc }}.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pc
+          path: NQSH-H2-PC-${{ needs.so-ban.outputs.pc }}.zip
+          retention-days: 3
+
+  day-len:
+    name: Đẩy lên GitHub Releases
+    needs: [so-ban, android, jar, pc]
+    # chạy khi các bản được chọn build xong (bản không chọn = skipped, vẫn chạy tiếp)
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: ra
+      - name: Đẩy lên + ghi phienban.json (lần lượt từng bản)
+        env:
+          GH_TOKEN: ${{ secrets.NQSH_TAI_TOKEN }}
+          GHI_CHU: ${{ inputs.ghi_chu }}
+        run: |
+          ls -R ra
+          day() {  # <loai> <ban> <file>: chỉ đẩy bản đã build trong lần chạy này
+            if [ -f "$3" ]; then sh phat-hanh/day-len.sh "$1" "$2" "$3" "$GHI_CHU"; fi
+          }
+          day jar ${{ needs.so-ban.outputs.jar }} ra/jar/NQSH-H2-v${{ needs.so-ban.outputs.jar }}.jar
+          day android ${{ needs.so-ban.outputs.android }} ra/android/NQSH-H2-${{ needs.so-ban.outputs.android }}.apk
+          day pc ${{ needs.so-ban.outputs.pc }} ra/pc/NQSH-H2-PC-${{ needs.so-ban.outputs.pc }}.zip

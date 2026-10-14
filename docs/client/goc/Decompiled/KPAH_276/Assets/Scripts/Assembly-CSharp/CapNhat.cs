@@ -8,14 +8,14 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 /// <summary>
-/// Tự cập nhật bản PC: lúc mở game đọc https://nqsh-h2.top/tai/phienban.json (do phat-hanh.sh ghi),
+/// Tự cập nhật bản PC: lúc mở game đọc https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json (repo public kpah-server/nqsh-h2-tai, do phat-hanh.sh ghi; không qua Nova WAF),
 /// mục "pc": {"ban", "link", "sha256", "ghiChu"}. "ban" lớn hơn Application.version (số bản, đặt lúc
 /// build qua KPAH_VERSION_CODE) thì tải zip, kiểm sha256, rồi chạy một script PowerShell chờ game
 /// thoát, giải nén đè lên thư mục game và mở lại game. Không có mạng / lỗi thì game chạy bình thường.
 /// </summary>
 public class CapNhat : MonoBehaviour
 {
-	private const string LINK = "https://nqsh-h2.top/tai/phienban.json";
+	private const string LINK = "https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json";
 
 	/// <summary>Đang tải bản mới: Main bỏ qua chuột / phím của game.</summary>
 	public static bool dangCapNhat;

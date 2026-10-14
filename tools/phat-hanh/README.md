@@ -1,7 +1,10 @@
 # Phát hành bản mới (client tự cập nhật)
 
-Bản mới được đặt ở `https://nqsh-h2.top/tai/` (thư mục `/var/www/tai` trên VPS 180.93.127.26),
-kèm `phienban.json` ghi số bản mới nhất. Lúc mở game, client đọc file này:
+Bản mới được đặt ở **GitHub Releases** của repo public [kpah-server/nqsh-h2-tai](https://github.com/kpah-server/nqsh-h2-tai)
+(chỉ chứa bản build, không có mã nguồn), kèm `phienban.json` trên nhánh `main` ghi số bản mới nhất.
+Không qua Nova WAF (WAF chặn `/tai/` trên nqsh-h2.top bằng trang thử thách JS) và không lộ IP VPS.
+Lúc mở game, client đọc `https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json`
+(GitHub cache file này tối đa ~5 phút):
 
 - **PC** (`Decompiled/KPAH_276/.../CapNhat.cs`): có bản mới thì tự tải zip, kiểm sha256, tự giải nén đè
   và tự mở lại game. Người chơi không phải làm gì.
@@ -12,10 +15,11 @@ kèm `phienban.json` ghi số bản mới nhất. Lúc mở game, client đọc 
 
 ## Cài một lần
 
+Đăng nhập GitHub CLI bằng tài khoản có quyền ghi repo `kpah-server/nqsh-h2-tai`:
 ```sh
-sh phat-hanh/cai-dat-vps.sh
+"/c/Program Files/GitHub CLI/gh.exe" auth login
 ```
-Tạo `/var/www/tai`, thêm `kpah-tai.conf` vào Apache (`/tai/` phục vụ thẳng từ đĩa, không qua Node).
+(`cai-dat-vps.sh` / `kpah-tai.conf` = cách cũ đặt file trên VPS ở `/tai/`; không dùng nữa vì WAF chặn.)
 
 ## Mỗi lần ra bản mới
 
@@ -25,13 +29,13 @@ sh phat-hanh/phat-hanh.sh pc      "Sửa lỗi ..., thêm ..."   # PC
 sh phat-hanh/phat-hanh.sh jar     "Sửa lỗi ..., thêm ..."   # jar J2ME (bản -release, số vNN kế tiếp)
 THU=1 sh phat-hanh/phat-hanh.sh jar                        # chạy thử: build + phat-hanh/tam/, không đẩy lên VPS
 ```
-Script tự lấy số bản kế tiếp, build, đẩy file lên VPS rồi mới ghi `phienban.json`.
+Script tự lấy số bản kế tiếp, build, đẩy file lên release `pc` / `android` / `jar` rồi mới ghi `phienban.json`.
 Ghi chú (tham số thứ 2) hiện cho người chơi lúc cập nhật.
 
 Link cố định để gửi người chơi mới (luôn là bản mới nhất):
-- PC: `https://nqsh-h2.top/tai/NQSH-H2-PC.zip`
-- Android: `https://nqsh-h2.top/tai/NQSH-H2.apk`
-- Jar: `https://nqsh-h2.top/tai/NQSH-H2.jar`
+- PC: `https://github.com/kpah-server/nqsh-h2-tai/releases/download/pc/NQSH-H2-PC.zip`
+- Android: `https://github.com/kpah-server/nqsh-h2-tai/releases/download/android/NQSH-H2.apk`
+- Jar: `https://github.com/kpah-server/nqsh-h2-tai/releases/download/jar/NQSH-H2.jar`
 
 ## `phienban.json`
 
@@ -52,3 +56,22 @@ Link cố định để gửi người chơi mới (luôn là bản mới nhất
 - APK phải ký bằng **cùng khóa** (`_tmp_build/android-key`), nếu không Android từ chối cài đè.
 - Bản PC/Android đã cài trước khi có tính năng này không tự cập nhật: người chơi cần cài lại một lần.
 - Thử cập nhật PC trên máy: đặt biến môi trường `KPAH_CAPNHAT_URL` trỏ tới một `phienban.json` cục bộ.
+
+## GitHub Actions (không cần máy tính)
+
+Tab **Actions** của repo `kpah-mod-pb` → workflow **Phát hành** → **Run workflow** → chọn bản
+(`tat-ca` / `android` / `pc` / `jar`) + ghi chú. Workflow `.github/workflows/phat-hanh.yml` build trên máy
+Linux của GitHub (PC dùng GameCI build Windows từ Linux), rồi đẩy lần lượt từng bản bằng `day-len.sh`.
+Tốn phút Actions của repo private (PC ~15-25 phút, Android / jar vài phút).
+
+Secrets (repo `kpah-mod-pb` → Settings → Secrets and variables → Actions):
+
+| Tên | Giá trị |
+|---|---|
+| `NQSH_TAI_TOKEN` | Token GitHub có quyền ghi repo `kpah-server/nqsh-h2-tai` (Contents: Read and write) |
+| `ANDROID_KEYSTORE_B64` | Nội dung file `_tmp_build/android-key/ANDROID_KEYSTORE_B64.txt` (keystore dạng base64) |
+| `ANDROID_KEY_PASSWORD` | Nội dung file `_tmp_build/android-key/ANDROID_KEY_PASSWORD.txt` |
+| `UNITY_LICENSE` | Toàn bộ nội dung `C:\ProgramData\Unity\Unity_lic.ulf` (chỉ cần cho bản PC) |
+| `UNITY_EMAIL` / `UNITY_PASSWORD` | Tài khoản Unity (chỉ cần cho bản PC) |
+
+Jar build từ `Jar276/` (bản sao của `_mod276/jar`, chạy được trên Windows lẫn Linux); APK gốc ở `Android277/goc/`.
