@@ -161,8 +161,9 @@ jobs:
   day-len:
     name: Đẩy lên GitHub Releases
     needs: [so-ban, android, jar, pc]
-    # chạy khi các bản được chọn build xong (bản không chọn = skipped, vẫn chạy tiếp)
-    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
+    # bản nào build xong thì phát hành bản đó (bản lỗi / không chọn thì không có file, bỏ qua);
+    # job vẫn báo lỗi ở bước cuối nếu có bản build hỏng để bạn thấy
+    if: ${{ !cancelled() && needs.so-ban.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -181,3 +182,8 @@ jobs:
           day jar ${{ needs.so-ban.outputs.jar }} ra/jar/NQSH-H2-v${{ needs.so-ban.outputs.jar }}.jar
           day android ${{ needs.so-ban.outputs.android }} ra/android/NQSH-H2-${{ needs.so-ban.outputs.android }}.apk
           day pc ${{ needs.so-ban.outputs.pc }} ra/pc/NQSH-H2-PC-${{ needs.so-ban.outputs.pc }}.zip
+      - name: Bản build lỗi (nếu có)
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: |
+          echo "::error::Co ban build loi (android=${{ needs.android.result }}, jar=${{ needs.jar.result }}, pc=${{ needs.pc.result }}) - ban do KHONG duoc phat hanh"
+          exit 1
