@@ -21,4 +21,6 @@ esac
 sh ./gradlew -q --no-daemon :app:assembleRelease -PkpahBan="$BAN" -PkpahTen="$TEN" -PkpahKeyDir="$KEY_DIR"
 mkdir -p out
 cp app/build/outputs/apk/release/app-release.apk "out/$OUT"
+# bảng tên R8 (giữ riêng, không đưa lên git / không phát kèm)
+cp app/build/outputs/mapping/release/mapping.txt "out/mapping-$BAN.txt" 2>/dev/null || true
 echo "OK out/$OUT"
