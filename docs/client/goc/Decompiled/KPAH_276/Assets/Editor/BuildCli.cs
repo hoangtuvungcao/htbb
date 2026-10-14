@@ -9,6 +9,12 @@ public static class BuildCli
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
         string outPath = System.Environment.GetEnvironmentVariable("KPAH_OUT");
         PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
+        // số bản (CapNhat.cs so với "pc.ban" trong phienban.json) - phat-hanh.sh truyền vào
+        string ban = System.Environment.GetEnvironmentVariable("KPAH_VERSION_CODE");
+        if (!string.IsNullOrEmpty(ban))
+        {
+            PlayerSettings.bundleVersion = ban;
+        }
         AssetDatabase.ImportAsset("Assets/Icon/app_icon.png");
         UnityEngine.Texture2D icon = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>("Assets/Icon/app_icon.png");
         PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.Unknown, new UnityEngine.Texture2D[] { icon }, IconKind.Any);

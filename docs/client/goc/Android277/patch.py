@@ -1,6 +1,6 @@
 """Vá APK KPAH_277 gốc thành bản NQSH-H2.
 
-    python -I patch.py <smali-src gốc> <thư mục ra> <modsmali> <package mới> <tên app>
+    python -I patch.py <smali-src gốc> <thư mục ra> <modsmali> <package mới> <tên app> <versionCode>
 
 Chép smali-src sang thư mục ra rồi:
 - thêm NqshMod (đã biên dịch ra smali) vào game/render/screen
@@ -13,7 +13,7 @@ import re
 import shutil
 import sys
 
-src, out, modsmali, pkg, ten = sys.argv[1:6]
+src, out, modsmali, pkg, ten, ban = sys.argv[1:7]
 if os.path.exists(out):
     shutil.rmtree(out)
 shutil.copytree(src, out)
@@ -65,6 +65,25 @@ p = os.path.join(out, "AndroidManifest.xml")
 s = open(p, encoding="utf-8").read()
 assert s.count('package="com.teamobi.kpah"') == 1
 s = s.replace('package="com.teamobi.kpah"', 'package="%s"' % pkg)
+# Tự cập nhật (NqshCapNhat): quyền mở trình cài APK + FileProvider chia sẻ file APK đã tải
+s = s.replace('<uses-permission android:name="android.permission.INTERNET"/>',
+              '<uses-permission android:name="android.permission.INTERNET"/>\n'
+              '    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>', 1)
+s = s.replace("</application>",
+              '    <provider android:name="androidx.core.content.FileProvider" android:authorities="%s.capnhat" '
+              'android:exported="false" android:grantUriPermissions="true">\n'
+              '            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/nqsh_capnhat"/>\n'
+              '        </provider>\n    </application>' % pkg, 1)
+assert "REQUEST_INSTALL_PACKAGES" in s and "nqsh_capnhat" in s
+open(p, "w", encoding="utf-8").write(s)
+os.makedirs(os.path.join(out, "res", "xml"), exist_ok=True)
+open(os.path.join(out, "res", "xml", "nqsh_capnhat.xml"), "w", encoding="utf-8").write(
+    '<?xml version="1.0" encoding="utf-8"?>\n<paths>\n    <cache-path name="capnhat" path="capnhat/"/>\n</paths>\n')
+
+p = os.path.join(out, "apktool.yml")
+s = open(p, encoding="utf-8").read()
+s, n = re.subn(r"(\n  versionCode: )\d+", r"\g<1>" + str(int(ban)), s)
+assert n == 1
 open(p, "w", encoding="utf-8").write(s)
 
 p = os.path.join(out, "res", "values", "strings.xml")
@@ -72,4 +91,4 @@ s = open(p, encoding="utf-8").read()
 s, n = re.subn(r'<string name="app_name">[^<]*</string>', '<string name="app_name">%s</string>' % ten, s)
 assert n == 1
 open(p, "w", encoding="utf-8").write(s)
-print("package", pkg, "ten", ten)
+print("package", pkg, "ten", ten, "versionCode", ban)

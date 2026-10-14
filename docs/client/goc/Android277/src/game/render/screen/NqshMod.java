@@ -56,6 +56,7 @@ public final class NqshMod {
         ServerListScr.port = new short[]{17949};
         ServerListScr.index_server = new byte[]{0};
         ServerListScr.linkGetHost = LINK;
+        NqshCapNhat.batDau();
     }
 
     /** Thay thân ServerListScr.doUpdateServer (nút "Cập nhật"). */

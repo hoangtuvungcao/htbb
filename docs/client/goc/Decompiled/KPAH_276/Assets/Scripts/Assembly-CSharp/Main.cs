@@ -78,6 +78,7 @@ public class Main : MonoBehaviour
 		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = FPS;
 		ScaleGUI.datCuaSo();
+		CapNhat.batDau(base.gameObject);
 	}
 
 	private void OnApplicationFocus(bool focus)
@@ -145,7 +146,10 @@ public class Main : MonoBehaviour
 	{
 		if (yy >= 10)
 		{
-			checkInput();
+			if (!CapNhat.dangCapNhat)
+			{
+				checkInput();
+			}
 			Session_ME.update();
 			if (Event.current.type.Equals(EventType.Repaint))
 			{
