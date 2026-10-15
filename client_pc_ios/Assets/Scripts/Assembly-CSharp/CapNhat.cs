@@ -132,9 +132,10 @@ public class CapNhat : MonoBehaviour
 		yield return new WaitForSeconds(0.5f);
 		try
 		{
+			// ghi "đã thử" SAU khi chạy được script cài - trước đây ghi trước, cài lỗi là bỏ qua bản này mãi
+			chayCaiDat(zip);
 			PlayerPrefs.SetInt(KHOA_DA_THU, moi.ban);
 			PlayerPrefs.Save();
-			chayCaiDat(zip);
 			Application.Quit();
 		}
 		catch (Exception ex)
@@ -183,11 +184,32 @@ public class CapNhat : MonoBehaviour
 		return "'" + s.Replace("'", "''") + "'";
 	}
 
+	/// <summary>File .exe của game trong thư mục (bỏ UnityCrashHandler64.exe); không thấy thì NQSH-H2.exe.</summary>
+	private static string timExe(string thuMuc)
+	{
+		try
+		{
+			foreach (string f in Directory.GetFiles(thuMuc, "*.exe"))
+			{
+				if (!string.Equals(Path.GetFileName(f), "UnityCrashHandler64.exe", StringComparison.OrdinalIgnoreCase))
+				{
+					return f;
+				}
+			}
+		}
+		catch (Exception)
+		{
+		}
+		return Path.Combine(thuMuc, "NQSH-H2.exe");
+	}
+
 	/// <summary>Script chờ game thoát -> giải nén đè -> mở exe có trong bản mới (lỗi thì mở lại bản cũ).</summary>
 	private static void chayCaiDat(string zip)
 	{
 		string thuMucGame = Path.GetDirectoryName(Application.dataPath);
-		string exeCu = Process.GetCurrentProcess().MainModule.FileName;
+		// Không dùng Process.GetCurrentProcess().MainModule: bản build Unity hiện tại ném
+		// ArgumentNullException ở Process.get_Modules -> không bao giờ cài được. Lấy exe trong thư mục game.
+		string exeCu = timExe(thuMucGame);
 		string tam = Path.Combine(Application.temporaryCachePath, "capnhat-giainen");
 		string log = Path.Combine(Application.temporaryCachePath, "capnhat-loi.txt");
 		string ps1 = Path.Combine(Application.temporaryCachePath, "capnhat.ps1");
