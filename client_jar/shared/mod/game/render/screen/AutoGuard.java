@@ -222,6 +222,39 @@ public final class AutoGuard {
     }
 
     /**
+     * Chèn ở ĐẦU GameService.requestMonsterInfo: true = không gửi lệnh 7. Lúc auto vận tiêu nháy map
+     * (nạp lại map mỗi vài ô) client xin lại thông tin MỌI con quái -> vượt chống flood của server
+     * (300 gói / 5s), server bỏ cả lệnh nháy -> xe tiêu bị bỏ lại. Chỉ xin cho xe tiêu (idChar >= 0).
+     */
+    /** Chèn ở đầu xử lý phím của Canvas: phím tắt PK (AutoPk.phim). true = đã dùng phím này. */
+    public static boolean phimPk(int n) {
+        try {
+            return AutoPk.phim(n);
+        }
+        catch (Throwable throwable) {
+            return false;
+        }
+    }
+
+    public static boolean chanXinQuai(short s) {
+        try {
+            if (!AutoVanTieu.dang || game.render.Canvas.gameScr == null) {
+                return false;
+            }
+            Vector vector = game.render.Canvas.gameScr.actors;
+            for (int i = vector.size() - 1; i >= 0; --i) {
+                game.model.Actor actor = (game.model.Actor)vector.elementAt(i);
+                if (actor == null || actor.catagory != 1 || actor.ID != s) continue;
+                return !(actor instanceof game.model.Monster) || ((game.model.Monster)actor).idChar < 0;
+            }
+        }
+        catch (Throwable throwable) {
+            // không bao giờ cản lệnh của game
+        }
+        return false;
+    }
+
+    /**
      * Lệnh 4 cho quái (cat 1) mà actor cùng id đang chạy hiệu ứng chết (lệnh 90, die = true): bỏ
      * actor cũ để onActorMove tạo lại actor mới (đúng loại + mã chủ tiêu). Đổi tiêu là vậy: server
      * gửi 90 rồi 4 cùng id với loại xe mới; giữ actor cũ thì nó chỉ đổi vị trí rồi bị xoá ở khung
@@ -325,10 +358,30 @@ public final class AutoGuard {
         return Canvas.h / 3;
     }
 
+    /** Nút TIÊU (bật/tắt vòng vận tiêu) nằm ngay dưới nút UP. */
+    static int nutY2() {
+        return nutY() + NUT_H + 8;
+    }
+
     /** Có nút và điểm (x, y) nằm trong nút. */
     static boolean trongNutUp(int x, int y) {
         return Nen.coNutUp() && Canvas.currentScreen == Canvas.gameScr
                 && x >= nutX() && x < nutX() + NUT_W && y >= nutY() && y < nutY() + NUT_H;
+    }
+
+    /** Nút PK (bật/tắt Đập người) dưới nút TIÊU. */
+    static int nutY3() {
+        return nutY2() + NUT_H + 8;
+    }
+
+    static boolean trongNutPk(int x, int y) {
+        return Nen.coNutUp() && Canvas.currentScreen == Canvas.gameScr
+                && x >= nutX() && x < nutX() + NUT_W && y >= nutY3() && y < nutY3() + NUT_H;
+    }
+
+    static boolean trongNutTieu(int x, int y) {
+        return Nen.coNutUp() && Canvas.currentScreen == Canvas.gameScr
+                && x >= nutX() && x < nutX() + NUT_W && y >= nutY2() && y < nutY2() + NUT_H;
     }
 
     /**
@@ -339,12 +392,20 @@ public final class AutoGuard {
         if (!Nen.coNutUp() || Canvas.currentScreen != Canvas.gameScr || Canvas.menu.showMenu || Canvas.currentDialog != null) {
             return;
         }
-        if (Canvas.isPointerDown && trongNutUp(Canvas.px, Canvas.py)) {
+        if (Canvas.isPointerDown && (trongNutUp(Canvas.px, Canvas.py) || trongNutTieu(Canvas.px, Canvas.py) || trongNutPk(Canvas.px, Canvas.py))) {
             Canvas.isPointerDown = false;
         }
         if (Canvas.isPointerClick && trongNutUp(Canvas.px, Canvas.py) && trongNutUp(Canvas.pxLast, Canvas.pyLast)) {
             Canvas.isPointerClick = false;
             AutoUp.batTat();
+        }
+        if (Canvas.isPointerClick && trongNutTieu(Canvas.px, Canvas.py) && trongNutTieu(Canvas.pxLast, Canvas.pyLast)) {
+            Canvas.isPointerClick = false;
+            AutoVanTieu.batTat();
+        }
+        if (Canvas.isPointerClick && trongNutPk(Canvas.px, Canvas.py) && trongNutPk(Canvas.pxLast, Canvas.pyLast)) {
+            Canvas.isPointerClick = false;
+            AutoPk.batTat();
         }
     }
 
@@ -375,10 +436,15 @@ public final class AutoGuard {
         if (!Nen.coNutUp() || Canvas.currentScreen != Canvas.gameScr) {
             return;
         }
-        boolean bat = AutoUp.dang;
+        AutoGuard.veNut(graphics, nutY(), "UP", AutoUp.dang);
+        AutoGuard.veNut(graphics, nutY2(), "TIÊU", AutoVanTieu.dang);
+        AutoGuard.veNut(graphics, nutY3(), "PK", AutoPk.danh());
+    }
+
+    private static void veNut(Graphics graphics, int y, String ten, boolean bat) {
         int r = NUT_W / 2 - 3;
         int cx = nutX() + NUT_W / 2;
-        int cy = nutY() + NUT_H / 2 - 1;
+        int cy = y + NUT_H / 2 - 1;
         boolean sang = System.currentTimeMillis() / 500L % 2L == 0L;
         graphics.setClip(0, 0, Canvas.w, Canvas.h);
         AutoGuard.veTron(graphics, cx, cy + 2, r + 1, 0x000000, 0x000000);
@@ -391,7 +457,7 @@ public final class AutoGuard {
             AutoGuard.veTron(graphics, cx, cy, r - 3, 0x6A6A6A, 0x242424);
         }
         int h = Font.normalFont[0].getHeight();
-        Font.normalFont[0].drawString(graphics, "UP", cx, cy - h + 1, 2);
+        Font.normalFont[0].drawString(graphics, ten, cx, cy - h + 1, 2);
         Font.normalFont[0].drawString(graphics, bat ? "BẬT" : "TẮT", cx, cy, 2);
     }
 

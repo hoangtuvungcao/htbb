@@ -11,7 +11,7 @@ import os
 import re
 import sys
 
-CHUNG = ["AutoGuard", "PauseMenu", "AutoUp", "AutoVanTieu", "AutoVanMay", "TienIch", "LenThanh"]
+CHUNG = ["AutoGuard", "PauseMenu", "AutoUp", "AutoVanTieu", "AutoPk", "AutoVanMay", "TienIch", "LenThanh"]
 
 # (mẫu regex, thay bằng) - áp theo thứ tự
 DOI_TEN = [

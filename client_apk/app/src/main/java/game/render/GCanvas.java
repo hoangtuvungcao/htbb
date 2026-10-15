@@ -463,6 +463,10 @@ public class GCanvas extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void mapKeyPress(int i) {
+        // mod: phím tắt PK (Mã pk, nháy map, bật đồ sát, gọi thú/pet)
+        if (game.render.screen.AutoGuard.phimPk(i)) {
+            return;
+        }
         switch (i) {
             case 12:
                 keyHold[12] = true;

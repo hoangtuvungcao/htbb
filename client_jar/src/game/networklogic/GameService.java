@@ -536,6 +536,10 @@ public class GameService extends Cmd_message {
     }
 
     public void requestMonsterInfo(short actorID) {
+        // mod: auto vận tiêu nháy map - không xin thông tin quái thường (tránh chống flood của server)
+        if (game.render.screen.AutoGuard.chanXinQuai(actorID)) {
+            return;
+        }
         Message m = init((byte) 7);
         try {
             m.writer().writeShort(actorID);

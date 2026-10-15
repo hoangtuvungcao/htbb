@@ -1933,6 +1933,7 @@ public partial class PauseMenu
 			AutoGuard.nutUpTick();
 			AutoUp.tick();
 			AutoVanTieu.tick();
+			AutoPk.tick();
 			AutoVanMay.tick();
 			LenThanh.tick();
 			TienIch.batLuong();

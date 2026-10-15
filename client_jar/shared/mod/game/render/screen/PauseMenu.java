@@ -1390,7 +1390,12 @@ extends Screen {
             return true;
         }
         int n4 = Tilemap.type[n3];
-        return n4 >= 2000000000 || (n4 & 2) == 2;
+        if (n4 >= 2000000000 || (n4 & 2) == 2) {
+            return true;
+        }
+        // vùng chặn của NPC (vd tượng lân sự kiện giữa làng): không có trong dữ liệu ô nhưng
+        // GameScr.doActorMove vẫn chặn bước đi -> trước đây BFS đi xuyên qua rồi đứng kẹt
+        return Canvas.gameScr != null && Canvas.gameScr.checkMoveLimit(n * 16 + 8, n2 * 16 + 8);
     }
 
     /**
@@ -1487,7 +1492,7 @@ extends Screen {
      * bản đồ (0, 1, 2...); map đích thật nằm trong Res.getLocation(nhóm map, toM) - mỗi điểm
      * đến 3 số (map, x, y). Vd map 9: lối ra 1 (mép trên) -> {201, 39, 90, ...} = Thành.
      */
-    private static int congDen(CMLocation cMLocation, int n) {
+    static int congDen(CMLocation cMLocation, int n) {
         short[] sArray = Res.getLocation(Canvas.gameScr.getIndexArrMap(), cMLocation.toM);
         for (int i = 0; sArray != null && i * 3 < sArray.length; ++i) {
             if (sArray[i * 3] != n) continue;
@@ -1867,6 +1872,13 @@ extends Screen {
             public void perform() {
                 Canvas.gameScr.switchToMe();
                 AutoVanTieu.moMenu(0);
+            }
+        }));
+        vector.addElement(new Command("PK", new IAction(){
+
+            public void perform() {
+                Canvas.gameScr.switchToMe();
+                AutoPk.moMenu(0);
             }
         }));
         vector.addElement(new Command("Vận may", new IAction(){
@@ -4971,6 +4983,7 @@ extends Screen {
             AutoGuard.nutUpTick();
             AutoUp.tick();
             AutoVanTieu.tick();
+            AutoPk.tick();
             AutoVanMay.tick();
             LenThanh.tick();
             TienIch.batLuong();

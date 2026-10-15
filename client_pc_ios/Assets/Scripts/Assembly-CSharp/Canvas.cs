@@ -548,6 +548,11 @@ public class Canvas
 
 	public void mapKeyPress(int keyCode)
 	{
+		// mod: phím tắt PK (Mã pk, nháy map, bật đồ sát, gọi thú/pet)
+		if (AutoGuard.phimPk(keyCode))
+		{
+			return;
+		}
 		switch (keyCode)
 		{
 		case 42:

@@ -1,64 +1,52 @@
+
+
 /**
- * Auto vận tiêu (chạy song song với game như AutoUp, gọi mỗi khung hình từ PauseMenu.autoCheDoTick).
- * Vòng: (thiếu Thổ địa phù thì vào nhà mua) -> nhận tiêu NPC -50 -> chưa đúng màu thì đổi NGAY tại
- * chỗ bằng Lệnh bài đổi tiêu cao cấp (116, hết thì mua gói 130 bằng lượng) -> đi 2 (Tiên Du),3,5,6,
- * 7,8,9 -> Biên giới 118 -> trả tiêu NPC -51 -> Thổ địa phù về làng -> lặp.
- * Bật auto lúc đang ở ngoài làng mà có tiêu cạnh mình thì đi tiếp chuyến đó, không về làng.
- * Luật server (xem KPAH real/Char.doInitMonter, doChangeTieu, TraVanTieu, MonsterVantieu):
- *  - tiêu chỉ đi theo khi chủ cách <= 80px mỗi trục, xa hơn thì đứng im -> đi chậm, chờ tiêu;
- *  - qua map tiêu chỉ sang theo khi cách <= 120px lúc gửi lệnh đổi map;
- *  - đổi tiêu chỉ ở làng nhà (cả map clone), tiêu phải cùng map;
- *  - trả tiêu: đứng ô x 51-59, y 16-24 map 118, tiêu cách <= 120px.
- * Thông báo nhận/đổi tiêu đọc qua AutoGuard.autoEatDlg (startOKDlg) để biết màu.
+ * Vận tiêu theo bản "KPAH2-DOITIEU" (đọc từ bản đã giải mã):
+ *  - Auto đổi (vòng, luồng teHFm): ở Biên giới thì dùng Thổ địa phù về làng; ở làng vào nhà rồi ra
+ *    lại, đi tới chỗ đứng, rồi chạy Đổi tiêu.
+ *  - Đổi tiêu (luồng knqO): nhận tiêu NPC -50 một lần, rồi cứ 250ms dùng Lệnh bài đổi tiêu cao cấp
+ *    (116, hết mà còn >= 100 lượng thì mua gói 130). Server báo "Chúc mừng bạn đã đổi được tiêu
+ *    <màu chọn>" (đúng màu) thì thôi đổi và chạy Đi tiêu.
+ *  - Đi tiêu (luồng COMb): chạy thẳng theo các mốc ghi sẵn từng map, nháy map ở mỗi điểm dừng để
+ *    server kéo xe tiêu tới chỗ mình, kiểm tra tiêu ở các mốc, tới Dịch trạm thì trả tiêu (NPC -51).
+ *    Server báo "Chúc mừng bạn nhận được" ở Biên giới thì vòng Auto đổi chạy lại.
+ * Khác bản gốc (để chạy được trên server này): đổi map qua cổng lấy toạ độ đến của đúng cổng đang
+ * đứng (server kick người xin sang map kề sai cổng); nháy kéo xe sát trước khi qua cổng.
  */
 public sealed class AutoVanTieu
 {
-	private static readonly string[] MAU = new string[] { "Trắng", "Xanh", "Đỏ", "Hoàn mỹ", "Vàng", "Tím" };
-	private static readonly int[] DUONG = new int[] { 2, 3, 5, 6, 7, 8, 9, 118 };
 	private const int MAP_BIEN_GIOI = 118;
 	private const int NPC_NHAN = -50;
 	private const int NPC_TRA = -51;
 	private const int THO_DIA = 19;
 	private const int LENH_CAO_CAP = 116;
-	private const int THE_VAN_TIEU = 82;
 	private const int SHOP_LENH_CAO_CAP = 130;
-	private const int SHOP_THE_VAN_TIEU = 131;
+	/** Màu chọn (thứ tự như bản gốc; "Xanh lá" bản gốc = "Hoàn mỹ" trên server này). */
+	private static readonly string[] MAU = new string[]{"Tím", "Vàng", "Hoàn mỹ", "Đỏ", "Xanh", "Trắng"};
 
+	/** Có chức năng vận tiêu nào đang chạy (AutoGuard.chanXinQuai, thanh trạng thái). */
 	public static bool dang;
-	private static int mauMucTieu = 2;
-	private static bool doiTieu = true;
-	private static long lucBat;
-	private static int buoc;
-	private static long luc;
-	private static long lucCho;
-	private static int lan;
-	private static int mau = -1;
+	private static volatile bool chayVong;
+	private static volatile bool chayDoi;
+	private static volatile bool chayDi;
+	private static int mauIndex = 0;
+	public static int tocNhay = 30;
+	public static bool kiemTra = true;
+	private static int soTieu;
 	private static int idTieu = -1;
-	private static int chuyen;
-	private static int doi;
-	private static int theDaMua;
-	private static bool hetLuong;
-	/** Server từ chối đổi tiêu ở chỗ này (vd nhận tiêu ở map 80): đi luôn với màu đang có. */
-	private static bool thoiDoi;
-	private static bool donTieu;
-	private static long lucChoCong;
-	private static int soTruoc;
-	private static int mapTruoc;
-	private static long lucMatTieu;
 	private static string trangThai = "";
-	// Java: field `thongBao` (C# không cho field trùng tên hàm thongBao(string)) -> đổi thành thongBao_
-	private static string thongBao_;
-	// đường đi BFS (các góc rẽ) tới vùng đích
-	private static bool[] dich;
-	private static int[] duong;
-	private static int duongPos;
-	private static int ketX;
-	private static int ketY;
-	private static long lucKet;
-	private static long lucChoTieu;
 
 	private AutoVanTieu()
 	{
+	}
+
+	private static void capNhat()
+	{
+		dang = chayVong || chayDoi || chayDi;
+		if (!chayDi)
+		{
+			AutoVanTieu.nha();
+		}
 	}
 
 	// ------------------------------------------------------------------ menu
@@ -66,900 +54,929 @@ public sealed class AutoVanTieu
 	public static void moMenu(int chon)
 	{
 		mVector vector = new mVector();
-		vector.addElement(new Command(dang ? "Tắt vận tiêu" : "Bật vận tiêu")
+		vector.addElement(new Command(chayVong || chayDoi ? "Auto đổi: Bật" : "Auto đổi: Tắt") { action = () =>
 		{
-			action = () =>
-			{
-				if (dang)
+				if (chayVong || chayDoi)
 				{
-					AutoVanTieu.tat();
+					chayVong = false;
+					chayDoi = false;
 				}
 				else
 				{
-					AutoVanTieu.bat();
+					AutoVanTieu.batVong();
 				}
-			}
-		});
-		vector.addElement(new Command(new System.Text.StringBuilder().Append("Màu: ").Append(MAU[mauMucTieu]).Append(" trở lên").ToString())
+				AutoVanTieu.capNhat();
+				AutoVanTieu.moMenu(0);
+			} });
+		vector.addElement(new Command(new System.Text.StringBuilder().Append("Màu chọn: ").Append(MAU[mauIndex]).ToString()) { action = () =>
 		{
-			action = () =>
-			{
-				mauMucTieu = mauMucTieu >= MAU.Length - 1 ? 1 : mauMucTieu + 1;
-				AutoVanTieu.moMenu(1);
-			}
-		});
-		vector.addElement(new Command(doiTieu ? "Đổi tiêu: bật" : "Đổi tiêu: tắt")
-		{
-			action = () =>
-			{
-				doiTieu = !doiTieu;
-				AutoVanTieu.moMenu(2);
-			}
-		});
-		MainChar mainChar = Canvas.gameScr == null ? null : Canvas.gameScr.mainChar;
-		if (mainChar != null)
-		{
-			vector.addElement(new Command(new System.Text.StringBuilder().Append("Lệnh bài ").Append(AutoVanTieu.so(LENH_CAO_CAP)).Append(" | Thổ địa ").Append(AutoVanTieu.so(THO_DIA)).ToString())
-			{
-				action = () =>
+				if (++mauIndex >= MAU.Length)
 				{
-					AutoVanTieu.moMenu(3);
+					mauIndex = 0;
 				}
-			});
-		}
+				AutoVanTieu.moMenu(1);
+			} });
+		vector.addElement(new Command(new System.Text.StringBuilder().Append("Tốc độ nháy: ").Append(tocNhay).ToString()) { action = () =>
+		{
+				// máy/mạng mạnh 100, yếu 200-300; còn bỏ rơi tiêu thì tăng lên
+				Canvas.inputDlg.setInfo(new System.Text.StringBuilder().Append("Tốc độ nháy: ").Append(tocNhay).ToString(), () =>
+				{
+						try
+						{
+							int n = int.Parse(Canvas.inputDlg.tfInput.getText().Trim());
+							if (n > 0)
+							{
+								tocNhay = n;
+							}
+						}
+						catch (System.Exception)
+						{
+							// empty catch block
+						}
+						Canvas.endDlg();
+						AutoVanTieu.moMenu(2);
+					}, 1, 3, true);
+				Canvas.inputDlg.show();
+			} });
+		vector.addElement(new Command(kiemTra ? "K.Tra Tiêu: Bật" : "K.Tra Tiêu: Tắt") { action = () =>
+		{
+				kiemTra = !kiemTra;
+				AutoVanTieu.moMenu(3);
+			} });
+		vector.addElement(new Command(chayDi ? "Đi tiêu: đang chạy" : "Đi tiêu") { action = () =>
+		{
+				if (!chayDi)
+				{
+					AutoVanTieu.batDi();
+				}
+				Canvas.menu.showMenu = false;
+			} });
+		vector.addElement(new Command("Dừng toàn bộ") { action = () =>
+		{
+				AutoVanTieu.tat();
+			} });
 		PauseMenu.moMenuGiuChon(vector, 2, chon);
 	}
 
-	private static void bat()
+	/** Nút TIÊU nổi trên màn game (AutoGuard): bật = Auto đổi (cả vòng), tắt = dừng toàn bộ. */
+	public static void batTat()
 	{
-		if (Canvas.gameScr == null || Canvas.gameScr.mainChar == null)
+		if (dang)
 		{
-			return;
+			AutoVanTieu.tat();
 		}
-		AutoUp.tat();
-		AutoVanMay.tat();
-		GameScr.autoFight = false;
-		GameScr.saveAutoFight = false;
-		dang = true;
-		buoc = 0;
-		lan = 0;
-		mau = -1;
-		// KHÔNG xoá idTieu: tắt auto, tự đi tay rồi bật lại giữa đường thì vẫn nhận ra tiêu của mình
-		chuyen = 0;
-		doi = 0;
-		theDaMua = 0;
-		hetLuong = false;
-		thoiDoi = false;
-		donTieu = false;
-		thongBao_ = null;
-		duong = null;
-		lucBat = mSystem.currentTimeMillis();
-		Canvas.menu.showMenu = false;
+		else if (Tilemap.lv == 0 || Tilemap.lv == 70 || Tilemap.lv == MAP_BIEN_GIOI)
+		{
+			AutoVanTieu.batVong();
+		}
+		else
+		{
+			// đang giữa đường (đã có tiêu): đi tiêu tiếp từ map này
+			AutoVanTieu.batDi();
+		}
 	}
 
+	/** Nút sao bản gốc: dừng toàn bộ thao tác. */
 	public static void tat()
 	{
-		if (!dang)
-		{
-			return;
-		}
-		dang = false;
-		AutoVanTieu.nha();
+		chayVong = false;
+		chayDoi = false;
+		chayDi = false;
+		AutoVanTieu.capNhat();
 		Canvas.menu.showMenu = false;
-	}
-
-	private static void dung(string @string)
-	{
-		AutoVanTieu.tat();
-		Canvas.startOKDlg(@string);
 	}
 
 	// ------------------------------------------------------------------ thông báo server
 
-	/** Gọi từ AutoGuard.autoEatDlg: true = nuốt hộp thoại (auto tự xử lý). */
+	/** Gọi từ AutoGuard.autoEatDlg (checkThongBao bản gốc): true = nuốt hộp thoại. */
 	public static bool thongBao(string @string)
 	{
 		if (!dang || @string == null)
 		{
 			return false;
 		}
-		if (@string.IndexOf("tiêu", System.StringComparison.Ordinal) >= 0 || @string.StartsWith("Đã mua", System.StringComparison.Ordinal) || @string.StartsWith("Bạn đã mua", System.StringComparison.Ordinal))
+		if (chayDoi && @string.IndexOf("Chúc mừng bạn đã đổi được tiêu " + MAU[mauIndex]) != -1)
 		{
-			thongBao_ = @string;
-			return true;
+			chayDoi = false;
+			AutoVanTieu.batDi();
 		}
-		return false;
+		if (@string.IndexOf("Không thể sử dụng khi bạn đang chưa nhận tiêu") != -1)
+		{
+			chayDoi = false;
+			AutoVanTieu.capNhat();
+		}
+		if (@string.IndexOf("Chúc mừng bạn nhận được") != -1)
+		{
+			++soTieu;
+			if (Tilemap.lv == MAP_BIEN_GIOI)
+			{
+				chayDi = false;
+				AutoVanTieu.batVong();
+			}
+		}
+		return @string.IndexOf("tiêu") >= 0 || @string.StartsWith("Chúc mừng bạn nhận được", System.StringComparison.Ordinal) || @string.StartsWith("Đã mua", System.StringComparison.Ordinal) || @string.StartsWith("Bạn đã mua", System.StringComparison.Ordinal);
 	}
 
-	private static int mauTrong(string @string)
-	{
-		for (int i = MAU.Length - 1; i >= 0; --i)
-		{
-			if (!@string.EndsWith(MAU[i], System.StringComparison.Ordinal)) continue;
-			return i;
-		}
-		return -1;
-	}
-
-	// ------------------------------------------------------------------ vòng chính
-
+	/** Mỗi khung hình (PauseMenu.autoCheDoTick): chỉ đóng menu chọn khu game tự bật khi đi vào vùng cổng. */
 	public static void tick()
 	{
-		if (!dang)
+		if (!chayDi || Canvas.gameScr == null)
 		{
 			return;
 		}
-		GameScr gameScr = Canvas.gameScr;
-		if (gameScr == null || gameScr.mainChar == null || Canvas.currentScreen != gameScr || Tilemap.type == null || Tilemap.w <= 0)
-		{
-			AutoVanTieu.nha();
-			return;
-		}
-		MainChar mainChar = gameScr.mainChar;
-		// đi vào VÙNG cổng (rộng hơn ô cổng nhiều) game tự bật menu chọn khu (Tiên du / Đông / Tây...):
-		// đóng đi, lúc qua cổng auto tự chọn map gốc (PauseMenu.quaCong). Auto không mở NPC nào nên
-		// menu lạ chỉ có thể là menu cổng; menu mod (để tắt auto) thì giữ. Muốn can thiệp: bấm phím.
 		if (Canvas.menu.showMenu && Canvas.menu.menuItems != PauseMenu.menuMod)
 		{
 			Canvas.menu.showMenu = false;
 		}
-		if (Canvas.currentDialog != null || Canvas.menu.showMenu)
-		{
-			AutoVanTieu.nha();
-			trangThai = "tạm dừng";
-			return;
-		}
-		long l = mSystem.currentTimeMillis();
-		// bấm phím / chạm màn hình bất kỳ thì dừng (bỏ qua 0.5s đầu: chính cú bấm bật auto)
-		if (l - lucBat > 500L && AutoVanTieu.coBam())
-		{
-			AutoVanTieu.dung(new System.Text.StringBuilder().Append("Đã dừng vận tiêu. Đã đi ").Append(chuyen).Append(" chuyến.").ToString());
-			return;
-		}
-		if (mainChar.hp <= 0)
-		{
-			AutoVanTieu.nha();
-			trangThai = "chờ hồi sinh";
-			return;
-		}
-		if (l < lucCho)
+	}
+
+	// ------------------------------------------------------------------ Auto đổi (vòng)
+
+	private static void batVong()
+	{
+		if (chayVong)
 		{
 			return;
 		}
-		switch (buoc)
+		chayVong = true;
+		AutoVanTieu.capNhat();
+		new System.Threading.Thread(() =>
 		{
-			case 0:
-			{
-				// chuẩn bị ở làng
-				if (!AutoVanTieu.oLang())
-				{
-					// đang ngoài làng: có tiêu của mình (hoặc tiêu sát bên) thì đi tiếp chuyến đó
-					Actor actor = idTieu >= 0 ? AutoVanTieu.timTieu(gameScr) : null;
-					if (actor == null)
-					{
-						actor = AutoVanTieu.tieuGanNhat(gameScr, mainChar, 120);
-					}
-					if (actor != null)
-					{
-						idTieu = ((Monster)actor).idChar;
-						lucMatTieu = 0L;
-						buoc = 40;
-						return;
-					}
-					buoc = 60;
-					return;
-				}
-				if (AutoVanTieu.so(THO_DIA) < 1)
-				{
-					buoc = 10;
-					return;
-				}
-				buoc = 20;
-				return;
-			}
-			case 10:
-			{
-				trangThai = "vào nhà mua Thổ địa phù";
-				if (gameScr.isOffLineMap(gameScr.map))
-				{
-					buoc = 12;
-					return;
-				}
-				CMLocation cMLocation = PauseMenu.autoFindHouseDoor();
-				if (cMLocation == null)
-				{
-					AutoVanTieu.dung("Vận tiêu: hết Thổ địa phù và không thấy cửa nhà để mua. Hãy mua rồi bật lại.");
-					return;
-				}
-				GameScr.oldMap = gameScr.map;
-				GameService.gI().changeMap(cMLocation.toM, cMLocation.toX, cMLocation.toY);
-				ChangScr.gI().switchToMe();
-				Res.removeMonsterTemplet();
-				buoc = 11;
-				luc = l;
-				return;
-			}
-			case 11:
-			{
-				if (gameScr.isOffLineMap(gameScr.map))
-				{
-					buoc = 12;
-					lucCho = l + 800L;
-					return;
-				}
-				if (l - luc > 20000L)
-				{
-					AutoVanTieu.dung("Vận tiêu: không vào được nhà để mua Thổ địa phù.");
-				}
-				return;
-			}
-			case 12:
-			{
-				soTruoc = AutoVanTieu.so(THO_DIA);
 				try
 				{
-					Message message = new Message(24);
-					message.writer().writeByte((sbyte)1);
-					message.writer().writeByte((sbyte)4);
-					message.writer().writeShort((short)THO_DIA);
-					message.writer().writeShort((short)5);
-					GameService.gI().session.sendMessage(message);
-					message.cleanup();
+					AutoVanTieu.vong();
 				}
 				catch (System.Exception)
 				{
-					// gửi lỗi thì chờ hết giờ rồi báo
+					// empty catch block
 				}
-				buoc = 13;
-				luc = l;
-				return;
-			}
-			case 13:
+				chayVong = false;
+				AutoVanTieu.capNhat();
+			}) { IsBackground = true }.Start();
+	}
+
+	/** teHFm.run: về làng (Biên giới), vào nhà ra lại để đứng đúng chỗ, rồi chạy Đổi tiêu. */
+	private static void vong()
+	{
+		while (chayVong)
+		{
+			AutoVanTieu.ngu(1000L);
+			AutoVanTieu.ngu(1000L);
+			if (!chayVong || Canvas.gameScr == null || Canvas.gameScr.mainChar == null)
 			{
-				if (AutoVanTieu.so(THO_DIA) > soTruoc || l - luc > 5000L)
-				{
-					if (AutoVanTieu.so(THO_DIA) <= soTruoc)
-					{
-						AutoVanTieu.dung("Vận tiêu: không mua được Thổ địa phù (thiếu xu?).");
-						return;
-					}
-					mVector vector = Tilemap.mapchangeLocations;
-					CMLocation cMLocation = vector == null || vector.size() == 0 ? null : (CMLocation)vector.elementAt(0);
-					if (cMLocation == null)
-					{
-						AutoVanTieu.dung("Vận tiêu: không tìm thấy cửa ra khỏi nhà.");
-						return;
-					}
-					GameService.gI().changeMap(GameScr.oldMap, cMLocation.toX, cMLocation.toY);
-					ChangScr.gI().switchToMe();
-					Res.removeMonsterTemplet();
-					buoc = 14;
-					luc = l;
-				}
-				return;
+				continue;
 			}
-			case 14:
+			if (Tilemap.lv == MAP_BIEN_GIOI)
 			{
-				if (!gameScr.isOffLineMap(gameScr.map))
-				{
-					buoc = 0;
-					lucCho = l + 1000L;
-					return;
-				}
-				if (l - luc > 20000L)
-				{
-					AutoVanTieu.dung("Vận tiêu: không ra được khỏi nhà.");
-				}
-				return;
-			}
-			case 20:
-			{
-				trangThai = "nhận tiêu";
-				thongBao_ = null;
-				mau = -1;
-				idTieu = -1;
-				thoiDoi = false;
-				donTieu = false;
-				GameService.gI().doMenuOption(NPC_NHAN, (sbyte)0, 0);
-				buoc = 21;
-				luc = l;
-				return;
-			}
-			case 21:
-			{
-				string @string = thongBao_;
-				if (@string == null)
-				{
-					if (l - luc > 6000L)
-					{
-						if (++lan >= 3)
-						{
-							AutoVanTieu.dung("Vận tiêu: NPC không trả lời khi nhận tiêu (ngoài giờ 9h-21h?).");
-							return;
-						}
-						buoc = 20;
-					}
-					return;
-				}
-				thongBao_ = null;
-				lan = 0;
-				if (@string.StartsWith("Bạn đã nhận được tiêu", System.StringComparison.Ordinal))
-				{
-					mau = AutoVanTieu.mauTrong(@string);
-					buoc = 22;
-					luc = l;
-					return;
-				}
-				if (@string.IndexOf("hết lượt", System.StringComparison.Ordinal) >= 0)
-				{
-					if (theDaMua >= 2)
-					{
-						AutoVanTieu.dung(new System.Text.StringBuilder().Append("Vận tiêu: hết lượt hôm nay. Đã đi ").Append(chuyen).Append(" chuyến.").ToString());
-						return;
-					}
-					buoc = 25;
-					return;
-				}
-				if (@string.IndexOf("chưa hoàn thành", System.StringComparison.Ordinal) >= 0)
-				{
-					// đang có tiêu nhận từ trước (vd trước khi thoát game): chưa biết màu -> mau = -1,
-					// bước đổi tiêu sẽ đổi ít nhất 1 lần để server báo màu
-					buoc = 22;
-					luc = l;
-					mau = -1;
-					return;
-				}
-				AutoVanTieu.dung(new System.Text.StringBuilder().Append("Vận tiêu: ").Append(@string).ToString());
-				return;
-			}
-			case 22:
-			{
-				trangThai = "tìm tiêu";
-				Actor actor = idTieu >= 0 ? AutoVanTieu.timTieu(gameScr) : null;
-				if (actor == null)
-				{
-					actor = AutoVanTieu.tieuGanNhat(gameScr, mainChar, 320);
-				}
-				if (actor != null)
-				{
-					idTieu = ((Monster)actor).idChar;
-					lucMatTieu = 0L;
-					// ở làng: đổi màu ngay tại chỗ (server cho đổi khắp làng nhà) rồi mới đi;
-					// ngoài làng (vd vào lại game giữa đường): đi tiếp, không đổi
-					buoc = AutoVanTieu.oLang() ? 31 : 40;
-					return;
-				}
-				if (l - luc > 6000L)
-				{
-					AutoVanTieu.dung("Vận tiêu: nhận tiêu xong nhưng không thấy tiêu quanh mình.");
-				}
-				return;
-			}
-			case 25:
-			{
-				// hết lượt: mua + dùng Thẻ vận tiêu (server cho mua 2 thẻ/ngày)
-				trangThai = "mua thẻ vận tiêu";
-				if (AutoVanTieu.so(THE_VAN_TIEU) > 0)
-				{
-					GameService.gI().usePotion(THE_VAN_TIEU);
-					++theDaMua;
-					buoc = 20;
-					lucCho = l + 1200L;
-					return;
-				}
-				soTruoc = 0;
-				GameService.gI().buyItemShopSpecial(SHOP_THE_VAN_TIEU);
-				buoc = 26;
-				luc = l;
-				return;
-			}
-			case 26:
-			{
-				if (AutoVanTieu.so(THE_VAN_TIEU) > 0)
-				{
-					buoc = 25;
-					lucCho = l + 300L;
-					return;
-				}
-				if (l - luc > 5000L)
-				{
-					AutoVanTieu.dung(new System.Text.StringBuilder().Append("Vận tiêu: hết lượt và không mua được Thẻ vận tiêu. Đã đi ").Append(chuyen).Append(" chuyến.").ToString());
-				}
-				return;
-			}
-			case 31:
-			{
-				// đổi tiêu tới khi đạt màu
-				trangThai = "đổi tiêu";
-				if (!doiTieu || mau >= mauMucTieu || hetLuong || thoiDoi)
-				{
-					buoc = 40;
-					return;
-				}
-				if (AutoVanTieu.coTieu(gameScr, mainChar, l) == null)
-				{
-					return;
-				}
-				if (AutoVanTieu.so(LENH_CAO_CAP) <= 0)
-				{
-					soTruoc = 0;
-					GameService.gI().buyItemShopSpecial(SHOP_LENH_CAO_CAP);
-					buoc = 33;
-					luc = l;
-					return;
-				}
-				thongBao_ = null;
-				GameService.gI().usePotion(LENH_CAO_CAP);
-				++doi;
-				buoc = 32;
-				luc = l;
-				return;
-			}
-			case 32:
-			{
-				string @string = thongBao_;
-				if (@string == null)
-				{
-					if (l - luc > 5000L)
-					{
-						buoc = 31;
-					}
-					return;
-				}
-				thongBao_ = null;
-				if (@string.StartsWith("Chúc mừng bạn đã đổi được tiêu", System.StringComparison.Ordinal))
-				{
-					mau = AutoVanTieu.mauTrong(@string);
-				}
-				else if (@string.StartsWith("Không thể đổi tiêu", System.StringComparison.Ordinal))
-				{
-					// server trả lại lệnh bài; đổi tiếp chỉ lặp vô hạn -> đi với màu đang có
-					thoiDoi = true;
-				}
-				buoc = 31;
-				lucCho = l + 350L;
-				return;
-			}
-			case 33:
-			{
-				if (AutoVanTieu.so(LENH_CAO_CAP) > 0)
-				{
-					buoc = 31;
-					return;
-				}
-				if (l - luc > 5000L)
-				{
-					// không mua được (hết lượng): đi luôn với màu hiện có
-					hetLuong = true;
-					buoc = 40;
-				}
-				return;
-			}
-			case 40:
-			{
-				// đi tiếp sang map kế trên đường tới Biên giới
-				if (PauseMenu.oMap(MAP_BIEN_GIOI))
-				{
-					AutoVanTieu.datDichVung(52, 17, 58, 23);
-					buoc = 50;
-					return;
-				}
-				int n = AutoVanTieu.mapKe();
-				if (n < 0)
-				{
-					AutoVanTieu.dung(new System.Text.StringBuilder().Append("Vận tiêu: map ").Append(gameScr.map).Append(" không nằm trên đường đi tiêu.").ToString());
-					return;
-				}
-				if (!AutoVanTieu.datDichCong(n))
-				{
-					AutoVanTieu.dung(new System.Text.StringBuilder().Append("Vận tiêu: không thấy cổng sang map ").Append(n).Append(".").ToString());
-					return;
-				}
-				buoc = 41;
-				return;
-			}
-			case 41:
-			{
-				trangThai = new System.Text.StringBuilder().Append("đi tiêu (map ").Append(gameScr.map).Append(")").ToString();
-				Actor actor = AutoVanTieu.coTieu(gameScr, mainChar, l);
-				if (actor == null || AutoVanTieu.dangDon(mainChar, actor))
-				{
-					return;
-				}
-				int n = AutoVanTieu.di(gameScr, mainChar, l);
-				if (n < 0)
-				{
-					AutoVanTieu.dung(new System.Text.StringBuilder().Append("Vận tiêu: không tìm được đường ở map ").Append(gameScr.map).Append(".").ToString());
-					return;
-				}
-				if (n == 0)
-				{
-					return;
-				}
-				// tới sát cổng: chờ tiêu sát (<= 60px, server cho <= 120px) rồi mới qua
-				if (!AutoVanTieu.tieuSat(mainChar, actor, 60, l))
-				{
-					trangThai = "chờ tiêu tới cổng";
-					return;
-				}
-				int n2 = AutoVanTieu.mapKe();
-				CMLocation cMLocation = n2 < 0 ? null : PauseMenu.congToi(n2);
-				if (cMLocation == null)
-				{
-					buoc = 40;
-					return;
-				}
-				AutoVanTieu.nha();
-				mapTruoc = gameScr.map;
-				PauseMenu.quaCong(cMLocation, n2);
-				buoc = 42;
-				luc = l;
-				return;
-			}
-			case 42:
-			{
-				if (gameScr.map != mapTruoc)
-				{
-					lucMatTieu = 0L;
-					buoc = 40;
-					lucCho = l + 1500L;
-					return;
-				}
-				if (l - luc > 20000L)
-				{
-					buoc = 40;
-				}
-				return;
-			}
-			case 50:
-			{
-				trangThai = "tới Dịch trạm";
-				Actor actor = AutoVanTieu.coTieu(gameScr, mainChar, l);
-				if (actor == null || AutoVanTieu.dangDon(mainChar, actor))
-				{
-					return;
-				}
-				int n = AutoVanTieu.di(gameScr, mainChar, l);
-				if (n < 0)
-				{
-					AutoVanTieu.dung("Vận tiêu: không tìm được đường tới Dịch trạm.");
-					return;
-				}
-				if (n == 0)
-				{
-					return;
-				}
-				if (!AutoVanTieu.tieuSat(mainChar, actor, 90, l))
-				{
-					trangThai = "chờ tiêu";
-					return;
-				}
-				thongBao_ = null;
-				GameService.gI().doMenuOption(NPC_TRA, (sbyte)0, 0);
-				buoc = 51;
-				luc = l;
-				return;
-			}
-			case 51:
-			{
-				trangThai = "trả tiêu";
-				if (AutoVanTieu.timTieu(gameScr) == null)
-				{
-					// tiêu biến mất = đã trả xong
-					++chuyen;
-					idTieu = -1;
-					buoc = 60;
-					lucCho = l + 1500L;
-					return;
-				}
-				if (thongBao_ != null && thongBao_.StartsWith("Không thể trả tiêu", System.StringComparison.Ordinal))
-				{
-					thongBao_ = null;
-					if (++lan >= 5)
-					{
-						AutoVanTieu.dung("Vận tiêu: trả tiêu không được.");
-						return;
-					}
-					buoc = 50;
-					lucCho = l + 1500L;
-					return;
-				}
-				if (l - luc > 8000L)
-				{
-					buoc = 50;
-				}
-				return;
-			}
-			case 60:
-			{
-				// về làng bằng Thổ địa phù
-				if (AutoVanTieu.oLang())
-				{
-					buoc = 0;
-					lan = 0;
-					lucCho = l + 1000L;
-					return;
-				}
-				if (AutoVanTieu.so(THO_DIA) <= 0)
-				{
-					AutoVanTieu.dung(new System.Text.StringBuilder().Append("Vận tiêu: hết Thổ địa phù để về làng. Đã đi ").Append(chuyen).Append(" chuyến.").ToString());
-					return;
-				}
+				// "sudungphu" + "velang" của bản gốc: dùng Thổ địa phù
 				trangThai = "về làng";
-				AutoVanTieu.nha();
-				gameScr.doUsePotion(THO_DIA);
-				buoc = 61;
-				luc = l;
-				return;
+				Canvas.gameScr.doUsePotion(THO_DIA);
+				AutoVanTieu.ngu(2000L);
 			}
-			case 61:
+			if (Tilemap.lv == 0 || Tilemap.lv == 70)
 			{
-				trangThai = "về làng";
-				if (AutoVanTieu.oLang())
+				trangThai = "ra chỗ nhận tiêu";
+				if (Tilemap.lv == 0)
 				{
-					buoc = 0;
-					lan = 0;
-					lucCho = l + 1500L;
-					return;
+					GameService.gI().changeMap(103, 11, 9);
+					AutoVanTieu.ngu(1000L);
+					GameService.gI().changeMap(0, 34, 46);
 				}
-				if (l - luc > 30000L)
+				else
 				{
-					buoc = 60;
+					GameService.gI().changeMap(73, 4, 4);
+					AutoVanTieu.ngu(1000L);
+					GameService.gI().changeMap(70, 31, 50);
 				}
+				AutoVanTieu.ngu(1000L);
+				AutoVanTieu.giu(8, 500L);
+				AutoVanTieu.giu(4, 1000L);
+				AutoVanTieu.giu(8, 300L);
+				chayVong = false;
+				AutoVanTieu.batDoi();
 				return;
 			}
 		}
 	}
 
-	// ------------------------------------------------------------------ tiêu
+	/** Giữ một phím mũi tên ảo trong l ms. */
+	private static void giu(int n, long l)
+	{
+		Canvas.keyHold[n] = true;
+		dangGiu = true;
+		AutoVanTieu.ngu(l);
+		AutoVanTieu.nha();
+	}
+
+	// ------------------------------------------------------------------ Đổi tiêu
+
+	private static void batDoi()
+	{
+		chayDoi = true;
+		AutoVanTieu.capNhat();
+		new System.Threading.Thread(() =>
+		{
+				try
+				{
+					AutoVanTieu.doi();
+				}
+				catch (System.Exception)
+				{
+					// empty catch block
+				}
+				AutoVanTieu.capNhat();
+			}) { IsBackground = true }.Start();
+	}
+
+	/** knqO.run: nhận tiêu một lần rồi dùng Lệnh bài đổi tiêu cao cấp mỗi 250ms (hết thì mua). */
+	private static void doi()
+	{
+		trangThai = "nhận tiêu";
+		idTieu = -1;
+		GameService.gI().doMenuOption(NPC_NHAN, (sbyte)0, 0);
+		while (chayDoi)
+		{
+			MainChar mainChar = Canvas.gameScr == null ? null : Canvas.gameScr.mainChar;
+			if (mainChar != null)
+			{
+				trangThai = new System.Text.StringBuilder().Append("đổi tiêu (chờ ").Append(MAU[mauIndex]).Append(")").ToString();
+				if (mainChar.potions[LENH_CAO_CAP] <= 0 && mainChar.luong >= 100)
+				{
+					GameService.gI().buyItemShopSpecial(SHOP_LENH_CAO_CAP);
+				}
+				if (mainChar.potions[LENH_CAO_CAP] > 0)
+				{
+					Canvas.gameScr.doUsePotion(LENH_CAO_CAP);
+				}
+			}
+			AutoVanTieu.ngu(250L);
+		}
+	}
+
+	// ------------------------------------------------------------------ Đi tiêu
+
+	private static void batDi()
+	{
+		chayDi = true;
+		AutoVanTieu.capNhat();
+		new System.Threading.Thread(() =>
+		{
+				try
+				{
+					AutoVanTieu.luongDiTieu();
+				}
+				catch (System.Exception)
+				{
+					// empty catch block
+				}
+				chayDi = false;
+				AutoVanTieu.capNhat();
+			}) { IsBackground = true }.Start();
+	}
+
+	private static bool chay()
+	{
+		return chayDi && Canvas.gameScr != null && Canvas.gameScr.mainChar != null;
+	}
+
+	private static bool song()
+	{
+		return AutoVanTieu.chay() && Canvas.gameScr.mainChar.hp > 0;
+	}
+
+	private static int tx()
+	{
+		return Canvas.gameScr.mainChar.x / 16;
+	}
+
+	private static int ty()
+	{
+		return Canvas.gameScr.mainChar.y / 16;
+	}
+
+	private static void ngu(long l)
+	{
+		try
+		{
+			System.Threading.Thread.Sleep((int)l);
+		}
+		catch (System.Exception)
+		{
+			// empty catch block
+		}
+	}
 
 	private static bool laTieu(Actor actor)
 	{
 		return actor is MonsterNew && ((MonsterNew)actor).isMonsterVantieu();
 	}
 
-	/** Tiêu của mình (theo mã chủ tiêu idChar lấy lúc nhận). */
-	private static Actor timTieu(GameScr gameScr)
+	/** Nháy map: xin sang map 24 (server từ chối, nạp lại map đang đứng, kéo xe tiêu tới chỗ mình). */
+	private static void nhay()
 	{
-		mVector vector = gameScr.actors;
-		for (int i = 0; i < vector.size(); ++i)
-		{
-			Actor actor = (Actor)vector.elementAt(i);
-			if (!AutoVanTieu.laTieu(actor) || ((Monster)actor).idChar != idTieu) continue;
-			return actor;
-		}
-		return null;
-	}
-
-	/** Tiêu gần mình nhất (<= n px) - dùng khi chưa biết mã chủ tiêu của mình (vừa nhận / bật lại giữa đường). */
-	private static Actor tieuGanNhat(GameScr gameScr, MainChar mainChar, int n)
-	{
-		Actor actor = null;
-		mVector vector = gameScr.actors;
-		for (int i = 0; i < vector.size(); ++i)
-		{
-			Actor actor2 = (Actor)vector.elementAt(i);
-			if (!AutoVanTieu.laTieu(actor2) || ((Monster)actor2).idChar < 0) continue;
-			int n2 = Util.distance(mainChar.x, mainChar.y, actor2.x, actor2.y);
-			if (n2 > n) continue;
-			n = n2;
-			actor = actor2;
-		}
-		return actor;
-	}
-
-	/** Tiêu đang ở cùng map; mất tiêu > 10s thì coi như tiêu đã bị cướp/hết giờ -> về làng. */
-	private static Actor coTieu(GameScr gameScr, MainChar mainChar, long l)
-	{
-		Actor actor = AutoVanTieu.timTieu(gameScr);
-		if (actor != null)
-		{
-			lucMatTieu = 0L;
-			return actor;
-		}
-		AutoVanTieu.nha();
-		trangThai = "không thấy tiêu";
-		if (lucMatTieu == 0L)
-		{
-			lucMatTieu = l;
-		}
-		else if (l - lucMatTieu > 10000L)
-		{
-			lucMatTieu = 0L;
-			idTieu = -1;
-			donTieu = false;
-			buoc = 60;
-		}
-		return null;
+		GameService.gI().changeMap(24, 3, 3);
 	}
 
 	/**
-	 * Đứng ở đích chờ tiêu lại sát (<= n px). Tiêu cách > 80px thì server cho đứng im, chờ mãi
-	 * không tới -> sau 3s chuyển sang quay lại đón (dangDon). true = tiêu đã sát.
+	 * Sang map n. Server này kick người xin sang map kề mà không đứng đúng cổng (MapXuLyLenh "hack chuyen
+	 * map"), nên lấy toạ độ đến của đúng cổng đang đứng cạnh (dữ liệu cổng của client, như game tự qua
+	 * cổng); không có thì dùng toạ độ ghi sẵn của bản đổi tiêu.
 	 */
-	private static bool tieuSat(MainChar mainChar, Actor actor, int n, long l)
+	private static void doiMap(int n, int n2, int n3)
 	{
-		if (AutoVanTieu.cach(mainChar, actor) <= n)
+		GameScr gameScr = Canvas.gameScr;
+		CMLocation cMLocation = AutoVanTieu.congGan(gameScr.mainChar, n);
+		if (cMLocation != null)
 		{
-			lucChoCong = 0L;
-			return true;
+			short[] sArray = Res.getLocation(gameScr.getIndexArrMap(), cMLocation.toM);
+			int n4 = PauseMenu.congDen(cMLocation, n);
+			if (sArray != null && n4 >= 0)
+			{
+				n2 = sArray[n4 * 3 + 1];
+				n3 = sArray[n4 * 3 + 2];
+			}
 		}
-		AutoVanTieu.nha();
-		if (lucChoCong == 0L)
+		GameScr.oldMap = gameScr.map;
+		GameService.gI().changeMap(n, n2, n3);
+	}
+
+	/** Cổng dẫn tới map n gần nhân vật nhất; null nếu không có (làng có 2 cổng sang Tiên Du). */
+	private static CMLocation congGan(MainChar mainChar, int n)
+	{
+		mVector vector = Tilemap.mapchangeLocations;
+		if (vector == null || Tilemap.type == null)
 		{
-			lucChoCong = l;
+			return null;
 		}
-		else if (l - lucChoCong > 3000L)
+		CMLocation cMLocation = null;
+		int n2 = int.MaxValue;
+		int n3 = Tilemap.w;
+		for (int i = 0; i < Tilemap.type.Length; ++i)
 		{
-			lucChoCong = 0L;
-			donTieu = true;
+			int n4 = Tilemap.type[i] - 2000000000;
+			if (Tilemap.type[i] < 2000000000 || n4 >= vector.size()) continue;
+			CMLocation cMLocation2 = (CMLocation)vector.elementAt(n4);
+			if (PauseMenu.congDen(cMLocation2, n) < 0) continue;
+			int n5 = Math.abs(i % n3 * 16 + 8 - mainChar.x) + Math.abs(i / n3 * 16 + 8 - mainChar.y);
+			if (n5 >= n2) continue;
+			n2 = n5;
+			cMLocation = cMLocation2;
+		}
+		return cMLocation;
+	}
+
+	/** checkTieu: có xe tiêu (của mình nếu đã biết mã chủ) trong 15 ô mỗi trục. */
+	private static bool checkTieu()
+	{
+		try
+		{
+			GameScr gameScr = Canvas.gameScr;
+			MainChar mainChar = gameScr.mainChar;
+			mVector vector = gameScr.actors;
+			for (int i = vector.size() - 1; i >= 0; --i)
+			{
+				Actor actor = (Actor)vector.elementAt(i);
+				if (!AutoVanTieu.laTieu(actor) || idTieu >= 0 && ((Monster)actor).idChar != idTieu) continue;
+				if (Math.abs(actor.x / 16 - mainChar.x / 16) > 15 || Math.abs(actor.y / 16 - mainChar.y / 16) > 15) continue;
+				if (idTieu < 0)
+				{
+					idTieu = ((Monster)actor).idChar;
+				}
+				return true;
+			}
+		}
+		catch (System.Exception)
+		{
+			// danh sách actor đang bị luồng game sửa: coi như chưa thấy, lần sau xem lại
 		}
 		return false;
 	}
 
-	/** Đang quay lại đón tiêu: đi thẳng về phía tiêu tới khi sát (<= 32px) rồi tìm lại đường. */
-	private static bool dangDon(MainChar mainChar, Actor actor)
+	/** kiemTraTieu(x,y, lùi về bx,by): mất tiêu thì lùi dần tìm xe, thấy thì quay lại (x,y). */
+	private static void kiemTraTieu(int n, int n2, int n3, int n4)
 	{
-		if (!donTieu)
+		if (!kiemTra || !AutoVanTieu.song())
 		{
-			return false;
+			return;
 		}
-		if (AutoVanTieu.cach(mainChar, actor) <= 32)
+		AutoVanTieu.ngu(1000L);
+		if (AutoVanTieu.checkTieu() || !AutoVanTieu.chay())
 		{
-			donTieu = false;
-			duong = null;
-			AutoVanTieu.nha();
-			return false;
+			return;
 		}
-		trangThai = "quay lại đón tiêu";
-		AutoVanTieu.giuPhim(actor.x - mainChar.x, actor.y - mainChar.y);
-		return true;
-	}
-
-	private static bool coBam()
-	{
-		for (int i = 0; i < Canvas.keyPressed.Length; ++i)
+		AutoVanTieu.ngu(1000L);
+		if (AutoVanTieu.checkTieu() || !AutoVanTieu.chay())
 		{
-			if (!Canvas.keyPressed[i]) continue;
-			return true;
+			return;
 		}
-		return Canvas.isPointerDown || Canvas.isPointerClick;
-	}
-
-	private static int cach(MainChar mainChar, Actor actor)
-	{
-		return Math.max(Math.abs(mainChar.x - actor.x), Math.abs(mainChar.y - actor.y));
-	}
-
-	// ------------------------------------------------------------------ đường
-
-	private static bool oLang()
-	{
-		return Tilemap.lv == 0 || Tilemap.lv == 70;
-	}
-
-	/** Map kế tiếp trên đường làng -> Tiên Du -> ... -> Biên giới; -1 nếu map hiện tại không thuộc đường. */
-	private static int mapKe()
-	{
-		if (AutoVanTieu.oLang())
+		trangThai = new System.Text.StringBuilder().Append("mất tiêu, dò ngược mốc ").Append(n3).Append(",").Append(n4).ToString();
+		int n5 = n;
+		int n6 = n2;
+		if (n6 != n4)
 		{
-			return DUONG[0];
-		}
-		for (int i = 0; i < DUONG.Length - 1; ++i)
-		{
-			if (!PauseMenu.oMap(DUONG[i])) continue;
-			return DUONG[i + 1];
-		}
-		return -1;
-	}
-
-	private static bool datDichCong(int n)
-	{
-		bool[] blArray = PauseMenu.dichSatCong(n);
-		dich = blArray;
-		duong = null;
-		lucKet = 0L;
-		lucChoTieu = 0L;
-		return blArray != null;
-	}
-
-	private static void datDichVung(int n, int n2, int n3, int n4)
-	{
-		bool[] blArray = new bool[Tilemap.w * Tilemap.h];
-		for (int i = n2; i <= n4; ++i)
-		{
-			for (int j = n; j <= n3; ++j)
+			int n7 = n4 > n6 ? 1 : -1;
+			while (n6 != n4 && !AutoVanTieu.checkTieu() && AutoVanTieu.chay())
 			{
-				if (PauseMenu.laTuong(j, i)) continue;
-				blArray[i * Tilemap.w + j] = true;
-			}
-		}
-		dich = blArray;
-		duong = null;
-		lucKet = 0L;
-		lucChoTieu = 0L;
-	}
-
-	/**
-	 * Đi theo đường BFS tới vùng dich, giữ tiêu bám theo: tiêu cách > 56px (server: > 80px là
-	 * tiêu đứng im) thì đứng chờ; chờ > 6s mà tiêu không lại gần thì quay lại đón tiêu.
-	 * 1 = tới nơi, 0 = đang đi/chờ, -1 = không có đường.
-	 */
-	private static int di(GameScr gameScr, MainChar mainChar, long l)
-	{
-		if (dich == null)
-		{
-			return -1;
-		}
-		int n = Tilemap.w;
-		int n2 = mainChar.x / 16;
-		int n3 = mainChar.y / 16;
-		int n4 = n3 * n + n2;
-		if (n2 >= 0 && n3 >= 0 && n2 < n && n4 < dich.Length && dich[n4])
-		{
-			AutoVanTieu.nha();
-			return 1;
-		}
-		Actor actor = AutoVanTieu.timTieu(gameScr);
-		if (actor != null && AutoVanTieu.cach(mainChar, actor) > 56)
-		{
-			AutoVanTieu.nha();
-			if (lucChoTieu == 0L)
-			{
-				lucChoTieu = l;
-			}
-			if (l - lucChoTieu > 6000L)
-			{
-				// tiêu kẹt: quay lại đón
-				AutoVanTieu.giuPhim(actor.x - mainChar.x, actor.y - mainChar.y);
-				duong = null;
-				if (AutoVanTieu.cach(mainChar, actor) <= 32)
+				int n8 = n6 + 5 * n7;
+				if (n7 == 1 && n8 > n4 || n7 == -1 && n8 < n4)
 				{
-					lucChoTieu = 0L;
+					n8 = n4;
+				}
+				AutoVanTieu.doAtorMove(n5, n6, n5, n8);
+				n6 = n8;
+			}
+		}
+		if (n5 != n3 && !AutoVanTieu.checkTieu() && AutoVanTieu.chay())
+		{
+			int n9 = n3 > n5 ? 1 : -1;
+			while (n5 != n3 && !AutoVanTieu.checkTieu() && AutoVanTieu.chay())
+			{
+				int n10 = n5 + 5 * n9;
+				if (n9 == 1 && n10 > n3 || n9 == -1 && n10 < n3)
+				{
+					n10 = n3;
+				}
+				AutoVanTieu.doAtorMove(n5, n6, n10, n6);
+				n5 = n10;
+			}
+		}
+		if (!AutoVanTieu.checkTieu())
+		{
+			trangThai = "lùi hết vẫn chưa thấy tiêu, đứng chờ";
+			while (!AutoVanTieu.checkTieu() && AutoVanTieu.chay())
+			{
+				AutoVanTieu.ngu(1000L);
+			}
+		}
+		if (AutoVanTieu.chay())
+		{
+			trangThai = "đã thấy tiêu, đi tiếp";
+			AutoVanTieu.doAtorMoveSafe(AutoVanTieu.tx(), AutoVanTieu.ty(), n, n2, 5);
+		}
+	}
+
+	/** doAtorMove: giữ phím trục x trước rồi trục y tới ô (n3,n4), tối đa 10s; tới nơi thì nghỉ + nháy map. */
+	private static void doAtorMove(int n, int n2, int n3, int n4)
+	{
+		long l = mSystem.currentTimeMillis() + 10000L;
+		// Đường gốc có đoạn đi thẳng đâm vào vách (map 7: (47,57)->(81,60) vướng ô 50,57; (81,48)->(48,54);
+		// (24,20)->(25,14)) - bản gốc đứng giữ phím 10s rồi bỏ điểm, dễ kẹt. Đoạn nào đi thẳng (trục x
+		// trước rồi y) bị vách chắn thì đi vòng theo đường BFS tới đúng điểm đó.
+		int[] nArray = null;
+		int n7 = 0;
+		if (AutoVanTieu.thangBiChan(AutoVanTieu.tx(), AutoVanTieu.ty(), n3, n4))
+		{
+			try
+			{
+				bool[] blArray = new bool[Tilemap.w * Tilemap.h];
+				blArray[n4 * Tilemap.w + n3] = true;
+				nArray = PauseMenu.timDuong(blArray);
+				l += 10000L;
+			}
+			catch (System.Exception)
+			{
+				nArray = null;
+			}
+		}
+		while (AutoVanTieu.song() && mSystem.currentTimeMillis() <= l)
+		{
+			int n5 = AutoVanTieu.tx();
+			int n6 = AutoVanTieu.ty();
+			if (nArray != null && n7 < nArray.Length - 1)
+			{
+				// đang đi vòng: tới từng góc rẽ của đường BFS (góc cuối chính là điểm đích)
+				int n8 = nArray[n7] % Tilemap.w;
+				int n9 = nArray[n7] / Tilemap.w;
+				if (n5 == n8 && n6 == n9)
+				{
+					++n7;
+					continue;
+				}
+				if (n5 < n8)
+				{
+					AutoVanTieu.giuPhim(1, 0);
+				}
+				else if (n5 > n8)
+				{
+					AutoVanTieu.giuPhim(-1, 0);
+				}
+				else if (n6 < n9)
+				{
+					AutoVanTieu.giuPhim(0, 1);
+				}
+				else
+				{
+					AutoVanTieu.giuPhim(0, -1);
+				}
+				AutoVanTieu.ngu(1L);
+				continue;
+			}
+			bool bl = n5 == n3;
+			if ((n3 == 120 || n3 == 125) && (n5 == 119 || n5 == 120))
+			{
+				bl = true;
+				n5 = n3;
+			}
+			if (bl && n6 == n4)
+			{
+				AutoVanTieu.nha();
+				if (Tilemap.lv == MAP_BIEN_GIOI)
+				{
+					AutoVanTieu.ngu(500L);
+				}
+				else if (Tilemap.lv == 5)
+				{
+					AutoVanTieu.ngu(300L);
+					AutoVanTieu.nhay();
+				}
+				else if (Tilemap.lv == 6)
+				{
+					AutoVanTieu.ngu(500L);
+					AutoVanTieu.nhay();
+				}
+				else
+				{
+					AutoVanTieu.ngu((long)tocNhay);
+					AutoVanTieu.nhay();
+				}
+				return;
+			}
+			if (n5 < n3)
+			{
+				AutoVanTieu.giuPhim(1, 0);
+			}
+			else if (n5 > n3)
+			{
+				AutoVanTieu.giuPhim(-1, 0);
+			}
+			else if (n6 < n4)
+			{
+				AutoVanTieu.giuPhim(0, 1);
+			}
+			else if (n6 > n4)
+			{
+				AutoVanTieu.giuPhim(0, -1);
+			}
+			AutoVanTieu.ngu(1L);
+		}
+		AutoVanTieu.nha();
+	}
+
+	/** Đi thẳng trục x trước rồi trục y từ (n,n2) tới (n3,n4) có gặp ô vách / vùng chặn NPC không. */
+	private static bool thangBiChan(int n, int n2, int n3, int n4)
+	{
+		try
+		{
+			int n5 = n;
+			while (n5 != n3)
+			{
+				n5 += n3 > n5 ? 1 : -1;
+				if (PauseMenu.laTuong(n5, n2))
+				{
+					return true;
 				}
 			}
-			return 0;
-		}
-		lucChoTieu = 0L;
-		if (duong == null)
-		{
-			duong = PauseMenu.timDuong(dich);
-			duongPos = 0;
-			if (duong == null)
+			int n6 = n2;
+			while (n6 != n4)
 			{
-				return -1;
-			}
-			if (duong.Length == 0)
-			{
-				duong = null;
-				return 1;
+				n6 += n4 > n6 ? 1 : -1;
+				if (PauseMenu.laTuong(n3, n6))
+				{
+					return true;
+				}
 			}
 		}
-		int n5 = duong[duongPos];
-		int n6 = n5 % n * 16 + 8 - mainChar.x;
-		int n7 = n5 / n * 16 + 8 - mainChar.y;
-		int n8 = Math.max(3, (int)mainChar.speed);
-		if (Math.abs(n6) <= n8 && Math.abs(n7) <= n8)
+		catch (System.Exception)
 		{
-			if (++duongPos >= duong.Length)
+			// empty catch block
+		}
+		return false;
+	}
+
+	/** doAtorMoveSafe: đi trục x trước rồi trục y, mỗi lần n5 ô (mỗi lần một doAtorMove = một lần nháy). */
+	private static void doAtorMoveSafe(int n, int n2, int n3, int n4, int n5)
+	{
+		int n6 = n;
+		int n7 = n2;
+		if (n != n3)
+		{
+			int n8 = n3 > n ? 1 : -1;
+			while (n6 != n3)
 			{
-				duong = null;
+				if (!AutoVanTieu.song())
+				{
+					return;
+				}
+				int n9 = n6 + n5 * n8;
+				if (n8 == 1 && n9 > n3 || n8 == -1 && n9 < n3)
+				{
+					n9 = n3;
+				}
+				AutoVanTieu.doAtorMove(n6, n7, n9, n7);
+				n6 = n9;
 			}
-			return 0;
 		}
-		AutoVanTieu.giuPhim(Math.abs(n6) > n8 ? n6 : 0, Math.abs(n6) > n8 ? 0 : n7);
-		if (lucKet == 0L || mainChar.x != ketX || mainChar.y != ketY)
+		if (n2 != n4)
 		{
-			lucKet = l;
-			ketX = mainChar.x;
-			ketY = mainChar.y;
+			int n10 = n4 > n2 ? 1 : -1;
+			while (n7 != n4)
+			{
+				if (!AutoVanTieu.song())
+				{
+					return;
+				}
+				int n11 = n7 + n5 * n10;
+				if (n10 == 1 && n11 > n4 || n10 == -1 && n11 < n4)
+				{
+					n11 = n4;
+				}
+				AutoVanTieu.doAtorMove(n6, n7, n6, n11);
+				n7 = n11;
+			}
 		}
-		else if (l - lucKet > 2000L)
+	}
+
+	/** doAtorMoveStep (Biên giới): như doAtorMoveSafe nhưng tính từ chỗ đang đứng, nghỉ 0.2s mỗi bước. */
+	private static void doAtorMoveStep(int n, int n2, int n3, int n4, int n5)
+	{
+		int n6 = AutoVanTieu.tx();
+		int n7 = AutoVanTieu.ty();
+		if (n != n3)
 		{
-			lucKet = 0L;
-			duong = null;
+			int n8 = n3 > n ? 1 : -1;
+			while (n6 != n3)
+			{
+				if (!AutoVanTieu.song())
+				{
+					return;
+				}
+				int n9 = n6 + n5 * n8;
+				if (n8 == 1 && n9 > n3 || n8 == -1 && n9 < n3)
+				{
+					n9 = n3;
+				}
+				AutoVanTieu.ngu(200L);
+				AutoVanTieu.doAtorMove(n6, n7, n9, n7);
+				n6 = AutoVanTieu.tx();
+			}
 		}
-		return 0;
+		if (n2 != n4)
+		{
+			int n10 = n4 > n2 ? 1 : -1;
+			while (n7 != n4)
+			{
+				if (!AutoVanTieu.song())
+				{
+					return;
+				}
+				int n11 = n7 + n5 * n10;
+				if (n10 == 1 && n11 > n4 || n10 == -1 && n11 < n4)
+				{
+					n11 = n4;
+				}
+				AutoVanTieu.ngu(200L);
+				AutoVanTieu.doAtorMove(n6, n7, n6, n11);
+				n7 = AutoVanTieu.ty();
+			}
+		}
+	}
+
+	/** Cuối map: tới sát (n,n2) <= 2 ô rồi đổi sang map n3 (n4,n5); tối đa nLan lần thử. */
+	private static void raCong(int n, int n2, int n3, int n4, int n5, int nLan)
+	{
+		int n6 = 0;
+		while (AutoVanTieu.song())
+		{
+			int n7 = AutoVanTieu.tx();
+			int n8 = AutoVanTieu.ty();
+			if (Math.abs(n7 - n) <= 2 && Math.abs(n8 - n2) <= 2)
+			{
+				// kiemTraTieu coi "thấy tiêu" khi xe trong 15 ô, server chỉ cho xe theo qua cổng khi
+				// cách <= 120px: nháy một lần kéo xe sát mình rồi mới qua (Biên giới / làng không nháy)
+				if (Tilemap.lv != 0 && Tilemap.lv != 70)
+				{
+					AutoVanTieu.nhay();
+					AutoVanTieu.ngu((long)tocNhay + 400L);
+				}
+				AutoVanTieu.doiMap(n3, n4, n5);
+			}
+			else if (++n6 <= nLan)
+			{
+				AutoVanTieu.doAtorMove(n7, n8, n, n2);
+				AutoVanTieu.ngu(500L);
+				continue;
+			}
+			AutoVanTieu.ngu(1000L);
+			return;
+		}
+	}
+
+	/** Chờ map đổi khác n (tối đa 10s) - bản gốc chạy tuần tự các khối map, ở đây chờ cho chắc. */
+	private static void choDoiMap(int n)
+	{
+		long l = mSystem.currentTimeMillis() + 10000L;
+		while (AutoVanTieu.chay() && Tilemap.lv == n && mSystem.currentTimeMillis() < l)
+		{
+			AutoVanTieu.ngu(100L);
+		}
+		AutoVanTieu.ngu(500L);
+	}
+
+	/** COMb.run: lần lượt làng -> 2 -> 3 -> 5 -> 6 -> 7 -> 8 -> 9 -> Biên giới 118 -> trả tiêu. */
+	private static void luongDiTieu()
+	{
+		while (AutoVanTieu.chay())
+		{
+			int n = Tilemap.lv;
+			trangThai = new System.Text.StringBuilder().Append("đi tiêu (map ").Append(Canvas.gameScr.map).Append(")").ToString();
+			if (n == 0 || n == 70)
+			{
+				if (n == 70)
+				{
+					// auto nhận tiêu ở NPC giữa làng: ra cổng Tiên Du (22,57) trước - bản gốc bắt đầu từ cổng
+					if (AutoVanTieu.ty() < 50)
+					{
+						AutoVanTieu.doAtorMove(AutoVanTieu.tx(), AutoVanTieu.ty(), 22, 51);
+						continue;
+					}
+					AutoVanTieu.ngu(2000L);
+					AutoVanTieu.raCong(22, 57, 2, 15, 1, 5);
+					AutoVanTieu.choDoiMap(n);
+					continue;
+				}
+				AutoVanTieu.ngu(2000L);
+				AutoVanTieu.doiMap(2, 15, 1);
+				AutoVanTieu.ngu(2000L);
+				if (Tilemap.lv != 2)
+				{
+					AutoVanTieu.doiMap(2, 15, 1);
+					AutoVanTieu.ngu(2000L);
+				}
+				AutoVanTieu.choDoiMap(n);
+				continue;
+			}
+			if (n == 2)
+			{
+				AutoVanTieu.ngu(2000L);
+				if (!AutoVanTieu.chay())
+				{
+					return;
+				}
+				AutoVanTieu.doAtorMove(15, 3, 15, 7);
+				AutoVanTieu.doAtorMove(15, 7, 15, 10);
+				AutoVanTieu.doAtorMove(15, 10, 15, 13);
+				AutoVanTieu.doAtorMove(15, 13, 15, 15);
+				AutoVanTieu.doAtorMove(15, 15, 20, 18);
+				AutoVanTieu.doAtorMove(15, 18, 20, 18);
+				int n2 = 20;
+				for (int i = 25; n2 <= 100 && i <= 95; i += 5)
+				{
+					if (!AutoVanTieu.chay())
+					{
+						return;
+					}
+					AutoVanTieu.doAtorMove(n2, 18, i, 18);
+					n2 += 5;
+				}
+				AutoVanTieu.kiemTraTieu(100, 18, 20, 18);
+				if (!AutoVanTieu.chay())
+				{
+					return;
+				}
+				AutoVanTieu.doAtorMove(95, 18, 100, 18);
+				AutoVanTieu.doAtorMove(100, 18, 100, 20);
+				n2 = 100;
+				for (int i = 105; n2 <= 120 && i <= 125; i += 4)
+				{
+					if (!AutoVanTieu.song())
+					{
+						return;
+					}
+					int n3 = AutoVanTieu.tx();
+					if (n3 == 119 || n3 >= 120) break;
+					AutoVanTieu.doAtorMove(n2, 20, i, 20);
+					n2 += 4;
+				}
+				AutoVanTieu.kiemTraTieu(120, 20, 100, 18);
+				AutoVanTieu.raCong(126, 20, 3, 1, 22, 5);
+				AutoVanTieu.choDoiMap(n);
+				continue;
+			}
+			if (n == 3)
+			{
+				AutoVanTieu.ngu(500L);
+				AutoVanTieu.doAtorMoveSafe(3, 22, 52, 22, 4);
+				AutoVanTieu.kiemTraTieu(52, 22, 3, 22);
+				AutoVanTieu.doAtorMoveSafe(52, 22, 52, 64, 4);
+				AutoVanTieu.kiemTraTieu(52, 64, 52, 22);
+				AutoVanTieu.doAtorMoveSafe(52, 64, 83, 64, 5);
+				AutoVanTieu.doAtorMoveSafe(83, 64, 83, 91, 5);
+				AutoVanTieu.kiemTraTieu(83, 91, 83, 64);
+				AutoVanTieu.doAtorMoveSafe(83, 91, 91, 91, 5);
+				AutoVanTieu.doAtorMoveSafe(91, 91, 91, 94, 5);
+				AutoVanTieu.kiemTraTieu(91, 94, 91, 91);
+				AutoVanTieu.raCong(91, 94, 5, 71, 1, 3);
+				AutoVanTieu.choDoiMap(n);
+				continue;
+			}
+			if (n == 5)
+			{
+				AutoVanTieu.ngu(500L);
+				AutoVanTieu.doAtorMoveSafe(71, 3, 71, 15, 5);
+				AutoVanTieu.doAtorMoveSafe(71, 15, 59, 15, 5);
+				AutoVanTieu.kiemTraTieu(59, 15, 71, 5);
+				AutoVanTieu.doAtorMoveSafe(59, 15, 59, 55, 5);
+				AutoVanTieu.doAtorMoveSafe(59, 55, 65, 75, 5);
+				AutoVanTieu.kiemTraTieu(65, 75, 59, 15);
+				AutoVanTieu.raCong(65, 75, 6, 40, 2, 3);
+				AutoVanTieu.choDoiMap(n);
+				continue;
+			}
+			if (n == 6)
+			{
+				AutoVanTieu.ngu(500L);
+				AutoVanTieu.doAtorMoveSafe(40, 2, 38, 26, 5);
+				AutoVanTieu.doAtorMoveSafe(38, 26, 37, 44, 5);
+				AutoVanTieu.doAtorMoveSafe(37, 44, 45, 44, 5);
+				AutoVanTieu.kiemTraTieu(45, 44, 37, 44);
+				AutoVanTieu.raCong(45, 44, 7, 2, 91, 3);
+				AutoVanTieu.choDoiMap(n);
+				continue;
+			}
+			if (n == 7)
+			{
+				AutoVanTieu.ngu(500L);
+				AutoVanTieu.doAtorMoveSafe(2, 91, 47, 81, 5);
+				AutoVanTieu.doAtorMoveSafe(47, 81, 47, 57, 5);
+				AutoVanTieu.kiemTraTieu(47, 57, 2, 91);
+				AutoVanTieu.doAtorMove(47, 57, 81, 60);
+				AutoVanTieu.doAtorMove(81, 60, 81, 48);
+				AutoVanTieu.doAtorMove(81, 48, 48, 54);
+				AutoVanTieu.doAtorMoveSafe(48, 54, 37, 54, 5);
+				AutoVanTieu.doAtorMoveSafe(37, 54, 37, 47, 5);
+				AutoVanTieu.doAtorMoveSafe(37, 47, 28, 47, 5);
+				AutoVanTieu.doAtorMoveSafe(28, 47, 28, 39, 5);
+				AutoVanTieu.doAtorMoveSafe(28, 39, 18, 39, 5);
+				AutoVanTieu.kiemTraTieu(18, 39, 28, 39);
+				AutoVanTieu.doAtorMoveSafe(18, 39, 17, 20, 5);
+				AutoVanTieu.doAtorMoveSafe(17, 20, 24, 20, 5);
+				// (bản gốc gửi thêm lệnh 79 xem giá xa phu map 5 rồi 7 - chỉ mở bảng giá, không đi; bỏ)
+				AutoVanTieu.ngu(1500L);
+				AutoVanTieu.nhay();
+				AutoVanTieu.ngu(500L);
+				AutoVanTieu.doAtorMoveSafe(20, 14, 28, 1, 5);
+				AutoVanTieu.kiemTraTieu(28, 1, 20, 14);
+				AutoVanTieu.raCong(28, 1, 8, 27, 77, 3);
+				AutoVanTieu.choDoiMap(n);
+				continue;
+			}
+			if (n == 8)
+			{
+				AutoVanTieu.ngu(500L);
+				AutoVanTieu.doAtorMoveSafe(27, 77, 27, 64, 4);
+				AutoVanTieu.doAtorMoveSafe(27, 64, 38, 64, 4);
+				AutoVanTieu.doAtorMoveSafe(38, 64, 41, 50, 4);
+				AutoVanTieu.doAtorMoveSafe(41, 50, 41, 3, 4);
+				AutoVanTieu.doAtorMoveSafe(41, 3, 47, 3, 4);
+				AutoVanTieu.kiemTraTieu(47, 3, 41, 3);
+				AutoVanTieu.raCong(47, 3, 9, 28, 98, 3);
+				AutoVanTieu.choDoiMap(n);
+				continue;
+			}
+			if (n == 9)
+			{
+				AutoVanTieu.ngu(500L);
+				AutoVanTieu.doAtorMoveSafe(28, 98, 33, 3, 5);
+				AutoVanTieu.kiemTraTieu(33, 3, 28, 98);
+				AutoVanTieu.raCong(33, 2, 118, 10, 20, 3);
+				AutoVanTieu.choDoiMap(n);
+				continue;
+			}
+			if (n == MAP_BIEN_GIOI)
+			{
+				AutoVanTieu.doAtorMoveStep(10, 20, 14, 20, 3);
+				AutoVanTieu.doAtorMoveStep(14, 20, 14, 10, 3);
+				AutoVanTieu.kiemTraTieu(14, 10, 14, 20);
+				AutoVanTieu.doAtorMoveStep(14, 10, 34, 13, 3);
+				AutoVanTieu.kiemTraTieu(34, 13, 14, 10);
+				if (!AutoVanTieu.chay())
+				{
+					return;
+				}
+				AutoVanTieu.doAtorMoveStep(34, 10, 34, 17, 3);
+				AutoVanTieu.doAtorMoveStep(34, 17, 55, 17, 3);
+				AutoVanTieu.kiemTraTieu(55, 17, 34, 17);
+				if (!AutoVanTieu.chay())
+				{
+					return;
+				}
+				trangThai = "trả tiêu";
+				GameService.gI().doMenuOption(NPC_TRA, (sbyte)0, 0);
+				return;
+			}
+			trangThai = new System.Text.StringBuilder().Append("map ").Append(Canvas.gameScr.map).Append(" không nằm trên đường đi tiêu").ToString();
+			return;
+		}
 	}
 
 	private static bool dangGiu;
@@ -991,12 +1008,6 @@ public sealed class AutoVanTieu
 		Canvas.keyHold[8] = false;
 	}
 
-	private static int so(int n)
-	{
-		MainChar mainChar = Canvas.gameScr == null ? null : Canvas.gameScr.mainChar;
-		return mainChar == null || n >= mainChar.potions.Length ? 0 : mainChar.potions[n];
-	}
-
 	// ------------------------------------------------------------------ thanh trạng thái
 
 	public static void ve(MyGraphics graphics, int n)
@@ -1005,7 +1016,7 @@ public sealed class AutoVanTieu
 		{
 			return;
 		}
-		string @string = new System.Text.StringBuilder().Append("Tiêu ").Append(mau < 0 ? "?" : MAU[mau]).Append(": chuyến ").Append(chuyen).Append(" | đổi ").Append(doi).Append(" | ").Append(trangThai).ToString();
+		string @string = new System.Text.StringBuilder().Append("Tiêu ").Append(MAU[mauIndex]).Append(": đã đi ").Append(soTieu).Append(" | ").Append(trangThai).ToString();
 		MFont font = MFont.normalFont[0];
 		while (@string.Length > 6 && font.getWidth(@string) > Canvas.w - 12)
 		{

@@ -282,6 +282,10 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         if (isLoad) {
             return;
         }
+        // mod: phím tắt PK (Mã pk, nháy map, bật đồ sát, gọi thú/pet)
+        if (game.render.screen.AutoGuard.phimPk(keyCode)) {
+            return;
+        }
         if (isMoto) {
             switch (keyCode) {
                 case -23:
