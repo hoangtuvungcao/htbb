@@ -154,7 +154,9 @@ public class Main : MonoBehaviour
 			if (Event.current.type.Equals(EventType.Repaint))
 			{
 				ScaleGUI.BeginGUI();
+				DoKhungHinh.batDau();
 				canvas.paint(g);
+				DoKhungHinh.ketThuc(); // chỉ đo khi chạy với -kpahDo
 				ScaleGUI.EndGUI();
 				countPaint++;
 				g.reset();
