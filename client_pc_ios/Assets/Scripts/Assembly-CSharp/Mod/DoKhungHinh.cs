@@ -27,6 +27,55 @@ public static class DoKhungHinh
 
 	private static float lanGhi;
 
+	// thời gian logic (FixedUpdate) và toàn bộ OnGUI (mọi sự kiện, không chỉ vẽ)
+	private static readonly System.Diagnostics.Stopwatch dongHoLogic = new System.Diagnostics.Stopwatch();
+
+	private static readonly System.Diagnostics.Stopwatch dongHoGui = new System.Diagnostics.Stopwatch();
+
+	private static double tongLogicMs;
+
+	private static int soLogic;
+
+	private static double tongGuiMs;
+
+	private static int soGui;
+
+	public static void batDauLogic()
+	{
+		if (Bat)
+		{
+			dongHoLogic.Restart();
+		}
+	}
+
+	public static void ketThucLogic()
+	{
+		if (Bat)
+		{
+			dongHoLogic.Stop();
+			tongLogicMs += dongHoLogic.Elapsed.TotalMilliseconds;
+			soLogic++;
+		}
+	}
+
+	public static void batDauGui()
+	{
+		if (Bat)
+		{
+			dongHoGui.Restart();
+		}
+	}
+
+	public static void ketThucGui()
+	{
+		if (Bat)
+		{
+			dongHoGui.Stop();
+			tongGuiMs += dongHoGui.Elapsed.TotalMilliseconds;
+			soGui++;
+		}
+	}
+
 	public static void batDau()
 	{
 		if (!Bat)
@@ -70,7 +119,14 @@ public static class DoKhungHinh
 			UnityEngine.Debug.Log("[DOKHUNG] khung=" + soKhung
 				+ " ve_tb=" + (tongMs / soKhung).ToString("F3") + "ms ve_max=" + maxMs.ToString("F2") + "ms"
 				+ " capphat_tb=" + (soKhungDoCapPhat == 0 ? 0 : tongCapPhat / soKhungDoCapPhat) + "B/khung"
-				+ " gc=" + (gc - gcMoc) + " heap=" + (System.GC.GetTotalMemory(false) >> 10) + "KB");
+				+ " gc=" + (gc - gcMoc) + " heap=" + (System.GC.GetTotalMemory(false) >> 10) + "KB"
+				+ " logic=" + soLogic + "x/" + (soLogic == 0 ? 0 : tongLogicMs / soLogic).ToString("F3") + "ms"
+				+ " ongui=" + soGui + "x/" + (soGui == 0 ? 0 : tongGuiMs / soGui).ToString("F3") + "ms"
+				+ " logic_tong=" + tongLogicMs.ToString("F0") + "ms ongui_tong=" + tongGuiMs.ToString("F0") + "ms");
+			tongLogicMs = 0;
+			soLogic = 0;
+			tongGuiMs = 0;
+			soGui = 0;
 			lanGhi = t;
 			tongMs = 0;
 			maxMs = 0;

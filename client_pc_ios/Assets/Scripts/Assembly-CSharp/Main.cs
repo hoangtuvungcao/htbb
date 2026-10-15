@@ -144,6 +144,9 @@ public class Main : MonoBehaviour
 
 	private void OnGUI()
 	{
+		DoKhungHinh.batDauGui();
+		try
+		{
 		if (yy >= 10)
 		{
 			if (!CapNhat.dangCapNhat)
@@ -161,6 +164,11 @@ public class Main : MonoBehaviour
 				countPaint++;
 				g.reset();
 			}
+		}
+		}
+		finally
+		{
+			DoKhungHinh.ketThucGui();
 		}
 	}
 
@@ -271,6 +279,7 @@ public class Main : MonoBehaviour
 			}
 		}
 		countUpdate++;
+		DoKhungHinh.batDauLogic();
 		if (Res.load != null)
 		{
 			Res.load.run();
@@ -285,6 +294,7 @@ public class Main : MonoBehaviour
 		Canvas.isPointerClick = false;
 		ipKeyboard.update();
 		Net.update();
+		DoKhungHinh.ketThucLogic();
 	}
 
 	private void Update()
