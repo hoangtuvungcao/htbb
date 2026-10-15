@@ -422,7 +422,7 @@ public final class AutoGuard {
             Canvas.isPointerClick = false;
             AutoPk.batTat();
         }
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 5; ++i) {
             if (Canvas.isPointerDown && trongNutPhim(i, Canvas.px, Canvas.py)) {
                 Canvas.isPointerDown = false;
             }
@@ -434,8 +434,10 @@ public final class AutoGuard {
                 AutoPk.nutNhay();
             } else if (i == 2) {
                 AutoPk.nutDs();
-            } else {
+            } else if (i == 3) {
                 AutoPk.nutDung();
+            } else {
+                AutoPk.nutDoiPet();
             }
         }
     }
@@ -475,6 +477,7 @@ public final class AutoGuard {
             AutoGuard.veNut(graphics, nutX2(), nutYPhim(1), "NHÁY", "MAP", false);
             AutoGuard.veNut(graphics, nutX2(), nutYPhim(2), "BẬT", "ĐS", false);
             AutoGuard.veNut(graphics, nutX2(), nutYPhim(3), "DỪNG", "HẾT", false);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(4), "ĐỔI", "PET", false);
         }
     }
 

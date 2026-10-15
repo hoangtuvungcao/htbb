@@ -720,6 +720,33 @@ public sealed class AutoPk
 		GameService.gI().requestKiller();
 	}
 
+	private static int petKe;
+
+	/** Nút ĐỔI PET: gọi con pet kế tiếp trong hành trang (vòng, bỏ con đã ẩn), báo tên lên khung chat. */
+	public static void nutDoiPet()
+	{
+		mVector vector = new mVector();
+		for (int i = 0; i < Char.animal.size(); ++i)
+		{
+			AnimalInfo pet = (AnimalInfo)Char.animal.elementAt(i);
+			if (pet == null || pet.typeAnimal != 1 || AutoPk.an(pet.id)) continue;
+			vector.addElement(pet);
+		}
+		if (vector.size() == 0)
+		{
+			Canvas.startOKDlg("Không có pet trong Hành Trang!");
+			return;
+		}
+		if (petKe >= vector.size())
+		{
+			petKe = 0;
+		}
+		AnimalInfo animalInfo = (AnimalInfo)vector.elementAt(petKe);
+		petKe = (petKe + 1) % vector.size();
+		AutoPk.goiThu(animalInfo);
+		Canvas.gameScr.addChat(new ChatInfo("", new System.Text.StringBuilder().Append("Đổi pet: ").Append(animalInfo.name).ToString(), 0));
+	}
+
 	public static void nutDung()
 	{
 		AutoPk.tat();

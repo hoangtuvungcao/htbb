@@ -3,6 +3,7 @@ package game.render.screen;
 import game.model.Actor;
 import game.model.AnimalInfo;
 import game.model.Char;
+import game.model.ChatInfo;
 import game.model.Command;
 import game.model.IAction;
 import game.model.LiveActor;
@@ -705,6 +706,29 @@ final class AutoPk {
 
     static void nutDs() {
         GameService.gI().requestKiller();
+    }
+
+    private static int petKe;
+
+    /** Nút ĐỔI PET: gọi con pet kế tiếp trong hành trang (vòng, bỏ con đã ẩn), báo tên lên khung chat. */
+    static void nutDoiPet() {
+        Vector vector = new Vector();
+        for (int i = 0; i < Char.animal.size(); ++i) {
+            AnimalInfo pet = (AnimalInfo)Char.animal.elementAt(i);
+            if (pet == null || pet.typeAnimal != 1 || AutoPk.an(pet.id)) continue;
+            vector.addElement(pet);
+        }
+        if (vector.size() == 0) {
+            Canvas.startOKDlg("Không có pet trong Hành Trang!");
+            return;
+        }
+        if (petKe >= vector.size()) {
+            petKe = 0;
+        }
+        AnimalInfo animalInfo = (AnimalInfo)vector.elementAt(petKe);
+        petKe = (petKe + 1) % vector.size();
+        AutoPk.goiThu(animalInfo);
+        Canvas.gameScr.addChat(new ChatInfo("", new StringBuilder().append("Đổi pet: ").append(animalInfo.name).toString(), 0));
     }
 
     static void nutDung() {
