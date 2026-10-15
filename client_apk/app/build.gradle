@@ -69,6 +69,12 @@ android {
     }
 }
 
+// Code game dịch ngược: tắt cảnh báo deprecated / unchecked của javac cho log build gọn (lỗi thật vẫn hiện)
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-nowarn', '-XDsuppressNotes']
+    options.deprecation = false
+}
+
 dependencies {
     implementation 'androidx.core:core:1.2.0'   // FileProvider (tự cập nhật APK)
 }

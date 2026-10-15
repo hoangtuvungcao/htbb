@@ -27,10 +27,10 @@ rm -rf "$B" && mkdir -p "$B/tool" "$B/api" "$B/gen/game/render/screen" "$B/cls" 
 # số bản jar gửi kèm khi đăng nhập (server real.BanMoiNhat báo khi có bản mới hơn)
 printf 'package game.render.screen;\n\n/** Sinh bởi build.sh - KHÔNG sửa tay. */\nfinal class PhienBan {\n    static final int BAN = %s;\n}\n' "$V" > "$B/gen/game/render/screen/PhienBan.java"
 
-"$J/javac" -nowarn -encoding UTF-8 -d "$B/tool" -cp tools/asm.jar tools/Down45.java
-"$J/javac" -nowarn --release 8 -encoding UTF-8 -d "$B/api" -cp "tools/midp.jar${S}tools/microemulator.jar" $(find api -name '*.java')
+"$J/javac" -nowarn -XDsuppressNotes -encoding UTF-8 -d "$B/tool" -cp tools/asm.jar tools/Down45.java
+"$J/javac" -nowarn -XDsuppressNotes --release 8 -encoding UTF-8 -d "$B/api" -cp "tools/midp.jar${S}tools/microemulator.jar" $(find api -name '*.java')
 find src ../shared/mod "$B/gen" -name '*.java' > "$B/nguon.txt"
-"$J/javac" -nowarn --release 8 -encoding UTF-8 -d "$B/cls" \
+"$J/javac" -nowarn -XDsuppressNotes --release 8 -encoding UTF-8 -d "$B/cls" \
     -cp "tools/midp.jar${S}tools/microemulator.jar${S}$B/api" @"$B/nguon.txt"
 
 "$J/java" -cp "$B/tool${S}tools/asm.jar" Down45 d "$B/cls" "$B/cls45"
