@@ -626,6 +626,14 @@ public partial class PauseMenu
 				AutoVanMay.moMenu(0);
 			}
 		});
+		vector.addElement(new Command("Hiệu ứng")
+		{
+			action = () =>
+			{
+				Canvas.gameScr.switchToMe();
+				HieuUng.moMenu(0);
+			}
+		});
 		vector.addElement(new Command("Tiện ích")
 		{
 			action = () =>

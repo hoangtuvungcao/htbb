@@ -3115,6 +3115,10 @@ public class GameScr extends Screen {
             this.tg.paint(g);
         }
         EffectManager.lowEffects.paintAll(g);
+        try {
+            HieuUng.veDuoi(g); // mod: hạt sáng khi di chuyển, nằm dưới nhân vật
+        } catch (Throwable th) {
+        }
         for (int i = 0; i < this.VecDataEff.size(); i++) {
             DataSkillEff e2 = (DataSkillEff) this.VecDataEff.elementAt(i);
             if (e2 != null) {
@@ -3552,6 +3556,9 @@ public class GameScr extends Screen {
             return;
         }
         Canvas.resetTrans(g);
+        if (MainChar.quickSlot == null) {
+            this.mainChar.loadQuickSlot();
+        }
         int wSlot = Res.imgPanel.getWidth();
         int hSlot = Res.imgPanel.getHeight();
         g.setColor(colorSlot[this.mainChar.clazz]);
@@ -4130,6 +4137,8 @@ public class GameScr extends Screen {
 
     public void onMainCharInfo() {
         int aa;
+        // mod: tạo ô skill nhanh trước, lỗi ở đoạn dưới không để quickSlot null (thanh skill thành ô đen)
+        this.mainChar.loadQuickSlot();
         GameData.gI().getImage();
         this.mainChar.timeDelayRequestCharInfo = System.currentTimeMillis();
         if (this.mainChar.gender <= 0) {

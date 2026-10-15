@@ -1,6 +1,7 @@
 package game.render.screen;
 
 import game.model.Sound;
+import game.render.Canvas;
 import game.networklogic.GameService;
 
 /**
@@ -11,9 +12,12 @@ final class Nen {
     private Nen() {
     }
 
-    /** Nút UP nổi trên màn game (AutoGuard): máy J2ME bấm phím, không có màn cảm ứng -> không vẽ. */
+    /** Cỡ nút mod nổi (px): nhỏ cho màn giả lập J2ME. */
+    static final int CO_NUT = 38;
+
+    /** Nút mod nổi trên màn game (AutoGuard): chỉ máy cảm ứng (J2ME Loader, máy Java cảm ứng); máy bấm phím không vẽ. */
     static boolean coNutUp() {
-        return false;
+        return Canvas.instance != null && Canvas.instance.hasPointerEvents();
     }
 
     static boolean coAmThanh() {

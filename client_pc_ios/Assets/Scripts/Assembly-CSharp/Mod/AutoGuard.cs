@@ -509,22 +509,22 @@ public sealed class AutoGuard
 		{
 			return;
 		}
-		AutoGuard.veNut(graphics, nutY(), "UP", AutoUp.dang);
-		AutoGuard.veNut(graphics, nutY2(), "TIÊU", AutoVanTieu.dang);
+		AutoGuard.veNut(graphics, nutY(), "Up", AutoUp.dang);
+		AutoGuard.veNut(graphics, nutY2(), "Tiêu", AutoVanTieu.dang);
 		AutoGuard.veNut(graphics, nutY3(), "PK", AutoPk.danh());
 		if (AutoPk.hienNut)
 		{
-			AutoGuard.veNut(graphics, nutX2(), nutYPhim(0), "MÃ PK", AutoPk.maPk ? "BẬT" : "TẮT", AutoPk.maPk);
-			AutoGuard.veNut(graphics, nutX2(), nutYPhim(1), "NHÁY", "MAP", false);
-			AutoGuard.veNut(graphics, nutX2(), nutYPhim(2), "BẬT", "ĐS", false);
-			AutoGuard.veNut(graphics, nutX2(), nutYPhim(3), "DỪNG", "HẾT", false);
-			AutoGuard.veNut(graphics, nutX2(), nutYPhim(4), "ĐỔI", "PET", false);
+			AutoGuard.veNut(graphics, nutX2(), nutYPhim(0), "Mã PK", AutoPk.maPk ? "Bật" : "Tắt", AutoPk.maPk);
+			AutoGuard.veNut(graphics, nutX2(), nutYPhim(1), "Nháy", "Map", false);
+			AutoGuard.veNut(graphics, nutX2(), nutYPhim(2), "Bật", "ĐS", false);
+			AutoGuard.veNut(graphics, nutX2(), nutYPhim(3), "Dừng", "Hết", false);
+			AutoGuard.veNut(graphics, nutX2(), nutYPhim(4), "Đổi", "Pet", false);
 		}
 	}
 
 	private static void veNut(MyGraphics graphics, int y, string ten, bool bat)
 	{
-		AutoGuard.veNut(graphics, nutX(), y, ten, bat ? "BẬT" : "TẮT", bat);
+		AutoGuard.veNut(graphics, nutX(), y, ten, bat ? "Bật" : "Tắt", bat);
 	}
 
 	private static void veNut(MyGraphics graphics, int x, int y, string ten, string dong2, bool bat)
@@ -545,6 +545,14 @@ public sealed class AutoGuard
 
 	public static void paint(MyGraphics graphics)
 	{
+		try
+		{
+			HieuUng.ve(graphics);
+		}
+		catch (System.Exception)
+		{
+			// hiệu ứng lỗi thì bỏ qua
+		}
 		try
 		{
 			AutoGuard.veNutUp(graphics);

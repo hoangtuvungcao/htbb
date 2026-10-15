@@ -4192,6 +4192,13 @@ public class GameScr : MyScreen
 		if (canPaintGameScr() || canPaintIsShowMenu())
 		{
 			EffectManager.lowEffects.paintAll(g);
+			try
+			{
+				HieuUng.veDuoi(g); // mod: hạt sáng khi di chuyển, nằm dưới nhân vật
+			}
+			catch (System.Exception)
+			{
+			}
 			int num2 = aeo.size();
 			for (int i = 0; i < num2; i++)
 			{

@@ -347,8 +347,10 @@ public final class AutoGuard {
     // ---------------------------------------------------------------- nút UP nổi trên màn game
     // Bật/tắt Auto up không cần mở menu. Chỉ có ở bản cảm ứng (Android / PC): Nen.coNutUp().
 
-    static final int NUT_W = 52;
-    static final int NUT_H = 52;
+    /** cỡ nút theo nền tảng: Nen.CO_NUT (jar trên giả lập nhỏ hơn) */
+    static final int NUT_W = Nen.CO_NUT;
+    static final int NUT_H = Nen.CO_NUT;
+    static final int CACH = NUT_H / 6;
 
     static int nutX() {
         return Canvas.w - NUT_W - 6;
@@ -360,7 +362,7 @@ public final class AutoGuard {
 
     /** Nút TIÊU (bật/tắt vòng vận tiêu) nằm ngay dưới nút UP. */
     static int nutY2() {
-        return nutY() + NUT_H + 8;
+        return nutY() + NUT_H + CACH;
     }
 
     /** Có nút và điểm (x, y) nằm trong nút. */
@@ -371,7 +373,7 @@ public final class AutoGuard {
 
     /** Nút PK (bật/tắt Đập người) dưới nút TIÊU. */
     static int nutY3() {
-        return nutY2() + NUT_H + 8;
+        return nutY2() + NUT_H + CACH;
     }
 
     static boolean trongNutPk(int x, int y) {
@@ -381,11 +383,11 @@ public final class AutoGuard {
 
     /** Cột nút thứ hai (MÃ PK / NHÁY / ĐS / DỪNG) bên trái cột UP / TIÊU / PK. */
     static int nutX2() {
-        return nutX() - NUT_W - 6;
+        return nutX() - NUT_W - CACH;
     }
 
     static int nutYPhim(int n) {
-        return nutY() + n * (NUT_H + 8);
+        return nutY() + n * (NUT_H + CACH);
     }
 
     /** Nút phím PK thứ n (0..3) có điểm (x, y) - chỉ khi đang hiện. */
@@ -469,20 +471,20 @@ public final class AutoGuard {
         if (!Nen.coNutUp() || Canvas.currentScreen != Canvas.gameScr) {
             return;
         }
-        AutoGuard.veNut(graphics, nutY(), "UP", AutoUp.dang);
-        AutoGuard.veNut(graphics, nutY2(), "TIÊU", AutoVanTieu.dang);
+        AutoGuard.veNut(graphics, nutY(), "Up", AutoUp.dang);
+        AutoGuard.veNut(graphics, nutY2(), "Tiêu", AutoVanTieu.dang);
         AutoGuard.veNut(graphics, nutY3(), "PK", AutoPk.danh());
         if (AutoPk.hienNut) {
-            AutoGuard.veNut(graphics, nutX2(), nutYPhim(0), "MÃ PK", AutoPk.maPk ? "BẬT" : "TẮT", AutoPk.maPk);
-            AutoGuard.veNut(graphics, nutX2(), nutYPhim(1), "NHÁY", "MAP", false);
-            AutoGuard.veNut(graphics, nutX2(), nutYPhim(2), "BẬT", "ĐS", false);
-            AutoGuard.veNut(graphics, nutX2(), nutYPhim(3), "DỪNG", "HẾT", false);
-            AutoGuard.veNut(graphics, nutX2(), nutYPhim(4), "ĐỔI", "PET", false);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(0), "Mã PK", AutoPk.maPk ? "Bật" : "Tắt", AutoPk.maPk);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(1), "Nháy", "Map", false);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(2), "Bật", "ĐS", false);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(3), "Dừng", "Hết", false);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(4), "Đổi", "Pet", false);
         }
     }
 
     private static void veNut(Graphics graphics, int y, String ten, boolean bat) {
-        AutoGuard.veNut(graphics, nutX(), y, ten, bat ? "BẬT" : "TẮT", bat);
+        AutoGuard.veNut(graphics, nutX(), y, ten, bat ? "Bật" : "Tắt", bat);
     }
 
     private static void veNut(Graphics graphics, int x, int y, String ten, String dong2, boolean bat) {
@@ -506,6 +508,12 @@ public final class AutoGuard {
     }
 
     public static void paint(Graphics graphics) {
+        try {
+            HieuUng.ve(graphics);
+        }
+        catch (Throwable throwable) {
+            // hiệu ứng lỗi thì bỏ qua
+        }
         try {
             AutoGuard.veNutUp(graphics);
         }

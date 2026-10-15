@@ -1888,6 +1888,13 @@ extends Screen {
                 AutoVanMay.moMenu(0);
             }
         }));
+        vector.addElement(new Command("Hiệu ứng", new IAction(){
+
+            public void perform() {
+                Canvas.gameScr.switchToMe();
+                HieuUng.moMenu(0);
+            }
+        }));
         vector.addElement(new Command("Tiện ích", new IAction(){
 
             public void perform() {

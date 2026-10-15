@@ -11,6 +11,9 @@ final class Nen {
     private Nen() {
     }
 
+    /** Cỡ nút mod nổi (px). */
+    static final int CO_NUT = 52;
+
     /** Nút UP nổi trên màn game (AutoGuard): bản cảm ứng -> có. */
     static boolean coNutUp() {
         return true;

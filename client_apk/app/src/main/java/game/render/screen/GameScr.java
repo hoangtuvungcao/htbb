@@ -3380,6 +3380,10 @@ public class GameScr extends Screen {
                 Tilemap.paintTile(graphics);
                 try {
                     EffectManager.lowEffects.paintAll(graphics);
+                    try {
+                        HieuUng.veDuoi(graphics); // mod: hạt sáng khi di chuyển, nằm dưới nhân vật
+                    } catch (Throwable th) {
+                    }
                     int size = aeo.size();
                     for (int i3 = 0; i3 < size; i3++) {
                         ((Effect) aeo.elementAt(i3)).paint(graphics);
