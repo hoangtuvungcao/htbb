@@ -8,7 +8,7 @@
  * API nào cho việc đó.
  */
 export default defineEventHandler(async (event) => {
-  const u = requireUser(event)
+  const u = await requireUser(event)
   const activated = await isActivated(u.username)
 
   // Danh sách nhân vật của tài khoản (phòng thủ nếu lỗi)

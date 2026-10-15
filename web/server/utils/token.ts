@@ -23,6 +23,10 @@ export interface TokenPayload {
   iat: number
   /** hết hạn lúc (giây) */
   exp: number
+  /** dấu mật khẩu (dauMatKhau) lúc cấp — đổi / quên mật khẩu là token cũ hết hiệu lực */
+  pw?: string
+  /** admin: lúc đăng nhập (giây) — giữ nguyên qua các lần gia hạn trượt, để có hạn tuyệt đối */
+  l?: number
 }
 
 const b64 = (buf: Buffer) => buf.toString('base64url')
@@ -35,9 +39,17 @@ export function nowSec(): number {
   return Math.floor(Date.now() / 1000)
 }
 
-export function taoToken(k: LoaiToken, id: number, u: string, hanGiay: number): string {
+/**
+ * Dấu của hash mật khẩu (cột team_user.password) để nhét vào token — không lộ hash thật (HMAC với khoá bí mật).
+ * Mật khẩu đổi thì dấu đổi -> mọi token cũ bị từ chối ở requireUser / requireAdmin.
+ */
+export function dauMatKhau(hashMatKhau: unknown): string {
+  return b64(createHmac('sha256', useKpahConfig().secret).update(`pw|${String(hashMatKhau ?? '')}`).digest()).slice(0, 16)
+}
+
+export function taoToken(k: LoaiToken, id: number, u: string, hanGiay: number, them: { pw?: string, l?: number } = {}): string {
   const iat = nowSec()
-  const payload: TokenPayload = { k, id, u, iat, exp: iat + hanGiay }
+  const payload: TokenPayload = { k, id, u, iat, exp: iat + hanGiay, ...them }
   const du = b64(Buffer.from(JSON.stringify(payload), 'utf8'))
   return `${du}.${kyTen(`${k}|${du}`)}`
 }

@@ -2,7 +2,7 @@
  * Mật khẩu người chơi: kiểm tra mật khẩu hiện tại, sinh mật khẩu mới, hạn mức
  * quên mật khẩu theo tài khoản. Dùng cho các API trong server/api/auth/.
  */
-import { randomInt } from 'node:crypto'
+import { createHmac, randomInt, timingSafeEqual } from 'node:crypto'
 
 /** Gõ SAI mật khẩu hiện tại (đổi mật khẩu / đổi email) tối đa bao nhiêu lần từ một IP. */
 export const DOI_MK_SAI_TOI_DA = 10
@@ -71,5 +71,50 @@ export function quenMkGhiTaiKhoan(username: string): void {
     for (const [k, v] of quenMkTheoTk) {
       if (!v.some(t => t > moc)) quenMkTheoTk.delete(k)
     }
+  }
+}
+
+/**
+ * MÃ XÁC NHẬN QUÊN MẬT KHẨU (không lưu gì phía máy chủ): HMAC(khoá bí mật, id | hash mật khẩu hiện tại | khung
+ * 30 phút) -> 8 ký tự. Gắn với hash mật khẩu nên đổi mật khẩu xong là mã cũ hết hiệu lực (dùng một lần); nhận
+ * khung hiện tại + khung trước -> sống 30-60 phút. Bỏ chữ dễ nhầm (0/O, 1/I/L).
+ */
+const KY_TU_MA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
+const KHUNG_MA_GIAY = 1800
+
+function maTheoKhung(userId: number, hash: string, khung: number): string {
+  const d = createHmac('sha256', useKpahConfig().secret).update(`qmk|${Math.trunc(userId)}|${hash}|${khung}`).digest()
+  let s = ''
+  for (let i = 0; i < 8; i++) s += KY_TU_MA[d[i]! % KY_TU_MA.length]
+  return s
+}
+
+export function taoMaQuenMk(userId: number, hash: string): string {
+  return maTheoKhung(userId, hash, Math.floor(nowSec() / KHUNG_MA_GIAY))
+}
+
+export function maQuenMkDung(userId: number, hash: string, ma: string): boolean {
+  const goi = Buffer.from(ma.trim().toUpperCase())
+  const k = Math.floor(nowSec() / KHUNG_MA_GIAY)
+  for (const khung of [k, k - 1]) {
+    const dung = Buffer.from(maTheoKhung(userId, hash, khung))
+    if (dung.length === goi.length && timingSafeEqual(dung, goi)) return true
+  }
+  return false
+}
+
+/** Nhập SAI mã theo tài khoản: 5 lần / giờ là thôi (cùng với hạn mức theo IP). */
+const saiMaTheoTk = new Map<string, number[]>()
+export function saiMaBiChan(username: string): boolean {
+  const moc = nowSec() - 3600
+  return (saiMaTheoTk.get(username) ?? []).filter(t => t > moc).length >= 5
+}
+export function ghiSaiMa(username: string): void {
+  const moc = nowSec() - 3600
+  const ds = (saiMaTheoTk.get(username) ?? []).filter(t => t > moc)
+  ds.push(nowSec())
+  saiMaTheoTk.set(username, ds)
+  if (saiMaTheoTk.size > 5000) {
+    for (const [k, v] of saiMaTheoTk) if (!v.some(t => t > moc)) saiMaTheoTk.delete(k)
   }
 }

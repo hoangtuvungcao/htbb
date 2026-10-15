@@ -12,6 +12,40 @@ const errors = ref<string[]>([])
 /** Câu trả lời của server sau khi gửi (luôn giống nhau dù tài khoản có khớp hay không). */
 const thongBao = ref('')
 
+// Bước 2: nhập mã trong email + mật khẩu mới
+const b2 = reactive({ ma: '', password: '', confirm: '' })
+const b2Loading = ref(false)
+const b2Loi = ref('')
+const daDoi = ref(false)
+
+async function datLai() {
+  b2Loi.value = ''
+  if (b2.ma.trim() === '') {
+    b2Loi.value = 'Vui lòng nhập mã xác nhận trong email.'
+    return
+  }
+  if (!matKhauGameHopLe(b2.password)) {
+    b2Loi.value = LOI_MAT_KHAU_GAME
+    return
+  }
+  if (b2.password !== b2.confirm) {
+    b2Loi.value = 'Mật khẩu nhập lại không khớp.'
+    return
+  }
+  b2Loading.value = true
+  try {
+    await api('/api/auth/dat-lai-mat-khau', {
+      method: 'POST',
+      body: { username: form.username, ma: b2.ma, password: b2.password, confirm: b2.confirm },
+    })
+    daDoi.value = true
+  } catch (e) {
+    b2Loi.value = loiApi(e)
+  } finally {
+    b2Loading.value = false
+  }
+}
+
 async function submit() {
   errors.value = []
   thongBao.value = ''
@@ -51,10 +85,25 @@ async function submit() {
       Quên<br><em class="text-gilded">mật khẩu?</em>
     </h1>
     <p class="mt-3 text-muted">
-      Nhập tên tài khoản và email đã đăng ký. Mật khẩu mới sẽ được gửi tới email của bạn.
+      Nhập tên tài khoản và email đã đăng ký. Mã xác nhận sẽ được gửi tới email của bạn — nhập mã đó cùng mật khẩu mới.
     </p>
 
-    <template v-if="thongBao">
+    <template v-if="daDoi">
+      <UAlert
+        class="mt-6"
+        color="success"
+        variant="subtle"
+        icon="i-lucide-shield-check"
+        title="Đã đặt lại mật khẩu"
+        description="Đăng nhập website và vào game bằng mật khẩu mới."
+        role="status"
+      />
+      <div class="mt-6">
+        <UButton to="/login" size="xl" block label="Đăng nhập" trailing-icon="i-lucide-arrow-up-right" :ui="{ label: 'flex-1 text-center' }" />
+      </div>
+    </template>
+
+    <template v-else-if="thongBao">
       <UAlert
         class="mt-6"
         color="success"
@@ -64,11 +113,31 @@ async function submit() {
         :description="thongBao"
         role="status"
       />
-      <p class="mt-4 text-sm text-muted">
-        Đăng nhập bằng mật khẩu mới rồi đổi sang mật khẩu của riêng bạn ở trang Tài khoản (mục Bảo mật).
-      </p>
-      <div class="mt-6 flex flex-col gap-3">
-        <UButton to="/login" size="xl" block label="Đăng nhập" trailing-icon="i-lucide-arrow-up-right" :ui="{ label: 'flex-1 text-center' }" />
+      <UAlert v-if="b2Loi" class="mt-4" color="error" variant="subtle" icon="i-lucide-circle-alert" :description="b2Loi" role="alert" />
+      <form class="mt-6 space-y-5" @submit.prevent="datLai">
+        <UFormField label="Mã xác nhận (trong email)" name="ma" required>
+          <UInput
+            v-model="b2.ma"
+            placeholder="VD: K7QM2XHP"
+            autocomplete="one-time-code"
+            autocapitalize="characters"
+            :spellcheck="false"
+            maxlength="8"
+            size="xl"
+            icon="i-lucide-mail"
+            class="w-full"
+            required
+          />
+        </UFormField>
+        <UFormField label="Mật khẩu mới" name="password" required>
+          <UInput v-model="b2.password" type="password" autocomplete="new-password" size="xl" icon="i-lucide-lock" class="w-full" required />
+        </UFormField>
+        <UFormField label="Nhập lại mật khẩu mới" name="confirm" required>
+          <UInput v-model="b2.confirm" type="password" autocomplete="new-password" size="xl" icon="i-lucide-lock" class="w-full" required />
+        </UFormField>
+        <UButton type="submit" size="xl" block :loading="b2Loading" label="Đặt lại mật khẩu" trailing-icon="i-lucide-key-round" :ui="{ label: 'flex-1 text-center' }" />
+      </form>
+      <div class="mt-4">
         <UButton color="neutral" variant="outline" size="xl" block @click="thongBao = ''">
           Gửi lại yêu cầu khác
         </UButton>
@@ -122,7 +191,7 @@ async function submit() {
         <p class="text-sm text-muted">
           Tài khoản chưa có email? <NuxtLink to="/download#support" class="text-primary hover:underline">Liên hệ quản trị viên ↗</NuxtLink>
         </p>
-        <UButton type="submit" size="xl" block :loading="loading" label="Gửi mật khẩu mới" trailing-icon="i-lucide-send" :ui="{ label: 'flex-1 text-center' }" />
+        <UButton type="submit" size="xl" block :loading="loading" label="Gửi mã xác nhận" trailing-icon="i-lucide-send" :ui="{ label: 'flex-1 text-center' }" />
       </form>
 
       <div class="my-6 flex items-center gap-3 text-xs tracking-[0.2em] text-dimmed">

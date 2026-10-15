@@ -10,7 +10,7 @@
  * hỏng cũng không báo lỗi.
  */
 export default defineEventHandler(async (event) => {
-  const u = requireUser(event)
+  const u = await requireUser(event)
 
   if (await biChanSpam(event, 'doi_mk_sai', DOI_MK_SAI_TOI_DA, DOI_MK_SAI_TRONG_GIAY)) {
     throw apiLoi(429, 'Bạn đã nhập sai mật khẩu quá nhiều lần. Vui lòng thử lại sau 15 phút.')

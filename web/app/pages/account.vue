@@ -10,6 +10,7 @@ interface AccountInfo {
 }
 
 const api = useApi()
+const auth = useAuth()
 const { data, error, refresh } = useAsyncData<AccountInfo>('kpah-account', () => api('/api/account'), { server: false })
 
 // Phiên hết hạn (401) -> useApi đã xoá token; đưa người chơi về trang đăng nhập.
@@ -45,7 +46,9 @@ async function doiMatKhau() {
   }
   mkDangGui.value = true
   try {
-    await api('/api/auth/doi-mat-khau', { method: 'POST', body: { ...mk } })
+    const kq = await api<{ ok: boolean, token?: string | null }>('/api/auth/doi-mat-khau', { method: 'POST', body: { ...mk } })
+    // Đổi mật khẩu làm mọi token cũ hết hiệu lực: lưu token mới để phiên này không bị đăng xuất
+    if (kq?.token && auth.user.value) auth.setSession(kq.token, auth.user.value)
     mk.current = ''
     mk.password = ''
     mk.confirm = ''

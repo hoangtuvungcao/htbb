@@ -613,5 +613,5 @@ export async function hbVaoDuoc(event: import('h3').H3Event, tk: { id: number, u
   // 'dang_nhap' có cột admin_user là chính người vừa vào.
   event.context.kpahAdmin = admin
   await ghiNhatKy(event, 'dang_nhap', admin.username, `vào trang quản trị (${cach})`)
-  return { token: taoTokenAdmin(admin.id, admin.username), admin }
+  return { token: await taoTokenAdmin(admin.id, admin.username), admin }
 }

@@ -8,11 +8,11 @@
  * khẩu có ký tự khác lưu được vào DB nhưng KHÔNG vào game được.
  *
  * Đổi xong, nếu tài khoản có email và đã cấu hình gửi mail thì gửi thư báo (không
- * chờ, gửi hỏng cũng không báo lỗi). Các phiên web đang đăng nhập vẫn giữ nguyên
- * (token không gắn với mật khẩu, tự hết hạn sau 7 ngày).
+ * chờ, gửi hỏng cũng không báo lỗi). Token gắn dấu mật khẩu: đổi xong MỌI phiên cũ (máy khác) hết hiệu lực;
+ * phiên đang dùng nhận token mới trong kết quả { ok, token }.
  */
 export default defineEventHandler(async (event) => {
-  const u = requireUser(event)
+  const u = await requireUser(event)
 
   // Chỉ đếm lần gõ SAI mật khẩu hiện tại (giống đăng nhập).
   if (await biChanSpam(event, 'doi_mk_sai', DOI_MK_SAI_TOI_DA, DOI_MK_SAI_TRONG_GIAY)) {
@@ -68,5 +68,11 @@ export default defineEventHandler(async (event) => {
     }).catch(() => { /* guiMail đã ghi log */ })
   }
 
-  return { ok: true }
+  // Token mới cho phiên đang dùng (token cũ đã mất hiệu lực vì dấu mật khẩu đổi)
+  let token: string | null = null
+  try {
+    const h = await qv<string>(dbAccount(), 'SELECT `password` FROM team_user WHERE id = ? LIMIT 1', [Math.trunc(u.id)])
+    token = taoTokenNguoiChoi(u.id, u.username, h)
+  } catch { /* phiên này sẽ phải đăng nhập lại */ }
+  return { ok: true, token }
 })

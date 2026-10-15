@@ -1,20 +1,18 @@
 /**
- * Quên mật khẩu: cấp mật khẩu mới ngẫu nhiên và gửi tới email của tài khoản.
+ * Quên mật khẩu — BƯỚC 1: gửi MÃ XÁC NHẬN tới email của tài khoản (KHÔNG đổi mật khẩu).
  * Body: { username, email } -> { message }
+ * Bước 2: /api/auth/dat-lai-mat-khau { username, ma, password, confirm } mới đổi.
  *
- * Không để lộ tài khoản / email nào có thật: sai tên, sai email, tài khoản bị khoá,
- * quá hạn mức theo tài khoản... đều trả ĐÚNG câu trả lời như khi cấp lại thành công.
+ * Trước đây khớp tên + email là ĐỔI NGAY sang mật khẩu ngẫu nhiên -> ai biết tên + email của người khác là
+ * khoá được họ ra ngoài (game + web) nhiều lần mỗi ngày. Giờ không có mã trong email thì không đổi được gì.
  *
- * Thứ tự khi khớp: sinh mật khẩu mới -> đọc bản băm cũ -> ghi bản băm mới -> gửi mail.
- * Gửi mail hỏng thì GHI LẠI bản băm cũ, người chơi vẫn đăng nhập bằng mật khẩu cũ
- * được (không bị khoá ngoài vì một lá thư không tới). Bản băm cũ chỉ nằm trong biến
- * của request này, không bao giờ trả ra ngoài hay ghi log.
+ * Không để lộ tài khoản / email nào có thật: sai tên, sai email, tài khoản bị khoá, quá hạn mức theo tài
+ * khoản... đều trả ĐÚNG câu trả lời như khi gửi thành công.
  *
- * Hạn mức: theo IP (bảng web_chan_spam, đếm MỌI lần gửi form) và theo tài khoản
- * (tối đa QUEN_MK_MOI_TK_TOI_DA lần cấp lại / 24 giờ, đếm trong bộ nhớ — xem
- * server/utils/matKhau.ts).
+ * Hạn mức: theo IP (bảng web_chan_spam, đếm MỌI lần gửi form) và theo tài khoản (QUEN_MK_MOI_TK_TOI_DA lần
+ * gửi mã / 24 giờ, đếm trong bộ nhớ — xem server/utils/matKhau.ts).
  */
-const TRA_LOI_CHUNG = 'Nếu tên tài khoản và email khớp, mật khẩu mới đã được gửi tới email của bạn. Hãy kiểm tra cả thư mục Spam.'
+const TRA_LOI_CHUNG = 'Nếu tên tài khoản và email khớp, mã xác nhận đã được gửi tới email của bạn (hiệu lực 30 phút). Hãy kiểm tra cả thư mục Spam.'
 
 export default defineEventHandler(async (event) => {
   if (await biChanSpam(event, 'quen_mk', QUEN_MK_TOI_DA, QUEN_MK_TRONG_GIAY)) {
@@ -64,54 +62,39 @@ export default defineEventHandler(async (event) => {
   }
 
   const userId = Math.trunc(Number(row.id))
-  const hashCu = row.hash as string
-  const matKhauMoi = taoMatKhauNgauNhien()
-
-  try {
-    await exec(acc, 'UPDATE team_user SET `password` = PASSWORD(?) WHERE id = ?', [matKhauMoi, userId])
-  } catch (e: any) {
-    console.error('Quen mat khau update failed:', e?.code ?? e)
-    throw apiLoi(503, 'Hệ thống đang bận. Vui lòng thử lại sau.')
-  }
-
+  const ma = taoMaQuenMk(userId, row.hash as string)
   const ten = String(row.username)
-  // Không chèn đường link dựng từ header Host (người gửi request tự đặt được) vào thư.
+  // Không chèn đường link dựng từ header Host (người gửi request tự đặt được) vào thư: gửi MÃ để nhập trên web.
   try {
     await guiMail({
       to: String(row.email).trim(),
-      subject: 'Mật khẩu mới - Khí Phách Anh Hùng',
+      subject: 'Mã xác nhận đặt lại mật khẩu - Khí Phách Anh Hùng',
       text: [
         'Xin chào,',
         '',
-        'Bạn (hoặc ai đó) vừa yêu cầu cấp lại mật khẩu cho tài khoản Khí Phách Anh Hùng.',
+        'Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu cho tài khoản Khí Phách Anh Hùng.',
         '',
         `Tên tài khoản: ${ten}`,
-        `Mật khẩu mới: ${matKhauMoi}`,
+        `Mã xác nhận: ${ma}`,
         '',
-        'Hãy đăng nhập website rồi đổi sang mật khẩu của riêng bạn ở trang Tài khoản (mục Bảo mật).',
+        'Nhập mã này cùng mật khẩu mới ở trang Quên mật khẩu trên website. Mã có hiệu lực 30 phút và chỉ dùng được một lần.',
         '',
-        'Nếu không phải bạn yêu cầu, bạn có thể bỏ qua thư này — nhưng mật khẩu cũ không còn dùng được nữa, hãy đăng nhập bằng mật khẩu mới ở trên rồi đổi mật khẩu.',
+        'Nếu không phải bạn yêu cầu, hãy bỏ qua thư này — mật khẩu của bạn KHÔNG bị đổi.',
       ].join('\n'),
       html: `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222">
 <p>Xin chào,</p>
-<p>Bạn (hoặc ai đó) vừa yêu cầu cấp lại mật khẩu cho tài khoản <b>Khí Phách Anh Hùng</b>.</p>
+<p>Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu cho tài khoản <b>Khí Phách Anh Hùng</b>.</p>
 <table style="border-collapse:collapse;margin:12px 0">
 <tr><td style="padding:4px 12px 4px 0;color:#666">Tên tài khoản</td><td style="padding:4px 0"><b>${maHoaHtml(ten)}</b></td></tr>
-<tr><td style="padding:4px 12px 4px 0;color:#666">Mật khẩu mới</td><td style="padding:4px 0"><b style="font-family:Consolas,monospace;font-size:17px;letter-spacing:1px">${maHoaHtml(matKhauMoi)}</b></td></tr>
+<tr><td style="padding:4px 12px 4px 0;color:#666">Mã xác nhận</td><td style="padding:4px 0"><b style="font-family:Consolas,monospace;font-size:20px;letter-spacing:3px">${maHoaHtml(ma)}</b></td></tr>
 </table>
-<p>Hãy đăng nhập website rồi đổi sang mật khẩu của riêng bạn ở trang <b>Tài khoản</b> (mục Bảo mật).</p>
-<p style="color:#666">Nếu không phải bạn yêu cầu, bạn có thể bỏ qua thư này — nhưng mật khẩu cũ không còn dùng được nữa, hãy đăng nhập bằng mật khẩu mới ở trên rồi đổi mật khẩu.</p>
+<p>Nhập mã này cùng mật khẩu mới ở trang <b>Quên mật khẩu</b> trên website. Mã có hiệu lực 30 phút và chỉ dùng được một lần.</p>
+<p style="color:#666">Nếu không phải bạn yêu cầu, hãy bỏ qua thư này — mật khẩu của bạn <b>không</b> bị đổi.</p>
 </div>`,
     })
   } catch {
-    // guiMail đã ghi log mã lỗi của Google. Trả lại mật khẩu cũ.
-    try {
-      await exec(acc, 'UPDATE team_user SET `password` = ? WHERE id = ?', [hashCu, userId])
-    } catch (e: any) {
-      // Hiếm: mật khẩu đã đổi mà thư không tới và không trả lại được -> ghi log để admin đặt lại.
-      console.error('[quen-mk] KHÔNG trả lại được mật khẩu cũ cho tài khoản', ten, e?.code ?? e)
-    }
-    throw apiLoi(503, 'Chưa gửi được email lúc này, mật khẩu của bạn chưa bị đổi. Vui lòng thử lại sau.')
+    // guiMail đã ghi log mã lỗi của Google
+    throw apiLoi(503, 'Chưa gửi được email lúc này. Vui lòng thử lại sau.')
   }
 
   quenMkGhiTaiKhoan(username)

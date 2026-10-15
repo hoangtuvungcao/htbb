@@ -20,10 +20,30 @@ export function currentUser(event: H3Event): WebUser | null {
   return p ? { id: p.id, username: p.u } : null
 }
 
-export function requireUser(event: H3Event): WebUser {
-  const u = currentUser(event)
-  if (!u) throw apiLoi(401, 'Bạn cần đăng nhập để tiếp tục.', { code: 'not_logged_in' })
-  return u
+/** Token người chơi kèm dấu mật khẩu hiện tại (đăng nhập / đổi mật khẩu cấp lại). */
+export function taoTokenNguoiChoi(id: number, username: string, hashMatKhau: unknown): string {
+  return taoToken('user', id, username, USER_TOKEN_HAN, { pw: dauMatKhau(hashMatKhau) })
+}
+
+/**
+ * Bắt buộc đăng nhập. Ngoài chữ ký + hạn, kiểm thêm trong DB: tài khoản bị khoá (ban) hoặc đã đổi / quên
+ * mật khẩu (dấu mật khẩu khác) -> phiên hết hiệu lực ngay. Trước đây token sống đủ 7 ngày dù đã đổi mật khẩu
+ * hay bị khoá (kẻ lấy được token vẫn vào được sau khi chủ tài khoản đổi mật khẩu).
+ */
+export async function requireUser(event: H3Event): Promise<WebUser> {
+  const p = docToken(bearer(event), 'user')
+  if (!p) throw apiLoi(401, 'Bạn cần đăng nhập để tiếp tục.', { code: 'not_logged_in' })
+  let row: { ban: number, password: string } | null
+  try {
+    row = await q1(dbAccount(), 'SELECT ban, `password` FROM team_user WHERE id = ? LIMIT 1', [Math.trunc(p.id)])
+  } catch (e: any) {
+    console.error('requireUser db:', e?.code ?? e)
+    throw apiLoi(503, 'Chưa kiểm tra được phiên đăng nhập. Vui lòng thử lại sau ít phút.')
+  }
+  if (!row || Number(row.ban) === 1 || p.pw !== dauMatKhau(row.password)) {
+    throw apiLoi(401, 'Phiên đăng nhập đã hết hiệu lực. Hãy đăng nhập lại.', { code: 'not_logged_in' })
+  }
+  return { id: p.id, username: p.u }
 }
 
 /** Tài khoản còn hạn kích hoạt trong 5h_active hay không. */

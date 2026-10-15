@@ -15,6 +15,8 @@
  * lần thao tác cuối. Mỗi request hợp lệ trả về token mới trong header
  * `X-Kpah-Token` (client tự thay) — tức "hết hạn khi quá lâu không thao tác".
  * Tên bị gỡ khỏi danh sách -> mất quyền ngay ở request kế tiếp.
+ * Thêm (2026-10-15): HẠN TUYỆT ĐỐI ADMIN_HAN_TOI_DA kể từ lúc đăng nhập (gia hạn trượt không kéo dài mãi),
+ * token gắn dấu mật khẩu (đổi mật khẩu là token cũ hết hiệu lực) và tài khoản bị khoá (ban) là mất quyền ngay.
  */
 import type { H3Event } from 'h3'
 
@@ -31,26 +33,43 @@ export function laTaiKhoanAdmin(username: string): boolean {
   return adminAccounts().includes(username.trim().toLowerCase())
 }
 
-export function taoTokenAdmin(id: number, username: string): string {
-  return taoToken('admin', id, username, useKpahConfig().admin.idleTimeout)
+/** Phiên admin dài nhất kể từ lúc đăng nhập, dù vẫn thao tác liên tục. */
+export const ADMIN_HAN_TOI_DA = 12 * 3600
+
+function taoTokenAdminTho(id: number, username: string, pw: string, l: number): string {
+  return taoToken('admin', id, username, useKpahConfig().admin.idleTimeout, { pw, l })
+}
+
+/** Token admin MỚI (vừa đăng nhập): đọc hash mật khẩu để gắn dấu, mốc đăng nhập = bây giờ. */
+export async function taoTokenAdmin(id: number, username: string): Promise<string> {
+  const h = await qv<string>(dbAccount(), 'SELECT `password` FROM team_user WHERE id = ? LIMIT 1', [Math.trunc(id)])
+  return taoTokenAdminTho(id, username, dauMatKhau(h), nowSec())
 }
 
 /** Admin đang đăng nhập, hoặc null. */
-export function adminUser(event: H3Event): AdminUser | null {
+export async function adminUser(event: H3Event): Promise<AdminUser | null> {
   if (event.context.kpahAdmin !== undefined) return event.context.kpahAdmin
   const p = docToken(bearer(event), 'admin')
   let a: AdminUser | null = null
-  if (p && laTaiKhoanAdmin(p.u)) {
-    a = { id: p.id, username: p.u }
-    // Gia hạn trượt: mỗi lần thao tác cấp token mới.
-    setResponseHeader(event, 'X-Kpah-Token', taoTokenAdmin(a.id, a.username))
+  if (p && laTaiKhoanAdmin(p.u) && typeof p.l === 'number' && nowSec() - p.l <= ADMIN_HAN_TOI_DA) {
+    let row: { ban: number, password: string } | null = null
+    try {
+      row = await q1(dbAccount(), 'SELECT ban, `password` FROM team_user WHERE id = ? LIMIT 1', [Math.trunc(p.id)])
+    } catch (e: any) {
+      console.error('adminUser db:', e?.code ?? e)
+    }
+    if (row && Number(row.ban) !== 1 && p.pw === dauMatKhau(row.password)) {
+      a = { id: p.id, username: p.u }
+      // Gia hạn trượt: mỗi lần thao tác cấp token mới (giữ nguyên mốc đăng nhập l).
+      setResponseHeader(event, 'X-Kpah-Token', taoTokenAdminTho(a.id, a.username, p.pw!, p.l))
+    }
   }
   event.context.kpahAdmin = a
   return a
 }
 
-export function requireAdmin(event: H3Event): AdminUser {
-  const a = adminUser(event)
+export async function requireAdmin(event: H3Event): Promise<AdminUser> {
+  const a = await adminUser(event)
   if (!a) throw apiLoi(401, 'Phiên quản trị đã hết hạn. Hãy đăng nhập lại.', { code: 'admin_required' })
   return a
 }
@@ -125,7 +144,11 @@ export async function soLanGoSai(event: H3Event): Promise<number> {
 }
 
 export async function dangBiChanDoSai(event: H3Event): Promise<boolean> {
-  return (await soLanGoSai(event)) >= useKpahConfig().admin.maxFail
+  // Giữ chỗ trước khi đếm (gửi song song không vượt được hạn mức) - xem giuCho trong chanSpam.ts
+  const dangChayTruoc = giuCho(`admin_dang_nhap|${ipKhach(event)}`)
+  const max = useKpahConfig().admin.maxFail
+  if (dangChayTruoc >= max) return true
+  return (await soLanGoSai(event)) + dangChayTruoc >= max
 }
 
 /**
@@ -135,7 +158,7 @@ export async function dangBiChanDoSai(event: H3Event): Promise<boolean> {
  */
 export function defineAdminHandler<T>(fn: (event: H3Event, admin: AdminUser) => Promise<T> | T) {
   return defineEventHandler(async (event) => {
-    const admin = requireAdmin(event)
+    const admin = await requireAdmin(event)
     try {
       return await fn(event, admin)
     } catch (e: any) {

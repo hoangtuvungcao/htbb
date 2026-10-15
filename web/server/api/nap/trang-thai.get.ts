@@ -3,7 +3,7 @@
  * Chỉ chủ đơn mới xem được. Query: ma_don -> { trang_thai }
  */
 export default defineEventHandler(async (event) => {
-  const u = requireUser(event)
+  const u = await requireUser(event)
   const maDon = str(getQuery(event).ma_don)
   let don: DonNapMoc | null = null
   try {

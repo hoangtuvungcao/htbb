@@ -9,7 +9,7 @@ const TAO_DON_TOI_DA = 10
 const TAO_DON_TRONG_GIAY = 3600
 
 export default defineEventHandler(async (event) => {
-  const u = requireUser(event)
+  const u = await requireUser(event)
   const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
 
   const moc = int(body?.moc, 0)

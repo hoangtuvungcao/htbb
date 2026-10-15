@@ -21,12 +21,12 @@ export default defineEventHandler(async (event) => {
     throw apiLoi(400, 'Vui lòng nhập tên tài khoản và mật khẩu.')
   }
 
-  let row: { id: number, username: string, ban: number } | null
+  let row: { id: number, username: string, ban: number, password: string } | null
   try {
     // So khớp mật khẩu bằng PASSWORD() giống login server của game.
     row = await q1(
       dbAccount(),
-      'SELECT id, username, ban FROM team_user WHERE username = ? AND `password` = PASSWORD(?) LIMIT 1',
+      'SELECT id, username, ban, `password` FROM team_user WHERE username = ? AND `password` = PASSWORD(?) LIMIT 1',
       [username, password],
     )
   } catch (e: any) {
@@ -43,5 +43,5 @@ export default defineEventHandler(async (event) => {
   }
 
   const user = { id: Number(row.id), username: String(row.username) }
-  return { token: taoToken('user', user.id, user.username, USER_TOKEN_HAN), user }
+  return { token: taoTokenNguoiChoi(user.id, user.username, row.password), user }
 })
