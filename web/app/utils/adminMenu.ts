@@ -14,7 +14,7 @@ export const ADMIN_MENU: { nhom: string, items: AdminMenuItem[] }[] = [
     nhom: 'Theo dõi',
     items: [
       { key: 'tongquan', to: '/admin', label: 'Tổng quan', icon: 'i-lucide-layout-grid' },
-      { key: 'online', to: '/admin/online', label: 'Ai đang ở đâu', icon: 'i-lucide-map-pin' },
+      { key: 'online', to: '/admin/online', label: 'Ai đang ở đâu · client', icon: 'i-lucide-map-pin' },
     ],
   },
   {
