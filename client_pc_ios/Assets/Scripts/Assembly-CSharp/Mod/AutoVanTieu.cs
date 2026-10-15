@@ -29,6 +29,8 @@ public sealed class AutoVanTieu
 	private static volatile bool chayVong;
 	private static volatile bool chayDoi;
 	private static volatile bool chayDi;
+	/** Bật bằng Auto đổi / nút TIÊU: trả tiêu xong thì tự chạy chuyến tiếp. */
+	private static volatile bool tuDong;
 	private static int mauIndex = 0;
 	public static int tocNhay = 30;
 	public static bool kiemTra = true;
@@ -58,6 +60,7 @@ public sealed class AutoVanTieu
 		{
 				if (chayVong || chayDoi)
 				{
+					tuDong = false;
 					chayVong = false;
 					chayDoi = false;
 				}
@@ -131,7 +134,8 @@ public sealed class AutoVanTieu
 		}
 		else
 		{
-			// đang giữa đường (đã có tiêu): đi tiêu tiếp từ map này
+			// đang giữa đường (đã có tiêu): đi tiêu tiếp từ map này, trả xong thì chạy tiếp vòng
+			tuDong = true;
 			AutoVanTieu.batDi();
 		}
 	}
@@ -139,6 +143,7 @@ public sealed class AutoVanTieu
 	/** Nút sao bản gốc: dừng toàn bộ thao tác. */
 	public static void tat()
 	{
+		tuDong = false;
 		chayVong = false;
 		chayDoi = false;
 		chayDi = false;
@@ -167,9 +172,9 @@ public sealed class AutoVanTieu
 		}
 		if (@string.IndexOf("Chúc mừng bạn nhận được") != -1)
 		{
-			++soTieu;
-			if (Tilemap.lv == MAP_BIEN_GIOI)
+			if (Tilemap.lv == MAP_BIEN_GIOI && !chayVong)
 			{
+				++soTieu;
 				chayDi = false;
 				AutoVanTieu.batVong();
 			}
@@ -198,6 +203,7 @@ public sealed class AutoVanTieu
 		{
 			return;
 		}
+		tuDong = true;
 		chayVong = true;
 		AutoVanTieu.capNhat();
 		new System.Threading.Thread(() =>
@@ -972,6 +978,28 @@ public sealed class AutoVanTieu
 				}
 				trangThai = "trả tiêu";
 				GameService.gI().doMenuOption(NPC_TRA, (sbyte)0, 0);
+				// Server này báo trả tiêu bằng "Chúc mừng bạn đã có 1 chuyến tiêu thành công" (thông báo
+				// chạy chữ, không qua hộp thoại) + "Bạn nhận được ... điểm đổi thưởng" - không phải câu
+				// "Chúc mừng bạn nhận được" bản gốc chờ. Nên tự chờ xe tiêu biến mất (= trả xong) rồi chạy
+				// lại vòng nếu đang tự động.
+				for (int i = 0; i < 30 && chayDi; ++i)
+				{
+					AutoVanTieu.ngu(500L);
+					if (!AutoVanTieu.checkTieu())
+					{
+						AutoVanTieu.ngu(1000L);
+						if (!AutoVanTieu.checkTieu())
+						{
+							++soTieu;
+							trangThai = "trả tiêu xong";
+							if (tuDong)
+							{
+								AutoVanTieu.batVong();
+							}
+							return;
+						}
+					}
+				}
 				return;
 			}
 			trangThai = new System.Text.StringBuilder().Append("map ").Append(Canvas.gameScr.map).Append(" không nằm trên đường đi tiêu").ToString();

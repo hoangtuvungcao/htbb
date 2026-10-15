@@ -42,6 +42,8 @@ final class AutoVanTieu {
     private static volatile boolean chayVong;
     private static volatile boolean chayDoi;
     private static volatile boolean chayDi;
+    /** Bật bằng Auto đổi / nút TIÊU: trả tiêu xong thì tự chạy chuyến tiếp. */
+    private static volatile boolean tuDong;
     private static int mauIndex = 0;
     static int tocNhay = 30;
     static boolean kiemTra = true;
@@ -67,6 +69,7 @@ final class AutoVanTieu {
 
             public void perform() {
                 if (chayVong || chayDoi) {
+                    tuDong = false;
                     chayVong = false;
                     chayDoi = false;
                 } else {
@@ -140,13 +143,15 @@ final class AutoVanTieu {
         } else if (Tilemap.lv == 0 || Tilemap.lv == 70 || Tilemap.lv == MAP_BIEN_GIOI) {
             AutoVanTieu.batVong();
         } else {
-            // đang giữa đường (đã có tiêu): đi tiêu tiếp từ map này
+            // đang giữa đường (đã có tiêu): đi tiêu tiếp từ map này, trả xong thì chạy tiếp vòng
+            tuDong = true;
             AutoVanTieu.batDi();
         }
     }
 
     /** Nút sao bản gốc: dừng toàn bộ thao tác. */
     static void tat() {
+        tuDong = false;
         chayVong = false;
         chayDoi = false;
         chayDi = false;
@@ -170,8 +175,8 @@ final class AutoVanTieu {
             AutoVanTieu.capNhat();
         }
         if (string.indexOf("Chúc mừng bạn nhận được") != -1) {
-            ++soTieu;
-            if (Tilemap.lv == MAP_BIEN_GIOI) {
+            if (Tilemap.lv == MAP_BIEN_GIOI && !chayVong) {
+                ++soTieu;
                 chayDi = false;
                 AutoVanTieu.batVong();
             }
@@ -195,6 +200,7 @@ final class AutoVanTieu {
         if (chayVong) {
             return;
         }
+        tuDong = true;
         chayVong = true;
         AutoVanTieu.capNhat();
         new Thread(){
@@ -835,6 +841,24 @@ final class AutoVanTieu {
                 }
                 trangThai = "trả tiêu";
                 GameService.gI().doMenuOption(NPC_TRA, (byte)0, 0);
+                // Server này báo trả tiêu bằng "Chúc mừng bạn đã có 1 chuyến tiêu thành công" (thông báo
+                // chạy chữ, không qua hộp thoại) + "Bạn nhận được ... điểm đổi thưởng" - không phải câu
+                // "Chúc mừng bạn nhận được" bản gốc chờ. Nên tự chờ xe tiêu biến mất (= trả xong) rồi chạy
+                // lại vòng nếu đang tự động.
+                for (int i = 0; i < 30 && chayDi; ++i) {
+                    AutoVanTieu.ngu(500L);
+                    if (!AutoVanTieu.checkTieu()) {
+                        AutoVanTieu.ngu(1000L);
+                        if (!AutoVanTieu.checkTieu()) {
+                            ++soTieu;
+                            trangThai = "trả tiêu xong";
+                            if (tuDong) {
+                                AutoVanTieu.batVong();
+                            }
+                            return;
+                        }
+                    }
+                }
                 return;
             }
             trangThai = new StringBuilder().append("map ").append(Canvas.gameScr.map).append(" không nằm trên đường đi tiêu").toString();
