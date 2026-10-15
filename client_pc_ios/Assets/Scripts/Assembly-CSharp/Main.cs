@@ -66,8 +66,8 @@ public class Main : MonoBehaviour
 		}
 	}
 
-	/// <summary>Số khung hình vẽ mỗi giây. Logic game chỉ chạy 25 lần/giây (FixedUpdate, Fixed Timestep 0.04) nên vẽ nhanh hơn là phí CPU.</summary>
-	private const int FPS = 30;
+	/// <summary>Số khung hình vẽ mỗi giây (logic game vẫn chạy 25 lần/giây - FixedUpdate, Fixed Timestep 0.04).</summary>
+	private const int FPS = 60;
 
 	/// <summary>Cửa sổ không được chọn (thu nhỏ / chạy nền): vẽ chậm lại, mạng vẫn chạy.</summary>
 	private const int FPS_NEN = 10;
