@@ -70,7 +70,7 @@ Mỗi lần push lên `main`, [.github/workflows/deploy.yml](.github/workflows/d
 
 | Tab **Secrets** (bí mật) | Tab **Variables** (không nhạy cảm) |
 |---|---|
-| `VPS_SSH_KEY_WEB` — **bắt buộc** (VPS cũ 180.93.57.30) | `KPAH_LINK_ANDROID`, `KPAH_LINK_PC`, `KPAH_LINK_IOS`, `KPAH_LINK_GROUP` |
+| `VPS_SSH_KEY_WEB` — **bắt buộc** (VPS cũ 180.93.57.30) | `KPAH_LINK_ANDROID`, `KPAH_LINK_PC`, `KPAH_LINK_IOS`, `KPAH_LINK_JAR`, `KPAH_LINK_GROUP` |
 | `VPS_SSH_KEY_WEB_2` — VPS mới 180.93.127.26 (để trống = bỏ qua VPS mới) | |
 | `KPAH_SECRET` — **bắt buộc**, `openssl rand -hex 32` | `KPAH_AUTO_ACTIVATE` (`true`/`false`) |
 | `KPAH_ADMIN_ACCOUNTS` — vd `hoahv,admin` | `KPAH_ADMIN_2FA_BAT_BUOC` |

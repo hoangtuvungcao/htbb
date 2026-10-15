@@ -16,7 +16,9 @@ function coLink(url: string | null | undefined): boolean {
 const platforms = computed(() => [
   { name: 'Android', hint: 'Bản cài đặt APK', icon: 'i-lucide-smartphone', url: site.value?.linkAndroid ?? '', mau: 'from-jade-400/25 to-jade-900/5', anh: 'shadow-jade-500/30' },
   { name: 'PC / Windows', hint: 'Chơi trên máy tính', icon: 'i-lucide-monitor', url: site.value?.linkPc ?? '', mau: 'from-gold-400/25 to-gold-900/5', anh: 'shadow-gold-500/30' },
-  { name: 'iOS', hint: 'Hướng dẫn cài đặt', icon: 'i-lucide-tablet-smartphone', url: site.value?.linkIos ?? '', mau: 'from-sky-400/25 to-sky-900/5', anh: 'shadow-sky-500/30' },
+  { name: 'Java (.jar)', hint: 'Điện thoại Java / giả lập J2ME', icon: 'i-lucide-cpu', url: site.value?.linkJar ?? '', mau: 'from-sky-400/25 to-sky-900/5', anh: 'shadow-sky-500/30' },
+  // iOS chưa có bản riêng: chỉ hiện khi đã cấu hình link
+  ...(coLink(site.value?.linkIos) ? [{ name: 'iOS', hint: 'Hướng dẫn cài đặt', icon: 'i-lucide-tablet-smartphone', url: site.value!.linkIos, mau: 'from-rose-400/25 to-rose-900/5', anh: 'shadow-rose-500/30' }] : []),
 ])
 
 const steps = computed(() => [

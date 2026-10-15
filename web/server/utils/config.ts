@@ -121,6 +121,7 @@ export interface KpahConfig {
     linkAndroid: string
     linkPc: string
     linkIos: string
+    linkJar: string
     linkGroup: string
     autoActivate: boolean
   }
@@ -237,6 +238,7 @@ export function useKpahConfig(): KpahConfig {
       linkAndroid: env('KPAH_LINK_ANDROID') || '#',
       linkPc: env('KPAH_LINK_PC') || '#',
       linkIos: env('KPAH_LINK_IOS') || '#',
+      linkJar: env('KPAH_LINK_JAR') || '#',
       linkGroup: env('KPAH_LINK_GROUP') || '#',
       autoActivate: envBool('KPAH_AUTO_ACTIVATE', false),
     },
@@ -277,6 +279,7 @@ export function publicSiteConfig() {
     linkAndroid: c.site.linkAndroid,
     linkPc: c.site.linkPc,
     linkIos: c.site.linkIos,
+    linkJar: c.site.linkJar,
     linkGroup: c.site.linkGroup,
     autoActivate: c.site.autoActivate,
   }

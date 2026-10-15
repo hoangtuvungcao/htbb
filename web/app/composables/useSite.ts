@@ -5,6 +5,7 @@ export interface SiteConfig {
   linkAndroid: string
   linkPc: string
   linkIos: string
+  linkJar: string
   linkGroup: string
   autoActivate: boolean
 }
