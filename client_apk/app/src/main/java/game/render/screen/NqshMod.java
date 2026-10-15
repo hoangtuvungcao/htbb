@@ -337,7 +337,7 @@ public final class NqshMod {
         }
         dangCho = false;
         GCanvas.gameScr.onConnectFail();
-        GCanvas.startOKDlg("Không thể kết nối [" + buoc + "]");
+        GCanvas.startOKDlg("Không thể kết nối");
     }
 
     /** Như GameService.login gốc nhưng thêm MÃ MÁY ở trường cuối (server: LoginHandler -> CamTheoMay). */
