@@ -122,8 +122,8 @@ jobs:
     name: Build PC
     needs: so-ban
     if: inputs.loai == 'tat-ca' || inputs.loai == 'pc'
-    # máy Windows: build IL2CPP cho Windows (cần Visual Studio C++ - có sẵn trên windows-2022);
-    # máy Linux chỉ build được Mono cho Windows
+    # Bản PC build Mono (-kpahMono) giống phat-hanh.sh trên máy: bản IL2CPP (PC 16) crash ngay khi vào map,
+    # và trộn hai kiểu build khiến bản cập nhật để sót file của kiểu kia.
     runs-on: windows-2022
     timeout-minutes: 120
     defaults:
@@ -149,7 +149,7 @@ jobs:
           buildName: NQSH-H2
           buildsPath: build
           # số bản qua tham số dòng lệnh: GameCI KHÔNG chuyển biến môi trường vào container Unity
-          customParameters: -kpahBan ${{ needs.so-ban.outputs.pc }}
+          customParameters: -kpahBan ${{ needs.so-ban.outputs.pc }} -kpahMono
       - name: Kiểm tra số bản trong bản build
         run: |
           ls build

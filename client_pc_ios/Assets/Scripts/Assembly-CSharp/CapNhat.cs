@@ -221,7 +221,17 @@ public class CapNhat : MonoBehaviour
 			+ "  $tam = " + q(tam) + "\r\n"
 			+ "  if (Test-Path -LiteralPath $tam) { Remove-Item -LiteralPath $tam -Recurse -Force }\r\n"
 			+ "  Expand-Archive -LiteralPath " + q(zip) + " -DestinationPath $tam -Force\r\n"
-			+ "  Get-ChildItem -LiteralPath $tam | Copy-Item -Destination " + q(thuMucGame) + " -Recurse -Force\r\n"
+			// Xóa file của bản cũ trước khi chép: bản IL2CPP (GameAssembly.dll, *_Data/il2cpp_data) nằm lại
+			// cạnh bản Mono (hoặc ngược lại) thì Unity nạp nhầm code cũ -> crash ngay khi vào map.
+			+ "  $game = " + q(thuMucGame) + "\r\n"
+			+ "  $xoa = @('GameAssembly.dll', 'baselib.dll', 'MonoBleedingEdge') + @(Get-ChildItem -LiteralPath $tam -Directory | ForEach-Object { $_.Name })\r\n"
+			+ "  foreach ($ten in $xoa) {\r\n"
+			+ "    $cu = Join-Path $game $ten\r\n"
+			+ "    for ($i = 0; (Test-Path -LiteralPath $cu) -and $i -lt 20; $i++) {\r\n"
+			+ "      try { Remove-Item -LiteralPath $cu -Recurse -Force } catch { Start-Sleep -Milliseconds 500 }\r\n"
+			+ "    }\r\n"
+			+ "  }\r\n"
+			+ "  Get-ChildItem -LiteralPath $tam | Copy-Item -Destination $game -Recurse -Force\r\n"
 			+ "  $moi = Get-ChildItem -LiteralPath $tam -Filter *.exe | Where-Object { $_.Name -ne 'UnityCrashHandler64.exe' } | Select-Object -First 1\r\n"
 			+ "  if ($moi) { $exe = Join-Path " + q(thuMucGame) + " $moi.Name }\r\n"
 			+ "  Remove-Item -LiteralPath $tam -Recurse -Force\r\n"
