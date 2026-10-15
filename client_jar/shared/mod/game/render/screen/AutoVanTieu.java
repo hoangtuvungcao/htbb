@@ -18,9 +18,10 @@ import network.Message;
 
 /**
  * Auto vận tiêu (chạy song song với game như AutoUp, gọi mỗi khung hình từ PauseMenu.autoCheDoTick).
- * Vòng: (thiếu Thổ địa phù thì vào nhà mua) -> nhận tiêu NPC -50 -> dẫn tiêu tới cổng ra Tiên Du ->
- * chưa đúng màu thì dùng Lệnh bài đổi tiêu cao cấp (116, hết thì mua gói 130 bằng lượng) -> đi
- * 2,3,5,6,7,8,9 -> Biên giới 118 -> trả tiêu NPC -51 -> Thổ địa phù về làng -> lặp.
+ * Vòng: (thiếu Thổ địa phù thì vào nhà mua) -> nhận tiêu NPC -50 -> chưa đúng màu thì đổi NGAY tại
+ * chỗ bằng Lệnh bài đổi tiêu cao cấp (116, hết thì mua gói 130 bằng lượng) -> đi 2 (Tiên Du),3,5,6,
+ * 7,8,9 -> Biên giới 118 -> trả tiêu NPC -51 -> Thổ địa phù về làng -> lặp.
+ * Bật auto lúc đang ở ngoài làng mà có tiêu cạnh mình thì đi tiếp chuyến đó, không về làng.
  * Luật server (xem KPAH real/Char.doInitMonter, doChangeTieu, TraVanTieu, MonsterVantieu):
  *  - tiêu chỉ đi theo khi chủ cách <= 80px mỗi trục, xa hơn thì đứng im -> đi chậm, chờ tiêu;
  *  - qua map tiêu chỉ sang theo khi cách <= 120px lúc gửi lệnh đổi map;
@@ -54,6 +55,10 @@ final class AutoVanTieu {
     private static int doi;
     private static int theDaMua;
     private static boolean hetLuong;
+    /** Server từ chối đổi tiêu ở chỗ này (vd nhận tiêu ở map 80): đi luôn với màu đang có. */
+    private static boolean thoiDoi;
+    private static boolean donTieu;
+    private static long lucChoCong;
     private static int soTruoc;
     private static int mapTruoc;
     private static long lucMatTieu;
@@ -123,11 +128,13 @@ final class AutoVanTieu {
         buoc = 0;
         lan = 0;
         mau = -1;
-        idTieu = -1;
+        // KHÔNG xoá idTieu: tắt auto, tự đi tay rồi bật lại giữa đường thì vẫn nhận ra tiêu của mình
         chuyen = 0;
         doi = 0;
         theDaMua = 0;
         hetLuong = false;
+        thoiDoi = false;
+        donTieu = false;
         thongBao = null;
         duong = null;
         lucBat = System.currentTimeMillis();
@@ -211,6 +218,17 @@ final class AutoVanTieu {
             case 0: {
                 // chuẩn bị ở làng
                 if (!AutoVanTieu.oLang()) {
+                    // đang ngoài làng: có tiêu của mình (hoặc tiêu sát bên) thì đi tiếp chuyến đó
+                    Actor actor = idTieu >= 0 ? AutoVanTieu.timTieu(gameScr) : null;
+                    if (actor == null) {
+                        actor = AutoVanTieu.tieuGanNhat(gameScr, mainChar, 120);
+                    }
+                    if (actor != null) {
+                        idTieu = ((Monster)actor).idChar;
+                        lucMatTieu = 0L;
+                        buoc = 40;
+                        return;
+                    }
                     buoc = 60;
                     return;
                 }
@@ -305,6 +323,8 @@ final class AutoVanTieu {
                 thongBao = null;
                 mau = -1;
                 idTieu = -1;
+                thoiDoi = false;
+                donTieu = false;
                 GameService.gI().doMenuOption(NPC_NHAN, (byte)0, 0);
                 buoc = 21;
                 luc = l;
@@ -324,7 +344,7 @@ final class AutoVanTieu {
                 }
                 thongBao = null;
                 lan = 0;
-                if (string.indexOf("nhận được tiêu") >= 0) {
+                if (string.startsWith("Bạn đã nhận được tiêu")) {
                     mau = AutoVanTieu.mauTrong(string);
                     buoc = 22;
                     luc = l;
@@ -351,17 +371,16 @@ final class AutoVanTieu {
             }
             case 22: {
                 trangThai = "tìm tiêu";
-                Actor actor = AutoVanTieu.tieuGanNhat(gameScr, mainChar);
+                Actor actor = idTieu >= 0 ? AutoVanTieu.timTieu(gameScr) : null;
+                if (actor == null) {
+                    actor = AutoVanTieu.tieuGanNhat(gameScr, mainChar, 320);
+                }
                 if (actor != null) {
                     idTieu = ((Monster)actor).idChar;
                     lucMatTieu = 0L;
-                    if (!AutoVanTieu.oLang()) {
-                        // đang ngoài làng cùng tiêu (vd vào lại game giữa đường): đi tiếp, không đổi
-                        buoc = 40;
-                        return;
-                    }
-                    AutoVanTieu.datDichCong(2);
-                    buoc = 30;
+                    // ở làng: đổi màu ngay tại chỗ (server cho đổi khắp làng nhà) rồi mới đi;
+                    // ngoài làng (vd vào lại game giữa đường): đi tiếp, không đổi
+                    buoc = AutoVanTieu.oLang() ? 31 : 40;
                     return;
                 }
                 if (l - luc > 6000L) {
@@ -396,26 +415,10 @@ final class AutoVanTieu {
                 }
                 return;
             }
-            case 30: {
-                // dẫn tiêu tới cổng ra Tiên Du
-                trangThai = "tới cổng Tiên Du";
-                if (AutoVanTieu.coTieu(gameScr, mainChar, l) == null) {
-                    return;
-                }
-                int n = AutoVanTieu.di(gameScr, mainChar, l);
-                if (n < 0) {
-                    AutoVanTieu.dung("Vận tiêu: không tìm được đường tới cổng Tiên Du.");
-                    return;
-                }
-                if (n > 0) {
-                    buoc = 31;
-                }
-                return;
-            }
             case 31: {
                 // đổi tiêu tới khi đạt màu
                 trangThai = "đổi tiêu";
-                if (!doiTieu || mau >= mauMucTieu || hetLuong) {
+                if (!doiTieu || mau >= mauMucTieu || hetLuong || thoiDoi) {
                     buoc = 40;
                     return;
                 }
@@ -445,8 +448,11 @@ final class AutoVanTieu {
                     return;
                 }
                 thongBao = null;
-                if (string.indexOf("đổi được tiêu") >= 0) {
+                if (string.startsWith("Chúc mừng bạn đã đổi được tiêu")) {
                     mau = AutoVanTieu.mauTrong(string);
+                } else if (string.startsWith("Không thể đổi tiêu")) {
+                    // server trả lại lệnh bài; đổi tiếp chỉ lặp vô hạn -> đi với màu đang có
+                    thoiDoi = true;
                 }
                 buoc = 31;
                 lucCho = l + 350L;
@@ -486,7 +492,7 @@ final class AutoVanTieu {
             case 41: {
                 trangThai = new StringBuilder().append("đi tiêu (map ").append(gameScr.map).append(")").toString();
                 Actor actor = AutoVanTieu.coTieu(gameScr, mainChar, l);
-                if (actor == null) {
+                if (actor == null || AutoVanTieu.dangDon(mainChar, actor)) {
                     return;
                 }
                 int n = AutoVanTieu.di(gameScr, mainChar, l);
@@ -498,8 +504,7 @@ final class AutoVanTieu {
                     return;
                 }
                 // tới sát cổng: chờ tiêu sát (<= 60px, server cho <= 120px) rồi mới qua
-                if (AutoVanTieu.cach(mainChar, actor) > 60) {
-                    AutoVanTieu.nha();
+                if (!AutoVanTieu.tieuSat(mainChar, actor, 60, l)) {
                     trangThai = "chờ tiêu tới cổng";
                     return;
                 }
@@ -531,7 +536,7 @@ final class AutoVanTieu {
             case 50: {
                 trangThai = "tới Dịch trạm";
                 Actor actor = AutoVanTieu.coTieu(gameScr, mainChar, l);
-                if (actor == null) {
+                if (actor == null || AutoVanTieu.dangDon(mainChar, actor)) {
                     return;
                 }
                 int n = AutoVanTieu.di(gameScr, mainChar, l);
@@ -542,8 +547,7 @@ final class AutoVanTieu {
                 if (n == 0) {
                     return;
                 }
-                if (AutoVanTieu.cach(mainChar, actor) > 90) {
-                    AutoVanTieu.nha();
+                if (!AutoVanTieu.tieuSat(mainChar, actor, 90, l)) {
                     trangThai = "chờ tiêu";
                     return;
                 }
@@ -630,10 +634,9 @@ final class AutoVanTieu {
         return null;
     }
 
-    /** Tiêu gần mình nhất (<= 320px) - dùng ngay sau khi nhận tiêu để biết mã chủ tiêu của mình. */
-    private static Actor tieuGanNhat(GameScr gameScr, MainChar mainChar) {
+    /** Tiêu gần mình nhất (<= n px) - dùng khi chưa biết mã chủ tiêu của mình (vừa nhận / bật lại giữa đường). */
+    private static Actor tieuGanNhat(GameScr gameScr, MainChar mainChar, int n) {
         Actor actor = null;
-        int n = 320;
         Vector vector = gameScr.actors;
         for (int i = 0; i < vector.size(); ++i) {
             Actor actor2 = (Actor)vector.elementAt(i);
@@ -660,9 +663,45 @@ final class AutoVanTieu {
         } else if (l - lucMatTieu > 10000L) {
             lucMatTieu = 0L;
             idTieu = -1;
+            donTieu = false;
             buoc = 60;
         }
         return null;
+    }
+
+    /**
+     * Đứng ở đích chờ tiêu lại sát (<= n px). Tiêu cách > 80px thì server cho đứng im, chờ mãi
+     * không tới -> sau 3s chuyển sang quay lại đón (dangDon). true = tiêu đã sát.
+     */
+    private static boolean tieuSat(MainChar mainChar, Actor actor, int n, long l) {
+        if (AutoVanTieu.cach(mainChar, actor) <= n) {
+            lucChoCong = 0L;
+            return true;
+        }
+        AutoVanTieu.nha();
+        if (lucChoCong == 0L) {
+            lucChoCong = l;
+        } else if (l - lucChoCong > 3000L) {
+            lucChoCong = 0L;
+            donTieu = true;
+        }
+        return false;
+    }
+
+    /** Đang quay lại đón tiêu: đi thẳng về phía tiêu tới khi sát (<= 32px) rồi tìm lại đường. */
+    private static boolean dangDon(MainChar mainChar, Actor actor) {
+        if (!donTieu) {
+            return false;
+        }
+        if (AutoVanTieu.cach(mainChar, actor) <= 32) {
+            donTieu = false;
+            duong = null;
+            AutoVanTieu.nha();
+            return false;
+        }
+        trangThai = "quay lại đón tiêu";
+        AutoVanTieu.giuPhim(actor.x - mainChar.x, actor.y - mainChar.y);
+        return true;
     }
 
     private static boolean coBam() {

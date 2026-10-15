@@ -167,7 +167,36 @@ public sealed class AutoGuard
 		{
 			// không bao giờ cản lệnh di chuyển của game
 		}
+		try
+		{
+			AutoGuard.boQuaiDangChet(by, s2);
+		}
+		catch (Exception)
+		{
+			// empty catch block
+		}
 		return false;
+	}
+
+	/**
+	 * Lệnh 4 cho quái (cat 1) mà actor cùng id đang chạy hiệu ứng chết (lệnh 90, die = true): bỏ
+	 * actor cũ để onActorMove tạo lại actor mới (đúng loại + mã chủ tiêu). Đổi tiêu là vậy: server
+	 * gửi 90 rồi 4 cùng id với loại xe mới; giữ actor cũ thì nó chỉ đổi vị trí rồi bị xoá ở khung
+	 * hình sau -> xe tiêu biến mất tới khi nó đi lại.
+	 */
+	private static void boQuaiDangChet(sbyte by, short s)
+	{
+		if (by != 1 || Canvas.gameScr == null)
+		{
+			return;
+		}
+		mVector vector = Canvas.gameScr.actors;
+		for (int i = vector.size() - 1; i >= 0; --i)
+		{
+			Actor actor = (Actor)vector.elementAt(i);
+			if (actor == null || actor.catagory != 1 || actor.ID != s || !actor.die) continue;
+			vector.removeElementAt(i);
+		}
 	}
 
 	/**
