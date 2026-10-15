@@ -379,6 +379,21 @@ public final class AutoGuard {
                 && x >= nutX() && x < nutX() + NUT_W && y >= nutY3() && y < nutY3() + NUT_H;
     }
 
+    /** Cột nút thứ hai (MÃ PK / NHÁY / ĐS / DỪNG) bên trái cột UP / TIÊU / PK. */
+    static int nutX2() {
+        return nutX() - NUT_W - 6;
+    }
+
+    static int nutYPhim(int n) {
+        return nutY() + n * (NUT_H + 8);
+    }
+
+    /** Nút phím PK thứ n (0..3) có điểm (x, y) - chỉ khi đang hiện. */
+    static boolean trongNutPhim(int n, int x, int y) {
+        return Nen.coNutUp() && AutoPk.hienNut && Canvas.currentScreen == Canvas.gameScr
+                && x >= nutX2() && x < nutX2() + NUT_W && y >= nutYPhim(n) && y < nutYPhim(n) + NUT_H;
+    }
+
     static boolean trongNutTieu(int x, int y) {
         return Nen.coNutUp() && Canvas.currentScreen == Canvas.gameScr
                 && x >= nutX() && x < nutX() + NUT_W && y >= nutY2() && y < nutY2() + NUT_H;
@@ -406,6 +421,22 @@ public final class AutoGuard {
         if (Canvas.isPointerClick && trongNutPk(Canvas.px, Canvas.py) && trongNutPk(Canvas.pxLast, Canvas.pyLast)) {
             Canvas.isPointerClick = false;
             AutoPk.batTat();
+        }
+        for (int i = 0; i < 4; ++i) {
+            if (Canvas.isPointerDown && trongNutPhim(i, Canvas.px, Canvas.py)) {
+                Canvas.isPointerDown = false;
+            }
+            if (!Canvas.isPointerClick || !trongNutPhim(i, Canvas.px, Canvas.py) || !trongNutPhim(i, Canvas.pxLast, Canvas.pyLast)) continue;
+            Canvas.isPointerClick = false;
+            if (i == 0) {
+                AutoPk.nutMaPk();
+            } else if (i == 1) {
+                AutoPk.nutNhay();
+            } else if (i == 2) {
+                AutoPk.nutDs();
+            } else {
+                AutoPk.nutDung();
+            }
         }
     }
 
@@ -439,11 +470,21 @@ public final class AutoGuard {
         AutoGuard.veNut(graphics, nutY(), "UP", AutoUp.dang);
         AutoGuard.veNut(graphics, nutY2(), "TIÊU", AutoVanTieu.dang);
         AutoGuard.veNut(graphics, nutY3(), "PK", AutoPk.danh());
+        if (AutoPk.hienNut) {
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(0), "MÃ PK", AutoPk.maPk ? "BẬT" : "TẮT", AutoPk.maPk);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(1), "NHÁY", "MAP", false);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(2), "BẬT", "ĐS", false);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(3), "DỪNG", "HẾT", false);
+        }
     }
 
     private static void veNut(Graphics graphics, int y, String ten, boolean bat) {
+        AutoGuard.veNut(graphics, nutX(), y, ten, bat ? "BẬT" : "TẮT", bat);
+    }
+
+    private static void veNut(Graphics graphics, int x, int y, String ten, String dong2, boolean bat) {
         int r = NUT_W / 2 - 3;
-        int cx = nutX() + NUT_W / 2;
+        int cx = x + NUT_W / 2;
         int cy = y + NUT_H / 2 - 1;
         boolean sang = System.currentTimeMillis() / 500L % 2L == 0L;
         graphics.setClip(0, 0, Canvas.w, Canvas.h);
@@ -458,7 +499,7 @@ public final class AutoGuard {
         }
         int h = Font.normalFont[0].getHeight();
         Font.normalFont[0].drawString(graphics, ten, cx, cy - h + 1, 2);
-        Font.normalFont[0].drawString(graphics, bat ? "BẬT" : "TẮT", cx, cy, 2);
+        Font.normalFont[0].drawString(graphics, dong2, cx, cy, 2);
     }
 
     public static void paint(Graphics graphics) {

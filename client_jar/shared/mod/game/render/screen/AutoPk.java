@@ -56,6 +56,8 @@ final class AutoPk {
     static int keyNhay = 42;
     static int keyBatDs = 46;
     static int keySao = 35;
+    /** Bản cảm ứng (PC / Android): 4 phím trên thành nút MÃ PK / NHÁY / ĐS / DỪNG cạnh nút UP. */
+    static boolean hienNut = true;
 
     // ---- trạng thái
     private static boolean daNap;
@@ -117,6 +119,7 @@ final class AutoPk {
                 return;
             }
             int[] nArray = new int[17];
+            nArray[15] = 1;
             int n = 0;
             int n2 = 0;
             boolean bl = false;
@@ -147,6 +150,7 @@ final class AutoPk {
             keyBatDs = nArray[12];
             keySao = nArray[13];
             autoPk = nArray[14];
+            hienNut = nArray[15] == 1;
         }
         catch (Throwable throwable) {
             // cài đặt hỏng: dùng mặc định
@@ -158,7 +162,7 @@ final class AutoPk {
             String string = new StringBuilder().append(tamNhin).append(",").append(phanTramBom).append(",").append(tocDoBom).append(",").append(hpTru)
                 .append(",").append(bom ? 1 : 0).append(",").append(no).append(",").append(hoiSinh ? 1 : 0).append(",").append(tayDs ? 1 : 0)
                 .append(",").append(nhayMap ? 1 : 0).append(",").append(ks ? 1 : 0).append(",").append(keyPk).append(",").append(keyNhay)
-                .append(",").append(keyBatDs).append(",").append(keySao).append(",").append(autoPk).toString();
+                .append(",").append(keyBatDs).append(",").append(keySao).append(",").append(autoPk).append(",").append(hienNut ? 1 : 0).toString();
             RMS.saveRMSString(RMS_TEN, string);
         }
         catch (Throwable throwable) {
@@ -372,10 +376,22 @@ final class AutoPk {
         AutoPk.themSo(vector, "Tốc độ bơm", 8, 1, 10);
         AutoPk.themSo(vector, "% HP trụ (KS)", 9, 1, 100);
         AutoPk.themSo(vector, "Tầm nhìn", 10, 0, 10000);
-        AutoPk.themSo(vector, "Phím PK", 11, 0, 255);
-        AutoPk.themSo(vector, "Phím nháy", 12, 0, 255);
-        AutoPk.themSo(vector, "Phím bật ĐS", 13, 0, 255);
-        AutoPk.themSo(vector, "Phím dừng", 14, 0, 255);
+        if (Nen.coNutUp()) {
+            // bản cảm ứng: phím tắt thành nút trên màn game
+            vector.addElement(new Command(hienNut ? "Nút phím PK: Hiện" : "Nút phím PK: Ẩn", new IAction(){
+
+                public void perform() {
+                    hienNut = !hienNut;
+                    AutoPk.luu();
+                    AutoPk.moCaiDat(11);
+                }
+            }));
+        } else {
+            AutoPk.themSo(vector, "Phím PK", 11, 0, 255);
+            AutoPk.themSo(vector, "Phím nháy", 12, 0, 255);
+            AutoPk.themSo(vector, "Phím bật ĐS", 13, 0, 255);
+            AutoPk.themSo(vector, "Phím dừng", 14, 0, 255);
+        }
         PauseMenu.moMenuGiuChon(vector, 2, chon);
     }
 
@@ -668,6 +684,32 @@ final class AutoPk {
             // không bao giờ cản phím của game
         }
         return false;
+    }
+
+    // ---- 4 nút (bản cảm ứng) thay cho 4 phím
+    static void nutMaPk() {
+        AutoPk.nap();
+        if (autoPk == 0) {
+            autoPk = 1;
+            AutoPk.luu();
+        }
+        maPk = !maPk;
+        if (maPk && tayDs) {
+            GameService.gI().requestKiller();
+        }
+    }
+
+    static void nutNhay() {
+        GameService.gI().changeMap(24, 3, 3);
+    }
+
+    static void nutDs() {
+        GameService.gI().requestKiller();
+    }
+
+    static void nutDung() {
+        AutoPk.tat();
+        AutoVanTieu.tat();
     }
 
     private static void goiThuTheoPhim(int n) {

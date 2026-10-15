@@ -41,6 +41,8 @@ public sealed class AutoPk
 	public static int keyNhay = 42;
 	public static int keyBatDs = 46;
 	public static int keySao = 35;
+	/** Bản cảm ứng (PC / Android): 4 phím trên thành nút MÃ PK / NHÁY / ĐS / DỪNG cạnh nút UP. */
+	public static bool hienNut = true;
 
 	// ---- trạng thái
 	private static bool daNap;
@@ -114,6 +116,7 @@ public sealed class AutoPk
 				return;
 			}
 			int[] nArray = new int[17];
+			nArray[15] = 1;
 			int n = 0;
 			int n2 = 0;
 			bool bl = false;
@@ -150,6 +153,7 @@ public sealed class AutoPk
 			keyBatDs = nArray[12];
 			keySao = nArray[13];
 			autoPk = nArray[14];
+			hienNut = nArray[15] == 1;
 		}
 		catch (System.Exception)
 		{
@@ -164,7 +168,7 @@ public sealed class AutoPk
 			string @string = new System.Text.StringBuilder().Append(tamNhin).Append(",").Append(phanTramBom).Append(",").Append(tocDoBom).Append(",").Append(hpTru)
 				.Append(",").Append(bom ? 1 : 0).Append(",").Append(no).Append(",").Append(hoiSinh ? 1 : 0).Append(",").Append(tayDs ? 1 : 0)
 				.Append(",").Append(nhayMap ? 1 : 0).Append(",").Append(ks ? 1 : 0).Append(",").Append(keyPk).Append(",").Append(keyNhay)
-				.Append(",").Append(keyBatDs).Append(",").Append(keySao).Append(",").Append(autoPk).ToString();
+				.Append(",").Append(keyBatDs).Append(",").Append(keySao).Append(",").Append(autoPk).Append(",").Append(hienNut ? 1 : 0).ToString();
 			RMS.saveRMSString(RMS_TEN, @string);
 		}
 		catch (System.Exception)
@@ -343,10 +347,23 @@ public sealed class AutoPk
 		AutoPk.themSo(vector, "Tốc độ bơm", 8, 1, 10);
 		AutoPk.themSo(vector, "% HP trụ (KS)", 9, 1, 100);
 		AutoPk.themSo(vector, "Tầm nhìn", 10, 0, 10000);
-		AutoPk.themSo(vector, "Phím PK", 11, 0, 255);
-		AutoPk.themSo(vector, "Phím nháy", 12, 0, 255);
-		AutoPk.themSo(vector, "Phím bật ĐS", 13, 0, 255);
-		AutoPk.themSo(vector, "Phím dừng", 14, 0, 255);
+		if (true)
+		{
+			// bản cảm ứng: phím tắt thành nút trên màn game
+			vector.addElement(new Command(hienNut ? "Nút phím PK: Hiện" : "Nút phím PK: Ẩn") { action = () =>
+			{
+					hienNut = !hienNut;
+					AutoPk.luu();
+					AutoPk.moCaiDat(11);
+				} });
+		}
+		else
+		{
+			AutoPk.themSo(vector, "Phím PK", 11, 0, 255);
+			AutoPk.themSo(vector, "Phím nháy", 12, 0, 255);
+			AutoPk.themSo(vector, "Phím bật ĐS", 13, 0, 255);
+			AutoPk.themSo(vector, "Phím dừng", 14, 0, 255);
+		}
 		PauseMenu.moMenuGiuChon(vector, 2, chon);
 	}
 
@@ -675,6 +692,38 @@ public sealed class AutoPk
 			// không bao giờ cản phím của game
 		}
 		return false;
+	}
+
+	// ---- 4 nút (bản cảm ứng) thay cho 4 phím
+	public static void nutMaPk()
+	{
+		AutoPk.nap();
+		if (autoPk == 0)
+		{
+			autoPk = 1;
+			AutoPk.luu();
+		}
+		maPk = !maPk;
+		if (maPk && tayDs)
+		{
+			GameService.gI().requestKiller();
+		}
+	}
+
+	public static void nutNhay()
+	{
+		GameService.gI().changeMap(24, 3, 3);
+	}
+
+	public static void nutDs()
+	{
+		GameService.gI().requestKiller();
+	}
+
+	public static void nutDung()
+	{
+		AutoPk.tat();
+		AutoVanTieu.tat();
 	}
 
 	private static void goiThuTheoPhim(int n)
