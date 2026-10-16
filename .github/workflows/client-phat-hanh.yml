@@ -154,7 +154,7 @@ jobs:
           buildName: NQSH-H2
           buildsPath: build
           # số bản qua tham số dòng lệnh: GameCI KHÔNG chuyển biến môi trường vào container Unity
-          customParameters: -kpahBan ${{ needs.so-ban.outputs.pc }} ${{ inputs.pc_kieu == 'il2cpp' && '' || '-kpahMono' }}
+          customParameters: -kpahBan ${{ needs.so-ban.outputs.pc }} ${{ inputs.pc_kieu != 'il2cpp' && '-kpahMono' || '' }}
       - name: Kiểm tra số bản trong bản build
         run: |
           ls build
