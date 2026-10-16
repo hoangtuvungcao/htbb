@@ -127,8 +127,10 @@ jobs:
     name: Build PC
     needs: so-ban
     if: inputs.loai == 'tat-ca' || inputs.loai == 'pc'
-    # Bản PC build Mono (-kpahMono) giống phat-hanh.sh trên máy: bản IL2CPP (PC 16) crash ngay khi vào map,
-    # và trộn hai kiểu build khiến bản cập nhật để sót file của kiểu kia.
+    # Mặc định Mono (pc_kieu=mono) như các bản đã phát hành. IL2CPP (pc_kieu=il2cpp): lỗi crash khi vào map
+    # (PC 16) đã sửa 2026-10-16 - nguyên nhân chia cho 0 trong GameScr.paintMainCharInfo, IL2CPP mặc định không
+    # kiểm chia 0 -> sập; nay bật DivideByZeroChecks cho cả assembly (Mod/Il2Cpp). Đã test: cập nhật Mono -> IL2CPP
+    # sạch (CapNhat đổi tên MonoBleedingEdge), vào map, auto up 60 s không lỗi.
     runs-on: windows-2022
     timeout-minutes: 120
     defaults:
