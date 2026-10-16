@@ -104,7 +104,15 @@ const saiTrongBoNho = new Map<string, number[]>()
 /** Riêng lần đăng nhập thất bại: chưa có admin nên ghi tên người đã gõ vào. */
 export async function ghiNhatKyDangNhapThatBai(event: H3Event, usernameGoVao: string, lyDo: string): Promise<void> {
   const ip = ipKhach(event)
-  traCho(`admin_dang_nhap|${ip}`)
+  // trả chỗ giữ (dangBiChanDoSai) SAU khi lượt sai đã được ghi
+  try {
+    await ghiSaiAdmin(ip, usernameGoVao, lyDo)
+  } finally {
+    traCho(`admin_dang_nhap|${ip}`)
+  }
+}
+
+async function ghiSaiAdmin(ip: string, usernameGoVao: string, lyDo: string): Promise<void> {
   if (!(await coBangNhatKy())) {
     const ds = saiTrongBoNho.get(ip) ?? []
     ds.push(nowSec())

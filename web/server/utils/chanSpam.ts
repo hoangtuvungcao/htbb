@@ -59,7 +59,7 @@ export function traCho(khoa: string): void {
 
 export async function ghiLanLam(event: H3Event, hanhDong: string): Promise<void> {
   const ip = ipKhach(event)
-  traCho(`${hanhDong}|${ip}`)
+  // Trả chỗ giữ SAU khi lượt đã được ghi (trả trước thì lượt song song đếm thiếu một)
   if (!(await coBang(dbGame(), 'web_chan_spam'))) {
     const key = `${hanhDong}|${ip}`
     const moc = nowSec() - HAN_GIU
@@ -72,11 +72,13 @@ export async function ghiLanLam(event: H3Event, hanhDong: string): Promise<void>
         if (!v.some(t => t > moc)) boNho.delete(k)
       }
     }
+    traCho(`${hanhDong}|${ip}`)
     return
   }
   try {
     await exec(dbGame(), 'INSERT INTO web_chan_spam (ip, hanh_dong) VALUES (?, ?)', [ip, hanhDong.slice(0, 30)])
   } catch { /* im lặng */ }
+  traCho(`${hanhDong}|${ip}`)
 }
 
 /** true = ĐANG BỊ CHẶN */
