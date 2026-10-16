@@ -18,6 +18,12 @@ public class CapNhat : MonoBehaviour
 	/// <summary>Số bản đã tải + cài gần nhất (chống vòng lặp cập nhật).</summary>
 	private const string KHOA_DA_THU = "capnhat_da_thu";
 
+	/// <summary>Số lần script cài báo lỗi liên tiếp (capnhat-loi.txt): dưới 3 thì cho thử lại bản đó.</summary>
+	private const string KHOA_SO_LOI = "capnhat_so_loi";
+
+	/// <summary>Tải zip mà quá bấy nhiêu giây không thêm byte nào thì huỷ (mạng treo giữa chừng).</summary>
+	private const float TAI_TREO_GIAY = 30f;
+
 	private const string LINK = "https://raw.githubusercontent.com/kpah-server/nqsh-h2-tai/main/phienban.json";
 
 	/// <summary>Đang tải bản mới: Main bỏ qua chuột / phím của game.</summary>
@@ -55,6 +61,28 @@ public class CapNhat : MonoBehaviour
 	{
 		int dangCai;
 		int.TryParse(Application.version, out dangCai);
+		// Lần cài trước lỗi (script ghi capnhat-loi.txt, game cũ vẫn mở lại): cho thử lại tối đa 3 lần thay vì
+		// bỏ qua bản đó mãi (khoá "đã thử" được ghi ngay khi script bắt đầu chạy).
+		string logLoi = Path.Combine(Application.temporaryCachePath, "capnhat-loi.txt");
+		try
+		{
+			if (File.Exists(logLoi))
+			{
+				UnityEngine.Debug.LogWarning("CapNhat: lan cai truoc loi: " + File.ReadAllText(logLoi));
+				File.Delete(logLoi);
+				int soLoi = PlayerPrefs.GetInt(KHOA_SO_LOI, 0) + 1;
+				PlayerPrefs.SetInt(KHOA_SO_LOI, soLoi);
+				if (soLoi < 3)
+				{
+					PlayerPrefs.DeleteKey(KHOA_DA_THU);
+				}
+				PlayerPrefs.Save();
+			}
+		}
+		catch (Exception ex)
+		{
+			UnityEngine.Debug.LogWarning("CapNhat: " + ex.Message);
+		}
 		string json;
 		// biến môi trường KPAH_CAPNHAT_URL chỉ để thử trên máy (trỏ tới phienban.json cục bộ)
 		string link = Environment.GetEnvironmentVariable("KPAH_CAPNHAT_URL");
@@ -85,6 +113,16 @@ public class CapNhat : MonoBehaviour
 		UnityEngine.Debug.Log("CapNhat: dang cai " + dangCai + ", moi nhat " + (moi == null ? "?" : moi.ban.ToString()));
 		if (moi == null || moi.ban <= dangCai || string.IsNullOrEmpty(moi.link))
 		{
+			if (moi != null && moi.ban <= dangCai)
+			{
+				PlayerPrefs.DeleteKey(KHOA_SO_LOI); // đã lên bản mới nhất
+			}
+			yield break;
+		}
+		// Bắt buộc có sha256 (64 hex): không có thì không cài file không kiểm được (zip hỏng / bị tráo)
+		if (moi.sha256 == null || moi.sha256.Trim().Length != 64)
+		{
+			UnityEngine.Debug.LogWarning("CapNhat: phienban.json thieu sha256 - bo qua");
 			yield break;
 		}
 		// chống lặp: đã cài bản này một lần mà mở lại vẫn chưa lên số bản đó (bản build ghi sai số)
@@ -107,6 +145,9 @@ public class CapNhat : MonoBehaviour
 		{
 			r.SendWebRequest();
 			int daHien = -1;
+			ulong daTai = 0;
+			float lucCoByte = Time.realtimeSinceStartup;
+			bool treo = false;
 			while (!r.isDone)
 			{
 				int pt = (int)(r.downloadProgress * 100f);
@@ -115,15 +156,27 @@ public class CapNhat : MonoBehaviour
 					daHien = pt;
 					hienHop("Đang tải: " + pt + "%");
 				}
+				// Mạng treo giữa chừng: UnityWebRequest mặc định không có hạn -> game kẹt hộp thoại, chặn bấm mãi
+				if (r.downloadedBytes != daTai)
+				{
+					daTai = r.downloadedBytes;
+					lucCoByte = Time.realtimeSinceStartup;
+				}
+				else if (Time.realtimeSinceStartup - lucCoByte > TAI_TREO_GIAY)
+				{
+					treo = true;
+					r.Abort();
+					break;
+				}
 				yield return null;
 			}
-			if (r.result != UnityWebRequest.Result.Success)
+			if (treo || r.result != UnityWebRequest.Result.Success)
 			{
 				baoLoi("Không tải được bản mới, game sẽ chạy bản hiện tại.");
 				yield break;
 			}
 		}
-		if (!string.IsNullOrEmpty(moi.sha256) && !string.Equals(sha256(zip), moi.sha256.Trim(), StringComparison.OrdinalIgnoreCase))
+		if (!string.Equals(sha256(zip), moi.sha256.Trim(), StringComparison.OrdinalIgnoreCase))
 		{
 			baoLoi("File tải về bị lỗi, game sẽ chạy bản hiện tại.");
 			yield break;
@@ -213,31 +266,45 @@ public class CapNhat : MonoBehaviour
 		string tam = Path.Combine(Application.temporaryCachePath, "capnhat-giainen");
 		string log = Path.Combine(Application.temporaryCachePath, "capnhat-loi.txt");
 		string ps1 = Path.Combine(Application.temporaryCachePath, "capnhat.ps1");
-		string s = "$ErrorActionPreference = 'Stop'\r\n"
+		int pid = Process.GetCurrentProcess().Id;
+		// Cài an toàn: chờ game tắt HẲN (không thì huỷ, không đụng file đang dùng); đổi tên mọi mục sẽ bị thay thành
+		// *.capnhat-bak rồi mới chép; chép lỗi thì xoá phần chép dở, đổi .bak về tên cũ (game cũ vẫn chạy). Trước đây
+		// xoá thẳng *_Data / GameAssembly.dll rồi mới chép: chép lỗi (antivirus khoá file, đầy đĩa) là hỏng bản cài.
+		string s = ""
+			+ "$ErrorActionPreference = 'Stop'\r\n"
 			+ "$exe = " + q(exeCu) + "\r\n"
+			+ "$game = " + q(thuMucGame) + "\r\n"
+			+ "$tam = " + q(tam) + "\r\n"
+			+ "$daDoi = @()\r\n"
+			+ "$moGame = $true\r\n"
 			+ "try {\r\n"
-			+ "  Wait-Process -Id " + Process.GetCurrentProcess().Id + " -Timeout 60 -ErrorAction SilentlyContinue\r\n"
+			+ "  Wait-Process -Id " + pid + " -Timeout 60 -ErrorAction SilentlyContinue\r\n"
+			+ "  if (Get-Process -Id " + pid + " -ErrorAction SilentlyContinue) { $moGame = $false; throw 'game chua tat sau 60 s' }\r\n"
 			+ "  Start-Sleep -Milliseconds 500\r\n"
-			+ "  $tam = " + q(tam) + "\r\n"
 			+ "  if (Test-Path -LiteralPath $tam) { Remove-Item -LiteralPath $tam -Recurse -Force }\r\n"
 			+ "  Expand-Archive -LiteralPath " + q(zip) + " -DestinationPath $tam -Force\r\n"
-			// Xóa file của bản cũ trước khi chép: bản IL2CPP (GameAssembly.dll, *_Data/il2cpp_data) nằm lại
-			// cạnh bản Mono (hoặc ngược lại) thì Unity nạp nhầm code cũ -> crash ngay khi vào map.
-			+ "  $game = " + q(thuMucGame) + "\r\n"
-			+ "  $xoa = @('GameAssembly.dll', 'baselib.dll', 'MonoBleedingEdge') + @(Get-ChildItem -LiteralPath $tam -Directory | ForEach-Object { $_.Name })\r\n"
-			+ "  foreach ($ten in $xoa) {\r\n"
-			+ "    $cu = Join-Path $game $ten\r\n"
-			+ "    for ($i = 0; (Test-Path -LiteralPath $cu) -and $i -lt 20; $i++) {\r\n"
-			+ "      try { Remove-Item -LiteralPath $cu -Recurse -Force } catch { Start-Sleep -Milliseconds 500 }\r\n"
+			+ "  $ten = @('GameAssembly.dll', 'baselib.dll', 'MonoBleedingEdge') + @(Get-ChildItem -LiteralPath $tam | ForEach-Object { $_.Name }) | Select-Object -Unique\r\n"
+			+ "  foreach ($t in $ten) {\r\n"
+			+ "    $cu = Join-Path $game $t\r\n"
+			+ "    if (Test-Path -LiteralPath $cu) {\r\n"
+			+ "      $bak = $cu + '.capnhat-bak'\r\n"
+			+ "      if (Test-Path -LiteralPath $bak) { Remove-Item -LiteralPath $bak -Recurse -Force }\r\n"
+			+ "      for ($i = 0; $true; $i++) { try { Rename-Item -LiteralPath $cu -NewName ($t + '.capnhat-bak'); break } catch { if ($i -ge 20) { throw }; Start-Sleep -Milliseconds 500 } }\r\n"
+			+ "      $daDoi += $t\r\n"
 			+ "    }\r\n"
 			+ "  }\r\n"
 			+ "  Get-ChildItem -LiteralPath $tam | Copy-Item -Destination $game -Recurse -Force\r\n"
+			+ "  foreach ($t in $daDoi) { Remove-Item -LiteralPath (Join-Path $game ($t + '.capnhat-bak')) -Recurse -Force -ErrorAction SilentlyContinue }\r\n"
 			+ "  $moi = Get-ChildItem -LiteralPath $tam -Filter *.exe | Where-Object { $_.Name -ne 'UnityCrashHandler64.exe' } | Select-Object -First 1\r\n"
-			+ "  if ($moi) { $exe = Join-Path " + q(thuMucGame) + " $moi.Name }\r\n"
-			+ "  Remove-Item -LiteralPath $tam -Recurse -Force\r\n"
-			+ "  Remove-Item -LiteralPath " + q(zip) + " -Force\r\n"
-			+ "} catch { $_ | Out-File -LiteralPath " + q(log) + " }\r\n"
-			+ "Start-Process -FilePath $exe -WorkingDirectory " + q(thuMucGame) + "\r\n";
+			+ "  if ($moi) { $exe = Join-Path $game $moi.Name }\r\n"
+			+ "  Remove-Item -LiteralPath $tam -Recurse -Force -ErrorAction SilentlyContinue\r\n"
+			+ "  Remove-Item -LiteralPath " + q(zip) + " -Force -ErrorAction SilentlyContinue\r\n"
+			+ "} catch {\r\n"
+			+ "  $_ | Out-File -LiteralPath " + q(log) + "\r\n"
+			+ "  if (Test-Path -LiteralPath $tam) { Get-ChildItem -LiteralPath $tam | ForEach-Object { $n = Join-Path $game $_.Name; if (Test-Path -LiteralPath ($n + '.capnhat-bak')) { Remove-Item -LiteralPath $n -Recurse -Force -ErrorAction SilentlyContinue } } }\r\n"
+			+ "  foreach ($t in $daDoi) { $cu = Join-Path $game $t; if (-not (Test-Path -LiteralPath $cu)) { Rename-Item -LiteralPath ($cu + '.capnhat-bak') -NewName $t -ErrorAction SilentlyContinue } }\r\n"
+			+ "}\r\n"
+			+ "if ($moGame) { Start-Process -FilePath $exe -WorkingDirectory $game }\r\n";
 		File.WriteAllText(ps1, s, new UTF8Encoding(true));
 		ProcessStartInfo p = new ProcessStartInfo("powershell.exe", "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"" + ps1 + "\"");
 		p.UseShellExecute = false;

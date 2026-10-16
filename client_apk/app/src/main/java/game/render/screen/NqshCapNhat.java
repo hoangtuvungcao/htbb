@@ -66,7 +66,8 @@ public final class NqshCapNhat {
         final String ghiChu = j.optString("ghiChu", "");
         int dangCai = a.getPackageManager().getPackageInfo(a.getPackageName(), 0).versionCode;
         System.out.println("NQSH capnhat: dang cai " + dangCai + ", moi nhat " + ban);
-        if (ban <= dangCai || link.length() == 0) {
+        // bắt buộc sha256 (64 hex): không kiểm được thì không cài (APK cụt / bị tráo)
+        if (ban <= dangCai || link.length() == 0 || sha.length() != 64) {
             return;
         }
         a.runOnUiThread(new Runnable() {
@@ -110,31 +111,50 @@ public final class NqshCapNhat {
                     HttpURLConnection c = (HttpURLConnection) new URL(link).openConnection();
                     c.setConnectTimeout(15000);
                     c.setReadTimeout(30000);
-                    int tong = c.getContentLength();
-                    MessageDigest md = MessageDigest.getInstance("SHA-256");
-                    InputStream in = c.getInputStream();
-                    FileOutputStream out = new FileOutputStream(f);
-                    byte[] b = new byte[16384];
-                    int n;
-                    long da = 0;
-                    while ((n = in.read(b)) > 0) {
-                        out.write(b, 0, n);
-                        md.update(b, 0, n);
-                        da += n;
-                        if (tong > 0) {
-                            final int pt = (int) (da * 100 / tong);
-                            a.runOnUiThread(new Runnable() {
-                                public void run() {
-                                    pd.setProgress(pt);
-                                }
-                            });
+                    InputStream in = null;
+                    FileOutputStream out = null;
+                    try {
+                        int ma = c.getResponseCode();
+                        if (ma != 200) {
+                            throw new java.io.IOException("HTTP " + ma);
                         }
-                    }
-                    out.close();
-                    in.close();
-                    c.disconnect();
-                    if (sha.length() > 0 && !sha.equals(hex(md.digest()))) {
-                        loi = "File tải về bị lỗi, vui lòng thử lại.";
+                        int tong = c.getContentLength();
+                        MessageDigest md = MessageDigest.getInstance("SHA-256");
+                        in = c.getInputStream();
+                        out = new FileOutputStream(f);
+                        byte[] b = new byte[16384];
+                        int n;
+                        long da = 0;
+                        int ptCu = -1;
+                        while ((n = in.read(b)) > 0) {
+                            out.write(b, 0, n);
+                            md.update(b, 0, n);
+                            da += n;
+                            if (tong > 0) {
+                                final int pt = (int) (da * 100 / tong);
+                                if (pt != ptCu) { // chỉ báo khi % đổi (trước: mỗi 16 KB một lần lên luồng UI)
+                                    ptCu = pt;
+                                    a.runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            pd.setProgress(pt);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        if (tong > 0 && da != tong) {
+                            loi = "Tải bản mới bị ngắt giữa chừng, vui lòng thử lại.";
+                        } else if (!sha.equals(hex(md.digest()))) {
+                            loi = "File tải về bị lỗi, vui lòng thử lại.";
+                        }
+                    } finally {
+                        if (out != null) {
+                            try { out.close(); } catch (Throwable ignored) { }
+                        }
+                        if (in != null) {
+                            try { in.close(); } catch (Throwable ignored) { }
+                        }
+                        c.disconnect();
                     }
                 } catch (Throwable t) {
                     loi = "Không tải được bản mới, kiểm tra mạng rồi thử lại.";
@@ -144,7 +164,14 @@ public final class NqshCapNhat {
                 final File apk = f;
                 a.runOnUiThread(new Runnable() {
                     public void run() {
-                        pd.dismiss();
+                        // Activity đã đóng (người chơi thoát game lúc đang tải): đụng dialog là BadTokenException
+                        if (a.isFinishing()) {
+                            return;
+                        }
+                        try {
+                            pd.dismiss();
+                        } catch (Throwable ignored) {
+                        }
                         if (loiCuoi != null) {
                             new AlertDialog.Builder(a).setMessage(loiCuoi).setPositiveButton("OK", null).show();
                             return;

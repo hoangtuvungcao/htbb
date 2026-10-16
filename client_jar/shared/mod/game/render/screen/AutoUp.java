@@ -441,7 +441,13 @@ final class AutoUp {
             case 4: {
                 if (!bl) {
                     buocSua = 0;
-                    lucSuaTiep = l + 30000L;
+                    if (AutoUp.canSua(mainChar)) {
+                        // sửa không lên bền (hết xu...): hoãn 10 phút, không dừng đánh để đi sửa lại mỗi 30 s
+                        lucSuaTiep = l + 600000L;
+                        trangThai = "không sửa được đồ";
+                    } else {
+                        lucSuaTiep = l + 30000L;
+                    }
                     return false;
                 }
                 if (l - lucSua > 10000L) {

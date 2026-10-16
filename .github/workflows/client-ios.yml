@@ -21,7 +21,7 @@ env:
 jobs:
   xcode:
     name: Xuất project Xcode
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
       - name: Dọn ổ đĩa (image Unity iOS ~6 GB)
@@ -30,15 +30,15 @@ jobs:
           tool-cache: false
           large-packages: false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ${{ env.PROJECT_PATH }}/Library
           key: Library-iOS-${{ hashFiles(format('{0}/Assets/**', env.PROJECT_PATH), format('{0}/Packages/**', env.PROJECT_PATH), format('{0}/ProjectSettings/**', env.PROJECT_PATH)) }}
           restore-keys: Library-iOS-
 
-      - uses: game-ci/unity-builder@v4
+      - uses: game-ci/unity-builder@v5
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -57,7 +57,7 @@ jobs:
       - name: Đóng gói project Xcode
         run: sudo tar -czf xcode.tgz -C build/iOS/KPAH276 .
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: xcode-project
           path: xcode.tgz
@@ -69,7 +69,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 60
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: xcode-project
 
@@ -94,7 +94,7 @@ jobs:
           zip -qry "KPAH276-NQSH-H2-${{ inputs.version }}-unsigned.ipa" Payload
           ls -la *.ipa
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: KPAH276-NQSH-H2-ipa
           path: "*.ipa"

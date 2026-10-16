@@ -99,6 +99,11 @@ elif lenh in ("ban-ke-tiep", "ghi"):
     else:
         ban, link, file = int(sys.argv[4]), sys.argv[5], sys.argv[6]
         ghi_chu = sys.argv[7] if len(sys.argv) > 7 else ""
+        # So ban chi duoc TANG: hai lan phat hanh chay chong nhau (CI + chay tay) se lay cung mot so -> client
+        # dang o so do khong bao gio cap nhat, hoac sha cua file khac -> tai lai moi lan mo game.
+        cu = int((d.get(loai) or {}).get("ban", 0))
+        if ban <= cu:
+            sys.exit("phienban.json: %s ban %d <= ban dang co %d - huy (co lan phat hanh khac chay chong?)" % (loai, ban, cu))
         h = hashlib.sha256()
         with open(file, "rb") as f:
             for khoi in iter(lambda: f.read(1 << 20), b""):

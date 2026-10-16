@@ -29,7 +29,7 @@ env:
 jobs:
   so-ban:
     name: Lấy số bản kế tiếp
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       android: ${{ steps.b.outputs.android }}
       jar: ${{ steps.b.outputs.jar }}
@@ -54,7 +54,7 @@ jobs:
             exit 1
           fi
           echo "Du secrets cho: $LOAI"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: b
         env:
           GH_TOKEN: ${{ secrets.NQSH_TAI_TOKEN }}
@@ -68,10 +68,10 @@ jobs:
     name: Build Android
     needs: so-ban
     if: inputs.loai == 'tat-ca' || inputs.loai == 'android'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "21"
@@ -87,7 +87,7 @@ jobs:
         run: |
           BAN=${{ needs.so-ban.outputs.android }} OUT=NQSH-H2-${{ needs.so-ban.outputs.android }}.apk KEY_DIR=/tmp/key sh android/build.sh
           rm -rf /tmp/key
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: android
           path: android/out/NQSH-H2-${{ needs.so-ban.outputs.android }}.apk
@@ -97,14 +97,14 @@ jobs:
     name: Build jar
     needs: so-ban
     if: inputs.loai == 'tat-ca' || inputs.loai == 'jar'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4    # JRE 8: rt.jar cho ProGuard
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6    # JRE 8: rt.jar cho ProGuard
         with:
           distribution: temurin
           java-version: "8"
-      - uses: actions/setup-java@v4    # JDK dùng để biên dịch (--release 8)
+      - uses: actions/setup-java@v6    # JDK dùng để biên dịch (--release 8)
         with:
           distribution: temurin
           java-version: "21"
@@ -112,7 +112,7 @@ jobs:
         run: |
           RT_JAR="$JAVA_HOME_8_X64/jre/lib/rt.jar" sh j2me/build.sh ${{ needs.so-ban.outputs.jar }}
           cp "j2me/out/KPAH_276 (1)-automenu-v${{ needs.so-ban.outputs.jar }}-release.jar" NQSH-H2-v${{ needs.so-ban.outputs.jar }}.jar
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: jar
           path: NQSH-H2-v${{ needs.so-ban.outputs.jar }}.jar
@@ -130,13 +130,13 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v7
+      - uses: actions/cache@v6
         with:
           path: pc/Library
           key: Library-Win64-${{ hashFiles('pc/Assets/**', 'pc/Packages/**', 'pc/ProjectSettings/**') }}
           restore-keys: Library-Win64-
-      - uses: game-ci/unity-builder@v4
+      - uses: game-ci/unity-builder@v5
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -162,7 +162,7 @@ jobs:
       - name: Nén zip
         run: |
           python -I phat-hanh/nen-zip.py build/StandaloneWindows64 NQSH-H2-PC-${{ needs.so-ban.outputs.pc }}.zip
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: pc
           path: NQSH-H2-PC-${{ needs.so-ban.outputs.pc }}.zip
@@ -174,10 +174,10 @@ jobs:
     # bản nào build xong thì phát hành bản đó (bản lỗi / không chọn thì không có file, bỏ qua);
     # job vẫn báo lỗi ở bước cuối nếu có bản build hỏng để bạn thấy
     if: ${{ !cancelled() && needs.so-ban.result == 'success' && !inputs.chi_build }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           path: ra
       - name: Đẩy lên + ghi phienban.json (lần lượt từng bản)

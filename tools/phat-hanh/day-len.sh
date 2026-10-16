@@ -36,7 +36,9 @@ $PY -I phat-hanh/phienban.py ghi "$TAM/phienban.json" "$LOAI" "$BAN" "$URL/$TEN"
 # Moi loai 1 release co dinh (tag pc / android / jar): file theo so ban + file ten co dinh (ban moi nhat).
 "$GH" release view "$LOAI" -R "$REPO" >/dev/null 2>&1 || "$GH" release create "$LOAI" -R "$REPO" \
     --title "NQSH-H2 $LOAI" --notes "Ban moi nhat: $URL/$ON_DINH" --latest=false
-"$GH" release upload "$LOAI" -R "$REPO" "$FILE" "$TAM/$ON_DINH" --clobber
+# file theo so ban: KHONG ghi de (trung so ban = loi, khong lang le thay file cua ban da phat hanh)
+"$GH" release upload "$LOAI" -R "$REPO" "$FILE"
+"$GH" release upload "$LOAI" -R "$REPO" "$TAM/$ON_DINH" --clobber
 $PY -I phat-hanh/phienban.py day-len "$TAM/phienban.json" "Phat hanh $LOAI $BAN"
 rm -rf "$TAM"
 echo "== Xong: $URL/$TEN  (link co dinh: $URL/$ON_DINH)"

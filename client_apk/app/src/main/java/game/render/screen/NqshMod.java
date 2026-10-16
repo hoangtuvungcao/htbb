@@ -28,9 +28,10 @@ public final class NqshMod {
     private static final byte[] MAGIC = {-115, 50, 41, -64, -25, 78, 23, -22};
     private static final SecureRandom NGAU_NHIEN = new SecureRandom();
 
-    private static boolean dangCho;
-    private static boolean choPhep;
-    private static int lan;
+    // volatile: ghi từ luồng mạng (nhan), luồng hẹn giờ 30 s và luồng game
+    private static volatile boolean dangCho;
+    private static volatile boolean choPhep;
+    private static volatile int lan;
     private static String host;
     private static byte[] nonce;
     private static byte[] nonceS;
@@ -172,6 +173,10 @@ public final class NqshMod {
         ServerListScr.address = dc;
         ServerListScr.port = cong;
         ServerListScr.index_server = new byte[n];
+        // danh sách ngắn lại mà đang chọn server cuối -> address[index] ngoài mảng, mọi lần đăng nhập đều lỗi
+        if (ServerListScr.index >= n) {
+            ServerListScr.index = 0;
+        }
         ServerListScr.saveIP();
         if (veLai) {
             ServerListScr.gI().init();
