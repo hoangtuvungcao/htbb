@@ -172,6 +172,14 @@ jobs:
           name: pc
           path: NQSH-H2-PC-${{ needs.so-ban.outputs.pc }}.zip
           retention-days: 3
+      # IL2CPP: symbol GameAssembly.pdb (khong nam trong zip phat hanh) - de doc stack khi game crash
+      - uses: actions/upload-artifact@v7
+        if: ${{ inputs.pc_kieu == 'il2cpp' }}
+        with:
+          name: pc-symbol
+          path: build/StandaloneWindows64/*_BackUpThisFolder_ButDontShipItWithYourGame/*.pdb
+          retention-days: 3
+          if-no-files-found: warn
 
   day-len:
     name: Đẩy lên GitHub Releases
