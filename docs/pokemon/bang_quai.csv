@@ -1,0 +1,139 @@
+id_quai,ten_cu,cap,maxhp,phan_loai,dex,ten_pokemon,shiny,he1,he2,"pmd_sprite(2=du,1=co)",ghi_chu
+1,Nhím,1,200,quai,27,sandshrew,0,8,-1,2,Nhím -> Sandshrew
+2,Sâu,2,300,quai,10,caterpie,0,11,-1,1,Sâu -> Caterpie
+3,Giọt nước,3,450,quai,194,wooper,0,2,8,2,Giọt nước -> Wooper
+4,Gà điên,4,650,quai,255,torchic,0,1,-1,2,Gà điên -> Torchic
+5,Rắn lục,5,900,quai,23,ekans,0,7,-1,2,Rắn lục -> Ekans
+6,Ma trơi,6,1200,quai,607,litwick,0,13,1,2,Ma trơi -> Litwick
+7,Nắp ấm,7,1550,quai,69,bellsprout,0,4,7,1,Nắp ấm -> Bellsprout
+8,Rệp quỷ,8,1950,quai,48,venonat,0,11,7,2,Rệp quỷ -> Venonat
+9,Chuột cống,9,2400,quai,19,rattata,0,0,-1,1,Chuột cống -> Rattata
+10,Quỷ hoa,10,3000,quai,43,oddish,0,4,7,1,Quỷ hoa -> Oddish
+11,Sâu róm,11,3660,quai,13,weedle,0,11,7,1,Sâu róm -> Weedle
+12,Lửa ma,12,4380,quai,37,vulpix,0,1,-1,2,Lửa ma -> Vulpix
+13,Giọt nước lớn,13,5160,quai,195,quagsire,0,2,8,1,Giọt nước lớn -> Quagsire
+14,Gà con,18,9960,quai,256,combusken,0,1,6,1,Gà con -> Combusken
+15,Heo mọi,14,6000,quai,498,tepig,0,1,-1,2,Heo mọi -> Tepig
+16,Bọ cạp,15,6900,quai,451,skorupi,0,7,11,1,Bọ cạp -> Skorupi
+17,Rùa đỏ,13,5160,quai,324,torkoal,0,1,-1,1,Rùa đỏ -> Torkoal
+18,Nhện tím,24,18600,quai,168,ariados,0,11,7,1,Nhện tím -> Ariados
+19,Nấm ma,16,7860,quai,46,paras,0,11,4,1,Nấm ma -> Paras
+20,Quỷ sinh hoa,17,8880,quai,44,gloom,0,4,7,1,Quỷ sinh hoa -> Gloom
+21,Rết,15,6900,quai,543,venipede,0,11,7,2,Rết -> Venipede
+22,Gà khổng lồ,30,30150,quai,85,dodrio,0,0,9,1,Gà khổng lồ -> Dodrio
+23,Rắn khổng lồ,31,32630,quai,24,arbok,0,7,-1,1,Rắn khổng lồ -> Arbok
+24,Bướm khổng lồ,18,9960,quai,12,butterfree,0,11,9,1,Bướm khổng lồ -> Butterfree
+25,Bóng ma,22,15310,quai,92,gastly,0,13,7,1,Bóng ma -> Gastly
+26,Thủy nhãn,21,13770,quai,72,tentacool,0,2,7,1,Thủy nhãn -> Tentacool
+27,Skeleton,24,18600,quai,104,cubone,0,8,-1,1,Skeleton -> Cubone
+28,Cọp khổng lồ,20,12300,quai,58,growlithe,0,1,-1,1,Cọp khổng lồ -> Growlithe
+29,Cá sấu,26,22170,quai,159,croconaw,0,2,-1,1,Cá sấu -> Croconaw
+30,ếch quỷ,27,24060,quai,453,croagunk,0,7,6,2,Ếch quỷ -> Croagunk
+31,Dế khổng lồ,33,37830,quai,402,kricketune,0,11,-1,1,Dế khổng lồ -> Kricketune
+32,Nấm tinh,32,35190,quai,47,parasect,0,11,4,1,Nấm tinh -> Parasect
+33,Trâu núi,34,40550,quai,128,tauros,0,0,-1,1,Trâu núi -> Tauros
+34,Sơn tặc,35,43350,quai,559,scraggy,0,15,6,2,Sơn tặc -> Scraggy
+35,Hải tặc,36,46230,quai,342,crawdaunt,0,2,15,1,Hải tặc -> Crawdaunt
+36,Long Trụ,33,50000000,boss,437,bronzong,0,16,10,1,Long Trụ (sự kiện) -> Bronzong
+37,Long trụ phụ,37,25000000,boss,436,bronzor,0,16,10,1,Long trụ phụ -> Bronzor
+38,Thuồng luồng,38,500000,boss,130,gyarados,0,2,9,1,Thuồng luồng -> Gyarados (BossThuongLuong)
+39,Thằn lằn,39,200000000,boss,373,salamence,0,14,9,2,Thằn lằn -> Salamence (BossThanLan)
+40,Rết đỏ,38,53678,quai,544,whirlipede,0,11,7,1,Rết đỏ -> Whirlipede
+41,Rết tía,49,106654,quai,545,scolipede,0,11,7,1,Rết tía -> Scolipede
+42,Rết xanh,43,75098,quai,544,whirlipede,1,11,7,1,Rết xanh -> Whirlipede shiny
+43,Liên hoa trụ,39,20000000,boss,185,sudowoodo,0,12,-1,1,Liên hoa trụ -> Sudowoodo
+44,Tử kê,51,118730,quai,257,blaziken,0,1,6,1,Tử kê -> Blaziken
+45,Hồng kê,39,57634,quai,83,farfetchd,0,0,9,1,Hồng kê -> Farfetch'd
+46,Tướng thủ thành,42,80000000,boss,681,aegislash-shield,0,16,13,1,Tướng thủ thành -> Aegislash
+47,Rắn mang bành,48,100918,quai,336,seviper,0,7,-1,1,Rắn mang bành -> Seviper
+48,Sư tử,60,193830,quai,59,arcanine,0,1,-1,1,Sư tử -> Arcanine
+49,ốc ma,72,460530,quai,423,gastrodon,0,2,8,1,Ốc ma -> Gastrodon
+50,Bướm nâu,44,79894,quai,269,dustox,0,11,7,1,Bướm nâu -> Dustox
+51,Ma cây,74,560530,quai,709,trevenant,0,13,4,1,Ma cây -> Trevenant
+52,Huyết ma,46,90030,quai,93,haunter,0,13,7,1,Huyết ma -> Haunter
+53,Cá Thòi lòi,68,330530,quai,340,whiscash,0,2,8,1,Cá thòi lòi -> Whiscash
+54,Cua càng to,70,360530,quai,99,kingler,0,2,-1,1,Cua càng to -> Kingler
+55,độc nhãn,37,49878,quai,355,duskull,0,13,-1,1,Độc nhãn -> Duskull
+56,Cá ma,76,680530,quai,319,sharpedo,0,2,15,1,Cá ma -> Sharpedo
+57,Huyết nhãn,45,84870,quai,356,dusclops,0,13,-1,1,Huyết nhãn -> Dusclops
+58,Quỷ hoa,78,800530,quai,45,vileplume,0,4,7,1,Quỷ hoa (lv78) -> Vileplume
+59,Skeleton lam,47,95378,quai,105,marowak,0,8,-1,1,Skeleton lam -> Marowak
+60,Tê giác,62,240878,quai,112,rhydon,0,8,12,1,Tê giác -> Rhydon
+61,Cọp tím,57,160078,quai,510,liepard,0,15,-1,1,Cọp tím -> Liepard
+62,Cọp xanh,50,112590,quai,404,luxio,0,3,-1,2,Cọp xanh -> Luxio
+63,Cọp đỏ,40,61750,quai,667,litleo,0,1,0,2,Cọp đỏ -> Litleo
+64,Cá sấu đỏ,60,183830,quai,552,krokorok,0,8,15,1,Cá sấu đỏ -> Krokorok
+65,Cua đinh,58,172230,quai,739,crabrawler,0,6,-1,1,Cua đinh -> Crabrawler
+66,Cá sấu xanh,62,200878,quai,160,feraligatr,0,2,-1,1,Cá sấu xanh -> Feraligatr
+67,Cóc lam,63,209778,quai,537,seismitoad,0,2,8,1,Cóc lam -> Seismitoad
+68,Cóc lửa,42,70478,quai,536,palpitoad,0,2,8,1,Cóc lửa -> Palpitoad
+69,Cóc xanh,65,228350,quai,454,toxicroak,0,7,6,1,Cóc xanh -> Toxicroak
+70,Dế lửa,66,238030,quai,637,volcarona,0,11,1,1,Dế lửa -> Volcarona
+71,Dế cam,41,66030,quai,401,kricketot,0,11,-1,1,Dế cam -> Kricketot
+72,Dế lam,68,258198,quai,214,heracross,0,11,6,1,Dế lam -> Heracross
+73,trâu đỏ,69,268694,quai,128,tauros,1,0,-1,1,Trâu đỏ -> Tauros shiny
+74,Người đá,54,158414,quai,76,golem,0,12,8,1,Người đá -> Golem
+75,trâu xanh,71,290530,quai,750,mudsdale,0,8,-1,1,Trâu xanh -> Mudsdale
+76,ốc sên,56,152630,quai,219,magcargo,0,1,12,1,Ốc sên -> Magcargo
+77,Bọ hung,64,268350,quai,127,pinsir,0,11,-1,1,Bọ hung -> Pinsir
+78,Sơn tặc 3,74,325454,quai,560,scrafty,0,15,6,1,Sơn tặc 3 -> Scrafty
+79,Hải tặc 1,75,337690,quai,781,dhelmise,0,13,4,1,Hải tặc 1 -> Dhelmise
+80,Nấm độc,52,125078,quai,286,breloom,0,4,6,2,Nấm độc -> Breloom
+81,Cánh cam,66,290530,quai,123,scyther,0,11,9,1,Cánh cam -> Scyther
+82,đại bàng,40,200000000,boss,145,zapdos,0,3,9,1,Đại bàng -> Zapdos (huyền thoại)
+83,cổng thành,40,100000000,vat_the,,,0,,,,Cổng thành -> Object PMD (cổng/khối)
+84,Cương thi,40,5000,quai,562,yamask,0,13,-1,1,Cương thi -> Yamask
+85,Đá,40,50,vat_the,,,0,,,,Đá (nguyên liệu khu mỏ) -> Object PMD
+86,Bông,40,50,vat_the,,,0,,,,Bông (nguyên liệu) -> Object PMD
+87,Gỗ,40,50,vat_the,,,0,,,,Gỗ (nguyên liệu) -> Object PMD
+88,Da,40,50,vat_the,,,0,,,,Da (nguyên liệu) -> Object PMD
+89,Sắt,40,50,vat_the,,,0,,,,Sắt (nguyên liệu) -> Object PMD
+90,Người tuyết,40,150000000,boss,460,abomasnow,0,4,5,1,Người tuyết -> Abomasnow (BossNguoiTuyet)
+91,Rắn chị,50,150000000,boss,497,serperior,0,4,-1,1,Rắn chị -> Serperior (BossLinhXa)
+92,Rắn em,50,150000000,boss,496,servine,0,4,-1,1,Rắn em -> Servine (BossBachXa)
+93,Mắt quỷ,55,100000000,boss,94,gengar,0,13,7,2,Mắt quỷ -> Gengar
+94,Bạch cốt tướng quân,60,150000000,boss,477,dusknoir,0,13,-1,2,Bạch cốt tướng quân -> Dusknoir (BossSkelonton)
+95,Ngựa ca nhan trang,1,158414,thu_cuoi,77,ponyta,0,1,-1,2,Ngựa cá nhân trắng -> Ponyta
+96,Ngựa ca nhan xanh,1,158414,thu_cuoi,77,ponyta,0,1,-1,2,Ngựa cá nhân xanh -> Ponyta (đổi màu)
+97,Ngựa ca nhan đỏ,1,158414,thu_cuoi,77,ponyta,0,1,-1,2,Ngựa cá nhân đỏ -> Ponyta (đổi màu)
+98,Ngựa ca nhan xanh la,1,158414,thu_cuoi,77,ponyta,0,1,-1,2,Ngựa cá nhân xanh lá -> Ponyta (đổi màu)
+99,Ngựa ca nhan vàng,1,158414,thu_cuoi,77,ponyta,0,1,-1,2,Ngựa cá nhân vàng -> Ponyta (đổi màu)
+100,Ngựa ca nhan tím,1,158414,thu_cuoi,77,ponyta,1,1,-1,2,Ngựa cá nhân tím -> Ponyta shiny
+101,Ngựa bang trắng,1,158414,thu_cuoi,78,rapidash,0,1,-1,1,Ngựa bang trắng -> Rapidash
+102,Ngựa bang xanh,1,158414,thu_cuoi,78,rapidash,0,1,-1,1,Ngựa bang xanh -> Rapidash (đổi màu)
+103,Ngựa bang đỏ,1,158414,thu_cuoi,78,rapidash,0,1,-1,1,Ngựa bang đỏ -> Rapidash (đổi màu)
+104,Ngựa bang xanh lá,1,158414,thu_cuoi,78,rapidash,0,1,-1,1,Ngựa bang xanh lá -> Rapidash (đổi màu)
+105,Ngựa bang vàng,1,158414,thu_cuoi,78,rapidash,0,1,-1,1,Ngựa bang vàng -> Rapidash (đổi màu)
+106,Ngựa bang tím,1,158414,thu_cuoi,78,rapidash,1,1,-1,1,Ngựa bang tím -> Rapidash shiny
+107,Ngựa quốc gia trắng,1,158414,thu_cuoi,750,mudsdale,0,8,-1,1,Ngựa quốc gia trắng -> Mudsdale
+108,Ngựa quốc gia xanh,1,158414,thu_cuoi,750,mudsdale,0,8,-1,1,Ngựa quốc gia xanh -> Mudsdale (đổi màu)
+109,Ngựa quốc gia đỏ,1,158414,thu_cuoi,750,mudsdale,0,8,-1,1,Ngựa quốc gia đỏ -> Mudsdale (đổi màu)
+110,Ngựa quốc gia xanh lá,1,158414,thu_cuoi,750,mudsdale,0,8,-1,1,Ngựa quốc gia xanh lá -> Mudsdale (đổi màu)
+111,Ngựa quốc gia vàng,1,158414,thu_cuoi,750,mudsdale,0,8,-1,1,Ngựa quốc gia vàng -> Mudsdale (đổi màu)
+112,Ngựa quốc gia tím,1,158414,thu_cuoi,750,mudsdale,1,8,-1,1,Ngựa quốc gia tím -> Mudsdale shiny
+113,Boss thỏ điên,1,200000000,boss,428,lopunny,0,0,-1,1,Boss thỏ điên -> Lopunny
+114,Khô lâu,1,1,quai,353,shuppet,0,13,-1,2,Khô lâu -> Shuppet
+115,Boss Gấu xám,1,400000000,boss,217,ursaring,0,0,-1,1,Boss Gấu xám -> Ursaring
+116,Dracula,1,500000000,boss,491,darkrai,0,15,-1,2,Dracula -> Darkrai (BossDracula)
+117,Bí ngô,1,500000000,boss,711,gourgeist-average,0,13,4,1,Bí ngô -> Gourgeist (BossDracula/Halloween)
+118,Nhện ma,80,900530,quai,596,galvantula,0,11,3,1,Nhện ma -> Galvantula
+119,cong thanh,1,1,vat_the,,,0,,,,cong thanh -> Object PMD
+120,Trụ rồng,50,100000000,boss,384,rayquaza,0,14,9,1,Trụ rồng -> Rayquaza (BossTruRong)
+121,Rương ma quái,1,1,vat_the,,,0,,,,Rương ma quái -> Object PMD Chest
+122,Ngọc 1 sao,1,1,vat_the,,,0,,,,Ngọc 1 sao -> Object/Item PMD
+123,Ngọc 2 sao,1,1,vat_the,,,0,,,,Ngọc 2 sao -> Object/Item PMD
+124,Ngọc 3 sao,1,1,vat_the,,,0,,,,Ngọc 3 sao -> Object/Item PMD
+125,Ngọc 4 sao,1,1,vat_the,,,0,,,,Ngọc 4 sao -> Object/Item PMD
+126,Ngọc 5 sao,1,1,vat_the,,,0,,,,Ngọc 5 sao -> Object/Item PMD
+127,Ngọc 6 sao,1,1,vat_the,,,0,,,,Ngọc 6 sao -> Object/Item PMD
+128,Ngọc 7 sao,1,1,vat_the,,,0,,,,Ngọc 7 sao -> Object/Item PMD
+129,Boss thuỷ tinh,1,1,boss,382,kyogre,0,2,-1,1,Boss Thủy Tinh -> Kyogre (BossSonTinhThuyTinh)
+130,Boss sơn tinh,1,1,boss,383,groudon,0,8,-1,1,Boss Sơn Tinh -> Groudon (BossSonTinhThuyTinh)
+131,Thùng gỗ,1,1,vat_the,,,0,,,,Thùng gỗ -> Object PMD
+132,Skeleton lam,47,95378,quai,105,marowak,1,8,-1,1,Skeleton lam (bản 2) -> Marowak shiny
+133,Huyết ma,46,90030,quai,93,haunter,1,13,7,1,Huyết ma (bản 2) -> Haunter shiny
+134,Rắn mang bành,48,100918,quai,336,seviper,1,7,-1,1,Rắn mang bành (bản 2) -> Seviper shiny
+135,Gấu xám,90,2000530,quai,901,ursaluna,0,8,0,1,Gấu xám lv90 -> Ursaluna
+136,Cọp tím,82,1000000,quai,510,liepard,1,15,-1,1,Cọp tím lv82 -> Liepard shiny
+137,Cọp xanh,84,5000000,quai,405,luxray,0,3,-1,1,Cọp xanh lv84 -> Luxray
+138,Cọp đỏ,86,10000000,boss,244,entei,0,1,-1,1,Cọp đỏ lv86 -> Entei (huyền thoại)
