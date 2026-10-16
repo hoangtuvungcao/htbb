@@ -45,13 +45,15 @@ export default defineAdminHandler(async (event) => {
   try {
     const dieuKien: string[] = []
     const thamSo: string[] = []
+    // gõ % hoặc _ là tìm đúng ký tự đó (không thành ký tự đại diện)
+    const thoat = (v: string) => v.replace(/[!%_]/g, c => `!${c}`)
     if (locTen !== '') {
-      dieuKien.push('charname LIKE ?')
-      thamSo.push(`%${locTen}%`)
+      dieuKien.push("charname LIKE ? ESCAPE '!'")
+      thamSo.push(`%${thoat(locTen)}%`)
     }
     if (locMap !== '') {
-      dieuKien.push('map_ten LIKE ?')
-      thamSo.push(`%${locMap}%`)
+      dieuKien.push("map_ten LIKE ? ESCAPE '!'")
+      thamSo.push(`%${thoat(locMap)}%`)
     }
     const where = dieuKien.length ? `WHERE ${dieuKien.join(' AND ')}` : ''
     dong = await q<DongViTri>(

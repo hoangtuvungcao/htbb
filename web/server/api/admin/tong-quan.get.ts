@@ -51,7 +51,20 @@ const TEN_NHOM_CAP: Record<string, string> = {
   1: 'Dưới 20', 2: '20 – 39', 3: '40 – 59', 4: '60 – 69', 5: '70 – 79', 6: 'Từ 80',
 }
 
+// Cache 30 s theo admin: ~30 truy vấn (quét tob_log_online, đếm tob_char...) mỗi lần mở trang Tổng quan.
+// ?moi=1 (nút Làm mới) bỏ qua cache.
+const CACHE_TONG_QUAN_MS = 30_000
+const cacheTongQuan = new Map<string, { luc: number, kq: unknown }>()
+
 export default defineAdminHandler(async (event, admin) => {
+  const c = cacheTongQuan.get(admin.username)
+  if (c && Date.now() - c.luc < CACHE_TONG_QUAN_MS && str(getQuery(event).moi) !== '1') return c.kq
+  const kq = await tinhTongQuan(event, admin)
+  cacheTongQuan.set(admin.username, { luc: Date.now(), kq })
+  return kq
+})
+
+async function tinhTongQuan(event: import('h3').H3Event, admin: AdminUser) {
   const cfg = useKpahConfig()
   const acc = dbAccount()
   const game = dbGame()
@@ -272,4 +285,4 @@ export default defineAdminHandler(async (event, admin) => {
     tkMoi: tkMoi.map(r => ({ id: sv(r, 'id'), username: String(r.username), email: String(r.email ?? ''), regdate: String(r.regdate ?? ''), ban: sv(r, 'ban') })),
     nhatKyMoi: nhatKyMoi.map(r => ({ admin_user: String(r.admin_user ?? ''), hanh_dong: String(r.hanh_dong ?? ''), doi_tuong: String(r.doi_tuong ?? ''), thoi_gian: String(r.thoi_gian ?? '') })),
   }
-})
+}

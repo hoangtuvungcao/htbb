@@ -42,12 +42,22 @@ interface TongQuan {
   nhatKyMoi: { admin_user: string, hanh_dong: string, doi_tuong: string, thoi_gian: string }[]
 }
 
-const { data, status, error, refresh } = useAsyncData<TongQuan | null>(
+// Server cache Tổng quan 30 s; bấm Làm mới thì gửi moi=1 để lấy số mới ngay
+let lamMoi = false
+const { data, status, error, refresh: taiLai } = useAsyncData<TongQuan | null>(
   'admin-tong-quan',
-  () => (auth.loggedIn.value ? api<TongQuan>('/api/admin/tong-quan') : Promise.resolve(null)),
+  () => {
+    const q = lamMoi ? { moi: '1' } : {}
+    lamMoi = false
+    return auth.loggedIn.value ? api<TongQuan>('/api/admin/tong-quan', { query: q }) : Promise.resolve(null)
+  },
   { server: false, watch: [() => auth.loggedIn.value] },
 )
 const dangTai = computed(() => status.value === 'pending')
+function refresh() {
+  lamMoi = true
+  return taiLai()
+}
 
 /** null (bảng chưa có / câu đếm hỏng) -> "—" thay vì vỡ trang. */
 const hienSo = (n: number | null | undefined) => (n === null || n === undefined ? '—' : so(n))
