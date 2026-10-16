@@ -103,11 +103,15 @@ export function maQuenMkDung(userId: number, hash: string, ma: string): boolean 
   return false
 }
 
-/** Nhập SAI mã theo tài khoản: 5 lần / giờ là thôi (cùng với hạn mức theo IP). */
+/**
+ * Nhập SAI mã theo tài khoản: 20 lần / giờ (cùng với hạn mức theo IP). Không để thấp: ai cũng gõ sai mã cho tên
+ * người khác được -> hạn thấp là chặn được chủ tài khoản đặt lại mật khẩu. Mã 8 ký tự / 31 chữ (~8,5e11) nên
+ * 20 lần/giờ vẫn không dò nổi.
+ */
 const saiMaTheoTk = new Map<string, number[]>()
 export function saiMaBiChan(username: string): boolean {
   const moc = nowSec() - 3600
-  return (saiMaTheoTk.get(username) ?? []).filter(t => t > moc).length >= 5
+  return (saiMaTheoTk.get(username) ?? []).filter(t => t > moc).length >= 20
 }
 export function ghiSaiMa(username: string): void {
   const moc = nowSec() - 3600

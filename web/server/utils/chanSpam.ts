@@ -20,24 +20,46 @@ import type { H3Event } from 'h3'
 const HAN_GIU = 86400
 const boNho = new Map<string, number[]>()
 
-/** Lượt đang chạy (đã qua kiểm tra, chưa chắc đã ghi) theo khoá, tự trả sau GIU_CHO_MS. */
-const GIU_CHO_MS = 10_000
-const dangChay = new Map<string, number>()
+/**
+ * Lượt đang chạy (đã qua kiểm tra, chưa ghi kết quả) theo khoá. Mỗi lượt là một mốc thời gian trong mảng; tự
+ * hết hạn sau GIU_CHO_MS. ghiLanLam bỏ một lượt của khoá đó (lượt đã ghi vào DB/bộ nhớ thì không đếm đôi).
+ */
+const GIU_CHO_MS = 5_000
+const dangChay = new Map<string, number[]>()
+
+function conHan(khoa: string): number[] {
+  const moc = Date.now() - GIU_CHO_MS
+  const ds = (dangChay.get(khoa) ?? []).filter(t => t > moc)
+  if (ds.length) dangChay.set(khoa, ds)
+  else dangChay.delete(khoa)
+  return ds
+}
 
 /** Giữ một chỗ cho khoá, trả số lượt đang chạy TRƯỚC lượt này. Đồng bộ (không await) nên không đua được. */
 export function giuCho(khoa: string): number {
-  const truoc = dangChay.get(khoa) ?? 0
-  dangChay.set(khoa, truoc + 1)
-  setTimeout(() => {
-    const n = (dangChay.get(khoa) ?? 1) - 1
-    if (n <= 0) dangChay.delete(khoa)
-    else dangChay.set(khoa, n)
-  }, GIU_CHO_MS).unref?.()
+  const ds = conHan(khoa)
+  const truoc = ds.length
+  ds.push(Date.now())
+  dangChay.set(khoa, ds)
+  if (dangChay.size > 5000) {
+    for (const k of [...dangChay.keys()]) conHan(k)
+  }
   return truoc
+}
+
+/** Bỏ lượt giữ cũ nhất của khoá (lượt đó vừa được ghi lại). */
+export function traCho(khoa: string): void {
+  const ds = conHan(khoa)
+  if (ds.length) {
+    ds.shift()
+    if (ds.length) dangChay.set(khoa, ds)
+    else dangChay.delete(khoa)
+  }
 }
 
 export async function ghiLanLam(event: H3Event, hanhDong: string): Promise<void> {
   const ip = ipKhach(event)
+  traCho(`${hanhDong}|${ip}`)
   if (!(await coBang(dbGame(), 'web_chan_spam'))) {
     const key = `${hanhDong}|${ip}`
     const moc = nowSec() - HAN_GIU

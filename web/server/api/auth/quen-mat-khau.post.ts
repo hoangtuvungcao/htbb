@@ -12,7 +12,7 @@
  * Hạn mức: theo IP (bảng web_chan_spam, đếm MỌI lần gửi form) và theo tài khoản (QUEN_MK_MOI_TK_TOI_DA lần
  * gửi mã / 24 giờ, đếm trong bộ nhớ — xem server/utils/matKhau.ts).
  */
-const TRA_LOI_CHUNG = 'Nếu tên tài khoản và email khớp, mã xác nhận đã được gửi tới email của bạn (hiệu lực 30 phút). Hãy kiểm tra cả thư mục Spam.'
+const TRA_LOI_CHUNG = 'Nếu tên tài khoản và email khớp, mã xác nhận đã được gửi tới email của bạn (hiệu lực ít nhất 30 phút). Hãy kiểm tra cả thư mục Spam.'
 
 export default defineEventHandler(async (event) => {
   if (await biChanSpam(event, 'quen_mk', QUEN_MK_TOI_DA, QUEN_MK_TRONG_GIAY)) {
@@ -65,8 +65,9 @@ export default defineEventHandler(async (event) => {
   const ma = taoMaQuenMk(userId, row.hash as string)
   const ten = String(row.username)
   // Không chèn đường link dựng từ header Host (người gửi request tự đặt được) vào thư: gửi MÃ để nhập trên web.
-  try {
-    await guiMail({
+  // Gửi NGẦM, không chờ: chờ SMTP (vài giây) chỉ xảy ra khi tên + email khớp -> đo thời gian trả lời là biết
+  // cặp nào có thật. Gửi hỏng chỉ ghi log (guiMail đã ghi), người chơi bấm gửi lại.
+  guiMail({
       to: String(row.email).trim(),
       subject: 'Mã xác nhận đặt lại mật khẩu - Khí Phách Anh Hùng',
       text: [
@@ -77,7 +78,7 @@ export default defineEventHandler(async (event) => {
         `Tên tài khoản: ${ten}`,
         `Mã xác nhận: ${ma}`,
         '',
-        'Nhập mã này cùng mật khẩu mới ở trang Quên mật khẩu trên website. Mã có hiệu lực 30 phút và chỉ dùng được một lần.',
+        'Nhập mã này cùng mật khẩu mới ở trang Quên mật khẩu trên website. Mã có hiệu lực ít nhất 30 phút và chỉ dùng được một lần.',
         '',
         'Nếu không phải bạn yêu cầu, hãy bỏ qua thư này — mật khẩu của bạn KHÔNG bị đổi.',
       ].join('\n'),
@@ -88,14 +89,10 @@ export default defineEventHandler(async (event) => {
 <tr><td style="padding:4px 12px 4px 0;color:#666">Tên tài khoản</td><td style="padding:4px 0"><b>${maHoaHtml(ten)}</b></td></tr>
 <tr><td style="padding:4px 12px 4px 0;color:#666">Mã xác nhận</td><td style="padding:4px 0"><b style="font-family:Consolas,monospace;font-size:20px;letter-spacing:3px">${maHoaHtml(ma)}</b></td></tr>
 </table>
-<p>Nhập mã này cùng mật khẩu mới ở trang <b>Quên mật khẩu</b> trên website. Mã có hiệu lực 30 phút và chỉ dùng được một lần.</p>
+<p>Nhập mã này cùng mật khẩu mới ở trang <b>Quên mật khẩu</b> trên website. Mã có hiệu lực ít nhất 30 phút và chỉ dùng được một lần.</p>
 <p style="color:#666">Nếu không phải bạn yêu cầu, hãy bỏ qua thư này — mật khẩu của bạn <b>không</b> bị đổi.</p>
 </div>`,
-    })
-  } catch {
-    // guiMail đã ghi log mã lỗi của Google
-    throw apiLoi(503, 'Chưa gửi được email lúc này. Vui lòng thử lại sau.')
-  }
+  }).catch(() => { /* guiMail đã ghi log */ })
 
   quenMkGhiTaiKhoan(username)
   return { message: TRA_LOI_CHUNG }

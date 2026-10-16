@@ -28,9 +28,12 @@ const groups = computed<NavigationMenuItem[][]>(() =>
   ]),
 )
 
+// Tạo lúc setup: gọi composable (useRouter bên trong) trong click handler có thể lỗi "nuxt instance unavailable"
+const apiAdmin = useAdminApi()
+
 async function thoat() {
   try {
-    await useAdminApi()('/api/admin/auth/logout', { method: 'POST' })
+    await apiAdmin('/api/admin/auth/logout', { method: 'POST' })
   } catch { /* phiên đã hết hạn thì thôi */ }
   auth.clear()
   await navigateTo('/admin')

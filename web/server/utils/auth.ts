@@ -15,11 +15,6 @@ export interface WebUser {
   username: string
 }
 
-export function currentUser(event: H3Event): WebUser | null {
-  const p = docToken(bearer(event), 'user')
-  return p ? { id: p.id, username: p.u } : null
-}
-
 /** Token người chơi kèm dấu mật khẩu hiện tại (đăng nhập / đổi mật khẩu cấp lại). */
 export function taoTokenNguoiChoi(id: number, username: string, hashMatKhau: unknown): string {
   return taoToken('user', id, username, USER_TOKEN_HAN, { pw: dauMatKhau(hashMatKhau) })

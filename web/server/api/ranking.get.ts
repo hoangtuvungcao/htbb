@@ -7,7 +7,9 @@
  */
 import type { Pool } from 'mysql2/promise'
 
-export default defineEventHandler(async () => {
+// Cache 2 phút (stale-while-revalidate): trang công khai, không đăng nhập — trước đây mỗi lượt xem chạy lại
+// toàn bộ truy vấn xếp hạng (có GROUP BY cả bảng tob_log_clan), ai cũng dùng được để làm nặng CSDL.
+export default defineCachedEventHandler(async () => {
   // Kết nối một lần cho mỗi request; không thử lại DB đang hỏng cho từng bảng.
   let rankDb: Pool | null = null
   try {
@@ -70,4 +72,4 @@ export default defineEventHandler(async () => {
     cardRanks,
     cardRankNote: XEP_HANG_THE_BAT_DAU_HIEN,
   }
-})
+}, { name: 'xep-hang', maxAge: 120, swr: true })

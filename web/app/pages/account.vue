@@ -48,7 +48,15 @@ async function doiMatKhau() {
   try {
     const kq = await api<{ ok: boolean, token?: string | null }>('/api/auth/doi-mat-khau', { method: 'POST', body: { ...mk } })
     // Đổi mật khẩu làm mọi token cũ hết hiệu lực: lưu token mới để phiên này không bị đăng xuất
-    if (kq?.token && auth.user.value) auth.setSession(kq.token, auth.user.value)
+    if (kq?.token && auth.user.value) {
+      auth.setSession(kq.token, auth.user.value)
+    } else {
+      // Không nhận được token mới: phiên cũ đã hết hiệu lực -> đăng nhập lại bằng mật khẩu mới
+      auth.clear()
+      toast.add({ title: 'Đã đổi mật khẩu.', description: 'Hãy đăng nhập lại bằng mật khẩu mới.', color: 'success', icon: 'i-lucide-shield-check' })
+      await navigateTo('/login')
+      return
+    }
     mk.current = ''
     mk.password = ''
     mk.confirm = ''

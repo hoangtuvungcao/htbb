@@ -56,7 +56,9 @@ export async function adminUser(event: H3Event): Promise<AdminUser | null> {
     try {
       row = await q1(dbAccount(), 'SELECT ban, `password` FROM team_user WHERE id = ? LIMIT 1', [Math.trunc(p.id)])
     } catch (e: any) {
+      // Lỗi DB tạm thời: báo 503, KHÔNG coi là hết phiên (401 làm trình duyệt xoá phiên, đá admin ra)
       console.error('adminUser db:', e?.code ?? e)
+      throw apiLoi(503, 'Chưa kiểm tra được phiên quản trị (MySQL chưa sẵn sàng). Thử lại sau ít giây.')
     }
     if (row && Number(row.ban) !== 1 && p.pw === dauMatKhau(row.password)) {
       a = { id: p.id, username: p.u }
@@ -102,6 +104,7 @@ const saiTrongBoNho = new Map<string, number[]>()
 /** Riêng lần đăng nhập thất bại: chưa có admin nên ghi tên người đã gõ vào. */
 export async function ghiNhatKyDangNhapThatBai(event: H3Event, usernameGoVao: string, lyDo: string): Promise<void> {
   const ip = ipKhach(event)
+  traCho(`admin_dang_nhap|${ip}`)
   if (!(await coBangNhatKy())) {
     const ds = saiTrongBoNho.get(ip) ?? []
     ds.push(nowSec())

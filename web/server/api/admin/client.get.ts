@@ -95,7 +95,7 @@ export default defineAdminHandler(async (event) => {
   const jarTheoBan = dem(jar30.map(r => (Number(r.ban_jar) > 0 ? `v${r.ban_jar}` : 'bản cũ (không gửi số bản)')))
 
   // Tài khoản từng vào bằng client KHÔNG phải bản của mình (mới nhất trước)
-  const banNgoai = dong.filter(r => Number(r.chinh_chu) !== 1)
+  const banNgoai = dong.filter(r => Number(r.chinh_chu) !== 1).slice(0, 500)
 
   return {
     online, dinh24h, onlineChuaCoCot, banNgoai,
