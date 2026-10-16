@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /** Đầu trang cho các trang con: dòng nhỏ, tiêu đề lớn, mô tả. */
-defineProps<{ title: string, intro?: string, eyebrow?: string }>()
+/** `trail`: các cấp trung gian giữa "Trang chủ" và trang hiện tại (vd. Pokédex). */
+defineProps<{ title: string, intro?: string, eyebrow?: string, trail?: { label: string, to: string }[] }>()
 </script>
 
 <template>
@@ -10,7 +11,11 @@ defineProps<{ title: string, intro?: string, eyebrow?: string }>()
       <nav aria-label="Đường dẫn" class="mb-6 flex items-center gap-2 text-sm text-muted">
         <NuxtLink to="/" class="text-primary hover:underline">Trang chủ</NuxtLink>
         <UIcon name="i-lucide-chevron-right" class="size-4" aria-hidden="true" />
-        <span aria-current="page">{{ title }}</span>
+        <template v-for="t in trail" :key="t.to">
+          <NuxtLink :to="t.to" class="text-primary hover:underline">{{ t.label }}</NuxtLink>
+          <UIcon name="i-lucide-chevron-right" class="size-4" aria-hidden="true" />
+        </template>
+        <span aria-current="page" class="truncate">{{ title }}</span>
       </nav>
       <FxReveal>
         <p class="eyebrow">

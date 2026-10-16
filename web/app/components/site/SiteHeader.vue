@@ -12,6 +12,8 @@ const links = computed<NavigationMenuItem[]>(() => {
   const ds: NavigationMenuItem[] = [
     { label: 'Trang chủ', to: '/', icon: 'i-lucide-house' },
     { label: 'Tải game', to: '/download', icon: 'i-lucide-download' },
+    { label: 'Pokédex', to: '/pokedex', icon: 'i-lucide-book-open', active: route.path.startsWith('/pokedex') },
+    { label: 'Hướng dẫn', to: '/huong-dan', icon: 'i-lucide-compass' },
     { label: 'Xếp hạng', to: '/ranking', icon: 'i-lucide-trophy' },
     { label: 'Tin tức', to: '/news', icon: 'i-lucide-scroll-text', active: route.path.startsWith('/news') },
   ]

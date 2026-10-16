@@ -19,6 +19,8 @@ const tenSite = useAppConfig().kpah.tenSite
         </div>
         <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted" aria-label="Liên kết chân trang">
           <NuxtLink to="/download" class="hover:text-primary">Tải game</NuxtLink>
+          <NuxtLink to="/pokedex" class="hover:text-primary">Pokédex</NuxtLink>
+          <NuxtLink to="/huong-dan" class="hover:text-primary">Hướng dẫn</NuxtLink>
           <NuxtLink to="/ranking" class="hover:text-primary">Xếp hạng</NuxtLink>
           <NuxtLink to="/news" class="hover:text-primary">Tin tức</NuxtLink>
           <NuxtLink to="/download#support" class="hover:text-primary">Hỗ trợ</NuxtLink>
