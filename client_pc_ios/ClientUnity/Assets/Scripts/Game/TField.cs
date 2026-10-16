@@ -274,9 +274,19 @@ public class TField : ObjGame
 		}
 	}
 
+	/// <summary>
+	/// Do rong chu trong o nhap: CUNG font ve chu (arialFont) va NGUYEN VAN (khong qua tu dien
+	/// ChuPokemon) - dung y nhu chu paint() ve ra, de con tro va cuon ngang khong lech khi nguoi
+	/// choi go dung mot tu co trong tu dien (vd "bang").
+	/// </summary>
+	private static int doRong(string s)
+	{
+		return MFont.arialFont.getWidthNguyenVan(s);
+	}
+
 	public void setOffset()
 	{
-		if (paintedText != null && MFont.normalFont[0] != null)
+		if (paintedText != null && MFont.arialFont != null)
 		{
 			if (inputType == INPUT_TYPE_PASSWORD)
 			{
@@ -286,18 +296,18 @@ public class TField : ObjGame
 			{
 				paintedText = text;
 			}
-			if (offsetX < 0 && MFont.normalFont[0].getWidth(paintedText) + offsetX < width - TEXT_GAP_X - 13 - typingModeAreaWidth)
+			if (offsetX < 0 && doRong(paintedText) + offsetX < width - TEXT_GAP_X - 13 - typingModeAreaWidth)
 			{
-				offsetX = width - 10 - typingModeAreaWidth - MFont.normalFont[0].getWidth(paintedText);
+				offsetX = width - 10 - typingModeAreaWidth - doRong(paintedText);
 			}
-			if (offsetX + MFont.normalFont[0].getWidth(paintedText.Substring(0, caretPos)) <= 0)
+			if (offsetX + doRong(paintedText.Substring(0, caretPos)) <= 0)
 			{
-				offsetX = -MFont.normalFont[0].getWidth(paintedText.Substring(0, caretPos));
+				offsetX = -doRong(paintedText.Substring(0, caretPos));
 				offsetX += 40;
 			}
-			else if (offsetX + MFont.normalFont[0].getWidth(paintedText.Substring(0, caretPos)) >= width - 12 - typingModeAreaWidth)
+			else if (offsetX + doRong(paintedText.Substring(0, caretPos)) >= width - 12 - typingModeAreaWidth)
 			{
-				offsetX = width - 10 - typingModeAreaWidth - MFont.normalFont[0].getWidth(paintedText.Substring(0, caretPos)) - 2 * TEXT_GAP_X;
+				offsetX = width - 10 - typingModeAreaWidth - doRong(paintedText.Substring(0, caretPos)) - 2 * TEXT_GAP_X;
 			}
 			if (offsetX > 0)
 			{
@@ -503,7 +513,7 @@ public class TField : ObjGame
 
 	public void setOffset(int index)
 	{
-		if (paintedText != null && MFont.normalFont[0] != null)
+		if (paintedText != null && MFont.arialFont != null)
 		{
 			if (inputType == INPUT_TYPE_PASSWORD)
 			{
@@ -513,18 +523,18 @@ public class TField : ObjGame
 			{
 				paintedText = text;
 			}
-			if (offsetX < 0 && MFont.normalFont[0].getWidth(paintedText) + offsetX < width - TEXT_GAP_X - 13 - typingModeAreaWidth)
+			if (offsetX < 0 && doRong(paintedText) + offsetX < width - TEXT_GAP_X - 13 - typingModeAreaWidth)
 			{
-				offsetX = width - 10 - typingModeAreaWidth - MFont.normalFont[0].getWidth(paintedText);
+				offsetX = width - 10 - typingModeAreaWidth - doRong(paintedText);
 			}
-			if (offsetX + MFont.normalFont[0].getWidth(paintedText.Substring(0, caretPos)) <= 0)
+			if (offsetX + doRong(paintedText.Substring(0, caretPos)) <= 0)
 			{
-				offsetX = -MFont.normalFont[0].getWidth(paintedText.Substring(0, caretPos));
+				offsetX = -doRong(paintedText.Substring(0, caretPos));
 				offsetX += 40;
 			}
-			else if (offsetX + MFont.normalFont[0].getWidth(paintedText.Substring(0, caretPos)) >= width - 12 - typingModeAreaWidth)
+			else if (offsetX + doRong(paintedText.Substring(0, caretPos)) >= width - 12 - typingModeAreaWidth)
 			{
-				offsetX = width - 10 - typingModeAreaWidth - MFont.normalFont[0].getWidth(paintedText.Substring(0, caretPos)) - 2 * TEXT_GAP_X;
+				offsetX = width - 10 - typingModeAreaWidth - doRong(paintedText.Substring(0, caretPos)) - 2 * TEXT_GAP_X;
 			}
 			if (offsetX > 0)
 			{
@@ -581,7 +591,7 @@ public class TField : ObjGame
 			if (isFocused() && keyInActiveState == 0 && (showCaretCounter > 0 || counter / CARET_SHOWING_TIME % 2 == 0))
 			{
 				g.setColor(0);
-				g.fillRect(TEXT_GAP_X + 1 + offsetX + x + MFont.arialFont.getWidth(paintedText.Substring(0, caretPos) + "a") - CARET_WIDTH - MFont.arialFont.getWidth("a"), y + (height - CARET_HEIGHT) / 2 + 2, CARET_WIDTH, CARET_HEIGHT + 2);
+				g.fillRect(TEXT_GAP_X + 1 + offsetX + x + doRong(paintedText.Substring(0, caretPos) + "a") - CARET_WIDTH - doRong("a"), y + (height - CARET_HEIGHT) / 2 + 2, CARET_WIDTH, CARET_HEIGHT + 2);
 			}
 		}
 		finally
@@ -637,7 +647,7 @@ public class TField : ObjGame
 			if (isFocused() && keyInActiveState == 0 && (showCaretCounter > 0 || counter / CARET_SHOWING_TIME % 2 == 0))
 			{
 				g.setColor(0);
-				g.fillRect(TEXT_GAP_X + 1 + offsetX + x + MFont.arialFont.getWidth(paintedText.Substring(0, caretPos) + "a") - CARET_WIDTH - MFont.arialFont.getWidth("a"), y + (height - CARET_HEIGHT) / 2 + 2, CARET_WIDTH, CARET_HEIGHT - 3);
+				g.fillRect(TEXT_GAP_X + 1 + offsetX + x + doRong(paintedText.Substring(0, caretPos) + "a") - CARET_WIDTH - doRong("a"), y + (height - CARET_HEIGHT) / 2 + 2, CARET_WIDTH, CARET_HEIGHT - 3);
 			}
 		}
 		finally

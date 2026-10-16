@@ -131,7 +131,8 @@ class TuDien:
                     continue
                 self.kpb[t] = v
                 alt.append(re.escape(k))
-        self.mau = re.compile(r"(?<!\w)(?:%s)(?!\w)" % "|".join(alt), re.IGNORECASE)
+        # Truoc khoa: khong la chu/gach duoi (chu so thi duoc: "1Giang hồ" trong hoi thoai NPC).
+        self.mau = re.compile(r"(?<![^\W\d])(?:%s)(?!\w)" % "|".join(alt), re.IGNORECASE)
 
     @staticmethod
     def _theo_kieu(goc, moi):

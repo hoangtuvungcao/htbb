@@ -5,11 +5,13 @@ G7.C1/C4: doi chu nguoi choi thay trong CSDL tu kiem hiep sang the gioi Pokemon.
 Ra (file sinh ra, KHONG sua tay - sua bang ben duoi hoac tu dien trong ChuPokemon.java roi
 chay lai):
   sql/pokemon_doi_chu.sql                                 UPDATE chi doi chu (id/so/gia giu nguyen)
-  docs/pokemon/bang_chu.csv                               moi o doi: bang,id,cot,cu,moi
+  docs/pokemon/bang_chu.csv                               moi o doi: bang,id,cot,cu,moi (+ moi cap
+                                                          cua tu dien, bang=ChuPokemon cot=tu_dien)
   ClientUnity/Assets/Scripts/Game/ChuPokemonDuLieu.cs     tu dien cho client (ban sao bangDayDu)
 
 Nguon chu:
-  1. Bang rieng o duoi (TEN_THUOC, SHOP, QUEST, BO_CUOI...) - viet tay cho cho can hay.
+  1. Bang rieng o duoi (TEN_THUOC, SHOP, QUEST, BO_CUOI, DAU_ITEM/DAU_SHOP...) - viet tay cho cho
+     can hay. Cac lua chon moi can chu du an duyet: docs/pokemon/DUYET_CHU.md.
   2. Tu dien chung ChuPokemon.DOI (+ dia danh TenMapPokemon) cho moi o con lai.
   3. Ten quai trong nhiem vu ("20 con nhím" -> "20 con Sandshrew") lay tu
      sql/pokemon_du_lieu_quai.sql (chu thich "-- Cu -> Moi").
@@ -134,6 +136,43 @@ TEN_ITEM = {
     714: "Kẹo Poké",
     739: "Thuốc hồi sinh\r\nHồi sinh sau khi chết",
 }
+# Dau ten (truoc dong mo ta) doi rieng theo id: {id: (dau cu, dau moi)}. Phan con lai van qua tu
+# dien chung. Dung cho do thoi trang ten ngan (vd "Freddy") de ro la "Áo ..." chu khong phai
+# ten mot Pokemon. Danh sach cho chu du an duyet: docs/pokemon/DUYET_CHU.md.
+DAU_ITEM = {
+    622: ("Hồng hài nhi nam", "Áo Magby nam"), 623: ("Hồng hài nhi nữ", "Áo Magby nữ"),
+    671: ("Freddy", "Áo Banette"), 672: ("Jason", "Áo Dusknoir"), 673: ("Harry potter", "Áo Alakazam"),
+    674: ("Chúa tể Voldemort", "Áo Giratina"),
+    723: ("Hắc Lang", "Áo Zoroark"), 724: ("Thần nữ", "Áo Gardevoir"), 725: ("Bạch Mi", "Áo Absol"),
+    726: ("Thuý Vũ Hồng Sam", "Áo Oricorio"), 736: ("Sơn Tinh", "Áo Groudon"), 737: ("Thuỷ Tinh", "Áo Kyogre"),
+    740: ("Tiểu long nữ", "Áo Latias"), 741: ("Dương Quá", "Áo Latios"),
+    805: ("Bá Thiên Hổ Nam", "Áo Raikou nam"), 806: ("Bá Thiên Hổ Nữ", "Áo Raikou nữ"),
+    833: ("Miêu mắt xanh", "Áo Glameow"), 834: ("Miêu quý tộc", "Áo Persian"),
+    # Canh (type 29) - ten Han Viet -> Pokemon co canh cung mau
+    898: ("Cánh Lam Băng", "Cánh Articuno"), 899: ("Cánh Bạch Linh", "Cánh Lugia"),
+    900: ("Cánh Xích Vũ", "Cánh Moltres"), 901: ("Cánh Hồng Vân", "Cánh Togekiss"),
+    902: ("Cánh Tử ảnh", "Cánh Crobat"),
+}
+DAU_SHOP = {
+    51: ("Lạc long quân", "Áo Rayquaza"), 53: ("Thạch sanh", "Áo Lucario"), 54: ("Thầy đồ", "Áo giáo sư"),
+    55: ("Tiên nữ", "Áo Lunala"), 56: ("Yếm đào", "Áo Bellossom"),
+    139: ("Hồng hài nhi nam", "Áo Magby nam"), 140: ("Hồng hài nhi nữ", "Áo Magby nữ"),
+    142: ("Freddy", "Áo Banette"), 143: ("Jason", "Áo Dusknoir"), 144: ("Harry potter", "Áo Alakazam"),
+    145: ("Chúa tể voldermort", "Áo Giratina"),
+    166: ("Sơn tinh", "Áo Groudon"), 167: ("Sơn tinh", "Áo Groudon"),
+    168: ("Thuỷ tinh", "Áo Kyogre"), 169: ("Thuỷ tinh", "Áo Kyogre"),  # "thuỷ tinh" thuong = nguyen lieu thuy tinh
+    170: ("Tiểu Long Nữ", "Áo Latias"), 171: ("Dương Quá", "Áo Latios"),
+    174: ("Tinh Quân", "Áo Solgaleo"), 175: ("Tiên Nữ", "Áo Lunala"),
+}
+
+
+def thay_dau(s, cap):
+    """Doi phan dau ten theo bang DAU_*; khong khop thi tra nguyen (bao loi o main)."""
+    if not cap or not s or not s.startswith(cap[0]):
+        return s
+    return cap[1] + s[len(cap[0]):]
+
+
 # Bo do thu cuoi (type 14..18, bang 6.4 "Yen, giap cho Pokemon cuoi"): ten bo kiem hiep ->
 # bac theo ten Poke Ball (cung thu tu cap).
 BO_CUOI = {
@@ -149,14 +188,14 @@ LOAI_CUOI = {16: ("Nón", "Mũ cưỡi"), 14: ("Giáp", "Giáp cưỡi"), 18: ("
 # Nhiem vu gio dau (tan thu) viet lai han. {id: {cot: chu}}. Dinh dang hoi thoai giu nhu cu:
 # ">" tach cau, "1" = NPC noi, "0" = nguoi choi noi, cau cuoi khong so = cau hoi nhan.
 QUEST = {
-    1: {"content": "1Chào cháu, ta là Trưởng làng Xatu. Ta sẽ cho cháu ít tiền để bắt đầu cuộc phiêu lưu>0Chào Trưởng làng>1Cháu là Pokémon mới đến từ Rừng Viridian phải không>0Dạ phải ạ>1Như đã hứa, ta sẽ giới thiệu cháu với các nhà huấn luyện của làng Pewter>1Ở thế giới Pokémon, sức mạnh luôn đi cùng lòng tốt: hãy giúp kẻ yếu và sống vì lẽ phải>1Cháu hãy đi chào hỏi mọi người trong làng>1và giúp họ vài việc nhỏ để làm quen>1Đầu tiên, hãy gặp Machamp thợ rèn.>1Cậu ấy là chuyên gia vật phẩm của làng này đó.>0Dạ, cháu đi ngay>1Ừm"},
+    1: {"content": "1Chào cháu, ta là Trưởng làng Xatu. Ta sẽ cho cháu ít tiền để bắt đầu cuộc phiêu lưu>0Chào Trưởng làng>1Cháu là Pokémon mới đến từ Rừng Viridian phải không>0Dạ phải ạ>1Như đã hứa, ta sẽ giới thiệu cháu với các nhà huấn luyện của làng Pewter>1Trong thế giới Pokémon, sức mạnh luôn đi cùng lòng tốt: hãy giúp kẻ yếu và sống vì lẽ phải>1Cháu hãy đi chào hỏi mọi người trong làng>1và giúp họ vài việc nhỏ để làm quen>1Đầu tiên, hãy gặp Machamp thợ rèn.>1Cậu ấy là chuyên gia vật phẩm của làng này đó.>0Dạ, cháu đi ngay>1Tốt lắm"},
     2: {"content": "1Khà khà!>1Ta đã nghe Trưởng làng kể về cháu>1Còn nhỏ mà đã biết sống vì lẽ phải>1Thật đáng quý!>1Ta là Machamp, thợ rèn của làng>1Niềm đam mê của ta là chế tạo và mua bán vật phẩm cho Pokémon>1Có gì thắc mắc về vật phẩm cứ đến tìm ta>1Giờ hãy đi gặp Bronzong thợ giáp nào."},
     3: {"content": "1Tuổi nhỏ chí lớn, tuổi nhỏ chí lớn!>1Ta là Bronzong, thợ làm đồ phòng thủ duy nhất của làng>1Khăn quàng, đai, băng đô... loại nào ta cũng rành>1Cần gì về đồ phòng thủ cứ đến tìm ta nhé!>1Cũng xế trưa rồi.>1Giờ này chắc Kecleon tạp hoá đang chờ cháu đấy>1Hãy qua chào hỏi đi."},
     4: {"content": "1Phù! Ta đợi cháu từ sáng sớm đến giờ>1Nghe chuyện của cháu mà ta thương quá>1Cửa hàng ta bán đủ thứ cho cả làng, từ Thuốc hồi máu đến Ether.>1Kangaskhan thủ kho đang háo hức được gặp cháu>1Ăn xong thì ghé chỗ cô ấy nhé."},
     5: {"content": "1Ha ha! Cháu đây rồi>1Lạ thật, chưa gặp lần nào mà ta thấy như quen cháu từ lâu>1Thật là vui>1Ta vốn ít nói nên cháu đừng ngại>1Sau này trên đường phiêu lưu>1nếu có món đồ quý mà không tiện mang theo>1cứ gửi ta giữ trong túi của ta>1Bảo đảm không ai lấy được.>1Giờ hãy đến gặp Persian>1cứ tìm ngôi nhà to và đẹp nhất làng là thấy."},
     6: {"content": "1Rất vui được gặp cháu>1Cháu tuy một mình nhưng ngoan và có chí lớn>1Thật tốt khi cháu trở thành nhà huấn luyện của làng>1Nếu cần nguyên liệu nâng cấp vật phẩm thì cứ đến tìm ta>1Ta đã nhắn Meowth thương nhân, bạn ta, về cháu rồi>1Hãy đến chào cậu ấy nhé."},
     7: {"content": "1Chào bạn trẻ!>1Ta hay đi buôn bán khắp các vùng>1Gặp được nhau thật là có duyên>1Meo meo ha ha>1Muốn phiêu lưu khắp thế giới Pokémon>1thì cần có chút bản lĩnh.>1Hãy đến gặp Blaziken để học hỏi nhé.>1Blaziken đang chờ cháu ở doanh trại>1Mau đến đó đi nào."},
-    8: {"content": "1Hây dà! Cuối cùng cũng đến!>1Cháu thật sự muốn trở thành nhà huấn luyện của làng Pewter chứ?>1Ở đây không có chỗ cho kẻ lười biếng đâu nhé>1Hãy chăm chỉ luyện tập>1ta thấy cháu có tiềm năng đấy>1Ta luôn có những nhiệm vụ cần người giải quyết>1khi nào đủ tự tin thì đến tìm ta.>1Nhân đây ta dạy cháu 1 chiêu>1Nó sẽ giúp cháu khi bắt đầu chuyến phiêu lưu.>1Giờ hãy quay lại gặp Trưởng làng>1Ông ấy có vài điều muốn dặn trước khi cháu lên đường."},
+    8: {"content": "1Hây dà! Cuối cùng cũng đến!>1Cháu thật sự muốn trở thành nhà huấn luyện của làng Pewter chứ?>1Nơi đây không có chỗ cho kẻ lười biếng đâu nhé>1Hãy chăm chỉ luyện tập>1ta thấy cháu có tiềm năng đấy>1Ta luôn có những nhiệm vụ cần người giải quyết>1khi nào đủ tự tin thì đến tìm ta.>1Nhân đây ta dạy cháu 1 chiêu>1Nó sẽ giúp cháu khi bắt đầu chuyến phiêu lưu.>1Giờ hãy quay lại gặp Trưởng làng>1Ông ấy có vài điều muốn dặn trước khi cháu lên đường."},
     9: {"content": "1Chúc mừng cháu>1Từ giờ cháu đã là nhà huấn luyện của làng Pewter>1Đừng phụ lòng mọi người nhé>0Dạ vâng. Cháu sẽ cố gắng."},
     10: {"name": "Tiệc chào mừng",
          "content": "1Cháu biết không, Pewter là ngôi làng có lịch sử lâu đời.>1Đây không chỉ là nơi ta sinh sống>1mà còn là nơi lưu giữ ý chí của những nhà huấn luyện đầu tiên khám phá thế giới Pokémon>1Nơi đây cũng là quê hương thứ hai của bao nhà vô địch khắp các vùng>1ai cũng tự hào là thành viên của làng>1Họ là tấm gương cho các Pokémon đi sau>1Cháu hãy cố gắng nối tiếp truyền thống của làng nhé>1Để ta làm bữa tiệc chào mừng cháu>1cháu hãy hạ 20 con Sandshrew ở Viridian giúp ta nhé>Cháu có muốn giúp ta việc này không ?",
@@ -171,6 +210,20 @@ QUEST = {
          "content": "1Cả làng rất thích bánh Poké do ta làm nên hôm nay ta muốn đãi mọi người một bữa>1Sáng nay ta đã mua hết Berry ngoài chợ nhưng vẫn chưa đủ>1Đám Tepig ở Celadon hay giấu Berry trong hang>1cháu hãy hạ chúng và mang về đây cho ta 50 túi Berry nhé>Cháu có sẵn sàng giúp ta làm bánh không ?",
          "scontent": "Mọi người đang đợi bánh Poké của ta đấy, đi sớm về sớm.",
          "infogift": "Nhiệm vụ:|lấy 50 túi Berry|Địa điểm:|Celadon|NPC nv:|Kecleon|Phần thưởng:|800 xu và 150000 exp"},
+    # Nhiem vu 11, 37-46: ban cu bat "lot da", "nau cao", "ngam ruou", "an thit" chinh Pokemon -
+    # trai the gioi Pokemon. Viet lai thanh danh bai / thu vat pham roi ra; so luong giu nguyen.
+    11: {"name": "Đuổi Caterpie phá lúa"},
+    37: {"name": "Răng Croconaw",
+         "content": "1Ta đang làm một chiếc vòng cổ may mắn từ những chiếc răng mà Croconaw thay ra>1nhưng hiện tại ta đang bận việc.>1Cậu hãy đánh bại 100 con Croconaw và nhặt giúp ta những chiếc răng chúng rơi lại nhé.>Cậu có đồng ý không?"},
+    38: {"name": "Nọc Croagunk",
+         "content": "1Croagunk có túi nọc độc rất quý, dùng để điều chế thuốc giải độc.>1Ta cần nọc của 100 con Croagunk.>Cậu có thể giúp ta không?"},
+    39: {"name": "Đua sức với Dodrio",
+         "content": "1Nghe nói Dodrio ở vùng đảo New Bark chạy nhanh như gió,>1rất hợp để các Pokémon trẻ luyện sức bền.>1Hãy đánh bại 100 con Dodrio để rèn luyện nhé.>Cậu có làm được không?"},
+    40: {"content": "1Kricketune ở Rừng Viridian kêu rất hay,>1sắp tới có tiệc chiêu đãi các nhà huấn luyện của các đội.>1Ta muốn mời chúng đến biểu diễn, nhưng trước hết cậu phải thắng 100 con Kricketune đã.>Cậu có thể giúp ta không?"},
+    44: {"content": "1Whirlipede ở Núi Mặt Trăng tiết ra một loại chất dịch>1kết hợp với thảo dược sẽ thành thuốc chữa thương rất hiệu quả.>1Cậu hãy giúp ta đánh bại 100 con Whirlipede để thu chất dịch đó nhé.>Liệu cậu có giúp ta không?"},
+    45: {"content": "1Những chiếc lông vũ Farfetch'd thay ra rất bền và đẹp,>1dùng để trang trí đồ phòng thủ thì không gì bằng.>1Cậu hãy giúp ta mang về 100 chiếc lông vũ Farfetch'd nhé.>1Cẩn thận, Farfetch'd ở Núi Mặt Trăng rất hung dữ.>Cậu có muốn làm việc này không?"},
+    46: {"name": "Hơi ấm của Litleo",
+         "content": "1Khi trời trở lạnh ta thường đau nhức khắp người,>1thật sự ta đã già rồi.>1Nghe nói hơi ấm từ bờm lửa của Litleo giúp giảm đau rất tốt.>1Cậu hãy thắng 100 con Litleo để chúng chịu đến sưởi ấm cho ta nhé.>Cậu có muốn giúp ta không?"},
 }
 
 # Ten quai them (chu trong nhiem vu khong khop dung ten data_monster).
@@ -259,6 +312,12 @@ def main():
     loi = []
     doi = []  # (bang, id, cot, cu, moi)
 
+    def kiem_dau(bang, id_, s, bang_dau):
+        cap = bang_dau.get(id_)
+        if cap and not (s or "").startswith(cap[0]):
+            loi.append("%s id=%d: ten khong bat dau bang '%s' (DAU_* cu?)" % (bang, id_, cap[0]))
+        return thay_dau(s, cap)
+
     def dat(bang, id_, cot, moi):
         cu = db[bang][id_][cot]
         if (bang, id_, cot) in da_sua:
@@ -277,7 +336,7 @@ def main():
             dat("data_potion", i, "name2", slug(moi))
     for i, r in sorted(db["data_shop"].items()):
         ten, mo = SHOP.get(i, (None, None))
-        dat("data_shop", i, "name", ten if ten is not None else td.doi(r["name"]))
+        dat("data_shop", i, "name", ten if ten is not None else td.doi(kiem_dau("data_shop", i, r["name"], DAU_SHOP)))
         dat("data_shop", i, "decript", mo if mo is not None else td.doi(r["decript"]))
     for i, r in sorted(db["data_quest"].items()):
         rieng = QUEST.get(i, {})
@@ -289,7 +348,8 @@ def main():
                 moi = td.doi(doi_quai(r[c], quai))
             dat("data_quest", i, c, moi)
     for i, r in sorted(db["data_item"].items()):
-        moi = TEN_ITEM.get(i) or doi_bo_cuoi(r["name"], int(r["type"])) or td.doi(r["name"])
+        moi = (TEN_ITEM.get(i) or doi_bo_cuoi(r["name"], int(r["type"]))
+               or td.doi(kiem_dau("data_item", i, r["name"], DAU_ITEM)))
         dat("data_item", i, "name", moi)
     for i, r in sorted(db["data_attribute"].items()):
         dat("data_attribute", i, "name", td.doi(r["name"]))
@@ -297,10 +357,14 @@ def main():
         dat("tob_fruit", i, "name", td.doi(r["name"]))
         dat("tob_fruit", i, "decript", td.doi(r["decript"]))
 
-    # Sau khi doi: khong con tu cam trong o minh da ghi
+    # Sau khi doi: khong con tu cam trong o minh da ghi; khong chu HOA co dau U+1EA0..U+1EF8
+    # (font client khong ve duoc - test nhom "Chu HOA co dau").
     for bang, id_, cot, cu, moi in doi:
         if cot != "name2" and cam.tim(moi):
             loi.append("%s.%s id=%d van con tu cam %s: %s" % (bang, cot, id_, cam.tim(moi), moi[:80]))
+        hoa = [c for c in moi if 0x1EA0 <= ord(c) <= 0x1EF8 and c.isupper()]
+        if hoa:
+            loi.append("%s.%s id=%d co chu HOA co dau %s: %s" % (bang, cot, id_, "".join(hoa), moi[:80]))
 
     with open(RA_SQL, "w", encoding="utf8", newline="\n") as f:
         f.write("-- SINH TU tools/pokemon/sinh_sql_chu.py - KHONG SUA TAY.\n")
@@ -315,6 +379,11 @@ def main():
         for bang, id_, cot, cu, moi in doi:
             w.writerow([bang, id_, cot, cu.replace("\r", "").replace("\n", "\\n"),
                         moi.replace("\r", "").replace("\n", "\\n")])
+        # Tu dien chung (ap luc chay cho chu server gui + moi chu client ve): ghi luon de mot
+        # bang nay du moi cap doi. bang=ChuPokemon, id = so thu tu trong bangDayDu().
+        for n, (k, v) in enumerate(cp.bang_day_du(b)):
+            if k != v:
+                w.writerow(["ChuPokemon", n, "tu_dien", k, v])
     n_cs = ghi_cs(b)
     dem = {}
     for d in doi:

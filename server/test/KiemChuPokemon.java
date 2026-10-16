@@ -25,6 +25,8 @@ public final class KiemChuPokemon {
     private static final String F_MFONT = "ClientUnity/Assets/Scripts/Game/MFont.cs";
     private static final String F_SQL = "sql/pokemon_doi_chu.sql";
     private static final String F_CON_LAI = "docs/pokemon/tu_cam_con_lai.csv";
+    private static final String F_CSV = "docs/pokemon/bang_chu.csv";
+    private static final String F_TFIELD = "ClientUnity/Assets/Scripts/Game/TField.cs";
 
     /** Nhom "gio choi dau tien" - phai sach tu cam SAU khi doi (giong GIO_DAU cua quet_tu_cam.py). */
     private static final String[] GIO_DAU = {
@@ -40,6 +42,8 @@ public final class KiemChuPokemon {
     public static void chay() {
         Kiem.nhom("Chu Pokemon (G7.C): tu dien, ap() theo co, ban C#, quet tu cam");
         kiemTuDien();
+        kiemRaSoatChu();
+        kiemChuHoaCoDau();
         kiemTatCo();
         kiemBatCo();
         kiemBanCs();
@@ -102,6 +106,116 @@ public final class KiemChuPokemon {
             }
         }
         Kiem.bang("TEXT_RIENG chi tro toi truong co that", Integer.valueOf(0), Integer.valueOf(truongSai));
+    }
+
+    /** Dot ra soat chu (docs/pokemon/DUYET_CHU.md): cac tu moi doi dung y, khong pha tu thuong. */
+    private static void kiemRaSoatChu() {
+        Kiem.bang("hoi thoai NPC: so dung truoc tu (1Giang hồ)", "1Thế giới Pokémon hiểm ác",
+                ChuPokemon.doiLuon("1Giang hồ hiểm ác"));
+        Kiem.bang("ngươi -> cậu", "Cậu có muốn rèn luyện không ?", ChuPokemon.doiLuon("Ngươi có muốn rèn luyện không ?"));
+        Kiem.bang("giết -> hạ", "Hạ 10 con nhím", ChuPokemon.doiLuon("Giết 10 con nhím"));
+        Kiem.bang("manh tu khoai", "Mảnh bộ huy hiệu", ChuPokemon.doiLuon("Mảnh tứ khoái"));
+        Kiem.bang("manh trong bo", "Mảnh huy hiệu Cascade 1", ChuPokemon.doiLuon("Mảnh ngư 1"));
+        Kiem.bang("ho ve lan su tu", "Pokémon hỗ trợ Suicune 5x lv 1", ChuPokemon.doiLuon("Hộ vệ lân sư tử 5x lv 1"));
+        Kiem.bang("toc -> bom", "Bờm Ponyta", ChuPokemon.doiLuon("Tóc bờm ngựa"));
+        Kiem.bang("than khi (moi tu hoa)", "Bảo Vật Huyền Thoại", ChuPokemon.doiLuon("Thần Khí"));
+        Kiem.bang("tu hon dan", "Kẹo Poké", ChuPokemon.doiLuon("Tụ hồn đan"));
+        Kiem.bang("noi tai -> dac tinh", "- Đặc tính: chặn", ChuPokemon.doiLuon("- Nội tại: chặn"));
+        Kiem.bang("skin Kim Cang Long", "Skin thú cưỡi Dialga", ChuPokemon.doiLuon("Skin linh thú Kim Cang Long"));
+        Kiem.bang("bo bat gioi", "Vòng tay Emboar", ChuPokemon.doiLuon("Kim cang bát giới"));
+        Kiem.bang("ky nang pet Kim cang", "Thu mình", ChuPokemon.doiLuon("Kim cang"));
+        Kiem.bang("thu vat ly / thu ma phap", "Phòng thủ: , Phòng thủ đặc biệt: ",
+                ChuPokemon.doiLuon("Thủ vật lý: , Thủ ma pháp: "));
+        Kiem.bang("van tieu -> giao hang", "Không thể dịch chuyển khi đang giao hàng",
+                ChuPokemon.doiLuon("Không thể dịch chuyển khi đang vận tiêu"));
+        Kiem.bang("'tiêu diệt' / 'mục tiêu' giu nguyen", "Hãy tiêu diệt mục tiêu", ChuPokemon.doiLuon("Hãy tiêu diệt mục tiêu"));
+        Kiem.bang("chiem thanh -> Gym", "Thời gian chiếm Gym bắt đầu", ChuPokemon.doiLuon("Thời gian chiếm thành bắt đầu"));
+        Kiem.bang("'hoàn thành' giu nguyen", "Nhiệm vụ hoàn thành", ChuPokemon.doiLuon("Nhiệm vụ hoàn thành"));
+        Kiem.bang("dia danh viet thuong + huong", "Đông Rừng Viridian, Tây Rừng Viridian, Đông Saffron",
+                ChuPokemon.doiLuon("Đông Sơn lâm, Tây Sơn lâm, Đông Đông sơn"));
+        Kiem.bang("danh hieu", "Nhà Vô Địch Mọi Vùng", ChuPokemon.doiLuon("Thiên Hạ Chí Tôn"));
+        Kiem.bang("thu cuoi mot minh (Bạch cốt mã)", "Spectrier thời hạn", ChuPokemon.doiLuon("Bạch cốt mã thời hạn"));
+        Kiem.bang("pet Bạch Thử / thu cuoi Đại Bạch Thử", "Sandshrew, Wooloo",
+                ChuPokemon.doiLuon("Bạch Thử, Đại Bạch Thử"));
+        Kiem.bang("thoi trang", "Áo Rayquaza, Mặt nạ Snorlax", ChuPokemon.doiLuon("Áo Lạc long quân, Mặt nạ ông địa"));
+        Kiem.bang("'thuỷ tinh' nguyen lieu giu nguyen", "Thuỷ tinh cấp 4", ChuPokemon.doiLuon("Thuỷ tinh cấp 4"));
+        Kiem.bang("'hỏa thạch' khong thanh 'đá đá'", "đá nham thạch cấp 2", ChuPokemon.doiLuon("đá hỏa thạch cấp 2"));
+        int lot = 0;
+        for (final String t : new String[]{"Tóc bờm ngựa", "Thần Khí", "Tụ hồn đan", "Nội tại", "Kim Cang Long",
+            "Phúc Thú", "Hộ vệ lân sư tử", "Mảnh tứ khoái", "Áo bát giới", "Ngươi", "Chiếm thành", "Vận tiêu"}) {
+            if (ChuPokemon.tuCamTrong(t).isEmpty()) {
+                lot++;
+                System.out.println("        tu cu khong bi TU_CAM bat: " + t);
+            }
+        }
+        Kiem.bang("cac ten cu da ra soat deu nam trong TU_CAM", Integer.valueOf(0), Integer.valueOf(lot));
+        final String tf = doc(F_TFIELD);
+        Kiem.dung("TField do chu NGUYEN VAN (khong qua tu dien) - con tro khong lech",
+                tf != null && tf.contains("getWidthNguyenVan(") && !tf.contains("normalFont[0].getWidth(")
+                        && !tf.contains("arialFont.getWidth("));
+        final String csv = doc(F_CSV);
+        final String sql = doc(F_SQL);
+        if (csv != null && sql != null) {
+            int soCsv = 0;
+            for (final String d : csv.split("\n")) {
+                if (d.matches("^(data_|tob_)\\w+,\\d+,.*")) {
+                    soCsv++;
+                }
+            }
+            int soSql = 0;
+            for (final String d : sql.split("\n")) {
+                if (d.startsWith("UPDATE ")) {
+                    soSql++;
+                }
+            }
+            Kiem.bang("bang_chu.csv ghi du moi o pokemon_doi_chu.sql doi", Integer.valueOf(soSql), Integer.valueOf(soCsv));
+        }
+    }
+
+    /** Chu HOA thuoc U+1EA0..U+1EF8 - font client khong ve duoc (cung quy uoc KiemChuHoaCoDau). */
+    private static String chuHoaCoDau(final String s) {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            final char c = s.charAt(i);
+            if (c >= 0x1EA0 && c <= 0x1EF8 && Character.isUpperCase(c)) {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Moi gia tri moi cua tu dien (ca dang "Moi Tu Hoa" ma theoKieu() co the tao ra) va moi chu
+     * trong pokemon_doi_chu.sql khong co chu HOA co dau.
+     */
+    private static void kiemChuHoaCoDau() {
+        int sai = 0;
+        for (final String[] d : ChuPokemon.bangDayDu()) {
+            final StringBuilder hoaDau = new StringBuilder();
+            boolean dauTu = true;
+            for (int i = 0; i < d[1].length(); i++) {
+                final char c = d[1].charAt(i);
+                hoaDau.append(dauTu ? Character.toUpperCase(c) : c);
+                dauTu = c == ' ';
+            }
+            final String x = chuHoaCoDau(d[1]) + chuHoaCoDau(hoaDau.toString());
+            if (!x.isEmpty()) {
+                sai++;
+                System.out.println("        gia tri tu dien co chu HOA co dau [" + x + "]: " + d[0] + " -> " + d[1]);
+            }
+        }
+        Kiem.bang("tu dien: khong gia tri nao (ke ca viet hoa dau tu) co chu HOA co dau", Integer.valueOf(0), Integer.valueOf(sai));
+        final String sql = doc(F_SQL);
+        int saiSql = 0;
+        if (sql != null) {
+            for (final String d : sql.split("\n")) {
+                if (d.startsWith("UPDATE ") && !chuHoaCoDau(d).isEmpty()) {
+                    saiSql++;
+                    System.out.println("        SQL co chu HOA co dau: " + d.substring(0, Math.min(120, d.length())));
+                }
+            }
+        }
+        Kiem.bang("pokemon_doi_chu.sql: khong chu HOA co dau", Integer.valueOf(0), Integer.valueOf(saiSql));
     }
 
     private static void kiemTatCo() {

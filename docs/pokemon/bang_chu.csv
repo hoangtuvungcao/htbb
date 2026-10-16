@@ -37,10 +37,38 @@ data_potion,30,name,Thiên lý mã,Sáo gọi Ponyta
 data_potion,30,name2,thienlyma,saogoiponyta
 data_potion,31,name,Kim bài,Huy hiệu lập đội
 data_potion,31,name2,kimbai,huyhieulapdoi
+data_potion,33,name,Thẻ chiếm thành,Thẻ chiếm Gym
+data_potion,33,name2,thechiemthanh,thechiemgym
 data_potion,34,name,Xích thố,Sáo gọi Ponyta lửa
 data_potion,34,name2,xichtho,saogoiponytalua
 data_potion,36,name,Tuần lộc,Sáo gọi Stantler
 data_potion,36,name2,tuanloc,saogoistantler
+data_potion,37,name,Đầu đinh,Lông đinh
+data_potion,37,name2,daudinh,longdinh
+data_potion,38,name,Tóc búi,Lông búi
+data_potion,38,name2,tocbui,longbui
+data_potion,39,name,Tóc cột cao,Lông cột cao
+data_potion,39,name2,toccotcao,longcotcao
+data_potion,40,name,Tóc chéo,Lông chéo
+data_potion,40,name2,toccheo,longcheo
+data_potion,41,name,Tóc xù,Lông xù
+data_potion,41,name2,tocxu,longxu
+data_potion,42,name,Tóc ngang vai,Lông ngang vai
+data_potion,42,name2,tocngangvai,longngangvai
+data_potion,43,name,Tóc đinh so le,Lông đinh so le
+data_potion,43,name2,tocdinhsole,longdinhsole
+data_potion,44,name,Tóc so le,Lông so le
+data_potion,44,name2,tocsole,longsole
+data_potion,45,name,Tóc thư sinh,Lông gọn gàng
+data_potion,45,name2,tocthusinh,longgongang
+data_potion,46,name,Tóc cài hoa,Lông cài hoa
+data_potion,46,name2,toccaihoa,longcaihoa
+data_potion,47,name,Tóc bờm ngựa,Bờm Ponyta
+data_potion,47,name2,tocbomngua,bomponyta
+data_potion,48,name,Tóc tiên đồng,Lông Clefairy
+data_potion,48,name2,toctiendong,longclefairy
+data_potion,49,name,Tóc dựng đứng,Lông dựng đứng
+data_potion,49,name2,tocdungdung,longdungdung
 data_potion,64,name,Hắc Ngưu,Sáo gọi Tauros
 data_potion,64,name2,hacnguu,saogoitauros
 data_potion,65,name,Mãnh hổ,Sáo gọi Arcanine
@@ -59,12 +87,22 @@ data_potion,72,name,Trứng đương khang,Trứng Piloswine
 data_potion,72,name2,trungduongkhang,trungpiloswine
 data_potion,74,name,Trứng bạch cốt,Trứng Spectrier
 data_potion,74,name2,trungbachcot,trungspectrier
+data_potion,82,name,Thẻ vận tiêu. Thêm một lượt vận tiêu khi sử dụng,Thẻ giao hàng. Thêm một lượt giao hàng khi sử dụng
+data_potion,82,name2,thevantieuthemmotluotvantieukhisudung,thegiaohangthemmotluotgiaohangkhisudung
 data_potion,83,name,Tụ hồn đan. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn.,Kẹo Poké. Tăng 1% kinh nghiệm cho thú nuôi khi cho ăn.
 data_potion,83,name2,tuhondantangkinhnghiemchothunuoikhichoan,keopoketangkinhnghiemchothunuoikhichoan
 data_potion,84,name,Thuốc cường hoá,Thuốc X
 data_potion,84,name2,thuoccuonghoa,thuocx
 data_potion,86,name,Phượng hoàng,Sáo gọi Moltres
 data_potion,86,name2,phuonghoang,saogoimoltres
+data_potion,87,name,Thẻ bài phong chức,Thẻ phong chức
+data_potion,87,name2,thebaiphongchuc,thephongchuc
+data_potion,88,name,Nhẫn Bách niên giai lão 2%pt,Nhẫn Trái tim đồng 2%pt
+data_potion,88,name2,nhanbachniengiailaopt,nhantraitimdongpt
+data_potion,89,name,Nhẫn Vĩnh kết đồng tâm 4%pt,Nhẫn Trái tim bạc 4%pt
+data_potion,89,name2,nhanvinhketdongtampt,nhantraitimbacpt
+data_potion,90,name,Nhẫn Loan phụng hòa minh 7%pt,Nhẫn Trái tim vàng 7%pt
+data_potion,90,name2,nhanloanphunghoaminhpt,nhantraitimvangpt
 data_potion,93,name,HP7k,Thuốc hồi máu 7k
 data_potion,93,name2,hpk,thuochoimauk
 data_potion,94,name,HP15k,Thuốc hồi máu 15k
@@ -73,12 +111,18 @@ data_potion,95,name,MP7k,Ether 7k
 data_potion,95,name2,mpk,etherk
 data_potion,96,name,MP15k,Ether 15k
 data_potion,96,name2,mpk,etherk
+data_potion,97,name,Lệnh bài đổi tiêu,Thẻ đổi hàng
+data_potion,97,name2,lenhbaidoitieu,thedoihang
+data_potion,98,name,Phù phu thê,Vảy trái tim
+data_potion,98,name2,phuphuthe,vaytraitim
 data_potion,104,name,Dây thừng. Dùng để bắt thú nuôi,Poké Ball. Dùng để bắt thú nuôi
 data_potion,104,name2,daythungdungdebatthunuoi,pokeballdungdebatthunuoi
 data_potion,111,name,Sách kỹ năng pet,Đĩa chiêu (TM) cho pet
 data_potion,111,name2,sachkynangpet,diachieutmchopet
 data_potion,115,name,Trứng Lân sư tử,Trứng Suicune
 data_potion,115,name2,trunglansutu,trungsuicune
+data_potion,116,name,Lệnh bài đổi tiêu cao cấp,Thẻ đổi hàng cao cấp
+data_potion,116,name2,lenhbaidoitieucaocap,thedoihangcaocap
 data_potion,118,name,Vé phượng hoàng.\nDùng quay số phượng hoàng,Vé Moltres.\nDùng quay số Moltres
 data_potion,118,name2,vephuonghoangdungquaysophuonghoang,vemoltresdungquaysomoltres
 data_potion,119,name,Tiên đan\nHồi sinh bản thân.,Thuốc hồi sinh\nHồi sinh bản thân.
@@ -103,12 +147,42 @@ data_shop,2,name,200 bình hp vừa,200 Siêu thuốc hồi máu
 data_shop,3,name,200 bình hp to,200 Thuốc hồi máu cực mạnh
 data_shop,4,name,200 bình mp vừa,200 Ether lớn
 data_shop,5,name,200 bình mp to,200 Ether tối đa
+data_shop,6,name,Tiềm năng đan,Kẹo tiềm năng
+data_shop,7,name,Kỹ năng đan,Kẹo kỹ năng
 data_shop,8,name,Thần hành phù,Vé bay Pidgeot
 data_shop,8,decript,Cho phép di chuyển tức thời đến 1 vị trí giặc trên lãnh thổ của mình,Cho phép bay tức thời đến 1 vị trí giặc trong vùng của mình
+data_shop,10,decript,Giảm trừ 100 điểm đồ sát,Giảm trừ 100 điểm PK
 data_shop,11,name,Thiên lý mã,Sáo gọi Ponyta
 data_shop,12,name,Kim bài,Huy hiệu lập đội
 data_shop,12,decript,Kim bài tạo bang hội,Huy hiệu dùng để tạo đội
+data_shop,14,decript,Thẻ bài xác nhận chiếm thành,Thẻ xác nhận chiếm Gym
 data_shop,15,name,Xích Thô,Sáo gọi Ponyta lửa
+data_shop,18,name,Đầu đinh,Lông đinh
+data_shop,18,decript,Đổi thành đầu đinh,Đổi thành lông đinh
+data_shop,19,name,Tóc búi,Lông búi
+data_shop,19,decript,Đổi thành tóc búi,Đổi thành lông búi
+data_shop,20,name,Tóc cột cao,Lông cột cao
+data_shop,20,decript,Đổi thành tóc cột cao,Đổi thành lông cột cao
+data_shop,21,name,Tóc chéo,Lông chéo
+data_shop,21,decript,Đổi thành tóc chéo,Đổi thành lông chéo
+data_shop,22,name,Tóc xù,Lông xù
+data_shop,22,decript,Đổi thành tóc xù,Đổi thành lông xù
+data_shop,23,name,Tóc ngang vai,Lông ngang vai
+data_shop,23,decript,Đổi thành tóc ngang vai,Đổi thành lông ngang vai
+data_shop,24,name,Tóc đinh so le,Lông đinh so le
+data_shop,24,decript,Đổi thành tóc đinh so le,Đổi thành lông đinh so le
+data_shop,25,name,Tóc so le,Lông so le
+data_shop,25,decript,Đổi thành tóc so le,Đổi thành lông so le
+data_shop,26,name,Tóc thư sinh,Lông gọn gàng
+data_shop,26,decript,Đổi thành tóc thư sinh,Đổi thành lông gọn gàng
+data_shop,27,name,Tóc cài hoa,Lông cài hoa
+data_shop,27,decript,Đổi thành tóc cài hoa,Đổi thành lông cài hoa
+data_shop,28,name,Tóc bờm ngựa,Bờm Ponyta
+data_shop,28,decript,Đổi thành tóc bờm ngựa,Đổi thành bờm Ponyta
+data_shop,29,name,Tóc tiên đồng,Lông Clefairy
+data_shop,29,decript,Đổi thành tóc tiên đồng,Đổi thành lông Clefairy
+data_shop,30,name,Tóc dựng đứng,Lông dựng đứng
+data_shop,30,decript,Đổi thành tóc dựng đứng,Đổi thành lông dựng đứng
 data_shop,45,name,Hăc ngưu,Sáo gọi Tauros
 data_shop,45,decript,Vật phẩm tạo linh thú Hắc ngưu,Vật phẩm gọi thú cưỡi Tauros
 data_shop,46,name,Mãnh hổ,Sáo gọi Arcanine
@@ -119,24 +193,74 @@ data_shop,48,name,Tiên hạc,Sáo gọi Pidgeot
 data_shop,48,decript,Vật phẩm tạo linh thú Tiên hạc,Vật phẩm gọi thú cưỡi Pidgeot
 data_shop,49,name,Bạch mã,Sáo gọi Rapidash
 data_shop,49,decript,Vật phẩm tạo linh thú Bạch mã,Vật phẩm gọi thú cưỡi Rapidash
+data_shop,51,name,Lạc long quân,Áo Rayquaza
+data_shop,53,name,Thạch sanh,Áo Lucario
+data_shop,54,name,Thầy đồ,Áo giáo sư
+data_shop,55,name,Tiên nữ,Áo Lunala
+data_shop,56,name,Yếm đào,Áo Bellossom
 data_shop,65,name,Thuốc cường hoá,Thuốc X
 data_shop,74,name,200 bình HP 7000,200 Thuốc hồi máu 7000
 data_shop,75,name,200 bình HP 15000,200 Thuốc hồi máu 15000
 data_shop,76,name,200 bình MP 7000,200 Ether 7000
 data_shop,77,name,200 bình MP 15000,200 Ether 15000
+data_shop,86,name,Áo Dracula nữ \n -Cộng 10%tc 10%pt và 3000 HP MP. Thời hạn 15 ngày,Áo Darkrai nữ \n -Cộng 10%tc 10%pt và 3000 HP MP. Thời hạn 15 ngày
+data_shop,87,name,Áo Hằng Nga \n -Cộng 10%tc 10%pt và 3000 HP MP. Thời hạn 7 ngày,Áo Clefairy \n -Cộng 10%tc 10%pt và 3000 HP MP. Thời hạn 7 ngày
+data_shop,88,name,Áo Dracula nam \n -Cộng 10%tc 10%pt và 3000 HP MP. Thời hạn 15 ngày,Áo Darkrai nam \n -Cộng 10%tc 10%pt và 3000 HP MP. Thời hạn 15 ngày
+data_shop,89,name,Áo Chú cuội \n -Cộng 10%tc 10%pt  và 3000 HP MP. Thời hạn 7 ngày,Áo Clefable \n -Cộng 10%tc 10%pt  và 3000 HP MP. Thời hạn 7 ngày
+data_shop,90,name,Đầu bí ngô \n-Tăng 50% tỷ lệ xuất hiện thuộc tính lan và 3000 HP MP. Thời hạn 10 ngày,Đầu Pumpkaboo \n-Tăng 50% tỷ lệ xuất hiện thuộc tính lan và 3000 HP MP. Thời hạn 10 ngày
+data_shop,91,name,Nón phù thủy \n -Tăng 50% tỷ lệ xuất hiện thuộc tính lan và 3000 HP MP. Thời hạn 10 ngày,Nón Mismagius \n -Tăng 50% tỷ lệ xuất hiện thuộc tính lan và 3000 HP MP. Thời hạn 10 ngày
+data_shop,92,name,Dơi quỷ \n -Cộng 30% tấn công. Thời hạn 7 ngày,Zubat \n -Cộng 30% tấn công. Thời hạn 7 ngày
 data_shop,104,name,Thuốc cường hóa siêu cấp,Thuốc X siêu cấp
+data_shop,107,name,"Pet Armadillo băng \n -Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính băng lan. Thời hạn 7 ngày","Pet Sandshrew \n -Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính băng lan. Thời hạn 7 ngày"
+data_shop,110,name,"Pet Armadillo sét \n -Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính sét lan. Thời hạn 7 ngày","Pet Pachirisu \n -Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính sét lan. Thời hạn 7 ngày"
+data_shop,111,name,"Pet Armadillo độc \n -Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính độc lan. Thời hạn 7 ngày","Pet Nidoran \n -Tăng 10%exp,10% tấn công,10% phòng thủ, x3 thuộc tính độc lan. Thời hạn 7 ngày"
+data_shop,112,name,Phi phong world cup ma pháp,Phi phong world cup đặc biệt
 data_shop,127,name,200 bình HP 15k \n - Hồi phục 15000 hp,200 Thuốc hồi máu 15k \n - Hồi phục 15000 hp
 data_shop,128,name,200 bình MP 15k \n - Hồi phục 15000 mp,200 Ether 15k \n - Hồi phục 15000 mp
+data_shop,129,name,Lệnh bài đổi tiêu \n - Đổi màu tiêu đang nhận,Thẻ đổi hàng \n - Đổi màu hàng đang nhận
+data_shop,130,name,Lệnh bài đổi tiêu cao cấp \n - Đổi màu tiêu đang nhận,Thẻ đổi hàng cao cấp \n - Đổi màu hàng đang nhận
+data_shop,131,name,Thẻ vận tiêu \n - Thêm 1 lượt vận tiêu khi sử dụng,Thẻ giao hàng \n - Thêm 1 lượt giao hàng khi sử dụng
+data_shop,132,name,Huyết bồ đề \n - Thay đổi phẩm chất thú cưng,Bạc hà tính cách \n - Thay đổi phẩm chất thú cưng
+data_shop,133,name,"Pet chim cánh cụt \n -Tăng 10%exp,10% tấn công,10% phòng thủ, tăng 100% thuộc tính độc lan, băng lan, sét lan, 2% bạo kích. Thời hạn 7 ngày","Pet Piplup \n -Tăng 10%exp,10% tấn công,10% phòng thủ, tăng 100% thuộc tính độc lan, băng lan, sét lan, 2% bạo kích. Thời hạn 7 ngày"
+data_shop,139,name,"Hồng hài nhi nam \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan. Thời hạn 60 ngày","Áo Magby nam \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan. Thời hạn 60 ngày"
+data_shop,140,name,"Hồng hài nhi nữ \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan. Thời hạn 60 ngày","Áo Magby nữ \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan. Thời hạn 60 ngày"
+data_shop,142,name,"Freddy \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan","Áo Banette \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan"
+data_shop,143,name,"Jason \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan","Áo Dusknoir \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan"
+data_shop,144,name,"Harry potter \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan","Áo Alakazam \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan"
+data_shop,145,name,"Chúa tể voldermort \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan","Áo Giratina \n -Cộng 10%tc 10%pt và 5000 HP MP.Tăng 100% băng lan, sét lan, độc lan, lửa lan"
 data_shop,146,name,Dây thừng \n - Dùng bắt thú nuôi,Poké Ball \n - Dùng bắt thú nuôi
 data_shop,147,name,Dây thừng \n - Dùng bắt thú nuôi,Poké Ball \n - Dùng bắt thú nuôi
-data_quest,1,content,"1Chào con, ta sẽ cho con tiền trải nghiệm game>0Chào Trưởng làng>1con là cháu ông Ba Lực trên vùng Lâm Viên phải không>0Dạ phải ạ>1như đã hứa với ông ấy>1ta sẽ giới thiệu con gia nhập làng nghĩa sỹ Sơn Nam"", ""1Ta luôn hoan nghênh các thanh niên có nhiệt huyết với giang sơn đất nước>1bênh vực kẻ yếu, sống vì lẽ phải>1Con hãy đi chào hỏi các bà con cô bác trong làng>1và làm một số việc giúp họ coi như là chào hỏi>1và biết được nhiều hơn về mọi thứ nhé.>1Đầu tiên con hãy đi gặp anh Hắc ngưu thợ rèn.>1Anh ta là chuyên gia vũ khí của làng này đó.>0Dạ, chào trưởng làng con đi>1Uhm","1Chào cháu, ta là Trưởng làng Xatu. Ta sẽ cho cháu ít tiền để bắt đầu cuộc phiêu lưu>0Chào Trưởng làng>1Cháu là Pokémon mới đến từ Rừng Viridian phải không>0Dạ phải ạ>1Như đã hứa, ta sẽ giới thiệu cháu với các nhà huấn luyện của làng Pewter>1Ở thế giới Pokémon, sức mạnh luôn đi cùng lòng tốt: hãy giúp kẻ yếu và sống vì lẽ phải>1Cháu hãy đi chào hỏi mọi người trong làng>1và giúp họ vài việc nhỏ để làm quen>1Đầu tiên, hãy gặp Machamp thợ rèn.>1Cậu ấy là chuyên gia vật phẩm của làng này đó.>0Dạ, cháu đi ngay>1Ừm"
+data_shop,152,name,Lân sư tử \n - Vật phẩm sự kiện. Thời hạn đến hết ngày tính từ lúc mua,Suicune \n - Vật phẩm sự kiện. Thời hạn đến hết ngày tính từ lúc mua
+data_shop,154,name,Tóc thời trang nữ \n - Dùng thay đổi kiểu tóc,Lông thời trang nữ \n - Dùng thay đổi kiểu lông
+data_shop,155,name,Tóc thời trang nữ \n - Dùng thay đổi kiểu tóc,Lông thời trang nữ \n - Dùng thay đổi kiểu lông
+data_shop,156,name,Tóc thời trang nữ \n - Dùng thay đổi kiểu tóc,Lông thời trang nữ \n - Dùng thay đổi kiểu lông
+data_shop,157,name,Tóc thời trang nữ \n - Dùng thay đổi kiểu tóc,Lông thời trang nữ \n - Dùng thay đổi kiểu lông
+data_shop,158,name,Tóc thời trang nữ \n - Dùng thay đổi kiểu tóc,Lông thời trang nữ \n - Dùng thay đổi kiểu lông
+data_shop,159,name,Tóc thời trang nữ \n - Dùng thay đổi kiểu tóc,Lông thời trang nữ \n - Dùng thay đổi kiểu lông
+data_shop,160,name,Tóc thời trang nữ \n - Dùng thay đổi kiểu tóc,Lông thời trang nữ \n - Dùng thay đổi kiểu lông
+data_shop,161,name,Tóc thời trang nam \n - Dùng thay đổi kiểu tóc,Lông thời trang nam \n - Dùng thay đổi kiểu lông
+data_shop,162,name,Tóc thời trang nam \n - Dùng thay đổi kiểu tóc,Lông thời trang nam \n - Dùng thay đổi kiểu lông
+data_shop,163,name,Tóc thời trang nam \n - Dùng thay đổi kiểu tóc,Lông thời trang nam \n - Dùng thay đổi kiểu lông
+data_shop,164,name,Tóc thời trang nam \n - Dùng thay đổi kiểu tóc,Lông thời trang nam \n - Dùng thay đổi kiểu lông
+data_shop,165,name,Huyết linh thảo \n -Vật phẩm nuôi thú cưng,Kẹo hiếm \n -Vật phẩm nuôi thú cưng
+data_shop,166,name,"Sơn tinh \n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h","Áo Groudon \n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h"
+data_shop,167,name,"Sơn tinh \n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h","Áo Groudon \n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h"
+data_shop,168,name,"Thuỷ tinh \n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h","Áo Kyogre \n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h"
+data_shop,169,name,"Thuỷ tinh \n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h","Áo Kyogre \n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h"
+data_shop,170,name,"Tiểu Long Nữ \n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h","Áo Latias \n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h"
+data_shop,171,name,"Dương Quá\n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h","Áo Latios\n -Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp, có hiệu ứng. Thời hạn 24h"
+data_shop,172,name,Lá thư của Ngưu Lang,Lá thư của Volbeat
+data_shop,173,name,Lân sư tử,Suicune
+data_shop,174,name,"Tinh Quân \n - Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp.\n- Nguyệt ảnh gây st 10%-15% maxhp.\n- Tỷ lệ xh :10%\n- Thời hạn 7 ngày","Áo Solgaleo \n - Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp.\n- Ánh Trăng gây st 10%-15% maxhp.\n- Tỷ lệ xh :10%\n- Thời hạn 7 ngày"
+data_shop,175,name,"Tiên Nữ \n - Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp.\n- Nguyệt ảnh gây st 10%-15% maxhp.\n- Tỷ lệ xh :10%\n- Thời hạn 7 ngày","Áo Lunala \n - Tăng 50% băng-sét-độc-lửa lan, tăng công 10% , tăng 5.000 hp-mp.\n- Ánh Trăng gây st 10%-15% maxhp.\n- Tỷ lệ xh :10%\n- Thời hạn 7 ngày"
+data_quest,1,content,"1Chào con, ta sẽ cho con tiền trải nghiệm game>0Chào Trưởng làng>1con là cháu ông Ba Lực trên vùng Lâm Viên phải không>0Dạ phải ạ>1như đã hứa với ông ấy>1ta sẽ giới thiệu con gia nhập làng nghĩa sỹ Sơn Nam"", ""1Ta luôn hoan nghênh các thanh niên có nhiệt huyết với giang sơn đất nước>1bênh vực kẻ yếu, sống vì lẽ phải>1Con hãy đi chào hỏi các bà con cô bác trong làng>1và làm một số việc giúp họ coi như là chào hỏi>1và biết được nhiều hơn về mọi thứ nhé.>1Đầu tiên con hãy đi gặp anh Hắc ngưu thợ rèn.>1Anh ta là chuyên gia vũ khí của làng này đó.>0Dạ, chào trưởng làng con đi>1Uhm","1Chào cháu, ta là Trưởng làng Xatu. Ta sẽ cho cháu ít tiền để bắt đầu cuộc phiêu lưu>0Chào Trưởng làng>1Cháu là Pokémon mới đến từ Rừng Viridian phải không>0Dạ phải ạ>1Như đã hứa, ta sẽ giới thiệu cháu với các nhà huấn luyện của làng Pewter>1Trong thế giới Pokémon, sức mạnh luôn đi cùng lòng tốt: hãy giúp kẻ yếu và sống vì lẽ phải>1Cháu hãy đi chào hỏi mọi người trong làng>1và giúp họ vài việc nhỏ để làm quen>1Đầu tiên, hãy gặp Machamp thợ rèn.>1Cậu ấy là chuyên gia vật phẩm của làng này đó.>0Dạ, cháu đi ngay>1Tốt lắm"
 data_quest,2,content,1Khà khà !!>1Ta đã được nghe qua câu chuyện của ngươi từ trưởng làng>1ngươi còn trẻ mà đã biết ý thức sống vì lẽ phải>1Đó là điều rất đáng quý !>1Ta là Hắc Ngưu>1niềm đam mê của ta là chế tạo và buôn bán vũ khí>1Nếu có thắc mắc điều gì liên quan đến vũ khí ngươi cứ đến tìm ta>1Giờ thì ngươi hãy đến ra mắt lão Thiết Bì đi nào.,"1Khà khà!>1Ta đã nghe Trưởng làng kể về cháu>1Còn nhỏ mà đã biết sống vì lẽ phải>1Thật đáng quý!>1Ta là Machamp, thợ rèn của làng>1Niềm đam mê của ta là chế tạo và mua bán vật phẩm cho Pokémon>1Có gì thắc mắc về vật phẩm cứ đến tìm ta>1Giờ hãy đi gặp Bronzong thợ giáp nào."
 data_quest,3,content,"1Anh hùng xuất thiếu niên, anh hùng xuất thiếu niên !>1Ta là Thiết Bì, người chế tạo giáp duy nhất của làng này>1mọi loại giáp trụ ta đều am hiểu>1Cần gì về giáp thì cứ đến tìm ta nhé !>1Cũng xế trưa rồi.>1giờ này chắc bà Tám tạp hóa cũng đang chờ ngươi đấy>1hãy qua mà chào hỏi bà ấy đi","1Tuổi nhỏ chí lớn, tuổi nhỏ chí lớn!>1Ta là Bronzong, thợ làm đồ phòng thủ duy nhất của làng>1Khăn quàng, đai, băng đô... loại nào ta cũng rành>1Cần gì về đồ phòng thủ cứ đến tìm ta nhé!>1Cũng xế trưa rồi.>1Giờ này chắc Kecleon tạp hoá đang chờ cháu đấy>1Hãy qua chào hỏi đi."
 data_quest,4,content,1Phù ! Ta đã đợi con từ sáng sớm đến giờ>1Nghe chuyện về hoàn cảnh của con mà ta thương quá>1Nhà ta chuyên kinh doanh các loại tạp phẩm có thể phục vụ cho cả làng.>1. Anh Bảy thủ kho đang háo hức được gặp mặt con>1hãy đến nhà anh ta sau khi ăn xong nhé.,"1Phù! Ta đợi cháu từ sáng sớm đến giờ>1Nghe chuyện của cháu mà ta thương quá>1Cửa hàng ta bán đủ thứ cho cả làng, từ Thuốc hồi máu đến Ether.>1Kangaskhan thủ kho đang háo hức được gặp cháu>1Ăn xong thì ghé chỗ cô ấy nhé."
 data_quest,5,content,"1Ha ha ! Tiểu đệ đây rồi>1Lạ thay, tuy chưa gặp mặt lần nào>1nhưng huynh cảm thấy như đã quen tiểu đệ từ lâu lắm rồi vậy>1Thật là sảng khoái>1Tính huynh vốn ít nói nên đệ đừng ngại>1Sau này trên đường bôn tẩu giang hồ>1nếu sưu tầm được thứ gì trân quí mà không tiện mang bên mình>1cứ đưa ta bảo quản>1Bảo đảm không ai có thể lấy được của đệ.>1Giờ thì đệ hãy đến ra mắt Phú ông>1cứ tìm nhà nào to và đẹp nhất làng chính là nhà ông ấy.","1Ha ha! Cháu đây rồi>1Lạ thật, chưa gặp lần nào mà ta thấy như quen cháu từ lâu>1Thật là vui>1Ta vốn ít nói nên cháu đừng ngại>1Sau này trên đường phiêu lưu>1nếu có món đồ quý mà không tiện mang theo>1cứ gửi ta giữ trong túi của ta>1Bảo đảm không ai lấy được.>1Giờ hãy đến gặp Persian>1cứ tìm ngôi nhà to và đẹp nhất làng là thấy."
 data_quest,6,content,1Rất vui khi được gặp ngươi>1Ngươi tuy mồ côi nhưng lại ngoan hiền và có chí lớn>1thật là tốt khi ngươi đứng vào hàng ngũ nghĩa sỹ Sơn Nam>1Nếu cần các loại vật liệu luyện thần binh thì cứ đến tìm ta>1Ta đã chuyển lời giới thiệu ngươi với Nhật thương nhân bạn ta>1hãy đến ra mắt ông ta nhé.,"1Rất vui được gặp cháu>1Cháu tuy một mình nhưng ngoan và có chí lớn>1Thật tốt khi cháu trở thành nhà huấn luyện của làng>1Nếu cần nguyên liệu nâng cấp vật phẩm thì cứ đến tìm ta>1Ta đã nhắn Meowth thương nhân, bạn ta, về cháu rồi>1Hãy đến chào cậu ấy nhé."
 data_quest,7,content,1Chào chàng trai trẻ !>1Ta thường đi giao thương khắp nơi>1Ta và ngươi thật là có duyên tương ngộ>1Ha ha ha >1Khi bôn ba giang hồ>1cần phải có một chút bản lĩnh.>1Hãy đến gặp Lâm tướng quân để học hỏi nha.>1Lâm tướng quân đang chờ ngươi tại doanh trại của ông ấy>1Hãy nhanh chân đến gặp ông ấy đi nào.,1Chào bạn trẻ!>1Ta hay đi buôn bán khắp các vùng>1Gặp được nhau thật là có duyên>1Meo meo ha ha>1Muốn phiêu lưu khắp thế giới Pokémon>1thì cần có chút bản lĩnh.>1Hãy đến gặp Blaziken để học hỏi nhé.>1Blaziken đang chờ cháu ở doanh trại>1Mau đến đó đi nào.
-data_quest,8,content,1Hây dà ! Cuối cùng cũng đã đến !>1Có thực sự ngươi muốn gia nhập làng nghĩa sỹ Sơn Nam không?>1Nơi đây không có chổ dung thân cho kẻ lười biếng và vô dụng nhé>1Hãy cố gắng luyện tập nhiều>1ta thấy tiền đồ ngươi có vẻ sáng lạn đấy>1Ta luôn có những nhiệm vụ đang cần người giải quyết>1khi nào thực sự tự tin để làm hãy đến tìm ta.>1Nhân đây ta sẽ dạy ngươi 1 chiêu thức>1Nó sẽ giúp ngươi khi bắt đầu cuộc hành tẩu.>1Bây giờ ngươi hãy quay lại gặp trưởng làng>1Ông ấy có 1 vài điều muốn nói với ngươi trước khi ngươi lên đường.,1Hây dà! Cuối cùng cũng đến!>1Cháu thật sự muốn trở thành nhà huấn luyện của làng Pewter chứ?>1Ở đây không có chỗ cho kẻ lười biếng đâu nhé>1Hãy chăm chỉ luyện tập>1ta thấy cháu có tiềm năng đấy>1Ta luôn có những nhiệm vụ cần người giải quyết>1khi nào đủ tự tin thì đến tìm ta.>1Nhân đây ta dạy cháu 1 chiêu>1Nó sẽ giúp cháu khi bắt đầu chuyến phiêu lưu.>1Giờ hãy quay lại gặp Trưởng làng>1Ông ấy có vài điều muốn dặn trước khi cháu lên đường.
+data_quest,8,content,1Hây dà ! Cuối cùng cũng đã đến !>1Có thực sự ngươi muốn gia nhập làng nghĩa sỹ Sơn Nam không?>1Nơi đây không có chổ dung thân cho kẻ lười biếng và vô dụng nhé>1Hãy cố gắng luyện tập nhiều>1ta thấy tiền đồ ngươi có vẻ sáng lạn đấy>1Ta luôn có những nhiệm vụ đang cần người giải quyết>1khi nào thực sự tự tin để làm hãy đến tìm ta.>1Nhân đây ta sẽ dạy ngươi 1 chiêu thức>1Nó sẽ giúp ngươi khi bắt đầu cuộc hành tẩu.>1Bây giờ ngươi hãy quay lại gặp trưởng làng>1Ông ấy có 1 vài điều muốn nói với ngươi trước khi ngươi lên đường.,1Hây dà! Cuối cùng cũng đến!>1Cháu thật sự muốn trở thành nhà huấn luyện của làng Pewter chứ?>1Nơi đây không có chỗ cho kẻ lười biếng đâu nhé>1Hãy chăm chỉ luyện tập>1ta thấy cháu có tiềm năng đấy>1Ta luôn có những nhiệm vụ cần người giải quyết>1khi nào đủ tự tin thì đến tìm ta.>1Nhân đây ta dạy cháu 1 chiêu>1Nó sẽ giúp cháu khi bắt đầu chuyến phiêu lưu.>1Giờ hãy quay lại gặp Trưởng làng>1Ông ấy có vài điều muốn dặn trước khi cháu lên đường.
 data_quest,9,content,1Chúc mừng con>1Từ giờ con đã là thành viên của làng nghĩa sỹ Sơn Nam>1Hãy cố gắng đừng phụ lòng mọi người kỳ vọng vào con>0Dạ vâng. Con sẽ cố gắng.,1Chúc mừng cháu>1Từ giờ cháu đã là nhà huấn luyện của làng Pewter>1Đừng phụ lòng mọi người nhé>0Dạ vâng. Cháu sẽ cố gắng.
 data_quest,10,name,Ra mắt thành hoàng,Tiệc chào mừng
 data_quest,10,content,"1Con biết không,Sơn Nam là một ngôi làng đã có lịch sử lâu đời.>1Nơi đây không chỉ là nơi ta sinh sống>1mà còn là nơi lưu giữ ý chí kiêu hùng và tôn chỉ của những người đầu tiên đi mở cõi và giữ nước>1Nơi đây cũng là quê hương thứ 2 của bao bậc anh hùng hào kiệt nhân sỹ tứ phương>1ai trong họ cũng tự hào là thành viên nơi đây và tự hào là con cháu của xứ sở Rồng Tiên>1Họ là tấm gương và là nguồn động viên cho các lớp người đi sau>1con hãy cố gắng để nối tiếp truyền thống làng ta nhé>1Để ta làm bữa cơm cho con cúng ra mắt thành hoàng làng>1con hãy kiếm 20 con nhím về đây cho ta nhé>Con có muốn giúp ta việc này không ?","1Cháu biết không, Pewter là ngôi làng có lịch sử lâu đời.>1Đây không chỉ là nơi ta sinh sống>1mà còn là nơi lưu giữ ý chí của những nhà huấn luyện đầu tiên khám phá thế giới Pokémon>1Nơi đây cũng là quê hương thứ hai của bao nhà vô địch khắp các vùng>1ai cũng tự hào là thành viên của làng>1Họ là tấm gương cho các Pokémon đi sau>1Cháu hãy cố gắng nối tiếp truyền thống của làng nhé>1Để ta làm bữa tiệc chào mừng cháu>1cháu hãy hạ 20 con Sandshrew ở Viridian giúp ta nhé>Cháu có muốn giúp ta việc này không ?"
@@ -144,6 +268,10 @@ data_quest,10,scontent,"Sắp qua giờ tốt rồi, nhanh con nhé.","Sắp đ�
 data_quest,10,rescontent,"1Tốt lắm, ta cảm ơn con !","1Tốt lắm, cảm ơn cháu!"
 data_quest,10,infogift,Nhiệm vụ:|bắt 20 con nhím|Địa điểm:|Tiên Du|NPC nv:|Bà Tám|Phần thưởng:|200 xu và 200 exp,Nhiệm vụ:|bắt 20 con Sandshrew|Địa điểm:|Viridian|NPC nv:|Kecleon|Phần thưởng:|200 xu và 200 exp
 data_quest,10,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Bà Tám|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Kecleon|Để nhận thưởng
+data_quest,11,name,Giết sâu bọ,Đuổi Caterpie phá lúa
+data_quest,11,content,1Nhà ta có mấy thửa ruộng trước cổng làng đang bị dịch sâu hại lúa>1ngươi hãy giúp ta diệt sâu>1để chúng không phá lúa nhà ta nữa nhé>Con có muốn giúp ta làm việc này không ?,1Nhà ta có mấy thửa ruộng trước cổng làng đang bị dịch sâu hại lúa>1cậu hãy giúp ta diệt sâu>1để chúng không phá lúa nhà ta nữa nhé>Con có muốn giúp ta làm việc này không ?
+data_quest,11,scontent,"Ôi lúa của ta, ngươi hãy đi nhanh đi.","Ôi lúa của ta, cậu hãy đi nhanh đi."
+data_quest,11,rescontent,"1Chà,ngươi làm nhanh thế!>1Ta nghĩ cũng phải hơn nửa ngày mới xong chứ>1ngươi làm ta thật bất ngờ !","1Chà,cậu làm nhanh thế!>1Ta nghĩ cũng phải hơn nửa ngày mới xong chứ>1cậu làm ta thật bất ngờ !"
 data_quest,11,infogift,Nhiệm vụ:|diệt 40 con sâu|Địa điểm:|Tiên Du|NPC nv:|Phú Ồng|Phần thưởng:|200 xu và 300 exp,Nhiệm vụ:|diệt 40 con Caterpie|Địa điểm:|Viridian|NPC nv:|Persian|Phần thưởng:|200 xu và 300 exp
 data_quest,11,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Phú Ông|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Persian|Để nhận thưởng
 data_quest,12,name,Bắt rắn ngâm rượu,Thu nọc Ekans
@@ -152,121 +280,188 @@ data_quest,12,scontent,"Cẩn thận đừng để rắn cắn, chết chứ ch�
 data_quest,12,rescontent,1Thật cảm ơn ngươi!>1Ngươi thật tốt bụng.,1Cảm ơn cháu!>1Cháu thật tốt bụng.
 data_quest,12,infogift,Nhiệm vụ:|bắt 60 con rắn lục|Địa điểm:|Tiên Du|NPC nv:|Phú Ông|Phần thưởng:|300 xu và 300 exp,Nhiệm vụ:|thu 60 túi nọc Ekans|Địa điểm:|Viridian|NPC nv:|Persian|Phần thưởng:|300 xu và 300 exp
 data_quest,12,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Phú Ông|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Persian|Để nhận thưởng
-data_quest,13,content,1Haiiiiii !>1Mùa màng năm nay của làng ta ở ruộng xa Phù Liệt thất bát quá>1Do bọn chuột từ đâu kéo về sinh sôi nảy nở quá nhiều>1ngươi hãy giúp dân làng diệt lũ chuột để chúng khỏi phá hại cây lúa>Ngươi có muốn giúp ta không ?,1Haiiiiii !>1Mùa màng năm nay của làng ta ở ruộng xa Vermilion thất bát quá>1Do bọn chuột từ đâu kéo về sinh sôi nảy nở quá nhiều>1ngươi hãy giúp dân làng diệt lũ chuột để chúng khỏi phá hại cây lúa>Ngươi có muốn giúp ta không ?
+data_quest,13,content,1Haiiiiii !>1Mùa màng năm nay của làng ta ở ruộng xa Phù Liệt thất bát quá>1Do bọn chuột từ đâu kéo về sinh sôi nảy nở quá nhiều>1ngươi hãy giúp dân làng diệt lũ chuột để chúng khỏi phá hại cây lúa>Ngươi có muốn giúp ta không ?,1Haiiiiii !>1Mùa màng năm nay của làng ta ở ruộng xa Vermilion thất bát quá>1Do bọn chuột từ đâu kéo về sinh sôi nảy nở quá nhiều>1cậu hãy giúp dân làng diệt lũ chuột để chúng khỏi phá hại cây lúa>Cậu có muốn giúp ta không ?
+data_quest,13,rescontent,1Nhờ có ngươi mà bọn chuột đã bớt phá hại>1thu hoạch cũng được khá hơn>Hãy nhận chút quà mọn của ta nhé.,1Nhờ có cậu mà bọn chuột đã bớt phá hại>1thu hoạch cũng được khá hơn>Hãy nhận chút quà mọn của ta nhé.
 data_quest,13,infogift,Nhiệm vụ:|diệt 50 con chuột|Địa điểm:|Phù Liệt|NPC nv:|Phú Ông|Phần thưởng:|500 xu và 50000 exp,Nhiệm vụ:|diệt 50 con Rattata|Địa điểm:|Vermilion|NPC nv:|Persian|Phần thưởng:|500 xu và 50000 exp
 data_quest,13,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Phú Ông|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Persian|Để nhận thưởng
 data_quest,14,name,Đưa thư cho Hỏa Xích,Đưa thư cho Torkoal
-data_quest,14,content,1Ta có một người bạn tâm giao cùng học nghệ năm xưa sống tại vùng Kỳ Bố>1lão tên là Hỏa Xích.>1Ta và lão tình như thủ túc>1lâu ngày không gặp sinh lòng nhớ thương bạn hiền>1ta muốn gửi thư hỏi thăm xem lão độ này sinh sống thế nào>Ngươi có thể giúp ta mang phong thư này trao tận tay lão không ?,1Ta có một người bạn tâm giao cùng học nghệ năm xưa sống tại vùng Cerulean>1lão tên là Torkoal.>1Ta và lão tình như thủ túc>1lâu ngày không gặp sinh lòng nhớ thương bạn hiền>1ta muốn gửi thư hỏi thăm xem lão độ này sinh sống thế nào>Ngươi có thể giúp ta mang phong thư này trao tận tay lão không ?
+data_quest,14,content,1Ta có một người bạn tâm giao cùng học nghệ năm xưa sống tại vùng Kỳ Bố>1lão tên là Hỏa Xích.>1Ta và lão tình như thủ túc>1lâu ngày không gặp sinh lòng nhớ thương bạn hiền>1ta muốn gửi thư hỏi thăm xem lão độ này sinh sống thế nào>Ngươi có thể giúp ta mang phong thư này trao tận tay lão không ?,1Ta có một người bạn tâm giao cùng học nghệ năm xưa sống tại vùng Cerulean>1lão tên là Torkoal.>1Ta và lão tình như thủ túc>1lâu ngày không gặp sinh lòng nhớ thương bạn hiền>1ta muốn gửi thư hỏi thăm xem lão độ này sinh sống thế nào>Cậu có thể giúp ta mang phong thư này trao tận tay lão không ?
 data_quest,14,scontent,Hãy mang lá thư của ta đến vùng Kỳ Bố giao cho Hỏa Xích,Hãy mang lá thư của ta đến vùng Cerulean giao cho Torkoal
-data_quest,14,rescontent,"1Oh,Thiết Bì huynh gửi thư cho ta àh?>1Thật quá bất ngờ !>1Ta cũng định ít bữa nữa thu xếp đến thăm huynh ấy>1chưa kịp đi thì huynh ấy đã cho người đưa thư đến hỏi thăm.>1ta đã xem xong thư để ta hồi âm cho huynh ấy vài chữ, ngươi đợi nhé !>1Hãy giúp ta chuyển lời cảm ơn đến Thiết Bì huynh nhé>1Phiền ngươi nhắn với huynh ấy>1vài bữa nữa ta sẽ đến thăm huynh ấy sau>1Thật cảm ơn ngươi rất nhiều.","1Oh,Bronzong anh gửi thư cho ta àh?>1Thật quá bất ngờ !>1Ta cũng định ít bữa nữa thu xếp đến thăm anh ấy>1chưa kịp đi thì anh ấy đã cho người đưa thư đến hỏi thăm.>1ta đã xem xong thư để ta hồi âm cho anh ấy vài chữ, ngươi đợi nhé !>1Hãy giúp ta chuyển lời cảm ơn đến Bronzong anh nhé>1Phiền ngươi nhắn với anh ấy>1vài bữa nữa ta sẽ đến thăm anh ấy sau>1Thật cảm ơn ngươi rất nhiều."
+data_quest,14,rescontent,"1Oh,Thiết Bì huynh gửi thư cho ta àh?>1Thật quá bất ngờ !>1Ta cũng định ít bữa nữa thu xếp đến thăm huynh ấy>1chưa kịp đi thì huynh ấy đã cho người đưa thư đến hỏi thăm.>1ta đã xem xong thư để ta hồi âm cho huynh ấy vài chữ, ngươi đợi nhé !>1Hãy giúp ta chuyển lời cảm ơn đến Thiết Bì huynh nhé>1Phiền ngươi nhắn với huynh ấy>1vài bữa nữa ta sẽ đến thăm huynh ấy sau>1Thật cảm ơn ngươi rất nhiều.","1Oh,Bronzong anh gửi thư cho ta àh?>1Thật quá bất ngờ !>1Ta cũng định ít bữa nữa thu xếp đến thăm anh ấy>1chưa kịp đi thì anh ấy đã cho người đưa thư đến hỏi thăm.>1ta đã xem xong thư để ta hồi âm cho anh ấy vài chữ, cậu đợi nhé !>1Hãy giúp ta chuyển lời cảm ơn đến Bronzong anh nhé>1Phiền cậu nhắn với anh ấy>1vài bữa nữa ta sẽ đến thăm anh ấy sau>1Thật cảm ơn cậu rất nhiều."
 data_quest,14,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Thiết Bì|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Bronzong|Để nhận thưởng
 data_quest,15,name,Đưa thư cho Hỏa Xích,Đưa thư cho Torkoal
-data_quest,15,content,1Được tin lão Hỏa Xích khỏe mạnh ta thật an lòng>1Thật vất vả cho ngươi>1Đây ta tặng ngươi cái áo>1để cảm ơn ngươi đã giúp ta.,1Được tin lão Torkoal khỏe mạnh ta thật an lòng>1Thật vất vả cho ngươi>1Đây ta tặng ngươi cái áo>1để cảm ơn ngươi đã giúp ta.
+data_quest,15,content,1Được tin lão Hỏa Xích khỏe mạnh ta thật an lòng>1Thật vất vả cho ngươi>1Đây ta tặng ngươi cái áo>1để cảm ơn ngươi đã giúp ta.,1Được tin lão Torkoal khỏe mạnh ta thật an lòng>1Thật vất vả cho cậu>1Đây ta tặng cậu cái áo>1để cảm ơn cậu đã giúp ta.
 data_quest,15,infogift,"Nhiệm vụ:|đưa thư|Địa điểm:|Kỳ Bố|NPC nv:|Hỏa Xích|Phần thưởng:|500 xu và 60000 exp,|vk lv11 +10","Nhiệm vụ:|đưa thư|Địa điểm:|Cerulean|NPC nv:|Torkoal|Phần thưởng:|500 xu và 60000 exp,|vk lv11 +10"
 data_quest,16,name,Làm bánh bao,Làm bánh Poké
 data_quest,16,content,1Cả làng rất thích ăn bánh bao do ta làm nên hôm nay ta muốn đãi họ một bữa>1Sáng này ta ra chợ mua hết thịt heo ngoài đó về để làm nhân bánh nhưng vẫn chưa đủ>1con hãy tìm về đây cho ta 60 con heo nhé>Con có sẵn sàng giúp ta làm bánh bao không ?,1Cả làng rất thích bánh Poké do ta làm nên hôm nay ta muốn đãi mọi người một bữa>1Sáng nay ta đã mua hết Berry ngoài chợ nhưng vẫn chưa đủ>1Đám Tepig ở Celadon hay giấu Berry trong hang>1cháu hãy hạ chúng và mang về đây cho ta 50 túi Berry nhé>Cháu có sẵn sàng giúp ta làm bánh không ?
 data_quest,16,scontent,"Mọi người đang đợi bánh bao ta làm đấy, đi sớm về sớm.","Mọi người đang đợi bánh Poké của ta đấy, đi sớm về sớm."
 data_quest,16,infogift,Nhiệm vụ:|cắt 50 miếng thịt heo|Địa điểm:|Thạch Giang|NPC nv:|Bà Tám|Phần thưởng:|800 xu và 150000 exp,Nhiệm vụ:|lấy 50 túi Berry|Địa điểm:|Celadon|NPC nv:|Kecleon|Phần thưởng:|800 xu và 150000 exp
 data_quest,16,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Bà Tám|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Kecleon|Để nhận thưởng
-data_quest,17,content,"1Ta đang cần nọc độc của bò cạp, rết để điều chế một số dược phẩm>1con hãy đến đông sơn tìm 30 nọc bò cạp mang về cho ta nhé>Con có muốn giúp ta không ?","1Ta đang cần nọc độc của Skorupi, rết để điều chế một số dược phẩm>1con hãy đến đông sơn tìm 30 nọc Skorupi mang về cho ta nhé>Con có muốn giúp ta không ?"
+data_quest,17,content,"1Ta đang cần nọc độc của bò cạp, rết để điều chế một số dược phẩm>1con hãy đến đông sơn tìm 30 nọc bò cạp mang về cho ta nhé>Con có muốn giúp ta không ?","1Ta đang cần nọc độc của Skorupi, rết để điều chế một số dược phẩm>1con hãy đến Saffron tìm 30 nọc Skorupi mang về cho ta nhé>Con có muốn giúp ta không ?"
 data_quest,17,infogift,"Nhiệm vụ:|lấy 30 đuôi bò cạp|30 con rết|Địa điểm:|Đông Sơn, Tử Quan|NPC nv:|Bà Tám|Phần thưởng:|1000 xu và 500000 exp","Nhiệm vụ:|lấy 30 đuôi Skorupi|30 con Venipede|Địa điểm:|Saffron, Fuchsia|NPC nv:|Kecleon|Phần thưởng:|1000 xu và 500000 exp"
 data_quest,17,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Bà Tám|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Kecleon|Để nhận thưởng
 data_quest,18,content,1Nhà của ta đã lâu lắm không tu sửa gì nên nó đã quá cũ kĩ>1đã có nhiều chổ bị mối mọt ăn mục>1Con hãy giúp ta  sửa lại căn nhà cho kịp mùa mưa đang đến>1vùng Tử Quan nổi tiếng nhiều gỗ tốt>1con hãy đến đấy tìm gỗ giúp ta nhé>1Rừng thiêng nước độc>1trên núi có rất nhiều hoa ăn thịt và quái thú con phải hết sức cẩn thận>Con có muốn giúp ta việc này không ?,1Nhà của ta đã lâu lắm không tu sửa gì nên nó đã quá cũ kĩ>1đã có nhiều chổ bị mối mọt ăn mục>1Con hãy giúp ta  sửa lại căn nhà cho kịp mùa mưa đang đến>1vùng Fuchsia nổi tiếng nhiều gỗ tốt>1con hãy đến đấy tìm gỗ giúp ta nhé>1Rừng thiêng nước độc>1trên núi có rất nhiều hoa ăn thịt và quái thú con phải hết sức cẩn thận>Con có muốn giúp ta việc này không ?
 data_quest,18,infogift,"Nhiệm vụ:|nhặt 50 khúc gỗ|từ Quỷ sinh hoa|Địa điểm:|Tử Quan|NPC nv:|Trưởng Làng|Phần thưởng:|2000 xu, 900000 exp,|10HP vừa, 10MP vừa","Nhiệm vụ:|nhặt 50 khúc gỗ|từ Gloom|Địa điểm:|Fuchsia|NPC nv:|Trưởng Làng|Phần thưởng:|2000 xu, 900000 exp,|10HP vừa, 10MP vừa"
-data_quest,19,content,1Ta thấy ngươi tiền đồ sáng lạn<0Tướng quân quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 50 con quái (+-5Lv nhân vật) rồi về đây gặp ta.>Ngươi có muốn rèn luyện không ?,1Ta thấy ngươi tiền đồ sáng lạn<0Tướng quân quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 50 con quái (+-5Lv Pokémon) rồi về đây gặp ta.>Ngươi có muốn rèn luyện không ?
-data_quest,19,infogift,Nhiệm vụ:|Giết 50 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|500000 exp,Nhiệm vụ:|Giết 50 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|500000 exp
+data_quest,19,content,1Ta thấy ngươi tiền đồ sáng lạn<0Tướng quân quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 50 con quái (+-5Lv nhân vật) rồi về đây gặp ta.>Ngươi có muốn rèn luyện không ?,1Ta thấy cậu tiền đồ sáng lạn<0Chỉ huy quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 50 con quái (+-5Lv Pokémon) rồi về đây gặp ta.>Cậu có muốn rèn luyện không ?
+data_quest,19,rescontent,"1Ngươi hoàn thành tốt đấy, cố gắng hơn nữa nhé.>0Dạ ","1Cậu hoàn thành tốt đấy, cố gắng hơn nữa nhé.>0Dạ "
+data_quest,19,infogift,Nhiệm vụ:|Giết 50 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|500000 exp,Nhiệm vụ:|Hạ 50 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|500000 exp
 data_quest,19,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Lâm Tướng Quân|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Blaziken|Để nhận thưởng
-data_quest,20,content,1Ta thấy ngươi tiền đồ sáng lạn>0Tướng quân quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 100 con quái (+-5Lv nhân vật) rồi về đây gặp ta.>Ngươi có muốn rèn luyện không ?,1Ta thấy ngươi tiền đồ sáng lạn>0Tướng quân quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 100 con quái (+-5Lv Pokémon) rồi về đây gặp ta.>Ngươi có muốn rèn luyện không ?
-data_quest,20,infogift,Nhiệm vụ:|Giết 100 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|1200000 exp,Nhiệm vụ:|Giết 100 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|1200000 exp
+data_quest,20,content,1Ta thấy ngươi tiền đồ sáng lạn>0Tướng quân quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 100 con quái (+-5Lv nhân vật) rồi về đây gặp ta.>Ngươi có muốn rèn luyện không ?,1Ta thấy cậu tiền đồ sáng lạn>0Chỉ huy quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 100 con quái (+-5Lv Pokémon) rồi về đây gặp ta.>Cậu có muốn rèn luyện không ?
+data_quest,20,rescontent,"1Ngươi hoàn thành tốt đấy, cố gắng hơn nữa nhé.>0Dạ ","1Cậu hoàn thành tốt đấy, cố gắng hơn nữa nhé.>0Dạ "
+data_quest,20,infogift,Nhiệm vụ:|Giết 100 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|1200000 exp,Nhiệm vụ:|Hạ 100 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|1200000 exp
 data_quest,20,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Lâm Tướng Quân|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Blaziken|Để nhận thưởng
-data_quest,21,content,1Ta thấy ngươi tiền đồ sáng lạn<0Tướng quân quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 150 con quái (+-5Lv nhân vật) rồi về đây gặp ta.>Ngươi có muốn rèn luyện không ?,1Ta thấy ngươi tiền đồ sáng lạn<0Tướng quân quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 150 con quái (+-5Lv Pokémon) rồi về đây gặp ta.>Ngươi có muốn rèn luyện không ?
-data_quest,21,infogift,Nhiệm vụ:|Giết 150 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|2000000 exp,Nhiệm vụ:|Giết 150 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|2000000 exp
+data_quest,21,content,1Ta thấy ngươi tiền đồ sáng lạn<0Tướng quân quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 150 con quái (+-5Lv nhân vật) rồi về đây gặp ta.>Ngươi có muốn rèn luyện không ?,1Ta thấy cậu tiền đồ sáng lạn<0Chỉ huy quá khen>1Hãy cố rèn luyện bản thân sau này sẽ nên người tài mà giúp ích cho đời.>1Nếu muốn rèn luyện thì đây là cách>1Đánh đủ số 150 con quái (+-5Lv Pokémon) rồi về đây gặp ta.>Cậu có muốn rèn luyện không ?
+data_quest,21,rescontent,"1Ngươi hoàn thành tốt đấy, cố gắng hơn nữa nhé.>0Dạ ","1Cậu hoàn thành tốt đấy, cố gắng hơn nữa nhé.>0Dạ "
+data_quest,21,infogift,Nhiệm vụ:|Giết 150 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|2000000 exp,Nhiệm vụ:|Hạ 150 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|2000000 exp
 data_quest,21,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Lâm Tướng Quân|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Blaziken|Để nhận thưởng
-data_quest,22,content,1Giang hồ hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn bôn tẩu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 85 con quái (+-5 Lv nhân vật) rồi về đây ta gặp ta.>Ngươi có muốn thực hiện việc này không?,1Giang hồ hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn phiêu lưu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 85 con quái (+-5 Lv Pokémon) rồi về đây ta gặp ta.>Ngươi có muốn thực hiện việc này không?
+data_quest,22,name,Cường thân kiện thể (dễ),Rèn luyện thể lực (dễ)
+data_quest,22,content,1Giang hồ hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn bôn tẩu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 85 con quái (+-5 Lv nhân vật) rồi về đây ta gặp ta.>Ngươi có muốn thực hiện việc này không?,1Thế giới Pokémon hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn phiêu lưu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 85 con quái (+-5 Lv Pokémon) rồi về đây ta gặp ta.>Cậu có muốn thực hiện việc này không?
+data_quest,22,scontent,"Cố gắng lên, ngươi vẫn chưa hoàn thành nhiệm vụ đâu !","Cố gắng lên, cậu vẫn chưa hoàn thành nhiệm vụ đâu !"
 data_quest,22,rescontent,"1Tốt rồi, nhận chút quà của ta xem như khích lệ nhé>0Vâng xin cảm ơn tướng quân","1Tốt rồi, nhận chút quà của ta xem như khích lệ nhé>0Vâng xin cảm ơn chỉ huy"
-data_quest,22,infogift,Nhiệm vụ:|Giết 85 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|1200000 exp,Nhiệm vụ:|Giết 85 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|1200000 exp
+data_quest,22,infogift,Nhiệm vụ:|Giết 85 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|1200000 exp,Nhiệm vụ:|Hạ 85 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|1200000 exp
 data_quest,22,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Lâm Tướng Quân|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Blaziken|Để nhận thưởng
-data_quest,23,content,1Giang hồ hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn bôn tẩu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 170 con quái (+-5 Lv nhân vật) rồi về đây ta gặp ta.>Ngươi có muốn thực hiện việc này không?,1Giang hồ hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn phiêu lưu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 170 con quái (+-5 Lv Pokémon) rồi về đây ta gặp ta.>Ngươi có muốn thực hiện việc này không?
+data_quest,23,name,Cường thân kiện thể (vừa),Rèn luyện thể lực (vừa)
+data_quest,23,content,1Giang hồ hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn bôn tẩu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 170 con quái (+-5 Lv nhân vật) rồi về đây ta gặp ta.>Ngươi có muốn thực hiện việc này không?,1Thế giới Pokémon hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn phiêu lưu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 170 con quái (+-5 Lv Pokémon) rồi về đây ta gặp ta.>Cậu có muốn thực hiện việc này không?
+data_quest,23,scontent,"Cố gắng lên, ngươi vẫn chưa hoàn thành nhiệm vụ đâu !","Cố gắng lên, cậu vẫn chưa hoàn thành nhiệm vụ đâu !"
 data_quest,23,rescontent,"1Tốt rồi, nhận chút quà của ta xem như khích lệ nhé>0Vâng xin cảm ơn tướng quân","1Tốt rồi, nhận chút quà của ta xem như khích lệ nhé>0Vâng xin cảm ơn chỉ huy"
-data_quest,23,infogift,Nhiệm vụ:|Giết 170 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|2500000 exp,Nhiệm vụ:|Giết 170 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|2500000 exp
+data_quest,23,infogift,Nhiệm vụ:|Giết 170 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|2500000 exp,Nhiệm vụ:|Hạ 170 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|2500000 exp
 data_quest,23,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Lâm Tướng Quân|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Blaziken|Để nhận thưởng
-data_quest,24,content,1Giang hồ hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn bôn tẩu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 250 con quái (+-5 Lv nhân vật) rồi về đây ta gặp ta.>Ngươi có muốn thực hiện việc này không?,1Giang hồ hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn phiêu lưu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 250 con quái (+-5 Lv Pokémon) rồi về đây ta gặp ta.>Ngươi có muốn thực hiện việc này không?
+data_quest,24,name,Cường thân kiện thể (khó),Rèn luyện thể lực (khó)
+data_quest,24,content,1Giang hồ hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn bôn tẩu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 250 con quái (+-5 Lv nhân vật) rồi về đây ta gặp ta.>Ngươi có muốn thực hiện việc này không?,1Thế giới Pokémon hiểm ác biết bao nhiêu nguy hiểm tiềm ẩn>1muốn phiêu lưu cần phải có một cơ thể khỏe mạnh>1Hãy tiếp tục rèn luyện bản thân đi.>0Dạ!<1Đi đánh 250 con quái (+-5 Lv Pokémon) rồi về đây ta gặp ta.>Cậu có muốn thực hiện việc này không?
+data_quest,24,scontent,"Cố gắng lên, ngươi vẫn chưa hoàn thành nhiệm vụ đâu !","Cố gắng lên, cậu vẫn chưa hoàn thành nhiệm vụ đâu !"
 data_quest,24,rescontent,"1Tốt rồi, nhận chút quà của ta xem như khích lệ nhé>0Vâng xin cảm ơn tướng quân","1Tốt rồi, nhận chút quà của ta xem như khích lệ nhé>0Vâng xin cảm ơn chỉ huy"
-data_quest,24,infogift,Nhiệm vụ:|Giết 250 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|4000000 exp,Nhiệm vụ:|Giết 250 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|4000000 exp
+data_quest,24,infogift,Nhiệm vụ:|Giết 250 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|4000000 exp,Nhiệm vụ:|Hạ 250 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|4000000 exp
 data_quest,24,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Lâm Tướng Quân|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Blaziken|Để nhận thưởng
-data_quest,25,content,"1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy ngươi có thể đảm đương việc này>1Tiêu diệt 117 con quái (+-5Lv nhân vật) quay về ta trọng thưởng>Ngươi có muốn làm việc này không ?","1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy ngươi có thể đảm đương việc này>1Tiêu diệt 117 con quái (+-5Lv Pokémon) quay về ta trọng thưởng>Ngươi có muốn làm việc này không ?"
-data_quest,25,infogift,Nhiệm vụ:|Giết 117 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|3000000 exp,Nhiệm vụ:|Giết 117 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|3000000 exp
+data_quest,25,name,Trừ gian diệt ác (dễ),Dẹp loạn khu hoang dã (dễ)
+data_quest,25,content,"1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy ngươi có thể đảm đương việc này>1Tiêu diệt 117 con quái (+-5Lv nhân vật) quay về ta trọng thưởng>Ngươi có muốn làm việc này không ?","1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy cậu có thể đảm đương việc này>1Tiêu diệt 117 con quái (+-5Lv Pokémon) quay về ta trọng thưởng>Cậu có muốn làm việc này không ?"
+data_quest,25,infogift,Nhiệm vụ:|Giết 117 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|3000000 exp,Nhiệm vụ:|Hạ 117 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|3000000 exp
 data_quest,25,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Lâm Tướng Quân|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Blaziken|Để nhận thưởng
-data_quest,26,content,"1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy ngươi có thể đảm đương việc này>1Tiêu diệt 234 con quái (+-5Lv nhân vật) quay về ta trọng thưởng>Ngươi có muốn làm việc này không ?","1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy ngươi có thể đảm đương việc này>1Tiêu diệt 234 con quái (+-5Lv Pokémon) quay về ta trọng thưởng>Ngươi có muốn làm việc này không ?"
-data_quest,26,infogift,Nhiệm vụ:|Giết 234 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|6000000 exp,Nhiệm vụ:|Giết 234 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|6000000 exp
+data_quest,26,name,Trừ gian diệt ác (vừa),Dẹp loạn khu hoang dã (vừa)
+data_quest,26,content,"1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy ngươi có thể đảm đương việc này>1Tiêu diệt 234 con quái (+-5Lv nhân vật) quay về ta trọng thưởng>Ngươi có muốn làm việc này không ?","1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy cậu có thể đảm đương việc này>1Tiêu diệt 234 con quái (+-5Lv Pokémon) quay về ta trọng thưởng>Cậu có muốn làm việc này không ?"
+data_quest,26,infogift,Nhiệm vụ:|Giết 234 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|6000000 exp,Nhiệm vụ:|Hạ 234 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|6000000 exp
 data_quest,26,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Lâm Tướng Quân|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Blaziken|Để nhận thưởng
-data_quest,27,content,"1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy ngươi có thể đảm đương việc này>1Tiêu diệt 350 con quái (+-5Lv nhân vật) quay về ta trọng thưởng>Ngươi có muốn làm việc này không ?","1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy ngươi có thể đảm đương việc này>1Tiêu diệt 350 con quái (+-5Lv Pokémon) quay về ta trọng thưởng>Ngươi có muốn làm việc này không ?"
-data_quest,27,infogift,Nhiệm vụ:|Giết 350 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|10000000 exp,Nhiệm vụ:|Giết 350 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|10000000 exp
+data_quest,27,name,Trừ gian diệt ác (khó),Dẹp loạn khu hoang dã (khó)
+data_quest,27,content,"1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy ngươi có thể đảm đương việc này>1Tiêu diệt 350 con quái (+-5Lv nhân vật) quay về ta trọng thưởng>Ngươi có muốn làm việc này không ?","1Cướp bóc, quái vật đang nổi lên hoành hành khắp mọi nơi>1thiết nghĩ phải có người ra tay tiêu diệt.>0Đó là điều nên làm ạ>1Ta thấy cậu có thể đảm đương việc này>1Tiêu diệt 350 con quái (+-5Lv Pokémon) quay về ta trọng thưởng>Cậu có muốn làm việc này không ?"
+data_quest,27,infogift,Nhiệm vụ:|Giết 350 quái +-5Lv|NPC nv:|Lâm Tướng Quân|Phần thưởng:|10000000 exp,Nhiệm vụ:|Hạ 350 quái +-5Lv|NPC nv:|Blaziken|Phần thưởng:|10000000 exp
 data_quest,27,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Lâm Tướng Quân|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Blaziken|Để nhận thưởng
-data_quest,28,content,1Trên đường bôn tẩu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách trừ hại cho dân>0Tôi xin ghi nhớ lời tướng quân dặn>1Khi nào đủ số 135 con quái (+-5Lv nhân vật) về gặp ta nhận thưởng>Ngươi có muốn nhận nhiệm vụ này không?,1Trên đường phiêu lưu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách trừ hại cho dân>0Tôi xin ghi nhớ lời chỉ huy dặn>1Khi nào đủ số 135 con quái (+-5Lv Pokémon) về gặp ta nhận thưởng>Ngươi có muốn nhận nhiệm vụ này không?
-data_quest,28,infogift,Nhiệm vụ:|Giết 135 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|6000000 exp,Nhiệm vụ:|Giết 135 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|6000000 exp
+data_quest,28,name,Hành hiệp trượng nghĩa (dễ),Giúp đỡ mọi người (dễ)
+data_quest,28,content,1Trên đường bôn tẩu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách trừ hại cho dân>0Tôi xin ghi nhớ lời tướng quân dặn>1Khi nào đủ số 135 con quái (+-5Lv nhân vật) về gặp ta nhận thưởng>Ngươi có muốn nhận nhiệm vụ này không?,1Trên đường phiêu lưu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách bảo vệ dân làng>0Tôi xin ghi nhớ lời chỉ huy dặn>1Khi nào đủ số 135 con quái (+-5Lv Pokémon) về gặp ta nhận thưởng>Cậu có muốn nhận nhiệm vụ này không?
+data_quest,28,rescontent,"1Ngươi thật có lòng, ta xin thay mặt mọi người cảm ơn ngươi","1Cậu thật có lòng, ta xin thay mặt mọi người cảm ơn cậu"
+data_quest,28,infogift,Nhiệm vụ:|Giết 135 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|6000000 exp,Nhiệm vụ:|Hạ 135 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|6000000 exp
 data_quest,28,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,29,content,1Trên đường bôn tẩu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách trừ hại cho dân>0Tôi xin ghi nhớ lời tướng quân dặn>1Khi nào đủ số 270 con quái (+-5Lv nhân vật) về gặp ta nhận thưởng>Ngươi có muốn nhận nhiệm vụ này không?,1Trên đường phiêu lưu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách trừ hại cho dân>0Tôi xin ghi nhớ lời chỉ huy dặn>1Khi nào đủ số 270 con quái (+-5Lv Pokémon) về gặp ta nhận thưởng>Ngươi có muốn nhận nhiệm vụ này không?
-data_quest,29,infogift,Nhiệm vụ:|Giết 270 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|16000000 exp,Nhiệm vụ:|Giết 270 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|16000000 exp
+data_quest,29,name,Hành hiệp trượng nghĩa (vừa),Giúp đỡ mọi người (vừa)
+data_quest,29,content,1Trên đường bôn tẩu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách trừ hại cho dân>0Tôi xin ghi nhớ lời tướng quân dặn>1Khi nào đủ số 270 con quái (+-5Lv nhân vật) về gặp ta nhận thưởng>Ngươi có muốn nhận nhiệm vụ này không?,1Trên đường phiêu lưu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách bảo vệ dân làng>0Tôi xin ghi nhớ lời chỉ huy dặn>1Khi nào đủ số 270 con quái (+-5Lv Pokémon) về gặp ta nhận thưởng>Cậu có muốn nhận nhiệm vụ này không?
+data_quest,29,rescontent,"1Ngươi thật có lòng, ta xin thay mặt mọi người cảm ơn ngươi","1Cậu thật có lòng, ta xin thay mặt mọi người cảm ơn cậu"
+data_quest,29,infogift,Nhiệm vụ:|Giết 270 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|16000000 exp,Nhiệm vụ:|Hạ 270 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|16000000 exp
 data_quest,29,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,30,content,1Trên đường bôn tẩu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách trừ hại cho dân>0Tôi xin ghi nhớ lời tướng quân dặn>1Khi nào đủ số 400 con quái (+-5Lv nhân vật) về gặp ta nhận thưởng>Ngươi có muốn nhận nhiệm vụ này không?,1Trên đường phiêu lưu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách trừ hại cho dân>0Tôi xin ghi nhớ lời chỉ huy dặn>1Khi nào đủ số 400 con quái (+-5Lv Pokémon) về gặp ta nhận thưởng>Ngươi có muốn nhận nhiệm vụ này không?
-data_quest,30,infogift,Nhiệm vụ:|Giết 400 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|25000000 exp,Nhiệm vụ:|Giết 400 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|25000000 exp
+data_quest,30,name,Hành hiệp trượng nghĩa (khó),Giúp đỡ mọi người (khó)
+data_quest,30,content,1Trên đường bôn tẩu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách trừ hại cho dân>0Tôi xin ghi nhớ lời tướng quân dặn>1Khi nào đủ số 400 con quái (+-5Lv nhân vật) về gặp ta nhận thưởng>Ngươi có muốn nhận nhiệm vụ này không?,1Trên đường phiêu lưu cố gắng tiêu diệt quái vật càng nhiều càng tốt>1đó cũng là một cách bảo vệ dân làng>0Tôi xin ghi nhớ lời chỉ huy dặn>1Khi nào đủ số 400 con quái (+-5Lv Pokémon) về gặp ta nhận thưởng>Cậu có muốn nhận nhiệm vụ này không?
+data_quest,30,rescontent,"1Ngươi thật có lòng, ta xin thay mặt mọi người cảm ơn ngươi","1Cậu thật có lòng, ta xin thay mặt mọi người cảm ơn cậu"
+data_quest,30,infogift,Nhiệm vụ:|Giết 400 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|25000000 exp,Nhiệm vụ:|Hạ 400 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|25000000 exp
 data_quest,30,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,31,content,"1Ngươi hãy đi giúp những người dân ở vùng sâu vùng xa, quái vật yêu ma còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 150 con quái (+-5Lv nhân vật) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, ngươi có muốn thực hiện không?","1Ngươi hãy đi giúp những người dân ở vùng sâu vùng xa, quái vật yêu ma còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 150 con quái (+-5Lv Pokémon) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, ngươi có muốn thực hiện không?"
-data_quest,31,infogift,Nhiệm vụ:|Giết 150 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|24000000 exp,Nhiệm vụ:|Giết 150 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|24000000 exp
+data_quest,31,name,Trừ hại cho dân (dễ),Bảo vệ dân làng (dễ)
+data_quest,31,content,"1Ngươi hãy đi giúp những người dân ở vùng sâu vùng xa, quái vật yêu ma còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 150 con quái (+-5Lv nhân vật) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, ngươi có muốn thực hiện không?","1Cậu hãy đi giúp những người dân ở vùng sâu vùng xa, Pokémon hung dữ còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 150 con quái (+-5Lv Pokémon) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, cậu có muốn thực hiện không?"
+data_quest,31,scontent,"Đi sớm cho kịp, họ đang đợi ngươi đến giúp đó.","Đi sớm cho kịp, họ đang đợi cậu đến giúp đó."
+data_quest,31,rescontent,"1Ngươi thật vất vả, sẽ có phần thưởng xứng đáng cho ngươi>0Vâng, xin cảm ơn!","1Cậu thật vất vả, sẽ có phần thưởng xứng đáng cho cậu>0Vâng, xin cảm ơn!"
+data_quest,31,infogift,Nhiệm vụ:|Giết 150 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|24000000 exp,Nhiệm vụ:|Hạ 150 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|24000000 exp
 data_quest,31,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,32,content,"1Ngươi hãy đi giúp những người dân ở vùng sâu vùng xa, quái vật yêu ma còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 300 con quái (+-5Lv nhân vật) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, ngươi có muốn thực hiện không?","1Ngươi hãy đi giúp những người dân ở vùng sâu vùng xa, quái vật yêu ma còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 300 con quái (+-5Lv Pokémon) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, ngươi có muốn thực hiện không?"
-data_quest,32,infogift,Nhiệm vụ:|Giết 300 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|50000000 exp,Nhiệm vụ:|Giết 300 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|50000000 exp
+data_quest,32,name,Trừ hại cho dân (vừa),Bảo vệ dân làng (vừa)
+data_quest,32,content,"1Ngươi hãy đi giúp những người dân ở vùng sâu vùng xa, quái vật yêu ma còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 300 con quái (+-5Lv nhân vật) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, ngươi có muốn thực hiện không?","1Cậu hãy đi giúp những người dân ở vùng sâu vùng xa, Pokémon hung dữ còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 300 con quái (+-5Lv Pokémon) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, cậu có muốn thực hiện không?"
+data_quest,32,scontent,"Đi sớm cho kịp, họ đang đợi ngươi đến giúp đó.","Đi sớm cho kịp, họ đang đợi cậu đến giúp đó."
+data_quest,32,rescontent,"1Ngươi thật vất vả, sẽ có phần thưởng xứng đáng cho ngươi>0Vâng, xin cảm ơn!","1Cậu thật vất vả, sẽ có phần thưởng xứng đáng cho cậu>0Vâng, xin cảm ơn!"
+data_quest,32,infogift,Nhiệm vụ:|Giết 300 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|50000000 exp,Nhiệm vụ:|Hạ 300 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|50000000 exp
 data_quest,32,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,33,content,"1Ngươi hãy đi giúp những người dân ở vùng sâu vùng xa, quái vật yêu ma còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 450 con quái (+-5Lv nhân vật) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, ngươi có muốn thực hiện không?","1Ngươi hãy đi giúp những người dân ở vùng sâu vùng xa, quái vật yêu ma còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 450 con quái (+-5Lv Pokémon) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, ngươi có muốn thực hiện không?"
-data_quest,33,infogift,Nhiệm vụ:|Giết 450 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|80000000 exp,Nhiệm vụ:|Giết 450 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|80000000 exp
+data_quest,33,name,Trừ hại cho dân (khó),Bảo vệ dân làng (khó)
+data_quest,33,content,"1Ngươi hãy đi giúp những người dân ở vùng sâu vùng xa, quái vật yêu ma còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 450 con quái (+-5Lv nhân vật) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, ngươi có muốn thực hiện không?","1Cậu hãy đi giúp những người dân ở vùng sâu vùng xa, Pokémon hung dữ còn nhiều>Có như vậy họ mới an cư lạc nghiệp được>0Chí phải ạ!>1Tiêu diệt 450 con quái (+-5Lv Pokémon) sau đó về đây báo công nhận thưởng.>Việc này rất gian nan, cậu có muốn thực hiện không?"
+data_quest,33,scontent,"Đi sớm cho kịp, họ đang đợi ngươi đến giúp đó.","Đi sớm cho kịp, họ đang đợi cậu đến giúp đó."
+data_quest,33,rescontent,"1Ngươi thật vất vả, sẽ có phần thưởng xứng đáng cho ngươi>0Vâng, xin cảm ơn!","1Cậu thật vất vả, sẽ có phần thưởng xứng đáng cho cậu>0Vâng, xin cảm ơn!"
+data_quest,33,infogift,Nhiệm vụ:|Giết 450 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|80000000 exp,Nhiệm vụ:|Hạ 450 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|80000000 exp
 data_quest,33,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,34,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 167 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 167 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?"
-data_quest,34,infogift,Nhiệm vụ:|Giết 167 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|40000000 exp,Nhiệm vụ:|Giết 167 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|40000000 exp
+data_quest,34,name,Trừ khử yêu ma (dễ),Đẩy lùi Pokémon hung dữ (dễ)
+data_quest,34,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 167 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Pokémon hung dữ xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta hạ 167 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Cậu có muốn làm việc này không ?"
+data_quest,34,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,34,infogift,Nhiệm vụ:|Giết 167 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|40000000 exp,Nhiệm vụ:|Hạ 167 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|40000000 exp
 data_quest,34,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,35,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 334 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 334 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?"
-data_quest,35,infogift,Nhiệm vụ:|Giết 334 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|90000000 exp,Nhiệm vụ:|Giết 334 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|90000000 exp
+data_quest,35,name,Trừ khử yêu ma (vừa),Đẩy lùi Pokémon hung dữ (vừa)
+data_quest,35,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 334 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Pokémon hung dữ xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta hạ 334 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Cậu có muốn làm việc này không ?"
+data_quest,35,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,35,infogift,Nhiệm vụ:|Giết 334 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|90000000 exp,Nhiệm vụ:|Hạ 334 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|90000000 exp
 data_quest,35,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,36,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 500 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 500 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?"
-data_quest,36,infogift,Nhiệm vụ:|Giết 500 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|150000000 exp,Nhiệm vụ:|Giết 500 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|150000000 exp
+data_quest,36,name,Trừ khử yêu ma (khó),Đẩy lùi Pokémon hung dữ (khó)
+data_quest,36,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 500 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Pokémon hung dữ xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta hạ 500 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Cậu có muốn làm việc này không ?"
+data_quest,36,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,36,infogift,Nhiệm vụ:|Giết 500 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|150000000 exp,Nhiệm vụ:|Hạ 500 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|150000000 exp
 data_quest,36,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,37,name,Móng cá sấu,Móng Croconaw
-data_quest,37,content,1Ta muốn làm 1 sợi dây chuyền từ móng cá sấu>1nhưng hiện tại ta đang bận việc.>1Vậy ngươi hãy đi tìm cho ta 100 móng cá sâu để ta làm dây chuyền.>Ngươi có đồng ý không?,1Ta muốn làm 1 sợi dây chuyền từ móng Croconaw>1nhưng hiện tại ta đang bận việc.>1Vậy ngươi hãy đi tìm cho ta 100 móng Croconaw để ta làm dây chuyền.>Ngươi có đồng ý không?
-data_quest,37,infogift,Nhiệm vụ:|Giết 100 con cá sấu|Địa điểm:|Trường Giang|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Giết 100 con Croconaw|Địa điểm:|Cinnabar|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp đội
-data_quest,38,content,1Ta đang cần tìm 100 da ếch quỷ đề làm thuốc.> Ngươi có thể giúp ta không?,1Ta đang cần tìm 100 da Croagunk đề làm thuốc.> Ngươi có thể giúp ta không?
-data_quest,38,infogift,Nhiệm vụ:|Giết 100 con ếch quỷ|Địa điểm:|Trường Giang|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Giết 100 con Croagunk|Địa điểm:|Cinnabar|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp đội
-data_quest,39,content,"1Nghe nói cựa Gà khổng lồ ở vùng đảo Lộc Trĩ nhọn như kim châm,>1sắc như dao cạo rất phù hợp để chế tạo vũ khí. >1Ta cần khoảng 100 cái cựa.>Ngươi có thể đi tìm về cho ta không?","1Nghe nói cựa Dodrio ở vùng đảo New Bark nhọn như kim châm,>1sắc như dao cạo rất phù hợp để chế tạo vũ khí. >1Ta cần khoảng 100 cái cựa.>Ngươi có thể đi tìm về cho ta không?"
-data_quest,39,infogift,Nhiệm vụ:|Giết 100 con gà khổng lồ|Địa điểm:|Lộc Trĩ|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Giết 100 con Dodrio|Địa điểm:|New Bark|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp đội
+data_quest,37,name,Móng cá sấu,Răng Croconaw
+data_quest,37,content,1Ta muốn làm 1 sợi dây chuyền từ móng cá sấu>1nhưng hiện tại ta đang bận việc.>1Vậy ngươi hãy đi tìm cho ta 100 móng cá sâu để ta làm dây chuyền.>Ngươi có đồng ý không?,1Ta đang làm một chiếc vòng cổ may mắn từ những chiếc răng mà Croconaw thay ra>1nhưng hiện tại ta đang bận việc.>1Cậu hãy đánh bại 100 con Croconaw và nhặt giúp ta những chiếc răng chúng rơi lại nhé.>Cậu có đồng ý không?
+data_quest,37,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,37,infogift,Nhiệm vụ:|Giết 100 con cá sấu|Địa điểm:|Trường Giang|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Hạ 100 con Croconaw|Địa điểm:|Cinnabar|NPC nv:|Lucario|Phần thưởng:|5exp đội
+data_quest,37,infofinish,Nhiệm vụ hoàn thành|Về gặp Tả Phó Thống|Nhận thưởng,Nhiệm vụ hoàn thành|Về gặp Lucario|Nhận thưởng
+data_quest,38,name,Tìm da ếch,Nọc Croagunk
+data_quest,38,content,1Ta đang cần tìm 100 da ếch quỷ đề làm thuốc.> Ngươi có thể giúp ta không?,"1Croagunk có túi nọc độc rất quý, dùng để điều chế thuốc giải độc.>1Ta cần nọc của 100 con Croagunk.>Cậu có thể giúp ta không?"
+data_quest,38,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,38,infogift,Nhiệm vụ:|Giết 100 con ếch quỷ|Địa điểm:|Trường Giang|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Hạ 100 con Croagunk|Địa điểm:|Cinnabar|NPC nv:|Lucario|Phần thưởng:|5exp đội
+data_quest,38,infofinish,Nhiệm vụ hoàn thành|Về gặp Tả Phó Thống|Nhận thưởng,Nhiệm vụ hoàn thành|Về gặp Lucario|Nhận thưởng
+data_quest,39,name,Tìm cựa gà,Đua sức với Dodrio
+data_quest,39,content,"1Nghe nói cựa Gà khổng lồ ở vùng đảo Lộc Trĩ nhọn như kim châm,>1sắc như dao cạo rất phù hợp để chế tạo vũ khí. >1Ta cần khoảng 100 cái cựa.>Ngươi có thể đi tìm về cho ta không?","1Nghe nói Dodrio ở vùng đảo New Bark chạy nhanh như gió,>1rất hợp để các Pokémon trẻ luyện sức bền.>1Hãy đánh bại 100 con Dodrio để rèn luyện nhé.>Cậu có làm được không?"
+data_quest,39,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,39,infogift,Nhiệm vụ:|Giết 100 con gà khổng lồ|Địa điểm:|Lộc Trĩ|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Hạ 100 con Dodrio|Địa điểm:|New Bark|NPC nv:|Lucario|Phần thưởng:|5exp đội
+data_quest,39,infofinish,Nhiệm vụ hoàn thành|Về gặp Tả Phó Thống|Nhận thưởng,Nhiệm vụ hoàn thành|Về gặp Lucario|Nhận thưởng
 data_quest,40,name,Bắt dế khổng lồ,Bắt Kricketune
-data_quest,40,content,"1Thịt Dế khổng lồ ở vùng Sơn Lâm> 1là một món ngon hiếm có, >1sắp tới có tiệc chiêu đãi anh hùng các bang hội. >Ngươi có thể mang 100 con Dế khổng lồ về đây cho ta không?","1Thịt Kricketune ở vùng Rừng Viridian> 1là một món ngon hiếm có, >1sắp tới có tiệc chiêu đãi anh hùng các đội. >Ngươi có thể mang 100 con Kricketune về đây cho ta không?"
-data_quest,40,infogift,Nhiệm vụ:|Giết 100 con dế khổng lồ|Địa điểm:|Sơn Lâm|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Giết 100 con Kricketune|Địa điểm:|Rừng Viridian|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp đội
+data_quest,40,content,"1Thịt Dế khổng lồ ở vùng Sơn Lâm> 1là một món ngon hiếm có, >1sắp tới có tiệc chiêu đãi anh hùng các bang hội. >Ngươi có thể mang 100 con Dế khổng lồ về đây cho ta không?","1Kricketune ở Rừng Viridian kêu rất hay,>1sắp tới có tiệc chiêu đãi các nhà huấn luyện của các đội.>1Ta muốn mời chúng đến biểu diễn, nhưng trước hết cậu phải thắng 100 con Kricketune đã.>Cậu có thể giúp ta không?"
+data_quest,40,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,40,infogift,Nhiệm vụ:|Giết 100 con dế khổng lồ|Địa điểm:|Sơn Lâm|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Hạ 100 con Kricketune|Địa điểm:|Rừng Viridian|NPC nv:|Lucario|Phần thưởng:|5exp đội
+data_quest,40,infofinish,Nhiệm vụ hoàn thành|Về gặp Tả Phó Thống|Nhận thưởng,Nhiệm vụ hoàn thành|Về gặp Lucario|Nhận thưởng
 data_quest,41,name,Thuần hoá trâu núi,Thuần hoá Tauros
-data_quest,41,content,"1Ta nghe nói một con Trâu núi khoẻ gấp 3 lần con trâu nhà,> 1giá mà mang được loài này về thuần hoá phục vụ cho việc cầy bừa thì thật là tốt.> Ngươi có thể thuần hoá 100 con Trâu núi cho ta không ?","1Ta nghe nói một con Tauros khoẻ gấp 3 lần con trâu nhà,> 1giá mà mang được loài này về thuần hoá phục vụ cho việc cầy bừa thì thật là tốt.> Ngươi có thể thuần hoá 100 con Tauros cho ta không ?"
-data_quest,41,infogift,Nhiệm vụ:|Giết 100 con trâu núi|Địa điểm:|Sơn Lâm|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Giết 100 con Tauros|Địa điểm:|Rừng Viridian|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp đội
+data_quest,41,content,"1Ta nghe nói một con Trâu núi khoẻ gấp 3 lần con trâu nhà,> 1giá mà mang được loài này về thuần hoá phục vụ cho việc cầy bừa thì thật là tốt.> Ngươi có thể thuần hoá 100 con Trâu núi cho ta không ?","1Ta nghe nói một con Tauros khoẻ gấp 3 lần con trâu nhà,> 1giá mà mang được loài này về thuần hoá phục vụ cho việc cầy bừa thì thật là tốt.> Cậu có thể thuần hoá 100 con Tauros cho ta không ?"
+data_quest,41,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,41,infogift,Nhiệm vụ:|Giết 100 con trâu núi|Địa điểm:|Sơn Lâm|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Hạ 100 con Tauros|Địa điểm:|Rừng Viridian|NPC nv:|Lucario|Phần thưởng:|5exp đội
+data_quest,41,infofinish,Nhiệm vụ hoàn thành|Về gặp Tả Phó Thống|Nhận thưởng,Nhiệm vụ hoàn thành|Về gặp Lucario|Nhận thưởng
 data_quest,42,name,Trừng trị sơn tặc,Trừng trị Scraggy
-data_quest,42,content,"1Bọn Sơn tặc dạo này rất hoành hành, >1chúng thường chặn đường cướp bóc người qua lại >1trên các con đường trọng yếu giữa các vùng.>1Đây đang là một vấn nạn cho mọi người,>1buộc phải dẹp yên.>1Theo nguồn tin ta có được>1sào huyệt của bọn chúng tại phía bắc Sơn Lâm,>1chúng có khoảng 100 tên.>Ngươi có sẵn sàng tiêu diệt hết bọn chúng cho ta không ?","1Bọn Scraggy dạo này rất hoành hành, >1chúng thường chặn đường cướp bóc người qua lại >1trên các con đường trọng yếu giữa các vùng.>1Đây đang là một vấn nạn cho mọi người,>1buộc phải dẹp yên.>1Theo nguồn tin ta có được>1sào huyệt của bọn chúng tại phía bắc Rừng Viridian,>1chúng có khoảng 100 tên.>Ngươi có sẵn sàng tiêu diệt hết bọn chúng cho ta không ?"
-data_quest,42,infogift,Nhiệm vụ:|Giết 100 tên sơn tặc|Địa điểm:|Sơn Lâm|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Giết 100 tên Scraggy|Địa điểm:|Rừng Viridian|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp đội
+data_quest,42,content,"1Bọn Sơn tặc dạo này rất hoành hành, >1chúng thường chặn đường cướp bóc người qua lại >1trên các con đường trọng yếu giữa các vùng.>1Đây đang là một vấn nạn cho mọi người,>1buộc phải dẹp yên.>1Theo nguồn tin ta có được>1sào huyệt của bọn chúng tại phía bắc Sơn Lâm,>1chúng có khoảng 100 tên.>Ngươi có sẵn sàng tiêu diệt hết bọn chúng cho ta không ?","1Bọn Scraggy dạo này rất hoành hành, >1chúng thường chặn đường cướp bóc người qua lại >1trên các con đường trọng yếu giữa các vùng.>1Đây đang là một vấn nạn cho mọi người,>1buộc phải dẹp yên.>1Theo nguồn tin ta có được>1sào huyệt của bọn chúng tại phía bắc Rừng Viridian,>1chúng có khoảng 100 tên.>Cậu có sẵn sàng tiêu diệt hết bọn chúng cho ta không ?"
+data_quest,42,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,42,infogift,Nhiệm vụ:|Giết 100 tên sơn tặc|Địa điểm:|Sơn Lâm|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Hạ 100 tên Scraggy|Địa điểm:|Rừng Viridian|NPC nv:|Lucario|Phần thưởng:|5exp đội
+data_quest,42,infofinish,Nhiệm vụ hoàn thành|Về gặp Tả Phó Thống|Nhận thưởng,Nhiệm vụ hoàn thành|Về gặp Lucario|Nhận thưởng
 data_quest,43,name,Trừng trị hải tặc,Trừng trị Crawdaunt
-data_quest,43,content,"1Vùng biển Lộc Trĩ rất hay xuất hiện Hải Tặc,>1chúng thường tấn công vào các tàu đánh cá của ngư dân>1cướp bóc không thương tiếc.>1Hãy diệt hết bọn chúng >1mang bình yên lại cho ngư dân lương thiện nhé.>1Ít nhất phải mang về đây cho ta 100 tên đấy>Ngươi có muốn làm việc này không ?","1Vùng biển New Bark rất hay xuất hiện Crawdaunt,>1chúng thường tấn công vào các tàu đánh cá của ngư dân>1cướp bóc không thương tiếc.>1Hãy diệt hết bọn chúng >1mang bình yên lại cho ngư dân lương thiện nhé.>1Ít nhất phải mang về đây cho ta 100 tên đấy>Ngươi có muốn làm việc này không ?"
-data_quest,43,infogift,Nhiệm vụ:|Giết 100 con hải tặc|Địa điểm:|Sơn Lâm|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Giết 100 con Crawdaunt|Địa điểm:|Rừng Viridian|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp đội
+data_quest,43,content,"1Vùng biển Lộc Trĩ rất hay xuất hiện Hải Tặc,>1chúng thường tấn công vào các tàu đánh cá của ngư dân>1cướp bóc không thương tiếc.>1Hãy diệt hết bọn chúng >1mang bình yên lại cho ngư dân lương thiện nhé.>1Ít nhất phải mang về đây cho ta 100 tên đấy>Ngươi có muốn làm việc này không ?","1Vùng biển New Bark rất hay xuất hiện Crawdaunt,>1chúng thường tấn công vào các tàu đánh cá của ngư dân>1cướp bóc không thương tiếc.>1Hãy diệt hết bọn chúng >1mang bình yên lại cho ngư dân lương thiện nhé.>1Ít nhất phải mang về đây cho ta 100 tên đấy>Cậu có muốn làm việc này không ?"
+data_quest,43,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,43,infogift,Nhiệm vụ:|Giết 100 con hải tặc|Địa điểm:|Sơn Lâm|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Hạ 100 con Crawdaunt|Địa điểm:|Rừng Viridian|NPC nv:|Lucario|Phần thưởng:|5exp đội
+data_quest,43,infofinish,Nhiệm vụ hoàn thành|Về gặp Tả Phó Thống|Nhận thưởng,Nhiệm vụ hoàn thành|Về gặp Lucario|Nhận thưởng
 data_quest,44,name,Tìm rết đỏ,Tìm Whirlipede
-data_quest,44,content,1Loài Rết đỏ kết hợp với một số thảo dược >1sẽ mang lại hiệu quả thần kỳ cho việc chữa trị nội thương. >1Ngươi hãy giúp ta tìm 100 con Rết đỏ >1để ngâm rượu thuốc nhé.>Liệu ngươi có giúp ta không ?,1Loài Whirlipede kết hợp với một số thảo dược >1sẽ mang lại hiệu quả thần kỳ cho việc chữa trị nội thương. >1Ngươi hãy giúp ta tìm 100 con Whirlipede >1để ngâm rượu thuốc nhé.>Liệu ngươi có giúp ta không ?
-data_quest,44,infogift,Nhiệm vụ:|Giết 100 con rết đỏ|Địa điểm:|Phong Châu|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Giết 100 con Whirlipede|Địa điểm:|Núi Mặt Trăng|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp đội
+data_quest,44,content,1Loài Rết đỏ kết hợp với một số thảo dược >1sẽ mang lại hiệu quả thần kỳ cho việc chữa trị nội thương. >1Ngươi hãy giúp ta tìm 100 con Rết đỏ >1để ngâm rượu thuốc nhé.>Liệu ngươi có giúp ta không ?,1Whirlipede ở Núi Mặt Trăng tiết ra một loại chất dịch>1kết hợp với thảo dược sẽ thành thuốc chữa thương rất hiệu quả.>1Cậu hãy giúp ta đánh bại 100 con Whirlipede để thu chất dịch đó nhé.>Liệu cậu có giúp ta không?
+data_quest,44,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,44,infogift,Nhiệm vụ:|Giết 100 con rết đỏ|Địa điểm:|Phong Châu|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Hạ 100 con Whirlipede|Địa điểm:|Núi Mặt Trăng|NPC nv:|Lucario|Phần thưởng:|5exp đội
+data_quest,44,infofinish,Nhiệm vụ hoàn thành|Về gặp Tả Phó Thống|Nhận thưởng,Nhiệm vụ hoàn thành|Về gặp Lucario|Nhận thưởng
 data_quest,45,name,Tìm hồng kê,Tìm Farfetch'd
-data_quest,45,content,"1Các loại áo giáp trân quý ngoài bảo thạch thì đều cần lông đuôi Hồng kê >1để điểm xuyết nhằm tăng thêm giá trị. >1Ngươi hãy giúp ta mang về đây 100 lông đuôi Hồng kê, >1tang đang rất cần. >1Cẩn thận kẻo bỏ mạng, >1loài này rất hung dữ chúng thường xuất hiện ở vùng Phong Châu>Ngươi có muốn làm việc này không ?","1Các loại áo giáp trân quý ngoài bảo thạch thì đều cần lông đuôi Farfetch'd >1để điểm xuyết nhằm tăng thêm giá trị. >1Ngươi hãy giúp ta mang về đây 100 lông đuôi Farfetch'd, >1tang đang rất cần. >1Cẩn thận kẻo bỏ mạng, >1loài này rất hung dữ chúng thường xuất hiện ở vùng Núi Mặt Trăng>Ngươi có muốn làm việc này không ?"
-data_quest,45,infogift,Nhiệm vụ:|Giết 100 con hồng kê|Địa điểm:|Phong Châu|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Giết 100 con Farfetch'd|Địa điểm:|Núi Mặt Trăng|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp đội
-data_quest,46,name,Tìm hổ đỏ nấu cao,Tìm Litleo nấu cao
-data_quest,46,content,"1Khi thời tiết thay đổi ta thường có những cơn đau khắp người,>1thật sự ta đã già rồi. >1Tương truyền cao Hổ đỏ có tác dụng giảm đau rất hữu hiệu. >1Ngươi hãy đi bắt 100 con Hổ đỏ để ta chế biến cao hổ nhé>Ngươi có muốn giúp ta không ?","1Khi thời tiết thay đổi ta thường có những cơn đau khắp người,>1thật sự ta đã già rồi. >1Tương truyền cao Litleo có tác dụng giảm đau rất hữu hiệu. >1Ngươi hãy đi bắt 100 con Litleo để ta chế biến cao hổ nhé>Ngươi có muốn giúp ta không ?"
-data_quest,46,infogift,Nhiệm vụ:|Giết 100 con hổ đỏ|Địa điểm:|Bình Lục|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Giết 100 con Litleo|Địa điểm:|Vùng Safari|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp đội
-data_quest,47,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 5000 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 5000 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?"
-data_quest,47,infogift,Nhiệm vụ:|Giết 5000 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|150000000 exp,Nhiệm vụ:|Giết 5000 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|150000000 exp
+data_quest,45,content,"1Các loại áo giáp trân quý ngoài bảo thạch thì đều cần lông đuôi Hồng kê >1để điểm xuyết nhằm tăng thêm giá trị. >1Ngươi hãy giúp ta mang về đây 100 lông đuôi Hồng kê, >1tang đang rất cần. >1Cẩn thận kẻo bỏ mạng, >1loài này rất hung dữ chúng thường xuất hiện ở vùng Phong Châu>Ngươi có muốn làm việc này không ?","1Những chiếc lông vũ Farfetch'd thay ra rất bền và đẹp,>1dùng để trang trí đồ phòng thủ thì không gì bằng.>1Cậu hãy giúp ta mang về 100 chiếc lông vũ Farfetch'd nhé.>1Cẩn thận, Farfetch'd ở Núi Mặt Trăng rất hung dữ.>Cậu có muốn làm việc này không?"
+data_quest,45,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,45,infogift,Nhiệm vụ:|Giết 100 con hồng kê|Địa điểm:|Phong Châu|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Hạ 100 con Farfetch'd|Địa điểm:|Núi Mặt Trăng|NPC nv:|Lucario|Phần thưởng:|5exp đội
+data_quest,45,infofinish,Nhiệm vụ hoàn thành|Về gặp Tả Phó Thống|Nhận thưởng,Nhiệm vụ hoàn thành|Về gặp Lucario|Nhận thưởng
+data_quest,46,name,Tìm hổ đỏ nấu cao,Hơi ấm của Litleo
+data_quest,46,content,"1Khi thời tiết thay đổi ta thường có những cơn đau khắp người,>1thật sự ta đã già rồi. >1Tương truyền cao Hổ đỏ có tác dụng giảm đau rất hữu hiệu. >1Ngươi hãy đi bắt 100 con Hổ đỏ để ta chế biến cao hổ nhé>Ngươi có muốn giúp ta không ?","1Khi trời trở lạnh ta thường đau nhức khắp người,>1thật sự ta đã già rồi.>1Nghe nói hơi ấm từ bờm lửa của Litleo giúp giảm đau rất tốt.>1Cậu hãy thắng 100 con Litleo để chúng chịu đến sưởi ấm cho ta nhé.>Cậu có muốn giúp ta không?"
+data_quest,46,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,46,infogift,Nhiệm vụ:|Giết 100 con hổ đỏ|Địa điểm:|Bình Lục|NPC nv:|Tả Phó Thống|Phần thưởng:|5exp bang hội,Nhiệm vụ:|Hạ 100 con Litleo|Địa điểm:|Vùng Safari|NPC nv:|Lucario|Phần thưởng:|5exp đội
+data_quest,46,infofinish,Nhiệm vụ hoàn thành|Về gặp Tả Phó Thống|Nhận thưởng,Nhiệm vụ hoàn thành|Về gặp Lucario|Nhận thưởng
+data_quest,47,name,Trừ khử yêu ma (dễ),Đẩy lùi Pokémon hung dữ (dễ)
+data_quest,47,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 5000 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Pokémon hung dữ xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta hạ 5000 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Cậu có muốn làm việc này không ?"
+data_quest,47,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,47,infogift,Nhiệm vụ:|Giết 5000 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|150000000 exp,Nhiệm vụ:|Hạ 5000 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|150000000 exp
 data_quest,47,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,48,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 6000 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 6000 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?"
-data_quest,48,infogift,Nhiệm vụ:|Giết 6000 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|200000000 exp,Nhiệm vụ:|Giết 6000 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|200000000 exp
+data_quest,48,name,Trừ khử yêu ma (vừa),Đẩy lùi Pokémon hung dữ (vừa)
+data_quest,48,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 6000 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Pokémon hung dữ xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta hạ 6000 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Cậu có muốn làm việc này không ?"
+data_quest,48,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,48,infogift,Nhiệm vụ:|Giết 6000 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|200000000 exp,Nhiệm vụ:|Hạ 6000 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|200000000 exp
 data_quest,48,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
-data_quest,49,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 7000 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 7000 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?"
-data_quest,49,infogift,Nhiệm vụ:|Giết 7000 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|250000000 exp,Nhiệm vụ:|Giết 7000 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|250000000 exp
+data_quest,49,name,Trừ khử yêu ma (khó),Đẩy lùi Pokémon hung dữ (khó)
+data_quest,49,content,"1Yêu ma quỷ quái xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta giết 7000 con quái (+-5Lv nhân vật) ta sẽ trọng thưởng>Ngươi có muốn làm việc này không ?","1Pokémon hung dữ xuất hiện khắp nơi, việc tiêu diệt không thể chậm trễ>1Nếu để chúng sinh sôi nãy nở thì sẽ thành họa cho muôn dân>0Dạ!>1Giúp ta hạ 7000 con quái (+-5Lv Pokémon) ta sẽ trọng thưởng>Cậu có muốn làm việc này không ?"
+data_quest,49,rescontent,"1Ngươi đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!","1Cậu đã lập công to rồi đấy, cố gắng phát huy nhé.>0Xin vâng!"
+data_quest,49,infogift,Nhiệm vụ:|Giết 7000 quái +-5Lv|NPC nv:|Trần Thống Lĩnh|Phần thưởng:|250000000 exp,Nhiệm vụ:|Hạ 7000 quái +-5Lv|NPC nv:|Heracross|Phần thưởng:|250000000 exp
 data_quest,49,infofinish,Nhiệm vụ hoàn thành|Quay về gặp Trần Thống Lĩnh|Để nhận thưởng,Nhiệm vụ hoàn thành|Quay về gặp Heracross|Để nhận thưởng
+data_item,264,name,Áo tiên nữ,Áo Lunala
+data_item,265,name,Áo Lạc long quân,Áo Rayquaza
+data_item,266,name,Áo thầy đồ,Áo giáo sư
+data_item,507,name,Áo yếm đào,Áo Bellossom
+data_item,508,name,Áo thạch sanh,Áo Lucario
 data_item,509,name,Nón Vủ dũng,Mũ cưỡi Poké
 data_item,510,name,Nón Băng tâm,Mũ cưỡi Great
 data_item,511,name,Nón Linh động,Mũ cưỡi Ultra
@@ -327,22 +522,770 @@ data_item,565,name,Hộ uyển Đại Lực,Vòng chân Level
 data_item,566,name,Hộ uyển Ngũ Vân,Vòng chân Moon
 data_item,567,name,Hộ uyển Hùng Bá,Vòng chân Dream
 data_item,568,name,Hộ uyển Vô Song,Vòng chân Master
+data_item,573,name,Áo Dracula nữ,Áo Darkrai nữ
+data_item,574,name,Áo Hằng Nga,Áo Clefairy
+data_item,575,name,Áo Dracula nam,Áo Darkrai nam
+data_item,576,name,Áo Chú cuội,Áo Clefable
+data_item,577,name,Đầu bí ngô,Đầu Pumpkaboo
+data_item,578,name,Nón phù thủy,Nón Mismagius
+data_item,611,name,Rương bảo tiêu,Rương giao hàng
+data_item,612,name,Rương cướp tiêu,Rương cướp hàng
+data_item,622,name,"Hồng hài nhi nam \ntăng 100% băng ,sét ,độc ,lửa lan","Áo Magby nam \ntăng 100% băng ,sét ,độc ,lửa lan"
+data_item,623,name,"Hồng hài nhi nữ \ntăng 100% băng ,sét ,độc ,lửa lan","Áo Magby nữ \ntăng 100% băng ,sét ,độc ,lửa lan"
+data_item,624,name,Đệ tử cấp 1(nam),Học trò cấp 1(nam)
+data_item,625,name,Đệ tử cấp 2(nam),Học trò cấp 2(nam)
+data_item,626,name,Đệ tử cấp 3(nam),Học trò cấp 3(nam)
+data_item,627,name,Đệ tử cấp 1(nữ),Học trò cấp 1(nữ)
+data_item,628,name,Đệ tử cấp 2(nữ),Học trò cấp 2(nữ)
+data_item,629,name,Đệ tử cấp 3(nữ),Học trò cấp 3(nữ)
+data_item,630,name,Hộ vệ lệnh 4x lv 1,Vé gọi Pokémon hỗ trợ 4x lv 1
+data_item,631,name,Hộ vệ lệnh 4x lv 2,Vé gọi Pokémon hỗ trợ 4x lv 2
+data_item,632,name,Hộ vệ lệnh 4x lv 3,Vé gọi Pokémon hỗ trợ 4x lv 3
+data_item,633,name,Hộ vệ lệnh 5x lv 1,Vé gọi Pokémon hỗ trợ 5x lv 1
+data_item,634,name,Hộ vệ lệnh 5x lv 2,Vé gọi Pokémon hỗ trợ 5x lv 2
+data_item,635,name,Hộ vệ lệnh 5x lv 3,Vé gọi Pokémon hỗ trợ 5x lv 3
+data_item,636,name,Hộ vệ lệnh 6x lv 1,Vé gọi Pokémon hỗ trợ 6x lv 1
+data_item,637,name,Hộ vệ lệnh 6x lv 2,Vé gọi Pokémon hỗ trợ 6x lv 2
+data_item,638,name,Hộ vệ lệnh 6x lv 3,Vé gọi Pokémon hỗ trợ 6x lv 3
+data_item,671,name,"Freddy\nTăng100% băng ,sét ,độc ,lửa lan","Áo Banette\nTăng100% băng ,sét ,độc ,lửa lan"
+data_item,672,name,"Jason\nTăng100% băng ,sét ,độc ,lửa lan","Áo Dusknoir\nTăng100% băng ,sét ,độc ,lửa lan"
+data_item,673,name,"Harry potter\nTăng100% băng ,sét ,độc ,lửa lan","Áo Alakazam\nTăng100% băng ,sét ,độc ,lửa lan"
+data_item,674,name,"Chúa tể Voldemort\nTăng100% băng ,sét ,độc ,lửa lan","Áo Giratina\nTăng100% băng ,sét ,độc ,lửa lan"
+data_item,676,name,Xa tiêu lệnh 2x,Vé xe giao hàng 2x
+data_item,677,name,Xa tiêu lệnh 3x,Vé xe giao hàng 3x
+data_item,678,name,Lệnh bài trấn yêu 5x,Vé Tháp Pokémon 5x
+data_item,679,name,Lệnh bài trấn yêu 6x,Vé Tháp Pokémon 6x
+data_item,680,name,Lệnh bài trấn yêu 7x,Vé Tháp Pokémon 7x
 data_item,714,name,Tụ hồn đan,Kẹo Poké
+data_item,720,name,Huyết linh thảo.\nTiến hoá trạng thái thú nuôi,Kẹo hiếm.\nTiến hoá trạng thái thú nuôi
+data_item,721,name,Huyết bồ đề\nThay đổi độ thông thạo của thú nuôi,Bạc hà tính cách\nThay đổi độ thông thạo của thú nuôi
+data_item,723,name,"Hắc Lang\n- Tăng 50% băng ,sét ,độc ,lửa lan","Áo Zoroark\n- Tăng 50% băng ,sét ,độc ,lửa lan"
+data_item,724,name,"Thần nữ\n- Tăng 50% băng ,sét ,độc ,lửa lan","Áo Gardevoir\n- Tăng 50% băng ,sét ,độc ,lửa lan"
+data_item,725,name,"Bạch Mi\n- Tăng 50% băng ,sét ,độc ,lửa lan","Áo Absol\n- Tăng 50% băng ,sét ,độc ,lửa lan"
+data_item,726,name,"Thuý Vũ Hồng Sam\n- Tăng 50% băng ,sét ,độc ,lửa lan","Áo Oricorio\n- Tăng 50% băng ,sét ,độc ,lửa lan"
+data_item,730,name,Đồng xu bạc\nDùng đổi Lân sư tử vĩnh viễn,Đồng xu bạc\nDùng đổi Suicune vĩnh viễn
+data_item,732,name,Đồng xu vàng\nDùng đổi pet Bạch thử vĩnh viễn,Đồng xu vàng\nDùng đổi pet Sandshrew vĩnh viễn
+data_item,733,name,Đồng xu đỏ\nDùng đổi lồng đèn hoa sen vĩnh viễn,Đồng xu đỏ\nDùng đổi Lotad vĩnh viễn
+data_item,736,name,"Sơn Tinh\nTăng 50% băng ,sét ,độc ,lửa lan","Áo Groudon\nTăng 50% băng ,sét ,độc ,lửa lan"
+data_item,737,name,"Thuỷ Tinh\nTăng 50% băng ,sét ,độc ,lửa lan","Áo Kyogre\nTăng 50% băng ,sét ,độc ,lửa lan"
+data_item,738,name,Rương bát bảo,Rương kho báu
 data_item,739,name,Tiên đơn\nHồi sinh sau khi chết,Thuốc hồi sinh\nHồi sinh sau khi chết
+data_item,740,name,"Tiểu long nữ\nTăng 50% băng ,sét ,độc ,lửa lan","Áo Latias\nTăng 50% băng ,sét ,độc ,lửa lan"
+data_item,741,name,"Dương Quá\nTăng 50% băng ,sét ,độc ,lửa lan","Áo Latios\nTăng 50% băng ,sét ,độc ,lửa lan"
+data_item,742,name,Phi phong Khổng Tước,Phi phong lông công
+data_item,743,name,"Áo Tiên Nữ\nTăng 50% băng ,sét ,độc ,lửa lan","Áo Lunala\nTăng 50% băng ,sét ,độc ,lửa lan"
+data_item,744,name,"Áo Tinh Quân\nTăng 50% băng ,sét ,độc ,lửa lan","Áo Solgaleo\nTăng 50% băng ,sét ,độc ,lửa lan"
+data_item,745,name,Mặt nạ bí ngô,Mặt nạ Pumpkaboo
+data_item,746,name,Mặt nạ ngạ quỷ,Mặt nạ Haunter
+data_item,747,name,Mặt nạ ngạ khuyển,Mặt nạ Houndoom
+data_item,748,name,Mặt nạ thi khiển,Mặt nạ Yamask
+data_item,749,name,Mặt nạ dạ xoa,Mặt nạ Gengar
+data_item,750,name,Phi Phong Huyền Vũ,Phi Phong Hoenn
+data_item,751,name,Phù phu thê,Vảy trái tim
+data_item,756,name,"Áo Lạc long quân\nTăng 50% băng ,sét ,độc ,lửa lan\nCòn 1hp khi bị quái cắn hoặc bị đồ sát","Áo Rayquaza\nTăng 50% băng ,sét ,độc ,lửa lan\nCòn 1hp khi bị quái cắn hoặc bị PK"
+data_item,757,name,"Áo Âu cơ\nTăng 50% băng ,sét ,độc ,lửa lan\nCòn 1hp khi bị quái cắn hoặc bị đồ sát","Áo Ho-Oh\nTăng 50% băng ,sét ,độc ,lửa lan\nCòn 1hp khi bị quái cắn hoặc bị PK"
+data_item,791,name,"Bóng đá nam\ntăng 100% băng ,sét ,độc ,lửa lan\nrơi thẻ khi giết quái và x2 tl rơi bóng bạc","Bóng đá nam\ntăng 100% băng ,sét ,độc ,lửa lan\nrơi thẻ khi hạ quái và x2 tl rơi bóng bạc"
+data_item,792,name,"Bóng đá nữ\ntăng 100% băng ,sét ,độc ,lửa lan\nrơi thẻ khi giết quái và x2 tl rơi bóng bạc","Bóng đá nữ\ntăng 100% băng ,sét ,độc ,lửa lan\nrơi thẻ khi hạ quái và x2 tl rơi bóng bạc"
+data_item,796,name,Nguyệt Linh Trượng,Gậy Ánh Trăng
+data_item,797,name,"Áo Nghê Thường\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Ám Khí:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp","Áo Milotic\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Đòn Đánh Lén:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp"
+data_item,798,name,"Áo Ngọc Nữ\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Ám Khí:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp","Áo Minun\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Đòn Đánh Lén:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp"
+data_item,799,name,"Áo Xích Cước\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Ám Khí:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp","Áo Blaziken\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Đòn Đánh Lén:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp"
+data_item,800,name,"Áo Kim Đồng\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Ám Khí:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp","Áo Plusle\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Đòn Đánh Lén:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp"
+data_item,801,name,"Áo Lôi Công\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Ám Khí:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp","Áo Zapdos\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Đòn Đánh Lén:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp"
+data_item,805,name,Bá Thiên Hổ Nam,Áo Raikou nam
+data_item,806,name,Bá Thiên Hổ Nữ,Áo Raikou nữ
+data_item,817,name,Đá ngũ hợp tinh khiết lv 1,Đá cầu vồng tinh khiết lv 1
+data_item,818,name,Đá ngũ hợp tinh khiết lv 2,Đá cầu vồng tinh khiết lv 2
+data_item,819,name,Đá ngũ hợp tinh khiết lv 3,Đá cầu vồng tinh khiết lv 3
+data_item,820,name,Đá ngũ hợp tinh khiết lv 4,Đá cầu vồng tinh khiết lv 4
+data_item,821,name,Đá ngũ hợp tinh khiết lv 5,Đá cầu vồng tinh khiết lv 5
+data_item,822,name,Đá ngũ hợp tinh khiết lv 6,Đá cầu vồng tinh khiết lv 6
+data_item,829,name,Ngọc huyền minh cấp 6,Ngọc hoàng hôn cấp 6
+data_item,830,name,Đá tiến giai,Đá thăng bậc
+data_item,831,name,Hỏa thạch cấp 1,Nham thạch cấp 1
+data_item,833,name,"Miêu mắt xanh-Tăng 100% băng ,sét ,độc ,lửa lan-Kháng 90% sát thương lan-Tỷ lệ xh:15%","Áo Glameow-Tăng 100% băng ,sét ,độc ,lửa lan-Kháng 90% sát thương lan-Tỷ lệ xh:15%"
+data_item,834,name,"Miêu quý tộc-Tăng 100% băng ,sét ,độc ,lửa lan-Kháng 90% sát thương lan-Tỷ lệ xh:15%","Áo Persian-Tăng 100% băng ,sét ,độc ,lửa lan-Kháng 90% sát thương lan-Tỷ lệ xh:15%"
+data_item,841,name,Áo sa tăng nam cấp 1,Áo Swampert nam cấp 1
+data_item,842,name,Áo sa tăng nam cấp 2,Áo Swampert nam cấp 2
+data_item,843,name,Áo sa tăng nữ cấp 1,Áo Swampert nữ cấp 1
+data_item,844,name,Áo sa tăng nữ cấp 2,Áo Swampert nữ cấp 2
+data_item,845,name,Áo bát giới nam cấp 2,Áo Emboar nam cấp 2
+data_item,846,name,Áo bát giới nữ cấp 1,Áo Emboar nữ cấp 1
+data_item,847,name,Áo bát giới nữ cấp 2,Áo Emboar nữ cấp 2
+data_item,848,name,Mảnh áo bát giới,Mảnh áo Emboar
+data_item,849,name,Mảnh quần bát giới,Mảnh quần Emboar
+data_item,850,name,Mảnh kim cang bát giới,Mảnh vòng tay Emboar
+data_item,851,name,Mảnh kim cô bát giới,Mảnh vòng đầu Emboar
+data_item,852,name,Mảnh giày bát giới,Mảnh giày Emboar
+data_item,853,name,Mảnh găng bát giới,Mảnh găng Emboar
+data_item,854,name,Mảnh áo sa tăng,Mảnh áo Swampert
+data_item,855,name,Mảnh quần sa tăng,Mảnh quần Swampert
+data_item,856,name,Mảnh kim cang sa tăng,Mảnh vòng tay Swampert
+data_item,857,name,Mảnh kim cô sa tăng,Mảnh vòng đầu Swampert
+data_item,858,name,Mảnh giày sa tăng,Mảnh giày Swampert
+data_item,859,name,Mảnh găng sa tăng,Mảnh găng Swampert
+data_item,860,name,Áo bát giới,Áo Emboar
+data_item,861,name,Quần bát giới,Quần Emboar
+data_item,862,name,Kim cang bát giới,Vòng tay Emboar
+data_item,863,name,Kim cô bát giới,Vòng đầu Emboar
+data_item,864,name,Giày bát giới,Giày Emboar
+data_item,865,name,Găng bát giới,Găng Emboar
+data_item,866,name,Áo sa tăng,Áo Swampert
+data_item,867,name,Quần sa tăng,Quần Swampert
+data_item,868,name,Kim cang sa tăng,Vòng tay Swampert
+data_item,869,name,Kim cô sa tăng,Vòng đầu Swampert
+data_item,870,name,Giày sa tăng,Giày Swampert
+data_item,871,name,Găng sa tăng,Găng Swampert
+data_item,872,name,Mặt nạ ông địa,Mặt nạ Snorlax
+data_item,874,name,Hộ vệ lân sư tử 4x lv 1,Pokémon hỗ trợ Suicune 4x lv 1
+data_item,875,name,Hộ vệ lân sư tử 4x lv 2,Pokémon hỗ trợ Suicune 4x lv 2
+data_item,876,name,Hộ vệ lân sư tử 4x lv 3,Pokémon hỗ trợ Suicune 4x lv 3
+data_item,877,name,Hộ vệ lân sư tử 5x lv 1,Pokémon hỗ trợ Suicune 5x lv 1
+data_item,878,name,Hộ vệ lân sư tử 5x lv 2,Pokémon hỗ trợ Suicune 5x lv 2
+data_item,879,name,Hộ vệ lân sư tử 5x lv 3,Pokémon hỗ trợ Suicune 5x lv 3
+data_item,880,name,Hộ vệ lân sư tử 6x lv 1,Pokémon hỗ trợ Suicune 6x lv 1
+data_item,881,name,Hộ vệ lân sư tử 6x lv 2,Pokémon hỗ trợ Suicune 6x lv 2
+data_item,882,name,Hộ vệ lân sư tử 6x lv 3,Pokémon hỗ trợ Suicune 6x lv 3
 data_item,883,name,Trứng hoả kỳ lân,Trứng Ponyta
 data_item,884,name,Trứng đương khang,Trứng Piloswine
 data_item,885,name,Trứng lân,Trứng Suicune
 data_item,886,name,Trứng bạch cốt,Trứng Spectrier
 data_item,887,name,Trứng rồng băng,Trứng Dragonite
-data_item,905,name,"Skin linh thú Phúc Thú\n[hệ Kim] - hợp Pháp sư\n- Cộng 2000 HP\n- Cộng 3000 MP\n- Nội tại (khi hợp hệ): khi bị Kiếm khách, Chiến binh hoặc Đấu sĩ đánh, chặn 30% sát thương trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây","Skin thú cưỡi Phúc Thú\n[hệ Thép] - hợp Dòng Eevee\n- Cộng 2000 HP\n- Cộng 3000 MP\n- Nội tại (khi hợp hệ): khi bị Dòng Charmander, Dòng Bulbasaur hoặc Dòng Squirtle đánh, chặn 30% sát thương trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây"
-data_item,906,name,"Skin linh thú Gấu Trúc\n[hệ Mộc] - hợp Chiến binh\n- Cộng 200 chính xác (khi hợp hệ)\n- Nội tại: khi bị Pháp sư hoặc Cung thủ đánh, phản sát thương +50% (tối đa 80%) trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây","Skin thú cưỡi Gấu Trúc\n[hệ Cỏ] - hợp Dòng Bulbasaur\n- Cộng 200 chính xác (khi hợp hệ)\n- Nội tại: khi bị Dòng Eevee hoặc Dòng Pichu đánh, phản sát thương +50% (tối đa 80%) trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây"
-data_item,907,name,"Skin linh thú Tiên Lộc\n[hệ Thủy] - hợp Cung thủ\n- Cộng 20% điểm tiềm năng (khi hợp hệ)\n- Nội tại: khi nhận sát thương, chặn 50% sát thương trong 5 giây. Tỉ lệ 10%, hồi chiêu 40 giây","Skin thú cưỡi Tiên Lộc\n[hệ Nước] - hợp Dòng Pichu\n- Cộng 20% điểm tiềm năng (khi hợp hệ)\n- Nội tại: khi nhận sát thương, chặn 50% sát thương trong 5 giây. Tỉ lệ 10%, hồi chiêu 40 giây"
-data_item,908,name,"Skin linh thú Xích Dương\n[hệ Hỏa] - hợp Đấu sĩ\n- 5% đòn đánh xuyên toàn bộ giáp (khi hợp hệ)\n- Nội tại: khi máu xuống dưới 30%, tăng 50% tấn công trong 3 giây, hồi chiêu 40 giây","Skin thú cưỡi Xích Dương\n[hệ Lửa] - hợp Dòng Squirtle\n- 5% đòn đánh xuyên toàn bộ giáp (khi hợp hệ)\n- Nội tại: khi máu xuống dưới 30%, tăng 50% tấn công trong 3 giây, hồi chiêu 40 giây"
-data_item,909,name,Skin linh thú Chiến Lang\n[hệ Thổ] - hợp Kiếm khách\n- Cộng 20% phòng thủ (khi hợp hệ)\n- Hấp thụ 15% sát thương,Skin thú cưỡi Chiến Lang\n[hệ Đất] - hợp Dòng Charmander\n- Cộng 20% phòng thủ (khi hợp hệ)\n- Hấp thụ 15% sát thương
-data_item,911,name,"Skin linh thú Kim Cang Long\n[hệ Kim]\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng","Skin thú cưỡi Kim Cang Long\n[hệ Thép]\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng"
+data_item,890,name,Quạt ba tiêu,Quạt lá Shiftry
+data_item,891,name,Gậy như ý,Gậy xương Marowak
+data_item,892,name,Lưỡng nhận đao,Lưỡi liềm Scyther
+data_item,898,name,Cánh Lam Băng,Cánh Articuno
+data_item,899,name,Cánh Bạch Linh,Cánh Lugia
+data_item,900,name,Cánh Xích Vũ,Cánh Moltres
+data_item,901,name,Cánh Hồng Vân,Cánh Togekiss
+data_item,902,name,Cánh Tử ảnh,Cánh Crobat
+data_item,903,name,Cải Trang Bát Giới,Cải Trang Emboar
+data_item,904,name,Cải Trang Sa Tăng,Cải Trang Swampert
+data_item,905,name,"Skin linh thú Phúc Thú\n[hệ Kim] - hợp Pháp sư\n- Cộng 2000 HP\n- Cộng 3000 MP\n- Nội tại (khi hợp hệ): khi bị Kiếm khách, Chiến binh hoặc Đấu sĩ đánh, chặn 30% sát thương trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây","Skin thú cưỡi Copperajah\n[hệ Thép] - hợp Dòng Eevee\n- Cộng 2000 HP\n- Cộng 3000 MP\n- Đặc tính (khi hợp hệ): khi bị Dòng Charmander, Dòng Bulbasaur hoặc Dòng Squirtle đánh, chặn 30% sát thương trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây"
+data_item,906,name,"Skin linh thú Gấu Trúc\n[hệ Mộc] - hợp Chiến binh\n- Cộng 200 chính xác (khi hợp hệ)\n- Nội tại: khi bị Pháp sư hoặc Cung thủ đánh, phản sát thương +50% (tối đa 80%) trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây","Skin thú cưỡi Pangoro\n[hệ Cỏ] - hợp Dòng Bulbasaur\n- Cộng 200 chính xác (khi hợp hệ)\n- Đặc tính: khi bị Dòng Eevee hoặc Dòng Pichu đánh, phản sát thương +50% (tối đa 80%) trong 3 giây. Tỉ lệ 15%, hồi chiêu 40 giây"
+data_item,907,name,"Skin linh thú Tiên Lộc\n[hệ Thủy] - hợp Cung thủ\n- Cộng 20% điểm tiềm năng (khi hợp hệ)\n- Nội tại: khi nhận sát thương, chặn 50% sát thương trong 5 giây. Tỉ lệ 10%, hồi chiêu 40 giây","Skin thú cưỡi Xerneas\n[hệ Nước] - hợp Dòng Pichu\n- Cộng 20% điểm tiềm năng (khi hợp hệ)\n- Đặc tính: khi nhận sát thương, chặn 50% sát thương trong 5 giây. Tỉ lệ 10%, hồi chiêu 40 giây"
+data_item,908,name,"Skin linh thú Xích Dương\n[hệ Hỏa] - hợp Đấu sĩ\n- 5% đòn đánh xuyên toàn bộ giáp (khi hợp hệ)\n- Nội tại: khi máu xuống dưới 30%, tăng 50% tấn công trong 3 giây, hồi chiêu 40 giây","Skin thú cưỡi Camerupt\n[hệ Lửa] - hợp Dòng Squirtle\n- 5% đòn đánh xuyên toàn bộ giáp (khi hợp hệ)\n- Đặc tính: khi máu xuống dưới 30%, tăng 50% tấn công trong 3 giây, hồi chiêu 40 giây"
+data_item,909,name,Skin linh thú Chiến Lang\n[hệ Thổ] - hợp Kiếm khách\n- Cộng 20% phòng thủ (khi hợp hệ)\n- Hấp thụ 15% sát thương,Skin thú cưỡi Lycanroc\n[hệ Đất] - hợp Dòng Charmander\n- Cộng 20% phòng thủ (khi hợp hệ)\n- Hấp thụ 15% sát thương
+data_item,911,name,"Skin linh thú Kim Cang Long\n[hệ Kim]\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng","Skin thú cưỡi Dialga\n[hệ Thép]\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng"
+data_item,950,name,Skin Phúc Thú (hệ Kim),Skin Copperajah (hệ Thép)
+data_item,951,name,Skin Gấu Trúc (hệ Mộc),Skin Pangoro (hệ Cỏ)
+data_item,952,name,Skin Tiên Lộc (hệ Thủy),Skin Xerneas (hệ Nước)
+data_item,953,name,Skin Xích Dương (hệ Hỏa),Skin Camerupt (hệ Lửa)
+data_item,954,name,Skin Chiến Lang (hệ Thổ),Skin Lycanroc (hệ Đất)
+data_attribute,1,name,Thủ vật,Phòng thủ
+data_attribute,6,name,Thủ ma,Phòng thủ đặc biệt
+data_attribute,29,name,Giảm st ma,Giảm st đặc biệt
+data_attribute,59,name,Tăng thủ ma,Tăng phòng thủ đặc biệt
+data_attribute,60,name,Tăng thủ vật,Tăng phòng thủ
+data_attribute,61,name,Bỏ qua tc ma,Bỏ qua tc đặc biệt
+data_attribute,63,name,Tăng thủ ma trang bị,Tăng phòng thủ đặc biệt trang bị
+data_attribute,64,name,Tăng thủ vật trang bị,Tăng phòng thủ trang bị
+data_attribute,119,name,Nguyệt ảnh gây st(10%-15%) tl xuất hiện,Ánh Trăng gây st(10%-15%) tl xuất hiện
+data_attribute,120,name,Kháng hoả,Kháng Lửa
+data_attribute,121,name,Kháng thuỷ,Kháng Nước
+data_attribute,122,name,Kháng mộc,Kháng Cỏ
+data_attribute,123,name,Kháng kim,Kháng Thép
+data_attribute,124,name,Kháng thổ,Kháng Đất
+data_attribute,145,name,Tăng % sát thương ma pháp,Tăng % sát thương đặc biệt
+data_attribute,146,name,Tăng % Xuyên thủ ma,Tăng % Xuyên phòng thủ đặc biệt
+data_attribute,147,name,Tăng % Xuyên thủ vật,Tăng % Xuyên phòng thủ
+data_attribute,152,name,Kháng Kim,Kháng Thép
+data_attribute,153,name,Kháng Mộc,Kháng Cỏ
+data_attribute,154,name,Kháng Thủy,Kháng Nước
+data_attribute,155,name,Kháng Hỏa,Kháng Lửa
+data_attribute,156,name,Kháng Thổ,Kháng Đất
+data_attribute,159,name,Tăng điểm sát thương ma pháp,Tăng điểm sát thương đặc biệt
 data_attribute,163,name,Sát thương hệ kim,Sát thương hệ Thép
 data_attribute,164,name,Sát thương hệ mộc,Sát thương hệ Cỏ
 data_attribute,165,name,Sát thương hệ thuỷ,Sát thương hệ Nước
 data_attribute,166,name,Sát thương hệ hoả,Sát thương hệ Lửa
 data_attribute,167,name,Sát thương hệ thổ,Sát thương hệ Đất
+data_attribute,179,name,Đá ngũ hợp,Đá cầu vồng
 data_attribute,201,name,Nội lực,Năng lượng
+tob_fruit,7,name,Quả ngũ hợp,Quả cầu vồng
+tob_fruit,7,decript,Quả ngũ hợp,Quả cầu vồng
+ChuPokemon,1,tu_dien,bang hội,đội
+ChuPokemon,2,tu_dien,bang chủ,đội trưởng
+ChuPokemon,3,tu_dien,chủ bang,đội trưởng
+ChuPokemon,4,tu_dien,phó bang,đội phó
+ChuPokemon,5,tu_dien,bang chúng,thành viên đội
+ChuPokemon,6,tu_dien,quý bang,quý đội
+ChuPokemon,7,tu_dien,trưởng lão,cố vấn
+ChuPokemon,8,tu_dien,bang,đội
+ChuPokemon,9,tu_dien,lãnh thổ,vùng
+ChuPokemon,10,tu_dien,thanh long,Kanto
+ChuPokemon,11,tu_dien,hắc hổ,Johto
+ChuPokemon,12,tu_dien,huyền vũ,Hoenn
+ChuPokemon,13,tu_dien,linh thú,thú cưỡi
+ChuPokemon,14,tu_dien,cưỡi linh thú,cưỡi thú
+ChuPokemon,15,tu_dien,nhân vật,Pokémon
+ChuPokemon,16,tu_dien,môn phái,dòng Pokémon
+ChuPokemon,17,tu_dien,kiếm khách,dòng Charmander
+ChuPokemon,18,tu_dien,kiếm sĩ,dòng Charmander
+ChuPokemon,19,tu_dien,kiếm sỹ,dòng Charmander
+ChuPokemon,20,tu_dien,chiến binh,dòng Bulbasaur
+ChuPokemon,21,tu_dien,pháp sư,dòng Eevee
+ChuPokemon,22,tu_dien,đấu sĩ,dòng Squirtle
+ChuPokemon,23,tu_dien,cung thủ,dòng Pichu
+ChuPokemon,24,tu_dien,hiệp khách,nhà thám hiểm
+ChuPokemon,25,tu_dien,đại hiệp,nhà huấn luyện
+ChuPokemon,26,tu_dien,thiếu hiệp,nhà huấn luyện trẻ
+ChuPokemon,27,tu_dien,nghĩa sỹ,nhà huấn luyện
+ChuPokemon,28,tu_dien,nghĩa sĩ,nhà huấn luyện
+ChuPokemon,29,tu_dien,làng nghĩa sỹ,làng huấn luyện
+ChuPokemon,30,tu_dien,làng nghĩa sĩ,làng huấn luyện
+ChuPokemon,31,tu_dien,cao thủ,nhà vô địch
+ChuPokemon,32,tu_dien,tiền bối,bậc đàn anh
+ChuPokemon,33,tu_dien,đệ tử,học trò
+ChuPokemon,34,tu_dien,sư phụ,thầy
+ChuPokemon,35,tu_dien,tại hạ,tôi
+ChuPokemon,36,tu_dien,huynh,anh
+ChuPokemon,37,tu_dien,tiểu đệ,em
+ChuPokemon,38,tu_dien,võ lâm chí tôn,nhà vô địch Pokémon
+ChuPokemon,39,tu_dien,giang hồ,thế giới Pokémon
+ChuPokemon,40,tu_dien,võ lâm,thế giới Pokémon
+ChuPokemon,41,tu_dien,kiếm hiệp,Pokémon
+ChuPokemon,42,tu_dien,bôn ba giang hồ,phiêu lưu khắp thế giới Pokémon
+ChuPokemon,43,tu_dien,bôn tẩu,phiêu lưu
+ChuPokemon,44,tu_dien,hành tẩu,phiêu lưu
+ChuPokemon,45,tu_dien,nội công,năng lượng
+ChuPokemon,46,tu_dien,nội lực,năng lượng
+ChuPokemon,47,tu_dien,võ công,chiêu thức
+ChuPokemon,48,tu_dien,bí kíp,đĩa chiêu
+ChuPokemon,49,tu_dien,thần binh,bảo vật
+ChuPokemon,50,tu_dien,hệ ngũ hành,hệ
+ChuPokemon,51,tu_dien,hệ Mộc,hệ Cỏ
+ChuPokemon,52,tu_dien,hệ Hỏa,hệ Lửa
+ChuPokemon,53,tu_dien,hệ Hoả,hệ Lửa
+ChuPokemon,54,tu_dien,hệ Thổ,hệ Đất
+ChuPokemon,55,tu_dien,hệ Kim,hệ Thép
+ChuPokemon,56,tu_dien,hệ Thủy,hệ Nước
+ChuPokemon,57,tu_dien,hệ Thuỷ,hệ Nước
+ChuPokemon,58,tu_dien,ngũ hành,hệ
+ChuPokemon,59,tu_dien,=Kiếm,Than lửa
+ChuPokemon,60,tu_dien,thanh kiếm,lưỡi năng lượng
+ChuPokemon,61,tu_dien,đại đao,hạt giống thần
+ChuPokemon,62,tu_dien,đao,hạt giống thần
+ChuPokemon,63,tu_dien,thần kiếm,thần hỏa
+ChuPokemon,64,tu_dien,xa phu,Pidgeot (Bay)
+ChuPokemon,65,tu_dien,thần hành phù,vé bay Pidgeot
+ChuPokemon,66,tu_dien,kim bài,huy hiệu lập đội
+ChuPokemon,67,tu_dien,lâm tướng quân,Blaziken
+ChuPokemon,68,tu_dien,tướng quân,chỉ huy
+ChuPokemon,69,tu_dien,trần thống lĩnh,Heracross
+ChuPokemon,70,tu_dien,kiếm sư,Farfetch'd
+ChuPokemon,71,tu_dien,dì út hp,Y tá Chansey
+ChuPokemon,72,tu_dien,dì út,Y tá Chansey
+ChuPokemon,73,tu_dien,bà tám tạp hóa,Kecleon tạp hoá
+ChuPokemon,74,tu_dien,bà tám tạp hoá,Kecleon tạp hoá
+ChuPokemon,75,tu_dien,bà tám,Kecleon
+ChuPokemon,76,tu_dien,hắc ngưu,Machamp
+ChuPokemon,77,tu_dien,thiết bì,Bronzong
+ChuPokemon,78,tu_dien,phú ông,Persian
+ChuPokemon,79,tu_dien,phú ồng,Persian
+ChuPokemon,80,tu_dien,anh bảy,Kangaskhan
+ChuPokemon,81,tu_dien,nhật thương nhân,Meowth thương nhân
+ChuPokemon,82,tu_dien,hỏa xích,Torkoal
+ChuPokemon,83,tu_dien,hoả xích,Torkoal
+ChuPokemon,84,tu_dien,ép ngọc,ép ngọc hệ
+ChuPokemon,86,tu_dien,ngươi,cậu
+ChuPokemon,87,tu_dien,giết,hạ
+ChuPokemon,88,tu_dien,yêu ma quỷ quái,Pokémon hung dữ
+ChuPokemon,89,tu_dien,quái vật yêu ma,Pokémon hung dữ
+ChuPokemon,90,tu_dien,yêu ma,Pokémon hung dữ
+ChuPokemon,91,tu_dien,cương thi,Pokémon ma
+ChuPokemon,92,tu_dien,nội thương,vết thương
+ChuPokemon,93,tu_dien,vận nội kình,dồn năng lượng
+ChuPokemon,94,tu_dien,vận kình lực,dồn sức
+ChuPokemon,95,tu_dien,nội kình,năng lượng
+ChuPokemon,96,tu_dien,kình lực,sức mạnh
+ChuPokemon,97,tu_dien,"đấng anh hào, ẩn sỹ",nhà huấn luyện tài ba
+ChuPokemon,98,tu_dien,anh hào,nhà huấn luyện tài ba
+ChuPokemon,99,tu_dien,ẩn sỹ,bậc thầy
+ChuPokemon,100,tu_dien,ẩn sĩ,bậc thầy
+ChuPokemon,101,tu_dien,anh em kết nghĩa,bạn thân
+ChuPokemon,102,tu_dien,hai minh,Xatu
+ChuPokemon,103,tu_dien,anh hùng xuất thiếu niên,tuổi trẻ tài cao
+ChuPokemon,104,tu_dien,phu quân,bạn đời
+ChuPokemon,105,tu_dien,phu nhân,bạn đời
+ChuPokemon,106,tu_dien,cường thân kiện thể,rèn luyện thể lực
+ChuPokemon,107,tu_dien,trừ gian diệt ác,dẹp loạn khu hoang dã
+ChuPokemon,108,tu_dien,hành hiệp trượng nghĩa,giúp đỡ mọi người
+ChuPokemon,109,tu_dien,trừ hại cho dân,bảo vệ dân làng
+ChuPokemon,110,tu_dien,trừ khử yêu ma,đẩy lùi Pokémon hung dữ
+ChuPokemon,111,tu_dien,việc nghĩa hiệp,việc tốt
+ChuPokemon,112,tu_dien,ngựa vận tiêu,Ponyta giao hàng
+ChuPokemon,113,tu_dien,vận tiêu,giao hàng
+ChuPokemon,114,tu_dien,chuyến tiêu,chuyến giao hàng
+ChuPokemon,115,tu_dien,trả tiêu,trả hàng
+ChuPokemon,116,tu_dien,nhận tiêu,nhận hàng
+ChuPokemon,117,tu_dien,đổi tiêu,đổi hàng
+ChuPokemon,118,tu_dien,màu tiêu,màu hàng
+ChuPokemon,119,tu_dien,nhận được tiêu,nhận được hàng
+ChuPokemon,120,tu_dien,đổi được tiêu,đổi được hàng
+ChuPokemon,121,tu_dien,=Tiêu của bạn,Hàng của bạn
+ChuPokemon,122,tu_dien,cướp tiêu,cướp hàng
+ChuPokemon,123,tu_dien,bảo tiêu,giao hàng
+ChuPokemon,124,tu_dien,xa tiêu lệnh,vé xe giao hàng
+ChuPokemon,125,tu_dien,đi tối đa 5 tiêu,giao tối đa 5 chuyến hàng
+ChuPokemon,126,tu_dien,lệnh bài trấn yêu,vé Tháp Pokémon
+ChuPokemon,127,tu_dien,trấn yêu trận,Tháp Pokémon
+ChuPokemon,128,tu_dien,trấn yêu,Tháp Pokémon
+ChuPokemon,129,tu_dien,long lệnh bài,thẻ Rayquaza
+ChuPokemon,130,tu_dien,lân lệnh bài,thẻ Suicune
+ChuPokemon,131,tu_dien,quy lệnh bài,thẻ Kyogre
+ChuPokemon,132,tu_dien,phụng lệnh bài,thẻ Ho-Oh
+ChuPokemon,133,tu_dien,lệnh bài,thẻ
+ChuPokemon,134,tu_dien,thẻ bài,thẻ
+ChuPokemon,135,tu_dien,hộ vệ lệnh,vé gọi Pokémon hỗ trợ
+ChuPokemon,136,tu_dien,lân sư tử hộ vệ,Suicune hỗ trợ
+ChuPokemon,137,tu_dien,hộ vệ,Pokémon hỗ trợ
+ChuPokemon,138,tu_dien,sở hữu thành trấn danh,sở hữu Cao nguyên Indigo
+ChuPokemon,139,tu_dien,thành trấn danh,Cao nguyên Indigo
+ChuPokemon,140,tu_dien,chiếm được thành,chiếm được Gym
+ChuPokemon,141,tu_dien,chiếm thành,chiếm Gym
+ChuPokemon,142,tu_dien,chiến thành,chiến Gym
+ChuPokemon,143,tu_dien,vào thành,vào Gym
+ChuPokemon,144,tu_dien,giữ thành,giữ Gym
+ChuPokemon,145,tu_dien,sở hữu thành,sở hữu Gym
+ChuPokemon,146,tu_dien,thành liên đấu,Gym liên đấu
+ChuPokemon,147,tu_dien,cổng thành,cổng Gym
+ChuPokemon,148,tu_dien,lôi đài,sàn đấu
+ChuPokemon,149,tu_dien,đức vua,nhà vô địch vùng
+ChuPokemon,150,tu_dien,nhà vua,Meowth
+ChuPokemon,151,tu_dien,vua,nhà vô địch vùng
+ChuPokemon,152,tu_dien,đại thần,cố vấn vùng
+ChuPokemon,153,tu_dien,bộ đầu,cảnh sát vùng
+ChuPokemon,154,tu_dien,phế chức,bãi nhiệm
+ChuPokemon,155,tu_dien,=Phế,Bãi nhiệm
+ChuPokemon,156,tu_dien,quốc gia,vùng
+ChuPokemon,157,tu_dien,quốc chiến,chiến vùng
+ChuPokemon,158,tu_dien,chiến trường chính tà,chiến trường liên vùng
+ChuPokemon,159,tu_dien,chính tà,liên vùng
+ChuPokemon,160,tu_dien,chiến trường tống kim,chiến trường liên vùng
+ChuPokemon,161,tu_dien,tống kim,liên vùng
+ChuPokemon,162,tu_dien,cừu nhân,đối thủ
+ChuPokemon,163,tu_dien,liên trảm,chuỗi thắng
+ChuPokemon,164,tu_dien,đồ sát,PK
+ChuPokemon,165,tu_dien,long trụ,trụ năng lượng
+ChuPokemon,166,tu_dien,thống lĩnh,chỉ huy
+ChuPokemon,167,tu_dien,thần khí,bảo vật huyền thoại
+ChuPokemon,168,tu_dien,quạt ba tiêu,Quạt lá Shiftry
+ChuPokemon,169,tu_dien,gậy như ý,Gậy xương Marowak
+ChuPokemon,170,tu_dien,lưỡng nhận đao,Lưỡi liềm Scyther
+ChuPokemon,171,tu_dien,hỏa thạch,nham thạch
+ChuPokemon,172,tu_dien,hoả thạch,nham thạch
+ChuPokemon,173,tu_dien,ngọc huyền minh,ngọc hoàng hôn
+ChuPokemon,174,tu_dien,huyền minh,hoàng hôn
+ChuPokemon,175,tu_dien,ngũ hợp,cầu vồng
+ChuPokemon,176,tu_dien,tiến giai,thăng bậc
+ChuPokemon,177,tu_dien,tụ hồn đan,Kẹo Poké
+ChuPokemon,178,tu_dien,tiên đan,cỏ hồi sinh
+ChuPokemon,179,tu_dien,tiên dược,kẹo kinh nghiệm
+ChuPokemon,180,tu_dien,tiềm năng đan,kẹo tiềm năng
+ChuPokemon,181,tu_dien,kỹ năng đan,kẹo kỹ năng
+ChuPokemon,182,tu_dien,huyết linh thảo,Kẹo hiếm
+ChuPokemon,183,tu_dien,huyết bồ đề,Bạc hà tính cách
+ChuPokemon,184,tu_dien,huyết bổ đề,Bạc hà tính cách
+ChuPokemon,185,tu_dien,nhân sâm,Berry Razz vàng
+ChuPokemon,186,tu_dien,được sâm,được Berry Razz vàng
+ChuPokemon,187,tu_dien,thổ địa phù,vé bay Pidgeot
+ChuPokemon,188,tu_dien,thiên lý mã,Ponyta
+ChuPokemon,189,tu_dien,xích thố,Ponyta lửa
+ChuPokemon,190,tu_dien,hỗn độn,X Phòng thủ
+ChuPokemon,191,tu_dien,hỗn nguyên,X Tấn công
+ChuPokemon,192,tu_dien,hoá công,Thuốc săn trùm
+ChuPokemon,193,tu_dien,hóa công,Thuốc săn trùm
+ChuPokemon,194,tu_dien,đoạn cốt,Ether chiến trường
+ChuPokemon,195,tu_dien,hoả dược,Bom lửa
+ChuPokemon,196,tu_dien,hỏa dược,Bom lửa
+ChuPokemon,197,tu_dien,rương bát bảo,rương kho báu
+ChuPokemon,198,tu_dien,bách niên giai lão,trái tim đồng
+ChuPokemon,199,tu_dien,vĩnh kết đồng tâm,trái tim bạc
+ChuPokemon,200,tu_dien,loan phụng hòa minh,trái tim vàng
+ChuPokemon,201,tu_dien,loan phụng hoà minh,trái tim vàng
+ChuPokemon,202,tu_dien,phù phu thê,Vảy trái tim
+ChuPokemon,203,tu_dien,nguyệt linh trượng,Gậy Ánh Trăng
+ChuPokemon,204,tu_dien,nguyệt ảnh,Ánh Trăng
+ChuPokemon,205,tu_dien,ám khí,đòn đánh lén
+ChuPokemon,206,tu_dien,phi phong khổng tước,phi phong lông công
+ChuPokemon,207,tu_dien,kim cang long,Dialga
+ChuPokemon,208,tu_dien,kim cang bát giới,vòng tay Emboar
+ChuPokemon,209,tu_dien,kim cang sa tăng,vòng tay Swampert
+ChuPokemon,210,tu_dien,kim cang,Thu mình
+ChuPokemon,211,tu_dien,kim cô,vòng đầu
+ChuPokemon,212,tu_dien,bát giới,Emboar
+ChuPokemon,213,tu_dien,sa tăng,Swampert
+ChuPokemon,214,tu_dien,tề thiên đại thánh,Infernape
+ChuPokemon,215,tu_dien,tề thiên,Infernape
+ChuPokemon,216,tu_dien,tứ bình,bộ Berry
+ChuPokemon,217,tu_dien,tứ nhạc,bộ Flute
+ChuPokemon,218,tu_dien,tứ khoái,bộ huy hiệu
+ChuPokemon,219,tu_dien,tứ linh,bộ huyền thoại
+ChuPokemon,220,tu_dien,mảnh mai,mảnh Berry Oran
+ChuPokemon,221,tu_dien,mảnh lan,mảnh Berry Pecha
+ChuPokemon,222,tu_dien,mảnh cúc,mảnh Berry Cheri
+ChuPokemon,223,tu_dien,mảnh trúc,mảnh Berry Rawst
+ChuPokemon,224,tu_dien,mảnh sáo,mảnh Blue Flute
+ChuPokemon,225,tu_dien,mảnh quạt,mảnh Red Flute
+ChuPokemon,226,tu_dien,mảnh sênh,mảnh Yellow Flute
+ChuPokemon,227,tu_dien,mảnh đàn,mảnh White Flute
+ChuPokemon,228,tu_dien,mảnh ngư,mảnh huy hiệu Cascade
+ChuPokemon,229,tu_dien,mảnh tiều,mảnh huy hiệu Rainbow
+ChuPokemon,230,tu_dien,mảnh canh,mảnh huy hiệu Boulder
+ChuPokemon,231,tu_dien,mảnh độc,mảnh huy hiệu Marsh
+ChuPokemon,232,tu_dien,mảnh long,mảnh Rayquaza
+ChuPokemon,233,tu_dien,mảnh lân,mảnh Suicune
+ChuPokemon,234,tu_dien,mảnh quy,mảnh Kyogre
+ChuPokemon,235,tu_dien,mảnh phụng,mảnh Ho-Oh
+ChuPokemon,236,tu_dien,tóc bờm ngựa,bờm Ponyta
+ChuPokemon,237,tu_dien,tóc tiên đồng,lông Clefairy
+ChuPokemon,238,tu_dien,tóc thư sinh,lông gọn gàng
+ChuPokemon,239,tu_dien,đầu đinh,lông đinh
+ChuPokemon,240,tu_dien,tóc,lông
+ChuPokemon,241,tu_dien,xuống ngựa,xuống thú cưỡi
+ChuPokemon,242,tu_dien,cưỡi ngựa,cưỡi thú
+ChuPokemon,243,tu_dien,=Ngựa sẽ bị mất,Thú cưỡi sẽ bị mất
+ChuPokemon,244,tu_dien,ngọc bội,phiến đá hệ
+ChuPokemon,245,tu_dien,dây chuyền,vòng cổ
+ChuPokemon,246,tu_dien,hộ uyển,vòng chân
+ChuPokemon,247,tu_dien,=từ Bút,từ Khăn lụa
+ChuPokemon,248,tu_dien,=từ Búa,từ Nước thần
+ChuPokemon,249,tu_dien,=từ Cung,từ Nam châm
+ChuPokemon,250,tu_dien,=Bút cấp độ,Khăn lụa cấp độ
+ChuPokemon,251,tu_dien,=Búa cấp độ,Nước thần cấp độ
+ChuPokemon,252,tu_dien,=Cung cấp độ,Nam châm cấp độ
+ChuPokemon,253,tu_dien,đũa thần,Khăn lụa
+ChuPokemon,254,tu_dien,đấu sỹ,dòng Squirtle
+ChuPokemon,255,tu_dien,thủ ma pháp,phòng thủ đặc biệt
+ChuPokemon,256,tu_dien,thủ vật lý,phòng thủ
+ChuPokemon,257,tu_dien,thủ ma,phòng thủ đặc biệt
+ChuPokemon,258,tu_dien,thủ vật,phòng thủ
+ChuPokemon,259,tu_dien,ma pháp,đặc biệt
+ChuPokemon,260,tu_dien,st ma,st đặc biệt
+ChuPokemon,261,tu_dien,tc ma,tc đặc biệt
+ChuPokemon,262,tu_dien,pt ma,PT đặc biệt
+ChuPokemon,263,tu_dien,kháng hỏa,kháng Lửa
+ChuPokemon,264,tu_dien,kháng hoả,kháng Lửa
+ChuPokemon,265,tu_dien,kháng thủy,kháng Nước
+ChuPokemon,266,tu_dien,kháng thuỷ,kháng Nước
+ChuPokemon,267,tu_dien,kháng mộc,kháng Cỏ
+ChuPokemon,268,tu_dien,kháng kim,kháng Thép
+ChuPokemon,269,tu_dien,kháng thổ,kháng Đất
+ChuPokemon,270,tu_dien,nhất phẩm,hạng 1
+ChuPokemon,271,tu_dien,nhị phẩm,hạng 2
+ChuPokemon,272,tu_dien,tam phẩm,hạng 3
+ChuPokemon,273,tu_dien,tứ phẩm,hạng 4
+ChuPokemon,274,tu_dien,ngũ phẩm,hạng 5
+ChuPokemon,275,tu_dien,phá triền,Bảo vệ
+ChuPokemon,276,tu_dien,đoạt mệnh,Dồn sức
+ChuPokemon,277,tu_dien,thiên nhãn,Phân thân
+ChuPokemon,278,tu_dien,tiên khí,Màn bảo hộ
+ChuPokemon,279,tu_dien,càn khôn,Màn ánh sáng
+ChuPokemon,280,tu_dien,cường thân,Tĩnh tâm
+ChuPokemon,281,tu_dien,hộ thể,Giáp sắt
+ChuPokemon,282,tu_dien,thuấn ảnh,Hồi năng lượng
+ChuPokemon,283,tu_dien,phí huyết,Rễ bám
+ChuPokemon,284,tu_dien,yểm bùa,nguyền rủa
+ChuPokemon,285,tu_dien,nội tại,đặc tính
+ChuPokemon,286,tu_dien,bạch cốt mã,Spectrier
+ChuPokemon,287,tu_dien,bạch cốt,Spectrier
+ChuPokemon,288,tu_dien,đương khang băng giá,Mamoswine
+ChuPokemon,289,tu_dien,đương khang,Piloswine
+ChuPokemon,290,tu_dien,đường khang,Piloswine
+ChuPokemon,291,tu_dien,đuong khang,Piloswine
+ChuPokemon,292,tu_dien,đại bạch thử,Wooloo
+ChuPokemon,293,tu_dien,bạch thử,Sandshrew
+ChuPokemon,294,tu_dien,mãnh hổ,Arcanine
+ChuPokemon,295,tu_dien,sói xám,Mightyena
+ChuPokemon,296,tu_dien,tiên hạc,Pidgeot
+ChuPokemon,297,tu_dien,bạch mã,Rapidash
+ChuPokemon,298,tu_dien,tuần lộc,Stantler
+ChuPokemon,299,tu_dien,rồng băng,Dragonite
+ChuPokemon,300,tu_dien,sư tử băng,Glastrier
+ChuPokemon,301,tu_dien,nhận được sư tử,nhận được Entei
+ChuPokemon,302,tu_dien,phượng hoàng lửa,Moltres
+ChuPokemon,303,tu_dien,phượng hoàng băng,Articuno
+ChuPokemon,304,tu_dien,phượng hoàng đa sắc,Ho-Oh
+ChuPokemon,305,tu_dien,phượng hoàng mộc,Tropius
+ChuPokemon,306,tu_dien,phượng hoàng kim,Skarmory
+ChuPokemon,307,tu_dien,phượng hoàng thổ,Flygon
+ChuPokemon,308,tu_dien,phượng hoàng,Moltres
+ChuPokemon,309,tu_dien,hoả kỳ lân,Ponyta
+ChuPokemon,310,tu_dien,hỏa kỳ lân,Ponyta
+ChuPokemon,311,tu_dien,hoả kì lân,Ponyta
+ChuPokemon,312,tu_dien,hỏa kì lân,Ponyta
+ChuPokemon,313,tu_dien,hoả kì nhông,Ponyta
+ChuPokemon,314,tu_dien,hắc thỏ,Lopunny
+ChuPokemon,315,tu_dien,hắc thố,Lopunny
+ChuPokemon,316,tu_dien,lồng đèn lân sư tử,Litleo
+ChuPokemon,317,tu_dien,lân sư tử,Suicune
+ChuPokemon,318,tu_dien,lân sư,Suicune
+ChuPokemon,319,tu_dien,pet lân,pet Suicune
+ChuPokemon,320,tu_dien,hình lân,hình Suicune
+ChuPokemon,321,tu_dien,lân cấp,Suicune cấp
+ChuPokemon,322,tu_dien,lồng đèn xếp,Litwick
+ChuPokemon,323,tu_dien,thanh tước,Taillow
+ChuPokemon,324,tu_dien,cánh cam,Ledyba
+ChuPokemon,325,tu_dien,dơi quỷ,Zubat
+ChuPokemon,326,tu_dien,tim bay,Luvdisc
+ChuPokemon,327,tu_dien,lồng đèn hoa sen,Lotad
+ChuPokemon,328,tu_dien,=Lồng đèn ngôi sao,Staryu
+ChuPokemon,329,tu_dien,=lồng đèn ngôi sao,Staryu
+ChuPokemon,330,tu_dien,=Lồng đèn Ngôi sao,Starmie
+ChuPokemon,331,tu_dien,pet hoa tuyết,pet Cryogonal
+ChuPokemon,332,tu_dien,pet giáp ngọ,pet Ponyta
+ChuPokemon,333,tu_dien,pet armadillo băng,pet Sandshrew
+ChuPokemon,334,tu_dien,pet armadillo sét,pet Pachirisu
+ChuPokemon,335,tu_dien,pet armadillo độc,pet Nidoran
+ChuPokemon,336,tu_dien,lồng đèn cá chép,Magikarp
+ChuPokemon,337,tu_dien,chim cánh cụt,Piplup
+ChuPokemon,338,tu_dien,pet ất mùi,pet Mareep
+ChuPokemon,339,tu_dien,ngôi sao băng,Jirachi
+ChuPokemon,340,tu_dien,lồng đèn trăng khuyết,Lunatone
+ChuPokemon,341,tu_dien,lồng đèn rồng xanh,Articuno
+ChuPokemon,342,tu_dien,khỉ vàng,Aipom
+ChuPokemon,343,tu_dien,thỏ bay,Mareep
+ChuPokemon,344,tu_dien,trứng cú,trứng Hoothoot
+ChuPokemon,345,tu_dien,trứng rồng,trứng Dratini
+ChuPokemon,346,tu_dien,trứng yêu tinh,trứng Cleffa
+ChuPokemon,347,tu_dien,trứng dơi,trứng Zubat
+ChuPokemon,348,tu_dien,trứng đại bàng,trứng Rufflet
+ChuPokemon,349,tu_dien,lạc long quân,Rayquaza
+ChuPokemon,350,tu_dien,âu cơ,Ho-Oh
+ChuPokemon,351,tu_dien,thầy đồ,giáo sư
+ChuPokemon,352,tu_dien,tiên nữ,Lunala
+ChuPokemon,353,tu_dien,tinh quân,Solgaleo
+ChuPokemon,354,tu_dien,áo yếm đào,áo Bellossom
+ChuPokemon,355,tu_dien,áo yếm,áo Bellossom
+ChuPokemon,356,tu_dien,yếm đào,Bellossom
+ChuPokemon,357,tu_dien,thạch sanh,Lucario
+ChuPokemon,358,tu_dien,dracula,Darkrai
+ChuPokemon,359,tu_dien,hằng nga,Clefairy
+ChuPokemon,360,tu_dien,chú cuội,Clefable
+ChuPokemon,361,tu_dien,đầu bí ngô,đầu Pumpkaboo
+ChuPokemon,362,tu_dien,mặt nạ bí ngô,mặt nạ Pumpkaboo
+ChuPokemon,363,tu_dien,nón phù thủy,nón Mismagius
+ChuPokemon,364,tu_dien,nón phù thuỷ,nón Mismagius
+ChuPokemon,365,tu_dien,phù thủy dễ thương,Gardevoir
+ChuPokemon,366,tu_dien,phù thuỷ dễ thương,Gardevoir
+ChuPokemon,367,tu_dien,hồng hài nhi,Magby
+ChuPokemon,368,tu_dien,freddy,Banette
+ChuPokemon,369,tu_dien,jason,Dusknoir
+ChuPokemon,370,tu_dien,harry potter,Alakazam
+ChuPokemon,371,tu_dien,chúa tể voldemort,Giratina
+ChuPokemon,372,tu_dien,chúa tể voldermort,Giratina
+ChuPokemon,373,tu_dien,voldemort,Giratina
+ChuPokemon,374,tu_dien,voldermort,Giratina
+ChuPokemon,375,tu_dien,hắc lang,Zoroark
+ChuPokemon,376,tu_dien,bạch mi,Absol
+ChuPokemon,377,tu_dien,thuý vũ hồng sam,Oricorio
+ChuPokemon,378,tu_dien,thúy vũ hồng sam,Oricorio
+ChuPokemon,379,tu_dien,thần nữ,Gardevoir
+ChuPokemon,380,tu_dien,sơn tinh vương,Groudon
+ChuPokemon,381,tu_dien,sơn tinh,Groudon
+ChuPokemon,382,tu_dien,=Thuỷ Tinh,Kyogre
+ChuPokemon,383,tu_dien,=Thủy Tinh,Kyogre
+ChuPokemon,384,tu_dien,mị nương công chúa,Diancie
+ChuPokemon,385,tu_dien,tiểu long nữ,Latias
+ChuPokemon,386,tu_dien,dương quá,Latios
+ChuPokemon,387,tu_dien,ngưu lang,Volbeat
+ChuPokemon,388,tu_dien,chức nữ,Illumise
+ChuPokemon,389,tu_dien,nghê thường,Milotic
+ChuPokemon,390,tu_dien,ngọc nữ,Minun
+ChuPokemon,391,tu_dien,kim đồng,Plusle
+ChuPokemon,392,tu_dien,xích cước,Blaziken
+ChuPokemon,393,tu_dien,lôi công,Zapdos
+ChuPokemon,394,tu_dien,bá thiên hổ,Raikou
+ChuPokemon,395,tu_dien,miêu mắt xanh,Glameow
+ChuPokemon,396,tu_dien,miêu quý tộc,Persian
+ChuPokemon,397,tu_dien,ông địa,Snorlax
+ChuPokemon,398,tu_dien,ngạ quỷ,Haunter
+ChuPokemon,399,tu_dien,ngạ khuyển,Houndoom
+ChuPokemon,400,tu_dien,thi khiển,Yamask
+ChuPokemon,401,tu_dien,dạ xoa,Gengar
+ChuPokemon,402,tu_dien,phúc thú,Copperajah
+ChuPokemon,403,tu_dien,gấu trúc,Pangoro
+ChuPokemon,404,tu_dien,tiên lộc,Xerneas
+ChuPokemon,405,tu_dien,xích dương,Camerupt
+ChuPokemon,406,tu_dien,chiến lang,Lycanroc
+ChuPokemon,407,tu_dien,thần tài,Meowth
+ChuPokemon,408,tu_dien,mẹ hiền,Gardevoir
+ChuPokemon,409,tu_dien,cây thông noel,Abomasnow
+ChuPokemon,410,tu_dien,ông già noel,Delibird
+ChuPokemon,411,tu_dien,cây lì xì,Sudowoodo
+ChuPokemon,412,tu_dien,tả thống lĩnh,Lucario
+ChuPokemon,413,tu_dien,hữu thống lĩnh,Lucario
+ChuPokemon,414,tu_dien,tả phó thống,Lucario
+ChuPokemon,415,tu_dien,nhất giáp,Golem 1
+ChuPokemon,416,tu_dien,nhị giáp,Golem 2
+ChuPokemon,417,tu_dien,tam giáp,Golem 3
+ChuPokemon,418,tu_dien,tứ giáp,Golem 4
+ChuPokemon,419,tu_dien,ngũ giáp,Golem 5
+ChuPokemon,420,tu_dien,nhất ngưu,Tauros 1
+ChuPokemon,421,tu_dien,nhị ngưu,Tauros 2
+ChuPokemon,422,tu_dien,tam ngưu,Tauros 3
+ChuPokemon,423,tu_dien,tứ ngưu,Tauros 4
+ChuPokemon,424,tu_dien,ngũ ngưu,Tauros 5
+ChuPokemon,425,tu_dien,bảo ngọc,Sableye
+ChuPokemon,426,tu_dien,giáp sư,Bronzong
+ChuPokemon,427,tu_dien,bội châu,Persian
+ChuPokemon,428,tu_dien,lộc phát,Meowth
+ChuPokemon,429,tu_dien,kim hoa,Kecleon
+ChuPokemon,430,tu_dien,lính gác,Arcanine gác cổng
+ChuPokemon,431,tu_dien,lão địa chủ,Persian
+ChuPokemon,432,tu_dien,địa chủ,Persian
+ChuPokemon,433,tu_dien,ông nội,ông Snorlax
+ChuPokemon,434,tu_dien,thuồng luồng,Gyarados
+ChuPokemon,435,tu_dien,đại bàng đã xuất hiện,Zapdos đã xuất hiện
+ChuPokemon,436,tu_dien,boss người tuyết,boss Abomasnow
+ChuPokemon,437,tu_dien,duy ngã độc tôn,Tứ Thiên Vương
+ChuPokemon,438,tu_dien,thiên hạ chí tôn,Nhà Vô Địch Mọi Vùng
+ChuPokemon,439,tu_dien,chí tôn,tối thượng
+ChuPokemon,440,tu_dien,hảo hán,người dũng cảm
+ChuPokemon,441,tu_dien,tông sư,bậc thầy Pokémon
+ChuPokemon,442,tu_dien,nhất dương tiễn,Tia Mặt Trời
+ChuPokemon,443,tu_dien,tuyệt thế vô song,có một không hai
+ChuPokemon,444,tu_dien,chiến thần bất diệt,Huyền Thoại Bất Diệt
+ChuPokemon,445,tu_dien,long tiễn chấn thiên,Rayquaza Chấn Thiên
+ChuPokemon,446,tu_dien,nghịch thiên nhi hành,Kẻ Thách Thức Định Mệnh
+ChuPokemon,447,tu_dien,khai thiên thần kiếm,Gươm Aegislash
+ChuPokemon,448,tu_dien,vô địch thiên hạ,Vô Địch Mọi Vùng
+ChuPokemon,449,tu_dien,độc bá nhất phương,Bá Chủ Một Vùng
+ChuPokemon,450,tu_dien,tung hoành thiên hạ,Tung Hoành Mọi Vùng
+ChuPokemon,451,tu_dien,tuyệt đỉnh cao thủ,Tinh Anh Tuyệt Đỉnh
+ChuPokemon,452,tu_dien,nhất tiễn phá thiên,Tia Chớp Phá Trời
+ChuPokemon,453,tu_dien,chân mên thiên tử,Người Được Chọn
+ChuPokemon,454,tu_dien,chân mệnh thiên tử,Người Được Chọn
+ChuPokemon,455,tu_dien,cửu huyền thất tổ,Truyền Nhân Huyền Thoại
+ChuPokemon,456,tu_dien,hủy thiên diệt địa,Sức Mạnh Hủy Diệt
+ChuPokemon,457,tu_dien,quy ân giang hồ,Lão Làng Pokémon
+ChuPokemon,458,tu_dien,thiên hạ đệ nhất,Số Một Mọi Vùng
+ChuPokemon,459,tu_dien,thiên hạ vô song,Vô Song Mọi Vùng
+ChuPokemon,460,tu_dien,quân lâm thiên hạ,Chúa Tể Mọi Vùng
+ChuPokemon,461,tu_dien,thiên hạ,mọi vùng
+ChuPokemon,462,tu_dien,đệ nhất,số một
+ChuPokemon,463,tu_dien,đông sơn lâm,Đông Rừng Viridian
+ChuPokemon,464,tu_dien,đông sơn nam,Đông Pewter
+ChuPokemon,465,tu_dien,sơn lâm,Rừng Viridian
+ChuPokemon,466,tu_dien,đông sơn,Saffron
+ChuPokemon,467,tu_dien,sơn nam,Pewter
+ChuPokemon,468,tu_dien,dao châu,Pallet
+ChuPokemon,469,tu_dien,tiên du,Viridian
+ChuPokemon,470,tu_dien,kỳ bố,Cerulean
+ChuPokemon,471,tu_dien,phù liệt,Vermilion
+ChuPokemon,472,tu_dien,hàm tử,Lavender
+ChuPokemon,473,tu_dien,thạch giang,Celadon
+ChuPokemon,474,tu_dien,tử quan,Fuchsia
+ChuPokemon,475,tu_dien,trường giang,Cinnabar
+ChuPokemon,476,tu_dien,phong châu,Núi Mặt Trăng
+ChuPokemon,477,tu_dien,bình lục,Vùng Safari
+ChuPokemon,478,tu_dien,lộc trĩ,New Bark
+ChuPokemon,479,tu_dien,bảo thái,Cherrygrove
+ChuPokemon,480,tu_dien,hồi hồ,Hồ Phẫn Nộ
+ChuPokemon,481,tu_dien,siêu loại,Violet
+ChuPokemon,482,tu_dien,cẩm khê,Azalea
+ChuPokemon,483,tu_dien,bạch hạc,Goldenrod
+ChuPokemon,484,tu_dien,tế giang,Ecruteak
+ChuPokemon,485,tu_dien,đỗ đông,Olivine
+ChuPokemon,486,tu_dien,bình kiều,Mahogany
+ChuPokemon,487,tu_dien,dương đông,Blackthorn
+ChuPokemon,488,tu_dien,lâm tây,Cianwood
+ChuPokemon,489,tu_dien,chiến hạm,Tàu S.S. Anne
+ChuPokemon,490,tu_dien,hang mãng xà,Hang Serperior
+ChuPokemon,491,tu_dien,hang thằn lằn,Hang Salamence
+ChuPokemon,492,tu_dien,hang đại bàng,Tổ Zapdos
+ChuPokemon,493,tu_dien,cánh rừng đông,Rừng Ilex
+ChuPokemon,494,tu_dien,rừng già,Rừng Cổ
+ChuPokemon,495,tu_dien,linh thú bạch mã,thú cưỡi Rapidash
+ChuPokemon,496,tu_dien,trứng bạch mã,trứng Rapidash
+ChuPokemon,497,tu_dien,linh thú mãnh hổ,thú cưỡi Arcanine
+ChuPokemon,498,tu_dien,trứng mãnh hổ,trứng Arcanine
+ChuPokemon,499,tu_dien,linh thú hắc ngưu,thú cưỡi Tauros
+ChuPokemon,500,tu_dien,trứng hắc ngưu,trứng Tauros
+ChuPokemon,501,tu_dien,linh thú sói xám,thú cưỡi Mightyena
+ChuPokemon,502,tu_dien,trứng sói xám,trứng Mightyena
+ChuPokemon,503,tu_dien,linh thú tiên hạc,thú cưỡi Pidgeot
+ChuPokemon,504,tu_dien,trứng tiên hạc,trứng Pidgeot
+ChuPokemon,505,tu_dien,linh thú phượng hoàng lửa,thú cưỡi Moltres
+ChuPokemon,506,tu_dien,trứng phượng hoàng lửa,trứng Moltres
+ChuPokemon,507,tu_dien,linh thú phượng hoàng băng,thú cưỡi Articuno
+ChuPokemon,508,tu_dien,trứng phượng hoàng băng,trứng Articuno
+ChuPokemon,509,tu_dien,linh thú phượng hoàng đa sắc,thú cưỡi Ho-Oh
+ChuPokemon,510,tu_dien,trứng phượng hoàng đa sắc,trứng Ho-Oh
+ChuPokemon,511,tu_dien,linh thú phượng hoàng mộc,thú cưỡi Tropius
+ChuPokemon,512,tu_dien,trứng phượng hoàng mộc,trứng Tropius
+ChuPokemon,513,tu_dien,linh thú phượng hoàng kim,thú cưỡi Skarmory
+ChuPokemon,514,tu_dien,trứng phượng hoàng kim,trứng Skarmory
+ChuPokemon,515,tu_dien,linh thú phượng hoàng thổ,thú cưỡi Flygon
+ChuPokemon,516,tu_dien,trứng phượng hoàng thổ,trứng Flygon
+ChuPokemon,517,tu_dien,linh thú phượng hoàng,thú cưỡi Moltres
+ChuPokemon,518,tu_dien,trứng phượng hoàng,trứng Moltres
+ChuPokemon,519,tu_dien,linh thú tuần lộc,thú cưỡi Stantler
+ChuPokemon,520,tu_dien,trứng tuần lộc,trứng Stantler
+ChuPokemon,521,tu_dien,linh thú đại bạch thử,thú cưỡi Wooloo
+ChuPokemon,522,tu_dien,trứng đại bạch thử,trứng Wooloo
+ChuPokemon,523,tu_dien,linh thú bạch thử,thú cưỡi Wooloo
+ChuPokemon,524,tu_dien,trứng bạch thử,trứng Wooloo
+ChuPokemon,525,tu_dien,linh thú hắc thỏ,thú cưỡi Lopunny
+ChuPokemon,526,tu_dien,trứng hắc thỏ,trứng Lopunny
+ChuPokemon,527,tu_dien,linh thú lân sư tử,thú cưỡi Suicune
+ChuPokemon,528,tu_dien,trứng lân sư tử,trứng Suicune
+ChuPokemon,529,tu_dien,linh thú lân,thú cưỡi Suicune
+ChuPokemon,530,tu_dien,trứng lân,trứng Suicune
+ChuPokemon,531,tu_dien,linh thú đương khang băng giá,thú cưỡi Mamoswine
+ChuPokemon,532,tu_dien,trứng đương khang băng giá,trứng Mamoswine
+ChuPokemon,533,tu_dien,linh thú đương khang,thú cưỡi Piloswine
+ChuPokemon,534,tu_dien,trứng đương khang,trứng Piloswine
+ChuPokemon,535,tu_dien,linh thú bạch cốt mã,thú cưỡi Spectrier
+ChuPokemon,536,tu_dien,trứng bạch cốt mã,trứng Spectrier
+ChuPokemon,537,tu_dien,linh thú bạch cốt,thú cưỡi Spectrier
+ChuPokemon,538,tu_dien,trứng bạch cốt,trứng Spectrier
+ChuPokemon,539,tu_dien,linh thú rồng băng,thú cưỡi Dragonite
+ChuPokemon,540,tu_dien,trứng rồng băng,trứng Dragonite
+ChuPokemon,541,tu_dien,linh thú sư tử băng,thú cưỡi Glastrier
+ChuPokemon,542,tu_dien,trứng sư tử băng,trứng Glastrier
+ChuPokemon,543,tu_dien,linh thú sư tử,thú cưỡi Entei
+ChuPokemon,544,tu_dien,trứng sư tử,trứng Entei
+ChuPokemon,545,tu_dien,linh thú hoả kỳ lân,thú cưỡi Ponyta
+ChuPokemon,546,tu_dien,trứng hoả kỳ lân,trứng Ponyta
+ChuPokemon,547,tu_dien,linh thú hỏa kỳ lân,thú cưỡi Ponyta
+ChuPokemon,548,tu_dien,trứng hỏa kỳ lân,trứng Ponyta
+ChuPokemon,549,tu_dien,=Dao Châu,Pallet
+ChuPokemon,550,tu_dien,=Tiên Du,Viridian
+ChuPokemon,551,tu_dien,=Sơn Nam,Pewter
+ChuPokemon,552,tu_dien,=Kỳ Bố,Cerulean
+ChuPokemon,553,tu_dien,=Phù Liệt,Vermilion
+ChuPokemon,554,tu_dien,=Hàm Tử,Lavender
+ChuPokemon,555,tu_dien,=Thạch Giang,Celadon
+ChuPokemon,556,tu_dien,=Đông Sơn,Saffron
+ChuPokemon,557,tu_dien,=Tử Quan,Fuchsia
+ChuPokemon,558,tu_dien,=Trường Giang,Cinnabar
+ChuPokemon,559,tu_dien,=Sơn Lâm,Rừng Viridian
+ChuPokemon,560,tu_dien,=Phong Châu,Núi Mặt Trăng
+ChuPokemon,561,tu_dien,=Bình Lục,Vùng Safari
+ChuPokemon,562,tu_dien,=Lộc Trĩ,New Bark
+ChuPokemon,563,tu_dien,=Bảo Thái,Cherrygrove
+ChuPokemon,564,tu_dien,=Hầm Tối,Hang Tối
+ChuPokemon,565,tu_dien,=Hồi Hồ,Hồ Phẫn Nộ
+ChuPokemon,566,tu_dien,=Siêu Loại,Violet
+ChuPokemon,567,tu_dien,=Cẩm Khê,Azalea
+ChuPokemon,568,tu_dien,=Bạch Hạc,Goldenrod
+ChuPokemon,569,tu_dien,=Tế Giang,Ecruteak
+ChuPokemon,570,tu_dien,=Đỗ Đông,Olivine
+ChuPokemon,571,tu_dien,=Thành Trấn Danh,Cao nguyên Indigo
+ChuPokemon,572,tu_dien,=Biên Giới,Đường Victory
+ChuPokemon,573,tu_dien,=Hang Thằn Lằn,Hang Salamence
+ChuPokemon,574,tu_dien,=Hang Đại Bàng,Tổ Zapdos
+ChuPokemon,575,tu_dien,=Hang Dracula,Hang Darkrai
+ChuPokemon,576,tu_dien,=Hang Mãng Xà,Hang Serperior
+ChuPokemon,577,tu_dien,=Cánh Rừng Đông,Rừng Ilex
+ChuPokemon,578,tu_dien,=Rừng Già,Rừng Cổ
+ChuPokemon,579,tu_dien,=Bình Kiều,Mahogany
+ChuPokemon,580,tu_dien,=Dương Đông,Blackthorn
+ChuPokemon,581,tu_dien,=Lâm Tây,Cianwood
+ChuPokemon,582,tu_dien,=Chiến Hạm,Tàu S.S. Anne
+ChuPokemon,583,tu_dien,=Núi kho báu,Núi Silver
+ChuPokemon,584,tu_dien,=Nhà bán HP,Trung tâm Pokémon
+ChuPokemon,585,tu_dien,=Nhà bán MP,Poké Mart
+ChuPokemon,586,tu_dien,=Nhà thợ rèn,Xưởng chế tạo

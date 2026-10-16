@@ -94,6 +94,12 @@ public final class KiemThuPokemon {
         try {
             final String mon = new String(Files.readAllBytes(new File("src/real/Monster.java").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("Monster.onDropItem goi RoiDaTienHoa", mon.contains("RoiDaTienHoa.khiHaQuai(p, this);"));
+            // 3 boss ghi de onDropItem KHONG goi super -> phai tu goi 2 hook (roi da + Pokedex)
+            for (final String b : new String[]{"BossTruRong", "BossTruRongMoba", "BossNguoiTuyet"}) {
+                final String src = new String(Files.readAllBytes(new File("src/real/" + b + ".java").toPath()), StandardCharsets.UTF_8);
+                Kiem.dung(b + ".onDropItem goi RoiDaTienHoa", src.contains("RoiDaTienHoa.khiHaQuai(p, this);"));
+                Kiem.dung(b + ".onDropItem goi PokedexPokemon", src.contains("PokedexPokemon.khiHaQuai(p, this);"));
+            }
         } catch (final Exception e) {
             Kiem.dung("doc Monster.java: " + e, false);
         }

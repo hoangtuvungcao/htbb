@@ -1,5 +1,11 @@
 # KPAH — Khí Phách Anh Hùng (private server)
 
+> **Nhánh `pokemon/chuyen-doi`:** game đã chuyển hoàn toàn sang **Huyền Thoại Bảo Bối** — game
+> Pokémon (người chơi chính là một Pokémon), bật bằng `sv.che_do_pokemon=1`. Mọi thứ về việc chuyển
+> đổi (quyết định, bảng chuyển đổi, tool, thứ tự chạy SQL, kết quả kiểm thử) nằm ở
+> [docs/pokemon/KE_HOACH_CHUYEN_DOI.md](docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Phần dưới đây mô tả
+> hạ tầng gốc của KPAH, vẫn đúng cho nhánh này.
+
 Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 4 phần chạy độc lập:
 
 - **Java game server** — `src/`, build bằng `build.bat`. Jar deploy thật là

@@ -542,6 +542,16 @@ public class MFont
 		return getWidthExactOf(ChuPokemon.D(s));
 	}
 
+	/// <summary>
+	/// Do rong DUNG chu dua vao, KHONG qua ChuPokemon.D. Dung cho o nhap chu (TField): o do
+	/// ve chu nguoi choi go nguyen van (ChuPokemon.KhongDoi), nen phep tinh con tro / cuon ngang
+	/// cung phai do nguyen van - neu do ban da doi (vd go "bang" -> do "đội") con tro se lech.
+	/// </summary>
+	public int getWidthNguyenVan(string s)
+	{
+		return getWidthExactOf(s);
+	}
+
 	public int getWidthExactOf(string s)
 	{
 		try

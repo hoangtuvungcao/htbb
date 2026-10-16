@@ -10,28 +10,34 @@
 /// </summary>
 public static class ThuongHieu
 {
-	public const string TEN_GAME = "KPAH Pokémon";
+	public const string TEN_GAME = "Huyền Thoại Bảo Bối";
+
+	/// <summary>Ten viet tat (logo nho, ten thu muc luu, nhan tin).</summary>
+	public const string TEN_VIET_TAT = "HTBB";
 
 	/// <summary>Ten cu, dung khi tat che do Pokemon.</summary>
 	public const string TEN_GAME_CU = "Khí Phách Anh Hùng";
 
 	/// <summary>Unity productName (khong dau de an toan cho ten cua so/thu muc).</summary>
-	public const string TEN_SAN_PHAM = "KPAH Pokemon";
+	public const string TEN_SAN_PHAM = "Huyen Thoai Bao Boi";
 
 	public const string TEN_SAN_PHAM_CU = "Khi Phach Anh Hung";
 
 	/// <summary>Ten file build (.exe/.apk), khong khoang trang.</summary>
-	public const string TEN_TEP = "KPAHPokemon";
+	public const string TEN_TEP = "HuyenThoaiBaoBoi";
 
 	public const string TEN_TEP_CU = "KhiPhachAnhHung";
 
 	/// <summary>applicationIdentifier Android/iOS.</summary>
-	public const string MA_UNG_DUNG = "com.kpah.pokemon";
+	public const string MA_UNG_DUNG = "vn.htbb.game";
+
+	/// <summary>Unity companyName.</summary>
+	public const string TEN_CONG_TY = "HTBB";
 
 	public const string MA_UNG_DUNG_CU = "com.kpah.game";
 
 	/// <summary>Dong gioi thieu/ghi cong ngan duoi tieu de (quyet dinh Q10: phi thuong mai).</summary>
-	public const string GIOI_THIEU = "Fan game phi thương mại - Pokémon © Nintendo / Game Freak";
+	public const string GIOI_THIEU = "Game Pokémon fan phi thương mại - Pokémon © Nintendo / Game Freak";
 
 	public static string tenGame()
 	{

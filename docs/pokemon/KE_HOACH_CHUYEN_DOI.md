@@ -1,4 +1,4 @@
-# Kế hoạch chuyển đổi KPAH → Game Pokémon
+# Kế hoạch chuyển đổi KPAH → Huyền Thoại Bảo Bối (game Pokémon)
 
 > **Nhánh:** `pokemon/chuyen-doi`, có ở cả 3 repo: `KPAH`, `kpah-mod-pb`, `KPAH-Web`.
 > **File này là nguồn sự thật duy nhất** của việc chuyển đổi. Ai làm phần nào cũng đọc
@@ -505,15 +505,15 @@ Nguyên tắc chung:
 | `data_item.he`, `GemTemplate.he`, ThanKhi | Hệ của trang bị, ngọc | Không đổi; độc lập với hệ loài |
 | Các class chỉ có trong jar: Material, Monster_Clone, MapBoss, PrivateDataMap, RegionMapMoba, RegionNuiChauBau | Random riêng | Không sửa được. Vô hại vì sát thương dùng hệ template |
 
-## 11. Câu hỏi còn mở (cần chủ dự án quyết)
+## 11. Câu hỏi mở: đã chốt (2026-10-16)
 
-| # | Câu hỏi | Gợi ý |
+| # | Câu hỏi | Đã chốt |
 |---|---|---|
-| M1 | Có cần làm lại cho 3 client `kpah-mod-pb` không? | Không (Q7). Đóng băng ở `main`. |
-| M2 | Tile 16 px của KPAH so với tile PMD 24 px: làm lại bản đồ không? | Giai đoạn 1–5 giữ tile cũ. Sau đó thử thu nhỏ tile PMD trên một map; nếu xấu thì vẽ lại. |
-| M3 | Bang hội, quốc gia giữ tên cũ hay đổi thành "Đội"? | Chỉ đổi chữ, giữ logic. |
-| M4 | Âm thanh, nhạc lấy từ đâu? | Nhạc tự do bản quyền (CC0). Không dùng nhạc Pokémon. |
-| M5 | `BossTrungThu` (template 48) đang ra Arcanine. Có muốn Pokémon riêng cho sự kiện không? | |
+| M1 | Có làm lại 3 client `kpah-mod-pb` không? | **Không.** Chỉ `ClientUnity` (Q7). `kpah-mod-pb` đóng băng ở `main` |
+| M2 | Tile 16 px vs tile PMD 24 px? | **Vẽ lại bằng tool** (G7.A, `DoiTileMap.java`): giữ lưới 16 px và chỉ số tile, đổi chất liệu sang PMD |
+| M3 | Bang hội, quốc gia? | **Đổi chữ, giữ logic:** Đội; vùng Kanto / Johto / Hoenn (G7.C) |
+| M4 | Âm thanh, nhạc? | **Không có gì để thay:** client Unity hiện KHÔNG phát âm thanh (`Player.load/start`, `MyAudioClip` không được gọi ở đâu — kiểm tra bằng grep 2026-10-16). Thêm nhạc là tính năng mới; nếu làm chỉ dùng nhạc CC0 có trang giấy phép rõ ràng, không dùng nhạc Pokémon |
+| M5 | Boss Trung Thu (template 48)? | **Giữ Arcanine** (sư tử lửa hợp lễ hội đèn lồng) |
 
 ---
 
@@ -560,7 +560,7 @@ Nguyên tắc chung:
 
 ## 15. Giai đoạn 7: Game mới hoàn toàn (mọi thứ người chơi nhìn thấy)
 
-Mục tiêu: không còn hình ảnh, tên gọi hay câu chữ nào của KPAH (kiếm hiệp, giang hồ, môn phái…) mà người chơi thấy được khi bật `sv.che_do_pokemon=1`. Tên tạm của game: **KPAH Pokémon**, đổi được ở một chỗ (G7.E1).
+Mục tiêu: không còn hình ảnh, tên gọi hay câu chữ nào của KPAH (kiếm hiệp, giang hồ, môn phái…) mà người chơi thấy được khi bật `sv.che_do_pokemon=1`. Tên game: **Huyền Thoại Bảo Bối** (viết tắt **HTBB**), đặt ở một chỗ: `ThuongHieu.java` + `ThuongHieu.cs` (test so hai bản), web lấy từ `app.config.ts`/`config.ts` (G7.E1).
 
 Từ điển thuật ngữ cố định (mọi luồng việc dùng chung):
 
@@ -604,6 +604,7 @@ Từ điển thuật ngữ cố định (mọi luồng việc dùng chung):
 
 | Việc | Ghi chú |
 |---|---|
+| Nhạc và âm thanh (M4) | Client chưa từng phát âm thanh; thêm nhạc CC0 là tính năng mới (chưa làm) |
 | Xem bằng mắt trong Unity | Toàn bộ phần hình (sprite, tile, particle, vật thể, tiêu đề) chưa xem trên Unity thật. `Editor/XayDung.cs` không được `cscheck` biên dịch (cần UnityEditor.dll) |
 | Chữ người dùng chọn | Các câu mới (Pokédex, thưởng mốc, Đội phó, Cố vấn, tên bậc Poké Ball…) theo CODING_CONVENTION §10 cần chủ dự án duyệt |
 | Tên vật phẩm còn chất KPAH nhưng không thuộc từ cấm | vd "Mảnh tứ khoái", "Hộ vệ lân sư tử", "Tóc bờm ngựa" — thêm vào `TU_CAM`/`DOI` rồi chạy lại `sinh_sql_chu.py` |

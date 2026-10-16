@@ -62,7 +62,7 @@ public static class XayDung
 
     private static void DatCauHinh()
     {
-        PlayerSettings.companyName = "KPAH";
+        PlayerSettings.companyName = ThuongHieu.TEN_CONG_TY;
         // Ten san pham (tieu de cua so, ten app) lay tu ThuongHieu (G7.E2): doi ten o MOT cho.
         PlayerSettings.productName = ThuongHieu.tenSanPham();
         PlayerSettings.defaultScreenWidth = 800;

@@ -70,7 +70,8 @@ public static class ChuPokemon
 		});
 		phanBiet = new Dictionary<string, string>();
 		khongPhanBiet = new Dictionary<string, string>();
-		StringBuilder sb = new StringBuilder("(?<!\\w)(?:");
+		// Truoc khoa: khong la chu/gach duoi (chu so thi duoc: "1Giang hồ" trong hoi thoai NPC).
+		StringBuilder sb = new StringBuilder("(?<![\\p{L}_])(?:");
 		bool dau = true;
 		foreach (KeyValuePair<int, string[]> kv in tam)
 		{
