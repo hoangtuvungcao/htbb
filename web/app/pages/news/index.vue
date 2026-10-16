@@ -1,7 +1,8 @@
 <script setup lang="ts">
+const tenSite = useAppConfig().kpah.tenSite
 useSeoMeta({
   title: 'Tin tức & sự kiện',
-  description: 'Những câu chuyện mới, những cuộc hội ngộ và thông tin từ thế giới KPAH Pokémon.',
+  description: `Những câu chuyện mới, những cuộc hội ngộ và thông tin từ thế giới ${tenSite}.`,
 })
 
 const news = newsList()
@@ -18,7 +19,7 @@ const iconTheoLoai: Record<string, string> = {
     <SitePageBanner
       title="Tin tức & sự kiện"
       eyebrow="Tin tức"
-      intro="Những câu chuyện mới, những cuộc hội ngộ và thông tin từ thế giới KPAH Pokémon."
+      :intro="`Những câu chuyện mới, những cuộc hội ngộ và thông tin từ thế giới ${tenSite}.`"
     />
 
     <section id="news" class="scroll-mt-20 py-20" aria-labelledby="news-title">

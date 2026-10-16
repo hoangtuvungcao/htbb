@@ -90,7 +90,7 @@ const faq = computed(() => [
           </FxReveal>
           <FxReveal :delay="0.2">
             <p class="mt-6 max-w-xl text-lg text-toned">
-              Chọn một Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu thời gian thực cùng bạn bè: săn Pokémon hoang dã, hạ boss huyền thoại, lập bang hội và tranh tài PvP.
+              Chọn một Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu thời gian thực cùng bạn bè: săn Pokémon hoang dã, hạ boss huyền thoại, lập đội và tranh tài PvP.
             </p>
           </FxReveal>
           <FxReveal :delay="0.3">

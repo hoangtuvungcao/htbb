@@ -122,8 +122,8 @@ const related = computed(() => newsList().filter(([s]) => s !== slug.value))
               </nav>
               <USeparator class="my-5" />
               <div class="flex items-center gap-3 text-sm text-dimmed">
-                <UIcon name="i-lucide-swords" class="size-6 text-primary/70" aria-hidden="true" />
-                <p>Một thời khí phách.<br>Một đời anh hùng.</p>
+                <UIcon name="i-lucide-sparkles" class="size-6 text-primary/70" aria-hidden="true" />
+                <p>Từng cấp một lần tiến hoá.<br>Viết nên huyền thoại của riêng bạn.</p>
               </div>
             </div>
           </aside>

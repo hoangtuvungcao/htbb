@@ -69,15 +69,15 @@ const linkNhanVat = (ten: string) => `/admin/nhanvat?q=${encodeURIComponent(ten)
 
 const cotPhai = { class: { th: 'text-right', td: 'text-right tabular-nums' } }
 const cotTopXp = [
-  { accessorKey: 'charname', header: 'Nhân vật' },
+  { accessorKey: 'charname', header: 'Pokémon' },
   { accessorKey: 'lastLv', header: 'Cấp', meta: cotPhai },
 ]
 const cotTopLuong = [
-  { accessorKey: 'charname', header: 'Nhân vật' },
+  { accessorKey: 'charname', header: 'Pokémon' },
   { accessorKey: 'luong', header: 'Lượng', meta: cotPhai },
 ]
 const cotTopNap = [
-  { accessorKey: 'charname', header: 'Nhân vật' },
+  { accessorKey: 'charname', header: 'Pokémon' },
   { accessorKey: 'luongnap', header: 'Đã nạp', meta: cotPhai },
 ]
 const cotTkMoi = [
@@ -323,10 +323,10 @@ const cotNhatKy = [
       <!-- ============ Nhân vật ============ -->
       <section class="space-y-4">
         <h3 class="text-xs font-semibold uppercase tracking-widest text-muted">
-          Nhân vật
+          Pokémon
         </h3>
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <AdminStatCard label="Tổng nhân vật" :value="hienSo(data.nhanVat.tong)" :note="`đang chơi được: ${hienSo(data.nhanVat.song)}`" icon="i-lucide-shield" />
+          <AdminStatCard label="Tổng Pokémon" :value="hienSo(data.nhanVat.tong)" :note="`đang chơi được: ${hienSo(data.nhanVat.song)}`" icon="i-lucide-shield" />
           <AdminStatCard
             label="Vào trong 24 giờ"
             :value="hienSo(data.nhanVat.h24)"
@@ -335,7 +335,7 @@ const cotNhatKy = [
             icon="i-lucide-log-in"
           />
           <AdminStatCard
-            label="Nhân vật bị khoá"
+            label="Pokémon bị khoá"
             :value="hienSo(data.nhanVat.khoa)"
             note="biến mất khỏi màn chọn nhân vật"
             :mau="(data.nhanVat.khoa ?? 0) > 0 ? 'bad' : ''"
@@ -362,10 +362,10 @@ const cotNhatKy = [
         <UCard>
           <template #header>
             <h3 class="font-semibold text-highlighted">
-              Nhân vật vào game · 14 ngày
+              Pokémon vào game · 14 ngày
             </h3>
           </template>
-          <AdminBarChart :data="data.bdHoatDong" don-vi="nhân vật" />
+          <AdminBarChart :data="data.bdHoatDong" don-vi="Pokémon" />
           <p class="mt-3 text-xs text-muted">
             Đếm theo cột <code>lastLog</code> — <em>lần vào cuối cùng</em> của mỗi nhân vật, nên một
             nhân vật chỉ nằm ở đúng một cột. Người chơi vào đều mỗi ngày sẽ luôn đứng ở cột hôm nay.
@@ -400,7 +400,7 @@ const cotNhatKy = [
               Cao cấp nhất
             </h3>
           </template>
-          <UTable :data="data.topXp" :columns="cotTopXp" empty="Chưa có nhân vật.">
+          <UTable :data="data.topXp" :columns="cotTopXp" empty="Chưa có Pokémon.">
             <template #charname-cell="{ row }">
               <NuxtLink :to="linkNhanVat(row.original.charname)" class="font-medium text-primary hover:underline">
                 {{ row.original.charname }}
@@ -418,7 +418,7 @@ const cotNhatKy = [
               Nhiều lượng nhất
             </h3>
           </template>
-          <UTable :data="data.topLuong" :columns="cotTopLuong" empty="Chưa có nhân vật.">
+          <UTable :data="data.topLuong" :columns="cotTopLuong" empty="Chưa có Pokémon.">
             <template #charname-cell="{ row }">
               <NuxtLink :to="linkNhanVat(row.original.charname)" class="font-medium text-primary hover:underline">
                 {{ row.original.charname }}

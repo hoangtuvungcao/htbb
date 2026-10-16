@@ -11,6 +11,7 @@
 import { readFileSync, statSync, accessSync, constants } from 'node:fs'
 import { resolve, join } from 'node:path'
 import { createHash, randomBytes } from 'node:crypto'
+import { TEN_SITE } from '../../shared/utils/tenSite.ts'
 
 export interface KpahDbIni {
   host: string | null
@@ -240,8 +241,8 @@ export function useKpahConfig(): KpahConfig {
       },
     },
     site: {
-      // Tên tạm cho nhánh pokemon/chuyen-doi; giữ khớp app/app.config.ts (kpah.tenSite).
-      name: 'KPAH Pokémon',
+      // Nguồn duy nhất: shared/utils/tenSite.ts (app/app.config.ts cũng đọc từ đó).
+      name: TEN_SITE,
       tagline: 'Máy chủ private phi thương mại - bạn chính là Pokémon',
       linkAndroid: env('KPAH_LINK_ANDROID') || '#',
       linkPc: env('KPAH_LINK_PC') || '#',
@@ -270,7 +271,7 @@ export function useKpahConfig(): KpahConfig {
       gmailClientSecret: (env('KPAH_GMAIL_CLIENT_SECRET') ?? '').trim(),
       gmailRefreshToken: (env('KPAH_GMAIL_REFRESH_TOKEN') ?? '').trim(),
       gmailSender: (env('KPAH_GMAIL_SENDER') ?? '').trim(),
-      fromName: env('KPAH_MAIL_FROM_NAME') || 'KPAH Pokémon',
+      fromName: env('KPAH_MAIL_FROM_NAME') || TEN_SITE,
     },
     secret,
     trustedProxies: (env('KPAH_TRUSTED_PROXIES') ?? '127.0.0.1,::1,::ffff:127.0.0.1')

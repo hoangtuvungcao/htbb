@@ -90,7 +90,7 @@ function nhan(nv: DongNV) {
 }
 
 const columns: TableColumn<DongNV>[] = [
-  { accessorKey: 'charname', header: 'Nhân vật' },
+  { accessorKey: 'charname', header: 'Pokémon' },
   { accessorKey: 'lastLv', header: 'Cấp', meta: { class: { th: 'text-right', td: 'text-right' } } },
   { accessorKey: 'luong', header: 'Lượng', meta: { class: { th: 'text-right', td: 'text-right' } } },
   { accessorKey: 'gold', header: 'Xu', meta: { class: { th: 'text-right', td: 'text-right' } } },
@@ -101,10 +101,10 @@ const columns: TableColumn<DongNV>[] = [
 </script>
 
 <template>
-  <AdminPage title="Nhân vật">
+  <AdminPage title="Pokémon người chơi">
     <template #right>
       <form class="flex items-center gap-2" @submit.prevent="timKiem">
-        <UInput v-model="oTim" icon="i-lucide-search" placeholder="Tên nhân vật hoặc ID tài khoản" class="w-56 sm:w-72" />
+        <UInput v-model="oTim" icon="i-lucide-search" placeholder="Tên Pokémon hoặc ID tài khoản" class="w-56 sm:w-72" />
         <UButton type="submit" label="Tìm" />
       </form>
     </template>
@@ -124,7 +124,7 @@ const columns: TableColumn<DongNV>[] = [
         <template #header>
           <div class="space-y-1">
             <h2 class="font-semibold text-highlighted">
-              {{ tim === '' ? 'Danh sách nhân vật' : `Kết quả cho “${tim}”` }}
+              {{ tim === '' ? 'Danh sách Pokémon' : `Kết quả cho “${tim}”` }}
             </h2>
             <p class="text-sm text-muted">
               Bấm <strong class="text-highlighted">tên nhân vật</strong> để mở trang chi tiết — ở đó mới có
@@ -134,7 +134,7 @@ const columns: TableColumn<DongNV>[] = [
           </div>
         </template>
 
-        <UTable :data="data?.ds ?? []" :columns="columns" :loading="status === 'pending'" empty="Không có nhân vật nào khớp.">
+        <UTable :data="data?.ds ?? []" :columns="columns" :loading="status === 'pending'" empty="Không có Pokémon nào khớp.">
           <template #charname-cell="{ row }">
             <NuxtLink :to="{ query: { ...(tim ? { q: tim } : {}), id: row.original.id } }" class="font-semibold text-primary hover:underline">
               {{ row.original.charname }}

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const tenVietTat = useAppConfig().kpah.tenVietTat
 /**
  * Khung khu quản trị: menu trái chia nhóm (thu gọn được), thanh trên chỉ đường.
  * Chưa đăng nhập -> chỉ hiện nội dung trang (form đăng nhập ở /admin).
@@ -41,7 +42,7 @@ async function thoat() {
 
 useHead({
   meta: [{ name: 'robots', content: 'noindex, nofollow' }],
-  titleTemplate: t => (t ? `${t} · Quản trị KPAH` : 'Quản trị KPAH'),
+  titleTemplate: t => (t ? `${t} · Quản trị ${tenVietTat}` : `Quản trị ${tenVietTat}`),
 })
 </script>
 

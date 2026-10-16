@@ -204,7 +204,7 @@ const trangThai = computed(() => {
           </template>
 
           <dl class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-sm">
-            <dt class="text-muted">ID nhân vật</dt><dd class="tabular-nums">{{ ct.id }}</dd>
+            <dt class="text-muted">ID Pokémon</dt><dd class="tabular-nums">{{ ct.id }}</dd>
             <dt class="text-muted">Tài khoản</dt>
             <dd>
               <template v-if="data.chuTk !== ''">
@@ -224,7 +224,7 @@ const trangThai = computed(() => {
             <dd class="tabular-nums">{{ so(ct.tichluy) }} <span class="text-xs text-muted">· top nạp {{ so(ct.topNap) }}</span></dd>
             <dt class="text-muted">Vào lần cuối</dt><dd>{{ ct.lastLog }}</dd>
             <dt class="text-muted">Máy chủ</dt><dd class="tabular-nums">{{ ct.idserver }}</dd>
-            <dt class="text-muted">Bang hội</dt>
+            <dt class="text-muted">Đội</dt>
             <dd><span v-if="Number(ct.idClan) === -1" class="text-muted">không có</span><span v-else class="tabular-nums">{{ ct.idClan }}</span></dd>
             <dt class="text-muted">Cờ nghi vấn</dt>
             <dd class="flex flex-wrap gap-1.5">
@@ -321,8 +321,8 @@ const trangThai = computed(() => {
               <strong class="text-highlighted">KHÔNG THỂ HOÀN TÁC.</strong> Khác hẳn "Khoá" ở trên (chỉ ẩn đi, mở lại
               được) — xoá vĩnh viễn xoá hẳn dòng <code>tob_char</code> này khỏi cơ sở dữ liệu, cùng với thú nuôi, trang
               trại, đá quý, bạn bè, quest riêng của nhân vật. Nhân vật đang online sẽ bị đẩy ra khỏi game trước khi xoá.
-              Nhật ký giao dịch/log vẫn được giữ lại để tra cứu. Nếu nhân vật đang trong bang hội, hãy tự rời bang
-              trước — trang này không tự gỡ tên khỏi danh sách thành viên bang hội.
+              Nhật ký giao dịch/log vẫn được giữ lại để tra cứu. Nếu Pokémon đang trong một đội, hãy tự rời đội
+              trước — trang này không tự gỡ tên khỏi danh sách thành viên đội.
             </p>
             <div class="flex flex-wrap items-end gap-3">
               <UFormField :label="`Gõ đúng tên “${ct.charname}” để xác nhận`" class="min-w-60">

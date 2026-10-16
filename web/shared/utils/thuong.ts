@@ -241,13 +241,13 @@ export function dmTenLoaiVatPham(): Record<number, string> {
     3: 'Kiếm', 4: 'Đại đao', 5: 'Bút',
     6: 'Búa', 7: 'Cung', 8: 'Nhẫn',
     9: 'Dây chuyền', 10: 'Giày', 11: 'Găng',
-    12: 'Ngọc trang bị', 13: 'Cuốc / chổi', 14: 'Giáp linh thú',
-    15: 'Hộ uyển linh thú', 16: 'Nón linh thú', 17: 'Bàn đạp linh thú',
-    18: 'Yên cương linh thú', 19: 'Phi phong', 20: 'Rương vận tiêu',
-    21: 'Hộ vệ lệnh / trứng linh thú', 22: 'Thẻ mua bán',
+    12: 'Ngọc trang bị', 13: 'Cuốc / chổi', 14: 'Giáp thú cưỡi',
+    15: 'Hộ uyển thú cưỡi', 16: 'Nón thú cưỡi', 17: 'Bàn đạp thú cưỡi',
+    18: 'Yên cương thú cưỡi', 19: 'Phi phong', 20: 'Rương vận tiêu',
+    21: 'Hộ vệ lệnh / trứng thú cưỡi', 22: 'Thẻ mua bán',
     23: 'Xa tiêu lệnh', 24: 'Lệnh bài trấn yêu', 25: 'Hoả kỳ lân',
     26: 'Trứng thú', 27: 'Thú nuôi', 28: 'Đan / thảo dược',
-    29: 'Mảnh cải trang', 30: 'Skin linh thú',
+    29: 'Mảnh cải trang', 30: 'Skin thú cưỡi',
   }
 }
 
@@ -315,7 +315,7 @@ export function dmTruongCuaLoai(loai: string): TruongThuong[] {
     case 'DB':
       // DB:id:soLuong:thoiHan(phút) -> lặp soLuong lần GiftCode.AddItem(p, id, 0, 0, phút).
       // Có THỜI HẠN (phút, 0 = vĩnh viễn) và đi qua đúng đường mọi nguồn phát skin dùng.
-      // Dùng cho nhóm "Skin linh thú" từ 12/09/2026. Khoá sẵn như ITEM.
+      // Dùng cho nhóm "Skin thú cưỡi" từ 12/09/2026. Khoá sẵn như ITEM.
       return [
         { ma: 'sl', nhan: 'Số lượng', macDinh: '1' },
         { ma: 'phut', nhan: 'Thời hạn (phút, 0 = vĩnh viễn)', macDinh: '0', minSo: '0' },

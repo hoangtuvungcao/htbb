@@ -1,4 +1,4 @@
-# KPAH-Web — Website Khí Phách Anh Hùng
+# KPAH-Web — Website Huyền Thoại Bảo Bối (trước đây Khí Phách Anh Hùng)
 
 Website (trang công khai + khu quản trị) của máy chủ private KPAH, viết bằng **Vue 3**:
 
@@ -40,8 +40,16 @@ Trên nhánh này mọi nhân vật người chơi là một Pokémon (kế ho�
   ([server/middleware/tat-nap.ts](server/middleware/tat-nap.ts)). Code nạp không bị xoá;
   `/admin/naptien` vẫn mở để xem đơn cũ. Đặt `KPAH_NAP_BAT=true` để bật lại — lưu ý deploy
   bỏ qua biến rỗng, nên muốn tắt lại phải đặt hẳn `false`.
-- **Tên website** tạm là "KPAH Pokémon": `kpah.tenSite` trong [app/app.config.ts](app/app.config.ts)
-  (giao diện) và `site.name` trong [server/utils/config.ts](server/utils/config.ts) (API `/api/site`).
+- **Tên game/website: "Huyền Thoại Bảo Bối"** (viết tắt **HTBB**, không dấu "Huyen Thoai Bao Boi"),
+  thay cho "Khí Phách Anh Hùng" / tên tạm "KPAH Pokémon". **Nguồn duy nhất:**
+  [shared/utils/tenSite.ts](shared/utils/tenSite.ts) (`TEN_SITE`, `TEN_SITE_VIET_TAT`, `TEN_SITE_ASCII`).
+  Giao diện đọc qua `useAppConfig().kpah.tenSite` / `.tenVietTat` ([app/app.config.ts](app/app.config.ts)):
+  tiêu đề tab, meta description, `og:site_name`, đầu/chân trang, tin tức. Server đọc qua
+  `useKpahConfig().site.name` ([server/utils/config.ts](server/utils/config.ts)): API `/api/site`, tiêu đề
+  và nội dung email (`server/api/auth/*.post.ts`), tên người gửi mặc định (`KPAH_MAIL_FROM_NAME`).
+  Nhãn 2FA admin là "HTBB Admin". Chữ trong [public/logo.svg](public/logo.svg) là ảnh tĩnh, đổi tên
+  thì sửa tay. Mã định danh (biến `KPAH_*`, CSDL `kpah_db`, khoá `kpah` trong app config) giữ nguyên.
+- **Thuật ngữ** trên giao diện: nhân vật → Pokémon, bang hội → Đội, linh thú → thú cưỡi.
 
 ## Chạy thử trên máy
 
@@ -108,7 +116,7 @@ Mỗi lần push lên `main`, [.github/workflows/deploy.yml](.github/workflows/d
 | `KPAH_SEPAY_WEBHOOK_APIKEY` | `KPAH_SERVER_DIR` (mặc định `/opt/kpah`) |
 | `KPAH_ADMIN_NAPTIEN_PASSWORD` | `KPAH_TRUSTED_PROXIES` |
 | `KPAH_DB_*` — chỉ khi web không đọc được `server.ini` | |
-| `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`, `KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` — gửi email, xem [Gửi email (Gmail API)](#gửi-email-gmail-api) | `KPAH_MAIL_FROM_NAME` (mặc định `KPAH Pokémon`) |
+| `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`, `KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` — gửi email, xem [Gửi email (Gmail API)](#gửi-email-gmail-api) | `KPAH_MAIL_FROM_NAME` (mặc định `Huyền Thoại Bảo Bối`) |
 
 **Hai VPS.** Push lên `main` deploy song song lên cả hai (job `deploy (vps-cu)` và
 `deploy (vps-moi)`, một bên lỗi không chặn bên kia). VPS mới **chỉ nhận bản build**: các
@@ -145,7 +153,7 @@ Gmail) — [server/utils/guiMail.ts](server/utils/guiMail.ts). Dùng cho:
 
 Thiếu một trong 4 biến `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`,
 `KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` = tắt gửi mail. `KPAH_MAIL_FROM_NAME` là
-tên người gửi (mặc định `KPAH Pokémon`).
+tên người gửi (mặc định `Huyền Thoại Bảo Bối`).
 
 ### Lấy thông tin (làm một lần)
 

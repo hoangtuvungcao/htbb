@@ -9,9 +9,10 @@
  */
 import ghiCongTho from '~~/public/pokemon/GHI_CONG.txt?raw'
 
+const tenSite = useAppConfig().kpah.tenSite
 useSeoMeta({
   title: 'Ghi công',
-  description: 'Ghi công tác giả sprite và chân dung Pokémon (PMDCollab SpriteCollab, CC BY-NC 4.0) dùng trong KPAH Pokémon.',
+  description: `Ghi công tác giả sprite và chân dung Pokémon (PMDCollab SpriteCollab, CC BY-NC 4.0) dùng trong ${tenSite}.`,
 })
 
 const ghiCong = docGhiCong(ghiCongTho)

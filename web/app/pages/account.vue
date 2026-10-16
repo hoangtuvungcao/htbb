@@ -104,7 +104,7 @@ async function doiEmail() {
 }
 
 const columns = [
-  { accessorKey: 'charname', header: 'Nhân vật' },
+  { accessorKey: 'charname', header: 'Tên' },
   { accessorKey: 'class', header: 'Pokémon' },
   { accessorKey: 'lastLv', header: 'Cấp' },
 ]
@@ -112,7 +112,7 @@ const columns = [
 
 <template>
   <div>
-    <SitePageBanner title="Tài khoản của tôi" eyebrow="Hồ sơ nhà huấn luyện" intro="Thông tin tài khoản và các nhân vật của bạn trong thế giới KPAH Pokémon." />
+    <SitePageBanner title="Tài khoản của tôi" eyebrow="Hồ sơ nhà huấn luyện" :intro="`Thông tin tài khoản và các Pokémon của bạn trong thế giới ${useAppConfig().kpah.tenSite}.`" />
 
     <UContainer class="max-w-6xl py-14">
       <UAlert
@@ -184,14 +184,14 @@ const columns = [
             <div class="flex items-center justify-between gap-4">
               <div>
                 <p class="eyebrow">
-                  Nhân vật
+                  Đội hình
                 </p>
                 <h2 class="section-title mt-2 text-2xl text-highlighted">
                   Những Pokémon của bạn
                 </h2>
               </div>
               <UBadge v-if="data?.chars.length" color="neutral" variant="outline" size="lg">
-                {{ data.chars.length }} nhân vật
+                {{ data.chars.length }} Pokémon
               </UBadge>
             </div>
 
@@ -226,9 +226,9 @@ const columns = [
               </template>
             </UTable>
             <div v-else-if="data" class="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-dashed border-default p-10 text-center">
-              <UIcon name="i-lucide-swords" class="size-10 text-primary/60" />
+              <UIcon name="i-lucide-paw-print" class="size-10 text-primary/60" />
               <p class="text-muted">
-                Chưa có nhân vật. Hãy vào game và tạo nhân vật đầu tiên của bạn!
+                Chưa có Pokémon nào. Hãy vào game và chọn Pokémon khởi đầu của bạn!
               </p>
             </div>
           </div>

@@ -8,9 +8,10 @@
  *   - vừa đăng xuất   -> "Đã đăng xuất" (?done=1)
  *   - chưa đăng nhập  -> "Bạn chưa đăng nhập"
  */
+const tenSite = useAppConfig().kpah.tenSite
 useSeoMeta({
   title: 'Đăng xuất',
-  description: 'Kết thúc phiên đăng nhập trên website KPAH Pokémon.',
+  description: `Kết thúc phiên đăng nhập trên website ${tenSite}.`,
   robots: 'noindex',
 })
 

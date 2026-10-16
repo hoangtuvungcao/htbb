@@ -42,20 +42,21 @@ export default defineEventHandler(async (event) => {
   const emailCu = tk.email
   if (emailCu && emailCu.toLowerCase() !== email.toLowerCase() && mailDaCauHinh()) {
     const ten = u.username
+    const tenSite = useKpahConfig().site.name
     guiMail({
       to: emailCu,
-      subject: 'Email tài khoản đã được đổi - Khí Phách Anh Hùng',
+      subject: `Email tài khoản đã được đổi - ${tenSite}`,
       text: [
         'Xin chào,',
         '',
-        `Email của tài khoản ${ten} vừa được đổi sang địa chỉ khác trên website Khí Phách Anh Hùng.`,
+        `Email của tài khoản ${ten} vừa được đổi sang địa chỉ khác trên website ${tenSite}.`,
         'Từ nay thư lấy lại mật khẩu sẽ gửi tới địa chỉ mới, không gửi về địa chỉ này nữa.',
         '',
         'Nếu không phải bạn đổi, hãy liên hệ quản trị viên ngay.',
       ].join('\n'),
       html: `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222">
 <p>Xin chào,</p>
-<p>Email của tài khoản <b>${maHoaHtml(ten)}</b> vừa được đổi sang địa chỉ khác trên website Khí Phách Anh Hùng.</p>
+<p>Email của tài khoản <b>${maHoaHtml(ten)}</b> vừa được đổi sang địa chỉ khác trên website ${tenSite}.</p>
 <p>Từ nay thư lấy lại mật khẩu sẽ gửi tới địa chỉ mới, không gửi về địa chỉ này nữa.</p>
 <p style="color:#666">Nếu không phải bạn đổi, hãy liên hệ quản trị viên ngay.</p>
 </div>`,

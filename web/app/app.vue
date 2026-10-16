@@ -2,6 +2,11 @@
 const tenSite = useAppConfig().kpah.tenSite
 useHead({
   titleTemplate: t => (t ? `${t} · ${tenSite}` : tenSite),
+  meta: [
+    { property: 'og:site_name', content: tenSite },
+    { name: 'application-name', content: tenSite },
+    { name: 'apple-mobile-web-app-title', content: tenSite },
+  ],
 })
 </script>
 

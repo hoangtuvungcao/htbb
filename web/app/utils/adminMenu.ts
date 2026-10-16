@@ -24,7 +24,7 @@ export const ADMIN_MENU: { nhom: string, items: AdminMenuItem[] }[] = [
       { key: 'nang_level_toanbo', to: '/admin/nang-level-toanbo', label: 'Nâng Level toàn bộ', icon: 'i-lucide-users' },
       { key: 'taikhoan', to: '/admin/taikhoan', label: 'Tài khoản', icon: 'i-lucide-user-round' },
       { key: 'tao_hang_loat', to: '/admin/tao-hang-loat', label: 'Tạo hàng loạt', icon: 'i-lucide-users-round' },
-      { key: 'nhanvat', to: '/admin/nhanvat', label: 'Nhân vật', icon: 'i-lucide-shield' },
+      { key: 'nhanvat', to: '/admin/nhanvat', label: 'Pokémon', icon: 'i-lucide-paw-print' },
       { key: 'cammay', to: '/admin/cammay', label: 'Cấm theo máy', icon: 'i-lucide-lock' },
       { key: 'reset_toanbo', to: '/admin/reset-toanbo', label: 'Reset toàn server', icon: 'i-lucide-rotate-ccw' },
     ],

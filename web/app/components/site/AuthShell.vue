@@ -24,7 +24,7 @@
               Trở về thế giới Pokémon, viết tiếp chuyến phiêu lưu của riêng bạn.
             </p>
             <div class="mt-8 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-default/60 pt-4 text-xs tracking-[0.2em] text-dimmed">
-              <span class="whitespace-nowrap">KPAH POKÉMON</span><span aria-hidden="true">✦</span><span class="whitespace-nowrap">TỪNG CẤP MỘT LẦN TIẾN HOÁ</span>
+              <span class="whitespace-nowrap uppercase">{{ useAppConfig().kpah.tenSite }}</span><span aria-hidden="true">✦</span><span class="whitespace-nowrap">TỪNG CẤP MỘT LẦN TIẾN HOÁ</span>
             </div>
           </div>
         </FxTiltCard>

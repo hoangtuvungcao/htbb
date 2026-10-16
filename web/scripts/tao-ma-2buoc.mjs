@@ -259,7 +259,7 @@ BUOC 1 - Mo ung dung xac thuc tren dien thoai
 BUOC 2 - Them tai khoan bang cach NHAP KHOA THU CONG
   Chon "Nhap khoa thiet lap" / "Enter setup key", roi go:
 
-      Ten     : KPAH Admin (${ten})
+      Ten     : ${hb.HB_TEN_HE_THONG} (${ten})
       Khoa    : ${hb.hbKhoaDeDoc(khoa)}
       Loai    : Theo thoi gian (Time based)
 

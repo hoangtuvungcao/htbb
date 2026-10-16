@@ -43,6 +43,10 @@
  *      cũng là lý do KHÔNG cần cửa hậu nào trên web.
  */
 import { createHmac, randomBytes, randomInt, timingSafeEqual } from 'node:crypto'
+import { TEN_SITE_VIET_TAT } from '../../shared/utils/tenSite.ts'
+
+/** Tên hiện trong ứng dụng xác thực (issuer). Đổi thì mục cũ đã quét vẫn giữ nhãn cũ, mã vẫn đúng. */
+export const HB_TEN_HE_THONG = `${TEN_SITE_VIET_TAT} Admin`
 
 /** Số chữ số của mã. 6 = mặc định của mọi ứng dụng authenticator. */
 export const HB_SO_CHU_SO = 6
@@ -193,9 +197,9 @@ function hbRawUrlEncode(s: string): string {
  * URI otpauth:// để ứng dụng authenticator quét hoặc nhận qua dán.
  *
  * `issuer` vào cả nhãn và tham số là cố ý — cách cũ (chỉ nhãn) không phải app
- * nào cũng đọc đúng, và trong app sẽ hiện thành "KPAH (tên)" cho dễ tìm.
+ * nào cũng đọc đúng, và trong app sẽ hiện thành "HTBB Admin (tên)" cho dễ tìm.
  */
-export function hbUri(khoaBase32: string, tenTaiKhoan: string, tenHeThong = 'KPAH Admin'): string {
+export function hbUri(khoaBase32: string, tenTaiKhoan: string, tenHeThong = HB_TEN_HE_THONG): string {
   const nhan = `${hbRawUrlEncode(tenHeThong)}:${hbRawUrlEncode(tenTaiKhoan)}`
   return `otpauth://totp/${nhan}?secret=${khoaBase32}&issuer=${hbRawUrlEncode(tenHeThong)}`
     + `&algorithm=SHA1&digits=${HB_SO_CHU_SO}&period=${HB_BUOC_GIAY}`

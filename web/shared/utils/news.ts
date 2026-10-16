@@ -8,6 +8,8 @@
  * Thứ tự khoá = thứ tự hiển thị (mới nhất trước).
  */
 
+import { TEN_SITE } from './tenSite'
+
 export interface NewsSection {
   title: string
   paragraphs?: string[]
@@ -28,12 +30,12 @@ export const NEWS: Record<string, NewsArticle> = {
     "date": "20/07",
     "category": "Thông báo",
     "title": "Khai mở máy chủ mới",
-    "body": "Chào mừng bạn đến với thế giới KPAH Pokémon, nơi chính bạn là một Pokémon. Chuẩn bị tài khoản và bắt đầu chuyến phiêu lưu cùng bạn bè.",
+    "body": `Chào mừng bạn đến với thế giới ${TEN_SITE}, nơi chính bạn là một Pokémon. Chuẩn bị tài khoản và bắt đầu chuyến phiêu lưu cùng bạn bè.`,
     "sections": [
       {
         "title": "Một hành trình mới đang chờ",
         "paragraphs": [
-          "Ở KPAH Pokémon, bạn không huấn luyện Pokémon mà hoá thân thành một Pokémon: lên cấp, tiến hoá, gặp gỡ bạn bè và khám phá vùng đất mới. Hãy chuẩn bị tài khoản và phiên bản game phù hợp trước khi bắt đầu."
+          `Ở ${TEN_SITE}, bạn không huấn luyện Pokémon mà hoá thân thành một Pokémon: lên cấp, tiến hoá, gặp gỡ bạn bè và khám phá vùng đất mới. Hãy chuẩn bị tài khoản và phiên bản game phù hợp trước khi bắt đầu.`
         ]
       },
       {
@@ -106,7 +108,7 @@ export const NEWS: Record<string, NewsArticle> = {
       {
         "title": "4. Quản lý tài khoản",
         "paragraphs": [
-          "Đăng nhập website để xem thông tin tài khoản và nhân vật. Khi dùng máy tính chung, hãy mở trang Đăng xuất và xác nhận để kết thúc phiên đăng nhập trên website."
+          "Đăng nhập website để xem thông tin tài khoản và Pokémon của bạn. Khi dùng máy tính chung, hãy mở trang Đăng xuất và xác nhận để kết thúc phiên đăng nhập trên website."
         ]
       }
     ],

@@ -1,7 +1,8 @@
 <script setup lang="ts">
+const tenSite = useAppConfig().kpah.tenSite
 useSeoMeta({
   title: 'Quên mật khẩu',
-  description: 'Lấy lại mật khẩu tài khoản KPAH Pokémon qua email đã đăng ký.',
+  description: `Lấy lại mật khẩu tài khoản ${tenSite} qua email đã đăng ký.`,
 })
 
 const api = useApi()

@@ -1,7 +1,8 @@
 <script setup lang="ts">
+const tenSite = useAppConfig().kpah.tenSite
 useSeoMeta({
   title: 'Đăng ký',
-  description: 'Tạo tài khoản KPAH Pokémon và bắt đầu chuyến phiêu lưu cùng bạn bè.',
+  description: `Tạo tài khoản ${tenSite} và bắt đầu chuyến phiêu lưu cùng bạn bè.`,
 })
 
 const api = useApi()

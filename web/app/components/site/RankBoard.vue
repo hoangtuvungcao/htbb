@@ -17,7 +17,7 @@ export interface RankRow {
 
 const props = defineProps<{
   rows: RankRow[]
-  /** Nhãn cột tên (Nhân vật / Tài khoản). */
+  /** Nhãn cột tên (Pokémon / Người chơi). */
   nameLabel: string
   /** Nhãn cột số (Cấp / Lượng / Số lần). */
   valueLabel: string

@@ -58,8 +58,8 @@ export const LOG_GAME_BANG: Readonly<Record<string, LogGameBang>> = Object.freez
     loc: 'charname', loc2: null, sap: 'id DESC',
   },
   tob_log_clan: {
-    ten: 'Bang hội',
-    mota: 'Vào / ra bang, đóng góp, thay đổi chức vụ.',
+    ten: 'Đội',
+    mota: 'Vào / ra đội, đóng góp, thay đổi chức vụ.',
     cot: { id: 'ID', charname: 'Nhân vật', actioninfo: 'Việc', info: 'Chi tiết', timeLog: 'Lúc' },
     loc: 'charname', loc2: 'actioninfo', sap: 'id DESC',
   },

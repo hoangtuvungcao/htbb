@@ -1,7 +1,8 @@
 <script setup lang="ts">
+const tenSite = useAppConfig().kpah.tenSite
 useSeoMeta({
   title: 'Đăng nhập',
-  description: 'Đăng nhập KPAH Pokémon để quản lý tài khoản và tiếp tục chuyến phiêu lưu cùng bạn bè.',
+  description: `Đăng nhập ${tenSite} để quản lý tài khoản và tiếp tục chuyến phiêu lưu cùng bạn bè.`,
 })
 
 const auth = useAuth()
@@ -110,7 +111,7 @@ async function submit() {
     </form>
 
     <div class="my-6 flex items-center gap-3 text-xs tracking-[0.2em] text-dimmed">
-      <USeparator class="flex-1" /> LẦN ĐẦU ĐẾN GIANG HỒ? <USeparator class="flex-1" />
+      <USeparator class="flex-1" /> LẦN ĐẦU ĐẾN THẾ GIỚI POKÉMON? <USeparator class="flex-1" />
     </div>
     <UButton to="/register" color="neutral" variant="outline" size="xl" block>
       Tạo tài khoản mới

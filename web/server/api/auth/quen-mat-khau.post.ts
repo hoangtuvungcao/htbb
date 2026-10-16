@@ -67,13 +67,14 @@ export default defineEventHandler(async (event) => {
   // Không chèn đường link dựng từ header Host (người gửi request tự đặt được) vào thư: gửi MÃ để nhập trên web.
   // Gửi NGẦM, không chờ: chờ SMTP (vài giây) chỉ xảy ra khi tên + email khớp -> đo thời gian trả lời là biết
   // cặp nào có thật. Gửi hỏng chỉ ghi log (guiMail đã ghi), người chơi bấm gửi lại.
+  const tenSite = useKpahConfig().site.name
   guiMail({
       to: String(row.email).trim(),
-      subject: 'Mã xác nhận đặt lại mật khẩu - Khí Phách Anh Hùng',
+      subject: `Mã xác nhận đặt lại mật khẩu - ${tenSite}`,
       text: [
         'Xin chào,',
         '',
-        'Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu cho tài khoản Khí Phách Anh Hùng.',
+        `Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu cho tài khoản ${tenSite}.`,
         '',
         `Tên tài khoản: ${ten}`,
         `Mã xác nhận: ${ma}`,
@@ -84,7 +85,7 @@ export default defineEventHandler(async (event) => {
       ].join('\n'),
       html: `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222">
 <p>Xin chào,</p>
-<p>Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu cho tài khoản <b>Khí Phách Anh Hùng</b>.</p>
+<p>Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu cho tài khoản <b>${tenSite}</b>.</p>
 <table style="border-collapse:collapse;margin:12px 0">
 <tr><td style="padding:4px 12px 4px 0;color:#666">Tên tài khoản</td><td style="padding:4px 0"><b>${maHoaHtml(ten)}</b></td></tr>
 <tr><td style="padding:4px 12px 4px 0;color:#666">Mã xác nhận</td><td style="padding:4px 0"><b style="font-family:Consolas,monospace;font-size:20px;letter-spacing:3px">${maHoaHtml(ma)}</b></td></tr>

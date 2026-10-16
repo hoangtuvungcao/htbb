@@ -201,7 +201,7 @@ export function dmDungDanhMuc(nguon: NguonDanhMucGiftcode): NhomDanhMucGiftcode[
   // id: thêm trứng mới là tự hiện. 883-886 đã bị dmIdRac() loại từ trước — còn đúng 887.
   const trungLinh = (vp.get(21) ?? []).filter(m => dmCoTu(m.ten, 'rứng'))
   if (trungLinh.length) {
-    dm.push({ ma: 'trung_linh', ten: 'Trứng linh thú', loai: 'ITEM', ghiChu: 'Nằm lẫn trong data_item type 21, lọc theo tên.', muc: trungLinh })
+    dm.push({ ma: 'trung_linh', ten: 'Trứng thú cưỡi', loai: 'ITEM', ghiChu: 'Nằm lẫn trong data_item type 21, lọc theo tên.', muc: trungLinh })
   }
 
   const thuoc = dmThuocTuDong(nguon.thuoc)
@@ -320,7 +320,7 @@ export function dmDungDanhMuc(nguon: NguonDanhMucGiftcode): NhomDanhMucGiftcode[
     + 'lúc phát. Thời hạn tính bằng PHÚT, 0 = vĩnh viễn (1 ngày = 1440, 7 ngày = 10080).'
   const nhomKhac: [number, string, string, string, string][] = [
     [29, 'manh_caitrang', 'Mảnh cải trang', 'Ghép thành bộ cải trang Bát Giới / Sa Tăng.', 'ITEM'],
-    [30, 'skin_thu', 'Skin linh thú', ghiChuSkin, 'DB'],
+    [30, 'skin_thu', 'Skin thú cưỡi', ghiChuSkin, 'DB'],
     [19, 'phi_phong', 'Phi phong', 'Loại thưởng ITEM cho phi phong thường; '
       + 'muốn chọn kháng thì dùng PPRK và gõ tay.', 'ITEM'],
     [27, 'thu_nuoi', 'Thú nuôi', 'Thú nuôi dạng vật phẩm trong hành trang.', 'ITEM'],

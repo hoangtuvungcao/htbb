@@ -48,20 +48,21 @@ export default defineEventHandler(async (event) => {
   // Thư báo: không chờ, không làm hỏng request.
   if (tk.email && mailDaCauHinh()) {
     const ten = u.username
+    const tenSite = useKpahConfig().site.name
     guiMail({
       to: tk.email,
-      subject: 'Mật khẩu đã được đổi - Khí Phách Anh Hùng',
+      subject: `Mật khẩu đã được đổi - ${tenSite}`,
       text: [
         'Xin chào,',
         '',
-        `Mật khẩu của tài khoản ${ten} vừa được đổi trên website Khí Phách Anh Hùng.`,
+        `Mật khẩu của tài khoản ${ten} vừa được đổi trên website ${tenSite}.`,
         '',
         'Nếu chính bạn đổi thì không cần làm gì thêm.',
         'Nếu không phải bạn, hãy dùng chức năng Quên mật khẩu trên website để lấy lại tài khoản và liên hệ quản trị viên ngay.',
       ].join('\n'),
       html: `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222">
 <p>Xin chào,</p>
-<p>Mật khẩu của tài khoản <b>${maHoaHtml(ten)}</b> vừa được đổi trên website Khí Phách Anh Hùng.</p>
+<p>Mật khẩu của tài khoản <b>${maHoaHtml(ten)}</b> vừa được đổi trên website ${tenSite}.</p>
 <p>Nếu chính bạn đổi thì không cần làm gì thêm.</p>
 <p style="color:#666">Nếu không phải bạn, hãy dùng chức năng <b>Quên mật khẩu</b> trên website để lấy lại tài khoản và liên hệ quản trị viên ngay.</p>
 </div>`,
