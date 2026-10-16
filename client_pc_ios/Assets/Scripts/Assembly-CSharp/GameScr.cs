@@ -4881,8 +4881,9 @@ public class GameScr : MyScreen
 			MFont.normalFont[0].drawString(g, goldTime, 5, imgInfo.getHeight() + 20, MFont.LEFT);
 			MFont.smallFontColor[0].drawString(g, Char.goldTime, 5, imgInfo.getHeight() + 36, MFont.LEFT);
 		}
-		int num2 = mainChar.hp * HPBARW / mainChar.maxhp;
-		int num3 = mainChar.mp * HPBARW / mainChar.maxmp;
+		// maxhp / maxmp = 0 khi vừa vào map (server chưa gửi chỉ số): chia cho 0 làm bản IL2CPP sập
+		int num2 = mainChar.maxhp > 0 ? mainChar.hp * HPBARW / mainChar.maxhp : HPBARW;
+		int num3 = mainChar.maxmp > 0 ? mainChar.mp * HPBARW / mainChar.maxmp : HPBARW;
 		g.setColor(0);
 		g.fillRect(58 + num2, 23, HPBARW - num2 - 1, 5);
 		g.setColor(0);
