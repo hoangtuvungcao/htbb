@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useSeoMeta({
   title: 'Tin tức & sự kiện',
-  description: 'Những câu chuyện mới, những cuộc hội ngộ và thông tin từ thế giới Khí Phách Anh Hùng.',
+  description: 'Những câu chuyện mới, những cuộc hội ngộ và thông tin từ thế giới KPAH Pokémon.',
 })
 
 const news = newsList()
@@ -18,14 +18,14 @@ const iconTheoLoai: Record<string, string> = {
     <SitePageBanner
       title="Tin tức & sự kiện"
       eyebrow="Tin tức"
-      intro="Những câu chuyện mới, những cuộc hội ngộ và thông tin từ thế giới Khí Phách Anh Hùng."
+      intro="Những câu chuyện mới, những cuộc hội ngộ và thông tin từ thế giới KPAH Pokémon."
     />
 
     <section id="news" class="scroll-mt-20 py-20" aria-labelledby="news-title">
       <UContainer class="max-w-6xl">
         <FxReveal>
           <h2 id="news-title" class="section-title text-4xl text-highlighted">
-            Nhịp sống giang hồ
+            Nhịp sống vùng đất Pokémon
           </h2>
         </FxReveal>
 
@@ -70,7 +70,7 @@ const iconTheoLoai: Record<string, string> = {
           <div class="pointer-events-none absolute -bottom-20 -left-10 size-64 rounded-full bg-jade-500/15 blur-3xl" aria-hidden="true" />
           <span class="relative font-serif text-2xl font-bold text-highlighted">Chưa có nhân vật của riêng mình?</span>
           <UButton to="/register" size="xl" trailing-icon="i-lucide-arrow-up-right" class="relative shadow-[0_10px_40px_rgba(249,192,42,.3)]">
-            Gia nhập giang hồ
+            Bắt đầu phiêu lưu
           </UButton>
         </div>
       </FxReveal>

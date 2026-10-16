@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useSeoMeta({
   title: 'Đăng nhập',
-  description: 'Đăng nhập Khí Phách Anh Hùng để quản lý tài khoản và tiếp tục hành trình cùng bằng hữu.',
+  description: 'Đăng nhập KPAH Pokémon để quản lý tài khoản và tiếp tục chuyến phiêu lưu cùng bạn bè.',
 })
 
 const auth = useAuth()
@@ -41,10 +41,10 @@ async function submit() {
       Tiếp nối hành trình
     </p>
     <h1 id="login-title" class="section-title mt-3 text-4xl text-highlighted">
-      Chào mừng<br><em class="text-gilded">anh hùng trở lại.</em>
+      Chào mừng<br><em class="text-gilded">bạn trở lại.</em>
     </h1>
     <p class="mt-3 text-muted">
-      Đăng nhập để quản lý tài khoản và sẵn sàng trở lại giang hồ.
+      Đăng nhập để quản lý tài khoản và sẵn sàng trở lại thế giới Pokémon.
     </p>
 
     <UAlert
@@ -116,7 +116,7 @@ async function submit() {
       Tạo tài khoản mới
     </UButton>
     <p class="mt-6 text-center text-xs tracking-widest text-dimmed">
-      Một tài khoản · Kết nối cùng bằng hữu
+      Một tài khoản · Kết nối cùng bạn bè
     </p>
   </SiteAuthShell>
 </template>

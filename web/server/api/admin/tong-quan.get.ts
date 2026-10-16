@@ -200,7 +200,7 @@ async function tinhTongQuan(event: import('h3').H3Event, admin: AdminUser) {
 
   // ---- Bảng xếp hạng nhanh ----
   const [topXp, topLuong, topNap, tkMoi] = await Promise.all([
-    dsach(game, `SELECT charname, lastLv, xp, \`class\` FROM tob_char
+    dsach(game, `SELECT charname, lastLv, xp, \`class\`, dex FROM tob_char
                   WHERE ban = 0 AND del = 1 ORDER BY xp DESC LIMIT 10`),
     dsach(game, `SELECT charname, lastLv, luong, luonglock FROM tob_char
                   WHERE ban = 0 AND del = 1 ORDER BY luong DESC LIMIT 10`),
@@ -279,7 +279,7 @@ async function tinhTongQuan(event: import('h3').H3Event, admin: AdminUser) {
     bdHoatDong,
     phanBoNghe,
     phanBoCap,
-    topXp: topXp.map(r => ({ charname: String(r.charname), lastLv: sv(r, 'lastLv'), xp: sv(r, 'xp'), nghe: tenNghe(r.class) })),
+    topXp: topXp.map(r => ({ charname: String(r.charname), lastLv: sv(r, 'lastLv'), xp: sv(r, 'xp'), nghe: speciesName(r.class, r.lastLv, r.dex) })),
     topLuong: topLuong.map(r => ({ charname: String(r.charname), lastLv: sv(r, 'lastLv'), luong: sv(r, 'luong'), luonglock: sv(r, 'luonglock') })),
     topNap: topNap.map(r => ({ charname: String(r.charname), luongnap: sv(r, 'luongnap'), luongxai: sv(r, 'luongxai') })),
     tkMoi: tkMoi.map(r => ({ id: sv(r, 'id'), username: String(r.username), email: String(r.email ?? ''), regdate: String(r.regdate ?? ''), ban: sv(r, 'ban') })),

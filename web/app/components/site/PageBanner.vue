@@ -14,7 +14,7 @@ defineProps<{ title: string, intro?: string, eyebrow?: string }>()
       </nav>
       <FxReveal>
         <p class="eyebrow">
-          {{ eyebrow ?? 'Khí Phách Anh Hùng' }}
+          {{ eyebrow ?? useAppConfig().kpah.tenSite }}
         </p>
         <h1 id="page-heading" class="section-title mt-3 text-4xl text-highlighted sm:text-5xl">
           {{ title }}

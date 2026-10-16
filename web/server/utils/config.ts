@@ -126,6 +126,13 @@ export interface KpahConfig {
     autoActivate: boolean
   }
   nap: {
+    /**
+     * Bật tính năng nạp tiền (KPAH_NAP_BAT). Mặc định TẮT trên nhánh pokemon/chuyen-doi:
+     * asset PMDCollab là CC BY-NC 4.0 và Pokémon là IP của Nintendo — không được thu tiền
+     * (quyết định Q10, KPAH/docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Tắt thì /api/nap/** và
+     * /api/xac-nhan-nap/** trả 403 (server/middleware/tat-nap.ts) và web ẩn trang Nạp.
+     */
+    bat: boolean
     bankBin: string
     accountNo: string
     accountName: string
@@ -233,8 +240,9 @@ export function useKpahConfig(): KpahConfig {
       },
     },
     site: {
-      name: 'KPAH - Khí Phách Anh Hùng',
-      tagline: 'Máy chủ private - Hồi ức tuổi thơ',
+      // Tên tạm cho nhánh pokemon/chuyen-doi; giữ khớp app/app.config.ts (kpah.tenSite).
+      name: 'KPAH Pokémon',
+      tagline: 'Máy chủ private phi thương mại - bạn chính là Pokémon',
       linkAndroid: env('KPAH_LINK_ANDROID') || '#',
       linkPc: env('KPAH_LINK_PC') || '#',
       linkIos: env('KPAH_LINK_IOS') || '#',
@@ -243,6 +251,7 @@ export function useKpahConfig(): KpahConfig {
       autoActivate: envBool('KPAH_AUTO_ACTIVATE', false),
     },
     nap: {
+      bat: envBool('KPAH_NAP_BAT', false),
       bankBin: '970423', // TPBank theo chuẩn VietQR
       accountNo: env('KPAH_TPBANK_ACCOUNT_NO') || '0000000000',
       accountName: env('KPAH_TPBANK_ACCOUNT_NAME') || 'NGUYEN VAN A',
@@ -261,7 +270,7 @@ export function useKpahConfig(): KpahConfig {
       gmailClientSecret: (env('KPAH_GMAIL_CLIENT_SECRET') ?? '').trim(),
       gmailRefreshToken: (env('KPAH_GMAIL_REFRESH_TOKEN') ?? '').trim(),
       gmailSender: (env('KPAH_GMAIL_SENDER') ?? '').trim(),
-      fromName: env('KPAH_MAIL_FROM_NAME') || 'Khí Phách Anh Hùng',
+      fromName: env('KPAH_MAIL_FROM_NAME') || 'KPAH Pokémon',
     },
     secret,
     trustedProxies: (env('KPAH_TRUSTED_PROXIES') ?? '127.0.0.1,::1,::ffff:127.0.0.1')
@@ -282,5 +291,6 @@ export function publicSiteConfig() {
     linkJar: c.site.linkJar,
     linkGroup: c.site.linkGroup,
     autoActivate: c.site.autoActivate,
+    napBat: c.nap.bat,
   }
 }

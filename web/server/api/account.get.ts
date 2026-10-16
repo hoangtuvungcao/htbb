@@ -1,6 +1,7 @@
 /**
  * Dữ liệu cho trang Tài khoản và trang Kích hoạt của người chơi đang đăng nhập.
- * -> { username, email, activated, chars: [{ charname, lastLv, xp, class }] }
+ * -> { username, email, activated, chars: [{ charname, lastLv, xp, class, dex }] }
+ * dex: loài Pokémon hiện tại (cột tob_char.dex, cần KPAH/sql/them_cot_pokemon.sql).
  * email: email lưu ở team_user (null = chưa có, chưa dùng được Quên mật khẩu).
  *
  * Chỉ đọc theo id/username lấy từ token, không bao giờ từ tham số người gọi gửi lên.
@@ -12,11 +13,11 @@ export default defineEventHandler(async (event) => {
   const activated = await isActivated(u.username)
 
   // Danh sách nhân vật của tài khoản (phòng thủ nếu lỗi)
-  let chars: Array<{ charname: string, lastLv: number, xp: number, class: number }> = []
+  let chars: Array<{ charname: string, lastLv: number, xp: number, class: number, dex: number }> = []
   try {
     chars = await q(
       dbGame(),
-      'SELECT charname, lastLv, xp, class FROM tob_char WHERE userId = ? ORDER BY xp DESC',
+      'SELECT charname, lastLv, xp, class, dex FROM tob_char WHERE userId = ? ORDER BY xp DESC',
       [Math.trunc(u.id)],
     )
   } catch {
@@ -41,6 +42,7 @@ export default defineEventHandler(async (event) => {
       lastLv: Math.trunc(Number(c.lastLv) || 0),
       xp: Number(c.xp) || 0,
       class: Math.trunc(Number(c.class)),
+      dex: dexHienTai(c.class, c.lastLv, c.dex),
     })),
   }
 })

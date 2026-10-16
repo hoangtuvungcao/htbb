@@ -7,6 +7,7 @@
  * Phiên: token 'naptien' sống 1 giờ, giữ trong sessionStorage (đóng tab là mất).
  * Trong khu quản trị có trang tương đương đầy đủ hơn: /admin/naptien.
  */
+definePageMeta({ middleware: 'nap-bat' })
 useSeoMeta({ title: 'Xác nhận nạp tiền (Admin)', robots: 'noindex, nofollow' })
 
 interface DonCho {

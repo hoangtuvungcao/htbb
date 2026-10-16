@@ -20,7 +20,7 @@
 import { q1 } from './db'
 
 /** Cột của danh sách và trang chi tiết. KHÔNG gồm equip/inven/bag (TEXT rất dài). */
-export const NV_COT = `id, charname, userId, lastLv, \`class\`, xp, gold, luong, luonglock, ban, del,
+export const NV_COT = `id, charname, userId, lastLv, \`class\`, dex, xp, gold, luong, luonglock, ban, del,
         lastLog, idserver, idClan, nhack, blacklist, tichluy, topNap`
 
 export interface NhanVatDong {
@@ -29,6 +29,8 @@ export interface NhanVatDong {
   userId: number
   lastLv: number
   class: number
+  /** Loài Pokémon (0 = suy ra từ class + cấp). Cột thêm bởi KPAH/sql/them_cot_pokemon.sql. */
+  dex: number
   xp: number | string
   gold: number
   luong: number

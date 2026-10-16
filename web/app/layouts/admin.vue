@@ -60,7 +60,7 @@ useHead({
           <img src="/logo-mark.svg" alt="" class="size-8 shrink-0">
           <span v-if="!collapsed" class="min-w-0 leading-tight">
             <strong class="block text-highlighted">Quản trị</strong>
-            <small class="block truncate text-xs text-muted">KPAH - Khí Phách Anh Hùng</small>
+            <small class="block truncate text-xs text-muted">{{ useAppConfig().kpah.tenSite }}</small>
           </span>
         </NuxtLink>
       </template>

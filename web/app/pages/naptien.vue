@@ -5,7 +5,7 @@
  * giây một lần; SePay báo tiền vào (hoặc admin xác nhận tay) thì chuyển sang "đã nhận".
  * Quà KHÔNG phát trên web: người chơi vào game gặp NPC Tổng Quản để nhận.
  */
-definePageMeta({ middleware: 'auth' })
+definePageMeta({ middleware: ['auth', 'nap-bat'] })
 useSeoMeta({
   title: 'Nạp tiền theo mốc',
   description: 'Chọn mốc nạp tân thủ, quét mã QR chuyển khoản TPBank và nhận quà tại NPC Tổng Quản trong game.',

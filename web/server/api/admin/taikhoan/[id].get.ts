@@ -10,7 +10,7 @@ export default defineAdminHandler(async (event, admin) => {
   if (!tk) throw apiLoi(404, `Không tìm thấy tài khoản #${id}.`)
 
   const nhanVat = await q(dbGame(),
-    `SELECT id, charname, lastLv, \`class\`, xp, gold, luong, luonglock, ban, del, lastLog, idserver
+    `SELECT id, charname, lastLv, \`class\`, dex, xp, gold, luong, luonglock, ban, del, lastLog, idserver
        FROM tob_char WHERE userId = ? ORDER BY lastLv DESC, id ASC`, [id])
 
   const daKichHoat = (await qv(dbGame(),
@@ -38,6 +38,7 @@ export default defineAdminHandler(async (event, admin) => {
       charname: String(nv.charname),
       lastLv: Number(nv.lastLv),
       class: Number(nv.class),
+      dex: dexHienTai(nv.class, nv.lastLv, nv.dex),
       gold: nv.gold,
       luong: nv.luong,
       luonglock: nv.luonglock,

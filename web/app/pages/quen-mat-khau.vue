@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useSeoMeta({
   title: 'Quên mật khẩu',
-  description: 'Lấy lại mật khẩu tài khoản Khí Phách Anh Hùng qua email đã đăng ký.',
+  description: 'Lấy lại mật khẩu tài khoản KPAH Pokémon qua email đã đăng ký.',
 })
 
 const api = useApi()
@@ -203,7 +203,7 @@ async function submit() {
     </template>
 
     <p class="mt-6 text-center text-xs tracking-widest text-dimmed">
-      Một tài khoản · Kết nối cùng bằng hữu
+      Một tài khoản · Kết nối cùng bạn bè
     </p>
   </SiteAuthShell>
 </template>

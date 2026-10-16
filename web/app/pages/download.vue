@@ -24,7 +24,7 @@ const platforms = computed(() => [
 const steps = computed(() => [
   { so: '01.', tieuDe: 'Tạo tài khoản', mo: 'Đăng ký tài khoản để bắt đầu hành trình của bạn.', link: 'Đăng ký ngay', to: '/register' },
   { so: '02.', tieuDe: 'Tải phiên bản phù hợp', mo: 'Chọn nền tảng và làm theo hướng dẫn cài đặt.', link: 'Chọn bản tải', to: '/download#download' },
-  { so: '03.', tieuDe: 'Gia nhập giang hồ', mo: 'Đăng nhập game, tạo nhân vật và tìm những người bạn đồng hành.', link: 'Cộng đồng & hỗ trợ', to: hoTro.value },
+  { so: '03.', tieuDe: 'Chọn Pokémon khởi đầu', mo: 'Đăng nhập game, chọn Pokémon của bạn và tìm những người bạn đồng hành.', link: 'Cộng đồng & hỗ trợ', to: hoTro.value },
 ])
 
 const faq = [
@@ -36,7 +36,7 @@ const faq = [
 <template>
   <div>
     <SitePageBanner
-      title="Hẹn gặp tại giang hồ"
+      title="Hẹn gặp trong thế giới Pokémon"
       eyebrow="Tải game"
       intro="Một lần tải game. Mở ra cả một thế giới để khám phá, kết giao và viết nên câu chuyện của bạn."
     />
@@ -109,7 +109,7 @@ const faq = [
               </span>
               <div>
                 <p class="eyebrow">
-                  Luôn có bằng hữu đồng hành
+                  Luôn có bạn bè đồng hành
                 </p>
                 <h2 id="support-title" class="section-title mt-2 text-3xl text-highlighted">
                   Cần hỗ trợ cài đặt?
@@ -146,7 +146,7 @@ const faq = [
           <div class="relative overflow-hidden rounded-3xl glass ring-gilded p-8 sm:p-12">
             <div class="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-gold-400/10 blur-3xl" aria-hidden="true" />
             <p class="eyebrow">
-              Hẹn gặp bạn tại giang hồ
+              Hẹn gặp bạn trong thế giới Pokémon
             </p>
             <h2 id="guide-title" class="section-title mt-3 text-4xl text-highlighted">
               Hành trình bắt đầu từ đây.

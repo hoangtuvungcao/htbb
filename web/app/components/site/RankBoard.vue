@@ -5,8 +5,10 @@
  */
 export interface RankRow {
   name: string
-  /** Dòng phụ dưới tên (vd. môn phái). */
+  /** Dòng phụ dưới tên (vd. loài Pokémon). */
   sub?: string
+  /** Chân dung Pokémon 40×40 (vd. /pokemon/4.png), hiện cạnh tên. */
+  anh?: string
   value: number
 }
 </script>
@@ -66,11 +68,15 @@ const kieuHang: Record<number, { vien: string, nen: string, chu: string, cao: st
               :class="[kieuHang[r.hang]!.vien, kieuHang[r.hang]!.nen]"
             >
               <span
-                class="grid size-16 place-items-center rounded-full border bg-ink-950/60 [transform:translateZ(70px)]"
+                class="relative grid size-20 place-items-center rounded-full border bg-ink-950/60 [transform:translateZ(70px)]"
                 :class="[kieuHang[r.hang]!.vien, kieuHang[r.hang]!.chu, kieuHang[r.hang]!.anh, r.hang === 1 ? 'animate-float' : '']"
                 aria-hidden="true"
               >
-                <UIcon :name="kieuHang[r.hang]!.icon" class="size-8" />
+                <img v-if="r.anh" :src="r.anh" width="40" height="40" alt="" class="pixelated size-16 rounded-full">
+                <UIcon v-else :name="kieuHang[r.hang]!.icon" class="size-8" />
+                <span v-if="r.anh" class="absolute -top-2 -right-2 grid size-8 place-items-center rounded-full border bg-ink-950" :class="kieuHang[r.hang]!.vien">
+                  <UIcon :name="kieuHang[r.hang]!.icon" class="size-4" />
+                </span>
               </span>
               <p class="mt-4 text-xs tracking-[0.25em] text-dimmed [transform:translateZ(30px)]">
                 HẠNG {{ r.hang }}
@@ -117,8 +123,13 @@ const kieuHang: Record<number, { vien: string, nen: string, chu: string, cao: st
                   {{ r.hang }}
                 </td>
                 <td class="px-5 py-3">
-                  <span class="font-semibold text-highlighted">{{ r.name }}</span>
-                  <span v-if="r.sub" class="ms-2 text-muted">· {{ r.sub }}</span>
+                  <span class="inline-flex items-center gap-3 align-middle">
+                    <img v-if="r.anh" :src="r.anh" width="40" height="40" alt="" class="pixelated size-10 shrink-0 rounded-lg bg-ink-950/60">
+                    <span>
+                      <span class="font-semibold text-highlighted">{{ r.name }}</span>
+                      <span v-if="r.sub" class="ms-2 text-muted">· {{ r.sub }}</span>
+                    </span>
+                  </span>
                 </td>
                 <td class="num px-5 py-3 font-semibold text-primary">
                   {{ so(r.value) }}

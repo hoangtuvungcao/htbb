@@ -377,7 +377,7 @@ const cotNhatKy = [
         <UCard>
           <template #header>
             <h3 class="font-semibold text-highlighted">
-              Phân bố nghề
+              Phân bố dòng Pokémon
             </h3>
           </template>
           <AdminHBar :data="data.phanBoNghe" />

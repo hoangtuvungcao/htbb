@@ -28,12 +28,12 @@ export const NEWS: Record<string, NewsArticle> = {
     "date": "20/07",
     "category": "Thông báo",
     "title": "Khai mở máy chủ mới",
-    "body": "Chào mừng anh hùng đến với thế giới Khí Phách Anh Hùng. Chuẩn bị tài khoản và bắt đầu hành trình cùng bằng hữu.",
+    "body": "Chào mừng bạn đến với thế giới KPAH Pokémon, nơi chính bạn là một Pokémon. Chuẩn bị tài khoản và bắt đầu chuyến phiêu lưu cùng bạn bè.",
     "sections": [
       {
         "title": "Một hành trình mới đang chờ",
         "paragraphs": [
-          "Khí Phách Anh Hùng là nơi bạn lựa chọn con đường của mình, gặp gỡ bằng hữu và khám phá thế giới kiếm hiệp. Hãy chuẩn bị tài khoản và phiên bản game phù hợp trước khi bắt đầu."
+          "Ở KPAH Pokémon, bạn không huấn luyện Pokémon mà hoá thân thành một Pokémon: lên cấp, tiến hoá, gặp gỡ bạn bè và khám phá vùng đất mới. Hãy chuẩn bị tài khoản và phiên bản game phù hợp trước khi bắt đầu."
         ]
       },
       {
@@ -41,13 +41,13 @@ export const NEWS: Record<string, NewsArticle> = {
         "steps": [
           "Tạo tài khoản tại trang Đăng ký và ghi nhớ thông tin đăng nhập.",
           "Mở trang Tải game, chọn phiên bản phù hợp với thiết bị của bạn.",
-          "Sau khi cài đặt, đăng nhập và làm theo hướng dẫn trong game để tạo nhân vật."
+          "Sau khi cài đặt, đăng nhập và làm theo hướng dẫn trong game để chọn Pokémon khởi đầu."
         ]
       },
       {
-        "title": "Chọn môn phái của bạn",
+        "title": "Chọn Pokémon khởi đầu",
         "paragraphs": [
-          "Năm môn phái gồm Kiếm khách, Chiến binh, Đấu sĩ, Pháp sư và Cung thủ. Chọn nhân vật phù hợp với phong cách bạn muốn khám phá."
+          "Năm Pokémon khởi đầu gồm Charmander (Lửa), Bulbasaur (Cỏ/Độc), Squirtle (Nước), Pichu (Điện) và Eevee (Thường). Mỗi Pokémon tiến hoá theo cấp; riêng Eevee được tự chọn 1 trong 8 hướng tiến hoá ở cấp 25."
         ]
       }
     ],
@@ -80,7 +80,7 @@ export const NEWS: Record<string, NewsArticle> = {
     "date": "15/07",
     "category": "Hướng dẫn",
     "title": "Hướng dẫn tân thủ",
-    "body": "Từ tạo tài khoản đến lựa chọn môn phái: những bước đầu tiên trên hành trình giang hồ.",
+    "body": "Từ tạo tài khoản đến chọn Pokémon khởi đầu: những bước đầu tiên trong thế giới Pokémon.",
     "sections": [
       {
         "title": "1. Tạo tài khoản",
@@ -99,7 +99,7 @@ export const NEWS: Record<string, NewsArticle> = {
       {
         "title": "3. Bắt đầu hành trình",
         "paragraphs": [
-          "Đăng nhập vào game bằng tài khoản vừa tạo. Chọn một trong năm môn phái: Kiếm khách, Chiến binh, Đấu sĩ, Pháp sư hoặc Cung thủ.",
+          "Đăng nhập vào game bằng tài khoản vừa tạo. Chọn một trong năm Pokémon khởi đầu: Charmander, Bulbasaur, Squirtle, Pichu hoặc Eevee.",
           "Làm quen với các hướng dẫn trong game, khám phá bản đồ và kết nối với những người chơi khác."
         ]
       },

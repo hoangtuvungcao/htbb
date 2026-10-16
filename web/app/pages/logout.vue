@@ -10,7 +10,7 @@
  */
 useSeoMeta({
   title: 'Đăng xuất',
-  description: 'Kết thúc phiên đăng nhập trên website Khí Phách Anh Hùng.',
+  description: 'Kết thúc phiên đăng nhập trên website KPAH Pokémon.',
   robots: 'noindex',
 })
 
@@ -43,7 +43,7 @@ async function dangXuat() {
       <UIcon :name="logoutUser ? 'i-lucide-moon' : 'i-lucide-check'" class="size-7" />
     </div>
     <p class="eyebrow">
-      {{ logoutUser ? 'Tạm biệt, không phải chia xa' : 'Giang hồ luôn chào đón bạn' }}
+      {{ logoutUser ? 'Tạm biệt, không phải chia xa' : 'Thế giới Pokémon luôn chào đón bạn' }}
     </p>
     <h1 id="logout-title" class="section-title mt-3 text-4xl text-highlighted">
       <template v-if="logoutUser">
@@ -76,7 +76,7 @@ async function dangXuat() {
           Đăng xuất
         </UButton>
         <UButton to="/account" color="neutral" variant="outline" size="xl" block>
-          Ở lại với giang hồ
+          Ở lại thêm chút nữa
         </UButton>
       </div>
       <p class="mt-6 text-center text-xs tracking-widest text-dimmed">
@@ -88,7 +88,7 @@ async function dangXuat() {
       <p class="mt-3 text-muted">
         {{ logoutComplete
           ? 'Phiên đăng nhập trên website đã kết thúc. Bạn có thể đăng nhập lại bất cứ khi nào muốn tiếp tục.'
-          : 'Đăng nhập để quản lý tài khoản hoặc trở về trang chủ để khám phá thế giới Khí Phách Anh Hùng.' }}
+          : 'Đăng nhập để quản lý tài khoản hoặc trở về trang chủ để khám phá thế giới Pokémon.' }}
       </p>
       <div class="mt-6 flex flex-col gap-3">
         <UButton to="/login" size="xl" block trailing-icon="i-lucide-arrow-up-right">

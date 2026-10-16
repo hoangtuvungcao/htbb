@@ -15,7 +15,7 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            'Khám phá Khí Phách Anh Hùng: năm môn phái, bang hội và hành trình kiếm hiệp cùng bằng hữu. Tải game và đăng ký tài khoản.',
+            'MMORPG nơi chính bạn là một Pokémon: chọn 1 trong 5 Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu cùng bạn bè. Tải game và đăng ký tài khoản.',
         },
       ],
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/logo-mark.svg' }],

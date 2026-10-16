@@ -38,7 +38,7 @@ const hoTro = computed(() => linkHoTro(site.value))
               <UIcon :name="data?.activated ? 'i-lucide-shield-check' : 'i-lucide-shield-alert'" class="size-10" />
             </div>
             <p class="eyebrow mt-8 justify-center">
-              Khí Phách Anh Hùng
+              {{ useAppConfig().kpah.tenSite }}
             </p>
             <h1 class="section-title mt-3 text-3xl text-highlighted sm:text-4xl">
               Kích hoạt tài khoản

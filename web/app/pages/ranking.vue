@@ -3,12 +3,12 @@ import type { TabsItem } from '@nuxt/ui'
 import type { RankRow } from '~/components/site/RankBoard.vue'
 
 useSeoMeta({
-  title: 'Bảng vàng anh hùng',
-  description: 'Mỗi chiến tích, một dấu ấn. Cùng nhìn lại những tên tuổi trên hành trình chinh phục giang hồ.',
+  title: 'Bảng vàng Pokémon',
+  description: 'Mỗi chiến tích, một dấu ấn. Cùng nhìn lại những nhà huấn luyện và Pokémon mạnh nhất vùng đất này.',
 })
 
 interface RankingData {
-  topLevel: Array<{ charname: string, lastLv: number, class: number }>
+  topLevel: Array<{ charname: string, lastLv: number, class: number, dex: number }>
   topLevelError: boolean
   topNap: Array<{ name: string, luong: number }>
   topNapError: boolean
@@ -41,7 +41,7 @@ const boards = computed<Board[]>(() => {
       icon: 'i-lucide-trophy',
       nameLabel: 'Nhân vật',
       valueLabel: 'Cấp',
-      rows: (d?.topLevel ?? []).map(c => ({ name: c.charname, sub: CLASS_NAMES[c.class] ?? '—', value: c.lastLv })),
+      rows: (d?.topLevel ?? []).map(c => ({ name: c.charname, sub: speciesName(c.class, c.lastLv, c.dex), anh: anhPokemon(dexHienTai(c.class, c.lastLv, c.dex)), value: c.lastLv })),
       error: loiTai || !!d?.topLevelError,
       errorText: 'Tạm thời chưa tải được dữ liệu xếp hạng.',
       emptyText: 'Chưa có dữ liệu xếp hạng.',
@@ -87,9 +87,9 @@ const board = computed(() => boards.value.find(b => b.value === tab.value) ?? bo
 <template>
   <div>
     <SitePageBanner
-      title="Bảng vàng anh hùng"
+      title="Bảng vàng Pokémon"
       eyebrow="Xếp hạng"
-      intro="Mỗi chiến tích, một dấu ấn. Cùng nhìn lại những tên tuổi trên hành trình chinh phục giang hồ."
+      intro="Mỗi chiến tích, một dấu ấn. Cùng nhìn lại những nhà huấn luyện và Pokémon mạnh nhất vùng đất này."
     />
 
     <section id="rank" class="relative scroll-mt-20 py-20" aria-labelledby="rank-title">
@@ -97,10 +97,10 @@ const board = computed(() => boards.value.find(b => b.value === tab.value) ?? bo
       <UContainer class="relative max-w-5xl">
         <FxReveal class="text-center">
           <p class="eyebrow justify-center">
-            Dấu ấn của anh hùng
+            Dấu ấn của nhà vô địch
           </p>
           <h2 id="rank-title" class="section-title mt-3 text-4xl text-highlighted sm:text-5xl">
-            Bảng vàng giang hồ
+            Bảng vàng Pokémon
           </h2>
         </FxReveal>
 

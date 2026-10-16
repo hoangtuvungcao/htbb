@@ -1,6 +1,7 @@
 <script setup lang="ts">
+const tenSite = useAppConfig().kpah.tenSite
 useHead({
-  titleTemplate: t => (t ? `${t} · KPAH - Khí Phách Anh Hùng` : 'KPAH - Khí Phách Anh Hùng'),
+  titleTemplate: t => (t ? `${t} · ${tenSite}` : tenSite),
 })
 </script>
 

@@ -14,6 +14,7 @@ interface NhanVat {
   charname: string
   lastLv: number
   class: number
+  dex: number
   gold: number | string
   luong: number | string
   luonglock: number | string
@@ -324,7 +325,7 @@ const cotNV: TableColumn<NhanVat>[] = [
           <template #charname-cell="{ row }">
             <strong class="text-highlighted">{{ row.original.charname }}</strong>
             <div class="text-xs text-muted">
-              {{ tenNghe(row.original.class) }} · máy chủ {{ row.original.idserver }}
+              {{ speciesName(row.original.class, row.original.lastLv, row.original.dex) }} · máy chủ {{ row.original.idserver }}
             </div>
           </template>
           <template #luong-cell="{ row }">

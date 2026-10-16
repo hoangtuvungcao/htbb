@@ -1,38 +1,62 @@
 <script setup lang="ts">
 useSeoMeta({
   title: 'Trang chủ',
-  description: 'Khám phá Khí Phách Anh Hùng: năm môn phái, bang hội và hành trình kiếm hiệp cùng bằng hữu. Tải game và đăng ký tài khoản.',
+  description: 'MMORPG nơi chính bạn là một Pokémon: chọn 1 trong 5 Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu cùng bạn bè. Tải game và đăng ký tài khoản.',
 })
 
 const auth = useAuth()
 onMounted(() => auth.hydrate())
 const { data: site } = await useSite()
 const hoTro = computed(() => linkHoTro(site.value))
+const tenSite = useAppConfig().kpah.tenSite
 
 const stats = [
-  { so: '05', tieuDe: 'Môn phái, một giang hồ', mo: 'Tìm phong cách chiến đấu của bạn' },
-  { so: '01', tieuDe: 'Lời hẹn cùng bằng hữu', mo: 'Sát cánh bên nhau, chinh phục thử thách' },
-  { so: '∞', tieuDe: 'Hành trình khám phá', mo: 'Mỗi ngày một câu chuyện mới' },
+  { so: '05', tieuDe: 'Pokémon khởi đầu', mo: 'Chọn người bạn đồng hành của chính bạn' },
+  { so: '18', tieuDe: 'Hệ khắc chế', mo: 'Lửa, Nước, Cỏ, Điện... biết hệ là thắng' },
+  { so: '21', tieuDe: 'Dạng tiến hoá', mo: 'Lên cấp và lớn mạnh qua từng giai đoạn' },
 ]
 
-const classes = [
-  { ten: 'Kiếm khách', ky: '⚔', mo: 'Kiếm trong tay, ngạo nghễ bước giữa giang hồ.', mau: 'from-jade-400/30 to-jade-900/10', vien: 'hover:border-jade-400/60', anh: 'shadow-jade-500/30' },
-  { ten: 'Chiến binh', ky: '♜', mo: 'Ý chí kiên cường, sát cánh cùng bằng hữu.', mau: 'from-orange-400/30 to-orange-900/10', vien: 'hover:border-orange-400/60', anh: 'shadow-orange-500/30' },
-  { ten: 'Đấu sĩ', ky: '◇', mo: 'Bản lĩnh tiên phong, không lùi trước thử thách.', mau: 'from-violet-400/30 to-violet-900/10', vien: 'hover:border-violet-400/60', anh: 'shadow-violet-500/30' },
-  { ten: 'Pháp sư', ky: '✧', mo: 'Khơi nguồn pháp thuật, khám phá sức mạnh huyền bí.', mau: 'from-sky-400/30 to-sky-900/10', vien: 'hover:border-sky-400/60', anh: 'shadow-sky-500/30' },
-  { ten: 'Cung thủ', ky: '➶', mo: 'Giương cung đón gió, vững tâm hướng tới mục tiêu.', mau: 'from-lime-400/30 to-lime-900/10', vien: 'hover:border-lime-400/60', anh: 'shadow-lime-500/30' },
-]
+/**
+ * 5 Pokémon khởi đầu, theo cột tob_char.class 0..4 (shared/utils/pokemon.ts).
+ * Thứ tự hiển thị: Charmander, Bulbasaur, Squirtle, Pichu, Eevee.
+ */
+const KIEU_KHOI_DAU: Record<number, { mo: string, mau: string, vien: string, anh: string, mauHe: string }> = {
+  0: { mo: 'Ngọn lửa trên đuôi không bao giờ tắt. Cận chiến cân bằng, càng đánh càng hăng.', mau: 'from-orange-400/30 to-orange-900/10', vien: 'hover:border-orange-400/60', anh: 'shadow-orange-500/30', mauHe: 'bg-orange-500/15 text-orange-300 ring-orange-400/40' },
+  1: { mo: 'Hạt giống trên lưng lớn dần theo từng trận. Lì đòn, trụ vững tuyến đầu.', mau: 'from-lime-400/30 to-lime-900/10', vien: 'hover:border-lime-400/60', anh: 'shadow-lime-500/30', mauHe: 'bg-lime-500/15 text-lime-300 ring-lime-400/40' },
+  3: { mo: 'Mai rùa cứng như đá, phun nước cực mạnh. Thủ chắc rồi phản công.', mau: 'from-sky-400/30 to-sky-900/10', vien: 'hover:border-sky-400/60', anh: 'shadow-sky-500/30', mauHe: 'bg-sky-500/15 text-sky-300 ring-sky-400/40' },
+  4: { mo: 'Nhỏ mà có võ: tích điện ở má rồi bắn tia sét từ xa.', mau: 'from-yellow-400/30 to-yellow-900/10', vien: 'hover:border-yellow-400/60', anh: 'shadow-yellow-500/30', mauHe: 'bg-yellow-500/15 text-yellow-300 ring-yellow-400/40' },
+  2: { mo: `Gen linh hoạt hiếm có. Đến cấp ${CAP_NHANH_EEVEE}, bạn tự chọn 1 trong 8 hướng tiến hoá.`, mau: 'from-violet-400/30 to-violet-900/10', vien: 'hover:border-violet-400/60', anh: 'shadow-violet-500/30', mauHe: 'bg-violet-500/15 text-violet-300 ring-violet-400/40' },
+}
+
+const khoiDau = [0, 1, 3, 4, 2].map((cls) => {
+  const dex = DEX_KHOI_DAU[cls as 0 | 1 | 2 | 3 | 4]
+  const loai = loaiPokemon(dex)!
+  const laEevee = cls === 2
+  const chuoi = laEevee
+    ? [{ dex, ten: loai.ten, cap: 0 }]
+    : chuoiTienHoa(dex).map((d, i, ds) => ({ dex: d, ten: tenLoai(d), cap: i === 0 ? 0 : loaiPokemon(ds[i - 1]!)!.capTienHoa }))
+  return {
+    cls,
+    dex,
+    ten: loai.ten,
+    he: loai.he,
+    anhSrc: anhPokemon(dex),
+    chuoi,
+    nhanhEevee: laEevee ? NHANH_EEVEE.map(d => ({ dex: d, ten: tenLoai(d) })) : [],
+    ...KIEU_KHOI_DAU[cls]!,
+  }
+})
 
 const portals = [
-  { so: '01 / KHỞI HÀNH', icon: 'i-lucide-download', tieuDe: 'Mở lối giang hồ', mo: 'Chọn phiên bản dành cho bạn và bắt đầu hành trình.', link: 'Tải game', to: '/download' },
-  { so: '02 / VINH DANH', icon: 'i-lucide-trophy', tieuDe: 'Lưu danh bảng vàng', mo: 'Theo dõi những cái tên ghi dấu ấn trong thế giới anh hùng.', link: 'Xem xếp hạng', to: '/ranking' },
-  { so: '03 / HỘI NGỘ', icon: 'i-lucide-scroll-text', tieuDe: 'Chuyện chốn giang hồ', mo: 'Khám phá tin tức, hoạt động và những lời hẹn cùng bằng hữu.', link: 'Đọc tin tức', to: '/news' },
+  { so: '01 / KHỞI HÀNH', icon: 'i-lucide-download', tieuDe: 'Bước vào thế giới Pokémon', mo: 'Chọn phiên bản dành cho bạn và bắt đầu chuyến phiêu lưu.', link: 'Tải game', to: '/download' },
+  { so: '02 / VINH DANH', icon: 'i-lucide-trophy', tieuDe: 'Lưu danh bảng vàng', mo: 'Theo dõi những Pokémon mạnh nhất và chủ nhân của chúng.', link: 'Xem xếp hạng', to: '/ranking' },
+  { so: '03 / HỘI NGỘ', icon: 'i-lucide-scroll-text', tieuDe: 'Tin tức vùng đất', mo: 'Khám phá tin tức, sự kiện và những cuộc hẹn cùng bạn bè.', link: 'Đọc tin tức', to: '/news' },
 ]
 
 const steps = computed(() => [
   { so: '01.', tieuDe: 'Tạo tài khoản', mo: 'Đăng ký tài khoản để bắt đầu hành trình của bạn.', link: 'Đăng ký ngay', to: '/register' },
   { so: '02.', tieuDe: 'Tải phiên bản phù hợp', mo: 'Chọn nền tảng và làm theo hướng dẫn cài đặt.', link: 'Chọn bản tải', to: '/download' },
-  { so: '03.', tieuDe: 'Gia nhập giang hồ', mo: 'Đăng nhập game, tạo nhân vật và tìm những người bạn đồng hành.', link: 'Cộng đồng & hỗ trợ', to: hoTro.value },
+  { so: '03.', tieuDe: 'Chọn Pokémon khởi đầu', mo: 'Đăng nhập game, chọn Pokémon của bạn và tìm những người bạn đồng hành.', link: 'Cộng đồng & hỗ trợ', to: hoTro.value },
 ])
 
 const faq = computed(() => [
@@ -55,18 +79,18 @@ const faq = computed(() => [
         <div class="max-w-2xl py-20 xl:max-w-3xl">
           <FxReveal>
             <p class="eyebrow">
-              Khí Phách Anh Hùng · MMORPG
+              {{ tenSite }} · MMORPG
             </p>
           </FxReveal>
           <FxReveal :delay="0.1">
             <h1 id="hero-heading" class="section-title mt-5 text-5xl text-highlighted drop-shadow-[0_4px_30px_rgba(0,0,0,.6)] sm:text-6xl lg:text-7xl">
-              Một thời <span class="text-jade-300">khí phách.</span><br>
-              <em class="text-gilded">Một đời anh hùng.</em>
+              Bạn không huấn luyện <span class="text-jade-300">Pokémon.</span><br>
+              <em class="text-gilded">Bạn chính là Pokémon.</em>
             </h1>
           </FxReveal>
           <FxReveal :delay="0.2">
             <p class="mt-6 max-w-xl text-lg text-toned">
-              Trở về miền ký ức, viết tiếp chuyện giang hồ. Cùng bằng hữu săn boss, lập bang hội và chinh phục thế giới Khí Phách Anh Hùng.
+              Chọn một Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu thời gian thực cùng bạn bè: săn Pokémon hoang dã, hạ boss huyền thoại, lập bang hội và tranh tài PvP.
             </p>
           </FxReveal>
           <FxReveal :delay="0.3">
@@ -91,7 +115,7 @@ const faq = computed(() => [
           </FxReveal>
           <FxReveal :delay="0.4">
             <div class="mt-10 flex items-center gap-4 text-xs tracking-[0.3em] text-muted">
-              <span class="h-px w-12 bg-gradient-to-r from-primary to-transparent" /> ✦ NHẬP VAI KIẾM HIỆP / KẾT NỐI BẰNG HỮU
+              <span class="h-px w-12 bg-gradient-to-r from-primary to-transparent" /> ✦ NHẬP VAI POKÉMON / KẾT NỐI BẠN BÈ
             </div>
           </FxReveal>
         </div>
@@ -117,39 +141,67 @@ const faq = computed(() => [
       </FxReveal>
     </UContainer>
 
-    <!-- ============ NGŨ ĐẠI MÔN PHÁI ============ -->
+    <!-- ============ 5 POKÉMON KHỞI ĐẦU ============ -->
     <section id="classes" class="scroll-mt-20 py-24" aria-labelledby="classes-title">
       <UContainer class="max-w-7xl">
         <FxReveal class="text-center">
           <p class="eyebrow justify-center">
-            Chọn con đường của bạn
+            Chọn người bạn của chính bạn
           </p>
           <h2 id="classes-title" class="section-title mt-3 text-4xl text-highlighted sm:text-5xl">
-            Ngũ đại môn phái
+            Năm Pokémon khởi đầu
           </h2>
           <p class="mx-auto mt-4 max-w-2xl text-muted">
-            Một mình làm nên tên tuổi. Cùng nhau làm nên huyền thoại. Bạn sẽ bước vào giang hồ với vai trò nào?
+            Mỗi Pokémon một hệ, một lối đánh và một con đường tiến hoá. Bạn sẽ bắt đầu chuyến phiêu lưu trong hình hài nào?
           </p>
         </FxReveal>
         <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          <FxReveal v-for="(c, i) in classes" :key="c.ten" :delay="i * 0.08">
+          <FxReveal v-for="(c, i) in khoiDau" :key="c.dex" :delay="i * 0.08">
             <FxTiltCard :max="14" as="article" class="group h-full rounded-2xl">
               <div
-                class="relative h-full overflow-hidden rounded-2xl border border-default/70 bg-gradient-to-br p-6 transition-colors duration-300"
+                class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-default/70 bg-gradient-to-br p-6 transition-colors duration-300"
                 :class="[c.mau, c.vien]"
               >
-                <small class="text-[0.7rem] tracking-[0.2em] text-dimmed">0{{ i + 1 }} / MÔN PHÁI</small>
+                <small class="text-[0.7rem] tracking-[0.2em] text-dimmed">#{{ String(c.dex).padStart(4, '0') }} / KHỞI ĐẦU</small>
                 <span
-                  class="mt-6 grid size-16 place-items-center rounded-full border border-white/10 bg-white/5 text-3xl text-highlighted shadow-2xl transition-transform duration-500 [transform:translateZ(60px)] group-hover:scale-110"
+                  class="mt-6 grid size-24 place-items-center rounded-full border border-white/10 bg-white/5 shadow-2xl transition-transform duration-500 [transform:translateZ(60px)] group-hover:scale-110"
                   :class="c.anh"
-                  aria-hidden="true"
-                >{{ c.ky }}</span>
+                >
+                  <img :src="c.anhSrc" width="40" height="40" :alt="`Chân dung ${c.ten}`" class="pixelated size-20 rounded-full">
+                </span>
                 <h3 class="mt-6 font-serif text-2xl font-bold text-highlighted [transform:translateZ(40px)]">
                   {{ c.ten }}
                 </h3>
-                <p class="mt-2 text-sm text-muted [transform:translateZ(25px)]">
+                <div class="mt-2 flex flex-wrap gap-1.5 [transform:translateZ(30px)]">
+                  <span v-for="h in c.he" :key="h" class="rounded-full px-2 py-0.5 text-xs font-semibold ring-1" :class="c.mauHe">{{ h }}</span>
+                </div>
+                <p class="mt-3 flex-1 text-sm text-muted [transform:translateZ(25px)]">
                   {{ c.mo }}
                 </p>
+                <!-- Chuỗi tiến hoá -->
+                <div class="mt-5 border-t border-white/10 pt-4">
+                  <p class="text-[0.65rem] tracking-[0.2em] text-dimmed">
+                    TIẾN HOÁ
+                  </p>
+                  <ol v-if="!c.nhanhEevee.length" class="mt-2 flex flex-wrap items-center gap-x-1 gap-y-2 text-xs">
+                    <li v-for="(t, j) in c.chuoi" :key="t.dex" class="inline-flex items-center gap-1">
+                      <UIcon v-if="j > 0" name="i-lucide-chevron-right" class="size-3 text-dimmed" aria-hidden="true" />
+                      <img :src="anhPokemon(t.dex)" width="40" height="40" alt="" class="pixelated size-6 rounded">
+                      <span class="text-toned">{{ t.ten }}</span>
+                      <span v-if="t.cap" class="text-dimmed">({{ t.cap }})</span>
+                    </li>
+                  </ol>
+                  <template v-else>
+                    <p class="mt-2 text-xs text-toned">
+                      Cấp {{ CAP_NHANH_EEVEE }}: chọn 1 trong 8
+                    </p>
+                    <ul class="mt-2 grid grid-cols-4 gap-1">
+                      <li v-for="t in c.nhanhEevee" :key="t.dex">
+                        <img :src="anhPokemon(t.dex)" width="40" height="40" :alt="t.ten" :title="t.ten" class="pixelated size-8 rounded">
+                      </li>
+                    </ul>
+                  </template>
+                </div>
               </div>
             </FxTiltCard>
           </FxReveal>
@@ -167,10 +219,9 @@ const faq = computed(() => [
               Thế giới của bạn
             </p>
             <h2 id="explore-title" class="section-title mt-3 text-4xl text-highlighted sm:text-5xl">
-              Giang hồ không chỉ có chiến trận.
+              Thế giới Pokémon không chỉ có chiến đấu.
             </h2>
           </div>
-          <span class="hidden rounded-xl border border-primary/30 px-3 py-2 text-center font-serif text-2xl leading-tight text-primary/70 sm:block" aria-hidden="true">江<br>湖</span>
         </FxReveal>
         <div class="mt-12 grid gap-6 md:grid-cols-3">
           <FxReveal v-for="(p, i) in portals" :key="p.to" :delay="i * 0.1">
@@ -197,7 +248,7 @@ const faq = computed(() => [
           <div class="relative overflow-hidden rounded-3xl glass ring-gilded p-8 sm:p-12">
             <div class="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-gold-400/10 blur-3xl" aria-hidden="true" />
             <p class="eyebrow">
-              Hẹn gặp bạn tại giang hồ
+              Hẹn gặp bạn trong thế giới Pokémon
             </p>
             <h2 id="guide-title" class="section-title mt-3 text-4xl text-highlighted">
               Hành trình bắt đầu từ đây.

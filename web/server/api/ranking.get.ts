@@ -3,7 +3,7 @@
  *
  * Mỗi bảng tự báo lỗi riêng (`error: true`) để một bảng hỏng không kéo sập cả
  * trang. Không bao giờ đưa chi tiết lỗi DB ra ngoài. Chỉ trả đúng các cột hiển thị
- * (tên nhân vật, cấp, môn phái, số lượng) — không id, tên đăng nhập, email hay IP.
+ * (tên nhân vật, cấp, loài Pokémon, số lượng) — không id, tên đăng nhập, email hay IP.
  */
 import type { Pool } from 'mysql2/promise'
 
@@ -21,12 +21,16 @@ export default defineCachedEventHandler(async () => {
   }
 
   // BXH cấp độ (theo kinh nghiệm)
-  let topLevel: Array<{ charname: string, lastLv: number, class: number }> = []
+  let topLevel: Array<{ charname: string, lastLv: number, class: number, dex: number }> = []
   let topLevelError = !rankDb
   if (rankDb) {
     try {
       const rows = await q(rankDb, XEP_HANG_CAP_DO_SQL)
-      topLevel = rows.map(r => ({ charname: String(r.charname), lastLv: Math.trunc(Number(r.lastLv) || 0), class: Math.trunc(Number(r.class)) }))
+      topLevel = rows.map((r) => {
+        const lastLv = Math.trunc(Number(r.lastLv) || 0)
+        const cls = Math.trunc(Number(r.class))
+        return { charname: String(r.charname), lastLv, class: cls, dex: dexHienTai(cls, lastLv, r.dex) }
+      })
     } catch { topLevelError = true }
   }
 

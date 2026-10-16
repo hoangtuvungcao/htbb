@@ -5,6 +5,8 @@ const auth = useAuth()
 onMounted(() => auth.hydrate())
 
 const route = useRoute()
+const tenSite = useAppConfig().kpah.tenSite
+const { data: site } = useSite()
 
 const links = computed<NavigationMenuItem[]>(() => {
   const ds: NavigationMenuItem[] = [
@@ -14,10 +16,9 @@ const links = computed<NavigationMenuItem[]>(() => {
     { label: 'Tin tức', to: '/news', icon: 'i-lucide-scroll-text', active: route.path.startsWith('/news') },
   ]
   if (auth.loggedIn.value) {
-    ds.push(
-      { label: 'Nạp mốc', to: '/naptien', icon: 'i-lucide-gem' },
-      { label: 'Kích hoạt', to: '/kichhoat', icon: 'i-lucide-badge-check' },
-    )
+    // Nạp tiền tắt mặc định (KPAH_NAP_BAT, quyết định Q10): chỉ hiện khi server bật.
+    if (site.value?.napBat) ds.push({ label: 'Nạp mốc', to: '/naptien', icon: 'i-lucide-gem' })
+    ds.push({ label: 'Kích hoạt', to: '/kichhoat', icon: 'i-lucide-badge-check' })
   }
   return ds
 })
@@ -27,7 +28,7 @@ const links = computed<NavigationMenuItem[]>(() => {
   <UHeader
     mode="slideover"
     to="/"
-    title="Khí Phách Anh Hùng — Trang chủ"
+    :title="`${tenSite} — Trang chủ`"
     :ui="{
       root: 'bg-default/60 backdrop-blur-xl border-b border-default/60',
       container: 'max-w-7xl',
@@ -36,7 +37,7 @@ const links = computed<NavigationMenuItem[]>(() => {
     <!-- UHeader đã tự bọc phần tiêu đề trong một liên kết về `to` (mặc định "/"):
          đặt thêm <NuxtLink> ở đây sẽ thành thẻ <a> lồng nhau -> lệch hydration. -->
     <template #title>
-      <img src="/logo.svg" width="180" height="50" alt="Khí Phách Anh Hùng — Trang chủ" class="h-11 w-auto drop-shadow-[0_0_18px_rgba(249,192,42,.25)]">
+      <img src="/logo.svg" width="180" height="50" :alt="`${tenSite} — Trang chủ`" class="h-11 w-auto drop-shadow-[0_0_18px_rgba(249,192,42,.25)]">
     </template>
 
     <UNavigationMenu :items="links" variant="link" color="primary" class="hidden lg:flex" />

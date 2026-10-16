@@ -8,6 +8,8 @@ export interface SiteConfig {
   linkJar: string
   linkGroup: string
   autoActivate: boolean
+  /** Nạp tiền đang bật (KPAH_NAP_BAT). Tắt = ẩn menu Nạp và trang /naptien, /xac-nhan-nap. */
+  napBat: boolean
 }
 
 export function useSite() {

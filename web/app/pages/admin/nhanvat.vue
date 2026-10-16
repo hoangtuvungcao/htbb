@@ -14,7 +14,7 @@ import type { TableColumn } from '@nuxt/ui'
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 
 interface DongNV {
-  id: number, charname: string, userId: number, lastLv: number, class: number
+  id: number, charname: string, userId: number, lastLv: number, class: number, dex: number
   gold: number, luong: number, ban: number, del: number, lastLog: string
 }
 interface KetQuaDs { q: string, trang: number, conTrangSau: boolean, ds: DongNV[], motId: number | null }
@@ -140,7 +140,7 @@ const columns: TableColumn<DongNV>[] = [
               {{ row.original.charname }}
             </NuxtLink>
             <div class="text-xs text-muted">
-              {{ tenNghe(row.original.class) }} · tài khoản #{{ row.original.userId }}
+              {{ speciesName(row.original.class, row.original.lastLv, row.original.dex) }} · tài khoản #{{ row.original.userId }}
             </div>
           </template>
           <template #lastLv-cell="{ row }">

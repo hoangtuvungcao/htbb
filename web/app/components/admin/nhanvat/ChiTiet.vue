@@ -13,7 +13,7 @@ const emit = defineEmits<{ veDanhSach: [] }>()
 
 interface ChiTietNhanVat {
   ct: {
-    id: number, charname: string, userId: number, lastLv: number, class: number, xp: number | string
+    id: number, charname: string, userId: number, lastLv: number, class: number, dex: number, xp: number | string
     gold: number, luong: number, luonglock: number, ban: number, del: number, lastLog: string
     idserver: number, idClan: number, nhack: number, blacklist: number, tichluy: number, topNap: number
   }
@@ -214,7 +214,7 @@ const trangThai = computed(() => {
               </template>
               <span v-else class="text-muted">không tìm thấy tài khoản #{{ ct.userId }}</span>
             </dd>
-            <dt class="text-muted">Nghề</dt><dd>{{ tenNghe(ct.class) }}</dd>
+            <dt class="text-muted">Pokémon</dt><dd>{{ speciesName(ct.class, ct.lastLv, ct.dex) }} <span class="text-muted">(dòng {{ tenNghe(ct.class) }})</span></dd>
             <dt class="text-muted">Cấp độ</dt>
             <dd><b class="tabular-nums">{{ ct.lastLv }}</b> <span class="text-xs text-muted">({{ so(ct.xp) }} kinh nghiệm)</span></dd>
             <dt class="text-muted">Xu</dt><dd class="tabular-nums">{{ so(ct.gold) }}</dd>

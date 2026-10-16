@@ -6,7 +6,7 @@ interface AccountInfo {
   username: string
   email: string | null
   activated: boolean
-  chars: Array<{ charname: string, lastLv: number, xp: number, class: number }>
+  chars: Array<{ charname: string, lastLv: number, xp: number, class: number, dex: number }>
 }
 
 const api = useApi()
@@ -105,14 +105,14 @@ async function doiEmail() {
 
 const columns = [
   { accessorKey: 'charname', header: 'Nhân vật' },
-  { accessorKey: 'class', header: 'Lớp' },
+  { accessorKey: 'class', header: 'Pokémon' },
   { accessorKey: 'lastLv', header: 'Cấp' },
 ]
 </script>
 
 <template>
   <div>
-    <SitePageBanner title="Tài khoản của tôi" eyebrow="Hồ sơ anh hùng" intro="Thông tin tài khoản và các nhân vật của bạn trong thế giới Khí Phách Anh Hùng." />
+    <SitePageBanner title="Tài khoản của tôi" eyebrow="Hồ sơ nhà huấn luyện" intro="Thông tin tài khoản và các nhân vật của bạn trong thế giới KPAH Pokémon." />
 
     <UContainer class="max-w-6xl py-14">
       <UAlert
@@ -187,7 +187,7 @@ const columns = [
                   Nhân vật
                 </p>
                 <h2 class="section-title mt-2 text-2xl text-highlighted">
-                  Những bước chân giang hồ
+                  Những Pokémon của bạn
                 </h2>
               </div>
               <UBadge v-if="data?.chars.length" color="neutral" variant="outline" size="lg">
@@ -209,7 +209,17 @@ const columns = [
                 <span class="font-semibold text-highlighted">{{ row.original.charname }}</span>
               </template>
               <template #class-cell="{ row }">
-                {{ CLASS_NAMES[row.original.class] ?? '—' }}
+                <span class="inline-flex items-center gap-2">
+                  <img
+                    v-if="anhPokemon(dexHienTai(row.original.class, row.original.lastLv, row.original.dex))"
+                    :src="anhPokemon(dexHienTai(row.original.class, row.original.lastLv, row.original.dex))"
+                    width="40"
+                    height="40"
+                    alt=""
+                    class="pixelated size-10 rounded-lg bg-ink-950/60"
+                  >
+                  {{ speciesName(row.original.class, row.original.lastLv, row.original.dex) }}
+                </span>
               </template>
               <template #lastLv-cell="{ row }">
                 <span class="num font-semibold text-primary">{{ row.original.lastLv }}</span>

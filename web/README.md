@@ -13,6 +13,36 @@ Website (trang công khai + khu quản trị) của máy chủ private KPAH, vi�
 Website này thay cho website cũ trong `KPAH/web/`; website cũ vẫn chạy cho tới khi
 bạn bật proxy Apache sang đây (xem [Bật website trên VPS](#bật-website-trên-vps)).
 
+## Nhánh Pokémon (`pokemon/chuyen-doi`)
+
+Trên nhánh này mọi nhân vật người chơi là một Pokémon (kế hoạch:
+`KPAH/docs/pokemon/KE_HOACH_CHUYEN_DOI.md`, việc W1 + W3). Phía web:
+
+- **Tên loài thay tên nghề.** `tob_char.class` (0..4) giữ nguyên, nay là dòng khởi đầu:
+  0 Charmander, 1 Bulbasaur, 2 Eevee, 3 Squirtle, 4 Pichu. Loài hiện tại tính bằng
+  `speciesName(class, cấp, dex)` / `dexHienTai()` trong
+  [shared/utils/pokemon.ts](shared/utils/pokemon.ts) — bản TS của `LoaiPokemon.java` ở repo
+  game, sửa bên kia thì sửa cả ở đây.
+- **Cần migration trước khi deploy.** Xếp hạng, Tài khoản và các trang admin (Nhân vật, chi
+  tiết Tài khoản, Tổng quan) `SELECT` cột mới `tob_char.dex` (smallint, 0 = suy ra từ class +
+  cấp). Chạy `KPAH/sql/them_cot_pokemon.sql` trên CSDL game **trước**; chưa có cột thì các
+  bảng đó báo "chưa tải được dữ liệu" / lỗi.
+- **Chân dung** 40×40 của 21 loài người chơi ở `public/pokemon/<dex>.png`, chép từ
+  `KPAH/ClientUnity/Assets/Resources/poke/<dddd>_cd.bytes` (thực chất là PNG). Hiển thị với
+  class `.pixelated` (`image-rendering: pixelated`).
+- **Trang ghi công `/ghi-cong`** (bắt buộc theo CC BY-NC 4.0) đọc
+  `public/pokemon/GHI_CONG.txt` lúc build. Mỗi lần client đóng gói lại sprite thì chép lại
+  file `KPAH/ClientUnity/Assets/Resources/poke/GHI_CONG.txt` sang rồi build.
+- **Tắt nạp tiền: `KPAH_NAP_BAT`** (mặc định `false`). Quyết định Q10: asset PMDCollab là
+  CC BY-NC 4.0 và Pokémon là IP của Nintendo, nên không được thu tiền. Khi tắt: menu
+  "Nạp mốc" ẩn, trang `/naptien` và `/xac-nhan-nap` báo 403, mọi API `/api/nap/**` và
+  `/api/xac-nhan-nap/**` (kể cả webhook SePay) trả **403** với thông báo tiếng Việt
+  ([server/middleware/tat-nap.ts](server/middleware/tat-nap.ts)). Code nạp không bị xoá;
+  `/admin/naptien` vẫn mở để xem đơn cũ. Đặt `KPAH_NAP_BAT=true` để bật lại — lưu ý deploy
+  bỏ qua biến rỗng, nên muốn tắt lại phải đặt hẳn `false`.
+- **Tên website** tạm là "KPAH Pokémon": `kpah.tenSite` trong [app/app.config.ts](app/app.config.ts)
+  (giao diện) và `site.name` trong [server/utils/config.ts](server/utils/config.ts) (API `/api/site`).
+
 ## Chạy thử trên máy
 
 Cần **Node ≥ 20** và MariaDB (XAMPP được).
@@ -72,13 +102,13 @@ Mỗi lần push lên `main`, [.github/workflows/deploy.yml](.github/workflows/d
 |---|---|
 | `VPS_SSH_KEY_WEB` — **bắt buộc** (VPS cũ 180.93.57.30) | `KPAH_LINK_ANDROID`, `KPAH_LINK_PC`, `KPAH_LINK_IOS`, `KPAH_LINK_JAR`, `KPAH_LINK_GROUP` |
 | `VPS_SSH_KEY_WEB_2` — VPS mới 180.93.127.26 (để trống = bỏ qua VPS mới) | |
-| `KPAH_SECRET` — **bắt buộc**, `openssl rand -hex 32` | `KPAH_AUTO_ACTIVATE` (`true`/`false`) |
+| `KPAH_SECRET` — **bắt buộc**, `openssl rand -hex 32` | `KPAH_AUTO_ACTIVATE` (`true`/`false`), `KPAH_NAP_BAT` (`true`/`false`, xem [Nhánh Pokémon](#nhánh-pokémon-pokemonchuyen-doi)) |
 | `KPAH_ADMIN_ACCOUNTS` — vd `hoahv,admin` | `KPAH_ADMIN_2FA_BAT_BUOC` |
 | `KPAH_TPBANK_ACCOUNT_NO`, `KPAH_TPBANK_ACCOUNT_NAME` | `KPAH_ADMIN_IDLE_TIMEOUT`, `KPAH_ADMIN_MAX_FAIL`, `KPAH_ADMIN_FAIL_WINDOW` |
 | `KPAH_SEPAY_WEBHOOK_APIKEY` | `KPAH_SERVER_DIR` (mặc định `/opt/kpah`) |
 | `KPAH_ADMIN_NAPTIEN_PASSWORD` | `KPAH_TRUSTED_PROXIES` |
 | `KPAH_DB_*` — chỉ khi web không đọc được `server.ini` | |
-| `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`, `KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` — gửi email, xem [Gửi email (Gmail API)](#gửi-email-gmail-api) | `KPAH_MAIL_FROM_NAME` (mặc định `Khí Phách Anh Hùng`) |
+| `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`, `KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` — gửi email, xem [Gửi email (Gmail API)](#gửi-email-gmail-api) | `KPAH_MAIL_FROM_NAME` (mặc định `KPAH Pokémon`) |
 
 **Hai VPS.** Push lên `main` deploy song song lên cả hai (job `deploy (vps-cu)` và
 `deploy (vps-moi)`, một bên lỗi không chặn bên kia). VPS mới **chỉ nhận bản build**: các
@@ -115,7 +145,7 @@ Gmail) — [server/utils/guiMail.ts](server/utils/guiMail.ts). Dùng cho:
 
 Thiếu một trong 4 biến `KPAH_GMAIL_CLIENT_ID`, `KPAH_GMAIL_CLIENT_SECRET`,
 `KPAH_GMAIL_REFRESH_TOKEN`, `KPAH_GMAIL_SENDER` = tắt gửi mail. `KPAH_MAIL_FROM_NAME` là
-tên người gửi (mặc định `Khí Phách Anh Hùng`).
+tên người gửi (mặc định `KPAH Pokémon`).
 
 ### Lấy thông tin (làm một lần)
 
@@ -171,7 +201,7 @@ Không phải đổi gì ở phía game:
   `https://<tên-miền>/api/nap/webhook-sepay` (API Key giữ nguyên). Chưa đổi thì
   tiền vẫn vào tài khoản nhưng đơn không tự xác nhận — phải bấm tay ở `/admin/naptien`.
 - Đường dẫn của website cũ không còn chạy; các trang mới: `/`, `/download`,
-  `/ranking`, `/news`, `/register`, `/login`, `/account`, `/kichhoat`, `/naptien`, `/admin`.
+  `/ranking`, `/news`, `/register`, `/login`, `/account`, `/kichhoat`, `/naptien`, `/ghi-cong`, `/admin`.
 - Database, bảng, mật khẩu `PASSWORD()` y hệt — login server không biết gì về thay đổi.
 
 Tắt proxy (trả Apache về website cũ): `a2disconf kpah-web-proxy && systemctl reload apache2`.

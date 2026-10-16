@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useSeoMeta({
   title: 'Đăng ký',
-  description: 'Tạo tài khoản Khí Phách Anh Hùng và bắt đầu hành trình cùng bằng hữu.',
+  description: 'Tạo tài khoản KPAH Pokémon và bắt đầu chuyến phiêu lưu cùng bạn bè.',
 })
 
 const api = useApi()
@@ -63,10 +63,10 @@ async function submit() {
       Khởi đầu một huyền thoại
     </p>
     <h1 id="register-title" class="section-title mt-3 text-4xl text-highlighted">
-      Gia nhập<br><em class="text-gilded">giang hồ.</em>
+      Bắt đầu<br><em class="text-gilded">phiêu lưu.</em>
     </h1>
     <p class="mt-3 text-muted">
-      Tạo tài khoản của bạn. Cùng bằng hữu viết nên một hành trình đáng nhớ.
+      Tạo tài khoản của bạn. Chọn Pokémon khởi đầu và cùng bạn bè viết nên một hành trình đáng nhớ.
     </p>
 
     <template v-if="daDangKy">

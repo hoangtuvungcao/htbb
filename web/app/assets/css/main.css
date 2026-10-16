@@ -173,3 +173,9 @@ body {
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
+
+/* Chân dung Pokémon 40×40 (PMDCollab) phóng to: giữ nét pixel, không làm mờ. */
+.pixelated {
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}

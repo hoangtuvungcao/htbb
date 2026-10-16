@@ -53,12 +53,19 @@ export function dangKyEmailHopLe(email: string): boolean {
   return nhan.every(n => /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/.test(n))
 }
 
-/** Tên nghề theo cột tob_char.class (khớp Res.nameClazz của client, MapCheTao.java:930). */
-export const CLASS_NAMES = ['Kiếm khách', 'Chiến binh', 'Pháp sư', 'Đấu sĩ', 'Cung thủ'] as const
+/**
+ * Dòng Pokémon khởi đầu theo cột tob_char.class (nhánh pokemon/chuyen-doi, quyết định Q1:
+ * class 0..4 giữ nguyên, chỉ đổi ý nghĩa). Tên cũ (Kiếm khách, Chiến binh, Pháp sư,
+ * Đấu sĩ, Cung thủ) ở CLASS_NAMES_CU. Loài hiện tại theo cấp: speciesName() ở pokemon.ts.
+ */
+export const CLASS_NAMES = ['Charmander', 'Bulbasaur', 'Eevee', 'Squirtle', 'Pichu'] as const
+
+/** Tên nghề cũ của KPAH (khớp Res.nameClazz của client, MapCheTao.java:930). */
+export const CLASS_NAMES_CU = ['Kiếm khách', 'Chiến binh', 'Pháp sư', 'Đấu sĩ', 'Cung thủ'] as const
 
 export function tenNghe(c: number | string | null | undefined): string {
   const i = Number(c)
-  return CLASS_NAMES[i] ?? `Nghề ${Number.isFinite(i) ? Math.trunc(i) : '?'}`
+  return CLASS_NAMES[i] ?? `Dòng ${Number.isFinite(i) ? Math.trunc(i) : '?'}`
 }
 
 /** Số nguyên làm tròn, dấu chấm ngăn cách hàng nghìn: 1234567 -> "1.234.567". */
