@@ -1,5 +1,22 @@
 # `sql/` — bản seed và các file migration
 
+## Dựng server mới (Huyền Thoại Bảo Bối): MỘT file
+
+```
+mysql -uroot < sql/htbb_day_du.sql        # tạo cả `account` lẫn `kpah_db`, đủ dữ liệu Pokémon
+```
+
+`htbb_day_du.sql` là **file sinh ra** (đừng sửa tay) bằng `tools/pokemon/xuat_sql_day_du.sh`. Script dựng
+lại từ đầu trên một MariaDB trống theo đúng thứ tự: `loginServer/account.sql` → `gamedb7_clean.sql` →
+`vps/db_new_server.sql` → các migration `them_*`/skin → các file `pokemon_*.sql` (`pokemon_doi_chu.sql`
+cuối cùng). Đã kiểm: nạp lại file vào MariaDB trống cho checksum khớp cả 102 bảng. Chạy lại script
+chỉ khác các mốc thời gian `NOW()` của tài khoản admin.
+
+Các file lẻ bên dưới **vẫn giữ** vì test/tool/trang quản trị đọc trực tiếp (xem cột "Ai đọc" khi
+`grep` tên file). Ngày 2026-10-16 đã xoá 3 file không ai đọc mà nội dung đã có sẵn trong seed hoặc trong
+`htbb_day_du.sql`: `them_bang_cau_hinh.sql`, `them_cot_soluong_log_buy_shop.sql`,
+`them_cot_userid_giftcode_log.sql`.
+
 Đối chiếu với production ngày **02/09/2026** (bằng bản sao DB của VPS nạp vào máy local).
 
 ## Đừng xoá thư mục này khi migration "đã áp dụng xong"
