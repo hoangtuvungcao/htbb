@@ -43,7 +43,7 @@ TEN_LOAI = {
 
 # (cap toi thieu, bac). Lay bac co cap toi thieu lon nhat <= cap item.
 BAC = [(0, "sơ cấp"), (10, "đồng"), (20, "bạc"), (30, "vàng"), (40, "bạch kim"),
-       (50, "kim cương"), (60, "cao thủ"), (70, "đại sư"), (80, "huyền thoại")]
+       (50, "kim cương"), (60, "chuyên gia"), (70, "đại sư"), (80, "huyền thoại")]
 
 
 def bac(cap):

@@ -754,7 +754,7 @@ public class TeamServer {
             // parseX: thieu dong = TAT (hanh vi KPAH cu), khong nem loi. Moi cho re nhanh doc
             // qua com.kpah.pokemon.CheDoPokemon.bat(). Doi gia tri phai khoi dong lai.
             com.kpah.pokemon.CheDoPokemon.dat(com.kpah.pokemon.CheDoPokemon.docGiaTri(p.getProperty("sv.che_do_pokemon")));
-            System.out.println("CHE DO POKEMON -> " + (com.kpah.pokemon.CheDoPokemon.bat() ? "BAT" : "TAT"));
+            System.out.println("CHE DO POKEMON -> " + (com.kpah.pokemon.CheDoPokemon.bat() ? "BAT" : "TAT") + " - " + com.kpah.pokemon.ThuongHieu.tenGame());
     
     
             
@@ -832,6 +832,10 @@ public class TeamServer {
         CauHinh.dongBoLucKhoiDong(p);
         CauHinh.batDau();
         Database.startSaveChar();
+        // G7.C: doi chu kiem hiep -> Pokemon (Text, ten vung, ten dong, ten thuoc, ngoc). PHAI
+        // SAU startSaveChar (Map.gemTemplate/potionTemplates2 da nap), TRUOC khi nhan nguoi
+        // choi. Tat che do Pokemon thi khong lam gi. Xem com.kpah.pokemon.ChuPokemon.
+        com.kpah.pokemon.ChuPokemon.ap();
         TeamServer.timeRemovePool = System.currentTimeMillis();
         System.out.println("Starting server...");
         (TeamServer.controllerManager = new ServerControllerManager()).addServerController(2, TeamServer.realController = new RealController());

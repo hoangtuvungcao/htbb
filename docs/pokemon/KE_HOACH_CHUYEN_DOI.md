@@ -558,6 +558,60 @@ Nguyên tắc chung:
 | Hệ theo từng chiêu | `bang_chieu.csv` có cột `so_he` nhưng S4 vẫn dùng hệ 1 của người đánh |
 | **M1–M5** | Câu hỏi mở mục 11 |
 
+## 15. Giai đoạn 7: Game mới hoàn toàn (mọi thứ người chơi nhìn thấy)
+
+Mục tiêu: không còn hình ảnh, tên gọi hay câu chữ nào của KPAH (kiếm hiệp, giang hồ, môn phái…) mà người chơi thấy được khi bật `sv.che_do_pokemon=1`. Tên tạm của game: **KPAH Pokémon**, đổi được ở một chỗ (G7.E1).
+
+Từ điển thuật ngữ cố định (mọi luồng việc dùng chung):
+
+| KPAH | Game mới |
+|---|---|
+| Lãnh thổ Thanh long / Hắc hổ / Huyền vũ | Vùng Kanto / Johto / Hoenn |
+| Bang hội, bang chủ | Đội, đội trưởng |
+| Nhân vật | Pokémon (của bạn) |
+| Môn phái / class | Dòng Pokémon |
+| Linh thú | Thú cưỡi |
+| Thuốc HP / MP | Thuốc hồi máu / Ether |
+| Ngọc (ép ngọc) | Ngọc hệ |
+| Xa phu | Bay (Fly) – Pidgeot |
+| Giang hồ, võ lâm, kiếm khách… | Thế giới Pokémon, huấn luyện… |
+
+| # | Luồng việc | Việc | Xong khi |
+|---|---|---|---|
+| G7.A | **Bản đồ** | A1 tile 16 px của KPAH thay bằng tile phong cách PMD (sinh tự động bằng tool, giữ nguyên chỉ số tile nên không phải sửa bố cục map); A2 ảnh nền/vật trang trí trên map | Mọi tileset được thay; client và server dùng bộ mới khi bật chế độ; có ảnh xem trước |
+| G7.B | **Hình còn sót** | B1 16 `vat_the` (cổng, ngọc, rương, nguyên liệu) dùng RawAsset/Object; B2 NPC sự kiện `Npc_Server`; B3 pet kiểu cũ; B4 logo, màn đăng nhập, màn tải | Không còn sprite người/vật KPAH hiện ra khi bật chế độ |
+| G7.C | **Chữ và dữ liệu** | C1 thuốc (`data_potion`), ngọc, nhiệm vụ, tên NPC, hội thoại NPC, hướng dẫn (`Text.help`), tên vùng/đội; C2 chuỗi thông báo server; C3 chuỗi UI client; C4 vật phẩm type 20–30 còn lại | Tool quét không còn từ cấm trong chuỗi người chơi thấy (danh sách từ cấm có test) |
+| G7.D | **Lối chơi** | D1 hệ theo từng chiêu + STAB ×1.2; D2 Pokédex (đã gặp / đã hạ theo loài, xem qua NPC); D3 NPC Eevee chọn nhánh; D4 thưởng mốc Pokédex | Test hàm thuần + chạy e2e |
+| G7.E | **Thương hiệu** | E1 tên game một chỗ (client, server, web); E2 tên build/ứng dụng | Đổi tên ở một chỗ là đổi khắp nơi |
+
+### 15.1 Kết quả giai đoạn 7 (2026-10-16)
+
+| # | Đã làm | File chính |
+|---|---|---|
+| G7.A | Tile 3 bộ (`t`, `t_hang`, `t_thanh`) vẽ lại theo chất liệu PMD, giữ nguyên chỉ số tile, ô chặn/đi được và độ trong suốt; hang giữ vực đen và mép gốc. Cây và vật trang trí (`map/tree` 47, `map/cay` 95, 7 ảnh lễ hội): 3 cây thay bằng PMD Tree_Town, còn lại tô lại màu theo bảng PMD | `tools/pokemon/DoiTileMap.java`, `map/pokemon_tile/`, `map/pokemon_trang_tri/`, `Resources/poke_tile/`, `PokeTile.cs`, `TrangTriPokemon.java`, xem trước `xem_truoc_tile.png` |
+| G7.B | 16 vật thể dùng RawAsset Object/Item; 13 NPC sự kiện; pet kiểu cũ (idImg 0–20) → Pokémon; 194 loài sprite | `VatThePokemon.cs`, `Npc_Server.cs`, `AnimalMove.cs`, `tai_vat_the.py`, các `bang_*.csv` |
+| G7.C | Một từ điển `ChuPokemon.DOI` (Java là nguồn duy nhất; Python và C# sinh từ đó) áp ở các điểm gửi chữ của server (`MessageCreator`…) và mọi chữ client vẽ ra (`MFont`). 347 ô DB đổi chữ (thuốc, nhiệm vụ, vật phẩm, shop) | `ChuPokemon.java/.cs`, `sinh_sql_chu.py`, `quet_tu_cam.py`, `sql/pokemon_doi_chu.sql` |
+| G7.D | Hệ theo từng chiêu + STAB ×1,2; Pokédex (`tob_pokedex`, ghi theo lô khi lưu nhân vật); NPC -90 thêm menu Pokédex / thưởng mốc 10-25-50-100 / tiến hoá Eevee | `ChieuPokemon.java`, `Pokedex.java`, `PokedexPokemon.java`, `DatabasePokedex.java`, `sql/them_bang_pokedex.sql` |
+| G7.E | Tên game một chỗ: `ThuongHieu` (Java + C#), màn chọn server/tải/đăng nhập vẽ tiêu đề + 5 chân dung; `XayDung.cs` lấy tên build/app id từ đây | `ThuongHieu.cs/.java`, `Editor/XayDung.cs` |
+
+**Kiểm thử giai đoạn 7:**
+- Java 65/5905 hỏng (đúng 14 nhóm cũ); `dotnet build` client 0 lỗi; 194 file `_dl` đọc đúng.
+- Bộ quét từ cấm: Java 504 → 0, C# 148 → 0, SQL → 0.
+- **E2E trên DB dựng mới từ seed** + đủ 8 file SQL Pokémon theo thứ tự: tạo nhân vật Pichu, nhận -90 dex=172/-91/-93/-94, lệnh 105 hết địa danh cũ, icon 14014 đúng byte; quét **3217 chuỗi** server gửi cho người chơi mới → **0 từ cấm**.
+- Pokédex/thưởng mốc/Eevee qua NPC đã chạy e2e (bot hạ 67 quái → 4 loài ghi vào `tob_pokedex`; mốc 10, 50 nhận được; Eevee → Jolteon).
+
+**Còn lại sau giai đoạn 7:**
+
+| Việc | Ghi chú |
+|---|---|
+| Xem bằng mắt trong Unity | Toàn bộ phần hình (sprite, tile, particle, vật thể, tiêu đề) chưa xem trên Unity thật. `Editor/XayDung.cs` không được `cscheck` biên dịch (cần UnityEditor.dll) |
+| Chữ người dùng chọn | Các câu mới (Pokédex, thưởng mốc, Đội phó, Cố vấn, tên bậc Poké Ball…) theo CODING_CONVENTION §10 cần chủ dự án duyệt |
+| Tên vật phẩm còn chất KPAH nhưng không thuộc từ cấm | vd "Mảnh tứ khoái", "Hộ vệ lân sư tử", "Tóc bờm ngựa" — thêm vào `TU_CAM`/`DOI` rồi chạy lại `sinh_sql_chu.py` |
+| Nhà/mái/thuyền trên tile | Chỉ tô lại màu (≈20–30% tile), chưa thay hình |
+| 3 boss ghi đè `onDropItem` không gọi lớp cha | BossTruRong, BossTruRongMoba, BossNguoiTuyet: không tính vào Pokédex, không rơi đá |
+| `TField` | Con trỏ có thể lệch nhẹ khi gõ đúng một từ trong từ điển |
+| **M1–M5** | Mục 11 |
+
 ## 14. Lệnh hay dùng
 
 ```bash
@@ -573,10 +627,15 @@ python3 -I tools/pokemon/ap_ten_chieu.py        # bang_chieu.csv + tên chiêu v
 javac -encoding UTF-8 -d build/tools tools/pokemon/DongGoiSprite.java && java -cp build/tools DongGoiSprite
 python3 -I tools/pokemon/tai_hieu_ung_pmd.py      # particle chiêu (--khong-tai: chỉ đóng gói lại)
 python3 -I tools/pokemon/sinh_icon_pokemon.py     # icon item PMD + sql/pokemon_icon_vat_pham.sql
+python3 -I tools/pokemon/sinh_sql_chu.py          # chữ DB + từ điển C# (sau khi sửa ChuPokemon.DOI)
+python3 -I tools/pokemon/quet_tu_cam.py --kiem    # quét từ cấm còn sót
+python3 -I tools/pokemon/tai_vat_the.py           # ảnh 16 vật thể + vật NPC sự kiện
+javac -encoding UTF-8 -d build/tools tools/pokemon/DoiTileMap.java && java -cp build/tools DoiTileMap --khong-tai
 
 # Thứ tự SQL trên server mới (sau gamedb7_clean.sql + vps/db_new_server.sql):
 #   sql/them_cot_pokemon.sql, sql/pokemon_du_lieu_quai.sql, sql/pokemon_doi_ten_vat_pham.sql,
-#   sql/pokemon_doi_ten_thu.sql, sql/pokemon_vat_pham_eevee.sql, sql/pokemon_icon_vat_pham.sql
+#   sql/them_bang_pokedex.sql, sql/pokemon_doi_ten_thu.sql, sql/pokemon_vat_pham_eevee.sql,
+#   sql/pokemon_icon_vat_pham.sql, sql/pokemon_doi_chu.sql   (doi_chu PHAI chay cuoi)
 ```
 
 **65 kiểm tra cũ đang hỏng** (Sự kiện, Hoá hình Pet, Tinh luyện thần binh…) đã có từ trước khi

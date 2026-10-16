@@ -332,7 +332,7 @@ public class MessageCreator {
     public static Message createMsgNpc(final String name, final int x, final int y, final int w, final int h, final int nFrame, final int idImg, final int id, final byte type) {
         final Message m = new Message(-50);
         try {
-            m.dos.writeUTF(name);
+            m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(name));
             m.dos.writeShort(id);
             m.dos.writeShort(idImg);
             m.dos.writeShort(x);
@@ -622,7 +622,7 @@ public class MessageCreator {
             msg.dos.writeByte(idmenu);
             msg.dos.writeByte(menu.size());
             for (int i = 0; i < menu.size(); ++i) {
-                msg.dos.writeUTF(menu.get(i));
+                msg.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(menu.get(i)));
             }
         } catch (final Exception ex) {
         }
@@ -636,7 +636,7 @@ public class MessageCreator {
             msg.dos.writeByte(idmenu);
             msg.dos.writeByte(menu.length);
             for (int i = 0; i < menu.length; ++i) {
-                msg.dos.writeUTF(menu[i]);
+                msg.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(menu[i]));
             }
         } catch (final Exception ex) {
         }
@@ -648,7 +648,7 @@ public class MessageCreator {
         try {
             msg.dos.writeShort(idNPC);
             msg.dos.writeByte(idmenu);
-            msg.dos.writeUTF(info);
+            msg.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info));
             msg.dos.writeByte(typeIput);
         } catch (final Exception ex) {
         }
@@ -660,7 +660,7 @@ public class MessageCreator {
         try {
             msg.dos.writeShort(idNPC);
             msg.dos.writeByte(idPopup);
-            msg.dos.writeUTF(info);
+            msg.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info));
         } catch (final Exception ex) {
         }
         return msg;
@@ -860,7 +860,7 @@ public class MessageCreator {
                     m.dos.writeShort(0);
                     continue;
                 }
-                m.dos.writeUTF(it.name);
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(it.name));
                 m.dos.writeByte(it.type);
                 m.dos.writeByte(it.style);
                 m.dos.writeByte(it.he);
@@ -882,8 +882,8 @@ public class MessageCreator {
                 m.dos.writeShort(Map.gemTemplate[l].id);
                 m.dos.writeByte(Map.gemTemplate[l].idImage);
                 m.dos.writeInt(Map.gemTemplate[l].getPrice(Map.isSale));
-                m.dos.writeUTF(Map.gemTemplate[l].name);
-                m.dos.writeUTF(Map.gemTemplate[l].decript);
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(Map.gemTemplate[l].name));
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(Map.gemTemplate[l].decript));
                 m.dos.writeByte(Map.gemTemplate[l].type);
                 m.dos.writeByte(Map.gemTemplate[l].sell);
                 m.dos.writeByte(Map.gemTemplate[l].ep);
@@ -894,8 +894,8 @@ public class MessageCreator {
                 m.dos.writeByte(Map.shop[l].id);
                 m.dos.writeByte(Map.shop[l].idImage);
                 m.dos.writeInt(Map.shop[l].getPrice(Map.isSale));
-                m.dos.writeUTF(Map.shop[l].name);
-                m.dos.writeUTF(Map.shop[l].decript);
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(Map.shop[l].name));
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(Map.shop[l].decript));
                 m.dos.writeByte(Map.shop[l].type);
                 m.dos.writeByte(Map.shop[l].tab);
                 m.dos.writeByte(Map.shop[l].sell);
@@ -1120,8 +1120,8 @@ public class MessageCreator {
                         m.dos.writeByte(animal.idImg);
                         m.dos.writeByte(Animal.idImgIcon[animal.idImg]);
                         m.dos.writeByte(animal.level);
-                        m.dos.writeUTF(animal.getName());
-                        m.dos.writeUTF(animal.getInfoSendUser());
+                        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.tenThuCuoi(animal.getName()));
+                        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(animal.getInfoSendUser()));
                         m.dos.writeByte(0);
                     }
                 }
@@ -1355,7 +1355,7 @@ public class MessageCreator {
             }
             m.dos.writeByte(type);
             if (type != -1) {
-                final String info2 = String.valueOf(p.animalRide.name) + " lv " + p.animalRide.level + "\n" + p.animalRide.getInfoSendUser();
+                final String info2 = String.valueOf(com.kpah.pokemon.ChuPokemon.tenThuCuoi(p.animalRide.name)) + " lv " + p.animalRide.level + "\n" + p.animalRide.getInfoSendUser();
                 m.dos.writeUTF(info2);
                 int idIcon = Animal.idImgIcon[p.animalRide.idImg];
                 if (p.rankGov == 0) {
@@ -1472,7 +1472,7 @@ public class MessageCreator {
             }
             m.dos.writeByte(type);
             if (type != -1) {
-                final String info2 = String.valueOf(p.animalRide.name) + " lv " + p.animalRide.level + "\n" + p.animalRide.getInfoSendUser();
+                final String info2 = String.valueOf(com.kpah.pokemon.ChuPokemon.tenThuCuoi(p.animalRide.name)) + " lv " + p.animalRide.level + "\n" + p.animalRide.getInfoSendUser();
                 m.dos.writeUTF(info2);
                 int idIcon = Animal.idImgIcon[p.animalRide.idImg];
                 if (p.rankGov == 0) {
@@ -2323,26 +2323,27 @@ public class MessageCreator {
 
     public static Message createServerInfoMessage() throws IOException {
         final Message m = new Message(38);
-        m.dos.writeUTF(RealController.maquee);
+        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(RealController.maquee));
         return m;
     }
     
     public static Message createthongbao(final String message) throws IOException {
         final Message m = new Message(38);
-        m.dos.writeUTF(message);
+        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(message));
         return m;
     }
 
     public static Message createServerInfoMessage1() throws IOException {
         final Message m = new Message(38);
-        m.dos.writeUTF(RealController.maquee2);
+        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(RealController.maquee2));
         return m;
     }
 
     public static Message createServerAlertMessage(final String message, final String url) {
         final Message m = new Message(37);
         try {
-            m.dos.writeUTF(message);
+            // G7.C: moi thong bao server qua day - doi chu Pokemon o MOT cho (ChuPokemon).
+            m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(message));
             m.dos.writeUTF(url);
         } catch (final Exception ex) {
         }
@@ -2351,7 +2352,7 @@ public class MessageCreator {
 
     public static Message createServerAlertAutoOffMessage(final String message) throws IOException {
         final Message m = new Message(-26);
-        m.dos.writeUTF(message);
+        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(message));
         return m;
     }
 
@@ -2651,7 +2652,7 @@ public class MessageCreator {
     public static Message createMsgSpeaker(final String info) {
         final Message m = new Message(-60);
         try {
-            m.dos.writeUTF(info);
+            m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info));
         } catch (final Exception ex) {
         }
         return m;
@@ -2862,15 +2863,15 @@ public class MessageCreator {
                 m.dos.writeByte(info.size() + 1);
                 m.dos.writeUTF("Có thể nhận được:");
                 for (byte i = 0; i < info.size(); ++i) {
-                    m.dos.writeUTF(info.get(i));
+                    m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info.get(i)));
                 }
             } else if (type == 1) {
                 m.dos.writeByte(n);
-                m.dos.writeUTF(info.get(0));
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info.get(0)));
                 m.dos.writeByte(info.size());
                 m.dos.writeUTF("Có thể nhận được:");
                 for (byte i = 1; i < info.size(); ++i) {
-                    m.dos.writeUTF(info.get(i));
+                    m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info.get(i)));
                 }
             }
         } catch (final Exception ex) {
@@ -2903,28 +2904,28 @@ public class MessageCreator {
                 final InfoQuestTemplate info = q.getTemplate();
                 m.dos.writeShort(q.id_quest);
                 m.dos.writeByte(info.main_sub);
-                m.dos.writeUTF(info.name);
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info.name));
                 switch (type) {
                     case 0: {
                         m.dos.writeByte(info.idNpcRcv);
-                        m.dos.writeUTF(info.content);
+                        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info.content));
                         m.dos.writeByte(info.type);
                         m.dos.writeByte(info.deltaLv);
                         break;
                     }
                     case 1: {
                         m.dos.writeByte(info.idNpcRes);
-                        m.dos.writeUTF(info.resContent);
-                        m.dos.writeUTF(info.getinfoHelpFinishQuest());
-                        m.dos.writeUTF(info.infoGift);
+                        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info.resContent));
+                        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info.getinfoHelpFinishQuest()));
+                        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info.infoGift));
                         break;
                     }
                     case 2: {
                         m.dos.writeByte(info.type);
-                        m.dos.writeUTF(info.shortContent);
+                        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info.shortContent));
                         m.dos.writeByte(info.idNpcRes);
                         m.dos.writeByte(info.deltaLv);
-                        m.dos.writeUTF(info.infoGift);
+                        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info.infoGift));
                         if (info.type == 1) {
                             break;
                         }
@@ -3137,7 +3138,7 @@ public class MessageCreator {
         try {
             m.dos.writeByte(cat);
             m.dos.writeShort(id);
-            m.dos.writeUTF(info);
+            m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info));
             m.dos.writeInt(time);
             m.dos.writeShort(idIcon);
             m.dos.writeByte(isCountDown);

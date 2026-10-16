@@ -54,6 +54,8 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2023-09-27 03:52:56.017938	<@!169247379453640706>	CUR	PMDCollab_2	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 2023-10-05 00:08:19.400287	<@!169247379453640706>	CUR	PMDCollab_2	Eat,Sit
 2023-10-05 01:31:41.533822	<@!169247379453640706>	CUR	PMDCollab_2	Pull,Sit
+== 0029
+2020-10-07 17:58:43.432151	CHUNSOFT	CUR	Unspecified	Walk,Attack,MultiScratch,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0035
 2020-10-07 17:58:43.447108	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Withdraw,Dance,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0036
@@ -148,6 +150,10 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2020-10-07 17:58:43.655551	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0115
 2020-10-07 17:58:43.661535	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0120
+2020-10-07 17:58:43.676497	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0121
+2020-10-07 17:58:43.679488	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0123
 2020-10-07 17:58:43.683476	CHUNSOFT	CUR	Unspecified	Walk,Attack,Slice,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0127
@@ -156,6 +162,8 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2020-10-07 17:58:43.695446	CHUNSOFT	CUR	Unspecified	Walk,Attack,Stomp,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0128s
 2020-10-07 17:58:43.696443	<@!200385851069300736>	CUR	PMDCollab_1	Walk,Attack,Stomp,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0129
+2020-10-07 17:58:43.697441	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0130
 2023-05-04 14:55:15.921758	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,RearUp,Swing,Double,Rotate,Hop
 == 0131
@@ -203,6 +211,9 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2020-10-07 17:58:43.791188	<@!171030521009274881>	CUR	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shoot,Sleep,SpAttack,Swing,Walk
 2022-01-28 03:54:12.977880	<@!217899432652308480>	CUR	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shoot,Sleep,SpAttack,Swing,Walk
 2024-04-29 08:45:12.685779	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,SpAttack,Swing,Double,Rotate,Hop,Eat,Cringe
+== 0165
+2020-10-07 17:58:43.793186	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Hover,Shoot,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2023-07-12 02:03:01.464191	<@!702275233125630042>	CUR	PMDCollab_2	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 == 0168
 2020-10-07 17:58:43.803156	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0169
@@ -226,8 +237,15 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2020-10-07 17:58:43.815124	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Sing,Shoot,Dance,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0178
 2022-12-16 20:07:13.939155	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
+== 0179
+2020-10-07 17:58:43.830084	CHUNSOFT	CUR	Unspecified	Attack,Charge,Double,Emit,Hop,Hurt,Idle,Rotate,Shoot,Sleep,Swing,Walk
+2021-08-08 02:27:56.281344	<@!356635814668664832>	CUR	PMDCollab_1	Attack,Charge,Cringe,DeepBreath,Double,Eat,Emit,EventSleep,Faint,Float,Head,HitGround,Hop,Hurt,Idle,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,Rotate,Shoot,Sink,Sit,Sleep,Swing,Trip,Tumble,TumbleBack,Wake,Walk
+2023-04-16 03:58:36.879584	<@!356635814668664832>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 == 0185
 2020-10-07 17:58:43.848037	CHUNSOFT	CUR	Unspecified	Walk,Attack,Slam,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0190
+2020-10-07 17:58:43.861002	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Dance,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2023-07-16 15:58:43.889144	<@!702275233125630042>	CUR	PMDCollab_2	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 == 0194
 2020-10-07 17:58:43.869977	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 2023-06-11 07:27:53.275338	<@!330751862590406656>	CUR	PMDCollab_2	EventSleep,Wake,Eat,Pose,Float,DeepBreath,Nod,Sink,Laying,Cringe
@@ -278,6 +296,12 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2021-12-03 15:05:43.321223	<@!358038459237138432>	CUR	PMDCollab_1	Attack,Charge,Cringe,DeepBreath,Double,Eat,EventSleep,Faint,Float,Head,HitGround,Hop,Hurt,Idle,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,RearUp,Rotate,Shoot,Sink,Sit,Sleep,Swing,Trip,Tumble,TumbleBack,Wake,Walk
 == 0269
 2020-10-07 17:58:44.224636	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,FlapAround,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0270
+2020-10-07 17:58:44.229622	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Dance,Appeal,Shake,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0276
+2020-10-07 17:58:44.245580	CHUNSOFT	CUR	Unspecified	Walk,Attack,QuickStrike,Shoot,FlapAround,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0282
+2022-07-09 22:37:29.896062	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Appeal,SpAttack,Swing,Double,Rotate,Hop
 == 0286
 2020-10-07 17:58:44.272507	CHUNSOFT	CUR	Unspecified	Walk,Attack,Punch,MultiStrike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 2024-07-02 16:28:24.479128	<@!356635814668664832>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
@@ -293,6 +317,8 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2020-10-07 17:58:44.402160	CHUNSOFT	CUR	Unspecified	Walk,Attack,Bite,Shoot,Swell,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0336s
 2024-04-01 10:57:02.868555	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Bite,Swell,Swing,Double,Rotate,Hop
+== 0337
+2020-10-07 17:58:44.404154	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0340
 2020-10-07 17:58:44.410140	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Shake,Rumble,Dance,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0342
@@ -312,6 +338,8 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 == 0357
 2020-10-07 17:58:44.458011	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Hover,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 2024-04-21 20:26:31.308465	<@!356635814668664832>	CUR	CC_BY-NC_4	Eat
+== 0370
+2020-10-07 17:58:44.487931	CHUNSOFT	CUR	Unspecified	Walk,Attack,QuickStrike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0373
 2020-10-07 17:58:44.494912	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Rumble,Emit,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 2022-06-30 22:42:31.864587	<@!356635814668664832>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
@@ -321,6 +349,13 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2022-12-17 00:14:21.402518	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,Emit,Swing,Double,Rotate,Hop
 == 0384
 2020-10-07 17:58:44.522837	CHUNSOFT	CUR	Unspecified	Walk,Attack,QuickStrike,Shoot,SpAttack,Rumble,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0385
+2022-08-10 00:31:03.706807	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,Hover
+2022-08-10 20:14:00.023712	<@!217653022094786560>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2022-08-16 01:50:12.606642	<@!217653022094786560>	CUR	PMDCollab_1	Pose,Nod
+2024-09-10 00:15:28.180816	<@!217653022094786560>	CUR	CC_BY-NC_4	Pose,DeepBreath,Nod,LookUp
+== 0393
+2020-10-07 17:58:44.553755	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Appeal,Hover,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,Faint,HitGround
 == 0399
 2022-08-24 13:24:21.242763	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Withdraw,Swing,Double,Rotate,Hop
 2022-09-02 16:10:36.474139	<@!356635814668664832>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
@@ -353,6 +388,10 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2020-10-07 17:58:44.686399	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
 == 0437
 2020-10-07 17:58:44.688395	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Emit,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0448
+2020-10-07 17:58:44.723301	CHUNSOFT	CUR	Unspecified	Walk,Attack,QuickStrike,Strike,SpAttack,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2023-03-19 21:50:39.908380	<@!356635814668664832>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2024-09-07 21:23:27.049432	<@!356635814668664832>	CUR	CC_BY-NC_4	EventSleep,Wake,Float,Trip,Laying,HitGround
 == 0451
 2022-11-08 03:48:10.510221	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Bite,Jab,Swing,Double,Rotate,Hop
 == 0453
@@ -440,6 +479,8 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 2021-04-07 17:00:57.834009	<@!356635814668664832>	CUR	PMDCollab_1	Attack,Charge,Cringe,DeepBreath,Double,Eat,EventSleep,Faint,Float,Head,HitGround,Hop,Hurt,Idle,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,Rotate,Shoot,Sink,Sit,Sleep,Swing,Trip,Tumble,TumbleBack,Wake,Walk
 2022-05-23 07:29:27.931439	<@!356635814668664832>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Twirl,SpAttack,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
 2024-09-04 23:45:49.311972	<@!356635814668664832>	CUR	CC_BY-NC_4	"
+== 0615
+2024-06-21 18:31:29.838970	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
 == 0627
 2024-06-08 03:48:34.757117	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,FlapAround,Swing,Double,Rotate,Hop
 2024-06-08 03:50:04.206067	<@!215638650434617345>	CUR	CC_BY-NC_4	"

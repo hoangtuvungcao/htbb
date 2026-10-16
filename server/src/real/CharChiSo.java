@@ -1,7 +1,7 @@
 package real;
 
 import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.SatThuongHe;
+import com.kpah.pokemon.ChieuPokemon;
 
 
 import server.TeamServer;
@@ -747,11 +747,15 @@ class CharChiSo {
                     if (def < 0) {
                         def = 5 + Map.r.nextInt(10);
                     }
+                    // Che do Pokemon (G7.D2): danh trung quai -> Pokedex "da gap" (tat co: khong lam gi).
+                    PokedexPokemon.khiDanh(self, actor);
                     if (!self.map.isMapChienTruongMoba() || (self.map.isMapChienTruongMoba() && !actor.isCharMonster())) {
                         if (CheDoPokemon.bat()) {
-                            // Che do Pokemon (viec S4): khac he 18 he thay ngu hanh.
-                            // He tan cong = he 1 cua nguoi danh (giai doan 3 se la he chieu).
-                            att = SatThuongHe.apDung(att, self.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
+                            // Che do Pokemon: khac he 18 he thay ngu hanh. G7.D1: he tan cong =
+                            // he cua CHIEU idSkill (docs/pokemon/bang_chieu.csv) + STAB x1.2;
+                            // skill ngoai bang -> he 1 cua nguoi danh, khong STAB (nhu S4).
+                            att = ChieuPokemon.apDung(att, self.charClass, idSkill, self.hePokemon1(), self.hePokemon2(),
+                                    actor.hePokemon1(), actor.hePokemon2());
                         } else if ((self.he + 2) % 5 == actor.he) {
                             def -= def * 5 / 100;
                             att += att * 10 / 100;

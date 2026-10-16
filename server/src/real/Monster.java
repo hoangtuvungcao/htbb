@@ -840,6 +840,7 @@ public class Monster extends LiveActor {
         }
         // Che do Pokemon: nguon phat da tien hoa Eevee (tat che do -> khong lam gi).
         RoiDaTienHoa.khiHaQuai(p, this);
+        PokedexPokemon.khiHaQuai(p, this); // G7.D2 Pokedex "da ha" (tat co: khong lam gi)
         final int x2Drop = p.getValueLua(0);
         Label_5628:
         {

@@ -201,8 +201,8 @@ public class MonsterTemplate
 
 	public void loadImage()
 	{
-		// Template da la Pokemon (lenh -91) thi khong xin anh quai cu (-47) nua.
-		if (laPokemon(type))
+		// Template da la Pokemon (lenh -91) hoac do vat PMD (VatThePokemon) thi khong xin anh quai cu (-47) nua.
+		if (laPokemon(type) || VatThePokemon.laVatThe(type))
 		{
 			return;
 		}

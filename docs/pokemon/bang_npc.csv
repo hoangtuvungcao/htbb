@@ -6,7 +6,7 @@ type,ten_cu,vai_tro,id_anh_cu,dex,pokemon,co_sprite
 4,Lính gác,Linh gac (Tilemap.idLinhGac),4,59,Arcanine,co
 5,Trưởng làng,Truong lang (noi chuyen/nhiem vu),5,178,Xatu,co
 6,Phú ông,"Case 6/29 (goi loai 3) - chua ro, doan la kho/ngan hang",6,53,Persian,co
-7,Xa phu,Xa phu: di den map khac (showNpcMenu type 7),7,78,Rapidash,co
+7,Xa phu,Xa phu: di den map khac (showNpcMenu type 7),7,18,Pidgeot,co
 8,ông nội,Noi chuyen/nhiem vu,8,143,Snorlax,co
 9,Anh bảy,Case 9/30: cat do vao tui (map 108/262/78/88) - kho do,9,115,Kangaskhan,co
 10,Hoa tiêu,"Hoa tieu: di thuyen, mua ve (showNpcMenu type 10)",10,131,Lapras,co

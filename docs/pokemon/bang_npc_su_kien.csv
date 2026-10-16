@@ -1,0 +1,14 @@
+id_img,ten_cu,noi_gui,dex,shiny,vat_the,ten_moi,ghi_chu
+13,Cổng dịch chuyển,Map.java (map 118),,,vt_npc13,Cổng dịch chuyển,Object/Portal.6 (6 khung)
+14,Thần tài / Chúc mừng năm mới / Nhà Vua,Map.java + addNPC.java,52,0,,Meowth,Meowth biết Pay Day (tiền) - hợp Thần tài
+15,Khu N (bảng khu),Map.java (map có nRegion),,,vt_npc15,Biển khu,Object/Sign.None
+20,Phù Thủy Dễ Thương / Mẹ hiền,Map.java + addNPC.java,282,0,,Gardevoir,Hiền và có phép - hợp cả phù thuỷ lẫn mẹ hiền
+21,Lồng đèn Lân Sư Tử,Map.java,667,0,,Litleo,Sư tử lửa (Pyroar không có sprite PMD)
+23,Cây thông Noel,Map.java + addNPC.java,460,0,,Abomasnow,Pokémon cây thông tuyết
+24,ông Già Noel,Map.java + addNPC.java,225,0,,Delibird,Pokémon chim mang quà
+25,Nồi bánh chưng,Map.java,,,vt_npc25,Nồi bánh chưng,Object/Pot.Flip
+26,Nồi bánh tét,Map.java,,,vt_npc26,Nồi bánh tét,Object/Pot.Flip
+27,Tả thống lĩnh / Hữu thống lĩnh,MapLienDau.java,448,0,,Lucario,Phó tướng liên đấu
+28,Trần thống lĩnh,MapLienDau.java,214,0,,Heracross,Giống NPC tĩnh 25 Trần thống lĩnh (bang_npc.csv)
+29,Cây lì xì (Thanh long),Map.java,185,0,,Sudowoodo,Pokémon giả cây
+30,Cây lì xì (Hắc hổ / Huyền vũ),Map.java,185,0,,Sudowoodo,Pokémon giả cây

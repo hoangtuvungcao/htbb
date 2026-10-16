@@ -2,7 +2,8 @@
 """
 Tai sprite PMDCollab/SpriteCollab cho MOI loai can dung + kiem ke thieu dong tac.
 
-Danh sach loai = dex trong docs/pokemon/bang_quai.csv, bang_thu.csv, bang_npc.csv
+Danh sach loai = dex trong docs/pokemon/bang_quai.csv, bang_thu.csv, bang_npc.csv,
+bang_npc_su_kien.csv, bang_pet_cu.csv
 + moi dex trong src/com/kpah/pokemon/LoaiPokemon.java (DU_LIEU). Khong co danh sach tay nao khac.
 
 Ra:
@@ -54,7 +55,10 @@ def dex_can_dung():
             if r["dex"]:
                 kq[(int(r["dex"]), int(r["shiny"]))] = "bang_quai"
     # Bang thu (thu cuoi + pet) va bang NPC: cot dex/shiny giong bang_quai.csv
-    for ten, nguon in (("bang_thu.csv", "thu"), ("bang_npc.csv", "npc")):
+    # bang_npc_su_kien.csv (NPC lenh -50, theo idImg) va bang_pet_cu.csv (pet khong itemPet,
+    # theo idImg PetTemplate): viec G7.B2/B3; dong la do vat (cot dex trong) thi bo qua.
+    for ten, nguon in (("bang_thu.csv", "thu"), ("bang_npc.csv", "npc"),
+                       ("bang_npc_su_kien.csv", "npc_su_kien"), ("bang_pet_cu.csv", "pet_cu")):
         p = os.path.join(GOC, "docs", "pokemon", ten)
         if os.path.exists(p):
             with open(p, encoding="utf8") as f:

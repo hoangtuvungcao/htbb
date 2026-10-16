@@ -241,6 +241,17 @@ class MapDoMenu {
             // thu" da bi bo (theo yeu cau nguoi choi), nen moi lua chon o day deu mo bang
             // diem doi thuong. Con hai duong go skin khac: lenh chat "boskin" va goi packet
             // 29 chung cho moi trang bi thu (Map.thaoTrangBiThu).
+            // Che do Pokemon (G7.D3): muc "Pokédex" noi vao cuoi menu NPC doi thuong (-90),
+            // menu con o npc ao PokedexPokemon.NPC_ID (-526). Tat co: khong co muc nay.
+            if (idNpc == -90 && idMenu == 0 && com.kpah.pokemon.CheDoPokemon.bat()
+                    && idOptionMenu == PokedexPokemon.VI_TRI_MUC_NPC_DOI_THUONG) {
+                PokedexPokemon.moMenu(player);
+                return;
+            }
+            if (idNpc == PokedexPokemon.NPC_ID) {
+                PokedexPokemon.doMenu(player, idMenu, idOptionMenu);
+                return;
+            }
             if (idNpc == -90 && idMenu == 0) {
                 map.showMenuDiemDoiThuong(player);
                 return;

@@ -88,6 +88,29 @@ public class DataGame {
         System.out.println("ICON POKEMON -> " + imgIconPokemon.length + " anh tu " + com.kpah.pokemon.IconPokemon.THU_MUC);
     }
 
+    /** Bo tile Pokemon (G7.A) do tools/pokemon/DoiTileMap.java sinh; KHONG nham voi map/img_tile/ (khong ai doc). */
+    public static final String THU_MUC_TILE_POKEMON = "map/pokemon_tile/";
+
+    /**
+     * Hai anh tile server gui trong goi dang nhap (LoginHandler, chi khi client xin vsTile == -1;
+     * do dai ghi bang writeShort nen moi anh phai < 32768 byte). Bat che do Pokemon va co du bo
+     * tile moi thi gui bo moi, khong thi giu bo KPAH.
+     */
+    public static String[] duongTileGuiClient() {
+        final String[] cu = new String[]{"map/t_hang.png", "map/t_thanh.png"};
+        if (!com.kpah.pokemon.CheDoPokemon.bat()) {
+            return cu;
+        }
+        final String[] moi = new String[]{THU_MUC_TILE_POKEMON + "t_hang.png", THU_MUC_TILE_POKEMON + "t_thanh.png"};
+        for (final String duong : moi) {
+            final java.io.File f = new java.io.File(duong);
+            if (!f.isFile() || f.length() > Short.MAX_VALUE) {
+                return cu;
+            }
+        }
+        return moi;
+    }
+
     public static void load() {
         try {
             int nMonster = 139;
@@ -323,7 +346,7 @@ public class DataGame {
             }
 
             imgTile = new byte[2][];
-            String[] urlTile = new String[]{"map/t_hang.png", "map/t_thanh.png"};
+            String[] urlTile = duongTileGuiClient();
 
             int i;
             for (i = 0; i < 2; ++i) {
@@ -496,7 +519,7 @@ public class DataGame {
 
             for (i = 0; i < 53; ++i) {
                 try {
-                    fis = new FileInputStream("map/tree/" + i);
+                    fis = new FileInputStream(com.kpah.pokemon.TrangTriPokemon.duong("map/tree/" + i));
                     dis = new DataInputStream(fis);
                     trees[i] = new byte[dis.available()];
                     dis.read(trees[i], 0, trees[i].length);
@@ -549,7 +572,7 @@ public class DataGame {
 
             for (j = 0; j < 95; ++j) {
                 try {
-                    fis = new FileInputStream("map/cay/" + j + ".png");
+                    fis = new FileInputStream(com.kpah.pokemon.TrangTriPokemon.duong("map/cay/" + j + ".png"));
                     dis = new DataInputStream(fis);
                     imgTreeFarm[j] = new byte[dis.available()];
                     dis.read(imgTreeFarm[j], 0, imgTreeFarm[j].length);

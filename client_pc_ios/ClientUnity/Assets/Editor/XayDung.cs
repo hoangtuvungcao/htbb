@@ -63,7 +63,8 @@ public static class XayDung
     private static void DatCauHinh()
     {
         PlayerSettings.companyName = "KPAH";
-        PlayerSettings.productName = "Khi Phach Anh Hung";
+        // Ten san pham (tieu de cua so, ten app) lay tu ThuongHieu (G7.E2): doi ten o MOT cho.
+        PlayerSettings.productName = ThuongHieu.tenSanPham();
         PlayerSettings.defaultScreenWidth = 800;
         PlayerSettings.defaultScreenHeight = 600;
         PlayerSettings.runInBackground = true;
@@ -85,7 +86,7 @@ public static class XayDung
     public static void XayWindows()
     {
         Xay(BuildTarget.StandaloneWindows64, BuildTargetGroup.Standalone,
-            THU_MUC_XUAT + "/Windows/KhiPhachAnhHung.exe");
+            THU_MUC_XUAT + "/Windows/" + ThuongHieu.tenTep() + ".exe");
     }
 
     [MenuItem("KPAH/Xay WebGL")]
@@ -97,15 +98,15 @@ public static class XayDung
     [MenuItem("KPAH/Xay Android (APK)")]
     public static void XayAndroid()
     {
-        PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "com.kpah.game");
+        PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, ThuongHieu.maUngDung());
         Xay(BuildTarget.Android, BuildTargetGroup.Android,
-            THU_MUC_XUAT + "/Android/KhiPhachAnhHung.apk");
+            THU_MUC_XUAT + "/Android/" + ThuongHieu.tenTep() + ".apk");
     }
 
     [MenuItem("KPAH/Xay iOS (du an Xcode)")]
     public static void XayIOS()
     {
-        PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, "com.kpah.game");
+        PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, ThuongHieu.maUngDung());
         Xay(BuildTarget.iOS, BuildTargetGroup.iOS, THU_MUC_XUAT + "/iOS");
     }
 

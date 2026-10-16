@@ -10635,6 +10635,7 @@ public void addCharXaiNapLuong(Char p, int type) {
         if (p == null) {
             return false;
         }
+        real.PokedexPokemon.luu(p); // G7.D2: xa lo Pokedex (tat che do Pokemon: khong lam gi). Bang rieng, khong can KHOA_LUU.
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveChar(this, p, admindExit);
         }
@@ -10645,6 +10646,7 @@ public void addCharXaiNapLuong(Char p, int type) {
         if (p == null) {
             return false;
         }
+        real.PokedexPokemon.luu(p); // G7.D2: xa lo Pokedex (cung ban sao voi saveChar).
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveCharAuto(this, p);
         }
@@ -12165,6 +12167,8 @@ public void addCharXaiNapLuong(Char p, int type) {
         themCotBangNeuThieu("data_monster", "dex", "SMALLINT", "0");
         themCotBangNeuThieu("data_monster", "shiny", "TINYINT", "0");
         themCotBangNeuThieu("data_monster", "he2", "TINYINT", "-1");
+        // G7.D2: bang Pokedex (sql/them_bang_pokedex.sql) - CREATE TABLE IF NOT EXISTS.
+        DatabasePokedex.taoBang();
     }
 
     /** Them cot NOT NULL DEFAULT macDinh vao bang neu chua co (ten bang/cot la hang so). */

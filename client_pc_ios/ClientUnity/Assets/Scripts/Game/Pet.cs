@@ -246,6 +246,12 @@ public class Pet : AnimalMove
 		}
 	}
 
+	/// <summary>Pet-tool: imgID/idTemplate la id hieu ung, khong tra bang pet kieu cu.</summary>
+	protected override int dexPetCu()
+	{
+		return 0;
+	}
+
 	public bool isFly()
 	{
 		mDataEffect mDataEffect2 = (mDataEffect)ALL_PET_DATA.get(string.Empty + idTemplate);

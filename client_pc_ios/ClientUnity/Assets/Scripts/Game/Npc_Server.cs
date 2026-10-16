@@ -18,30 +18,83 @@ public class Npc_Server : NPC
 	}
 
 	/// <summary>
-	/// NPC server/su kien (lenh -50, idImg + 4200): type = ID server, KHONG phai type NPC tinh
-	/// nen khong dung POKE_DEX_THEO_TYPE. Doi idImg -&gt; dex lam o giai doan 4 (muc 5 ke hoach).
+	/// NPC su kien (lenh -50) theo idImg (anh icon idImg + 4200) -&gt; {idImg, dex} ve bang
+	/// PokeBody (viec G7.B2). type cua Npc_Server la ID server, KHONG phai type NPC tinh nen
+	/// khong dung POKE_DEX_THEO_TYPE. idImg la do vat (cong, bang khu, noi) thi ve do vat PMD
+	/// qua VatThePokemon.NPC. Bang day du: docs/pokemon/bang_npc_su_kien.csv (sua 2 noi cung
+	/// luc - test/KiemHinhPokemon so khop). Chi khi PokeBody.CHE_DO_POKEMON.
 	/// </summary>
+	public static readonly short[][] POKE_DEX_THEO_IDIMG = new short[][]
+	{
+		new short[] { 14, 52 },   // Than tai / Chuc mung nam moi / Nha Vua -> Meowth
+		new short[] { 20, 282 },  // Phu thuy de thuong / Me hien -> Gardevoir
+		new short[] { 21, 667 },  // Long den Lan Su Tu -> Litleo
+		new short[] { 23, 460 },  // Cay thong Noel -> Abomasnow
+		new short[] { 24, 225 },  // ong Gia Noel -> Delibird
+		new short[] { 27, 448 },  // Ta/Huu thong linh -> Lucario
+		new short[] { 28, 214 },  // Tran thong linh -> Heracross
+		new short[] { 29, 185 },  // Cay li xi -> Sudowoodo
+		new short[] { 30, 185 }   // Cay li xi -> Sudowoodo
+	};
+
+	public static int dexTheoIdImg(int idImg)
+	{
+		if (!PokeBody.CHE_DO_POKEMON)
+		{
+			return 0;
+		}
+		for (int i = 0; i < POKE_DEX_THEO_IDIMG.Length; i++)
+		{
+			if (POKE_DEX_THEO_IDIMG[i][0] == idImg)
+			{
+				return POKE_DEX_THEO_IDIMG[i][1];
+			}
+		}
+		return 0;
+	}
+
 	public override int getPokeDex()
 	{
-		return 0;
+		return dexTheoIdImg(idImg);
 	}
 
 	public override void paint(MyGraphics g)
 	{
-		ImageIcon imgIcon = GameData.getImgIcon((short)(idImg + 4200));
-		if (imgIcon != null && !imgIcon.isLoad)
+		int caoIcon = height;
+		if (paintPokemon(g))
 		{
-			g.drawRegion(GameData.getImgIcon((short)(idImg + 4200)).img, 0, height * index, width, height, 0, x, y, MyGraphics.BOTTOM | MyGraphics.HCENTER);
+			caoIcon = PokeBody.caoTrenChan(getPokeDex(), false, 100) + 4;
+		}
+		else if (VatThePokemon.veNpc(g, idImg, x, y))
+		{
+			caoIcon = VatThePokemon.caoNpc(idImg);
+		}
+		else
+		{
+			ImageIcon imgIcon = GameData.getImgIcon((short)(idImg + 4200));
+			if (imgIcon != null && !imgIcon.isLoad)
+			{
+				g.drawRegion(GameData.getImgIcon((short)(idImg + 4200)).img, 0, height * index, width, height, 0, x, y, MyGraphics.BOTTOM | MyGraphics.HCENTER);
+			}
 		}
 		Image imgQuest = GameScr.getImgQuest(type);
 		if (!imgQuest.Equals(Res.imgSelect))
 		{
-			g.drawImage(imgQuest, x, y - height - 5, MyGraphics.HCENTER | MyGraphics.BOTTOM);
+			g.drawImage(imgQuest, x, y - caoIcon - 5, MyGraphics.HCENTER | MyGraphics.BOTTOM);
 		}
 	}
 
 	public override void paintCorner(MyGraphics g, int xCorner, int yCorner)
 	{
+		int dex = getPokeDex();
+		if (dex > 0 && PokeBody.paintChanDung(g, dex, false, xCorner, yCorner - 8, 24))
+		{
+			return;
+		}
+		if (VatThePokemon.veGocNpc(g, idImg, xCorner, yCorner - 8, 24))
+		{
+			return;
+		}
 		g.setClip(xCorner - 10, yCorner + 12 - height, 20, 22);
 		ImageIcon imgIcon = GameData.getImgIcon((short)(idImg + 4200));
 		if (imgIcon != null && !imgIcon.isLoad)

@@ -178,40 +178,40 @@ UPDATE data_item SET name='Than lửa bạch kim', gender=0 WHERE id=175; -- Lon
 UPDATE data_item SET name='Than lửa bạch kim', gender=0 WHERE id=176; -- Thất Xích Kiếm
 UPDATE data_item SET name='Than lửa kim cương', gender=0 WHERE id=177; -- Vạn Hoa Kiếm
 UPDATE data_item SET name='Than lửa kim cương', gender=0 WHERE id=178; -- Huyền Thiết Kiếm
-UPDATE data_item SET name='Than lửa cao thủ', gender=0 WHERE id=179; -- Hoàn Tử Kiếm
-UPDATE data_item SET name='Than lửa cao thủ', gender=0 WHERE id=180; -- Báo Vĩ Kiếm
+UPDATE data_item SET name='Than lửa chuyên gia', gender=0 WHERE id=179; -- Hoàn Tử Kiếm
+UPDATE data_item SET name='Than lửa chuyên gia', gender=0 WHERE id=180; -- Báo Vĩ Kiếm
 UPDATE data_item SET name='Than lửa đại sư', gender=0 WHERE id=181; -- Nhạn Linh Kiếm
 UPDATE data_item SET name='Hạt giống thần vàng', gender=0 WHERE id=182; -- Quỷ Đầu Đao
 UPDATE data_item SET name='Hạt giống thần bạch kim', gender=0 WHERE id=183; -- Nguyệt Nha Đao
 UPDATE data_item SET name='Hạt giống thần bạch kim', gender=0 WHERE id=184; -- Phá Phong Đao
 UPDATE data_item SET name='Hạt giống thần kim cương', gender=0 WHERE id=185; -- Vạn Linh Đao
 UPDATE data_item SET name='Hạt giống thần kim cương', gender=0 WHERE id=186; -- Cổn Châu Đao
-UPDATE data_item SET name='Hạt giống thần cao thủ', gender=0 WHERE id=187; -- Đại Phong Đao
-UPDATE data_item SET name='Hạt giống thần cao thủ', gender=0 WHERE id=188; -- Điểm Cang Đao
+UPDATE data_item SET name='Hạt giống thần chuyên gia', gender=0 WHERE id=187; -- Đại Phong Đao
+UPDATE data_item SET name='Hạt giống thần chuyên gia', gender=0 WHERE id=188; -- Điểm Cang Đao
 UPDATE data_item SET name='Hạt giống thần đại sư', gender=0 WHERE id=189; -- Hỏa Diệm Đao
 UPDATE data_item SET name='Khăn lụa vàng', gender=0 WHERE id=190; -- Kim Qua Bút
 UPDATE data_item SET name='Khăn lụa bạch kim', gender=0 WHERE id=191; -- Đào Hoa Bút
 UPDATE data_item SET name='Khăn lụa bạch kim', gender=0 WHERE id=192; -- Tâm Ý Bút
 UPDATE data_item SET name='Khăn lụa kim cương', gender=0 WHERE id=193; -- Độc Cơ Bút
 UPDATE data_item SET name='Khăn lụa kim cương', gender=0 WHERE id=194; -- Bạo Vũ Bút
-UPDATE data_item SET name='Khăn lụa cao thủ', gender=0 WHERE id=195; -- Tề Mi Bút
-UPDATE data_item SET name='Khăn lụa cao thủ', gender=0 WHERE id=196; -- Hỗn Thiết Bút
+UPDATE data_item SET name='Khăn lụa chuyên gia', gender=0 WHERE id=195; -- Tề Mi Bút
+UPDATE data_item SET name='Khăn lụa chuyên gia', gender=0 WHERE id=196; -- Hỗn Thiết Bút
 UPDATE data_item SET name='Khăn lụa đại sư', gender=0 WHERE id=197; -- Thu Vũ Bút
 UPDATE data_item SET name='Nước thần vàng', gender=0 WHERE id=198; -- Tú Cốt Búa
 UPDATE data_item SET name='Nước thần bạch kim', gender=0 WHERE id=199; -- Toán Đầu Búa
 UPDATE data_item SET name='Nước thần bạch kim', gender=0 WHERE id=200; -- Bát Lăng Búa
 UPDATE data_item SET name='Nước thần kim cương', gender=0 WHERE id=201; -- Ngũ Tinh Búa
 UPDATE data_item SET name='Nước thần kim cương', gender=0 WHERE id=202; -- Tích Lịch Búa
-UPDATE data_item SET name='Nước thần cao thủ', gender=0 WHERE id=203; -- Lượng Ngân Búa
-UPDATE data_item SET name='Nước thần cao thủ', gender=0 WHERE id=204; -- Liệt Tâm Búa
+UPDATE data_item SET name='Nước thần chuyên gia', gender=0 WHERE id=203; -- Lượng Ngân Búa
+UPDATE data_item SET name='Nước thần chuyên gia', gender=0 WHERE id=204; -- Liệt Tâm Búa
 UPDATE data_item SET name='Nước thần đại sư', gender=0 WHERE id=205; -- Nghiệt Long Búa
 UPDATE data_item SET name='Nam châm vàng', gender=0 WHERE id=206; -- Kim Tiền Cung
 UPDATE data_item SET name='Nam châm bạch kim', gender=0 WHERE id=207; -- Yến Tử Cung
 UPDATE data_item SET name='Nam châm bạch kim', gender=0 WHERE id=208; -- Phi Hoàng Cung
 UPDATE data_item SET name='Nam châm kim cương', gender=0 WHERE id=209; -- Liễu Diệp Cung
 UPDATE data_item SET name='Nam châm kim cương', gender=0 WHERE id=210; -- Lượng Ngân Cung
-UPDATE data_item SET name='Nam châm cao thủ', gender=0 WHERE id=211; -- Hồ Điệp Cung
-UPDATE data_item SET name='Nam châm cao thủ', gender=0 WHERE id=212; -- Nhạn Vĩ Cung
+UPDATE data_item SET name='Nam châm chuyên gia', gender=0 WHERE id=211; -- Hồ Điệp Cung
+UPDATE data_item SET name='Nam châm chuyên gia', gender=0 WHERE id=212; -- Nhạn Vĩ Cung
 UPDATE data_item SET name='Nam châm đại sư', gender=0 WHERE id=213; -- Phá Thiên Cung 
 UPDATE data_item SET name='Than lửa bạc', gender=0 WHERE id=214; -- Mộ khúc kiếm_thuê
 UPDATE data_item SET name='Than lửa bạc', gender=0 WHERE id=215; -- Lưu Chỉ Kiếm_thuê
@@ -221,8 +221,8 @@ UPDATE data_item SET name='Than lửa bạch kim', gender=0 WHERE id=218; -- Lon
 UPDATE data_item SET name='Than lửa bạch kim', gender=0 WHERE id=219; -- Thất Xích Kiếm_thuê
 UPDATE data_item SET name='Than lửa kim cương', gender=0 WHERE id=220; -- Vạn Hoa Kiếm_thuê
 UPDATE data_item SET name='Than lửa kim cương', gender=0 WHERE id=221; -- Huyền Thiết Kiếm_thuê
-UPDATE data_item SET name='Than lửa cao thủ', gender=0 WHERE id=222; -- Hoàn Tử Kiếm_thuê
-UPDATE data_item SET name='Than lửa cao thủ', gender=0 WHERE id=223; -- Báo Vĩ Kiếm_thuê
+UPDATE data_item SET name='Than lửa chuyên gia', gender=0 WHERE id=222; -- Hoàn Tử Kiếm_thuê
+UPDATE data_item SET name='Than lửa chuyên gia', gender=0 WHERE id=223; -- Báo Vĩ Kiếm_thuê
 UPDATE data_item SET name='Hạt giống thần bạc', gender=0 WHERE id=224; -- Đà đao_thuê
 UPDATE data_item SET name='Hạt giống thần bạc', gender=0 WHERE id=225; -- Tuệ Đao_thuê
 UPDATE data_item SET name='Hạt giống thần vàng', gender=0 WHERE id=226; -- Khổng Trác Đao_thuê
@@ -231,8 +231,8 @@ UPDATE data_item SET name='Hạt giống thần bạch kim', gender=0 WHERE id=2
 UPDATE data_item SET name='Hạt giống thần bạch kim', gender=0 WHERE id=229; -- Phá Phong Đao_thuê
 UPDATE data_item SET name='Hạt giống thần kim cương', gender=0 WHERE id=230; -- Vạn Linh Đao_thuê
 UPDATE data_item SET name='Hạt giống thần kim cương', gender=0 WHERE id=231; -- Cổn Châu Đao_thuê
-UPDATE data_item SET name='Hạt giống thần cao thủ', gender=0 WHERE id=232; -- Đại Phong Đao_thuê
-UPDATE data_item SET name='Hạt giống thần cao thủ', gender=0 WHERE id=233; -- Điểm Cang Đao_thuê
+UPDATE data_item SET name='Hạt giống thần chuyên gia', gender=0 WHERE id=232; -- Đại Phong Đao_thuê
+UPDATE data_item SET name='Hạt giống thần chuyên gia', gender=0 WHERE id=233; -- Điểm Cang Đao_thuê
 UPDATE data_item SET name='Khăn lụa bạc', gender=0 WHERE id=234; -- Cơ duyên bút_thuê
 UPDATE data_item SET name='Khăn lụa bạc', gender=0 WHERE id=235; -- Mộ Danh Bút_thuê
 UPDATE data_item SET name='Khăn lụa vàng', gender=0 WHERE id=236; -- Bãn Nhãn Bút_thuê
@@ -241,8 +241,8 @@ UPDATE data_item SET name='Khăn lụa bạch kim', gender=0 WHERE id=238; -- Đ
 UPDATE data_item SET name='Khăn lụa bạch kim', gender=0 WHERE id=239; -- Tâm Ý Bút_thuê
 UPDATE data_item SET name='Khăn lụa kim cương', gender=0 WHERE id=240; -- Độc Cơ Bút_thuê
 UPDATE data_item SET name='Khăn lụa kim cương', gender=0 WHERE id=241; -- Bạo Vũ Bút_thuê
-UPDATE data_item SET name='Khăn lụa cao thủ', gender=0 WHERE id=242; -- Tề Mi Bút_thuê
-UPDATE data_item SET name='Khăn lụa cao thủ', gender=0 WHERE id=243; -- Hỗn Thiết Bút_thuê
+UPDATE data_item SET name='Khăn lụa chuyên gia', gender=0 WHERE id=242; -- Tề Mi Bút_thuê
+UPDATE data_item SET name='Khăn lụa chuyên gia', gender=0 WHERE id=243; -- Hỗn Thiết Bút_thuê
 UPDATE data_item SET name='Nước thần bạc', gender=0 WHERE id=244; -- Búa thủ ngưu_thuê
 UPDATE data_item SET name='Nước thần bạc', gender=0 WHERE id=245; -- Búa Mã Diện_thuê
 UPDATE data_item SET name='Nước thần vàng', gender=0 WHERE id=246; -- Búa Địa Tinh_thuê
@@ -251,8 +251,8 @@ UPDATE data_item SET name='Nước thần bạch kim', gender=0 WHERE id=248; --
 UPDATE data_item SET name='Nước thần bạch kim', gender=0 WHERE id=249; -- Bát Lăng Búa_thuê
 UPDATE data_item SET name='Nước thần kim cương', gender=0 WHERE id=250; -- Ngũ Tinh Búa_thuê
 UPDATE data_item SET name='Nước thần kim cương', gender=0 WHERE id=251; -- Tích Lịch Búa_thuê
-UPDATE data_item SET name='Nước thần cao thủ', gender=0 WHERE id=252; -- Lượng Ngân Búa_thuê
-UPDATE data_item SET name='Nước thần cao thủ', gender=0 WHERE id=253; -- Liệt Tâm Búa_thuê
+UPDATE data_item SET name='Nước thần chuyên gia', gender=0 WHERE id=252; -- Lượng Ngân Búa_thuê
+UPDATE data_item SET name='Nước thần chuyên gia', gender=0 WHERE id=253; -- Liệt Tâm Búa_thuê
 UPDATE data_item SET name='Nam châm bạc', gender=0 WHERE id=254; -- Bán nguyệt cung_thuê
 UPDATE data_item SET name='Nam châm bạc', gender=0 WHERE id=255; -- Kim Loan Cung_thuê
 UPDATE data_item SET name='Nam châm vàng', gender=0 WHERE id=256; -- Lĩnh Nam Cung_thuê
@@ -261,8 +261,8 @@ UPDATE data_item SET name='Nam châm bạch kim', gender=0 WHERE id=258; -- Yế
 UPDATE data_item SET name='Nam châm bạch kim', gender=0 WHERE id=259; -- Phi Hoàng Cung_thuê
 UPDATE data_item SET name='Nam châm kim cương', gender=0 WHERE id=260; -- Liễu Diệp Cung_thuê
 UPDATE data_item SET name='Nam châm kim cương', gender=0 WHERE id=261; -- Lượng Ngân Cung_thuê
-UPDATE data_item SET name='Nam châm cao thủ', gender=0 WHERE id=262; -- Hồ Điệp Cung_thuê
-UPDATE data_item SET name='Nam châm cao thủ', gender=0 WHERE id=263; -- Nhạn Vĩ Cung_thuê
+UPDATE data_item SET name='Nam châm chuyên gia', gender=0 WHERE id=262; -- Hồ Điệp Cung_thuê
+UPDATE data_item SET name='Nam châm chuyên gia', gender=0 WHERE id=263; -- Nhạn Vĩ Cung_thuê
 UPDATE data_item SET name='Khăn quàng sơ cấp', gender=0 WHERE id=267; -- Áo dài
 UPDATE data_item SET name='Khăn quàng sơ cấp', gender=0 WHERE id=264; -- Áo tiên nữ
 UPDATE data_item SET name='Khăn quàng sơ cấp', gender=0 WHERE id=265; -- Áo Lạc long quân
@@ -283,10 +283,10 @@ UPDATE data_item SET name='Khăn quàng kim cương', gender=0 WHERE id=280; -- 
 UPDATE data_item SET name='Khăn quàng kim cương', gender=0 WHERE id=281; -- Áo Hắc báo (nam)
 UPDATE data_item SET name='Khăn quàng kim cương', gender=0 WHERE id=282; -- Áo Băng tinh (nữ)
 UPDATE data_item SET name='Khăn quàng kim cương', gender=0 WHERE id=283; -- Áo Băng tinh (nam)
-UPDATE data_item SET name='Khăn quàng cao thủ', gender=0 WHERE id=284; -- Áo Thất bảo (nữ)
-UPDATE data_item SET name='Khăn quàng cao thủ', gender=0 WHERE id=285; -- Áo Thất bảo (nam)
-UPDATE data_item SET name='Khăn quàng cao thủ', gender=0 WHERE id=286; -- Áo Liên vân (nữ)
-UPDATE data_item SET name='Khăn quàng cao thủ', gender=0 WHERE id=287; -- Áo Liên vân (nam)
+UPDATE data_item SET name='Khăn quàng chuyên gia', gender=0 WHERE id=284; -- Áo Thất bảo (nữ)
+UPDATE data_item SET name='Khăn quàng chuyên gia', gender=0 WHERE id=285; -- Áo Thất bảo (nam)
+UPDATE data_item SET name='Khăn quàng chuyên gia', gender=0 WHERE id=286; -- Áo Liên vân (nữ)
+UPDATE data_item SET name='Khăn quàng chuyên gia', gender=0 WHERE id=287; -- Áo Liên vân (nam)
 UPDATE data_item SET name='Khăn quàng đại sư', gender=0 WHERE id=288; -- Áo Ngân tơ (nữ)
 UPDATE data_item SET name='Khăn quàng đại sư', gender=0 WHERE id=289; -- Áo Ngân tơ (nam)
 UPDATE data_item SET name='Khăn quàng đại sư', gender=0 WHERE id=290; -- Áo Vô cực (nữ)
@@ -307,10 +307,10 @@ UPDATE data_item SET name='Đai kim cương', gender=0 WHERE id=304; -- Quần H
 UPDATE data_item SET name='Đai kim cương', gender=0 WHERE id=305; -- Quần Hắc báo (nam)
 UPDATE data_item SET name='Đai kim cương', gender=0 WHERE id=306; -- Quần Băng tinh (nữ)
 UPDATE data_item SET name='Đai kim cương', gender=0 WHERE id=307; -- Quần Băng tinh (nam)
-UPDATE data_item SET name='Đai cao thủ', gender=0 WHERE id=308; -- Quần Thất bảo (nữ)
-UPDATE data_item SET name='Đai cao thủ', gender=0 WHERE id=309; -- Quần Thất bảo (nam)
-UPDATE data_item SET name='Đai cao thủ', gender=0 WHERE id=310; -- Quần Liên vân (nữ)
-UPDATE data_item SET name='Đai cao thủ', gender=0 WHERE id=311; -- Quần Liên vân (nam)
+UPDATE data_item SET name='Đai chuyên gia', gender=0 WHERE id=308; -- Quần Thất bảo (nữ)
+UPDATE data_item SET name='Đai chuyên gia', gender=0 WHERE id=309; -- Quần Thất bảo (nam)
+UPDATE data_item SET name='Đai chuyên gia', gender=0 WHERE id=310; -- Quần Liên vân (nữ)
+UPDATE data_item SET name='Đai chuyên gia', gender=0 WHERE id=311; -- Quần Liên vân (nam)
 UPDATE data_item SET name='Đai đại sư', gender=0 WHERE id=312; -- Quần Ngân tơ (nữ)
 UPDATE data_item SET name='Đai đại sư', gender=0 WHERE id=313; -- Quần Ngân tơ (nam)
 UPDATE data_item SET name='Đai đại sư', gender=0 WHERE id=314; -- Quần Vô cưc (nữ)
@@ -331,10 +331,10 @@ UPDATE data_item SET name='Băng đô kim cương', gender=0 WHERE id=328; -- N�
 UPDATE data_item SET name='Băng đô kim cương', gender=0 WHERE id=329; -- Nón Hắc báo (nam)
 UPDATE data_item SET name='Băng đô kim cương', gender=0 WHERE id=330; -- Nón Băng tinh (nữ)
 UPDATE data_item SET name='Băng đô kim cương', gender=0 WHERE id=331; -- Nón Băng tinh (nam)
-UPDATE data_item SET name='Băng đô cao thủ', gender=0 WHERE id=332; -- Nón Thất bảo (nữ)
-UPDATE data_item SET name='Băng đô cao thủ', gender=0 WHERE id=333; -- Nón Thất bảo (nam)
-UPDATE data_item SET name='Băng đô cao thủ', gender=0 WHERE id=334; -- Nón Liên vân (nữ)
-UPDATE data_item SET name='Băng đô cao thủ', gender=0 WHERE id=335; -- Nón Liên vân (nam)
+UPDATE data_item SET name='Băng đô chuyên gia', gender=0 WHERE id=332; -- Nón Thất bảo (nữ)
+UPDATE data_item SET name='Băng đô chuyên gia', gender=0 WHERE id=333; -- Nón Thất bảo (nam)
+UPDATE data_item SET name='Băng đô chuyên gia', gender=0 WHERE id=334; -- Nón Liên vân (nữ)
+UPDATE data_item SET name='Băng đô chuyên gia', gender=0 WHERE id=335; -- Nón Liên vân (nam)
 UPDATE data_item SET name='Băng đô đại sư', gender=0 WHERE id=336; -- Nón Ngân tơ (nữ)
 UPDATE data_item SET name='Băng đô đại sư', gender=0 WHERE id=337; -- Nón Ngân tơ (nam)
 UPDATE data_item SET name='Băng đô đại sư', gender=0 WHERE id=338; -- Nón Vô cực (nữ)
@@ -347,8 +347,8 @@ UPDATE data_item SET name='Găng đấm vàng', gender=0 WHERE id=354; -- Găng 
 UPDATE data_item SET name='Găng đấm bạc', gender=0 WHERE id=353; -- Găng Thạch lựu
 UPDATE data_item SET name='Găng đấm kim cương', gender=0 WHERE id=358; -- Găng Hắc báo
 UPDATE data_item SET name='Găng đấm kim cương', gender=0 WHERE id=359; -- Găng Băng tinh
-UPDATE data_item SET name='Găng đấm cao thủ', gender=0 WHERE id=360; -- Găng Thất bảo
-UPDATE data_item SET name='Găng đấm cao thủ', gender=0 WHERE id=361; -- Găng Liên vân
+UPDATE data_item SET name='Găng đấm chuyên gia', gender=0 WHERE id=360; -- Găng Thất bảo
+UPDATE data_item SET name='Găng đấm chuyên gia', gender=0 WHERE id=361; -- Găng Liên vân
 UPDATE data_item SET name='Găng đấm đại sư', gender=0 WHERE id=362; -- Găng Ngân tơ
 UPDATE data_item SET name='Găng đấm đại sư', gender=0 WHERE id=363; -- Găng Vô cực
 UPDATE data_item SET name='Lông vũ tốc độ bạc', gender=0 WHERE id=340; -- Giày Thanh Tuyệt
@@ -359,8 +359,8 @@ UPDATE data_item SET name='Lông vũ tốc độ bạch kim', gender=0 WHERE id=
 UPDATE data_item SET name='Lông vũ tốc độ bạch kim', gender=0 WHERE id=345; -- Giày Tâm ma
 UPDATE data_item SET name='Lông vũ tốc độ kim cương', gender=0 WHERE id=346; -- Giày Hắc báo
 UPDATE data_item SET name='Lông vũ tốc độ kim cương', gender=0 WHERE id=347; -- Giày Băng tinh
-UPDATE data_item SET name='Lông vũ tốc độ cao thủ', gender=0 WHERE id=348; -- Giày Thất bảo
-UPDATE data_item SET name='Lông vũ tốc độ cao thủ', gender=0 WHERE id=349; -- Giày Liên vân
+UPDATE data_item SET name='Lông vũ tốc độ chuyên gia', gender=0 WHERE id=348; -- Giày Thất bảo
+UPDATE data_item SET name='Lông vũ tốc độ chuyên gia', gender=0 WHERE id=349; -- Giày Liên vân
 UPDATE data_item SET name='Lông vũ tốc độ đại sư', gender=0 WHERE id=350; -- Giày Ngân tơ
 UPDATE data_item SET name='Lông vũ tốc độ đại sư', gender=0 WHERE id=351; -- Giày Vô cực
 UPDATE data_item SET name='Huy hiệu bạc', gender=0 WHERE id=364; -- Nhẫn Toàn Thạch
@@ -371,8 +371,8 @@ UPDATE data_item SET name='Huy hiệu bạch kim', gender=0 WHERE id=368; -- Nh�
 UPDATE data_item SET name='Huy hiệu bạch kim', gender=0 WHERE id=369; -- Nhẫn Ngũ sắc
 UPDATE data_item SET name='Huy hiệu kim cương', gender=0 WHERE id=370; -- Nhẫn Huyền tê
 UPDATE data_item SET name='Huy hiệu kim cương', gender=0 WHERE id=371; -- Nhẫn Khổng tượng
-UPDATE data_item SET name='Huy hiệu cao thủ', gender=0 WHERE id=372; -- Nhẫn Âm dương
-UPDATE data_item SET name='Huy hiệu cao thủ', gender=0 WHERE id=373; -- Nhẫn Nhật nguyệt
+UPDATE data_item SET name='Huy hiệu chuyên gia', gender=0 WHERE id=372; -- Nhẫn Âm dương
+UPDATE data_item SET name='Huy hiệu chuyên gia', gender=0 WHERE id=373; -- Nhẫn Nhật nguyệt
 UPDATE data_item SET name='Huy hiệu đại sư', gender=0 WHERE id=374; -- Nhẫn Song phụng
 UPDATE data_item SET name='Huy hiệu đại sư', gender=0 WHERE id=375; -- Nhẫn Song long
 UPDATE data_item SET name='Vòng cổ bạc', gender=0 WHERE id=376; -- Dây chuyền Toàn Thạch
@@ -383,8 +383,8 @@ UPDATE data_item SET name='Vòng cổ bạch kim', gender=0 WHERE id=380; -- Dâ
 UPDATE data_item SET name='Vòng cổ bạch kim', gender=0 WHERE id=381; -- Dây chuyền Ngũ sắc
 UPDATE data_item SET name='Vòng cổ kim cương', gender=0 WHERE id=382; -- Dây chuyền Huyền tê
 UPDATE data_item SET name='Vòng cổ kim cương', gender=0 WHERE id=383; -- Dây chuyền Khổng tượng
-UPDATE data_item SET name='Vòng cổ cao thủ', gender=0 WHERE id=384; -- Dây chuyền Âm dương
-UPDATE data_item SET name='Vòng cổ cao thủ', gender=0 WHERE id=385; -- Dây chuyền Nhật nguyệt
+UPDATE data_item SET name='Vòng cổ chuyên gia', gender=0 WHERE id=384; -- Dây chuyền Âm dương
+UPDATE data_item SET name='Vòng cổ chuyên gia', gender=0 WHERE id=385; -- Dây chuyền Nhật nguyệt
 UPDATE data_item SET name='Vòng cổ đại sư', gender=0 WHERE id=386; -- Dây chuyền Song phụng
 UPDATE data_item SET name='Vòng cổ đại sư', gender=0 WHERE id=387; -- Dây chuyền Song long
 UPDATE data_item SET name='Phiến đá hệ bạc', gender=0 WHERE id=388; -- Ngọc Toàn Thạch
@@ -395,8 +395,8 @@ UPDATE data_item SET name='Phiến đá hệ bạch kim', gender=0 WHERE id=392;
 UPDATE data_item SET name='Phiến đá hệ bạch kim', gender=0 WHERE id=393; -- Ngọc Ngũ sắc
 UPDATE data_item SET name='Phiến đá hệ kim cương', gender=0 WHERE id=394; -- Ngọc Huyền tê
 UPDATE data_item SET name='Phiến đá hệ kim cương', gender=0 WHERE id=395; -- Ngọc Khổng tượng
-UPDATE data_item SET name='Phiến đá hệ cao thủ', gender=0 WHERE id=396; -- Ngọc Âm dương
-UPDATE data_item SET name='Phiến đá hệ cao thủ', gender=0 WHERE id=397; -- Ngọc Nhật nguyệt
+UPDATE data_item SET name='Phiến đá hệ chuyên gia', gender=0 WHERE id=396; -- Ngọc Âm dương
+UPDATE data_item SET name='Phiến đá hệ chuyên gia', gender=0 WHERE id=397; -- Ngọc Nhật nguyệt
 UPDATE data_item SET name='Phiến đá hệ đại sư', gender=0 WHERE id=398; -- Ngọc Song phụng
 UPDATE data_item SET name='Phiến đá hệ đại sư', gender=0 WHERE id=399; -- Ngọc Song long
 UPDATE data_item SET name='Hạt giống thần bạc', gender=0 WHERE id=413; -- Trảm mã đao
@@ -407,8 +407,8 @@ UPDATE data_item SET name='Hạt giống thần bạch kim', gender=0 WHERE id=4
 UPDATE data_item SET name='Hạt giống thần bạch kim', gender=0 WHERE id=418; -- Đới y đao
 UPDATE data_item SET name='Hạt giống thần kim cương', gender=0 WHERE id=419; -- Quan cán đao
 UPDATE data_item SET name='Hạt giống thần kim cương', gender=0 WHERE id=420; -- Toái nguyệt đao
-UPDATE data_item SET name='Hạt giống thần cao thủ', gender=0 WHERE id=421; -- Thanh phong đao
-UPDATE data_item SET name='Hạt giống thần cao thủ', gender=0 WHERE id=422; -- Túc đế đao
+UPDATE data_item SET name='Hạt giống thần chuyên gia', gender=0 WHERE id=421; -- Thanh phong đao
+UPDATE data_item SET name='Hạt giống thần chuyên gia', gender=0 WHERE id=422; -- Túc đế đao
 UPDATE data_item SET name='Hạt giống thần đại sư', gender=0 WHERE id=423; -- Bôi trang đao
 UPDATE data_item SET name='Hạt giống thần đại sư', gender=0 WHERE id=424; -- Bá vương đao
 UPDATE data_item SET name='Hạt giống thần huyền thoại', gender=0 WHERE id=425; -- Gia cát đao
@@ -420,8 +420,8 @@ UPDATE data_item SET name='Than lửa bạch kim', gender=0 WHERE id=404; -- H�
 UPDATE data_item SET name='Than lửa bạch kim', gender=0 WHERE id=405; -- Giác hải kiếm
 UPDATE data_item SET name='Than lửa kim cương', gender=0 WHERE id=406; -- Kim cô kiếm
 UPDATE data_item SET name='Than lửa kim cương', gender=0 WHERE id=407; -- Tấn thiết kiếm
-UPDATE data_item SET name='Than lửa cao thủ', gender=0 WHERE id=408; -- Hắc bạch kiếm
-UPDATE data_item SET name='Than lửa cao thủ', gender=0 WHERE id=409; -- Tuyết hoa kiếm
+UPDATE data_item SET name='Than lửa chuyên gia', gender=0 WHERE id=408; -- Hắc bạch kiếm
+UPDATE data_item SET name='Than lửa chuyên gia', gender=0 WHERE id=409; -- Tuyết hoa kiếm
 UPDATE data_item SET name='Than lửa đại sư', gender=0 WHERE id=411; -- Phù dung kiếm
 UPDATE data_item SET name='Than lửa huyền thoại', gender=0 WHERE id=412; -- Phá giáp kiếm
 UPDATE data_item SET name='Than lửa đại sư', gender=0 WHERE id=410; -- Uyên ương kiếm
@@ -433,8 +433,8 @@ UPDATE data_item SET name='Nước thần bạch kim', gender=0 WHERE id=443; --
 UPDATE data_item SET name='Nước thần bạch kim', gender=0 WHERE id=444; -- Hoàng đồng búa
 UPDATE data_item SET name='Nước thần kim cương', gender=0 WHERE id=445; -- Càn khôn búa
 UPDATE data_item SET name='Nước thần kim cương', gender=0 WHERE id=446; -- Thẩm lộ búa
-UPDATE data_item SET name='Nước thần cao thủ', gender=0 WHERE id=447; -- Song diện búa
-UPDATE data_item SET name='Nước thần cao thủ', gender=0 WHERE id=448; -- Tiêu diêu búa
+UPDATE data_item SET name='Nước thần chuyên gia', gender=0 WHERE id=447; -- Song diện búa
+UPDATE data_item SET name='Nước thần chuyên gia', gender=0 WHERE id=448; -- Tiêu diêu búa
 UPDATE data_item SET name='Nước thần đại sư', gender=0 WHERE id=449; -- Bố nhung búa
 UPDATE data_item SET name='Nước thần đại sư', gender=0 WHERE id=450; -- Phật ấn búa
 UPDATE data_item SET name='Nước thần huyền thoại', gender=0 WHERE id=451; -- Viên đỉnh búa
@@ -446,8 +446,8 @@ UPDATE data_item SET name='Khăn lụa bạch kim', gender=0 WHERE id=430; -- Nh
 UPDATE data_item SET name='Khăn lụa bạch kim', gender=0 WHERE id=431; -- Ngân hoàn bút
 UPDATE data_item SET name='Khăn lụa kim cương', gender=0 WHERE id=432; -- Xích đồn bút
 UPDATE data_item SET name='Khăn lụa kim cương', gender=0 WHERE id=433; -- Tứ giác bút
-UPDATE data_item SET name='Khăn lụa cao thủ', gender=0 WHERE id=434; -- Thanh văn bút
-UPDATE data_item SET name='Khăn lụa cao thủ', gender=0 WHERE id=435; -- Khôn lộc bút
+UPDATE data_item SET name='Khăn lụa chuyên gia', gender=0 WHERE id=434; -- Thanh văn bút
+UPDATE data_item SET name='Khăn lụa chuyên gia', gender=0 WHERE id=435; -- Khôn lộc bút
 UPDATE data_item SET name='Khăn lụa đại sư', gender=0 WHERE id=436; -- Huyền sa bút
 UPDATE data_item SET name='Khăn lụa đại sư', gender=0 WHERE id=437; -- Bạch trực bút
 UPDATE data_item SET name='Khăn lụa huyền thoại', gender=0 WHERE id=438; -- Y tơ bút
@@ -459,57 +459,57 @@ UPDATE data_item SET name='Nam châm bạch kim', gender=0 WHERE id=456; -- Càn
 UPDATE data_item SET name='Nam châm bạch kim', gender=0 WHERE id=457; -- Thanh sát cung
 UPDATE data_item SET name='Nam châm kim cương', gender=0 WHERE id=458; -- Lang tà cung
 UPDATE data_item SET name='Nam châm kim cương', gender=0 WHERE id=459; -- Lưu ly cung
-UPDATE data_item SET name='Nam châm cao thủ', gender=0 WHERE id=460; -- Cang khôi cung
-UPDATE data_item SET name='Nam châm cao thủ', gender=0 WHERE id=461; -- Kim tơ cung
+UPDATE data_item SET name='Nam châm chuyên gia', gender=0 WHERE id=460; -- Cang khôi cung
+UPDATE data_item SET name='Nam châm chuyên gia', gender=0 WHERE id=461; -- Kim tơ cung
 UPDATE data_item SET name='Nam châm đại sư', gender=0 WHERE id=462; -- Thanh anh cung
 UPDATE data_item SET name='Nam châm đại sư', gender=0 WHERE id=463; -- Tử cốt cung
 UPDATE data_item SET name='Nam châm huyền thoại', gender=0 WHERE id=464; -- Anh vũ cung
-UPDATE data_item SET name='Khăn quàng cao thủ', gender=0 WHERE id=467; -- Phi phong bào(nữ)
-UPDATE data_item SET name='Khăn quàng cao thủ', gender=0 WHERE id=468; -- Phi phong bào(nam)
-UPDATE data_item SET name='Khăn quàng cao thủ', gender=0 WHERE id=469; -- Tử quang bào(nữ)
-UPDATE data_item SET name='Khăn quàng cao thủ', gender=0 WHERE id=470; -- Tử quang bào(nam)
+UPDATE data_item SET name='Khăn quàng chuyên gia', gender=0 WHERE id=467; -- Phi phong bào(nữ)
+UPDATE data_item SET name='Khăn quàng chuyên gia', gender=0 WHERE id=468; -- Phi phong bào(nam)
+UPDATE data_item SET name='Khăn quàng chuyên gia', gender=0 WHERE id=469; -- Tử quang bào(nữ)
+UPDATE data_item SET name='Khăn quàng chuyên gia', gender=0 WHERE id=470; -- Tử quang bào(nam)
 UPDATE data_item SET name='Khăn quàng đại sư', gender=0 WHERE id=471; -- Đại hùng bào(nữ)
 UPDATE data_item SET name='Khăn quàng đại sư', gender=0 WHERE id=472; -- Đại hùng bào(nữ)
 UPDATE data_item SET name='Khăn quàng đại sư', gender=0 WHERE id=473; -- Phi yến bào (nam)
 UPDATE data_item SET name='Khăn quàng đại sư', gender=0 WHERE id=474; -- Phi yến bào (nam)
-UPDATE data_item SET name='Đai cao thủ', gender=0 WHERE id=475; -- Quần phi long(nữ)
-UPDATE data_item SET name='Đai cao thủ', gender=0 WHERE id=476; -- Quần phi long(nam)
-UPDATE data_item SET name='Đai cao thủ', gender=0 WHERE id=477; -- Quần Tử quang(nữ)
-UPDATE data_item SET name='Đai cao thủ', gender=0 WHERE id=478; -- Quần Tử quang(nam)
+UPDATE data_item SET name='Đai chuyên gia', gender=0 WHERE id=475; -- Quần phi long(nữ)
+UPDATE data_item SET name='Đai chuyên gia', gender=0 WHERE id=476; -- Quần phi long(nam)
+UPDATE data_item SET name='Đai chuyên gia', gender=0 WHERE id=477; -- Quần Tử quang(nữ)
+UPDATE data_item SET name='Đai chuyên gia', gender=0 WHERE id=478; -- Quần Tử quang(nam)
 UPDATE data_item SET name='Đai đại sư', gender=0 WHERE id=479; -- Quần Đại hùng(nữ)
 UPDATE data_item SET name='Đai đại sư', gender=0 WHERE id=480; -- Quần Đại hùng(nam)
 UPDATE data_item SET name='Đai đại sư', gender=0 WHERE id=481; -- Quần Phi yến(nữ)
 UPDATE data_item SET name='Đai đại sư', gender=0 WHERE id=482; -- Quần Phi yến(nam)
-UPDATE data_item SET name='Băng đô cao thủ', gender=0 WHERE id=483; -- Phi long mão(nữ)
-UPDATE data_item SET name='Băng đô cao thủ', gender=0 WHERE id=484; -- Phi long mão(nam)
-UPDATE data_item SET name='Băng đô cao thủ', gender=0 WHERE id=485; -- Tử quang mão(nữ)
-UPDATE data_item SET name='Băng đô cao thủ', gender=0 WHERE id=486; -- Tử quang mão(nam)
+UPDATE data_item SET name='Băng đô chuyên gia', gender=0 WHERE id=483; -- Phi long mão(nữ)
+UPDATE data_item SET name='Băng đô chuyên gia', gender=0 WHERE id=484; -- Phi long mão(nam)
+UPDATE data_item SET name='Băng đô chuyên gia', gender=0 WHERE id=485; -- Tử quang mão(nữ)
+UPDATE data_item SET name='Băng đô chuyên gia', gender=0 WHERE id=486; -- Tử quang mão(nam)
 UPDATE data_item SET name='Băng đô đại sư', gender=0 WHERE id=487; -- Đại hùng mão(nữ)
 UPDATE data_item SET name='Băng đô đại sư', gender=0 WHERE id=488; -- Đại hùng mão(nam)
 UPDATE data_item SET name='Băng đô đại sư', gender=0 WHERE id=489; -- Phi yến mão(nữ)
 UPDATE data_item SET name='Băng đô đại sư', gender=0 WHERE id=490; -- Phi yến mão(nam)
-UPDATE data_item SET name='Lông vũ tốc độ cao thủ', gender=0 WHERE id=491; -- Giày phi long
-UPDATE data_item SET name='Lông vũ tốc độ cao thủ', gender=0 WHERE id=492; -- Giày Tử quang
+UPDATE data_item SET name='Lông vũ tốc độ chuyên gia', gender=0 WHERE id=491; -- Giày phi long
+UPDATE data_item SET name='Lông vũ tốc độ chuyên gia', gender=0 WHERE id=492; -- Giày Tử quang
 UPDATE data_item SET name='Lông vũ tốc độ đại sư', gender=0 WHERE id=493; -- Giày Đại hùng
 UPDATE data_item SET name='Lông vũ tốc độ đại sư', gender=0 WHERE id=494; -- Giày phi yến
-UPDATE data_item SET name='Găng đấm cao thủ', gender=0 WHERE id=495; -- Găng phi long
-UPDATE data_item SET name='Găng đấm cao thủ', gender=0 WHERE id=496; -- Găng Tử quang
+UPDATE data_item SET name='Găng đấm chuyên gia', gender=0 WHERE id=495; -- Găng phi long
+UPDATE data_item SET name='Găng đấm chuyên gia', gender=0 WHERE id=496; -- Găng Tử quang
 UPDATE data_item SET name='Găng đấm đại sư', gender=0 WHERE id=497; -- Găng Đại hùng
 UPDATE data_item SET name='Găng đấm đại sư', gender=0 WHERE id=498; -- Găng Phi yến
-UPDATE data_item SET name='Huy hiệu cao thủ', gender=0 WHERE id=499; -- Nhẫn Phi long
-UPDATE data_item SET name='Huy hiệu cao thủ', gender=0 WHERE id=500; -- Nhẫn Tử quang
+UPDATE data_item SET name='Huy hiệu chuyên gia', gender=0 WHERE id=499; -- Nhẫn Phi long
+UPDATE data_item SET name='Huy hiệu chuyên gia', gender=0 WHERE id=500; -- Nhẫn Tử quang
 UPDATE data_item SET name='Huy hiệu đại sư', gender=0 WHERE id=501; -- Nhẫn Đại hùng
 UPDATE data_item SET name='Huy hiệu đại sư', gender=0 WHERE id=502; -- Nhẫn phi yến
-UPDATE data_item SET name='Vòng cổ cao thủ', gender=0 WHERE id=503; -- Dây chuyền phi long
-UPDATE data_item SET name='Vòng cổ cao thủ', gender=0 WHERE id=504; -- Dây chuyền Tử quang
+UPDATE data_item SET name='Vòng cổ chuyên gia', gender=0 WHERE id=503; -- Dây chuyền phi long
+UPDATE data_item SET name='Vòng cổ chuyên gia', gender=0 WHERE id=504; -- Dây chuyền Tử quang
 UPDATE data_item SET name='Vòng cổ đại sư', gender=0 WHERE id=505; -- Dây chuyền Đại hùng
 UPDATE data_item SET name='Vòng cổ đại sư', gender=0 WHERE id=506; -- Dây chuyền phi yến
 UPDATE data_item SET name='Khăn quàng sơ cấp', gender=0 WHERE id=507; -- Áo yếm đào
 UPDATE data_item SET name='Khăn quàng sơ cấp', gender=0 WHERE id=508; -- Áo thạch sanh
 UPDATE data_item SET name='Phiến đá hệ đại sư', gender=0 WHERE id=571; -- Ngọc đại hùng
 UPDATE data_item SET name='Phiến đá hệ đại sư', gender=0 WHERE id=572; -- Ngọc phi yến
-UPDATE data_item SET name='Phiến đá hệ cao thủ', gender=0 WHERE id=569; -- Ngọc phi long
-UPDATE data_item SET name='Phiến đá hệ cao thủ', gender=0 WHERE id=570; -- Ngọc tử quang
+UPDATE data_item SET name='Phiến đá hệ chuyên gia', gender=0 WHERE id=569; -- Ngọc phi long
+UPDATE data_item SET name='Phiến đá hệ chuyên gia', gender=0 WHERE id=570; -- Ngọc tử quang
 UPDATE data_item SET name='Khăn quàng sơ cấp', gender=0 WHERE id=573; -- Áo Dracula nữ
 UPDATE data_item SET name='Khăn quàng sơ cấp', gender=0 WHERE id=574; -- Áo Hằng Nga
 UPDATE data_item SET name='Khăn quàng sơ cấp', gender=0 WHERE id=575; -- Áo Dracula nam
@@ -526,8 +526,8 @@ UPDATE data_item SET name='Ruy băng bạch kim', gender=0 WHERE id=585; -- Phi 
 UPDATE data_item SET name='Ruy băng bạch kim', gender=0 WHERE id=586; -- Phi phong Phá Quân
 UPDATE data_item SET name='Ruy băng kim cương', gender=0 WHERE id=587; -- Phi phong Ngạo Tuyết
 UPDATE data_item SET name='Ruy băng kim cương', gender=0 WHERE id=588; -- Phi phong Kình Lôi
-UPDATE data_item SET name='Ruy băng cao thủ', gender=0 WHERE id=589; -- Phi phong Siêu Phàm
-UPDATE data_item SET name='Ruy băng cao thủ', gender=0 WHERE id=590; -- Phi phong Xuất Trần
+UPDATE data_item SET name='Ruy băng chuyên gia', gender=0 WHERE id=589; -- Phi phong Siêu Phàm
+UPDATE data_item SET name='Ruy băng chuyên gia', gender=0 WHERE id=590; -- Phi phong Xuất Trần
 UPDATE data_item SET name='Ruy băng đại sư', gender=0 WHERE id=591; -- Phi phong Lăng Tuyệt
 UPDATE data_item SET name='Ruy băng đại sư', gender=0 WHERE id=592; -- Phi phong Kinh Thế
 UPDATE data_item SET name='Ruy băng huyền thoại', gender=0 WHERE id=593; -- Phi phong Ngự Không
@@ -633,11 +633,11 @@ UPDATE data_item SET name='Nước thần đại sư', gender=0 WHERE id=781; --
 UPDATE data_item SET name='Khăn lụa đại sư', gender=0 WHERE id=780; -- Định thiên bút
 UPDATE data_item SET name='Hạt giống thần đại sư', gender=0 WHERE id=779; -- Long phụng đao
 UPDATE data_item SET name='Than lửa đại sư', gender=0 WHERE id=778; -- Hiên viên kiếm
-UPDATE data_item SET name='Nam châm cao thủ', gender=0 WHERE id=777; -- Thí thần cung
-UPDATE data_item SET name='Nước thần cao thủ', gender=0 WHERE id=776; -- Ngũ Lôi Búa
-UPDATE data_item SET name='Khăn lụa cao thủ', gender=0 WHERE id=775; -- Dao quang bút
-UPDATE data_item SET name='Hạt giống thần cao thủ', gender=0 WHERE id=774; -- Xà cốt đao
-UPDATE data_item SET name='Than lửa cao thủ', gender=0 WHERE id=773; -- Huyền thiên kiếm
+UPDATE data_item SET name='Nam châm chuyên gia', gender=0 WHERE id=777; -- Thí thần cung
+UPDATE data_item SET name='Nước thần chuyên gia', gender=0 WHERE id=776; -- Ngũ Lôi Búa
+UPDATE data_item SET name='Khăn lụa chuyên gia', gender=0 WHERE id=775; -- Dao quang bút
+UPDATE data_item SET name='Hạt giống thần chuyên gia', gender=0 WHERE id=774; -- Xà cốt đao
+UPDATE data_item SET name='Than lửa chuyên gia', gender=0 WHERE id=773; -- Huyền thiên kiếm
 UPDATE data_item SET name='Nam châm huyền thoại', gender=0 WHERE id=772; -- Đoạt mệnh cung
 UPDATE data_item SET name='Nước thần huyền thoại', gender=0 WHERE id=771; -- Bách linh búa
 UPDATE data_item SET name='Khăn lụa huyền thoại', gender=0 WHERE id=770; -- Minh Đạo bút
@@ -648,11 +648,11 @@ UPDATE data_item SET name='Nước thần đại sư', gender=0 WHERE id=766; --
 UPDATE data_item SET name='Hạt giống thần đại sư', gender=0 WHERE id=764; -- Long phụng đao
 UPDATE data_item SET name='Khăn lụa đại sư', gender=0 WHERE id=765; -- Định thiên bút
 UPDATE data_item SET name='Than lửa đại sư', gender=0 WHERE id=763; -- Hiên viên kiếm
-UPDATE data_item SET name='Nước thần cao thủ', gender=0 WHERE id=761; -- Ngũ Lôi Búa
-UPDATE data_item SET name='Nam châm cao thủ', gender=0 WHERE id=762; -- Thí thần cung
-UPDATE data_item SET name='Hạt giống thần cao thủ', gender=0 WHERE id=759; -- Xà cốt đao
-UPDATE data_item SET name='Khăn lụa cao thủ', gender=0 WHERE id=760; -- Dao quang bút
-UPDATE data_item SET name='Than lửa cao thủ', gender=0 WHERE id=758; -- Huyền thiên kiếm
+UPDATE data_item SET name='Nước thần chuyên gia', gender=0 WHERE id=761; -- Ngũ Lôi Búa
+UPDATE data_item SET name='Nam châm chuyên gia', gender=0 WHERE id=762; -- Thí thần cung
+UPDATE data_item SET name='Hạt giống thần chuyên gia', gender=0 WHERE id=759; -- Xà cốt đao
+UPDATE data_item SET name='Khăn lụa chuyên gia', gender=0 WHERE id=760; -- Dao quang bút
+UPDATE data_item SET name='Than lửa chuyên gia', gender=0 WHERE id=758; -- Huyền thiên kiếm
 UPDATE data_item SET name='Khăn quàng sơ cấp', gender=0 WHERE id=757; -- Áo Âu cơ\r\nTăng 50% băng ,sét ,độc ,lửa lan\r\nCòn 1hp khi bị quái cắn hoặc bị đồ sát
 UPDATE data_item SET name='Khăn quàng sơ cấp', gender=0 WHERE id=792; -- Bóng đá nữ\r\ntăng 100% băng ,sét ,độc ,lửa lan\r\nrơi thẻ khi giết quái và x2 tl rơi bóng bạc
 UPDATE data_item SET name='Ruy băng sơ cấp', gender=0 WHERE id=795; -- Phi Phong bóng đá

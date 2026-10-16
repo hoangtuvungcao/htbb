@@ -1131,6 +1131,22 @@ public class Res
 		int num = 0;
 		int num2 = 0;
 		int num3 = 0;
+		// Che do Pokemon (G7.A): bo tile PMD cung so tile/thu tu, sinh boi tools/pokemon/DoiTileMap.java.
+		// Thieu tep (Resources/poke_tile/) thi quay ve bo KPAH.
+		bool tilePokemon = false;
+		if (PokeBody.CHE_DO_POKEMON)
+		{
+			image = PokeTile.napAnh("t_thanh");
+			image2 = PokeTile.napAnh("t");
+			image3 = PokeTile.napAnh("t_hang");
+			tilePokemon = image != null && image2 != null && image3 != null;
+			if (!tilePokemon)
+			{
+				image = null;
+				image2 = null;
+				image3 = null;
+			}
+		}
 		if (image == null)
 		{
 			image = Image.createImage(Main.res + "/pngtile/t_thanh");
@@ -1160,6 +1176,13 @@ public class Res
 		for (int k = 0; k < num3; k++)
 		{
 			Tilemap.img[2][k] = Image.createImage(image3, 0, k * 16, 16, 16, 0);
+		}
+		if (tilePokemon)
+		{
+			// Ban do nho to theo mau trung binh cua tile moi (mang mau cu viet cung cho tile KPAH).
+			PokeTile.tinhMauBanDoNho(image, Tilemap.mangMauThanh);
+			PokeTile.tinhMauBanDoNho(image2, Tilemap.mangMau);
+			PokeTile.tinhMauBanDoNho(image3, Tilemap.mangMauHang);
 		}
 		image.texture = null;
 		image = null;

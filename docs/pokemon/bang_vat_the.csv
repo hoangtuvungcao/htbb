@@ -1,0 +1,21 @@
+loai,id,ten_cu,nguon_rawasset,file_client,rong_khung,cao,so_khung,ti_le,ghi_chu
+quai,83,cổng thành,Object/Block_*.None,vt_83.bytes,168,48,1,200,Tường khối đá + khối khoá ở giữa
+quai,85,Đá,Item/Rock_Gray.None,vt_85.bytes,16,16,1,200,Mỏ đá
+quai,86,Bông,Item/Silk_White.None,vt_86.bytes,16,16,1,200,Bông = tơ trắng
+quai,87,Gỗ,Object/Logs_Stacked.Flip,vt_87.bytes,48,48,1,100,Đống gỗ
+quai,88,Da,Item/Belt_Brown.None,vt_88.bytes,16,16,1,200,Da = đai da nâu
+quai,89,Sắt,Item/Iron_Ball.None,vt_89.bytes,16,16,1,200,Sắt = bi sắt
+quai,119,cong thanh,Object/Block_*.None,vt_119.bytes,168,48,1,200,Giống 83
+quai,121,Rương ma quái,Object/Chest.None,vt_121.bytes,40,40,1,100,Rương PMD đổi màu tím
+quai,122,Ngọc 1 sao,Item/Orb_Tan.None,vt_122.bytes,16,16,1,200,Orb cam + 1 chấm
+quai,123,Ngọc 2 sao,Item/Orb_Tan.None,vt_123.bytes,16,16,1,200,Orb cam + 2 chấm
+quai,124,Ngọc 3 sao,Item/Orb_Tan.None,vt_124.bytes,16,16,1,200,Orb cam + 3 chấm
+quai,125,Ngọc 4 sao,Item/Orb_Tan.None,vt_125.bytes,16,16,1,200,Orb cam + 4 chấm
+quai,126,Ngọc 5 sao,Item/Orb_Tan.None,vt_126.bytes,16,16,1,200,Orb cam + 5 chấm
+quai,127,Ngọc 6 sao,Item/Orb_Tan.None,vt_127.bytes,16,16,1,200,Orb cam + 6 chấm
+quai,128,Ngọc 7 sao,Item/Orb_Tan.None,vt_128.bytes,16,16,1,200,Orb cam + 7 chấm
+quai,131,Thùng gỗ,Item/Box_Brown.None,vt_131.bytes,16,16,1,200,Thùng gỗ = hộp nâu
+npc_su_kien,13,Cổng dịch chuyển,Object/Portal.6,vt_npc13.bytes,64,96,6,100,Cổng PMD 6 khung
+npc_su_kien,15,Khu N (bảng khu),Object/Sign.None,vt_npc15.bytes,40,40,1,150,Biển gỗ
+npc_su_kien,25,Nồi bánh chưng,Object/Pot.Flip,vt_npc25.bytes,16,16,1,250,Hũ PMD
+npc_su_kien,26,Nồi bánh tét,Object/Pot.Flip,vt_npc26.bytes,16,16,1,250,Hũ PMD

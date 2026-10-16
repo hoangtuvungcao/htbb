@@ -1299,7 +1299,7 @@ public class Map implements Runnable {
                 DataInputStream dis = null;
 
                 for (byte i = 0; i < url.length; i++) {
-                    fis = new FileInputStream(url[i]);
+                    fis = new FileInputStream(com.kpah.pokemon.TrangTriPokemon.duong(url[i]));
                     dis = new DataInputStream(fis);
                     imgDynamic[i] = new byte[dis.available()];
                     int byteRead = 0;
@@ -15330,7 +15330,7 @@ public class Map implements Runnable {
                 int nation = idoption % 3;
                 Message m = new Message(-19);
                 m.dos.writeByte(7);
-                m.dos.writeUTF(topnation[idoption].toUpperCase());
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(topnation[idoption]).toUpperCase());
                 Vector<CharInfo> info = null;
                 if (idoption < 3) {
                     info = (Vector<CharInfo>) topLvNation.get(nation);

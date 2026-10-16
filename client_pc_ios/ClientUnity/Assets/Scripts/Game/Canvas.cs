@@ -888,7 +888,10 @@ public class Canvas
 				resetTrans(g);
 				g.setColor(0);
 				g.fillRect(0, 0, w, h);
-				g.drawImage(imgLogo, w / 2, h / 2, 3);
+				if (!ThuongHieu.veTieuDe(g, w / 2, h / 2 - 30))
+				{
+					g.drawImage(imgLogo, w / 2, h / 2, 3);
+				}
 			}
 			resetTrans(g);
 			if (!infoDisConnect.Equals(string.Empty))

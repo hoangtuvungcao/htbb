@@ -263,7 +263,7 @@ class MapBangHoi {
             }
 
             String info = "Chi phí tạo bang là 100.000.000 xu và phải đạt 10 thành viên trong 3 ngày tính từ thời điểm tạo bang.";
-            msg.dos.writeUTF(info);
+            msg.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(info));
             player.sendMessage(msg);
         } catch (Exception var5) {
         }
@@ -585,13 +585,13 @@ class MapBangHoi {
                     Database.instance.updateTimeCheckDelClan(clanInfo.id, clanInfo.timeStartDel);
                     Message msg = new Message(27);
                     msg.dos.writeShort(p.id);
-                    msg.dos.writeUTF("Bang sẽ bị xoá sau " + clanInfo.timeDel() + " phút vì không đủ 10 thành viên");
+                    msg.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi("Bang sẽ bị xoá sau " + clanInfo.timeDel() + " phút vì không đủ 10 thành viên"));
                     p.sendMessage(msg);
                 }
             } else {
                 Message m = new Message(27);
                 m.dos.writeShort(player.id);
-                m.dos.writeUTF(player.charname + " đã rời khỏi bang");
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(player.charname + " đã rời khỏi bang"));
 
                 for (CharClan cx : clanInfo.member.values()) {
                     Char pp = CharManager.instance.getCharByCharName(cx.charname);
@@ -747,7 +747,7 @@ class MapBangHoi {
                 Database.instance.updateTimeCheckDelClan(clanInfo.id, clanInfo.timeStartDel);
                 Message m = new Message(27);
                 m.dos.writeShort(player.id);
-                m.dos.writeUTF("Bang sẽ bị xoá sau " + clanInfo.timeDel() + " phút vì không đủ 10 thành viên");
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi("Bang sẽ bị xoá sau " + clanInfo.timeDel() + " phút vì không đủ 10 thành viên"));
                 player.sendMessage(m);
             }
 
@@ -810,7 +810,7 @@ class MapBangHoi {
                 m.dos.writeBoolean(isdel);
                 m.dos.writeByte(-1);
                 if (isdel) {
-                    m.dos.writeUTF("Bang còn " + clan.timeDel() + " phút nữa sẽ giải tán");
+                    m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi("Bang còn " + clan.timeDel() + " phút nữa sẽ giải tán"));
                 }
 
                 player.sendMessage(m);
@@ -913,7 +913,7 @@ class MapBangHoi {
                         Message m = new Message(-11);
                         m.dos.writeByte(type);
                         m.dos.writeShort(player.id);
-                        m.dos.writeUTF(player.charname + " muốn mời bạn tham gia bang " + clan.name + ". Bạn có tham gia không? ");
+                        m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(player.charname + " muốn mời bạn tham gia bang " + clan.name + ". Bạn có tham gia không? "));
                         p.sendMessage(m);
                         return;
                     }
@@ -996,7 +996,7 @@ class MapBangHoi {
 
                 Message m = new Message(-11);
                 m.dos.writeByte(type);
-                m.dos.writeUTF(player.charname + (ok ? " đã tham gia bang " : " không đồng ý tham gia bang ") + clanx.name);
+                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(player.charname + (ok ? " đã tham gia bang " : " không đồng ý tham gia bang ") + clanx.name));
                 m.dos.writeBoolean(ok);
                 player.rankClan = 3;
 
@@ -1157,7 +1157,7 @@ class MapBangHoi {
             if (Database.instance.addNewClan(clan)) {
                 Message msg = new Message(-10);
                 msg.dos.writeShort(cID);
-                msg.dos.writeUTF("Bang " + clanName.toUpperCase() + " được tạo thành công.");
+                msg.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi("Bang " + clanName.toUpperCase() + " được tạo thành công."));
                 player.sendMessage(msg);
                 player.idClan = cID;
                 idIconClan.remove(new Integer(cID));

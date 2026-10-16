@@ -449,7 +449,11 @@ public class ServerListScr : MyScreen
 	{
 		paintBg(g);
 		Canvas.resetTrans(g);
-		g.drawImage(Canvas.imgLogo, Canvas.hw, Canvas.hh - 100, 3);
+		// Che do Pokemon: tieu de ThuongHieu (ten game + 5 Pokemon khoi dau) thay logo KPAH.
+		if (!ThuongHieu.veTieuDe(g, Canvas.hw, Canvas.hh - 150))
+		{
+			g.drawImage(Canvas.imgLogo, Canvas.hw, Canvas.hh - 100, 3);
+		}
 		paintPanel(g);
 		base.paint(g);
 	}

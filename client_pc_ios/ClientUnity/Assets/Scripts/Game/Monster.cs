@@ -245,7 +245,7 @@ public class Monster : LiveActor
 	{
 		if (!MonsterTemplate.laPokemon(monster_type))
 		{
-			return false;
+			return paintVatThe(g);
 		}
 		if (!isPaint() || state == 8 || hp <= 0)
 		{
@@ -280,6 +280,40 @@ public class Monster : LiveActor
 				{
 					((DynamicEffect)dynamicEffTop.elementAt(k)).paint(g, x, y);
 				}
+			}
+		}
+		paintDataEff_Bot(g, x, y, false);
+		paintEffSkill(g);
+		return true;
+	}
+
+	/// <summary>
+	/// Quai phan_loai vat_the (cong thanh, nguyen lieu, ngoc, ruong, thung): ve do vat PMD
+	/// (VatThePokemon, viec G7.B1) thay anh KPAH cu. Tra ve false de ve kieu cu.
+	/// </summary>
+	public bool paintVatThe(MyGraphics g)
+	{
+		if (!VatThePokemon.laVatThe(monster_type))
+		{
+			return false;
+		}
+		if (!isPaint() || state == 8 || hp <= 0)
+		{
+			return true;
+		}
+		paintDataEff_Top(g, x, y, false);
+		if (!isFreeze)
+		{
+			int cao = VatThePokemon.caoQuai(monster_type) + 4;
+			if (cao > height)
+			{
+				height = (short)cao;
+			}
+			g.drawImage(Res.imgShadow, x, y, 3);
+			VatThePokemon.veQuai(g, monster_type, x + vangx, y + vangy + dy + z);
+			for (int j = 0; j < buff.size(); j++)
+			{
+				((CharBuff)buff.elementAt(j)).paint(g);
 			}
 		}
 		paintDataEff_Bot(g, x, y, false);
@@ -349,6 +383,10 @@ public class Monster : LiveActor
 		if (z != 0)
 		{
 			frame = 3;
+		}
+		if (VatThePokemon.veGocQuai(g, monster_type, xCorner, yCorner - 8, 24))
+		{
+			return;
 		}
 		if (MonsterTemplate.laPokemon(monster_type))
 		{

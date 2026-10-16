@@ -573,11 +573,20 @@ public class TField : ObjGame
 		}
 		g.setClip(x + 3, y + 1, width - typingModeAreaWidth - 8, height - 3);
 		g.setColor(0);
-		MFont.arialFont.drawString(g, paintedText, TEXT_GAP_X + offsetX + x, num + y + (height - MFont.arialFont.getHeight()) / 2 + 3, 0);
-		if (isFocused() && keyInActiveState == 0 && (showCaretCounter > 0 || counter / CARET_SHOWING_TIME % 2 == 0))
+		// G7.C3: chu nguoi choi dang go giu nguyen (khong qua ChuPokemon.D).
+		ChuPokemon.KhongDoi = true;
+		try
 		{
-			g.setColor(0);
-			g.fillRect(TEXT_GAP_X + 1 + offsetX + x + MFont.arialFont.getWidth(paintedText.Substring(0, caretPos) + "a") - CARET_WIDTH - MFont.arialFont.getWidth("a"), y + (height - CARET_HEIGHT) / 2 + 2, CARET_WIDTH, CARET_HEIGHT + 2);
+			MFont.arialFont.drawString(g, paintedText, TEXT_GAP_X + offsetX + x, num + y + (height - MFont.arialFont.getHeight()) / 2 + 3, 0);
+			if (isFocused() && keyInActiveState == 0 && (showCaretCounter > 0 || counter / CARET_SHOWING_TIME % 2 == 0))
+			{
+				g.setColor(0);
+				g.fillRect(TEXT_GAP_X + 1 + offsetX + x + MFont.arialFont.getWidth(paintedText.Substring(0, caretPos) + "a") - CARET_WIDTH - MFont.arialFont.getWidth("a"), y + (height - CARET_HEIGHT) / 2 + 2, CARET_WIDTH, CARET_HEIGHT + 2);
+			}
+		}
+		finally
+		{
+			ChuPokemon.KhongDoi = false;
 		}
 	}
 
@@ -620,11 +629,20 @@ public class TField : ObjGame
 			g.fillRect(x + 1, y + 1, width - 1, height - 1);
 		}
 		g.setColor(0);
-		MFont.arialFont.drawString(g, paintedText, TEXT_GAP_X + offsetX + x, num + y + (height - MFont.arialFont.getHeight()) / 2 + 3, 0);
-		if (isFocused() && keyInActiveState == 0 && (showCaretCounter > 0 || counter / CARET_SHOWING_TIME % 2 == 0))
+		// G7.C3: chu nguoi choi dang go giu nguyen (khong qua ChuPokemon.D).
+		ChuPokemon.KhongDoi = true;
+		try
 		{
-			g.setColor(0);
-			g.fillRect(TEXT_GAP_X + 1 + offsetX + x + MFont.arialFont.getWidth(paintedText.Substring(0, caretPos) + "a") - CARET_WIDTH - MFont.arialFont.getWidth("a"), y + (height - CARET_HEIGHT) / 2 + 2, CARET_WIDTH, CARET_HEIGHT - 3);
+			MFont.arialFont.drawString(g, paintedText, TEXT_GAP_X + offsetX + x, num + y + (height - MFont.arialFont.getHeight()) / 2 + 3, 0);
+			if (isFocused() && keyInActiveState == 0 && (showCaretCounter > 0 || counter / CARET_SHOWING_TIME % 2 == 0))
+			{
+				g.setColor(0);
+				g.fillRect(TEXT_GAP_X + 1 + offsetX + x + MFont.arialFont.getWidth(paintedText.Substring(0, caretPos) + "a") - CARET_WIDTH - MFont.arialFont.getWidth("a"), y + (height - CARET_HEIGHT) / 2 + 2, CARET_WIDTH, CARET_HEIGHT - 3);
+			}
+		}
+		finally
+		{
+			ChuPokemon.KhongDoi = false;
 		}
 	}
 
