@@ -20,6 +20,30 @@ import network.Session_ME;
  * nhập - auto đăng nhập cần vậy).
  */
 final class TienIch {
+    // Cắt chuỗi thanh trạng thái cho vừa màn hình, nhớ 4 kết quả gần nhất (mỗi khung hình vẽ lại cùng chuỗi:
+    // trước đây cắt từng ký tự + đo lại mỗi lần). Chỉ gọi từ luồng vẽ.
+    private static final String[] CAT_GOC = new String[4];
+    private static final String[] CAT_KQ = new String[4];
+    private static final int[] CAT_W = new int[4];
+    private static int catTiep;
+
+    static String catVua(String s, Font font) {
+        for (int i = 0; i < 4; ++i) {
+            if (CAT_W[i] == Canvas.w && s.equals(CAT_GOC[i])) {
+                return CAT_KQ[i];
+            }
+        }
+        String kq = s;
+        while (kq.length() > 6 && font.getWidth(kq) > Canvas.w - 12) {
+            kq = kq.substring(0, kq.length() - 1);
+        }
+        CAT_GOC[catTiep] = s;
+        CAT_KQ[catTiep] = kq;
+        CAT_W[catTiep] = Canvas.w;
+        catTiep = (catTiep + 1) % 4;
+        return kq;
+    }
+
     private static final String RMS_TEN = "kpahti";
     /** Tắt thông báo: nuốt mọi hộp thoại OK của server khi đang trong game (màn đăng nhập vẫn hiện). */
     static boolean tatThongBao;

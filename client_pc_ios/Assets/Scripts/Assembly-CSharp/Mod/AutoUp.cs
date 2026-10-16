@@ -1805,6 +1805,14 @@ public sealed class AutoUp
 
 	// ------------------------------------------------------------------ thanh trạng thái
 
+	private static string veTho;
+
+	private static string veCat;
+
+	private static int veW;
+
+	private static int veRong;
+
 	public static void ve(MyGraphics graphics, int n)
 	{
 		if (!dang || MFont.normalFont == null || MFont.normalFont[0] == null)
@@ -1820,11 +1828,26 @@ public sealed class AutoUp
 		stringBuilder.Append(" | ").Append(trangThai);
 		string @string = stringBuilder.ToString();
 		MFont font = MFont.normalFont[0];
-		while (@string.Length > 6 && font.getWidth(@string) > Canvas.w - 12)
+		int n2;
+		// Chỉ cắt + đo lại khi nội dung / bề rộng màn hình đổi (trước: mỗi khung hình cắt từng ký tự, mỗi chuỗi
+		// ngắn hơn lại vào bộ nhớ đo MFont -> đầy 4096 là xoá sạch, đo lại tất cả)
+		if (@string == veTho && Canvas.w == veW)
 		{
-			@string = @string.Substring(0, @string.Length - 1);
+			@string = veCat;
+			n2 = veRong;
 		}
-		int n2 = Math.min(Canvas.w, font.getWidth(@string) + 12);
+		else
+		{
+			veTho = @string;
+			veW = Canvas.w;
+			while (@string.Length > 6 && font.getWidth(@string) > Canvas.w - 12)
+			{
+				@string = @string.Substring(0, @string.Length - 1);
+			}
+			n2 = Math.min(Canvas.w, font.getWidth(@string) + 12);
+			veCat = @string;
+			veRong = n2;
+		}
 		int n3 = font.getHeight() + 6;
 		int n4 = (Canvas.w - n2) / 2;
 		graphics.translate(-graphics.getTranslateX(), -graphics.getTranslateY());

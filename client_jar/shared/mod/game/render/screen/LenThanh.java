@@ -304,9 +304,7 @@ final class LenThanh {
         }
         String string = new StringBuffer().append("Lên thành: ").append(trangThai).toString();
         Font font = Font.normalFont[0];
-        while (string.length() > 6 && font.getWidth(string) > Canvas.w - 12) {
-            string = string.substring(0, string.length() - 1);
-        }
+        string = TienIch.catVua(string, font);
         int n2 = Math.min(Canvas.w, font.getWidth(string) + 12);
         int n3 = font.getHeight() + 6;
         int n4 = (Canvas.w - n2) / 2;

@@ -1567,6 +1567,11 @@ final class AutoUp {
 
     // ------------------------------------------------------------------ thanh trạng thái
 
+    private static String veTho;
+    private static String veCat;
+    private static int veW;
+    private static int veRong;
+
     static void ve(Graphics graphics, int n) {
         if (!dang || Font.normalFont == null || Font.normalFont[0] == null) {
             return;
@@ -1579,10 +1584,21 @@ final class AutoUp {
         stringBuilder.append(" | ").append(trangThai);
         String string = stringBuilder.toString();
         Font font = Font.normalFont[0];
-        while (string.length() > 6 && font.getWidth(string) > Canvas.w - 12) {
-            string = string.substring(0, string.length() - 1);
+        int n2;
+        // Chỉ cắt + đo lại khi nội dung / bề rộng màn hình đổi (trước: mỗi khung hình cắt từng ký tự, đo lại từng lần)
+        if (string.equals(veTho) && Canvas.w == veW) {
+            string = veCat;
+            n2 = veRong;
+        } else {
+            veTho = string;
+            veW = Canvas.w;
+            while (string.length() > 6 && font.getWidth(string) > Canvas.w - 12) {
+                string = string.substring(0, string.length() - 1);
+            }
+            n2 = Math.min(Canvas.w, font.getWidth(string) + 12);
+            veCat = string;
+            veRong = n2;
         }
-        int n2 = Math.min(Canvas.w, font.getWidth(string) + 12);
         int n3 = font.getHeight() + 6;
         int n4 = (Canvas.w - n2) / 2;
         graphics.translate(-graphics.getTranslateX(), -graphics.getTranslateY());

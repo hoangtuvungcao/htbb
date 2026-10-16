@@ -3231,9 +3231,7 @@ extends Screen {
         if (font.getWidth(string) > Canvas.w - 12 && string.startsWith("Auto ")) {
             string = string.substring(5);
         }
-        while (string.length() > 6 && font.getWidth(string) > Canvas.w - 12) {
-            string = string.substring(0, string.length() - 1);
-        }
+        string = TienIch.catVua(string, font);
         int n = Math.min(Canvas.w, font.getWidth(string) + 12);
         int n2 = font.getHeight() + 6;
         int n3 = (Canvas.w - n) / 2;

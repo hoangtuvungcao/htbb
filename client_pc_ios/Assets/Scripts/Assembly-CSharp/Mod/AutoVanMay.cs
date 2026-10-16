@@ -233,10 +233,7 @@ public sealed class AutoVanMay
 		}
 		string @string = new System.Text.StringBuilder().Append("Vận may: lượt ").Append(daMo).Append(" | trúng ").Append(trung).Append(thuongCuoi.Length > 0 ? new System.Text.StringBuilder().Append(" | ").Append(thuongCuoi).ToString() : "").ToString();
 		MFont font = MFont.normalFont[0];
-		while (@string.Length > 6 && font.getWidth(@string) > Canvas.w - 12)
-		{
-			@string = @string.Substring(0, @string.Length - 1);
-		}
+		@string = TienIch.catVua(@string, font);
 		int n2 = Math.min(Canvas.w, font.getWidth(@string) + 12);
 		int n3 = font.getHeight() + 6;
 		int n4 = (Canvas.w - n2) / 2;

@@ -628,10 +628,7 @@ public partial class PauseMenu
 		{
 			str = str.Substring(5);
 		}
-		while (str.Length > 6 && font.getWidth(str) > Canvas.w - 12)
-		{
-			str = str.Substring(0, str.Length - 1);
-		}
+		str = TienIch.catVua(str, font);
 		int n = Math.min(Canvas.w, font.getWidth(str) + 12);
 		int n2 = font.getHeight() + 6;
 		int n3 = (Canvas.w - n) / 2;

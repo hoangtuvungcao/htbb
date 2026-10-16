@@ -1046,10 +1046,7 @@ public sealed class AutoVanTieu
 		}
 		string @string = new System.Text.StringBuilder().Append("Tiêu ").Append(MAU[mauIndex]).Append(": đã đi ").Append(soTieu).Append(" | ").Append(trangThai).ToString();
 		MFont font = MFont.normalFont[0];
-		while (@string.Length > 6 && font.getWidth(@string) > Canvas.w - 12)
-		{
-			@string = @string.Substring(0, @string.Length - 1);
-		}
+		@string = TienIch.catVua(@string, font);
 		int n2 = Math.min(Canvas.w, font.getWidth(@string) + 12);
 		int n3 = font.getHeight() + 6;
 		int n4 = (Canvas.w - n2) / 2;

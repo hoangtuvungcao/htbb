@@ -9,6 +9,37 @@ using System.Threading;
  */
 public sealed class TienIch
 {
+	// Cắt chuỗi thanh trạng thái cho vừa màn hình, nhớ 4 kết quả gần nhất (mỗi khung hình vẽ lại cùng chuỗi:
+	// trước đây cắt từng ký tự + đo lại, mỗi chuỗi ngắn hơn lại vào bộ nhớ đo MFont). Chỉ gọi từ luồng vẽ.
+	private static readonly string[] CAT_GOC = new string[4];
+
+	private static readonly string[] CAT_KQ = new string[4];
+
+	private static readonly int[] CAT_W = new int[4];
+
+	private static int catTiep;
+
+	public static string catVua(string s, MFont font)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			if (CAT_W[i] == Canvas.w && s == CAT_GOC[i])
+			{
+				return CAT_KQ[i];
+			}
+		}
+		string kq = s;
+		while (kq.Length > 6 && font.getWidth(kq) > Canvas.w - 12)
+		{
+			kq = kq.Substring(0, kq.Length - 1);
+		}
+		CAT_GOC[catTiep] = s;
+		CAT_KQ[catTiep] = kq;
+		CAT_W[catTiep] = Canvas.w;
+		catTiep = (catTiep + 1) % 4;
+		return kq;
+	}
+
 	private const string RMS_TEN = "kpahti";
 
 	/** Tắt thông báo: nuốt mọi hộp thoại OK của server khi đang trong game (màn đăng nhập vẫn hiện). */
@@ -510,36 +541,52 @@ public sealed class TienIch
 		dangLam = true;
 		Thread thread = new Thread(() =>
 		{
+			// dangLam chỉ tắt SAU khi việc trên luồng chính chạy xong (trước đây tắt ngay khi gửi đi -> tick sau gửi
+			// thêm một lần đăng nhập / chọn nhân vật trong lúc việc trước còn chờ, khác bản jar)
+			Action xong = () => dangLam = false;
 			try
 			{
 				// C#: thread nền chỉ chờ như bản jar; việc đụng game (đổi màn, hộp thoại, kết nối) gửi sang luồng chính
 				if (n == 0)
 				{
-					LuongChinh.chay(() => TienIch.veManChonServer());
+					LuongChinh.chay(() =>
+					{
+						try { TienIch.veManChonServer(); } finally { xong(); }
+					});
 				}
 				else if (n == 1)
 				{
 					Thread.Sleep(1500);
 					LuongChinh.chay(() =>
 					{
-						Canvas.startWaitDlg("Tự đăng nhập lại...", true);
-						Canvas.connect();
-						GameService.gI().setClientType();
-						GameService.gI().login(AutoGuard.tkDangNhap, AutoGuard.mkDangNhap, GameMidlet.version);
-						GameScr.saveAutoFight = false;
+						try
+						{
+							Canvas.startWaitDlg("Tự đăng nhập lại...", true);
+							Canvas.connect();
+							GameService.gI().setClientType();
+							GameService.gI().login(AutoGuard.tkDangNhap, AutoGuard.mkDangNhap, GameMidlet.version);
+							GameScr.saveAutoFight = false;
+						}
+						finally
+						{
+							xong();
+						}
 					});
 				}
 				else
 				{
 					Thread.Sleep(1000);
-					LuongChinh.chay(() => CharSelectScr.me.cmdSelect.action());
+					LuongChinh.chay(() =>
+					{
+						try { CharSelectScr.me.cmdSelect.action(); } finally { xong(); }
+					});
 				}
 			}
 			catch (Exception)
 			{
 				// lần sau thử lại
+				xong();
 			}
-			dangLam = false;
 		});
 		thread.IsBackground = true;
 		thread.Start();
