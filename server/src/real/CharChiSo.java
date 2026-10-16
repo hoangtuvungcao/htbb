@@ -145,6 +145,10 @@ class CharChiSo {
         // (fullset, pet, noi luc chien truong, cai tao) va TRUOC hai dong chan hp/mp.
         // Dat truoc cac khoi phan tram thi 2000 mau se bi nhan len theo, thanh nhieu hon
         // con so ghi trong mo ta; dat sau hai dong chan thi hp co the vuot maxhp.
+        // Che do Pokemon (B1): cong % HP theo giai doan tien hoa (LoaiPokemon.phanTramGiaiDoan).
+        if (com.kpah.pokemon.CheDoPokemon.bat() && self.pokeDex > 0) {
+            self.maxhp += (int) ((long) self.maxhp * com.kpah.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex) / 100L);
+        }
         self.maxhp += SkinLinhThu.congHp(self);
         self.maxmp += SkinLinhThu.congMp(self);
         if (self.hp > self.maxhp) {
@@ -1395,6 +1399,12 @@ class CharChiSo {
                     self.attackPlayer = (int) (self.attackPlayer * noiluc / 10L + (self.attackPlayer / 20));
                 }
             }
+        }
+        // Che do Pokemon (B1): cong % tan cong theo giai doan tien hoa, truoc diem Than Khi.
+        if (com.kpah.pokemon.CheDoPokemon.bat() && self.pokeDex > 0) {
+            final int ptGd = com.kpah.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex);
+            self.attack += (int) ((long) self.attack * ptGd / 100L);
+            self.attackPlayer += (int) ((long) self.attackPlayer * ptGd / 100L);
         }
         // ---- THAN KHI: "Tang diem sat thuong" — cong SAU CUNG ----
         // Dat o cuoi ham nen khong bi bat ky he so nhan nao phia tren khuech dai,

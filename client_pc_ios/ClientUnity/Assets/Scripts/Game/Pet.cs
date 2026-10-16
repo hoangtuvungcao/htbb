@@ -203,6 +203,11 @@ public class Pet : AnimalMove
 	{
 		try
 		{
+			// Che do Pokemon (lenh -94): ve Pokemon thay anh pet-tool; khong co thi ve kieu cu.
+			if (vePokePet(g, myOwner ?? (owner as Char)))
+			{
+				return;
+			}
 			mDataEffect mDataEffect2 = (mDataEffect)ALL_PET_DATA.get(string.Empty + idTemplate);
 			if (mDataEffect2 != null && mDataEffect2 != null)
 			{

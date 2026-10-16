@@ -139,6 +139,11 @@ public class Char : LiveActor
 
 	public bool pokeThuShiny;
 
+	/// <summary>Pet di theo dang Pokemon (lenh -94 POKE_PET), 0 = ve pet kieu cu. Ve o AnimalMove.vePokePet.</summary>
+	public short pokePetDex;
+
+	public bool pokePetShiny;
+
 	/// <summary>1.5 giay o 50 tick/giay (PokeDuLieu.TICK_MOI_GIAY).</summary>
 	public const int POKE_TICK_TIEN_HOA = 75;
 
@@ -2918,6 +2923,12 @@ public class Char : LiveActor
 			else
 			{
 				currentSkillAnimate = SkillManager.getSkillAnimate(currentSkillType, clazz);
+			}
+			// K3: Pokemon dung particle PMD cua chieu thay hieu ung KPAH (thieu thi giu cu).
+			SkillAnimate pokeSkill = PokeHieuUng.layChieu(this, isDoing ? 0 : currentSkillType);
+			if (pokeSkill != null)
+			{
+				currentSkillAnimate = pokeSkill;
 			}
 			if (currentSkillType < coolDownSkill.Length && skillID < skillLevelLearnt.Length)
 			{

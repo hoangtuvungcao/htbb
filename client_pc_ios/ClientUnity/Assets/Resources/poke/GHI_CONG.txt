@@ -489,3 +489,10 @@ Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
 == 0901
 2023-11-07 08:35:29.920405	<@!356635814668664832>	CUR	PMDCollab_2	Idle,Walk,Swing,Double,Rotate
 2024-07-02 15:06:25.800274	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,SpAttack,RearUp,Hop
+
+== HIEU UNG CHIEU (tai_hieu_ung_pmd.py) ==
+Hieu ung chieu (hu_*.bytes): PMDCollab RawAsset, thu muc Particle/ - https://github.com/PMDCollab/RawAsset
+RawAsset KHONG co file LICENSE: trich tu PMD goc (Chunsoft/Nintendo) / PMDCollab RawAsset, chi dung PHI THUONG MAI.
+Pokemon (c) Nintendo / Game Freak / The Pokemon Company.
+File goc: Aqua_Tail_Splash.None, Bite.Dir8, Brine_Splashes.None, Bubbles_Blue.None, Charge_Beam_Glow.None, Charge_Beam_Hit.None, Charge_Up.None, Discharge.None, Discharge_Hit.None, Ember.None, Fire_Blast.None, Fire_Fang_Fang.None, Fire_Spin_Front.None, Flamethrower.None, Giga_Impact_Front.None, Grudge_Lights.None, Harden_RSE.None, Healing_Wish_Charge.None, Hit_Neutral.None, Hit_Super_Effective.None, Hydro_Cannon.None, Hydro_Pump_RSE.Dir1, Iron_Head.None, Last_Resort_Front.None, Leaf_Storm_Hit.None, Light_Ball_Yellow.None, Mud_Bomb_Ball.None, Protect.None, Razor_Leaf.None, Scratch.Dir1, Seed_Bomb_Blast.None, Shadow_Claw.None, Shock_Wave.None, Sleep_Z.None, Smoke_Black.None, Spark.None, Stat_Blue_Ring.None, Stat_Green_Ring.None, Swift_Star.None, Swords_Dance.None, Thunder_Fang_Fang.None, Vine_Whip.Dir1, Water_Column_Ranger.None, Wish.None, Withdraw.Flip
+== HET HIEU UNG CHIEU ==

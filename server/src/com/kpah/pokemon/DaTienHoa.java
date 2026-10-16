@@ -58,4 +58,28 @@ public final class DaTienHoa {
         }
         return dexTheoDa(idItem);
     }
+
+    /** Ti le roi da khi Eevee du cap ha quai, phan nghin (5 = 0,5% moi con). */
+    public static final int TI_LE_ROI_PHAN_NGHIN = 5;
+
+    /** Quai thap hon nguoi choi qua muc nay thi khong roi (chong cay quai yeu). */
+    public static final int LECH_CAP_TOI_DA = 10;
+
+    /**
+     * Nguon phat da: Eevee (cap >= 25) ha quai co ti le nhan 1 da ngau nhien.
+     * Tra ve id vat pham da, hoac 0 neu khong roi. Ham THUAN - so ngau nhien do
+     * noi goi truyen vao ({@code r1000} trong [0,1000), {@code rDa} bat ky >= 0).
+     */
+    public static int daRoiKhiHaQuai(final int dex, final int capNguoi, final int capQuai, final int r1000, final int rDa) {
+        if (!duocDung(dex, capNguoi)) {
+            return 0;
+        }
+        if (capNguoi - capQuai > LECH_CAP_TOI_DA) {
+            return 0;
+        }
+        if (r1000 < 0 || r1000 >= TI_LE_ROI_PHAN_NGHIN) {
+            return 0;
+        }
+        return ID_ITEM[Math.abs(rDa) % ID_ITEM.length];
+    }
 }

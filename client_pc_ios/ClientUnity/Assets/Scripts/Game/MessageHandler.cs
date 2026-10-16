@@ -110,6 +110,21 @@ public class MessageHandler : Cmd_message, IMessageHandler
 		c.pokeThuShiny = shiny;
 	}
 
+	/// <summary>-94 POKE_PET: i16 charId, i16 dexPet (0 = khong co / pet kieu cu), u8 shiny. Server gui sau -93.</summary>
+	private void onPokePet(Message msg)
+	{
+		short id = msg.reader().readShort();
+		short dexPet = msg.reader().readShort();
+		bool shiny = msg.reader().readUnsignedByte() != 0;
+		Char c = timCharPoke(id);
+		if (c == null)
+		{
+			return;
+		}
+		c.pokePetDex = dexPet;
+		c.pokePetShiny = shiny;
+	}
+
 	public void onMessage(Message msg)
 	{
 		try
@@ -128,6 +143,9 @@ public class MessageHandler : Cmd_message, IMessageHandler
 				break;
 			case -93:
 				onPokeCuoi(msg);
+				break;
+			case -94:
+				onPokePet(msg);
 				break;
 			case -76:
 				Canvas.gameScr.onShopNew(msg);

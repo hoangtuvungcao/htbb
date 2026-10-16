@@ -21,6 +21,8 @@ public class DataGame {
     public static byte[] effDataLocal;
     public static byte[][] imgEff;
     public static byte[][] imgIconTrangBi;
+    /** Icon vat pham Pokemon map/icon_pokemon/&lt;n&gt;.png, phuc vu o id 14000+n. */
+    public static byte[][] imgIconPokemon = new byte[0][];
     public static byte[][] imgOther;
     public static byte[][] allImg;
     public static byte[][] iconClanImg;
@@ -67,6 +69,24 @@ public class DataGame {
     static short nIconItem = 866; // update item moi (865 = icon skin Kim Cang Long)
 //    static short nIconItem = 632;
     public static byte version = 1;
+
+    /** Nap map/icon_pokemon/0..n-1.png (dung o file dau tien thieu). Thieu thu muc -> 0 icon. */
+    static void napIconPokemon() {
+        final java.util.List<byte[]> ds = new java.util.ArrayList<byte[]>();
+        for (int i = 0; i < com.kpah.pokemon.IconPokemon.SO_TOI_DA; i++) {
+            final java.io.File f = new java.io.File(com.kpah.pokemon.IconPokemon.THU_MUC + i + ".png");
+            if (!f.isFile()) {
+                break;
+            }
+            try {
+                ds.add(java.nio.file.Files.readAllBytes(f.toPath()));
+            } catch (final Exception e) {
+                break;
+            }
+        }
+        imgIconPokemon = ds.toArray(new byte[0][]);
+        System.out.println("ICON POKEMON -> " + imgIconPokemon.length + " anh tu " + com.kpah.pokemon.IconPokemon.THU_MUC);
+    }
 
     public static void load() {
         try {
@@ -323,6 +343,7 @@ public class DataGame {
                 }
             }
 
+            napIconPokemon();
             allImg = new byte[nIconItem][];
 
             for (i = 0; i < nIconItem; ++i) {
@@ -954,6 +975,9 @@ public class DataGame {
                 ghiAnh(m, iconClanImg, idImg - 11000, idImg);
             } else if (idImg >= 12000 && idImg < 12100) {
                 ghiAnh(m, imgThanThu, idImg - 12000, idImg);
+            } else if (com.kpah.pokemon.IconPokemon.thuocDai(idImg)) {
+                // Icon vat pham Pokemon (map/icon_pokemon/), xem com.kpah.pokemon.IconPokemon.
+                ghiAnh(m, imgIconPokemon, idImg - com.kpah.pokemon.IconPokemon.ID_DAU, idImg);
             } else if (idImg >= real.SkinLinhThu.ID_ANH_BAN_DO
                     && idImg < real.SkinLinhThu.ID_ANH_BAN_DO + real.SkinLinhThu.SO_SKIN) {
                 // Skin linh thu. Dai id nay chua tung duoc dung (dai cu cao nhat het o

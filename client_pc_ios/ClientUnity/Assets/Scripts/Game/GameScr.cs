@@ -7420,6 +7420,7 @@ public class GameScr : MyScreen
 					mainChar.lvBuff[num7] = (sbyte)num6;
 					mainChar.buffType[num7] = (sbyte)num4;
 					mainChar.buff.addElement(charBuff);
+					PokeHieuUng.khiNhanBuff(mainChar, num4);
 				}
 				break;
 			}
@@ -7436,6 +7437,7 @@ public class GameScr : MyScreen
 						((Char)actor3).lvBuff[num7] = (sbyte)num6;
 						((Char)actor3).buffType[num7] = (sbyte)num4;
 						((Char)actor3).buff.addElement(charBuff2);
+						PokeHieuUng.khiNhanBuff(actor3, num4);
 					}
 					break;
 				}

@@ -27,6 +27,13 @@ public final class GoiPokemon {
     /** -93 POKE_CUOI: i16 charId, i16 dexThu (0 = khong cuoi), u8 shiny. Gui ngay sau moi -90. */
     public static final int POKE_CUOI = -93;
 
+    /**
+     * -94 POKE_PET: i16 charId, i16 dexPet (0 = khong co pet / pet khong phai Pokemon), u8 shiny.
+     * Gui ngay sau moi -93 (chuoi -90 -> -93 -> -94). -94 da grep src/ va ClientUnity/: chua
+     * dung lam so lenh (chi co -99 la id NPC o gan).
+     */
+    public static final int POKE_PET = -94;
+
     /** Ti le ve quai thuong / boss (%). */
     public static final int TI_LE_THUONG = 100;
     public static final int TI_LE_BOSS = 160;
@@ -83,6 +90,12 @@ public final class GoiPokemon {
     public static void ghiCuoi(final DataOutputStream dos, final int charId, final int dexThu, final boolean shiny) throws IOException {
         dos.writeShort(charId);
         dos.writeShort(dexThu);
+        dos.writeByte(shiny ? 1 : 0);
+    }
+
+    public static void ghiPet(final DataOutputStream dos, final int charId, final int dexPet, final boolean shiny) throws IOException {
+        dos.writeShort(charId);
+        dos.writeShort(dexPet);
         dos.writeByte(shiny ? 1 : 0);
     }
 

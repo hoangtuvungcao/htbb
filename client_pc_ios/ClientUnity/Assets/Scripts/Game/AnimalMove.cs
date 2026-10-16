@@ -413,8 +413,56 @@ public class AnimalMove : Char
 		return false;
 	}
 
+	/// <summary>Ti le ve pet Pokemon di theo (%), nho hon chu nhan.</summary>
+	public const int TI_LE_POKE_PET = 70;
+
+	private int pokeXCu = int.MinValue;
+
+	private int pokeYCu;
+
+	private int pokeDiCon;
+
+	/// <summary>
+	/// Ve pet di theo bang PokeBody khi chu nhan co pokePetDex (lenh -94 POKE_PET) va co sprite
+	/// trong Resources/poke/. Dang di neu vua doi vi tri trong vai khung gan day, quay theo dir
+	/// cua pet. Tra ve false de goi ve kieu cu (anh pet KPAH). Dung chung cho AnimalMove va Pet.
+	/// </summary>
+	protected bool vePokePet(MyGraphics g, Char chu)
+	{
+		if (chu == null || chu.pokePetDex <= 0 || !PokeBody.coSprite(chu.pokePetDex, chu.pokePetShiny))
+		{
+			return false;
+		}
+		if (pokeXCu != int.MinValue && (x != pokeXCu || y != pokeYCu))
+		{
+			pokeDiCon = 4;
+		}
+		else if (pokeDiCon > 0)
+		{
+			pokeDiCon--;
+		}
+		pokeXCu = x;
+		pokeYCu = y;
+		if (timeMagic % 2 != 0)
+		{
+			// Nhap nhay luc pet bien mat (status 3), giong duong ve cu.
+			return true;
+		}
+		int dongTac = (pokeDiCon > 0) ? PokeDuLieu.CHAY : PokeDuLieu.DUNG;
+		if (Res.imgShadowPet != null)
+		{
+			g.drawImage(Res.imgShadowPet, x, y, 3);
+		}
+		PokeBody.paint(g, chu.pokePetDex, chu.pokePetShiny, x, y, dir, dongTac, Canvas.gameTick, TI_LE_POKE_PET);
+		return true;
+	}
+
 	public override void paint(MyGraphics g)
 	{
+		if (vePokePet(g, myOwner))
+		{
+			return;
+		}
 		ImageIcon imgIcon = GameData.getImgIcon((short)(imgID + 5200));
 		if (myOwner != null && imgIcon != null && !imgIcon.isLoad)
 		{

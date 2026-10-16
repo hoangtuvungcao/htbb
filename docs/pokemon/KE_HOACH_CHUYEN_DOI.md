@@ -319,20 +319,21 @@ Các `id` dưới đây lấy theo `Map.java:3336-3345` và `MapNapTaiNguyen.jav
 `!/ClientUnity/Assets/Resources/poke/`, để build client không cần mạng. Ghi công tổng hợp nằm ở
 `ClientUnity/Assets/Resources/poke/GHI_CONG.txt`.
 
-**Atlas:** gồm 6 động tác, xếp dọc theo thứ tự trong bảng 4.3. Mỗi động tác có 4 hàng hướng
+**Atlas:** tối đa 2048×2048 (máy cũ/WebGL1 giới hạn texture). 6 động tác được xếp theo cột (giữ thứ tự bảng 4.3); không vừa thì xếp theo kệ (động tác cao trước). Vị trí mỗi động tác ghi ở `xAtlas`/`yAtlas`. Mỗi động tác có 4 hàng hướng
 theo thứ tự client DOWN(0), UP(1), LEFT(2), RIGHT(3), lấy từ hàng PMD 0, 4, 6, 2. Mỗi hàng chứa
 `soKhung` khung đặt ngang nhau.
 
 **`<khoa>_dl.bytes`:** big-endian, đọc bằng `DataInputStream` của client.
 
 ```
-u8  phienBan = 1
+u8  phienBan = 2                  // bản 1 không có xAtlas; client đọc được cả hai
 u8  soDongTac = 6                 // 0 dung, 1 chay, 2 danh_gan, 3 danh_xa, 4 trung_don, 5 guc_nga
 lặp lại soDongTac lần:
   u16 rongKhung, u16 caoKhung
   u8  soKhung
   u8  thoiLuong[soKhung]          // đơn vị 1/60 s (AnimData.xml)
-  u16 yAtlas                      // y của hàng DOWN; hàng hướng d nằm ở yAtlas + d*caoKhung; x bắt đầu từ 0
+  u16 yAtlas                      // y của hàng DOWN; hàng hướng d nằm ở yAtlas + d*caoKhung
+  u16 xAtlas                      // (bản 2) x của khung 0; khung f nằm ở xAtlas + f*rongKhung
   i8  dxChan[4], i8 dyChan[4]     // theo hướng: vị trí điểm chân (tâm bóng ở khung 0) so với TÂM khung
 u8  coDongTacThat[6]              // 1 = có thật, 0 = dùng bản thay thế (ví dụ guc_nga = Sleep)
 ```
@@ -357,7 +358,7 @@ u8  coDongTacThat[6]              // 1 = có thật, 0 = dùng bản thay thế 
 ### 7.3 Lệnh mạng mới
 
 Đã grep `src/` và `ClientUnity/` ngày 2026-10-16: client đang xử lý lệnh từ -76 đến 106, còn
--90, -91, -92, -93 **chưa ai dùng làm số lệnh**. Có chỗ dùng -90/-91/-92 nhưng đó là **id NPC**, một
+-90 … -94 **chưa ai dùng làm số lệnh**. Có chỗ dùng -90/-91/-92 nhưng đó là **id NPC**, một
 không gian số khác.
 
 | Số | Tên | Hướng | Nội dung | Gửi khi |
@@ -366,6 +367,7 @@ không gian số khác.
 | -91 | POKE_QUAI | S→C | `u8 n`, rồi n × `(u8 idTemplate, i16 dex, u8 shiny, u8 tiLe%)` | Ngay sau lệnh 26 |
 | -92 | POKE_TIEN_HOA | S→C | `i16 charId, i16 dexCu, i16 dexMoi` | Khi tiến hoá: gửi cho chính mình và người ở gần, trước lệnh -90 |
 | -93 | POKE_CUOI | S→C | `i16 charId, i16 dexThu (0 = không cưỡi), u8 shiny` | Ngay sau MỖI lệnh -90 (`Message.kemTheo`). Lên/xuống thú gửi lại lệnh 3 + 5 nên tự cập nhật |
+| -94 | POKE_PET | S→C | `i16 charId, i16 dexPet (0 = không có / pet cũ), u8 shiny` | Sau mỗi -93 (chuỗi -90 → -93 → -94). Nâng cấp pet thì gửi thêm cho người ở gần |
 
 Chỉ gửi các lệnh này khi `sv.che_do_pokemon=1` (tên khoá thật trong `server.ini` có tiền tố `sv.` như mọi khoá khác). Giữ nguyên định dạng các lệnh cũ.
 
@@ -457,7 +459,7 @@ Ký hiệu: `[ ]` chưa làm, `[x]` xong. Ghi tên người làm sau mỗi dòng
 - [x] **K1** Bảng 5 × 15 chiêu: tên Pokémon, hệ của chiêu, hiệu ứng Particle tương ứng.
   Ghi thành `docs/pokemon/bang_chieu.csv`.
 - [x] **K2** Áp tên chiêu (`Text.java:412`) và hệ của chiêu vào S4.
-- [ ] **K3** Client: hiệu ứng chiêu dùng RawAsset/Particle.
+- [x] **K3** Client: hiệu ứng chiêu dùng RawAsset/Particle.
 
 ### Giai đoạn 4: NPC, vật phẩm, Eevee
 
@@ -471,14 +473,14 @@ Ký hiệu: `[ ]` chưa làm, `[x]` xong. Ghi tên người làm sau mỗi dòng
 
 - [x] **T1** Bảng linh thú → Pokémon cưỡi được (`docs/pokemon/bang_thu.csv`).
 - [x] **T2** Vẽ cưỡi: Pokémon người chơi ngồi trên Pokémon thú. Offset lấy từ `Offsets.png`.
-- [ ] **T3** Pet và thần thú → Pokémon đi theo.
+- [x] **T3** Pet và thần thú → Pokémon đi theo.
 
 ### Giai đoạn 6: Hoàn thiện
 
 - [x] **W1** KPAH-Web: đổi thương hiệu, bỏ tên class, thêm Pokédex.
-- [ ] **W2** Đổi tên map (192 instance trong `RealController.initMapKPAH`).
+- [x] **W2** Đổi tên map (192 instance trong `RealController.initMapKPAH`).
 - [x] **W3** Trang ghi công: gom mọi `credits.txt` (bắt buộc theo CC BY-NC).
-- [ ] **B1** Cân bằng chỉ số theo loài và giai đoạn tiến hoá.
+- [x] **B1** Cân bằng chỉ số theo loài và giai đoạn tiến hoá.
 - [ ] Giải quyết các câu hỏi mở M1–M5.
 
 ---
@@ -530,18 +532,31 @@ Nguyên tắc chung:
 
 **Chưa kiểm được:** hình ảnh thật trong Unity (vị trí, kích cỡ, hiệu ứng tiến hoá), vì máy dev không có Unity Editor. Việc đầu tiên khi mở Unity: vào game nhìn bằng mắt các mục C2, C3, C5, T2.
 
-## 13. Việc còn lại sau đợt này
+## 13. Đợt 3 (2026-10-16): đã làm thêm
+
+| Việc | Làm gì | Kiểm |
+|---|---|---|
+| **K3** Hiệu ứng chiêu | `tools/pokemon/tai_hieu_ung_pmd.py` tải particle RawAsset → `Resources/poke/hu_*.bytes` (45 ảnh, 125 KB) + `hu_bang.bytes`; client `PokeHieuUng.cs` (`SkillPokemon` thay hiệu ứng KPAH khi `pokeDex > 0`; buff chạy particle trên người nhận). Bảng: `bang_hieu_ung.csv` | KiemHieuUngPokemon; nhìn tay vài atlas |
+| **T3** Pet + thần thú | Lệnh -94 (`PetPokemon` theo id item pet); client vẽ pet đi theo bằng PokeBody 70%. Thần thú (Hoả kỳ lân 0..2) vẽ Ponyta/Rapidash/Rapidash shiny ở `ThanThu.cs` (bảng ở client) | KiemPetPokemon; e2e thấy -94 |
+| Atlas ≤ 2048 | Định dạng `_dl` bản 2 (`xAtlas`), `DongGoiSprite` xếp cột/kệ. 0/178 loài vượt 2048 | Tool tự đọc lại so pixel; test C# kiểm chồng lấn + giới hạn |
+| Nguồn đá Eevee | `RoiDaTienHoa` (gọi đầu `Monster.onDropItem`): Eevee cấp ≥ 25 hạ quái không thấp hơn 10 cấp → 0,5% rơi 1 đá ngẫu nhiên | Test hàm thuần `DaTienHoa.daRoiKhiHaQuai` |
+| Icon item PMD | `tools/pokemon/sinh_icon_pokemon.py` → `map/icon_pokemon/0..21.png` + `sql/pokemon_icon_vat_pham.sql`; server phục vụ dải ảnh **14000+n** (`IconPokemon`). `nIconItem` giữ 866 | e2e: xin ảnh 14014 nhận đúng 271 byte |
+| **W2** Tên map | `TenMapPokemon` (38 địa danh → Kanto/Johto, giữ hướng Đông/Tây/Nam/Bắc) áp vào lệnh 105 (cả `nameMap` lẫn `namMap` xa phu); bản C# cho tên viết cứng `Tilemap.setNameMap` | e2e: lệnh 105 không còn địa danh cũ; test so hai bảng |
+| **B1** Cân bằng | HP và tấn công + % theo giai đoạn: dạng 2 +8%, dạng 3 +16%, nhánh Eevee +12% (`LoaiPokemon.phanTramGiaiDoan`, gắn ở `CharChiSo`) | Test giai đoạn cho cả 21 loài |
+| GHI_CONG.txt | `DongGoiSprite` giữ khối ghi công particle khi chạy lại | Chạy 2 lần, file y hệt |
+
+**Kiểm thử đợt 3:** Java 65/5546 hỏng (đúng 14 nhóm cũ); `dotnet build` client 0 lỗi; test C# 178 file `_dl`; e2e trên server thật: -90/-91/-93/-94, lệnh 105, ảnh 14014.
+
+### Việc còn lại
 
 | Việc | Ghi chú |
 |---|---|
-| **K3** hiệu ứng chiêu bằng RawAsset/Particle | Hiệu ứng chiêu vẫn là của KPAH (`Skill_*_Type*.cs`), chỉ đổi tên chiêu. Hệ của từng chiêu đã có trong `bang_chieu.csv` (cột `so_he`), nhưng S4 vẫn dùng hệ 1 của người đánh |
-| **T3** pet và thần thú đi theo dạng Pokémon | `bang_thu.csv` đã có 41 item pet → dex, và SQL đổi tên đã chạy. Client vẫn vẽ pet bằng ảnh cũ: ảnh pet chọn qua `PetTemplate`/`idImg`, cần thêm một lệnh giống -93 |
-| Icon item theo PMD | Mới đổi tên. `xstart` (icon) giữ nguyên; đá Eevee dùng tạm icon 747 |
-| Nguồn phát đá Eevee | Chưa có shop hay giftcode nào phát id 960–967 |
-| NPC sự kiện (`Npc_Server`) | Vẫn dùng hình cũ |
-| `vat_the` (16 dòng) | Giữ hình cũ, chưa dùng RawAsset/Object |
-| **W2** tên map, **B1** cân bằng, **M1–M5** | Chưa làm |
-| Atlas cao hơn 2048 px (5 loài, cao nhất 3008 px: Gyarados) | Máy cũ giới hạn texture 2048 có thể không nạp được. Nếu gặp, tách atlas theo động tác |
+| Xem bằng mắt trong Unity | Vị trí/kích cỡ sprite, particle, pet, thú cưỡi, thần thú, màn tạo nhân vật — chưa có Unity Editor trên máy dev |
+| `vat_the` (16 dòng) | Vẫn hình cũ; có thể dùng RawAsset/Object |
+| NPC sự kiện (`Npc_Server`) | Vẫn hình cũ |
+| Pet kiểu cũ (không có `itemPet`) | Gửi dex 0, giữ hình cũ |
+| Hệ theo từng chiêu | `bang_chieu.csv` có cột `so_he` nhưng S4 vẫn dùng hệ 1 của người đánh |
+| **M1–M5** | Câu hỏi mở mục 11 |
 
 ## 14. Lệnh hay dùng
 
@@ -556,10 +571,12 @@ python3 -I tools/pokemon/sinh_bang_thu.py       # bang_thu.csv + sql/pokemon_doi
 python3 -I tools/pokemon/sinh_sql_vat_pham.py   # sql/pokemon_doi_ten_vat_pham.sql
 python3 -I tools/pokemon/ap_ten_chieu.py        # bang_chieu.csv + tên chiêu vào 3 chỗ (chạy lại an toàn)
 javac -encoding UTF-8 -d build/tools tools/pokemon/DongGoiSprite.java && java -cp build/tools DongGoiSprite
+python3 -I tools/pokemon/tai_hieu_ung_pmd.py      # particle chiêu (--khong-tai: chỉ đóng gói lại)
+python3 -I tools/pokemon/sinh_icon_pokemon.py     # icon item PMD + sql/pokemon_icon_vat_pham.sql
 
 # Thứ tự SQL trên server mới (sau gamedb7_clean.sql + vps/db_new_server.sql):
 #   sql/them_cot_pokemon.sql, sql/pokemon_du_lieu_quai.sql, sql/pokemon_doi_ten_vat_pham.sql,
-#   sql/pokemon_doi_ten_thu.sql, sql/pokemon_vat_pham_eevee.sql
+#   sql/pokemon_doi_ten_thu.sql, sql/pokemon_vat_pham_eevee.sql, sql/pokemon_icon_vat_pham.sql
 ```
 
 **65 kiểm tra cũ đang hỏng** (Sự kiện, Hoá hình Pet, Tinh luyện thần binh…) đã có từ trước khi

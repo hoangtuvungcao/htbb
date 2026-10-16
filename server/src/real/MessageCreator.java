@@ -2618,7 +2618,9 @@ public class MessageCreator {
                     for (int k = 0; k < MessageCreator.nclone * 3; ++k) {
                         m.dos.writeShort(locationMap[i][j][k]);
                         if (k % 3 == 0) {
-                            m.dos.writeUTF(nameMap[i][j][k / 3]);
+                            m.dos.writeUTF(com.kpah.pokemon.CheDoPokemon.bat()
+                                    ? com.kpah.pokemon.TenMapPokemon.doi(nameMap[i][j][k / 3])
+                                    : nameMap[i][j][k / 3]);
                         }
                     }
                 }
@@ -2635,7 +2637,9 @@ public class MessageCreator {
                 for (int j = 0; j < MessageCreator.nclone * 3; ++j) {
                     m.dos.writeShort(Map.localXaphu[i][j]);
                     if (j % 3 == 0) {
-                        m.dos.writeUTF(Map.namMap[i][j / 3]);
+                        m.dos.writeUTF(com.kpah.pokemon.CheDoPokemon.bat()
+                                ? com.kpah.pokemon.TenMapPokemon.doi(Map.namMap[i][j / 3])
+                                : Map.namMap[i][j / 3]);
                     }
                 }
             }

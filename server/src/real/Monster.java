@@ -838,6 +838,8 @@ public class Monster extends LiveActor {
             }
         } catch (final Exception ex) {
         }
+        // Che do Pokemon: nguon phat da tien hoa Eevee (tat che do -> khong lam gi).
+        RoiDaTienHoa.khiHaQuai(p, this);
         final int x2Drop = p.getValueLua(0);
         Label_5628:
         {

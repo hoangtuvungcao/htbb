@@ -162,7 +162,7 @@ public class PokeBody
 		int f = d.khungTai(PokeDuLieu.doiTick(tick), PokeDuLieu.laDongTacLap(dongTac));
 		int rong = d.rongKhung;
 		int cao = d.caoKhung;
-		int xNguon = f * rong;
+		int xNguon = d.xAtlas + f * rong;
 		int yNguon = d.yHang(dir);
 		if (tiLe == 100 && doSang <= 0)
 		{

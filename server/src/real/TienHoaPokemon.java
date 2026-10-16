@@ -3,6 +3,7 @@ package real;
 import com.kpah.pokemon.CheDoPokemon;
 import com.kpah.pokemon.DaTienHoa;
 import com.kpah.pokemon.GoiPokemon;
+import com.kpah.pokemon.PetPokemon;
 import com.kpah.pokemon.ThuPokemon;
 import com.kpah.pokemon.LoaiPokemon;
 import data.Database;
@@ -170,9 +171,72 @@ public final class TienHoaPokemon {
         }
         final Message m = taoPokeThan(ch.id, ch.pokeDex, ch.pokeShiny);
         if (m != null) {
-            m.kemTheo = taoPokeCuoi(ch);
+            // Chuoi -90 -> -93 -> -94 (Session gui ca chuoi kemTheo ngay sau goi chinh).
+            final Message cuoi = taoPokeCuoi(ch);
+            final Message pet = taoPokePet(ch);
+            if (cuoi != null) {
+                cuoi.kemTheo = pet;
+                m.kemTheo = cuoi;
+            } else {
+                m.kemTheo = pet;
+            }
         }
         return m;
+    }
+
+    /**
+     * Dex Pokemon cua pet dang di theo {@code ch}: tra theo id template cua petUsing.itemPet
+     * (PetPokemon). 0 khi khong co pet, pet kieu cu khong co itemPet, item ngoai bang, hoac
+     * pet dang hoa hinh Lan (giu hinh Lan cu de con thay hieu ung hoa hinh).
+     */
+    public static int dexPet(final Char ch) {
+        final int id = idItemPet(ch);
+        return id > 0 ? PetPokemon.dex(id) : 0;
+    }
+
+    private static int idItemPet(final Char ch) {
+        if (ch == null) {
+            return 0;
+        }
+        final data.Pet pet = ch.petUsing;
+        if (pet == null || pet.itemPet == null || pet.itemPet.getTemplate() == null || pet.dangHoaHinh()) {
+            return 0;
+        }
+        return pet.itemPet.getTemplate().id;
+    }
+
+    /**
+     * -94 POKE_PET: pet Pokemon di theo cua {@code ch}. Di kem sau moi -93 (xem taoPokeThan),
+     * nen moi duong doi pet da gui lai lenh 3 (deo/doi pet, het han, het hoa hinh) tu cap nhat.
+     */
+    public static Message taoPokePet(final Char ch) {
+        if (!CheDoPokemon.bat() || ch == null) {
+            return null;
+        }
+        final int id = idItemPet(ch);
+        final int dex = id > 0 ? PetPokemon.dex(id) : 0;
+        final Message m = new Message(GoiPokemon.POKE_PET);
+        try {
+            GoiPokemon.ghiPet(m.dos, ch.id, dex, dex > 0 && PetPokemon.shiny(id));
+        } catch (final Exception e) {
+            return null;
+        }
+        return m;
+    }
+
+    /**
+     * Gui -94 cho nguoi o gan {@code p}. Dung o nhung duong doi item pet ma chi gui lenh 3 cho
+     * CHINH MINH (Pet.doUpdrage, Pet.doUpdrage2MaxByAdmin): ban than da nhan -94 qua chuoi
+     * kemTheo cua lenh 3, nguoi xung quanh thi chua.
+     */
+    public static void guiPokePetChoNguoiGan(final Char p) {
+        if (!CheDoPokemon.bat() || p == null) {
+            return;
+        }
+        final Message m = taoPokePet(p);
+        if (m != null) {
+            p.sendToNearPlayer(m);
+        }
     }
 
     /**

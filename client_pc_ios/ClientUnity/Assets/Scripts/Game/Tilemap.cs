@@ -628,6 +628,10 @@ public class Tilemap
 			mapName = string.Empty;
 			break;
 		}
+		if (PokeBody.CHE_DO_POKEMON)
+		{
+			mapName = TenMapPokemon.doi(mapName);
+		}
 	}
 
 	public static void paintTile(MyGraphics g)

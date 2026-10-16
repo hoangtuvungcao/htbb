@@ -2,9 +2,10 @@
 /// Du lieu khung hinh cua 1 loai Pokemon, doc tu file Resources/poke/&lt;khoa&gt;_dl.bytes.
 ///
 /// Dinh dang (big-endian, xem docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 7.1):
-///   u8 phienBan = 1, u8 soDongTac = 6
+///   u8 phienBan = 1 hoac 2, u8 soDongTac = 6
 ///   lap soDongTac lan: u16 rongKhung, u16 caoKhung, u8 soKhung, u8 thoiLuong[soKhung],
-///                      u16 yAtlas, i8 dxChan[4], i8 dyChan[4]
+///                      u16 yAtlas, [phien ban 2: u16 xAtlas], i8 dxChan[4], i8 dyChan[4]
+///   (phien ban 2: atlas xep dong tac thanh nhieu cot de khong cao qua 2048 px)
 ///   u8 coDongTacThat[6]
 ///
 /// Lop nay KHONG dung UnityEngine de bien dich rieng va kiem thu duoc ngoai Unity
@@ -52,7 +53,7 @@ public class PokeDuLieu
 			int p = 0;
 			PokeDuLieu kq = new PokeDuLieu();
 			kq.phienBan = b[p++];
-			if (kq.phienBan != 1)
+			if (kq.phienBan != 1 && kq.phienBan != 2)
 			{
 				return null;
 			}
@@ -88,6 +89,11 @@ public class PokeDuLieu
 				}
 				d.yAtlas = (b[p] << 8) | b[p + 1];
 				p += 2;
+				if (kq.phienBan >= 2)
+				{
+					d.xAtlas = (b[p] << 8) | b[p + 1];
+					p += 2;
+				}
 				for (int h = 0; h < 4; h++)
 				{
 					d.dxChan[h] = (sbyte)b[p++];
@@ -151,6 +157,9 @@ public class PokeDongTac
 	public int tongThoiLuong;
 
 	public int yAtlas;
+
+	/// <summary>Cot bat dau cua dong tac trong atlas (phien ban 1 luon 0).</summary>
+	public int xAtlas;
 
 	public int[] dxChan = new int[4];
 

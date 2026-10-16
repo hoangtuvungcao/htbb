@@ -167,4 +167,51 @@ public final class LoaiPokemon {
         }
         return kq;
     }
+
+    /** B1: phan tram cong them HP/tan cong theo giai doan tien hoa. */
+    public static final int PT_GIAI_DOAN_2 = 8;
+    public static final int PT_GIAI_DOAN_3 = 16;
+    public static final int PT_NHANH_EEVEE = 12;
+
+    /** Giai doan tien hoa 1..3 cua loai trong bang (nhanh Eevee = 2); ngoai bang = 1. */
+    public static int giaiDoan(final int dex) {
+        if (laNhanhEevee(dex)) {
+            return 2;
+        }
+        int gd = 1;
+        int hienTai = dex;
+        for (int lan = 0; lan < 3; lan++) {
+            boolean coTruoc = false;
+            for (final int[] d : DU_LIEU) {
+                if (d[4] == hienTai) {
+                    hienTai = d[0];
+                    coTruoc = true;
+                    break;
+                }
+            }
+            if (!coTruoc) {
+                break;
+            }
+            gd++;
+        }
+        return gd;
+    }
+
+    /**
+     * Phan tram cong HP/tan cong cho loai {@code dex} (B1 - can bang theo tien hoa):
+     * dang dau 0, dang 2 +8%, dang 3 +16%, nhanh Eevee +12%.
+     */
+    public static int phanTramGiaiDoan(final int dex) {
+        if (laNhanhEevee(dex)) {
+            return PT_NHANH_EEVEE;
+        }
+        switch (giaiDoan(dex)) {
+            case 2:
+                return PT_GIAI_DOAN_2;
+            case 3:
+                return PT_GIAI_DOAN_3;
+            default:
+                return 0;
+        }
+    }
 }
