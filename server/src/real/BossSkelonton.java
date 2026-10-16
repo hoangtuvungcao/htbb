@@ -1,6 +1,9 @@
 
 package real;
 
+import com.kpah.pokemon.CheDoPokemon;
+import com.kpah.pokemon.SatThuongHe;
+
 import data.Database;
 import data.GemItem;
 import io.Message;
@@ -42,7 +45,10 @@ public class BossSkelonton extends Boss {
         int dam = this.attack;
         dam -= def;
         dam = dam * (30 + UtilKPAH.random(80)) / 100;
-        if ((this.he + 2) % 5 == actor.he) {
+        if (CheDoPokemon.bat()) {
+            // Che do Pokemon (viec S4): khac he 18 he thay ngu hanh.
+            dam = SatThuongHe.apDung(dam, this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
+        } else if ((this.he + 2) % 5 == actor.he) {
             dam += dam * 5 / 100;
         } else if ((this.he + 3) % 5 == actor.he) {
             dam -= dam * 5 / 100;
@@ -470,7 +476,7 @@ public class BossSkelonton extends Boss {
                     this.timeLife = System.currentTimeMillis();
                     this.isDead = false;
                     byte[] he = new byte[]{0, 1, 2, 3, 4};
-                    this.he = he[Map.r.nextInt(5)];
+                    this.he = this.heKhiSinh(he[Map.r.nextInt(5)]);
                     int[] idmap = new int[]{6, 8, 9, 10, 13, 14, 15, 18, 19, 20, 114};
                     int[][] xy = new int[][]{{36, 33}, {40, 40}, {33, 44}, {98, 67}, {48, 24}, {17, 64}, {77, 20}, {35, 10}, {43, 12}, {20, 26}, {2, 20}};
                     if (this.idTemplate == 113) {
@@ -565,7 +571,7 @@ public class BossSkelonton extends Boss {
         } else {
             if (System.currentTimeMillis() - this.timeChangehe > 60000L) {
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                this.he = he[Map.r.nextInt(5)];
+                this.he = this.heKhiSinh(he[Map.r.nextInt(5)]);
                 this.magic_physic = (byte)((this.magic_physic + 1) % 2);
             }
 

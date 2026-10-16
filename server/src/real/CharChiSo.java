@@ -1,5 +1,8 @@
 package real;
 
+import com.kpah.pokemon.CheDoPokemon;
+import com.kpah.pokemon.SatThuongHe;
+
 
 import server.TeamServer;
 import io.Message;
@@ -741,7 +744,11 @@ class CharChiSo {
                         def = 5 + Map.r.nextInt(10);
                     }
                     if (!self.map.isMapChienTruongMoba() || (self.map.isMapChienTruongMoba() && !actor.isCharMonster())) {
-                        if ((self.he + 2) % 5 == actor.he) {
+                        if (CheDoPokemon.bat()) {
+                            // Che do Pokemon (viec S4): khac he 18 he thay ngu hanh.
+                            // He tan cong = he 1 cua nguoi danh (giai doan 3 se la he chieu).
+                            att = SatThuongHe.apDung(att, self.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
+                        } else if ((self.he + 2) % 5 == actor.he) {
                             def -= def * 5 / 100;
                             att += att * 10 / 100;
                         } else if ((self.he + 3) % 5 == actor.he) {

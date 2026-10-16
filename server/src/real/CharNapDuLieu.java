@@ -67,6 +67,9 @@ class CharNapDuLieu {
                 if (self.lastLV < self.lvDetail.lv) {
                     self.lastLV = (short) self.lvDetail.lv;
                 }
+                // Che do Pokemon (viec S2/S3): suy loai tu class + cap neu tob_char.dex
+                // = 0, va dat he/he2 theo loai (thay ngu hanh he[charClass] o tren).
+                TienHoaPokemon.napLoai(self);
                 self.hp = Integer.parseInt(data[6]);
                 if (self.hp <= 0) {
                     self.hp = 1;

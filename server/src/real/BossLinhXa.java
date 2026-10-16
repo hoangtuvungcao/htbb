@@ -1,5 +1,8 @@
 package real;
 
+import com.kpah.pokemon.CheDoPokemon;
+import com.kpah.pokemon.SatThuongHe;
+
 import data.Database;
 import data.EventGame;
 import data.GemItem;
@@ -48,7 +51,10 @@ public class BossLinhXa extends Boss {
 
         dam -= def;
         dam = dam * (30 + UtilKPAH.random(80)) / 100;
-        if ((this.he + 2) % 5 == actor.he) {
+        if (CheDoPokemon.bat()) {
+            // Che do Pokemon (viec S4): khac he 18 he thay ngu hanh.
+            dam = SatThuongHe.apDung(dam, this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
+        } else if ((this.he + 2) % 5 == actor.he) {
             dam += dam * 5 / 100;
         } else if ((this.he + 3) % 5 == actor.he) {
             dam -= dam * 5 / 100;
@@ -443,7 +449,7 @@ public class BossLinhXa extends Boss {
                 if (System.currentTimeMillis() > this.bornTime) {
                     this.isDead = false;
                     byte[] he = new byte[]{0, 1, 2, 3, 4};
-                    this.he = he[Map.r.nextInt(5)];
+                    this.he = this.heKhiSinh(he[Map.r.nextInt(5)]);
                     int[] idmap = new int[]{20};
                     int[][] xy = new int[][]{{26, 27}};
 
@@ -522,7 +528,7 @@ public class BossLinhXa extends Boss {
         } else {
             if (System.currentTimeMillis() - this.timeChangehe > 60000L) {
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                this.he = he[Map.r.nextInt(5)];
+                this.he = this.heKhiSinh(he[Map.r.nextInt(5)]);
                 this.magic_physic = (byte)((this.magic_physic + 1) % 2);
             }
 

@@ -3,6 +3,9 @@
 // 
 package real;
 
+import com.kpah.pokemon.CheDoPokemon;
+import com.kpah.pokemon.HePokemon;
+
 import data.ItemQuest;
 import server.TeamServer;
 import data.GemItem;
@@ -74,6 +77,15 @@ public class Monster extends LiveActor {
         this.map = mapLiveIn;
         this.setType(template.type);
         this.he = template.he;
+        // Che do Pokemon: data_monster.he/he2 la he Pokemon 0..17. Giu rieng o
+        // hePokemon/he2 (dung tinh khac he), con truong he doi ve ngu hanh 0..4 vi client
+        // cu va cac lop trong lib/NQSH_5h.jar (Dun, MapVanTienTran...) gui/dung no nhu
+        // ngu hanh. Tat co thi khong dong vao gi.
+        this.hePokemon = template.he;
+        if (CheDoPokemon.bat()) {
+            this.he = (byte) HePokemon.nguHanhCu(template.he);
+            this.he2 = template.he2;
+        }
         final int maxhp = template.maxhp;
         this.maxhp = maxhp;
         this.hp = maxhp;
@@ -105,6 +117,29 @@ public class Monster extends LiveActor {
         this.speed = 1;
         this.maxHit = 0;
         this.idregion = 0;
+    }
+
+    /** He Pokemon 1 lay tu template luc sinh (data_monster.he). */
+    public byte hePokemon;
+
+    @Override
+    public int hePokemon1() {
+        return CheDoPokemon.bat() ? this.hePokemon : this.he;
+    }
+
+    /**
+     * Q9: bat che do Pokemon thi he cua quai lay tu template, KHONG random. Tra ve
+     * ngu hanh 0..4 tuong ung (truong he van la ngu hanh, xem constructor).
+     * Dung hePokemon da chep tu CHINH template truyen vao constructor - KHONG tra lai
+     * getMonsterTemplate(): quai Van Tien Tran lay template tu MapVanTienTran.monsterTemplates,
+     * con getMonsterTemplate() tra theo Map.monsterTemplates.
+     */
+    @Override
+    public byte heKhiSinh(final byte heNgauNhien) {
+        if (!CheDoPokemon.bat()) {
+            return heNgauNhien;
+        }
+        return (byte) HePokemon.nguHanhCu(this.hePokemon);
     }
 
     public MonsterTemplate getMonsterTemplate() {

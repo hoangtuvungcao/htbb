@@ -174,7 +174,7 @@ public class MapTown extends Map {
       m.level = m.getMonsterTemplate().level;
       m.id = this.idMonster--;
       byte[] he = new byte[]{0, 1, 2, 3, 4};
-      m.he = he[r.nextInt(5)];
+      m.he = m.heKhiSinh(he[r.nextInt(5)]);
       byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
       m.typeAttack = t[r.nextInt(10)];
       m.bornTime = 120000L;
@@ -271,7 +271,7 @@ public class MapTown extends Map {
          m.level = m.getMonsterTemplate().level;
          m.id = this.idMonster--;
          byte[] he = new byte[]{0, 1, 2, 3, 4};
-         m.he = he[r.nextInt(5)];
+         m.he = m.heKhiSinh(he[r.nextInt(5)]);
          byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
          m.typeAttack = t[r.nextInt(10)];
          m.bornTime = 120000L;
@@ -287,7 +287,7 @@ public class MapTown extends Map {
       m.level = m.getMonsterTemplate().level;
       m.id = this.idMonster--;
       byte[] he = new byte[]{0, 1, 2, 3, 4};
-      m.he = he[r.nextInt(5)];
+      m.he = m.heKhiSinh(he[r.nextInt(5)]);
       byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
       m.typeAttack = t[r.nextInt(10)];
       m.bornTime = 120000L;
@@ -1412,7 +1412,7 @@ public class MapTown extends Map {
             m.level = m.getMonsterTemplate().level;
             m.id = this.idMonster--;
             byte[] he = new byte[]{0, 1, 2, 3, 4};
-            m.he = he[r.nextInt(5)];
+            m.he = m.heKhiSinh(he[r.nextInt(5)]);
             byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
             m.typeAttack = t[r.nextInt(10)];
             m.bornTime = 120000L;
@@ -1457,7 +1457,7 @@ public class MapTown extends Map {
                         m.level = m.getMonsterTemplate().level;
                         m.id = this.idMonster--;
                         byte[] he = new byte[]{0, 1, 2, 3, 4};
-                        m.he = he[r.nextInt(5)];
+                        m.he = m.heKhiSinh(he[r.nextInt(5)]);
                         byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
                         m.typeAttack = t[r.nextInt(10)];
                         m.bornTime = 120000L;
@@ -1665,7 +1665,7 @@ public class MapTown extends Map {
       m.level = m.getMonsterTemplate().level;
       m.id = this.idMonster--;
       byte[] he = new byte[]{0, 1, 2, 3, 4};
-      m.he = he[r.nextInt(5)];
+      m.he = m.heKhiSinh(he[r.nextInt(5)]);
       byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
       m.typeAttack = t[r.nextInt(10)];
       m.bornTime = 120000L;

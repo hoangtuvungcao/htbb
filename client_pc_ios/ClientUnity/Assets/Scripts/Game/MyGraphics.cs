@@ -746,6 +746,71 @@ public class MyGraphics
 		}
 	}
 
+	/// <summary>
+	/// Ve vung (x0,y0,w,h) cua anh vao hinh chu nhat dich (x,y,dw,dh) - co phong to/thu nho,
+	/// goc tren-trai, khong lat. Dung cho PokeBody (quai/boss ve theo tiLe%).
+	/// doSang: 0 = mau goc; &gt;0 lam sang hon (vd 100 = gap doi, dung cho hieu ung tien hoa).
+	/// Mau trung tinh cua Graphics.DrawTexture la (0.5,0.5,0.5,0.5).
+	/// Cat theo clip giong _drawRegion (khong dung GUI.BeginGroup).
+	/// </summary>
+	public void drawRegionScale(Image image, int x0, int y0, int w, int h, int x, int y, int dw, int dh, int doSang)
+	{
+		if (image == null || image.texture == null || w <= 0 || h <= 0 || dw <= 0 || dh <= 0)
+		{
+			return;
+		}
+		if (isTranslate)
+		{
+			x += translateX;
+			y += translateY;
+		}
+		float dx = x;
+		float dy = y;
+		float rw = dw;
+		float rh = dh;
+		float sx = x0;
+		float sy = y0;
+		float sw = w;
+		float sh = h;
+		if (isClip)
+		{
+			float cx = clipX;
+			float cy = clipY;
+			if (isTranslate)
+			{
+				cx += clipTX;
+				cy += clipTY;
+			}
+			Rect r = intersectRect(new Rect(x, y, dw, dh), new Rect(cx, cy, clipW, clipH));
+			if (r.width <= 0f || r.height <= 0f)
+			{
+				return;
+			}
+			float tlx = (float)w / (float)dw;
+			float tly = (float)h / (float)dh;
+			sx += (r.x - x) * tlx;
+			sy += (r.y - y) * tly;
+			sw = r.width * tlx;
+			sh = r.height * tly;
+			dx = r.x;
+			dy = r.y;
+			rw = r.width;
+			rh = r.height;
+		}
+		float tw = image.texture.width;
+		float th = image.texture.height;
+		Rect src = new Rect(sx / tw, (th - sy - sh) / th, sw / tw, sh / th);
+		if (doSang <= 0)
+		{
+			Graphics.DrawTexture(new Rect(dx, dy, rw, rh), image.texture, src, 0, 0, 0, 0);
+		}
+		else
+		{
+			float m = 0.5f + 0.5f * (float)doSang / 100f;
+			Graphics.DrawTexture(new Rect(dx, dy, rw, rh), image.texture, src, 0, 0, 0, 0, new Color(m, m, m, 0.5f));
+		}
+	}
+
 	public static int getImageWidth(Image image)
 	{
 		return image.getWidth();

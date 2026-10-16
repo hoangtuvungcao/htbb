@@ -6,6 +6,11 @@ public class MonsterTemplate {
     public int id;
     public String name;
     public byte he;
+    // Cot moi cua data_monster (sql/them_cot_pokemon.sql). Database.loadMonsterTemplate
+    // nap neu cot ton tai; thieu cot thi giu mac dinh duoi day.
+    public short dex = 0;
+    public byte shiny = 0;
+    public byte he2 = -1;
     public byte typeMons = 0;
     public byte move = 1;
     public short type = 0;

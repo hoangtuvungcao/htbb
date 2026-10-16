@@ -441,6 +441,10 @@ public class Session extends Thread {
                 if (Session.this.socket != null) {
                     OutputStream os = Session.this.socket.getOutputStream();
                     os.write(data);
+                    // Goi kem (che do Pokemon, xem Message.kemTheo) - ghi ngay sau.
+                    for (Message kem = m.kemTheo; kem != null; kem = kem.kemTheo) {
+                        os.write(kem.toByteArray());
+                    }
                     os.flush();
                 }
             } catch (Exception e) {
@@ -455,6 +459,14 @@ public class Session extends Thread {
                     byte[] data = m.toByteArray();
                     if (data != null) {
                         this.sendDatas.add(data);
+                        // Goi kem (che do Pokemon, xem Message.kemTheo): xep NGAY SAU goi
+                        // chinh trong cung hang doi, client nhan dung thu tu.
+                        for (Message kem = m.kemTheo; kem != null; kem = kem.kemTheo) {
+                            byte[] dataKem = kem.toByteArray();
+                            if (dataKem != null) {
+                                this.sendDatas.add(dataKem);
+                            }
+                        }
                     }
                 } catch (Exception var6) {
                     System.out.println("LOI KHI GUI DATA");

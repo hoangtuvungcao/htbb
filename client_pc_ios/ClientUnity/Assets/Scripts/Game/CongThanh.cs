@@ -49,6 +49,11 @@ public class CongThanh : Monster
 
 	public override void paint(MyGraphics g)
 	{
+		// Template da la Pokemon (lenh -91): ve bang PokeBody, bo renderer boss cu.
+		if (paintPokemon(g))
+		{
+			return;
+		}
 		if (Res.monsterTemplates[monster_type] != null && Res.monsterTemplates[monster_type].image != null)
 		{
 			g.drawRegion(Res.monsterTemplates[monster_type].image, 32, 0, 48, 89, 0, x - 48 + x0, y + y0, MyGraphics.BOTTOM | MyGraphics.LEFT);

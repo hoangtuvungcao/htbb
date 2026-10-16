@@ -1,0 +1,33 @@
+type,ten_cu,vai_tro,id_anh_cu,dex,pokemon,co_sprite
+0,Dì út HP,"Ban thuoc HP/MP (requestNPCInfo, khong menu)",0,113,Chansey,co
+1,Bà tám tạp hóa,Tap hoa (RequestNPCInfoHandler case 1/26: danh sach hang),1,352,Kecleon,co
+2,Hắc ngưu,"Tho ren: mua ban, luyen do, sua do, kham, duc lo (GameScr.showNpcMenu type 2/28)",2,68,Machamp,co
+3,Thiết bì,Ban trang bi ma phap/vat ly (case 3/27),3,437,Bronzong,co
+4,Lính gác,Linh gac (Tilemap.idLinhGac),4,59,Arcanine,co
+5,Trưởng làng,Truong lang (noi chuyen/nhiem vu),5,178,Xatu,co
+6,Phú ông,"Case 6/29 (goi loai 3) - chua ro, doan la kho/ngan hang",6,53,Persian,co
+7,Xa phu,Xa phu: di den map khac (showNpcMenu type 7),7,78,Rapidash,co
+8,ông nội,Noi chuyen/nhiem vu,8,143,Snorlax,co
+9,Anh bảy,Case 9/30: cat do vao tui (map 108/262/78/88) - kho do,9,115,Kangaskhan,co
+10,Hoa tiêu,"Hoa tieu: di thuyen, mua ve (showNpcMenu type 10)",10,131,Lapras,co
+11,Nhất giáp,Ban do theo Map.npcSell (case 11..20),11,76,Golem,co
+12,Nhị giáp,Ban do theo Map.npcSell (case 11..20),11,76,Golem,co
+13,Tam giáp,Ban do theo Map.npcSell (case 11..20),11,76,Golem,co
+14,Tứ giáp,Ban do theo Map.npcSell (case 11..20),11,76,Golem,co
+15,Ngũ giáp,Ban do theo Map.npcSell (case 11..20),11,76,Golem,co
+16,Nhất ngưu,Ban do theo Map.npcSell (case 11..20),12,128,Tauros,co
+17,Nhị ngưu,Ban do theo Map.npcSell (case 11..20),12,128,Tauros,co
+18,Tam ngưu,Ban do theo Map.npcSell (case 11..20),12,128,Tauros,co
+19,Tứ ngưu,Ban do theo Map.npcSell (case 11..20),12,128,Tauros,co
+20,Ngũ ngưu,Ban do theo Map.npcSell (case 11..20),12,128,Tauros,co
+21,Lâm tướng quân,Tuong quan (mo showNpcMenu),14,257,Blaziken,co
+22,Nhật thương nhân,Nap xu (showNpcMenu type 22/31),13,52,Meowth,co
+23,Hỏa xích,Chua ro (khong co nhanh rieng),15,324,Torkoal,co
+24,Bảo ngọc,Ban vat pham id 214..263 (case 24),16,302,Sableye,co
+25,Trần thống lĩnh,"Thong linh: giao tiep, chuyen the (showNpcMenu type 25)",17,214,Heracross,co
+26,Kim hoa,Tap hoa (cung case voi type 1),1,352,Kecleon,co
+27,Giáp Sư,Ban trang bi ma phap/vat ly (cung case voi type 3),3,437,Bronzong,co
+28,Kiếm Sư,Kiem su: ban vat pham 174..213 + menu tho ren (case 28),2,83,Farfetch'd,co
+29,Bội Châu,Cung case voi type 6,6,53,Persian,co
+30,An Tâm,Cung case voi type 9,9,115,Kangaskhan,co
+31,Lộc Phát,Nap xu (cung menu voi type 22),13,52,Meowth,co

@@ -1,0 +1,491 @@
+Sprite Pokemon: PMDCollab SpriteCollab - https://github.com/PMDCollab/SpriteCollab
+Giay phep: CC BY-NC 4.0 (KHONG thuong mai). Nguoi ve theo tung loai ben duoi
+(cot: thoi diem, nguoi ve, trang thai, giay phep, dong tac). Sinh boi DongGoiSprite.
+
+== 0001
+2020-10-07 17:58:43.323442	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Dance,Shake,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,Faint,HitGround
+== 0002
+2020-10-07 17:58:43.328428	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Dance,Shake,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0003
+2020-10-07 17:58:43.332418	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Dance,Shake,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0004
+2020-10-07 17:58:43.337405	CHUNSOFT	CUR	Unspecified	Walk,Attack,Kick,Shoot,Strike,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,Faint,HitGround
+== 0005
+2020-10-07 17:58:43.341392	CHUNSOFT	CUR	Unspecified	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shoot,Sleep,Strike,Swing,Walk
+2021-01-26 01:22:03.704417	<@!199989579682414592>	CUR	PMDCollab_1	Cringe,DeepBreath,Double,Eat,EventSleep,Faint,Float,Head,HitGround,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,Sink,Sit,Trip,Tumble,TumbleBack,Wake
+2021-01-26 11:30:34.384747	<@!199989579682414592>	CUR	PMDCollab_1	Double
+2024-10-22 04:27:26.367585	<@!193530896211509248>	CUR	CC_BY-NC_4	Eat,Pose,Pull,Pain,DeepBreath,Nod,Sink,Trip,Head,LostBalance,HitGround,Faint
+2024-10-24 22:08:25.766375	<@!217653022094786560>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Float,Nod,Sit,LookUp,Laying,LeapForth,Cringe,TumbleBack
+2026-03-30 00:05:36.049897	<@!217653022094786560>	CUR	CC_BY-NC_4	EventSleep,Wake,Tumble,Float,Trip,Laying,TumbleBack,HitGround,Faint
+== 0006
+2020-10-07 17:58:43.345381	CHUNSOFT	CUR	Unspecified	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shoot,Sleep,Strike,Swing,Walk
+2021-10-01 08:17:01.621356	<@!237286997645983744>	CUR	PMDCollab_1	Charge,Double,Faint,Hop,Hurt,Rotate,Shoot,Sleep,Strike,Swing
+2023-03-19 18:54:53.170665	<@!237286997645983744>	CUR	PMDCollab_1	Faint
+== 0007
+2020-10-07 17:58:43.349371	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Withdraw,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,Faint,HitGround
+== 0008
+2020-10-07 17:58:43.353362	CHUNSOFT	CUR	Unspecified	Walk,Attack,Ricochet,Shoot,Withdraw,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0009
+2020-10-07 17:58:43.356353	CHUNSOFT	CUR	Unspecified	Walk,Attack,Ricochet,Shoot,Withdraw,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0010
+2020-10-07 17:58:43.360347	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0012
+2020-10-07 17:58:43.367322	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,FlapAround,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0013
+2020-10-07 17:58:43.371313	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Jab,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0018
+2020-10-07 17:58:43.388267	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,FlapAround,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0019
+2020-10-07 17:58:43.392257	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,TailWhip,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0023
+2020-10-07 17:58:43.411209	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2026-05-10 01:47:17.896026	<@!356635814668664832>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0024
+2022-12-16 19:40:57.548341	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
+== 0025
+2020-10-07 17:58:43.416193	CHUNSOFT	CUR	Unspecified	Walk,Attack,QuickStrike,Shoot,Shock,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,Faint,HitGround
+== 0026
+2020-10-07 17:58:43.421179	CHUNSOFT	CUR	Unspecified	Walk,Attack,QuickStrike,Shoot,Shock,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2025-12-23 02:47:04.237398	<@!217653022094786560>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2025-12-23 02:50:14.012801	<@!276369635304275968>	CUR	CC_BY-NC_4	Trip,HitGround,Faint
+== 0027
+2020-10-07 17:58:43.425171	CHUNSOFT	CUR	Unspecified	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Sleep,Strike,Swing,Walk,Withdraw
+2021-11-08 23:42:12.507887	<@!237286997645983744>	CUR	PMDCollab_1	EventSleep,Laying,Wake
+2023-09-27 03:52:56.017938	<@!169247379453640706>	CUR	PMDCollab_2	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2023-10-05 00:08:19.400287	<@!169247379453640706>	CUR	PMDCollab_2	Eat,Sit
+2023-10-05 01:31:41.533822	<@!169247379453640706>	CUR	PMDCollab_2	Pull,Sit
+== 0035
+2020-10-07 17:58:43.447108	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Withdraw,Dance,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0036
+2020-10-07 17:58:43.449104	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Withdraw,Dance,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0036s
+2020-10-07 17:58:43.451100	<@!234720295292895232>	CUR	PMDCollab_1	Walk,Attack,Strike,Withdraw,Dance,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0037
+2020-10-07 17:58:43.452098	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Appeal,SpAttack,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,Faint,HitGround
+== 0041
+2022-12-16 19:41:09.853923	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,Hover
+== 0042
+2020-10-07 17:58:43.464065	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Hover,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0043
+2020-10-07 17:58:43.468055	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0044
+2020-10-07 17:58:43.470049	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0045
+2020-10-07 17:58:43.474038	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0046
+2020-10-07 17:58:43.478026	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0047
+2020-10-07 17:58:43.481018	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0048
+2020-10-07 17:58:43.483018	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2026-01-25 18:03:05.145792	<@!275075929905168384>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0052
+2020-10-07 17:58:43.491989	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,MultiStrike,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,Faint,HitGround
+== 0053
+2020-10-07 17:58:43.493985	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0058
+2020-10-07 17:58:43.507947	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Rumble,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2024-04-24 10:39:15.896788	<@!356635814668664832>	CUR	CC_BY-NC_4	Eat,Cringe
+2026-07-28 00:43:16.483827	<@!1377429093997477928>	CUR	CC_BY-NC_4	EventSleep
+== 0059
+2020-10-07 17:58:43.511936	CHUNSOFT	CUR	Unspecified	Walk,Attack,QuickStrike,Shoot,SpAttack,Rumble,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0068
+2020-10-07 17:58:43.533877	CHUNSOFT	CUR	Unspecified	Walk,Attack,Punch,Shoot,Kick,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0069
+2020-10-07 17:58:43.535873	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0072
+2020-10-07 17:58:43.542853	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Slam,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0076
+2022-12-16 23:48:21.416574	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Withdraw,Swing,Double,Rotate,Hop
+2024-12-18 09:55:51.875707	<@!356635814668664832>	CUR	CC_BY-NC_4	Special0
+== 0077
+2020-10-07 17:58:43.554821	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2025-03-11 05:13:10.454377	<@!702275233125630042>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2025-03-18 05:33:22.818298	<@!702275233125630042>	CUR	CC_BY-NC_4	Wake,Nod,HitGround,Faint
+== 0077s
+2020-10-07 17:58:43.555819	<@!234720295292895232>	CUR	PMDCollab_1	Walk,Attack,Strike,Shoot,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2023-04-16 23:23:32.329671	<@!356635814668664832>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop
+2025-04-12 05:50:13.166267	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0078
+2020-10-07 17:58:43.556816	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0078s
+2020-10-07 17:58:43.558811	<@!200385851069300736>	CUR	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,RearUp,Rotate,Shoot,Sleep,Swing,Walk
+2022-01-26 01:41:14.510254	<@!217899432652308480>	CUR	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,RearUp,Rotate,Shoot,Sleep,Swing,Walk
+== 0083
+2020-10-07 17:58:43.569782	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0085
+2020-10-07 17:58:43.576765	CHUNSOFT	CUR	Unspecified	Walk,Attack,MultiStrike,Shoot,Jab,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0092
+2020-10-07 17:58:43.596710	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Lick,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0093
+2022-12-16 20:06:58.019393	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,MultiStrike,Lick,Swing,Double,Rotate,Hop
+== 0093s
+2023-02-17 17:53:52.326129	<@!234720295292895232>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,MultiStrike,Lick,Swing,Double,Rotate,Hop
+== 0094
+2022-12-17 00:13:11.432426	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Lick,Twirl,Swing,Double,Rotate,Hop
+2023-04-22 22:29:17.717502	<@!237286997645983744>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0099
+2020-10-07 17:58:43.615658	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0100s
+2020-10-07 17:58:43.620644	<@!234720295292895232>	OLD	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Sleep,Swing,Twirl,Walk
+2022-06-05 12:30:28.598963	<@!237286997645983744>	OLD	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2023-03-13 02:51:53.797868	<@!237286997645983744>	OLD	PMDCollab_1	Idle,Walk,Attack,Charge,Twirl,Swing,Double,Rotate,Hop,EventSleep,Wake,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2023-03-13 02:52:02.007739	<@!237286997645983744>	OLD	PMDCollab_1	Idle,Walk,Attack,Charge,Twirl,Swing,Double,Rotate,Hop,EventSleep,Wake,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2023-03-13 02:52:07.450580	<@!237286997645983744>	OLD	PMDCollab_1	Idle,Walk,Attack,Charge,Twirl,Swing,Double,Rotate,Hop,EventSleep,Wake,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2024-02-17 00:54:29.700076	<@!356635814668664832>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Twirl,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0104
+2022-12-17 00:12:56.028560	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop,Pose
+2023-01-02 22:54:59.449267	<@!356635814668664832>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Float,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2023-03-18 06:05:50.508814	<@!965734014604410990>	CUR	PMDCollab_1	DeepBreath
+2026-10-11 21:52:15.062676	<@!965734014604410990>	CUR	CC_BY-NC_4	DeepBreath
+== 0105
+2020-10-07 17:58:43.631617	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Punch,Shoot,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0105s
+2020-10-07 17:58:43.632613	<@!200385851069300736>	CUR	PMDCollab_1	Walk,Attack,Strike,Punch,Shoot,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0112
+2020-10-07 17:58:43.651562	CHUNSOFT	CUR	Unspecified	Walk,Attack,Stomp,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0113
+2020-10-07 17:58:43.655551	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0115
+2020-10-07 17:58:43.661535	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0123
+2020-10-07 17:58:43.683476	CHUNSOFT	CUR	Unspecified	Walk,Attack,Slice,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0127
+2020-10-07 17:58:43.691455	CHUNSOFT	CUR	Unspecified	Walk,Attack,Slice,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0128
+2020-10-07 17:58:43.695446	CHUNSOFT	CUR	Unspecified	Walk,Attack,Stomp,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0128s
+2020-10-07 17:58:43.696443	<@!200385851069300736>	CUR	PMDCollab_1	Walk,Attack,Stomp,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0130
+2023-05-04 14:55:15.921758	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,RearUp,Swing,Double,Rotate,Hop
+== 0131
+2020-10-07 17:58:43.706416	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Sound,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0133
+2020-10-07 17:58:43.712400	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Appeal,TailWhip,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,Faint,HitGround
+== 0134
+2020-10-07 17:58:43.716391	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0135
+2020-10-07 17:58:43.719381	CHUNSOFT	CUR	Unspecified	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shock,Shoot,Sleep,Swing,Walk
+2021-05-09 08:03:16.469247	<@!474262233442942995>	CUR	PMDCollab_1	Attack,Charge,Cringe,DeepBreath,Double,Eat,EventSleep,Faint,Float,Head,HitGround,Hop,Hurt,Idle,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,Rotate,Shock,Shoot,Sink,Sit,Sleep,Swing,Trip,Tumble,TumbleBack,Wake,Walk
+== 0136
+2020-10-07 17:58:43.722373	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Appeal,TailWhip,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2024-06-13 09:55:30.372631	<@!722542425196724289>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Pose,Pull,Pain,Float,DeepBreath,Nod,Sink,Laying,Head,Cringe,LostBalance
+2024-07-06 07:30:13.316346	<@!702275233125630042>	CUR	CC_BY-NC_4	EventSleep,Wake,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2024-07-15 15:25:49.675866	<@!702275233125630042>	CUR	CC_BY-NC_4	Tumble,Sink,LostBalance,TumbleBack
+== 0143
+2020-10-07 17:58:43.739327	CHUNSOFT	CUR	Unspecified	Walk,Attack,Stomp,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0144
+2023-05-04 17:21:45.663338	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,RearUp,Swing,Double,Rotate,Hop
+== 0145
+2023-05-04 17:22:01.976723	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Emit,SpAttack,Swing,Double,Rotate,Hop
+== 0146
+2023-05-04 17:21:54.081407	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,Hover
+== 0147
+2020-10-07 17:58:43.748303	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2024-07-18 23:05:22.804957	<@!702275233125630042>	CUR	CC_BY-NC_4	EventSleep,Wake,Tumble,Pain,Float,Laying,TumbleBack
+== 0148
+2020-10-07 17:58:43.750299	CHUNSOFT	CUR	Unspecified	Walk,Attack,MultiStrike,Shoot,Ricochet,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0149
+2020-10-07 17:58:43.752293	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Withdraw,Emit,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2025-11-09 03:55:24.114365	<@!268261643178344448>	CUR	CC_BY-NC_4	Special0
+2025-11-09 03:58:59.331082	<@!157796074457661440>	CUR	CC_BY-NC_4	Special0
+2025-11-09 03:59:05.496762	<@!157796074457661440>	CUR	CC_BY-NC_4	Special0
+== 0159
+2020-10-07 17:58:43.779221	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0160
+2020-10-07 17:58:43.782215	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0163
+2020-10-07 17:58:43.788196	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0164
+2020-10-07 17:58:43.790191	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2024-04-26 18:52:47.201357	<@!356635814668664832>	CUR	CC_BY-NC_4	Eat,Cringe
+== 0164s
+2020-10-07 17:58:43.791188	<@!171030521009274881>	CUR	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shoot,Sleep,SpAttack,Swing,Walk
+2022-01-28 03:54:12.977880	<@!217899432652308480>	CUR	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shoot,Sleep,SpAttack,Swing,Walk
+2024-04-29 08:45:12.685779	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,SpAttack,Swing,Double,Rotate,Hop,Eat,Cringe
+== 0168
+2020-10-07 17:58:43.803156	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0169
+2020-10-07 17:58:43.805152	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0172
+2020-10-07 17:58:43.813132	CHUNSOFT	CUR	Unspecified	Walk,Attack,QuickStrike,Shock,Sing,Appeal,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2023-03-31 07:43:37.521359	<@!454421330058805251>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2023-04-09 15:40:44.183737	<@!454421330058805251>	CUR	PMDCollab_1	Tumble,Pose,Pain,Nod,Sit,LookUp,Sink,LeapForth,TumbleBack,HitGround
+2023-04-14 22:15:16.617311	<@!454421330058805251>	CUR	PMDCollab_1	Wake,Pain
+2023-04-15 00:36:45.710329	<@!454421330058805251>	CUR	PMDCollab_1	Pain
+2023-04-22 10:46:17.867751	<@!454421330058805251>	CUR	PMDCollab_1	Pain,Trip,HitGround,Faint
+2023-06-18 20:09:12.351687	<@!454421330058805251>	CUR	PMDCollab_2	Wake,Nod
+2023-07-24 20:50:32.263698	<@!454421330058805251>	CUR	PMDCollab_2	Pose,Nod,Trip,LeapForth,HitGround
+2023-10-13 20:12:56.420025	<@!454421330058805251>	CUR	PMDCollab_2	Pose,Pain,Nod,Trip,HitGround,Faint
+2024-07-31 02:22:31.048084	<@!454421330058805251>	CUR	CC_BY-NC_4	EventSleep,Wake,Tumble,Pose,Pain,Float,Nod,Sink,Trip,Laying,LeapForth,TumbleBack,HitGround,Faint
+2024-08-20 01:37:43.869590	<@!454421330058805251>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Float,Nod,Trip,Laying,Head,HitGround
+2025-08-17 17:32:13.671858	<@!454421330058805251>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Float,Nod,Trip,Laying,LeapForth,LostBalance,TumbleBack,HitGround,Faint
+2025-08-17 22:35:43.868958	<@!454421330058805251>	CUR	CC_BY-NC_4	Nod,LeapForth
+2025-08-17 22:35:48.439766	<@!454421330058805251>	CUR	CC_BY-NC_4	Nod,LeapForth
+== 0173
+2020-10-07 17:58:43.815124	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Sing,Shoot,Dance,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0178
+2022-12-16 20:07:13.939155	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
+== 0185
+2020-10-07 17:58:43.848037	CHUNSOFT	CUR	Unspecified	Walk,Attack,Slam,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0194
+2020-10-07 17:58:43.869977	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2023-06-11 07:27:53.275338	<@!330751862590406656>	CUR	PMDCollab_2	EventSleep,Wake,Eat,Pose,Float,DeepBreath,Nod,Sink,Laying,Cringe
+2023-06-13 06:29:33.565597	<@!330751862590406656>	CUR	PMDCollab_2	Sink
+2023-09-20 05:52:47.956486	<@!555919605265203232>	CUR	PMDCollab_2	Tumble,Pose,Pull,Pain,Nod,Sit,LookUp,Trip,LeapForth,Head,LostBalance,TumbleBack,HitGround,Faint
+2023-10-08 17:43:15.848418	<@!555919605265203232>	CUR	PMDCollab_2	Head
+2024-03-16 01:22:36.254149	<@!402958234371227648>	CUR	CC_BY-NC_4	EventSleep,Wake,Tumble,Pain,Float,Nod,Sit,Trip,Laying,Head,TumbleBack,HitGround,Faint
+== 0195
+2020-10-07 17:58:43.873967	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,RearUp,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0196
+2020-10-07 17:58:43.876961	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0197
+2020-10-07 17:58:43.878955	CHUNSOFT	CUR	Unspecified	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shoot,Sleep,Swing,Walk,Withdraw
+2021-02-07 01:19:42.640630	<@!702275233125630042>	OLD	PMDCollab_1	Attack,Charge,Cringe,DeepBreath,Double,Eat,EventSleep,Faint,Float,Head,HitGround,Hop,Hurt,Idle,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,Rotate,Shoot,Sink,Sit,Sleep,Swing,Trip,Tumble,TumbleBack,Wake,Walk,Withdraw
+2021-09-22 19:54:46.968229	<@!356635814668664832>	CUR	PMDCollab_1	Attack,Charge,Cringe,DeepBreath,Double,Eat,EventSleep,Faint,Float,Head,HitGround,Hop,Hurt,Idle,Laying,LookUp,LostBalance,Nod,Pose,Pull,Rotate,Shoot,Sink,Sit,Sleep,Swing,Trip,Tumble,TumbleBack,Wake,Walk,Withdraw
+2024-05-24 04:18:55.879248	<@!356635814668664832>	CUR	CC_BY-NC_4	Head
+== 0214
+2020-10-07 17:58:43.984670	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Slam,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0217
+2020-10-07 17:58:43.993647	CHUNSOFT	CUR	Unspecified	Walk,Attack,MultiStrike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0219
+2020-10-07 17:58:43.997637	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Rumble,Shake,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0221
+2020-10-07 17:58:44.001626	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0225
+2020-10-07 17:58:44.012597	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,SpAttack,Shoot,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2024-01-06 06:39:11.124809	<@!350050109741858829>	CUR	PMDCollab_2	Head,Cringe
+2025-12-09 17:13:09.589528	<@!228595807132057600>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,LostBalance,TumbleBack,HitGround,Faint
+2025-12-09 18:01:57.487598	<@!228595807132057600>	CUR	CC_BY-NC_4	EventSleep,Wake,Float,Laying
+== 0227
+2022-12-16 20:07:40.027488	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Twirl,Swing,Double,Rotate,Hop
+== 0234
+2020-10-07 17:58:44.033540	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0244
+2023-05-04 17:22:08.879619	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,SpAttack,Swing,Double,Rotate,Hop
+== 0245
+2023-05-04 17:22:17.022353	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,RearUp,Swing,Double,Rotate,Hop
+== 0250
+2020-10-07 17:58:44.169783	CHUNSOFT	CUR	Unspecified	Walk,Attack,Jab,Shoot,Hover,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0255
+2020-10-07 17:58:44.182748	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Dance,Shake,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,Faint,HitGround
+== 0256
+2020-10-07 17:58:44.185739	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0257
+2020-10-07 17:58:44.190727	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Slam,Shoot,Kick,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0262
+2020-10-07 17:58:44.205686	CHUNSOFT	CUR	Unspecified	Attack,Charge,Double,Hop,Hurt,Idle,RearUp,Rotate,Shoot,Sleep,Swing,Walk
+2021-12-03 15:05:43.321223	<@!358038459237138432>	CUR	PMDCollab_1	Attack,Charge,Cringe,DeepBreath,Double,Eat,EventSleep,Faint,Float,Head,HitGround,Hop,Hurt,Idle,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,RearUp,Rotate,Shoot,Sink,Sit,Sleep,Swing,Trip,Tumble,TumbleBack,Wake,Walk
+== 0269
+2020-10-07 17:58:44.224636	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,FlapAround,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0286
+2020-10-07 17:58:44.272507	CHUNSOFT	CUR	Unspecified	Walk,Attack,Punch,MultiStrike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2024-07-02 16:28:24.479128	<@!356635814668664832>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0302
+2022-12-17 00:13:48.420532	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,MultiStrike,SpAttack,Swing,Double,Rotate,Hop
+== 0319
+2020-10-07 17:58:44.360273	CHUNSOFT	CUR	Unspecified	Walk,Attack,Bite,Shoot,Swell,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0324
+2020-10-07 17:58:44.372240	CHUNSOFT	CUR	Unspecified	Walk,Attack,Ricochet,Shoot,Withdraw,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0330
+2020-10-07 17:58:44.388221	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,FlapAround,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0336
+2020-10-07 17:58:44.402160	CHUNSOFT	CUR	Unspecified	Walk,Attack,Bite,Shoot,Swell,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0336s
+2024-04-01 10:57:02.868555	<@!356635814668664832>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Bite,Swell,Swing,Double,Rotate,Hop
+== 0340
+2020-10-07 17:58:44.410140	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Shake,Rumble,Dance,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0342
+2020-10-07 17:58:44.415125	CHUNSOFT	CUR	Unspecified	Walk,Attack,Bite,Shoot,Swell,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0352
+2023-05-04 17:22:24.490582	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swell,Swing,Double,Rotate,Hop
+2026-06-19 03:50:34.116717	<@!276369635304275968>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0353
+2020-10-07 17:58:44.450033	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2024-12-22 04:56:30.825908	<@!330751862590406656>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2024-12-24 04:54:51.622926	<@!330751862590406656>	CUR	CC_BY-NC_4	Nod
+== 0355
+2020-10-07 17:58:44.454022	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2023-12-17 00:12:08.495872	<@!702275233125630042>	CUR	PMDCollab_2	Pose
+== 0356
+2020-10-07 17:58:44.456017	CHUNSOFT	CUR	Unspecified	Walk,Attack,Punch,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0357
+2020-10-07 17:58:44.458011	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Hover,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2024-04-21 20:26:31.308465	<@!356635814668664832>	CUR	CC_BY-NC_4	Eat
+== 0373
+2020-10-07 17:58:44.494912	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Rumble,Emit,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2022-06-30 22:42:31.864587	<@!356635814668664832>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0382
+2020-10-07 17:58:44.516860	CHUNSOFT	CUR	Unspecified	Walk,Attack,Stomp,Shoot,Swell,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0383
+2022-12-17 00:14:21.402518	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,Emit,Swing,Double,Rotate,Hop
+== 0384
+2020-10-07 17:58:44.522837	CHUNSOFT	CUR	Unspecified	Walk,Attack,QuickStrike,Shoot,SpAttack,Rumble,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0399
+2022-08-24 13:24:21.242763	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Withdraw,Swing,Double,Rotate,Hop
+2022-09-02 16:10:36.474139	<@!356635814668664832>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0401
+2020-10-07 17:58:44.578688	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,Sound,Appeal,Emit,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0402
+2020-10-07 17:58:44.582678	CHUNSOFT	CUR	Unspecified	Walk,Attack,MultiStrike,Shoot,Strike,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0403s
+2020-10-07 17:58:44.586667	<@!162389028061052928>	CUR	PMDCollab_1	Walk,Attack,Strike,Shoot,TailWhip,Shake,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,Faint,HitGround
+== 0404
+2020-10-07 17:58:44.587664	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,TailWhip,Shake,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2022-09-14 15:18:32.756222	<@!330751862590406656>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2022-09-15 23:05:08.569821	<@!330751862590406656>	CUR	PMDCollab_1	Nod,Trip,HitGround,Faint
+2023-02-10 14:38:44.236405	<@!330751862590406656>	CUR	PMDCollab_1	Wake
+== 0405
+2020-10-07 17:58:44.589659	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,TailWhip,Shake,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0417
+2020-10-07 17:58:44.632544	CHUNSOFT	CUR	Unspecified	Walk,Attack,QuickStrike,Shoot,Appeal,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2024-07-02 16:37:25.951716	<@!702275233125630042>	CUR	CC_BY-NC_4	EventSleep,Wake,Float,Laying
+2024-07-02 18:28:39.265146	<@!702275233125630042>	CUR	CC_BY-NC_4	Wake
+2024-10-26 05:01:15.829762	<@!544245909639397378>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2024-11-16 04:46:30.681729	<@!544245909639397378>	CUR	CC_BY-NC_4	LostBalance
+== 0423
+2020-10-07 17:58:44.652491	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Rumble,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0428
+2022-11-08 03:47:47.901705	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Appeal,Swing,Double,Rotate,Hop,QuickStrike
+== 0428s
+2023-01-26 04:41:33.522387	<@!95650095034273792>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Appeal,Swing,Double,Rotate,Hop,QuickStrike
+== 0436
+2020-10-07 17:58:44.686399	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0437
+2020-10-07 17:58:44.688395	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,Emit,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0451
+2022-11-08 03:48:10.510221	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Bite,Jab,Swing,Double,Rotate,Hop
+== 0453
+2022-11-08 03:48:21.065675	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Jab,RearUp,Swing,Double,Rotate,Hop
+2025-09-07 17:52:49.454926	<@!330751862590406656>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2025-09-10 07:01:13.092054	<@!330751862590406656>	CUR	CC_BY-NC_4	Pose,Pull,Nod,Sit,LookUp,Sink,LostBalance
+== 0454
+2020-10-07 17:58:44.746239	CHUNSOFT	CUR	Unspecified	Walk,Attack,Jab,Strike,Shoot,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0460
+2020-10-07 17:58:44.768180	CHUNSOFT	CUR	Unspecified	Walk,Attack,Strike,Shoot,SpAttack,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0470
+2020-10-07 17:58:44.794112	CHUNSOFT	CUR	Unspecified	Attack,Charge,Double,Hop,Hurt,Idle,QuickStrike,Rotate,Shoot,Sleep,Swing,TailWhip,Walk
+2021-12-12 09:34:52.947877	<@!544245909639397378>	CUR	PMDCollab_1	Attack,Charge,Cringe,DeepBreath,Double,Eat,EventSleep,Faint,Float,Head,HitGround,Hop,Hurt,Idle,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,QuickStrike,Rotate,Shoot,Sink,Sit,Sleep,Swing,TailWhip,Trip,Tumble,TumbleBack,Wake,Walk
+== 0471
+2020-10-07 17:58:44.797106	CHUNSOFT	CUR	Unspecified	Attack,Charge,Double,Hop,Hurt,Idle,QuickStrike,Rotate,Shoot,Sleep,Swing,TailWhip,Walk
+2021-02-12 05:17:29.544825	<@!702275233125630042>	CUR	PMDCollab_1	Attack,Charge,Cringe,DeepBreath,Double,Eat,EventSleep,Faint,Float,Head,HitGround,Hop,Hurt,Idle,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,QuickStrike,Rotate,Shoot,Sink,Sit,Sleep,Swing,TailWhip,Trip,Tumble,TumbleBack,Wake,Walk
+2025-01-29 17:51:48.330106	<@!544245909639397378>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0473
+2023-05-04 17:19:24.915983	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,RearUp,Swing,Double,Rotate,Hop
+== 0477
+2022-11-08 03:48:34.279823	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Punch,Emit,SpAttack,Swing,Double,Rotate,Hop
+2026-03-04 17:29:11.819902	<@!330751862590406656>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2026-05-10 17:58:06.092429	<@!330751862590406656>	CUR	CC_BY-NC_4	Wake,Eat,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,LostBalance,HitGround,Faint
+2026-05-10 17:58:13.861556	<@!330751862590406656>	CUR	CC_BY-NC_4	Wake,Eat,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,LostBalance,HitGround,Faint
+== 0491
+2022-11-08 03:47:19.670949	CHUNSOFT	CUR	Unspecified	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,SpAttack,RearUp,Swing,Double,Rotate,Hop,QuickStrike
+2022-11-08 04:14:41.871948	<@!544245909639397378>	CUR	PMDCollab_1	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0496
+2021-03-26 04:24:41.337918	<@!319945906600411179>	CUR	PMDCollab_1	Walk,Attack,Slice,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0497
+2021-03-26 04:24:43.905111	<@!319945906600411179>	CUR	PMDCollab_1	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0498
+2022-02-18 08:50:55.881762	<@!319945906600411179>	CUR	PMDCollab_1	Attack,Idle,Walk
+2022-02-22 04:29:43.784034	<@!237286997645983744>	CUR	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shoot,Sleep,Swing,Walk
+2022-06-29 13:26:20.537869	<@!237286997645983744>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
+2022-06-30 04:41:29.958524	<@!704349360929898516>	CUR	PMDCollab_1	Idle,Walk,Attack,Charge,Shoot,Swing,Double,Rotate,Hop
+2023-06-19 03:30:30.635190	<@!169247379453640706>	CUR	PMDCollab_2	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2023-06-19 06:50:46.607316	<@!169247379453640706>	CUR	PMDCollab_2	Wake,HitGround,Faint
+2023-10-13 20:25:43.048850	<@!169247379453640706>	CUR	PMDCollab_2	LeapForth
+== 0510
+2022-11-15 05:22:42.260650	<@!283045864509800468>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
+== 0510s
+2022-11-17 03:40:39.154973	<@!576876006636519434>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
+== 0536
+2023-05-18 07:06:42.885775	<@!702275233125630042>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
+== 0537
+2024-02-24 08:55:16.111945	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
+2024-02-25 08:29:34.076282	<@!229131140903075840>	CUR	CC_BY-NC_4	Swing
+== 0543
+2024-05-18 23:31:57.587729	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Attack,Shoot,Strike,Twirl,Rotate,Hop
+2024-05-18 23:36:14.001658	<@!608107243329814529>	CUR	CC_BY-NC_4	"
+2024-06-08 04:31:11.095896	<@!544245909639397378>	CUR	CC_BY-NC_4	Sleep,Charge,Swing,Double
+2024-06-08 04:34:35.642191	<@!229131140903075840>	CUR	CC_BY-NC_4	"
+2024-06-13 09:24:36.960642	<@!544245909639397378>	CUR	CC_BY-NC_4	Hurt,Charge
+2025-03-07 16:55:05.781329	<@!702275233125630042>	CUR	CC_BY-NC_4	Idle,Walk,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2025-11-09 02:28:24.639399	<@!702275233125630042>	CUR	CC_BY-NC_4	Idle,Walk,Hurt,Attack,Charge,Shoot,Swing,Double,Hop,EventSleep,Wake,Pose,Pull,Pain,Float,Nod,Laying,LeapForth,Cringe
+== 0544
+2024-11-07 01:48:41.529320	<@!350050109741858829>	CUR	CC_BY-NC_4	Idle,Rotate
+2024-12-22 05:11:18.366345	<@!350050109741858829>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
+2024-12-22 20:13:27.565845	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop,Cringe
+== 0544s
+2024-11-07 06:45:24.156429	<@!350050109741858829>	CUR	CC_BY-NC_4	Idle,Rotate
+2024-12-23 21:37:29.885120	<@!350050109741858829>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop,Cringe
+== 0545
+2023-10-03 03:51:01.880813	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
+== 0552
+2024-01-23 03:20:07.329905	<@!229131140903075840>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop
+2024-02-05 16:24:32.894849	<@!229131140903075840>	CUR	PMDCollab_2	Double,Hop
+== 0559
+2023-04-09 09:45:43.451810	<@!702275233125630042>	OLD	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
+2024-04-20 17:57:53.375571	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2024-04-20 17:58:00.434741	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0560
+2022-05-20 23:36:04.395413	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,SpAttack,Swing,Double,Rotate,Hop
+2023-06-19 04:04:26.845513	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
+== 0562
+2023-04-10 22:58:28.132213	<@!653416391201783856>	CUR	PMDCollab_1	Idle,Walk,Sleep,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
+2023-04-30 22:07:48.177417	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
+== 0585
+2021-06-04 05:54:05.114751	<@!544245909639397378>	CUR	PMDCollab_1	Walk,Attack,Strike,Shoot,RearUp,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2023-03-16 06:04:54.674884	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0596
+2021-04-04 08:28:20.211194	<@!702275233125630042>	CUR	PMDCollab_1	Walk,Attack,Strike,Shoot,Twirl,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+== 0607
+2021-04-07 17:00:57.834009	<@!356635814668664832>	CUR	PMDCollab_1	Attack,Charge,Cringe,DeepBreath,Double,Eat,EventSleep,Faint,Float,Head,HitGround,Hop,Hurt,Idle,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,Rotate,Shoot,Sink,Sit,Sleep,Swing,Trip,Tumble,TumbleBack,Wake,Walk
+2022-05-23 07:29:27.931439	<@!356635814668664832>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Twirl,SpAttack,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2024-09-04 23:45:49.311972	<@!356635814668664832>	CUR	CC_BY-NC_4	"
+== 0627
+2024-06-08 03:48:34.757117	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,FlapAround,Swing,Double,Rotate,Hop
+2024-06-08 03:50:04.206067	<@!215638650434617345>	CUR	CC_BY-NC_4	"
+2024-06-21 18:51:32.877507	<@!544245909639397378>	CUR	CC_BY-NC_4	Sleep,Charge
+2025-05-13 05:53:17.473018	<@!544245909639397378>	CUR	CC_BY-NC_4	EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+2025-09-09 06:38:31.850348	<@!544245909639397378>	CUR	CC_BY-NC_4	LookUp
+== 0628
+2022-08-08 02:03:45.498682	<@!330751862590406656>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Hover,QuickStrike
+2022-08-10 00:22:56.931419	<@!330751862590406656>	CUR	PMDCollab_1	Hurt
+== 0628s
+2022-08-08 03:53:29.202876	<@!330751862590406656>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Hover,QuickStrike
+2022-08-10 00:34:31.040657	<@!330751862590406656>	CUR	PMDCollab_1	Hurt
+== 0637
+2021-10-05 02:16:05.933970	POWERCRISTAL	CUR	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shake,Shoot,Sleep,Swing,Walk
+2022-03-07 05:34:02.379071	<@!356635814668664832>	OLD	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shake,Shoot,Sleep,Swing,Walk
+2024-03-30 14:36:09.056740	<@!608107243329814529>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Shake,Swing,Double,Rotate,Hop
+2024-03-30 22:34:35.718338	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Shake,Swing,Double,Rotate,Hop
+== 0667
+2022-09-12 11:47:15.992097	<@!330751862590406656>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop,EventSleep,Wake,Eat,Tumble,Pose,Pull,Pain,Float,DeepBreath,Nod,Sit,LookUp,Sink,Trip,Laying,LeapForth,Head,Cringe,LostBalance,TumbleBack,HitGround,Faint
+== 0681
+2022-08-08 02:03:56.145569	<@!276369635304275968>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Special0
+2024-01-25 18:55:21.038925	<@!276369635304275968>	CUR	PMDCollab_2	Special0
+2025-04-01 21:00:19.619003	<@!276369635304275968>	CUR	CC_BY-NC_4	Special0
+== 0700
+2024-07-04 18:59:33.009262	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,SpAttack,Swing,Double,Rotate,Hop,QuickStrike
+== 0709
+2023-12-31 17:28:39.211544	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Punch,Swing,Double,Rotate,Hop
+== 0711
+2021-10-27 10:41:13.342875	<@!702275233125630042>	CUR	PMDCollab_1	Walk,Attack,Strike,Shoot,Hover,Sleep,Hurt,Idle,Swing,Double,Hop,Charge,Rotate
+2023-12-07 07:37:38.582996	<@!544245909639397378>	CUR	PMDCollab_2	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Swing,Double,Rotate,Hop,Hover
+== 0739
+2024-03-05 03:38:02.560496	<@!229131140903075840>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Emit,SpAttack,Swing,Double,Rotate,Hop
+== 0750
+2025-07-21 00:37:43.834450	<@!193530896211509248>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop
+2025-09-29 03:39:52.211295	<@!193530896211509248>	CUR	CC_BY-NC_4	Idle,Attack,Charge,Shoot,RearUp,Double,Hop
+== 0750s
+2025-12-09 04:23:07.592662	<@!350778126919401485>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop
+== 0781
+2023-04-30 22:26:24.713934	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,Swing,Double,Rotate,Hop
+== 0831
+2021-04-15 04:56:38.679221	<@!356635814668664832>	CUR	PMDCollab_1	Attack,Charge,Double,Hop,Hurt,Idle,Rotate,Shoot,Sleep,Stomp,Swing,Walk
+2021-04-20 02:05:28.355998	<@!702275233125630042>	CUR	PMDCollab_1	Cringe,DeepBreath,Eat,EventSleep,Faint,Float,Head,HitGround,Laying,LeapForth,LookUp,LostBalance,Nod,Pain,Pose,Pull,Sink,Sit,Trip,Tumble,TumbleBack,Wake
+== 0896
+2026-09-14 12:12:41.443465	<@!702275233125630042>	CUR	CC_BY-NC_4	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,RearUp,Swing,Double,Rotate,Hop
+== 0897
+2022-10-12 23:26:49.986605	<@!544245909639397378>	CUR	PMDCollab_1	Idle,Walk,Sleep,Hurt,Attack,Charge,Shoot,Strike,RearUp,Swing,Double,Rotate,Hop
+== 0901
+2023-11-07 08:35:29.920405	<@!356635814668664832>	CUR	PMDCollab_2	Idle,Walk,Swing,Double,Rotate
+2024-07-02 15:06:25.800274	<@!544245909639397378>	CUR	CC_BY-NC_4	Idle,Sleep,Hurt,Attack,Charge,Shoot,Strike,Rumble,SpAttack,RearUp,Hop

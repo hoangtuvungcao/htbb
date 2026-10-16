@@ -1,0 +1,697 @@
+id,ten_cu,type,cap,gender_cu,ten_moi
+1,Áo bà ba,0,1,2,Khăn quàng sơ cấp
+2,(ở trần),0,1,1,Khăn quàng sơ cấp
+3,Áo đai thô (nữ),0,4,2,Khăn quàng sơ cấp
+4,Áo đai thô (nam),0,4,1,Khăn quàng sơ cấp
+5,Áo thổ cẩm (nữ),0,9,2,Khăn quàng sơ cấp
+6,Áo thổ cẩm (nam),0,9,1,Khăn quàng sơ cấp
+7,Áo bông (nữ),0,14,2,Khăn quàng đồng
+8,Áo bông (nam),0,14,1,Khăn quàng đồng
+9,Áo lụa (nữ),0,19,2,Khăn quàng đồng
+10,Áo lụa (nam),0,19,1,Khăn quàng đồng
+11,Áo tơ tằm (nữ),0,24,2,Khăn quàng bạc
+12,Áo tơ tằm (nam),0,24,1,Khăn quàng bạc
+13,Áo nhung (nữ),0,29,2,Khăn quàng bạc
+14,Áo nhung (nam),0,29,1,Khăn quàng bạc
+15,Áo gấm (nữ),0,34,2,Khăn quàng vàng
+16,Áo gấm (nam),0,34,1,Khăn quàng vàng
+17,Khoái linh thượng y (nữ),0,39,2,Khăn quàng vàng
+18,Khoái linh thượng y (nam),0,39,1,Khăn quàng vàng
+19,Cẩm trác y (nữ),0,44,2,Khăn quàng bạch kim
+20,Cẩm trác y (nam),0,44,1,Khăn quàng bạch kim
+21,Hổ bào (nữ),0,49,2,Khăn quàng bạch kim
+22,Hổ bào (nam),0,49,1,Khăn quàng bạch kim
+23,Sư vương bào (nữ),0,54,2,Khăn quàng kim cương
+24,Sư vương bào (nam),0,54,1,Khăn quàng kim cương
+25,Kim long bào (nữ),0,59,2,Khăn quàng kim cương
+26,Kim long bào (nam),0,59,1,Khăn quàng kim cương
+27,Quần bà ba,1,1,2,Đai sơ cấp
+28,Quần đùi,1,1,1,Đai sơ cấp
+29,Quần đai thô (nữ),1,4,2,Đai sơ cấp
+30,Quần đai thô (nam),1,4,1,Đai sơ cấp
+31,Quần thổ cẩm (nữ),1,9,2,Đai sơ cấp
+32,Quần thổ cẩm (nam),1,9,1,Đai sơ cấp
+33,Quần bông (nữ),1,14,2,Đai đồng
+34,Quần bông (nam),1,14,1,Đai đồng
+35,Quần lụa (nữ),1,19,2,Đai đồng
+36,Quần lụa (nam),1,19,1,Đai đồng
+37,Quần tơ tằm (nữ),1,24,2,Đai bạc
+38,Quần tơ tằm (nam),1,24,1,Đai bạc
+39,Quần nhung (nữ),1,29,2,Đai bạc
+40,Quần nhung (nam),1,29,1,Đai bạc
+41,Quần gấm (nữ),1,34,2,Đai vàng
+42,Quần gấm (nam),1,34,1,Đai vàng
+43,Quần khoái linh (nữ),1,39,2,Đai vàng
+44,Quần khoái linh (nam),1,39,1,Đai vàng
+45,Quần cẩm trác (nữ),1,44,2,Đai bạch kim
+46,Quần cẩm trác (nam),1,44,1,Đai bạch kim
+47,Hổ mao (nữ),1,49,2,Đai bạch kim
+48,Hổ mao (nam),1,49,1,Đai bạch kim
+49,Sư vương mao (nữ),1,54,2,Đai kim cương
+50,Sư vương mao (nam),1,54,1,Đai kim cương
+51,Quần kim long (nữ),1,59,2,Đai kim cương
+52,Quần kim long (nam),1,59,1,Đai kim cương
+53,Băng đô,2,1,2,Băng đô sơ cấp
+54,Khăn,2,1,1,Băng đô sơ cấp
+55,Nón dây gai (nữ),2,4,2,Băng đô sơ cấp
+56,Nón dây gai (nam),2,4,1,Băng đô sơ cấp
+57,Nón lam trúc (nữ),2,9,2,Băng đô sơ cấp
+58,Nón lam trúc (nam),2,9,1,Băng đô sơ cấp
+59,Nón hắc trúc (nữ),2,14,2,Băng đô đồng
+60,Nón hắc trúc (nam),2,14,1,Băng đô đồng
+61,Nón mộc trúc (nữ),2,19,2,Băng đô đồng
+62,Nón mộc trúc (nam),2,19,1,Băng đô đồng
+63,Nón thanh vải (nữ),2,24,2,Băng đô bạc
+64,Nón thanh vải (nam),2,24,1,Băng đô bạc
+65,Nón đồng đen (nữ),2,29,2,Băng đô bạc
+66,Nón đồng đen (nam),2,29,1,Băng đô bạc
+67,Nón đồng đỏ (nữ),2,34,2,Băng đô vàng
+68,Nón đồng đỏ (nam),2,34,1,Băng đô vàng
+69,Nón sắt đen (nữ),2,39,2,Băng đô vàng
+70,Nón sắt đen (nam),2,39,1,Băng đô vàng
+71,Nón sắt xám (nữ),2,44,2,Băng đô bạch kim
+72,Nón sắt xám (nam),2,44,1,Băng đô bạch kim
+73,Tuyệt tâm mão (nữ),2,49,2,Băng đô bạch kim
+74,Tuyệt tâm mão (nam),2,49,1,Băng đô bạch kim
+75,Tùng linh mão (nữ),2,54,2,Băng đô kim cương
+76,Tùng linh mão (nam),2,54,1,Băng đô kim cương
+77,Kim long mão (nữ),2,59,2,Băng đô kim cương
+78,Kim long mão (nam),2,59,1,Băng đô kim cương
+79,Kiếm tre,3,1,0,Than lửa sơ cấp
+80,Kiếm gỗ,3,6,0,Than lửa sơ cấp
+81,Kiếm đồng,3,11,0,Than lửa đồng
+82,Kiếm sắt,3,16,0,Than lửa đồng
+83,Mộ khúc kiếm,3,21,0,Than lửa bạc
+86,Đao tre,4,1,0,Hạt giống thần sơ cấp
+87,Đao gỗ,4,6,0,Hạt giống thần sơ cấp
+88,Đao đồng,4,11,0,Hạt giống thần đồng
+89,Đao sắt,4,16,0,Hạt giống thần đồng
+90,Đà đao,4,21,0,Hạt giống thần bạc
+93,Bút tre,5,1,0,Khăn lụa sơ cấp
+94,Bút gỗ,5,6,0,Khăn lụa sơ cấp
+95,Bút đồng,5,11,0,Khăn lụa đồng
+96,Bút sắt,5,16,0,Khăn lụa đồng
+97,Cơ duyên bút,5,21,0,Khăn lụa bạc
+100,Thổ búa,6,1,0,Nước thần sơ cấp
+101,Mộc búa,6,6,0,Nước thần sơ cấp
+102,Búa đồng,6,11,0,Nước thần đồng
+103,Búa sắt,6,16,0,Nước thần đồng
+104,Búa thủ ngưu,6,21,0,Nước thần bạc
+107,Cung tre,7,1,0,Nam châm sơ cấp
+108,Cung gỗ,7,6,0,Nam châm sơ cấp
+109,Cung đồng,7,11,0,Nam châm đồng
+110,Cung sắt,7,16,0,Nam châm đồng
+111,Bán nguyệt cung,7,21,0,Nam châm bạc
+105,Búa Mã Diện,6,26,0,Nước thần bạc
+84,Lưu Chỉ Kiếm,3,26,0,Than lửa bạc
+85,Khổng Tú Kiếm,3,31,0,Than lửa vàng
+91,Tuệ Đao,4,26,0,Hạt giống thần bạc
+92,Khổng Trác Đao,4,31,0,Hạt giống thần vàng
+98,Mộ Danh Bút,5,26,0,Khăn lụa bạc
+99,Bãn Nhãn Bút,5,31,0,Khăn lụa vàng
+106,Búa Địa Tinh,6,31,0,Nước thần vàng
+112,Kim Loan Cung,7,26,0,Nam châm bạc
+113,Lĩnh Nam Cung,7,31,0,Nam châm vàng
+138,Giày đai thô,10,4,0,Lông vũ tốc độ sơ cấp
+115,Nhẫn lam ngọc ,8,9,0,Huy hiệu sơ cấp
+116,Nhẫn hoàng bảo ,8,14,0,Huy hiệu đồng
+117,Nhẫn lam bảo,8,19,0,Huy hiệu đồng
+118,Nhẫn cảm lãm ,8,24,0,Huy hiệu bạc
+119,Nhẫn phù dung ,8,29,0,Huy hiệu bạc
+120,Nhẫn phỉ thúy,8,34,0,Huy hiệu vàng
+121,Nhẫn thúy lựu,8,39,0,Huy hiệu vàng
+122,Nhẫn tổ mẫu,8,44,0,Huy hiệu bạch kim
+123,Nhẫn hải lam,8,49,0,Huy hiệu bạch kim
+124,Nhẫn hồng bảo,8,54,0,Huy hiệu kim cương
+125,Nhẫn sa thạch,8,59,0,Huy hiệu kim cương
+126,Dây chuyền đồng,9,4,0,Vòng cổ sơ cấp
+127,Dây chuyền san hô,9,9,0,Vòng cổ sơ cấp
+128,Dây chuyền lục tùng,9,14,0,Vòng cổ đồng
+129,Dây chuyền miêu nhãn,9,19,0,Vòng cổ đồng
+130,Dây chuyền bạch kim,9,24,0,Vòng cổ bạc
+131,Dây chuyền thủy tinh,9,29,0,Vòng cổ bạc
+132,Dây chuyền ngọc châu,9,34,0,Vòng cổ vàng
+133,Dây chuyền hổ phách,9,39,0,Vòng cổ vàng
+134,Dây chuyền ngân châu,9,44,0,Vòng cổ bạch kim
+135,Dây chuyền phỉ thúy,9,49,0,Vòng cổ bạch kim
+136,Dây chuyền toàn thạch,9,54,0,Vòng cổ kim cương
+137,Dây chuyền khổng tước,9,59,0,Vòng cổ kim cương
+114,Nhẫn hoàng ngọc ,8,4,0,Huy hiệu sơ cấp
+139,Giày thổ cẩm,10,9,0,Lông vũ tốc độ sơ cấp
+140,Giày bông,10,14,0,Lông vũ tốc độ đồng
+141,Giày lụa,10,19,0,Lông vũ tốc độ đồng
+142,Giày tơ tằm,10,24,0,Lông vũ tốc độ bạc
+143,Giày nhung,10,29,0,Lông vũ tốc độ bạc
+144,Giày gấm,10,34,0,Lông vũ tốc độ vàng
+145,Giày khoái linh,10,39,0,Lông vũ tốc độ vàng
+146,Giày cẩm trác,10,44,0,Lông vũ tốc độ bạch kim
+147,Giày da hổ,10,49,0,Lông vũ tốc độ bạch kim
+148,Giày sư vương,10,54,0,Lông vũ tốc độ kim cương
+149,Giày kim long,10,59,0,Lông vũ tốc độ kim cương
+150,Găng đai thô,11,4,0,Găng đấm sơ cấp
+151,Găng thổ cẩm,11,9,0,Găng đấm sơ cấp
+152,Găng bông,11,14,0,Găng đấm đồng
+153,Găng lụa,11,19,0,Găng đấm đồng
+154,Găng tơ tằm,11,24,0,Găng đấm bạc
+155,Găng nhung,11,29,0,Găng đấm bạc
+156,Găng gấm,11,34,0,Găng đấm vàng
+157,Găng khoái linh,11,39,0,Găng đấm vàng
+158,Găng cẩm trác,11,44,0,Găng đấm bạch kim
+159,Găng da hổ,11,49,0,Găng đấm bạch kim
+160,Găng sư vương,11,54,0,Găng đấm kim cương
+161,Găng kim long,11,59,0,Găng đấm kim cương
+162,Ngọc Bích ngọc,12,4,0,Phiến đá hệ sơ cấp
+163,Ngọc Ngân bích,12,9,0,Phiến đá hệ sơ cấp
+164,Ngọc Tứ tuyệt,12,14,0,Phiến đá hệ đồng
+165,Ngọc Hoàng phủ,12,19,0,Phiến đá hệ đồng
+166,Ngọc Hồ điệp,12,24,0,Phiến đá hệ bạc
+167,Ngọc Lam hoa,12,29,0,Phiến đá hệ bạc
+168,Ngọc Túy tiên,12,34,0,Phiến đá hệ vàng
+169,Ngọc Viên xích,12,39,0,Phiến đá hệ vàng
+170,Ngọc Ấu nguyệt,12,44,0,Phiến đá hệ bạch kim
+171,Ngọc Đào hoa,12,49,0,Phiến đá hệ bạch kim
+172,Ngọc Mai hoa,12,54,0,Phiến đá hệ kim cương
+173,Ngọc Long tiên,12,59,0,Phiến đá hệ kim cương
+174,Thanh Phong Kiếm,3,36,0,Than lửa vàng
+175,Long Tuyền Kiếm,3,41,0,Than lửa bạch kim
+176,Thất Xích Kiếm,3,46,0,Than lửa bạch kim
+177,Vạn Hoa Kiếm,3,51,0,Than lửa kim cương
+178,Huyền Thiết Kiếm,3,56,0,Than lửa kim cương
+179,Hoàn Tử Kiếm,3,61,0,Than lửa cao thủ
+180,Báo Vĩ Kiếm,3,66,0,Than lửa cao thủ
+181,Nhạn Linh Kiếm,3,71,0,Than lửa đại sư
+182,Quỷ Đầu Đao,4,36,0,Hạt giống thần vàng
+183,Nguyệt Nha Đao,4,41,0,Hạt giống thần bạch kim
+184,Phá Phong Đao,4,46,0,Hạt giống thần bạch kim
+185,Vạn Linh Đao,4,51,0,Hạt giống thần kim cương
+186,Cổn Châu Đao,4,56,0,Hạt giống thần kim cương
+187,Đại Phong Đao,4,61,0,Hạt giống thần cao thủ
+188,Điểm Cang Đao,4,66,0,Hạt giống thần cao thủ
+189,Hỏa Diệm Đao,4,71,0,Hạt giống thần đại sư
+190,Kim Qua Bút,5,36,0,Khăn lụa vàng
+191,Đào Hoa Bút,5,41,0,Khăn lụa bạch kim
+192,Tâm Ý Bút,5,46,0,Khăn lụa bạch kim
+193,Độc Cơ Bút,5,51,0,Khăn lụa kim cương
+194,Bạo Vũ Bút,5,56,0,Khăn lụa kim cương
+195,Tề Mi Bút,5,61,0,Khăn lụa cao thủ
+196,Hỗn Thiết Bút,5,66,0,Khăn lụa cao thủ
+197,Thu Vũ Bút,5,71,0,Khăn lụa đại sư
+198,Tú Cốt Búa,6,36,0,Nước thần vàng
+199,Toán Đầu Búa,6,41,0,Nước thần bạch kim
+200,Bát Lăng Búa,6,46,0,Nước thần bạch kim
+201,Ngũ Tinh Búa,6,51,0,Nước thần kim cương
+202,Tích Lịch Búa,6,56,0,Nước thần kim cương
+203,Lượng Ngân Búa,6,61,0,Nước thần cao thủ
+204,Liệt Tâm Búa,6,66,0,Nước thần cao thủ
+205,Nghiệt Long Búa,6,71,0,Nước thần đại sư
+206,Kim Tiền Cung,7,36,0,Nam châm vàng
+207,Yến Tử Cung,7,41,0,Nam châm bạch kim
+208,Phi Hoàng Cung,7,46,0,Nam châm bạch kim
+209,Liễu Diệp Cung,7,51,0,Nam châm kim cương
+210,Lượng Ngân Cung,7,56,0,Nam châm kim cương
+211,Hồ Điệp Cung,7,61,0,Nam châm cao thủ
+212,Nhạn Vĩ Cung,7,66,0,Nam châm cao thủ
+213,Phá Thiên Cung ,7,71,0,Nam châm đại sư
+214,Mộ khúc kiếm_thuê,3,21,0,Than lửa bạc
+215,Lưu Chỉ Kiếm_thuê,3,26,0,Than lửa bạc
+216,Khổng Tú Kiếm_thuê,3,31,0,Than lửa vàng
+217,Thanh Phong Kiếm_thuê,3,36,0,Than lửa vàng
+218,Long Tuyền Kiếm_thuê,3,41,0,Than lửa bạch kim
+219,Thất Xích Kiếm_thuê,3,46,0,Than lửa bạch kim
+220,Vạn Hoa Kiếm_thuê,3,51,0,Than lửa kim cương
+221,Huyền Thiết Kiếm_thuê,3,56,0,Than lửa kim cương
+222,Hoàn Tử Kiếm_thuê,3,61,0,Than lửa cao thủ
+223,Báo Vĩ Kiếm_thuê,3,66,0,Than lửa cao thủ
+224,Đà đao_thuê,4,21,0,Hạt giống thần bạc
+225,Tuệ Đao_thuê,4,26,0,Hạt giống thần bạc
+226,Khổng Trác Đao_thuê,4,31,0,Hạt giống thần vàng
+227,Quỷ Đầu Đao_thuê,4,36,0,Hạt giống thần vàng
+228,Nguyệt Nha Đao_thuê,4,41,0,Hạt giống thần bạch kim
+229,Phá Phong Đao_thuê,4,46,0,Hạt giống thần bạch kim
+230,Vạn Linh Đao_thuê,4,51,0,Hạt giống thần kim cương
+231,Cổn Châu Đao_thuê,4,56,0,Hạt giống thần kim cương
+232,Đại Phong Đao_thuê,4,61,0,Hạt giống thần cao thủ
+233,Điểm Cang Đao_thuê,4,66,0,Hạt giống thần cao thủ
+234,Cơ duyên bút_thuê,5,21,0,Khăn lụa bạc
+235,Mộ Danh Bút_thuê,5,26,0,Khăn lụa bạc
+236,Bãn Nhãn Bút_thuê,5,31,0,Khăn lụa vàng
+237,Kim Qua Bút_thuê,5,36,0,Khăn lụa vàng
+238,Đào Hoa Bút_thuê,5,41,0,Khăn lụa bạch kim
+239,Tâm Ý Bút_thuê,5,46,0,Khăn lụa bạch kim
+240,Độc Cơ Bút_thuê,5,51,0,Khăn lụa kim cương
+241,Bạo Vũ Bút_thuê,5,56,0,Khăn lụa kim cương
+242,Tề Mi Bút_thuê,5,61,0,Khăn lụa cao thủ
+243,Hỗn Thiết Bút_thuê,5,66,0,Khăn lụa cao thủ
+244,Búa thủ ngưu_thuê,6,21,0,Nước thần bạc
+245,Búa Mã Diện_thuê,6,26,0,Nước thần bạc
+246,Búa Địa Tinh_thuê,6,31,0,Nước thần vàng
+247,Tú Cốt Búa_thuê,6,36,0,Nước thần vàng
+248,Toán Đầu Búa_thuê,6,41,0,Nước thần bạch kim
+249,Bát Lăng Búa_thuê,6,46,0,Nước thần bạch kim
+250,Ngũ Tinh Búa_thuê,6,51,0,Nước thần kim cương
+251,Tích Lịch Búa_thuê,6,56,0,Nước thần kim cương
+252,Lượng Ngân Búa_thuê,6,61,0,Nước thần cao thủ
+253,Liệt Tâm Búa_thuê,6,66,0,Nước thần cao thủ
+254,Bán nguyệt cung_thuê,7,21,0,Nam châm bạc
+255,Kim Loan Cung_thuê,7,26,0,Nam châm bạc
+256,Lĩnh Nam Cung_thuê,7,31,0,Nam châm vàng
+257,Kim Tiền Cung_thuê,7,36,0,Nam châm vàng
+258,Yến Tử Cung_thuê,7,41,0,Nam châm bạch kim
+259,Phi Hoàng Cung_thuê,7,46,0,Nam châm bạch kim
+260,Liễu Diệp Cung_thuê,7,51,0,Nam châm kim cương
+261,Lượng Ngân Cung_thuê,7,56,0,Nam châm kim cương
+262,Hồ Điệp Cung_thuê,7,61,0,Nam châm cao thủ
+263,Nhạn Vĩ Cung_thuê,7,66,0,Nam châm cao thủ
+267,Áo dài,0,1,2,Khăn quàng sơ cấp
+264,Áo tiên nữ,0,1,2,Khăn quàng sơ cấp
+265,Áo Lạc long quân,0,1,1,Khăn quàng sơ cấp
+266,Áo thầy đồ,0,1,1,Khăn quàng sơ cấp
+268,Áo Thanh Tuyệt (nữ),0,20,2,Khăn quàng bạc
+269,Áo Thanh Tuyệt (nam),0,20,1,Khăn quàng bạc
+270,Áo Thạch Lựu (nữ),0,25,2,Khăn quàng bạc
+271,Áo Thạch Lựu (nam),0,25,1,Khăn quàng bạc
+272,Áo Dật Hiệp (nữ),0,30,2,Khăn quàng vàng
+273,Áo Dật Hiệp (nam),0,30,1,Khăn quàng vàng
+274,Áo Linh Xà (nữ),0,35,2,Khăn quàng vàng
+275,Áo Linh Xà (nam),0,35,1,Khăn quàng vàng
+276,Áo Vô sắc (nữ),0,40,2,Khăn quàng bạch kim
+277,Áo Vô sắc (nam),0,40,1,Khăn quàng bạch kim
+278,Áo Tâm ma (nữ),0,45,2,Khăn quàng bạch kim
+279,Áo Tâm ma (nam),0,45,1,Khăn quàng bạch kim
+280,Áo  Hắc báo (nữ),0,50,2,Khăn quàng kim cương
+281,Áo Hắc báo (nam),0,50,1,Khăn quàng kim cương
+282,Áo Băng tinh (nữ),0,55,2,Khăn quàng kim cương
+283,Áo Băng tinh (nam),0,55,1,Khăn quàng kim cương
+284,Áo Thất bảo (nữ),0,60,2,Khăn quàng cao thủ
+285,Áo Thất bảo (nam),0,60,1,Khăn quàng cao thủ
+286,Áo Liên vân (nữ),0,65,2,Khăn quàng cao thủ
+287,Áo Liên vân (nam),0,65,1,Khăn quàng cao thủ
+288,Áo Ngân tơ (nữ),0,70,2,Khăn quàng đại sư
+289,Áo Ngân tơ (nam),0,70,1,Khăn quàng đại sư
+290,Áo Vô cực (nữ),0,75,2,Khăn quàng đại sư
+291,Áo Vô cực (nam),0,75,1,Khăn quàng đại sư
+292,Quần Thanh tuyệt (nữ),1,20,2,Đai bạc
+293,Quần Thanh tuyệt (nam),1,20,1,Đai bạc
+294,Quần Thạch lựu (nữ),1,25,2,Đai bạc
+295,Quần Thạch lựu (nam),1,25,1,Đai bạc
+296,Quần Dật Hiệp (nữ),1,30,2,Đai vàng
+297,Quần Dật Hiệp (nam),1,30,1,Đai vàng
+298,Quần Linh xà (nữ),1,35,2,Đai vàng
+299,Quần Linh xà (nam),1,35,1,Đai vàng
+300,Quần Vô sắc (nữ),1,40,2,Đai bạch kim
+301,Quần Vô sắc (nam),1,40,1,Đai bạch kim
+302,Quần Tâm ma (nữ),1,45,2,Đai bạch kim
+303,Quần Tâm ma (nam),1,45,1,Đai bạch kim
+304,Quần Hắc báo (nữ),1,50,2,Đai kim cương
+305,Quần Hắc báo (nam),1,50,1,Đai kim cương
+306,Quần Băng tinh (nữ),1,55,2,Đai kim cương
+307,Quần Băng tinh (nam),1,55,1,Đai kim cương
+308,Quần Thất bảo (nữ),1,60,2,Đai cao thủ
+309,Quần Thất bảo (nam),1,60,1,Đai cao thủ
+310,Quần Liên vân (nữ),1,65,2,Đai cao thủ
+311,Quần Liên vân (nam),1,65,1,Đai cao thủ
+312,Quần Ngân tơ (nữ),1,70,2,Đai đại sư
+313,Quần Ngân tơ (nam),1,70,1,Đai đại sư
+314,Quần Vô cưc (nữ),1,75,2,Đai đại sư
+315,Quần Vô cưc (nam),1,75,1,Đai đại sư
+316,Nón Thanh tuyệt (nữ),2,20,2,Băng đô bạc
+317,Nón Thanh tuyệt (nam),2,20,1,Băng đô bạc
+318,Nón Thạch lựu (nữ),2,25,2,Băng đô bạc
+319,Nón Thạch lựu (nam),2,25,1,Băng đô bạc
+320,Nón Dật hiệp (nữ),2,30,2,Băng đô vàng
+321,Nón Dật hiệp (nam),2,30,1,Băng đô vàng
+322,Nón Linh xà (nữ),2,35,2,Băng đô vàng
+323,Nón Linh xà (nam),2,35,1,Băng đô vàng
+324,Nón vô sắc (nữ),2,40,2,Băng đô bạch kim
+325,Nón vô sắc (nam),2,40,1,Băng đô bạch kim
+326,Nón Tâm ma (nữ),2,45,2,Băng đô bạch kim
+327,Nón Tâm ma (nam),2,45,1,Băng đô bạch kim
+328,Nón Hắc báo (nữ),2,50,2,Băng đô kim cương
+329,Nón Hắc báo (nam),2,50,1,Băng đô kim cương
+330,Nón Băng tinh (nữ),2,55,2,Băng đô kim cương
+331,Nón Băng tinh (nam),2,55,1,Băng đô kim cương
+332,Nón Thất bảo (nữ),2,60,2,Băng đô cao thủ
+333,Nón Thất bảo (nam),2,60,1,Băng đô cao thủ
+334,Nón Liên vân (nữ),2,65,2,Băng đô cao thủ
+335,Nón Liên vân (nam),2,65,1,Băng đô cao thủ
+336,Nón Ngân tơ (nữ),2,70,2,Băng đô đại sư
+337,Nón Ngân tơ (nam),2,70,1,Băng đô đại sư
+338,Nón Vô cực (nữ),2,75,2,Băng đô đại sư
+339,Nón Vô cực (nam),2,75,1,Băng đô đại sư
+352,Găng Thanh Tuyệt,11,20,0,Găng đấm bạc
+357,Găng Tâm ma,11,45,0,Găng đấm bạch kim
+356,Găng Vô sắc,11,40,0,Găng đấm bạch kim
+355,Găng Linh xà,11,35,0,Găng đấm vàng
+354,Găng Dật Hiệp,11,30,0,Găng đấm vàng
+353,Găng Thạch lựu,11,25,0,Găng đấm bạc
+358,Găng Hắc báo,11,50,0,Găng đấm kim cương
+359,Găng Băng tinh,11,55,0,Găng đấm kim cương
+360,Găng Thất bảo,11,60,0,Găng đấm cao thủ
+361,Găng Liên vân,11,65,0,Găng đấm cao thủ
+362,Găng Ngân tơ,11,70,0,Găng đấm đại sư
+363,Găng Vô cực,11,75,0,Găng đấm đại sư
+340,Giày Thanh Tuyệt,10,20,0,Lông vũ tốc độ bạc
+341,Giày Thạch lựu,10,25,0,Lông vũ tốc độ bạc
+342,Giày Dật Hiệp,10,30,0,Lông vũ tốc độ vàng
+343,Giày Linh xà,10,35,0,Lông vũ tốc độ vàng
+344,Giày Vô sắc,10,40,0,Lông vũ tốc độ bạch kim
+345,Giày Tâm ma,10,45,0,Lông vũ tốc độ bạch kim
+346,Giày Hắc báo,10,50,0,Lông vũ tốc độ kim cương
+347,Giày Băng tinh,10,55,0,Lông vũ tốc độ kim cương
+348,Giày Thất bảo,10,60,0,Lông vũ tốc độ cao thủ
+349,Giày Liên vân,10,65,0,Lông vũ tốc độ cao thủ
+350,Giày Ngân tơ,10,70,0,Lông vũ tốc độ đại sư
+351,Giày Vô cực,10,75,0,Lông vũ tốc độ đại sư
+364,Nhẫn Toàn Thạch,8,20,0,Huy hiệu bạc
+365,Nhẫn Linh xà,8,25,0,Huy hiệu bạc
+366,Nhẫn Ngọc châu,8,30,0,Huy hiệu vàng
+367,Nhẫn Ngân châu,8,35,0,Huy hiệu vàng
+368,Nhẫn San hô,8,40,0,Huy hiệu bạch kim
+369,Nhẫn Ngũ sắc,8,45,0,Huy hiệu bạch kim
+370,Nhẫn Huyền tê,8,50,0,Huy hiệu kim cương
+371,Nhẫn Khổng tượng,8,55,0,Huy hiệu kim cương
+372,Nhẫn Âm dương,8,60,0,Huy hiệu cao thủ
+373,Nhẫn Nhật nguyệt,8,65,0,Huy hiệu cao thủ
+374,Nhẫn Song phụng,8,70,0,Huy hiệu đại sư
+375,Nhẫn Song long,8,75,0,Huy hiệu đại sư
+376,Dây chuyền Toàn Thạch,9,20,0,Vòng cổ bạc
+377,Dây chuyền Linh xà,9,25,0,Vòng cổ bạc
+378,Dây chuyền Ngọc châu,9,30,0,Vòng cổ vàng
+379,Dây chuyền Ngân châu,9,35,0,Vòng cổ vàng
+380,Dây chuyền San hô,9,40,0,Vòng cổ bạch kim
+381,Dây chuyền Ngũ sắc,9,45,0,Vòng cổ bạch kim
+382,Dây chuyền Huyền tê,9,50,0,Vòng cổ kim cương
+383,Dây chuyền Khổng tượng,9,55,0,Vòng cổ kim cương
+384,Dây chuyền Âm dương,9,60,0,Vòng cổ cao thủ
+385,Dây chuyền Nhật nguyệt,9,65,0,Vòng cổ cao thủ
+386,Dây chuyền Song phụng,9,70,0,Vòng cổ đại sư
+387,Dây chuyền Song long,9,75,0,Vòng cổ đại sư
+388,Ngọc Toàn Thạch,12,20,0,Phiến đá hệ bạc
+389,Ngọc Linh xà,12,25,0,Phiến đá hệ bạc
+390,Ngọc Ngọc châu,12,30,0,Phiến đá hệ vàng
+391,Ngọc Ngân châu,12,35,0,Phiến đá hệ vàng
+392,Ngọc San hô,12,40,0,Phiến đá hệ bạch kim
+393,Ngọc Ngũ sắc,12,45,0,Phiến đá hệ bạch kim
+394,Ngọc Huyền tê,12,50,0,Phiến đá hệ kim cương
+395,Ngọc Khổng tượng,12,55,0,Phiến đá hệ kim cương
+396,Ngọc Âm dương,12,60,0,Phiến đá hệ cao thủ
+397,Ngọc Nhật nguyệt,12,65,0,Phiến đá hệ cao thủ
+398,Ngọc Song phụng,12,70,0,Phiến đá hệ đại sư
+399,Ngọc Song long,12,75,0,Phiến đá hệ đại sư
+413,Trảm mã đao,4,21,0,Hạt giống thần bạc
+414,Điểm cang đao,4,26,0,Hạt giống thần bạc
+415,Lang nha đao,4,31,0,Hạt giống thần vàng
+416,Thập tự đao,4,36,0,Hạt giống thần vàng
+417,Tinh trang đao,4,41,0,Hạt giống thần bạch kim
+418,Đới y đao,4,46,0,Hạt giống thần bạch kim
+419,Quan cán đao,4,51,0,Hạt giống thần kim cương
+420,Toái nguyệt đao,4,56,0,Hạt giống thần kim cương
+421,Thanh phong đao,4,61,0,Hạt giống thần cao thủ
+422,Túc đế đao,4,66,0,Hạt giống thần cao thủ
+423,Bôi trang đao,4,71,0,Hạt giống thần đại sư
+424,Bá vương đao,4,76,0,Hạt giống thần đại sư
+425,Gia cát đao,4,81,0,Hạt giống thần huyền thoại
+400,Khổng tước kiếm,3,21,0,Than lửa bạc
+401,Phù du kiếm,3,26,0,Than lửa bạc
+402,Thiêu hoả kiếm,3,31,0,Than lửa vàng
+403,Bàn hoa kiếm,3,36,0,Than lửa vàng
+404,Hồ vĩ kiếm,3,41,0,Than lửa bạch kim
+405,Giác hải kiếm,3,46,0,Than lửa bạch kim
+406,Kim cô kiếm,3,51,0,Than lửa kim cương
+407,Tấn thiết kiếm,3,56,0,Than lửa kim cương
+408,Hắc bạch kiếm,3,61,0,Than lửa cao thủ
+409,Tuyết hoa kiếm,3,66,0,Than lửa cao thủ
+411,Phù dung kiếm,3,76,0,Than lửa đại sư
+412,Phá giáp kiếm,3,81,0,Than lửa huyền thoại
+410,Uyên ương kiếm,3,71,0,Than lửa đại sư
+439,Thôn nhật búa,6,21,0,Nước thần bạc
+440,Bán diện búa,6,26,0,Nước thần bạc
+441,Ngân liêm búa,6,31,0,Nước thần vàng
+442,Tim đồng búa,6,36,0,Nước thần vàng
+443,Hoàng bố búa,6,41,0,Nước thần bạch kim
+444,Hoàng đồng búa,6,46,0,Nước thần bạch kim
+445,Càn khôn búa,6,51,0,Nước thần kim cương
+446,Thẩm lộ búa,6,56,0,Nước thần kim cương
+447,Song diện búa,6,61,0,Nước thần cao thủ
+448,Tiêu diêu búa,6,66,0,Nước thần cao thủ
+449,Bố nhung búa,6,71,0,Nước thần đại sư
+450,Phật ấn búa,6,76,0,Nước thần đại sư
+451,Viên đỉnh búa,6,81,0,Nước thần huyền thoại
+426,Cân quản bút,5,21,0,Khăn lụa bạc
+427,Phi yến bút,5,26,0,Khăn lụa bạc
+428,Lộ thiên bút,5,31,0,Khăn lụa vàng
+429,Thiết khôi bút,5,36,0,Khăn lụa vàng
+430,Nhạn vũ bút,5,41,0,Khăn lụa bạch kim
+431,Ngân hoàn bút,5,46,0,Khăn lụa bạch kim
+432,Xích đồn bút,5,51,0,Khăn lụa kim cương
+433,Tứ giác bút,5,56,0,Khăn lụa kim cương
+434,Thanh văn bút,5,61,0,Khăn lụa cao thủ
+435,Khôn lộc bút,5,66,0,Khăn lụa cao thủ
+436,Huyền sa bút,5,71,0,Khăn lụa đại sư
+437,Bạch trực bút,5,76,0,Khăn lụa đại sư
+438,Y tơ bút,5,81,0,Khăn lụa huyền thoại
+452,Kê vĩ cung,7,21,0,Nam châm bạc
+453,Thanh phụng cung,7,26,0,Nam châm bạc
+454,Hồng anh cung,7,31,0,Nam châm vàng
+455,Lâm liên cung,7,36,0,Nam châm vàng
+456,Càn khảm cung,7,41,0,Nam châm bạch kim
+457,Thanh sát cung,7,46,0,Nam châm bạch kim
+458,Lang tà cung,7,51,0,Nam châm kim cương
+459,Lưu ly cung,7,56,0,Nam châm kim cương
+460,Cang khôi cung,7,61,0,Nam châm cao thủ
+461,Kim tơ cung,7,66,0,Nam châm cao thủ
+462,Thanh anh cung,7,71,0,Nam châm đại sư
+463,Tử cốt cung,7,76,0,Nam châm đại sư
+464,Anh vũ cung,7,81,0,Nam châm huyền thoại
+467,Phi phong bào(nữ),0,64,2,Khăn quàng cao thủ
+468,Phi phong bào(nam),0,64,1,Khăn quàng cao thủ
+469,Tử quang bào(nữ),0,69,2,Khăn quàng cao thủ
+470,Tử quang bào(nam),0,69,1,Khăn quàng cao thủ
+471,Đại hùng bào(nữ),0,74,2,Khăn quàng đại sư
+472,Đại hùng bào(nữ),0,74,1,Khăn quàng đại sư
+473,Phi yến bào (nam),0,79,2,Khăn quàng đại sư
+474,Phi yến bào (nam),0,79,1,Khăn quàng đại sư
+475,Quần phi long(nữ),1,64,2,Đai cao thủ
+476,Quần phi long(nam),1,64,1,Đai cao thủ
+477,Quần Tử quang(nữ),1,69,2,Đai cao thủ
+478,Quần Tử quang(nam),1,69,1,Đai cao thủ
+479,Quần Đại hùng(nữ),1,74,2,Đai đại sư
+480,Quần Đại hùng(nam),1,74,1,Đai đại sư
+481,Quần Phi yến(nữ),1,79,2,Đai đại sư
+482,Quần Phi yến(nam),1,79,1,Đai đại sư
+483,Phi long mão(nữ),2,64,2,Băng đô cao thủ
+484,Phi long mão(nam),2,64,1,Băng đô cao thủ
+485,Tử quang mão(nữ),2,69,2,Băng đô cao thủ
+486,Tử quang mão(nam),2,69,1,Băng đô cao thủ
+487,Đại hùng mão(nữ),2,74,2,Băng đô đại sư
+488,Đại hùng mão(nam),2,74,1,Băng đô đại sư
+489,Phi yến mão(nữ),2,79,2,Băng đô đại sư
+490,Phi yến mão(nam),2,79,1,Băng đô đại sư
+491,Giày phi long,10,64,0,Lông vũ tốc độ cao thủ
+492,Giày Tử quang,10,69,0,Lông vũ tốc độ cao thủ
+493,Giày Đại hùng,10,74,0,Lông vũ tốc độ đại sư
+494,Giày phi yến,10,79,0,Lông vũ tốc độ đại sư
+495,Găng phi long,11,64,0,Găng đấm cao thủ
+496,Găng Tử quang,11,69,0,Găng đấm cao thủ
+497,Găng Đại hùng,11,74,0,Găng đấm đại sư
+498,Găng Phi yến,11,79,0,Găng đấm đại sư
+499,Nhẫn Phi long,8,64,0,Huy hiệu cao thủ
+500,Nhẫn Tử quang,8,69,0,Huy hiệu cao thủ
+501,Nhẫn Đại hùng,8,74,0,Huy hiệu đại sư
+502,Nhẫn phi yến,8,79,0,Huy hiệu đại sư
+503,Dây chuyền phi long,9,64,0,Vòng cổ cao thủ
+504,Dây chuyền Tử quang,9,69,0,Vòng cổ cao thủ
+505,Dây chuyền Đại hùng,9,74,0,Vòng cổ đại sư
+506,Dây chuyền phi yến,9,79,0,Vòng cổ đại sư
+507,Áo yếm đào,0,1,2,Khăn quàng sơ cấp
+508,Áo thạch sanh,0,1,1,Khăn quàng sơ cấp
+571,Ngọc đại hùng,12,74,0,Phiến đá hệ đại sư
+572,Ngọc phi yến,12,79,0,Phiến đá hệ đại sư
+569,Ngọc phi long,12,64,0,Phiến đá hệ cao thủ
+570,Ngọc tử quang,12,69,0,Phiến đá hệ cao thủ
+573,Áo Dracula nữ,0,0,2,Khăn quàng sơ cấp
+574,Áo Hằng Nga,0,0,2,Khăn quàng sơ cấp
+575,Áo Dracula nam,0,0,1,Khăn quàng sơ cấp
+576,Áo Chú cuội,0,0,1,Khăn quàng sơ cấp
+577,Đầu bí ngô,1,0,0,Đai sơ cấp
+578,Nón phù thủy,2,0,0,Băng đô sơ cấp
+579,áo noel nữ,0,0,2,Khăn quàng sơ cấp
+580,áo noel nam,0,0,1,Khăn quàng sơ cấp
+581,nón noel,2,0,0,Băng đô sơ cấp
+582,áo dài nữ,0,0,2,Khăn quàng sơ cấp
+583,áo dài nam,0,0,1,Khăn quàng sơ cấp
+584,Phi phong Lăng Vân,19,35,0,Ruy băng vàng
+585,Phi phong Tuyệt Thế,19,40,0,Ruy băng bạch kim
+586,Phi phong Phá Quân,19,45,0,Ruy băng bạch kim
+587,Phi phong Ngạo Tuyết,19,50,0,Ruy băng kim cương
+588,Phi phong Kình Lôi,19,55,0,Ruy băng kim cương
+589,Phi phong Siêu Phàm,19,60,0,Ruy băng cao thủ
+590,Phi phong Xuất Trần,19,65,0,Ruy băng cao thủ
+591,Phi phong Lăng Tuyệt,19,70,0,Ruy băng đại sư
+592,Phi phong Kinh Thế,19,75,0,Ruy băng đại sư
+593,Phi phong Ngự Không,19,80,0,Ruy băng huyền thoại
+594,Phi phong Hỗn Thiên,19,85,0,Ruy băng huyền thoại
+595,Phi phong Tiềm Long,19,90,0,Ruy băng huyền thoại
+596,Phi phong Lăng Vân,19,95,0,Ruy băng huyền thoại
+597,Phi phong Lăng Vân,19,100,0,Ruy băng huyền thoại
+598,Chuyên Chư kiếm,3,76,0,Than lửa đại sư
+599,Vu Điện kiếm,3,81,0,Than lửa huyền thoại
+600,Hàn Khôi đao,4,76,0,Hạt giống thần đại sư
+601,Minh Nguyệt đao,4,81,0,Hạt giống thần huyền thoại
+602,Bạch Hồng bút,5,76,0,Khăn lụa đại sư
+603,Nhiếp Chính bút,5,81,0,Khăn lụa huyền thoại
+604,Tuệ Tinh búa,6,76,0,Nước thần đại sư
+605,Lôi Động búa,6,81,0,Nước thần huyền thoại
+606,Yếu Ly cung,7,76,0,Nam châm đại sư
+607,Thương Ưng cung,7,81,0,Nam châm huyền thoại
+608,Phi phong world cup,19,1,0,Ruy băng sơ cấp
+609,"áo brazin nam,tăng100% băng lan, sét lan, độc lan",0,1,1,Khăn quàng sơ cấp
+610,"áo brazin nữ,tăng100% băng lan, sét lan, độc lan",0,1,2,Khăn quàng sơ cấp
+616,Phi phong lông thú,19,1,0,Ruy băng sơ cấp
+620,"Thời trang băng tuyết(nam)\\ntăng100% băng ,sét ,độc ,lửa lan",0,1,1,Khăn quàng sơ cấp
+621,"Thời trang băng tuyết\\ntăng100% băng ,sét ,độc ,lửa lan",0,1,2,Khăn quàng sơ cấp
+622,"Hồng hài nhi nam \\ntăng 100% băng ,sét ,độc ,lửa lan",0,1,1,Khăn quàng sơ cấp
+623,"Hồng hài nhi nữ \\ntăng 100% băng ,sét ,độc ,lửa lan",0,1,2,Khăn quàng sơ cấp
+624,Đệ tử cấp 1(nam),0,1,1,Khăn quàng sơ cấp
+625,Đệ tử cấp 2(nam),0,1,1,Khăn quàng sơ cấp
+626,Đệ tử cấp 3(nam),0,1,1,Khăn quàng sơ cấp
+627,Đệ tử cấp 1(nữ),0,1,2,Khăn quàng sơ cấp
+628,Đệ tử cấp 2(nữ),0,1,2,Khăn quàng sơ cấp
+629,Đệ tử cấp 3(nữ),0,1,2,Khăn quàng sơ cấp
+639,ô quy bào ( nam),0,80,1,Khăn quàng huyền thoại
+640,Bạch hạc bào (nữ),0,80,2,Khăn quàng huyền thoại
+641,Hoàng long bào (nam),0,85,1,Khăn quàng huyền thoại
+642,Hoả phụng bào (nữ),0,85,2,Khăn quàng huyền thoại
+643,Quần Ô quy (nam),1,80,1,Đai huyền thoại
+644,Quần Bạch hạc (nữ),1,80,2,Đai huyền thoại
+645,Quần Hoàng long (nam),1,85,1,Đai huyền thoại
+646,Quần Hoả phụng (nữ),1,85,2,Đai huyền thoại
+647,ô quy mão (nam),2,80,1,Băng đô huyền thoại
+648,Bạch hạc mão (nữ),2,80,2,Băng đô huyền thoại
+649,Hoàng long mão(nam),2,85,1,Băng đô huyền thoại
+650,Hoả phụng mão (nữ),2,85,2,Băng đô huyền thoại
+651,Nhẫn ô quy,8,80,0,Huy hiệu huyền thoại
+652,Nhẫn Bạch hạc ,8,85,0,Huy hiệu huyền thoại
+653,Nhẫn Hoàng long,8,90,0,Huy hiệu huyền thoại
+654,Nhẫn Hoả phụng,8,95,0,Huy hiệu huyền thoại
+655,Dây chuyền Ô quy,9,80,0,Vòng cổ huyền thoại
+656,Dây chuyền Bạch hạc ,9,85,0,Vòng cổ huyền thoại
+657,Dây chuyền Hoàng long,9,90,0,Vòng cổ huyền thoại
+658,Dây chuyền Hoả phụng,9,95,0,Vòng cổ huyền thoại
+659,Giày Ô quy,10,80,0,Lông vũ tốc độ huyền thoại
+660,Giày Bạch hạc ,10,85,0,Lông vũ tốc độ huyền thoại
+661,Giày Hoàng long,10,90,0,Lông vũ tốc độ huyền thoại
+662,Giày Hoả phụng,10,95,0,Lông vũ tốc độ huyền thoại
+663,Găng Ô quy,11,80,0,Găng đấm huyền thoại
+664,Găng Bạch hạc ,11,85,0,Găng đấm huyền thoại
+665,Găng Hoàng long,11,90,0,Găng đấm huyền thoại
+666,Găng Hoả phụng,11,95,0,Găng đấm huyền thoại
+667,Ngọc Ô quy,12,80,0,Phiến đá hệ huyền thoại
+668,Ngọc Bạch hạc ,12,85,0,Phiến đá hệ huyền thoại
+669,Ngọc Hoàng long,12,90,0,Phiến đá hệ huyền thoại
+670,Ngọc Hoả phụng,12,95,0,Phiến đá hệ huyền thoại
+671,"Freddy\r\nTăng100% băng ,sét ,độc ,lửa lan",0,1,0,Khăn quàng sơ cấp
+672,"Jason\r\nTăng100% băng ,sét ,độc ,lửa lan",0,1,0,Khăn quàng sơ cấp
+673,"Harry potter\r\nTăng100% băng ,sét ,độc ,lửa lan",0,1,0,Khăn quàng sơ cấp
+674,"Chúa tể Voldemort\r\nTăng100% băng ,sét ,độc ,lửa lan",0,1,0,Khăn quàng sơ cấp
+715,Huyền Thiết Kiếm,3,40,0,Than lửa bạch kim
+716,Yển Nguyệt Đao,4,40,0,Hạt giống thần bạch kim
+717,Ngọc Tỷ Bút,5,40,0,Khăn lụa bạch kim
+718,Trấn Hồn Búa,6,40,0,Nước thần bạch kim
+719,Khổng Tước Cung,7,40,0,Nam châm bạch kim
+950,Skin Phúc Thú (hệ Kim),19,0,0,Ruy băng sơ cấp
+723,"Hắc Lang\n- Tăng 50% băng ,sét ,độc ,lửa lan",0,1,1,Khăn quàng sơ cấp
+724,"Thần nữ\n- Tăng 50% băng ,sét ,độc ,lửa lan",0,1,2,Khăn quàng sơ cấp
+725,"Bạch Mi\n- Tăng 50% băng ,sét ,độc ,lửa lan",0,1,1,Khăn quàng sơ cấp
+726,"Thuý Vũ Hồng Sam\n- Tăng 50% băng ,sét ,độc ,lửa lan",0,1,2,Khăn quàng sơ cấp
+736,"Sơn Tinh\r\nTăng 50% băng ,sét ,độc ,lửa lan",0,1,0,Khăn quàng sơ cấp
+737,"Thuỷ Tinh\r\nTăng 50% băng ,sét ,độc ,lửa lan",0,1,0,Khăn quàng sơ cấp
+740,"Tiểu long nữ\r\nTăng 50% băng ,sét ,độc ,lửa lan",0,1,2,Khăn quàng sơ cấp
+741,"Dương Quá\r\nTăng 50% băng ,sét ,độc ,lửa lan",0,1,1,Khăn quàng sơ cấp
+742,Phi phong Khổng Tước,19,1,0,Ruy băng sơ cấp
+743,"Áo Tiên Nữ\r\nTăng 50% băng ,sét ,độc ,lửa lan",0,1,2,Khăn quàng sơ cấp
+744,"Áo Tinh Quân\r\nTăng 50% băng ,sét ,độc ,lửa lan",0,1,1,Khăn quàng sơ cấp
+745,Mặt nạ bí ngô,1,1,0,Đai sơ cấp
+746,Mặt nạ ngạ quỷ,1,1,0,Đai sơ cấp
+747,Mặt nạ ngạ khuyển,1,1,0,Đai sơ cấp
+748,Mặt nạ thi khiển,1,1,0,Đai sơ cấp
+749,Mặt nạ dạ xoa,1,1,0,Đai sơ cấp
+750,Phi Phong Huyền Vũ,19,1,0,Ruy băng sơ cấp
+754,"Áo dài nam \nTăng 100% băng ,sét ,độc ,lửa lan",0,1,1,Khăn quàng sơ cấp
+755,"Áo dài nữ \nTăng 100% băng ,sét ,độc ,lửa lan",0,1,2,Khăn quàng sơ cấp
+791,"Bóng đá nam\r\ntăng 100% băng ,sét ,độc ,lửa lan\r\nrơi thẻ khi giết quái và x2 tl rơi bóng bạc",0,1,1,Khăn quàng sơ cấp
+789,"Bóng đá nữ\r\ntăng 100% băng ,sét ,độc ,lửa lan",0,1,2,Khăn quàng sơ cấp
+788,"Bóng đá nam\r\ntăng 100% băng ,sét ,độc ,lửa lan",0,1,1,Khăn quàng sơ cấp
+787,Đoạt mệnh cung,7,80,0,Nam châm huyền thoại
+786,Bách linh búa,6,80,0,Nước thần huyền thoại
+785,Minh Đạo bút,5,80,0,Khăn lụa huyền thoại
+784,Tử mộc đao,4,80,0,Hạt giống thần huyền thoại
+783,Vô ngân kiếm,3,80,0,Than lửa huyền thoại
+782,Địa sát cung,7,70,0,Nam châm đại sư
+781,Hóa hồn búa,6,70,0,Nước thần đại sư
+780,Định thiên bút,5,70,0,Khăn lụa đại sư
+779,Long phụng đao,4,70,0,Hạt giống thần đại sư
+778,Hiên viên kiếm,3,70,0,Than lửa đại sư
+777,Thí thần cung,7,60,0,Nam châm cao thủ
+776,Ngũ Lôi Búa,6,60,0,Nước thần cao thủ
+775,Dao quang bút,5,60,0,Khăn lụa cao thủ
+774,Xà cốt đao,4,60,0,Hạt giống thần cao thủ
+773,Huyền thiên kiếm,3,60,0,Than lửa cao thủ
+772,Đoạt mệnh cung,7,80,0,Nam châm huyền thoại
+771,Bách linh búa,6,80,0,Nước thần huyền thoại
+770,Minh Đạo bút,5,80,0,Khăn lụa huyền thoại
+769,Tử mộc đao,4,80,0,Hạt giống thần huyền thoại
+768,Vô ngân kiếm,3,80,0,Than lửa huyền thoại
+767,Địa sát cung,7,70,0,Nam châm đại sư
+766,Hóa hồn búa,6,70,0,Nước thần đại sư
+764,Long phụng đao,4,70,0,Hạt giống thần đại sư
+765,Định thiên bút,5,70,0,Khăn lụa đại sư
+763,Hiên viên kiếm,3,70,0,Than lửa đại sư
+761,Ngũ Lôi Búa,6,60,0,Nước thần cao thủ
+762,Thí thần cung,7,60,0,Nam châm cao thủ
+759,Xà cốt đao,4,60,0,Hạt giống thần cao thủ
+760,Dao quang bút,5,60,0,Khăn lụa cao thủ
+758,Huyền thiên kiếm,3,60,0,Than lửa cao thủ
+757,"Áo Âu cơ\r\nTăng 50% băng ,sét ,độc ,lửa lan\r\nCòn 1hp khi bị quái cắn hoặc bị đồ sát",0,1,2,Khăn quàng sơ cấp
+792,"Bóng đá nữ\r\ntăng 100% băng ,sét ,độc ,lửa lan\r\nrơi thẻ khi giết quái và x2 tl rơi bóng bạc",0,1,2,Khăn quàng sơ cấp
+795,Phi Phong bóng đá,19,1,0,Ruy băng sơ cấp
+796,Nguyệt Linh Trượng,5,10,0,Khăn lụa đồng
+797,"Áo Nghê Thường\r\n- Tăng 50% băng ,sét ,độc ,lửa lan\r\n- Quyền năng ma thuật:\r\n. Tỷ lệ xh: 5%\r\n. Gây st 1%-10% hp\r\n- Ám Khí:\r\n. Gây st 1%-5% hp\r\n. Hồi 1%-10%hp",0,1,2,Khăn quàng sơ cấp
+798,"Áo Ngọc Nữ\r\n- Tăng 50% băng ,sét ,độc ,lửa lan\r\n- Quyền năng ma thuật:\r\n. Tỷ lệ xh: 5%\r\n. Gây st 1%-10% hp\r\n- Ám Khí:\r\n. Gây st 1%-5% hp\r\n. Hồi 1%-10%hp",0,1,2,Khăn quàng sơ cấp
+799,"Áo Xích Cước\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Ám Khí:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp",0,1,1,Khăn quàng sơ cấp
+800,"Áo Kim Đồng\r\n- Tăng 50% băng ,sét ,độc ,lửa lan\r\n- Quyền năng ma thuật:\r\n. Tỷ lệ xh: 5%\r\n. Gây st 1%-10% hp\r\n- Ám Khí:\r\n. Gây st 1%-5% hp\r\n. Hồi 1%-10%hp",0,1,1,Khăn quàng sơ cấp
+801,"Áo Lôi Công\n- Tăng 50% băng ,sét ,độc ,lửa lan\n- Quyền năng ma thuật:\n. Tỷ lệ xh: 5%\n. Gây st 1%-10% hp\n- Ám Khí:\n. Gây st 1%-5% hp\n. Hồi 1%-10%hp",0,1,1,Khăn quàng sơ cấp
+805,Bá Thiên Hổ Nam,0,1,0,Khăn quàng sơ cấp
+806,Bá Thiên Hổ Nữ,0,1,0,Khăn quàng sơ cấp
+833,"Miêu mắt xanh-Tăng 100% băng ,sét ,độc ,lửa lan-Kháng 90% sát thương lan-Tỷ lệ xh:15%",0,1,2,Khăn quàng sơ cấp
+834,"Miêu quý tộc-Tăng 100% băng ,sét ,độc ,lửa lan-Kháng 90% sát thương lan-Tỷ lệ xh:15%",0,1,1,Khăn quàng sơ cấp
+837,Mặt nạ thỏ,1,1,0,Đai sơ cấp
+838,Mặt nạ cáo,1,1,0,Đai sơ cấp
+839,"Giáp rồng-Tăng 100% băng ,sét ,độc ,lửa lan-Kháng 90% sát thương lan-Tỷ lệ xh:15%",0,1,0,Khăn quàng sơ cấp
+756,"Áo Lạc long quân\r\nTăng 50% băng ,sét ,độc ,lửa lan\r\nCòn 1hp khi bị quái cắn hoặc bị đồ sát",0,1,1,Khăn quàng sơ cấp
+841,Áo sa tăng nam cấp 1,0,1,0,Khăn quàng sơ cấp
+842,Áo sa tăng nam cấp 2,0,1,0,Khăn quàng sơ cấp
+843,Áo sa tăng nữ cấp 1,0,1,0,Khăn quàng sơ cấp
+844,Áo sa tăng nữ cấp 2,0,1,0,Khăn quàng sơ cấp
+845,Áo bát giới nam cấp 2,0,1,0,Khăn quàng sơ cấp
+846,Áo bát giới nữ cấp 1,0,1,0,Khăn quàng sơ cấp
+847,Áo bát giới nữ cấp 2,0,1,0,Khăn quàng sơ cấp
+872,Mặt nạ ông địa,1,1,0,Đai sơ cấp
+840,Test,0,0,0,Khăn quàng sơ cấp
+888,Áo noel nam 2024\n- Bỏng lạnh trong [10s]- Thời gian hồi: [30s]- Tỷ lệ xh: 5%,0,1,1,Khăn quàng sơ cấp
+889,Áo noel nữ 2024\n- Bỏng lạnh trong [10s]- Thời gian hồi: [30s]- Tỷ lệ xh: 5%,0,1,2,Khăn quàng sơ cấp
+890,Quạt ba tiêu,4,10,0,Hạt giống thần đồng
+891,Gậy như ý,4,10,0,Hạt giống thần đồng
+892,Lưỡng nhận đao,4,10,0,Hạt giống thần đồng
+893,Huyền Long Kiếm,3,86,0,Than lửa huyền thoại
+894,Thanh Long Đao,4,86,0,Hạt giống thần huyền thoại
+895,Thiên Long Bút,5,86,0,Khăn lụa huyền thoại
+896,Kim Long Búa,6,86,0,Nước thần huyền thoại
+897,Phương Thiên Cung,7,86,0,Nam châm huyền thoại
+903,Cải Trang Bát Giới,0,1,0,Khăn quàng sơ cấp
+904,Cải Trang Sa Tăng,0,1,0,Khăn quàng sơ cấp
+951,Skin Gấu Trúc (hệ Mộc),19,0,0,Ruy băng sơ cấp
+952,Skin Tiên Lộc (hệ Thủy),19,0,0,Ruy băng sơ cấp
+953,Skin Xích Dương (hệ Hỏa),19,0,0,Ruy băng sơ cấp
+954,Skin Chiến Lang (hệ Thổ),19,0,0,Ruy băng sơ cấp
+910,Phi phong vô hình,19,0,0,Ruy băng sơ cấp

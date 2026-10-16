@@ -1,5 +1,8 @@
 package real;
 
+import com.kpah.pokemon.CheDoPokemon;
+import com.kpah.pokemon.SatThuongHe;
+
 import data.Database;
 import data.GemItem;
 import io.Message;
@@ -35,7 +38,10 @@ public class BossThanLan extends Boss {
         int dam = this.attack;
         dam -= def;
         dam = dam * (30 + UtilKPAH.random(80)) / 100;
-        if ((this.he + 2) % 5 == actor.he) {
+        if (CheDoPokemon.bat()) {
+            // Che do Pokemon (viec S4): khac he 18 he thay ngu hanh.
+            dam = SatThuongHe.apDung(dam, this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
+        } else if ((this.he + 2) % 5 == actor.he) {
             dam += dam * 5 / 100;
         } else if ((this.he + 3) % 5 == actor.he) {
             dam -= dam * 5 / 100;
@@ -426,7 +432,7 @@ public class BossThanLan extends Boss {
                     Map.createLocationGate(1);
                     this.isDead = false;
                     byte[] he = new byte[]{0, 1, 2, 3, 4};
-                    this.he = he[Map.r.nextInt(5)];
+                    this.he = this.heKhiSinh(he[Map.r.nextInt(5)]);
                     int[] idmap = new int[]{112};
                     int[][] xy = new int[][]{{27, 10}};
                     if (this.idTemplate == 82) {
@@ -501,7 +507,7 @@ public class BossThanLan extends Boss {
         } else {
             if (System.currentTimeMillis() - this.timeChangehe > 600000L) {
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                this.he = he[Map.r.nextInt(5)];
+                this.he = this.heKhiSinh(he[Map.r.nextInt(5)]);
             }
 
             this.updateEffKham();

@@ -70,6 +70,9 @@ public final class Kiem {
         KiemDucLoKham.chay();
         KiemSkinLinhThu.chay();
         KiemPokemon.chay();
+        KiemThuPokemon.chay();
+        KiemPokemonServer.chay();
+        KiemPokemonClient.chay();
         KiemPhienBan.chay();
         KiemGoi26Test.chay();
         KiemGoi3Test.chay();

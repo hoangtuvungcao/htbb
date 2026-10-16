@@ -141,6 +141,11 @@ public class Boss_Dragon : Monster
 
 	public override void paint(MyGraphics g)
 	{
+		// Template da la Pokemon (lenh -91): ve bang PokeBody, bo renderer boss cu.
+		if (paintPokemon(g))
+		{
+			return;
+		}
 		g.drawImage(imgShadow, xBody[11], yBody[11], 3);
 		for (int i = 0; i < xBody.Length - 1; i++)
 		{

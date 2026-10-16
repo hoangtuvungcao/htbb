@@ -111,6 +111,9 @@ class MapXuLyLenh {
                     p.sendMessage(m);
                     p.sendToNearPlayer(m);
                     m.cleanup();
+                    // Che do Pokemon (viec S5): tien hoa neu cap moi du moc. Dat TRUOC goi 3
+                    // ben duoi de goi 3 kem -90 da mang loai moi.
+                    TienHoaPokemon.kiemTienHoaTheoCap(p);
                     if (newlevel > p.lastLV) {
                         p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
                         p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));
@@ -239,6 +242,8 @@ class MapXuLyLenh {
                 p.sendMessage(m);
                 p.sendToNearPlayer(m);
                 m.cleanup();
+                // Che do Pokemon (viec S5): ban sao thu hai cua khoi len cap - xem tren.
+                TienHoaPokemon.kiemTienHoaTheoCap(p);
                 if (newlevel > p.lastLV) {
                     p.basepoint = (short) (p.basepoint + 5 * (newlevel - p.lastLV));
                     p.strength = (short) (p.strength + 1 * (newlevel - p.lastLV));

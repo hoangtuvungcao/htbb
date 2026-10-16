@@ -209,8 +209,90 @@ public class Monster : LiveActor
 		return true;
 	}
 
+	/// <summary>
+	/// Trang thai quai -&gt; dong tac PokeBody. Hang so trang thai o dau file:
+	/// STAND 0, WALK 2 / MOVE_TO_TARGET 6 / GO_TO_XYFIRST 7 -&gt; chay, ATTACK 3 -&gt; danh gan,
+	/// INJURE 4 hoac dang nay len/bi day lui -&gt; trung don, DEAD 1 / DEADFLY 5 -&gt; guc nga.
+	/// </summary>
+	public virtual int pokeDongTac()
+	{
+		switch (state)
+		{
+		case 1:
+		case 5:
+			return PokeDuLieu.GUC_NGA;
+		case 3:
+			return PokeDuLieu.DANH_GAN;
+		case 4:
+			return PokeDuLieu.TRUNG_DON;
+		}
+		if (pokeDangTrungDon())
+		{
+			return PokeDuLieu.TRUNG_DON;
+		}
+		if (state == 2 || state == 6 || state == 7)
+		{
+			return PokeDuLieu.CHAY;
+		}
+		return PokeDuLieu.DUNG;
+	}
+
+	/// <summary>
+	/// Ve quai bang PokeBody neu template co pokeDex (lenh -91). Tra ve false de lop goi
+	/// ve kieu cu. Dung chung cho Monster va cac lop boss con (Boss_*, BossTL, MonsterNew...).
+	/// </summary>
+	public bool paintPokemon(MyGraphics g)
+	{
+		if (!MonsterTemplate.laPokemon(monster_type))
+		{
+			return false;
+		}
+		if (!isPaint() || state == 8 || hp <= 0)
+		{
+			return true;
+		}
+		paintDataEff_Top(g, x, y, false);
+		if (!isFreeze)
+		{
+			if (dynamicEffBottom != null)
+			{
+				for (int i = 0; i < dynamicEffBottom.size(); i++)
+				{
+					((DynamicEffect)dynamicEffBottom.elementAt(i)).paint(g, x, y);
+				}
+			}
+			g.drawImage(Res.imgShadow, x, y, 3);
+			int cao = PokeBody.caoTrenChan(MonsterTemplate.pokeDex[monster_type], MonsterTemplate.pokeShiny[monster_type], MonsterTemplate.pokeTiLe[monster_type]) + 4;
+			if (cao > height)
+			{
+				height = (short)cao;
+			}
+			int dongTac = pokeDongTac();
+			int tick = pokeTickTrongDongTac(dongTac);
+			PokeBody.paint(g, MonsterTemplate.pokeDex[monster_type], MonsterTemplate.pokeShiny[monster_type], x + vangx, y + vangy + dy + z, dir, dongTac, tick, MonsterTemplate.pokeTiLe[monster_type]);
+			for (int j = 0; j < buff.size(); j++)
+			{
+				((CharBuff)buff.elementAt(j)).paint(g);
+			}
+			if (dynamicEffTop != null)
+			{
+				for (int k = 0; k < dynamicEffTop.size(); k++)
+				{
+					((DynamicEffect)dynamicEffTop.elementAt(k)).paint(g, x, y);
+				}
+			}
+		}
+		paintDataEff_Bot(g, x, y, false);
+		paintEffSkill(g);
+		return true;
+	}
+
 	public override void paint(MyGraphics g)
 	{
+		if (paintPokemon(g))
+		{
+			return;
+		}
 		if (!isPaint() || state == 8 || hp <= 0)
 		{
 			return;
@@ -267,6 +349,15 @@ public class Monster : LiveActor
 		if (z != 0)
 		{
 			frame = 3;
+		}
+		if (MonsterTemplate.laPokemon(monster_type))
+		{
+			PokeBody.paintChanDung(g, MonsterTemplate.pokeDex[monster_type], MonsterTemplate.pokeShiny[monster_type], xCorner, yCorner - 8, 24);
+			if (he >= 0 && he < nh.Length)
+			{
+				g.drawRegion(Res.imgNguHanh, nh[he] * 16, 0, 16, 16, 0, xCorner - 15, yCorner + 3, MyGraphics.TOP | MyGraphics.LEFT);
+			}
+			return;
 		}
 		try
 		{

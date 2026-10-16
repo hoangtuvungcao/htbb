@@ -133,7 +133,7 @@ public class BossThuongLuong extends Boss {
                     Map.createLocationGate(0);
                     this.isDead = false;
                     byte[] he = new byte[]{0, 1, 2, 3, 4};
-                    this.he = he[Map.r.nextInt(5)];
+                    this.he = this.heKhiSinh(he[Map.r.nextInt(5)]);
                     int[] idmap = new int[]{111, 2521, 2522, 2523, 2524};
 
                     try {

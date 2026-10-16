@@ -718,7 +718,7 @@ class MapChat {
                                         msg.level = msg.getMonsterTemplate().level;
                                         msg.id = RealController.intance.idGen.getID(1, "new monster");
                                         byte[] he = new byte[]{0, 1, 2, 3, 4};
-                                        msg.he = he[Map.r.nextInt(5)];
+                                        msg.he = msg.heKhiSinh(he[Map.r.nextInt(5)]);
                                         byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
                                         msg.typeAttack = t[Map.r.nextInt(10)];
                                         msg.bornTime = 120000L;
@@ -869,6 +869,8 @@ class MapChat {
                                             long xeppc = LevelDetail.getPCExp(Integer.parseInt(info[2]), Integer.parseInt(info[1]));
                                             p.lvDetail.setExpNew(exp + xeppc);
                                             p.lastLV = (short) p.lvDetail.lv;
+                                            // Che do Pokemon: GM dat cap thi tien hoa theo cap moi luon.
+                                            TienHoaPokemon.kiemTienHoaTheoCap(p);
                                             p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
                                             p.sendToNearPlayer(MessageCreator.createCharInfo(p));
                                             Database.instance

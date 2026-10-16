@@ -750,6 +750,11 @@ public class TeamServer {
             TeamServer.isSuKienGioTo2016 = Byte.parseByte(p.getProperty("sv.isSuKienGioTo2016")) == 1;
             TeamServer.isSuKienNoel2023 = Byte.parseByte(p.getProperty("sv.isSuKienNoel2023")) == 1;
             TeamServer.isSuKienTetduonglich2024 = Byte.parseByte(p.getProperty("sv.isSuKienTetduonglich2024")) == 1;
+            // Che do Pokemon (quyet dinh Q8, docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Khong qua
+            // parseX: thieu dong = TAT (hanh vi KPAH cu), khong nem loi. Moi cho re nhanh doc
+            // qua com.kpah.pokemon.CheDoPokemon.bat(). Doi gia tri phai khoi dong lai.
+            com.kpah.pokemon.CheDoPokemon.dat(com.kpah.pokemon.CheDoPokemon.docGiaTri(p.getProperty("sv.che_do_pokemon")));
+            System.out.println("CHE DO POKEMON -> " + (com.kpah.pokemon.CheDoPokemon.bat() ? "BAT" : "TAT"));
     
     
             
@@ -804,6 +809,17 @@ public class TeamServer {
             // loi chua thay het.
             System.out.println("[KHO] LOI kiem tra cot tob_char.kho_xu/kho_luong/kho_luong_khoa: " + exKho);
             exKho.printStackTrace();
+        }
+        // Che do Pokemon: cot tob_char.dex/shiny + data_monster.dex/shiny/he2. PHAI truoc
+        // Database.startSaveChar() (nap template quai) va truoc khi nhan nguoi choi (saveChar
+        // ghi cot dex). Tat co thi khong dong vao schema. Xem Database.themCotPokemon().
+        if (com.kpah.pokemon.CheDoPokemon.bat()) {
+            try {
+                Database.instance.themCotPokemon();
+            } catch (Exception exPoke) {
+                System.out.println("[POKEMON] LOI kiem tra cot dex/shiny/he2: " + exPoke);
+                exPoke.printStackTrace();
+            }
         }
         // Cung phai chay TRUOC khi nhan nguoi choi: chan nhan giftcode nhieu lan qua nhieu
         // nhan vat cung tai khoan. Xem Database.chuanBiGiftCodeUserId().

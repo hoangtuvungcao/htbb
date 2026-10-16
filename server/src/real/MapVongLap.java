@@ -591,7 +591,7 @@ class MapVongLap {
             bo.isDead = true;
             byte[] he = new byte[]{0, 1, 2, 3, 4};
             bo.id = RealController.intance.idGen.getID(1, "new monster");
-            bo.he = he[Map.r.nextInt(5)];
+            bo.he = bo.heKhiSinh(he[Map.r.nextInt(5)]);
             bo.level = bo.getMonsterTemplate().level;
             Map.bossTime.add(bo);
             Map.timeCheckCallBoss = System.currentTimeMillis() + 14400000L;

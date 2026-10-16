@@ -254,7 +254,7 @@ public class MapChauBau extends Map {
                     m0.region = rg.idRegion;
                     m0.bornTime = System.currentTimeMillis() + 50000L;
                     he = new byte[]{0, 1, 2, 3, 4};
-                    m0.he = he[r.nextInt(he.length)];
+                    m0.he = m0.heKhiSinh(he[r.nextInt(he.length)]);
                     rg.addMonster(m0.id, m0, 0);
                     ++idMonster;
                 }
@@ -265,7 +265,7 @@ public class MapChauBau extends Map {
                 m0.level = m0.getMonsterTemplate().level;
                 m0.id = idMonster;
                 he = new byte[]{0, 1, 2, 3, 4};
-                m0.he = he[r.nextInt(5)];
+                m0.he = m0.heKhiSinh(he[r.nextInt(5)]);
                 byte[] t = new byte[]{1};
                 m0.attack = 100;
                 m0.typeAttack = t[r.nextInt(t.length)];

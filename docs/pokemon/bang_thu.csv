@@ -1,0 +1,63 @@
+loai,id,hang_so_cu,dex,shiny,ten_moi
+pet_item,681,,77,0,Ponyta lửa
+pet_item,682,,78,0,Rapidash lửa
+pet_item,683,,78,1,Rapidash lửa Shiny
+pet_item,684,,163,0,Trứng Hoothoot
+pet_item,685,,147,0,Trứng Dratini
+pet_item,686,,173,0,Trứng Cleffa
+pet_item,687,,41,0,Trứng Zubat
+pet_item,688,,627,0,Trứng Rufflet
+pet_item,689,,163,0,Hoothoot cấp 1
+pet_item,690,,163,0,Hoothoot cấp 2
+pet_item,691,,164,0,Noctowl cấp 3
+pet_item,692,,164,0,Noctowl cấp 4
+pet_item,693,,164,1,Noctowl Shiny cấp 5
+pet_item,694,,147,0,Dratini cấp 1
+pet_item,695,,147,0,Dratini cấp 2
+pet_item,696,,148,0,Dragonair cấp 3
+pet_item,697,,148,0,Dragonair cấp 4
+pet_item,698,,149,0,Dragonite cấp 5
+pet_item,699,,173,0,Cleffa cấp 1
+pet_item,700,,35,0,Clefairy cấp 2
+pet_item,701,,35,0,Clefairy cấp 3
+pet_item,702,,36,0,Clefable cấp 4
+pet_item,703,,36,1,Clefable Shiny cấp 5
+pet_item,704,,41,0,Zubat cấp 1
+pet_item,705,,41,0,Zubat cấp 2
+pet_item,706,,42,0,Golbat cấp 3
+pet_item,707,,42,0,Golbat cấp 4
+pet_item,708,,169,0,Crobat cấp 5
+pet_item,709,,627,0,Rufflet cấp 1
+pet_item,710,,627,0,Rufflet cấp 2
+pet_item,711,,628,0,Braviary cấp 3
+pet_item,712,,628,0,Braviary cấp 4
+pet_item,713,,628,1,Braviary Shiny cấp 5
+pet_item,727,,417,0,Pachirisu
+pet_item,728,,225,0,Delibird
+pet_item,790,,100,1,Voltorb vàng
+pet_item,802,,403,1,Shinx vàng
+pet_item,803,,667,0,Litleo
+pet_item,804,,58,0,Growlithe
+pet_item,832,,585,0,Deerling
+pet_item,873,,399,0,Bidoof
+thu_cuoi,0,BACH_MA,78,0,Rapidash
+thu_cuoi,1,HO,59,0,Arcanine
+thu_cuoi,2,TRAU,128,0,Tauros
+thu_cuoi,3,SOI,262,0,Mightyena
+thu_cuoi,4,HAC,18,0,Pidgeot
+thu_cuoi,5,PHUONG_HOANG,146,0,Moltres
+thu_cuoi,6,HAC_THO,428,1,Lopunny Shiny
+thu_cuoi,7,TUAN_LOC,234,0,Stantler
+thu_cuoi,8,PHUONG_HOANG_BANG,144,0,Articuno
+thu_cuoi,9,PORO,831,0,Wooloo
+thu_cuoi,10,LAN,245,0,Suicune
+thu_cuoi,11,HEO,221,0,Piloswine
+thu_cuoi,12,NGUA_XUONG,897,0,Spectrier
+thu_cuoi,13,RONG_LON,149,0,Dragonite
+thu_cuoi,14,PHUONG_HOANG_7MAU,250,0,Ho-Oh
+thu_cuoi,15,PHUONG_HOANG_MOC,357,0,Tropius
+thu_cuoi,16,PHUONG_HOANG_KIM,227,0,Skarmory
+thu_cuoi,17,PHUONG_HOANG_THO,330,0,Flygon
+thu_cuoi,18,HEO_BANG,473,0,Mamoswine
+thu_cuoi,19,SU_TU,244,0,Entei
+thu_cuoi,20,SU_TU_BANG,896,0,Glastrier

@@ -17,6 +17,15 @@ public class Npc_Server : NPC
 	{
 	}
 
+	/// <summary>
+	/// NPC server/su kien (lenh -50, idImg + 4200): type = ID server, KHONG phai type NPC tinh
+	/// nen khong dung POKE_DEX_THEO_TYPE. Doi idImg -&gt; dex lam o giai doan 4 (muc 5 ke hoach).
+	/// </summary>
+	public override int getPokeDex()
+	{
+		return 0;
+	}
+
 	public override void paint(MyGraphics g)
 	{
 		ImageIcon imgIcon = GameData.getImgIcon((short)(idImg + 4200));

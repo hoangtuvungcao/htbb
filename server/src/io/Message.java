@@ -23,6 +23,15 @@ public class Message {
     public DataInputStream dis = null;
     private byte[] bytes = null;
 
+    /**
+     * Goi gui KEM NGAY SAU goi nay, cung mot hang doi (Session.Sender). Dung cho
+     * che do Pokemon: goi 5/3 (thong tin nhan vat) kem -90 POKE_THAN, goi 26 kem
+     * -91 POKE_QUAI - nho vay khong phai sua hang tram cho goi
+     * createCharInfo/createMainCharInfoMessage. null = khong kem gi (mac dinh, hanh
+     * vi cu). Xem real.TienHoaPokemon.
+     */
+    public Message kemTheo = null;
+
     public Message(int command) {
         this.command = command;
         this.os = new ByteArrayOutputStream();

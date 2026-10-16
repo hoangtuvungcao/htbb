@@ -196,7 +196,7 @@ public class MapLienDau extends Map {
                         m0.level = m0.getMonsterTemplate().level;
                         m0.id = RealController.intance.idGen.getID(1, "new monster");
                         byte[] he = new byte[]{0, 1, 2, 3, 4};
-                        m0.he = he[r.nextInt(5)];
+                        m0.he = m0.heKhiSinh(he[r.nextInt(5)]);
                         byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
                         m0.typeAttack = t[r.nextInt(10)];
                         this.monsters.put(m0.id, m0);
@@ -224,7 +224,7 @@ public class MapLienDau extends Map {
                 Boss bo = new BossDracula(this, (MonsterTemplate) monsterTemplates.get(116), 352, 400, 0);
                 bo.id = RealController.intance.idGen.getID(1, "new monster");
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                bo.he = he[r.nextInt(5)];
+                bo.he = bo.heKhiSinh(he[r.nextInt(5)]);
                 bo.level = bo.getMonsterTemplate().level;
                 bo.randomMap = false;
                 bo.isDead = true;
@@ -2355,7 +2355,7 @@ public class MapLienDau extends Map {
         this.idMonster = (short) (var10003 + 1);
         m.id = var10003;
         byte[] he = new byte[]{0, 1, 2, 3, 4};
-        m.he = he[r.nextInt(5)];
+        m.he = m.heKhiSinh(he[r.nextInt(5)]);
         byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
         m.typeAttack = t[r.nextInt(10)];
         m.bornTime = 120000L;

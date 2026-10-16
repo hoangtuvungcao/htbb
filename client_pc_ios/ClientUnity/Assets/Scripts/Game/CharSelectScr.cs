@@ -63,7 +63,11 @@ public class CharSelectScr : MyScreen
 			{
 				chars[num3].x = (short)(num4 + 20);
 				chars[num3].y = (short)(num2 + 64);
-				chars[num3].paintAvatar(g, chars[num3].x, chars[num3].y);
+				int dexDoan = duDoanDex(chars[num3]);
+				if (dexDoan <= 0 || !PokeBody.paint(g, dexDoan, false, chars[num3].x, chars[num3].y, Char.DOWN, PokeDuLieu.DUNG, Canvas.gameTick, 100))
+				{
+					chars[num3].paintAvatar(g, chars[num3].x, chars[num3].y);
+				}
 			}
 			num3++;
 			num4 += 83;
@@ -84,6 +88,22 @@ public class CharSelectScr : MyScreen
 			}
 		}
 		base.paint(g);
+	}
+
+	/// <summary>
+	/// Du doan Pokemon cua nhan vat o man chon (server chua gui dex o buoc nay - lenh -90 chi
+	/// gui sau khi vao game). Goi danh sach nhan vat (lenh 13) KHONG co class, nen suy class
+	/// tu loai vu khi dang mac: weaponType 3..7 = class 0..4 (bang 6.4: kiem, dao, but, bua, cung).
+	/// Khong mac vu khi thi tra ve -1 (ve paper doll cu). Eevee da chon nhanh van hien Eevee.
+	/// </summary>
+	public static int duDoanDex(MainChar c)
+	{
+		if (!PokeBody.CHE_DO_POKEMON || c == null || c.weaponType < 3 || c.weaponType > 7)
+		{
+			return -1;
+		}
+		int cap = (c.lastLv <= 0) ? 1 : c.lastLv;
+		return LoaiPokemonClient.duDoan(c.weaponType - 3, cap);
 	}
 
 	public override void pointerPress(int dx, int dy)

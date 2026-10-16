@@ -301,59 +301,73 @@ Các `id` dưới đây lấy theo `Map.java:3336-3345` và `MapNapTaiNguyen.jav
 
 ## 7. Thiết kế kỹ thuật PokeBody
 
-### 7.1 Đóng gói sprite (tool A3: `tools/pokemon/dong_goi_sprite.py`)
+### 7.1 Đóng gói sprite (tool A3: `tools/pokemon/DongGoiSprite.java`)
 
-**Đầu vào:** `pmd_raw/<dex>[s]/` (do `tai_sprite_pmd.py` tải về).
+**Đầu vào:** `tools/pokemon/pmd_raw/<khoa>/`, trong đó `<khoa>` là `0004` (bản thường) hoặc
+`0004s` (bản shiny).
 
-**Đầu ra:** `ClientUnity/Assets/Resources/poke/<dex>[s].png` và `<dex>[s].bytes`.
+**Đầu ra:** `ClientUnity/Assets/Resources/poke/`, gồm 3 file cho mỗi khóa:
 
-Ảnh `.png` là atlas chứa 6 động tác × 4 hướng (hàng 0, 2, 4, 6 của PMD). Atlas tối đa 2048 px.
+| File | Nội dung |
+|---|---|
+| `<khoa>_anh.bytes` | PNG atlas |
+| `<khoa>_dl.bytes` | Dữ liệu khung (định dạng bên dưới) |
+| `<khoa>_cd.bytes` | PNG chân dung 40×40 |
 
-File `.bytes` có định dạng như sau. Mọi số đều big-endian, giống `DataInputStream` mà client
-đang dùng.
+Đuôi `.bytes` là bắt buộc để Unity nạp được dưới dạng `TextAsset`, giống
+`Image.createImage(string)`. Thư mục `poke/` **được commit**: `.gitignore` có ngoại lệ
+`!/ClientUnity/Assets/Resources/poke/`, để build client không cần mạng. Ghi công tổng hợp nằm ở
+`ClientUnity/Assets/Resources/poke/GHI_CONG.txt`.
+
+**Atlas:** gồm 6 động tác, xếp dọc theo thứ tự trong bảng 4.3. Mỗi động tác có 4 hàng hướng
+theo thứ tự client DOWN(0), UP(1), LEFT(2), RIGHT(3), lấy từ hàng PMD 0, 4, 6, 2. Mỗi hàng chứa
+`soKhung` khung đặt ngang nhau.
+
+**`<khoa>_dl.bytes`:** big-endian, đọc bằng `DataInputStream` của client.
 
 ```
 u8  phienBan = 1
-u8  soDongTac = 6        // theo thứ tự bảng 4.3
+u8  soDongTac = 6                 // 0 dung, 1 chay, 2 danh_gan, 3 danh_xa, 4 trung_don, 5 guc_nga
 lặp lại soDongTac lần:
   u16 rongKhung, u16 caoKhung
   u8  soKhung
-  u8  thoiLuong[soKhung]     // đơn vị 1/60 s, lấy từ AnimData.xml
-  u16 xAtlas, u16 yAtlas     // góc trái trên của hàng hướng DOWN; UP, LEFT, RIGHT nằm ngay dưới
-  i8  dxChan, i8 dyChan      // điểm đặt chân so với tâm khung (tính từ *-Shadow.png)
+  u8  thoiLuong[soKhung]          // đơn vị 1/60 s (AnimData.xml)
+  u16 yAtlas                      // y của hàng DOWN; hàng hướng d nằm ở yAtlas + d*caoKhung; x bắt đầu từ 0
+  i8  dxChan[4], i8 dyChan[4]     // theo hướng: vị trí điểm chân (tâm bóng ở khung 0) so với TÂM khung
+u8  coDongTacThat[6]              // 1 = có thật, 0 = dùng bản thay thế (ví dụ guc_nga = Sleep)
 ```
 
-Dùng `u16` (không dùng u8 như `DataSkillEff`) nên khung 120×136 và atlas lớn không bị tràn.
+**Cách vẽ ở client:** đặt khung sao cho điểm chân (`tâm khung + dxChan/dyChan`) trùng toạ độ
+`(x, y)` của actor. Đây cũng là điểm chân mà paper doll cũ đang dùng.
 
 ### 7.2 Client (`ClientUnity/Assets/Scripts/Game/`)
 
 - Thêm `PokeBody.cs`:
-  - Tự nạp `Resources/poke/<dex>[s]` và giữ cache.
-  - Có hàm `paint(g, x, y, dir, trangThai, tick)`.
-- `Char.paint` (`Char.cs:1114`): khi `dex > 0` thì gọi `PokeBody.paint` và **bỏ qua** toàn bộ
-  phần vẽ ghép (`getIdPartPaint`, `paintWeapon`, vẽ ngựa). Có thể dùng nhánh
-  `isLoadAnimalOk` (:1298) làm mẫu.
-- `Monster`/`MonsterTemplate.cs`: khi template có `dex > 0` thì vẽ bằng `PokeBody`, không
-  gửi yêu cầu -47 xin ảnh.
+  - Tự nạp `Resources/poke/<khoa>_*` và giữ cache.
+  - Có hàm `paint(g, x, y, dir, trangThai, tick, tiLe%)`.
+  - Nếu nạp lỗi (không tìm thấy file) thì trả về false, để code gọi quay về cách vẽ cũ.
+- `Char.paint`: khi `pokeDex > 0` thì gọi PokeBody và bỏ qua toàn bộ phần vẽ ghép, vũ khí và ngựa.
+- `Monster`: template nào có `pokeDex > 0` (nhận qua lệnh -91) thì vẽ bằng PokeBody theo `tiLe`.
+- NPC tĩnh: bảng client `type → dex` ghi ở `docs/pokemon/bang_npc.csv`.
 - `CreateCharScr.cs`:
-  - 5 ô chọn Pokémon, hiện chân dung và Idle.
-  - Ẩn ô chọn giới tính và kiểu tóc; vẫn gửi `gender = 0`, `headStyle = 0`.
-- Màn chọn nhân vật (`CharSelectScr.cs`) và avatar: dùng chân dung 40×40.
+  - 5 Pokémon khởi đầu, hiện chân dung.
+  - Ẩn ô giới tính và kiểu tóc; gửi `gender = 0`, `headStyle = 0`.
+- Màn chọn nhân vật và avatar dùng chân dung.
 
 ### 7.3 Lệnh mạng mới
 
-**Trước khi chọn số lệnh**, grep toàn bộ `src/` và `ClientUnity/` (cả `MessageHandler.cs`
-lẫn `MapXuLyLenh.processMessage` ở `MapXuLyLenh.java:412`). Chọn số **chưa ai dùng** rồi ghi
-vào bảng này.
+Đã grep `src/` và `ClientUnity/` ngày 2026-10-16: client đang xử lý lệnh từ -76 đến 106, còn
+-90, -91, -92, -93 **chưa ai dùng làm số lệnh**. Có chỗ dùng -90/-91/-92 nhưng đó là **id NPC**, một
+không gian số khác.
 
-| Tên | Hướng | Nội dung | Gửi khi |
-|---|---|---|---|
-| POKE_THAN | S→C | `i16 charId, i16 dex, u8 shiny` | Nhân vật vào tầm nhìn (sau lệnh 5), khi tiến hoá, khi đổi skin |
-| POKE_QUAI | S→C | `u8 n` rồi n × `(u8 idTemplate, i16 dex, u8 shiny, u8 tiLe%)` | Ngay sau lệnh 26 lúc vào game |
-| POKE_TIEN_HOA | S→C | `i16 charId, i16 dexCu, i16 dexMoi` | Để client chạy hiệu ứng sáng trắng |
+| Số | Tên | Hướng | Nội dung | Gửi khi |
+|---|---|---|---|---|
+| -90 | POKE_THAN | S→C | `i16 charId, i16 dex, u8 shiny` | Ngay sau mỗi lần gửi lệnh 5 về một Char (kể cả bot NPC); gửi về chính mình sau lệnh 3; khi tiến hoá |
+| -91 | POKE_QUAI | S→C | `u8 n`, rồi n × `(u8 idTemplate, i16 dex, u8 shiny, u8 tiLe%)` | Ngay sau lệnh 26 |
+| -92 | POKE_TIEN_HOA | S→C | `i16 charId, i16 dexCu, i16 dexMoi` | Khi tiến hoá: gửi cho chính mình và người ở gần, trước lệnh -90 |
+| -93 | POKE_CUOI | S→C | `i16 charId, i16 dexThu (0 = không cưỡi), u8 shiny` | Ngay sau MỖI lệnh -90 (`Message.kemTheo`). Lên/xuống thú gửi lại lệnh 3 + 5 nên tự cập nhật |
 
-Giữ nguyên định dạng các lệnh cũ (5, 3, 15, 26). Không chèn thêm byte vào lệnh cũ, nếu
-không client cũ sẽ đọc lệch dữ liệu.
+Chỉ gửi các lệnh này khi `sv.che_do_pokemon=1` (tên khoá thật trong `server.ini` có tiền tố `sv.` như mọi khoá khác). Giữ nguyên định dạng các lệnh cũ.
 
 **Giới hạn đã biết, không được vượt:**
 
@@ -394,7 +408,7 @@ ALTER TABLE data_monster ADD COLUMN dex   SMALLINT NOT NULL DEFAULT 0,
 
 Ký hiệu: `[ ]` chưa làm, `[x]` xong. Ghi tên người làm sau mỗi dòng khi nhận việc.
 
-### Giai đoạn 0: Nền tảng (đã xong trên nhánh)
+### Giai đoạn 0: Nền tảng
 
 - [x] **G0.1** Tạo nhánh `pokemon/chuyen-doi` ở 3 repo.
 - [x] **G0.2** `com.kpah.pokemon.HePokemon`: 18 hệ và bảng khắc chế.
@@ -409,78 +423,85 @@ Ký hiệu: `[ ]` chưa làm, `[x]` xong. Ghi tên người làm sau mỗi dòng
 
 ### Giai đoạn 1: Nhìn thấy Pokémon trong game (chỉ client và tool)
 
-- [ ] **A3** Viết `dong_goi_sprite.py` theo định dạng 7.1.
+- [x] **A3** Viết `tools/pokemon/DongGoiSprite.java` (Java + ImageIO, máy không có PIL) theo định dạng 7.1.
   - Xong khi: đóng gói đủ 21 loài người chơi, `.bytes` đọc lại khớp `AnimData.xml`.
-- [ ] **C1** Viết `PokeBody.cs` (nạp, cache, vẽ 6 trạng thái × 4 hướng).
-- [ ] **C2** `Char.paint`: rẽ nhánh sang PokeBody khi `dex > 0`. Tạm thời suy `dex` ở client
+- [x] **C1** Viết `PokeBody.cs` (nạp, cache, vẽ 6 trạng thái × 4 hướng).
+- [x] **C2** `Char.paint`: rẽ nhánh sang PokeBody khi `dex > 0`. Tạm thời suy `dex` ở client
   từ `charClass` + cấp, để chưa phải đụng server.
   - Xong khi: vào game thấy mình là Charmander, đi 4 hướng, đứng, đánh, chết đều đúng.
-- [ ] **C3** Màn tạo và chọn nhân vật dùng 5 Pokémon (mục 7.2).
+- [x] **C3** Màn tạo và chọn nhân vật dùng 5 Pokémon (mục 7.2).
 
 ### Giai đoạn 2: Server hiểu Pokémon
 
-- [ ] **S0** Thêm cờ `che_do_pokemon` (Q8) vào `vps/server.ini.tmpl` và
+- [x] **S0** Thêm cờ `che_do_pokemon` (Q8) vào `vps/server.ini.tmpl` và
   `docs/cau-hinh-server-ini.md`, đọc qua một hàm duy nhất.
-- [ ] **S1** Migration `sql/them_cot_pokemon.sql` (mục 8).
-- [ ] **S2** Nạp, lưu, tạo nhân vật có `dex` (bảng 5).
-- [ ] **S3** Thêm field `he2` vào `LiveActor`; gán `he/he2` từ loài.
+- [x] **S1** Migration `sql/them_cot_pokemon.sql` (mục 8).
+- [x] **S2** Nạp, lưu, tạo nhân vật có `dex` (bảng 5).
+- [x] **S3** Thêm field `he2` vào `LiveActor`; gán `he/he2` từ loài.
   - Xong khi: grep mọi chỗ dùng `.he` (pet skin "hợp hệ", item `he`, ngọc) và ghi cách xử lý
     từng chỗ vào bảng ở mục 10.
-- [ ] **S4** Thay khối ngũ hành bằng `HePokemon.heSoTrongGame` ở 2 chỗ.
+- [x] **S4** Thay khối ngũ hành bằng `HePokemon.heSoTrongGame` ở 2 chỗ.
   - Xong khi: có test cho hàm nhận hệ số (tách thành hàm thuần) và đánh thử thấy số đúng.
-- [ ] **S5** Tiến hoá khi lên cấp, kèm lệnh POKE_THAN và POKE_TIEN_HOA.
+- [x] **S5** Tiến hoá khi lên cấp, kèm lệnh POKE_THAN và POKE_TIEN_HOA.
   - Xong khi: lên cấp 16 ở Charmander thì người ở gần thấy đổi thành Charmeleon.
-- [ ] **C4** Client nhận POKE_THAN và POKE_TIEN_HOA, bỏ phần suy `dex` tạm ở C2, làm hiệu
+- [x] **C4** Client nhận POKE_THAN và POKE_TIEN_HOA, bỏ phần suy `dex` tạm ở C2, làm hiệu
   ứng tiến hoá.
 
 ### Giai đoạn 3: Quái, boss, chiêu
 
-- [ ] **Q2** Tool sinh phần UPDATE `data_monster` từ `bang_quai.csv`.
-- [ ] **Q3** Server gửi POKE_QUAI; bỏ random hệ (Q9).
-- [ ] **C5** Client vẽ quái và boss bằng PokeBody (boss phóng to); `vat_the` dùng
+- [x] **Q2** Tool sinh phần UPDATE `data_monster` từ `bang_quai.csv`.
+- [x] **Q3** Server gửi POKE_QUAI; bỏ random hệ (Q9).
+- [x] **C5** Client vẽ quái và boss bằng PokeBody (boss phóng to); `vat_the` dùng
   RawAsset/Object.
   - Xong khi: đi hết các map quái, không còn sprite người hay quái KPAH nào.
-- [ ] **K1** Bảng 5 × 15 chiêu: tên Pokémon, hệ của chiêu, hiệu ứng Particle tương ứng.
+- [x] **K1** Bảng 5 × 15 chiêu: tên Pokémon, hệ của chiêu, hiệu ứng Particle tương ứng.
   Ghi thành `docs/pokemon/bang_chieu.csv`.
-- [ ] **K2** Áp tên chiêu (`Text.java:412`) và hệ của chiêu vào S4.
+- [x] **K2** Áp tên chiêu (`Text.java:412`) và hệ của chiêu vào S4.
 - [ ] **K3** Client: hiệu ứng chiêu dùng RawAsset/Particle.
 
 ### Giai đoạn 4: NPC, vật phẩm, Eevee
 
-- [ ] **N1** Lập `bang_npc.csv` bằng tool, gồm mọi NPC tĩnh (`NPC.cs:9-60`), NPC sự kiện và
+- [x] **N1** Lập `bang_npc.csv` bằng tool, gồm mọi NPC tĩnh (`NPC.cs:9-60`), NPC sự kiện và
   bot. Mỗi NPC gán một Pokémon (Chansey hồi máu, Kecleon bán đồ, Xatu nhiệm vụ…).
-- [ ] **N2** Áp bảng NPC vào server và client.
-- [ ] **I1** Tool đổi tên, icon, mô tả item theo bảng 6.4. Sinh SQL, không sửa tay.
-- [ ] **I2** 8 item đá tiến hoá + menu chọn nhánh Eevee.
+- [x] **N2** Áp bảng NPC vào server và client.
+- [x] **I1** Tool đổi tên, icon, mô tả item theo bảng 6.4. Sinh SQL, không sửa tay.
+- [x] **I2** 8 item đá tiến hoá + menu chọn nhánh Eevee.
 
 ### Giai đoạn 5: Thú cưỡi, pet
 
-- [ ] **T1** Bảng linh thú → Pokémon cưỡi được (`docs/pokemon/bang_thu.csv`).
-- [ ] **T2** Vẽ cưỡi: Pokémon người chơi ngồi trên Pokémon thú. Offset lấy từ `Offsets.png`.
+- [x] **T1** Bảng linh thú → Pokémon cưỡi được (`docs/pokemon/bang_thu.csv`).
+- [x] **T2** Vẽ cưỡi: Pokémon người chơi ngồi trên Pokémon thú. Offset lấy từ `Offsets.png`.
 - [ ] **T3** Pet và thần thú → Pokémon đi theo.
 
 ### Giai đoạn 6: Hoàn thiện
 
-- [ ] **W1** KPAH-Web: đổi thương hiệu, bỏ tên class, thêm Pokédex.
+- [x] **W1** KPAH-Web: đổi thương hiệu, bỏ tên class, thêm Pokédex.
 - [ ] **W2** Đổi tên map (192 instance trong `RealController.initMapKPAH`).
-- [ ] **W3** Trang ghi công: gom mọi `credits.txt` (bắt buộc theo CC BY-NC).
+- [x] **W3** Trang ghi công: gom mọi `credits.txt` (bắt buộc theo CC BY-NC).
 - [ ] **B1** Cân bằng chỉ số theo loài và giai đoạn tiến hoá.
 - [ ] Giải quyết các câu hỏi mở M1–M5.
 
 ---
 
-## 10. Các chỗ dùng `he` cũ cần xử lý (điền ở việc S3)
+## 10. Các chỗ dùng `he` cũ (đã rà ở việc S3)
+
+Nguyên tắc chung:
+- Khi cờ bật, **hệ Pokémon (0..17) nằm ở `hePokemon`/`he2`**.
+- Trường `he` cũ vẫn là ngũ hành 0..4. Client vẽ `nh[he]` có 5 ô, và vài class chỉ có trong jar gửi thẳng `monster.he`.
+- Gửi xuống client thì đổi qua `CheDoPokemon.heGuiClient` (dùng `HePokemon.nguHanhCu`).
 
 | File:dòng | Đang dùng `he` để làm gì | Xử lý |
 |---|---|---|
-| `CharChiSo.java:744-755` | Khắc ngũ hành | Thay bằng HePokemon (S4) |
-| `LiveActor.java:~446` | Khắc ngũ hành (quái → người) | Thay bằng HePokemon (S4) |
-| `MapNapTaiNguyen.java:1187-1265` | Random hệ quái | Bỏ khi bật cờ (Q9) |
-| `SkinLinhThu.TEN_HE` (`SkinLinhThu.java:277`) | Nội tại "hợp hệ" | *(điền)* |
-| `data_item.he` | Hệ của trang bị | *(điền)* |
-| *(grep thêm)* | | |
-
----
+| `CharChiSo.java:747` | Khắc ngũ hành, người → mục tiêu | Cờ bật: `SatThuongHe.apDung` (HePokemon) |
+| `LiveActor.java:452` + `attackDam` của 7 boss (BossSkelonton, BossMoba, BossSkelontonMoba, BossBachXa, BossLinhXa, BossThanLan, data/BossMatQuy) | Khắc ngũ hành, quái → người | Như trên |
+| `CharNapDuLieu.java:52` | `he[charClass]` | Sau đó `TienHoaPokemon.napLoai` ghi đè bằng hệ của loài |
+| `Monster.java:79` | `he = template.he` | Giữ 0..4 (qua `nguHanhCu`); hệ thật nằm ở `hePokemon`/`he2` |
+| ~65 chỗ random hệ khi sinh quái (MapNapTaiNguyen 1187–1569, Map, MapTown, MapLienDau, Region…, Boss*) | Random ngũ hành | `heKhiSinh(...)`: cờ bật thì lấy hệ của template. Vẫn gọi random để chuỗi random giữ nguyên khi cờ tắt |
+| `MapChienTruongMoba`, `BossSkelontonMoba:479/562/713` | Random; `CharChienTruong` trong jar đánh chỉ số theo 0..4 | Giữ nguyên; sát thương vẫn dùng hệ template |
+| `MessageCreator:1734/1938/1999`, `Map.java:15062` | `he` nhân vật gửi trong lệnh 5/3 | `heGuiClient` → 0..4 |
+| `SkinLinhThu` "hợp hệ" | Dựa vào `charClass`, không dựa vào `he` | Không đổi |
+| `data_item.he`, `GemTemplate.he`, ThanKhi | Hệ của trang bị, ngọc | Không đổi; độc lập với hệ loài |
+| Các class chỉ có trong jar: Material, Monster_Clone, MapBoss, PrivateDataMap, RegionMapMoba, RegionNuiChauBau | Random riêng | Không sửa được. Vô hại vì sát thương dùng hệ template |
 
 ## 11. Câu hỏi còn mở (cần chủ dự án quyết)
 
@@ -494,7 +515,35 @@ Ký hiệu: `[ ]` chưa làm, `[x]` xong. Ghi tên người làm sau mỗi dòng
 
 ---
 
-## 12. Lệnh hay dùng
+## 12. Kết quả kiểm thử (2026-10-16)
+
+| Kiểm thử | Kết quả |
+|---|---|
+| `test/` đầy đủ (Linux, JDK 21, `--release 8`) | 65/5267 hỏng. **Đúng y bộ 65 lỗi cũ** (14 nhóm, đã so khớp). Mọi nhóm Pokémon đạt: KiemPokemon, KiemPokemonServer, KiemPokemonClient, KiemThuPokemon |
+| Biên dịch client: `dotnet build` toàn bộ `ClientUnity/Assets/Scripts` với DLL UnityEngine thật | 0 lỗi |
+| Bộ đọc `_dl` C# chạy độc lập (`PokeDuLieu`) trên 178 file sprite thật | Đạt hết: khung nằm trong atlas, điểm chân nằm trong khung |
+| `DongGoiSprite` tự đọc lại và so pixel | 178/178 loài khớp |
+| Migration và SQL dữ liệu trên MariaDB 10.4 nạp `gamedb7_clean.sql` + `db_new_server.sql` | Chạy hết không lỗi: 122 quái có dex, 696 trang bị đổi tên, 8 đá Eevee (id 960–967) |
+| **Đầu–cuối:** game server + login server thật, client giả lập theo giao thức (khoá -40, đăng nhập, tạo, chọn nhân vật, chat GM) | Đăng nhập → -91 (122 template, boss 160%) ngay sau 26. Vào game → -90 dex=4 + -93. `slv 16` → -92 4→5, `slv 36` → -92 5→6. Thoát → DB lưu `dex=6`. Đăng nhập lại → -90 dex=6. Server log không có exception |
+| Cờ `sv.che_do_pokemon=0` | Không gửi gói -90…-93 nào; server chạy như cũ |
+| KPAH-Web: `nuxi typecheck` + `npm run build` (Node 22) | 0 lỗi. API nạp trả 403 khi `KPAH_NAP_BAT=false` |
+
+**Chưa kiểm được:** hình ảnh thật trong Unity (vị trí, kích cỡ, hiệu ứng tiến hoá), vì máy dev không có Unity Editor. Việc đầu tiên khi mở Unity: vào game nhìn bằng mắt các mục C2, C3, C5, T2.
+
+## 13. Việc còn lại sau đợt này
+
+| Việc | Ghi chú |
+|---|---|
+| **K3** hiệu ứng chiêu bằng RawAsset/Particle | Hiệu ứng chiêu vẫn là của KPAH (`Skill_*_Type*.cs`), chỉ đổi tên chiêu. Hệ của từng chiêu đã có trong `bang_chieu.csv` (cột `so_he`), nhưng S4 vẫn dùng hệ 1 của người đánh |
+| **T3** pet và thần thú đi theo dạng Pokémon | `bang_thu.csv` đã có 41 item pet → dex, và SQL đổi tên đã chạy. Client vẫn vẽ pet bằng ảnh cũ: ảnh pet chọn qua `PetTemplate`/`idImg`, cần thêm một lệnh giống -93 |
+| Icon item theo PMD | Mới đổi tên. `xstart` (icon) giữ nguyên; đá Eevee dùng tạm icon 747 |
+| Nguồn phát đá Eevee | Chưa có shop hay giftcode nào phát id 960–967 |
+| NPC sự kiện (`Npc_Server`) | Vẫn dùng hình cũ |
+| `vat_the` (16 dòng) | Giữ hình cũ, chưa dùng RawAsset/Object |
+| **W2** tên map, **B1** cân bằng, **M1–M5** | Chưa làm |
+| Atlas cao hơn 2048 px (5 loài, cao nhất 3008 px: Gyarados) | Máy cũ giới hạn texture 2048 có thể không nạp được. Nếu gặp, tách atlas theo động tác |
+
+## 14. Lệnh hay dùng
 
 ```bash
 # Kiểm thử (Windows): test.bat. Trên Linux:
@@ -503,10 +552,17 @@ Ký hiệu: `[ ]` chưa làm, `[x]` xong. Ghi tên người làm sau mỗi dòng
 python3 -I tools/pokemon/sinh_bang_quai.py      # sinh lại bang_quai.csv (thoát mã 1 nếu sót)
 python3 -I tools/pokemon/tai_sprite_pmd.py      # tải sprite + kiểm kê
 python3 -I tools/pokemon/tai_sprite_pmd.py --chi-kiem
+python3 -I tools/pokemon/sinh_bang_thu.py       # bang_thu.csv + sql/pokemon_doi_ten_thu.sql
+python3 -I tools/pokemon/sinh_sql_vat_pham.py   # sql/pokemon_doi_ten_vat_pham.sql
+python3 -I tools/pokemon/ap_ten_chieu.py        # bang_chieu.csv + tên chiêu vào 3 chỗ (chạy lại an toàn)
+javac -encoding UTF-8 -d build/tools tools/pokemon/DongGoiSprite.java && java -cp build/tools DongGoiSprite
+
+# Thứ tự SQL trên server mới (sau gamedb7_clean.sql + vps/db_new_server.sql):
+#   sql/them_cot_pokemon.sql, sql/pokemon_du_lieu_quai.sql, sql/pokemon_doi_ten_vat_pham.sql,
+#   sql/pokemon_doi_ten_thu.sql, sql/pokemon_vat_pham_eevee.sql
 ```
 
-**Tình trạng bộ test lúc tạo nhánh** (chạy trên Linux, JDK 21, `--release 8`): có 65 kiểm tra
-hỏng ở các nhóm cũ (Sự kiện, Hoá hình Pet, Tinh luyện thần binh…). Chúng không liên quan đến
-chuyển đổi Pokémon. Một số có thể chỉ hỏng trên Linux (đường dẫn, encoding); hãy chạy
-`test.bat` trên Windows để có con số gốc chính xác.
+**65 kiểm tra cũ đang hỏng** (Sự kiện, Hoá hình Pet, Tinh luyện thần binh…) đã có từ trước khi
+tạo nhánh, chạy trên Linux. Một số có thể chỉ hỏng trên Linux (đường dẫn, encoding); hãy chạy
+`test.bat` trên Windows để có con số gốc. Khi thêm việc mới, không được làm tăng con số này.
 Nhóm `com.kpah.pokemon.*` đạt toàn bộ. Khi thêm việc mới, **không được làm tăng** con số 65 này.

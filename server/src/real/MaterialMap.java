@@ -134,7 +134,7 @@ public class MaterialMap extends Map {
                         m0.level = m0.getMonsterTemplate().level;
                         m0.id = RealController.intance.idGen.getID(1, "new monster");
                         byte[] he = new byte[]{0, 1, 2, 3, 4};
-                        m0.he = he[r.nextInt(5)];
+                        m0.he = m0.heKhiSinh(he[r.nextInt(5)]);
                         byte[] t = new byte[11];
                         t[1] = 1;
                         t[3] = 1;

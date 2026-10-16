@@ -1175,6 +1175,9 @@ class MapNapTaiNguyen {
 //        Map.npcVilage.add(bot);
 //        CharManager.instance.put(bot);
 
+        // Che do Pokemon: gan loai cho tung bot NPC trong lang theo chi so (Chansey,
+        // Kecleon, Xatu...) de goi 5 cua bot kem -90. Tat co thi khong lam gi.
+        TienHoaPokemon.ganLoaiBot(Map.npcVilage);
     }
 
     static void loadBoss(int type) {
@@ -1185,7 +1188,7 @@ class MapNapTaiNguyen {
                 bo.isDead = true;
                 bo.id = RealController.intance.idGen.getID(1, "new monster");
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                bo.he = he[Map.r.nextInt(5)];
+                bo.he = bo.heKhiSinh(he[Map.r.nextInt(5)]);
                 bo.level = bo.getMonsterTemplate().level;
                 Map.boss.add(bo);
                 if (Map.event.timeBossAppear[1] > 0L) {
@@ -1196,7 +1199,7 @@ class MapNapTaiNguyen {
                 bo.isDead = true;
                 bo.id = RealController.intance.idGen.getID(1, "new monster");
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                bo.he = he[Map.r.nextInt(5)];
+                bo.he = bo.heKhiSinh(he[Map.r.nextInt(5)]);
                 bo.level = bo.getMonsterTemplate().level;
                 if (Map.event.timeBossAppear[0] > 0L) {
                     bo.bornTime = Map.event.timeBossAppear[0];
@@ -1206,7 +1209,7 @@ class MapNapTaiNguyen {
                 bo = new BossThanLan(null, (MonsterTemplate) Map.monsterTemplates.get(82), 432, 112, 0);
                 bo.isDead = true;
                 bo.id = RealController.intance.idGen.getID(1, "new monster");
-                bo.he = he[Map.r.nextInt(5)];
+                bo.he = bo.heKhiSinh(he[Map.r.nextInt(5)]);
                 bo.level = bo.getMonsterTemplate().level;
                 if (Map.event.timeBossAppear[3] > 0L) {
                     bo.bornTime = Map.event.timeBossAppear[3];
@@ -1216,7 +1219,7 @@ class MapNapTaiNguyen {
                 Boss var7 = new BossThanLan(null, (MonsterTemplate) Map.monsterTemplates.get(39), 432, 112, 0);
                 var7.isDead = true;
                 var7.id = RealController.intance.idGen.getID(1, "new monster");
-                var7.he = he[Map.r.nextInt(5)];
+                var7.he = var7.heKhiSinh(he[Map.r.nextInt(5)]);
                 var7.level = var7.getMonsterTemplate().level;
                 if (Map.event.timeBossAppear[4] > 0L) {
                     var7.bornTime = Map.event.timeBossAppear[4];
@@ -1226,7 +1229,7 @@ class MapNapTaiNguyen {
                 Boss var8 = new BossLinhXa(null, (MonsterTemplate) Map.monsterTemplates.get(91), 432, 112, 0);
                 var8.isDead = true;
                 var8.id = RealController.intance.idGen.getID(1, "new monster");
-                var8.he = he[Map.r.nextInt(5)];
+                var8.he = var8.heKhiSinh(he[Map.r.nextInt(5)]);
                 var8.level = var8.getMonsterTemplate().level;
                 if (Map.event.timeBossAppear[2] > 0L) {
                     var8.bornTime = Map.event.timeBossAppear[2];
@@ -1238,7 +1241,7 @@ class MapNapTaiNguyen {
                     Boss var9 = new BossBachXa(null, (MonsterTemplate) Map.monsterTemplates.get(92), 432, 112, 0);
                     var9.isDead = true;
                     var9.id = RealController.intance.idGen.getID(1, "new monster");
-                    var9.he = he[Map.r.nextInt(5)];
+                    var9.he = var9.heKhiSinh(he[Map.r.nextInt(5)]);
                     var9.level = var9.getMonsterTemplate().level;
                     if (Map.event.timeBossAppear[2] > 0L) {
                         var9.bornTime = Map.event.timeBossAppear[2];
@@ -1251,7 +1254,7 @@ class MapNapTaiNguyen {
                 Boss var10 = new BossSkelonton(null, (MonsterTemplate) Map.monsterTemplates.get(113), 432, 112, 0);
                 var10.isDead = true;
                 var10.id = RealController.intance.idGen.getID(1, "new monster");
-                var10.he = he[Map.r.nextInt(5)];
+                var10.he = var10.heKhiSinh(he[Map.r.nextInt(5)]);
                 var10.level = var10.getMonsterTemplate().level;
                 if (Map.event.timeBossAppear[5] > 0L) {
                     var10.bornTime = Map.event.timeBossAppear[5];
@@ -1262,7 +1265,7 @@ class MapNapTaiNguyen {
                 Boss var11 = new BossSkelonton(null, (MonsterTemplate) Map.monsterTemplates.get(115), 432, 112, 0);
                 var11.isDead = true;
                 var11.id = RealController.intance.idGen.getID(1, "new monster");
-                var11.he = he[Map.r.nextInt(5)];
+                var11.he = var11.heKhiSinh(he[Map.r.nextInt(5)]);
                 var11.level = var11.getMonsterTemplate().level;
                 if (Map.event.timeBossAppear[6] > 0L) {
                     var11.bornTime = Map.event.timeBossAppear[6];
@@ -1277,7 +1280,7 @@ class MapNapTaiNguyen {
                     final Boss boTrungThu = new BossTrungThu(null, (MonsterTemplate) Map.monsterTemplates.get(48), 432, 112, country);
                     boTrungThu.isDead = true;
                     boTrungThu.id = RealController.intance.idGen.getID(1, "new monster");
-                    boTrungThu.he = new byte[]{0, 1, 2, 3, 4}[Map.r.nextInt(5)];
+                    boTrungThu.he = boTrungThu.heKhiSinh(new byte[]{0, 1, 2, 3, 4}[Map.r.nextInt(5)]);
                     boTrungThu.level = boTrungThu.getMonsterTemplate().level;
                     Map.boss.add(boTrungThu);
                 }
@@ -1389,7 +1392,7 @@ class MapNapTaiNguyen {
                                 m0.level = m0.getMonsterTemplate().level;
                                 m0.id = idMonster;
                                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                                m0.he = he[Map.r.nextInt(5)];
+                                m0.he = m0.heKhiSinh(he[Map.r.nextInt(5)]);
                                 byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
                                 m0.typeAttack = t[Map.r.nextInt(10)];
                                 m0.inCountry = (byte) k;
@@ -1403,7 +1406,7 @@ class MapNapTaiNguyen {
                                     m0.level = m0.getMonsterTemplate().level;
                                     m0.id = idMonster;
                                     byte[] he = new byte[]{0, 1, 2, 3, 4};
-                                    m0.he = he[Map.r.nextInt(5)];
+                                    m0.he = m0.heKhiSinh(he[Map.r.nextInt(5)]);
                                     byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
                                     m0.typeAttack = t[Map.r.nextInt(10)];
                                     m0.magic_physic = (byte) magic_physic;
@@ -1441,7 +1444,7 @@ class MapNapTaiNguyen {
                 BossVanTienTran bo = new BossVanTienTran(map, (MonsterTemplate) MapVanTienTran.monsterTemplates.get(116), xs * 16, ys * 16, 0);
                 bo.id = id++;
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                bo.he = he[Map.r.nextInt(5)];
+                bo.he = bo.heKhiSinh(he[Map.r.nextInt(5)]);
                 bo.level = 1;
                 ((Hashtable) map.monsters.get(kx)).put(bo.id, bo);
             }
@@ -1453,7 +1456,7 @@ class MapNapTaiNguyen {
                 m0.level = m0.getMonsterTemplate().level;
                 m0.id = idMonster;
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                m0.he = he[Map.r.nextInt(5)];
+                m0.he = m0.heKhiSinh(he[Map.r.nextInt(5)]);
                 byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
                 m0.typeAttack = t[Map.r.nextInt(10)];
                 m0.magic_physic = (byte) magic_physic;
@@ -1491,7 +1494,7 @@ class MapNapTaiNguyen {
                         m0.level        = m0.getMonsterTemplate().level;
                         m0.id           = idMonster;
                         byte[] heads     = {0, 1, 2, 3, 4};
-                        m0.he           = heads[Map.r.nextInt(heads.length)];
+                        m0.he           = m0.heKhiSinh(heads[Map.r.nextInt(heads.length)]);
                         byte[] attacks   = {0, 1, 0, 1, 0, 0, 1, 0};
                         m0.typeAttack   = attacks[Map.r.nextInt(attacks.length)];
                         m0.inCountry    = (byte) country;
@@ -1508,7 +1511,7 @@ class MapNapTaiNguyen {
                             m0.idregion     = (byte) regionIndex;
                             m0.inCountry    = (byte) country;
                             byte[] heads     = {0, 1, 2, 3, 4};
-                            m0.he           = heads[Map.r.nextInt(heads.length)];
+                            m0.he           = m0.heKhiSinh(heads[Map.r.nextInt(heads.length)]);
                             byte[] attacks   = {0, 1, 0, 1, 0, 0, 1, 0};
                             m0.typeAttack   = attacks[Map.r.nextInt(attacks.length)];
                             m0.region       = regionIndex;
@@ -1566,7 +1569,7 @@ class MapNapTaiNguyen {
                         ct.isDead = true;
                         ct.bornTime = System.currentTimeMillis() + 21600000L;
                         byte[] he = new byte[]{0, 1, 2, 3, 4};
-                        ct.he = he[Map.r.nextInt(5)];
+                        ct.he = ct.heKhiSinh(he[Map.r.nextInt(5)]);
                         m.addMonster(ct, k, 0);
                     }
                 }

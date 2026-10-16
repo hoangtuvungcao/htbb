@@ -2,8 +2,8 @@
 """
 Tai sprite PMDCollab/SpriteCollab cho MOI loai can dung + kiem ke thieu dong tac.
 
-Danh sach loai = dex trong docs/pokemon/bang_quai.csv + moi dex trong
-src/com/kpah/pokemon/LoaiPokemon.java (DU_LIEU). Khong co danh sach tay thu ba.
+Danh sach loai = dex trong docs/pokemon/bang_quai.csv, bang_thu.csv, bang_npc.csv
++ moi dex trong src/com/kpah/pokemon/LoaiPokemon.java (DU_LIEU). Khong co danh sach tay nao khac.
 
 Ra:
   tools/pokemon/pmd_raw/<dex>[s]/   AnimData.xml, <Anim>-Anim.png, <Anim>-Shadow.png,
@@ -53,6 +53,14 @@ def dex_can_dung():
         for r in csv.DictReader(f):
             if r["dex"]:
                 kq[(int(r["dex"]), int(r["shiny"]))] = "bang_quai"
+    # Bang thu (thu cuoi + pet) va bang NPC: cot dex/shiny giong bang_quai.csv
+    for ten, nguon in (("bang_thu.csv", "thu"), ("bang_npc.csv", "npc")):
+        p = os.path.join(GOC, "docs", "pokemon", ten)
+        if os.path.exists(p):
+            with open(p, encoding="utf8") as f:
+                for r in csv.DictReader(f):
+                    if r.get("dex", "").strip().isdigit() and int(r["dex"]) > 0:
+                        kq.setdefault((int(r["dex"]), int(r.get("shiny") or 0)), nguon)
     src = open(LOAI_JAVA, encoding="utf8").read()
     khoi = src[src.index("DU_LIEU = {"):src.index("};", src.index("DU_LIEU = {"))]
     for m in re.finditer(r"\{(\d+),", khoi):
@@ -85,7 +93,8 @@ def duong_nguon(dex, shiny):
 
 
 def doc_anim(xml_path):
-    """ten anim -> (rong, cao, so_khung). CopyOf duoc giai ve anim goc."""
+    """ten anim -> (rong, cao, so_khung, ten_file_goc). CopyOf duoc giai ve anim goc
+    (file PNG mang ten anim GOC, vd Idle CopyOf Walk -> tai Walk-Anim.png)."""
     goc = ET.parse(xml_path).getroot()
     tho = {}
     for a in goc.iter("Anim"):
@@ -98,10 +107,12 @@ def doc_anim(xml_path):
                         len(a.findall("Durations/Duration")))
     kq = {}
     for ten, v in tho.items():
+        goc_ten = ten
         while isinstance(v, str):
+            goc_ten = v
             v = tho.get(v)
         if v:
-            kq[ten] = v
+            kq[ten] = v + (goc_ten,)
     return kq
 
 
@@ -137,11 +148,11 @@ def main():
                 o.append("")
                 thieu.append(ten_game)
                 continue
-            w, h, n = anims[chon]
+            w, h, n, ten_file = anims[chon]
             o.append("%s %dx%d x%d" % (chon, w, h, n))
             if not chi_kiem:
                 for hau_to in ("Anim", "Shadow"):
-                    tai("%s/%s-%s.png" % (base, chon, hau_to), os.path.join(tm, "%s-%s.png" % (chon, hau_to)))
+                    tai("%s/%s-%s.png" % (base, ten_file, hau_to), os.path.join(tm, "%s-%s.png" % (ten_file, hau_to)))
         if thieu:
             loi += 1
             print("LOI %04d%s: thieu %s" % (dex, "s" if shiny else "", ",".join(thieu)))

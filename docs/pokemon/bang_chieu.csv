@@ -1,0 +1,48 @@
+class,dong_pokemon,so_hieu_skill,ten_cu,ten_moi,he,so_he
+0,Kiếm khách → Charmander,0,Chém,Cào,Thường,0
+0,Kiếm khách → Charmander,1,Kim tinh pháp,Than hồng,Lửa,1
+0,Kiếm khách → Charmander,2,Lôi điện pháp,Nanh lửa,Lửa,1
+0,Kiếm khách → Charmander,3,Kinh lôi bát thủ,Xoáy lửa,Lửa,1
+0,Kiếm khách → Charmander,4,Hộ sát tiến,Màn khói,Thường,0
+0,Kiếm khách → Charmander,5,Dĩ lực đáo công,Múa kiếm,Thường,0
+0,Kiếm khách → Charmander,6,Thiên lôi điện trảm,Súng phun lửa,Lửa,1
+0,Kiếm khách → Charmander,7,Sấm động dương gian,Vuốt rồng,Rồng,14
+0,Kiếm khách → Charmander,8,Kiếm phi kinh thiên,Đại hỏa,Lửa,1
+1,Chiến binh → Bulbasaur,0,Chém,Húc,Thường,0
+1,Chiến binh → Bulbasaur,1,Hỏa kinh thiên,Roi dây leo,Cỏ,4
+1,Chiến binh → Bulbasaur,2,Nhất hỏa long,Lá dao,Cỏ,4
+1,Chiến binh → Bulbasaur,3,Bát đại hỏa long,Bom bùn,Độc,7
+1,Chiến binh → Bulbasaur,4,Cường thân giáp,Tự vệ,Thường,0
+1,Chiến binh → Bulbasaur,5,Hộ công tiến,Sinh trưởng,Thường,0
+1,Chiến binh → Bulbasaur,6,Thiên long bạo kích,Bom hạt,Cỏ,4
+1,Chiến binh → Bulbasaur,7,Liệt hỏa bạo kích,Bão lá,Cỏ,4
+1,Chiến binh → Bulbasaur,8,Sao băng giáng thế,Tia mặt trời,Cỏ,4
+2,Pháp sư → Eevee,0,Đánh,Húc,Thường,0
+2,Pháp sư → Eevee,1,Thủy giáng minh,Tấn công nhanh,Thường,0
+2,Pháp sư → Eevee,2,Thần long thủy,Cắn,Bóng tối,15
+2,Pháp sư → Eevee,3,Bát đại hải long,Sao băng,Thường,0
+2,Pháp sư → Eevee,4,Hồi công lực đan,Mong ước,Thường,0
+2,Pháp sư → Eevee,5,Hồi lực tiến,Nghỉ ngơi,Siêu linh,10
+2,Pháp sư → Eevee,6,Hồi sinh,Phước lành hồi sinh,Thường,0
+2,Pháp sư → Eevee,7,Song hộ công thủ,Chia sẻ nỗi đau,Ma,13
+2,Pháp sư → Eevee,8,Hải long xuất thế,Đuôi sắt,Thép,16
+2,Pháp sư → Eevee,9,Song long thị uy,Bứt phá cuối cùng,Thường,0
+2,Pháp sư → Eevee,10,Hàn băng vũ,Tia phá hủy,Thường,0
+3,Đấu sĩ → Squirtle,0,Đập,Húc,Thường,0
+3,Đấu sĩ → Squirtle,1,Thổ Tú,Súng nước,Nước,2
+3,Đấu sĩ → Squirtle,2,Kim sơn thủy,Bong bóng,Nước,2
+3,Đấu sĩ → Squirtle,3,Khổng kình bát vĩ,Xoáy nước,Nước,2
+3,Đấu sĩ → Squirtle,4,Bất di biến,Phá mai,Thường,0
+3,Đấu sĩ → Squirtle,5,Hộ thủ tiến,Rút vào mai,Nước,2
+3,Đấu sĩ → Squirtle,6,Kinh thiên động địa,Đuôi nước,Nước,2
+3,Đấu sĩ → Squirtle,7,Sơn Tinh bộ thiên,Bơm nước,Nước,2
+3,Đấu sĩ → Squirtle,8,Thạch nhũ công tâm,Đại pháo nước,Nước,2
+4,Cung thủ → Pichu,0,Bắn,Tia lửa điện,Điện,3
+4,Cung thủ → Pichu,1,Nhất hồn tiễn,Sóng điện,Điện,3
+4,Cung thủ → Pichu,2,Phi thiên tiễn,Cầu điện,Điện,3
+4,Cung thủ → Pichu,3,Bát kim tễn đáo,Tia chớp,Điện,3
+4,Cung thủ → Pichu,4,Độc lưu tiễn,Nhanh nhẹn,Siêu linh,10
+4,Cung thủ → Pichu,5,Hộ độc tiễn,Nạp điện,Điện,3
+4,Cung thủ → Pichu,6,Thập diện tâm tiễn,Lưới điện,Điện,3
+4,Cung thủ → Pichu,7,Thăng thiên loạn tiễn,Sấm sét,Điện,3
+4,Cung thủ → Pichu,8,Vạn tiễn quy tâm,Đâm sầm điện,Điện,3

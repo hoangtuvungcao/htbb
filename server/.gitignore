@@ -163,8 +163,11 @@ out_tools/
 # Tai nguyen game do tools/ChuyenTaiNguyen.java sinh ra tu ban client J2ME.
 # La san pham dan xuat, khong phai ma nguon: tao lai bang mot lenh (xem README).
 # Khong commit de repo khoi phinh them vai nghin tep nhi phan.
-/ClientUnity/Assets/Resources/
+/ClientUnity/Assets/Resources/*
 /ClientUnity/Assets/Resources.meta
+# Ngoai le: sprite Pokemon do tools/pokemon/DongGoiSprite.java sinh tu PMDCollab (CC BY-NC).
+# DUOC commit de build client khong can mang/Python (xem docs/pokemon/KE_HOACH_CHUYEN_DOI.md 7.1).
+!/ClientUnity/Assets/Resources/poke/
 
 ### Rac he dieu hanh / trinh quan ly tep - da tung lot vao map/d_effect/desktop.ini ###
 Thumbs.db

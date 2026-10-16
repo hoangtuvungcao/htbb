@@ -31,6 +31,85 @@ public class MessageHandler : Cmd_message, IMessageHandler
 		Canvas.gameScr.onDisconnect();
 	}
 
+	/// <summary>Tim Char theo id: nhan vat chinh hoac nguoi/bot trong danh sach actors (giong lenh 5).</summary>
+	private static Char timCharPoke(short id)
+	{
+		if (Canvas.gameScr == null)
+		{
+			return null;
+		}
+		if (Canvas.gameScr.mainChar != null && Canvas.gameScr.mainChar.ID == id)
+		{
+			return Canvas.gameScr.mainChar;
+		}
+		return Canvas.gameScr.findCharByID(id) as Char;
+	}
+
+	/// <summary>-90 POKE_THAN: i16 charId, i16 dex, u8 shiny (KE_HOACH_CHUYEN_DOI.md muc 7.3).</summary>
+	private void onPokeThan(Message msg)
+	{
+		short id = msg.reader().readShort();
+		short dex = msg.reader().readShort();
+		bool shiny = msg.reader().readUnsignedByte() != 0;
+		Char c = timCharPoke(id);
+		if (c == null)
+		{
+			return;
+		}
+		c.pokeDex = dex;
+		c.pokeShiny = shiny;
+	}
+
+	/// <summary>-91 POKE_QUAI: u8 n, n x (u8 idTemplate, i16 dex, u8 shiny, u8 tiLe%).</summary>
+	private void onPokeQuai(Message msg)
+	{
+		int n = msg.reader().readUnsignedByte();
+		for (int i = 0; i < n; i++)
+		{
+			int idTemplate = msg.reader().readUnsignedByte();
+			short dex = msg.reader().readShort();
+			bool shiny = msg.reader().readUnsignedByte() != 0;
+			int tiLe = msg.reader().readUnsignedByte();
+			MonsterTemplate.datPoke(idTemplate, dex, shiny, tiLe);
+		}
+	}
+
+	/// <summary>-92 POKE_TIEN_HOA: i16 charId, i16 dexCu, i16 dexMoi. Server gui truoc -90.</summary>
+	private void onPokeTienHoa(Message msg)
+	{
+		short id = msg.reader().readShort();
+		short dexCu = msg.reader().readShort();
+		short dexMoi = msg.reader().readShort();
+		Char c = timCharPoke(id);
+		if (c == null)
+		{
+			return;
+		}
+		c.batDauTienHoa(dexCu, dexMoi);
+		string tenMoi = LoaiPokemonClient.ten(dexMoi);
+		if (tenMoi.Length == 0)
+		{
+			tenMoi = "#" + dexMoi;
+		}
+		// Bong chat tren dau (khong dung startFlyText: ham do tach chu so trong chuoi va int.Parse).
+		GameScr.addChat(c, "Tiến hóa thành " + tenMoi + "!", 100);
+	}
+
+	/// <summary>-93 POKE_CUOI: i16 charId, i16 dexThu (0 = xuong thu), u8 shiny.</summary>
+	private void onPokeCuoi(Message msg)
+	{
+		short id = msg.reader().readShort();
+		short dexThu = msg.reader().readShort();
+		bool shiny = msg.reader().readUnsignedByte() != 0;
+		Char c = timCharPoke(id);
+		if (c == null)
+		{
+			return;
+		}
+		c.pokeThuDex = dexThu;
+		c.pokeThuShiny = shiny;
+	}
+
 	public void onMessage(Message msg)
 	{
 		try
@@ -38,6 +117,18 @@ public class MessageHandler : Cmd_message, IMessageHandler
 			ItemDropInfo[] array = null;
 			switch (msg.command)
 			{
+			case -90:
+				onPokeThan(msg);
+				break;
+			case -91:
+				onPokeQuai(msg);
+				break;
+			case -92:
+				onPokeTienHoa(msg);
+				break;
+			case -93:
+				onPokeCuoi(msg);
+				break;
 			case -76:
 				Canvas.gameScr.onShopNew(msg);
 				break;
@@ -1741,6 +1832,8 @@ public class MessageHandler : Cmd_message, IMessageHandler
 			{
 				int num35 = msg.reader().readUnsignedByte();
 				Res.monsterTemplates = new MonsterTemplate[num35];
+				// Bang Pokemon cua template gui lai bang -91 ngay sau lenh nay (neu server bat che_do_pokemon).
+				MonsterTemplate.xoaPoke();
 				short num36 = msg.reader().readShort();
 				sbyte[] data = new sbyte[num36];
 				msg.reader().read(ref data);

@@ -183,4 +183,36 @@ public final class HePokemon {
     public static String ten(final int he) {
         return hopLe(he) ? TEN[he] : "";
     }
+
+    /**
+     * Ngu hanh KPAH cu (LiveActor.HE_THUY=0, HE_MOC=1, HE_HOA=2, HE_THO=3, HE_KIM=4)
+     * gan nhat voi tung he Pokemon. CHI dung de gui xuong client cu / ghi vao cac
+     * truong ngu hanh cu (icon he cua quai, mang buff 5 o trong lib/NQSH_5h.jar) -
+     * KHONG dung de tinh khac he (do la heSoTrongGame).
+     */
+    private static final byte[] NGU_HANH_CU = {
+        3, // Thuong   -> Tho
+        2, // Lua      -> Hoa
+        0, // Nuoc     -> Thuy
+        4, // Dien     -> Kim
+        1, // Co       -> Moc
+        0, // Bang     -> Thuy
+        3, // Giac dau -> Tho
+        1, // Doc      -> Moc
+        3, // Dat      -> Tho
+        4, // Bay      -> Kim
+        0, // Sieu linh-> Thuy
+        1, // Bo       -> Moc
+        3, // Da       -> Tho
+        2, // Ma       -> Hoa
+        2, // Rong     -> Hoa
+        0, // Bong toi -> Thuy
+        4, // Thep     -> Kim
+        1, // Tien     -> Moc
+    };
+
+    /** Ngu hanh cu 0..4 cua he Pokemon {@code he}; he khong hop le -> Tho (3). */
+    public static int nguHanhCu(final int he) {
+        return hopLe(he) ? NGU_HANH_CU[he] : 3;
+    }
 }

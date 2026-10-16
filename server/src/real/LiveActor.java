@@ -1,6 +1,9 @@
 // Source code is decompiled from a .class file using FernFlower decompiler.
 package real;
 
+import com.kpah.pokemon.CheDoPokemon;
+import com.kpah.pokemon.SatThuongHe;
+
 import data.Animal;
 import data.Pet;
 import io.Message;
@@ -22,6 +25,9 @@ public class LiveActor extends Actor {
    public int[] percentBuff = new int[3];
    public int[] percentBuffPlayer = new int[3];
    public byte he;
+   // He thu hai (he Pokemon 0..17, -1 = khong co). Chi co nghia khi bat
+   // com.kpah.pokemon.CheDoPokemon - xem hePokemon1/hePokemon2 ben duoi.
+   public byte he2 = -1;
    public byte divSpeed = 1;
    public Vector<EffectBuff> AllEffBuff = new Vector();
    public Hashtable<Short, EffectBuff> hashEffBuff = new Hashtable();
@@ -443,7 +449,10 @@ public class LiveActor extends Actor {
 
       dam -= def;
       dam = dam * (30 + UtilKPAH.random(80)) / 100;
-      if ((this.he + 2) % 5 == actor.he) {
+      if (CheDoPokemon.bat()) {
+         // Che do Pokemon: khac he 18 he thay cho ngu hanh (viec S4).
+         dam = SatThuongHe.apDung(dam, this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
+      } else if ((this.he + 2) % 5 == actor.he) {
          dam += dam * 5 / 100;
       } else if ((this.he + 3) % 5 == actor.he) {
          dam -= dam * 5 / 100;
@@ -455,6 +464,30 @@ public class LiveActor extends Actor {
       }
 
       return dam;
+   }
+
+   /**
+    * He Pokemon thu nhat dung de tinh khac he khi bat CheDoPokemon. Nhan vat: chinh
+    * la he (gan tu loai luc nap/tien hoa). Monster ghi de: lay tu template, vi truong
+    * he cua quai van giu ngu hanh 0..4 (client cu ve icon bang no, va lop trong
+    * lib/NQSH_5h.jar con random/gui no) - xem Monster.hePokemon1.
+    */
+   public int hePokemon1() {
+      return this.he;
+   }
+
+   public int hePokemon2() {
+      return this.he2;
+   }
+
+   /**
+    * Gia tri gan vao truong he luc SINH actor (thay cho viec random 0..4 cu).
+    * LiveActor/Char: tra nguyen gia tri truyen vao. Monster ghi de khi bat che do
+    * Pokemon (quyet dinh Q9). Van goi Map.r.nextInt o cho goi de chuoi random giu
+    * nguyen khi tat co.
+    */
+   public byte heKhiSinh(byte heNgauNhien) {
+      return heNgauNhien;
    }
 
    public int getX(int idCountry) {

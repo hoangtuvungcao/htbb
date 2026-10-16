@@ -47,7 +47,7 @@ public class BossSonTinhThuyTinh extends BossSkelonton {
         } else {
             if (System.currentTimeMillis() - this.timeChangehe > 60000L) {
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                this.he = he[Map.r.nextInt(5)];
+                this.he = this.heKhiSinh(he[Map.r.nextInt(5)]);
                 this.magic_physic = (byte)((this.magic_physic + 1) % 2);
             }
 

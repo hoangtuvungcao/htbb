@@ -350,7 +350,7 @@ public class BossNguoiTuyet extends Boss {
                     }
 
                     byte[] he = new byte[]{0, 1, 2, 3, 4};
-                    this.he = he[Map.r.nextInt(5)];
+                    this.he = this.heKhiSinh(he[Map.r.nextInt(5)]);
                     int[] idmap = new int[]{111};
                     int[][] xy = new int[][]{{22, 25}};
                     if (this.idTemplate == 117) {
@@ -460,7 +460,7 @@ public class BossNguoiTuyet extends Boss {
         } else {
             if (System.currentTimeMillis() - this.timeChangehe > 60000L) {
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                this.he = he[Map.r.nextInt(5)];
+                this.he = this.heKhiSinh(he[Map.r.nextInt(5)]);
                 this.magic_physic = (byte)((this.magic_physic + 1) % 2);
             }
 

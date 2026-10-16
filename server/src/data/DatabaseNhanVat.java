@@ -1,5 +1,7 @@
 package data;
 
+import com.kpah.pokemon.LoaiPokemon;
+
 import io.Session;
 
 import real.Map;
@@ -297,6 +299,8 @@ class DatabaseNhanVat {
                 p.tichluy_tuan = rs.getInt("tichluy_tuan");
                 p.tichluy_bosung = rs.getInt("tichluy_bosung");
                 p.dbInfo = rs.getString("pInfo");
+                // Che do Pokemon: loai + shiny (cot moi, doc trong try rieng).
+                Database.docCotPokemon(rs, p);
                 p.using = rs.getByte("del");
                 p.dbPotion = rs.getString("potion");
                 p.dbSkill = rs.getString("skill");
@@ -764,6 +768,8 @@ class DatabaseNhanVat {
             pre.setInt(33, p.charDBID);
             try {
                 pre.execute();
+                // Che do Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
+                Database.luuCotPokemon(conn, p.charDBID, p.pokeDex, p.pokeShiny);
             } catch (Exception e) {
                 e.printStackTrace();
                 try {
@@ -1003,6 +1009,8 @@ class DatabaseNhanVat {
             pre.setInt(27, p.charDBID);
             try {
                 pre.execute();
+                // Che do Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
+                Database.luuCotPokemon(conn, p.charDBID, p.pokeDex, p.pokeShiny);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("LOI excute char " + e);
@@ -1351,6 +1359,8 @@ class DatabaseNhanVat {
                 ResultSet rs3 = pre.getResultSet();
                 if (rs3.next()) {
                     charId = rs3.getInt("id");
+                    // Che do Pokemon (viec S2): nhan vat moi mang Pokemon khoi dau cua class.
+                    Database.luuCotPokemon(conn, charId, LoaiPokemon.khoiDau(classID), 0);
                 }
                 try {
                     rs3.close();
@@ -1482,6 +1492,8 @@ class DatabaseNhanVat {
             pre.setInt(24, charid);
             try {
                 pre.execute();
+                // Che do Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
+                Database.luuCotPokemon(conn, charid, p.pokeDex, p.pokeShiny);
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("LOI excute char " + e);
@@ -1752,6 +1764,8 @@ class DatabaseNhanVat {
                 ResultSet rs3 = pre.getResultSet();
                 if (rs3.next()) {
                     charId = rs3.getInt("id");
+                    // Che do Pokemon (viec S2): nhan vat moi mang Pokemon khoi dau cua class.
+                    Database.luuCotPokemon(conn, charId, LoaiPokemon.khoiDau(classID), 0);
                     System.out.println("CHAR DANG KY THANH CONG: " + charId);
                 }
                 try {

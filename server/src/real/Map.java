@@ -1,5 +1,7 @@
 package real;
 
+import com.kpah.pokemon.CheDoPokemon;
+
 
 import data.Animal;
 import data.BossMatQuy;
@@ -3351,7 +3353,7 @@ public class Map implements Runnable {
             bo.isCopy = true;
             bo.isDead = false;
             bo.timeLive = System.currentTimeMillis() + 10000L;
-            bo.he = he[r.nextInt(5)];
+            bo.he = bo.heKhiSinh(he[r.nextInt(5)]);
             bo.level = bo.getMonsterTemplate().level;
             bo.attack /= 2;
             bo.defend_physic /= 2;
@@ -3507,7 +3509,7 @@ public class Map implements Runnable {
                             ct.isDead = false;
                             ct.bornTime = System.currentTimeMillis() + 10800000L;
                             byte[] he = new byte[]{0, 1, 2, 3, 4};
-                            ct.he = he[r.nextInt(5)];
+                            ct.he = ct.heKhiSinh(he[r.nextInt(5)]);
                             m.addMonster(ct, k, 0);
                         }
                     }
@@ -3959,7 +3961,7 @@ public class Map implements Runnable {
         mons.attack = mt.attack;
         mons.attackDelay = mt.attackDelay;
         mons.idTemplate = 114;
-        mons.he = mt.he;
+        mons.he = mons.heKhiSinh(mt.he);
         mons.inCountry = mt.inCountry;
         mons.x = mt.x;
         mons.y = mt.y;
@@ -4012,7 +4014,7 @@ public class Map implements Runnable {
                             mons.attack = mt.attack;
                             mons.attackDelay = mt.attackDelay;
                             mons.idTemplate = 114;
-                            mons.he = mt.he;
+                            mons.he = mons.heKhiSinh(mt.he);
                             mons.inCountry = mt.inCountry;
                             mons.x = mt.x;
                             mons.y = mt.y;
@@ -6191,7 +6193,7 @@ public class Map implements Runnable {
 
                 ct.bornTime = System.currentTimeMillis() + 1000L;
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                ct.he = he[r.nextInt(5)];
+                ct.he = ct.heKhiSinh(he[r.nextInt(5)]);
                 if (this.nRegion > 0) {
                     ct.idregion = (byte) player.region;
                     rg.total_cuongthi++;
@@ -6228,7 +6230,7 @@ public class Map implements Runnable {
                         ct.isDead = true;
                         ct.bornTime = System.currentTimeMillis() + 5000L;
                         byte[] he = new byte[]{0, 1, 2, 3, 4};
-                        ct.he = he[r.nextInt(5)];
+                        ct.he = ct.heKhiSinh(he[r.nextInt(5)]);
                         m.addMonsterDynamic(ct, i, 0);
                     }
                 } catch (Exception var5) {
@@ -6266,7 +6268,7 @@ public class Map implements Runnable {
                 ct.isDead = false;
                 ct.bornTime = System.currentTimeMillis() + 1000L;
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                ct.he = he[r.nextInt(5)];
+                ct.he = ct.heKhiSinh(he[r.nextInt(5)]);
                 ct.idregion = (byte) player.region;
                 ct.region = player.region;
                 this.addMonsterDynamic(ct, player.inCountry, player.region);
@@ -6302,7 +6304,7 @@ public class Map implements Runnable {
                 ct.isDead = true;
                 ct.bornTime = System.currentTimeMillis() + 1000L;
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                ct.he = he[r.nextInt(5)];
+                ct.he = ct.heKhiSinh(he[r.nextInt(5)]);
                 m.addMonsterDynamic(ct, i, 0);
                 if (i == 0) {
                     ruong_ma_quai_thanh_long = ct;
@@ -6343,7 +6345,7 @@ public class Map implements Runnable {
                 ct.isDead = true;
                 ct.bornTime = System.currentTimeMillis() + 1000L;
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                ct.he = he[r.nextInt(5)];
+                ct.he = ct.heKhiSinh(he[r.nextInt(5)]);
                 ct.idregion = (byte) player.region;
                 ct.region = player.region;
                 this.addMonsterDynamic(ct, player.inCountry, player.region);
@@ -6382,7 +6384,7 @@ public class Map implements Runnable {
             ct.setInfo(1, 1, 1);
             ct.id = RealController.intance.idGen.getID(1, "TAO GHOST");
             byte[] he = new byte[]{0, 1, 2, 3, 4};
-            ct.he = he[r.nextInt(5)];
+            ct.he = ct.heKhiSinh(he[r.nextInt(5)]);
             this.addMonsterDynamic(ct, country, region);
             if (country == 0) {
                 all_ngoc_rong_thanh_long.add(ct);
@@ -6424,7 +6426,7 @@ public class Map implements Runnable {
         ct.defend_physic = mt.defend + 1500;
         ct.defend_magic = mt.defend + 1500;
         byte[] he = new byte[]{0, 1, 2, 3, 4};
-        ct.he = he[r.nextInt(5)];
+        ct.he = ct.heKhiSinh(he[r.nextInt(5)]);
         this.addMonsterDynamic(ct, player.inCountry, player.region);
     }
 
@@ -6441,7 +6443,7 @@ public class Map implements Runnable {
         ct.defend_physic = mt.defend + 1500;
         ct.defend_magic = mt.defend + 1500;
         byte[] he = new byte[]{0, 1, 2, 3, 4};
-        ct.he = he[r.nextInt(5)];
+        ct.he = ct.heKhiSinh(he[r.nextInt(5)]);
         this.addMonsterDynamic(ct, player.inCountry, player.region);
         Database.instance.saveOrtherLog("", player.charname, "Goi boss cuong thi tai " + this.mapIDLoadMap + " " + this.mapId, "goiboss");
     }
@@ -15057,7 +15059,7 @@ public class Map implements Runnable {
                 m.dos.writeByte(ch.pk);
                 m.dos.writeShort(Char.clampShort(ch.defend_physic + ch.percentBuff[0]));
                 m.dos.writeByte(ch.lvDetail.lv);
-                m.dos.writeByte(ch.he);
+                m.dos.writeByte(CheDoPokemon.heGuiClient(ch.he));
                 m.dos.writeByte(ch.rideHorse);
                 byte fly = 0;
                 if (ch.animalRide != null) {
@@ -15066,6 +15068,8 @@ public class Map implements Runnable {
 
                 m.dos.writeByte(fly);
                 m.dos.writeByte(ch.speed + ch.getThanKhiSpeedBonus());
+                // Che do Pokemon: goi 5 tu dung tay o day cung kem -90 (null khi tat co).
+                m.kemTheo = TienHoaPokemon.taoPokeThan(ch);
                 player.sendMessage(m);
                 m.cleanup();
             } catch (Exception var8) {
@@ -15886,6 +15890,12 @@ public class Map implements Runnable {
                     isItemAnimal = isWearingAnimal(item.getTemplate().type)
                             || SkinLinhThu.laItemSkin(item.getTemplate().id);
                     if (t == 24) {
+                        return;
+                    }
+
+                    // Che do Pokemon (viec I2): 8 da tien hoa Eevee. Tat co -> tra false,
+                    // vat pham di tiep duong cu.
+                    if (TienHoaPokemon.dungDaTienHoa(player, item)) {
                         return;
                     }
 
@@ -17931,7 +17941,7 @@ public class Map implements Runnable {
                     m0.id = player.getIDItem();
                     m0.level = m0.getMonsterTemplate().level;
                     byte[] he = new byte[]{0, 1, 2, 3, 4};
-                    m0.he = he[r.nextInt(5)];
+                    m0.he = m0.heKhiSinh(he[r.nextInt(5)]);
                     byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0};
                     m0.typeAttack = t[r.nextInt(10)];
                     m0.magic_physic = player.magic_physic;

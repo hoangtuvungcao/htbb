@@ -1805,7 +1805,7 @@ public class Region {
                         mons.attack = mt.attack;
                         mons.attackDelay = mt.attackDelay;
                         mons.idTemplate = 114;
-                        mons.he = mt.he;
+                        mons.he = mons.heKhiSinh(mt.he);
                         mons.inCountry = mt.inCountry;
                         mons.x = mt.x;
                         mons.y = mt.y;

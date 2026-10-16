@@ -162,6 +162,11 @@ public class Char extends LiveActor {
     public String charname;
     public byte headStyle;
     public byte charClass;
+    // Loai Pokemon (so Pokedex) va ban shiny - cot tob_char.dex/shiny (viec S2).
+    // 0 = chua co, suy ra tu class + cap luc nap (real.TienHoaPokemon.napLoai).
+    // Chi dung khi bat com.kpah.pokemon.CheDoPokemon.
+    public int pokeDex = 0;
+    public byte pokeShiny = 0;
     public byte[] skill;
     public short[] skillClan;
     public byte[] skillLvClan;

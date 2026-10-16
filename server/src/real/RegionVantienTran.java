@@ -54,7 +54,7 @@ public class RegionVantienTran implements Runnable {
                 this.idMonster = (short)(var10003 + 1);
                 bo.id = var10003;
                 byte[] he = new byte[]{0, 1, 2, 3, 4};
-                bo.he = he[Map.r.nextInt(5)];
+                bo.he = bo.heKhiSinh(he[Map.r.nextInt(5)]);
                 bo.level = this.level;
                 bo.region = this.id;
                 this.monsters.add(bo);
@@ -80,7 +80,7 @@ public class RegionVantienTran implements Runnable {
                     this.idMonster = (short)(var10003 + 1);
                     m.id = var10003;
                     byte[] he = new byte[]{0, 1, 2, 3, 4};
-                    m.he = he[Map.r.nextInt(5)];
+                    m.he = m.heKhiSinh(he[Map.r.nextInt(5)]);
                     m.typeAttack = 1;
                     m.bornTime = 120000L;
                     m.region = this.id;
@@ -103,7 +103,7 @@ public class RegionVantienTran implements Runnable {
             this.idMonster = (short)(var10003 + 1);
             m.id = var10003;
             byte[] he = new byte[]{0, 1, 2, 3, 4};
-            m.he = he[Map.r.nextInt(5)];
+            m.he = m.heKhiSinh(he[Map.r.nextInt(5)]);
             byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
             m.typeAttack = t[Map.r.nextInt(10)];
             m.bornTime = 120000L;
@@ -1525,7 +1525,7 @@ public class RegionVantienTran implements Runnable {
             this.idMonster = (short)(var10003 + 1);
             m.id = var10003;
             byte[] he = new byte[]{0, 1, 2, 3, 4};
-            m.he = he[Map.r.nextInt(5)];
+            m.he = m.heKhiSinh(he[Map.r.nextInt(5)]);
             byte[] t = new byte[]{0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0};
             m.typeAttack = t[Map.r.nextInt(10)];
             m.bornTime = 120000L;

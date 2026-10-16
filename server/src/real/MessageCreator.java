@@ -3,6 +3,8 @@
 // 
 package real;
 
+import com.kpah.pokemon.CheDoPokemon;
+
 import Constant.Checker;
 import data.FruitTemplate;
 import data.InfoQuestTemplate;
@@ -85,7 +87,7 @@ public class MessageCreator {
         MessageCreator.msglogin = null;
         MessageCreator.msgXaphu = null;
         MessageCreator.infoString = new String[][]{{"Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Phòng thủ tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: "}, {"Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Phòng thủ tăng: ", "Tăng sức công: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: "}, {"Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "HP+MP tăng: ", "MP tăng: ", "Hồi sinh: ", "Chia sẻ thiệt hại: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: "}, {"Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tốc độ tăng: ", "Phòng thủ tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: "}, {"Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tốc độ tăng: ", "HP tăng: ", "Tấn công tăng: ", "Tấn công tăng: ", "Tấn công tăng: "}};
-        SKILL_NAME = new String[][]{{"Chém", "Kim tinh pháp", "Lôi điện pháp", "Kinh lôi bát thủ", "Hộ sát tiến", "Dĩ lực đáo công", "Thiên lôi điện trảm", "Sấm động dương gian", "Kiếm phi kinh thiên"}, {"Chém", "Hỏa kinh thiên", "Nhất hỏa long", "Bát đại hỏa long", "Cường thân giáp", "Hộ công tiến", "Thiên long bạo kích", "Liệt hỏa bạo kích", "Sao băng giáng thế"}, {"Đánh", "Thủy giáng minh", "Thần long thủy", "Bát đại hải long", "Hồi công lực đan", "Hồi lực tiến", "Hồi sinh", "Song hộ công thủ", "Hải long xuất thế", "Song long thị uy", "Hàn băng vũ"}, {"Đập", "Thổ Tú", "Kim sơn thủy", "Khổng kình bát vĩ", "Bất di biến", "Hộ thủ tiến", "Kinh thiên động địa", "Sơn Tinh bộ thiên", "Thạch nhũ công tâm"}, {"Bắn", "Nhất hồn tiễn", "Phi thiên tiễn", "Bát kim tễn đáo", "Độc lưu tiễn", "Hộ độc tiễn", "Thập diện tâm tiễn", "Thăng thiên loạn tiễn", "Vạn tiễn quy tâm"}};
+        SKILL_NAME = new String[][]{{"Cào", "Than hồng", "Nanh lửa", "Xoáy lửa", "Màn khói", "Múa kiếm", "Súng phun lửa", "Vuốt rồng", "Đại hỏa"}, {"Húc", "Roi dây leo", "Lá dao", "Bom bùn", "Tự vệ", "Sinh trưởng", "Bom hạt", "Bão lá", "Tia mặt trời"}, {"Húc", "Tấn công nhanh", "Cắn", "Sao băng", "Mong ước", "Nghỉ ngơi", "Phước lành hồi sinh", "Chia sẻ nỗi đau", "Đuôi sắt", "Bứt phá cuối cùng", "Tia phá hủy"}, {"Húc", "Súng nước", "Bong bóng", "Xoáy nước", "Phá mai", "Rút vào mai", "Đuôi nước", "Bơm nước", "Đại pháo nước"}, {"Tia lửa điện", "Sóng điện", "Cầu điện", "Tia chớp", "Nhanh nhẹn", "Nạp điện", "Lưới điện", "Sấm sét", "Đâm sầm điện"}};
         MessageCreator.nclone = 5;
         MessageCreator.ALL_ID_ITEM_NPC_SELL = null;
         MessageCreator.nameTuBinh = new String[]{"Tứ bình", "Tứ nhạc", "Tứ khoái", "Tứ linh"};
@@ -586,6 +588,8 @@ public class MessageCreator {
                 KiemGoi26.kiem(msgMons.toByteArray(), clientVersion);
             } catch (final Exception ex) {
             }
+            // Che do Pokemon: kem -91 POKE_QUAI ngay sau goi 26 (null khi tat co).
+            msgMons.kemTheo = TienHoaPokemon.taoPokeQuai();
         }
         return msgMons;
     }
@@ -1727,7 +1731,7 @@ public class MessageCreator {
             m.dos.writeShort(Char.clampShort(ch.defend_physic + ch.percentBuff[0]));
             m.dos.writeShort(Char.clampShort(ch.defend_magic + ch.getBuffDefCB(1, true)));
             m.dos.writeByte(ch.lvDetail.lv);
-            m.dos.writeByte(ch.he);
+            m.dos.writeByte(CheDoPokemon.heGuiClient(ch.he));
             int userHorse = ch.rideHorse;
 
             // Kiểm tra isHoaHinh trước
@@ -1898,6 +1902,8 @@ public class MessageCreator {
             } catch (final Exception ex) {
             }
         }
+        // Che do Pokemon: kem -90 POKE_THAN ngay sau goi 5 (null khi tat co).
+        m.kemTheo = TienHoaPokemon.taoPokeThan(ch);
         return m;
     }
 
@@ -1929,7 +1935,7 @@ public class MessageCreator {
             m.dos.writeShort(Char.clampShort(ch.defend_physic + ch.percentBuff[0]));
             m.dos.writeShort(Char.clampShort(ch.defend_magic + ch.getBuffDefCB(1, true)));
             m.dos.writeByte(ch.lvDetail.lv);
-            m.dos.writeByte(ch.he);
+            m.dos.writeByte(CheDoPokemon.heGuiClient(ch.he));
             m.dos.writeByte(ch.rideHorse);
             byte idImgHorse = ch.idImgHorse;
             byte fly = 0;
@@ -1968,6 +1974,8 @@ public class MessageCreator {
             Logger.logError(e);
             m.cleanup();
         }
+        // Che do Pokemon: bot/NPC cung kem -90 (xem TienHoaPokemon.taoPokeThanNpc).
+        m.kemTheo = TienHoaPokemon.taoPokeThanNpc(ch);
         return m;
     }
 
@@ -1988,7 +1996,7 @@ public class MessageCreator {
         m.dos.writeShort(p.accurate);
         m.dos.writeShort(p.dodge);
         m.dos.writeShort(p.critical);
-        m.dos.writeByte(p.he);
+        m.dos.writeByte(CheDoPokemon.heGuiClient(p.he));
         m.dos.writeByte(p.lvDetail.lv);
         m.dos.writeShort(p.lvDetail.percent);
         // SKIN LINH THU (Tien Loc): bon dong nay la bang diem tiem nang nguoi choi NHIN
@@ -2233,6 +2241,8 @@ public class MessageCreator {
             KiemGoi3.kiem(m.toByteArray(), p.charname, idThutoolDaGui, indexdxyDaGui);
         } catch (final Exception ex) {
         }
+        // Che do Pokemon: -90 cua chinh minh ngay sau goi 3.
+        m.kemTheo = TienHoaPokemon.taoPokeThan(p);
         return m;
     }
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-Sinh docs/pokemon/bang_quai.csv: MOI dong data_monster (138 dong) -> Pokemon thay the.
+Sinh docs/pokemon/bang_quai.csv: MOI dong data_monster (138 dong) -> Pokemon thay the,
+va sql/pokemon_du_lieu_quai.sql (UPDATE data_monster SET dex/shiny/he/he2 - chay SAU
+sql/them_cot_pokemon.sql). Vat_the giu dex=0 -> client ve bang anh cu.
 
 Nguon:
   - sql/gamedb7_clean.sql, bang data_monster (id, ten, cap, maxhp)
@@ -23,6 +25,7 @@ import urllib.request
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SQL = os.path.join(GOC, "sql", "gamedb7_clean.sql")
 RA = os.path.join(GOC, "docs", "pokemon", "bang_quai.csv")
+RA_SQL = os.path.join(GOC, "sql", "pokemon_du_lieu_quai.sql")
 BO_NHO = os.path.join(GOC, "tools", "pokemon", ".cache")
 
 TRACKER = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/tracker.json"
@@ -190,6 +193,13 @@ def tai_json(url, ten_cache):
     return d
 
 
+def ten_hien_thi(ghi_chu, shiny):
+    """'Rết xanh -> Whirlipede shiny' -> 'Whirlipede Shiny'; bo chu thich trong ngoac."""
+    ten = ghi_chu.split("->", 1)[1]
+    ten = re.sub(r"\(.*?\)", "", ten).replace(" shiny", "").strip()
+    return (ten + " Shiny") if shiny else ten
+
+
 def doc_quai():
     s = open(SQL, encoding="utf8").read()
     i = s.index("INSERT INTO `data_monster`")
@@ -230,7 +240,19 @@ def main():
         w.writerow(["id_quai", "ten_cu", "cap", "maxhp", "phan_loai", "dex", "ten_pokemon",
                     "shiny", "he1", "he2", "pmd_sprite(2=du,1=co)", "ghi_chu"])
         w.writerows(dong)
+    with open(RA_SQL, "w", encoding="utf8", newline="\n") as f:
+        f.write("-- SINH TU tools/pokemon/sinh_bang_quai.py - KHONG SUA TAY.\n")
+        f.write("-- Chay SAU sql/them_cot_pokemon.sql. he = he 1 Pokemon (0..17, com.kpah.pokemon.HePokemon).\n")
+        f.write("-- Chi dung cho server che_do_pokemon=1: cot he khong con la ngu hanh 0..4.\n")
+        for d in dong:
+            id_quai, dex, shiny, he1, he2 = d[0], d[5], d[7], d[8], d[9]
+            if dex == "":
+                f.write("UPDATE data_monster SET dex=0, shiny=0, he2=-1 WHERE id=%d; -- %s\n" % (id_quai, d[11]))
+            else:
+                f.write("UPDATE data_monster SET name='%s', dex=%d, shiny=%d, he=%d, he2=%d WHERE id=%d; -- %s\n"
+                        % (ten_hien_thi(d[11], shiny).replace("'", "''"), dex, shiny, he1, he2, id_quai, d[11]))
     print("Da ghi %s: %d dong" % (os.path.relpath(RA, GOC), len(dong)))
+    print("Da ghi %s" % os.path.relpath(RA_SQL, GOC))
     for l in loi:
         print("LOI:", l)
     return 1 if loi else 0

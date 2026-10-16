@@ -1,5 +1,7 @@
 package data;
 
+import com.kpah.pokemon.CheDoPokemon;
+
 import io.Session;
 
 import real.Map;
@@ -5639,6 +5641,19 @@ public class Database {
             stmt = conn.createStatement();
             final String sql = "SELECT * FROM data_monster";
             ResultSet rs = stmt.executeQuery(sql);
+            // Cot Pokemon (sql/them_cot_pokemon.sql): dex, shiny, he2. CSDL chua chay
+            // migration thi thieu cot - hoi MOT lan qua findColumn, thieu thi giu mac dinh
+            // trong MonsterTemplate (dex 0 = khong gui trong goi -91), khong lam hong
+            // ca vong nap template.
+            boolean coCotPokemon;
+            try {
+                rs.findColumn("dex");
+                rs.findColumn("shiny");
+                rs.findColumn("he2");
+                coCotPokemon = true;
+            } catch (Exception thieuCot) {
+                coCotPokemon = false;
+            }
             while (rs.next()) {
                 MonsterTemplate item = new MonsterTemplate();
                 item.id = rs.getInt("id");
@@ -5663,6 +5678,11 @@ public class Database {
                 item.typeMons = rs.getByte("isuse");
                 item.move = rs.getByte("move");
                 item.isNewMonster = rs.getByte("isnew");
+                if (coCotPokemon) {
+                    item.dex = rs.getShort("dex");
+                    item.shiny = rs.getByte("shiny");
+                    item.he2 = rs.getByte("he2");
+                }
                 list.put(item.id, item);
             }
             try {
@@ -7838,6 +7858,8 @@ public class Database {
 
                 p.setLuong(rs.getInt("luong"));
                 p.dbInfo = rs.getString("pInfo");
+                // Che do Pokemon: loai + shiny (cot moi, doc trong try rieng).
+                Database.docCotPokemon(rs, p);
                 p.using = rs.getByte("del");
                 p.charname = rs.getString("charname").toLowerCase();
                 p.dbPotion = rs.getString("potion");
@@ -12127,6 +12149,117 @@ public void addCharXaiNapLuong(Char p, int type) {
         themCotNeuThieu("kho_xu", "bigint(20)", "kho xu o NPC Tong Quan");
         themCotNeuThieu("kho_luong", "int(11)", "kho luong mo o NPC Tong Quan");
         themCotNeuThieu("kho_luong_khoa", "int(11)", "kho luong khoa o NPC Tong Quan");
+    }
+
+    /**
+     * Cot cua che do Pokemon (sql/them_cot_pokemon.sql): tob_char.dex/shiny va
+     * data_monster.dex/shiny/he2. Chi goi khi bat com.kpah.pokemon.CheDoPokemon, va
+     * PHAI TRUOC khi nap template quai (Map.loadAllTemplate) va nhan nguoi choi - cung
+     * ly do voi themCotKhoXuLuong(). Tat co thi khong dong vao schema (dung hanh vi cu).
+     * Chay sql/them_cot_pokemon.sql bang tay truoc van la cach chinh; ham nay chi la
+     * luoi an toan, co cot roi thi khong lam gi.
+     */
+    public void themCotPokemon() {
+        themCotBangNeuThieu("tob_char", "dex", "SMALLINT", "0");
+        themCotBangNeuThieu("tob_char", "shiny", "TINYINT", "0");
+        themCotBangNeuThieu("data_monster", "dex", "SMALLINT", "0");
+        themCotBangNeuThieu("data_monster", "shiny", "TINYINT", "0");
+        themCotBangNeuThieu("data_monster", "he2", "TINYINT", "-1");
+    }
+
+    /** Them cot NOT NULL DEFAULT macDinh vao bang neu chua co (ten bang/cot la hang so). */
+    private void themCotBangNeuThieu(final String bang, final String tenCot, final String kieuCot, final String macDinh) {
+        Connection conn = null;
+        PreparedStatement pre = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = this.getConnection();
+            pre = conn.prepareStatement("SELECT COUNT(*) FROM information_schema.COLUMNS"
+                    + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?");
+            pre.setString(1, bang);
+            pre.setString(2, tenCot);
+            rs = pre.executeQuery();
+            final boolean daCo = rs.next() && rs.getInt(1) > 0;
+            rs.close();
+            rs = null;
+            if (!daCo) {
+                stmt = conn.createStatement();
+                stmt.execute("ALTER TABLE " + bang + " ADD COLUMN " + tenCot
+                        + " " + kieuCot + " NOT NULL DEFAULT " + macDinh);
+                System.out.println("[DB] Da them cot " + bang + "." + tenCot + " (che do Pokemon).");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                if (pre != null) {
+                    pre.close();
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                Database.connPool.free(conn);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /**
+     * Doc tob_char.dex/shiny vao Char luc nap nhan vat (viec S2). Cot moi - CSDL chua
+     * chay migration thi rs.getX nem SQLException; boc rieng de KHONG lam hong dang nhap
+     * (cung bai hoc voi isCT/kho_xu). Thieu cot -> 0 = suy loai tu class + cap.
+     */
+    public static void docCotPokemon(final ResultSet rs, final Char p) {
+        try {
+            p.pokeDex = rs.getShort("dex");
+            p.pokeShiny = rs.getByte("shiny");
+        } catch (Exception thieuCot) {
+            p.pokeDex = 0;
+            p.pokeShiny = 0;
+        }
+    }
+
+    /**
+     * Ghi tob_char.dex/shiny (viec S2). Mot cau UPDATE RIENG chay sau cau UPDATE chinh
+     * cua saveChar/saveCharAuto/saveCharLienDau va addChar, KHONG nhet vao cau chinh:
+     * cau chinh loi la nhan vat bi KHOA (xem nhanh catch cua saveChar), con thieu cot
+     * dex chi nen mat dex. Chi chay khi bat che do Pokemon - tat co thi khong co cau
+     * SQL nao them. Dung chung connection cua noi goi, khong tra connection.
+     */
+    public static void luuCotPokemon(final Connection conn, final int idChar, final int dex, final int shiny) {
+        if (!CheDoPokemon.bat() || conn == null || idChar <= 0) {
+            return;
+        }
+        PreparedStatement pre = null;
+        try {
+            pre = conn.prepareStatement("UPDATE tob_char SET dex=?, shiny=? WHERE id=?");
+            pre.setInt(1, dex);
+            pre.setInt(2, shiny);
+            pre.setInt(3, idChar);
+            pre.execute();
+        } catch (Exception e) {
+            System.out.println("[POKEMON] khong luu duoc tob_char.dex cho id " + idChar + ": " + e);
+        } finally {
+            try {
+                if (pre != null) {
+                    pre.close();
+                }
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     /** Them mot cot NOT NULL DEFAULT 0 kieu tuy y vao tob_char neu chua co. */

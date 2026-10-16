@@ -60,6 +60,11 @@ public class CreateCharScr : MyScreen
 		tfChat.height = 21;
 		tfChat.isFocus = true;
 		tfChat.setIputType(TField.INPUT_ALPHA_NUMBER_ONLY);
+		if (PokeBody.CHE_DO_POKEMON)
+		{
+			// Pokemon khong co gioi tinh/kieu toc: luon gui gender = 0, headStyle = 0 (muc 4.2).
+			selectGender = 0;
+		}
 		ch.state = 0;
 		currentClazz = 0;
 		ch.hatStyle = -1;
@@ -90,7 +95,14 @@ public class CreateCharScr : MyScreen
 			}
 			else
 			{
-				GameService.gI().createChar(tfChat.getText(), currentClazz, clazz[currentClazz][selectGender].headID, selectGender, selectNation);
+				if (PokeBody.CHE_DO_POKEMON)
+				{
+					GameService.gI().createChar(tfChat.getText(), currentClazz, 0, 0, selectNation);
+				}
+				else
+				{
+					GameService.gI().createChar(tfChat.getText(), currentClazz, clazz[currentClazz][selectGender].headID, selectGender, selectNation);
+				}
 				Canvas.startWaitDlg("Xin chờ", true);
 			}
 		};
@@ -144,18 +156,22 @@ public class CreateCharScr : MyScreen
 		{
 			Canvas.isPointerClick = false;
 			int num = (Canvas.py - (Canvas.hh - 90)) / 30;
-			if (num > 3)
+			// Che do Pokemon chi con 2 dong: 0 = Pokemon khoi dau (class), 1 = lanh tho.
+			int soDongCuoi = (PokeBody.CHE_DO_POKEMON ? 1 : 3);
+			if (num > soDongCuoi)
 			{
-				num = 3;
+				num = soDongCuoi;
 			}
 			if (selected != num)
 			{
 				selected = num;
 			}
+			// Doi dong hien thi sang dong goc (1 -> 3 = lanh tho) de giu nguyen cac nhanh cu.
+			int dongGoc = ((PokeBody.CHE_DO_POKEMON && selected == 1) ? 3 : selected);
 			if (Canvas.px >= Canvas.hw && Canvas.px <= Canvas.hw + 80)
 			{
 				xL = 5;
-				if (selected == 0)
+				if (dongGoc == 0)
 				{
 					currentClazz++;
 					if (currentClazz >= 5)
@@ -164,12 +180,12 @@ public class CreateCharScr : MyScreen
 					}
 					flag = true;
 				}
-				else if (selected == 1)
+				else if (dongGoc == 1)
 				{
 					selectGender = ((selectGender != 1) ? 1 : 0);
 					changChar();
 				}
-				else if (selected == 2)
+				else if (dongGoc == 2)
 				{
 					clazz[currentClazz][selectGender].headID -= 2;
 					if (clazz[currentClazz][selectGender].headID < 0)
@@ -178,7 +194,7 @@ public class CreateCharScr : MyScreen
 					}
 					flag = true;
 				}
-				else if (selected == 3)
+				else if (dongGoc == 3)
 				{
 					selectNation--;
 					if (selectNation < 0)
@@ -190,7 +206,7 @@ public class CreateCharScr : MyScreen
 			else if (Canvas.px <= Canvas.hw + 180 && Canvas.px >= Canvas.hw + 90)
 			{
 				xR = 5;
-				if (selected == 0)
+				if (dongGoc == 0)
 				{
 					currentClazz--;
 					if (currentClazz < 0)
@@ -199,12 +215,12 @@ public class CreateCharScr : MyScreen
 					}
 					flag = true;
 				}
-				else if (selected == 1)
+				else if (dongGoc == 1)
 				{
 					selectGender = ((selectGender == 0) ? 1 : 0);
 					changChar();
 				}
-				else if (selected == 2)
+				else if (dongGoc == 2)
 				{
 					clazz[currentClazz][selectGender].headID += 2;
 					if (clazz[currentClazz][selectGender].headID > 5)
@@ -213,7 +229,7 @@ public class CreateCharScr : MyScreen
 					}
 					flag = true;
 				}
-				else if (selected == 3)
+				else if (dongGoc == 3)
 				{
 					selectNation++;
 					if (selectNation > 1)
@@ -256,6 +272,14 @@ public class CreateCharScr : MyScreen
 		g.drawImage(Res.imgBar, num - 25 - xL, num2 + selected * 30 + 7, 3);
 		g.drawRegion(Res.imgBar, 0, 0, 11, 7, 2, Canvas.hw + 175 + xR, num2 + selected * 30 + 7, 3);
 		MFont.normalFont[0].drawString(g, "Tên:", tfChat.x, Canvas.hh + 10, 0);
+		if (PokeBody.CHE_DO_POKEMON)
+		{
+			paintPokemon(g, num, num2);
+			tfChat.paint(g);
+			g.setClip(0, 0, Canvas.w, Canvas.h);
+			base.paint(g);
+			return;
+		}
 		MFont.normalFont[0].drawString(g, "Dòng: " + clazz[currentClazz][selectGender].name, num - 5, num2, 0);
 		num2 += 30;
 		MFont.normalFont[0].drawString(g, "Giới tính: " + gender[selectGender], num - 5, num2, 0);
@@ -274,6 +298,30 @@ public class CreateCharScr : MyScreen
 		tfChat.paint(g);
 		g.setClip(0, 0, Canvas.w, Canvas.h);
 		base.paint(g);
+	}
+
+	/// <summary>Man tao nhan vat che do Pokemon: 5 Pokemon khoi dau thay 5 class (bang 4.1).</summary>
+	private void paintPokemon(MyGraphics g, int num, int num2)
+	{
+		MFont.normalFont[0].drawString(g, "Pokémon: " + LoaiPokemonClient.TEN_KHOI_DAU[currentClazz], num - 5, num2, 0);
+		num2 += 30;
+		MFont.normalFont[0].drawString(g, "Lãnh thổ: " + GameScr.nameCountry[selectNation], num - 5, num2, 0);
+		num2 += 30;
+		MFont.normalFont[0].drawString(g, LoaiPokemonClient.HE_KHOI_DAU[currentClazz], num - 5, num2, 0);
+		num2 += 30;
+		MFont.normalFont[0].drawString(g, LoaiPokemonClient.VAI_TRO[currentClazz], num - 5, num2, 0);
+		// Chan dung + Pokemon dang dung (Idle). Thieu sprite thi ve paper doll cu.
+		int dexKhoiDau = LoaiPokemonClient.khoiDau(currentClazz);
+		PokeBody.paintChanDung(g, dexKhoiDau, false, Canvas.hw - 140, Canvas.hh - 45, 40);
+		if (!PokeBody.paint(g, dexKhoiDau, false, Canvas.hw - 60, Canvas.hh + 2, Char.DOWN, PokeDuLieu.DUNG, Canvas.gameTick, 100))
+		{
+			ch.paintAvatar(g, (short)(Canvas.hw - 85), (short)(Canvas.hh + 10));
+			if (ch.weaponType != -1 && ch.weaponStyle != -1 && ch.imgWpa != null)
+			{
+				int num5 = ((ch.frame == 1) ? 1 : 0);
+				g.drawImage(ch.imgWpa, Canvas.hw - 85 + ch.dxWear, Canvas.hh + 10 + ch.dyWear + num5, 0);
+			}
+		}
 	}
 
 	public override void update()
