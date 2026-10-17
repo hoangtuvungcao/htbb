@@ -68,6 +68,6 @@ export default defineAdminHandler(async (event) => {
     page,
     perPage: MOI_TRANG,
     thongKe,
-    sepay: useKpahConfig().nap.sepayApiKey !== '',
+    sepay: useHtbbConfig().nap.sepayApiKey !== '',
   }
 })

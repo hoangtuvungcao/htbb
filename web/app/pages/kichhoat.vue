@@ -9,7 +9,7 @@ useSeoMeta({ title: 'Kích hoạt tài khoản', robots: 'noindex' })
 const api = useApi()
 // Dùng chung API với trang Tài khoản (cùng câu kiểm tra 5h_active).
 const { data, error, refresh } = useAsyncData<{ username: string, activated: boolean }>(
-  'kpah-kichhoat',
+  'htbb-kichhoat',
   () => api('/api/account'),
   { server: false },
 )
@@ -38,7 +38,7 @@ const hoTro = computed(() => linkHoTro(site.value))
               <UIcon :name="data?.activated ? 'i-lucide-shield-check' : 'i-lucide-shield-alert'" class="size-10" />
             </div>
             <p class="eyebrow mt-8 justify-center">
-              {{ useAppConfig().kpah.tenSite }}
+              {{ useAppConfig().htbb.tenSite }}
             </p>
             <h1 class="section-title mt-3 text-3xl text-highlighted sm:text-4xl">
               Kích hoạt tài khoản

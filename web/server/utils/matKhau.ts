@@ -83,7 +83,7 @@ const KY_TU_MA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
 const KHUNG_MA_GIAY = 1800
 
 function maTheoKhung(userId: number, hash: string, khung: number): string {
-  const d = createHmac('sha256', useKpahConfig().secret).update(`qmk|${Math.trunc(userId)}|${hash}|${khung}`).digest()
+  const d = createHmac('sha256', useHtbbConfig().secret).update(`qmk|${Math.trunc(userId)}|${hash}|${khung}`).digest()
   let s = ''
   for (let i = 0; i < 8; i++) s += KY_TU_MA[d[i]! % KY_TU_MA.length]
   return s

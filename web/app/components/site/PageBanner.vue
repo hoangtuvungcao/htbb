@@ -23,7 +23,7 @@ defineProps<{ title: string, intro?: string, eyebrow?: string, trail?: { label: 
       </nav>
       <FxReveal>
         <p class="eyebrow">
-          {{ eyebrow ?? useAppConfig().kpah.tenSite }}
+          {{ eyebrow ?? useAppConfig().htbb.tenSite }}
         </p>
         <h1 id="page-heading" class="section-title mt-4 text-4xl text-highlighted sm:text-5xl">
           {{ title }}

@@ -5,7 +5,7 @@
  * Tên lấy từ app config (shared/utils/tenSite.ts): tách đôi theo khoảng trắng ở giữa.
  */
 withDefaults(defineProps<{ size?: 'sm' | 'md' }>(), { size: 'md' })
-const ten = useAppConfig().kpah.tenSite
+const ten = useAppConfig().htbb.tenSite
 const tu = ten.split(' ')
 const nua = Math.ceil(tu.length / 2)
 const dong1 = tu.slice(0, nua).join(' ')

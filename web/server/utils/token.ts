@@ -32,7 +32,7 @@ export interface TokenPayload {
 const b64 = (buf: Buffer) => buf.toString('base64url')
 
 function kyTen(du: string): string {
-  return b64(createHmac('sha256', useKpahConfig().secret).update(du).digest())
+  return b64(createHmac('sha256', useHtbbConfig().secret).update(du).digest())
 }
 
 export function nowSec(): number {
@@ -44,7 +44,7 @@ export function nowSec(): number {
  * Mật khẩu đổi thì dấu đổi -> mọi token cũ bị từ chối ở requireUser / requireAdmin.
  */
 export function dauMatKhau(hashMatKhau: unknown): string {
-  return b64(createHmac('sha256', useKpahConfig().secret).update(`pw|${String(hashMatKhau ?? '')}`).digest()).slice(0, 16)
+  return b64(createHmac('sha256', useHtbbConfig().secret).update(`pw|${String(hashMatKhau ?? '')}`).digest()).slice(0, 16)
 }
 
 export function taoToken(k: LoaiToken, id: number, u: string, hanGiay: number, them: { pw?: string, l?: number } = {}): string {

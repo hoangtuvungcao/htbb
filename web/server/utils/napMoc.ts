@@ -29,7 +29,7 @@ export const NAP_MOC_COT = 'id, userID, moc, amount, ma_don, phuong_hoang, trang
 
 /** URL QR VietQR theo tài khoản TPBank đã cấu hình. */
 export function napMocQr(amount: number, maDon: string): string {
-  const n = useKpahConfig().nap
+  const n = useHtbbConfig().nap
   return napMocVietQrUrl(n.bankBin, n.accountNo, n.accountName, amount, maDon)
 }
 
@@ -124,7 +124,7 @@ export function napMocMoTaDon(don: DonNapMoc, username: string | null): string {
 export const NAP_MOC_MK_MAC_DINH = 'doi-mat-khau-nay'
 
 export function napMocTrangAdminMo(): boolean {
-  const mk = useKpahConfig().nap.adminNaptienPassword
+  const mk = useHtbbConfig().nap.adminNaptienPassword
   return mk !== '' && mk !== NAP_MOC_MK_MAC_DINH
 }
 
@@ -141,8 +141,8 @@ export const NAP_MOC_TOKEN_HAN = 3600
  * khoá bí mật của site nên đọc token cũng không suy ra được mật khẩu.
  */
 export function napMocVanTayMatKhau(): string {
-  return createHmac('sha256', useKpahConfig().secret)
-    .update(`naptien|${useKpahConfig().nap.adminNaptienPassword}`)
+  return createHmac('sha256', useHtbbConfig().secret)
+    .update(`naptien|${useHtbbConfig().nap.adminNaptienPassword}`)
     .digest('base64url')
     .slice(0, 22)
 }

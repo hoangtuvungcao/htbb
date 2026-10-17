@@ -5,7 +5,7 @@ const auth = useAuth()
 onMounted(() => auth.hydrate())
 
 const route = useRoute()
-const tenSite = useAppConfig().kpah.tenSite
+const tenSite = useAppConfig().htbb.tenSite
 const { data: site } = useSite()
 
 const links = computed<NavigationMenuItem[]>(() => {

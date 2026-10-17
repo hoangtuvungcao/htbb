@@ -8,7 +8,7 @@
  *   - vừa đăng xuất   -> "Đã đăng xuất" (?done=1)
  *   - chưa đăng nhập  -> "Bạn chưa đăng nhập"
  */
-const tenSite = useAppConfig().kpah.tenSite
+const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Đăng xuất',
   description: `Kết thúc phiên đăng nhập trên website ${tenSite}.`,
@@ -26,7 +26,7 @@ const logoutComplete = computed(() => !logoutUser.value && route.query.done === 
 async function dangXuat() {
   auth.clear()
   // Xoá cache trang Tài khoản để người dùng sau không thấy dữ liệu cũ.
-  clearNuxtData(['kpah-account', 'kpah-kichhoat'])
+  clearNuxtData(['htbb-account', 'htbb-kichhoat'])
   toast.add({ title: 'Đã đăng xuất. Hẹn gặp lại bạn.', color: 'success', icon: 'i-lucide-log-out' })
   await navigateTo({ path: '/logout', query: { done: '1' } }, { replace: true })
 }

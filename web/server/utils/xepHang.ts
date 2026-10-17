@@ -3,7 +3,7 @@
  */
 
 /** BXH cấp độ (theo kinh nghiệm). */
-// Cột `dex` (loài Pokémon hiện tại) thêm bởi KPAH/sql/them_cot_pokemon.sql — PHẢI chạy
+// Cột `dex` (loài Pokémon hiện tại) thêm bởi HTBB/sql/them_cot_pokemon.sql — PHẢI chạy
 // migration đó trước khi deploy nhánh pokemon/chuyen-doi, không thì bảng này báo lỗi.
 export const XEP_HANG_CAP_DO_SQL = 'SELECT charname, lastLv, class, dex FROM tob_char ORDER BY xp DESC, lastLv DESC LIMIT 10'
 

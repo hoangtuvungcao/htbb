@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const tenVietTat = useAppConfig().kpah.tenVietTat
+const tenVietTat = useAppConfig().htbb.tenVietTat
 /**
  * Khung khu quản trị: menu trái chia nhóm (thu gọn được), thanh trên chỉ đường.
  * Chưa đăng nhập -> chỉ hiện nội dung trang (form đăng nhập ở /admin).
@@ -47,7 +47,7 @@ useHead({
 </script>
 
 <template>
-  <UDashboardGroup v-if="auth.loggedIn.value" unit="rem" storage="local" storage-key="kpah-admin-sidebar">
+  <UDashboardGroup v-if="auth.loggedIn.value" unit="rem" storage="local" storage-key="htbb-admin-sidebar">
     <UDashboardSidebar
       id="admin-sidebar"
       v-model:open="open"
@@ -61,7 +61,7 @@ useHead({
           <img src="/logo-mark.svg" alt="" class="size-8 shrink-0">
           <span v-if="!collapsed" class="min-w-0 leading-tight">
             <strong class="block text-highlighted">Quản trị</strong>
-            <small class="block truncate text-xs text-muted">{{ useAppConfig().kpah.tenSite }}</small>
+            <small class="block truncate text-xs text-muted">{{ useAppConfig().htbb.tenSite }}</small>
           </span>
         </NuxtLink>
       </template>

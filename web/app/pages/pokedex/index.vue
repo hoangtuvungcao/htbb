@@ -4,7 +4,7 @@
  * Dữ liệu tĩnh (shared/data/pokedex.json) -> SSR đủ danh sách, lọc ngay trên trình duyệt.
  * Bộ lọc ghi vào query (?q=&he=&vai=) để chia sẻ link được.
  */
-const tenSite = useAppConfig().kpah.tenSite
+const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Pokédex',
   description: `Pokédex ${tenSite}: ${POKEDEX.loai.length} loài Pokémon trong game — hệ, vai trò, tiến hoá, nơi xuất hiện và khắc chế.`,

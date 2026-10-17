@@ -97,7 +97,7 @@ async function doiMa(code) {
 
 function traTrang(res, ma, noiDung) {
   res.writeHead(ma, { 'Content-Type': 'text/html; charset=utf-8' })
-  res.end(`<!doctype html><meta charset="utf-8"><title>KPAH - Gmail</title><body style="font-family:sans-serif;padding:40px"><h2>${noiDung}</h2><p>Quay lại cửa sổ dòng lệnh để xem kết quả. Có thể đóng tab này.</p></body>`)
+  res.end(`<!doctype html><meta charset="utf-8"><title>HTBB - Gmail</title><body style="font-family:sans-serif;padding:40px"><h2>${noiDung}</h2><p>Quay lại cửa sổ dòng lệnh để xem kết quả. Có thể đóng tab này.</p></body>`)
 }
 
 const server = createServer(async (req, res) => {

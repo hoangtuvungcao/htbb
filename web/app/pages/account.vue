@@ -11,7 +11,7 @@ interface AccountInfo {
 
 const api = useApi()
 const auth = useAuth()
-const { data, error, refresh } = useAsyncData<AccountInfo>('kpah-account', () => api('/api/account'), { server: false })
+const { data, error, refresh } = useAsyncData<AccountInfo>('htbb-account', () => api('/api/account'), { server: false })
 
 // Phiên hết hạn (401) -> useApi đã xoá token; đưa người chơi về trang đăng nhập.
 watch(error, (e: any) => {
@@ -112,7 +112,7 @@ const columns = [
 
 <template>
   <div>
-    <SitePageBanner title="Tài khoản của tôi" eyebrow="Hồ sơ nhà huấn luyện" :intro="`Thông tin tài khoản và các Pokémon của bạn trong thế giới ${useAppConfig().kpah.tenSite}.`" />
+    <SitePageBanner title="Tài khoản của tôi" eyebrow="Hồ sơ nhà huấn luyện" :intro="`Thông tin tài khoản và các Pokémon của bạn trong thế giới ${useAppConfig().htbb.tenSite}.`" />
 
     <UContainer class="max-w-6xl py-14">
       <UAlert

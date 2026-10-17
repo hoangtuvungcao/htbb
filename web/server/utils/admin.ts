@@ -13,7 +13,7 @@
  *
  * PHIÊN: token 'admin' sống KPAH_ADMIN_IDLE_TIMEOUT giây (mặc định 60 phút) kể từ
  * lần thao tác cuối. Mỗi request hợp lệ trả về token mới trong header
- * `X-Kpah-Token` (client tự thay) — tức "hết hạn khi quá lâu không thao tác".
+ * `X-Htbb-Token` (client tự thay) — tức "hết hạn khi quá lâu không thao tác".
  * Tên bị gỡ khỏi danh sách -> mất quyền ngay ở request kế tiếp.
  * Thêm (2026-10-15): HẠN TUYỆT ĐỐI ADMIN_HAN_TOI_DA kể từ lúc đăng nhập (gia hạn trượt không kéo dài mãi),
  * token gắn dấu mật khẩu (đổi mật khẩu là token cũ hết hiệu lực) và tài khoản bị khoá (ban) là mất quyền ngay.
@@ -26,7 +26,7 @@ export interface AdminUser {
 }
 
 export function adminAccounts(): string[] {
-  return useKpahConfig().admin.accounts
+  return useHtbbConfig().admin.accounts
 }
 
 export function laTaiKhoanAdmin(username: string): boolean {
@@ -37,7 +37,7 @@ export function laTaiKhoanAdmin(username: string): boolean {
 export const ADMIN_HAN_TOI_DA = 12 * 3600
 
 function taoTokenAdminTho(id: number, username: string, pw: string, l: number): string {
-  return taoToken('admin', id, username, useKpahConfig().admin.idleTimeout, { pw, l })
+  return taoToken('admin', id, username, useHtbbConfig().admin.idleTimeout, { pw, l })
 }
 
 /** Token admin MỚI (vừa đăng nhập): đọc hash mật khẩu để gắn dấu, mốc đăng nhập = bây giờ. */
@@ -48,7 +48,7 @@ export async function taoTokenAdmin(id: number, username: string): Promise<strin
 
 /** Admin đang đăng nhập, hoặc null. */
 export async function adminUser(event: H3Event): Promise<AdminUser | null> {
-  if (event.context.kpahAdmin !== undefined) return event.context.kpahAdmin
+  if (event.context.htbbAdmin !== undefined) return event.context.htbbAdmin
   const p = docToken(bearer(event), 'admin')
   let a: AdminUser | null = null
   if (p && laTaiKhoanAdmin(p.u) && typeof p.l === 'number' && nowSec() - p.l <= ADMIN_HAN_TOI_DA) {
@@ -63,10 +63,10 @@ export async function adminUser(event: H3Event): Promise<AdminUser | null> {
     if (row && Number(row.ban) !== 1 && p.pw === dauMatKhau(row.password)) {
       a = { id: p.id, username: p.u }
       // Gia hạn trượt: mỗi lần thao tác cấp token mới (giữ nguyên mốc đăng nhập l).
-      setResponseHeader(event, 'X-Kpah-Token', taoTokenAdminTho(a.id, a.username, p.pw!, p.l))
+      setResponseHeader(event, 'X-Htbb-Token', taoTokenAdminTho(a.id, a.username, p.pw!, p.l))
     }
   }
-  event.context.kpahAdmin = a
+  event.context.htbbAdmin = a
   return a
 }
 
@@ -88,7 +88,7 @@ export async function coBangNhatKy(): Promise<boolean> {
 export async function ghiNhatKy(event: H3Event, hanhDong: string, doiTuong = '', chiTiet = ''): Promise<void> {
   if (!(await coBangNhatKy())) return
   try {
-    const ten = event.context.kpahAdmin?.username ?? ''
+    const ten = event.context.htbbAdmin?.username ?? ''
     await exec(
       dbGame(),
       'INSERT INTO web_admin_log (admin_user, hanh_dong, doi_tuong, chi_tiet, ip) VALUES (?, ?, ?, ?, ?)',
@@ -136,7 +136,7 @@ async function ghiSaiAdmin(ip: string, usernameGoVao: string, lyDo: string): Pro
 /** Số lần gõ sai gần đây từ IP này. */
 export async function soLanGoSai(event: H3Event): Promise<number> {
   const ip = ipKhach(event)
-  const cua = Math.trunc(useKpahConfig().admin.failWindow)
+  const cua = Math.trunc(useHtbbConfig().admin.failWindow)
   if (!(await coBangNhatKy())) {
     return (saiTrongBoNho.get(ip) ?? []).filter(t => t > nowSec() - cua).length
   }
@@ -157,7 +157,7 @@ export async function soLanGoSai(event: H3Event): Promise<number> {
 export async function dangBiChanDoSai(event: H3Event): Promise<boolean> {
   // Giữ chỗ trước khi đếm (gửi song song không vượt được hạn mức) - xem giuCho trong chanSpam.ts
   const dangChayTruoc = giuCho(`admin_dang_nhap|${ipKhach(event)}`)
-  const max = useKpahConfig().admin.maxFail
+  const max = useHtbbConfig().admin.maxFail
   if (dangChayTruoc >= max) return true
   return (await soLanGoSai(event)) + dangChayTruoc >= max
 }
@@ -174,7 +174,7 @@ export function defineAdminHandler<T>(fn: (event: H3Event, admin: AdminUser) => 
       return await fn(event, admin)
     } catch (e: any) {
       if (e?.statusCode && e.statusCode < 500) throw e
-      console.error('[kpah-admin]', event.path, e)
+      console.error('[htbb-admin]', event.path, e)
       await ghiNhatKy(event, 'loi_web', event.path.slice(0, 100), `${e?.name ?? 'Error'}: ${e?.message ?? e}`)
       throw apiLoi(500, `Trang quản trị gặp lỗi: ${e?.message ?? 'không rõ'}. Thường là do MySQL chưa chạy hoặc sai thông tin kết nối.`)
     }

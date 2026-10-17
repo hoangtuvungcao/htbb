@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const tenSite = useAppConfig().kpah.tenSite
+const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Đăng nhập',
   description: `Đăng nhập ${tenSite} để quản lý tài khoản và tiếp tục chuyến phiêu lưu cùng bạn bè.`,

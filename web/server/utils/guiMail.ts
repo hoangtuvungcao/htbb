@@ -34,7 +34,7 @@ export interface ThuGui {
 
 /** Đủ cấu hình để gửi mail chưa (đủ 4 giá trị KPAH_GMAIL_*). */
 export function mailDaCauHinh(): boolean {
-  const m = useKpahConfig().mail
+  const m = useHtbbConfig().mail
   return m.gmailClientId !== '' && m.gmailClientSecret !== ''
     && m.gmailRefreshToken !== '' && m.gmailSender !== ''
 }
@@ -68,7 +68,7 @@ async function layAccessToken(): Promise<string> {
 }
 
 async function doiRefreshToken(): Promise<string> {
-  const m = useKpahConfig().mail
+  const m = useHtbbConfig().mail
   const res = await fetch(TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -133,8 +133,8 @@ function base64Dong(s: string): string {
 }
 
 function dungThu(thu: ThuGui): string {
-  const m = useKpahConfig().mail
-  const ranh = `kpah_${randomBytes(12).toString('hex')}`
+  const m = useHtbbConfig().mail
+  const ranh = `htbb_${randomBytes(12).toString('hex')}`
   const tenGui = motDong(m.fromName).replace(/["\\]/g, '')
   const tu = /^[\x20-\x7E]*$/.test(tenGui) ? `"${tenGui}"` : maHoaHeader(tenGui)
   const dong = [

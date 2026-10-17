@@ -20,7 +20,7 @@ interface DonCho {
   username: string | null
 }
 
-const KHOA = 'kpah_naptien'
+const KHOA = 'htbb_naptien'
 const toast = useToast()
 const token = ref<string | null>(null)
 const matKhau = ref('')

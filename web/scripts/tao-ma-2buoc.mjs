@@ -8,7 +8,7 @@
  *  ĐÚNG biến môi trường của dịch vụ web (để chắc chắn đọc được cùng cấu hình —
  *  nếu lệnh này chạy được mà trang lại báo lỗi kết nối thì vấn đề nằm ở chỗ khác):
  *
- *      cd <thư mục KPAH-Web>
+ *      cd <thư mục HTBB-Web>
  *      sudo -u <người chạy web> node --env-file=<file EnvironmentFile của systemd> scripts/tao-ma-2buoc.mjs <tên>
  *
  *  Khi dev: `node scripts/tao-ma-2buoc.mjs <tên>` (tự đọc .env nếu có).
@@ -47,11 +47,11 @@ if (existsSync(join(GOC, '.env'))) {
   try { process.loadEnvFile(join(GOC, '.env')) } catch { /* bỏ qua */ }
 }
 
-const { useKpahConfig } = await import('../server/utils/config.ts')
+const { useHtbbConfig } = await import('../server/utils/config.ts')
 const hb = await import('../server/utils/haiBuoc.ts')
 const mysql = (await import('mysql2/promise')).default
 
-const cfg = useKpahConfig()
+const cfg = useHtbbConfig()
 const HB_BANG = hb.HB_BANG
 const adminAccounts = () => cfg.admin.accounts
 const laTaiKhoanAdmin = ten => adminAccounts().includes(ten.trim().toLowerCase())

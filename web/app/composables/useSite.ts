@@ -13,7 +13,7 @@ export interface SiteConfig {
 }
 
 export function useSite() {
-  return useFetch<SiteConfig>('/api/site', { key: 'kpah-site', dedupe: 'defer' })
+  return useFetch<SiteConfig>('/api/site', { key: 'htbb-site', dedupe: 'defer' })
 }
 
 /** Link nhóm hỗ trợ, rơi về mục hỗ trợ của trang tải game khi chưa cấu hình. */

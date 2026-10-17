@@ -67,7 +67,7 @@ export default defineEventHandler(async (event) => {
   // Không chèn đường link dựng từ header Host (người gửi request tự đặt được) vào thư: gửi MÃ để nhập trên web.
   // Gửi NGẦM, không chờ: chờ SMTP (vài giây) chỉ xảy ra khi tên + email khớp -> đo thời gian trả lời là biết
   // cặp nào có thật. Gửi hỏng chỉ ghi log (guiMail đã ghi), người chơi bấm gửi lại.
-  const tenSite = useKpahConfig().site.name
+  const tenSite = useHtbbConfig().site.name
   guiMail({
       to: String(row.email).trim(),
       subject: `Mã xác nhận đặt lại mật khẩu - ${tenSite}`,

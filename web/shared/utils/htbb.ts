@@ -60,7 +60,7 @@ export function dangKyEmailHopLe(email: string): boolean {
  */
 export const CLASS_NAMES = ['Charmander', 'Bulbasaur', 'Eevee', 'Squirtle', 'Pichu'] as const
 
-/** Tên nghề cũ của KPAH (khớp Res.nameClazz của client, MapCheTao.java:930). */
+/** Tên nghề cũ của game gốc (khớp Res.nameClazz của client, MapCheTao.java:930). */
 export const CLASS_NAMES_CU = ['Kiếm khách', 'Chiến binh', 'Pháp sư', 'Đấu sĩ', 'Cung thủ'] as const
 
 export function tenNghe(c: number | string | null | undefined): string {

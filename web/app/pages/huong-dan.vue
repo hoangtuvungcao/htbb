@@ -3,7 +3,7 @@
  * Hướng dẫn tân thủ. Mọi con số (cấp tiến hoá, bảng khắc chế, tỉ lệ rơi đá, mốc Pokédex...)
  * lấy từ shared/data/pokedex.json — sinh từ code game, nên trang luôn khớp với server.
  */
-const tenSite = useAppConfig().kpah.tenSite
+const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Hướng dẫn tân thủ',
   description: `Hướng dẫn ${tenSite}: chọn Pokémon khởi đầu, bảng khắc chế 18 hệ, tiến hoá và đá Eevee, mốc Pokédex, thú cưỡi, pet, đội và vùng.`,

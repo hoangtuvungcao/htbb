@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
   // Thư báo: không chờ, không làm hỏng request.
   if (tk.email && mailDaCauHinh()) {
     const ten = u.username
-    const tenSite = useKpahConfig().site.name
+    const tenSite = useHtbbConfig().site.name
     guiMail({
       to: tk.email,
       subject: `Mật khẩu đã được đổi - ${tenSite}`,

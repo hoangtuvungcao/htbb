@@ -3,7 +3,7 @@
  * Lịch sử đăng nhập theo client (PC / Android / jar) + danh sách tài khoản từng dùng BẢN NGOÀI
  * (không phải client NQSH-H2 của mình) để soát và khoá. Đặt dưới trang "Ai đang ở đâu".
  * Dữ liệu: server/api/admin/client.get.ts (bảng tob_client_dang_nhap, server game ghi mỗi lần
- * đăng nhập thành công — data/GhiClient.java bên repo KPAH).
+ * đăng nhập thành công — data/GhiClient.java bên repo HTBB).
  */
 const api = useAdminApi()
 

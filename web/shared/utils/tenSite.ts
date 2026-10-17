@@ -1,6 +1,6 @@
 /**
  * NGUỒN DUY NHẤT của tên game/website (nhánh pokemon/chuyen-doi).
- * app/app.config.ts (kpah.tenSite) và server/utils/config.ts (site.name, mail.fromName)
+ * app/app.config.ts (htbb.tenSite) và server/utils/config.ts (site.name, mail.fromName)
  * đều đọc từ đây; muốn đổi tên thì chỉ sửa file này.
  */
 export const TEN_SITE = 'Huyền Thoại Bảo Bối'

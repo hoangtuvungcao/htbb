@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
   const emailCu = tk.email
   if (emailCu && emailCu.toLowerCase() !== email.toLowerCase() && mailDaCauHinh()) {
     const ten = u.username
-    const tenSite = useKpahConfig().site.name
+    const tenSite = useHtbbConfig().site.name
     guiMail({
       to: emailCu,
       subject: `Email tài khoản đã được đổi - ${tenSite}`,

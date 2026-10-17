@@ -1,7 +1,7 @@
 /**
  * Đăng ký tài khoản — quy tắc nhập liệu và các câu SQL dùng chung.
  */
-import { USERNAME_MIN, USERNAME_MAX, PASSWORD_MIN, PASSWORD_MAX, validUsername, matKhauGameHopLe, dangKyEmailHopLe } from '../../shared/utils/kpah'
+import { USERNAME_MIN, USERNAME_MAX, PASSWORD_MIN, PASSWORD_MAX, validUsername, matKhauGameHopLe, dangKyEmailHopLe } from '../../shared/utils/htbb'
 
 /**
  * Số tài khoản một địa chỉ IP được tạo trong một giờ. Người thật hiếm khi cần
@@ -22,7 +22,7 @@ export const DANG_KY_INSERT_SQL
 
 export const DANG_KY_TRUNG_TEN_SQL = 'SELECT 1 FROM team_user WHERE username = ? LIMIT 1'
 
-// Kiểm tra email (dangKyEmailHopLe) nằm ở shared/utils/kpah.ts để form đăng ký
+// Kiểm tra email (dangKyEmailHopLe) nằm ở shared/utils/htbb.ts để form đăng ký
 // kiểm tra trước đúng như server.
 
 export interface DangKyInput {

@@ -54,7 +54,7 @@ export default defineEventHandler(async (event) => {
   // Tài khoản đã tạo xong thì không báo lỗi nữa dù kích hoạt hỏng; chỉ báo đúng
   // trạng thái để trang không nói "đã kích hoạt" khi thực ra chưa (người chơi sẽ
   // được nhắc liên hệ quản trị viên).
-  const autoActivate = useKpahConfig().site.autoActivate
+  const autoActivate = useHtbbConfig().site.autoActivate
     ? await activateAccount(userId, d.username)
     : false
 

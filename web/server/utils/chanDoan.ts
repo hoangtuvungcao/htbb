@@ -60,7 +60,7 @@ const byteLen = (s: string) => Buffer.byteLength(s, 'utf8')
 
 /** Chạy toàn bộ phép kiểm tra, đã xếp theo mức nặng. */
 export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
-  const c = useKpahConfig()
+  const c = useHtbbConfig()
   const DB_GAME = c.db.game
   const DB_ACCOUNT = c.db.account
   const DB_GAME_TEN = DB_GAME.replace(/[^A-Za-z0-9_]/g, '')
@@ -366,7 +366,7 @@ export async function chanDoanChayKiemTra(): Promise<ChanDoanKetQua[]> {
     const fGame = join(goc, 'server.ini')
     const fLogin = join(goc, 'loginServer', 'server.ini')
     const { nguon } = c.db
-    // useKpahConfig() đọc hai file này MỘT LẦN lúc website khởi động — cái đáng
+    // useHtbbConfig() đọc hai file này MỘT LẦN lúc website khởi động — cái đáng
     // hỏi là "lúc đó có đọc được không", vì giá trị đang dùng đến từ lúc đó.
     const trangThai = (f: string, docDuoc: boolean) => {
       if (!existsSync(f)) return 'không có file'
@@ -488,7 +488,7 @@ export async function chanDoanLoiWeb(): Promise<Record<string, unknown>[]> {
 
 /** Danh sách file log (cố định) + file lưu nhân vật hỏng, kèm trạng thái. */
 export function chanDoanDanhSachFile() {
-  const serverDir = useKpahConfig().serverDir
+  const serverDir = useHtbbConfig().serverDir
   const files = Object.entries(DOC_LOG_FILE).map(([ten, mota]) => {
     const tt = docLogTrangThai(docLogDuongDan(serverDir, ten))
     return { ten, mota, co: tt.co, kichThuoc: tt.kichThuoc, suaLuc: tt.co ? docLogNgayGio(tt.suaLuc) : '', docDuoc: tt.docDuoc }

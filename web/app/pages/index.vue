@@ -8,7 +8,7 @@ const auth = useAuth()
 onMounted(() => auth.hydrate())
 const { data: site } = await useSite()
 const hoTro = computed(() => linkHoTro(site.value))
-const tenSite = useAppConfig().kpah.tenSite
+const tenSite = useAppConfig().htbb.tenSite
 
 const stats = [
   { so: '05', tieuDe: 'Pokémon khởi đầu', mo: 'Chọn người bạn đồng hành của chính bạn' },

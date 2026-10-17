@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     return { success, message }
   }
 
-  const apiKey = useKpahConfig().nap.sepayApiKey
+  const apiKey = useHtbbConfig().nap.sepayApiKey
   if (apiKey === '') {
     // Chưa cấu hình SePay -> bỏ qua toàn bộ webhook, dùng xác nhận thủ công.
     return respond(false, 'SePay chưa được cấu hình')

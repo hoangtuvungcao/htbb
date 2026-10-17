@@ -15,8 +15,8 @@ export interface WebUser {
   username: string
 }
 
-const USER_KEY = 'kpah_user'
-const ADMIN_KEY = 'kpah_admin'
+const USER_KEY = 'htbb_user'
+const ADMIN_KEY = 'htbb_admin'
 
 interface Saved<T> { token: string, info: T }
 
@@ -61,9 +61,9 @@ const local = () => (import.meta.client ? window.localStorage : undefined)
 const session = () => (import.meta.client ? window.sessionStorage : undefined)
 
 export function useAuth() {
-  const token = useState<string | null>('kpah-user-token', () => null)
-  const user = useState<WebUser | null>('kpah-user', () => null)
-  const ready = useState<boolean>('kpah-user-ready', () => false)
+  const token = useState<string | null>('htbb-user-token', () => null)
+  const user = useState<WebUser | null>('htbb-user', () => null)
+  const ready = useState<boolean>('htbb-user-ready', () => false)
 
   function hydrate() {
     if (!import.meta.client || ready.value) return
@@ -89,9 +89,9 @@ export function useAuth() {
 }
 
 export function useAdminAuth() {
-  const token = useState<string | null>('kpah-admin-token', () => null)
-  const admin = useState<WebUser | null>('kpah-admin', () => null)
-  const ready = useState<boolean>('kpah-admin-ready', () => false)
+  const token = useState<string | null>('htbb-admin-token', () => null)
+  const admin = useState<WebUser | null>('htbb-admin', () => null)
+  const ready = useState<boolean>('htbb-admin-ready', () => false)
 
   function hydrate() {
     if (!import.meta.client || ready.value) return

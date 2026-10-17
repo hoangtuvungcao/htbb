@@ -2,7 +2,7 @@
 /**
  * Cắt dải hoạt ảnh (đứng + đi, hướng DOWN) của 5 Pokémon khởi đầu cho hero trang chủ.
  *
- *   KPAH_DIR=../KPAH node scripts/sinh-anim-khoi-dau.mjs
+ *   HTBB_DIR=../HTBB node scripts/sinh-anim-khoi-dau.mjs
  *
  * Đọc (chỉ đọc): ClientUnity/Assets/Resources/poke/<dddd>_anh.bytes (PNG atlas RGBA)
  *               + <dddd>_dl.bytes (dữ liệu khung, định dạng ở KE_HOACH_CHUYEN_DOI.md §7.1).
@@ -17,8 +17,8 @@ import { fileURLToPath } from 'node:url'
 import { deflateSync, inflateSync } from 'node:zlib'
 
 const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const KPAH = resolve(WEB, process.env.KPAH_DIR ?? '../KPAH')
-const POKE = join(KPAH, 'ClientUnity/Assets/Resources/poke')
+const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '../HTBB')
+const POKE = join(HTBB, 'ClientUnity/Assets/Resources/poke')
 const OUT = join(WEB, 'public/pokemon/anim')
 
 /** Charmander, Bulbasaur, Eevee, Squirtle, Pichu (DEX_KHOI_DAU). */
@@ -29,7 +29,7 @@ const DONG_TAC = { idle: 0, walk: 1 }
 const HUONG = 0
 
 if (!existsSync(POKE)) {
-  console.error(`Không thấy ${POKE} (đặt KPAH_DIR).`)
+  console.error(`Không thấy ${POKE} (đặt HTBB_DIR).`)
   process.exit(1)
 }
 mkdirSync(OUT, { recursive: true })

@@ -545,7 +545,7 @@ export async function hbDaGhiDanh(tenTaiKhoan: string): Promise<boolean> {
 
 /** Có bắt buộc MỌI tài khoản admin phải có 2FA không (KPAH_ADMIN_2FA_BAT_BUOC). */
 export function hbBatBuocTatCa(): boolean {
-  return useKpahConfig().admin.batBuoc2fa
+  return useHtbbConfig().admin.batBuoc2fa
 }
 
 /**
@@ -615,7 +615,7 @@ export async function hbVaoDuoc(event: import('h3').H3Event, tk: { id: number, u
   const admin = { id: Number(tk.id), username: String(tk.username) }
   // ghiNhatKy() lấy tên người làm từ context: gắn admin vào trước để dòng
   // 'dang_nhap' có cột admin_user là chính người vừa vào.
-  event.context.kpahAdmin = admin
+  event.context.htbbAdmin = admin
   await ghiNhatKy(event, 'dang_nhap', admin.username, `vào trang quản trị (${cach})`)
   return { token: await taoTokenAdmin(admin.id, admin.username), admin }
 }

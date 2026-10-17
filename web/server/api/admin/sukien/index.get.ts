@@ -33,7 +33,7 @@ export default defineAdminHandler(async () => {
 
   // Đọc thẳng server.ini của game server. Web có thể nằm khác máy với game server — lúc đó
   // không đọc được và trang nói thẳng là không biết, không đoán bừa là "đang bật".
-  const cauHinh = suKienCauHinhKhoiDong(kpahDocIni(join(useKpahConfig().serverDir, 'server.ini')))
+  const cauHinh = suKienCauHinhKhoiDong(htbbDocIni(join(useHtbbConfig().serverDir, 'server.ini')))
   const pl = suKienPhanLoai(dong)
 
   return {

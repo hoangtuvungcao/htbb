@@ -16,7 +16,7 @@ export function ipKhach(event: H3Event): string {
   // đóng giữa chừng cũng cho remoteAddress rỗng, và tin XFF lúc ấy = cho kẻ tấn
   // công tự khai IP.
   const remote = event.node.req.socket?.remoteAddress ?? ''
-  const { trustedProxies } = useKpahConfig()
+  const { trustedProxies } = useHtbbConfig()
   if ((import.meta.dev && remote === '') || trustedProxies.includes(remote)) {
     const xff = event.node.req.headers['x-forwarded-for']
     const chuoi = Array.isArray(xff) ? xff.join(',') : (xff ?? '')

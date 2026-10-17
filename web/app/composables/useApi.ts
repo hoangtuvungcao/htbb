@@ -48,7 +48,7 @@ export function useAdminApi() {
       }
     },
     onResponse({ response }) {
-      const t = response.headers.get('x-kpah-token')
+      const t = response.headers.get('x-htbb-token')
       if (t) auth.refresh(t)
     },
     onResponseError({ response }) {

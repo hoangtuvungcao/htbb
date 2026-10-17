@@ -1,18 +1,18 @@
 /**
  * Loài Pokémon của nhân vật người chơi (nhánh pokemon/chuyen-doi).
  *
- * Bản TS thuần của quy tắc trong game server `src/com/kpah/pokemon/LoaiPokemon.java`
- * (repo KPAH) — sửa bên đó thì sửa cả ở đây. Kế hoạch: KPAH/docs/pokemon/KE_HOACH_CHUYEN_DOI.md
+ * Bản TS thuần của quy tắc trong game server `src/com/htbb/pokemon/LoaiPokemon.java`
+ * (repo HTBB) — sửa bên đó thì sửa cả ở đây. Kế hoạch: HTBB/docs/pokemon/KE_HOACH_CHUYEN_DOI.md
  * mục 4.1.
  *
  * - `tob_char.class` (0..4) = dòng khởi đầu: 0 Charmander, 1 Bulbasaur, 2 Eevee, 3 Squirtle, 4 Pichu.
  * - `tob_char.dex` = loài hiện tại; 0 = tự suy ra từ class + cấp (cột thêm bởi
- *   sql/them_cot_pokemon.sql của repo KPAH).
+ *   sql/them_cot_pokemon.sql của repo HTBB).
  * - Eevee chọn nhánh ở cấp 25 (người chơi chọn) nên không suy ra được từ cấp: chưa có
  *   `dex` thì vẫn là Eevee.
  */
 
-import { tenNghe } from './kpah'
+import { tenNghe } from './htbb'
 
 export interface LoaiPokemonWeb {
   dex: number

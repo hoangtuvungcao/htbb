@@ -8,7 +8,7 @@
  * Lỗi có `code: 'restart'` = phải quay lại bước một (hết hạn / thiết lập đổi).
  */
 function loiCsdl(e: any): never {
-  console.error('[kpah-admin] xac thuc hai buoc that bai:', e?.code ?? '', e?.message ?? e)
+  console.error('[htbb-admin] xac thuc hai buoc that bai:', e?.code ?? '', e?.message ?? e)
   // Không đọc/ghi được web_admin_2fa thì từ chối: cho vào lúc này là bỏ qua
   // chống dùng lại mã (hoặc để mã dự phòng dùng được nhiều lần).
   throw apiLoi(503, 'Cơ sở dữ liệu đang lỗi nên chưa kiểm tra được mã. Thử lại sau ít phút.')

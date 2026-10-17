@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const tenSite = useAppConfig().kpah.tenSite
+const tenSite = useAppConfig().htbb.tenSite
 useHead({
   titleTemplate: t => (t ? `${t} · ${tenSite}` : tenSite),
   meta: [

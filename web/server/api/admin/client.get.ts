@@ -1,7 +1,7 @@
 /**
  * Người chơi dùng client nào (PC / Android / jar).
  *
- * Hai bảng, đều do server game ghi (repo KPAH):
+ * Hai bảng, đều do server game ghi (repo HTBB):
  *   tob_client_dang_nhap — data/GhiClient.java: mỗi lần ĐĂNG NHẬP THÀNH CÔNG cập nhật một dòng cho
  *     (tài khoản, loại client): số lần, lần đầu, lần cuối, tên máy (platf), phiên bản, số bản jar.
  *   tob_log_online       — data/GhiSoOnline.java: 5 phút một mẫu, có thêm cột pc / android / jar / khac

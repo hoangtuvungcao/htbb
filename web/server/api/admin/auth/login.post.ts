@@ -23,7 +23,7 @@ import { accessSync, constants, statSync } from 'node:fs'
  * thông tin quý cho kẻ tấn công.
  */
 function goiYLoiKetNoi(): string {
-  const c = useKpahConfig()
+  const c = useHtbbConfig()
   const f = join(c.serverDir, 'server.ini')
   let laFile = false
   try {
@@ -53,7 +53,7 @@ function loiCsdl(buoc: string, e: any): never {
   //     nơi hàm PASSWORD() đã bị gỡ (login server cũng sẽ hỏng theo)
   // Ghi nguyên văn + gợi ý ra log của server để người sửa không đi nhầm hướng.
   const goiY = goiYLoiKetNoi()
-  console.error(`[kpah-admin] dang nhap that bai (${buoc}):`, e?.code ?? '', e?.message ?? e, goiY ? `\n  goi y: ${goiY}` : '')
+  console.error(`[htbb-admin] dang nhap that bai (${buoc}):`, e?.code ?? '', e?.message ?? e, goiY ? `\n  goi y: ${goiY}` : '')
   throw apiLoi(503, 'Cơ sở dữ liệu đang lỗi nên chưa đăng nhập được. Chi tiết và gợi ý cách sửa nằm trong log của web server.')
 }
 

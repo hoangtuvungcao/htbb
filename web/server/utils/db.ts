@@ -15,7 +15,7 @@ import type { Pool, PoolConnection, RowDataPacket, ResultSetHeader } from 'mysql
 const pools = new Map<string, Pool>()
 
 function taoPool(dbName: string): Pool {
-  const c = useKpahConfig()
+  const c = useHtbbConfig()
   const laAccount = dbName === c.db.account && c.db.accountUser !== null
   // CSDL là NovaDB thì SQL đi qua lớp đệm đổi giờ/PASSWORD()/collation (xem novadb.ts)
   return bocPoolNovaDB(mysql.createPool({
@@ -47,9 +47,9 @@ export function db(dbName: string): Pool {
 }
 
 /** DB tài khoản (team_user). */
-export const dbAccount = () => db(useKpahConfig().db.account)
+export const dbAccount = () => db(useHtbbConfig().db.account)
 /** DB game (nhân vật, kích hoạt, BXH). */
-export const dbGame = () => db(useKpahConfig().db.game)
+export const dbGame = () => db(useHtbbConfig().db.game)
 
 export type Row = RowDataPacket & Record<string, any>
 type Executor = Pool | PoolConnection

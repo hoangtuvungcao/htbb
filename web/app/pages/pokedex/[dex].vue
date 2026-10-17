@@ -12,7 +12,7 @@ if (!loai) {
 const l = loai
 
 const soDex = (d: number) => `#${String(d).padStart(3, '0')}`
-const tenSite = useAppConfig().kpah.tenSite
+const tenSite = useAppConfig().htbb.tenSite
 const heChu = l.he.map(tenHe).join(' / ')
 
 useSeoMeta({

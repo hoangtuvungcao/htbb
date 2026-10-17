@@ -16,7 +16,7 @@ interface RankingData {
   cardRankNote: string
 }
 
-const { data, error } = await useFetch<RankingData>('/api/ranking', { key: 'kpah-ranking' })
+const { data, error } = await useFetch<RankingData>('/api/ranking', { key: 'htbb-ranking' })
 
 interface Board {
   value: string

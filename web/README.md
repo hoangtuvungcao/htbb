@@ -1,6 +1,6 @@
-# KPAH-Web — Website Huyền Thoại Bảo Bối (trước đây Khí Phách Anh Hùng)
+# HTBB-Web — Website Huyền Thoại Bảo Bối (trước đây Khí Phách Anh Hùng)
 
-Website (trang công khai + khu quản trị) của máy chủ private KPAH, viết bằng **Vue 3**:
+Website (trang công khai + khu quản trị) của máy chủ private HTBB, viết bằng **Vue 3**:
 
 | Thành phần | Dùng gì |
 |---|---|
@@ -10,13 +10,13 @@ Website (trang công khai + khu quản trị) của máy chủ private KPAH, vi�
 | Hiệu ứng | **motion-v** (hiện dần khi cuộn), thẻ nghiêng 3D theo chuột (`FxTiltCard`) |
 | Database | `mysql2` — dùng **chung** MariaDB với game server (DB `account` + `kpah_db`) |
 
-Website này thay cho website cũ trong `KPAH/web/`; website cũ vẫn chạy cho tới khi
+Website này thay cho website cũ trong `HTBB/web/`; website cũ vẫn chạy cho tới khi
 bạn bật proxy Apache sang đây (xem [Bật website trên VPS](#bật-website-trên-vps)).
 
 ## Nhánh Pokémon (`pokemon/chuyen-doi`)
 
 Trên nhánh này mọi nhân vật người chơi là một Pokémon (kế hoạch:
-`KPAH/docs/pokemon/KE_HOACH_CHUYEN_DOI.md`, việc W1 + W3). Phía web:
+`HTBB/docs/pokemon/KE_HOACH_CHUYEN_DOI.md`, việc W1 + W3). Phía web:
 
 - **Tên loài thay tên nghề.** `tob_char.class` (0..4) giữ nguyên, nay là dòng khởi đầu:
   0 Charmander, 1 Bulbasaur, 2 Eevee, 3 Squirtle, 4 Pichu. Loài hiện tại tính bằng
@@ -25,14 +25,14 @@ Trên nhánh này mọi nhân vật người chơi là một Pokémon (kế ho�
   game, sửa bên kia thì sửa cả ở đây.
 - **Cần migration trước khi deploy.** Xếp hạng, Tài khoản và các trang admin (Nhân vật, chi
   tiết Tài khoản, Tổng quan) `SELECT` cột mới `tob_char.dex` (smallint, 0 = suy ra từ class +
-  cấp). Chạy `KPAH/sql/them_cot_pokemon.sql` trên CSDL game **trước**; chưa có cột thì các
+  cấp). Chạy `HTBB/sql/them_cot_pokemon.sql` trên CSDL game **trước**; chưa có cột thì các
   bảng đó báo "chưa tải được dữ liệu" / lỗi.
 - **Chân dung** 40×40 của 21 loài người chơi ở `public/pokemon/<dex>.png`, chép từ
-  `KPAH/ClientUnity/Assets/Resources/poke/<dddd>_cd.bytes` (thực chất là PNG). Hiển thị với
+  `HTBB/ClientUnity/Assets/Resources/poke/<dddd>_cd.bytes` (thực chất là PNG). Hiển thị với
   class `.pixelated` (`image-rendering: pixelated`).
 - **Trang ghi công `/ghi-cong`** (bắt buộc theo CC BY-NC 4.0) đọc
   `public/pokemon/GHI_CONG.txt` lúc build. Mỗi lần client đóng gói lại sprite thì chép lại
-  file `KPAH/ClientUnity/Assets/Resources/poke/GHI_CONG.txt` sang rồi build.
+  file `HTBB/ClientUnity/Assets/Resources/poke/GHI_CONG.txt` sang rồi build.
 - **Tắt nạp tiền: `KPAH_NAP_BAT`** (mặc định `false`). Quyết định Q10: asset PMDCollab là
   CC BY-NC 4.0 và Pokémon là IP của Nintendo, nên không được thu tiền. Khi tắt: menu
   "Nạp mốc" ẩn, trang `/naptien` và `/xac-nhan-nap` báo 403, mọi API `/api/nap/**` và
@@ -41,14 +41,14 @@ Trên nhánh này mọi nhân vật người chơi là một Pokémon (kế ho�
   `/admin/naptien` vẫn mở để xem đơn cũ. Đặt `KPAH_NAP_BAT=true` để bật lại — lưu ý deploy
   bỏ qua biến rỗng, nên muốn tắt lại phải đặt hẳn `false`.
 - **Tên game/website: "Huyền Thoại Bảo Bối"** (viết tắt **HTBB**, không dấu "Huyen Thoai Bao Boi"),
-  thay cho "Khí Phách Anh Hùng" / tên tạm "KPAH Pokémon". **Nguồn duy nhất:**
+  thay cho "Khí Phách Anh Hùng" / tên tạm "KPAH Pokémon" trước đây. **Nguồn duy nhất:**
   [shared/utils/tenSite.ts](shared/utils/tenSite.ts) (`TEN_SITE`, `TEN_SITE_VIET_TAT`, `TEN_SITE_ASCII`).
-  Giao diện đọc qua `useAppConfig().kpah.tenSite` / `.tenVietTat` ([app/app.config.ts](app/app.config.ts)):
+  Giao diện đọc qua `useAppConfig().htbb.tenSite` / `.tenVietTat` ([app/app.config.ts](app/app.config.ts)):
   tiêu đề tab, meta description, `og:site_name`, đầu/chân trang, tin tức. Server đọc qua
-  `useKpahConfig().site.name` ([server/utils/config.ts](server/utils/config.ts)): API `/api/site`, tiêu đề
+  `useHtbbConfig().site.name` ([server/utils/config.ts](server/utils/config.ts)): API `/api/site`, tiêu đề
   và nội dung email (`server/api/auth/*.post.ts`), tên người gửi mặc định (`KPAH_MAIL_FROM_NAME`).
   Nhãn 2FA admin là "HTBB Admin". Chữ trong [public/logo.svg](public/logo.svg) là ảnh tĩnh, đổi tên
-  thì sửa tay. Mã định danh (biến `KPAH_*`, CSDL `kpah_db`, khoá `kpah` trong app config) giữ nguyên.
+  thì sửa tay. Khoá trong app config là `htbb`. Hạ tầng giữ tên cũ: biến môi trường `KPAH_*` (GitHub Secrets/VPS), CSDL `kpah_db`, service `kpah-web`, thư mục `/opt/kpah-web`.
 - **Thuật ngữ** trên giao diện: nhân vật → Pokémon, bang hội → Đội, linh thú → thú cưỡi.
 
 ## Chạy thử trên máy
@@ -64,7 +64,7 @@ npm run dev               # http://localhost:3000
 `.env` tối thiểu khi dev:
 
 ```bash
-KPAH_SERVER_DIR=C:/Users/ADMIN/Desktop/KPAH-All/KPAH   # để tự đọc server.ini
+KPAH_SERVER_DIR=C:/Users/ADMIN/Desktop/KPAH-All/HTBB   # để tự đọc server.ini
 KPAH_SECRET=chuoi-ngau-nhien-bat-ky
 KPAH_ADMIN_ACCOUNTS=admin
 ```
@@ -94,7 +94,7 @@ Mỗi lần push lên `main`, [.github/workflows/deploy.yml](.github/workflows/d
 
 1. `npm ci` → `nuxt build` → đóng gói `.output`.
 2. SSH vào VPS bằng khoá riêng `VPS_SSH_KEY_WEB`. Khoá này **bị ép chạy đúng một
-   lệnh**: [deploy/deploy-web.sh](deploy/deploy-web.sh) — giống cách repo KPAH đang làm.
+   lệnh**: [deploy/deploy-web.sh](deploy/deploy-web.sh) — giống cách repo HTBB đang làm.
 3. **`nhan-env`**: gửi các biến `KPAH_*` qua **stdin** (không qua biến môi trường của
    ssh, không in ra log). VPS gộp vào `/etc/kpah-web.env` (`chmod 640`). **Secret nào
    để trống thì VPS giữ nguyên giá trị đang có** — quên đặt một secret không làm sập web.
@@ -104,7 +104,7 @@ Mỗi lần push lên `main`, [.github/workflows/deploy.yml](.github/workflows/d
 
 ### Khai ở đâu trên GitHub
 
-`KPAH-Web` > Settings > Secrets and variables > Actions:
+`KPAH-Web` (tên repo GitHub, giữ nguyên) > Settings > Secrets and variables > Actions:
 
 | Tab **Secrets** (bí mật) | Tab **Variables** (không nhạy cảm) |
 |---|---|
@@ -158,10 +158,10 @@ tên người gửi (mặc định `Huyền Thoại Bảo Bối`).
 ### Lấy thông tin (làm một lần)
 
 1. Vào [Google Cloud Console](https://console.cloud.google.com/), đăng nhập **đúng tài
-   khoản Gmail sẽ dùng để gửi thư**, tạo project mới (vd. `kpah-mail`).
+   khoản Gmail sẽ dùng để gửi thư**, tạo project mới (vd. `htbb-mail`).
 2. **APIs & Services → Library** → tìm **Gmail API** → **Enable**.
 3. **APIs & Services → OAuth consent screen** (Google Auth Platform):
-   - User type: **External**. Điền tên ứng dụng (vd. `KPAH Web`), email hỗ trợ, email liên hệ.
+   - User type: **External**. Điền tên ứng dụng (vd. `HTBB Web`), email hỗ trợ, email liên hệ.
    - **Data access / Scopes** → Add scope `https://www.googleapis.com/auth/gmail.send`
      (chỉ quyền gửi thư, không đọc được hộp thư).
    - **Audience → Publish app** → chuyển sang **In production**. Dùng cho chính mình thì
@@ -173,7 +173,7 @@ tên người gửi (mặc định `Huyền Thoại Bảo Bối`).
    - Loại **Web application** với Authorized redirect URI đúng `http://127.0.0.1:8765/`
      (đổi cổng thì đổi cả ở đây lẫn tham số cổng của script).
    - Lưu lại **Client ID** và **Client secret**.
-5. Trên máy có trình duyệt, trong thư mục KPAH-Web:
+5. Trên máy có trình duyệt, trong thư mục HTBB-Web:
 
    ```bash
    node scripts/lay-gmail-refresh-token.mjs <client_id> <client_secret> [cổng, mặc định 8765]
@@ -229,7 +229,7 @@ Tắt proxy (trả Apache về website cũ): `a2disconf kpah-web-proxy && system
 - **Phiên.** Người chơi: 7 ngày kể từ lúc đăng nhập (localStorage). Admin:
   sessionStorage (đóng tab là mất), hết hạn sau `KPAH_ADMIN_IDLE_TIMEOUT` giây
   (mặc định 60 phút) không thao tác — mỗi request hợp lệ server cấp token mới qua
-  header `X-Kpah-Token` (gia hạn trượt). Tên bị gỡ khỏi `KPAH_ADMIN_ACCOUNTS` thì
+  header `X-Htbb-Token` (gia hạn trượt). Tên bị gỡ khỏi `KPAH_ADMIN_ACCOUNTS` thì
   mất quyền ngay ở request kế tiếp; danh sách rỗng = không ai vào được.
 - **IP khách.** Node chỉ tin `X-Forwarded-For` khi kết nối đến từ proxy cùng máy
   (`KPAH_TRUSTED_PROXIES`, mặc định chỉ loopback), và lấy phần tử **cuối** — địa

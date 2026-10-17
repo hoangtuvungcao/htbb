@@ -158,7 +158,7 @@ const cotNhatKy = [
             Bật bằng lệnh chạy trên máy chủ (khoá bí mật không đi qua web, cố ý như vậy):
           </p>
           <p class="mt-1">
-            <code>cd &lt;thư mục KPAH-Web&gt; &amp;&amp; node scripts/tao-ma-2buoc.mjs {{ data.baoMat.admin }}</code>
+            <code>cd &lt;thư mục HTBB-Web&gt; &amp;&amp; node scripts/tao-ma-2buoc.mjs {{ data.baoMat.admin }}</code>
           </p>
           <p v-if="!data.baoMat.batBuoc2fa" class="mt-2">
             Ghi danh xong cho tất cả người trong <code>KPAH_ADMIN_ACCOUNTS</code> thì đặt

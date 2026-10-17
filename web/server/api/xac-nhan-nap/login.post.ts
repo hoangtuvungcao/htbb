@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<Record<string, unknown>>(event).catch(() => ({} as Record<string, unknown>))
   const password = typeof body?.password === 'string' ? body.password : ''
 
-  if (!napMocSoKhoa(useKpahConfig().nap.adminNaptienPassword, password)) {
+  if (!napMocSoKhoa(useHtbbConfig().nap.adminNaptienPassword, password)) {
     await ghiLanLam(event, 'naptien_sai_mk')
     throw apiLoi(401, 'Sai mật khẩu.')
   }

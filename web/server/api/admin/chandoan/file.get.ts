@@ -14,7 +14,7 @@
 export default defineAdminHandler(async (event) => {
   const query = getQuery(event)
   const ten = typeof query.ten === 'string' ? query.ten : ''
-  const serverDir = useKpahConfig().serverDir
+  const serverDir = useHtbbConfig().serverDir
 
   const luuHong = docLogFileLuuNhanVatHong(serverDir)
   if (!docLogDuocDoc(ten, DOC_LOG_FILE, luuHong)) {

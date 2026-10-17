@@ -11,7 +11,7 @@
 const MOI_TRANG = 50
 
 export default defineAdminHandler(async (event) => {
-  const c = useKpahConfig()
+  const c = useHtbbConfig()
   const goiY = {
     dbGame: c.db.game,
     maxFail: Math.trunc(c.admin.maxFail),

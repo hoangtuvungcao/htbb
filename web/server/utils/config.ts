@@ -13,7 +13,7 @@ import { resolve, join } from 'node:path'
 import { createHash, randomBytes } from 'node:crypto'
 import { TEN_SITE } from '../../shared/utils/tenSite.ts'
 
-export interface KpahDbIni {
+export interface HtbbDbIni {
   host: string | null
   port: number | null
   user: string | null
@@ -25,7 +25,7 @@ export interface KpahDbIni {
 }
 
 /** Đọc file .ini kiểu `khoa=gia tri`. File không có / không đọc được -> {}. */
-export function kpahDocIni(duongDan: string): Record<string, string> {
+export function htbbDocIni(duongDan: string): Record<string, string> {
   let noiDung: string
   try {
     noiDung = readFileSync(duongDan, 'utf8')
@@ -48,11 +48,11 @@ export function kpahDocIni(duongDan: string): Record<string, string> {
  * Giữ nguyên chữ "localhost" (không đổi sang 127.0.0.1): MySQL phân quyền theo
  * máy khách, 'kpah'@'localhost' và 'kpah'@'127.0.0.1' là hai quyền khác nhau.
  */
-export function kpahCauHinhDb(serverDir: string): KpahDbIni {
+export function htbbCauHinhDb(serverDir: string): HtbbDbIni {
   const goc = serverDir.replace(/[\\/]+$/, '')
-  const game = kpahDocIni(join(goc, 'server.ini'))
-  const login = kpahDocIni(join(goc, 'loginServer', 'server.ini'))
-  const ra: KpahDbIni = {
+  const game = htbbDocIni(join(goc, 'server.ini'))
+  const login = htbbDocIni(join(goc, 'loginServer', 'server.ini'))
+  const ra: HtbbDbIni = {
     host: null, port: null, user: null, pass: null,
     game: null, account: null, accountUser: null, accountPass: null,
   }
@@ -101,7 +101,7 @@ function envInt(ten: string, macDinh: number): number {
   return Number(v)
 }
 
-export interface KpahConfig {
+export interface HtbbConfig {
   serverDir: string
   db: {
     host: string
@@ -130,7 +130,7 @@ export interface KpahConfig {
     /**
      * Bật tính năng nạp tiền (KPAH_NAP_BAT). Mặc định TẮT trên nhánh pokemon/chuyen-doi:
      * asset PMDCollab là CC BY-NC 4.0 và Pokémon là IP của Nintendo — không được thu tiền
-     * (quyết định Q10, KPAH/docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Tắt thì /api/nap/** và
+     * (quyết định Q10, HTBB/docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Tắt thì /api/nap/** và
      * /api/xac-nhan-nap/** trả 403 (server/middleware/tat-nap.ts) và web ẩn trang Nạp.
      */
     bat: boolean
@@ -168,14 +168,14 @@ export interface KpahConfig {
 }
 
 /** Đọc một lần mỗi tiến trình: đổi biến môi trường thì khởi động lại dịch vụ. */
-let cache: KpahConfig | null = null
+let cache: HtbbConfig | null = null
 
-export function useKpahConfig(): KpahConfig {
+export function useHtbbConfig(): HtbbConfig {
   if (cache) return cache
 
   // Mặc định: thư mục cha của thư mục chạy web (web nằm ngay trong thư mục game server).
   const serverDir = resolve(env('KPAH_SERVER_DIR') || resolve(process.cwd(), '..'))
-  const ini = kpahCauHinhDb(serverDir)
+  const ini = htbbCauHinhDb(serverDir)
 
   const userTuEnv = env('KPAH_DB_USER') !== undefined
   const host = env('KPAH_DB_HOST') ?? ini.host ?? '127.0.0.1'
@@ -221,13 +221,13 @@ export function useKpahConfig(): KpahConfig {
   let secret = env('KPAH_SECRET') ?? ''
   if (secret === '') {
     if (import.meta.dev) {
-      secret = createHash('sha256').update(`kpah-web-token|${pass}|${serverDir}`).digest('hex')
+      secret = createHash('sha256').update(`htbb-web-token|${pass}|${serverDir}`).digest('hex')
     } else {
       secret = randomBytes(32).toString('hex')
-      console.warn('[kpah] Chưa đặt KPAH_SECRET: dùng khoá ngẫu nhiên tạm thời, mọi phiên đăng nhập sẽ mất khi khởi động lại. Đặt KPAH_SECRET (openssl rand -hex 32).')
+      console.warn('[htbb] Chưa đặt KPAH_SECRET: dùng khoá ngẫu nhiên tạm thời, mọi phiên đăng nhập sẽ mất khi khởi động lại. Đặt KPAH_SECRET (openssl rand -hex 32).')
     }
   } else if (secret.length < 32) {
-    console.warn('[kpah] KPAH_SECRET quá ngắn (< 32 ký tự): nên dùng openssl rand -hex 32.')
+    console.warn('[htbb] KPAH_SECRET quá ngắn (< 32 ký tự): nên dùng openssl rand -hex 32.')
   }
 
   cache = {
@@ -282,7 +282,7 @@ export function useKpahConfig(): KpahConfig {
 
 /** Thông tin công khai được phép gửi xuống trình duyệt. */
 export function publicSiteConfig() {
-  const c = useKpahConfig()
+  const c = useHtbbConfig()
   return {
     name: c.site.name,
     tagline: c.site.tagline,

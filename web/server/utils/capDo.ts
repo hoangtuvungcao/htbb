@@ -2,7 +2,7 @@
  * BẢNG QUY ĐỔI CẤP ĐỘ -> ĐIỂM KINH NGHIỆM.
  *
  * DỮ LIỆU SINH TỰ ĐỘNG — ĐỪNG SỬA TAY.
- *   Nguồn : real.LevelDetail.expMain / expRequire (src/real/LevelDetail.java, repo game KPAH),
+ *   Nguồn : real.LevelDetail.expMain / expRequire (src/real/LevelDetail.java, repo game HTBB),
  *           xuất ra bằng chương trình Java SinhBangCapDo trong cùng repo đó.
  *   Server game đổi bảng exp thì chạy lại SinhBangCapDo rồi thay hai mảng dưới đây bằng
  *   kết quả mới; không chỉnh từng số bằng tay (lệch một số là lệch cấp của người chơi).

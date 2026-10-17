@@ -1,8 +1,8 @@
 /**
  * DỮ LIỆU SINH TỰ ĐỘNG — ĐỪNG SỬA TAY.
  *
- *   Nguồn gốc : data.DanhHieu.getName() (src/data/DanhHieu.java), repo game KPAH.
- *   Công cụ   : tools/SinhDanhMucDanhHieu.java trong repo game KPAH (chạy bằng Java trên mã
+ *   Nguồn gốc : data.DanhHieu.getName() (src/data/DanhHieu.java), repo game HTBB.
+ *   Công cụ   : tools/SinhDanhMucDanhHieu.java trong repo game HTBB (chạy bằng Java trên mã
  *               nguồn đã biên dịch). Dữ liệu ở đây được chép từ kết quả của công cụ đó.
  *
  * Tên ghi cứng trong mã nguồn Java, KHÔNG có trong CSDL nào. Phải sinh bằng Java

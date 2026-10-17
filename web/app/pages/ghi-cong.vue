@@ -1,15 +1,15 @@
 <script setup lang="ts">
 /**
- * Trang ghi công (việc W3, KPAH/docs/pokemon/KE_HOACH_CHUYEN_DOI.md mục 3.3).
+ * Trang ghi công (việc W3, HTBB/docs/pokemon/KE_HOACH_CHUYEN_DOI.md mục 3.3).
  * Bắt buộc theo CC BY-NC 4.0: ghi tên người vẽ từng sprite/chân dung PMDCollab.
  *
  * Nguồn: public/pokemon/GHI_CONG.txt — chép lại từ
- * KPAH/ClientUnity/Assets/Resources/poke/GHI_CONG.txt mỗi khi client đóng gói lại sprite.
+ * HTBB/ClientUnity/Assets/Resources/poke/GHI_CONG.txt mỗi khi client đóng gói lại sprite.
  * Đọc lúc build (?raw) nên không phụ thuộc file tĩnh khi chạy.
  */
 import ghiCongTho from '~~/public/pokemon/GHI_CONG.txt?raw'
 
-const tenSite = useAppConfig().kpah.tenSite
+const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Ghi công',
   description: `Ghi công tác giả sprite và chân dung Pokémon (PMDCollab SpriteCollab, CC BY-NC 4.0) dùng trong ${tenSite}.`,

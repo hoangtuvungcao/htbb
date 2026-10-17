@@ -62,7 +62,7 @@ const related = computed(() => newsList().filter(([s]) => s !== slug.value))
                 {{ article.category }}
               </UBadge>
               <span class="inline-flex items-center gap-1"><UIcon name="i-lucide-calendar" class="size-4" /> {{ article.date }}</span>
-              <span class="inline-flex items-center gap-1"><UIcon name="i-lucide-feather" class="size-4" /> {{ useAppConfig().kpah.tenSite }}</span>
+              <span class="inline-flex items-center gap-1"><UIcon name="i-lucide-feather" class="size-4" /> {{ useAppConfig().htbb.tenSite }}</span>
             </div>
             <h1 class="section-title mt-5 text-4xl text-highlighted sm:text-5xl">
               {{ article.title }}

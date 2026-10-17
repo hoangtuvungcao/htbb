@@ -1,7 +1,7 @@
 /**
  * Dữ liệu Pokédex của game (mọi loài có trong game: khởi đầu, quái, boss, thú cưỡi, pet, NPC).
  *
- * File JSON sinh bởi `scripts/sinh-du-lieu-pokemon.mjs` từ repo KPAH — KHÔNG sửa tay;
+ * File JSON sinh bởi `scripts/sinh-du-lieu-pokemon.mjs` từ repo HTBB — KHÔNG sửa tay;
  * sửa dữ liệu bên game rồi chạy lại script. Import tĩnh nên SSR và client dùng chung,
  * không cần gọi API.
  */

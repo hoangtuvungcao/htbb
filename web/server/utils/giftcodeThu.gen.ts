@@ -1,8 +1,8 @@
 /**
  * DỮ LIỆU SINH TỰ ĐỘNG — ĐỪNG SỬA TAY.
  *
- *   Nguồn gốc : mảng real.Map.petTemplate (src/real/Map.java, loadPetTemplate), repo game KPAH.
- *   Công cụ   : tools/SinhDanhMucThu.java trong repo game KPAH (chạy bằng Java trên mã
+ *   Nguồn gốc : mảng real.Map.petTemplate (src/real/Map.java, loadPetTemplate), repo game HTBB.
+ *   Công cụ   : tools/SinhDanhMucThu.java trong repo game HTBB (chạy bằng Java trên mã
  *               nguồn đã biên dịch). Dữ liệu ở đây được chép từ kết quả của công cụ đó.
  *
  * Tên ghi cứng trong mã nguồn Java, KHÔNG có trong CSDL nào. Phải sinh bằng Java

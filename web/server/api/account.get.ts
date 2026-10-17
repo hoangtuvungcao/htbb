@@ -1,7 +1,7 @@
 /**
  * Dữ liệu cho trang Tài khoản và trang Kích hoạt của người chơi đang đăng nhập.
  * -> { username, email, activated, chars: [{ charname, lastLv, xp, class, dex }] }
- * dex: loài Pokémon hiện tại (cột tob_char.dex, cần KPAH/sql/them_cot_pokemon.sql).
+ * dex: loài Pokémon hiện tại (cột tob_char.dex, cần HTBB/sql/them_cot_pokemon.sql).
  * email: email lưu ở team_user (null = chưa có, chưa dùng được Quên mật khẩu).
  *
  * Chỉ đọc theo id/username lấy từ token, không bao giờ từ tham số người gọi gửi lên.

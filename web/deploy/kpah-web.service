@@ -1,8 +1,8 @@
 # /etc/systemd/system/kpah-web.service
-# Website KPAH (Nuxt). Bien moi truong do GitHub Actions ghi vao /etc/kpah-web.env
+# Website HTBB (Nuxt). Bien moi truong do GitHub Actions ghi vao /etc/kpah-web.env
 # (xem deploy/deploy-web.sh). Apache dung truoc, chuyen tiep ve 127.0.0.1:3000.
 [Unit]
-Description=Website KPAH (Nuxt)
+Description=Website HTBB (Nuxt)
 After=network.target novadb.service
 
 [Service]

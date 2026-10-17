@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * Sinh dữ liệu Pokédex cho website từ repo game KPAH (nhánh pokemon/chuyen-doi).
+ * Sinh dữ liệu Pokédex cho website từ repo game HTBB (nhánh pokemon/chuyen-doi).
  *
- *   KPAH_DIR=../KPAH node scripts/sinh-du-lieu-pokemon.mjs
+ *   HTBB_DIR=../HTBB node scripts/sinh-du-lieu-pokemon.mjs
  *
- * Đọc (chỉ đọc, không sửa gì bên KPAH):
+ * Đọc (chỉ đọc, không sửa gì bên HTBB):
  *   docs/pokemon/bang_quai.csv, bang_chieu.csv, bang_thu.csv, bang_npc.csv,
  *   bang_npc_su_kien.csv, bang_pet_cu.csv, kiem_ke_sprite.csv
- *   src/com/kpah/pokemon/{HePokemon,LoaiPokemon,DaTienHoa,Pokedex,TenMapPokemon,ChuPokemon}.java
+ *   src/com/htbb/pokemon/{HePokemon,LoaiPokemon,DaTienHoa,Pokedex,TenMapPokemon,ChuPokemon}.java
  *   src/real/Map.java (bảng tên map), ClientUnity/.../Tilemap.cs (tên map client)
  *   sql/htbb_day_du.sql (data_monster: cấp, HP, exp; data_potion: tên thuốc thưởng)
  *   map/map<N> (lưới quái: 2 byte rộng/cao + rộng×cao byte id template; 0/255 = trống)
@@ -24,16 +24,16 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const KPAH = resolve(WEB, process.env.KPAH_DIR ?? '../KPAH')
+const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '../HTBB')
 const OUT_JSON = join(WEB, 'shared/data/pokedex.json')
 const OUT_ANH = join(WEB, 'public/pokemon')
 
-if (!existsSync(join(KPAH, 'docs/pokemon/bang_quai.csv'))) {
-  console.error(`Không thấy repo KPAH ở ${KPAH} (đặt KPAH_DIR).`)
+if (!existsSync(join(HTBB, 'docs/pokemon/bang_quai.csv'))) {
+  console.error(`Không thấy repo HTBB ở ${HTBB} (đặt HTBB_DIR).`)
   process.exit(1)
 }
 
-const doc = p => readFileSync(join(KPAH, p), 'utf8')
+const doc = p => readFileSync(join(HTBB, p), 'utf8')
 
 // ---------------------------------------------------------------- CSV / Java helpers
 
@@ -82,7 +82,7 @@ const dongCon = s => [...s.matchAll(/\{([^{}]*)\}/g)].map(m => m[1])
 
 // ---------------------------------------------------------------- Hệ + bảng khắc
 
-const heJava = doc('src/com/kpah/pokemon/HePokemon.java')
+const heJava = doc('src/com/htbb/pokemon/HePokemon.java')
 const TEN_HE = chuoi(khoi(heJava, 'String[] TEN ='))
 const TEN_HE_EN = chuoi(khoi(heJava, 'String[] TEN_EN ='))
 const HANG_HE = Object.fromEntries([...heJava.matchAll(/static final byte (\w+) = (-?\d+);/g)].map(m => [m[1], Number(m[2])]))
@@ -99,7 +99,7 @@ LAM_DIU['100'] = Number(/default:\s*return (\d+);/.exec(khoi(heJava, 'int heSoTr
 
 // ---------------------------------------------------------------- Người chơi (5 dòng)
 
-const loaiJava = doc('src/com/kpah/pokemon/LoaiPokemon.java')
+const loaiJava = doc('src/com/htbb/pokemon/LoaiPokemon.java')
 const HE_K = { K: -1 }
 const giaTri = (t) => {
   t = t.trim()
@@ -125,7 +125,7 @@ const PT_GD = {
 
 // ---------------------------------------------------------------- Đá tiến hoá, Pokédex mốc
 
-const daJava = doc('src/com/kpah/pokemon/DaTienHoa.java')
+const daJava = doc('src/com/htbb/pokemon/DaTienHoa.java')
 const DA_ID = so(khoi(daJava, 'int[] ID_ITEM ='))
 const DA_DEX = so(khoi(daJava, 'int[] DEX ='))
 const DA_TEN = chuoi(khoi(daJava, 'String[] TEN ='))
@@ -160,7 +160,7 @@ function sqlDong(bang) {
 }
 const THUOC = Object.fromEntries(sqlDong('data_potion').map(r => [Number(r[0]), r[4].split(/[:.\n]/)[0].trim()]))
 
-const pokedexJava = doc('src/com/kpah/pokemon/Pokedex.java')
+const pokedexJava = doc('src/com/htbb/pokemon/Pokedex.java')
 const MOC = so(khoi(pokedexJava, 'int[] MOC ='))
 const MOC_THUONG = MOC.map((moc) => {
   const m = new RegExp(`case ${moc}:\\s*return ([^;]+);`).exec(pokedexJava)
@@ -184,7 +184,7 @@ for (const r of CHIEU) {
 
 // ---------------------------------------------------------------- Tên map
 
-const tenMapJava = doc('src/com/kpah/pokemon/TenMapPokemon.java')
+const tenMapJava = doc('src/com/htbb/pokemon/TenMapPokemon.java')
 const BANG_TEN_MAP = dongCon(khoi(tenMapJava, 'String[][] BANG =')).map(r => chuoi(r))
 const HUONG = chuoi(khoi(tenMapJava, 'String[] HUONG ='))
 const lower = s => s.toLocaleLowerCase('vi')
@@ -211,7 +211,7 @@ MAP_ID.forEach((id, i) => {
   if (t) tenMapServer[id] = t
 })
 const tenMapClient = {}
-const tilemap = join(KPAH, 'ClientUnity/Assets/Scripts/Game/Tilemap.cs')
+const tilemap = join(HTBB, 'ClientUnity/Assets/Scripts/Game/Tilemap.cs')
 if (existsSync(tilemap)) {
   const src = khoi(readFileSync(tilemap, 'utf8'), 'void setNameMap(')
   for (const m of src.matchAll(/case (\d+):\s*mapName = "([^"]*)";/g)) tenMapClient[m[1]] = m[2]
@@ -230,10 +230,10 @@ function tenMap(id) {
 const MAP_BO_QUA = new Set([40, 42])
 const SPAWN = {} // idTemplate -> {mapId: soLuong}
 const MAP_CO_QUAI = {}
-for (const f of readdirSync(join(KPAH, 'map')).filter(f => /^map\d+$/.test(f))) {
+for (const f of readdirSync(join(HTBB, 'map')).filter(f => /^map\d+$/.test(f))) {
   const id = Number(f.slice(3))
   if (MAP_BO_QUA.has(id)) continue
-  const b = readFileSync(join(KPAH, 'map', f))
+  const b = readFileSync(join(HTBB, 'map', f))
   const w = b[0]
   const h = b[1]
   for (let i = 0; i < w * h && 2 + i < b.length; i++) {
@@ -264,7 +264,7 @@ const NPC = docCsv('docs/pokemon/bang_npc.csv')
 const NPC_SK = docCsv('docs/pokemon/bang_npc_su_kien.csv')
 const PET_CU = docCsv('docs/pokemon/bang_pet_cu.csv')
 const KIEM_KE = docCsv('docs/pokemon/kiem_ke_sprite.csv')
-const chuJava = doc('src/com/kpah/pokemon/ChuPokemon.java')
+const chuJava = doc('src/com/htbb/pokemon/ChuPokemon.java')
 const TEN_NPC = chuoi(khoi(chuJava, 'String[] TEN_NPC ='))
 const TEN_VUNG = chuoi(khoi(chuJava, 'String[] TEN_VUNG ='))
 const TEN_DONG = chuoi(khoi(chuJava, 'String[] TEN_DONG ='))
@@ -414,7 +414,7 @@ for (const l of LOAI.values()) {
 
 // ---------------------------------------------------------------- Chân dung
 
-const THU_MUC_ANH = join(KPAH, 'ClientUnity/Assets/Resources/poke')
+const THU_MUC_ANH = join(HTBB, 'ClientUnity/Assets/Resources/poke')
 const anhCo = new Set(readdirSync(THU_MUC_ANH).filter(f => /^\d{4}s?_cd\.bytes$/.test(f)).map(f => f.slice(0, -'_cd.bytes'.length)))
 mkdirSync(OUT_ANH, { recursive: true })
 let soAnhGhi = 0
@@ -515,11 +515,11 @@ const thieu = [...kiemKeDex].filter(d => !LOAI.has(d))
 if (thieu.length) console.warn(`Cảnh báo: dex có sprite nhưng không có vai trò: ${thieu.join(', ')}`)
 
 const du = {
-  nguon: 'KPAH (bang_*.csv, LoaiPokemon/HePokemon/DaTienHoa/Pokedex/TenMapPokemon.java, htbb_day_du.sql, map/map<N>)',
+  nguon: 'HTBB (bang_*.csv, LoaiPokemon/HePokemon/DaTienHoa/Pokedex/TenMapPokemon.java, htbb_day_du.sql, map/map<N>)',
   he: TEN_HE.map((ten, id) => ({ id, ten, en: TEN_HE_EN[id] })),
   khacChinhXac: KHAC,
   lamDiu: LAM_DIU,
-  stabPhanTram: Number(/PT_STAB = (\d+)/.exec(doc('src/com/kpah/pokemon/ChieuPokemon.java'))[1]),
+  stabPhanTram: Number(/PT_STAB = (\d+)/.exec(doc('src/com/htbb/pokemon/ChieuPokemon.java'))[1]),
   khoiDau: KHOI_DAU_THEO_CLASS.map((dex, cls) => ({ class: cls, dex, dong: TEN_DONG[cls] ?? '' })),
   capNhanhEevee: CAP_NHANH_EEVEE,
   phanTramGiaiDoan: PT_GD,

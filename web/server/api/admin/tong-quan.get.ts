@@ -65,7 +65,7 @@ export default defineAdminHandler(async (event, admin) => {
 })
 
 async function tinhTongQuan(event: import('h3').H3Event, admin: AdminUser) {
-  const cfg = useKpahConfig()
+  const cfg = useHtbbConfig()
   const acc = dbAccount()
   const game = dbGame()
 
@@ -234,7 +234,7 @@ async function tinhTongQuan(event: import('h3').H3Event, admin: AdminUser) {
       if (!(await hbDaGhiDanh(ten))) chuaGhiDanh.push(ten)
     }
   } catch (e: any) {
-    console.error('[kpah-admin] tong quan: khong doc duoc web_admin_2fa:', e?.message ?? e)
+    console.error('[htbb-admin] tong quan: khong doc duoc web_admin_2fa:', e?.message ?? e)
   }
   const batBuoc2fa = hbBatBuocTatCa()
 

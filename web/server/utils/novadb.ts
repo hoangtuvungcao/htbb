@@ -1,7 +1,7 @@
 /**
  * Lớp đệm SQL cho NovaDB (https://github.com/hoangtuvungcao/NovaDB) — CSDL nền SQLite có cổng
  * giả lập MySQL. Dùng bản NovaDB tải về nguyên gốc, nên những chỗ cổng MySQL của nó còn thiếu
- * được vá ở đây, ngay trước khi câu lệnh gửi đi. Y hệt `KPAH/src/data/NovaDBSql.java` (game +
+ * được vá ở đây, ngay trước khi câu lệnh gửi đi. Y hệt `HTBB/src/data/NovaDBSql.java` (game +
  * login server) — sửa một bên thì sửa cả bên kia để ba tiến trình thấy cùng một giờ, cùng một
  * cách so tên.
  *

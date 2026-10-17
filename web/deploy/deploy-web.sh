@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-#  DEPLOY WEBSITE KPAH (Nuxt) - lenh DUY NHAT ma khoa SSH cua GitHub Actions
+#  DEPLOY WEBSITE HTBB (Nuxt) - lenh DUY NHAT ma khoa SSH cua GitHub Actions
 #  duoc phep chay (command="/opt/kpah-web/deploy/deploy-web.sh" trong
 #  /root/.ssh/authorized_keys). Ca du lieu lan bi mat deu di qua STDIN.
 #
