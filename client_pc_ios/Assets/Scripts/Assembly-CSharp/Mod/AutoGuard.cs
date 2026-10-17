@@ -320,6 +320,10 @@ public sealed class AutoGuard
 	/** Điểm (x, y) nằm trong nút (đang ở màn game). */
 	public static bool trongNutUp(int x, int y)
 	{
+		if (MenuNhanh.bat())
+		{
+			return MenuNhanh.trongNut(x, y);
+		}
 		return Canvas.currentScreen == Canvas.gameScr && x >= nutX() && x < nutX() + NUT_W && y >= nutY() && y < nutY() + NUT_H;
 	}
 
@@ -377,6 +381,13 @@ public sealed class AutoGuard
 	{
 		if (Canvas.currentScreen != Canvas.gameScr || Canvas.menu.showMenu || Canvas.currentDialog != null)
 		{
+			return;
+		}
+		if (MenuNhanh.bat())
+		{
+			// pokemon: Menu nhanh + thanh chiêu nhận chuột trước game
+			MenuNhanh.tick();
+			HudPokemon.tick(Canvas.gameScr);
 			return;
 		}
 		if (Canvas.isPointerDown && (trongNutUp(Canvas.px, Canvas.py) || trongNutTieu(Canvas.px, Canvas.py) || trongNutPk(Canvas.px, Canvas.py)))
@@ -507,6 +518,12 @@ public sealed class AutoGuard
 	{
 		if (Canvas.currentScreen != Canvas.gameScr)
 		{
+			return;
+		}
+		if (MenuNhanh.bat())
+		{
+			// pokemon: một Poké Ball nhỏ mép trái + bảng Menu nhanh thay hai cột nút che màn chơi
+			MenuNhanh.ve(graphics);
 			return;
 		}
 		AutoGuard.veNut(graphics, nutY(), "Up", AutoUp.dang);

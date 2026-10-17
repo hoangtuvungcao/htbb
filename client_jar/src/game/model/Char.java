@@ -1352,7 +1352,8 @@ public class Char extends LiveActor {
             yNguoi -= caoThu * 55 / 100;
             this.height = (short) (this.height + caoThu * 55 / 100);
         }
-        PokeBody.paint(g, dexVe, this.pokeShiny, this.x, yNguoi, this.dir, dongTac, tick, 100, doSang);
+        // pokemon: chop trang + lac nhe khi trung don (HieuUngDanh)
+        PokeBody.paint(g, dexVe, this.pokeShiny, this.x + pokeLac(), yNguoi, this.dir, dongTac, tick, 100, doSang == 0 && pokeChop() ? 230 : doSang);
         if (this.comeHome) {
             g.setColor(0);
             g.fillRect(this.x - 16, this.y - 46, 32, 4);

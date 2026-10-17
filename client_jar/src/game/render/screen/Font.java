@@ -90,13 +90,19 @@ public class Font {
             x1 = x - (getWidthNguyenVan(st) >> 1);
         }
         for (int i = 0; i < len; i++) {
-            int pos = this.charList.indexOf(st.charAt(i));
-            if (pos == -1) {
-                pos = 0;
+            char c = st.charAt(i);
+            int pos = this.charList.indexOf(c);
+            if (pos < 0) {
+                // chữ thiếu trong ảnh font: chữ hoa có dấu ghép tại chỗ, còn lại thay chữ gần nhất
+                Image gh = ghep(c);
+                if (gh != null) {
+                    g.drawImage(gh, x1, y, 20);
+                    x1 += gh.getWidth() + this.charSpace;
+                    continue;
+                }
+                pos = thay(c);
             }
-            if (pos > -1) {
-                g.drawRegion(this.imgFont, 0, pos * this.charHeight, this.imgFont.getWidth(), this.charHeight, 0, x1, y, 20);
-            }
+            g.drawRegion(this.imgFont, 0, pos * this.charHeight, this.imgFont.getWidth(), this.charHeight, 0, x1, y, 20);
             x1 += this.charWidth[pos] + this.charSpace;
         }
     }
@@ -110,13 +116,248 @@ public class Font {
     public int getWidthNguyenVan(String st) {
         int len = 0;
         for (int i = 0; i < st.length(); i++) {
-            int pos = this.charList.indexOf(st.charAt(i));
-            if (pos == -1) {
-                pos = 0;
+            char c = st.charAt(i);
+            int pos = this.charList.indexOf(c);
+            if (pos < 0) {
+                Image gh = ghep(c);
+                if (gh != null) {
+                    len += gh.getWidth() + this.charSpace;
+                    continue;
+                }
+                pos = thay(c);
             }
             len += this.charWidth[pos] + this.charSpace;
         }
         return len;
+    }
+
+    // ------------------------------------------------------------------ chữ tiếng Việt thiếu trong font
+    /** Chữ thường tiếng Việt có dấu và chữ gốc không dấu tương ứng (cùng thứ tự). */
+    private static final String VIET = "àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ";
+    private static final String GOC = "aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd";
+    private static final Object KHONG_GHEP = new Object();
+    /** chữ -&gt; Image ghép (hoặc KHONG_GHEP); tạo khi dùng lần đầu, mỗi chữ ~11x13 px. */
+    private java.util.Hashtable boGhep;
+
+    private static char boDau(char c) {
+        char t = ChuPokemon.thuong(c);
+        int i = VIET.indexOf(t);
+        if (i < 0) {
+            return c;
+        }
+        char b = GOC.charAt(i);
+        return t == c ? b : ChuPokemon.hoa(b);
+    }
+
+    /**
+     * Chữ thay khi font không có (không bao giờ bỏ chữ im lặng): đúng chữ khác hoa/thường (giữ dấu)
+     * -&gt; bỏ dấu -&gt; bỏ dấu khác hoa/thường -&gt; '?' (ký tự ASCII điều khiển/thiếu: khoảng trắng như cũ).
+     */
+    private int thay(char c) {
+        if (c < 0x80 && !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9')) {
+            return 0;
+        }
+        char t = ChuPokemon.thuong(c);
+        char h = ChuPokemon.hoa(c);
+        int pos = this.charList.indexOf(t != c ? t : h);
+        if (pos >= 0) {
+            return pos;
+        }
+        char b = boDau(c);
+        pos = this.charList.indexOf(b);
+        if (pos >= 0) {
+            return pos;
+        }
+        pos = this.charList.indexOf(b == ChuPokemon.thuong(b) ? ChuPokemon.hoa(b) : ChuPokemon.thuong(b));
+        if (pos >= 0) {
+            return pos;
+        }
+        pos = this.charList.indexOf('?');
+        return pos >= 0 ? pos : 0;
+    }
+
+    private int[] doc(int pos) {
+        int w = this.imgFont.getWidth();
+        int[] p = new int[w * this.charHeight];
+        this.imgFont.getRGB(p, 0, w, 0, pos * this.charHeight, w, this.charHeight);
+        return p;
+    }
+
+    /** Khung mực [trái, trên, phải, dưới] của ô chữ (null nếu trống). */
+    private int[] khung(int[] p, int w) {
+        int x0 = w, y0 = this.charHeight, x1 = -1, y1 = -1;
+        for (int y = 0; y < this.charHeight; y++) {
+            for (int x = 0; x < w; x++) {
+                if ((p[y * w + x] >>> 24) != 0) {
+                    if (x < x0) {
+                        x0 = x;
+                    }
+                    if (x > x1) {
+                        x1 = x;
+                    }
+                    if (y < y0) {
+                        y0 = y;
+                    }
+                    if (y > y1) {
+                        y1 = y;
+                    }
+                }
+            }
+        }
+        return x1 < 0 ? null : new int[]{x0, y0, x1, y1};
+    }
+
+    /**
+     * Chữ HOA có dấu font thiếu (Â, Í, Ấ, Ữ...): ghép chữ hoa gốc của chính font này + dấu lấy từ chữ
+     * thường có dấu (nét khác giữa "ấ" và "a"): dấu trên dời lên sát đỉnh chữ hoa (thiếu chỗ thì hạ chữ
+     * hoa 1 px), dấu dưới giữ, râu ơ/ư dời theo mép phải - đúng nét pixel của font.
+     */
+    private Image ghep(char c) {
+        if (c < 0xC0 || this.imgFont == null) {
+            return null;
+        }
+        if (this.boGhep == null) {
+            this.boGhep = new java.util.Hashtable();
+        }
+        Character k = new Character(c);
+        Object o = this.boGhep.get(k);
+        if (o != null) {
+            return o == KHONG_GHEP ? null : (Image) o;
+        }
+        Image kq = null;
+        try {
+            kq = taoGhep(c);
+        } catch (Throwable e) {
+            kq = null;
+        }
+        this.boGhep.put(k, kq == null ? KHONG_GHEP : (Object) kq);
+        return kq;
+    }
+
+    private Image taoGhep(char c) {
+        char thuong = ChuPokemon.thuong(c);
+        if (thuong == c) {
+            return null;                      // chỉ ghép chữ hoa
+        }
+        char gocThuong = boDau(thuong);
+        char gocHoa = ChuPokemon.hoa(gocThuong);
+        int pThuong = this.charList.indexOf(thuong);
+        int pGoc = this.charList.indexOf(gocThuong);
+        int pHoa = this.charList.indexOf(gocHoa);
+        if (gocThuong == thuong || pThuong < 0 || pGoc < 0 || pHoa < 0) {
+            return null;
+        }
+        int w = this.imgFont.getWidth();
+        int H = this.charHeight;
+        int[] dau = doc(pThuong);
+        int[] goc = doc(pGoc);
+        int[] hoa = doc(pHoa);
+        int[] kGoc = khung(goc, w);
+        int[] kHoa = khung(hoa, w);
+        if (kGoc == null || kHoa == null) {
+            return null;
+        }
+        // chiều cao chữ thường (x-height) theo chữ "o": chữ "i" có chấm nên đỉnh mực của nó cao hơn
+        int pO = this.charList.indexOf('o');
+        int[] kO = pO >= 0 ? khung(doc(pO), w) : null;
+        if (kO != null) {
+            kGoc = new int[]{kGoc[0], kO[1], kGoc[2], kO[3]};
+        }
+        // nét dấu = điểm của chữ thường có dấu khác chữ thường gốc (với "đ": cả nét gạch)
+        int tren0 = H, tren1 = -1;
+        boolean coDuoi = false;
+        // có dấu trên thật (khác chữ gốc ở vùng trên x-height)? có thì lấy MỌI điểm vùng đó (dấu sắc của
+        // "í" trùng chỗ chấm "i"); không thì vùng trên giữ như chữ gốc (chấm "ị" không thành dấu)
+        boolean dauTren = false;
+        for (int y = 0; y < kGoc[1] && !dauTren; y++) {
+            for (int x = 0; x < w; x++) {
+                int a = dau[y * w + x];
+                if ((a >>> 24) != 0 && a != goc[y * w + x]) {
+                    dauTren = true;
+                    break;
+                }
+            }
+        }
+        for (int y = 0; y < H; y++) {
+            for (int x = 0; x < w; x++) {
+                int a = dau[y * w + x];
+                if ((a >>> 24) != 0 && (y < kGoc[1] ? dauTren : a != goc[y * w + x])) {
+                    if (y < kGoc[1]) {
+                        if (y < tren0) {
+                            tren0 = y;
+                        }
+                        if (y > tren1) {
+                            tren1 = y;
+                        }
+                    } else if (y > kGoc[3]) {
+                        coDuoi = true;
+                    }
+                }
+            }
+        }
+        int dyTren = tren1 >= 0 ? (kHoa[1] - 1) - tren1 : 0;
+        int haHoa = 0;
+        if (tren1 >= 0 && tren0 + dyTren < 0) {
+            int thieu = -(tren0 + dyTren);
+            int choDuoi = H - 1 - kHoa[3] - (coDuoi ? 2 : 0);
+            haHoa = thieu < 1 ? thieu : 1;
+            if (haHoa > choDuoi) {
+                haHoa = choDuoi < 0 ? 0 : choDuoi;
+            }
+            dyTren = -tren0;                  // phần còn thiếu: dấu chạm đỉnh chữ hoa
+        }
+        int dxTren = ((kHoa[0] + kHoa[2]) - (kGoc[0] + kGoc[2])) / 2;
+        int dxRau = kHoa[2] - kGoc[2];
+        int dyRau = kHoa[1] - kGoc[1];
+        int rong = w;
+        int[] p = new int[rong * H];
+        for (int y = 0; y < H; y++) {
+            int yy = y - haHoa;
+            if (yy < 0) {
+                continue;
+            }
+            for (int x = 0; x < w; x++) {
+                p[y * rong + x] = hoa[yy * w + x];
+            }
+        }
+        int phai = kHoa[2];
+        for (int y = 0; y < H; y++) {
+            for (int x = 0; x < w; x++) {
+                int a = dau[y * w + x];
+                if ((a >>> 24) == 0 || (y < kGoc[1] ? !dauTren : a == goc[y * w + x])) {
+                    continue;
+                }
+                int tx, ty;
+                if (y < kGoc[1]) {
+                    tx = x + dxTren;
+                    ty = y + dyTren;
+                } else if (y > kGoc[3]) {
+                    tx = x + dxTren;
+                    ty = y + haHoa;
+                } else {
+                    tx = x + dxRau;            // râu ơ / ư (hoặc gạch đ) bám mép phải chữ hoa
+                    ty = y + dyRau + haHoa;
+                }
+                if (tx >= 0 && tx < rong && ty >= 0 && ty < H) {
+                    p[ty * rong + tx] = a;
+                    if (tx > phai) {
+                        phai = tx;
+                    }
+                }
+            }
+        }
+        int wHoa = this.charWidth[pHoa];
+        int wMoi = phai + 2 > wHoa ? phai + 2 : wHoa;
+        if (wMoi > rong) {
+            wMoi = rong;
+        }
+        int[] q = new int[wMoi * H];
+        for (int y = 0; y < H; y++) {
+            for (int x = 0; x < wMoi; x++) {
+                q[y * wMoi + x] = p[y * rong + x];
+            }
+        }
+        return Image.createRGBImage(q, wMoi, H, true);
     }
 
     public String[] splitFontBStrInLine(String src, int lineWidth) {

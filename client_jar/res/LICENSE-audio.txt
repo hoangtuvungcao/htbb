@@ -1,0 +1,24 @@
+Am thanh trong jar Huyen Thoai Bao Boi (/am/*.wav, /am/*.mid)
+================================================================
+
+Tat ca am thanh deu la CC0 1.0 (Creative Commons Zero, public domain):
+https://creativecommons.org/publicdomain/zero/1.0/
+Sinh bang j2me/tools/lam_am_thanh.py (cat ngan, chuan hoa, doi sang WAV 8 bit mono 8-16 kHz).
+
+1. Kenney (www.kenney.nl) - CC0, License.txt trong tung goi:
+   - "Interface Sounds"  : click_001, confirmation_001, back_001, open_001, pluck_001
+       -> s_click, s_xacnhan, s_huy, s_mo, s_nhat
+   - "Impact Sounds"     : impactPunch_medium_000, impactPunch_heavy_001, impactSoft_heavy_001,
+                           impactGeneric_light_000
+       -> s_danh, s_chimang, s_bidanh, s_ithieuqua
+   - "RPG Audio"         : knifeSlice2, handleCoins2 -> s_truot, s_vang
+   - "Digital Audio"     : zapTwoTone, phaserUp3, phaserDown2, phaseJump1, powerUp2, lowThreeTone
+       -> s_phep, s_hieuqua, s_chet, s_dichchuyen, s_hoimau, s_canhbao
+   - "Music Jingles" (8-Bit jingles): jingles_NES12, jingles_NES00, jingles_NES04
+       -> s_lencap, s_tienhoa, s_nhiemvu
+   Kenney khong bat buoc ghi cong; ghi o day de minh bach.
+
+2. Tu tong hop cho du an (CC0):
+   - s_boss.wav: tieng gam boss (song rang cua quet xuong + nhieu loc).
+   - n_*.mid: 9 bai nhac nen chiptune GOC (tieu de, thi tran, duong, rung, hang, tuyet, sa mac,
+     dau chien, boss), soan bang thuat toan trong lam_am_thanh.py - KHONG dung nhac Pokemon.

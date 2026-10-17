@@ -252,7 +252,9 @@ public class LoginScr extends Screen {
         ServerListScr.gI().paintBg(g);
         Canvas.resetTrans(g);
         // pokemon: tieu de ThuongHieu thay logo game goc
-        if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 125), Canvas.w, Canvas.hh - 54)) {
+        if (game.pokemon.Banner.co()) {
+            game.pokemon.ThuongHieu.veLogo(g, Canvas.hw, Math.max(6, Canvas.hh - 100), Canvas.w);
+        } else if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 125), Canvas.w, Canvas.hh - 54)) {
             g.drawImage(Canvas.imgLogo, Canvas.hw, Canvas.hh - 70, 3);
         }
         paintPanel(g);
@@ -260,7 +262,7 @@ public class LoginScr extends Screen {
 
     void paintPanel(Graphics g) {
         // pokemon: hộp thoại trắng viền tối, dải tiêu đề đỏ, chữ tối
-        game.pokemon.GiaoDien.hop(g, Canvas.hw - 72, Canvas.hh - 50, 144, 116);
+        game.pokemon.GiaoDien.theMo(g, Canvas.hw - 72, Canvas.hh - 50, 144, 116);
         game.pokemon.GiaoDien.dai(g, Canvas.hw - 69, Canvas.hh - 47, 138, 16, "Đăng nhập");
         Font.blackFont.drawString(g, "Tài khoản:", this.xC + 1, Canvas.hh - 27, 0);
         Font.blackFont.drawString(g, "Mật khẩu:", this.xC + 1, Canvas.hh + 9, 0);
@@ -277,7 +279,7 @@ public class LoginScr extends Screen {
             game.pokemon.GiaoDien.khoi(g, xo + 3, yo + 3, 5, 5, 1, game.pokemon.GiaoDien.LA_TOI);
         }
         Font.blackFont.drawString(g, "Nhớ mật khẩu", this.xC + 18, Canvas.hh + 47, 0);
-        if (Canvas.hh + 84 + 14 < Canvas.h - Screen.deltaY) {
+        if (!game.pokemon.Banner.co() && Canvas.hh + 84 + 14 < Canvas.h - Screen.deltaY) {
             Font.borderFont.drawString(g, new StringBuffer("Hotline: ").append(numberSupport).toString(), Canvas.hw, Canvas.hh + 84, 2);
         }
         super.paint(g);
@@ -287,6 +289,7 @@ public class LoginScr extends Screen {
     public void switchToMe() {
         super.switchToMe();
         init();
+        game.pokemon.AmThanh.manTieuDe();   // pokemon: nhac tieu de
     }
 
     @Override

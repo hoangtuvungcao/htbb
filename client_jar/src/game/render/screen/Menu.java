@@ -38,6 +38,7 @@ public class Menu extends Main {
             @Override
             public void perform() {
                 Menu.this.showMenu = false;
+                game.pokemon.AmThanh.phat(game.pokemon.AmThanh.XAC_NHAN);   // pokemon: tieng chon
                 if (Menu.this.selected != -1) {
                     ((Command) Menu.this.menuItems.elementAt(Menu.this.selected)).action.perform();
                 }
@@ -48,6 +49,7 @@ public class Menu extends Main {
             @Override
             public void perform() {
                 Menu.this.showMenu = false;
+                game.pokemon.AmThanh.phat(game.pokemon.AmThanh.HUY);   // pokemon: tieng dong
             }
         });
     }
@@ -108,6 +110,7 @@ public class Menu extends Main {
         }
         this.menuTemY = Canvas.h - Screen.ITEM_HEIGHT;
         this.showMenu = true;
+        game.pokemon.AmThanh.phat(game.pokemon.AmThanh.MO);   // pokemon: tieng mo menu
         this.selected = 0;
         this.cylim = (this.menuItems.size() - 4) * Screen.ITEM_HEIGHT;
         if (this.cylim < 0) {

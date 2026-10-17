@@ -175,6 +175,54 @@ public final class GiaoDien {
         khoiDoc(g, x + 4, y + 4, w - 8, h - 8, 3, THAN_TREN, THAN_DUOI);
     }
 
+    /**
+     * Tiêu đề VIẾT HOA của game gốc ("TOP BANG HỘI") -> "Top bang hội": borderFont (chữ tiêu đề kiểu
+     * Pokémon) thiếu nhiều chữ hoa có dấu (Ộ, Ữ...) nên chữ hoa có dấu bị mất nét.
+     */
+    public static String tieuDe(String s) {
+        if (s == null || s.length() < 4 || s.indexOf(' ') < 0) {
+            return s; // "PK", "HP", tên một từ: giữ
+        }
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (ChuPokemon.hoa(c) != c) {
+                return s; // đã có chữ thường: giữ nguyên
+            }
+        }
+        return s.substring(0, 1) + ChuPokemon.thuong(s.substring(1));
+    }
+
+    /** Thân bo góc mờ (alpha) w x h: giữa + 2 dải trên/dưới thụt góc 3 px. */
+    private static void thanMo(Graphics g, int x, int y, int w, int h, int argb) {
+        KieuO.phu(g, x + 3, y, w - 6, 3, argb);
+        KieuO.phu(g, x, y + 3, w, h - 6, argb);
+        KieuO.phu(g, x + 3, y + h - 3, w - 6, 3, argb);
+    }
+
+    /** Thẻ trắng mờ trên nền banner (đăng nhập / máy chủ): viền tối + viền trong trắng, chữ tối. */
+    public static void theMo(Graphics g, int x, int y, int w, int h) {
+        moClip(g);
+        thanMo(g, x + 1, y + 2, w, h, 0x400B1222);
+        thanMo(g, x + 2, y + 2, w - 4, h - 4, 0xE0F7FAFF);
+        g.setColor(VIEN);
+        g.drawRoundRect(x, y, w - 1, h - 1, 10, 10);
+        g.setColor(TRANG);
+        g.drawRoundRect(x + 1, y + 1, w - 3, h - 3, 8, 8);
+    }
+
+    /** Bảng xanh đậm mờ trên nền banner (chọn / tạo nhân vật): chữ trắng của game đọc rõ. */
+    public static void bangMo(Graphics g, int x, int y, int w, int h) {
+        moClip(g);
+        thanMo(g, x + 1, y + 2, w, h, 0x500B1222);
+        thanMo(g, x + 3, y + 3, w - 6, h - 6, 0xD81A3B6E);
+        g.setColor(VIEN);
+        g.drawRoundRect(x, y, w - 1, h - 1, 10, 10);
+        g.setColor(TRANG);
+        g.drawRoundRect(x + 1, y + 1, w - 3, h - 3, 8, 8);
+        g.setColor(XANH_SANG);
+        g.drawRoundRect(x + 2, y + 2, w - 5, h - 5, 6, 6);
+    }
+
     /** Bảng có dải tiêu đề đỏ cao hTieuDe (tính từ mép trên khung). */
     public static void bangTieuDe(Graphics g, int x, int y, int w, int h, int hTieuDe, String tieuDe) {
         bang(g, x, y, w, h);
@@ -191,17 +239,58 @@ public final class GiaoDien {
         g.fillRect(x + 3, y + 1, w - 6, 1);
         g.setColor(VIEN);
         g.fillRect(x, y + h, w, 1);
+        boolean coBong = h >= 12 && w > 60;
         if (tieuDe != null && tieuDe.length() > 0 && Font.borderFont != null) {
+            tieuDe = tieuDe(tieuDe);
             int fh = Font.borderFont.getHeight();
-            Font.borderFont.drawString(g, tieuDe, x + w / 2, y + (h - fh) / 2 + 1, Font.CENTER);
+            int fw = Font.borderFont.getWidth(tieuDe);
+            int r = h / 2 - 2 > 6 ? 6 : h / 2 - 2;
+            int choBong = 2 * r + 8;
+            int xTam = x + w / 2;
+            if (coBong && fw + 2 * choBong > w) {
+                // chữ dài: dời chữ sang phải tránh Poké Ball; vẫn không đủ thì bỏ Poké Ball
+                if (fw + choBong + 4 <= w) {
+                    xTam = x + choBong + (w - choBong) / 2;
+                } else {
+                    coBong = false;
+                }
+            }
+            Font.borderFont.drawString(g, tieuDe, xTam, y + (h - fh) / 2 + 1, Font.CENTER);
         }
-        if (h >= 12 && w > 60) {
+        if (coBong) {
             int r = h / 2 - 2;
             if (r > 6) {
                 r = 6;
             }
             pokeBall(g, x + 4 + r, y + h / 2, r, 0);
         }
+    }
+
+    /** Viên tên tab (giống bảng nhân vật): đỏ khi đang ở nội dung, xanh khi đang chọn tab. */
+    public static void vienTab(Graphics g, int x, int y, int w, int h, boolean doiTab) {
+        khoi(g, x, y, w, h, 6, VIEN);
+        khoiDoc(g, x + 1, y + 1, w - 2, h - 2, 5, doiTab ? XANH_SANG : DO_SANG, doiTab ? XANH : DO_TOI);
+    }
+
+    /** Mũi tên đổi tab vàng viền tối, đỉnh tại (x, yTam); trai = chỉ sang trái. */
+    public static void muiTab(Graphics g, int x, int yTam, boolean trai) {
+        int d = trai ? 1 : -1;
+        g.setColor(VIEN);
+        g.fillTriangle(x, yTam, x + 9 * d, yTam - 6, x + 9 * d, yTam + 6);
+        g.setColor(VANG);
+        g.fillTriangle(x + 2 * d, yTam, x + 8 * d, yTam - 4, x + 8 * d, yTam + 4);
+    }
+
+    /** Cắt chuỗi cho vừa bề ngang w (thêm ".."), dùng cho dòng mô tả trên máy hẹp. */
+    public static String catChu(Font f, String s, int w) {
+        if (s == null || f == null || f.getWidth(s) <= w) {
+            return s;
+        }
+        int n = s.length();
+        while (n > 1 && f.getWidth(s.substring(0, n) + "..") > w) {
+            n--;
+        }
+        return s.substring(0, n) + "..";
     }
 
     /** Ô đang chọn trên nền tối: thân xanh sáng, viền vàng. */

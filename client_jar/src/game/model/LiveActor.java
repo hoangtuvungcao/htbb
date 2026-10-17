@@ -48,6 +48,37 @@ public abstract class LiveActor extends Actor {
     // pokemon: dong tac PokeBody dang ve va tick luc bat dau (ClientUnity LiveActor.cs)
     public int pokeDongTacCu = -1;
     public int pokeTickBatDau;
+    // pokemon: phan hoi chien dau (game.pokemon.HieuUngDanh): tick bi trung (chop trang + lac),
+    // tick bi bong (sat thuong theo thoi gian), trang thai server gui (-97: 1 bong 2 doc 3 te 4 ngu 5 bang)
+    public int pokeTrungLuc = -1;
+    public int pokeBongLuc = -1;
+    public int pokeTT;
+    public int pokeTTChong;
+    public long pokeTTHet;
+
+    private int pokeTuoiTrung() {
+        if (this.pokeTrungLuc < 0) {
+            return 99;
+        }
+        int t = game.render.Canvas.gameTick - this.pokeTrungLuc;
+        return t < 0 ? t + 10001 : t;
+    }
+
+    /** Dang chop trang (2 khung dau sau khi trung). */
+    public boolean pokeChop() {
+        int t = pokeTuoiTrung();
+        return t == 0 || t == 2;
+    }
+
+    /** Lac ngang (px) sau khi trung, tat dan trong 6 tick. */
+    public int pokeLac() {
+        int t = pokeTuoiTrung();
+        if (t >= 6) {
+            return 0;
+        }
+        int a = (6 - t + 1) / 2;
+        return (t & 1) == 0 ? a : -a;
+    }
 
     /** So tick ke tu luc bat dau dong tac hien tai (Canvas.gameTick quay ve 0 sau 10000). */
     public int pokeTickTrongDongTac(int dongTac) {

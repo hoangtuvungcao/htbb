@@ -204,7 +204,7 @@ public class ViewInfoScr extends Screen {
         g.translate(Canvas.hw - (this.w / 2), Canvas.hh - (this.h / 2));
         Res.paintDlgFull(g, 0, 0, this.w, this.h);
         g.setClip(0, 0, this.w, this.h);
-        Font.bigFont.drawString(g, this.title, this.w >> 1, 4, 2);
+        Font.borderFont.drawString(g, game.pokemon.GiaoDien.tieuDe(this.title), (this.w >> 1) + 6, 6, 2); // pokemon: chữ trắng viền giữa dải đỏ
         g.setClip(0, 27, this.w, this.h - 30);
         g.translate(0, -cmy);
         if (this.type == 2) {

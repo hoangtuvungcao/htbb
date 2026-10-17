@@ -28,6 +28,19 @@ public class NPC : Actor
 		9, 13
 	};
 
+	/// <summary>
+	/// NPC tinh (type 0..31, cung index voi NPCNAME) -&gt; so Pokedex ve bang PokeBody.
+	/// 0 = giu anh NPC cu. Bang day du kem vai tro: docs/pokemon/bang_npc.csv (sua 2 noi cung luc).
+	/// Thieu sprite trong Resources/poke/ thi tu quay ve anh cu.
+	/// </summary>
+	public static readonly short[] POKE_DEX_THEO_TYPE = new short[32]
+	{
+		113, 352, 68, 437, 59, 178, 53, 18, 143, 115,
+		131, 76, 76, 76, 76, 76, 128, 128, 128, 128,
+		128, 257, 52, 324, 302, 214, 352, 437, 83, 53,
+		115, 52
+	};
+
 	private int dy;
 
 	private int fra;
@@ -75,12 +88,37 @@ public class NPC : Actor
 		return NPCNAME[type];
 	}
 
+	/// <summary>So Pokedex cua NPC nay (0 = khong doi sang Pokemon).</summary>
+	public virtual int getPokeDex()
+	{
+		if (type < 0 || type >= POKE_DEX_THEO_TYPE.Length)
+		{
+			return 0;
+		}
+		return POKE_DEX_THEO_TYPE[type];
+	}
+
+	/// <summary>Ve NPC bang PokeBody, (x, y) la diem chan (anh cu cung ve BOTTOM tai y).</summary>
+	public bool paintPokemon(MyGraphics g)
+	{
+		int dex = getPokeDex();
+		if (dex <= 0 || !PokeBody.coSprite(dex, false))
+		{
+			return false;
+		}
+		g.drawImage(Res.imgShadow, x, y - 2, MyGraphics.HCENTER | MyGraphics.VCENTER);
+		return PokeBody.paint(g, dex, false, x, y, Char.DOWN, PokeDuLieu.DUNG, Canvas.gameTick, 100);
+	}
+
 	public override void paint(MyGraphics g)
 	{
-		g.drawImage(img[1], x, y, MyGraphics.BOTTOM | MyGraphics.HCENTER);
-		if (img[0] != null)
+		if (!paintPokemon(g))
 		{
-			g.drawImage(img[0], x + NPCX[idImg[type]], y + NPCY[idImg[type]] + fra / 5, MyGraphics.BOTTOM | MyGraphics.HCENTER);
+			g.drawImage(img[1], x, y, MyGraphics.BOTTOM | MyGraphics.HCENTER);
+			if (img[0] != null)
+			{
+				g.drawImage(img[0], x + NPCX[idImg[type]], y + NPCY[idImg[type]] + fra / 5, MyGraphics.BOTTOM | MyGraphics.HCENTER);
+			}
 		}
 		Image imgQuest = GameScr.getImgQuest(type);
 		if (!imgQuest.Equals(Res.imgSelect))
@@ -91,6 +129,11 @@ public class NPC : Actor
 
 	public override void paintCorner(MyGraphics g, int xCorner, int yCorner)
 	{
+		int dex = getPokeDex();
+		if (dex > 0 && ChanDungPoke.paintHuyHieu(g, dex, false, xCorner, yCorner - 8, 26))
+		{
+			return;
+		}
 		g.setClip(xCorner - 10, yCorner + 12 - height, 20, 22);
 		if (img[0] != null)
 		{

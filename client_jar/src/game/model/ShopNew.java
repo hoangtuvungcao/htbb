@@ -3423,17 +3423,8 @@ public class ShopNew extends Screen {
     }
 
     private void paintFeatures(Graphics g) {
-        if (!this.isChangeTab) {
-            g.setColor(7278866);
-            g.fillRect(5, this.selected * 19, 119, 18);
-        }
-        g.drawImage(Res.imgInfoWindow[1], 0, -20, 0);
-        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.basePointLeft)).toString(), 107, -11, 2);
-        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.strength)).toString(), 107, 8, 2);
-        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.agility)).toString(), 107, 27, 2);
-        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.spirit)).toString(), 107, 46, 2);
-        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.health)).toString(), 107, 65, 2);
-        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.luck)).toString(), 107, 84, 2);
+        // pokemon: hàng chỉ số bo góc + biểu tượng màu hệ (game.pokemon.BangTiemNang) thay ảnh inv_1
+        game.pokemon.BangTiemNang.ve(g, Canvas.gameScr.mainChar, this.selected, this.isChangeTab, this.w);
     }
 
     private void paintCharWearing(Graphics g) {

@@ -755,7 +755,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                         HelpScr.gI().setInfo(strt);
                     } else if (typeStr == 1) {
                     }
-                    Canvas.gameScr.onMSGServer(msg.reader().readUTF());
+                    // gói hướng dẫn (typeStr 0) chỉ có một chuỗi: đọc thêm khi còn dữ liệu (trước đây EOFException)
+                    if (msg.reader().available() > 0) {
+                        Canvas.gameScr.onMSGServer(msg.reader().readUTF());
+                    }
                     break;
                 case -22:
                     Char ch = new Char();

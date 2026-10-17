@@ -156,13 +156,23 @@ public class CharSelectScr extends Screen {
 
     @Override
     public void paint(Graphics g) {
-        ServerListScr.gI().paintBg(g);
+        // pokemon: banner; Pokémon khởi đầu cùng dòng với nhân vật đang chọn được chiếu sáng
+        int chonDong = -1;
+        try {
+            // lệnh 13 không gửi class: suy từ loại vũ khí như duDoanDex (weaponType 3..7 = class 0..4)
+            if (this.chars != null && this.selected >= 0 && this.selected < this.chars.length && this.chars[this.selected] != null) {
+                int vk = this.chars[this.selected].weaponType;
+                chonDong = vk >= 3 && vk <= 7 ? vk - 3 : -1;
+            }
+        } catch (Throwable e) {
+        }
+        ServerListScr.gI().paintBg(g, chonDong, true);
         Canvas.resetTrans(g);
         // pokemon: 3 thẻ kiểu Pokédex - dải đỏ số thứ tự, Pokémon trong vòng sáng, tên, Lv, huy hiệu hệ
         int cw = rongThe();
         int xKhung = xThe(0) - 8;
         int wKhung = 3 * cw + 8 + 16;
-        game.pokemon.GiaoDien.bang(g, xKhung, yThe() - 30, wKhung, CAO_THE + 76);
+        game.pokemon.GiaoDien.bangMo(g, xKhung, yThe() - 30, wKhung, CAO_THE + 76);
         game.pokemon.GiaoDien.dai(g, xKhung + 4, yThe() - 26, wKhung - 8, 18, "Chọn nhân vật");
         for (int i = 0; i < 3; i++) {
             int x = xThe(i);

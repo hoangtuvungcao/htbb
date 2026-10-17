@@ -405,6 +405,8 @@ public class MFont
 
 	public mVector splitFontVector(string src, int lineWidth)
 	{
+		// Ngat dong theo chu SAU khi doi (chu doi co the dai/ngan hon).
+		src = ChuPokemon.D(src);
 		mVector mVector2 = new mVector();
 		string text = string.Empty;
 		for (int i = 0; i < src.Length; i++)
@@ -484,6 +486,17 @@ public class MFont
 	}
 
 	public int getWidth(string s)
+	{
+		// Do rong theo chu SAU khi doi (khop chu _drawString ve ra).
+		return getWidthExactOf(ChuPokemon.D(s));
+	}
+
+	/// <summary>
+	/// Do rong DUNG chu dua vao, KHONG qua ChuPokemon.D. Dung cho o nhap chu (TField): o do
+	/// ve chu nguoi choi go nguyen van (ChuPokemon.KhongDoi), nen phep tinh con tro / cuon ngang
+	/// cung phai do nguyen van - neu do ban da doi (vd go "bang" -> do "đội") con tro se lech.
+	/// </summary>
+	public int getWidthNguyenVan(string s)
 	{
 		return getWidthExactOf(s);
 	}
@@ -605,6 +618,8 @@ public class MFont
 
 	public void _drawString(MyGraphics g, string st, int x0, int y0, int align)
 	{
+		// G7.C3: moi chu ve ra man hinh doi sang the gioi Pokemon o day (ChuPokemon.D co bo nho dem).
+		st = ChuPokemon.D(st);
 		// mod: dùng lại một GUIStyle cho mỗi font (trước: chép GUI.skin.label mới mỗi lần vẽ chuỗi)
 		if (styleVe == null || styleVe.font != myFont)
 		{
@@ -640,6 +655,7 @@ public class MFont
 
 	public string[] splitFontBStrInLine(string src, int lineWidth)
 	{
+		src = ChuPokemon.D(src);
 		ArrayList arrayList = splitStrInLineA(src, lineWidth);
 		string[] array = new string[arrayList.Count];
 		for (int i = 0; i < arrayList.Count; i++)

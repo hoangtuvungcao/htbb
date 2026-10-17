@@ -164,7 +164,8 @@ public class Monster extends LiveActor {
             }
             int dongTac = pokeDongTac();
             int tick = pokeTickTrongDongTac(dongTac);
-            PokeBody.paint(g, MonsterTemplate.pokeDex[t], MonsterTemplate.pokeShiny[t], this.x + this.vangx, this.y + this.vangy + this.dy + this.z, this.dir, dongTac, tick, MonsterTemplate.pokeTiLe[t]);
+            // pokemon: chop trang + lac nhe khi trung don (HieuUngDanh)
+            PokeBody.paint(g, MonsterTemplate.pokeDex[t], MonsterTemplate.pokeShiny[t], this.x + this.vangx + pokeLac(), this.y + this.vangy + this.dy + this.z, this.dir, dongTac, tick, MonsterTemplate.pokeTiLe[t], pokeChop() ? 230 : 0);
             for (int i = 0; i < this.buff.size(); i++) {
                 ((CharBuff) this.buff.elementAt(i)).paint(g);
             }

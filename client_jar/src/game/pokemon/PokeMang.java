@@ -8,7 +8,7 @@ import java.io.DataInputStream;
 import network.Message;
 
 /**
- * Lenh mang Pokemon -90 .. -94 (HTBB docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 7.3) - ban J2ME cua
+ * Lenh mang Pokemon -90 .. -94 (+ -95..-99 chien dau: PokeMangChienDau) (HTBB docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 7.3) - ban J2ME cua
  * cac ham onPoke* trong ClientUnity MessageHandler.cs. Goi o DAU MessageHandler.onMessage.
  * Server chi gui cac lenh nay khi sv.che_do_pokemon=1; server cu khong gui gi, game ve kieu cu.
  */
@@ -38,6 +38,14 @@ public final class PokeMang {
     /** true = da xu ly (lenh Pokemon). */
     public static boolean xuLy(Message msg) {
         int lenh = msg.command;
+        if (lenh <= PokeMangChienDau.POKE_DON && lenh >= PokeMangChienDau.POKE_DONG_GOP) {
+            // -95..-99: goi chien dau (co don, canh bao, trang thai, pha boss, dong gop)
+            try {
+                return PokeMangChienDau.xuLy(lenh, msg.reader());
+            } catch (Throwable e) {
+                return true;
+            }
+        }
         if (lenh > POKE_THAN || lenh < POKE_PET) {
             return false;
         }
@@ -73,6 +81,7 @@ public final class PokeMang {
                     Char c = timChar(id);
                     if (c != null) {
                         c.batDauTienHoa(dexCu, dexMoi);
+                        HieuUngDanh.tienHoa(c);   // no sang + tieng tien hoa
                         String tenMoi = LoaiPokemonClient.ten(dexMoi);
                         if (tenMoi.length() == 0) {
                             tenMoi = "#" + dexMoi;

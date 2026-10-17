@@ -27,6 +27,54 @@ public final class ThuongHieu {
     }
 
     /**
+     * Logo tên game trên nền banner (5 Pokémon khởi đầu đã đứng trên cỏ nên không vẽ hàng chân
+     * dung): bảng navy mờ viền vàng, Poké Ball hai bên, chữ tên game, vệt sáng lướt qua mỗi ~4 giây.
+     * Trả về đáy logo.
+     */
+    public static int veLogo(Graphics g, int xTam, int yTren, int rongToiDa) {
+        Font chu = Font.bigFont;
+        String ten = TEN_GAME_HOA;
+        int wMax = rongToiDa - 12;
+        if (chu == null || chu.getWidth(ten) + 52 > wMax) {
+            chu = Font.borderFont != null ? Font.borderFont : Font.normalFont[0];
+            ten = TEN_GAME;
+        }
+        if (chu == null) {
+            return yTren;
+        }
+        int wChu = chu.getWidth(ten);
+        int w = wChu + 52;
+        if (w > wMax) {
+            w = wMax;
+        }
+        int h = 26;
+        int x = xTam - w / 2;
+        GiaoDien.moClip(g);
+        KieuO.phu(g, x + 3, yTren + 3, w, h, 0x500B1222);
+        GiaoDien.khoi(g, x, yTren, w, h, 7, GiaoDien.VANG_TOI);
+        GiaoDien.khoiDoc(g, x + 2, yTren + 2, w - 4, h - 4, 5, 0x2D62AA, GiaoDien.NAVY);
+        g.setColor(GiaoDien.VANG);
+        g.drawRoundRect(x + 1, yTren + 1, w - 3, h - 3, 10, 10);
+        chu.drawString(g, ten, xTam, chu == Font.bigFont ? yTren + 4 : yTren + 6, Font.CENTER);
+        GiaoDien.pokeBall(g, x + 11, yTren + h / 2, 6, (game.render.Canvas.gameTick * 3) % 24);
+        GiaoDien.pokeBall(g, x + w - 11, yTren + h / 2, 6, 0);
+        // vệt sáng chéo lướt qua chữ
+        int chuKy = 100;
+        int t = game.render.Canvas.gameTick % chuKy;
+        if (t < 24) {
+            int xs = x + (w + 20) * t / 24 - 10;
+            int cx = g.getClipX(), cy = g.getClipY(), cw = g.getClipWidth(), ch = g.getClipHeight();
+            g.clipRect(x + 3, yTren + 3, w - 6, h - 6);
+            for (int i = 0; i < h; i++) {
+                KieuO.phu(g, xs + i / 3, yTren + i, 4, 1, 0x70FFFFFF);
+                KieuO.phu(g, xs + 6 + i / 3, yTren + i, 1, 1, 0x50FFFFFF);
+            }
+            g.setClip(cx, cy, cw, ch);
+        }
+        return yTren + h;
+    }
+
+    /**
      * Ve tieu de Pokemon, tam ngang xTam, dong ten game o yTam, hang chan dung ngay duoi.
      * rongToiDa: be ngang man hinh (de thu nho hang chan dung tren may 128/176 px).
      * Tra ve false (de ve logo cu) khi tat che do Pokemon hoac chua co gi de ve.

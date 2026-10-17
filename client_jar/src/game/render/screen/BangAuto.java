@@ -497,8 +497,8 @@ public class BangAuto extends Screen {
         }
         if (this.isOptionFocus) {
             Res.paintDlgFull(g, (Canvas.w / 2) - 80, (Canvas.h / 2) - 80, 160, 160);
-            g.drawImage(Res.imgBar, ((Canvas.w / 2) - 65) - this.countL, (Canvas.h / 2) - 66, 3);
-            g.drawRegion(Res.imgBar, 0, 0, 11, 7, 2, (Canvas.w / 2) + 65 + this.countR, (Canvas.h / 2) - 66, 3);
+            game.pokemon.GiaoDien.muiTab(g, ((Canvas.w / 2) - 72) - this.countL, (Canvas.h / 2) - 66, true);
+            game.pokemon.GiaoDien.muiTab(g, (Canvas.w / 2) + 72 + this.countR, (Canvas.h / 2) - 66, false);
             Font.normalFont[0].drawString(g, this.optionFC[GameScr.typeOptionFocus], Canvas.w / 2, (Canvas.h / 2) - 73, 2);
             for (int i = 0; i < this.info.length; i++) {
                 Font.normalFont[0].drawString(g, this.info[i], (Canvas.w / 2) - 72, ((Canvas.h / 2) - 50) + (i * Screen.ITEM_HEIGHT), 0);
@@ -508,13 +508,10 @@ public class BangAuto extends Screen {
         }
         g.translate(Canvas.hw - 70, Canvas.hh - 80);
         Res.paintDlgFull(g, 2, 2, 140, 145);
-        g.drawImage(Res.imgBar, 13 - this.countL, 16, 3);
-        g.drawRegion(Res.imgBar, 0, 0, 11, 7, 2, 127 + this.countR, 17, 3);
-        g.setColor(7961465);
-        g.fillRect(27, 8, 88, 16);
-        g.fillRect(26, 9, 90, 14);
-        g.setColor(this.isChangeTab ? 30611 : 2368548);
-        g.fillRect(27, 9, 88, 14);
+        // pokemon: viên tên tab + mũi tên vàng (thay thanh xám + mũi tên ảnh kiếm hiệp)
+        game.pokemon.GiaoDien.muiTab(g, 9 - this.countL, 16, true);
+        game.pokemon.GiaoDien.muiTab(g, 133 + this.countR, 16, false);
+        game.pokemon.GiaoDien.vienTab(g, 25, 7, 92, 18, this.isChangeTab);
         Font.normalFont[0].drawString(g, name, 72, 9, 2);
         Canvas.resetTrans(g);
         switch (this.index) {

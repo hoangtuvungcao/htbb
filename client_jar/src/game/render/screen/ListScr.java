@@ -80,7 +80,7 @@ public class ListScr extends Screen {
     public void init() {
         this.w = Canvas.w - 41;
         this.h = Canvas.h - 56;
-        cmyLim = (this.list.size() * this.height) - (this.h - 32);
+        cmyLim = ((this.list == null ? 0 : this.list.size()) * this.height) - (this.h - 32);
         if (cmyLim < 0) {
             cmyLim = 0;
         }
@@ -91,14 +91,18 @@ public class ListScr extends Screen {
             @Override
             public void perform() {
                 ListScr.this.lastScr.switchToMe();
-                ListScr.this.list.removeAllElements();
+                if (ListScr.this.list != null) {
+                    ListScr.this.list.removeAllElements();
+                }
                 ListScr.this.lastScr = null;
             }
         });
         this.center = new Command("Chọn", new IAction() {
             @Override
             public void perform() {
-                ListScr.this.doSelected(ListScr.this.list.elementAt(ListScr.selected));
+                if (ListScr.this.list != null && ListScr.selected >= 0 && ListScr.selected < ListScr.this.list.size()) {
+                    ListScr.this.doSelected(ListScr.this.list.elementAt(ListScr.selected));
+                }
             }
         });
         this.left = new Command("Menu", new IAction() {
@@ -256,6 +260,9 @@ public class ListScr extends Screen {
         selected = 0;
         if (list.size() == 0) {
             this.page = (byte) -1;
+            if (this.list == null) {
+                this.list = list; // danh sách rỗng lần đầu: tránh NullPointer ở init/updateKey/paint
+            }
         } else {
             this.list = list;
         }
@@ -300,6 +307,11 @@ public class ListScr extends Screen {
 
     @Override
     public void updateKey() {
+        if (this.list == null || this.list.size() == 0) {
+            selected = 0;
+            super.updateKey(); // chỉ phím mềm (Đóng)
+            return;
+        }
         boolean changeFocus = false;
         if (Canvas.isPointer(20, 46, this.w, this.h - 24)) {
             if (Canvas.isPointerDown) {
@@ -383,26 +395,42 @@ public class ListScr extends Screen {
         }
         Canvas.resetTrans(g);
         Res.paintDlgFull(g, 20, 20, this.w, this.h);
-        g.setClip(25, 20, this.w - 10, 20);
-        int www = Font.arialFontW.getWidth(this.title);
-        if (www > this.w - 25) {
+        // pokemon: tiêu đề chữ trắng viền (borderFont) giữa dải đỏ, chạy chữ khi dài; chừa Poké Ball bên trái
+        int xTieuDe = 38;
+        int wTieuDe = this.w + 20 - 4 - xTieuDe;
+        g.setClip(xTieuDe, 20, wTieuDe, 22);
+        String tieuDe = this.title == null ? "" : game.pokemon.GiaoDien.tieuDe(this.title);
+        int www = Font.borderFont.getWidth(tieuDe);
+        if (www > wTieuDe) {
+            if (this.a0 > xTieuDe + 4 || this.a0 < xTieuDe + wTieuDe - www - 4) {
+                this.a0 = xTieuDe + 2;
+                this.dir0 = 1;
+            }
             if (this.dir0 == 1) {
                 this.a0--;
-                if (this.a0 < (this.w - 35) - www) {
+                if (this.a0 <= xTieuDe + wTieuDe - www - 4) {
                     this.dir0 = -1;
                 }
             } else {
                 this.a0++;
-                if (this.a0 > 25) {
+                if (this.a0 >= xTieuDe + 2) {
                     this.dir0 = 1;
                 }
             }
+            Font.borderFont.drawString(g, tieuDe, this.a0, 25, 0);
+        } else {
+            Font.borderFont.drawString(g, tieuDe, xTieuDe + wTieuDe / 2, 25, Font.CENTER);
         }
-        Font.bigFont.drawString(g, this.title, this.a0, 24, 0);
         Canvas.resetTrans(g);
         g.translate(20, 47);
         g.setClip(4, 0, this.w - 8, this.h - 31);
         g.translate(0, -cmy);
+        if (this.list == null || this.list.size() == 0) {
+            // pokemon: danh sách rỗng -> dòng báo thay ô chọn trống
+            Font.arialFontW.drawString(g, "Chưa có dữ liệu", this.w / 2, cmy + 12, Font.CENTER);
+            super.paint(g);
+            return;
+        }
         Res.paintSelected(g, 4, selected * this.height, this.w - 9, this.height);
         if (this.type == 5) {
             paintTopClan(g);
@@ -483,16 +511,14 @@ public class ListScr extends Screen {
         int i = aa;
         while (i < bb) {
             Char ac = (Char) this.list.elementAt(i);
-            ac.paintCharList(g);
-            String str = new StringBuffer("Cấp độ: ").append(ac.level > -1 ? new StringBuffer(String.valueOf((int) ac.level)).toString() : "?").toString();
-            for (int a = 0; a < ac.wearingItems.size(); a++) {
-                ItemInInventory item = (ItemInInventory) ac.wearingItems.elementAt(a);
-                ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
-                str = new StringBuffer(String.valueOf(str)).append(" - ").append(ItemTemplate.nameItem[it.type]).append(": ").append((int) item.level).toString();
-                if (item.plusTemplate > 0) {
-                    str = new StringBuffer(String.valueOf(str)).append("+").append((int) item.plusTemplate).toString();
-                }
+            // pokemon: chân dung Pokémon trong vòng tròn thay hình nhân vật kiếm hiệp (paintCharList)
+            int dex = ac.pokeDex > 0 ? ac.pokeDex : game.pokemon.LoaiPokemonClient.duDoan(ac.clazz, ac.level);
+            int yTam = i * this.height + this.height / 2;
+            if (dex <= 0 || !game.pokemon.PokeBody.paintChanDung(g, dex, ac.pokeShiny, 25, yTam, 32)) {
+                game.pokemon.GiaoDien.pokeBall(g, 25, yTam, 9, 0);
             }
+            String tenLoai = dex > 0 ? game.pokemon.LoaiPokemonClient.ten(dex) : "";
+            String str = new StringBuffer("Cấp độ: ").append(ac.level > -1 ? new StringBuffer(String.valueOf((int) ac.level)).toString() : "?").append(tenLoai.length() > 0 ? " - " : "").append(tenLoai).toString();
             int zz = 0;
             if (ac.idClan != -1 && GameData.getImgIcon(ac.idClan) != null) {
                 zz = 8;

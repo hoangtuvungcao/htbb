@@ -203,6 +203,11 @@ public class Pet : AnimalMove
 	{
 		try
 		{
+			// Che do Pokemon (lenh -94): ve Pokemon thay anh pet-tool; khong co thi ve kieu cu.
+			if (vePokePet(g, myOwner ?? (owner as Char)))
+			{
+				return;
+			}
 			mDataEffect mDataEffect2 = (mDataEffect)ALL_PET_DATA.get(string.Empty + idTemplate);
 			if (mDataEffect2 != null && mDataEffect2 != null)
 			{
@@ -240,6 +245,12 @@ public class Pet : AnimalMove
 		catch (Exception)
 		{
 		}
+	}
+
+	/// <summary>Pet-tool: imgID/idTemplate la id hieu ung, khong tra bang pet kieu cu.</summary>
+	protected override int dexPetCu()
+	{
+		return 0;
 	}
 
 	public bool isFly()

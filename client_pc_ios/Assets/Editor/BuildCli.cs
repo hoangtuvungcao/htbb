@@ -17,8 +17,60 @@ public static class BuildCli
         return i >= 0 && i + 1 < args.Length ? args[i + 1] : null;
     }
 
+    /// <summary>
+    /// Tên hiển thị cho người chơi (Huyền Thoại Bảo Bối) lấy từ ThuongHieu.cs - đổi tên game ở MỘT chỗ.
+    /// productName không dấu (tên thư mục lưu PlayerPrefs / persistentDataPath); tiêu đề cửa sổ có dấu do
+    /// TieuDeCuaSo.cs đặt lúc chạy. Không đổi applicationIdentifier / tên file build (hạ tầng phát hành).
+    /// </summary>
+    /// <summary>
+    /// Ảnh banner parallax (màn đăng nhập / chọn Pokémon - BannerParallax.cs): chép htbb-client/shared/banner/
+    /// (*.png, *.jpg, lop.txt) vào Assets/Resources/banner/ nếu thư mục đó chưa có ảnh. Không có nguồn thì bỏ
+    /// qua - game tự vẽ cảnh trời / đồi.
+    /// </summary>
+    private static void chepBanner()
+    {
+        try
+        {
+            string nguon = System.IO.Path.GetFullPath(System.IO.Path.Combine(UnityEngine.Application.dataPath, "../../shared/banner"));
+            string dich = System.IO.Path.Combine(UnityEngine.Application.dataPath, "Resources/banner");
+            if (!System.IO.Directory.Exists(nguon))
+            {
+                return;
+            }
+            if (System.IO.Directory.Exists(dich) && System.IO.Directory.GetFiles(dich, "*.png").Length > 0)
+            {
+                return;
+            }
+            System.IO.Directory.CreateDirectory(dich);
+            foreach (string f in System.IO.Directory.GetFiles(nguon))
+            {
+                string ten = System.IO.Path.GetFileName(f);
+                string duoi = System.IO.Path.GetExtension(f).ToLowerInvariant();
+                if (duoi == ".png" || duoi == ".jpg" || ten == "lop.txt")
+                {
+                    System.IO.File.Copy(f, System.IO.Path.Combine(dich, ten), true);
+                }
+            }
+            AssetDatabase.Refresh();
+            UnityEngine.Debug.Log("HTBB banner: da chep " + nguon + " -> " + dich);
+        }
+        catch (System.Exception e)
+        {
+            UnityEngine.Debug.LogWarning("HTBB banner: " + e.Message);
+        }
+    }
+
+    private static void datThuongHieu()
+    {
+        chepBanner();
+        PlayerSettings.companyName = ThuongHieu.TEN_CONG_TY;
+        PlayerSettings.productName = ThuongHieu.tenSanPham();
+        UnityEngine.Debug.Log("HTBB san pham: " + PlayerSettings.companyName + " / " + PlayerSettings.productName);
+    }
+
     public static void Win64()
     {
+        datThuongHieu();
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
         string outPath = duongRa();
         // IL2CPP: C# dịch ra C++ rồi mã máy - chạy nhanh hơn Mono và khó dịch ngược hơn (DLL không còn mã C#).
@@ -64,6 +116,7 @@ public static class BuildCli
     /// <summary>APK Android: IL2CPP ARM64 + ARMv7, màn hình ngang, ký bằng khóa riêng (HTBB_KEY_DIR/key.properties).</summary>
     public static void Android()
     {
+        datThuongHieu();
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
         string outPath = System.Environment.GetEnvironmentVariable("HTBB_OUT");
         string keyDir = System.Environment.GetEnvironmentVariable("HTBB_KEY_DIR");
@@ -104,6 +157,7 @@ public static class BuildCli
     /// </summary>
     public static void iOS()
     {
+        datThuongHieu();
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
         string[] args = System.Environment.GetCommandLineArgs();
         int i = System.Array.IndexOf(args, "-customBuildPath");

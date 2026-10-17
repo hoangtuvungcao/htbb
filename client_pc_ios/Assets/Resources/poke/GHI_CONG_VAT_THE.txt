@@ -1,0 +1,4 @@
+Hinh vat the (vt_*.bytes): PMDCollab RawAsset, thu muc Object/ va Item/ - https://github.com/PMDCollab/RawAsset
+RawAsset KHONG co file LICENSE: trich tu PMD goc (Chunsoft/Nintendo) / PMDCollab RawAsset, chi dung PHI THUONG MAI.
+Pokemon (c) Nintendo / Game Freak / The Pokemon Company.
+Sinh boi tools/pokemon/tai_vat_the.py. File goc: Item/Belt_Brown.None, Item/Box_Brown.None, Item/Iron_Ball.None, Item/Orb_Tan.None, Item/Rock_Gray.None, Item/Silk_White.None, Object/Block_Blank.None, Object/Block_Guild.None, Object/Block_Vault.None, Object/Chest.None, Object/Logs_Stacked.Flip, Object/Portal.6, Object/Pot.Flip, Object/Sign.None

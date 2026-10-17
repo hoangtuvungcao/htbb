@@ -6,7 +6,7 @@ Ba bản client của game Huyền Thoại Bảo Bối (HTBB; trước đây là
 
 ```
 pc/          Unity 6000.5.9f1 — bản PC (Windows; build được cả iOS). C#, giải nén từ KPAH_276.exe
-android/     Gradle (AGP 9) — bản Android, code game 2.7.7 của TeaMobi decompile ra Java
+android/     Gradle (AGP 9) — app/: bản Android NQSH (code 2.7.7 TeaMobi); pokemon/: APK HTBB = code bản jar
 j2me/        javac + ProGuard — bản jar J2ME (MIDP 2.0 / CLDC 1.0), code game 2.7.6 decompile ra Java
 shared/mod/  code mod dùng chung cho j2me + android (viết theo API J2ME)
 phat-hanh/   phát hành + tự cập nhật (GitHub Releases kpah-server/nqsh-h2-tai, phienban.json)
@@ -29,11 +29,15 @@ phat-hanh/   phát hành + tự cập nhật (GitHub Releases kpah-server/nqsh-h
 
 ## Nhánh `pokemon/chuyen-doi`: bản jar Huyền Thoại Bảo Bối (Pokémon)
 
-- Code: `j2me/src/game/pokemon/` (bản J2ME của các lớp Pokémon trong `HTBB/ClientUnity/Assets/Scripts/Game/`),
+- **Client PC chính thức là `pc/`** (Unity): đã gộp toàn bộ phần Pokémon từ `HTBB/ClientUnity` (ChuPokemon,
+  PokeBody, PokeHieuUng, VatThePokemon, PokeTile, Tilemap/Res, `Resources/poke`, `poke_tile`, `poke_map`...) mà vẫn giữ
+  mod + BuildCli. `HTBB/ClientUnity` là bản cũ, sẽ xoá (xem `pc/README.md`).
+- Code: `j2me/src/game/pokemon/` (bản J2ME của các lớp Pokémon trong `pc/Assets/Scripts/Assembly-CSharp/`),
   hook có chú thích `// pokemon:` trong Char, Monster (+ boss), NPC, Npc_Server, AnimalMove, ThanThu,
   MessageHandler (-90..-94), Font (từ điển `ChuPokemon`), TField, Res (tile), Create/CharSelectScr, màn tiêu đề.
 - Tài nguyên `j2me/res/pk` (sprite, chân dung, vật thể, từ điển) + `j2me/res/pt` (tile PMD) sinh bằng
-  `HTBB_ASSETS=<HTBB>/ClientUnity/Assets sh j2me/build.sh N` (tool `j2me/tools/DongGoiPokeJ2me.java`).
+  `HTBB_ASSETS=pc sh j2me/build.sh N` (= `../pc/Assets`; bản cũ `<HTBB>/ClientUnity/Assets` vẫn dùng được;
+  tool `j2me/tools/DongGoiPokeJ2me.java`, bảng loài bản nhẹ đọc từ `HTBB/docs/pokemon` hoặc biến `HTBB_DOCS`).
 - Hiệu ứng chiêu (K3): `PokeHieuUng` (hook `Char.setCurrentSkillByID`, buff trong `GameScr`), dữ liệu
   `res/pk/hu.bin` + `hu_*.png` đóng gói từ `Resources/poke/hu_*.bytes`.
 - Bản thử nối một server: `MAY_CHU=127.0.0.1:19129 sh j2me/build.sh N` -> `...-vN-thu.jar`
@@ -44,6 +48,29 @@ phat-hanh/   phát hành + tự cập nhật (GitHub Releases kpah-server/nqsh-h
 - Bản nhẹ cho máy thật: `GOI=nhe sh j2me/build.sh N` -> `...-vN-nhe.jar` (ProGuard + `j2me/res_nhe/pk`:
   ít loài, ít khung, chân dung 24px; loài thiếu vẽ bằng bóng đen `bong`). Xem đầu `DongGoiPokeJ2me.java`.
 - Kiểm thử thuần Java: `j2me/tools/KiemPokeDuLieu.java` (xem chú thích đầu tệp).
+- Phản hồi chiến đấu: `HieuUngDanh` (hạt theo hệ, đạn quái theo hệ, chớp trắng + lắc, rung màn, vùng cảnh báo boss,
+  gục mờ dần, lên cấp/tiến hoá, biểu tượng trạng thái), `SoBay` (số bay có viền, màu theo chí mạng/khắc hệ),
+  `HePoke` (hệ theo dex + bảng khắc hệ khớp server), gói -95..-99 `PokeMangChienDau` (THIET_KE_LAU_DAI 4.6).
+- Âm thanh: `game.model.Sound` (+ `SoundMm` MMAPI, an toàn khi máy không có) và `game.pokemon.AmThanh`; tệp
+  `j2me/res/am` (bản nhẹ `res_nhe/am`, chỉ tiếng hiệu ứng) sinh bằng `python3 -P j2me/tools/lam_am_thanh.py`;
+  bật/tắt nhạc, hiệu ứng, âm lượng trong Menu nhanh. Ghi công: `res/LICENSE-audio.txt`, HTBB `docs/pokemon/GHI_CONG_AM_THANH.md`.
+
+## Nhánh `pokemon/chuyen-doi`: bản Android Huyền Thoại Bảo Bối (`android/pokemon`)
+
+- APK = **đúng code bản jar** (`j2me/src` + `shared/mod`) biên dịch cho Android trên lớp tương thích MIDP
+  (`android/pokemon/src/main/java/javax/microedition/**`: Graphics/Image trên `android.graphics`, Canvas/Display,
+  RecordStore = tệp, Connector = Socket/HttpURLConnection, Player = MediaPlayer, TextBox = hộp nhập Android).
+  Một nguồn duy nhất: Gradle chạy `android/port-j2me.py` chép code jar vào `build/generated` mỗi lần build, chỉ vá
+  `getResourceAsStream` -> assets và ô nhập TField -> bàn phím hệ thống. Tài nguyên = `j2me/res` (bản đầy đủ).
+  Module cũ `android/app` (TeaMobi 2.7.7, NQSH) giữ nguyên.
+- Màn hình: chỉ ngang (sensorLandscape); độ phân giải logic = màn thật chia hệ số nguyên (cạnh ngắn >= 320 px,
+  vd 2400x1080 -> 800x360 x3, 1920x1080 -> 640x360 x3, 2048x1536 -> 512x384 x4), phóng láng giềng gần nhất.
+  Nút Back = phím mềm phải (-7), Menu = phím mềm trái (-6).
+- Build: `sh android/build-pokemon.sh` -> `android/out/HTBB-android-thu.apk` (debug, server thử `10.0.2.2:19129`
+  = 127.0.0.1 của máy dev nhìn từ máy ảo Android). `MAY_CHU=host:cong` đổi server; `KIEU=release BAN=N
+  [KEY_DIR=...]` bản phát hành (không đặt MAY_CHU = tải danh sách server); `XAC_THUC=1` bật lại -88.
+- Icon: `android/pokemon/tools/tao_icon.py` (Poké Ball vẽ bằng code + chân dung Pikachu PMDCollab CC BY-NC 4.0,
+  ghi công trong assets `GHI_CONG.txt`).
 
 ## Code mod nằm ở đâu
 

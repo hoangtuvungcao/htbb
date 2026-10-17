@@ -78,12 +78,18 @@ public class Main : MonoBehaviour
 		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = FPS;
 		ScaleGUI.datCuaSo();
+		// pokemon: tieu de cua so co dau "Huyền Thoại Bảo Bối" (productName de khong dau)
+		TieuDeCuaSo.dat();
 		CapNhat.batDau(base.gameObject);
 	}
 
 	private void OnApplicationFocus(bool focus)
 	{
 		Application.targetFrameRate = focus ? FPS : FPS_NEN;
+		if (focus)
+		{
+			TieuDeCuaSo.dat(); // luc Start cua so co the chua duoc chon (GetActiveWindow = 0)
+		}
 	}
 
 	public void platformRequest(string url)
@@ -176,6 +182,8 @@ public class Main : MonoBehaviour
 	{
 		if (Input.GetMouseButtonDown(0))
 		{
+			// am thanh: tieng bam giao dien (chi khi menu / hop thoai / man ngoai game)
+			AmThanh.bamGiaoDien();
 			Canvas.isPointerDrange = false;
 			Vector3 mousePosition = Input.mousePosition;
 			canvas.pointerPressed((int)ScaleGUI.scaleX(mousePosition.x), (int)ScaleGUI.scaleY((float)Screen.height - mousePosition.y));

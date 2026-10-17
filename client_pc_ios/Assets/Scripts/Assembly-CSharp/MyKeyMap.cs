@@ -54,6 +54,9 @@ public class MyKeyMap
 		h.Add(KeyCode.Backspace, -8);
 		h.Add(KeyCode.Return, -5);
 		h.Add(KeyCode.Tab, -23);
+		// pokemon: F3 mở/đóng Menu nhanh, Esc đóng (MenuNhanh)
+		h.Add(KeyCode.F3, MenuNhanh.PHIM_F3);
+		h.Add(KeyCode.Escape, MenuNhanh.PHIM_ESC);
 	}
 
 	public static int map(KeyCode k)

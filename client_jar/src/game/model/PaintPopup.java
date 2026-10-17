@@ -138,7 +138,7 @@ public class PaintPopup extends Screen {
         this.lastScr.paint(g);
         Canvas.resetTrans(g);
         Res.paintDlgFull(g, this.x, this.y, this.w, this.h);
-        Font.bigFont.drawString(g, this.title, this.x + (this.w / 2), this.y + 2, 2);
+        Font.borderFont.drawString(g, game.pokemon.GiaoDien.tieuDe(this.title), this.x + (this.w / 2) + 6, this.y + 6, 2); // pokemon: chữ trắng viền giữa dải đỏ
         g.translate(this.x + 3 + this.x0, this.y + 26 + this.y0);
         g.setClip(0, 0, this.w - (this.x0 * 2), (this.h - 30) - this.y0);
         g.translate(0, -cmy);

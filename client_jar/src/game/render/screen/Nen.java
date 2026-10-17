@@ -46,6 +46,15 @@ final class Nen {
         return MenuNhanh.ve(g);
     }
 
+    /** pokemon: "Bản đồ lớn" vẽ bằng code (game.pokemon.BanDoVung) thay ảnh bản đồ kiếm hiệp. true = đã vẽ. */
+    static boolean veBanDoLon(Object g, short[][] diem, int hienTai, int w, int h) {
+        if (!game.pokemon.PokeBody.CHE_DO_POKEMON) {
+            return false;
+        }
+        game.pokemon.BanDoVung.ve((javax.microedition.lcdui.Graphics) g, diem, hienTai, w, h);
+        return true;
+    }
+
     static boolean menuNhanhTick() {
         return MenuNhanh.tick();
     }

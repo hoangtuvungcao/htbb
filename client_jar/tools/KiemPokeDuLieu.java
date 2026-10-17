@@ -1,4 +1,6 @@
+import game.pokemon.AmThanh;
 import game.pokemon.ChuPokemon;
+import game.pokemon.HePoke;
 import game.pokemon.PokeDongTac;
 import game.pokemon.PokeDuLieu;
 import game.pokemon.TenMapPokemon;
@@ -25,7 +27,7 @@ import java.util.regex.Pattern;
  *  3. (tuy chon) ChuPokemon / TenMapPokemon cua jar cho KET QUA GIONG HET ban server
  *     com.htbb.pokemon.ChuPokemon.doiLuon / TenMapPokemon.doi (regex) tren tap chu kiem.
  *
- *   java -cp &lt;lop jar&gt;:&lt;midp.jar&gt;:res[:lop server] KiemPokeDuLieu &lt;HTBB/ClientUnity/Assets&gt; res [nguon java ...]
+ *   java -cp &lt;lop jar&gt;:&lt;midp.jar&gt;:res[:lop server] KiemPokeDuLieu &lt;htbb-client/pc/Assets (hoac HTBB/ClientUnity/Assets cu)&gt; res [nguon java ...]
  */
 public class KiemPokeDuLieu {
     static int loi = 0;
@@ -115,6 +117,8 @@ public class KiemPokeDuLieu {
             }
         }
 
+        kiemAmThanh(res);
+        kiemHe();
         kiemChu(a);
         System.out.println(loi == 0 ? "OK" : ("HONG: " + loi + " loi"));
         System.exit(loi == 0 ? 0 : 1);
@@ -412,6 +416,98 @@ public class KiemPokeDuLieu {
             }
         } else if (f.getName().endsWith(".java")) {
             ds.add(f);
+        }
+    }
+
+    /**
+     * Am thanh: moi tieng AmThanh.TEN co /am/s_*.wav (PCM 8 bit mono), moi bai AmThanh.TEN_NHAC co
+     * /am/n_*.mid (MThd); tong ban thuong &lt;= 400 KB; ban nhe (res_nhe/am) chi WAV, &lt;= 60 KB.
+     */
+    static void kiemAmThanh(File res) throws Exception {
+        File am = new File(res, "am");
+        long tong = 0;
+        for (String t : AmThanh.TEN) {
+            File f = new File(am, "s_" + t + ".wav");
+            if (!f.exists()) {
+                sai("thieu am thanh " + f);
+                continue;
+            }
+            byte[] b = Files.readAllBytes(f.toPath());
+            tong += b.length;
+            if (b.length < 44 || b[0] != 'R' || b[8] != 'W' || b[22] != 1 || b[34] != 8) {
+                sai(f + ": khong phai WAV PCM 8 bit mono");
+            }
+        }
+        for (String t : AmThanh.TEN_NHAC) {
+            File f = new File(am, "n_" + t + ".mid");
+            if (!f.exists()) {
+                sai("thieu nhac " + f);
+                continue;
+            }
+            byte[] b = Files.readAllBytes(f.toPath());
+            tong += b.length;
+            if (b.length < 22 || b[0] != 'M' || b[1] != 'T' || b[2] != 'h' || b[3] != 'd') {
+                sai(f + ": khong phai MIDI");
+            }
+        }
+        if (tong > 400 * 1024) {
+            sai("am thanh ban thuong qua 400 KB: " + tong);
+        }
+        if (AmThanh.TEN.length != AmThanh.UU_TIEN.length) {
+            sai("AmThanh.UU_TIEN lech TEN");
+        }
+        System.out.println("am thanh: " + AmThanh.TEN.length + " tieng + " + AmThanh.TEN_NHAC.length + " bai nhac, " + tong + " byte");
+        File nhe = new File(res.getAbsoluteFile().getParentFile(), "res_nhe/am");
+        if (nhe.isDirectory()) {
+            long t2 = 0;
+            for (File f : nhe.listFiles()) {
+                t2 += f.length();
+                if (!f.getName().endsWith(".wav")) {
+                    sai("ban nhe co tep khong phai tieng hieu ung: " + f);
+                }
+            }
+            if (t2 > 60 * 1024) {
+                sai("am thanh ban nhe qua 60 KB: " + t2);
+            }
+            System.out.println("am thanh ban nhe: " + t2 + " byte");
+        }
+    }
+
+    /**
+     * HePoke (client) khop bang khac he server (com.htbb.pokemon.HePokemon.heSoTrongGame) neu lop
+     * server co tren classpath; luon kiem vai cap da biet.
+     */
+    static void kiemHe() {
+        int[][] mau = {{1, 4, -1, 150}, {2, 1, -1, 150}, {3, 8, -1, 30}, {1, 2, -1, 70}, {4, 4, 7, 50},
+            {5, 14, 9, 200}, {0, 13, -1, 30}, {3, 2, 9, 200}, {6, 0, -1, 150}};
+        for (int[] m : mau) {
+            int v = HePoke.heSo(m[0], m[1], m[2]);
+            if (v != m[3]) {
+                sai("HePoke.heSo(" + m[0] + "," + m[1] + "," + m[2] + ") = " + v + " != " + m[3]);
+            }
+        }
+        if (HePoke.he1(6) != HePoke.LUA || HePoke.he2(6) != HePoke.BAY || HePoke.he1(94) != HePoke.MA || HePoke.he2(25) != -1) {
+            sai("HePoke.he1/he2 sai (Charizard/Gengar/Pikachu)");
+        }
+        try {
+            Method m = Class.forName("com.htbb.pokemon.HePokemon").getMethod("heSoTrongGame", int.class, int.class, int.class);
+            int so = 0;
+            for (int a = 0; a < 18; a++) {
+                for (int b = 0; b < 18; b++) {
+                    for (int c = -1; c < 18; c++) {
+                        int sv = (Integer) m.invoke(null, a, b, c);
+                        if (sv != HePoke.heSo(a, b, c)) {
+                            sai("khac he lech server: " + a + " -> " + b + "/" + c);
+                        }
+                        so++;
+                    }
+                }
+            }
+            System.out.println("HePoke khop server: " + so + " cap");
+        } catch (ClassNotFoundException e) {
+            System.out.println("HePoke: khong co lop server tren classpath, chi kiem mau");
+        } catch (Exception e) {
+            sai("HePoke: " + e);
         }
     }
 }

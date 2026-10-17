@@ -396,13 +396,23 @@ public class PokeBody {
         return true;
     }
 
-    /** Ve mot khung sang hon (mau x (100 + doSang)/100, toi da trang). Chi dung khi tien hoa. */
+    /** Bo dem pixel dung lai cho veSang (khong cap phat moi lan chop trang). */
+    private static int[] demSang;
+
+    /**
+     * Ve mot khung sang hon (mau x (100 + doSang)/100, toi da trang). Dung khi tien hoa va chop
+     * trang luc trung don (HieuUngDanh, vai khung hinh).
+     */
     private static void veSang(Graphics g, Image anh, int sx, int sy, int w, int h, int x, int y, int doSang) {
         try {
-            int[] px = new int[w * h];
+            int n = w * h;
+            if (demSang == null || demSang.length < n) {
+                demSang = new int[n];
+            }
+            int[] px = demSang;
             anh.getRGB(px, 0, w, sx, sy, w, h);
             int heSo = 100 + doSang;
-            for (int i = 0; i < px.length; i++) {
+            for (int i = 0; i < n; i++) {
                 int c = px[i];
                 if ((c >>> 24) == 0) {
                     continue;
@@ -453,8 +463,29 @@ public class PokeBody {
         return img;
     }
 
-    /** Ve chan dung voi tam (xTam, yTam), canh = kich thuoc ve (40 = goc). */
+    // ---- dung cho HuyHieuPoke (huy hieu tron: sprite dung yen tren nen mau he)
+    static Object demLay(String ten) {
+        return layDem(ten);
+    }
+
+    static void demDat(String ten, Image img) {
+        datDem(ten, img);
+    }
+
+    /** Anh dong tac DUNG (ti le goc) + du lieu khung, null neu thieu. */
+    Image anhDung() {
+        return anhDongTac(PokeDuLieu.DUNG, dl.layDongTac(PokeDuLieu.DUNG), 100);
+    }
+
+    /**
+     * Ve chan dung voi tam (xTam, yTam), canh = kich thuoc ve (40 = goc).
+     * pokemon: ve huy hieu tron (HuyHieuPoke - sprite dung yen trong suot tren nen mau he, vien
+     * dam + vet sang) thay anh chan dung PMD co nen troi/co ve san; thieu sprite moi dung anh cu.
+     */
     public static boolean paintChanDung(Graphics g, int dex, boolean shiny, int xTam, int yTam, int canh) {
+        if (HuyHieuPoke.ve(g, dex, shiny, xTam, yTam, canh)) {
+            return true;
+        }
         Image img = chanDung(dex, shiny);
         if (img == null) {
             return false;

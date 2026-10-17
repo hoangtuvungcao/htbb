@@ -604,10 +604,10 @@ public class ScreenDapDo extends Screen {
     }
 
     public void paintCell(Graphics g) {
-        g.setColor(25695);
+        g.setColor(0x003A70);
         int h0 = Canvas.isSmartPhone ? -27 : 10;
         g.fillRect(this.xSh + 2, this.ySh + h0, this.wSh, this.hSh - 8);
-        g.setColor(16774720);
+        g.setColor(0xFFCB05);
         g.drawRect(this.xSh + 2, this.ySh + h0, this.wSh, this.hSh - 8);
     }
 
@@ -651,20 +651,20 @@ public class ScreenDapDo extends Screen {
         this.mScrollItemInventory.setClip(g, xDr + 2, yDr + 23 + this.h0, wCell - 4, 31);
         for (int i2 = 0; i2 < listItem.size(); i2++) {
             if (this.selectItemInventory == i2 && this.currentRow == 1) {
-                g.setColor(6513507);
+                g.setColor(0x3D7DCA);
                 g.fillRect(xDr + (this.wTab * i2), yDr + 23 + this.h0, this.wTab, 28);
             }
             ItemInInventory item = (ItemInInventory) listItem.elementAt(i2);
             item.paint(g, xDr + (this.wTab * i2) + (this.wTab / 2), yDr + 36 + this.h0);
-            g.setColor(14527502);
+            g.setColor(0x6FA6EA);
             g.fillRect(xDr + (this.wTab * i2), yDr + 22 + this.h0, 1, 29);
             if (itemSelect != null && itemSelect.itemID == item.itemID) {
-                g.setColor(3268607);
+                g.setColor(0xFFCB05);
                 g.drawRect(xDr + (this.wTab * i2) + 1, yDr + 23 + this.h0, this.wTab - 2, 28);
                 g.drawRect(xDr + (this.wTab * i2) + 2, yDr + 24 + this.h0, this.wTab - 4, 26);
             }
         }
-        g.setColor(14527502);
+        g.setColor(0x6FA6EA);
         g.fillRect(xDr + (this.wTab * listItem.size()), yDr + 22 + this.h0, 1, 29);
         Canvas.resetTrans(g);
         int wi = !Canvas.isSmartPhone ? wCell - 2 : (wCell - 2) - this.wSh;
@@ -672,7 +672,7 @@ public class ScreenDapDo extends Screen {
         this.mScrollNguyenLieu.setClip(g, xDr + 2, ((yDr + 23) + this.h0) - 28, wi - 2, 31);
         for (int i3 = 0; i3 < vnguyenLieu.size(); i3++) {
             if (this.indexTabNguyenLieu == i3 && this.currentRow == 0) {
-                g.setColor(6513507);
+                g.setColor(0x3D7DCA);
                 g.fillRect(xDr + (this.wTab * i3), ((yDr + 24) + this.h0) - 28, this.wTab, 26);
             }
             GemTemplate gem = (GemTemplate) vnguyenLieu.elementAt(i3);
@@ -680,12 +680,12 @@ public class ScreenDapDo extends Screen {
                 g.setColor(3276851);
                 g.fillRect(xDr + (this.wTab * i3), ((yDr + 24) + this.h0) - 28, this.wTab, 26);
                 if (this.indexTabNguyenLieu == i3 && this.currentRow == 0) {
-                    g.setColor(6513507);
+                    g.setColor(0x3D7DCA);
                     g.fillRect(xDr + (this.wTab * i3), ((yDr + 24) + this.h0) - 28, this.wTab, 26);
                 }
             }
             if (selectGem != null && selectGem.id == gem.id && selectGem.lock == gem.lock) {
-                g.setColor(3268607);
+                g.setColor(0xFFCB05);
                 g.drawRect(xDr + (this.wTab * i3) + 1, ((yDr + 24) + this.h0) - 28, this.wTab - 2, 25);
                 g.drawRect(xDr + (this.wTab * i3) + 2, ((yDr + 24) + this.h0) - 27, this.wTab - 4, 23);
             }
@@ -701,7 +701,7 @@ public class ScreenDapDo extends Screen {
             }
             Res.paintGem(g, Res.getGemByID(gem.id).idImage, xDr + (this.wTab * i3) + (this.wTab / 2), (((yDr + 24) + this.h0) - 28) + 13);
             Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(gem.number)).toString(), ((xDr + (this.wTab * i3)) + this.wTab) - 1, ((yDr + 22) + this.h0) - Font.smallFontColor[3].getHeight(), 1);
-            g.setColor(14527502);
+            g.setColor(0x6FA6EA);
             g.fillRect(xDr + (this.wTab * i3), ((yDr + 22) + this.h0) - 28, 1, 29);
         }
         g.fillRect(xDr + (this.wTab * vnguyenLieu.size()), ((yDr + 22) + this.h0) - 28, 1, 28);
@@ -716,7 +716,7 @@ public class ScreenDapDo extends Screen {
             g.setColor(16777215);
             g.fillRect(this.xItem[i], this.yItem[i], 22, 22);
             if (this.cout % 2 == 0) {
-                g.setColor(6513507);
+                g.setColor(0x3D7DCA);
                 g.fillRect(this.xItem[i] + 1, this.yItem[i] + 1, 20, 20);
             }
         }

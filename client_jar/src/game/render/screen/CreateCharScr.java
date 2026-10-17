@@ -245,7 +245,8 @@ public class CreateCharScr extends Screen {
 
     @Override
     public void paint(Graphics g) {
-        ServerListScr.gI().paintBg(g);
+        // pokemon: banner, Pokémon khởi đầu đang chọn có cột sáng + hào quang màu hệ
+        ServerListScr.gI().paintBg(g, PokeBody.CHE_DO_POKEMON ? this.currentClazz : -1, true);
         Canvas.resetTrans(g);
         if (PokeBody.CHE_DO_POKEMON) {
             paintPokemon(g);
@@ -290,7 +291,7 @@ public class CreateCharScr extends Screen {
         int x0 = xBang();
         int y0 = yBang();
         int W = rongBang();
-        game.pokemon.GiaoDien.bang(g, x0, y0, W, caoBang());
+        game.pokemon.GiaoDien.bangMo(g, x0, y0, W, caoBang());
         game.pokemon.GiaoDien.dai(g, x0 + 4, y0 + 4, W - 8, 17, "Chọn Pokémon khởi đầu");
         int c = canhAnh();
         int yAnh = y0 + 26;
@@ -298,9 +299,14 @@ public class CreateCharScr extends Screen {
             int dex = LoaiPokemonClient.khoiDau(i);
             int cx = xAnh(i);
             boolean dangChon = i == this.currentClazz;
-            game.pokemon.GiaoDien.khoi(g, cx - c / 2 - 2, yAnh - 2, c + 4, c + 4, 4, dangChon ? game.pokemon.GiaoDien.VANG : game.pokemon.GiaoDien.VIEN);
-            game.pokemon.GiaoDien.khoi(g, cx - c / 2, yAnh, c, c, 3, game.pokemon.GiaoDien.mauHe(LoaiPokemonClient.HE_KHOI_DAU[i]));
-            PokeBody.paintChanDung(g, dex, false, cx, yAnh + c / 2, c - 2);
+            // huy hiệu tròn màu hệ (HuyHieuPoke); đang chọn: vòng vàng dày
+            if (dangChon) {
+                g.setColor(game.pokemon.GiaoDien.VANG);
+                g.fillArc(cx - c / 2 - 3, yAnh - 3, c + 6, c + 6, 0, 360);
+            }
+            if (!PokeBody.paintChanDung(g, dex, false, cx, yAnh + c / 2, c)) {
+                game.pokemon.GiaoDien.khoi(g, cx - c / 2, yAnh, c, c, 3, game.pokemon.GiaoDien.mauHe(LoaiPokemonClient.HE_KHOI_DAU[i]));
+            }
         }
         if (this.selected == 1) {
             g.setColor(game.pokemon.GiaoDien.VANG);
@@ -321,7 +327,7 @@ public class CreateCharScr extends Screen {
         int xc = x0 + 64;
         Font.blackFont.drawString(g, LoaiPokemonClient.TEN_KHOI_DAU[this.currentClazz], xc, yGiua + 4, 0);
         game.pokemon.GiaoDien.huyHieuHe(g, xc, yGiua + 21, LoaiPokemonClient.HE_KHOI_DAU[this.currentClazz]);
-        Font.arialFont.drawString(g, LoaiPokemonClient.VAI_TRO[this.currentClazz], xc, yGiua + 40, 0);
+        Font.arialFont.drawString(g, game.pokemon.GiaoDien.catChu(Font.arialFont, LoaiPokemonClient.VAI_TRO[this.currentClazz], x0 + W - 10 - xc), xc, yGiua + 40, 0);
         // mũi tên trái / phải đổi Pokémon
         g.setColor(game.pokemon.GiaoDien.XANH);
         g.fillTriangle(x0 + W - 22, yGiua + 10, x0 + W - 22, yGiua + 22, x0 + W - 15, yGiua + 16);

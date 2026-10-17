@@ -5571,7 +5571,10 @@ extends Screen {
             break;
         }
         final int n2 = n;
-        PageScr.gI().setInfo(Canvas.hw - 94, Canvas.hh - 84 - Screen.deltaY, 197, 168, Res.nameBigMap[n2], null);
+        // khung vừa màn (máy 176 px: khung 197 px cũ tràn mép)
+        final int wBd = Math.min(197, Canvas.w - 6);
+        final int hBd = Math.min(168, Canvas.h - 40);
+        PageScr.gI().setInfo(Canvas.hw - wBd / 2, Canvas.hh - hBd / 2 - Screen.deltaY, wBd, hBd, Res.nameBigMap[n2], null);
         PageScr.gI().indexFont = 1;
         PageScr.gI().left = new Command("Tr\u1edf l\u1ea1i", new IAction(){
 
@@ -5581,6 +5584,9 @@ extends Screen {
         });
         PageScr.gI().layer = new Layer(){
             public void paint(Graphics graphics, int n, int n22) {
+                if (Nen.veBanDoLon(graphics, sArrayArray, n2, wBd, hBd)) {
+                    return;
+                }
                 GameData.paintIconCayThan(graphics, (short)800, 98, 95);
                 Res.getCharPartInfo(2, Canvas.gameScr.mainChar.currentHead).paint(graphics, sArrayArray[n2][0], sArrayArray[n2][1], 0, 1);
             }

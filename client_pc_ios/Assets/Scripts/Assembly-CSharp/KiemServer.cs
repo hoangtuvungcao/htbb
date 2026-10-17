@@ -54,9 +54,30 @@ public static class KiemServer
 
 	private static Timer hetGio;
 
+	private static int batXacThucCache = -1;
+
+	/// <summary>
+	/// pokemon: có làm bước -88 không (giống batXacThuc() bản jar). Server Pokémon HTBB KHÔNG trả lời -88
+	/// (client sẽ chờ 30s rồi báo "không thể kết nối") nên mặc định TẮT khi PokeBody.CHE_DO_POKEMON;
+	/// bật lại cho server NQSH cũ bằng tham số dòng lệnh -htbbXacThuc.
+	/// </summary>
+	public static bool batXacThuc()
+	{
+		if (batXacThucCache < 0)
+		{
+			bool thamSo = Array.IndexOf(Environment.GetCommandLineArgs(), "-htbbXacThuc") >= 0;
+			batXacThucCache = (!PokeBody.CHE_DO_POKEMON || thamSo) ? 1 : 0;
+		}
+		return batXacThucCache == 1;
+	}
+
 	/// <summary>Đầu GameService.login: true = chặn lệnh đăng nhập này (đang xác thực trước).</summary>
 	public static bool chanDangNhap(string username, string pass, string version)
 	{
+		if (!batXacThuc())
+		{
+			return false;
+		}
 		if (choPhep)
 		{
 			choPhep = false;

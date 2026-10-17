@@ -973,6 +973,12 @@ public class MenuWindows : MyScreen
 		PageScr.gI().layer = new Layer();
 		ActionPaintCmd isPaint = (MyGraphics g, int x, int y) =>
 		{
+			if (PokeBody.CHE_DO_POKEMON)
+			{
+				// pokemon: bản đồ vùng vẽ bằng code (BanDoVung) thay ảnh bản đồ kiếm hiệp
+				BanDoVung.ve(g, location, id, 197, 168);
+				return;
+			}
 			GameData.paintIconCayThan(g, 800, 98, 95);
 			Res.getCharPartInfo(2, Canvas.gameScr.mainChar.currentHead).paint(g, location[id][0], location[id][1], 0, 1);
 		};

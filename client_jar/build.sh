@@ -9,12 +9,15 @@
 #   MAY_CHU=127.0.0.1:19129 sh build.sh 54
 #                      -> bản THỬ ...-v54-thu.jar: MANIFEST thêm "HTBB-May-Chu: host:cong" = chỉ một server thử
 #                         (không tải danh sách, bỏ xác thực -88). Không ảnh hưởng bản thường/phát hành.
-#   HTBB_ASSETS=<HTBB>/ClientUnity/Assets sh build.sh 54
+#   HTBB_ASSETS=../pc/Assets sh build.sh 54        (Assets client PC; bản cũ <HTBB>/ClientUnity/Assets vẫn dùng được)
+#   HTBB_ASSETS=pc sh build.sh 54                  (viết tắt của ../pc/Assets)
 #                      -> trước khi build, đóng gói lại sprite + hiệu ứng chiêu Pokémon (res/pk, res/pt, và bản
 #                         nhẹ res_nhe/pk) bằng tools/DongGoiPokeJ2me.java (đọc thêm HTBB docs/pokemon/*.csv)
 #   GOI=nhe sh build.sh 54
 #                      -> thêm bản NHẸ cho máy thật ...-v54-nhe.jar (ProGuard + res_nhe/pk: ít loài, ít khung,
-#                         chân dung 24px; loài thiếu vẽ bằng bóng đen, xem DongGoiPokeJ2me)
+#                         chân dung 24px; loài thiếu vẽ bằng bóng đen, xem DongGoiPokeJ2me; âm thanh res_nhe/am:
+#                         chỉ tiếng hiệu ứng, không nhạc)
+#   Âm thanh res/am (+ res_nhe/am): python3 -P tools/lam_am_thanh.py <goi Kenney CC0> res/am res_nhe/am
 #   MAY_CHU_CHINH=host:cong sh build.sh 54
 #                      -> MỌI bản (thường/phát hành/nhẹ) chỉ vào server Pokémon này ("HTBB-May-Chu" trong
 #                         MANIFEST), không tải danh sách server cũ.
@@ -53,6 +56,7 @@ find src ../shared/mod "$B/gen" -name '*.java' > "$B/nguon.txt"
 "$J/java" -cp "$B/tool${S}tools/asm.jar" Down45 d "$B/cls" "$B/cls45"
 
 # Pokémon (Huyền Thoại Bảo Bối): sprite/tile/từ điển đóng gói sẵn trong res/pk, res/pt
+[ "$HTBB_ASSETS" = "pc" ] && HTBB_ASSETS=../pc/Assets
 if [ -n "$HTBB_ASSETS" ]; then
     mkdir -p "$B/dg"
     "$J/javac" -nowarn -encoding UTF-8 -d "$B/dg" src/game/pokemon/PokeDuLieu.java src/game/pokemon/PokeDongTac.java src/game/pokemon/HieuUngBang.java tools/DongGoiPokeJ2me.java
@@ -98,8 +102,12 @@ if [ "$GOI" = nhe ]; then
     [ -f res_nhe/pk/chu.bin ] || { echo "Thieu res_nhe/pk - chay voi HTBB_ASSETS=... de dong goi ban nhe"; exit 1; }
     NHE="out/HTBB-v$V-nhe.jar"
     rm -rf "$B/res_nhe" && mkdir -p "$B/res_nhe"
-    for e in res/*; do [ "$(basename "$e")" = pk ] || cp -r "$e" "$B/res_nhe/"; done
+    for e in res/*; do case "$(basename "$e")" in pk|am) ;; *) cp -r "$e" "$B/res_nhe/" ;; esac; done
     cp -r res_nhe/pk "$B/res_nhe/pk"
+    # banner bản nhẹ: chỉ lớp cỏ tiền cảnh (trời vẽ bằng code) - bỏ núi / đồi / mây
+    rm -f "$B/res_nhe/bn/nui.png" "$B/res_nhe/bn/doi.png" "$B/res_nhe/bn/may1.png" "$B/res_nhe/bn/may2.png"
+    # âm thanh bản nhẹ: chỉ tiếng hiệu ứng 8 kHz, không nhạc (res_nhe/am, sinh bởi tools/lam_am_thanh.py)
+    [ -d res_nhe/am ] && cp -r res_nhe/am "$B/res_nhe/am"
     rm -f out/pg-in.jar out/pg-out.jar
     "$J/jar" cfm out/pg-in.jar "$B/MANIFEST.MF" -C "$B/cls45" . -C "$B/res_nhe" .
     "$J/java" -jar tools/proguard.jar @release.pro @out/rt.pro -injars out/pg-in.jar -outjars out/pg-out.jar -printmapping "out/mapping-v$V-nhe.txt" > out/proguard-v$V-nhe.log 2>&1     || { tail -20 out/proguard-v$V-nhe.log; exit 1; }

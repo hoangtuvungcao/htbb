@@ -59,7 +59,7 @@ public class ViewTextDlg extends Dialog {
     public void paint(Graphics g) {
         Canvas.resetTrans(g);
         Res.paintDlgFull(g, this.x, this.y, this.w, this.h);
-        Font.bigFont.drawString(g, this.title, this.x + (this.w / 2), this.y + 2, 2);
+        Font.borderFont.drawString(g, game.pokemon.GiaoDien.tieuDe(this.title), this.x + (this.w / 2) + 6, this.y + 6, 2); // pokemon: chữ trắng viền giữa dải đỏ
         g.translate(this.x, this.y + 25);
         g.setClip(0, 0, this.w, this.h - 30);
         g.translate(0, -cmy);

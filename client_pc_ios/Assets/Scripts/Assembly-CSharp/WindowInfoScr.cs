@@ -4700,6 +4700,12 @@ public class WindowInfoScr : MyScreen
 	private void paintGrid(MyGraphics g, int x, int y)
 	{
 		int num = ((!isDefault) ? 34 : 44);
+		if (PokeBody.CHE_DO_POKEMON)
+		{
+			// pokemon: ô lưới bo góc có khe, sọc xen kẽ (KieuO)
+			KieuO.oDo(g, x, y, num + 1, true, ((x / num + y / num) & 1) == 1);
+			return;
+		}
 		g.setColor(6513507);
 		g.drawRect(x, y, num, num);
 		g.setColor(8684162);
@@ -4759,6 +4765,13 @@ public class WindowInfoScr : MyScreen
 
 	private void paintSelected(MyGraphics g, int x, int y)
 	{
+		if (PokeBody.CHE_DO_POKEMON)
+		{
+			// pokemon: ô chọn nền xanh sáng + viền vàng nhấp nháy (KieuO)
+			KieuO.nenChon(g, x - 1, y - 1, 33);
+			KieuO.chonO(g, x - 1, y - 1, 33);
+			return;
+		}
 		g.setColor(10595790);
 		g.fillRect(x, y, 32, 32);
 	}
@@ -5574,6 +5587,20 @@ public class WindowInfoScr : MyScreen
 
 	private void paintSkill(MyGraphics g)
 	{
+		if (PokeBody.CHE_DO_POKEMON)
+		{
+			// pokemon: hàng ô chiêu màu hệ + thẻ chiêu (BangChieu)
+			if (selected < 0)
+			{
+				selected = 0;
+			}
+			else if (selected > numW - 1)
+			{
+				selected = numW - 1;
+			}
+			BangChieu.ve(g, numW, selected, isChangeTab, cmx, cmy, w);
+			return;
+		}
 		MFont.smallFont.drawString(g, Canvas.gameScr.mainChar.skillPointLeft + string.Empty, 105, -16, MFont.CENTER);
 		MFont.normalFont[0].drawString(g, "Điểm kỹ năng: ", 60, -22, MFont.CENTER);
 		g.setColor(11908533);
@@ -5627,6 +5654,16 @@ public class WindowInfoScr : MyScreen
 
 	private void paintFeatures(MyGraphics g)
 	{
+		if (PokeBody.CHE_DO_POKEMON)
+		{
+			// pokemon: hàng chỉ số bo góc + biểu tượng màu hệ (BangTiemNang) thay ảnh inv_1
+			if (selected > 4)
+			{
+				selected = 4;
+			}
+			BangTiemNang.ve(g, Canvas.gameScr.mainChar, selected, isChangeTab, w);
+			return;
+		}
 		if (!isChangeTab)
 		{
 			if (selected > 4)
@@ -5660,42 +5697,50 @@ public class WindowInfoScr : MyScreen
 		{
 			g.drawImage(imgCharWear, w / 2 + 5 + xTr, -5 + yTr, MyGraphics.TOP | MyGraphics.HCENTER);
 		}
-		g.setColor(14605278);
-		g.drawRect(39 + xTr, -10 + yTr, 104, 208);
-		g.fillRect(43 + xTr, -10 + yTr + 175, 30, 30);
-		g.fillRect(110 + xTr, -10 + yTr + 175, 30, 30);
-		for (int i = 0; i < 5; i++)
+		if (PokeBody.CHE_DO_POKEMON)
 		{
-			g.fillRect(-3 + xTr, -10 + i * 42 + yTr, 40, 40);
-			g.fillRect(147 + xTr, -10 + i * 42 + yTr, 40, 40);
+			// pokemon: ô trang bị bo góc kiểu Pokémon + ô chọn viền vàng + tên ô (BangTrangBi)
+			BangTrangBi.vePc(g, xTr, yTr, selected, numW, isPaintFc, charWearing.clazz);
 		}
-		g.setColor(4802889);
-		g.fillRect(44 + xTr, -10 + yTr + 176, 28, 28);
-		g.fillRect(111 + xTr, -10 + yTr + 176, 28, 28);
-		for (int j = 0; j < 5; j++)
+		else
 		{
-			g.fillRect(-2 + xTr, -9 + j * 42 + yTr, 38, 38);
-			g.fillRect(148 + xTr, -9 + j * 42 + yTr, 38, 38);
-		}
-		if (Canvas.gameTick % 10 > 3 && isPaintFc)
-		{
-			g.setColor(10595790, 0.5f);
-			if (selected % 3 != 1)
+			g.setColor(14605278);
+			g.drawRect(39 + xTr, -10 + yTr, 104, 208);
+			g.fillRect(43 + xTr, -10 + yTr + 175, 30, 30);
+			g.fillRect(110 + xTr, -10 + yTr + 175, 30, 30);
+			for (int i = 0; i < 5; i++)
 			{
-				int num = 0;
-				if (selected == 2 || selected == 5 || selected == 8 || selected == 11 || selected == 14)
+				g.fillRect(-3 + xTr, -10 + i * 42 + yTr, 40, 40);
+				g.fillRect(147 + xTr, -10 + i * 42 + yTr, 40, 40);
+			}
+			g.setColor(4802889);
+			g.fillRect(44 + xTr, -10 + yTr + 176, 28, 28);
+			g.fillRect(111 + xTr, -10 + yTr + 176, 28, 28);
+			for (int j = 0; j < 5; j++)
+			{
+				g.fillRect(-2 + xTr, -9 + j * 42 + yTr, 38, 38);
+				g.fillRect(148 + xTr, -9 + j * 42 + yTr, 38, 38);
+			}
+			if (Canvas.gameTick % 10 > 3 && isPaintFc)
+			{
+				g.setColor(10595790, 0.5f);
+				if (selected % 3 != 1)
 				{
-					num = 1;
+					int num = 0;
+					if (selected == 2 || selected == 5 || selected == 8 || selected == 11 || selected == 14)
+					{
+						num = 1;
+					}
+					g.fillRect(-2 + num * 150 + xTr, selected / numW * 42 - 9 + yTr, 38, 38);
 				}
-				g.fillRect(-2 + num * 150 + xTr, selected / numW * 42 - 9 + yTr, 38, 38);
-			}
-			else if (selected != 4)
-			{
-				g.fillRect(111 + xTr, -10 + yTr + 176, 28, 28);
-			}
-			else
-			{
-				g.fillRect(44 + xTr, -10 + yTr + 176, 28, 28);
+				else if (selected != 4)
+				{
+					g.fillRect(111 + xTr, -10 + yTr + 176, 28, 28);
+				}
+				else
+				{
+					g.fillRect(44 + xTr, -10 + yTr + 176, 28, 28);
+				}
 			}
 		}
 		int num2 = 0;

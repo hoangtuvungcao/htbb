@@ -11,6 +11,14 @@ FILE=$3
 GHI_CHU=${4:-}
 REPO=${REPO:-kpah-server/nqsh-h2-tai}
 export REPO
+# Nhanh pokemon/chuyen-doi build ra Huyen Thoai Bao Boi: KHONG duoc day vao kenh tu cap nhat cua NQSH-H2
+# (client NQSH-H2 cua nguoi choi cu se tu tai ban Pokemon). Dat REPO=<repo phat hanh HTBB> (va doi LINK
+# trong pc/.../CapNhat.cs cho khop); chi khi CHAC CHAN dang phat hanh NQSH-H2 moi dat CHO_PHEP_NQSH=1.
+if [ "$REPO" = kpah-server/nqsh-h2-tai ] && [ "${CHO_PHEP_NQSH:-0}" != 1 ] \
+    && { echo "${GITHUB_REF_NAME:-}"; git rev-parse --abbrev-ref HEAD 2>/dev/null; } | grep -q '^pokemon/'; then
+    echo "TU CHOI: nhanh pokemon/* dang day vao repo NQSH-H2 ($REPO). Dat REPO=... (repo HTBB) hoac CHO_PHEP_NQSH=1."
+    exit 1
+fi
 case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*) PY=python; GH=${GH:-"/c/Program Files/GitHub CLI/gh.exe"} ;;
     *) PY=python3; GH=${GH:-gh} ;;

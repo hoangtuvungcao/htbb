@@ -108,8 +108,9 @@ public class ShopOnline extends Screen {
     }
 
     public void paintNameItemSelect(Graphics g, int x, int y, String str, Font f, int id) {
-        g.drawImage(Res.imgBar, x + 100 + (this.select == id ? this.countL : 0), y + 7, 3);
-        g.drawRegion(Res.imgBar, 0, 0, 11, 7, 2, x - (this.select == id ? this.countL : 0), y + 7, 3);
+        // pokemon: mũi tên vàng chỉ vào tên (thay ảnh mũi tên kiếm hiệp)
+        game.pokemon.GiaoDien.muiTab(g, x + 4 - (this.select == id ? this.countL : 0), y + 7, false);
+        game.pokemon.GiaoDien.muiTab(g, x + 96 + (this.select == id ? this.countL : 0), y + 7, true);
         f.drawString(g, str, x + (100 / 2), y, 2);
     }
 
@@ -369,7 +370,7 @@ public class ShopOnline extends Screen {
     }
 
     public void paintFillLine(Graphics g, int x, int y1, int y2) {
-        g.setColor(9605778);
+        g.setColor(game.pokemon.GiaoDien.XANH_SANG);
         g.fillRect(x, y1, this.w0 + 2, 1);
     }
 
@@ -380,13 +381,11 @@ public class ShopOnline extends Screen {
         }
         Canvas.resetTrans(g);
         Res.paintDlgDragonFull(g, this.x, this.y, this.w0, this.h0);
-        g.setColor(7961465);
-        g.fillRect(Canvas.hw - 51, this.y + 7, 102, 22);
-        g.setColor(!this.isFocusMainTab ? 2368548 : 30611);
-        g.fillRect(Canvas.hw - 50, this.y + 8, 100, 20);
+        // pokemon: viên tên tab + mũi tên vàng (thay thanh xám + mũi tên ảnh kiếm hiệp)
+        game.pokemon.GiaoDien.vienTab(g, Canvas.hw - 51, this.y + 7, 102, 21, this.isFocusMainTab);
         Font.normalFont[0].drawString(g, tile[this.indexMainTile], Canvas.w / 2, this.y + 10, 2);
-        g.drawImage(Res.imgBar, (Canvas.hw - 40) + this.xRunL, this.y + 17, 3);
-        g.drawRegion(Res.imgBar, 0, 0, 11, 7, 2, Canvas.hw + 40 + this.xRunR, this.y + 17, 3);
+        game.pokemon.GiaoDien.muiTab(g, (Canvas.hw - 64) + this.xRunL, this.y + 17, true);
+        game.pokemon.GiaoDien.muiTab(g, Canvas.hw + 64 + this.xRunR, this.y + 17, false);
         Font.smallFontColor[0].drawString(g, new StringBuffer(String.valueOf(money)).append("$").toString(), (this.x + this.w0) - 4, (this.y + this.h0) - 12, 1);
         int i = Screen.ITEM_HEIGHT + 10;
         if (this.indexMainTile == 1) {
@@ -437,7 +436,7 @@ public class ShopOnline extends Screen {
             ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
             if ((yy + kc) - this.scl.cmy >= this.y + 30 && yy - this.scl.cmy <= this.y + this.h0) {
                 if (this.select == i) {
-                    g.setColor(34949);
+                    g.setColor(game.pokemon.GiaoDien.XANH);
                     g.fillRect(this.x - 1, yy - 5, this.w0 - 2, kc);
                     isOne = true;
                 }
@@ -473,9 +472,9 @@ public class ShopOnline extends Screen {
 
     public void paintShowTxt(Graphics g) {
         Canvas.resetTrans(g);
-        g.setColor(16774720);
+        g.setColor(game.pokemon.GiaoDien.VANG);
         g.fillRect(this.xShowTxt - 1, this.yShowTxt - 1, this.wShowTxt + 2, this.hShowTxt + 2);
-        g.setColor(25695);
+        g.setColor(game.pokemon.GiaoDien.NAVY);
         g.fillRect(this.xShowTxt, this.yShowTxt, this.wShowTxt, this.hShowTxt);
         this.cmrShowTxt.setStyle(this.arrInfo.length, Screen.ITEM_HEIGHT + 2, this.xShowTxt, this.yShowTxt, this.wShowTxt, this.hShowTxt, true, 0);
         this.cmrShowTxt.setClip(g, this.xShowTxt, this.yShowTxt, this.wShowTxt, this.hShowTxt);

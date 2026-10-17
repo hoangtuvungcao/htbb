@@ -25,6 +25,11 @@ public class CuongThi : Monster
 
 	public override void paint(MyGraphics g)
 	{
+		// Template da la Pokemon (lenh -91): ve bang PokeBody, bo renderer boss cu.
+		if (paintPokemon(g))
+		{
+			return;
+		}
 		if (!isFreeze)
 		{
 			g.drawImage(Res.imgShadow, x, y, 3);

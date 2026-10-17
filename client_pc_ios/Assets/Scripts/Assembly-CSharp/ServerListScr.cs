@@ -115,8 +115,42 @@ public class ServerListScr : MyScreen
 		base.pointerPress(dx, dy);
 	}
 
+	/// <summary>
+	/// pokemon: máy chủ cố định (ThuongHieu.mayChuCoDinh: -htbbMayChu / MAY_CHU_CHINH / bản dev 127.0.0.1:19129)
+	/// - danh sách chỉ còn máy chủ đó, không tải robots.txt, không dùng danh sách / máy đăng nhập tự động đã lưu.
+	/// true = đã áp.
+	/// </summary>
+	public static bool apMayChuCoDinh()
+	{
+		string mc = ThuongHieu.mayChuCoDinh();
+		if (string.IsNullOrEmpty(mc))
+		{
+			return false;
+		}
+		int i = mc.LastIndexOf(':');
+		short cong;
+		if (i <= 0 || !short.TryParse(mc.Substring(i + 1), out cong))
+		{
+			return false;
+		}
+		nameServer = new string[1] { ThuongHieu.TEN_GAME };
+		address = new string[1] { mc.Substring(0, i) };
+		port = new short[1] { cong };
+		index_server = new sbyte[1];
+		index = 0;
+		nameSvAuto = nameServer[0];
+		addressAuTo = address[0];
+		portAuTo = cong;
+		LoginScr.nameServer = nameServer[0];
+		return true;
+	}
+
 	public static void loadSv(bool isHTBB)
 	{
+		if (apMayChuCoDinh())
+		{
+			return;
+		}
 		if (isHTBB)
 		{
 			// Giống bản jar (TaiDanhSach): server NQSH-H2, danh sách "Tên|host|port" tải từ linkGetHost
@@ -148,6 +182,10 @@ public class ServerListScr : MyScreen
 		if (str == null)
 		{
 			return false;
+		}
+		if (apMayChuCoDinh())
+		{
+			return true; // pokemon: máy chủ cố định - bỏ danh sách tải về
 		}
 		List<string[]> list = new List<string[]>();
 		string[] lines = str.Replace("\r", string.Empty).Split('\n');
@@ -190,6 +228,10 @@ public class ServerListScr : MyScreen
 	/// </summary>
 	public static System.Collections.IEnumerator taiDanhSachTuDong()
 	{
+		if (!string.IsNullOrEmpty(ThuongHieu.mayChuCoDinh()))
+		{
+			yield break; // pokemon: máy chủ cố định, không tải robots.txt
+		}
 		using (UnityEngine.Networking.UnityWebRequest r = UnityEngine.Networking.UnityWebRequest.Get(linkGetHost))
 		{
 			r.timeout = 10;
@@ -213,6 +255,8 @@ public class ServerListScr : MyScreen
 	public override void switchToMe()
 	{
 		base.switchToMe();
+		// am thanh: nhac man tieu de
+		AmThanh.nhac(AmThanh.NHAC_TIEU_DE);
 		myScroll.clear();
 		goc = 0;
 		xTo = (yTo = 0);
@@ -328,6 +372,10 @@ public class ServerListScr : MyScreen
 
 	public static void loadIPAuTo()
 	{
+		if (apMayChuCoDinh())
+		{
+			return;
+		}
 		nameSvAuto = string.Empty;
 		addressAuTo = string.Empty;
 		portAuTo = -1;
@@ -357,6 +405,10 @@ public class ServerListScr : MyScreen
 
 	public static void loadIP()
 	{
+		if (apMayChuCoDinh())
+		{
+			return;
+		}
 		sbyte[] array = RMS.loadRMS("ipnqsh");
 		if (array == null)
 		{
@@ -496,6 +548,12 @@ public class ServerListScr : MyScreen
 
 	public void paintBg(MyGraphics g)
 	{
+		if (BannerParallax.bat())
+		{
+			// pokemon: nền banner parallax riêng cho màn chọn máy chủ / đăng nhập / tạo - chọn Pokémon
+			BannerParallax.ve(g);
+			return;
+		}
 		Canvas.resetTrans(g);
 		g.translate(-GameScr.cmx, -GameScr.cmy);
 		Tilemap.paintTile(g);
@@ -506,7 +564,11 @@ public class ServerListScr : MyScreen
 	{
 		paintBg(g);
 		Canvas.resetTrans(g);
-		g.drawImage(Canvas.imgLogo, Canvas.hw, Canvas.hh - 100, 3);
+		// Che do Pokemon: tieu de ThuongHieu (ten game + 5 Pokemon khoi dau) thay logo goc.
+		if (!ThuongHieu.veTieuDe(g, Canvas.hw, Canvas.hh - 150))
+		{
+			g.drawImage(Canvas.imgLogo, Canvas.hw, Canvas.hh - 100, 3);
+		}
 		paintPanel(g);
 		base.paint(g);
 	}

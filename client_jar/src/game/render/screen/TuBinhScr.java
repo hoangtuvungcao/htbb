@@ -186,9 +186,9 @@ public class TuBinhScr extends Screen {
     }
 
     public void paintCell(Graphics g) {
-        g.setColor(25695);
+        g.setColor(0x003A70);
         g.fillRect(this.xSh, this.ySh + (Canvas.isSmartPhone ? 0 : 10), this.wSh, this.hSh - 10);
-        g.setColor(16774720);
+        g.setColor(0xFFCB05);
         g.drawRect(this.xSh, this.ySh + (Canvas.isSmartPhone ? 0 : 10), this.wSh, this.hSh - 10);
     }
 
@@ -223,14 +223,13 @@ public class TuBinhScr extends Screen {
         this.mScrollTab.setClip(g, xDr + 2, yDr + 25, wCell - 4, 25);
         for (int i = 0; i < this.arraySubTile.length; i++) {
             if (this.indexTab == i) {
-                g.setColor(6513507);
-                g.fillRect(xDr + (this.wTab * i), yDr + 26, this.wTab, 25);
+                game.pokemon.GiaoDien.chon(g, xDr + (this.wTab * i) + 1, yDr + 27, this.wTab - 1, 22);
             }
             Font.normalFont[0].drawString(g, this.arraySubTile[i], xDr + (this.wTab * i) + (this.wTab / 2), yDr + 32, 2);
-            g.setColor(14527502);
-            g.fillRect(xDr + (this.wTab * i), yDr + 25, 1, 25);
+            g.setColor(game.pokemon.GiaoDien.XANH_SANG);
+            g.fillRect(xDr + (this.wTab * i), yDr + 27, 1, 21);
         }
-        g.fillRect(xDr + (this.wTab * this.arraySubTile.length), yDr + 25, 1, 25);
+        g.fillRect(xDr + (this.wTab * this.arraySubTile.length), yDr + 27, 1, 21);
         Canvas.resetTrans(g);
         if (allTuBinh.size() > 0) {
             if (this.saveIndexTab != this.indexTab && this.indexTab > -1 && this.indexTab < allTuBinh.size()) {
@@ -243,8 +242,7 @@ public class TuBinhScr extends Screen {
                 ObjTuBinh obj = (ObjTuBinh) allTuBinh2.elementAt(i2);
                 if (obj != null) {
                     if (this.index == i2) {
-                        g.setColor(6513507);
-                        g.fillRect(xDr + 4, obj.y, w0, hImg);
+                        game.pokemon.GiaoDien.chon(g, xDr + 4, obj.y, w0 - 8, hImg);
                     }
                     obj.paint(g);
                 }

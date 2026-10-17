@@ -278,6 +278,23 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
         }
     }
 
+    // pokemon: tam dung / tiep nhac khi man hinh bi che (cuoc goi, menu he thong)
+    protected void hideNotify() {
+        try {
+            game.model.Sound.me.pauseMusic();
+        } catch (Throwable e) {
+            // bo qua
+        }
+    }
+
+    protected void showNotify() {
+        try {
+            game.model.Sound.me.resumeMusic();
+        } catch (Throwable e) {
+            // bo qua
+        }
+    }
+
     public void keyPressed(int keyCode) {
         if (isLoad) {
             return;
@@ -653,11 +670,20 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 if (game.pokemon.PokeBody.CHE_DO_POKEMON) {
                     w = getWidth();
                     h = getHeight();
-                    game.pokemon.GiaoDien.nenTroi(g, w, h);
-                    game.pokemon.ThuongHieu.veTieuDe(g, w >> 1, (h >> 1) - 60, w);
-                    game.pokemon.GiaoDien.dangTai(g, w >> 1, h - 52, 12);
+                    if (game.pokemon.Banner.ve(g, -1, true)) {
+                        // banner nhiều lớp + logo; Poké Ball chờ giữa trời
+                        try {
+                            game.pokemon.ThuongHieu.veLogo(g, w >> 1, Math.max(8, (h >> 1) - 90), w);
+                        } catch (Throwable th) {
+                            // font chưa nạp
+                        }
+                    } else {
+                        game.pokemon.GiaoDien.nenTroi(g, w, h);
+                        game.pokemon.ThuongHieu.veTieuDe(g, w >> 1, (h >> 1) - 60, w);
+                    }
+                    game.pokemon.GiaoDien.dangTai(g, w >> 1, (h >> 1) - 10, 12);
                     try {
-                        game.render.screen.Font.borderFont.drawString(g, "Đang tải...", w >> 1, h - 34, 2);
+                        game.render.screen.Font.borderFont.drawString(g, "Đang tải...", w >> 1, (h >> 1) + 8, 2);
                     } catch (Throwable th) {
                         // font chưa nạp
                     }

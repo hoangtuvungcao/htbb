@@ -1122,6 +1122,22 @@ public class Res
 		int num = 0;
 		int num2 = 0;
 		int num3 = 0;
+		// Che do Pokemon (G7.A): bo tile PMD cung so tile/thu tu, sinh boi tools/pokemon/DoiTileMap.java.
+		// Thieu tep (Resources/poke_tile/) thi quay ve bo goc.
+		bool tilePokemon = false;
+		if (PokeBody.CHE_DO_POKEMON)
+		{
+			image = PokeTile.napAnh("t_thanh");
+			image2 = PokeTile.napAnh("t");
+			image3 = PokeTile.napAnh("t_hang");
+			tilePokemon = image != null && image2 != null && image3 != null;
+			if (!tilePokemon)
+			{
+				image = null;
+				image2 = null;
+				image3 = null;
+			}
+		}
 		if (image == null)
 		{
 			image = Image.createImage(Main.res + "/pngtile/t_thanh");
@@ -1151,6 +1167,13 @@ public class Res
 		for (int k = 0; k < num3; k++)
 		{
 			Tilemap.img[2][k] = Image.createImage(image3, 0, k * 16, 16, 16, 0);
+		}
+		if (tilePokemon)
+		{
+			// Ban do nho to theo mau trung binh cua tile moi (mang mau cu viet cung cho tile goc).
+			PokeTile.tinhMauBanDoNho(image, Tilemap.mangMauThanh);
+			PokeTile.tinhMauBanDoNho(image2, Tilemap.mangMau);
+			PokeTile.tinhMauBanDoNho(image3, Tilemap.mangMauHang);
 		}
 		image.texture = null;
 		image = null;
@@ -1188,6 +1211,22 @@ public class Res
 				dataInputStream = DataInputStream.getResourceAsStream(Main.res + "/t_hang");
 				imgtileSmall = Image.createImage(Main.res + "/pngtile/t_hang_s");
 				mauTile = 2;
+			}
+			if (PokeBody.CHE_DO_POKEMON)
+			{
+				// Bo tile moi (tools/pokemon/DungBoTileMoi.java): kieu di duoc + anh nho ban do di cung bo tile
+				// Resources/poke_tile - chi so tile khac han bo goc nen KHONG duoc dung res/t*.type cu.
+				string tenBo = (lv > 200) ? "t_thanh" : ((lv < 110) ? "t" : "t_hang");
+				TextAsset kieuMoi = (TextAsset)Resources.Load(Tilemap.BAN_DO_POKEMON + "kieu_" + tenBo, typeof(TextAsset));
+				if (kieuMoi != null)
+				{
+					dataInputStream = new DataInputStream(ArrayCast.cast(kieuMoi.bytes));
+					Image nhoMoi = PokeTile.napNho((lv > 200) ? "t_thanh_s" : ((lv < 110) ? "t_small" : "t_hang_s"));
+					if (nhoMoi != null)
+					{
+						imgtileSmall = nhoMoi;
+					}
+				}
 			}
 			try
 			{

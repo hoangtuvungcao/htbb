@@ -54,6 +54,11 @@ final class Nen {
         return false;
     }
 
+    /** Bản Android giữ ảnh bản đồ lớn cũ (bản jar Pokémon vẽ bằng code - xem j2me Nen). */
+    static boolean veBanDoLon(Object g, short[][] diem, int hienTai, int w, int h) {
+        return false;
+    }
+
     static boolean menuNhanhTick() {
         return false;
     }

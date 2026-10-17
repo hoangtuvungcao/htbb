@@ -124,6 +124,29 @@ public class Char : LiveActor
 
 	public sbyte idFashion = -1;
 
+	/// <summary>So Pokedex cua than Pokemon (0 = ve paper doll cu). Nhan qua lenh -90 POKE_THAN.</summary>
+	public short pokeDex;
+
+	public bool pokeShiny;
+
+	/// <summary>Hieu ung tien hoa (lenh -92): so tick con lai va dex truoc khi tien hoa.</summary>
+	public int pokeTienHoaCon;
+
+	public short pokeDexTruoc;
+
+	/// <summary>Pokemon thu cuoi (lenh -93 POKE_CUOI), 0 = khong cuoi. Ve duoi chan nguoi choi.</summary>
+	public short pokeThuDex;
+
+	public bool pokeThuShiny;
+
+	/// <summary>Pet di theo dang Pokemon (lenh -94 POKE_PET), 0 = ve pet kieu cu. Ve o AnimalMove.vePokePet.</summary>
+	public short pokePetDex;
+
+	public bool pokePetShiny;
+
+	/// <summary>1.5 giay o 50 tick/giay (PokeDuLieu.TICK_MOI_GIAY).</summary>
+	public const int POKE_TICK_TIEN_HOA = 75;
+
 	public sbyte timeChangeFrame = 1;
 
 	public short lvpercent;
@@ -1125,7 +1148,8 @@ public class Char : LiveActor
 		}
 		try
 		{
-			if (!isFreeze)
+			// Than Pokemon ve nguyen con: bo qua toan bo paper doll, vu khi, ngua, phi phong (Q5).
+			if (!isFreeze && !paintPokemon(g))
 			{
 				sbyte b = getHorse();
 				if (GameData.imgHorse == null)
@@ -1345,9 +1369,135 @@ public class Char : LiveActor
 		paintListEff(g, 0);
 	}
 
+	/// <summary>
+	/// Trang thai client -&gt; dong tac PokeBody (bang 4.3 KE_HOACH_CHUYEN_DOI.md).
+	/// state: 0 dung, 1 chay, 2 danh (startAttack), 3 chet. Trung don = dang nay len/bi day lui.
+	/// Class 2 (Phap su/Eevee) va 4 (Cung thu/Pichu) danh xa -&gt; DANH_XA.
+	/// </summary>
+	public int pokeDongTac()
+	{
+		if (state == 3)
+		{
+			return PokeDuLieu.GUC_NGA;
+		}
+		if (state == 2)
+		{
+			return (clazz == 2 || clazz == 4) ? PokeDuLieu.DANH_XA : PokeDuLieu.DANH_GAN;
+		}
+		if (pokeDangTrungDon())
+		{
+			return PokeDuLieu.TRUNG_DON;
+		}
+		if (state == 1)
+		{
+			return PokeDuLieu.CHAY;
+		}
+		return PokeDuLieu.DUNG;
+	}
+
+	/// <summary>Bat dau hieu ung tien hoa (lenh -92).</summary>
+	public void batDauTienHoa(short dexCu, short dexMoi)
+	{
+		pokeDexTruoc = dexCu;
+		pokeTienHoaCon = POKE_TICK_TIEN_HOA;
+		// am thanh: tien hoa
+		AmThanh.phat(AmThanh.TIEN_HOA);
+		if (dexMoi > 0)
+		{
+			pokeDex = dexMoi;
+		}
+	}
+
+	/// <summary>
+	/// Ve than Pokemon thay cho paper doll. Tra ve false (de ve kieu cu) khi chua co dex
+	/// hoac thieu sprite trong Resources/poke/.
+	/// </summary>
+	public bool paintPokemon(MyGraphics g)
+	{
+		if (pokeDex <= 0 || !PokeBody.coSprite(pokeDex, pokeShiny))
+		{
+			return false;
+		}
+		int dexVe = pokeDex;
+		int doSang = 0;
+		if (pokeTienHoaCon > 0)
+		{
+			if (pokeTienHoaCon > 10)
+			{
+				// Nhap nhay giua dang cu va dang moi, cang ve cuoi cang nhanh, than sang trang.
+				int daQua = POKE_TICK_TIEN_HOA - pokeTienHoaCon;
+				int chuKy = 2 + pokeTienHoaCon / 10;
+				if (pokeDexTruoc > 0 && (daQua / chuKy) % 2 == 0)
+				{
+					dexVe = pokeDexTruoc;
+				}
+				doSang = 100;
+			}
+			else
+			{
+				doSang = pokeTienHoaCon * 10;
+			}
+			if (!PokeBody.coSprite(dexVe, pokeShiny))
+			{
+				dexVe = pokeDex;
+			}
+		}
+		int dongTac = pokeDongTac();
+		int tick = pokeTickTrongDongTac(dongTac);
+		// Ten, icon nhiem vu, bong chat dat tai y - height: nang len theo chieu cao sprite.
+		int cao = PokeBody.caoTrenChan(pokeDex, pokeShiny, 100) + 6;
+		height = (short)((cao > 32) ? cao : 32);
+		if (effPhap != null)
+		{
+			effPhap.x = x;
+			effPhap.y = y;
+			effPhap.paint(g);
+		}
+		if (state != 3)
+		{
+			paintDataEff_Top(g, x, y, false);
+			paintListEff(g, 0);
+		}
+		g.drawImage(Res.imgShadow, x, y - 2, MyGraphics.HCENTER | MyGraphics.VCENTER);
+		int yNguoi = y + z + dy;
+		if (pokeThuDex > 0 && state != 3 && PokeBody.coSprite(pokeThuDex, pokeThuShiny))
+		{
+			// Thu cuoi: ve thu (dung/chay theo nguoi choi) roi nang nguoi choi len ~55% chieu cao thu.
+			int dongTacThu = (state == 1) ? 1 : 0;
+			PokeBody.paint(g, pokeThuDex, pokeThuShiny, x, yNguoi, dir, dongTacThu, pokeTickTrongDongTac(dongTacThu), 100);
+			int caoThu = PokeBody.caoTrenChan(pokeThuDex, pokeThuShiny, 100);
+			yNguoi -= caoThu * 55 / 100;
+			height = (short)(height + caoThu * 55 / 100);
+		}
+		// hit flash (PhanHoiChienDau)
+		doSang = System.Math.Max(doSang, pokeDoSangNhay());
+		PokeBody.paint(g, dexVe, pokeShiny, x, yNguoi, dir, dongTac, tick, 100, doSang);
+		if (comeHome)
+		{
+			g.setColor(0);
+			g.fillRect(x - 16, y - 46, 32, 4);
+			g.setColor(1165236);
+			g.fillRect(x - 16, y - 46, time, 4);
+			g.setColor(3363085);
+			g.drawRect(x - 16, y - 46, 32, 4);
+		}
+		paintbuff(g);
+		return true;
+	}
+
+	/// <summary>Ve Pokemon dang dung yen tai (x, y) = diem chan (man tao/chon nhan vat, bang trang bi).</summary>
+	public bool paintPokemonTinh(MyGraphics g, int xp, int yp)
+	{
+		if (pokeDex <= 0)
+		{
+			return false;
+		}
+		return PokeBody.paint(g, pokeDex, pokeShiny, xp, yp, DOWN, PokeDuLieu.DUNG, Canvas.gameTick, 100);
+	}
+
 	public void paintAvatar(MyGraphics g)
 	{
-		if (!isFreeze)
+		if (!isFreeze && !paintPokemon(g))
 		{
 			sbyte b = getHorse();
 			if (name.ToLower().Equals("loivu") && GameData.imgHorse == null)
@@ -1744,6 +1894,10 @@ public class Char : LiveActor
 
 	public override void paintCorner(MyGraphics g, int xCorner, int yCorner)
 	{
+		if (pokeDex > 0 && ChanDungPoke.paintHuyHieu(g, pokeDex, pokeShiny, xCorner + 2, yCorner - 10, 26))
+		{
+			return;
+		}
 		g.translate(-x + xCorner + 2, -y + yCorner - 10);
 		if (currentHead != -1)
 		{
@@ -1934,6 +2088,10 @@ public class Char : LiveActor
 
 	public override void update()
 	{
+		if (pokeTienHoaCon > 0)
+		{
+			pokeTienHoaCon--;
+		}
 		if (ID == 32001)
 		{
 			return;
@@ -2648,6 +2806,10 @@ public class Char : LiveActor
 
 	public void paintAvatar(MyGraphics g, short x, short y)
 	{
+		if (paintPokemonTinh(g, x, y))
+		{
+			return;
+		}
 		int num = legStyle;
 		int num2 = bodyStyle;
 		int num3 = currentHead;
@@ -2747,6 +2909,12 @@ public class Char : LiveActor
 			else
 			{
 				currentSkillAnimate = SkillManager.getSkillAnimate(currentSkillType, clazz);
+			}
+			// K3: Pokemon dung particle PMD cua chieu thay hieu ung goc (thieu thi giu cu).
+			SkillAnimate pokeSkill = PokeHieuUng.layChieu(this, isDoing ? 0 : currentSkillType);
+			if (pokeSkill != null)
+			{
+				currentSkillAnimate = pokeSkill;
 			}
 			if (currentSkillType < coolDownSkill.Length && skillID < skillLevelLearnt.Length)
 			{

@@ -279,7 +279,7 @@ public final class PokeHieuUng {
                 }
             }
             if (c.p1 == trung) {
-                trungDon(c, dich, false);
+                trungDon(c, dich, false, h);
                 for (int i = 0; i < mst.size(); i++) {
                     try {
                         Object o = mst.elementAt(i);
@@ -288,7 +288,7 @@ public final class PokeHieuUng {
                             if (h.kieuVe != HieuUngBang.VE_TREN_NGUOI) {
                                 EffectManager.addHiEffect(new HieuUngPoke(h, a, null, c.dir));
                             }
-                            trungDon(c, a, true);
+                            trungDon(c, a, true, h);
                         }
                     } catch (Throwable e) {
                         // bo muc tieu loi
@@ -305,9 +305,23 @@ public final class PokeHieuUng {
             c.p1++;
         }
 
-        private static void trungDon(Char c, LiveActor a, boolean phu) {
+        private static void trungDon(Char c, LiveActor a, boolean phu, HieuUngBang h) {
             if (a == null) {
                 return;
+            }
+            // pokemon: phan hoi trung don - hat theo he chieu, chop/lac muc tieu, goi y mau so + tieng
+            try {
+                int he = PokeChieu.he(h.lop, h.chieu);
+                boolean chiMang = c.attkEffect == AttackResult.EFF_CRITICAL || c.attkEffect == AttackResult.EFF_BAO_KICH;
+                int heSo = HePoke.heSoVaoDex(he, HieuUngDanh.dexCua(a));
+                if (c.attkPower != 0 && c.attkPower != 2000000 && c.attkEffect != AttackResult.EFF_MISS) {
+                    HieuUngDanh.trung(a, he, chiMang || heSo >= 150 ? 1 : 0);
+                }
+                boolean dacBiet = h.kieuVe == HieuUngBang.VE_BAY || (h.chieu > 0 && he != HePoke.THUONG && he != HePoke.GIAC_DAU
+                        && he != HePoke.BONG_TOI && he != HePoke.THEP);
+                SoBay.goiY(heSo, chiMang, dacBiet ? 1 : 0);
+            } catch (Throwable e) {
+                // hieu ung phu
             }
             if (a.catagory == 1) {
                 ((Monster) a).jump();

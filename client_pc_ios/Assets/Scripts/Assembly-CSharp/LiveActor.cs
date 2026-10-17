@@ -68,8 +68,53 @@ public abstract class LiveActor : Actor
 
 	public short totalTime = 36;
 
+	/// <summary>Dong tac PokeBody dang ve lan truoc (-1 = chua ve) va tick bat dau dong tac do.</summary>
+	public int pokeDongTacCu = -1;
+
+	public int pokeTickBatDau;
+
+	/// <summary>Hit flash: nhay trang toi tick nay (PhanHoiChienDau.nhayTrungDon). -1000 = khong.</summary>
+	public int pokeNhayDen = -1000;
+
+	/// <summary>Do sang cho PokeBody.paint khi dang nhay trang (0 = khong nhay).</summary>
+	public int pokeDoSangNhay()
+	{
+		int d = pokeNhayDen - Canvas.gameTick;
+		if (d <= 0 || d > PhanHoiChienDau.TICK_NHAY)
+		{
+			return 0;
+		}
+		return 40 + 20 * d;
+	}
+
 	public LiveActor()
 	{
+	}
+
+	/// <summary>
+	/// So tick (Canvas.gameTick) da troi qua tu luc bat dau dong tac PokeBody hien tai.
+	/// Doi dong tac thi dem lai tu 0 de dong tac danh/guc nga chay tu khung dau.
+	/// Canvas.gameTick quay ve 0 sau 10000 nen tinh theo vong 10001.
+	/// </summary>
+	public int pokeTickTrongDongTac(int dongTac)
+	{
+		if (dongTac != pokeDongTacCu)
+		{
+			pokeDongTacCu = dongTac;
+			pokeTickBatDau = Canvas.gameTick;
+		}
+		int t = Canvas.gameTick - pokeTickBatDau;
+		if (t < 0)
+		{
+			t += 10001;
+		}
+		return t;
+	}
+
+	/// <summary>Dang bi danh trung: dang nay len (jump/jumpVang) hoac dang bi day lui.</summary>
+	public bool pokeDangTrungDon()
+	{
+		return z < 0 || dvangx != 0 || dvangy != 0;
 	}
 
 	public override void addBuff(CharBuff b)

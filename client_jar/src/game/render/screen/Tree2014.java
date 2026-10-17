@@ -248,9 +248,9 @@ public class Tree2014 extends Screen {
     }
 
     public void paintCell(Graphics g) {
-        g.setColor(25695);
+        g.setColor(0x003A70);
         g.fillRect(this.xSh - 5, this.ySh + 10, this.wSh, this.hSh - 10);
-        g.setColor(16774720);
+        g.setColor(0xFFCB05);
         g.drawRect(this.xSh - 5, this.ySh + 10, this.wSh, this.hSh - 10);
         if (!this.isShowText && this.str != null && Canvas.isSmartPhone) {
             String[] r = Util.split(this.str, "|");
@@ -284,9 +284,9 @@ public class Tree2014 extends Screen {
         int w = Font.normalFont[0].getWidth(r[0]);
         int w1 = Font.normalFont[0].getWidth(r[1]);
         int w2 = w < w1 ? w1 : w;
-        g.setColor(1593912);
+        g.setColor(0x003A70);
         g.fillRect(((x + 16) - (w2 / 2)) - 3, y - 16, w2 + 5, 30);
-        g.setColor(16772608);
+        g.setColor(0xFFCB05);
         g.drawRect(((x + 16) - (w2 / 2)) - 3, y - 16, w2 + 5, 30);
         Font.normalFont[0].drawString(g, r[0], x + 16, y - 15, 2);
         Font.normalFont[0].drawString(g, r[1], x + 16, y, 2);
@@ -297,7 +297,7 @@ public class Tree2014 extends Screen {
         if (this.last != null) {
             this.last.paint(g);
         }
-        Res.paintDlgFull(g, this.xDr, this.yDr, this.wCell, this.hCell, 0, this.name, false, 0);
+        Res.paintDlgFull(g, this.xDr, this.yDr, this.wCell, this.hCell, 0, this.name == null || this.name.length() == 0 ? "Cây thần" : this.name, false, 0);
         int w0 = Canvas.isSmartPhone ? this.wTree : this.wCell / 2;
         GameData.paintIconTuBinh(g, (short) 8214, this.xDr + w0, (Canvas.h / 2) + 12, 3);
         this.str = null;
@@ -307,9 +307,9 @@ public class Tree2014 extends Screen {
             ObjTree obj = (ObjTree) this.allTree.elementAt(i);
             if (obj != null) {
                 if (this.index == i) {
-                    g.setColor(25695);
+                    g.setColor(0x003A70);
                     g.fillRect(obj.x, obj.y, 16, 30);
-                    g.setColor(16774720);
+                    g.setColor(0xFFCB05);
                     g.drawRect(obj.x, obj.y, 16, 30);
                     xx = obj.x;
                     yy = obj.y;

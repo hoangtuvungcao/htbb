@@ -53,6 +53,55 @@ public class MonsterTemplate
 
 	private sbyte[] arrayDataMonsterNew;
 
+	/// <summary>
+	/// Pokemon cua tung template quai, index = idTemplate (0..255, lenh 26 dem bang 1 byte).
+	/// Nhan qua lenh -91 POKE_QUAI ngay sau lenh 26 - luc do Res.monsterTemplates[id] con
+	/// null (tao luoi trong Monster.setType), nen luu o mang tinh rieng, khong luu tren doi tuong.
+	/// pokeDex = 0: ve kieu cu (anh -47). pokeTiLe: phan tram (100 = 1x).
+	/// </summary>
+	public static short[] pokeDex = new short[256];
+
+	public static bool[] pokeShiny = new bool[256];
+
+	public static short[] pokeTiLe = new short[256];
+
+	public static void datPoke(int idTemplate, int dex, bool shiny, int tiLe)
+	{
+		if (idTemplate < 0 || idTemplate >= pokeDex.Length)
+		{
+			return;
+		}
+		pokeDex[idTemplate] = (short)dex;
+		pokeShiny[idTemplate] = shiny;
+		pokeTiLe[idTemplate] = (short)((tiLe <= 0) ? 100 : tiLe);
+	}
+
+	public static void xoaPoke()
+	{
+		for (int i = 0; i < pokeDex.Length; i++)
+		{
+			pokeDex[i] = 0;
+			pokeShiny[i] = false;
+			pokeTiLe[i] = 100;
+		}
+	}
+
+	public static int layPokeDex(int idTemplate)
+	{
+		if (idTemplate < 0 || idTemplate >= pokeDex.Length)
+		{
+			return 0;
+		}
+		return pokeDex[idTemplate];
+	}
+
+	/// <summary>Template nay ve bang PokeBody va co du sprite trong client.</summary>
+	public static bool laPokemon(int idTemplate)
+	{
+		int dex = layPokeDex(idTemplate);
+		return dex > 0 && PokeBody.coSprite(dex, pokeShiny[idTemplate]);
+	}
+
 	public MonsterTemplate()
 	{
 	}
@@ -152,6 +201,11 @@ public class MonsterTemplate
 
 	public void loadImage()
 	{
+		// Template da la Pokemon (lenh -91) hoac do vat PMD (VatThePokemon) thi khong xin anh quai cu (-47) nua.
+		if (laPokemon(type) || VatThePokemon.laVatThe(type))
+		{
+			return;
+		}
 		if (!isLoad && type > -1)
 		{
 			GameService.gI().doRequestImageMonster(type, palate, spalate);

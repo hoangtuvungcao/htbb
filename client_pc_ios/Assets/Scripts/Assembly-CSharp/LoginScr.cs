@@ -221,6 +221,7 @@ public class LoginScr : MyScreen
 		ServerListScr.gI().paintBg(g);
 		Canvas.resetTrans(g);
 		MFont.borderFont.drawString(g, nameServer, 4, 2, 0);
+		ThuongHieu.veTieuDe(g, Canvas.hw, System.Math.Max(24, Canvas.h / 2 - 190));
 		paintPanel(g);
 	}
 
@@ -246,6 +247,8 @@ public class LoginScr : MyScreen
 	public override void switchToMe()
 	{
 		base.switchToMe();
+		// am thanh: nhac man tieu de
+		AmThanh.nhac(AmThanh.NHAC_TIEU_DE);
 		init();
 	}
 

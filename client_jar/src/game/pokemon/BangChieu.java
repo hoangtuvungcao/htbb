@@ -68,14 +68,22 @@ public final class BangChieu {
         int diem = Canvas.gameScr.mainChar.skillPointLeft;
         GiaoDien.moClip(g);
         // ---- đầu: điểm kỹ năng
-        Font.arialFontW.drawString(g, "Điểm kỹ năng:", 46, -15, Font.CENTER);
+        // viên điểm sát mép phải, nhãn canh phải sát viên (không đè "x/y" bên trái ở máy hẹp)
         String sd = String.valueOf(diem);
         int wd = Font.borderFont.getWidth(sd) + 10;
-        GiaoDien.khoi(g, 86, -15, wd, 14, 6, GiaoDien.VIEN);
-        GiaoDien.khoiDoc(g, 87, -14, wd - 2, 12, 5, diem > 0 ? GiaoDien.VANG_NHAT : 0x8A93A3, diem > 0 ? GiaoDien.VANG_TOI : 0x5E6A80);
-        Font.borderFont.drawString(g, sd, 86 + wd / 2, -15, Font.CENTER);
+        int xd = w + 4 - wd;
+        GiaoDien.khoi(g, xd, -15, wd, 14, 6, GiaoDien.VIEN);
+        GiaoDien.khoiDoc(g, xd + 1, -14, wd - 2, 12, 5, diem > 0 ? GiaoDien.VANG_NHAT : 0x8A93A3, diem > 0 ? GiaoDien.VANG_TOI : 0x5E6A80);
+        Font.borderFont.drawString(g, sd, xd + wd / 2, -15, Font.CENTER);
+        String nhan = "Điểm kỹ năng:";
+        String so = new StringBuffer().append(chon + 1).append('/').append(soChieu).toString();
+        int wSo = Font.smallFont.getWidth(so);
+        if (Font.arialFontW.getWidth(nhan) > xd - 3 - (-6 + wSo + 4)) {
+            nhan = "Điểm:";
+        }
+        Font.arialFontW.drawString(g, nhan, xd - 3, -15, Font.RIGHT);
         // chỉ số chiêu đang xem
-        Font.smallFont.drawString(g, new StringBuffer().append(chon + 1).append('/').append(soChieu).toString(), -6, -10, Font.LEFT);
+        Font.smallFont.drawString(g, so, -6, -10, Font.LEFT);
         // ---- hàng ô chiêu
         if (chon < 0) {
             chon = 0;

@@ -208,9 +208,62 @@ public class ThanThu : Char
 		}
 	}
 
+	/// <summary>
+	/// Che do Pokemon: than thu (Hoa ky lan cap 1..3 = idThanThu 0..2, item 681..683) ve thanh
+	/// Pokemon theo docs/pokemon/bang_thu.csv: Ponyta, Rapidash, Rapidash shiny.
+	/// </summary>
+	public static readonly short[] POKE_DEX_THAN_THU = new short[] { 77, 78, 78 };
+
+	public static readonly bool[] POKE_SHINY_THAN_THU = new bool[] { false, false, true };
+
+	private bool paintPokemonThanThu(MyGraphics g)
+	{
+		if (!PokeBody.CHE_DO_POKEMON || idThanThu < 0 || idThanThu >= POKE_DEX_THAN_THU.Length)
+		{
+			return false;
+		}
+		int dex = POKE_DEX_THAN_THU[idThanThu];
+		bool shiny = POKE_SHINY_THAN_THU[idThanThu];
+		if (!PokeBody.coSprite(dex, shiny))
+		{
+			return false;
+		}
+		int dongTac;
+		switch (state)
+		{
+		case DEAD:
+		case DEADFLY:
+			dongTac = PokeDuLieu.GUC_NGA;
+			break;
+		case WALK:
+			dongTac = PokeDuLieu.CHAY;
+			break;
+		case ATTACK:
+			dongTac = PokeDuLieu.DANH_GAN;
+			break;
+		case INJURE:
+			dongTac = PokeDuLieu.TRUNG_DON;
+			break;
+		default:
+			dongTac = PokeDuLieu.DUNG;
+			break;
+		}
+		g.drawImage(Res.imgShadow, x, y - 2, MyGraphics.HCENTER | MyGraphics.VCENTER);
+		PokeBody.paint(g, dex, shiny, x + vangx, y + vangy, dir, dongTac, pokeTickTrongDongTac(dongTac), 100);
+		return true;
+	}
+
 	public override void paint(MyGraphics g)
 	{
-		if (isDie || data.size() == 0)
+		if (isDie)
+		{
+			return;
+		}
+		if (paintPokemonThanThu(g))
+		{
+			return;
+		}
+		if (data.size() == 0)
 		{
 			return;
 		}

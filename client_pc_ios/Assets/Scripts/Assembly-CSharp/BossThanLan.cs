@@ -35,6 +35,11 @@ public class BossThanLan : Monster
 	public override void paint(MyGraphics g)
 	{
 		monster_type = 39;
+		// Template da la Pokemon (lenh -91): ve bang PokeBody, bo renderer boss cu.
+		if (paintPokemon(g))
+		{
+			return;
+		}
 		if (totalExp < 15)
 		{
 			if (Res.monsterTemplates[monster_type].imageObj != null)

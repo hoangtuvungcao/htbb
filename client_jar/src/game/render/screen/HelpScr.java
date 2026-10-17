@@ -44,7 +44,8 @@ public class HelpScr extends Screen {
     }
 
     public void setInfo(String st) {
-        this.stInfo = Font.normalFont[0].splitFontBStrInLine(st, Canvas.w - 30);
+        // pokemon: ngắt dòng theo bề rộng khung (Canvas.w - 30 cũ rộng hơn khung -> chữ tràn mép phải)
+        this.stInfo = Font.normalFont[0].splitFontBStrInLine(st, this.w - 20);
         int c = 0;
         this.font = new int[this.stInfo.length];
         for (int i = 0; i < this.stInfo.length; i++) {

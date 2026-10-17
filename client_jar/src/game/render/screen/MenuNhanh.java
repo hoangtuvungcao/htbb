@@ -31,8 +31,20 @@ final class MenuNhanh {
     private static final int DOI_PET = 6;
     private static final int DUNG = 7;
     private static final int AN = 8;
+    // pokemon: cài đặt âm thanh (game.model.Sound, lưu RecordStore "htbbAm")
+    private static final int NHAC = 9;
+    private static final int HIEU_UNG = 10;
+    private static final int AM_LUONG = 11;
 
-    private static final String[] TEN = {"Luyện cấp", "Giao hàng", "Tự PK", "Mã PK", "Nhảy vùng", "Bật cờ PK", "Đổi Pet", "Dừng hết", "Tự ẩn nút"};
+    private static final String[] TEN = {"Luyện cấp", "Giao hàng", "Tự PK", "Mã PK", "Nhảy vùng", "Bật cờ PK", "Đổi Pet", "Dừng hết", "Tự ẩn nút", "Nhạc nền", "Âm thanh", "Âm lượng"};
+
+    /** Tên mục (âm lượng kèm %). */
+    private static String ten(int m) {
+        if (m == AM_LUONG) {
+            return new StringBuffer("Loa ").append(game.model.Sound.me.amLuong).append('%').toString();
+        }
+        return TEN[m];
+    }
 
     private MenuNhanh() {
     }
@@ -52,9 +64,9 @@ final class MenuNhanh {
     /** Các mục đang hiện (nút phím PK theo cài đặt "Nút phím PK: Hiện/Ẩn" của AutoPk). */
     private static int[] dsMuc() {
         if (AutoPk.hienNut) {
-            return new int[]{LUYEN, GIAO, TU_PK, MA_PK, NHAY, CO_PK, DOI_PET, DUNG, AN};
+            return new int[]{LUYEN, GIAO, TU_PK, MA_PK, NHAY, CO_PK, DOI_PET, DUNG, AN, NHAC, HIEU_UNG, AM_LUONG};
         }
-        return new int[]{LUYEN, GIAO, TU_PK, DUNG, AN};
+        return new int[]{LUYEN, GIAO, TU_PK, DUNG, AN, NHAC, HIEU_UNG, AM_LUONG};
     }
 
     /** 1 = đang bật, 0 = tắt, -1 = lệnh, -2 = lệnh dừng (đỏ). */
@@ -70,6 +82,12 @@ final class MenuNhanh {
                 return AutoPk.maPk ? 1 : 0;
             case AN:
                 return anKhiDanh ? 1 : 0;
+            case NHAC:
+                game.model.Sound.me.napCaiDat();
+                return game.model.Sound.me.batNhac ? 1 : 0;
+            case HIEU_UNG:
+                game.model.Sound.me.napCaiDat();
+                return game.model.Sound.me.batHieuUng ? 1 : 0;
             case DUNG:
                 return -2;
             default:
@@ -78,7 +96,22 @@ final class MenuNhanh {
     }
 
     private static void lam(int m) {
+        game.pokemon.AmThanh.phat(game.pokemon.AmThanh.XAC_NHAN);
         switch (m) {
+            case NHAC:
+                game.model.Sound.me.datNhac(!game.model.Sound.me.batNhac);
+                break;
+            case HIEU_UNG:
+                game.model.Sound.me.datHieuUng(!game.model.Sound.me.batHieuUng);
+                game.pokemon.AmThanh.phat(game.pokemon.AmThanh.CLICK);
+                break;
+            case AM_LUONG: {
+                // 25 -> 50 -> 75 -> 100 -> 25
+                int a = game.model.Sound.me.amLuong;
+                game.model.Sound.me.datAmLuong(a >= 100 ? 25 : (a / 25 + 1) * 25);
+                game.pokemon.AmThanh.phat(game.pokemon.AmThanh.CLICK);
+                break;
+            }
             case LUYEN:
                 AutoUp.batTat();
                 break;
@@ -271,9 +304,9 @@ final class MenuNhanh {
             Font f = tt == 0 ? Font.blackFont : Font.borderFont;
             int yChu = y + (hO - f.getHeight()) / 2 + 1;
             if (tt < 0) {
-                f.drawString(g, TEN[m], x + wO / 2, yChu, Font.CENTER);
+                f.drawString(g, ten(m), x + wO / 2, yChu, Font.CENTER);
             } else {
-                f.drawString(g, TEN[m], xChu, yChu, Font.LEFT);
+                f.drawString(g, ten(m), xChu, yChu, Font.LEFT);
             }
         }
         // phím mềm riêng của bảng: trái = Chọn, phải = Đóng
@@ -309,6 +342,7 @@ final class MenuNhanh {
                 Canvas.isPointerDown = false;
                 mo = true;
                 chon = 0;
+                game.pokemon.AmThanh.phat(game.pokemon.AmThanh.MO);
             }
             return true;
         }
@@ -355,6 +389,7 @@ final class MenuNhanh {
         mo = true;
         chon = 0;
         dungPhim = true;
+        game.pokemon.AmThanh.phat(game.pokemon.AmThanh.MO);
     }
 
     static boolean phim(int keyCode) {

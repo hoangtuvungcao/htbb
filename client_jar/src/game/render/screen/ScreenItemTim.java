@@ -503,23 +503,23 @@ public class ScreenItemTim extends Screen {
             this.mScrollItemInventory.setClip(g, xDr + 2, yDr + 23 + this.h0, wCell - 4, 31);
             for (int i = 0; i < listItem.size(); i++) {
                 if (this.selectItemInventory == i) {
-                    g.setColor(6513507);
+                    g.setColor(0x3D7DCA);
                     g.fillRect(xDr + (this.wTab * i), yDr + 23 + this.h0, this.wTab, 28);
                 }
                 ItemInInventory item = (ItemInInventory) listItem.elementAt(i);
                 item.paint(g, xDr + (this.wTab * i) + (this.wTab / 2), yDr + 36 + this.h0);
-                g.setColor(14527502);
+                g.setColor(0x6FA6EA);
                 g.fillRect(xDr + (this.wTab * i), yDr + 22 + this.h0, 1, 29);
             }
-            g.setColor(14527502);
+            g.setColor(0x6FA6EA);
             g.fillRect(xDr + (this.wTab * listItem.size()), yDr + 22 + this.h0, 1, 29);
         }
         if (selecItemNL2 != null && this.currentCell == 2) {
-            g.setColor(6513507);
+            g.setColor(0x3D7DCA);
             g.fillRect(xDr + 3, yDr + 23 + this.h0, this.wTab - 3, 28);
             Res.paintGem(g, Res.getGemByID(selecItemNL2.id).idImage, xDr + (this.wTab / 2), yDr + 36 + this.h0);
             Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(selecItemNL2.number)).toString(), xDr + (this.wTab / 2) + (this.size / 2), ((yDr + 50) + this.h0) - Font.smallFontColor[3].getHeight(), 1);
-            g.setColor(14527502);
+            g.setColor(0x6FA6EA);
             g.fillRect(xDr + this.wTab, yDr + 22 + this.h0, 1, 29);
         }
         Canvas.resetTrans(g);
@@ -683,10 +683,10 @@ public class ScreenItemTim extends Screen {
     }
 
     public void paintCell(Graphics g) {
-        g.setColor(25695);
+        g.setColor(0x003A70);
         int h0 = Canvas.isSmartPhone ? -27 : 10;
         g.fillRect(this.xSh + 2, this.ySh + h0, this.wSh, this.hSh - 8);
-        g.setColor(16774720);
+        g.setColor(0xFFCB05);
         g.drawRect(this.xSh + 2, this.ySh + h0, this.wSh, this.hSh - 8);
     }
 
@@ -731,20 +731,20 @@ public class ScreenItemTim extends Screen {
         this.mScrollItemInventory.setClip(g, xDr + 2, yDr + 23 + this.h0, wCell - 4, 31);
         for (int i = 0; i < listItem.size(); i++) {
             if (this.selectItemInventory == i) {
-                g.setColor(6513507);
+                g.setColor(0x3D7DCA);
                 g.fillRect(xDr + (this.wTab * i), yDr + 23 + this.h0, this.wTab, 28);
             }
             ItemInInventory item = (ItemInInventory) listItem.elementAt(i);
             item.paint(g, xDr + (this.wTab * i) + (this.wTab / 2), yDr + 36 + this.h0);
-            g.setColor(14527502);
+            g.setColor(0x6FA6EA);
             g.fillRect(xDr + (this.wTab * i), yDr + 22 + this.h0, 1, 29);
             if (itemSelect != null && itemSelect.itemID == item.itemID) {
-                g.setColor(3268607);
+                g.setColor(0xFFCB05);
                 g.drawRect(xDr + (this.wTab * i) + 1, yDr + 23 + this.h0, this.wTab - 2, 28);
                 g.drawRect(xDr + (this.wTab * i) + 2, yDr + 24 + this.h0, this.wTab - 4, 26);
             }
         }
-        g.setColor(14527502);
+        g.setColor(0x6FA6EA);
         g.fillRect(xDr + (this.wTab * listItem.size()), yDr + 22 + this.h0, 1, 29);
         Canvas.resetTrans(g);
     }
@@ -790,7 +790,7 @@ public class ScreenItemTim extends Screen {
                 if (i % 4 == 0) {
                     g.setColor(16777215);
                     g.fillRect(this.xItem[i], this.yItem[i] - 10, this.size, this.size);
-                    g.setColor(6513507);
+                    g.setColor(0x3D7DCA);
                     g.fillRect(this.xItem[i] + 1, this.yItem[i] - 9, this.size - 2, this.size - 2);
                 } else if (Res.getImgArrow(10) != null) {
                     g.drawRegion(Res.getImgArrow(10), 0, this.frame * Arrow.ARROWSIZE[1][10], Arrow.ARROWSIZE[0][10], Arrow.ARROWSIZE[1][10], 0, this.xItem[i] - 3, this.yItem[i] - 10, 0);
@@ -800,7 +800,7 @@ public class ScreenItemTim extends Screen {
             for (int i2 = 0; i2 < this.xItem.length; i2++) {
                 g.setColor(16777215);
                 g.fillRect(this.xItem[i2], this.yItem[i2] - 10, this.size, this.size);
-                g.setColor(6513507);
+                g.setColor(0x3D7DCA);
                 g.fillRect(this.xItem[i2] + 1, this.yItem[i2] - 9, this.size - 2, this.size - 2);
             }
         }

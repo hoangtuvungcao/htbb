@@ -548,8 +548,18 @@ public class Canvas
 
 	public void mapKeyPress(int keyCode)
 	{
+		// pokemon: bảng Menu nhanh đang mở nhận phím (mũi tên / Enter / F3 / Esc)
+		if (MenuNhanh.phim(keyCode))
+		{
+			return;
+		}
 		// mod: phím tắt PK (Mã pk, nháy map, bật đồ sát, gọi thú/pet)
 		if (AutoGuard.phimPk(keyCode))
+		{
+			return;
+		}
+		// pokemon: phím số 1-5 = 5 ô chiêu trên PC
+		if (HudPokemon.phimSo(keyCode))
 		{
 			return;
 		}
@@ -893,7 +903,10 @@ public class Canvas
 				resetTrans(g);
 				g.setColor(0);
 				g.fillRect(0, 0, w, h);
-				g.drawImage(imgLogo, w / 2, h / 2, 3);
+				if (!ThuongHieu.veTieuDe(g, w / 2, h / 2 - 30))
+				{
+					g.drawImage(imgLogo, w / 2, h / 2, 3);
+				}
 			}
 			resetTrans(g);
 			if (!infoDisConnect.Equals(string.Empty))

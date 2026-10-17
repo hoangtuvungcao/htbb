@@ -413,8 +413,131 @@ public class AnimalMove : Char
 		return false;
 	}
 
+	/// <summary>Ti le ve pet Pokemon di theo (%), nho hon chu nhan.</summary>
+	public const int TI_LE_POKE_PET = 70;
+
+	private int pokeXCu = int.MinValue;
+
+	private int pokeYCu;
+
+	private int pokeDiCon;
+
+	/// <summary>
+	/// Ve pet di theo bang PokeBody khi chu nhan co pokePetDex (lenh -94 POKE_PET) va co sprite
+	/// trong Resources/poke/. Dang di neu vua doi vi tri trong vai khung gan day, quay theo dir
+	/// cua pet. Tra ve false de goi ve kieu cu (anh pet goc). Dung chung cho AnimalMove va Pet.
+	/// </summary>
+	protected bool vePokePet(MyGraphics g, Char chu)
+	{
+		if (chu == null)
+		{
+			return false;
+		}
+		int dex = chu.pokePetDex;
+		bool shiny = chu.pokePetShiny;
+		if (dex <= 0)
+		{
+			// Pet kieu cu (khong co itemPet, server gui dex 0): tra bang idImg (G7.B3).
+			dex = dexPetCu();
+			shiny = false;
+		}
+		if (dex <= 0 || !PokeBody.coSprite(dex, shiny))
+		{
+			return false;
+		}
+		if (pokeXCu != int.MinValue && (x != pokeXCu || y != pokeYCu))
+		{
+			pokeDiCon = 4;
+		}
+		else if (pokeDiCon > 0)
+		{
+			pokeDiCon--;
+		}
+		pokeXCu = x;
+		pokeYCu = y;
+		if (timeMagic % 2 != 0)
+		{
+			// Nhap nhay luc pet bien mat (status 3), giong duong ve cu.
+			return true;
+		}
+		int dongTac = (pokeDiCon > 0) ? PokeDuLieu.CHAY : PokeDuLieu.DUNG;
+		if (Res.imgShadowPet != null)
+		{
+			g.drawImage(Res.imgShadowPet, x, y, 3);
+		}
+		if (chu.pokePetDex > 0)
+		{
+			PokeBody.paint(g, chu.pokePetDex, chu.pokePetShiny, x, y, dir, dongTac, Canvas.gameTick, TI_LE_POKE_PET);
+		}
+		else
+		{
+			PokeBody.paint(g, dex, shiny, x, y, dir, dongTac, Canvas.gameTick, TI_LE_POKE_PET);
+		}
+		return true;
+	}
+
+	/// <summary>
+	/// Pet kieu cu (AnimalMove khong phai pet-tool, anh map/pet/&lt;imgID&gt; = PetTemplate.idImg
+	/// cua server, 0..20) -&gt; {idImg, dex}. Bang day du: docs/pokemon/bang_pet_cu.csv (sua 2 noi
+	/// cung luc - test/KiemHinhPokemon so khop). Pet-tool (type 5, lop Pet) KHONG dung bang nay:
+	/// imgID cua no la id hieu ung (hoa hinh...), co dex rieng qua lenh -94.
+	/// </summary>
+	public static readonly short[][] POKE_DEX_PET_CU = new short[][]
+	{
+		new short[] { 0, 607 },   // Long den xep -> Litwick
+		new short[] { 1, 276 },   // Thanh tuoc / Dai bang -> Taillow
+		new short[] { 2, 165 },   // Canh cam -> Ledyba
+		new short[] { 3, 41 },    // Doi quy / Doi -> Zubat
+		new short[] { 4, 370 },   // Tim bay -> Luvdisc
+		new short[] { 5, 270 },   // Long den hoa sen -> Lotad
+		new short[] { 6, 120 },   // Long den ngoi sao -> Staryu
+		new short[] { 7, 615 },   // Hoa tuyet -> Cryogonal
+		new short[] { 8, 77 },    // Giap Ngo / Rong -> Ponyta
+		new short[] { 9, 27 },    // Armadillo bang / Bach Thu / Capybara -> Sandshrew
+		new short[] { 10, 417 },  // Armadillo set -> Pachirisu
+		new short[] { 11, 29 },   // Armadillo doc -> Nidoran cai
+		new short[] { 12, 129 },  // Long den ca chep -> Magikarp
+		new short[] { 13, 393 },  // Chim canh cut / Cu -> Piplup
+		new short[] { 14, 179 },  // At mui / Tho bay -> Mareep
+		new short[] { 15, 385 },  // Ngoi sao bang -> Jirachi
+		new short[] { 16, 146 },  // Phuong hoang lua -> Moltres
+		new short[] { 17, 144 },  // Phuong hoang bang / Rong xanh -> Articuno
+		new short[] { 18, 121 },  // Long den Ngoi sao -> Starmie
+		new short[] { 19, 337 },  // Long den Trang khuyet -> Lunatone
+		new short[] { 20, 190 }   // Khi vang -> Aipom
+	};
+
+	public static int dexTheoIdImgPetCu(int idImg)
+	{
+		if (!PokeBody.CHE_DO_POKEMON)
+		{
+			return 0;
+		}
+		for (int i = 0; i < POKE_DEX_PET_CU.Length; i++)
+		{
+			if (POKE_DEX_PET_CU[i][0] == idImg)
+			{
+				return POKE_DEX_PET_CU[i][1];
+			}
+		}
+		return 0;
+	}
+
+	protected virtual int dexPetCu()
+	{
+		if (type == 5)
+		{
+			return 0;
+		}
+		return dexTheoIdImgPetCu(imgID);
+	}
+
 	public override void paint(MyGraphics g)
 	{
+		if (vePokePet(g, myOwner))
+		{
+			return;
+		}
 		ImageIcon imgIcon = GameData.getImgIcon((short)(imgID + 5200));
 		if (myOwner != null && imgIcon != null && !imgIcon.isLoad)
 		{

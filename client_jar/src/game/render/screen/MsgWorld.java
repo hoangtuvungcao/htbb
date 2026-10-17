@@ -39,6 +39,7 @@ public class MsgWorld extends Screen {
     @Override
     public void init() {
         this.data = new Vector();
+        this.limSelect = 0; // mở lại nhiều lần: trước đây cộng dồn -> cuộn quá danh sách
         for (int i = 0; i < GameScr.savemsgWorld.size(); i++) {
             MsgInfo ms = (MsgInfo) GameScr.savemsgWorld.elementAt(i);
             ms.arr = Font.arialFontW.splitFontBStrInLine(ms.message, Canvas.w - 44);

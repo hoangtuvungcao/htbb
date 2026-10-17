@@ -182,6 +182,9 @@ public class GameScr : MyScreen
 
 	public int[] flyTextColor;
 
+	/// <summary>Kieu chu bay len (PhanHoiChienDau.KIEU_*); 0 = ve kieu goc.</summary>
+	public int[] flyTextKieu;
+
 	public short saveIDViewInfoAnimal = -1;
 
 	public bool chatMode;
@@ -708,6 +711,7 @@ public class GameScr : MyScreen
 		flyTextDy = new int[15];
 		flyTextState = new int[15];
 		flyTextColor = new int[15];
+		flyTextKieu = new int[15];
 		flyTextString = new string[15];
 		for (int i = 0; i < 15; i++)
 		{
@@ -779,7 +783,14 @@ public class GameScr : MyScreen
 		}
 		if (num2 != -1)
 		{
-			flyTextString[num2] = flyString.ToLower();
+			// pokemon: so sat thuong / chi mang / hieu qua cao / truot / hoi mau (PhanHoiChienDau)
+			int kieu = PhanHoiChienDau.KIEU_GOC;
+			if (PokeBody.CHE_DO_POKEMON && flyTextKieu != null)
+			{
+				kieu = PhanHoiChienDau.phanLoai(this, ref flyString, x, y);
+				flyTextKieu[num2] = kieu;
+			}
+			flyTextString[num2] = (kieu != PhanHoiChienDau.KIEU_GOC) ? flyString : flyString.ToLower();
 			flyTextX[num2] = x;
 			flyTextY[num2] = y;
 			flyTextDx[num2] = dx * ((r.nextInt(2) != 1) ? 1 : (-1));
@@ -816,7 +827,11 @@ public class GameScr : MyScreen
 		{
 			if (flyTextState[i] != -1)
 			{
-				if (flyTextColor[i] != 0)
+				if (flyTextKieu != null && flyTextKieu[i] != PhanHoiChienDau.KIEU_GOC)
+				{
+					PhanHoiChienDau.ve(g, flyTextString[i], flyTextKieu[i], flyTextX[i], flyTextY[i], flyTextState[i]);
+				}
+				else if (flyTextColor[i] != 0)
 				{
 					MFont.smallFontColor[flyTextColor[i]].drawString(g, flyTextString[i], flyTextX[i], flyTextY[i], 0);
 				}
@@ -4382,7 +4397,14 @@ public class GameScr : MyScreen
 					{
 						MFont.borderFont.drawString(g, nameCountry[mainChar.inCountry], 4, Canvas.h - 34 - (Main.isPC ? 12 : 0), 0);
 					}
-					MFont.borderFont.drawString(g, nameMap, 4, Canvas.h - 18 - (Main.isPC ? 12 : 0), 0);
+					if (HudPokemon.bat())
+					{
+						HudPokemon.veTenMap(g, nameMap); // pokemon: tên vùng trong viên xanh
+					}
+					else
+					{
+						MFont.borderFont.drawString(g, nameMap, 4, Canvas.h - 18 - (Main.isPC ? 12 : 0), 0);
+					}
 				}
 				if (!chatMode && hideGUI == 0 && Canvas.currentDialog == null && !Canvas.menu.showMenu)
 				{
@@ -4863,6 +4885,13 @@ public class GameScr : MyScreen
 			g.translate(-g.getTranslateX(), 30);
 			num = 40;
 		}
+		if (HudPokemon.bat())
+		{
+			// pokemon: khung HP kiểu trận đấu Pokémon (HudPokemon)
+			Canvas.resetTrans(g);
+			HudPokemon.veKhungChinh(this, g, num);
+			return;
+		}
 		g.drawImage(imgInfo, 0, -1, MyGraphics.TOP | MyGraphics.LEFT);
 		Res.getCharPartInfo(2, mainChar.currentHead).paintStatic(g, 28, 33, 0, mainChar.frame);
 		MFont.normalFontColor.drawString(g, "Lv " + mainChar.level + "+" + mainChar.getPercent(), 55, 5, MFont.LEFT);
@@ -4913,6 +4942,16 @@ public class GameScr : MyScreen
 			return;
 		}
 		Canvas.resetTrans(g);
+		if (HudPokemon.bat())
+		{
+			// pokemon: 5 ô chiêu màu hệ + phím 1-5 + chuột (HudPokemon)
+			HudPokemon.veThanhChieu(this, g);
+			if (Canvas.currentScreen == this && !chatMode)
+			{
+				paintSoftIcon(g);
+			}
+			return;
+		}
 		int num = 15;
 		int width = Res.imgPanel.getWidth();
 		int height = Res.imgPanel.getHeight();
@@ -5008,6 +5047,12 @@ public class GameScr : MyScreen
 		}
 		if (focusedActor == null)
 		{
+			return;
+		}
+		if (HudPokemon.bat())
+		{
+			// pokemon: khung đối thủ kiểu trận đấu Pokémon (HudPokemon)
+			HudPokemon.veKhungDich(this, g, num);
 			return;
 		}
 		if (focusedActor.catagory != Actor.CAT_MY_GROUND && focusedActor.catagory != Actor.CAT_MY_TREE)
@@ -7182,6 +7227,8 @@ public class GameScr : MyScreen
 		}
 		if (obj == mainChar)
 		{
+			// am thanh: len cap
+			AmThanh.phat(AmThanh.LEN_CAP);
 			addChat(new ChatInfo(string.Empty, "Đạt được level " + newlevel, 1));
 			if (newlevel == 2)
 			{
@@ -7437,6 +7484,7 @@ public class GameScr : MyScreen
 					mainChar.lvBuff[num7] = (sbyte)num6;
 					mainChar.buffType[num7] = (sbyte)num4;
 					mainChar.buff.addElement(charBuff);
+					PokeHieuUng.khiNhanBuff(mainChar, num4);
 				}
 				break;
 			}
@@ -7453,6 +7501,7 @@ public class GameScr : MyScreen
 						((Char)actor3).lvBuff[num7] = (sbyte)num6;
 						((Char)actor3).buffType[num7] = (sbyte)num4;
 						((Char)actor3).buff.addElement(charBuff2);
+						PokeHieuUng.khiNhanBuff(actor3, num4);
 					}
 					break;
 				}

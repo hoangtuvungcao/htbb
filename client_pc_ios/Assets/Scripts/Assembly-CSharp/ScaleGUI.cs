@@ -25,6 +25,16 @@ public class ScaleGUI
 
 	public const int LOGIC_H = 600;
 
+	/// <summary>Cửa sổ PC mặc định 16:9 (1280x720 phóng theo màn hình).</summary>
+	public const int CUA_SO_W = 1280;
+
+	public const int CUA_SO_H = 720;
+
+	/// <summary>Tỉ lệ ngang/dọc logic PC được nhận: 4:3 .. 21:9 (ngoài khoảng này thì viền đen).</summary>
+	public const float TI_LE_MIN = 4f / 3f;
+
+	public const float TI_LE_MAX = 21f / 9f;
+
 	/// <summary>Điện thoại: chiều cao logic cố định, chiều rộng theo tỉ lệ màn hình (không viền đen).</summary>
 	public const int LOGIC_H_MOBILE = 480;
 
@@ -32,6 +42,14 @@ public class ScaleGUI
 	{
 		WIDTH = LOGIC_W;
 		HEIGHT = LOGIC_H;
+		if (!Application.isMobilePlatform && Screen.height > 0)
+		{
+			// Luôn nằm ngang: chiều cao logic 600 cố định, chiều rộng theo tỉ lệ cửa sổ (4:3 -> 800,
+			// 16:9 -> 1067, 21:9 -> 1400) - màn rộng thấy thêm bản đồ hai bên thay vì viền đen;
+			// HUD neo theo mép (Canvas.w) nên không đè vùng giữa.
+			float tiLe = Mathf.Clamp((float)Screen.width / Screen.height, TI_LE_MIN, TI_LE_MAX);
+			WIDTH = Mathf.Round(LOGIC_H * tiLe);
+		}
 		if (Application.isMobilePlatform)
 		{
 			float dai = Mathf.Max(Screen.width, Screen.height);
@@ -45,7 +63,7 @@ public class ScaleGUI
 		capNhat();
 	}
 
-	/// <summary>Cửa sổ ban đầu: phóng khung 800x600 vừa ~85% chiều cao / 90% chiều rộng màn hình.</summary>
+	/// <summary>Cửa sổ ban đầu: 1280x720 (16:9), thu nhỏ nếu màn hình không đủ.</summary>
 	public static void datCuaSo()
 	{
 		if (Application.isMobilePlatform)
@@ -53,12 +71,17 @@ public class ScaleGUI
 			return;
 		}
 		Resolution r = Screen.currentResolution;
-		float s = Mathf.Min(r.width * 0.9f / LOGIC_W, r.height * 0.85f / LOGIC_H);
-		if (s < 1f)
+		// 16:9 (1280x720) vừa ~90% bề ngang / 85% chiều cao màn hình; cửa sổ đổi cỡ được (resizableWindow)
+		float s = Mathf.Min(r.width * 0.9f / CUA_SO_W, r.height * 0.85f / CUA_SO_H);
+		if (s > 1f)
 		{
 			s = 1f;
 		}
-		Screen.SetResolution((int)(LOGIC_W * s), (int)(LOGIC_H * s), FullScreenMode.Windowed);
+		if (s < 0.5f)
+		{
+			s = 0.5f;
+		}
+		Screen.SetResolution((int)(CUA_SO_W * s), (int)(CUA_SO_H * s), FullScreenMode.Windowed);
 	}
 
 	private static void capNhat()

@@ -72,10 +72,9 @@ public class PageScr extends Screen {
         Canvas.resetTrans(g);
         g.translate(this.x, this.y);
         Res.paintDlgFull(g, 0, 0, this.w, this.h);
-        if (this.indexFont == 0) {
-            Font.bigFont.drawString(g, this.title, this.w / 2, 3, 2);
-        } else {
-            Font.normalFont[0].drawString(g, this.title, this.w / 2, 6, 2);
+        // pokemon: tiêu đề chữ trắng viền giữa dải đỏ (bigFont cũ là chữ vàng kiếm hiệp, đè Poké Ball)
+        if (this.title != null) {
+            Font.borderFont.drawString(g, game.pokemon.GiaoDien.tieuDe(this.title), this.w / 2 + 6, 6, 2);
         }
         if (this.layer != null) {
             this.layer.paint(g, 0, 35);

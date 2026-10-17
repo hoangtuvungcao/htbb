@@ -55,6 +55,7 @@ public class ServerListScr extends Screen {
         Canvas.gameScr.loadCamera();
         updateCamera();
         init();
+        game.pokemon.AmThanh.manTieuDe();   // pokemon: nhac tieu de
     }
 
     public ServerListScr() {
@@ -270,7 +271,16 @@ public class ServerListScr extends Screen {
     }
 
     public void paintBg(Graphics g) {
+        paintBg(g, -1, true);
+    }
+
+    /** pokemon: nền banner nhiều lớp (game.pokemon.Banner) thay bản đồ game; thiếu ảnh thì vẽ bản đồ như cũ. */
+    public void paintBg(Graphics g, int chonKhoiDau, boolean veKhoiDau) {
         Canvas.resetTrans(g);
+        if (game.pokemon.PokeBody.CHE_DO_POKEMON && game.pokemon.Banner.ve(g, chonKhoiDau, veKhoiDau)) {
+            Canvas.resetTrans(g);
+            return;
+        }
         g.translate(-GameScr.cmx, -GameScr.cmy);
         Tilemap.paintTile(g);
         Tilemap.paintTileTop(g);
@@ -281,7 +291,9 @@ public class ServerListScr extends Screen {
         paintBg(g);
         Canvas.resetTrans(g);
         // pokemon: tieu de ThuongHieu (ten game + 5 Pokemon khoi dau) thay logo game goc
-        if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 125), Canvas.w, Canvas.hh - 56)) {
+        if (game.pokemon.Banner.co()) {
+            game.pokemon.ThuongHieu.veLogo(g, Canvas.hw, Math.max(6, Canvas.hh - 100), Canvas.w);
+        } else if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 125), Canvas.w, Canvas.hh - 56)) {
             g.drawImage(Canvas.getLogo(), Canvas.hw, Canvas.hh - 70, 3);
         }
         paintPanel(g);
@@ -297,7 +309,7 @@ public class ServerListScr extends Screen {
         if (hDs < 2) {
             hDs = 2;
         }
-        game.pokemon.GiaoDien.hop(g, Canvas.hw - 72, Canvas.hh - 52, 144, 36 + hDs * 16);
+        game.pokemon.GiaoDien.theMo(g, Canvas.hw - 72, Canvas.hh - 52, 144, 36 + hDs * 16);
         game.pokemon.GiaoDien.dai(g, Canvas.hw - 69, Canvas.hh - 49, 138, 18, "Chọn máy chủ");
         g.setClip(Canvas.hw - 69, Canvas.hh - 28, this.w, this.h);
         g.translate(0, -cmy);

@@ -6,6 +6,9 @@ public class Tilemap
 {
 	public const int T_BLOCK = 2;
 
+	/// <summary>Resources/poke_map/&lt;id&gt;.bytes: bo cuc ve lai (che do Pokemon), xem docs/pokemon/DINH_DANG_MAP.md.</summary>
+	public const string BAN_DO_POKEMON = "poke_map/";
+
 	public static int w;
 
 	public static int h;
@@ -156,6 +159,8 @@ public class Tilemap
 		try
 		{
 			Res.loadTileImage(level);
+			// am thanh: nhac nen theo loai ban do (thanh / ngoai troi / hang)
+			AmThanh.nhacTheoMap(typeTile);
 			map = null;
 			type = null;
 			for (int i = 0; i < trees.size(); i++)
@@ -169,6 +174,16 @@ public class Tilemap
 			trees.removeAllElements();
 			lv = (short)level;
 			DataInputStream dataInputStream = null;
+			if (byteMap == null && PokeBody.CHE_DO_POKEMON)
+			{
+				// Ban do ve lai (tools/pokemon/VeMapMoi.java) dong goi san cho luc server khong gui bo cuc
+				// (map 0 khi khoi dong / lui ve khi loi). Thieu tep thi dung ban goc nhu truoc.
+				TextAsset banMoi = (TextAsset)Resources.Load(BAN_DO_POKEMON + level, typeof(TextAsset));
+				if (banMoi != null)
+				{
+					byteMap = ArrayCast.cast(banMoi.bytes);
+				}
+			}
 			dataInputStream = ((byteMap != null) ? new DataInputStream(byteMap) : DataInputStream.getResourceAsStream(Main.res + "/" + level));
 			w = dataInputStream.read();
 			h = dataInputStream.read();
@@ -617,6 +632,10 @@ public class Tilemap
 		default:
 			mapName = string.Empty;
 			break;
+		}
+		if (PokeBody.CHE_DO_POKEMON)
+		{
+			mapName = TenMapPokemon.doi(mapName);
 		}
 	}
 

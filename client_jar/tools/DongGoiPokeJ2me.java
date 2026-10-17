@@ -24,11 +24,11 @@ import javax.imageio.ImageIO;
 /**
  * Dong goi tai nguyen Pokemon cua ClientUnity (HTBB) thanh ban nhe cho jar J2ME (chay tren JDK).
  *
- *   java -cp out/tool DongGoiPokeJ2me &lt;HTBB/ClientUnity/Assets&gt; &lt;j2me/res&gt;
+ *   java -cp out/tool DongGoiPokeJ2me &lt;htbb-client/pc/Assets&gt; &lt;j2me/res&gt;   (hoac HTBB/ClientUnity/Assets cu)
  *
  * Doc  Resources/poke/&lt;khoa&gt;_anh.bytes + _dl.bytes (atlas PNG + du lieu khung ban 2, muc 7.1),
  *      Resources/poke/&lt;khoa&gt;_cd.bytes, vt_*.bytes, Resources/poke_tile/*.bytes,
- *      Scripts/Game/ChuPokemonDuLieu.cs (tu dien chu).
+ *      Scripts/Assembly-CSharp/ChuPokemonDuLieu.cs (ban cu: Scripts/Game/...) (tu dien chu).
  * Ghi res/pk/&lt;khoa&gt;.dl        du lieu khung, CUNG dinh dang _dl ban 2 (PokeDuLieu.doc doc duoc),
  *                                  them u8 anhDongTac[6] o cuoi
  *      res/pk/&lt;khoa&gt;_&lt;a&gt;.png     anh cua dong tac a: 4 hang huong x soKhung cot, khung da cat sat
@@ -99,10 +99,33 @@ public class DongGoiPokeJ2me {
         File assets = new File(a[0]);
         dongGoiHet(assets, new File(a[1]), DAY_DU);
         if (a.length > 2) {
-            NHE.chiGiu = loaiNhe(new File(assets, "../../docs/pokemon"));
+            NHE.chiGiu = loaiNhe(thuMucDocs(assets));
             System.out.println("--- ban nhe: " + NHE.chiGiu.size() + " loai");
             dongGoiHet(assets, new File(a[2]), NHE);
         }
+    }
+
+    /**
+     * Tu dien C#: client PC htbb-client/pc dat ma game o Scripts/Assembly-CSharp, ban cu HTBB/ClientUnity
+     * o Scripts/Game.
+     */
+    static File tepTuDien(File assets) {
+        File pc = new File(assets, "Scripts/Assembly-CSharp/ChuPokemonDuLieu.cs");
+        return pc.isFile() ? pc : new File(assets, "Scripts/Game/ChuPokemonDuLieu.cs");
+    }
+
+    /**
+     * docs/pokemon cua HTBB (bang loai cho ban nhe): bien HTBB_DOCS, hoac &lt;assets&gt;/../../docs/pokemon
+     * (assets = HTBB/ClientUnity/Assets), hoac &lt;assets&gt;/../../../HTBB/docs/pokemon (assets = htbb-client/pc/Assets
+     * voi HTBB nam canh htbb-client).
+     */
+    static File thuMucDocs(File assets) {
+        String rieng = System.getenv("HTBB_DOCS");
+        if (rieng != null && rieng.length() > 0) {
+            return new File(rieng);
+        }
+        File cu = new File(assets, "../../docs/pokemon");
+        return cu.isDirectory() ? cu : new File(assets, "../../../HTBB/docs/pokemon");
     }
 
     static void datLai() {
@@ -158,7 +181,7 @@ public class DongGoiPokeJ2me {
                 tile += b.length;
             }
         }
-        long chu = ghiTuDien(new File(assets, "Scripts/Game/ChuPokemonDuLieu.cs"), new File(pk, "chu.bin"));
+        long chu = ghiTuDien(tepTuDien(assets), new File(pk, "chu.bin"));
         System.out.println("khoa: " + soKhoa + ", anh dong tac: " + (soPalette + soArgb) + " (palette " + soPalette
                 + ", argb " + soArgb + "), dung chung anh: " + soDungChung);
         System.out.println("pixel: goc " + tongPxGoc + " -> " + tongPx);
@@ -574,7 +597,7 @@ public class DongGoiPokeJ2me {
         }
         int canh = cau.chanDung;
         if (canh <= 0 || canh == a.getWidth()) {
-            return a;
+            return matNaTron(a);
         }
         int h2 = a.getHeight() * canh / a.getWidth();
         // lay mau gan nhat (giu bang mau pixel art, PNG bang mau nho), alpha ve 0/255
@@ -583,6 +606,24 @@ public class DongGoiPokeJ2me {
             for (int x = 0; x < canh; x++) {
                 int c = a.getRGB((2 * x + 1) * a.getWidth() / (2 * canh), (2 * y + 1) * a.getHeight() / (2 * h2));
                 r.setRGB(x, y, (c >>> 24) >= 128 ? (c | 0xFF000000) : 0);
+            }
+        }
+        return matNaTron(r);
+    }
+
+    /**
+     * Mat na tron (alpha 0/255) cho chan dung PMD: nen troi/co ve san (10-14 mau, khong tach duoc)
+     * thanh khung tron co chu y; client ve them vong vien (game.pokemon.HuyHieuPoke dung sprite
+     * dung yen, anh nay chi la duong lui khi loai thieu sprite).
+     */
+    static BufferedImage matNaTron(BufferedImage a) {
+        int w = a.getWidth(), h = a.getHeight();
+        int d = Math.min(w, h);
+        BufferedImage r = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int dx = 2 * x + 1 - w, dy = 2 * y + 1 - h;
+                r.setRGB(x, y, dx * dx + dy * dy < d * d ? a.getRGB(x, y) : 0);
             }
         }
         return r;
