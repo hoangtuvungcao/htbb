@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Do vat phong cach PMD (RawAsset Object/, Item/) thay hinh KPAH cu cho:
+/// Do vat phong cach PMD (RawAsset Object/, Item/) thay hinh goc cu cho:
 ///  - 16 quai phan_loai = vat_the (cong thanh, nguyen lieu, ngoc rong, ruong, thung go):
 ///    bang QUAI theo id template (viec G7.B1);
 ///  - NPC su kien (lenh -50) la do vat (cong dich chuyen, bang khu, noi banh): Npc_Server

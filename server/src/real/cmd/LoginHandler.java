@@ -101,7 +101,7 @@ public class LoginHandler implements ICommandHandler {
             msgLoginSuccess.dos.writeByte(Map.potionTemplates2.size());
             for (PotionTemplate2 potion : Map.potionTemplates2) {
                 msgLoginSuccess.dos.writeByte(potion.idImage);
-                msgLoginSuccess.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(potion.name));
+                msgLoginSuccess.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(potion.name));
                 msgLoginSuccess.dos.writeUTF(potion.name2);
                 msgLoginSuccess.dos.writeShort(potion.delay);
                 msgLoginSuccess.dos.writeBoolean(potion.isTrade);
@@ -122,7 +122,7 @@ public class LoginHandler implements ICommandHandler {
                     msgLoginSuccess.dos.writeByte(Map.idSkill[j][k]);
                     msgLoginSuccess.dos.writeUTF(Text.nameSkillLearn[j][k]);
                     // G7.C: mo ta chieu hoc theo dong Pokemon khi bat che do (ChuPokemon).
-                    msgLoginSuccess.dos.writeUTF(com.kpah.pokemon.ChuPokemon.moTaChieuHoc(j, k, decript[j][k]));
+                    msgLoginSuccess.dos.writeUTF(com.htbb.pokemon.ChuPokemon.moTaChieuHoc(j, k, decript[j][k]));
                     msgLoginSuccess.dos.writeInt(Map.priceLearnSkill[j][k]);
                 }
             }
@@ -173,7 +173,7 @@ public class LoginHandler implements ICommandHandler {
             msgLoginSuccess.dos.writeByte(ItemQuest.NAME_ITEM_QUEST.length);
             for (int i3 = 0; i3 < ItemQuest.NAME_ITEM_QUEST.length; ++i3) {
                 msgLoginSuccess.dos.writeByte(ItemQuest.ICON_IMAGE[i3]);
-                msgLoginSuccess.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(ItemQuest.NAME_ITEM_QUEST[i3]));
+                msgLoginSuccess.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(ItemQuest.NAME_ITEM_QUEST[i3]));
             }  
             // Trang chu gui xuong client: lay tu server.ini (sv.website), khong con domain ben thu ba.
             msgLoginSuccess.dos.writeUTF(TeamServer.website);

@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-#  CAP NHAT SERVER KPAH TU GIT
+#  CAP NHAT SERVER HTBB TU GIT
 #
 #  Dung o VPS:  sudo /opt/kpah/vps/update.sh
 #

@@ -686,7 +686,7 @@ class MapQuaTang {
         }
     }
 
-    static void doSetGiftOfflineKpah(Map map, Char player, String code) {
+    static void doSetGiftOfflineHtbb(Map map, Char player, String code) {
         // SECURITY: disabled external call to third-party (teamobi) server.
         player.sendMessage(MessageCreator.createServerAlertMessage("Chức năng này hiện không khả dụng.", ""));
         if (true) {

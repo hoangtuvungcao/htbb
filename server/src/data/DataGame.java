@@ -73,8 +73,8 @@ public class DataGame {
     /** Nap map/icon_pokemon/0..n-1.png (dung o file dau tien thieu). Thieu thu muc -> 0 icon. */
     static void napIconPokemon() {
         final java.util.List<byte[]> ds = new java.util.ArrayList<byte[]>();
-        for (int i = 0; i < com.kpah.pokemon.IconPokemon.SO_TOI_DA; i++) {
-            final java.io.File f = new java.io.File(com.kpah.pokemon.IconPokemon.THU_MUC + i + ".png");
+        for (int i = 0; i < com.htbb.pokemon.IconPokemon.SO_TOI_DA; i++) {
+            final java.io.File f = new java.io.File(com.htbb.pokemon.IconPokemon.THU_MUC + i + ".png");
             if (!f.isFile()) {
                 break;
             }
@@ -85,7 +85,7 @@ public class DataGame {
             }
         }
         imgIconPokemon = ds.toArray(new byte[0][]);
-        System.out.println("ICON POKEMON -> " + imgIconPokemon.length + " anh tu " + com.kpah.pokemon.IconPokemon.THU_MUC);
+        System.out.println("ICON POKEMON -> " + imgIconPokemon.length + " anh tu " + com.htbb.pokemon.IconPokemon.THU_MUC);
     }
 
     /** Bo tile Pokemon (G7.A) do tools/pokemon/DoiTileMap.java sinh; KHONG nham voi map/img_tile/ (khong ai doc). */
@@ -94,11 +94,11 @@ public class DataGame {
     /**
      * Hai anh tile server gui trong goi dang nhap (LoginHandler, chi khi client xin vsTile == -1;
      * do dai ghi bang writeShort nen moi anh phai < 32768 byte). Bat che do Pokemon va co du bo
-     * tile moi thi gui bo moi, khong thi giu bo KPAH.
+     * tile moi thi gui bo moi, khong thi giu bo goc.
      */
     public static String[] duongTileGuiClient() {
         final String[] cu = new String[]{"map/t_hang.png", "map/t_thanh.png"};
-        if (!com.kpah.pokemon.CheDoPokemon.bat()) {
+        if (!com.htbb.pokemon.CheDoPokemon.bat()) {
             return cu;
         }
         final String[] moi = new String[]{THU_MUC_TILE_POKEMON + "t_hang.png", THU_MUC_TILE_POKEMON + "t_thanh.png"};
@@ -519,7 +519,7 @@ public class DataGame {
 
             for (i = 0; i < 53; ++i) {
                 try {
-                    fis = new FileInputStream(com.kpah.pokemon.TrangTriPokemon.duong("map/tree/" + i));
+                    fis = new FileInputStream(com.htbb.pokemon.TrangTriPokemon.duong("map/tree/" + i));
                     dis = new DataInputStream(fis);
                     trees[i] = new byte[dis.available()];
                     dis.read(trees[i], 0, trees[i].length);
@@ -572,7 +572,7 @@ public class DataGame {
 
             for (j = 0; j < 95; ++j) {
                 try {
-                    fis = new FileInputStream(com.kpah.pokemon.TrangTriPokemon.duong("map/cay/" + j + ".png"));
+                    fis = new FileInputStream(com.htbb.pokemon.TrangTriPokemon.duong("map/cay/" + j + ".png"));
                     dis = new DataInputStream(fis);
                     imgTreeFarm[j] = new byte[dis.available()];
                     dis.read(imgTreeFarm[j], 0, imgTreeFarm[j].length);
@@ -938,8 +938,8 @@ public class DataGame {
             Message m = new Message(-51);
             m.dos.writeShort(idImg);
             // Che do Pokemon: anh thuoc/ngoc/thu/vat pham nhiem vu/trai cay (chi so 1 byte, khong
-            // co cot DB de tro sang dai 14000+) tra icon PMD thay cho anh KPAH. Xem IconPokemon.
-            final int iconPmd = com.kpah.pokemon.CheDoPokemon.bat() ? com.kpah.pokemon.IconPokemon.doiAnh(idImg) : -1;
+            // co cot DB de tro sang dai 14000+) tra icon PMD thay cho anh goc. Xem IconPokemon.
+            final int iconPmd = com.htbb.pokemon.CheDoPokemon.bat() ? com.htbb.pokemon.IconPokemon.doiAnh(idImg) : -1;
             if (iconPmd >= 0) {
                 ghiAnh(m, imgIconPokemon, iconPmd, idImg);
                 s.sendMessage(m);
@@ -1006,9 +1006,9 @@ public class DataGame {
                 ghiAnh(m, iconClanImg, idImg - 11000, idImg);
             } else if (idImg >= 12000 && idImg < 12100) {
                 ghiAnh(m, imgThanThu, idImg - 12000, idImg);
-            } else if (com.kpah.pokemon.IconPokemon.thuocDai(idImg)) {
-                // Icon vat pham Pokemon (map/icon_pokemon/), xem com.kpah.pokemon.IconPokemon.
-                ghiAnh(m, imgIconPokemon, idImg - com.kpah.pokemon.IconPokemon.ID_DAU, idImg);
+            } else if (com.htbb.pokemon.IconPokemon.thuocDai(idImg)) {
+                // Icon vat pham Pokemon (map/icon_pokemon/), xem com.htbb.pokemon.IconPokemon.
+                ghiAnh(m, imgIconPokemon, idImg - com.htbb.pokemon.IconPokemon.ID_DAU, idImg);
             } else if (idImg >= real.SkinLinhThu.ID_ANH_BAN_DO
                     && idImg < real.SkinLinhThu.ID_ANH_BAN_DO + real.SkinLinhThu.SO_SKIN) {
                 // Skin linh thu. Dai id nay chua tung duoc dung (dai cu cao nhat het o

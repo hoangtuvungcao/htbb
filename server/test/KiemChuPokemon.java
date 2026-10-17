@@ -1,5 +1,5 @@
-import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.ChuPokemon;
+import com.htbb.pokemon.CheDoPokemon;
+import com.htbb.pokemon.ChuPokemon;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;

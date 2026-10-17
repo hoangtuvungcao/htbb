@@ -11,7 +11,7 @@ if (adminUser()) {
     ghiNhatKy('dang_xuat', adminName(), 'rời trang quản trị');
 }
 
-unset($_SESSION['kpah_admin']);
+unset($_SESSION['htbb_admin']);
 session_regenerate_id(true);
 
 setFlash('success', 'Đã thoát khỏi khu quản trị.');

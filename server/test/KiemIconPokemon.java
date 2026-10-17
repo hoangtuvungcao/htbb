@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.kpah.pokemon.IconPokemon;
+import com.htbb.pokemon.IconPokemon;
 
 /**
  * Kiem thu icon Pokemon (tools/pokemon/sinh_icon_pokemon.py -> map/icon_pokemon/, SQL, bang
@@ -59,7 +59,7 @@ public final class KiemIconPokemon {
         try {
             final String dg = doc("src/data/DataGame.java");
             Kiem.dung("sendByteImg chi doi anh khi bat che do Pokemon",
-                    dg.contains("com.kpah.pokemon.CheDoPokemon.bat() ? com.kpah.pokemon.IconPokemon.doiAnh(idImg) : -1"));
+                    dg.contains("com.htbb.pokemon.CheDoPokemon.bat() ? com.htbb.pokemon.IconPokemon.doiAnh(idImg) : -1"));
             Kiem.dung("nIconItem van la 866", dg.contains("nIconItem = 866;"));
 
             // So dong SQL sinh ra.

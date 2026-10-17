@@ -56,7 +56,7 @@ public final class KiemMayDevCSDL {
         Kiem.sai("khoa =1 nhung CSDL o may khac -> KHONG cho",
                 q("1", "10.0.0.5:3306"));
         Kiem.sai("khoa =1 nhung CSDL o ten may khac -> KHONG cho",
-                q("1", "db.kpah.vn:3306"));
+                q("1", "db.htbb.vn:3306"));
 
         // ---- 2. Nhan dang host noi bo ----
         Kiem.dung("localhost (khong ghi cong)", server.TeamServer.laHostNoiBo("localhost"));

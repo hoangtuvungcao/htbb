@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.*;
  *     danh (lenh 9) va hoi lai mau (lenh 7) sau moi don den khi quai chet.
  * In thong ke moi 10 giay (bot dang choi, goi tin, don danh, quai ha, RAM/CPU server).
  *
- * Bien dich + chay (o thu muc KPAH/):
+ * Bien dich + chay (o thu muc HTBB/):
  *   javac -d build/kiem_tai tools/pokemon/kiem_tai/BotTai.java
  *   java -cp build/kiem_tai -Dgm=10 -Dtu=1 BotTai 127.0.0.1 19129 50 600 tai
  *     args: host cong soBot giay [tienTo=tai] [lop=-1 ngau nhien]; -Dtu = so thu tu bot dau tien

@@ -197,7 +197,7 @@ echo "  Google Authenticator, Microsoft Authenticator, Authy, 2FAS... deu duoc.\
 
 echo "BUOC 2 - Them tai khoan bang cach NHAP KHOA THU CONG\n";
 echo "  Chon \"Nhap khoa thiet lap\" / \"Enter setup key\", roi go:\n\n";
-echo "      Ten     : KPAH Admin ($ten)\n";
+echo "      Ten     : HTBB Admin ($ten)\n";
 echo "      Khoa    : " . hbKhoaDeDoc($khoa) . "\n";
 echo "      Loai    : Theo thoi gian (Time based)\n\n";
 echo "  Khoang trang trong khoa chi de de doc, go lien hay co cach deu duoc.\n\n";

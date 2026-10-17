@@ -19,7 +19,7 @@
 # ============================================================================
 set -uo pipefail
 
-DIR=${KPAH_DIR:-/opt/kpah}
+DIR=${HTBB_DIR:-/opt/kpah}
 TMPL="$DIR/vps/server.ini.tmpl"
 DICH="$DIR/server.ini"
 LUU="$DIR/backup"

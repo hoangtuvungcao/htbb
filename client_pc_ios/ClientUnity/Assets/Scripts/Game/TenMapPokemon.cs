@@ -1,5 +1,5 @@
 /// <summary>
-/// Doi ten dia danh KPAH sang dia danh Pokemon - BAN SAO cua src/com/kpah/pokemon/TenMapPokemon.java
+/// Doi ten dia danh goc sang dia danh Pokemon - BAN SAO cua src/com/htbb/pokemon/TenMapPokemon.java
 /// (test/KiemThuPokemon doi chieu hai bang). Dung cho ten viet cung o client (Tilemap.setNameMap);
 /// ten gui tu server (lenh 105) da duoc server doi san.
 /// </summary>

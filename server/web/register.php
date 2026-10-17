@@ -85,7 +85,7 @@ require __DIR__ . '/inc/header.php';
 <section class="auth-wrap">
     <div class="auth-card">
         <h1 class="auth-title">Đăng ký tài khoản</h1>
-        <p class="auth-sub">Tạo tài khoản để bắt đầu hành trình Khí Phách Anh Hùng.</p>
+        <p class="auth-sub">Tạo tài khoản để bắt đầu hành trình Huyền Thoại Bảo Bối.</p>
 
         <?php if ($daDangKy !== null): ?>
             <div class="flash flash-success">

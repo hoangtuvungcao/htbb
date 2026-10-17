@@ -1411,7 +1411,7 @@ class MapXuLyLenh {
 
                 m.dos.writeByte(type);
                 if (type != -1) {
-                    String info = com.kpah.pokemon.ChuPokemon.tenThuCuoi(p.animalRide.name) + " lv " + p.animalRide.level + "\n" + p.animalRide.getInfoSendUser();
+                    String info = com.htbb.pokemon.ChuPokemon.tenThuCuoi(p.animalRide.name) + " lv " + p.animalRide.level + "\n" + p.animalRide.getInfoSendUser();
                     m.dos.writeUTF(info);
                     int idIcon = Animal.idImgIcon[p.animalRide.idImg];
                     if (p.rankGov == 0) {
@@ -1626,7 +1626,7 @@ class MapXuLyLenh {
             }
             switch (type) {
                 case 3:
-                    m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi("Top đại gia"));
+                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi("Top đại gia"));
                     if (start >= Map.topRich.size()) {
                         start = Map.topRich.size();
                     }
@@ -1665,7 +1665,7 @@ class MapXuLyLenh {
                     }
                     break;
                 case 4:
-                    m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi("Top cao thủ"));
+                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi("Top cao thủ"));
                     if (start >= Map.topLv.size()) {
                         start = Map.topLv.size();
                     }
@@ -1704,7 +1704,7 @@ class MapXuLyLenh {
                     }
                     break;
                 case 5:
-                    m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi("Top bang hội"));
+                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi("Top bang hội"));
                     if (start >= Map.topClan.size()) {
                         start = Map.topClan.size();
                     }
@@ -1749,7 +1749,7 @@ class MapXuLyLenh {
                     );
                     return;
                 case 8:
-                    m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi("TOP NHÓM ĐUA"));
+                    m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi("TOP NHÓM ĐUA"));
                     int len = Map.topRich.size();
                     if (len > 10) {
                         len = 10;

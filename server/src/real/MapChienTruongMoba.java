@@ -734,7 +734,7 @@ public class MapChienTruongMoba extends Map {
                         }
 
                         String nt = (new Date(System.currentTimeMillis())).toString();
-                        boolean isDay = UtilKPAH.isWednesay() || UtilKPAH.isSunday() || Char.getDayOpen(0L).equals("2020-10-25");
+                        boolean isDay = UtilHTBB.isWednesay() || UtilHTBB.isSunday() || Char.getDayOpen(0L).equals("2020-10-25");
                         if (isDay) {
                             Calendar cl = Calendar.getInstance();
                             int iHour = cl.get(11);
@@ -947,7 +947,7 @@ public class MapChienTruongMoba extends Map {
         } else {
             Calendar cl = Calendar.getInstance();
             int iHour = cl.get(11);
-            return (UtilKPAH.isSunday() || UtilKPAH.isWednesay() || Char.getDayOpen(0L).equals("2020-10-15")) && iHour < 21;
+            return (UtilHTBB.isSunday() || UtilHTBB.isWednesay() || Char.getDayOpen(0L).equals("2020-10-15")) && iHour < 21;
         }
     }
 

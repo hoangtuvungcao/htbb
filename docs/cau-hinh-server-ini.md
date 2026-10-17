@@ -34,7 +34,7 @@ Hai file khác **không** đi qua pipeline này, vẫn phải sửa tay trên VP
 | Đường dẫn | Dùng cho |
 |---|---|
 | `/opt/kpah/loginServer/server.ini` | server đăng nhập |
-| `KPAH\server.ini` (máy nhà) | server chạy thử ở nhà |
+| `HTBB\server.ini` (máy nhà) | server chạy thử ở nhà |
 
 ## 2. Đổi một thiết lập
 
@@ -290,12 +290,12 @@ sv.che_do_pokemon = 1
 Cờ của nhánh `pokemon/chuyen-doi` (quyết định Q8 trong
 [`pokemon/KE_HOACH_CHUYEN_DOI.md`](pokemon/KE_HOACH_CHUYEN_DOI.md)). **Phải khởi động lại**
 mới có tác dụng: chỉ đọc một lần lúc bật máy, mọi chỗ trong mã nguồn đọc qua
-`com.kpah.pokemon.CheDoPokemon.bat()`.
+`com.htbb.pokemon.CheDoPokemon.bat()`.
 
 | Giá trị | Nghĩa |
 |---|---|
 | `1` | Bật. Sát thương dùng 18 hệ khắc chế thay ngũ hành, nhân vật tiến hoá theo cấp, quái lấy hệ từ `data_monster.he/he2` (không random), server gửi thêm lệnh `-90/-91/-92` cho ClientUnity. Bản mẫu đặt `1`. |
-| `0` hoặc thiếu dòng | KPAH gốc, y như trước — không thêm câu SQL, không thêm gói tin nào. |
+| `0` hoặc thiếu dòng | game gốc, y như trước — không thêm câu SQL, không thêm gói tin nào. |
 
 Trước khi bật trên một CSDL mới: chạy `sql/them_cot_pokemon.sql` (thêm cột `dex`, `shiny`,
 `he2`; server cũng tự thêm nếu thiếu, nhưng chỉ khi cờ đang bật) rồi

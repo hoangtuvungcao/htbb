@@ -9,7 +9,7 @@ Nguon su that: BANG ben duoi (sua O DAY). Script:
        ClientUnity/Assets/Scripts/Game/SkillManager.cs   SKILL_NAME (client tu hien)
        src/data/Text.java                      nameSkillLearn (ban tieng Viet, 3 skill hoc them)
 
-Chay (o thu muc KPAH/):  python3 -I tools/pokemon/ap_ten_chieu.py [--chi-csv]
+Chay (o thu muc HTBB/):  python3 -I tools/pokemon/ap_ten_chieu.py [--chi-csv]
 Chay lai nhieu lan van an toan: neu code da mang ten moi thi bo qua.
 """
 import csv

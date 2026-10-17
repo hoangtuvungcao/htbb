@@ -30,7 +30,7 @@ Dong goi (client Unity, Resources/poke/):
                           T = tren nguoi dung chieu (chieu bo tro).
   docs/pokemon/bang_hieu_ung.csv  bang doi chieu (commit).
 
-Chay (o thu muc KPAH/):
+Chay (o thu muc HTBB/):
     python3 -I tools/pokemon/tai_hieu_ung_pmd.py            # tai + dong goi
     python3 -I tools/pokemon/tai_hieu_ung_pmd.py --khong-tai # chi dong goi tu file da tai
 
@@ -305,7 +305,7 @@ def ghep(rong, cao, hang_khung):
 def tai(url, dich):
     if os.path.exists(dich):
         return True
-    req = urllib.request.Request(url, headers={"User-Agent": "kpah-pokemon-tool"})
+    req = urllib.request.Request(url, headers={"User-Agent": "htbb-pokemon-tool"})
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             data = r.read()

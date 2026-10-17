@@ -44,7 +44,7 @@
  * WorkingDirectory=/opt/kpah còn web ở /opt/kpah/web. Chỉ đặt lại khi chép
  * riêng thư mục web/ đi chỗ khác, ví dụ sang C:\xampp\htdocs để chạy thử.
  */
-// define('SERVER_DIR', 'C:/Users/ADMIN/Desktop/KPAH');
+// define('SERVER_DIR', 'C:/Users/ADMIN/Desktop/HTBB');
 
 // ---- Nạp tiền theo mốc (TPBank + SePay) ----
 define('TPBANK_ACCOUNT_NO', '0000000000');       // số tài khoản TPBank thật

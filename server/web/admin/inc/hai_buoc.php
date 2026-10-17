@@ -198,9 +198,9 @@ function hbKhoaDeDoc(string $khoaBase32): string
  * URI otpauth:// để ứng dụng authenticator quét hoặc nhận qua dán.
  *
  * `issuer` vào cả nhãn và tham số là cố ý — cách cũ (chỉ nhãn) không phải app
- * nào cũng đọc đúng, và trong app sẽ hiện thành "KPAH (tên)" cho dễ tìm.
+ * nào cũng đọc đúng, và trong app sẽ hiện thành "HTBB (tên)" cho dễ tìm.
  */
-function hbUri(string $khoaBase32, string $tenTaiKhoan, string $tenHeThong = 'KPAH Admin'): string
+function hbUri(string $khoaBase32, string $tenTaiKhoan, string $tenHeThong = 'HTBB Admin'): string
 {
     $nhan = rawurlencode($tenHeThong) . ':' . rawurlencode($tenTaiKhoan);
     return 'otpauth://totp/' . $nhan

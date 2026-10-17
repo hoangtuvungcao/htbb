@@ -14,13 +14,13 @@
  * để kiểm thử được — xem web/admin/test/kiem_doc_ini.php.
  */
 
-if (!function_exists('kpahDocIni')) {
+if (!function_exists('htbbDocIni')) {
     /**
      * Đọc file .ini kiểu `khoa=gia tri` thành mảng.
      * Trả mảng rỗng nếu file không tồn tại hoặc không có quyền đọc — hai file kia
      * thường để chmod 640 chown kpah:kpah, mà PHP có thể chạy dưới người dùng khác.
      */
-    function kpahDocIni(string $duongDan): array
+    function htbbDocIni(string $duongDan): array
     {
         if (!is_file($duongDan) || !is_readable($duongDan)) {
             return [];
@@ -45,7 +45,7 @@ if (!function_exists('kpahDocIni')) {
     }
 }
 
-if (!function_exists('kpahGoiYLoiKetNoi')) {
+if (!function_exists('htbbGoiYLoiKetNoi')) {
     /**
      * Đoán vì sao kết nối database hỏng, để thông báo lỗi nói được điều gì đó
      * hữu ích thay vì chỉ ném ra mã 1045.
@@ -58,7 +58,7 @@ if (!function_exists('kpahGoiYLoiKetNoi')) {
      *
      * @return string chuỗi rỗng nếu không đoán được gì
      */
-    function kpahGoiYLoiKetNoi(): string
+    function htbbGoiYLoiKetNoi(): string
     {
         if (!defined('SERVER_DIR')) {
             return '';
@@ -81,7 +81,7 @@ if (!function_exists('kpahGoiYLoiKetNoi')) {
     }
 }
 
-if (!function_exists('kpahCauHinhDb')) {
+if (!function_exists('htbbCauHinhDb')) {
     /**
      * Rút thông tin kết nối từ hai file ini.
      *
@@ -90,11 +90,11 @@ if (!function_exists('kpahCauHinhDb')) {
      * @return array{host:?string, port:?int, user:?string, pass:?string,
      *               game:?string, account:?string, account_user:?string, account_pass:?string}
      */
-    function kpahCauHinhDb(string $serverDir): array
+    function htbbCauHinhDb(string $serverDir): array
     {
         $goc   = rtrim($serverDir, "/\\");
-        $game  = kpahDocIni($goc . '/server.ini');
-        $login = kpahDocIni($goc . '/loginServer/server.ini');
+        $game  = htbbDocIni($goc . '/server.ini');
+        $login = htbbDocIni($goc . '/loginServer/server.ini');
 
         $ra = ['host' => null, 'port' => null, 'user' => null, 'pass' => null,
                'game' => null, 'account' => null, 'account_user' => null, 'account_pass' => null];

@@ -1,6 +1,6 @@
-# Kế hoạch chuyển đổi KPAH → Huyền Thoại Bảo Bối (game Pokémon)
+# Kế hoạch chuyển đổi game kiếm hiệp gốc (trước đây là KPAH) → Huyền Thoại Bảo Bối (game Pokémon)
 
-> **Nhánh:** `pokemon/chuyen-doi`, có ở cả 3 repo: `KPAH`, `kpah-mod-pb`, `KPAH-Web`.
+> **Nhánh:** `pokemon/chuyen-doi`, có ở cả 3 repo: `HTBB`, `htbb-client`, `HTBB-Web`.
 > **File này là nguồn sự thật duy nhất** của việc chuyển đổi. Ai làm phần nào cũng đọc
 > mục 0 và mục 2 trước, rồi tick ô `[ ]` ở mục 9 khi xong việc.
 >
@@ -24,7 +24,7 @@
    vào bảng 3.2 trước, nếu không game sẽ lẫn nhiều phong cách vẽ.
 3. **Mọi con số dùng chung phải `grep` trước khi gán**, gồm id lệnh mạng, id ảnh, id item, id
    NPC, cột DB (theo `docs/CODING_CONVENTION.md` mục 1). Các giới hạn 1 byte nằm ở mục 7.
-4. **Không xoá code KPAH cũ.** Phần cũ bị thay thì đặt sau cờ `che_do_pokemon` (quyết định
+4. **Không xoá code game gốc cũ.** Phần cũ bị thay thì đặt sau cờ `che_do_pokemon` (quyết định
    Q8) để các test cũ vẫn chạy được.
 5. **Mỗi việc ở mục 9 có tiêu chí "Xong khi".** Chỉ tick ô khi đạt đúng tiêu chí đó, không
    tick theo cảm giác.
@@ -38,11 +38,11 @@
 
 - Trong game **không có nhân vật người**. Người chơi điều khiển **một con Pokémon**. Quái,
   boss, NPC và thú cưỡi cũng đều là Pokémon.
-- **Giữ nguyên lối chơi MMO đánh thời gian thực** của KPAH: di chuyển, đánh quái, lên cấp,
+- **Giữ nguyên lối chơi MMO đánh thời gian thực** của game gốc: di chuyển, đánh quái, lên cấp,
   bang hội, sự kiện, PvP. Không chuyển sang đánh theo lượt.
 - Chất Pokémon đến từ ba thứ: **loài + 18 hệ khắc chế + tiến hoá**.
 - Phong cách hình: **Pokémon Mystery Dungeon** (PMD), sprite 4 hướng nhìn từ trên xuống, rất
-  hợp với góc nhìn của KPAH.
+  hợp với góc nhìn của game gốc.
 
 **Ngoài phạm vi nhánh này:** bắt Pokémon bằng bóng, đội hình 6 con, đánh theo lượt.
 
@@ -58,7 +58,7 @@
 | Q4 | **18 hệ thay cho ngũ hành.** Hệ số được "làm dịu": x4→x2, x2→x1.5, x0.5→x0.7, x0.25→x0.5, x0→x0.3. Code ở `HePokemon.heSoTrongGame`. | Người chơi không đổi được Pokémon giữa trận, nên giữ x0 thì có quái không thể đánh được, còn x4 sẽ đánh chết ngay trong PvP. |
 | Q5 | **Thân Pokémon là một sprite nguyên con**, bỏ kiểu ghép nhiều phần (paper doll). Trang bị **không đổi hình**, chỉ cộng chỉ số. | PMD không có bộ phận rời. Client đã có sẵn đường vẽ "nguyên con" (`isLoadAnimalOk` → `myAnimal.paint`, `Char.cs:1298`). |
 | Q6 | **Sprite đóng gói sẵn trong client** (`Resources/poke/`). Server chỉ gửi `dex` và `shiny`. | Đường gửi ảnh của server dùng toạ độ u8 (ảnh ghép tối đa 255 px) và `w/h` kiểu sbyte (≤127). Trong khi đó tấm Attack của PMD rộng tới 800×640, có khung 120×136. |
-| Q7 | **Chỉ làm `ClientUnity`** (Windows/WebGL/Android/iOS). Ba client trong `kpah-mod-pb` (pc/android/j2me) **không port**. Nhánh bên đó chỉ để đánh dấu. | J2ME không đủ bộ nhớ cho sprite PMD. Ba client mod là mã decompile, sửa 3 lần sẽ rất tốn công. |
+| Q7 | **Chỉ làm `ClientUnity`** (Windows/WebGL/Android/iOS). Ba client trong `htbb-client` (pc/android/j2me) **không port**. Nhánh bên đó chỉ để đánh dấu. | J2ME không đủ bộ nhớ cho sprite PMD. Ba client mod là mã decompile, sửa 3 lần sẽ rất tốn công. |
 | Q8 | **Cờ `che_do_pokemon`** trong `vps/server.ini.tmpl`, mặc định 1 trên nhánh này. Mọi chỗ rẽ nhánh đọc qua một hàm duy nhất. | Giữ được bộ test cũ (characterization) và có thể so sánh A/B khi cân bằng. |
 | Q9 | **Hệ của quái lấy từ template** (`data_monster.he/he2`), bỏ việc random hệ khi spawn. | Code hiện tại random 0..4 ở `MapNapTaiNguyen.java:1187-1265`. Nếu giữ, Kyogre có thể ra hệ Lửa. |
 | Q10 | **Không thu tiền** (tắt nạp) khi còn dùng asset PMDCollab hoặc tên Pokémon thật (mục 3.3). | Asset là CC BY-NC 4.0 và Pokémon là IP của Nintendo/Game Freak. |
@@ -129,7 +129,7 @@ Cả 21 loài đều có sprite và chân dung trên SpriteCollab (đã kiểm t
 
 ### 4.2 Thuộc tính nhân vật: cũ → mới
 
-| KPAH (cũ) | Ở đâu | Pokémon (mới) | Việc phải làm |
+| Game gốc (cũ) | Ở đâu | Pokémon (mới) | Việc phải làm |
 |---|---|---|---|
 | `charClass` | `Char.java:164`, `tob_char.class` | Dòng Pokémon khởi đầu | Giữ nguyên (Q1) |
 | `gender`, `headStyle` | `Char.java:415`, `:163` | **Bỏ.** Client gửi giá trị mặc định | Ẩn ô chọn trong `CreateCharScr.cs` |
@@ -147,7 +147,7 @@ Cả 21 loài đều có sprite và chân dung trên SpriteCollab (đã kiểm t
 
 Cột "Ưu tiên" lấy theo `DONG_TAC` trong `tai_sprite_pmd.py`: lấy tên đầu tiên mà loài đó có.
 
-| Trạng thái client | Frame KPAH hiện tại | Động tác (ưu tiên) |
+| Trạng thái client | Frame game gốc hiện tại | Động tác (ưu tiên) |
 |---|---|---|
 | Đứng | 0/1 (`STANDFRAME`) | Idle → Walk khung 0 |
 | Chạy | 2/3 (`RUNFRAMEWAL`) | Walk |
@@ -413,9 +413,9 @@ Ký hiệu: `[ ]` chưa làm, `[x]` xong. Ghi tên người làm sau mỗi dòng
 ### Giai đoạn 0: Nền tảng
 
 - [x] **G0.1** Tạo nhánh `pokemon/chuyen-doi` ở 3 repo.
-- [x] **G0.2** `com.kpah.pokemon.HePokemon`: 18 hệ và bảng khắc chế.
+- [x] **G0.2** `com.htbb.pokemon.HePokemon`: 18 hệ và bảng khắc chế.
   - Xong khi: test 51 ô x2, 61 ô x0.5, 8 ô x0 đều đạt.
-- [x] **G0.3** `com.kpah.pokemon.LoaiPokemon`: 5 dòng khởi đầu, 21 loài, tiến hoá.
+- [x] **G0.3** `com.htbb.pokemon.LoaiPokemon`: 5 dòng khởi đầu, 21 loài, tiến hoá.
   - Xong khi: `test/KiemPokemon.java` đạt.
 - [x] **G0.4** `tools/pokemon/sinh_bang_quai.py` sinh ra `bang_quai.csv`.
   - Xong khi: đủ 138/138 dòng, không còn LỖI.
@@ -455,7 +455,7 @@ Ký hiệu: `[ ]` chưa làm, `[x]` xong. Ghi tên người làm sau mỗi dòng
 - [x] **Q3** Server gửi POKE_QUAI; bỏ random hệ (Q9).
 - [x] **C5** Client vẽ quái và boss bằng PokeBody (boss phóng to); `vat_the` dùng
   RawAsset/Object.
-  - Xong khi: đi hết các map quái, không còn sprite người hay quái KPAH nào.
+  - Xong khi: đi hết các map quái, không còn sprite người hay quái của game gốc nào.
 - [x] **K1** Bảng 5 × 15 chiêu: tên Pokémon, hệ của chiêu, hiệu ứng Particle tương ứng.
   Ghi thành `docs/pokemon/bang_chieu.csv`.
 - [x] **K2** Áp tên chiêu (`Text.java:412`) và hệ của chiêu vào S4.
@@ -477,8 +477,8 @@ Ký hiệu: `[ ]` chưa làm, `[x]` xong. Ghi tên người làm sau mỗi dòng
 
 ### Giai đoạn 6: Hoàn thiện
 
-- [x] **W1** KPAH-Web: đổi thương hiệu, bỏ tên class, thêm Pokédex.
-- [x] **W2** Đổi tên map (192 instance trong `RealController.initMapKPAH`).
+- [x] **W1** HTBB-Web: đổi thương hiệu, bỏ tên class, thêm Pokédex.
+- [x] **W2** Đổi tên map (192 instance trong `RealController.initMapHTBB`).
 - [x] **W3** Trang ghi công: gom mọi `credits.txt` (bắt buộc theo CC BY-NC).
 - [x] **B1** Cân bằng chỉ số theo loài và giai đoạn tiến hoá.
 - [ ] Giải quyết các câu hỏi mở M1–M5.
@@ -509,7 +509,7 @@ Nguyên tắc chung:
 
 | # | Câu hỏi | Đã chốt |
 |---|---|---|
-| M1 | Có làm lại 3 client `kpah-mod-pb` không? | **Không.** Chỉ `ClientUnity` (Q7). `kpah-mod-pb` đóng băng ở `main` |
+| M1 | Có làm lại 3 client `htbb-client` không? | **Không.** Chỉ `ClientUnity` (Q7). `htbb-client` đóng băng ở `main` |
 | M2 | Tile 16 px vs tile PMD 24 px? | **Vẽ lại bằng tool** (G7.A, `DoiTileMap.java`): giữ lưới 16 px và chỉ số tile, đổi chất liệu sang PMD |
 | M3 | Bang hội, quốc gia? | **Đổi chữ, giữ logic:** Đội; vùng Kanto / Johto / Hoenn (G7.C) |
 | M4 | Âm thanh, nhạc? | **Không có gì để thay:** client Unity hiện KHÔNG phát âm thanh (`Player.load/start`, `MyAudioClip` không được gọi ở đâu — kiểm tra bằng grep 2026-10-16). Thêm nhạc là tính năng mới; nếu làm chỉ dùng nhạc CC0 có trang giấy phép rõ ràng, không dùng nhạc Pokémon |
@@ -528,7 +528,7 @@ Nguyên tắc chung:
 | Migration và SQL dữ liệu trên MariaDB 10.4 nạp `gamedb7_clean.sql` + `db_new_server.sql` | Chạy hết không lỗi: 122 quái có dex, 696 trang bị đổi tên, 8 đá Eevee (id 960–967) |
 | **Đầu–cuối:** game server + login server thật, client giả lập theo giao thức (khoá -40, đăng nhập, tạo, chọn nhân vật, chat GM) | Đăng nhập → -91 (122 template, boss 160%) ngay sau 26. Vào game → -90 dex=4 + -93. `slv 16` → -92 4→5, `slv 36` → -92 5→6. Thoát → DB lưu `dex=6`. Đăng nhập lại → -90 dex=6. Server log không có exception |
 | Cờ `sv.che_do_pokemon=0` | Không gửi gói -90…-93 nào; server chạy như cũ |
-| KPAH-Web: `nuxi typecheck` + `npm run build` (Node 22) | 0 lỗi. API nạp trả 403 khi `KPAH_NAP_BAT=false` |
+| HTBB-Web: `nuxi typecheck` + `npm run build` (Node 22) | 0 lỗi. API nạp trả 403 khi `KPAH_NAP_BAT=false` |
 
 **Chưa kiểm được:** hình ảnh thật trong Unity (vị trí, kích cỡ, hiệu ứng tiến hoá), vì máy dev không có Unity Editor. Việc đầu tiên khi mở Unity: vào game nhìn bằng mắt các mục C2, C3, C5, T2.
 
@@ -536,7 +536,7 @@ Nguyên tắc chung:
 
 | Việc | Làm gì | Kiểm |
 |---|---|---|
-| **K3** Hiệu ứng chiêu | `tools/pokemon/tai_hieu_ung_pmd.py` tải particle RawAsset → `Resources/poke/hu_*.bytes` (45 ảnh, 125 KB) + `hu_bang.bytes`; client `PokeHieuUng.cs` (`SkillPokemon` thay hiệu ứng KPAH khi `pokeDex > 0`; buff chạy particle trên người nhận). Bảng: `bang_hieu_ung.csv` | KiemHieuUngPokemon; nhìn tay vài atlas |
+| **K3** Hiệu ứng chiêu | `tools/pokemon/tai_hieu_ung_pmd.py` tải particle RawAsset → `Resources/poke/hu_*.bytes` (45 ảnh, 125 KB) + `hu_bang.bytes`; client `PokeHieuUng.cs` (`SkillPokemon` thay hiệu ứng game gốc khi `pokeDex > 0`; buff chạy particle trên người nhận). Bảng: `bang_hieu_ung.csv` | KiemHieuUngPokemon; nhìn tay vài atlas |
 | **T3** Pet + thần thú | Lệnh -94 (`PetPokemon` theo id item pet); client vẽ pet đi theo bằng PokeBody 70%. Thần thú (Hoả kỳ lân 0..2) vẽ Ponyta/Rapidash/Rapidash shiny ở `ThanThu.cs` (bảng ở client) | KiemPetPokemon; e2e thấy -94 |
 | Atlas ≤ 2048 | Định dạng `_dl` bản 2 (`xAtlas`), `DongGoiSprite` xếp cột/kệ. 0/178 loài vượt 2048 | Tool tự đọc lại so pixel; test C# kiểm chồng lấn + giới hạn |
 | Nguồn đá Eevee | `RoiDaTienHoa` (gọi đầu `Monster.onDropItem`): Eevee cấp ≥ 25 hạ quái không thấp hơn 10 cấp → 0,5% rơi 1 đá ngẫu nhiên | Test hàm thuần `DaTienHoa.daRoiKhiHaQuai` |
@@ -560,11 +560,11 @@ Nguyên tắc chung:
 
 ## 15. Giai đoạn 7: Game mới hoàn toàn (mọi thứ người chơi nhìn thấy)
 
-Mục tiêu: không còn hình ảnh, tên gọi hay câu chữ nào của KPAH (kiếm hiệp, giang hồ, môn phái…) mà người chơi thấy được khi bật `sv.che_do_pokemon=1`. Tên game: **Huyền Thoại Bảo Bối** (viết tắt **HTBB**), đặt ở một chỗ: `ThuongHieu.java` + `ThuongHieu.cs` (test so hai bản), web lấy từ `app.config.ts`/`config.ts` (G7.E1).
+Mục tiêu: không còn hình ảnh, tên gọi hay câu chữ nào của game gốc (kiếm hiệp, giang hồ, môn phái…) mà người chơi thấy được khi bật `sv.che_do_pokemon=1`. Tên game: **Huyền Thoại Bảo Bối** (viết tắt **HTBB**), đặt ở một chỗ: `ThuongHieu.java` + `ThuongHieu.cs` (test so hai bản), web lấy từ `app.config.ts`/`config.ts` (G7.E1).
 
 Từ điển thuật ngữ cố định (mọi luồng việc dùng chung):
 
-| KPAH | Game mới |
+| Game gốc | Game mới |
 |---|---|
 | Lãnh thổ Thanh long / Hắc hổ / Huyền vũ | Vùng Kanto / Johto / Hoenn |
 | Bang hội, bang chủ | Đội, đội trưởng |
@@ -578,8 +578,8 @@ Từ điển thuật ngữ cố định (mọi luồng việc dùng chung):
 
 | # | Luồng việc | Việc | Xong khi |
 |---|---|---|---|
-| G7.A | **Bản đồ** | A1 tile 16 px của KPAH thay bằng tile phong cách PMD (sinh tự động bằng tool, giữ nguyên chỉ số tile nên không phải sửa bố cục map); A2 ảnh nền/vật trang trí trên map | Mọi tileset được thay; client và server dùng bộ mới khi bật chế độ; có ảnh xem trước |
-| G7.B | **Hình còn sót** | B1 16 `vat_the` (cổng, ngọc, rương, nguyên liệu) dùng RawAsset/Object; B2 NPC sự kiện `Npc_Server`; B3 pet kiểu cũ; B4 logo, màn đăng nhập, màn tải | Không còn sprite người/vật KPAH hiện ra khi bật chế độ |
+| G7.A | **Bản đồ** | A1 tile 16 px của game gốc thay bằng tile phong cách PMD (sinh tự động bằng tool, giữ nguyên chỉ số tile nên không phải sửa bố cục map); A2 ảnh nền/vật trang trí trên map | Mọi tileset được thay; client và server dùng bộ mới khi bật chế độ; có ảnh xem trước |
+| G7.B | **Hình còn sót** | B1 16 `vat_the` (cổng, ngọc, rương, nguyên liệu) dùng RawAsset/Object; B2 NPC sự kiện `Npc_Server`; B3 pet kiểu cũ; B4 logo, màn đăng nhập, màn tải | Không còn sprite người/vật HTBB hiện ra khi bật chế độ |
 | G7.C | **Chữ và dữ liệu** | C1 thuốc (`data_potion`), ngọc, nhiệm vụ, tên NPC, hội thoại NPC, hướng dẫn (`Text.help`), tên vùng/đội; C2 chuỗi thông báo server; C3 chuỗi UI client; C4 vật phẩm type 20–30 còn lại | Tool quét không còn từ cấm trong chuỗi người chơi thấy (danh sách từ cấm có test) |
 | G7.D | **Lối chơi** | D1 hệ theo từng chiêu + STAB ×1.2; D2 Pokédex (đã gặp / đã hạ theo loài, xem qua NPC); D3 NPC Eevee chọn nhánh; D4 thưởng mốc Pokédex | Test hàm thuần + chạy e2e |
 | G7.E | **Thương hiệu** | E1 tên game một chỗ (client, server, web); E2 tên build/ứng dụng | Đổi tên ở một chỗ là đổi khắp nơi |
@@ -607,7 +607,7 @@ Từ điển thuật ngữ cố định (mọi luồng việc dùng chung):
 | Nhạc và âm thanh (M4) | Client chưa từng phát âm thanh; thêm nhạc CC0 là tính năng mới (chưa làm) |
 | Xem bằng mắt trong Unity | Toàn bộ phần hình (sprite, tile, particle, vật thể, tiêu đề) chưa xem trên Unity thật. `Editor/XayDung.cs` không được `cscheck` biên dịch (cần UnityEditor.dll) |
 | Chữ người dùng chọn | Các câu mới (Pokédex, thưởng mốc, Đội phó, Cố vấn, tên bậc Poké Ball…) theo CODING_CONVENTION §10 cần chủ dự án duyệt |
-| Tên vật phẩm còn chất KPAH nhưng không thuộc từ cấm | vd "Mảnh tứ khoái", "Hộ vệ lân sư tử", "Tóc bờm ngựa" — thêm vào `TU_CAM`/`DOI` rồi chạy lại `sinh_sql_chu.py` |
+| Tên vật phẩm còn chất kiếm hiệp của game gốc nhưng không thuộc từ cấm | vd "Mảnh tứ khoái", "Hộ vệ lân sư tử", "Tóc bờm ngựa" — thêm vào `TU_CAM`/`DOI` rồi chạy lại `sinh_sql_chu.py` |
 | Nhà/mái/thuyền trên tile | Chỉ tô lại màu (≈20–30% tile), chưa thay hình |
 | 3 boss ghi đè `onDropItem` không gọi lớp cha | BossTruRong, BossTruRongMoba, BossNguoiTuyet: không tính vào Pokédex, không rơi đá |
 | `TField` | Con trỏ có thể lệch nhẹ khi gõ đúng một từ trong từ điển |
@@ -631,9 +631,9 @@ sh tools/pokemon/chay_tren_novadb.sh dung                 # dừng cả 3
 - Giới hạn còn lại: NovaDB so sánh chuỗi phân biệt hoa/thường (tên nhân vật đã chuyển về chữ thường khi tạo);
   không có `SUBSTRING_INDEX`, truy vấn chéo CSDL (server không dùng).
 
-### 16.2 Client jar (J2ME, repo `kpah-mod-pb`)
+### 16.2 Client jar (J2ME, repo `htbb-client`)
 
-- Build: `JAVA8_HOME=/usr/lib/jvm/java-8-openjdk-amd64 sh j2me/build.sh <n>`; `KPAH_ASSETS=<KPAH>/ClientUnity/Assets` để
+- Build: `JAVA8_HOME=/usr/lib/jvm/java-8-openjdk-amd64 sh j2me/build.sh <n>`; `HTBB_ASSETS=<HTBB>/ClientUnity/Assets` để
   đóng gói lại sprite/từ điển; `MAY_CHU=host:cong` tạo bản thử; `MAY_CHU_CHINH=host:cong` gắn server cho mọi bản;
   `GOI=nhe` bản nhẹ cho điện thoại (~1,94 MB, 99 loài, ít khung).
 - Bước xác thực -88 của server NQSH cũ (chữ ký RSA, khoá riêng không có) **tắt mặc định** (`XAC_THUC=1` bật lại).
@@ -684,4 +684,4 @@ javac -encoding UTF-8 -d build/tools tools/pokemon/DoiTileMap.java && java -cp b
 **65 kiểm tra cũ đang hỏng** (Sự kiện, Hoá hình Pet, Tinh luyện thần binh…) đã có từ trước khi
 tạo nhánh, chạy trên Linux. Một số có thể chỉ hỏng trên Linux (đường dẫn, encoding); hãy chạy
 `test.bat` trên Windows để có con số gốc. Khi thêm việc mới, không được làm tăng con số này.
-Nhóm `com.kpah.pokemon.*` đạt toàn bộ. Khi thêm việc mới, **không được làm tăng** con số 65 này.
+Nhóm `com.htbb.pokemon.*` đạt toàn bộ. Khi thêm việc mới, **không được làm tăng** con số 65 này.

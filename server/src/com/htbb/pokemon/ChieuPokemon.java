@@ -1,4 +1,4 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 /**
  * He cua tung chieu (viec G7.D1) + STAB. Bang HE chep tay tu cot so_he cua

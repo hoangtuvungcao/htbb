@@ -1,5 +1,5 @@
 /// <summary>
-/// Ban C# rut gon cua src/com/kpah/pokemon/LoaiPokemon.java, chi dung o client cho nhung
+/// Ban C# rut gon cua src/com/htbb/pokemon/LoaiPokemon.java, chi dung o client cho nhung
 /// cho server CHUA gui dex (man chon nhan vat, man tao nhan vat). Sau khi vao game, dex
 /// lay tu lenh -90 POKE_THAN, KHONG suy ra o day.
 ///

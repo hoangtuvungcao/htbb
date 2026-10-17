@@ -121,9 +121,9 @@ public class ServerListScr : MyScreen
 		base.pointerPress(dx, dy);
 	}
 
-	public static void loadSv(bool isKPAH)
+	public static void loadSv(bool isHTBB)
 	{
-		if (isKPAH)
+		if (isHTBB)
 		{
 			nameServer = new string[9] { "Server 1", "Test", "Test", "Test", "Test", "Test", "Test", "Test", "Test" };
 			address = new string[9] { SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST, SERVER_HOST };
@@ -140,7 +140,7 @@ public class ServerListScr : MyScreen
 			linkGetHost = "http://" + SERVER_HOST + "/ngude2.txt";
 			GameMidlet.numberSupport = "19001530";
 		}
-		Debug.Log("Ban: " + ((!isKPAH) ? "-- ngu de" : "-- khi phach anh hung"));
+		Debug.Log("Ban: " + ((!isHTBB) ? "-- ngu de" : "-- huyen thoai bao boi"));
 	}
 
 	public override void switchToMe()
@@ -328,7 +328,7 @@ public class ServerListScr : MyScreen
 		}
 		catch (IOException)
 		{
-			loadSv(GameMidlet.isKPAH);
+			loadSv(GameMidlet.isHTBB);
 		}
 	}
 
@@ -449,7 +449,7 @@ public class ServerListScr : MyScreen
 	{
 		paintBg(g);
 		Canvas.resetTrans(g);
-		// Che do Pokemon: tieu de ThuongHieu (ten game + 5 Pokemon khoi dau) thay logo KPAH.
+		// Che do Pokemon: tieu de ThuongHieu (ten game + 5 Pokemon khoi dau) thay logo goc.
 		if (!ThuongHieu.veTieuDe(g, Canvas.hw, Canvas.hh - 150))
 		{
 			g.drawImage(Canvas.imgLogo, Canvas.hw, Canvas.hh - 100, 3);

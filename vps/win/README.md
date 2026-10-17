@@ -18,7 +18,7 @@ Tất cả đi qua **SSH**, không cần mở thêm cổng nào trên VPS.
 Chạy hai file, theo thứ tự:
 
 ```
-vps-db-tai-ve.bat          -> tải về %USERPROFILE%\Desktop\kpah-db-backup\
+vps-db-tai-ve.bat          -> tải về %USERPROFILE%\Desktop\htbb-db-backup\
 vps-db-nap-vao-local.bat   -> nạp vào MySQL local
 ```
 

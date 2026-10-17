@@ -27,13 +27,13 @@ public static class XayDung
     // -------------------------------------------------------------------
     // Tao canh + dat cau hinh. Phai chay truoc moi lan xay lan dau.
     // -------------------------------------------------------------------
-    [MenuItem("KPAH/Chuan bi du an")]
+    [MenuItem("HTBB/Chuan bi du an")]
     public static void ChuanBi()
     {
         TaoCanh();
         DatCauHinh();
         AssetDatabase.SaveAssets();
-        Debug.Log("[KPAH] Chuan bi xong.");
+        Debug.Log("[HTBB] Chuan bi xong.");
     }
 
     private static void TaoCanh()
@@ -57,7 +57,7 @@ public static class XayDung
 
         EditorSceneManager.SaveScene(canh, DUONG_CANH);
         EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(DUONG_CANH, true) };
-        Debug.Log("[KPAH] Da tao canh " + DUONG_CANH);
+        Debug.Log("[HTBB] Da tao canh " + DUONG_CANH);
     }
 
     private static void DatCauHinh()
@@ -82,20 +82,20 @@ public static class XayDung
     // -------------------------------------------------------------------
     // Cac ban xay
     // -------------------------------------------------------------------
-    [MenuItem("KPAH/Xay Windows")]
+    [MenuItem("HTBB/Xay Windows")]
     public static void XayWindows()
     {
         Xay(BuildTarget.StandaloneWindows64, BuildTargetGroup.Standalone,
             THU_MUC_XUAT + "/Windows/" + ThuongHieu.tenTep() + ".exe");
     }
 
-    [MenuItem("KPAH/Xay WebGL")]
+    [MenuItem("HTBB/Xay WebGL")]
     public static void XayWebGL()
     {
         Xay(BuildTarget.WebGL, BuildTargetGroup.WebGL, THU_MUC_XUAT + "/WebGL");
     }
 
-    [MenuItem("KPAH/Xay Android (APK)")]
+    [MenuItem("HTBB/Xay Android (APK)")]
     public static void XayAndroid()
     {
         PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, ThuongHieu.maUngDung());
@@ -103,7 +103,7 @@ public static class XayDung
             THU_MUC_XUAT + "/Android/" + ThuongHieu.tenTep() + ".apk");
     }
 
-    [MenuItem("KPAH/Xay iOS (du an Xcode)")]
+    [MenuItem("HTBB/Xay iOS (du an Xcode)")]
     public static void XayIOS()
     {
         PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, ThuongHieu.maUngDung());
@@ -146,7 +146,7 @@ public static class XayDung
             return;
         }
 
-        Debug.Log("[KPAH] Xay " + dich + " xong -> " + duongRa
+        Debug.Log("[HTBB] Xay " + dich + " xong -> " + duongRa
                 + " (" + (bc.summary.totalSize / 1024 / 1024) + " MB)");
     }
 
@@ -154,7 +154,7 @@ public static class XayDung
     // neu khong thi kich ban goi se tuong la xay thanh cong.
     private static void LoiVaThoat(string thongDiep)
     {
-        Debug.LogError("[KPAH] " + thongDiep);
+        Debug.LogError("[HTBB] " + thongDiep);
         if (Application.isBatchMode)
         {
             EditorApplication.Exit(1);

@@ -1,4 +1,4 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 /**
  * Nhan khac he Pokemon vao sat thuong - thay khoi ngu hanh "(he + 2) % 5" cu

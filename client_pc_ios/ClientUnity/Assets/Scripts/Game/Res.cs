@@ -1132,7 +1132,7 @@ public class Res
 		int num2 = 0;
 		int num3 = 0;
 		// Che do Pokemon (G7.A): bo tile PMD cung so tile/thu tu, sinh boi tools/pokemon/DoiTileMap.java.
-		// Thieu tep (Resources/poke_tile/) thi quay ve bo KPAH.
+		// Thieu tep (Resources/poke_tile/) thi quay ve bo goc.
 		bool tilePokemon = false;
 		if (PokeBody.CHE_DO_POKEMON)
 		{
@@ -1179,7 +1179,7 @@ public class Res
 		}
 		if (tilePokemon)
 		{
-			// Ban do nho to theo mau trung binh cua tile moi (mang mau cu viet cung cho tile KPAH).
+			// Ban do nho to theo mau trung binh cua tile moi (mang mau cu viet cung cho tile goc).
 			PokeTile.tinhMauBanDoNho(image, Tilemap.mangMauThanh);
 			PokeTile.tinhMauBanDoNho(image2, Tilemap.mangMau);
 			PokeTile.tinhMauBanDoNho(image3, Tilemap.mangMauHang);

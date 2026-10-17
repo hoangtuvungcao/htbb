@@ -1,7 +1,7 @@
 package real;
 
-import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.ChieuPokemon;
+import com.htbb.pokemon.CheDoPokemon;
+import com.htbb.pokemon.ChieuPokemon;
 
 
 import server.TeamServer;
@@ -146,8 +146,8 @@ class CharChiSo {
         // Dat truoc cac khoi phan tram thi 2000 mau se bi nhan len theo, thanh nhieu hon
         // con so ghi trong mo ta; dat sau hai dong chan thi hp co the vuot maxhp.
         // Che do Pokemon (B1): cong % HP theo giai doan tien hoa (LoaiPokemon.phanTramGiaiDoan).
-        if (com.kpah.pokemon.CheDoPokemon.bat() && self.pokeDex > 0) {
-            self.maxhp += (int) ((long) self.maxhp * com.kpah.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex) / 100L);
+        if (com.htbb.pokemon.CheDoPokemon.bat() && self.pokeDex > 0) {
+            self.maxhp += (int) ((long) self.maxhp * com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex) / 100L);
         }
         self.maxhp += SkinLinhThu.congHp(self);
         self.maxmp += SkinLinhThu.congMp(self);
@@ -1405,8 +1405,8 @@ class CharChiSo {
             }
         }
         // Che do Pokemon (B1): cong % tan cong theo giai doan tien hoa, truoc diem Than Khi.
-        if (com.kpah.pokemon.CheDoPokemon.bat() && self.pokeDex > 0) {
-            final int ptGd = com.kpah.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex);
+        if (com.htbb.pokemon.CheDoPokemon.bat() && self.pokeDex > 0) {
+            final int ptGd = com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex);
             self.attack += (int) ((long) self.attack * ptGd / 100L);
             self.attackPlayer += (int) ((long) self.attackPlayer * ptGd / 100L);
         }

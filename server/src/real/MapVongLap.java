@@ -73,7 +73,7 @@ class MapVongLap {
                 }
 
                 if (Char.isSuKienTet2017()) {
-                    if ((UtilKPAH.getHour() == Map.hourGiveLixi || UtilKPAH.getHour() == Map.hourGiveLixi - 1 || TeamServer.isServerLocal()) && Map.MAX_LI_XI > 0) {
+                    if ((UtilHTBB.getHour() == Map.hourGiveLixi || UtilHTBB.getHour() == Map.hourGiveLixi - 1 || TeamServer.isServerLocal()) && Map.MAX_LI_XI > 0) {
                         Message m = MessageCreator.createMsgChat(
                                 ((Char) Map.npcVilage.get(3)).id,
                                 "Máy chủ sẽ phát bao lì xì tại cây lì xì bắt đầu từ " + Map.hourGiveLixi + "h " + Map.minuteGiveLixi + " phút"
@@ -88,7 +88,7 @@ class MapVongLap {
                         map.sendAllCharMap(m, 0, 0);
                     }
 
-                    if (UtilKPAH.getHour() > 0 && UtilKPAH.getHour() < 6 && (Map.MAX_LI_XI < 100 || Map.hourGiveLixi != 18)) {
+                    if (UtilHTBB.getHour() > 0 && UtilHTBB.getHour() < 6 && (Map.MAX_LI_XI < 100 || Map.hourGiveLixi != 18)) {
                         Map.MAX_LI_XI = 100;
                         Map.hourGiveLixi = 18;
                         Map.minuteGiveLixi = 30;
@@ -96,7 +96,7 @@ class MapVongLap {
                     }
                 }
 
-                if (UtilKPAH.getDayOfMonth() == Char.dayEndVip && UtilKPAH.getHour() == Char.timeEndVip && UtilKPAH.getMinute() >= Char.minuteEnd) {
+                if (UtilHTBB.getDayOfMonth() == Char.dayEndVip && UtilHTBB.getHour() == Char.timeEndVip && UtilHTBB.getMinute() >= Char.minuteEnd) {
                     Database.instance.doresetCharVip();
                     Map.ALL_CHAR_VIP.clear();
                     Map.ALL_CHAR_BUY_RUONG.clear();
@@ -105,7 +105,7 @@ class MapVongLap {
 
                 if (MapChienTruongMoba.isDayChienTruong()) {
                     String info = "Chiến trường chính tà sẽ mở vào 21h dành cho nhân vật có cấp độ dưới 70. Nhanh chân đến NPC Đấu Trường đăng ký trước 21h";
-                    if (UtilKPAH.isSunday()) {
+                    if (UtilHTBB.isSunday()) {
                         info = "Chiến trường chính tà sẽ mở vào 21h dành cho nhân vật có cấp độ từ 70 trở lên. Nhanh chân đến NPC Đấu Trường đăng ký trước 21h";
                     }
 
@@ -118,7 +118,7 @@ class MapVongLap {
                     map.sendAllCharMap(m, 0, 0);
                     map = (Map) RealController.mapList.get(1701);
                     map.sendAllCharMap(m, 0, 0);
-                } else if (!isResetChienTruongMoba && (UtilKPAH.isTuesday() || UtilKPAH.isSaturday() || UtilKPAH.isFriday())) {
+                } else if (!isResetChienTruongMoba && (UtilHTBB.isTuesday() || UtilHTBB.isSaturday() || UtilHTBB.isFriday())) {
                     MapChienTruongMoba.all_char_chien_truong.clear();
                     MapChienTruongMoba.v_all_char_chien_truong.removeAllElements();
                     Database.instance.resetCharRegChienTruongMoba("");

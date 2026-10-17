@@ -1,5 +1,5 @@
 [Unit]
-Description=KPAH login server (CheckLoginSocket)
+Description=HTBB login server (CheckLoginSocket)
 After=network.target mariadb.service
 Wants=mariadb.service
 

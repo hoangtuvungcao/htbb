@@ -4,7 +4,7 @@
 # Dung mot MariaDB/MySQL TRONG (khong co du lieu that) de dung lai tu dau theo DUNG thu tu
 # duoi day, roi mysqldump ra MOT file. Server moi chi can: mysql < sql/htbb_day_du.sql
 #
-# Chay o thu muc KPAH/:
+# Chay o thu muc HTBB/:
 #   MYSQL="mysql -uroot -h127.0.0.1 -P3306" MYSQLDUMP="mysqldump -uroot -h127.0.0.1 -P3306" \
 #     sh tools/pokemon/xuat_sql_day_du.sh
 #

@@ -1,4 +1,4 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -894,7 +894,7 @@ public final class ChuPokemon {
         return sb.toString();
     }
 
-    /** Doi chu khi bat che do Pokemon; tat thi tra nguyen (hanh vi KPAH cu). */
+    /** Doi chu khi bat che do Pokemon; tat thi tra nguyen (hanh vi goc cu). */
     public static String doi(final String s) {
         return CheDoPokemon.bat() ? doiLuon(s) : s;
     }

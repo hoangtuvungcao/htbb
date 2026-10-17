@@ -1,4 +1,4 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 /**
  * Thu cuoi (data.Animal, so hieu 0..20 = Animal.idImg) -> Pokemon thu cuoi.

@@ -2924,7 +2924,7 @@ public class Char : LiveActor
 			{
 				currentSkillAnimate = SkillManager.getSkillAnimate(currentSkillType, clazz);
 			}
-			// K3: Pokemon dung particle PMD cua chieu thay hieu ung KPAH (thieu thi giu cu).
+			// K3: Pokemon dung particle PMD cua chieu thay hieu ung goc (thieu thi giu cu).
 			SkillAnimate pokeSkill = PokeHieuUng.layChieu(this, isDoing ? 0 : currentSkillType);
 			if (pokeSkill != null)
 			{

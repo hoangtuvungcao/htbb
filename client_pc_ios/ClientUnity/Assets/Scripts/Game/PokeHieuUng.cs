@@ -11,7 +11,7 @@ using UnityEngine;
 /// kieuVe: D = no tai muc tieu, B = bay tu nguoi danh toi muc tieu, T = tren nguoi dung chieu.
 ///
 /// Char co pokeDex &gt; 0 dung chieu (lop, chieu) co trong bang thi Char.setCurrentSkillByID lay
-/// SkillAnimate o day (layChieu) thay cho hieu ung KPAH cu. Thieu bang/anh thi tra ve null va
+/// SkillAnimate o day (layChieu) thay cho hieu ung goc cu. Thieu bang/anh thi tra ve null va
 /// giu hieu ung cu. Ket qua nap (ke ca that bai) duoc nho, khong Resources.Load moi khung hinh.
 /// </summary>
 public class PokeHieuUng

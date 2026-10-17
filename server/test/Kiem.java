@@ -58,7 +58,7 @@ public final class Kiem {
 
     public static void main(final String[] args) {
         System.out.println("============================================================");
-        System.out.println("  KIEM THU KPAH");
+        System.out.println("  KIEM THU HTBB");
         System.out.println("============================================================");
         System.out.println("(Khoi static cua real.Map co goi CSDL nen se in NullPointer-");
         System.out.println(" Exception o duoi - do la BINH THUONG khi chay ngoai server,");

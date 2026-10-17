@@ -9,7 +9,7 @@ Nguon:
   - ANH_XA ben duoi (do nguoi quyet dinh - SUA O DAY, khong sua tay file CSV)
   - PokeAPI (he cua loai) + tracker.json cua PMDCollab/SpriteCollab (co sprite chua)
 
-Chay (o thu muc KPAH/):
+Chay (o thu muc HTBB/):
     python3 -I tools/pokemon/sinh_bang_quai.py
 
 Script se BAO LOI va thoat ma 1 neu co dong data_monster chua duoc anh xa,
@@ -31,7 +31,7 @@ BO_NHO = os.path.join(GOC, "tools", "pokemon", ".cache")
 TRACKER = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/tracker.json"
 POKEAPI = "https://pokeapi.co/api/v2/pokemon/{}"
 
-# Ten he PokeAPI -> so hieu HePokemon (src/com/kpah/pokemon/HePokemon.java)
+# Ten he PokeAPI -> so hieu HePokemon (src/com/htbb/pokemon/HePokemon.java)
 HE = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground",
       "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"]
 
@@ -185,7 +185,7 @@ def tai_json(url, ten_cache):
     if os.path.exists(p):
         with open(p, encoding="utf8") as f:
             return json.load(f)
-    req = urllib.request.Request(url, headers={"User-Agent": "kpah-pokemon-tool"})
+    req = urllib.request.Request(url, headers={"User-Agent": "htbb-pokemon-tool"})
     with urllib.request.urlopen(req, timeout=30) as r:
         d = json.loads(r.read().decode("utf8"))
     with open(p, "w", encoding="utf8") as f:
@@ -242,7 +242,7 @@ def main():
         w.writerows(dong)
     with open(RA_SQL, "w", encoding="utf8", newline="\n") as f:
         f.write("-- SINH TU tools/pokemon/sinh_bang_quai.py - KHONG SUA TAY.\n")
-        f.write("-- Chay SAU sql/them_cot_pokemon.sql. he = he 1 Pokemon (0..17, com.kpah.pokemon.HePokemon).\n")
+        f.write("-- Chay SAU sql/them_cot_pokemon.sql. he = he 1 Pokemon (0..17, com.htbb.pokemon.HePokemon).\n")
         f.write("-- Chi dung cho server che_do_pokemon=1: cot he khong con la ngu hanh 0..4.\n")
         for d in dong:
             id_quai, dex, shiny, he1, he2 = d[0], d[5], d[7], d[8], d[9]

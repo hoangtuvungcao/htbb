@@ -1,11 +1,11 @@
 package real;
 
-import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.DaTienHoa;
-import com.kpah.pokemon.GoiPokemon;
-import com.kpah.pokemon.PetPokemon;
-import com.kpah.pokemon.ThuPokemon;
-import com.kpah.pokemon.LoaiPokemon;
+import com.htbb.pokemon.CheDoPokemon;
+import com.htbb.pokemon.DaTienHoa;
+import com.htbb.pokemon.GoiPokemon;
+import com.htbb.pokemon.PetPokemon;
+import com.htbb.pokemon.ThuPokemon;
+import com.htbb.pokemon.LoaiPokemon;
 import data.Database;
 import io.Message;
 import java.util.ArrayList;
@@ -16,10 +16,10 @@ import java.util.Vector;
 /**
  * Phan "Char/Message" cua che do Pokemon (viec S2, S3, S5, I2 va lenh -90/-91/-92
  * trong docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Logic thuan (bang loai, khac he, ghi
- * byte) nam o com.kpah.pokemon va co test; lop nay chi noi chung vao Char/Session.
+ * byte) nam o com.htbb.pokemon va co test; lop nay chi noi chung vao Char/Session.
  *
  * MOI ham o day KHONG lam gi khi CheDoPokemon.bat() == false - tat co la dung hanh
- * vi KPAH cu.
+ * vi goc cu.
  */
 public final class TienHoaPokemon {
 

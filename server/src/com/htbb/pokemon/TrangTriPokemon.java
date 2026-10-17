@@ -1,10 +1,10 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 import java.io.File;
 
 /**
  * G7.A2: vat trang tri ban do ban Pokemon (sinh boi tools/pokemon/DoiTileMap.java) nam o
- * map/pokemon_trang_tri/ voi CUNG duong dan con nhu ban KPAH:
+ * map/pokemon_trang_tri/ voi CUNG duong dan con nhu ban goc:
  *   map/tree/&lt;i&gt;       -> map/pokemon_trang_tri/tree/&lt;i&gt;   (cay/nha ban do, lenh -48, cung dinh dang)
  *   map/cay/&lt;j&gt;.png   -> map/pokemon_trang_tri/cay/&lt;j&gt;.png (cay trong, anh 3200+j)
  *   map/&lt;ten&gt;.png     -> map/pokemon_trang_tri/&lt;ten&gt;.png (anh dip le, Map.imgDynamic)

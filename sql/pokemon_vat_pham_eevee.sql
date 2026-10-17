@@ -6,7 +6,7 @@
 --
 --  Id 960..967: da grep src/, sql/ va docs/danh_muc_item.md ngay 16/10/2026 - id lon nhat
 --  dang dung la 954, khong cho nao nhac toi 955..967. PHAI khop
---  src/com/kpah/pokemon/DaTienHoa.ID_ITEM (test/KiemPokemonServer.java doi chieu).
+--  src/com/htbb/pokemon/DaTienHoa.ID_ITEM (test/KiemPokemonServer.java doi chieu).
 --
 --  type 28 = vat pham tieu hao (cung loai "Ruong may man" 735, "The doi ten" 836), dung
 --  qua Map.doUseItem (goi 29). Khi sv.che_do_pokemon=1, real.TienHoaPokemon.dungDaTienHoa

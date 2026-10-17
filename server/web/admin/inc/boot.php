@@ -29,7 +29,7 @@ require_once __DIR__ . '/../../inc/functions.php';
  * đăng nhập mới thấy nội dung lỗi.
  */
 set_exception_handler(static function (Throwable $ex): void {
-    error_log('[kpah-admin] ' . get_class($ex) . ': ' . $ex->getMessage()
+    error_log('[htbb-admin] ' . get_class($ex) . ': ' . $ex->getMessage()
         . ' @ ' . $ex->getFile() . ':' . $ex->getLine());
 
     // Ghi luôn vào nhật ký để trang Chẩn đoán nhìn thấy. Bọc try/catch vì lỗi
@@ -50,7 +50,7 @@ set_exception_handler(static function (Throwable $ex): void {
        . '<h2 style="color:#e0453f;margin-top:0;">Trang quản trị gặp lỗi</h2>'
        . '<p>Thường là do MySQL chưa chạy hoặc sai thông tin kết nối trong '
        . '<code>web/config.local.php</code>.</p>';
-    if (!empty($_SESSION['kpah_admin'])) {
+    if (!empty($_SESSION['htbb_admin'])) {
         echo '<p style="color:#9a8c78;font-size:.9rem;">Chi tiết: '
            . htmlspecialchars($ex->getMessage(), ENT_QUOTES, 'UTF-8') . '</p>';
     } else {
@@ -108,20 +108,20 @@ function adminIp(): string
 /** Admin đang đăng nhập, hoặc null. Tự hết hạn khi quá lâu không thao tác. */
 function adminUser(): ?array
 {
-    $a = $_SESSION['kpah_admin'] ?? null;
+    $a = $_SESSION['htbb_admin'] ?? null;
     if (!$a) {
         return null;
     }
     if (time() - (int)($a['last'] ?? 0) > ADMIN_IDLE_TIMEOUT) {
-        unset($_SESSION['kpah_admin']);
+        unset($_SESSION['htbb_admin']);
         return null;
     }
     // Rút quyền ngay lập tức nếu tên bị gỡ khỏi ADMIN_ACCOUNTS giữa chừng.
     if (!laTaiKhoanAdmin((string)$a['username'])) {
-        unset($_SESSION['kpah_admin']);
+        unset($_SESSION['htbb_admin']);
         return null;
     }
-    $_SESSION['kpah_admin']['last'] = time();
+    $_SESSION['htbb_admin']['last'] = time();
     return $a;
 }
 

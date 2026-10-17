@@ -25,9 +25,9 @@ SET @ten_moi = 'admin';
 
 USE kpah_db;
 
-DROP PROCEDURE IF EXISTS kpah_doi_ten;
+DROP PROCEDURE IF EXISTS htbb_doi_ten;
 DELIMITER $$
-CREATE PROCEDURE kpah_doi_ten()
+CREATE PROCEDURE htbb_doi_ten()
 BEGIN
     DECLARE done INT DEFAULT 0;
     DECLARE tbl  VARCHAR(128);
@@ -71,8 +71,8 @@ BEGIN
 END$$
 DELIMITER ;
 
-CALL kpah_doi_ten();
-DROP PROCEDURE kpah_doi_ten;
+CALL htbb_doi_ten();
+DROP PROCEDURE htbb_doi_ten;
 
 -- Kiem tra
 SELECT id, charname, userId, ban, del FROM kpah_db.tob_char;

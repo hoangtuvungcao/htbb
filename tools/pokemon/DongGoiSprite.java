@@ -29,7 +29,7 @@ import org.w3c.dom.NodeList;
  * tung file .bytes va doi chieu voi AnimData.xml + anh goc (so sanh tung pixel cua
  * khung dau va khung cuoi moi huong) - lech la thoat ma 1.
  *
- * Chay (o thu muc KPAH/, can JDK):
+ * Chay (o thu muc HTBB/, can JDK):
  *   javac -d build/tools tools/pokemon/DongGoiSprite.java
  *   java -cp build/tools DongGoiSprite
  *

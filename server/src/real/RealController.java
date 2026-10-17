@@ -85,7 +85,7 @@ public class RealController extends ServerController {
         resetTime = false;
     }
 
-    public void initMapKPAH() {
+    public void initMapHTBB() {
         Map m = null;
         mapList.put(new Integer(-1), new OfflineMap(-1));
         mapList.put(new Integer(0), new Map(0, 0, 1, 0, 0));
@@ -924,7 +924,7 @@ public class RealController extends ServerController {
     }
 
     public void initData() {
-        this.initMapKPAH();
+        this.initMapHTBB();
         System.out.println("KHOI TAO XONG ");
         Map.loadAllLocaltionMap();
         commandHandler.put(1, new LoginHandler());
@@ -1995,7 +1995,7 @@ public class RealController extends ServerController {
 
                         return;
 
-                    // Hoa hinh Pet (them 31/08/2026) - port tu ban KPAH khac, doi
+                    // Hoa hinh Pet (them 31/08/2026) - port tu ban goc khac, doi
                     // dieu kien theo pet da co san (itemPet.level>=2 = da sieu tien
                     // hoa qua doTienHoa()), dung lai item 268 (lo thuoc hoa hinh)
                     // dang dung cho hoa hinh Thu de khong phai tao vat pham moi.
@@ -2177,7 +2177,7 @@ public class RealController extends ServerController {
         try {
             int i;
             if (idMenu == 0 && idOptionMenu == 3) {
-                if (UtilKPAH.getDayOfMonth() == Char.dayEndVip && UtilKPAH.getHour() >= Char.timeEndVip) {
+                if (UtilHTBB.getDayOfMonth() == Char.dayEndVip && UtilHTBB.getHour() >= Char.timeEndVip) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể nhận thành tích trong thời gian này", ""));
                     return;
                 }

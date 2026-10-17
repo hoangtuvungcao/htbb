@@ -1,6 +1,6 @@
 package real;
 
-import com.kpah.pokemon.CheDoPokemon;
+import com.htbb.pokemon.CheDoPokemon;
 
 
 import data.Animal;
@@ -1299,7 +1299,7 @@ public class Map implements Runnable {
                 DataInputStream dis = null;
 
                 for (byte i = 0; i < url.length; i++) {
-                    fis = new FileInputStream(com.kpah.pokemon.TrangTriPokemon.duong(url[i]));
+                    fis = new FileInputStream(com.htbb.pokemon.TrangTriPokemon.duong(url[i]));
                     dis = new DataInputStream(fis);
                     imgDynamic[i] = new byte[dis.available()];
                     int byteRead = 0;
@@ -6005,7 +6005,7 @@ public class Map implements Runnable {
     }
 
     public static void genTrungRuongMayMan() {
-        ID_RUONG_MAY_MAN_TRUNG = UtilKPAH.getRandomMinMax(r.nextInt(MAX_RUONG_MM_SELL), MAX_RUONG_MM_SELL) + 1;
+        ID_RUONG_MAY_MAN_TRUNG = UtilHTBB.getRandomMinMax(r.nextInt(MAX_RUONG_MM_SELL), MAX_RUONG_MM_SELL) + 1;
         ALL_RUONG_MAY_MAN = MAX_RUONG_MM_SELL;
         timeWaitSellRuongMM = System.currentTimeMillis() + 7200000L;
         if (TeamServer.isServerLocal()) {
@@ -8418,8 +8418,8 @@ public class Map implements Runnable {
 
                         cinfo.luong++;
                         Database.instance.doUpdateCharBuyRuong(cinfo);
-                        int hour = 24 - UtilKPAH.getHour();
-                        int minute = UtilKPAH.getMinute();
+                        int hour = 24 - UtilHTBB.getHour();
+                        int minute = UtilHTBB.getMinute();
                         int value = hour * 60 - minute;
                         ItemTemplates template = (ItemTemplates) ((Hashtable) itemTemplates.get(5)).get(it.tempateID);
                         Item newItem = null;
@@ -11534,7 +11534,7 @@ public class Map implements Runnable {
     public static synchronized boolean doTuoiNuocCayLixi() {
         if (!Char.is123Tet()) {
             return false;
-        } else if (UtilKPAH.getHour() >= hourGiveLixi) {
+        } else if (UtilHTBB.getHour() >= hourGiveLixi) {
             return false;
         } else {
             minuteGiveLixi -= 10;
@@ -11549,7 +11549,7 @@ public class Map implements Runnable {
     }
 
     public static synchronized boolean checkCanReceiveLixi() {
-        return MAX_LI_XI > 0 && (UtilKPAH.getHour() == hourGiveLixi && UtilKPAH.getMinute() >= minuteGiveLixi || UtilKPAH.getHour() > hourGiveLixi);
+        return MAX_LI_XI > 0 && (UtilHTBB.getHour() == hourGiveLixi && UtilHTBB.getMinute() >= minuteGiveLixi || UtilHTBB.getHour() > hourGiveLixi);
     }
 
     /**
@@ -15330,7 +15330,7 @@ public class Map implements Runnable {
                 int nation = idoption % 3;
                 Message m = new Message(-19);
                 m.dos.writeByte(7);
-                m.dos.writeUTF(com.kpah.pokemon.ChuPokemon.doi(topnation[idoption]).toUpperCase());
+                m.dos.writeUTF(com.htbb.pokemon.ChuPokemon.doi(topnation[idoption]).toUpperCase());
                 Vector<CharInfo> info = null;
                 if (idoption < 3) {
                     info = (Vector<CharInfo>) topLvNation.get(nation);

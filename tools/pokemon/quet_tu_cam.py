@@ -21,7 +21,7 @@ Chuoi CSDL tinh nguyen van (CSDL phai sach tu goc).
 Ra: docs/pokemon/tu_cam_con_lai.csv - moi o CON tu cam SAU doi (cot gio_dau = 1 neu thuoc
 nhom "gio choi dau tien", cot chu_so_huu = viec khac dang giu file do).
 
-Chay (o thu muc KPAH/): python3 -I tools/pokemon/quet_tu_cam.py [--kiem]
+Chay (o thu muc HTBB/): python3 -I tools/pokemon/quet_tu_cam.py [--kiem]
   --kiem: thoat ma 1 neu nhom gio dau con tu cam.
 """
 import csv
@@ -42,7 +42,7 @@ CS = os.path.join(GOC, "ClientUnity", "Assets", "Scripts")
 
 # Khong quet: bang du lieu tu dien (chua tu cam co chu dich) va tool admin (khong phai nguoi choi).
 BO_QUA = {
-    "src/com/kpah/pokemon/ChuPokemon.java",
+    "src/com/htbb/pokemon/ChuPokemon.java",
     "src/server/AdminPanel.java",
     "ClientUnity/Assets/Scripts/Game/ChuPokemonDuLieu.cs",
     "ClientUnity/Assets/Scripts/Game/ChuPokemon.cs",

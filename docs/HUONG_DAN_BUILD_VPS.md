@@ -1,4 +1,4 @@
-# Dựng server KPAH chạy hẳn trên VPS `180.93.57.30` (Ubuntu 20.04)
+# Dựng server HTBB chạy hẳn trên VPS `180.93.57.30` (Ubuntu 20.04)
 
 Khác với [HUONG_DAN_VPS_FRP.md](HUONG_DAN_VPS_FRP.md): file đó để VPS làm **trạm chuyển tiếp**,
 game vẫn chạy ở máy nhà. File này là **chuyển toàn bộ server lên VPS** — máy nhà tắt cũng
@@ -96,7 +96,7 @@ Jar đang chạy **có nằm trong Git** (`KPAH2_patched.jar`), nên VPS chỉ c
 jar mới — không phải `scp` từng lần. Quy trình mỗi lần sửa code:
 
 ```powershell
-# 1. Build (đã làm) -> KPAH2_NEW.jar
+# 1. Build (đã làm) -> HTBB_NEW.jar
 # 2. Chạy capnhat.bat  -> KPAH2_patched.jar thành bản mới, server ở nhà chạy luôn bản đó
 # 3. Đẩy lên Git
 git add -A
@@ -111,7 +111,7 @@ git status -sb          # phải là "## main...origin/main" không có ahead
 ```
 
 **Bước 2 quan trọng.** VPS lấy `KPAH2_patched.jar` từ Git, nên file đó trong repo phải là
-bản mới nhất. Nếu chỉ commit `KPAH2_NEW.jar` mà quên chạy `capnhat.bat`, VPS pull về vẫn
+bản mới nhất. Nếu chỉ commit `HTBB_NEW.jar` mà quên chạy `capnhat.bat`, VPS pull về vẫn
 chạy jar cũ và bạn sẽ ngồi tìm xem code mới đi đâu mất.
 
 ### A4. Đẩy DB lên VPS
@@ -513,9 +513,9 @@ sudo -u kpah ssh -T git@github.com          # "You've successfully authenticated
 tiếp vào đó được (git đòi thư mục rỗng). Clone ra chỗ khác rồi chuyển vào:
 
 ```bash
-sudo -u kpah git clone git@github.com:hoanghoa0903/KPAH.git /tmp/kpah-src
-sudo -u kpah cp -a /tmp/kpah-src/. /opt/kpah/
-rm -rf /tmp/kpah-src
+sudo -u kpah git clone git@github.com:hoanghoa0903/KPAH.git /tmp/htbb-src
+sudo -u kpah cp -a /tmp/htbb-src/. /opt/kpah/
+rm -rf /tmp/htbb-src
 
 mkdir -p /opt/kpah/log /opt/kpah/backup
 chmod +x /opt/kpah/vps/*.sh
@@ -699,7 +699,7 @@ thay vì MariaDB.
 **Máy nhà:**
 
 ```powershell
-# build -> KPAH2_NEW.jar, rồi:
+# build -> HTBB_NEW.jar, rồi:
 .\capnhat.bat            # KPAH2_patched.jar = bản mới, server nhà chạy luôn để test
 git add -A
 git commit -m "mo ta thay doi"
@@ -729,7 +729,7 @@ systemctl start kpah-game
 ```
 
 > **Cách 2 — không qua Git**, khi cần thử nhanh một bản jar chưa muốn commit:
-> `scp KPAH2_NEW.jar kpah@180.93.57.30:/opt/kpah/` rồi `sudo /opt/kpah/vps/capnhat.sh`.
+> `scp HTBB_NEW.jar kpah@180.93.57.30:/opt/kpah/` rồi `sudo /opt/kpah/vps/capnhat.sh`.
 > Nhưng nhớ là lần `update.sh` sau sẽ báo `KPAH2_patched.jar` bị sửa tay và dừng lại —
 > lúc đó chạy `sudo -u kpah git -C /opt/kpah checkout -- KPAH2_patched.jar` rồi update lại.
 
@@ -905,9 +905,9 @@ Dấu ngăn classpath trên Linux là **`:`**, không phải `;` như Windows.
 **Bước quan trọng nhất — KHÔNG đóng jar từ đầu:**
 
 ```bash
-cp KPAH2_patched.jar KPAH2_NEW.jar
-jar uf KPAH2_NEW.jar -C out .
-unzip -t KPAH2_NEW.jar >/dev/null && echo "jar OK"
+cp KPAH2_patched.jar HTBB_NEW.jar
+jar uf HTBB_NEW.jar -C out .
+unzip -t HTBB_NEW.jar >/dev/null && echo "jar OK"
 sudo /opt/kpah/vps/capnhat.sh          # doi jar tai cho, KHONG qua git
 ```
 
@@ -924,7 +924,7 @@ nhà. Kiểm tra sau khi build:
 ```bash
 # Danh sach class truoc/sau phai giong nhau (tru class bạn co tinh them)
 unzip -l KPAH2_patched.jar | awk '{print $4}' | sort > /tmp/cu.txt
-unzip -l KPAH2_NEW.jar     | awk '{print $4}' | sort > /tmp/moi.txt
+unzip -l HTBB_NEW.jar     | awk '{print $4}' | sort > /tmp/moi.txt
 diff /tmp/cu.txt /tmp/moi.txt
 ```
 

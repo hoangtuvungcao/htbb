@@ -4,14 +4,14 @@ Tai sprite PMDCollab/SpriteCollab cho MOI loai can dung + kiem ke thieu dong tac
 
 Danh sach loai = dex trong docs/pokemon/bang_quai.csv, bang_thu.csv, bang_npc.csv,
 bang_npc_su_kien.csv, bang_pet_cu.csv
-+ moi dex trong src/com/kpah/pokemon/LoaiPokemon.java (DU_LIEU). Khong co danh sach tay nao khac.
++ moi dex trong src/com/htbb/pokemon/LoaiPokemon.java (DU_LIEU). Khong co danh sach tay nao khac.
 
 Ra:
   tools/pokemon/pmd_raw/<dex>[s]/   AnimData.xml, <Anim>-Anim.png, <Anim>-Shadow.png,
                                     portrait.png, credits.txt  (KHONG commit, xem .gitignore)
   docs/pokemon/kiem_ke_sprite.csv   bang kiem ke (commit) - nguoi lam asset doc file nay
 
-Chay (o thu muc KPAH/):
+Chay (o thu muc HTBB/):
     python3 -I tools/pokemon/tai_sprite_pmd.py           # tai + kiem ke
     python3 -I tools/pokemon/tai_sprite_pmd.py --chi-kiem # chi kiem ke tu file da tai
 
@@ -31,7 +31,7 @@ import xml.etree.ElementTree as ET
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RAW = os.path.join(GOC, "tools", "pokemon", "pmd_raw")
 BANG_QUAI = os.path.join(GOC, "docs", "pokemon", "bang_quai.csv")
-LOAI_JAVA = os.path.join(GOC, "src", "com", "kpah", "pokemon", "LoaiPokemon.java")
+LOAI_JAVA = os.path.join(GOC, "src", "com", "htbb", "pokemon", "LoaiPokemon.java")
 KIEM_KE = os.path.join(GOC, "docs", "pokemon", "kiem_ke_sprite.csv")
 
 NGUON = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master"
@@ -75,7 +75,7 @@ def dex_can_dung():
 def tai(url, dich):
     if os.path.exists(dich):
         return True
-    req = urllib.request.Request(url, headers={"User-Agent": "kpah-pokemon-tool"})
+    req = urllib.request.Request(url, headers={"User-Agent": "htbb-pokemon-tool"})
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             data = r.read()

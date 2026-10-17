@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Het han binh chon thi ben nhieu phieu hon thang, ai da bo phieu cho ben do vao nhan
  * qua, Top 1 cua ben thang nhan them phi phong max chi so.
  *
- * NGUON: lay tu ban KPAH khac (real/EventQueGoTre.java - ten lop ben do khong lien
+ * NGUON: lay tu ban goc khac (real/EventQueGoTre.java - ten lop ben do khong lien
  * quan gi den World Cup). Nhung cho DA SUA cho hop voi ban nay, ghi ro de sau nay doi
  * chieu:
  *

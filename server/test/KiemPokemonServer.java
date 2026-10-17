@@ -1,9 +1,9 @@
-import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.DaTienHoa;
-import com.kpah.pokemon.GoiPokemon;
-import com.kpah.pokemon.HePokemon;
-import com.kpah.pokemon.LoaiPokemon;
-import com.kpah.pokemon.SatThuongHe;
+import com.htbb.pokemon.CheDoPokemon;
+import com.htbb.pokemon.DaTienHoa;
+import com.htbb.pokemon.GoiPokemon;
+import com.htbb.pokemon.HePokemon;
+import com.htbb.pokemon.LoaiPokemon;
+import com.htbb.pokemon.SatThuongHe;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -38,8 +38,8 @@ public final class KiemPokemonServer {
     }
 
     private static void kiemCo() {
-        Kiem.nhom("com.kpah.pokemon.CheDoPokemon");
-        Kiem.sai("mac dinh TAT (test cu + server.ini cu chay nhu KPAH goc)", CheDoPokemon.bat());
+        Kiem.nhom("com.htbb.pokemon.CheDoPokemon");
+        Kiem.sai("mac dinh TAT (test cu + server.ini cu chay nhu game goc)", CheDoPokemon.bat());
         Kiem.dung("\"1\" -> bat", CheDoPokemon.docGiaTri("1"));
         Kiem.dung("\" 1 \" -> bat", CheDoPokemon.docGiaTri(" 1 "));
         Kiem.sai("\"0\" -> tat", CheDoPokemon.docGiaTri("0"));
@@ -64,7 +64,7 @@ public final class KiemPokemonServer {
     }
 
     private static void kiemSatThuong() {
-        Kiem.nhom("com.kpah.pokemon.SatThuongHe");
+        Kiem.nhom("com.htbb.pokemon.SatThuongHe");
         Kiem.bang("Nuoc -> Lua: 1000 x1.5", Integer.valueOf(1500),
                 Integer.valueOf(SatThuongHe.apDung(1000, HePokemon.NUOC, HePokemon.LUA, HePokemon.KHONG_CO)));
         Kiem.bang("Lua -> Nuoc: 1000 x0.7", Integer.valueOf(700),
@@ -101,7 +101,7 @@ public final class KiemPokemonServer {
     }
 
     private static void kiemNguHanhCu() {
-        Kiem.nhom("com.kpah.pokemon.HePokemon.nguHanhCu");
+        Kiem.nhom("com.htbb.pokemon.HePokemon.nguHanhCu");
         for (int he = 0; he < HePokemon.SO_HE; he++) {
             final int n = HePokemon.nguHanhCu(he);
             Kiem.dung(HePokemon.TEN_EN[he] + " -> ngu hanh 0..4", n >= 0 && n <= 4);
@@ -115,7 +115,7 @@ public final class KiemPokemonServer {
     }
 
     private static void kiemGoiTin() throws IOException {
-        Kiem.nhom("com.kpah.pokemon.GoiPokemon (-90/-91/-92)");
+        Kiem.nhom("com.htbb.pokemon.GoiPokemon (-90/-91/-92)");
         Kiem.bang("so lenh POKE_THAN", Integer.valueOf(-90), Integer.valueOf(GoiPokemon.POKE_THAN));
         Kiem.bang("so lenh POKE_QUAI", Integer.valueOf(-91), Integer.valueOf(GoiPokemon.POKE_QUAI));
         Kiem.bang("so lenh POKE_TIEN_HOA", Integer.valueOf(-92), Integer.valueOf(GoiPokemon.POKE_TIEN_HOA));
@@ -162,7 +162,7 @@ public final class KiemPokemonServer {
     }
 
     private static void kiemDaTienHoa() {
-        Kiem.nhom("com.kpah.pokemon.DaTienHoa (Eevee)");
+        Kiem.nhom("com.htbb.pokemon.DaTienHoa (Eevee)");
         Kiem.bang("8 da", Integer.valueOf(8), Integer.valueOf(DaTienHoa.ID_ITEM.length));
         Kiem.bang("8 dex", Integer.valueOf(8), Integer.valueOf(DaTienHoa.DEX.length));
         Kiem.bang("8 ten", Integer.valueOf(8), Integer.valueOf(DaTienHoa.TEN.length));

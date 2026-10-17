@@ -754,10 +754,10 @@ public class TeamServer {
             TeamServer.isSuKienNoel2023 = Byte.parseByte(p.getProperty("sv.isSuKienNoel2023")) == 1;
             TeamServer.isSuKienTetduonglich2024 = Byte.parseByte(p.getProperty("sv.isSuKienTetduonglich2024")) == 1;
             // Che do Pokemon (quyet dinh Q8, docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Khong qua
-            // parseX: thieu dong = TAT (hanh vi KPAH cu), khong nem loi. Moi cho re nhanh doc
-            // qua com.kpah.pokemon.CheDoPokemon.bat(). Doi gia tri phai khoi dong lai.
-            com.kpah.pokemon.CheDoPokemon.dat(com.kpah.pokemon.CheDoPokemon.docGiaTri(p.getProperty("sv.che_do_pokemon")));
-            System.out.println("CHE DO POKEMON -> " + (com.kpah.pokemon.CheDoPokemon.bat() ? "BAT" : "TAT") + " - " + com.kpah.pokemon.ThuongHieu.tenGame());
+            // parseX: thieu dong = TAT (hanh vi goc cu), khong nem loi. Moi cho re nhanh doc
+            // qua com.htbb.pokemon.CheDoPokemon.bat(). Doi gia tri phai khoi dong lai.
+            com.htbb.pokemon.CheDoPokemon.dat(com.htbb.pokemon.CheDoPokemon.docGiaTri(p.getProperty("sv.che_do_pokemon")));
+            System.out.println("CHE DO POKEMON -> " + (com.htbb.pokemon.CheDoPokemon.bat() ? "BAT" : "TAT") + " - " + com.htbb.pokemon.ThuongHieu.tenGame());
     
     
             
@@ -816,7 +816,7 @@ public class TeamServer {
         // Che do Pokemon: cot tob_char.dex/shiny + data_monster.dex/shiny/he2. PHAI truoc
         // Database.startSaveChar() (nap template quai) va truoc khi nhan nguoi choi (saveChar
         // ghi cot dex). Tat co thi khong dong vao schema. Xem Database.themCotPokemon().
-        if (com.kpah.pokemon.CheDoPokemon.bat()) {
+        if (com.htbb.pokemon.CheDoPokemon.bat()) {
             try {
                 Database.instance.themCotPokemon();
             } catch (Exception exPoke) {
@@ -837,8 +837,8 @@ public class TeamServer {
         Database.startSaveChar();
         // G7.C: doi chu kiem hiep -> Pokemon (Text, ten vung, ten dong, ten thuoc, ngoc). PHAI
         // SAU startSaveChar (Map.gemTemplate/potionTemplates2 da nap), TRUOC khi nhan nguoi
-        // choi. Tat che do Pokemon thi khong lam gi. Xem com.kpah.pokemon.ChuPokemon.
-        com.kpah.pokemon.ChuPokemon.ap();
+        // choi. Tat che do Pokemon thi khong lam gi. Xem com.htbb.pokemon.ChuPokemon.
+        com.htbb.pokemon.ChuPokemon.ap();
         TeamServer.timeRemovePool = System.currentTimeMillis();
         System.out.println("Starting server...");
         (TeamServer.controllerManager = new ServerControllerManager()).addServerController(2, TeamServer.realController = new RealController());

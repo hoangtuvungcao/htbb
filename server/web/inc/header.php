@@ -19,7 +19,7 @@ $page = $page ?? '';
         <a class="brand" href="index.php">
             <span class="brand-mark">⚔️</span>
             <span class="brand-text">
-                <strong>KPAH</strong>
+                <strong>HTBB</strong>
                 <small><?= e(SITE_TAGLINE) ?></small>
             </span>
         </a>

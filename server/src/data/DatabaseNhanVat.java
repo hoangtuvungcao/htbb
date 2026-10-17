@@ -1,6 +1,6 @@
 package data;
 
-import com.kpah.pokemon.LoaiPokemon;
+import com.htbb.pokemon.LoaiPokemon;
 
 import io.Session;
 

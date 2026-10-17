@@ -12,7 +12,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.kpah.pokemon.ThuongHieu;
+import com.htbb.pokemon.ThuongHieu;
 
 /**
  * Hinh con sot + thuong hieu (viec G7.B va G7.E trong docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 15).
@@ -25,7 +25,7 @@ import com.kpah.pokemon.ThuongHieu;
  *  - E1 ThuongHieu.java va ThuongHieu.cs cung TEN_GAME
  *
  * VI SAO: bang client viet cung (khong co goi tin), sua mot noi quen noi kia thi NPC/pet/vat the
- * am tham quay ve hinh KPAH cu (hoac ve Pokemon chua dong goi) ma khong bao loi.
+ * am tham quay ve hinh goc cu (hoac ve Pokemon chua dong goi) ma khong bao loi.
  */
 public final class KiemHinhPokemon {
 

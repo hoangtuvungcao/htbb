@@ -14,18 +14,18 @@
       "Bash(grep -n \"CREATE TABLE \\\\`data_item\\\\`\" -A 40 gamedb7_clean.sql)",
       "Bash(grep -n \"team_user\\\\|5h_active\\\\|\\\\`5h_active\\\\`\" gamedb7_clean.sql account.sql backup_account.sql buff_ddsa.sql backup_kpah_db_truoc_import.sql kpah_db.sql)",
       "Bash(grep -n \"CREATE TABLE \\\\`tob_char\\\\`\" -A 5 gamedb7_clean.sql)",
-      "Bash(awk 'NR<24042 && /public |void |private / {line=NR\": \"$0} END{}' /c/Users/ADMIN/Desktop/KPAH/src/real/Map.java)",
+      "Bash(awk 'NR<24042 && /public |void |private / {line=NR\": \"$0} END{}' /c/Users/ADMIN/Desktop/HTBB/src/real/Map.java)",
       "Bash(awk -F: '$1<24042')",
       "Bash(python3 -)",
       "Bash(sort -t'-' -k2 -n -u)",
-      "Bash(mkdir -p /c/Users/ADMIN/Desktop/KPAH/sql && ls /c/Users/ADMIN/Desktop/KPAH/sql)",
+      "Bash(mkdir -p /c/Users/ADMIN/Desktop/HTBB/sql && ls /c/Users/ADMIN/Desktop/HTBB/sql)",
       "Bash(php -v)",
       "Bash(gh --version)",
       "Bash(echo \"EXIT:$?\")",
       "Bash(echo 'public class T{}')",
       "Bash(echo \"EXIT19:$?\")",
       "Bash(echo \"EXIT17:$?\")",
-      "PowerShell(& \"C:\\\\Users\\\\ADMIN\\\\Desktop\\\\KPAH\\\\build.bat\")",
+      "PowerShell(& \"C:\\\\Users\\\\ADMIN\\\\Desktop\\\\HTBB\\\\build.bat\")",
       "Bash(git commit -m ' *)",
       "Bash(curl -s http://180.93.57.30/kpah/index.php)",
       "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://180.93.57.30/kpah/naptien.php)",
@@ -34,9 +34,9 @@
       "Bash(grep -n \"^INSERT INTO \\\\`data_item\\\\`\" gamedb7_clean.sql)",
       "Bash(awk 'NR<=36468 && /\\(private|protected|public\\).*\\\\\\(.*\\\\\\)\\\\s*\\(throws.*\\)?\\\\{?\\\\s*$/{line=NR; text=$0} END{print line\": \"text}' src/real/Map.java)",
       "Bash(awk 'NR<=10261 && /\\(private|protected|public\\)[^=]*\\\\\\([^;]*$|\\(private|protected|public\\).*\\\\\\)\\\\s*\\\\{?\\\\s*$/{line=NR; text=$0} END{print line\": \"text}' src/real/Char.java)",
-      "Bash(awk 'NR==779,NR==835' \"c:/Users/ADMIN/Desktop/KPAH/src/real/RealController.java\")",
-      "Bash(awk '/Map\\\\.namMap = new String/{flag=1; idx=-1} flag && /^            \\\\{/{idx++; if \\($0 ~ /Cánh Rừng Đông/\\) print \"index=\"idx\": \"$0} flag && /^        \\\\};/{flag=0}' \"c:/Users/ADMIN/Desktop/KPAH/src/real/RealController.java\")",
-      "Bash(awk '/static short\\\\[\\\\]\\\\[\\\\] mapID = new short/{flag=1; idx=-1} flag && /^        \\\\{/{idx++; print idx\": \"$0} flag && /\\\\};/{if\\(idx>=0\\){exit}}' \"c:/Users/ADMIN/Desktop/KPAH/src/real/Map.java\")",
+      "Bash(awk 'NR==779,NR==835' \"c:/Users/ADMIN/Desktop/HTBB/src/real/RealController.java\")",
+      "Bash(awk '/Map\\\\.namMap = new String/{flag=1; idx=-1} flag && /^            \\\\{/{idx++; if \\($0 ~ /Cánh Rừng Đông/\\) print \"index=\"idx\": \"$0} flag && /^        \\\\};/{flag=0}' \"c:/Users/ADMIN/Desktop/HTBB/src/real/RealController.java\")",
+      "Bash(awk '/static short\\\\[\\\\]\\\\[\\\\] mapID = new short/{flag=1; idx=-1} flag && /^        \\\\{/{idx++; print idx\": \"$0} flag && /\\\\};/{if\\(idx>=0\\){exit}}' \"c:/Users/ADMIN/Desktop/HTBB/src/real/Map.java\")",
       "Bash(awk -F: '$1<780')",
       "Bash(grep -i \"^map30$\\\\|^map30\\\\b\")",
       "Bash(javap -p -classpath lib/NQSH_5h.jar data.CharTemplate)",
@@ -60,10 +60,10 @@
       "Bash(where javap *)",
       "Bash(curl -sI --max-time 8 https://github.com)",
       "Bash(curl -s --max-time 15 https://api.github.com/repos/leibnitz27/cfr/releases/latest)",
-      "Bash('/c/Program Files/Java/jdk-26.0.1/bin/javap.exe' -p -classpath 'c:\\\\Users\\\\ADMIN\\\\Desktop\\\\KPAH\\\\lib\\\\NQSH_5h.jar' real.Region)"
+      "Bash('/c/Program Files/Java/jdk-26.0.1/bin/javap.exe' -p -classpath 'c:\\\\Users\\\\ADMIN\\\\Desktop\\\\HTBB\\\\lib\\\\NQSH_5h.jar' real.Region)"
     ],
     "additionalDirectories": [
-      "C:\\Users\\ADMIN\\Desktop\\KPAH"
+      "C:\\Users\\ADMIN\\Desktop\\HTBB"
     ]
   }
 }

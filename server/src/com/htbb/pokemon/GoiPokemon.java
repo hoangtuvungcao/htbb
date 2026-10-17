@@ -1,11 +1,11 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
  * Noi dung 3 lenh mang moi cua che do Pokemon (muc 7.3 KE_HOACH_CHUYEN_DOI.md).
- * Big-endian bang DataOutputStream nhu moi goi KPAH khac; client doc o
+ * Big-endian bang DataOutputStream nhu moi goi khac cua game goc; client doc o
  * ClientUnity MessageHandler.onPokeThan/onPokeQuai/onPokeTienHoa.
  *
  * So lenh -90/-91/-92: da grep src/ va ClientUnity/ - chua lenh nao dung lam so

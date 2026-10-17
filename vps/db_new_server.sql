@@ -40,9 +40,9 @@ USE kpah_db;
 --  Đặt ở đây (không phải ở phần tạo tài khoản) để nếu bạn quên sửa mật khẩu
 --  thì script dừng khi database vẫn còn nguyên vẹn.
 -- ############################################################################
-DROP PROCEDURE IF EXISTS kpah_kiem_tra_truoc;
+DROP PROCEDURE IF EXISTS htbb_kiem_tra_truoc;
 DELIMITER $$
-CREATE PROCEDURE kpah_kiem_tra_truoc()
+CREATE PROCEDURE htbb_kiem_tra_truoc()
 BEGIN
     IF @admin_pass IS NULL OR @admin_pass = 'DOI_MAT_KHAU_NAY' OR CHAR_LENGTH(@admin_pass) < 4 THEN
         SIGNAL SQLSTATE '45000'
@@ -55,8 +55,8 @@ BEGIN
 END$$
 DELIMITER ;
 
-CALL kpah_kiem_tra_truoc();
-DROP PROCEDURE kpah_kiem_tra_truoc;
+CALL htbb_kiem_tra_truoc();
+DROP PROCEDURE htbb_kiem_tra_truoc;
 
 
 -- ############################################################################
@@ -74,9 +74,9 @@ DROP PROCEDURE kpah_kiem_tra_truoc;
 --    tob_code_lixi  -> kho mã lì xì (bên dưới chỉ reset lượt nhận).
 --    5h_active      -> bảng kích hoạt; ở đây xoá riêng ở PHẦN 3 cùng team_user.
 -- ############################################################################
-DROP PROCEDURE IF EXISTS kpah_wipe_players;
+DROP PROCEDURE IF EXISTS htbb_wipe_players;
 DELIMITER $$
-CREATE PROCEDURE kpah_wipe_players()
+CREATE PROCEDURE htbb_wipe_players()
 BEGIN
     DECLARE done INT DEFAULT 0;
     DECLARE tbl  VARCHAR(128);
@@ -106,8 +106,8 @@ BEGIN
 END$$
 DELIMITER ;
 
-CALL kpah_wipe_players();
-DROP PROCEDURE kpah_wipe_players;
+CALL htbb_wipe_players();
+DROP PROCEDURE htbb_wipe_players;
 
 
 -- ############################################################################
@@ -397,9 +397,9 @@ ALTER TABLE `account`.`team_user` AUTO_INCREMENT = 1;
 --  (CheckLoginSocket.jar so: ... and `password`=password('...')).
 --  Đây là lý do KHÔNG dùng được MySQL 8 — bản đó đã bỏ hàm PASSWORD().
 -- ############################################################################
-DROP PROCEDURE IF EXISTS kpah_tao_admin;
+DROP PROCEDURE IF EXISTS htbb_tao_admin;
 DELIMITER $$
-CREATE PROCEDURE kpah_tao_admin()
+CREATE PROCEDURE htbb_tao_admin()
 BEGIN
     SET @sql = CONCAT(
         'INSERT INTO `account`.`team_user` ',
@@ -415,8 +415,8 @@ BEGIN
 END$$
 DELIMITER ;
 
-CALL kpah_tao_admin();
-DROP PROCEDURE kpah_tao_admin;
+CALL htbb_tao_admin();
+DROP PROCEDURE htbb_tao_admin;
 
 
 -- ############################################################################

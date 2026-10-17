@@ -5,11 +5,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 
-import com.kpah.pokemon.GoiPokemon;
-import com.kpah.pokemon.ThuPokemon;
+import com.htbb.pokemon.GoiPokemon;
+import com.htbb.pokemon.ThuPokemon;
 
 /**
- * Kiem thu thu cuoi Pokemon (com.kpah.pokemon.ThuPokemon) + goi -93 POKE_CUOI.
+ * Kiem thu thu cuoi Pokemon (com.htbb.pokemon.ThuPokemon) + goi -93 POKE_CUOI.
  *
  * Mang ThuPokemon.DEX duoc chep tay tu docs/pokemon/bang_thu.csv - test nay doi chieu
  * TUNG dong "thu_cuoi" trong CSV voi mang Java, va so luong voi so hang so trong
@@ -18,7 +18,7 @@ import com.kpah.pokemon.ThuPokemon;
 public final class KiemThuPokemon {
 
     public static void chay() {
-        Kiem.nhom("com.kpah.pokemon.ThuPokemon - khop bang_thu.csv");
+        Kiem.nhom("com.htbb.pokemon.ThuPokemon - khop bang_thu.csv");
         Kiem.bang("21 loai thu cuoi", Integer.valueOf(21), Integer.valueOf(ThuPokemon.soLoai()));
         Kiem.bang("ngoai bang -> 0", Integer.valueOf(0), Integer.valueOf(ThuPokemon.dex(21)));
         Kiem.bang("am -> 0", Integer.valueOf(0), Integer.valueOf(ThuPokemon.dex(-1)));
@@ -73,24 +73,24 @@ public final class KiemThuPokemon {
             Kiem.dung("doi chieu ten chieu: " + e, false);
         }
 
-        Kiem.nhom("com.kpah.pokemon.DaTienHoa - roi da khi Eevee ha quai");
-        final int ti = com.kpah.pokemon.DaTienHoa.TI_LE_ROI_PHAN_NGHIN;
+        Kiem.nhom("com.htbb.pokemon.DaTienHoa - roi da khi Eevee ha quai");
+        final int ti = com.htbb.pokemon.DaTienHoa.TI_LE_ROI_PHAN_NGHIN;
         Kiem.bang("Eevee 25 trung ti le -> da dau", Integer.valueOf(960),
-                Integer.valueOf(com.kpah.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 25, 25, 0, 0)));
+                Integer.valueOf(com.htbb.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 25, 25, 0, 0)));
         Kiem.bang("rDa 7 -> Ruy Bang Tien 967", Integer.valueOf(967),
-                Integer.valueOf(com.kpah.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 30, 30, ti - 1, 7)));
+                Integer.valueOf(com.htbb.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 30, 30, ti - 1, 7)));
         Kiem.bang("ngoai ti le -> 0", Integer.valueOf(0),
-                Integer.valueOf(com.kpah.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 30, 30, ti, 0)));
+                Integer.valueOf(com.htbb.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 30, 30, ti, 0)));
         Kiem.bang("Eevee cap 24 -> 0", Integer.valueOf(0),
-                Integer.valueOf(com.kpah.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 24, 24, 0, 0)));
+                Integer.valueOf(com.htbb.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 24, 24, 0, 0)));
         Kiem.bang("khong phai Eevee -> 0", Integer.valueOf(0),
-                Integer.valueOf(com.kpah.pokemon.DaTienHoa.daRoiKhiHaQuai(4, 40, 40, 0, 0)));
+                Integer.valueOf(com.htbb.pokemon.DaTienHoa.daRoiKhiHaQuai(4, 40, 40, 0, 0)));
         Kiem.bang("da tien hoa roi (Vaporeon) -> 0", Integer.valueOf(0),
-                Integer.valueOf(com.kpah.pokemon.DaTienHoa.daRoiKhiHaQuai(134, 40, 40, 0, 0)));
+                Integer.valueOf(com.htbb.pokemon.DaTienHoa.daRoiKhiHaQuai(134, 40, 40, 0, 0)));
         Kiem.bang("quai thap hon 11 cap -> 0", Integer.valueOf(0),
-                Integer.valueOf(com.kpah.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 40, 29, 0, 0)));
+                Integer.valueOf(com.htbb.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 40, 29, 0, 0)));
         Kiem.bang("quai thap hon 10 cap van roi", Integer.valueOf(960),
-                Integer.valueOf(com.kpah.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 40, 30, 0, 0)));
+                Integer.valueOf(com.htbb.pokemon.DaTienHoa.daRoiKhiHaQuai(133, 40, 30, 0, 0)));
         try {
             final String mon = new String(Files.readAllBytes(new File("src/real/Monster.java").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("Monster.onDropItem goi RoiDaTienHoa", mon.contains("RoiDaTienHoa.khiHaQuai(p, this);"));
@@ -104,10 +104,10 @@ public final class KiemThuPokemon {
             Kiem.dung("doc Monster.java: " + e, false);
         }
 
-        Kiem.nhom("com.kpah.pokemon.IconPokemon - icon PMD dai 14000+");
-        Kiem.dung("14000 thuoc dai", com.kpah.pokemon.IconPokemon.thuocDai(14000));
-        Kiem.sai("13999 (skin thu) khong thuoc dai", com.kpah.pokemon.IconPokemon.thuocDai(13999));
-        Kiem.sai("15000 ngoai dai", com.kpah.pokemon.IconPokemon.thuocDai(15000));
+        Kiem.nhom("com.htbb.pokemon.IconPokemon - icon PMD dai 14000+");
+        Kiem.dung("14000 thuoc dai", com.htbb.pokemon.IconPokemon.thuocDai(14000));
+        Kiem.sai("13999 (skin thu) khong thuoc dai", com.htbb.pokemon.IconPokemon.thuocDai(13999));
+        Kiem.sai("15000 ngoai dai", com.htbb.pokemon.IconPokemon.thuocDai(15000));
         try {
             final List<String> sql = Files.readAllLines(new File("sql/pokemon_icon_vat_pham.sql").toPath(), StandardCharsets.UTF_8);
             int dem = 0;
@@ -118,9 +118,9 @@ public final class KiemThuPokemon {
                 }
                 final int id = Integer.parseInt(m.group(1));
                 dem++;
-                Kiem.dung("xstart " + id + " thuoc dai icon Pokemon", com.kpah.pokemon.IconPokemon.thuocDai(id));
-                Kiem.dung("co file icon cho " + id, new File(com.kpah.pokemon.IconPokemon.THU_MUC
-                        + (id - com.kpah.pokemon.IconPokemon.ID_DAU) + ".png").isFile());
+                Kiem.dung("xstart " + id + " thuoc dai icon Pokemon", com.htbb.pokemon.IconPokemon.thuocDai(id));
+                Kiem.dung("co file icon cho " + id, new File(com.htbb.pokemon.IconPokemon.THU_MUC
+                        + (id - com.htbb.pokemon.IconPokemon.ID_DAU) + ".png").isFile());
             }
             Kiem.dung("co dong UPDATE icon (dem chi tiet o KiemIconPokemon)", dem >= 22);
             final String dg = new String(Files.readAllBytes(new File("src/data/DataGame.java").toPath()), StandardCharsets.UTF_8);
@@ -130,18 +130,18 @@ public final class KiemThuPokemon {
             Kiem.dung("doc sql/pokemon_icon_vat_pham.sql: " + e, false);
         }
 
-        Kiem.nhom("com.kpah.pokemon.TenMapPokemon - doi ten dia danh");
-        Kiem.bang("Dao Châu", "Pallet", com.kpah.pokemon.TenMapPokemon.doi("Dao Châu"));
-        Kiem.bang("Đông Dao Châu giu huong", "Đông Pallet", com.kpah.pokemon.TenMapPokemon.doi("Đông Dao Châu"));
-        Kiem.bang("Đông sơn (khong phai huong)", "Saffron", com.kpah.pokemon.TenMapPokemon.doi("Đông sơn"));
-        Kiem.bang("Đông Đông sơn", "Đông Saffron", com.kpah.pokemon.TenMapPokemon.doi("Đông Đông sơn"));
-        Kiem.bang("Nam Sơn Nam", "Nam Pewter", com.kpah.pokemon.TenMapPokemon.doi("Nam Sơn Nam"));
-        Kiem.bang("Tiên du (thuong)", "Viridian", com.kpah.pokemon.TenMapPokemon.doi("Tiên du"));
-        Kiem.bang("ten chung giu nguyen", "Bến tàu", com.kpah.pokemon.TenMapPokemon.doi("Bến tàu"));
-        Kiem.bang("rong giu nguyen", "", com.kpah.pokemon.TenMapPokemon.doi(""));
+        Kiem.nhom("com.htbb.pokemon.TenMapPokemon - doi ten dia danh");
+        Kiem.bang("Dao Châu", "Pallet", com.htbb.pokemon.TenMapPokemon.doi("Dao Châu"));
+        Kiem.bang("Đông Dao Châu giu huong", "Đông Pallet", com.htbb.pokemon.TenMapPokemon.doi("Đông Dao Châu"));
+        Kiem.bang("Đông sơn (khong phai huong)", "Saffron", com.htbb.pokemon.TenMapPokemon.doi("Đông sơn"));
+        Kiem.bang("Đông Đông sơn", "Đông Saffron", com.htbb.pokemon.TenMapPokemon.doi("Đông Đông sơn"));
+        Kiem.bang("Nam Sơn Nam", "Nam Pewter", com.htbb.pokemon.TenMapPokemon.doi("Nam Sơn Nam"));
+        Kiem.bang("Tiên du (thuong)", "Viridian", com.htbb.pokemon.TenMapPokemon.doi("Tiên du"));
+        Kiem.bang("ten chung giu nguyen", "Bến tàu", com.htbb.pokemon.TenMapPokemon.doi("Bến tàu"));
+        Kiem.bang("rong giu nguyen", "", com.htbb.pokemon.TenMapPokemon.doi(""));
         try {
             final String cs = new String(Files.readAllBytes(new File("ClientUnity/Assets/Scripts/Game/TenMapPokemon.cs").toPath()), StandardCharsets.UTF_8);
-            for (final String[] d : com.kpah.pokemon.TenMapPokemon.BANG) {
+            for (final String[] d : com.htbb.pokemon.TenMapPokemon.BANG) {
                 Kiem.dung("client co dong " + d[0], cs.contains("{ \"" + d[0] + "\", \"" + d[1] + "\" }"));
             }
             final java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\t\\tnew string\\[\\] \\{ \"").matcher(cs);
@@ -149,29 +149,29 @@ public final class KiemThuPokemon {
             while (m.find()) {
                 dem++;
             }
-            Kiem.bang("client cung so dong", Integer.valueOf(com.kpah.pokemon.TenMapPokemon.BANG.length), Integer.valueOf(dem));
+            Kiem.bang("client cung so dong", Integer.valueOf(com.htbb.pokemon.TenMapPokemon.BANG.length), Integer.valueOf(dem));
         } catch (final Exception e) {
             Kiem.dung("doc TenMapPokemon.cs: " + e, false);
         }
 
-        Kiem.nhom("com.kpah.pokemon.LoaiPokemon - can bang theo giai doan (B1)");
-        Kiem.bang("Charmander gd1", Integer.valueOf(1), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.giaiDoan(4)));
-        Kiem.bang("Charmeleon gd2", Integer.valueOf(2), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.giaiDoan(5)));
-        Kiem.bang("Charizard gd3", Integer.valueOf(3), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.giaiDoan(6)));
-        Kiem.bang("Raichu gd3", Integer.valueOf(3), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.giaiDoan(26)));
-        Kiem.bang("Eevee gd1", Integer.valueOf(1), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.giaiDoan(133)));
-        Kiem.bang("Sylveon gd2", Integer.valueOf(2), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.giaiDoan(700)));
-        Kiem.bang("% Charmander 0", Integer.valueOf(0), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.phanTramGiaiDoan(4)));
-        Kiem.bang("% Ivysaur 8", Integer.valueOf(8), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.phanTramGiaiDoan(2)));
-        Kiem.bang("% Blastoise 16", Integer.valueOf(16), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.phanTramGiaiDoan(9)));
-        Kiem.bang("% Umbreon 12", Integer.valueOf(12), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.phanTramGiaiDoan(197)));
-        Kiem.bang("% loai ngoai bang 0", Integer.valueOf(0), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.phanTramGiaiDoan(999)));
+        Kiem.nhom("com.htbb.pokemon.LoaiPokemon - can bang theo giai doan (B1)");
+        Kiem.bang("Charmander gd1", Integer.valueOf(1), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.giaiDoan(4)));
+        Kiem.bang("Charmeleon gd2", Integer.valueOf(2), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.giaiDoan(5)));
+        Kiem.bang("Charizard gd3", Integer.valueOf(3), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.giaiDoan(6)));
+        Kiem.bang("Raichu gd3", Integer.valueOf(3), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.giaiDoan(26)));
+        Kiem.bang("Eevee gd1", Integer.valueOf(1), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.giaiDoan(133)));
+        Kiem.bang("Sylveon gd2", Integer.valueOf(2), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.giaiDoan(700)));
+        Kiem.bang("% Charmander 0", Integer.valueOf(0), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(4)));
+        Kiem.bang("% Ivysaur 8", Integer.valueOf(8), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(2)));
+        Kiem.bang("% Blastoise 16", Integer.valueOf(16), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(9)));
+        Kiem.bang("% Umbreon 12", Integer.valueOf(12), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(197)));
+        Kiem.bang("% loai ngoai bang 0", Integer.valueOf(0), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(999)));
         for (int c = 0; c < 5; c++) {
-            final int dau = com.kpah.pokemon.LoaiPokemon.khoiDau(c);
-            Kiem.bang("khoi dau class " + c + " la gd1", Integer.valueOf(1), Integer.valueOf(com.kpah.pokemon.LoaiPokemon.giaiDoan(dau)));
+            final int dau = com.htbb.pokemon.LoaiPokemon.khoiDau(c);
+            Kiem.bang("khoi dau class " + c + " la gd1", Integer.valueOf(1), Integer.valueOf(com.htbb.pokemon.LoaiPokemon.giaiDoan(dau)));
         }
 
-        Kiem.nhom("com.kpah.pokemon.GoiPokemon - goi -93 POKE_CUOI");
+        Kiem.nhom("com.htbb.pokemon.GoiPokemon - goi -93 POKE_CUOI");
         Kiem.bang("so lenh -93", Integer.valueOf(-93), Integer.valueOf(GoiPokemon.POKE_CUOI));
         try {
             final ByteArrayOutputStream bo = new ByteArrayOutputStream();

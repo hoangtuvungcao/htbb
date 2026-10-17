@@ -1,9 +1,9 @@
 package real;
 
-import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.DaTienHoa;
-import com.kpah.pokemon.LoaiPokemon;
-import com.kpah.pokemon.Pokedex;
+import com.htbb.pokemon.CheDoPokemon;
+import com.htbb.pokemon.DaTienHoa;
+import com.htbb.pokemon.LoaiPokemon;
+import com.htbb.pokemon.Pokedex;
 import data.Database;
 import data.DatabaseGiftCode;
 import data.DatabasePokedex;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Pokedex + NPC Pokedex (viec G7.D2/D3). Logic thuan o com.kpah.pokemon.Pokedex (co test),
+ * Pokedex + NPC Pokedex (viec G7.D2/D3). Logic thuan o com.htbb.pokemon.Pokedex (co test),
  * CSDL o data.DatabasePokedex; lop nay noi vao Char/Monster/menu.
  *
  * Diem goi:

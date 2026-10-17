@@ -1,5 +1,5 @@
 @echo off
-title Login server KPAH (cong 8023)
+title Login server HTBB (cong 8023)
 cd /d "%~dp0"
 
 REM Ten file PHAI dung hoa/thuong: CheckLoginSocket.jar

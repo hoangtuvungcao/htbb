@@ -1,5 +1,5 @@
 // SINH TU tools/pokemon/sinh_sql_chu.py - KHONG SUA TAY.
-// Ban sao cua com.kpah.pokemon.ChuPokemon.bangDayDu() (server). test/KiemChuPokemon doi chieu.
+// Ban sao cua com.htbb.pokemon.ChuPokemon.bangDayDu() (server). test/KiemChuPokemon doi chieu.
 // Khoa bat dau bang "=" la so khop phan biet hoa thuong.
 public static class ChuPokemonDuLieu
 {

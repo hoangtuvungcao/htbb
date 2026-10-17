@@ -3,11 +3,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 
-import com.kpah.pokemon.ChieuPokemon;
-import com.kpah.pokemon.DaTienHoa;
-import com.kpah.pokemon.HePokemon;
-import com.kpah.pokemon.Pokedex;
-import com.kpah.pokemon.SatThuongHe;
+import com.htbb.pokemon.ChieuPokemon;
+import com.htbb.pokemon.DaTienHoa;
+import com.htbb.pokemon.HePokemon;
+import com.htbb.pokemon.Pokedex;
+import com.htbb.pokemon.SatThuongHe;
 
 /**
  * Kiem thu luong viec G7.D "Loi choi": he theo tung chieu + STAB (ChieuPokemon), Pokedex
@@ -23,7 +23,7 @@ public final class KiemLoiChoiPokemon {
     }
 
     private static void kiemBangChieuKhopCsv() {
-        Kiem.nhom("com.kpah.pokemon.ChieuPokemon - khop docs/pokemon/bang_chieu.csv (cot so_he)");
+        Kiem.nhom("com.htbb.pokemon.ChieuPokemon - khop docs/pokemon/bang_chieu.csv (cot so_he)");
         try {
             final List<String> dong = Files.readAllLines(new File("docs/pokemon/bang_chieu.csv").toPath(), StandardCharsets.UTF_8);
             final int[] demTheoClass = new int[5];
@@ -57,7 +57,7 @@ public final class KiemLoiChoiPokemon {
     }
 
     private static void kiemStab() {
-        Kiem.nhom("com.kpah.pokemon.ChieuPokemon - STAB x1.2 + khac he theo chieu");
+        Kiem.nhom("com.htbb.pokemon.ChieuPokemon - STAB x1.2 + khac he theo chieu");
         Kiem.dung("Lua danh boi Charmander (Lua) co STAB", ChieuPokemon.coStab(HePokemon.LUA, HePokemon.LUA, -1));
         Kiem.dung("STAB theo he 2", ChieuPokemon.coStab(HePokemon.BAY, HePokemon.LUA, HePokemon.BAY));
         Kiem.sai("Thuong danh boi Lua khong STAB", ChieuPokemon.coStab(HePokemon.THUONG, HePokemon.LUA, -1));
@@ -88,7 +88,7 @@ public final class KiemLoiChoiPokemon {
     }
 
     private static void kiemPokedex() {
-        Kiem.nhom("com.kpah.pokemon.Pokedex - gap/ha, top, ghi theo lo");
+        Kiem.nhom("com.htbb.pokemon.Pokedex - gap/ha, top, ghi theo lo");
         final Pokedex d = new Pokedex();
         Kiem.bang("moi tao: 0 gap", Integer.valueOf(0), Integer.valueOf(d.soLoaiDaGap()));
         Kiem.dung("lan dau gap Pidgey", d.ghiGap(16, 100));
@@ -147,7 +147,7 @@ public final class KiemLoiChoiPokemon {
     }
 
     private static void kiemMoc() {
-        Kiem.nhom("com.kpah.pokemon.Pokedex - thuong moc 10/25/50/100");
+        Kiem.nhom("com.htbb.pokemon.Pokedex - thuong moc 10/25/50/100");
         Kiem.bang("4 moc", Integer.valueOf(4), Integer.valueOf(Pokedex.MOC.length));
         for (int i = 1; i < Pokedex.MOC.length; i++) {
             Kiem.dung("moc tang dan " + i, Pokedex.MOC[i] > Pokedex.MOC[i - 1]);

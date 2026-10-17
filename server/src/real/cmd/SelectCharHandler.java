@@ -3,7 +3,7 @@
 // 
 package real.cmd;
 
-import com.kpah.event.TichLuyOnline;
+import com.htbb.event.TichLuyOnline;
 import java.io.IOException;
 import real.Item;
 import real.EffectBuff;

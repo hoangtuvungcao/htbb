@@ -1,4 +1,4 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 /**
  * Pet di theo (data.Pet) -> Pokemon di theo, tra theo ID ITEM PET (template cua Pet.itemPet,

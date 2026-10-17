@@ -1,8 +1,8 @@
 // Source code is decompiled from a .class file using FernFlower decompiler.
 package real;
 
-import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.SatThuongHe;
+import com.htbb.pokemon.CheDoPokemon;
+import com.htbb.pokemon.SatThuongHe;
 
 import data.Animal;
 import data.Pet;
@@ -26,7 +26,7 @@ public class LiveActor extends Actor {
    public int[] percentBuffPlayer = new int[3];
    public byte he;
    // He thu hai (he Pokemon 0..17, -1 = khong co). Chi co nghia khi bat
-   // com.kpah.pokemon.CheDoPokemon - xem hePokemon1/hePokemon2 ben duoi.
+   // com.htbb.pokemon.CheDoPokemon - xem hePokemon1/hePokemon2 ben duoi.
    public byte he2 = -1;
    public byte divSpeed = 1;
    public Vector<EffectBuff> AllEffBuff = new Vector();
@@ -91,8 +91,8 @@ public class LiveActor extends Actor {
    }
 
    public boolean attackMiss(LiveActor actor) {
-      if (UtilKPAH.random(this.accurate + 10) < this.accurate) {
-         return UtilKPAH.random(5000) < actor.dodge;
+      if (UtilHTBB.random(this.accurate + 10) < this.accurate) {
+         return UtilHTBB.random(5000) < actor.dodge;
       } else {
          return true;
       }
@@ -389,7 +389,7 @@ public class LiveActor extends Actor {
    }
 
    public boolean isCritical() {
-      return UtilKPAH.random(100) < this.critical;
+      return UtilHTBB.random(100) < this.critical;
    }
 
    public int attackDam(LiveActor actor) {
@@ -448,7 +448,7 @@ public class LiveActor extends Actor {
       }
 
       dam -= def;
-      dam = dam * (30 + UtilKPAH.random(80)) / 100;
+      dam = dam * (30 + UtilHTBB.random(80)) / 100;
       if (CheDoPokemon.bat()) {
          // Che do Pokemon: khac he 18 he thay cho ngu hanh (viec S4).
          dam = SatThuongHe.apDung(dam, this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());

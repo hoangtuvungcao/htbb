@@ -5,12 +5,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 
-import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.GoiPokemon;
-import com.kpah.pokemon.PetPokemon;
+import com.htbb.pokemon.CheDoPokemon;
+import com.htbb.pokemon.GoiPokemon;
+import com.htbb.pokemon.PetPokemon;
 
 /**
- * Kiem thu pet di theo Pokemon (com.kpah.pokemon.PetPokemon) + goi -94 POKE_PET.
+ * Kiem thu pet di theo Pokemon (com.htbb.pokemon.PetPokemon) + goi -94 POKE_PET.
  *
  * Bang PetPokemon.BANG duoc chep tay tu cac dong loai=pet_item cua docs/pokemon/bang_thu.csv -
  * test doi chieu TUNG dong CSV voi bang Java (va nguoc lai qua so dong). Kem kiem client co
@@ -20,7 +20,7 @@ public final class KiemPetPokemon {
 
     public static void chay() {
         kiemChuoiGoi();
-        Kiem.nhom("com.kpah.pokemon.PetPokemon - khop bang_thu.csv (pet_item)");
+        Kiem.nhom("com.htbb.pokemon.PetPokemon - khop bang_thu.csv (pet_item)");
         Kiem.bang("41 item pet", Integer.valueOf(41), Integer.valueOf(PetPokemon.soDong()));
         Kiem.bang("item ngoai bang -> 0", Integer.valueOf(0), Integer.valueOf(PetPokemon.dex(714)));
         Kiem.bang("id 0 -> 0", Integer.valueOf(0), Integer.valueOf(PetPokemon.dex(0)));
@@ -50,7 +50,7 @@ public final class KiemPetPokemon {
             Kiem.dung("doc bang_thu.csv: " + e, false);
         }
 
-        Kiem.nhom("com.kpah.pokemon.GoiPokemon - goi -94 POKE_PET");
+        Kiem.nhom("com.htbb.pokemon.GoiPokemon - goi -94 POKE_PET");
         Kiem.bang("so lenh -94", Integer.valueOf(-94), Integer.valueOf(GoiPokemon.POKE_PET));
         try {
             final ByteArrayOutputStream bo = new ByteArrayOutputStream();

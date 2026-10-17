@@ -17,7 +17,7 @@ Nguon chu:
      sql/pokemon_du_lieu_quai.sql (chu thich "-- Cu -> Moi").
 KHONG dong vao o da duoc file SQL Pokemon khac sua (I1 ten trang bi, T1 ten pet, quai...).
 
-Chay (o thu muc KPAH/): python3 -I tools/pokemon/sinh_sql_chu.py
+Chay (o thu muc HTBB/): python3 -I tools/pokemon/sinh_sql_chu.py
 Chay SQL SAU cac file pokemon_* khac (muc 14 cua ke hoach).
 """
 import csv
@@ -289,7 +289,7 @@ def ghi_cs(b):
     dong = cp.bang_day_du(b)
     with open(RA_CS, "w", encoding="utf8", newline="\n") as f:
         f.write("// SINH TU tools/pokemon/sinh_sql_chu.py - KHONG SUA TAY.\n")
-        f.write("// Ban sao cua com.kpah.pokemon.ChuPokemon.bangDayDu() (server). test/KiemChuPokemon doi chieu.\n")
+        f.write("// Ban sao cua com.htbb.pokemon.ChuPokemon.bangDayDu() (server). test/KiemChuPokemon doi chieu.\n")
         f.write("// Khoa bat dau bang \"=\" la so khop phan biet hoa thuong.\n")
         f.write("public static class ChuPokemonDuLieu\n{\n")
         f.write("\tpublic static readonly string[][] BANG = new string[][]\n\t{\n")

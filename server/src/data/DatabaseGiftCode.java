@@ -1663,7 +1663,7 @@ public class DatabaseGiftCode {
                         Map.MAX_LI_XI = Integer.parseInt(data[0]);
                         Map.hourGiveLixi = Integer.parseInt(data[1]);
                         Map.minuteGiveLixi = Integer.parseInt(data[2]);
-                        if (UtilKPAH.getHour() == 5 || UtilKPAH.getHour() == 6) {
+                        if (UtilHTBB.getHour() == 5 || UtilHTBB.getHour() == 6) {
                             Map.MAX_LI_XI = 100;
                             Map.hourGiveLixi = 18;
                             Map.minuteGiveLixi = 30;

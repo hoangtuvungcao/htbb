@@ -818,7 +818,7 @@ class MapCheTao {
     static void doCreateItem(Map map, Char player, int idNpc, int idMenu, int idOptionMenu) {
         try {
             if (idMenu == 0 && idOptionMenu == 3) {
-                if (UtilKPAH.getDayOfMonth() == Char.dayEndVip && UtilKPAH.getHour() >= Char.timeEndVip) {
+                if (UtilHTBB.getDayOfMonth() == Char.dayEndVip && UtilHTBB.getHour() >= Char.timeEndVip) {
                     player.sendMessage(MessageCreator.createServerAlertMessage("Không thể nhận thành tích trong thời gian này", ""));
                     return;
                 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * ============================================================
- *  CẤU HÌNH WEBSITE KPAH  —  SỬA CÁC GIÁ TRỊ DƯỚI ĐÂY
+ *  CẤU HÌNH WEBSITE HTBB  —  SỬA CÁC GIÁ TRỊ DƯỚI ĐÂY
  * ============================================================
  *  - Website này dùng CHUNG MySQL/MariaDB với game server.
  *  - Có 2 database:
@@ -58,26 +58,26 @@ require_once __DIR__ . '/inc/doc_server_ini.php';
 
 // Người dùng có tự khai DB_USER trong config.local.php không? Nếu có thì tôn
 // trọng cho CẢ HAI database — đừng lấy người dùng của login server đè lên nửa chừng.
-$kpahUserKhaiTay = defined('DB_USER');
+$htbbUserKhaiTay = defined('DB_USER');
 
-$kpahIni = kpahCauHinhDb(SERVER_DIR);
+$htbbIni = htbbCauHinhDb(SERVER_DIR);
 
-if (!defined('DB_HOST') && $kpahIni['host'] !== null) define('DB_HOST', $kpahIni['host']);
-if (!defined('DB_PORT') && $kpahIni['port'] !== null) define('DB_PORT', $kpahIni['port']);
-if (!defined('DB_USER') && $kpahIni['user'] !== null) define('DB_USER', $kpahIni['user']);
-if (!defined('DB_PASS') && $kpahIni['pass'] !== null) define('DB_PASS', $kpahIni['pass']);
-if (!defined('DB_GAME') && $kpahIni['game'] !== null) define('DB_GAME', $kpahIni['game']);
-if (!defined('DB_ACCOUNT') && $kpahIni['account'] !== null) define('DB_ACCOUNT', $kpahIni['account']);
+if (!defined('DB_HOST') && $htbbIni['host'] !== null) define('DB_HOST', $htbbIni['host']);
+if (!defined('DB_PORT') && $htbbIni['port'] !== null) define('DB_PORT', $htbbIni['port']);
+if (!defined('DB_USER') && $htbbIni['user'] !== null) define('DB_USER', $htbbIni['user']);
+if (!defined('DB_PASS') && $htbbIni['pass'] !== null) define('DB_PASS', $htbbIni['pass']);
+if (!defined('DB_GAME') && $htbbIni['game'] !== null) define('DB_GAME', $htbbIni['game']);
+if (!defined('DB_ACCOUNT') && $htbbIni['account'] !== null) define('DB_ACCOUNT', $htbbIni['account']);
 
 // Login server CÓ THỂ dùng người dùng database khác game server. Chỉ khai riêng
 // khi thật sự khác, để inc/db.php dùng đúng cặp cho mỗi database.
-if (!defined('DB_ACCOUNT_USER') && !$kpahUserKhaiTay && $kpahIni['account_user'] !== null
-    && (!defined('DB_USER') || $kpahIni['account_user'] !== DB_USER)) {
-    define('DB_ACCOUNT_USER', $kpahIni['account_user']);
-    define('DB_ACCOUNT_PASS', (string)$kpahIni['account_pass']);
+if (!defined('DB_ACCOUNT_USER') && !$htbbUserKhaiTay && $htbbIni['account_user'] !== null
+    && (!defined('DB_USER') || $htbbIni['account_user'] !== DB_USER)) {
+    define('DB_ACCOUNT_USER', $htbbIni['account_user']);
+    define('DB_ACCOUNT_PASS', (string)$htbbIni['account_pass']);
 }
 
-unset($kpahIni, $kpahUserKhaiTay);
+unset($htbbIni, $htbbUserKhaiTay);
 
 // ---- Mặc định cuối cùng: máy dev XAMPP, khi không có server.ini nào đọc được ----
 if (!defined('DB_HOST')) define('DB_HOST', '127.0.0.1');
@@ -89,7 +89,7 @@ if (!defined('DB_ACCOUNT')) define('DB_ACCOUNT', 'account');  // DB chứa bản
 if (!defined('DB_GAME'))    define('DB_GAME', 'kpah_db');     // DB game
 
 // ---- Thiết lập website ----
-const SITE_NAME   = 'KPAH - Khí Phách Anh Hùng';
+const SITE_NAME   = 'HTBB - Huyền Thoại Bảo Bối';
 const SITE_TAGLINE = 'Máy chủ private - Hồi ức tuổi thơ';
 
 // Link tải game (sửa thành link của bạn)
@@ -167,5 +167,5 @@ if (!defined('ADMIN_ACCOUNTS')) define('ADMIN_ACCOUNTS', '');
  * Chỉ cần đặt lại trong config.local.php khi web KHÔNG nằm cùng cây thư mục với
  * server (ví dụ chép web/ sang C:\xampp\htdocs khi chạy thử):
  *
- *     define('SERVER_DIR', 'C:/Users/ADMIN/Desktop/KPAH');
+ *     define('SERVER_DIR', 'C:/Users/ADMIN/Desktop/HTBB');
  */

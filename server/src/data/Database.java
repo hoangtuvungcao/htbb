@@ -1,6 +1,6 @@
 package data;
 
-import com.kpah.pokemon.CheDoPokemon;
+import com.htbb.pokemon.CheDoPokemon;
 
 import io.Session;
 
@@ -2548,7 +2548,7 @@ public class Database {
         String code;
         for (info = "0123456789", code = ""; code.length() < 12; code = code + info.charAt(Map.r.nextInt(info.length()))) {
         }
-        code = code + "kpah";
+        code = code + "htbb";
         return code;
     }
 
@@ -9299,7 +9299,7 @@ public void getDiemNapXaiLuong(Char p) {
                 p.diemNapVip = rs.getInt("luongnap");
                 p.diemxaiVip = rs.getInt("luongxai");
 
-                if (UtilKPAH.getDayOfMonth() == 3) {
+                if (UtilHTBB.getDayOfMonth() == 3) {
                     p.diemxaiVip = 0;
                     Database.instance.addCharXaiNapLuong(p, 1); // lưu reset
                 }
@@ -12251,7 +12251,7 @@ public void addCharXaiNapLuong(Char p, int type) {
 
     /**
      * Cot cua che do Pokemon (sql/them_cot_pokemon.sql): tob_char.dex/shiny va
-     * data_monster.dex/shiny/he2. Chi goi khi bat com.kpah.pokemon.CheDoPokemon, va
+     * data_monster.dex/shiny/he2. Chi goi khi bat com.htbb.pokemon.CheDoPokemon, va
      * PHAI TRUOC khi nap template quai (Map.loadAllTemplate) va nhan nguoi choi - cung
      * ly do voi themCotKhoXuLuong(). Tat co thi khong dong vao schema (dung hanh vi cu).
      * Chay sql/them_cot_pokemon.sql bang tay truoc van la cach chinh; ham nay chi la

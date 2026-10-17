@@ -1,7 +1,7 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 /**
- * W2: doi ten dia danh KPAH sang dia danh the gioi Pokemon (Kanto/Johto).
+ * W2: doi ten dia danh goc sang dia danh the gioi Pokemon (Kanto/Johto).
  *
  * Ap dung khi gui ten (MessageCreator.createMessageLocation, lenh 105) neu che do Pokemon
  * bat. Giu tien to huong "Đông/Tây/Nam/Bắc " ("Đông Dao Châu" -> "Đông Pallet"); ten chung

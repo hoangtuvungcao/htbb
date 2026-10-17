@@ -22,7 +22,7 @@ REM  o cuoi file. Thieu mot trong hai la coi nhu that bai.
 REM ============================================================
 
 set "VPS=root@180.93.57.30"
-set "DICH=%USERPROFILE%\Desktop\kpah-db-backup"
+set "DICH=%USERPROFILE%\Desktop\htbb-db-backup"
 
 REM Dat NGOAI thu muc git: ban dump nang ~600MB va chua du lieu nguoi
 REM choi that, tuyet doi khong de no lot vao commit.

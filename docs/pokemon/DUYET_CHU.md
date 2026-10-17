@@ -4,7 +4,7 @@ Theo `docs/CODING_CONVENTION.md` §10, chữ người chơi thấy phải đư�
 là **các cách gọi mới** của đợt này, xếp theo nhóm (cũ → mới). Muốn đổi cách nào thì sửa đúng
 một chỗ ghi ở cột "Sửa ở", chạy lại tool, không sửa tay file SQL/CSV/C# sinh ra.
 
-- **Tự điển chung** (`src/com/kpah/pokemon/ChuPokemon.java`, mảng `DOI`): áp cho chữ server gửi
+- **Tự điển chung** (`src/com/htbb/pokemon/ChuPokemon.java`, mảng `DOI`): áp cho chữ server gửi
   và **mọi** chữ client vẽ. Sửa xong chạy `python3 -I tools/pokemon/sinh_sql_chu.py`.
 - **Theo dòng CSDL** (`tools/pokemon/sinh_sql_chu.py`: `QUEST`, `DAU_ITEM`, `DAU_SHOP`;
   `tools/pokemon/sinh_sql_vat_pham.py`: `BAC`, `GIU_TEN`).

@@ -51,7 +51,7 @@ foreach ($cardRanks as &$rank) {
 unset($rank);
 // Tin tức tĩnh (bạn có thể sửa)
 $news = [
-    ['date' => '20/07', 'title' => 'Khai mở máy chủ mới', 'body' => 'Chào mừng anh hùng đến với thế giới Khí Phách Anh Hùng. Đăng ký ngay để nhận quà tân thủ!'],
+    ['date' => '20/07', 'title' => 'Khai mở máy chủ mới', 'body' => 'Chào mừng anh hùng đến với thế giới Huyền Thoại Bảo Bối. Đăng ký ngay để nhận quà tân thủ!'],
     ['date' => '18/07', 'title' => 'Sự kiện Hè rực lửa', 'body' => 'Nạp càng nhiều, quà càng khủng. Xem chi tiết trong game.'],
     ['date' => '15/07', 'title' => 'Hướng dẫn tân thủ', 'body' => 'Tải game, đăng ký tài khoản và tạo nhân vật đầu tiên chỉ trong 1 phút.'],
 ];
@@ -60,7 +60,7 @@ require __DIR__ . '/inc/header.php';
 ?>
 <section class="hero">
     <div class="hero-inner">
-        <h1 class="hero-title">KHÍ PHÁCH ANH HÙNG</h1>
+        <h1 class="hero-title">HUYỀN THOẠI BẢO BỐI</h1>
         <p class="hero-tagline"><?= e(SITE_TAGLINE) ?></p>
         <p class="hero-desc">Săn boss, lập bang hội, đua top và giao tranh PvP — huyền thoại nhập vai kiếm hiệp trở lại.</p>
         <div class="hero-actions">

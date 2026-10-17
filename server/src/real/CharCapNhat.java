@@ -643,7 +643,7 @@ class CharCapNhat {
             if (!Map.openLog && self.dayLogin.compareTo("2014-08-06") < 0) {
                 self.doAddGiftSn();
             }
-            if (UtilKPAH.getDayOfMonth() == 1) {
+            if (UtilHTBB.getDayOfMonth() == 1) {
                 Database.instance.check();
                 Database.instance.getDiemNapXaiLuong(self);
             }

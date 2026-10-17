@@ -3,8 +3,8 @@ package real;
 
 import Constant.Logger2;
 import ThanKhi.ThanKhiCraftState;
-import com.kpah.event.TichLuyOnline;
-import com.kpah.runtime.runtimeCharProperties;
+import com.htbb.event.TichLuyOnline;
+import com.htbb.runtime.runtimeCharProperties;
 import java.util.Set;
 import data.Xoso;
 import data.UserLogger;
@@ -164,7 +164,7 @@ public class Char extends LiveActor {
     public byte charClass;
     // Loai Pokemon (so Pokedex) va ban shiny - cot tob_char.dex/shiny (viec S2).
     // 0 = chua co, suy ra tu class + cap luc nap (real.TienHoaPokemon.napLoai).
-    // Chi dung khi bat com.kpah.pokemon.CheDoPokemon.
+    // Chi dung khi bat com.htbb.pokemon.CheDoPokemon.
     public int pokeDex = 0;
     public byte pokeShiny = 0;
     public byte[] skill;
@@ -10069,7 +10069,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             }
         }
         if (!isXu) {
-            final int xu = UtilKPAH.getRandomMinMax(10000, 20000);
+            final int xu = UtilHTBB.getRandomMinMax(10000, 20000);
             p.addXu(xu, "char 6");
             info = String.valueOf(info) + xu + " xu. ";
             isXu = true;

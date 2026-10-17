@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 /// <summary>
 /// G7.C3: doi chu kiem hiep -> the gioi Pokemon tren client. Ban C# cua
-/// src/com/kpah/pokemon/ChuPokemon.java (doiLuon). Tu dien lay tu ChuPokemonDuLieu.BANG -
+/// src/com/htbb/pokemon/ChuPokemon.java (doiLuon). Tu dien lay tu ChuPokemonDuLieu.BANG -
 /// file SINH bang tools/pokemon/sinh_sql_chu.py tu ban Java, khong sua tay.
 ///
 /// Doi o MOT cho: MFont (moi chu ve ra man hinh, do rong chu, ngat dong) goi D(). Nho vay

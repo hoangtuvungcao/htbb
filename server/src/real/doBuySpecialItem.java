@@ -481,8 +481,8 @@ public class doBuySpecialItem {
 
                             nameItem = item.name;
                             soluong = 1;
-                            hour = 24 - UtilKPAH.getHour();
-                            minute = UtilKPAH.getMinute();
+                            hour = 24 - UtilHTBB.getHour();
+                            minute = UtilHTBB.getMinute();
                             value = hour * 60 - minute;
                             player.map.doBuyGayGiangSinh(player, value);
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));
@@ -514,8 +514,8 @@ public class doBuySpecialItem {
                             }
 
                             soluong = 1;
-                            hour = 24 - UtilKPAH.getHour();
-                            minute = UtilKPAH.getMinute();
+                            hour = 24 - UtilHTBB.getHour();
+                            minute = UtilHTBB.getMinute();
                             value = hour * 60 - minute;
                             player.createLan((long) value, true, 0);
                             player.sendMessage(MessageCreator.createCharInventoryMessage(player, 0));

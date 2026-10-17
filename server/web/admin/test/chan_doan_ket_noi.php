@@ -77,7 +77,7 @@ foreach ([$fGame, $fLogin] as $f) {
 // ---------------------------------------------------------------------------
 tieuDe('3. Gia tri server.ini doc ra duoc');
 
-$ini = kpahCauHinhDb(SERVER_DIR);
+$ini = htbbCauHinhDb(SERVER_DIR);
 foreach ($ini as $k => $v) {
     if ($k === 'pass' || $k === 'account_pass') {
         dong($k, $v === null ? '(khong doc duoc)' : ('(' . strlen($v) . ' ky tu)'));

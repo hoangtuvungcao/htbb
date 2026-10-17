@@ -71,7 +71,7 @@ const FORM_TOKEN_HAN = 3600;
 
 function formTokenKhoa(): string
 {
-    return hash('sha256', 'kpah-form-token|' . (defined('DB_PASS') ? DB_PASS : '') . '|' . __DIR__);
+    return hash('sha256', 'htbb-form-token|' . (defined('DB_PASS') ? DB_PASS : '') . '|' . __DIR__);
 }
 
 function formToken(string $form): string

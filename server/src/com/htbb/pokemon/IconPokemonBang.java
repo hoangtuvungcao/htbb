@@ -1,4 +1,4 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 /**
  * SINH TU tools/pokemon/sinh_icon_pokemon.py - KHONG SUA TAY.

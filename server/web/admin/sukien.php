@@ -282,8 +282,8 @@ usort($lichSapToi, fn($a, $b) => strcmp($a['moc'], $b['moc']));
 $tuKhoiDongLai = null;   // null = không đọc được
 $gomGiay = 120;
 $baoTruocGiay = 60;
-if (defined('SERVER_DIR') && function_exists('kpahDocIni')) {
-    $ini = kpahDocIni(rtrim(SERVER_DIR, "/\\") . '/server.ini');
+if (defined('SERVER_DIR') && function_exists('htbbDocIni')) {
+    $ini = htbbDocIni(rtrim(SERVER_DIR, "/\\") . '/server.ini');
     if ($ini) {
         $tuKhoiDongLai = ($ini['sv.suKienTuKhoiDongLai'] ?? '1') !== '0';
         // Kẹp y hệt CauHinh.apDungLichSuKien để con số hiện ra đúng cái server dùng.

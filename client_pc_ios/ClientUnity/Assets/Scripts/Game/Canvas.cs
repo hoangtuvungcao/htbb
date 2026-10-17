@@ -212,7 +212,7 @@ public class Canvas
 		try
 		{
 			string filename = Main.res + "/png/logo";
-			if (!GameMidlet.isKPAH)
+			if (!GameMidlet.isHTBB)
 			{
 				filename = Main.res + "/png/vtclogo";
 			}

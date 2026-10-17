@@ -1512,7 +1512,7 @@ class MapNhapText {
                     return;
                 } else if (idMenu == 7) {
                     if (Map.openLog) {
-                        MapQuaTang.doSetGiftOfflineKpah(map, player, text.trim());
+                        MapQuaTang.doSetGiftOfflineHtbb(map, player, text.trim());
                     } else if (!Map.openLog) {
                         MapQuaTang.doSetGiftNguDeDaiNam(map, player, text.trim());
                     }

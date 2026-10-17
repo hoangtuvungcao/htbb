@@ -3,8 +3,8 @@
 // 
 package real;
 
-import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.HePokemon;
+import com.htbb.pokemon.CheDoPokemon;
+import com.htbb.pokemon.HePokemon;
 
 import data.ItemQuest;
 import server.TeamServer;
@@ -1054,11 +1054,11 @@ public class Monster extends LiveActor {
                         }
                     }
                 }
-//                if (UtilKPAH.getHour() != hourEvent && LimitEvent < 10000
+//                if (UtilHTBB.getHour() != hourEvent && LimitEvent < 10000
 //                        && getDayTime(0L).compareTo("2022-07-04 00:00:00") > 0
 //                        && getDayTime(0L).compareTo("2022-07-15 00:00:00") < 0) {
 //                    LimitEvent = (TeamServer.maxCCU * 30);
-//                    hourEvent = UtilKPAH.getHour();
+//                    hourEvent = UtilHTBB.getHour();
 //                    System.out.println("DA RESET LIMIT EVEMT");
 //                    try {
 //                        Map.sendAllCharServer(-1, MessageCreator.createServerAlertAutoOffMessage("Đã reset kho nguyên liệu sơ cấp, train quái tiếp thui nào mọi người."));

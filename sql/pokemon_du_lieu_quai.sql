@@ -1,5 +1,5 @@
 -- SINH TU tools/pokemon/sinh_bang_quai.py - KHONG SUA TAY.
--- Chay SAU sql/them_cot_pokemon.sql. he = he 1 Pokemon (0..17, com.kpah.pokemon.HePokemon).
+-- Chay SAU sql/them_cot_pokemon.sql. he = he 1 Pokemon (0..17, com.htbb.pokemon.HePokemon).
 -- Chi dung cho server che_do_pokemon=1: cot he khong con la ngu hanh 0..4.
 UPDATE data_monster SET name='Sandshrew', dex=27, shiny=0, he=8, he2=-1 WHERE id=1; -- Nhím -> Sandshrew
 UPDATE data_monster SET name='Caterpie', dex=10, shiny=0, he=11, he2=-1 WHERE id=2; -- Sâu -> Caterpie

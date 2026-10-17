@@ -72,7 +72,7 @@ foreach (['doiFile(', 'chiaMuc(', 'daoThuTu('] as $ham) {
 }
 
 echo "== 1. File NHO hon nguong: doc het ==\n";
-$nho = tempnam(sys_get_temp_dir(), 'kpahlog');
+$nho = tempnam(sys_get_temp_dir(), 'htbblog');
 file_put_contents($nho, "dong mot\ndong hai\ndong ba\n");
 $r = doiFile($nho, 64000);
 dung('tra ve mang', is_array($r));
@@ -82,7 +82,7 @@ kt('khong bi cat', $r['cat'], false);
 dung('giu nguyen noi dung', strpos($r['noi_dung'], 'dong mot') === 0);
 
 echo "\n== 2. File LON hon nguong: chi doc phan cuoi ==\n";
-$lon = tempnam(sys_get_temp_dir(), 'kpahlog');
+$lon = tempnam(sys_get_temp_dir(), 'htbblog');
 $fh = fopen($lon, 'wb');
 for ($i = 0; $i < 200000; $i++) {
     fwrite($fh, str_pad("dong so $i", 60, '.') . "\n");
@@ -111,7 +111,7 @@ echo "\n== 3. Bo nho: day la phep kiem quan trong nhat ==\n";
 // duoc gi. Cach duy nhat trung thuc la tai hien dung canh o Apache: hanh muc
 // bo nho co han, file lon hon han muc do, va xem tien trinh co chet khong.
 
-$conScript = tempnam(sys_get_temp_dir(), 'kpahcon');
+$conScript = tempnam(sys_get_temp_dir(), 'htbbcon');
 file_put_contents($conScript, <<<'PHP'
 <?php
 // Trich doiFile() tu chandoan.php y het tien trinh cha
@@ -144,7 +144,7 @@ dung('van doc duoc gan 64 KB du han muc chi 8M',
 
 echo "\n== 4. Truong hop bien ==\n";
 kt('file khong ton tai -> null', doiFile('/khong/co/file/nao.txt'), null);
-$rong = tempnam(sys_get_temp_dir(), 'kpahlog');
+$rong = tempnam(sys_get_temp_dir(), 'htbblog');
 file_put_contents($rong, '');
 $r = doiFile($rong);
 dung('file rong van tra ve mang', is_array($r));

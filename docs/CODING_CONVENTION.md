@@ -1,8 +1,8 @@
-# Coding convention KPAH — rút ra từ các bug đã sửa
+# Coding convention HTBB — rút ra từ các bug đã sửa
 
 Tài liệu này KHÔNG phải nguyên tắc chung chung. Mỗi mục dưới đây gắn với ít nhất
 1 bug thật đã xảy ra trên chính dự án này (xem cột "Đã từng gây ra"), và quy tắc
-được viết đủ cụ thể để áp dụng thẳng vào code Java/PHP/MySQL của KPAH. Cập nhật
+được viết đủ cụ thể để áp dụng thẳng vào code Java/PHP/MySQL của HTBB. Cập nhật
 file này mỗi khi phát hiện một pattern lỗi mới lặp lại lần thứ 2.
 
 Trước khi đóng bất kỳ task code nào (tính năng mới, sửa bug, chỉnh số liệu),
@@ -71,7 +71,7 @@ nhưng lệch thụt đầu dòng nên chỉ khớp 1/2. Thiếu `continue` sau 
 
 ## 4. Thao tác tiền/vật phẩm dùng chung giữa nhiều luồng — không check-rồi-act rời rạc
 
-Kiến trúc KPAH: lệnh trong `RealController.privateCmd` chạy trên luồng phiên
+Kiến trúc HTBB: lệnh trong `RealController.privateCmd` chạy trên luồng phiên
 (session thread); phần lớn lệnh khác (mua shop dạng -76, giao dịch gói 66, tổ
 đội, kho...) chạy trên luồng bản đồ (map/region thread). Cùng 1 `Char` có thể bị
 sửa `iItems`/`potions[]`/xu/lượng từ 2 luồng gần như đồng thời.
@@ -115,7 +115,7 @@ Tiên Lộc thân thấp hơn lộ sai lệch rõ.
 
 **Quy tắc:** Khi thêm 1 loại thực thể mới (thú, pet, skin, level cap, mặt nạ...)
 vào hệ có sẵn, `grep` toàn bộ mảng song song cùng trục chỉ số (không chỉ mảng
-được yêu cầu ban đầu) — các mảng song song trong KPAH KHÔNG có kiểm tra độ dài
+được yêu cầu ban đầu) — các mảng song song trong HTBB KHÔNG có kiểm tra độ dài
 lẫn nhau, sai lệch chỉ lộ ra khi đúng loại thực thể đó được dùng tới.
 
 ## 7. Encoding UTF-8 khi thao tác DB qua dòng lệnh

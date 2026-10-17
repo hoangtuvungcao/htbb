@@ -42,7 +42,7 @@ public class Pet extends Actor {
     public static int[][] percent = new int[][]{{20, 0, 0, 0, 0, 0, 0, 0}, {10, 10, 0, 0, 0, 0, 0, 0}, {20, 20, 0, 0, 0, 0, 0, 0}, {30, 0, 0, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 0, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 1, 1, 1, 0, 1}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 3, 0, 0, 0, 0}, {10, 10, 10, 0, 3, 0, 0, 0}, {10, 10, 10, 0, 0, 3, 0, 0}, {5, 0, 0, 0, 0, 0, 0, 0}, {10, 10, 10, 1, 1, 1, 20, 1}, {10, 10, 10, 1, 1, 1, 20, 1}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {10, 10, 10, 0, 0, 0, 0, 0}, {0, 0, 10, 0, 0, 0, 0, 0}, {0, 5, 0, 0, 0, 0, 0, 0}, {10, 0, 10, 1, 1, 1, 0, 1}, {10, 10, 10, 0, 0, 0, 0, 0}, new int[8], new int[8], new int[8], new int[8], new int[8], {10, 0, 25, 0, 0, 0, 0, 0}, new int[8], new int[8], new int[8], new int[8], new int[8], new int[8]};
     static int[][] pc_chang_thong_thao = new int[][]{{983, 14, 3, 0}, {996, 498, 3, 0}, {999, 666, 333, 0}, {1000, 750, 500, 250}};
     long timeBienHinh = 0L;
-    // Hoa hinh Pet (them 31/08/2026, port tu ban KPAH khac - xem README).
+    // Hoa hinh Pet (them 31/08/2026, port tu ban goc khac - xem README).
     // idHoaHinhPet: -1 = chua hoa hinh, khac -1 = da hoa hinh (danh dau CO/KHONG,
     // gan = 67 luc kich hoat cho ro rang - gia tri cu the KHONG dung de chon anh
     // hien thi). Anh hien thi thuc te chon theo capHoaHinh, xem getIdEffPet().

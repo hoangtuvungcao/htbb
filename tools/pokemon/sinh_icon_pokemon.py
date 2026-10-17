@@ -8,7 +8,7 @@ Ra (KHONG sua tay, chay lai tool):
   map/icon_pokemon/<n>.png               server phuc vu o id anh 14000+n (IconPokemon)
   sql/pokemon_icon_vat_pham.sql          UPDATE data_item.xstart -> 14000+n, va tach vai o anh
                                          thuoc dung chung (data_potion.idImage / data_shop.idImg)
-  src/com/kpah/pokemon/IconPokemonBang.java
+  src/com/htbb/pokemon/IconPokemonBang.java
                                          bang thuan: chi so anh cu cua cac dai KHONG co cot DB
                                          (thuoc 5500+, ngoc 6500+, thu 7500+, vat pham nhiem vu
                                          8000+, trai cay 8200+) -> n. DataGame.sendByteImg dung
@@ -18,7 +18,7 @@ Ra (KHONG sua tay, chay lai tool):
 
 Vi sao dai rieng ma khong ghi de map/icon/<id>.png: icon cu dung chung giua nhieu vat pham,
 nIconItem = 866 bi test cu (KiemSkinLinhThu) khoa cung, va khi tat che do Pokemon thi cac dai
-cu van phai ra hinh KPAH.
+cu van phai ra hinh goc.
 
 Nguon su that DUY NHAT cua danh sach icon la bang ICON ben duoi. So thu tu n = vi tri trong
 bang (n duoc ghi vao CSDL), nen CHI THEM VAO CUOI, khong chen/xoa giua chung.
@@ -36,14 +36,14 @@ Moi dong ICON = (nguon, [dung cho...]).
   dung cho:
           "type:N"           moi trang bi type N trong docs/pokemon/bang_vat_pham.csv
           "item:A,B-C"       data_item id (chay TRUOC cac luat xs:)
-          "xs:N"             moi data_item dang co xstart = N (icon KPAH cu N)
+          "xs:N"             moi data_item dang co xstart = N (icon goc cu N)
           "potion:K" "gem:K" "thu:K" "nv:K" "trai:K"
                              anh cu 5500+K / 6500+K / 7500+K / 8000+K / 8200+K
           "dp:ID>K"          data_potion id ID chuyen sang o anh thuoc K (K phai la o TRONG -
           "ds:ID>K"          data_shop  ...                       test kiem tren htbb_day_du.sql)
                              (dung de tach hai vat pham khac nghia dang dung chung mot anh cu)
 
-Chay (o thu muc KPAH/):
+Chay (o thu muc HTBB/):
     python3 -I tools/pokemon/sinh_icon_pokemon.py               # tai (neu thieu) + sinh
     python3 -I tools/pokemon/sinh_icon_pokemon.py --xem-truoc   # them anh xem truoc
 Tai ve: tools/pokemon/pmd_raw_icon/ (KHONG commit, CC BY-NC / tai san PMD, xem .gitignore).
@@ -60,7 +60,7 @@ import zlib
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RA_ANH = os.path.join(GOC, "map", "icon_pokemon")
 RA_SQL = os.path.join(GOC, "sql", "pokemon_icon_vat_pham.sql")
-RA_JAVA = os.path.join(GOC, "src", "com", "kpah", "pokemon", "IconPokemonBang.java")
+RA_JAVA = os.path.join(GOC, "src", "com", "htbb", "pokemon", "IconPokemonBang.java")
 RA_CSV = os.path.join(GOC, "docs", "pokemon", "bang_icon.csv")
 RA_XEM = os.path.join(GOC, "docs", "pokemon", "xem_truoc_icon.png")
 BANG_VP = os.path.join(GOC, "docs", "pokemon", "bang_vat_pham.csv")
@@ -644,7 +644,7 @@ def tai(url, dich, loi):
     if os.path.exists(dich):
         return True
     os.makedirs(os.path.dirname(dich), exist_ok=True)
-    req = urllib.request.Request(url, headers={"User-Agent": "kpah-pokemon-tool"})
+    req = urllib.request.Request(url, headers={"User-Agent": "htbb-pokemon-tool"})
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             data = r.read()
@@ -769,7 +769,7 @@ def ghi_sql(kq, loi):
 
 def ghi_java(kq):
     with open(RA_JAVA, "w", encoding="utf8", newline="\n") as f:
-        f.write("package com.kpah.pokemon;\n\n")
+        f.write("package com.htbb.pokemon;\n\n")
         f.write("/**\n * SINH TU tools/pokemon/sinh_icon_pokemon.py - KHONG SUA TAY.\n *\n")
         f.write(" * Chi so anh cu (dai khong co cot DB) -> so thu tu icon PMD n (anh map/icon_pokemon/n.png,\n")
         f.write(" * id 14000+n). -1 = giu anh cu. Dung qua IconPokemon.doiAnh khi bat che do Pokemon.\n */\n")

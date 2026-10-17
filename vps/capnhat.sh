@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-#  CAP NHAT SERVER KPAH TREN VPS  (ban Linux cua capnhat.bat)
+#  CAP NHAT SERVER HTBB TREN VPS  (ban Linux cua capnhat.bat)
 #
 #  Dung o VPS:  sudo /opt/kpah/vps/capnhat.sh
 #
@@ -8,7 +8,7 @@
 #  Deploy binh thuong thi dung vps/update.sh (keo tu git).
 #
 #  Viec no lam, dung thu tu:
-#    1. Kiem tra co KPAH2_NEW.jar chua
+#    1. Kiem tra co HTBB_NEW.jar chua
 #    2. Tat game server co trat tu (SIGTERM -> shutdown hook luu du lieu)
 #    3. Backup jar dang chay
 #    4. Thay jar moi
@@ -17,7 +17,7 @@
 set -u
 
 DIR=/opt/kpah
-NEW="$DIR/KPAH2_NEW.jar"
+NEW="$DIR/HTBB_NEW.jar"
 CUR="$DIR/KPAH2_patched.jar"
 BAK="$DIR/KPAH2_patched_backup_truoc_capnhat.jar"
 SV=kpah-game
@@ -25,7 +25,7 @@ SV=kpah-game
 if [ ! -f "$NEW" ]; then
     echo "[LOI] Khong thay $NEW"
     echo "      Upload jar moi tu may nha truoc:"
-    echo "      scp KPAH2_NEW.jar kpah@180.93.57.30:/opt/kpah/"
+    echo "      scp HTBB_NEW.jar kpah@180.93.57.30:/opt/kpah/"
     exit 1
 fi
 

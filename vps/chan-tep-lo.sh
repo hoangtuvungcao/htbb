@@ -108,7 +108,7 @@ sleep 1
 echo
 echo "$LOG_TAG Tu kiem bang tep that"
 GOC=/opt/kpah/web
-THU="$GOC/kpah-thu-chan-$$.save"
+THU="$GOC/htbb-thu-chan-$$.save"
 echo "khong duoc doc thay dong nay" > "$THU"
 MA=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1/kpah/$(basename "$THU")" 2>/dev/null)
 rm -f "$THU"

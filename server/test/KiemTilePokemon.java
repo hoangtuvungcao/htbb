@@ -8,8 +8,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.TrangTriPokemon;
+import com.htbb.pokemon.CheDoPokemon;
+import com.htbb.pokemon.TrangTriPokemon;
 
 import data.DataGame;
 
@@ -43,7 +43,7 @@ public final class KiemTilePokemon {
                 final BufferedImage moi = ImageIO.read(fMoi);
                 final byte[] kieu = Files.readAllBytes(new File("cMap/" + ten + ".type").toPath());
                 Kiem.bang(ten + ": rong 16", 16, moi.getWidth());
-                Kiem.bang(ten + ": cung chieu cao (so tile) voi ban KPAH", cu.getHeight(), moi.getHeight());
+                Kiem.bang(ten + ": cung chieu cao (so tile) voi ban goc", cu.getHeight(), moi.getHeight());
                 Kiem.bang(ten + ": so tile = so kieu trong cMap", kieu.length, moi.getHeight() / 16);
                 int lechMatNa = 0;
                 for (int y = 0; y < cu.getHeight(); y++) {
@@ -92,7 +92,7 @@ public final class KiemTilePokemon {
         final boolean cu = CheDoPokemon.bat();
         try {
             CheDoPokemon.dat(false);
-            Kiem.bang("tat che do: gui tile KPAH", "map/t_hang.png", DataGame.duongTileGuiClient()[0]);
+            Kiem.bang("tat che do: gui tile goc", "map/t_hang.png", DataGame.duongTileGuiClient()[0]);
             CheDoPokemon.dat(true);
             Kiem.bang("bat che do: gui tile Pokemon", DataGame.THU_MUC_TILE_POKEMON + "t_hang.png",
                 DataGame.duongTileGuiClient()[0]);
@@ -103,7 +103,7 @@ public final class KiemTilePokemon {
             Kiem.bang("bat che do: tep khong co ban Pokemon thi giu goc", "map/tree/9999",
                 TrangTriPokemon.duong("map/tree/9999"));
             CheDoPokemon.dat(false);
-            Kiem.bang("tat che do: cay ban do KPAH", "map/tree/6", TrangTriPokemon.duong("map/tree/6"));
+            Kiem.bang("tat che do: cay ban do goc", "map/tree/6", TrangTriPokemon.duong("map/tree/6"));
         } finally {
             CheDoPokemon.dat(cu);
         }

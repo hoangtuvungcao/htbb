@@ -15,7 +15,7 @@ REM  file dump de tren Desktop, ai chay nham no nguoc len VPS thi
 REM  chi mat may bang chu khong xoa ca DB that.
 REM ============================================================
 
-set "LUU=%USERPROFILE%\Desktop\kpah-db-backup"
+set "LUU=%USERPROFILE%\Desktop\htbb-db-backup"
 set "MYSQL=C:\xampp\mysql\bin\mysql.exe"
 set "MYSQLDUMP=C:\xampp\mysql\bin\mysqldump.exe"
 

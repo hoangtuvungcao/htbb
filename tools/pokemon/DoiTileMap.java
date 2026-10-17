@@ -18,7 +18,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 /**
- * G7.A1: sinh bo tile 16x16 phong cach PMD thay cho tile KPAH, GIU NGUYEN so tile, thu tu
+ * G7.A1: sinh bo tile 16x16 phong cach PMD thay cho tile goc, GIU NGUYEN so tile, thu tu
  * va kich thuoc (map khong phai sua, cMap/*.type van dung).
  *
  * Duong tile cua game (xem bao cao G7.A / docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 15):
@@ -29,20 +29,20 @@ import javax.imageio.ImageIO;
  *   - Kieu tile (0 di duoc, 2 chan) o cMap/{t,t_hang,t_thanh}.type - KHONG doi.
  *
  * Cach lam ("ve lai theo vat lieu"):
- *   1. Moi bo tile KPAH co mot danh sach VAT LIEU (co, dat, nuoc, cay, da...). Bang mau cua vat
+ *   1. Moi bo tile goc co mot danh sach VAT LIEU (co, dat, nuoc, cay, da...). Bang mau cua vat
  *      lieu rut tu cac tile mau (k-means trong khong gian Lab).
  *   2. Moi vat lieu co vai nguon PMD ung vien (TileDtef: khoi tuong/nuoc/nen). Bo so khop chon
- *      nguon gan mau KPAH nhat, roi chon tile PMD cu the bang dac trung: luoi mau 4x4 (Lab) +
+ *      nguon gan mau goc nhat, roi chon tile PMD cu the bang dac trung: luoi mau 4x4 (Lab) +
  *      mat na trong suot + mat do canh. Tile PMD 24x24 thu nho 24->16 bang trung binh dien tich
  *      (alpha nhan truoc) roi "bam" ve bang mau cua chinh tile nguon de giu net pixel art.
- *   3. Tile KPAH thuan mot vat lieu (>= NGUONG_THUAN) -> thay nguyen bang tile PMD khop nhat.
+ *   3. Tile goc thuan mot vat lieu (>= NGUONG_THUAN) -> thay nguyen bang tile PMD khop nhat.
  *      Tile lan nhieu vat lieu (mep co/dat, bo nuoc...) -> tung pixel lay van PMD cua vat lieu
- *      cua no, giu do sang lech (bong, vien) cua KPAH, nen hinh dang mep giu nguyen va cac tile
+ *      cua no, giu do sang lech (bong, vien) cua goc, nen hinh dang mep giu nguyen va cac tile
  *      ghep lien nhau van khop. Pixel khong thuoc vat lieu nao (mai nha, go, do vat) -> giu mau
- *      KPAH nhung doi sang bang mau PMD gan nhat.
- *   4. Pixel trong suot cua KPAH giu trong suot (tile phu "tileTop").
+ *      goc nhung doi sang bang mau PMD gan nhat.
+ *   4. Pixel trong suot cua goc giu trong suot (tile phu "tileTop").
  *
- * Chay (o thu muc KPAH/, can JDK + mang lan dau):
+ * Chay (o thu muc HTBB/, can JDK + mang lan dau):
  *   javac -encoding UTF-8 -d build/tools tools/pokemon/DoiTileMap.java
  *   java -cp build/tools DoiTileMap            (tai PMD neu chua co, sinh moi thu)
  *   java -cp build/tools DoiTileMap --khong-tai
@@ -82,7 +82,7 @@ public final class DoiTileMap {
     static final double NGUONG_PIXEL = 16.0;
     /** Khoang cach dac trung toi da de o tuong/nuoc khac (1,1) duoc coi la o ben trong. */
     static final double NGUONG_O_TRONG = 5.0;
-    /** Giu bao nhieu phan do sang lech cua KPAH khi ve van PMD (bong, vien). */
+    /** Giu bao nhieu phan do sang lech cua goc khi ve van PMD (bong, vien). */
     static final double HE_SO_SANG = 0.75;
 
     /** Nguon PMD: ten bo + khoi. */
@@ -102,7 +102,7 @@ public final class DoiTileMap {
         return new Nguon(bo, khoi);
     }
 
-    /** Vat lieu: ten, tile KPAH mau, nguon PMD ung vien. */
+    /** Vat lieu: ten, tile goc mau, nguon PMD ung vien. */
     static final class VatLieu {
         final String ten;
         final int[] mau;
@@ -112,7 +112,7 @@ public final class DoiTileMap {
         Nguon nguonChon;
         List<TilePmd> tiles = new ArrayList<TilePmd>();
         TilePmd coBan;            // van dung cho tile lan
-        /** 0 = giu nguyen mau PMD; 1 = dua trung binh mau ve dung mau KPAH (chi giu van). */
+        /** 0 = giu nguyen mau PMD; 1 = dua trung binh mau ve dung mau goc (chi giu van). */
         double giuMau;
         VatLieu(final String ten, final int[] mau, final Nguon... ungVien) {
             this.ten = ten;
@@ -131,7 +131,7 @@ public final class DoiTileMap {
             this.tuongPhan = heSo;
             return this;
         }
-        /** true: khong bao gio thay nguyen tile; luon ve tung pixel de giu duong vien KPAH. */
+        /** true: khong bao gio thay nguyen tile; luon ve tung pixel de giu duong vien goc. */
         boolean khongThay;
         VatLieu khongThay() {
             this.khongThay = true;
@@ -192,13 +192,13 @@ public final class DoiTileMap {
     static final String[] NUOC = {"TinyWoods", "ForestPath", "BeachCave", "MtSteel1", "WesternCave1", "DesertRegion", "SidePath"};
     static final String[] DAT = {"TinyWoods", "MtSteel1", "SidePath", "QuicksandCave", "DesertRegion", "NorthernDesert1"};
     static final String[] DA = {"SealedRuin", "MtSteel1", "TemporalTower", "QuicksandCave", "WesternCave1"};
-    /** Da hang: van da vun co hat (tuong DTEF), mau keo ve mau hang KPAH. */
+    /** Da hang: van da vun co hat (tuong DTEF), mau keo ve mau hang goc. */
     static final String[] DA_HANG = {"SealedRuin", "QuicksandCave", "WesternCave1"};
     /** Nen hang di duoc. */
     static final String[] NEN_HANG = {"WesternCave1", "MurkyCave", "GoldenChamber", "SealedRuin", "MtSteel1"};
     /*
      * Rang buoc theo KIEU tile: "nuoc" (van nuoc PMD) chi cho o CHAN; o di duoc mau nuoc (nuoc
-     * nong, bo bien) la "nuoc_nong" - giu hinh KPAH, chi doi mau - de nguoi choi khong thay mot o
+     * nong, bo bien) la "nuoc_nong" - giu hinh goc, chi doi mau - de nguoi choi khong thay mot o
      * nuoc sau PMD ma van di qua duoc.
      */
     /** Nguong do lech chuan L de coi tile hang co vat noi (xem BoTile.nguongVat). */
@@ -229,7 +229,7 @@ public final class DoiTileMap {
         return k.toArray(new Nguon[0]);
     }
 
-    /** Mot bo tile KPAH. */
+    /** Mot bo tile goc. */
     static final class BoTile {
         final String ten;           // t, t_hang, t_thanh
         final String tenNho;        // anh 1xN cho ban do nho
@@ -238,7 +238,7 @@ public final class DoiTileMap {
         int[] kieu;
         /**
          * > 0: tile co vat noi (nhu da, tang, lua...) - do lech chuan do sang (Lab L) cua phan
-         * khong phai vuc vuot nguong nay - khong bi thay nguyen; ve tung pixel, giu bong KPAH day du
+         * khong phai vuc vuot nguong nay - khong bi thay nguyen; ve tung pixel, giu bong goc day du
          * va giu nguyen pixel lech manh (vien, diem sang) de vat van doc duoc.
          */
         double nguongVat;
@@ -261,7 +261,7 @@ public final class DoiTileMap {
                 new VatLieu("dat", c(7, 16, 17, 18, 19, 80, 81, 82), ds(DAT, NEN)).giuMau(0.3),
                 new VatLieu("nuoc", c(141, 142, 143, 188, 189, 196, 197, 198, 199), ds(NUOC, PHU)).giuMau(0.85).tuongPhan(0.75).sachHet().chiKieu(CHAN),
                 new VatLieu("nuoc_nong", c(141, 142, 143, 188, 189, 196, 197, 198, 199)).chiKieu(DI_DUOC),
-                // Tan cay KPAH ghep tu nhieu tile: phan trong cua tuong DTEF la mang phang, thay vao
+                // Tan cay goc ghep tu nhieu tile: phan trong cua tuong DTEF la mang phang, thay vao
                 // thanh o vuong xanh. Nen giu hinh (chi doi mau), chi chan khong cho bi xep la "co".
                 new VatLieu("cay", r(162, 174)).chiKieu(CHAN),
                 // Vach dat nau (mat vach) cung giu hinh: thay bang van dat se mat do cao.
@@ -271,7 +271,7 @@ public final class DoiTileMap {
             // Hang / sa mac (110..200).
             new BoTile("t_hang", "t_hang_s",
                 // Vuc toi (o 8, chan) GIU den nhu vung "ngoai ban do" cua hang PMD; van da PMD chi
-                // nam tren dai vach (o mep) va giu dung duong vien KPAH (khongThay).
+                // nam tren dai vach (o mep) va giu dung duong vien goc (khongThay).
                 new VatLieu("vuc", c(8)).nguyenMau().chiKieu(CHAN),
                 new VatLieu("nen_hang", c(0, 4, 6, 7, 16, 17, 22, 23), ds(NEN_HANG, NEN)).giuMau(1.0).tuongPhan(0.4).sachHet(),
                 new VatLieu("da_hang", g(r(9, 15), r(19, 21), r(24, 30)), ds(DA_HANG, TUONG)).giuMau(0.75)
@@ -568,7 +568,7 @@ public final class DoiTileMap {
 
     // ------------------------------------------------------------------ chuong trinh chinh
 
-    /** Ket qua cho mot tile KPAH. */
+    /** Ket qua cho mot tile goc. */
     static final class KetQua {
         int[] px;
         String vatLieuChinh;
@@ -789,7 +789,7 @@ public final class DoiTileMap {
             if (v.ungVien.length == 0) {
                 continue;   // vat lieu "giu": chi de pixel khong bi xep nham sang vat lieu khac
             }
-            // Chon nguon: trung binh khoang cach dac trung tu tile mau KPAH toi tile PMD tot nhat.
+            // Chon nguon: trung binh khoang cach dac trung tu tile mau goc toi tile PMD tot nhat.
             double tot = Double.MAX_VALUE;
             for (final Nguon ng : v.ungVien) {
                 final List<TilePmd> ds = tileDay(ng);
@@ -883,7 +883,7 @@ public final class DoiTileMap {
         return lech / 256.0;
     }
 
-    /** Dich mau moi tile PMD cua vat lieu ve phia mau trung binh KPAH (giu van, giu do tuong phan). */
+    /** Dich mau moi tile PMD cua vat lieu ve phia mau trung binh goc (giu van, giu do tuong phan). */
     static void keoMau(final VatLieu v, final double[] tbMau) {
         final double[] tbPmd = new double[3];
         for (final TilePmd t : v.tiles) {
@@ -1040,7 +1040,7 @@ public final class DoiTileMap {
 
     /**
      * Pixel khong thuoc vat lieu nao (mai, go, do vat): giu hinh, keo mau ve phia bang mau
-     * PMD - dich sac do (a,b) theo do lech trung binh giua vat lieu KPAH va van PMD da chon,
+     * PMD - dich sac do (a,b) theo do lech trung binh giua vat lieu goc va van PMD da chon,
      * co trong so theo khoang cach toi tung vat lieu. Nho hon: giu nguyen mau goc.
      */
     static int doiMauKhac(final BoTile b, final double[] l) {

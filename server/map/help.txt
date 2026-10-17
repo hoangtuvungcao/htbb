@@ -1,4 +1,4 @@
-﻿Chào mừng bạn đến với trò chơi KPAH! Bạn đã sẵn sàng cho chuyến phiêu lưu của mình chưa?
+﻿Chào mừng bạn đến với trò chơi Huyền Thoại Bảo Bối! Bạn đã sẵn sàng cho chuyến phiêu lưu của mình chưa?
 x1I. Phím điều khiển
 x0  * Phím mũi tên hoặc 2,4,6,8: Di chuyển nhân vật
 x0  * Phím 5 hoặc phím chọn giữa: Đánh thường. Phím 1,3: Dùng kỹ năng khác nếu đã học

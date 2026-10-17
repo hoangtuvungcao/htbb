@@ -139,7 +139,7 @@ function adminHead(string $trang, string $tieuDe): void
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <meta name="color-scheme" content="dark">
-    <title><?= e($tieuDe) ?> · Quản trị KPAH</title>
+    <title><?= e($tieuDe) ?> · Quản trị HTBB</title>
     <link rel="stylesheet" href="<?= e(tepTinh('assets/admin.css')) ?>">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
 </head>

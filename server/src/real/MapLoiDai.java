@@ -503,8 +503,8 @@ public class MapLoiDai extends Map {
 
    public static boolean isTimeLoiDai() {
       if (isRunLoiDai() && Map.openLog) {
-         int hour = UtilKPAH.getHour();
-         int minute = UtilKPAH.getMinute();
+         int hour = UtilHTBB.getHour();
+         int minute = UtilHTBB.getMinute();
          return hour == HOUR_LOI_DAI && minute < 59;
       } else {
          return false;
@@ -528,7 +528,7 @@ public class MapLoiDai extends Map {
             }
 
             this.map_run_state = 1;
-            int minute = UtilKPAH.getMinute();
+            int minute = UtilHTBB.getMinute();
             if (isTimeLoiDai() && start_minute == minute) {
                isStartLoiDai = true;
                start_minute += 7;

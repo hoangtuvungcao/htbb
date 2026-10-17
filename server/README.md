@@ -1,12 +1,14 @@
-# KPAH — Khí Phách Anh Hùng (private server)
+# HTBB — Huyền Thoại Bảo Bối (private server)
 
 > **Nhánh `pokemon/chuyen-doi`:** game đã chuyển hoàn toàn sang **Huyền Thoại Bảo Bối** — game
 > Pokémon (người chơi chính là một Pokémon), bật bằng `sv.che_do_pokemon=1`. Mọi thứ về việc chuyển
 > đổi (quyết định, bảng chuyển đổi, tool, thứ tự chạy SQL, kết quả kiểm thử) nằm ở
 > [docs/pokemon/KE_HOACH_CHUYEN_DOI.md](docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Phần dưới đây mô tả
-> hạ tầng gốc của KPAH, vẫn đúng cho nhánh này.
+> hạ tầng gốc của HTBB, vẫn đúng cho nhánh này.
 
-Private server cho game mobile MMORPG "Khí Phách Anh Hùng". Gồm 4 phần chạy độc lập:
+Private server cho game mobile MMORPG Huyền Thoại Bảo Bối (HTBB; trước đây là KPAH — "Khí Phách Anh Hùng").
+Các tên hạ tầng trên VPS vẫn giữ chữ `kpah` (CSDL `kpah_db`, thư mục `/opt/kpah`, service
+`kpah-game`/`kpah-login`, user Linux `kpah`, jar deploy `KPAH2_patched.jar`, biến `KPAH_*`). Gồm 4 phần chạy độc lập:
 
 - **Java game server** — `src/`, build bằng `build.bat`. Jar deploy thật là
   `KPAH2_patched.jar` ở gốc repo.
@@ -131,7 +133,7 @@ Chạy `KhiPhachAnhHung.exe -batchmode -nographics -logfile <tệp>` rồi đọ
 | Sau khi đặt ảnh giữ chỗ | 1 | `Tilemap.loadMap()` tràn ngăn xếp |
 | **Hiện tại** | **0** | — chạy hết chuỗi khởi động |
 
-Nhật ký hiện tại đi hết: `Init Scale GUI` → `Ban: -- khi phach anh hung` →
+Nhật ký hiện tại đi hết: `Init Scale GUI` → `Ban: -- huyen thoai bao boi` →
 `init Session_ME` (lớp mạng sẵn sàng).
 
 Bốn thứ đã sửa để tới được đây:
@@ -182,8 +184,8 @@ bình thường như hiện nay.
 ## Build
 
 ```
-build.bat      # biên dịch src/ -> KPAH2_NEW.jar (jar sạch, dựng từ đầu)
-capnhat.bat    # thay KPAH2_NEW.jar vào KPAH2_patched.jar (có backup) + chạy lại
+build.bat      # biên dịch src/ -> HTBB_NEW.jar (jar sạch, dựng từ đầu)
+capnhat.bat    # thay HTBB_NEW.jar vào KPAH2_patched.jar (có backup) + chạy lại
 test.bat       # chạy bộ kiểm thử (mã thoát 0 = đạt) — không đụng jar deploy
 ```
 
@@ -243,7 +245,7 @@ trong `KPAH2_patched.jar` thì bản đó thắng, thiếu thì rơi xuống `NQ
 **49 trên 100 class của `src/` bị bytecode trong `NQSH_5h.jar` gọi ngược theo tên.**
 Ví dụ `data/BossMatQuy.class` trong jar giữ tham chiếu cứng tới `real/Char`.
 
-Hệ quả: đổi `real.Char` thành `com.kpah.game.Char` sẽ **biên dịch sạch, mọi kiểm
+Hệ quả: đổi `real.Char` thành `com.htbb.game.Char` sẽ **biên dịch sạch, mọi kiểm
 tra đều pass, rồi server ném `NoClassDefFoundError: real/Char` lúc chạy** — đúng
 lúc người chơi chạm vào đường code đó. Compiler không thể phát hiện, vì jar là
 bytecode đóng.
@@ -431,7 +433,7 @@ Cộng thêm: bộ test hiện chỉ phủ được hàm thuần, **không phủ
 **Đề xuất thứ tự**: viết test phủ các đường đi chính trước → rồi mới đổi, làm
 từng nhóm nhỏ, mỗi nhóm build + chạy thử trên máy riêng trước khi đẩy lên server.
 
-Cái được nếu làm xong: đổi được tên package sang `com.kpah.*`, trả lại `private`
+Cái được nếu làm xong: đổi được tên package sang `com.htbb.*`, trả lại `private`
 cho 63 thành viên đã nới, và bỏ được mối nguy trộn hai phiên bản MySQL connector
 (26 class `com/mysql` chỉ có trong NQSH là inner class của bản cũ hơn — ở đó
 `Connection` là *class*, còn 5.1.49 là *interface*).

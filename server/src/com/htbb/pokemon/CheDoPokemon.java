@@ -1,4 +1,4 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 /**
  * Co {@code sv.che_do_pokemon} trong server.ini (quyet dinh Q8 o
@@ -6,7 +6,7 @@ package com.kpah.pokemon;
  * qua {@link #bat()} - khong cho nao duoc tu doc server.ini lan nua.
  *
  * Mac dinh TAT khi thieu dong: server.ini cu (va bo test characterization chay
- * ngoai server) giu nguyen hanh vi KPAH goc. Ban mau vps/server.ini.tmpl tren
+ * ngoai server) giu nguyen hanh vi game goc. Ban mau vps/server.ini.tmpl tren
  * nhanh pokemon/chuyen-doi dat =1.
  *
  * Chi doc MOT lan luc bat may (TeamServer). Doi gia tri phai khoi dong lai: bat

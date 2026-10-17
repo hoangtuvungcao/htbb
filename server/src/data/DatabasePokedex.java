@@ -1,6 +1,6 @@
 package data;
 
-import com.kpah.pokemon.Pokedex;
+import com.htbb.pokemon.Pokedex;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

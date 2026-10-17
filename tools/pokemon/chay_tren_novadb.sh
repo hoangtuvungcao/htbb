@@ -2,7 +2,7 @@
 # Chay TOAN BO server Huyen Thoai Bao Boi tren NovaDB (may dev / test):
 #   NovaDB (cong MySQL) -> nap sql/htbb_day_du.sql neu CSDL trong -> login server -> game server.
 #
-# Chay o thu muc KPAH/:
+# Chay o thu muc HTBB/:
 #   sh tools/pokemon/chay_tren_novadb.sh            # khoi dong
 #   sh tools/pokemon/chay_tren_novadb.sh dung       # dung ca 3
 #
@@ -12,7 +12,7 @@
 #   NOVA_USER / NOVA_PASS  tai khoan cong MySQL      MYSQL      lenh mysql client (de nap SQL)
 #   CHAY         thu muc chua pid + log (mac dinh ./chay_novadb, nam trong .gitignore)
 #
-# Game server doc server.ini o KPAH/: script SINH server.ini tu vps/server.ini.tmpl (tro vao NovaDB,
+# Game server doc server.ini o HTBB/: script SINH server.ini tu vps/server.ini.tmpl (tro vao NovaDB,
 # db.thamSoJdbc=useSSL=false). server.ini nam trong .gitignore.
 set -e
 NOVADBD=${NOVADBD:-$HOME/Downloads/github/nova-db/NovaDB/target/release/novadbd}

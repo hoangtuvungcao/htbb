@@ -425,7 +425,7 @@ public class AnimalMove : Char
 	/// <summary>
 	/// Ve pet di theo bang PokeBody khi chu nhan co pokePetDex (lenh -94 POKE_PET) va co sprite
 	/// trong Resources/poke/. Dang di neu vua doi vi tri trong vai khung gan day, quay theo dir
-	/// cua pet. Tra ve false de goi ve kieu cu (anh pet KPAH). Dung chung cho AnimalMove va Pet.
+	/// cua pet. Tra ve false de goi ve kieu cu (anh pet goc). Dung chung cho AnimalMove va Pet.
 	/// </summary>
 	protected bool vePokePet(MyGraphics g, Char chu)
 	{

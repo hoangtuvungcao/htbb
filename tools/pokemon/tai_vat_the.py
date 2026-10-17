@@ -17,7 +17,7 @@ Ra (client Unity, Resources/poke/):
   docs/pokemon/bang_vat_the.csv  bang doi chieu (commit). test/KiemHinhPokemon so bang nay
                                  voi bang C# trong ClientUnity/Assets/Scripts/Game/VatThePokemon.cs
 
-Chay (o thu muc KPAH/):
+Chay (o thu muc HTBB/):
     python3 -I tools/pokemon/tai_vat_the.py            # tai + dong goi
     python3 -I tools/pokemon/tai_vat_the.py --khong-tai # chi dong goi tu file da tai
 
@@ -94,7 +94,7 @@ VAT_THE = {
 def tai(ten, dich):
     if os.path.exists(dich):
         return True
-    req = urllib.request.Request(NGUON + ten + ".png", headers={"User-Agent": "kpah-pokemon-tool"})
+    req = urllib.request.Request(NGUON + ten + ".png", headers={"User-Agent": "htbb-pokemon-tool"})
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             data = r.read()

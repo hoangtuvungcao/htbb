@@ -1,9 +1,9 @@
-package com.kpah.pokemon;
+package com.htbb.pokemon;
 
 /**
  * Bang loai Pokemon NGUOI CHOI dieu khien (giai doan 1: 5 dong khoi dau).
  *
- * Moi class cu cua KPAH (CharManager.KIEM..CUNG_THU) anh xa sang mot dong
+ * Moi class cu cua game goc (CharManager.KIEM..CUNG_THU) anh xa sang mot dong
  * Pokemon khoi dau, nho vay KHONG phai doi cot `class` trong tob_char hay
  * CreateCharHandler (chi co bytecode trong lib/NQSH_5h.jar, khong co source).
  * Chi tiet ly do: docs/pokemon/KE_HOACH_CHUYEN_DOI.md, bang "Class -> Pokemon".

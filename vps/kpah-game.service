@@ -1,5 +1,5 @@
 [Unit]
-Description=KPAH game server
+Description=HTBB game server
 After=network.target mariadb.service kpah-login.service
 Wants=mariadb.service kpah-login.service
 

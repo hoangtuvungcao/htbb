@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-title Chay kiem thu KPAH
+title Chay kiem thu HTBB
 cd /d "%~dp0"
 
 REM ============================================================
@@ -15,7 +15,7 @@ REM  Ma thoat: 0 = tat ca dat, 1 = co test hong.
 REM ============================================================
 
 echo ============================================================
-echo   KIEM THU KPAH
+echo   KIEM THU HTBB
 echo ============================================================
 echo.
 

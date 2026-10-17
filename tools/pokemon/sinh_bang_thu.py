@@ -9,7 +9,7 @@ Ra:
 Bao loi (ma thoat 1) neu loai chon khong co sprite PMD (tracker.json),
 hoac ANIMAL khong du 21 loai (Animal.java co 21 hang so 0..20).
 
-Chay (o thu muc KPAH/): python3 -I tools/pokemon/sinh_bang_thu.py
+Chay (o thu muc HTBB/): python3 -I tools/pokemon/sinh_bang_thu.py
 Sau do chay tai_sprite_pmd.py de tai them sprite (no doc ca bang_thu.csv).
 """
 import csv
@@ -76,7 +76,7 @@ def tracker():
     os.makedirs(BO_NHO, exist_ok=True)
     p = os.path.join(BO_NHO, "tracker.json")
     if not os.path.exists(p):
-        req = urllib.request.Request(TRACKER, headers={"User-Agent": "kpah-pokemon-tool"})
+        req = urllib.request.Request(TRACKER, headers={"User-Agent": "htbb-pokemon-tool"})
         with urllib.request.urlopen(req, timeout=60) as r:
             open(p, "wb").write(r.read())
     return json.load(open(p, encoding="utf8"))

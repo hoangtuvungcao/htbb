@@ -243,7 +243,7 @@ class MapDoMenu {
             // 29 chung cho moi trang bi thu (Map.thaoTrangBiThu).
             // Che do Pokemon (G7.D3): muc "Pokédex" noi vao cuoi menu NPC doi thuong (-90),
             // menu con o npc ao PokedexPokemon.NPC_ID (-526). Tat co: khong co muc nay.
-            if (idNpc == -90 && idMenu == 0 && com.kpah.pokemon.CheDoPokemon.bat()
+            if (idNpc == -90 && idMenu == 0 && com.htbb.pokemon.CheDoPokemon.bat()
                     && idOptionMenu == PokedexPokemon.VI_TRI_MUC_NPC_DOI_THUONG) {
                 PokedexPokemon.moMenu(player);
                 return;
@@ -1731,7 +1731,7 @@ class MapDoMenu {
                                 }
 
                                 if (player.lvDetail.lv >= 70) {
-                                    if (!UtilKPAH.isSunday()) {
+                                    if (!UtilHTBB.isSunday()) {
                                         player.sendMessage(
                                                 MessageCreator.createServerAlertMessage(
                                                         !MapChienTruongMoba.isStart
@@ -1742,7 +1742,7 @@ class MapDoMenu {
                                         );
                                         return;
                                     }
-                                } else if (!UtilKPAH.isWednesay()) {
+                                } else if (!UtilHTBB.isWednesay()) {
                                     player.sendMessage(
                                             MessageCreator.createServerAlertMessage(
                                                     !MapChienTruongMoba.isStart
@@ -1771,7 +1771,7 @@ class MapDoMenu {
                                         return;
                                     }
 
-                                    if (!UtilKPAH.isMonday() && !UtilKPAH.isThursday() && (UtilKPAH.isWednesay() || UtilKPAH.isSunday()) && UtilKPAH.getHour() < 21) {
+                                    if (!UtilHTBB.isMonday() && !UtilHTBB.isThursday() && (UtilHTBB.isWednesay() || UtilHTBB.isSunday()) && UtilHTBB.getHour() < 21) {
                                         player.sendMessage(MessageCreator.createMsgChat(player.id, "Chỉ có thể nhận quà đến hết ngày thứ 2 hoặc ngày thứ 5."));
                                         return;
                                     }
@@ -1800,10 +1800,10 @@ class MapDoMenu {
                                     return;
                                 }
 
-                                if (!UtilKPAH.isTuesday()
-                                        && !UtilKPAH.isFriday()
-                                        && !UtilKPAH.isSaturday()
-                                        && (!UtilKPAH.isWednesay() && !UtilKPAH.isSunday() || UtilKPAH.getHour() >= 21)) {
+                                if (!UtilHTBB.isTuesday()
+                                        && !UtilHTBB.isFriday()
+                                        && !UtilHTBB.isSaturday()
+                                        && (!UtilHTBB.isWednesay() && !UtilHTBB.isSunday() || UtilHTBB.getHour() >= 21)) {
                                     int win = Database.instance.getCharTopLiendau(player.charname, 0);
                                     if (win == -1) {
                                         player.sendMessage(MessageCreator.createMsgChat(player.id, "Không thể nhận quà."));
@@ -1832,10 +1832,10 @@ class MapDoMenu {
                                 return;
                             }
 
-                            if (!UtilKPAH.isTuesday()
-                                    && !UtilKPAH.isFriday()
-                                    && !UtilKPAH.isSaturday()
-                                    && (!UtilKPAH.isWednesay() && !UtilKPAH.isSunday() || UtilKPAH.getHour() >= 21)) {
+                            if (!UtilHTBB.isTuesday()
+                                    && !UtilHTBB.isFriday()
+                                    && !UtilHTBB.isSaturday()
+                                    && (!UtilHTBB.isWednesay() && !UtilHTBB.isSunday() || UtilHTBB.getHour() >= 21)) {
                                 int win = Database.instance.getCharWinLiendau(player.charname);
                                 if (win < 1) {
                                     player.sendMessage(MessageCreator.createMsgChat(player.id, "Không thể nhận quà."));

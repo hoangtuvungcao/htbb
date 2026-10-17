@@ -2,8 +2,8 @@
 G7.C - phan dung chung cua sinh_sql_chu.py va quet_tu_cam.py (KHONG chay truc tiep).
 
 MOT NGUON: tu dien doi chu va danh sach tu cam nam trong
-src/com/kpah/pokemon/ChuPokemon.java (DOI, TEN_THU_CUOI, CHO_PHEP, TU_CAM) va ten dia danh
-trong src/com/kpah/pokemon/TenMapPokemon.java (BANG). File nay doc thang hai file Java do
+src/com/htbb/pokemon/ChuPokemon.java (DOI, TEN_THU_CUOI, CHO_PHEP, TU_CAM) va ten dia danh
+trong src/com/htbb/pokemon/TenMapPokemon.java (BANG). File nay doc thang hai file Java do
 (regex tren ma nguon) va ghep bang dung thu tu ChuPokemon.bangDayDu().
 
 Nap bang importlib (python3 -I khong dua thu muc script vao sys.path):
@@ -13,8 +13,8 @@ import os
 import re
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-F_CHU = os.path.join(GOC, "src", "com", "kpah", "pokemon", "ChuPokemon.java")
-F_MAP = os.path.join(GOC, "src", "com", "kpah", "pokemon", "TenMapPokemon.java")
+F_CHU = os.path.join(GOC, "src", "com", "htbb", "pokemon", "ChuPokemon.java")
+F_MAP = os.path.join(GOC, "src", "com", "htbb", "pokemon", "TenMapPokemon.java")
 F_DUMP = os.path.join(GOC, "sql", "gamedb7_clean.sql")
 
 PHAN_BIET = "="

@@ -1,6 +1,6 @@
-# Website KPAH (đăng ký / đăng nhập / kích hoạt)
+# Website HTBB (đăng ký / đăng nhập / kích hoạt)
 
-Trang chủ + hệ thống tài khoản cho máy chủ private KPAH, viết bằng **PHP + MySQL/MariaDB**,
+Trang chủ + hệ thống tài khoản cho máy chủ private HTBB, viết bằng **PHP + MySQL/MariaDB**,
 dùng chung database với game server.
 
 ## Kết nối vào đâu?
@@ -517,7 +517,7 @@ bảng riêng nên không hiện ở đây.
 Đọc file log lấy khoảng **64 KB cuối** bằng `fseek` chứ không nạp cả file — `game.out` có thể vài trăm MB. Thư mục lấy từ hằng `SERVER_DIR`, mặc định là thư mục cha của `web/` (đúng cho VPS vì server chạy với `WorkingDirectory=/opt/kpah` còn web ở `/opt/kpah/web`). Chạy thử trên máy khác cây thư mục thì đặt lại trong `config.local.php`:
 
 ```php
-define('SERVER_DIR', 'C:/Users/ADMIN/Desktop/KPAH');
+define('SERVER_DIR', 'C:/Users/ADMIN/Desktop/HTBB');
 ```
 
 Trang **chỉ đọc**, và chỉ đọc đúng 10 tên file viết sẵn trong mã nguồn — tên file không bao giờ lấy từ đường dẫn, nên `?file=../config.local.php` không lần ra mật khẩu database được.

@@ -38,7 +38,7 @@ public final class XemSkinNhuTrongGame {
 
     private static final String[] TEN_HUONG = { "xuong", "len", "trai", "phai" };
 
-    /** Nhan vat KPAH cao xap xi 40px, rong xap xi 20px, chan o day khung. */
+    /** Nhan vat game goc cao xap xi 40px, rong xap xi 20px, chan o day khung. */
     private static final int NGUOI_RONG = 20;
     private static final int NGUOI_CAO = 40;
 

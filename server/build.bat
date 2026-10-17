@@ -1,10 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
-title Build KPAH2_NEW.jar tu source
+title Build HTBB_NEW.jar tu source
 cd /d "%~dp0"
 
 REM ============================================================
-REM  Build KPAH2_NEW.jar tu src\  (jar SACH, dung tu dau)
+REM  Build HTBB_NEW.jar tu src\  (jar SACH, dung tu dau)
 REM
 REM  Chay sau khi sua bat ky file .java nao trong src\.
 REM  Xong thi chay capnhat.bat de thay vao KPAH2_patched.jar.
@@ -21,7 +21,7 @@ REM     ket lai vinh vien trong jar nua.
 REM ============================================================
 
 echo ============================================================
-echo   BUILD KPAH2_NEW.jar TU SOURCE (src\)
+echo   BUILD HTBB_NEW.jar TU SOURCE (src\)
 echo ============================================================
 echo.
 
@@ -90,7 +90,7 @@ if errorlevel 1 (
 for /f %%C in ('dir /s /b "%OUT%\*.class" ^| find /c /v ""') do set SOCLASS=%%C
 echo       OK - %SOCLASS% class.
 
-echo [3/4] Dong goi KPAH2_NEW.jar...
+echo [3/4] Dong goi HTBB_NEW.jar...
 REM Class-Path tro toi lib\ - la duong dan TUONG DOI so voi cho dat jar, tuc
 REM /opt/kpah/lib tren VPS (WorkingDirectory=/opt/kpah). Doi ten thu muc lib
 REM la server chet ngay luc khoi dong vi khong thay driver MySQL.
@@ -99,8 +99,8 @@ REM la server chet ngay luc khoi dong vi khong thay driver MySQL.
 >> "%MF%" echo Class-Path: lib/jxl-2.6.jar lib/mysql-connector-java-5.1.49.jar lib/NQSH_5h.jar
 >> "%MF%" echo.
 
-if exist KPAH2_NEW.jar del /f /q KPAH2_NEW.jar
-"%JDKBIN%\jar.exe" cfm KPAH2_NEW.jar "%MF%" -C "%OUT%" .
+if exist HTBB_NEW.jar del /f /q HTBB_NEW.jar
+"%JDKBIN%\jar.exe" cfm HTBB_NEW.jar "%MF%" -C "%OUT%" .
 if errorlevel 1 (
     echo [LOI] Dong goi jar that bai.
     pause
@@ -109,7 +109,7 @@ if errorlevel 1 (
 
 echo [4/4] Kiem tra jar...
 REM Ba kiem tra toi thieu truoc khi cho phep dem len server that.
-"%JDKBIN%\jar.exe" tf KPAH2_NEW.jar > build\entries.txt
+"%JDKBIN%\jar.exe" tf HTBB_NEW.jar > build\entries.txt
 if errorlevel 1 (
     echo   [LOI] Jar khong doc duoc.
     pause
@@ -132,7 +132,7 @@ echo       OK - %SOJAR% class, Main-Class %MAINCLASS% co mat.
 
 echo.
 echo ============================================================
-echo   XONG: da tao KPAH2_NEW.jar (%SOJAR% class)
+echo   XONG: da tao HTBB_NEW.jar (%SOJAR% class)
 echo   Buoc tiep theo:
 echo     1. capnhat.bat  -^> thay vao KPAH2_patched.jar (co backup) + chay lai
 echo     2. Test server chay on tren may ban

@@ -289,7 +289,7 @@ public class Monster : LiveActor
 
 	/// <summary>
 	/// Quai phan_loai vat_the (cong thanh, nguyen lieu, ngoc, ruong, thung): ve do vat PMD
-	/// (VatThePokemon, viec G7.B1) thay anh KPAH cu. Tra ve false de ve kieu cu.
+	/// (VatThePokemon, viec G7.B1) thay anh goc cu. Tra ve false de ve kieu cu.
 	/// </summary>
 	public bool paintVatThe(MyGraphics g)
 	{

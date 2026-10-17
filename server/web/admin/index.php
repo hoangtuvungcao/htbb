@@ -23,12 +23,12 @@ const CHO_2FA_HAN = 300;
 /** Đang chờ gõ mã hai bước cho ai, hoặc null. Tự hết hạn. */
 function cho2fa(): ?array
 {
-    $c = $_SESSION['kpah_cho_2fa'] ?? null;
+    $c = $_SESSION['htbb_cho_2fa'] ?? null;
     if (!$c) {
         return null;
     }
     if (time() - (int)($c['luc'] ?? 0) > CHO_2FA_HAN) {
-        unset($_SESSION['kpah_cho_2fa']);
+        unset($_SESSION['htbb_cho_2fa']);
         return null;
     }
     return $c;
@@ -37,9 +37,9 @@ function cho2fa(): ?array
 /** Đóng phiên chờ và mở phiên admin thật. */
 function vaoDuoc(array $tk, string $cach): void
 {
-    unset($_SESSION['kpah_cho_2fa']);
+    unset($_SESSION['htbb_cho_2fa']);
     session_regenerate_id(true);
-    $_SESSION['kpah_admin'] = [
+    $_SESSION['htbb_admin'] = [
         'id'       => (int)$tk['id'],
         'username' => (string)$tk['username'],
         'last'     => time(),
@@ -54,7 +54,7 @@ function vaoDuoc(array $tk, string $cach): void
 // ---------------------------------------------------------------------------
 // Bấm "Đăng nhập bằng tài khoản khác" ở bước hai.
 if (isset($_GET['huy_2fa'])) {
-    unset($_SESSION['kpah_cho_2fa']);
+    unset($_SESSION['htbb_cho_2fa']);
     header('Location: index.php');
     exit;
 }
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser() && cho2fa() !== null) 
             // Khoá bị gỡ giữa lúc đang đăng nhập (ai đó chạy DELETE để cứu tài
             // khoản). Bắt đầu lại từ đầu chứ không cho đi tiếp — phiên chờ này
             // được tạo dựa trên một điều kiện giờ không còn đúng.
-            unset($_SESSION['kpah_cho_2fa']);
+            unset($_SESSION['htbb_cho_2fa']);
             $loi[] = 'Thiết lập hai bước của tài khoản này vừa thay đổi. Hãy đăng nhập lại.';
         } else {
             $buoc = hbKiemMa((string)$d['khoa_bimat'], $maGoVao, (int)$d['buoc_da_dung']);
@@ -147,10 +147,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser() && cho2fa() === null) 
                     $loi[] = 'Tài khoản này đang bị khoá.';
                 } elseif (hbDaGhiDanh((string)$row['username'])) {
                     // Mật khẩu đúng, nhưng CHƯA vào được. Phiên chờ này không phải
-                    // phiên admin: requireAdmin() chỉ đọc $_SESSION['kpah_admin'],
+                    // phiên admin: requireAdmin() chỉ đọc $_SESSION['htbb_admin'],
                     // nên mọi trang khác vẫn đá về đây.
                     session_regenerate_id(true);
-                    $_SESSION['kpah_cho_2fa'] = [
+                    $_SESSION['htbb_cho_2fa'] = [
                         'id'       => (int)$row['id'],
                         'username' => (string)$row['username'],
                         'luc'      => time(),
@@ -172,14 +172,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !adminUser() && cho2fa() === null) 
                 //     MySQL 8, nơi hàm PASSWORD() đã bị gỡ (login server cũng sẽ hỏng theo)
                 // Trước đây chỉ báo "không kết nối được" cho cả hai, làm người sửa đi
                 // nhầm hướng. Giờ ghi nguyên văn ra log lỗi PHP và nói rõ chỗ để xem.
-                error_log('[kpah-admin] dang nhap that bai: ' . get_class($ex) . ': ' . $ex->getMessage());
+                error_log('[htbb-admin] dang nhap that bai: ' . get_class($ex) . ': ' . $ex->getMessage());
                 $maLoi = ($ex instanceof PDOException && $ex->getCode() !== '') ? ' [' . $ex->getCode() . ']' : '';
                 $loi[] = 'Cơ sở dữ liệu báo lỗi' . $maLoi . ' với '
                        . DB_USER . '@' . DB_HOST . ' (mật khẩu ' . strlen(DB_PASS) . ' ký tự).';
                 // Mã 1045 "Access denied for user 'root'" gần như không bao giờ là
                 // nguyên nhân thật — nó chỉ là hệ quả của việc không đọc được
                 // server.ini rồi rơi xuống mặc định. Nói thẳng điều đó ra.
-                $goiY = function_exists('kpahGoiYLoiKetNoi') ? kpahGoiYLoiKetNoi() : '';
+                $goiY = function_exists('htbbGoiYLoiKetNoi') ? htbbGoiYLoiKetNoi() : '';
                 if ($goiY !== '') {
                     $loi[] = $goiY;
                 }

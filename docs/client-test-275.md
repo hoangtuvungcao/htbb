@@ -60,7 +60,7 @@ class 52). Đã thử 12/09/2026: mở được tới màn Launcher, không ngo�
 **Bẫy RMS — đã dính ngay lần đầu**: lúc mở, `yv()` đọc RMS `ipnqsh` (danh sách server client
 đã lưu) và **đè lên** danh sách vừa vá. MicroEmulator giữ RMS theo `MIDlet-Name` ở
 `C:\Users\ADMIN\.microemulator\suite-Khi Phach Anh Hung\`, và ở đó đã có `ipnqsh.rs` chứa đúng
-một mục "Server → 180.93.57.30" do lần chạy KPAH trước để lại — bấm Start là nối thẳng VPS.
+một mục "Server → 180.93.57.30" do lần chạy HTBB trước để lại — bấm Start là nối thẳng VPS.
 Đã đổi tên thành `ipnqsh.rs.bak-truoc-local-20260912`. Client ghi lại `ipnqsh` khi bấm **Cập
 nhật** hoặc khi server gửi danh sách xuống, nên nếu sau này jar mới mà vẫn nối IP lạ: xoá/đổi
 tên `ipnqsh.rs` lần nữa (đừng xoá cả thư mục suite — `nqshlogin.rs` là tài khoản đã lưu). KEmulator

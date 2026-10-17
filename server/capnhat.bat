@@ -1,16 +1,16 @@
 @echo off
-title Cap nhat server KPAH
+title Cap nhat server HTBB
 setlocal enabledelayedexpansion
 
 cd /d "%~dp0"
 
 echo ============================================================
-echo   CAP NHAT SERVER KPAH
+echo   CAP NHAT SERVER HTBB
 echo ============================================================
 echo.
 
-if not exist "KPAH2_NEW.jar" (
-  echo [LOI] Khong thay KPAH2_NEW.jar trong thu muc nay.
+if not exist "HTBB_NEW.jar" (
+  echo [LOI] Khong thay HTBB_NEW.jar trong thu muc nay.
   pause
   exit /b 1
 )
@@ -51,7 +51,7 @@ if exist "KPAH2_patched.jar" (
   copy /Y "KPAH2_patched.jar" "KPAH2_patched_backup_truoc_capnhat.jar" >nul
   echo   Ban cu luu tai: KPAH2_patched_backup_truoc_capnhat.jar
 )
-copy /Y "KPAH2_NEW.jar" "KPAH2_patched.jar" >nul
+copy /Y "HTBB_NEW.jar" "KPAH2_patched.jar" >nul
 if errorlevel 1 (
   echo [LOI] Copy that bai, file co the dang bi khoa.
   pause

@@ -1,7 +1,7 @@
 package real;
 
-import com.kpah.pokemon.CheDoPokemon;
-import com.kpah.pokemon.SatThuongHe;
+import com.htbb.pokemon.CheDoPokemon;
+import com.htbb.pokemon.SatThuongHe;
 
 import data.Database;
 import data.GemItem;
@@ -75,8 +75,8 @@ public class BossMoba extends Boss {
             int sp = 6;
             int xx = 6;
             int yy = 6;
-            int[] dxy = UtilKPAH.getDXDy(UtilKPAH.angle(this.xTarget - this.x, this.ytarGet - this.y), sp);
-            if (UtilKPAH.distance(this.x, this.y, this.xTarget, this.ytarGet) > 12) {
+            int[] dxy = UtilHTBB.getDXDy(UtilHTBB.angle(this.xTarget - this.x, this.ytarGet - this.y), sp);
+            if (UtilHTBB.distance(this.x, this.y, this.xTarget, this.ytarGet) > 12) {
                 this.x += dxy[0];
                 this.y += dxy[1];
             }
@@ -178,7 +178,7 @@ public class BossMoba extends Boss {
 
         int dam = this.attack;
         dam -= def;
-        dam = dam * (30 + UtilKPAH.random(80)) / 100;
+        dam = dam * (30 + UtilHTBB.random(80)) / 100;
         if (CheDoPokemon.bat()) {
             // Che do Pokemon (viec S4): khac he 18 he thay ngu hanh.
             dam = SatThuongHe.apDung(dam, this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
@@ -719,7 +719,7 @@ public class BossMoba extends Boss {
                 this.toY = this.y;
             }
 
-        } else if (UtilKPAH.distance(this.x, this.y, this.xTarget, this.ytarGet) <= 12) {
+        } else if (UtilHTBB.distance(this.x, this.y, this.xTarget, this.ytarGet) <= 12) {
             this.attack();
         } else {
             if (System.currentTimeMillis() - this.timeChangehe > 60000L) {

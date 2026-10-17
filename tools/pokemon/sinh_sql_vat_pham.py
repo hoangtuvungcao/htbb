@@ -11,7 +11,7 @@ Ra: sql/pokemon_doi_ten_vat_pham.sql (KHONG sua tay) + docs/pokemon/bang_vat_pha
 - Ten moi = <ten loai> <bac theo cap>. Do cung loai cung cap (ban nam/nu cu) se trung ten -
   chap nhan, vi gio chung giong het nhau ve cong dung.
 
-Chay (o thu muc KPAH/): python3 -I tools/pokemon/sinh_sql_vat_pham.py
+Chay (o thu muc HTBB/): python3 -I tools/pokemon/sinh_sql_vat_pham.py
 """
 import csv
 import os

@@ -204,7 +204,7 @@ public final class KiemChiemVatRoi {
 
     /**
      * Cat than mot ham theo dau ngoac nhon can bang. Tra ve "" neu khong tim thay chu ky.
-     * (Du dung cho ma nguon KPAH: khong co chuoi nao chua dau ngoac nhon le trong cac ham nay.)
+     * (Du dung cho ma nguon HTBB: khong co chuoi nao chua dau ngoac nhon le trong cac ham nay.)
      */
     private static String thanHam(final String nguon, final String chuKy) {
         final int batDau = nguon.indexOf(chuKy);

@@ -106,13 +106,13 @@ cat > "$CONF" <<EOF
 # vao viec Apache tu giai symlink truoc khi so khop <Directory> hay khong).
 <Directory /opt/kpah/web/admin>
     AuthType Basic
-    AuthName "KPAH - Khu quan tri"
+    AuthName "HTBB - Khu quan tri"
     AuthUserFile $HTPASSWD_FILE
     Require valid-user
 </Directory>
 <Directory /var/www/html/kpah/admin>
     AuthType Basic
-    AuthName "KPAH - Khu quan tri"
+    AuthName "HTBB - Khu quan tri"
     AuthUserFile $HTPASSWD_FILE
     Require valid-user
 </Directory>

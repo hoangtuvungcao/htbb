@@ -1,12 +1,12 @@
 /// <summary>
 /// Ten game va thuong hieu - MOT cho duy nhat phia client (viec G7.E1/E2 trong
-/// docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 15). Ban server: src/com/kpah/pokemon/ThuongHieu.java
+/// docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 15). Ban server: src/com/htbb/pokemon/ThuongHieu.java
 /// (test/KiemHinhPokemon so hai ban phai giong nhau). Doi ten game: sua TEN_GAME o day va o ban
 /// Java; ten build/ung dung (Unity productName, ten file .exe/.apk, ma ung dung) lay tu day qua
 /// Assets/Editor/XayDung.cs khi chay "xay-client.bat chuanbi".
 ///
 /// Man tai / chon may chu / dang nhap: khi PokeBody.CHE_DO_POKEMON thi ve tieu de Pokemon (ten
-/// game + hang chan dung 5 Pokemon khoi dau) thay cho anh logo KPAH cu (png/logo).
+/// game + hang chan dung 5 Pokemon khoi dau) thay cho anh logo goc cu (png/logo).
 /// </summary>
 public static class ThuongHieu
 {
@@ -34,7 +34,7 @@ public static class ThuongHieu
 	/// <summary>Unity companyName.</summary>
 	public const string TEN_CONG_TY = "HTBB";
 
-	public const string MA_UNG_DUNG_CU = "com.kpah.game";
+	public const string MA_UNG_DUNG_CU = "com.htbb.game";
 
 	/// <summary>Dong gioi thieu/ghi cong ngan duoi tieu de (quyet dinh Q10: phi thuong mai).</summary>
 	public const string GIOI_THIEU = "Game Pokémon fan phi thương mại - Pokémon © Nintendo / Game Freak";

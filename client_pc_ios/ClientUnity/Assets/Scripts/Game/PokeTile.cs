@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Bo tile ban do phong cach PMD (G7.A, docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 15).
 /// Resources/poke_tile/{t,t_hang,t_thanh}.bytes: anh doc 16 x (16*n), CUNG so tile va thu tu
-/// voi res/pngtile/ cua KPAH (kieu tile trong res/t*.type khong doi). Sinh boi
+/// voi res/pngtile/ cua game goc (kieu tile trong res/t*.type khong doi). Sinh boi
 /// tools/pokemon/DoiTileMap.java. Res.loadImgMap dung bo nay khi PokeBody.CHE_DO_POKEMON.
 /// </summary>
 public class PokeTile

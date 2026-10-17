@@ -1,15 +1,15 @@
-import com.kpah.pokemon.HePokemon;
-import com.kpah.pokemon.LoaiPokemon;
+import com.htbb.pokemon.HePokemon;
+import com.htbb.pokemon.LoaiPokemon;
 
 /**
- * Kiem thu nen tang chuyen doi Pokemon (com.kpah.pokemon).
+ * Kiem thu nen tang chuyen doi Pokemon (com.htbb.pokemon).
  * Bang khac he duoc doi chieu bang SO LUONG o tung muc (51 x2, 61 x0.5, 8 x0
  * theo chuan Gen 6+) va mot so cap mau - go sai mot o la so luong lech ngay.
  */
 public final class KiemPokemon {
 
     public static void chay() {
-        Kiem.nhom("com.kpah.pokemon.HePokemon");
+        Kiem.nhom("com.htbb.pokemon.HePokemon");
 
         int x2 = 0;
         int nua = 0;
@@ -61,7 +61,7 @@ public final class KiemPokemon {
         Kiem.bang("trong game x0.25 -> 50", Integer.valueOf(50),
                 Integer.valueOf(HePokemon.heSoTrongGame(HePokemon.CO, HePokemon.LUA, HePokemon.BAY)));
 
-        Kiem.nhom("com.kpah.pokemon.LoaiPokemon");
+        Kiem.nhom("com.htbb.pokemon.LoaiPokemon");
 
         Kiem.bang("moi loai deu co ten", Integer.valueOf(LoaiPokemon.soLoai()), Integer.valueOf(LoaiPokemon.soTen()));
         final int[] dex = LoaiPokemon.tatCaDex();
