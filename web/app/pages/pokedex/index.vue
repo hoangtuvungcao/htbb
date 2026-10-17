@@ -68,7 +68,7 @@ const soDex = (d: number) => `#${String(d).padStart(3, '0')}`
         <h2 id="loc-title" class="sr-only">
           Bộ lọc
         </h2>
-        <div class="rounded-3xl glass p-4 sm:p-6">
+        <div class="rounded-3xl glass ring-gilded p-4 sm:p-6">
           <div class="grid gap-4 md:grid-cols-[1fr_14rem]">
             <UFormField label="Tìm theo tên hoặc số Pokédex" name="tim">
               <UInput
@@ -85,7 +85,7 @@ const soDex = (d: number) => `#${String(d).padStart(3, '0')}`
             </UFormField>
           </div>
           <fieldset class="mt-4">
-            <legend class="mb-2 text-sm font-medium text-default">
+            <legend class="mb-2 font-display text-sm font-bold text-default">
               Vai trò trong game
             </legend>
             <div class="flex flex-wrap gap-2">
@@ -121,13 +121,17 @@ const soDex = (d: number) => `#${String(d).padStart(3, '0')}`
           </UButton>
         </div>
 
-        <ul v-if="ketQua.length" class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6" aria-label="Danh sách Pokémon">
+        <ul v-if="ketQua.length" class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6" aria-label="Danh sách Pokémon">
           <li v-for="l in ketQua" :key="l.dex">
             <NuxtLink
               :to="`/pokedex/${l.dex}`"
-              class="group flex h-full flex-col items-center rounded-2xl glass p-3 text-center transition hover:-translate-y-0.5 hover:ring-1 hover:ring-primary/60 focus-visible:outline-2 focus-visible:outline-primary"
+              class="group flex h-full flex-col overflow-hidden rounded-2xl border-[3px] border-[var(--poke-outline)] bg-[var(--poke-card)] text-center shadow-[0_4px_0_var(--poke-outline)] transition hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-              <span class="grid size-20 place-items-center rounded-xl bg-ink-950/60">
+              <span class="flex items-center justify-between bg-pokered-500 py-1.5 pl-3 pr-4 group-hover:bg-pokered-600">
+                <span class="size-2.5 rounded-full border-2 border-white bg-pokeblue-400" aria-hidden="true" />
+                <span class="font-pixel text-[10px] text-white">{{ soDex(l.dex) }}</span>
+              </span>
+              <span class="mx-2 mt-2 grid h-24 place-items-center rounded-xl bg-screen">
                 <img
                   v-if="anhLoaiDex(l)"
                   :src="anhLoaiDex(l)"
@@ -136,22 +140,25 @@ const soDex = (d: number) => `#${String(d).padStart(3, '0')}`
                   alt=""
                   loading="lazy"
                   decoding="async"
-                  class="pixelated size-16"
+                  class="pixelated size-20 transition-transform group-hover:scale-110"
                 >
+                <PokeBall v-else class="size-10 opacity-40" />
               </span>
-              <span class="num mt-2 text-xs text-dimmed">{{ soDex(l.dex) }}</span>
-              <span class="font-semibold text-highlighted group-hover:text-primary">{{ l.ten }}</span>
-              <span class="mt-2 flex flex-wrap justify-center gap-1">
+              <span class="mt-2 px-2 font-display text-lg font-bold leading-tight text-highlighted group-hover:text-primary">{{ l.ten }}</span>
+              <span class="mt-1.5 flex flex-wrap justify-center gap-1 px-2">
                 <PokeHeBadge v-for="h in l.he" :key="h" :he="h" size="sm" />
               </span>
-              <span class="mt-2 text-[11px] text-muted">
+              <span class="mt-auto px-2 pb-3 pt-2 text-[11px] font-semibold text-muted">
                 {{ l.vaiTro.map(v => TEN_VAI_TRO[v]).join(' · ') }}
               </span>
             </NuxtLink>
           </li>
         </ul>
-        <div v-else class="mt-10 rounded-2xl glass p-10 text-center text-muted">
-          Không có Pokémon nào khớp bộ lọc.
+        <div v-else class="mt-10 flex flex-col items-center gap-4 p-6 text-center">
+          <PokeBall wiggle class="size-14" />
+          <div class="dialog-box max-w-md">
+            <p>Không có Pokémon nào khớp bộ lọc. Có lẽ chúng đang trốn trong bụi cỏ cao...</p>
+          </div>
         </div>
 
         <p class="mt-10 text-center text-sm text-muted">

@@ -35,9 +35,7 @@ async function submit() {
 
 <template>
   <SiteAuthShell>
-    <div class="mb-6 grid size-14 place-items-center rounded-2xl border border-primary/30 bg-primary/10 text-2xl text-primary shadow-[0_0_30px_rgba(249,192,42,.25)]" aria-hidden="true">
-      ⚔
-    </div>
+    <PokeBall wiggle class="mb-6 size-14" />
     <p class="eyebrow">
       Tiếp nối hành trình
     </p>
@@ -107,7 +105,7 @@ async function submit() {
       </p>
       <!-- Dùng prop label (không dùng slot) để ui.label áp vào: nút block đẩy icon sang
            mép phải bằng ms-auto, chữ phải tự giãn ra mới nằm giữa được. -->
-      <UButton type="submit" size="xl" block :loading="loading" label="Đăng nhập" trailing-icon="i-lucide-arrow-up-right" :ui="{ label: 'flex-1 text-center' }" />
+      <UButton type="submit" size="xl" block class="btn-game" :loading="loading" label="Đăng nhập" trailing-icon="i-lucide-arrow-up-right" :ui="{ label: 'flex-1 text-center' }" />
     </form>
 
     <div class="my-6 flex items-center gap-3 text-xs tracking-[0.2em] text-dimmed">

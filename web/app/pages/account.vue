@@ -131,12 +131,12 @@ const columns = [
         <FxReveal>
           <FxTiltCard :max="6" class="h-full rounded-3xl">
             <div class="relative h-full overflow-hidden rounded-3xl glass ring-gilded p-8">
-              <div class="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-gold-400/10 blur-3xl" aria-hidden="true" />
+              <div class="pointer-events-none absolute -right-16 -top-16 size-56 rounded-full bg-pikachu-400/10 blur-3xl" aria-hidden="true" />
               <p class="eyebrow">
                 Thông tin
               </p>
               <div class="mt-6 flex items-center gap-4 [transform:translateZ(40px)]">
-                <span class="grid size-16 place-items-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-[0_0_30px_rgba(249,192,42,.2)]" aria-hidden="true">
+                <span class="grid size-16 place-items-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-[0_0_30px_rgba(10,26,51,.14)]" aria-hidden="true">
                   <UIcon name="i-lucide-user-round" class="size-8" />
                 </span>
                 <div class="min-w-0">
@@ -144,7 +144,7 @@ const columns = [
                     TÊN TÀI KHOẢN
                   </p>
                   <USkeleton v-if="!data && !error" class="mt-1 h-7 w-36" />
-                  <p v-else class="truncate font-serif text-2xl font-bold text-highlighted">
+                  <p v-else class="truncate font-display text-2xl font-bold text-highlighted">
                     {{ data?.username }}
                   </p>
                 </div>
@@ -216,7 +216,7 @@ const columns = [
                     width="40"
                     height="40"
                     alt=""
-                    class="pixelated size-10 rounded-lg bg-ink-950/60"
+                    class="pixelated size-10 rounded-lg bg-screen"
                   >
                   {{ speciesName(row.original.class, row.original.lastLv, row.original.dex) }}
                 </span>

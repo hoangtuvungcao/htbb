@@ -60,7 +60,7 @@ const style = computed(() => ({
       v-if="glare"
       class="pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-300"
       :class="hover ? 'opacity-100' : 'opacity-0'"
-      :style="{ background: `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,229,138,.22), transparent 55%)` }"
+      :style="{ background: `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,.35), transparent 55%)` }"
       aria-hidden="true"
     />
   </component>

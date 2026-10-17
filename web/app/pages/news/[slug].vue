@@ -27,7 +27,7 @@ const related = computed(() => newsList().filter(([s]) => s !== slug.value))
       <FxGlowOrbs />
       <UContainer class="relative max-w-2xl text-center">
         <FxReveal>
-          <span class="font-serif text-[8rem] leading-none text-primary/15" aria-hidden="true">404</span>
+          <span class="font-display text-[8rem] leading-none text-primary/15" aria-hidden="true">404</span>
           <p class="eyebrow justify-center">
             Tin tức · 404
           </p>
@@ -71,7 +71,7 @@ const related = computed(() => newsList().filter(([s]) => s !== slug.value))
               {{ article.body }}
             </p>
             <div class="mt-8 flex items-center gap-4 text-primary/70" aria-hidden="true">
-              <span class="h-px flex-1 bg-gradient-to-r from-transparent to-primary/50" />✦<span class="h-px flex-1 bg-gradient-to-l from-transparent to-primary/50" />
+              <span class="h-0.5 flex-1 bg-[var(--ui-border)]" /><PokeBall class="size-5" /><span class="h-0.5 flex-1 bg-[var(--ui-border)]" />
             </div>
           </FxReveal>
         </UContainer>
@@ -90,7 +90,7 @@ const related = computed(() => newsList().filter(([s]) => s !== slug.value))
               </p>
               <ol v-if="section.steps?.length" class="mt-5 space-y-3">
                 <li v-for="(step, j) in section.steps" :key="j" class="flex gap-4 rounded-2xl glass p-4">
-                  <span class="grid size-8 shrink-0 place-items-center rounded-full bg-primary/15 font-serif font-bold text-primary">{{ j + 1 }}</span>
+                  <span class="grid size-8 shrink-0 place-items-center rounded-full bg-primary/15 font-display font-bold text-primary">{{ j + 1 }}</span>
                   <span class="text-toned">{{ step }}</span>
                 </li>
               </ol>
@@ -144,9 +144,9 @@ const related = computed(() => newsList().filter(([s]) => s !== slug.value))
           <div class="mt-8 grid gap-6 md:grid-cols-2">
             <FxReveal v-for="([s, r], i) in related" :key="s" :delay="i * 0.08">
               <FxTiltCard :max="10" class="group h-full rounded-3xl">
-                <NuxtLink :to="`/news/${s}`" class="flex h-full flex-col rounded-3xl glass ring-gilded p-6 transition-shadow hover:shadow-[0_20px_60px_rgba(249,192,42,.15)]">
+                <NuxtLink :to="`/news/${s}`" class="flex h-full flex-col rounded-3xl glass ring-gilded p-6 transition-shadow hover:shadow-[0_20px_60px_rgba(10,26,51,.14)]">
                   <span class="text-xs tracking-[0.2em] text-dimmed">{{ r.category }} · {{ r.date }}</span>
-                  <h3 class="mt-3 font-serif text-xl font-bold text-highlighted [transform:translateZ(35px)]">
+                  <h3 class="mt-3 font-display text-xl font-bold text-highlighted [transform:translateZ(35px)]">
                     {{ r.title }}
                   </h3>
                   <p class="mt-2 flex-1 text-muted">

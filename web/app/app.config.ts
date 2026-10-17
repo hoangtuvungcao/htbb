@@ -10,14 +10,24 @@ export default defineAppConfig({
     tenVietTat: TEN_SITE_VIET_TAT,
   },
   ui: {
+    // Màu định nghĩa ở app/assets/css/main.css (@theme).
     colors: {
-      primary: 'gold',
-      secondary: 'jade',
-      neutral: 'ink',
+      primary: 'pokered',
+      secondary: 'pokeblue',
+      success: 'grass',
+      info: 'pokeblue',
+      warning: 'pikachu',
+      error: 'red',
+      neutral: 'navy',
     },
     button: {
       slots: {
-        base: 'font-semibold tracking-wide',
+        base: 'font-display font-bold tracking-wide rounded-full',
+      },
+    },
+    badge: {
+      slots: {
+        base: 'font-bold rounded-full',
       },
     },
   },

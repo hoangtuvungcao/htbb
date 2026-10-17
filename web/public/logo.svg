@@ -1,8 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="84" viewBox="0 0 300 84" role="img" aria-labelledby="title"><title id="title">Huyền Thoại Bảo Bối</title><g transform="translate(1 2)"><defs><linearGradient id="gold" x2="0.3" y2="1"><stop stop-color="#fff3a3"/><stop offset=".45" stop-color="#f9cd44"/><stop offset="1" stop-color="#c38719"/></linearGradient><linearGradient id="jade" x2="1" y2="1"><stop stop-color="#139987"/><stop offset="1" stop-color="#003c37"/></linearGradient></defs>
-<path d="M40 3 66 13 77 39 65 65 40 77 15 65 3 39 14 13Z" fill="#023e37" stroke="#bc8c25" stroke-width="2"/>
-<path d="m40 8 22 9 10 22-11 22-21 11-21-11L8 39l10-22Z" fill="url(#jade)" stroke="url(#gold)" stroke-width="1.5"/>
-<path d="M31 19C15 25 15 51 29 58M49 19c16 6 16 32 2 39" fill="none" stroke="#6ac5a2" opacity=".55"/>
-<path d="m40 13 5 7-2 23 9-5 8 2-14 10-6 16-6-16-14-10 8-2 9 5-2-23Z" fill="url(#gold)" stroke="#3e541f" stroke-width="1"/>
-<path d="M40 20v40" stroke="#fff9bf" stroke-width="1.5"/><path d="m40 41 5 6-5 7-5-7Z" fill="#29bfa1" stroke="#fff0a5"/>
-<path d="m11 40 4-4 4 4-4 4Zm50 0 4-4 4 4-4 4Z" fill="#f1cf60"/>
-</g><g font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-style="italic" fill="url(#gold)" stroke="#4b3715" stroke-width=".65" paint-order="stroke fill"><text x="90" y="34" font-size="30" letter-spacing=".3">Huyền Thoại</text><text x="88" y="66" font-size="32" letter-spacing=".3">Bảo Bối</text></g><path d="M92 75h61m10 0h81" stroke="#d3ad43" stroke-width="1"/><path d="m157 72 3 3-3 3-3-3Z" fill="#f4d25e"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 100" role="img" aria-label="Huyền Thoại Bảo Bối">
+  <!-- Wordmark gốc của dự án (không dùng font/hình logo Pokémon chính thức).
+       Chữ là <text>: hiển thị bằng font hệ thống khi mở file riêng; trên website dùng
+       component SiteLogo (font Baloo 2). Đổi tên site thì sửa tay ở đây. -->
+  <g transform="translate(8 8)">
+    <circle cx="42" cy="42" r="38" fill="#fff" stroke="#1b2233" stroke-width="6"/>
+    <path d="M4 42a38 38 0 0 1 76 0Z" fill="#e3350d" stroke="#1b2233" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M14 28a31 31 0 0 1 18-16" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>
+    <path d="M4 42h76" stroke="#1b2233" stroke-width="7"/>
+    <circle cx="42" cy="42" r="12" fill="#fff" stroke="#1b2233" stroke-width="6"/>
+  </g>
+  <g font-family="'Baloo 2','Arial Rounded MT Bold','Nunito',Arial,sans-serif" font-weight="800" paint-order="stroke fill" stroke-linejoin="round">
+    <text x="104" y="42" font-size="30" fill="#ffcb05" stroke="#22508f" stroke-width="7">Huyền Thoại</text>
+    <text x="104" y="86" font-size="40" fill="#ffcb05" stroke="#22508f" stroke-width="8">Bảo Bối</text>
+  </g>
+</svg>

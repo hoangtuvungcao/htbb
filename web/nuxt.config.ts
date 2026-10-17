@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2026-10-01',
   devtools: { enabled: false },
 
-  modules: ['@nuxt/ui', '@tresjs/nuxt', '@vueuse/nuxt', 'motion-v/nuxt'],
+  modules: ['@nuxt/ui', '@vueuse/nuxt', 'motion-v/nuxt'],
 
   css: ['~/assets/css/main.css'],
 
@@ -54,14 +54,18 @@ export default defineNuxtConfig({
   // Không tải font từ Google lúc chạy: tự host khi build.
   fonts: {
     families: [
-      { name: 'Be Vietnam Pro', provider: 'google', weights: [400, 500, 600, 700, 800] },
-      { name: 'Noto Serif', provider: 'google', weights: [600, 700, 800], styles: ['normal', 'italic'] },
+      // Cả hai đều có bộ chữ tiếng Việt (subset "vietnamese" trên Google Fonts).
+      { name: 'Nunito', provider: 'google', weights: [400, 600, 700, 800, 900] },
+      { name: 'Baloo 2', provider: 'google', weights: [500, 600, 700, 800] },
+      // Font pixel KHÔNG có tiếng Việt: chỉ dùng cho chữ ASCII ngắn (số dex, "LV").
+      { name: 'Press Start 2P', provider: 'google', weights: [400] },
     ],
   },
 
+  // Mặc định sáng (trời xanh, cỏ xanh); vẫn có chế độ tối (navy) qua nút đổi màu ở đầu trang.
   colorMode: {
-    preference: 'dark',
-    fallback: 'dark',
+    preference: 'light',
+    fallback: 'light',
   },
 
   ui: {

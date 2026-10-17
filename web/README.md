@@ -5,8 +5,8 @@ Website (trang công khai + khu quản trị) của máy chủ private KPAH, vi�
 | Thành phần | Dùng gì |
 |---|---|
 | Framework | **Nuxt 4** (Vue 3.5, TypeScript) — trang + API server (Nitro) trong một dự án |
-| Giao diện | **Nuxt UI v4** (Tailwind CSS v4, Reka UI) — bảng màu vàng cổ / ngọc bích / mực đêm |
-| 3D | **TresJS** (Three.js cho Vue): Linh Kiếm lơ lửng, vòng thiên văn, tinh thể, đom đóm ở trang chủ |
+| Giao diện | **Nuxt UI v4** (Tailwind CSS v4, Reka UI) — phong cách game Pokémon: đỏ Poké Ball / vàng Pikachu / xanh dương, nền trời + cỏ, 18 màu hệ (token ở `app/assets/css/main.css`), font Nunito + Baloo 2 (có tiếng Việt) |
+| Hero | CSS/SVG thuần (không WebGL): trời, mây, bãi cỏ, 5 Pokémon khởi đầu chạy sprite PMD thật (`PokeSprite`, dải khung sinh bằng `node scripts/sinh-anim-khoi-dau.mjs` vào `public/pokemon/anim/`) |
 | Hiệu ứng | **motion-v** (hiện dần khi cuộn), thẻ nghiêng 3D theo chuột (`FxTiltCard`) |
 | Database | `mysql2` — dùng **chung** MariaDB với game server (DB `account` + `kpah_db`) |
 

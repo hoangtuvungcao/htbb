@@ -27,12 +27,12 @@ const hoTro = computed(() => linkHoTro(site.value))
       <FxReveal>
         <FxTiltCard :max="8" class="rounded-3xl">
           <div class="relative overflow-hidden rounded-3xl glass ring-gilded p-8 text-center sm:p-12">
-            <div class="pointer-events-none absolute -left-20 -top-20 size-64 rounded-full bg-jade-500/10 blur-3xl" aria-hidden="true" />
+            <div class="pointer-events-none absolute -left-20 -top-20 size-64 rounded-full bg-grass-500/10 blur-3xl" aria-hidden="true" />
             <div
               class="mx-auto grid size-20 place-items-center rounded-full border [transform:translateZ(60px)]"
               :class="data?.activated
                 ? 'border-success/40 bg-success/10 text-success shadow-[0_0_40px_rgba(7,196,166,.3)]'
-                : 'border-warning/40 bg-warning/10 text-warning shadow-[0_0_40px_rgba(249,192,42,.25)]'"
+                : 'border-warning/40 bg-warning/10 text-warning shadow-[0_0_40px_rgba(10,26,51,.14)]'"
               aria-hidden="true"
             >
               <UIcon :name="data?.activated ? 'i-lucide-shield-check' : 'i-lucide-shield-alert'" class="size-10" />

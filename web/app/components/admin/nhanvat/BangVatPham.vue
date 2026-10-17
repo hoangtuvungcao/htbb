@@ -44,12 +44,12 @@ const columns = computed<TableColumn<VatPhamGiaoDien>[]>(() => {
 
 /** Màu thật của vật phẩm (hằng số COLOR_* trong real/Item.java) — chấm màu cạnh tên màu. */
 const CHAM_MAU: Record<number, string> = {
-  0: 'bg-ink-100',
+  0: 'bg-navy-100',
   1: 'bg-emerald-400',
   2: 'bg-red-500',
   3: 'bg-sky-400',
   4: 'bg-pink-400',
-  5: 'bg-gold-400',
+  5: 'bg-pikachu-400',
 }
 </script>
 
@@ -72,7 +72,7 @@ const CHAM_MAU: Record<number, string> = {
     </template>
     <template #ten_mau-cell="{ row }">
       <span class="inline-flex items-center gap-1.5 text-sm">
-        <span class="size-2.5 rounded-full ring-1 ring-default" :class="CHAM_MAU[row.original.mau] ?? 'bg-ink-500'" />
+        <span class="size-2.5 rounded-full ring-1 ring-default" :class="CHAM_MAU[row.original.mau] ?? 'bg-navy-500'" />
         {{ row.original.ten_mau }}
       </span>
     </template>

@@ -1,9 +1,7 @@
 <template>
-  <!-- Quầng sáng mờ trôi chậm làm nền cho các trang con (nhẹ hơn nhiều so với WebGL).
-       Mép trên/dưới mờ dần để không thành vạch cắt ngang giữa hai phần trang. -->
-  <div class="pointer-events-none absolute inset-0 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)]" aria-hidden="true">
-    <div class="absolute -left-32 -top-40 size-[34rem] rounded-full bg-jade-500/15 blur-3xl animate-float" />
-    <div class="absolute -right-24 top-10 size-[28rem] rounded-full bg-gold-400/12 blur-3xl animate-float [animation-delay:-2s]" />
-    <div class="absolute bottom-[-12rem] left-1/3 size-[30rem] rounded-full bg-jade-700/15 blur-3xl animate-float [animation-delay:-4s]" />
+  <!-- Trang trí nền nhẹ cho các khối trang: vài Poké Ball mờ (tên giữ nguyên để không phải sửa nơi dùng). -->
+  <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+    <PokeBall mono class="absolute -left-24 top-10 size-72 -rotate-12 text-pokeblue-500/[.06] dark:text-white/[.04]" />
+    <PokeBall mono class="absolute -right-16 bottom-0 size-56 rotate-12 text-pokered-500/[.07] dark:text-white/[.04]" />
   </div>
 </template>

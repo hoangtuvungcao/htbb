@@ -74,7 +74,7 @@ const loaiLoc = computed(() => {
                 Người vẽ ghi dạng "Discord #số" là tài khoản Discord trên máy chủ PMDCollab (danh sách gốc chỉ lưu mã số).
               </li>
             </ul>
-            <p v-if="ghiCong.loiDan.length" class="mt-6 whitespace-pre-line rounded-2xl bg-ink-950/40 p-4 font-mono text-xs text-dimmed">
+            <p v-if="ghiCong.loiDan.length" class="mt-6 whitespace-pre-line rounded-2xl bg-screen p-4 font-mono text-xs text-dimmed">
               {{ ghiCong.loiDan.join('\n') }}
             </p>
           </div>
@@ -105,8 +105,8 @@ const loaiLoc = computed(() => {
         <div class="mt-6 grid gap-4 md:grid-cols-2">
           <article v-for="l in loaiLoc" :key="l.ma" class="rounded-2xl glass p-5">
             <header class="flex items-center gap-3">
-              <img v-if="l.anh" :src="l.anh" width="40" height="40" alt="" class="pixelated size-12 rounded-lg bg-ink-950/60">
-              <span v-else class="grid size-12 place-items-center rounded-lg bg-ink-950/60 text-xs text-dimmed" aria-hidden="true">#</span>
+              <img v-if="l.anh" :src="l.anh" width="40" height="40" alt="" class="pixelated size-12 rounded-lg bg-screen">
+              <span v-else class="grid size-12 place-items-center rounded-lg bg-screen text-xs text-dimmed" aria-hidden="true">#</span>
               <div>
                 <h3 class="font-semibold text-highlighted">
                   #{{ l.ma.replace(/s$/, '') }}

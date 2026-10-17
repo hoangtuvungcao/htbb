@@ -34,7 +34,13 @@ const dongKhoiDau = POKEDEX.khoiDau.map((k) => {
 // ---- Bảng khắc chế 18×18 (hệ số trong game khi đánh vào loài một hệ)
 const dsHe = POKEDEX.he
 const oKhac = (ck: number, pt: number) => heSoTrongGame(ck, [pt])
-const lopO = (g: number) => g >= 150 ? 'bg-success/25 text-success font-bold' : g <= 30 ? 'bg-error/30 text-error font-bold' : g < 100 ? 'bg-error/10 text-error' : 'text-dimmed'
+const lopO = (g: number) => g >= 150
+  ? 'bg-grass-400 text-navy-950 font-bold'
+  : g <= 30
+    ? 'bg-navy-800 text-white font-bold dark:bg-black'
+    : g < 100
+      ? 'bg-pokered-200 text-pokered-900 dark:bg-pokered-900/70 dark:text-pokered-100'
+      : 'bg-navy-50 text-dimmed dark:bg-navy-900'
 const chuO = (g: number) => g === 100 ? '' : (g / 100).toLocaleString('vi-VN')
 const bangLamDiu = Object.entries(POKEDEX.lamDiu)
   .map(([goc, game]) => ({ goc: Number(goc), game }))
@@ -76,8 +82,8 @@ const petKhac = POKEDEX.loai.filter(l => l.vaiTro.includes('pet') && l.tienHoa?.
           </p>
           <ol class="mt-3 flex flex-wrap gap-2 lg:flex-col lg:gap-1">
             <li v-for="(m, i) in muc" :key="m.id">
-              <a :href="`#${m.id}`" class="block rounded-lg px-3 py-1.5 text-sm text-muted ring-1 ring-default/60 hover:text-primary lg:ring-0 lg:hover:bg-elevated/50">
-                <span class="num text-dimmed">{{ i + 1 }}.</span> {{ m.ten }}
+              <a :href="`#${m.id}`" class="flex items-center gap-2 rounded-full px-3 py-1.5 font-display text-sm font-semibold text-muted ring-2 ring-default hover:bg-elevated hover:text-primary lg:ring-0">
+                <span class="grid size-5 place-items-center rounded-full bg-pokered-500 font-pixel text-[8px] text-white">{{ i + 1 }}</span> {{ m.ten }}
               </a>
             </li>
           </ol>
@@ -100,7 +106,7 @@ const petKhac = POKEDEX.loai.filter(l => l.vaiTro.includes('pet') && l.tienHoa?.
             <ul class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               <li v-for="d in dongKhoiDau" :key="d.dex" class="flex flex-col rounded-3xl glass p-5">
                 <div class="flex items-center gap-4">
-                  <img :src="anhLoaiDex(d.dau)" width="40" height="40" alt="" class="pixelated size-16 rounded-xl bg-ink-950/60">
+                  <img :src="anhLoaiDex(d.dau)" width="40" height="40" alt="" class="pixelated size-16 rounded-xl bg-screen">
                   <div>
                     <h3 class="text-lg font-bold text-highlighted">
                       <NuxtLink :to="`/pokedex/${d.dex}`" class="hover:text-primary">{{ d.dau.ten }}</NuxtLink>
@@ -142,7 +148,7 @@ const petKhac = POKEDEX.loai.filter(l => l.vaiTro.includes('pet') && l.tienHoa?.
               Chiêu cùng hệ với bạn được cộng ×{{ (POKEDEX.stabPhanTram / 100).toLocaleString('vi-VN') }} (STAB).
               Loài hai hệ: nhân hai hệ số gốc rồi mới quy đổi.
             </p>
-            <div class="mt-5 overflow-x-auto rounded-2xl glass">
+            <div class="relative mt-5 overflow-x-auto rounded-2xl glass">
               <table class="w-full text-left text-sm">
                 <caption class="sr-only">
                   Quy đổi hệ số khắc chế gốc sang hệ số trong game
@@ -194,7 +200,7 @@ const petKhac = POKEDEX.loai.filter(l => l.vaiTro.includes('pet') && l.tienHoa?.
                     <td
                       v-for="pt in dsHe"
                       :key="pt.id"
-                      class="num size-8 min-w-8 rounded"
+                      class="num size-8 min-w-8 rounded-md !text-center"
                       :class="lopO(oKhac(ck.id, pt.id))"
                       :title="`${ck.ten} → ${pt.ten}: ${hienHeSo(oKhac(ck.id, pt.id))}`"
                     >
@@ -205,9 +211,9 @@ const petKhac = POKEDEX.loai.filter(l => l.vaiTro.includes('pet') && l.tienHoa?.
               </table>
             </div>
             <p class="mt-3 flex flex-wrap gap-4 text-xs text-muted">
-              <span><span class="inline-block size-3 rounded bg-success/40 align-middle" /> Khắc (×1,5)</span>
-              <span><span class="inline-block size-3 rounded bg-error/20 align-middle" /> Bị kháng (×0,7)</span>
-              <span><span class="inline-block size-3 rounded bg-error/40 align-middle" /> Gần như vô hiệu (×0,3, bản gốc ×0)</span>
+              <span><span class="inline-block size-3 rounded-sm bg-grass-400 align-middle ring-1 ring-black/20" /> Khắc (×1,5)</span>
+              <span><span class="inline-block size-3 rounded-sm bg-pokered-200 align-middle ring-1 ring-black/20 dark:bg-pokered-900" /> Bị kháng (×0,7)</span>
+              <span><span class="inline-block size-3 rounded-sm bg-navy-800 align-middle ring-1 ring-black/20 dark:bg-black" /> Gần như vô hiệu (×0,3, bản gốc ×0)</span>
             </p>
           </section>
 
@@ -216,7 +222,7 @@ const petKhac = POKEDEX.loai.filter(l => l.vaiTro.includes('pet') && l.tienHoa?.
             <h2 id="h-tien-hoa" class="section-title text-3xl text-highlighted">
               3. Tiến hoá
             </h2>
-            <div class="mt-5 grid gap-6 xl:grid-cols-2">
+            <div class="mt-5 grid grid-cols-1 gap-6 xl:grid-cols-2">
               <div class="rounded-3xl glass p-6">
                 <h3 class="text-lg font-bold text-highlighted">
                   Tiến hoá theo cấp
@@ -224,7 +230,7 @@ const petKhac = POKEDEX.loai.filter(l => l.vaiTro.includes('pet') && l.tienHoa?.
                 <p class="mt-1 text-sm text-muted">
                   Tự động khi đạt cấp, không cần vật phẩm.
                 </p>
-                <div class="mt-4 overflow-x-auto">
+                <div class="relative mt-4 overflow-x-auto">
                   <table class="w-full min-w-[22rem] text-left text-sm">
                     <caption class="sr-only">
                       Cấp tiến hoá của các dòng khởi đầu
@@ -307,7 +313,7 @@ const petKhac = POKEDEX.loai.filter(l => l.vaiTro.includes('pet') && l.tienHoa?.
                 </div>
                 <ul class="flex flex-wrap gap-1" :aria-label="`Pokémon ở ${m.ten}`">
                   <li v-for="d in m.dex" :key="d">
-                    <NuxtLink :to="`/pokedex/${d}`" class="flex items-center gap-1 rounded-lg bg-ink-950/50 py-0.5 pl-0.5 pr-2 text-xs hover:text-primary">
+                    <NuxtLink :to="`/pokedex/${d}`" class="flex items-center gap-1 rounded-lg bg-screen py-0.5 pl-0.5 pr-2 text-xs hover:text-primary">
                       <img :src="L(d) ? anhLoaiDex(L(d)!) : ''" width="40" height="40" alt="" class="pixelated size-6" loading="lazy">
                       {{ L(d)?.ten }}
                     </NuxtLink>
@@ -387,7 +393,7 @@ const petKhac = POKEDEX.loai.filter(l => l.vaiTro.includes('pet') && l.tienHoa?.
             </h3>
             <ul class="mt-3 flex flex-wrap gap-1.5">
               <li v-for="p in petKhac" :key="p.dex">
-                <NuxtLink :to="`/pokedex/${p.dex}`" class="flex items-center gap-1 rounded-lg bg-ink-950/50 py-0.5 pl-0.5 pr-2 text-xs hover:text-primary">
+                <NuxtLink :to="`/pokedex/${p.dex}`" class="flex items-center gap-1 rounded-lg bg-screen py-0.5 pl-0.5 pr-2 text-xs hover:text-primary">
                   <img :src="anhLoaiDex(p)" width="40" height="40" alt="" class="pixelated size-6" loading="lazy">
                   {{ p.ten }}
                 </NuxtLink>

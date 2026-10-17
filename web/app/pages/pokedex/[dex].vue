@@ -58,24 +58,45 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
     <UContainer class="max-w-6xl py-12 sm:py-16">
       <!-- Tổng quan -->
       <section class="grid gap-6 lg:grid-cols-[18rem_1fr]" aria-labelledby="tong-quan">
-        <div class="rounded-3xl glass ring-gilded flex flex-col items-center p-6">
-          <div class="grid size-48 place-items-center rounded-2xl bg-ink-950/60">
-            <img
-              v-if="anhLoaiDex(l)"
-              :src="anhLoaiDex(l)"
-              width="40"
-              height="40"
-              :alt="`Chân dung ${l.ten}`"
-              class="pixelated size-40"
-            >
+        <div class="dex-card self-start">
+          <div class="mb-2 mt-1 flex items-center justify-end gap-1.5 pr-1" aria-hidden="true">
+            <span class="size-2.5 rounded-full border-2 border-[var(--poke-outline)] bg-pokered-300" />
+            <span class="size-2.5 rounded-full border-2 border-[var(--poke-outline)] bg-pikachu-400" />
+            <span class="size-2.5 rounded-full border-2 border-[var(--poke-outline)] bg-grass-400" />
           </div>
-          <div v-if="l.anh && l.anhShiny" class="mt-4 flex items-center gap-3 text-sm text-muted">
-            <img :src="l.anhShiny" width="40" height="40" :alt="`${l.ten} shiny`" class="pixelated size-12 rounded-lg bg-ink-950/60" loading="lazy">
-            Có bản shiny trong game
+          <div class="dex-screen p-3">
+            <div class="relative grid aspect-square place-items-center rounded-xl bg-screen">
+              <span class="absolute left-2.5 top-2.5 font-pixel text-[11px] text-navy-700 dark:text-grass-200">{{ soDex(l.dex) }}</span>
+              <img
+                v-if="anhLoaiDex(l)"
+                :src="anhLoaiDex(l)"
+                width="40"
+                height="40"
+                :alt="`Chân dung ${l.ten}`"
+                class="pixelated size-40"
+              >
+              <PokeBall v-else class="size-20 opacity-40" />
+            </div>
+            <p class="mt-3 text-center font-display text-2xl font-extrabold text-highlighted">
+              {{ l.ten }}
+            </p>
+            <div class="mt-1 flex justify-center gap-1.5">
+              <PokeHeBadge v-for="h in l.he" :key="h" :he="h" />
+            </div>
+            <div v-if="l.anh && l.anhShiny" class="mt-4 flex items-center justify-center gap-3 rounded-xl bg-pikachu-50 p-2 text-sm font-semibold text-pikachu-900 dark:bg-pikachu-950/40 dark:text-pikachu-200">
+              <img :src="l.anhShiny" width="40" height="40" :alt="`${l.ten} shiny`" class="pixelated size-12 rounded-lg bg-screen" loading="lazy">
+              ✨ Có bản shiny trong game
+            </div>
+          </div>
+          <div class="mt-2 flex items-center justify-between px-2 pb-0.5" aria-hidden="true">
+            <span class="h-2 w-16 rounded-full bg-pokered-800/60" />
+            <span class="grid size-7 place-items-center rounded-full border-2 border-[var(--poke-outline)] bg-navy-800">
+              <span class="h-1 w-3 rounded bg-navy-400" />
+            </span>
           </div>
         </div>
 
-        <div class="rounded-3xl glass p-6">
+        <div class="rounded-3xl glass ring-gilded p-6">
           <h2 id="tong-quan" class="section-title text-2xl text-highlighted">
             Tổng quan
           </h2>
@@ -206,7 +227,7 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
         <p class="mt-2 text-sm text-muted">
           Hạ loài này để ghi vào Pokédex của bạn. Số lượng là số con xuất hiện cùng lúc trên bản đồ.
         </p>
-        <div class="mt-5 overflow-x-auto">
+        <div class="relative mt-5 overflow-x-auto">
           <table class="w-full min-w-[34rem] text-left text-sm">
             <caption class="sr-only">
               Các mẫu {{ l.ten }} trong game và nơi xuất hiện

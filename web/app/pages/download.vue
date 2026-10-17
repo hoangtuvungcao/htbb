@@ -14,8 +14,8 @@ function coLink(url: string | null | undefined): boolean {
 }
 
 const platforms = computed(() => [
-  { name: 'Android', hint: 'Bản cài đặt APK', icon: 'i-lucide-smartphone', url: site.value?.linkAndroid ?? '', mau: 'from-jade-400/25 to-jade-900/5', anh: 'shadow-jade-500/30' },
-  { name: 'PC / Windows', hint: 'Chơi trên máy tính', icon: 'i-lucide-monitor', url: site.value?.linkPc ?? '', mau: 'from-gold-400/25 to-gold-900/5', anh: 'shadow-gold-500/30' },
+  { name: 'Android', hint: 'Bản cài đặt APK', icon: 'i-lucide-smartphone', url: site.value?.linkAndroid ?? '', mau: 'from-grass-400/25 to-grass-900/5', anh: 'shadow-grass-500/30' },
+  { name: 'PC / Windows', hint: 'Chơi trên máy tính', icon: 'i-lucide-monitor', url: site.value?.linkPc ?? '', mau: 'from-pikachu-400/25 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
   { name: 'Java (.jar)', hint: 'Điện thoại Java / giả lập J2ME', icon: 'i-lucide-cpu', url: site.value?.linkJar ?? '', mau: 'from-sky-400/25 to-sky-900/5', anh: 'shadow-sky-500/30' },
   // iOS chưa có bản riêng: chỉ hiện khi đã cấu hình link
   ...(coLink(site.value?.linkIos) ? [{ name: 'iOS', hint: 'Hướng dẫn cài đặt', icon: 'i-lucide-tablet-smartphone', url: site.value!.linkIos, mau: 'from-rose-400/25 to-rose-900/5', anh: 'shadow-rose-500/30' }] : []),
@@ -68,7 +68,7 @@ const faq = [
                 >
                   <UIcon :name="p.icon" class="size-10" />
                 </span>
-                <h3 class="mt-8 font-serif text-2xl font-bold text-highlighted [transform:translateZ(40px)]">
+                <h3 class="mt-8 font-display text-2xl font-bold text-highlighted [transform:translateZ(40px)]">
                   {{ p.name }}
                 </h3>
                 <p class="mt-2 flex-1 text-muted [transform:translateZ(25px)]">
@@ -82,7 +82,7 @@ const faq = [
                     block
                     size="lg"
                     trailing-icon="i-lucide-arrow-up-right"
-                    class="shadow-[0_10px_30px_rgba(249,192,42,.25)]"
+                    class="shadow-[0_10px_30px_rgba(10,26,51,.14)]"
                   >
                     Tải / cài đặt
                   </UButton>
@@ -102,9 +102,9 @@ const faq = [
       <UContainer class="max-w-6xl">
         <FxReveal>
           <div class="relative flex flex-col items-start justify-between gap-6 overflow-hidden rounded-3xl glass ring-gilded p-8 sm:flex-row sm:items-center sm:p-10">
-            <div class="pointer-events-none absolute -left-16 -bottom-24 size-72 rounded-full bg-jade-500/15 blur-3xl" aria-hidden="true" />
+            <div class="pointer-events-none absolute -left-16 -bottom-24 size-72 rounded-full bg-grass-500/15 blur-3xl" aria-hidden="true" />
             <div class="relative flex items-start gap-5">
-              <span class="hidden size-14 shrink-0 place-items-center rounded-2xl border border-jade-400/30 bg-jade-500/10 text-jade-300 sm:grid" aria-hidden="true">
+              <span class="hidden size-14 shrink-0 place-items-center rounded-2xl border border-grass-400/30 bg-grass-500/10 text-grass-300 sm:grid" aria-hidden="true">
                 <UIcon name="i-lucide-life-buoy" class="size-7" />
               </span>
               <div>
@@ -144,7 +144,7 @@ const faq = [
       <UContainer class="max-w-6xl">
         <FxReveal>
           <div class="relative overflow-hidden rounded-3xl glass ring-gilded p-8 sm:p-12">
-            <div class="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-gold-400/10 blur-3xl" aria-hidden="true" />
+            <div class="pointer-events-none absolute -right-24 -top-24 size-80 rounded-full bg-pikachu-400/10 blur-3xl" aria-hidden="true" />
             <p class="eyebrow">
               Hẹn gặp bạn trong thế giới Pokémon
             </p>
@@ -153,7 +153,7 @@ const faq = [
             </h2>
             <div class="mt-10 grid gap-8 md:grid-cols-3">
               <div v-for="s in steps" :key="s.so">
-                <b class="font-serif text-5xl text-primary/30">{{ s.so }}</b>
+                <b class="font-display text-5xl text-primary/30">{{ s.so }}</b>
                 <h3 class="mt-2 text-lg font-bold text-highlighted">
                   {{ s.tieuDe }}
                 </h3>

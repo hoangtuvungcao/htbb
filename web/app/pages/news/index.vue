@@ -38,15 +38,15 @@ const iconTheoLoai: Record<string, string> = {
             :class="i === 0 ? 'md:col-span-2' : ''"
           >
             <FxTiltCard :max="i === 0 ? 6 : 10" as="article" class="group h-full rounded-3xl">
-              <div class="relative flex h-full flex-col overflow-hidden rounded-3xl glass ring-gilded p-8 transition-shadow group-hover:shadow-[0_20px_60px_rgba(249,192,42,.15)]">
-                <div class="pointer-events-none absolute -right-12 -top-12 size-48 rounded-full bg-gold-400/10 blur-3xl transition-opacity group-hover:opacity-100" :class="i === 0 ? 'opacity-100' : 'opacity-0'" aria-hidden="true" />
+              <div class="relative flex h-full flex-col overflow-hidden rounded-3xl glass ring-gilded p-8 transition-shadow group-hover:shadow-[0_20px_60px_rgba(10,26,51,.14)]">
+                <div class="pointer-events-none absolute -right-12 -top-12 size-48 rounded-full bg-pikachu-400/10 blur-3xl transition-opacity group-hover:opacity-100" :class="i === 0 ? 'opacity-100' : 'opacity-0'" aria-hidden="true" />
                 <div class="flex items-center justify-between gap-4 [transform:translateZ(30px)]">
-                  <UBadge color="primary" variant="subtle" :icon="iconTheoLoai[n.category] ?? 'i-lucide-scroll-text'">
+                  <UBadge color="primary" variant="subtle" :icon="iconTheoLoai[n.category] ?? 'i-lucide-newspaper'">
                     {{ n.category }}
                   </UBadge>
-                  <span class="font-serif text-3xl font-bold text-primary/40">{{ n.date }}</span>
+                  <span class="font-display text-3xl font-bold text-primary/40">{{ n.date }}</span>
                 </div>
-                <h3 class="mt-6 font-serif font-bold text-highlighted [transform:translateZ(45px)]" :class="i === 0 ? 'text-3xl sm:text-4xl' : 'text-2xl'">
+                <h3 class="mt-6 font-display font-bold text-highlighted [transform:translateZ(45px)]" :class="i === 0 ? 'text-3xl sm:text-4xl' : 'text-2xl'">
                   <NuxtLink :to="`/news/${slug}`" class="after:absolute after:inset-0 hover:text-primary">
                     {{ n.title }}
                   </NuxtLink>
@@ -68,9 +68,9 @@ const iconTheoLoai: Record<string, string> = {
     <UContainer class="max-w-6xl pb-24">
       <FxReveal>
         <div class="relative flex flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl glass ring-gilded p-8 text-center sm:flex-row sm:text-left">
-          <div class="pointer-events-none absolute -bottom-20 -left-10 size-64 rounded-full bg-jade-500/15 blur-3xl" aria-hidden="true" />
-          <span class="relative font-serif text-2xl font-bold text-highlighted">Chưa có nhân vật của riêng mình?</span>
-          <UButton to="/register" size="xl" trailing-icon="i-lucide-arrow-up-right" class="relative shadow-[0_10px_40px_rgba(249,192,42,.3)]">
+          <div class="pointer-events-none absolute -bottom-20 -left-10 size-64 rounded-full bg-grass-500/15 blur-3xl" aria-hidden="true" />
+          <span class="relative font-display text-2xl font-bold text-highlighted">Chưa có nhân vật của riêng mình?</span>
+          <UButton to="/register" size="xl" trailing-icon="i-lucide-arrow-up-right" class="relative shadow-[0_10px_40px_rgba(10,26,51,.14)]">
             Bắt đầu phiêu lưu
           </UButton>
         </div>

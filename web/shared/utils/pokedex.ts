@@ -85,26 +85,29 @@ export const TEN_VAI_TRO: Record<VaiTroLoai, string> = {
 }
 export const DS_VAI_TRO = Object.keys(TEN_VAI_TRO) as VaiTroLoai[]
 
-/** Màu hệ (nền, chữ) — cặp màu đủ tương phản cho chữ nhỏ. */
+/**
+ * Màu hệ (nền, chữ) — màu chuẩn 18 hệ, khớp token --color-type-* ở app/assets/css/main.css.
+ * Chữ trắng cho các hệ nền tối, chữ gần đen cho hệ nền sáng (đủ tương phản cho chữ nhỏ).
+ */
 const MAU_HE: [string, string][] = [
-  ['#a8a77a', '#111'], // Thường
-  ['#ee8130', '#111'], // Lửa
-  ['#6390f0', '#111'], // Nước
-  ['#f7d02c', '#111'], // Điện
-  ['#7ac74c', '#111'], // Cỏ
-  ['#96d9d6', '#111'], // Băng
-  ['#c22e28', '#fff'], // Giác đấu
-  ['#a33ea1', '#fff'], // Độc
-  ['#e2bf65', '#111'], // Đất
-  ['#a98ff3', '#111'], // Bay
-  ['#f95587', '#111'], // Siêu linh
-  ['#a6b91a', '#111'], // Bọ
-  ['#b6a136', '#111'], // Đá
-  ['#735797', '#fff'], // Ma
-  ['#6f35fc', '#fff'], // Rồng
-  ['#705746', '#fff'], // Bóng tối
-  ['#b7b7ce', '#111'], // Thép
-  ['#d685ad', '#111'], // Tiên
+  ['#a8a878', '#14110a'], // Thường
+  ['#f08030', '#1a0b00'], // Lửa
+  ['#6890f0', '#06122e'], // Nước
+  ['#f8d030', '#1f1700'], // Điện
+  ['#78c850', '#0c1f04'], // Cỏ
+  ['#98d8d8', '#062222'], // Băng
+  ['#c03028', '#fff'], // Giác đấu
+  ['#a040a0', '#fff'], // Độc
+  ['#e0c068', '#1f1600'], // Đất
+  ['#a890f0', '#120a33'], // Bay
+  ['#f85888', '#26000b'], // Siêu linh
+  ['#a8b820', '#141800'], // Bọ
+  ['#b8a038', '#1a1400'], // Đá
+  ['#705898', '#fff'], // Ma
+  ['#7038f8', '#fff'], // Rồng
+  ['#705848', '#fff'], // Bóng tối
+  ['#b8b8d0', '#14142a'], // Thép
+  ['#ee99ac', '#2a0710'], // Tiên
 ]
 
 export function mauHe(he: number): { backgroundColor: string, color: string } {

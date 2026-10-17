@@ -98,12 +98,12 @@ function huy2fa() {
 <template>
   <FxTiltCard :max="4" :scale="1" class="rounded-3xl">
     <div class="glass ring-gilded relative overflow-hidden rounded-3xl p-7 shadow-2xl shadow-black/50 sm:p-9">
-      <div class="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-gold-400/10 blur-3xl" aria-hidden="true" />
-      <div class="pointer-events-none absolute -bottom-28 -left-20 size-64 rounded-full bg-jade-400/10 blur-3xl" aria-hidden="true" />
+      <div class="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-pikachu-400/10 blur-3xl" aria-hidden="true" />
+      <div class="pointer-events-none absolute -bottom-28 -left-20 size-64 rounded-full bg-grass-400/10 blur-3xl" aria-hidden="true" />
 
       <div class="relative [transform:translateZ(30px)]">
         <div class="mb-6 flex items-center justify-between">
-          <div class="grid size-14 place-items-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-[0_0_30px_rgba(249,192,42,.25)]">
+          <div class="grid size-14 place-items-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-[0_0_30px_rgba(10,26,51,.14)]">
             <UIcon :name="cho ? 'i-lucide-key-round' : 'i-lucide-shield'" class="size-7" />
           </div>
           <UBadge v-if="cho" color="neutral" variant="subtle" icon="i-lucide-timer" class="tabular-nums">

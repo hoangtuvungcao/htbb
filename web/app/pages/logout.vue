@@ -37,7 +37,7 @@ async function dangXuat() {
     <div
       class="mb-6 grid size-14 place-items-center rounded-2xl border text-2xl"
       :class="logoutUser
-        ? 'border-primary/30 bg-primary/10 text-primary shadow-[0_0_30px_rgba(249,192,42,.25)]'
+        ? 'border-primary/30 bg-primary/10 text-primary shadow-[0_0_30px_rgba(10,26,51,.14)]'
         : 'border-success/40 bg-success/10 text-success shadow-[0_0_30px_rgba(7,196,166,.25)]'"
       aria-hidden="true"
     >
@@ -70,7 +70,7 @@ async function dangXuat() {
           <small class="block text-[0.7rem] tracking-[0.2em] text-dimmed">TÀI KHOẢN ĐANG ĐĂNG NHẬP</small>
           <strong class="block truncate text-highlighted">{{ logoutUser.username }}</strong>
         </div>
-        <span class="size-2.5 rounded-full bg-success shadow-[0_0_10px_var(--color-jade-400)] animate-glow" aria-hidden="true" />
+        <span class="size-2.5 rounded-full bg-success shadow-[0_0_10px_var(--color-grass-400)] animate-glow" aria-hidden="true" />
       </div>
       <div class="mt-6 flex flex-col gap-3">
         <UButton size="xl" block trailing-icon="i-lucide-arrow-up-right" @click="dangXuat">

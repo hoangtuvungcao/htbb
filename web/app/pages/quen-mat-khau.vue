@@ -76,7 +76,7 @@ async function submit() {
 
 <template>
   <SiteAuthShell>
-    <div class="mb-6 grid size-14 place-items-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-[0_0_30px_rgba(249,192,42,.25)]" aria-hidden="true">
+    <div class="mb-6 grid size-14 place-items-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-[0_0_30px_rgba(10,26,51,.14)]" aria-hidden="true">
       <UIcon name="i-lucide-key-round" class="size-7" />
     </div>
     <p class="eyebrow">

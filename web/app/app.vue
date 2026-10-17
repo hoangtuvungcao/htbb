@@ -12,7 +12,7 @@ useHead({
 
 <template>
   <UApp :toaster="{ position: 'top-right' }" :tooltip="{ delayDuration: 200 }">
-    <NuxtLoadingIndicator color="linear-gradient(90deg,#20e0bf,#f9c02a)" />
+    <NuxtLoadingIndicator color="linear-gradient(90deg,#e3350d,#ffcb05,#3d7dca)" />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

@@ -15,7 +15,7 @@ const links = computed<NavigationMenuItem[]>(() => {
     { label: 'Pokédex', to: '/pokedex', icon: 'i-lucide-book-open', active: route.path.startsWith('/pokedex') },
     { label: 'Hướng dẫn', to: '/huong-dan', icon: 'i-lucide-compass' },
     { label: 'Xếp hạng', to: '/ranking', icon: 'i-lucide-trophy' },
-    { label: 'Tin tức', to: '/news', icon: 'i-lucide-scroll-text', active: route.path.startsWith('/news') },
+    { label: 'Tin tức', to: '/news', icon: 'i-lucide-newspaper', active: route.path.startsWith('/news') },
   ]
   if (auth.loggedIn.value) {
     // Nạp tiền tắt mặc định (KPAH_NAP_BAT, quyết định Q10): chỉ hiện khi server bật.
@@ -32,19 +32,27 @@ const links = computed<NavigationMenuItem[]>(() => {
     to="/"
     :title="`${tenSite} — Trang chủ`"
     :ui="{
-      root: 'bg-default/60 backdrop-blur-xl border-b border-default/60',
+      root: 'bg-default/95 backdrop-blur border-b-4 border-pokered-500 shadow-[0_3px_0_var(--poke-outline)]',
       container: 'max-w-7xl',
     }"
   >
     <!-- UHeader đã tự bọc phần tiêu đề trong một liên kết về `to` (mặc định "/"):
          đặt thêm <NuxtLink> ở đây sẽ thành thẻ <a> lồng nhau -> lệch hydration. -->
     <template #title>
-      <img src="/logo.svg" width="180" height="50" :alt="`${tenSite} — Trang chủ`" class="h-11 w-auto drop-shadow-[0_0_18px_rgba(249,192,42,.25)]">
+      <SiteLogo />
     </template>
 
-    <UNavigationMenu :items="links" variant="link" color="primary" class="hidden lg:flex" />
+    <UNavigationMenu
+      :items="links"
+      variant="pill"
+      color="primary"
+      highlight
+      class="hidden lg:flex"
+      :ui="{ link: 'font-display font-bold text-[15px]', linkLeadingIcon: 'size-4' }"
+    />
 
     <template #right>
+      <UColorModeButton color="neutral" variant="ghost" />
       <ClientOnly>
         <template v-if="auth.loggedIn.value">
           <UButton to="/account" color="neutral" variant="ghost" icon="i-lucide-user-round" class="hidden sm:inline-flex">
@@ -58,7 +66,7 @@ const links = computed<NavigationMenuItem[]>(() => {
           <UButton to="/login" color="neutral" variant="ghost" class="hidden sm:inline-flex">
             Đăng nhập
           </UButton>
-          <UButton to="/register" color="primary" variant="solid" trailing-icon="i-lucide-sparkles" class="shadow-[0_0_24px_rgba(249,192,42,.35)]">
+          <UButton to="/register" color="warning" variant="solid" trailing-icon="i-lucide-sparkles" class="btn-pikachu">
             Đăng ký
           </UButton>
         </template>
@@ -84,7 +92,7 @@ const links = computed<NavigationMenuItem[]>(() => {
           <UButton to="/login" color="neutral" variant="outline" block>
             Đăng nhập
           </UButton>
-          <UButton to="/register" color="primary" block>
+          <UButton to="/register" color="warning" class="btn-pikachu" block>
             Đăng ký
           </UButton>
         </div>

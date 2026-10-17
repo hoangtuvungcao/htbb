@@ -35,9 +35,9 @@ const daXong = computed(() => !!don.value && don.value.trang_thai !== 'cho_thanh
 
 const mocList = (Object.entries(MOC_NAP) as [string, (typeof MOC_NAP)[1]][]).map(([k, v]) => ({ moc: Number(k), ...v }))
 const mocTrangTri: Record<number, { nhan: string, mau: string, vien: string, ky: string }> = {
-  1: { nhan: 'Khởi đầu', mau: 'from-jade-400/25 to-jade-900/5', vien: 'hover:border-jade-400/60', ky: '✦' },
+  1: { nhan: 'Khởi đầu', mau: 'from-grass-400/25 to-grass-900/5', vien: 'hover:border-grass-400/60', ky: '✦' },
   2: { nhan: 'Đồng hành', mau: 'from-sky-400/25 to-sky-900/5', vien: 'hover:border-sky-400/60', ky: '✧' },
-  3: { nhan: 'Huyền thoại', mau: 'from-gold-400/30 to-gold-900/10', vien: 'hover:border-gold-300/70', ky: '❖' },
+  3: { nhan: 'Huyền thoại', mau: 'from-pikachu-400/30 to-pikachu-900/10', vien: 'hover:border-pikachu-300/70', ky: '❖' },
 }
 
 // --- Hỏi lại trạng thái: 4 giây một lần, lỗi mạng thì giãn ra 6 giây ---
@@ -138,7 +138,7 @@ onBeforeUnmount(dungHoi)
       <div v-if="maDon && (don || dangTai)" class="mx-auto max-w-xl">
         <FxReveal>
           <div class="relative overflow-hidden rounded-3xl glass ring-gilded p-6 sm:p-10">
-            <div class="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-gold-400/10 blur-3xl" aria-hidden="true" />
+            <div class="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-pikachu-400/10 blur-3xl" aria-hidden="true" />
 
             <div v-if="dangTai" class="flex items-center justify-center gap-3 py-24 text-muted">
               <UIcon name="i-lucide-loader-circle" class="size-6 animate-spin" /> Đang tải đơn nạp...
@@ -155,7 +155,7 @@ onBeforeUnmount(dungHoi)
               <!-- Chờ thanh toán -->
               <div v-if="!daXong" class="mt-6">
                 <FxTiltCard :max="6" :scale="1.01" class="mx-auto w-fit rounded-2xl">
-                  <div class="rounded-2xl bg-white p-3 shadow-[0_20px_60px_rgba(249,192,42,.18)]">
+                  <div class="rounded-2xl bg-white p-3 shadow-[0_20px_60px_rgba(10,26,51,.14)]">
                     <img :src="qr" alt="Mã QR chuyển khoản TPBank" class="block size-64 sm:size-72" width="288" height="288">
                   </div>
                 </FxTiltCard>
@@ -212,7 +212,7 @@ onBeforeUnmount(dungHoi)
                 <div class="mx-auto grid size-20 place-items-center rounded-full border border-success/40 bg-success/10 text-success shadow-[0_0_50px_rgba(32,224,191,.3)]">
                   <UIcon name="i-lucide-check" class="size-10" />
                 </div>
-                <h3 class="mt-6 font-serif text-2xl font-bold text-highlighted">
+                <h3 class="mt-6 font-display text-2xl font-bold text-highlighted">
                   Đã nhận được thanh toán!
                 </h3>
                 <p class="mt-3 text-muted">
@@ -247,11 +247,11 @@ onBeforeUnmount(dungHoi)
                   <small class="text-[0.7rem] tracking-[0.2em] text-dimmed">0{{ m.moc }} / {{ mocTrangTri[m.moc]?.nhan?.toUpperCase() }}</small>
                   <UBadge v-if="m.moc === 3" color="primary" variant="subtle" label="Giá trị nhất" />
                 </div>
-                <span class="mt-6 font-serif text-5xl text-primary/80 [transform:translateZ(60px)]" aria-hidden="true">{{ mocTrangTri[m.moc]?.ky }}</span>
-                <h3 class="mt-4 font-serif text-2xl font-bold text-highlighted [transform:translateZ(40px)]">
+                <span class="mt-6 font-display text-5xl text-primary/80 [transform:translateZ(60px)]" aria-hidden="true">{{ mocTrangTri[m.moc]?.ky }}</span>
+                <h3 class="mt-4 font-display text-2xl font-bold text-highlighted [transform:translateZ(40px)]">
                   Mốc {{ m.moc }}
                 </h3>
-                <div class="mt-1 font-serif text-4xl font-extrabold text-gilded [transform:translateZ(50px)]">
+                <div class="mt-1 font-display text-4xl font-extrabold text-gilded [transform:translateZ(50px)]">
                   {{ vnd(m.gia) }}
                 </div>
                 <ul class="mt-6 flex-1 space-y-2.5 text-sm text-toned [transform:translateZ(25px)]">

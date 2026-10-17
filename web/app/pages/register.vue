@@ -57,8 +57,8 @@ async function submit() {
 
 <template>
   <SiteAuthShell>
-    <div class="mb-6 grid size-14 place-items-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-[0_0_30px_rgba(249,192,42,.25)]" aria-hidden="true">
-      <UIcon name="i-lucide-scroll-text" class="size-7" />
+    <div class="mb-6 grid size-14 place-items-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-[0_0_30px_rgba(10,26,51,.14)]" aria-hidden="true">
+      <UIcon name="i-lucide-newspaper" class="size-7" />
     </div>
     <p class="eyebrow">
       Khởi đầu một huyền thoại

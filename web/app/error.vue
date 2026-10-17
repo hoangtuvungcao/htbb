@@ -18,7 +18,8 @@ function veTrangChu() {
     <div class="relative grid min-h-dvh place-items-center overflow-hidden bg-pattern p-6 text-center">
       <FxGlowOrbs />
       <div class="relative max-w-lg">
-        <p class="font-serif text-[7rem] font-extrabold leading-none text-gilded">
+        <PokeBall wiggle class="mx-auto mb-2 size-20" />
+        <p class="font-display text-[7rem] font-extrabold leading-none text-gilded">
           {{ error.statusCode || 500 }}
         </p>
         <h1 class="section-title mt-4 text-3xl text-highlighted">
