@@ -16,8 +16,9 @@ auth.hydrate()
 const route = useRoute()
 const open = ref(false)
 
+const me = useAdminMe()
 const groups = computed<NavigationMenuItem[][]>(() =>
-  ADMIN_MENU.map(g => [
+  ADMIN_MENU.map(g => ({ ...g, items: g.items.filter(i => !i.vai || i.vai.includes(me.vaiTro.value)) })).filter(g => g.items.length).map(g => [
     { label: g.nhom, type: 'label' as const },
     ...g.items.map(i => ({
       label: i.label,
@@ -85,7 +86,9 @@ useHead({
           <div v-if="!collapsed" class="flex items-center gap-2 px-2.5 py-1.5 text-sm text-muted">
             <span class="size-2 rounded-full bg-success shadow-[0_0_8px] shadow-success" />
             {{ auth.admin.value?.username }}
+            <UBadge size="sm" color="neutral" variant="subtle" class="ml-auto">{{ TEN_VAI_TRO_WEB[me.vaiTro.value] }}</UBadge>
           </div>
+          <UColorModeButton v-if="!collapsed" color="neutral" variant="ghost" class="justify-start" />
         </div>
       </template>
     </UDashboardSidebar>

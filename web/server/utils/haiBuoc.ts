@@ -612,7 +612,7 @@ export const HB_CHO_2FA_HAN = 300
 
 /** Đóng phiên chờ và mở phiên admin thật: ghi nhật ký 'dang_nhap' rồi cấp token admin. */
 export async function hbVaoDuoc(event: import('h3').H3Event, tk: { id: number, username: string }, cach: string) {
-  const admin = { id: Number(tk.id), username: String(tk.username) }
+  const admin = { id: Number(tk.id), username: String(tk.username), vaiTro: (await vaiTroCua(String(tk.username))) ?? 'xem' as const }
   // ghiNhatKy() lấy tên người làm từ context: gắn admin vào trước để dòng
   // 'dang_nhap' có cột admin_user là chính người vừa vào.
   event.context.htbbAdmin = admin

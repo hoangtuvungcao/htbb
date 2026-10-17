@@ -70,7 +70,7 @@ export default defineEventHandler(async (event) => {
   if (tenDaGo === '' || matKhau === '') {
     throw apiLoi(400, 'Nhập đủ tên tài khoản và mật khẩu.')
   }
-  if (adminAccounts().length === 0) {
+  if (!(await coAiLaAdmin())) {
     throw apiLoi(403, 'Chưa cấu hình KPAH_ADMIN_ACCOUNTS nên trang quản trị đang đóng với tất cả mọi người.')
   }
 
@@ -92,7 +92,7 @@ export default defineEventHandler(async (event) => {
     await ghiNhatKyDangNhapThatBai(event, tenDaGo, 'sai tên hoặc mật khẩu')
     throw apiLoi(401, 'Sai tên tài khoản hoặc mật khẩu.')
   }
-  if (!laTaiKhoanAdmin(String(row.username))) {
+  if (!(await vaiTroCua(String(row.username)))) {
     // Mật khẩu ĐÚNG nhưng không nằm trong danh sách admin — đáng ghi lại.
     await ghiNhatKyDangNhapThatBai(event, tenDaGo, 'đúng mật khẩu nhưng không có quyền admin')
     throw apiLoi(403, 'Tài khoản này không có quyền vào trang quản trị.')

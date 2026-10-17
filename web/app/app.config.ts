@@ -25,6 +25,14 @@ export default defineAppConfig({
         base: 'font-display font-bold tracking-wide rounded-full',
       },
     },
+    // Menu ngang chỉ hiện từ xl (7 mục + tìm kiếm); dưới xl dùng nút mở menu trượt.
+    header: {
+      slots: {
+        toggle: 'xl:hidden',
+        content: 'xl:hidden',
+        overlay: 'xl:hidden',
+      },
+    },
     badge: {
       slots: {
         base: 'font-bold rounded-full',

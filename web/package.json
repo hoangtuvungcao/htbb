@@ -9,13 +9,16 @@
     "preview": "nuxt preview",
     "start": "node .output/server/index.mjs",
     "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "dong-bo-du-lieu": "node scripts/sinh-du-lieu-pokemon.mjs && node scripts/sinh-anim-khoi-dau.mjs && node scripts/dong-bo-cam-nang.mjs",
+    "sinh-anh-og": "node scripts/sinh-anh-og.mjs"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.140",
     "@nuxt/ui": "^4.11.3",
     "@vueuse/core": "^15.0.0",
     "@vueuse/nuxt": "^15.0.0",
+    "marked": "^17.0.6",
     "motion-v": "^2.5.2",
     "mysql2": "^3.24.5",
     "nuxt": "^4.5.2",

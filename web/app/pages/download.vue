@@ -13,12 +13,21 @@ function coLink(url: string | null | undefined): boolean {
   return u !== '' && u !== '#'
 }
 
-const platforms = computed(() => [
-  { name: 'Android', hint: 'Bản cài đặt APK', icon: 'i-lucide-smartphone', url: site.value?.linkAndroid ?? '', mau: 'from-grass-400/25 to-grass-900/5', anh: 'shadow-grass-500/30' },
-  { name: 'PC / Windows', hint: 'Chơi trên máy tính', icon: 'i-lucide-monitor', url: site.value?.linkPc ?? '', mau: 'from-pikachu-400/25 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
-  { name: 'Java (.jar)', hint: 'Điện thoại Java / giả lập J2ME', icon: 'i-lucide-cpu', url: site.value?.linkJar ?? '', mau: 'from-sky-400/25 to-sky-900/5', anh: 'shadow-sky-500/30' },
+const cms = useCongKhai()
+/** Link + phiên bản sửa ở /admin/tai-game; link trống thì dùng biến môi trường KPAH_LINK_*. */
+const banCms = (ma: string) => cms.value.taiGame.ban.find(b => b.ma === ma)
+const platforms = computed(() => _platformsGoc.value
+  .map((p) => {
+    const b = banCms(p.ma)
+    return { ...p, name: b?.ten || p.name, hint: b?.moTa || p.hint, url: lienKetAnToan(b?.url) || p.url, phienBan: b?.phienBan ?? '', dungLuong: b?.dungLuong ?? '', capNhat: b?.capNhat ?? '', nhatKy: b?.nhatKy ?? '', hien: b ? b.hien || coLink(b.url) : true }
+  })
+  .filter(p => p.hien))
+const _platformsGoc = computed(() => [
+  { ma: 'android', name: 'Android', hint: 'Bản cài đặt APK — đồ hoạ đầy đủ, điều khiển cảm ứng', icon: 'i-lucide-smartphone', url: site.value?.linkAndroid ?? '', mau: 'from-grass-400/25 to-grass-900/5', anh: 'shadow-grass-500/30', chiTiet: ['File .apk', 'Cài ngoài CH Play', 'Cảm ứng + bàn phím'] },
+  { ma: 'pc', name: 'PC / Windows', hint: 'Chơi trên máy tính bằng bàn phím', icon: 'i-lucide-monitor', url: site.value?.linkPc ?? '', mau: 'from-pikachu-400/25 to-pikachu-900/5', anh: 'shadow-pikachu-500/30', chiTiet: ['File nén .zip', 'Giải nén rồi chạy .exe', 'Màn hình lớn'] },
+  { ma: 'jar', name: 'Java (.jar)', hint: 'Điện thoại phím Java hoặc giả lập J2ME', icon: 'i-lucide-cpu', url: site.value?.linkJar ?? '', mau: 'from-pokeblue-400/25 to-pokeblue-900/5', anh: 'shadow-pokeblue-500/30', chiTiet: ['Bản thường & bản nhẹ (~2 MB)', 'Máy yếu chơi mượt', 'Phím số'] },
   // iOS chưa có bản riêng: chỉ hiện khi đã cấu hình link
-  ...(coLink(site.value?.linkIos) ? [{ name: 'iOS', hint: 'Hướng dẫn cài đặt', icon: 'i-lucide-tablet-smartphone', url: site.value!.linkIos, mau: 'from-rose-400/25 to-rose-900/5', anh: 'shadow-rose-500/30' }] : []),
+  ...(coLink(site.value?.linkIos) || banCms('ios')?.hien ? [{ ma: 'ios', name: 'iOS', hint: 'Hướng dẫn cài đặt', icon: 'i-lucide-tablet-smartphone', url: site.value?.linkIos ?? '', mau: 'from-pokered-400/25 to-pokered-900/5', anh: 'shadow-pokered-500/30', chiTiet: [] as string[] }] : []),
 ])
 
 const steps = computed(() => [
@@ -26,6 +35,14 @@ const steps = computed(() => [
   { so: '02.', tieuDe: 'Tải phiên bản phù hợp', mo: 'Chọn nền tảng và làm theo hướng dẫn cài đặt.', link: 'Chọn bản tải', to: '/download#download' },
   { so: '03.', tieuDe: 'Chọn Pokémon khởi đầu', mo: 'Đăng nhập game, chọn Pokémon của bạn và tìm những người bạn đồng hành.', link: 'Cộng đồng & hỗ trợ', to: hoTro.value },
 ])
+
+const cauHinh = [
+  ['Hệ điều hành', 'Android 5.0 trở lên', 'Windows 7 / 10 / 11 (64-bit)', 'Điện thoại hỗ trợ Java MIDP 2.0, hoặc J2ME Loader trên Android'],
+  ['Bộ nhớ (RAM)', '2 GB', '2 GB', 'Bản nhẹ cho máy ít bộ nhớ'],
+  ['Dung lượng trống', '200 MB', '300 MB', 'Vài MB'],
+  ['Kết nối', 'Wi-Fi hoặc 3G/4G ổn định', 'Internet ổn định', 'GPRS/3G trở lên'],
+  ['Điều khiển', 'Cảm ứng', 'Bàn phím', 'Phím số'],
+]
 
 const faq = [
   { label: 'Tôi cần làm gì sau khi đăng ký?', slot: 'faq1' as const },
@@ -36,8 +53,8 @@ const faq = [
 <template>
   <div>
     <SitePageBanner
-      title="Hẹn gặp trong thế giới Pokémon"
-      eyebrow="Tải game"
+      title="Tải game"
+      eyebrow="Miễn phí · không nạp tiền"
       intro="Một lần tải game. Mở ra cả một thế giới để khám phá, kết giao và viết nên câu chuyện của bạn."
     />
 
@@ -71,9 +88,23 @@ const faq = [
                 <h3 class="mt-8 font-display text-2xl font-bold text-highlighted [transform:translateZ(40px)]">
                   {{ p.name }}
                 </h3>
-                <p class="mt-2 flex-1 text-muted [transform:translateZ(25px)]">
+                <p class="mt-2 text-muted [transform:translateZ(25px)]">
                   {{ p.hint }}
                 </p>
+                <ul class="mt-4 flex flex-1 flex-wrap content-start justify-center gap-1.5 [transform:translateZ(20px)]">
+                  <li v-for="c in p.chiTiet" :key="c" class="rounded-full bg-elevated px-2.5 py-1 text-xs font-semibold text-toned">
+                    {{ c }}
+                  </li>
+                </ul>
+                <p v-if="p.phienBan || p.dungLuong || p.capNhat" class="mt-4 text-xs font-semibold text-dimmed">
+                  <span v-if="p.phienBan">Phiên bản {{ p.phienBan }}</span>
+                  <span v-if="p.dungLuong"> · {{ p.dungLuong }}</span>
+                  <span v-if="p.capNhat"> · cập nhật {{ p.capNhat }}</span>
+                </p>
+                <details v-if="p.nhatKy" class="mt-2 w-full text-left text-xs text-muted">
+                  <summary class="cursor-pointer text-center font-semibold text-primary">Có gì mới</summary>
+                  <p class="mt-2 whitespace-pre-line">{{ p.nhatKy }}</p>
+                </details>
                 <div class="mt-8 w-full [transform:translateZ(30px)]">
                   <UButton
                     v-if="coLink(p.url)"
@@ -94,6 +125,37 @@ const faq = [
             </FxTiltCard>
           </FxReveal>
         </div>
+      </UContainer>
+    </section>
+
+    <!-- ============ YÊU CẦU CẤU HÌNH ============ -->
+    <section id="yeu-cau" class="scroll-mt-20 pb-20" aria-labelledby="yeu-cau-title">
+      <UContainer class="max-w-6xl">
+        <h2 id="yeu-cau-title" class="section-title text-3xl text-highlighted">
+          Yêu cầu cấu hình (khuyến nghị)
+        </h2>
+        <p class="mt-2 text-muted">
+          Game nhẹ, chạy tốt trên máy cũ. Bảng dưới là mức khuyến nghị để chơi mượt.
+        </p>
+        <div class="bang-cuon mt-5">
+          <table class="bang-wiki">
+            <thead>
+              <tr>
+                <th /><th>Android</th><th>PC / Windows</th><th>Java (.jar)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="r in cauHinh" :key="r[0]">
+                <td class="font-semibold text-highlighted">
+                  {{ r[0] }}
+                </td><td>{{ r[1] }}</td><td>{{ r[2] }}</td><td>{{ r[3] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-3 text-sm text-muted">
+          Cài xong? Làm theo <NuxtLink to="/huong-dan" class="font-semibold text-primary hover:underline">hướng dẫn tân thủ</NuxtLink> để bắt đầu.
+        </p>
       </UContainer>
     </section>
 

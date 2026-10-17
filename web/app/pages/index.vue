@@ -11,10 +11,32 @@ const hoTro = computed(() => linkHoTro(site.value))
 const tenSite = useAppConfig().htbb.tenSite
 
 const stats = [
-  { so: '05', tieuDe: 'Pokémon khởi đầu', mo: 'Chọn người bạn đồng hành của chính bạn' },
-  { so: '18', tieuDe: 'Hệ khắc chế', mo: 'Lửa, Nước, Cỏ, Điện... biết hệ là thắng' },
-  { so: '21', tieuDe: 'Dạng tiến hoá', mo: 'Lên cấp và lớn mạnh qua từng giai đoạn' },
+  { so: '05', tieuDe: 'Pokémon khởi đầu', mo: 'Chính bạn là Pokémon đó', to: '/huong-dan#khoi-dau' },
+  { so: String(POKEDEX.he.length), tieuDe: 'Hệ khắc chế', mo: 'Biết hệ là thắng', to: '/cam-nang/he-khac-che' },
+  { so: String(POKEDEX.loai.length), tieuDe: 'Loài trong Pokédex', mo: 'Săn, sưu tầm, săn Shiny', to: '/pokedex' },
+  { so: String(CAM_NANG.suKien.length), tieuDe: 'Tuần sự kiện / năm', mo: 'Tuần nào cũng có chuyện vui', to: '/cam-nang/su-kien' },
 ]
+
+// Trạng thái máy chủ: chỉ gọi phía trình duyệt (không làm chậm SSR khi CSDL chậm).
+const { data: trangThai, status: ttStatus } = useFetch<{ song: boolean | null, online: number | null }>('/api/trang-thai', { server: false, lazy: true, key: 'trang-thai' })
+
+// Sự kiện tuần này + 2 tuần tới (tính theo ngày trên máy người xem)
+const suKien = ref<SuKienTuan[]>([])
+const lich = useLichSuKien()
+onMounted(() => { suKien.value = suKienTuTuan(tuanTrongNam(new Date()), 2, lich.value) })
+watch(lich, l => { suKien.value = suKienTuTuan(tuanTrongNam(new Date()), 2, l) })
+
+// Nội dung sửa được trong khu quản trị (CSDL), mặc định = bản cũ.
+const cms = useCongKhai()
+const tc = computed(() => cms.value.trangChu)
+const { data: dsTin } = await useFetch<TinTomTatWeb[]>('/api/tin-tuc', { key: 'htbb-tin', default: () => [] })
+const tinMoi = computed(() => (dsTin.value ?? []).slice(0, 3))
+const bannerHien = computed(() => tc.value.banner.filter(b => b.hien && (b.anh || b.tieuDe)))
+const iBanner = ref(0)
+let hBanner: ReturnType<typeof setInterval> | undefined
+onMounted(() => { hBanner = setInterval(() => { if (bannerHien.value.length > 1) iBanner.value = (iBanner.value + 1) % bannerHien.value.length }, 6000) })
+onBeforeUnmount(() => clearInterval(hBanner))
+
 
 /**
  * 5 Pokémon khởi đầu, theo cột tob_char.class 0..4 (shared/utils/pokemon.ts).
@@ -28,7 +50,7 @@ const KIEU_KHOI_DAU: Record<number, { mo: string }> = {
   2: { mo: `Gen linh hoạt hiếm có. Đến cấp ${CAP_NHANH_EEVEE}, bạn tự chọn 1 trong 8 hướng tiến hoá.` },
 }
 
-const khoiDau = [0, 1, 3, 4, 2].map((cls) => {
+const khoiDauTatCa = [0, 1, 2, 3, 4].map((cls) => {
   const dex = DEX_KHOI_DAU[cls as 0 | 1 | 2 | 3 | 4]
   const loai = loaiPokemon(dex)!
   const laEevee = cls === 2
@@ -46,12 +68,11 @@ const khoiDau = [0, 1, 3, 4, 2].map((cls) => {
     ...KIEU_KHOI_DAU[cls]!,
   }
 })
+const khoiDau = computed(() => {
+  const thuTu = tc.value.khoiDauThuTu.filter(c => c >= 0 && c <= 4)
+  return (thuTu.length ? thuTu : [0, 1, 3, 4, 2]).map(c => khoiDauTatCa[c]!).filter(Boolean)
+})
 
-const portals = [
-  { so: '01 · KHỞI HÀNH', icon: 'i-lucide-download', tieuDe: 'Bước vào thế giới Pokémon', mo: 'Chọn phiên bản dành cho bạn và bắt đầu chuyến phiêu lưu.', link: 'Tải game', to: '/download' },
-  { so: '02 · VINH DANH', icon: 'i-lucide-trophy', tieuDe: 'Lưu danh bảng vàng', mo: 'Theo dõi những Pokémon mạnh nhất và chủ nhân của chúng.', link: 'Xem xếp hạng', to: '/ranking' },
-  { so: '03 · HỘI NGỘ', icon: 'i-lucide-newspaper', tieuDe: 'Tin tức vùng đất', mo: 'Khám phá tin tức, sự kiện và những cuộc hẹn cùng bạn bè.', link: 'Đọc tin tức', to: '/news' },
-]
 
 const steps = computed(() => [
   { so: '1', tieuDe: 'Tạo tài khoản', mo: 'Đăng ký tài khoản để bắt đầu hành trình của bạn.', link: 'Đăng ký ngay', to: '/register' },
@@ -76,28 +97,36 @@ const faq = computed(() => [
           <div class="lg:pb-24">
             <FxReveal>
               <p class="eyebrow">
-                {{ tenSite }} · MMORPG
+                {{ tc.hero.nhan || `${tenSite} · MMORPG` }}
               </p>
             </FxReveal>
             <FxReveal :delay="0.1">
               <h1 id="hero-heading" class="section-title mt-5 text-[2.6rem] leading-[1.08] text-highlighted sm:text-6xl lg:text-[4.2rem]">
-                Bạn không huấn luyện Pokémon.<br>
-                <span class="text-gilded">Bạn chính là Pokémon!</span>
+                {{ tc.hero.dong1 }}<br>
+                <span class="text-gilded">{{ tc.hero.dong2 }}</span>
               </h1>
             </FxReveal>
             <FxReveal :delay="0.2">
               <div class="dialog-box mt-7 max-w-xl">
                 <p class="text-base sm:text-lg">
-                  Chọn một Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu thời gian thực cùng bạn bè: săn Pokémon hoang dã, hạ boss huyền thoại, lập đội và tranh tài PvP.
+                  {{ tc.hero.moTa }}
                 </p>
               </div>
             </FxReveal>
             <FxReveal :delay="0.3">
               <div class="mt-8 flex flex-wrap gap-3">
-                <UButton to="/download" size="xl" trailing-icon="i-lucide-download" class="btn-game px-6">
-                  Tải game ngay
+                <UButton
+                  v-for="(n, k) in tc.hero.nut"
+                  :key="k"
+                  :to="lienKetAnToan(n.to) || '/'"
+                  size="xl"
+                  :color="n.kieu === 'chinh' ? 'primary' : 'warning'"
+                  :class="n.kieu === 'chinh' ? 'btn-game px-6' : 'btn-pikachu px-6'"
+                  :trailing-icon="n.kieu === 'chinh' ? 'i-lucide-arrow-right' : undefined"
+                >
+                  {{ n.label }}
                 </UButton>
-                <ClientOnly>
+                <ClientOnly v-if="!tc.hero.nut.length">
                   <UButton v-if="auth.loggedIn.value" to="/account" size="xl" color="warning" class="btn-pikachu px-6">
                     Tài khoản của bạn
                   </UButton>
@@ -112,6 +141,28 @@ const faq = computed(() => [
                 </ClientOnly>
               </div>
             </FxReveal>
+            <FxReveal :delay="0.35">
+              <ClientOnly>
+                <p class="mt-6 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-sm font-semibold text-navy-800 shadow-sm dark:bg-navy-950/70 dark:text-navy-100">
+                  <span class="relative flex size-2.5">
+                    <span v-if="trangThai?.song" class="absolute inline-flex size-full animate-ping rounded-full bg-grass-400 opacity-75" />
+                    <span class="relative inline-flex size-2.5 rounded-full" :class="trangThai?.song ? 'bg-grass-500' : trangThai?.song === false ? 'bg-pokered-500' : 'bg-navy-400'" />
+                  </span>
+                  <template v-if="trangThai?.song">
+                    Máy chủ đang mở · {{ trangThai.online }} Pokémon online
+                  </template>
+                  <template v-else-if="trangThai?.song === false">
+                    Máy chủ đang bảo trì
+                  </template>
+                  <template v-else-if="ttStatus === 'pending' || ttStatus === 'idle'">
+                    Đang kiểm tra máy chủ…
+                  </template>
+                  <template v-else>
+                    Chưa rõ trạng thái máy chủ — xem kênh hỗ trợ
+                  </template>
+                </p>
+              </ClientOnly>
+            </FxReveal>
           </div>
 
           <FxReveal :delay="0.15" class="relative">
@@ -125,19 +176,69 @@ const faq = computed(() => [
     <div class="bg-grass-400 pb-2 dark:bg-grass-800">
       <UContainer class="max-w-6xl">
         <FxReveal>
-          <div class="grid divide-y-2 divide-[var(--ui-border)] overflow-hidden rounded-2xl glass ring-gilded sm:grid-cols-3 sm:divide-x-2 sm:divide-y-0">
-            <div v-for="s in stats" :key="s.so" class="flex items-center gap-4 p-5">
-              <b class="grid size-14 shrink-0 place-items-center rounded-xl bg-screen font-pixel text-lg text-pokered-600 dark:text-pikachu-300">{{ s.so }}</b>
-              <span>
-                <strong class="block font-display text-lg text-highlighted">{{ s.tieuDe }}</strong>
-                <span class="text-sm text-muted">{{ s.mo }}</span>
+          <div class="grid grid-cols-2 overflow-hidden rounded-2xl glass ring-gilded lg:grid-cols-4">
+            <NuxtLink v-for="s in stats" :key="s.tieuDe" :to="s.to" class="flex items-center gap-3 border-[var(--ui-border)] p-4 transition-colors hover:bg-elevated/60 sm:gap-4 sm:p-5 [&:nth-child(-n+2)]:border-b-2 lg:[&:nth-child(-n+2)]:border-b-0 [&:not(:last-child)]:border-r-2 max-lg:[&:nth-child(2)]:border-r-0">
+              <b class="grid size-12 shrink-0 place-items-center rounded-xl bg-screen font-pixel text-sm text-pokered-600 sm:size-14 sm:text-base dark:text-pikachu-300">{{ s.so }}</b>
+              <span class="min-w-0">
+                <strong class="block font-display text-base leading-tight text-highlighted sm:text-lg">{{ s.tieuDe }}</strong>
+                <span class="text-xs text-muted sm:text-sm">{{ s.mo }}</span>
               </span>
-            </div>
+            </NuxtLink>
           </div>
         </FxReveal>
       </UContainer>
       <div class="h-10" />
     </div>
+
+    <!-- ============ CẢNH PHIM + TÍNH NĂNG ============ -->
+    <section class="pt-16 sm:pt-20" aria-labelledby="tinh-nang-title">
+      <UContainer class="max-w-7xl">
+        <div v-if="bannerHien.length" class="relative mb-10 overflow-hidden rounded-3xl ring-gilded" aria-roledescription="carousel">
+          <NuxtLink
+            v-for="(b, k) in bannerHien"
+            v-show="k === iBanner"
+            :key="k"
+            :to="lienKetAnToan(b.to) || '/'"
+            class="group relative block aspect-[21/7] min-h-44 bg-navy-900"
+            :aria-label="b.tieuDe"
+          >
+            <img v-if="b.anh" :src="lienKetAnToan(b.anh)" alt="" class="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105">
+            <span class="absolute inset-0 bg-gradient-to-r from-navy-950/80 via-navy-950/30 to-transparent" />
+            <span class="absolute inset-y-0 left-0 flex max-w-xl flex-col justify-center p-6 sm:p-10">
+              <span class="font-display text-2xl font-extrabold text-white sm:text-4xl">{{ b.tieuDe }}</span>
+              <span v-if="b.moTa" class="mt-2 text-sm text-white/85 sm:text-base">{{ b.moTa }}</span>
+            </span>
+          </NuxtLink>
+          <div v-if="bannerHien.length > 1" class="absolute bottom-3 right-4 flex gap-1.5">
+            <button v-for="(b, k) in bannerHien" :key="k" type="button" class="size-2.5 rounded-full" :class="k === iBanner ? 'bg-white' : 'bg-white/45'" :aria-label="`Banner ${k + 1}`" @click="iBanner = k" />
+          </div>
+        </div>
+        <FxReveal v-if="tc.hienCanhPhim">
+          <SiteCanhPhim />
+        </FxReveal>
+        <FxReveal class="mt-14 text-center">
+          <p class="eyebrow">
+            Có gì trong game
+          </p>
+          <h2 id="tinh-nang-title" class="section-title mt-4 text-4xl text-highlighted sm:text-5xl">
+            {{ tc.tinhNangTieuDe }}
+          </h2>
+        </FxReveal>
+        <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <li v-for="(f, i) in tc.tinhNang" :key="f.t">
+            <FxReveal :delay="(i % 3) * 0.08" class="h-full">
+              <NuxtLink :to="lienKetAnToan(f.to) || '/'" class="group flex h-full gap-4 rounded-3xl glass p-5 transition hover:-translate-y-1">
+                <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-pikachu-400 text-navy-950 ring-2 ring-[color-mix(in_oklab,var(--poke-outline)_70%,transparent)]"><UIcon :name="f.icon" class="size-6" /></span>
+                <span>
+                  <span class="block font-display text-xl font-bold text-highlighted group-hover:text-primary">{{ f.t }}</span>
+                  <span class="mt-1 block text-sm text-muted">{{ f.m }}</span>
+                </span>
+              </NuxtLink>
+            </FxReveal>
+          </li>
+        </ul>
+      </UContainer>
+    </section>
 
     <!-- ============ 5 POKÉMON KHỞI ĐẦU ============ -->
     <section id="classes" class="scroll-mt-20 py-20" aria-labelledby="classes-title">
@@ -158,9 +259,9 @@ const faq = computed(() => [
             <article class="dex-card group flex h-full flex-col transition-transform duration-200 hover:-translate-y-1">
               <!-- Màn hình Pokédex -->
               <div class="dex-screen mt-5 overflow-hidden">
-                <div class="relative grid h-36 place-items-center bg-screen [--s:3]">
-                  <span class="absolute left-2 top-2 font-pixel text-[10px] text-navy-700 dark:text-grass-200">#{{ String(c.dex).padStart(4, '0') }}</span>
-                  <PokeSprite :dex="c.dex" :delay="i * 0.3" />
+                <div class="relative">
+                  <PokeSan :dex="c.dex" :he="c.he" :size="150" :delay="i * 0.3" :label="c.ten" class="w-full" />
+                  <span class="absolute left-2 top-2 rounded-full bg-white/80 px-1.5 py-1 font-pixel text-[9px] leading-none text-navy-800 dark:bg-navy-950/70 dark:text-navy-100">#{{ String(c.dex).padStart(3, '0') }}</span>
                 </div>
               </div>
               <div class="dex-screen mt-2 flex flex-1 flex-col p-4">
@@ -181,7 +282,7 @@ const faq = computed(() => [
                   <ol v-if="!c.nhanhEevee.length" class="mt-2 flex flex-wrap items-center gap-x-1 gap-y-2 text-xs">
                     <li v-for="(t, j) in c.chuoi" :key="t.dex" class="inline-flex items-center gap-1">
                       <UIcon v-if="j > 0" name="i-lucide-chevron-right" class="size-3 text-dimmed" aria-hidden="true" />
-                      <img :src="anhPokemon(t.dex)" width="40" height="40" alt="" class="pixelated size-6 rounded">
+                      <PokeAvatar :dex="t.dex" class="size-6" />
                       <span class="font-semibold text-toned">{{ t.ten }}</span>
                       <span v-if="t.cap" class="text-dimmed">(Lv {{ t.cap }})</span>
                     </li>
@@ -192,7 +293,7 @@ const faq = computed(() => [
                     </p>
                     <ul class="mt-2 grid grid-cols-4 gap-1">
                       <li v-for="t in c.nhanhEevee" :key="t.dex">
-                        <img :src="anhPokemon(t.dex)" width="40" height="40" :alt="t.ten" :title="t.ten" class="pixelated size-8 rounded">
+                        <PokeAvatar :dex="t.dex" :alt="t.ten" :title="t.ten" class="size-8" />
                       </li>
                     </ul>
                   </template>
@@ -204,33 +305,71 @@ const faq = computed(() => [
       </UContainer>
     </section>
 
-    <!-- ============ THẾ GIỚI ============ -->
-    <section class="relative isolate py-20" aria-labelledby="explore-title">
+    <!-- ============ SỰ KIỆN + TIN MỚI ============ -->
+    <section class="relative isolate py-20" aria-labelledby="su-kien-title">
       <div class="absolute inset-0 -z-10 bg-pokeblue-50 dark:bg-navy-900/60" aria-hidden="true" />
       <FxGlowOrbs />
       <UContainer class="relative max-w-7xl">
-        <FxReveal>
-          <p class="eyebrow">
-            Thế giới của bạn
-          </p>
-          <h2 id="explore-title" class="section-title mt-4 text-4xl text-highlighted sm:text-5xl">
-            Thế giới Pokémon không chỉ có chiến đấu.
-          </h2>
-        </FxReveal>
-        <div class="mt-12 grid gap-6 md:grid-cols-3">
-          <FxReveal v-for="(p, i) in portals" :key="p.to" :delay="i * 0.1">
-            <NuxtLink :to="p.to" class="group flex h-full flex-col rounded-2xl glass ring-gilded p-7 transition-transform hover:-translate-y-1">
-              <span class="font-display text-xs font-bold tracking-[0.18em] text-dimmed">{{ p.so }}</span>
-              <span class="mt-5 grid size-14 place-items-center rounded-2xl border-2 border-[var(--poke-outline)] bg-pikachu-400 text-navy-950 shadow-[0_3px_0_var(--poke-outline)]">
-                <UIcon :name="p.icon" class="size-7" />
-              </span>
-              <h3 class="mt-5 font-display text-2xl font-bold text-highlighted">{{ p.tieuDe }}</h3>
-              <p class="mt-2 flex-1 text-muted">{{ p.mo }}</p>
-              <span class="mt-6 inline-flex items-center gap-2 border-t-2 border-dashed border-[var(--ui-border)] pt-4 font-display font-bold text-primary">
-                {{ p.link }} <UIcon name="i-lucide-arrow-right" class="size-4 transition-transform group-hover:translate-x-1" />
-              </span>
-            </NuxtLink>
-          </FxReveal>
+        <div class="grid gap-10 lg:grid-cols-[1.1fr_1fr]">
+          <div>
+            <FxReveal>
+              <p class="eyebrow">
+                Lịch tuần này
+              </p>
+              <h2 id="su-kien-title" class="section-title mt-4 text-4xl text-highlighted">
+                Sự kiện đang diễn ra
+              </h2>
+            </FxReveal>
+            <ClientOnly>
+              <ol class="mt-8 space-y-3">
+                <li v-for="(e, i) in suKien" :key="e.tuan">
+                  <NuxtLink to="/cam-nang/su-kien" class="group relative flex gap-4 overflow-hidden rounded-2xl glass p-4 pl-5 transition hover:-translate-y-0.5" :class="i === 0 ? 'ring-gilded' : ''">
+                    <span class="absolute inset-y-0 left-0 w-1.5" :style="{ background: LOAI_SU_KIEN[e.loai]?.mau }" />
+                    <span class="grid size-11 shrink-0 place-items-center rounded-xl text-white" :style="{ background: LOAI_SU_KIEN[e.loai]?.mau }"><UIcon :name="LOAI_SU_KIEN[e.loai]?.icon ?? 'i-lucide-calendar'" class="size-5" /></span>
+                    <span class="min-w-0">
+                      <span class="text-xs font-bold uppercase tracking-wide" :class="i === 0 ? 'text-primary' : 'text-dimmed'">{{ i === 0 ? 'Tuần này' : i === 1 ? 'Tuần sau' : 'Sắp tới' }} · {{ LOAI_SU_KIEN[e.loai]?.ten }}</span>
+                      <span class="block font-display text-lg font-bold text-highlighted group-hover:text-primary">{{ e.ten1 }}</span>
+                      <span class="block text-sm text-muted">{{ e.coChe }}</span>
+                    </span>
+                  </NuxtLink>
+                </li>
+              </ol>
+              <template #fallback>
+                <USkeleton class="mt-8 h-64 w-full rounded-2xl" />
+              </template>
+            </ClientOnly>
+            <UButton to="/cam-nang/su-kien" color="neutral" variant="ghost" trailing-icon="i-lucide-arrow-right" class="mt-4">
+              Lịch sự kiện cả năm
+            </UButton>
+          </div>
+          <div>
+            <FxReveal>
+              <p class="eyebrow">
+                Tin mới
+              </p>
+              <h2 class="section-title mt-4 text-4xl text-highlighted">
+                Bảng tin vùng đất
+              </h2>
+            </FxReveal>
+            <ul class="mt-8 space-y-3">
+              <li v-for="a in tinMoi" :key="a.slug">
+                <NuxtLink :to="`/news/${a.slug}`" class="group flex gap-4 rounded-2xl glass p-4 transition hover:-translate-y-0.5">
+                  <img v-if="a.anhBia" :src="a.anhBia" alt="" loading="lazy" class="hidden size-20 shrink-0 rounded-xl object-cover sm:block">
+                  <span class="min-w-0">
+                    <span class="flex items-center gap-2 text-xs font-bold text-dimmed">
+                      <UBadge color="primary" variant="subtle" size="sm">{{ a.loai }}</UBadge>
+                      <UBadge v-if="a.ghim" color="warning" variant="subtle" size="sm" icon="i-lucide-pin">Ghim</UBadge> {{ a.ngay }}
+                    </span>
+                    <span class="mt-1.5 block font-display text-lg font-bold text-highlighted group-hover:text-primary">{{ a.tieuDe }}</span>
+                    <span class="mt-1 line-clamp-2 block text-sm text-muted">{{ a.tomTat }}</span>
+                  </span>
+                </NuxtLink>
+              </li>
+            </ul>
+            <UButton to="/news" color="neutral" variant="ghost" trailing-icon="i-lucide-arrow-right" class="mt-4">
+              Tất cả tin tức
+            </UButton>
+          </div>
         </div>
       </UContainer>
     </section>

@@ -23,6 +23,8 @@ import type { H3Event } from 'h3'
 export interface AdminUser {
   id: number
   username: string
+  /** Vai trò (server/utils/vaiTro.ts). Tên trong KPAH_ADMIN_ACCOUNTS = sieu_quan_tri. */
+  vaiTro: VaiTro
 }
 
 export function adminAccounts(): string[] {
@@ -51,7 +53,8 @@ export async function adminUser(event: H3Event): Promise<AdminUser | null> {
   if (event.context.htbbAdmin !== undefined) return event.context.htbbAdmin
   const p = docToken(bearer(event), 'admin')
   let a: AdminUser | null = null
-  if (p && laTaiKhoanAdmin(p.u) && typeof p.l === 'number' && nowSec() - p.l <= ADMIN_HAN_TOI_DA) {
+  const vt = p && typeof p.l === 'number' && nowSec() - p.l <= ADMIN_HAN_TOI_DA ? await vaiTroCua(p.u) : null
+  if (p && vt) {
     let row: { ban: number, password: string } | null = null
     try {
       row = await q1(dbAccount(), 'SELECT ban, `password` FROM team_user WHERE id = ? LIMIT 1', [Math.trunc(p.id)])
@@ -61,9 +64,9 @@ export async function adminUser(event: H3Event): Promise<AdminUser | null> {
       throw apiLoi(503, 'Chưa kiểm tra được phiên quản trị (MySQL chưa sẵn sàng). Thử lại sau ít giây.')
     }
     if (row && Number(row.ban) !== 1 && p.pw === dauMatKhau(row.password)) {
-      a = { id: p.id, username: p.u }
+      a = { id: p.id, username: p.u, vaiTro: vt }
       // Gia hạn trượt: mỗi lần thao tác cấp token mới (giữ nguyên mốc đăng nhập l).
-      setResponseHeader(event, 'X-Htbb-Token', taoTokenAdminTho(a.id, a.username, p.pw!, p.l))
+      setResponseHeader(event, 'X-Htbb-Token', taoTokenAdminTho(a.id, a.username, p.pw!, p.l as number))
     }
   }
   event.context.htbbAdmin = a
@@ -170,6 +173,7 @@ export async function dangBiChanDoSai(event: H3Event): Promise<boolean> {
 export function defineAdminHandler<T>(fn: (event: H3Event, admin: AdminUser) => Promise<T> | T) {
   return defineEventHandler(async (event) => {
     const admin = await requireAdmin(event)
+    requireQuyen(event, admin.vaiTro)
     try {
       return await fn(event, admin)
     } catch (e: any) {

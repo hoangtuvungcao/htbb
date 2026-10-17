@@ -122,3 +122,11 @@ export function useAdminAuth() {
 
   return { token, admin, ready, hydrate, setSession, refresh, clear, loggedIn: computed(() => !!admin.value) }
 }
+
+/** Thông tin admin đang đăng nhập + vai trò (server trả ở /api/admin/auth/me). */
+export function useAdminMe() {
+  const api = useAdminApi()
+  const { data, refresh } = useAsyncData('admin-me', () => api<{ admin: { username: string, vaiTro: VaiTroAdmin }, coBangNhatKy: boolean, coBangCms: boolean }>('/api/admin/auth/me'), { server: false })
+  const vaiTro = computed<VaiTroAdmin>(() => data.value?.admin?.vaiTro ?? 'xem')
+  return { data, refresh, vaiTro, coBangCms: computed(() => data.value?.coBangCms ?? true), duocGhiNoiDung: computed(() => ['sieu_quan_tri', 'bien_tap'].includes(vaiTro.value)) }
+}

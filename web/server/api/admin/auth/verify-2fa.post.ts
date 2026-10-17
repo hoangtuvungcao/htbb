@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
   }
   // Tên bị gỡ khỏi KPAH_ADMIN_ACCOUNTS trong 5 phút chờ: chặn ngay, không cấp
   // token admin cho người vừa bị rút quyền.
-  if (!laTaiKhoanAdmin(ten)) {
+  if (!(await vaiTroCua(ten))) {
     throw apiLoi(403, 'Tài khoản này không có quyền vào trang quản trị.', { code: 'restart' })
   }
 

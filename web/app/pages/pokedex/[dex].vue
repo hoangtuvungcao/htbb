@@ -18,7 +18,6 @@ const heChu = l.he.map(tenHe).join(' / ')
 useSeoMeta({
   title: `${l.ten} ${soDex(l.dex)} — Pokédex`,
   description: `${l.ten} (${heChu}) trong ${tenSite}: ${l.vaiTro.map(v => TEN_VAI_TRO[v].toLowerCase()).join(', ')}. Khắc chế, tiến hoá, nơi xuất hiện${l.chieu ? ', chiêu thức' : ''}.`,
-  ogImage: anhLoaiDex(l) || undefined,
 })
 
 const phongThu = bangPhongThu(l.he)
@@ -57,7 +56,7 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
 
     <UContainer class="max-w-6xl py-12 sm:py-16">
       <!-- Tổng quan -->
-      <section class="grid gap-6 lg:grid-cols-[18rem_1fr]" aria-labelledby="tong-quan">
+      <section class="grid gap-6 lg:grid-cols-[18rem_1fr] lg:items-start" aria-labelledby="tong-quan">
         <div class="dex-card self-start">
           <div class="mb-2 mt-1 flex items-center justify-end gap-1.5 pr-1" aria-hidden="true">
             <span class="size-2.5 rounded-full border-2 border-[var(--poke-outline)] bg-pokered-300" />
@@ -65,17 +64,9 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
             <span class="size-2.5 rounded-full border-2 border-[var(--poke-outline)] bg-grass-400" />
           </div>
           <div class="dex-screen p-3">
-            <div class="relative grid aspect-square place-items-center rounded-xl bg-screen">
-              <span class="absolute left-2.5 top-2.5 font-pixel text-[11px] text-navy-700 dark:text-grass-200">{{ soDex(l.dex) }}</span>
-              <img
-                v-if="anhLoaiDex(l)"
-                :src="anhLoaiDex(l)"
-                width="40"
-                height="40"
-                :alt="`Chân dung ${l.ten}`"
-                class="pixelated size-40"
-              >
-              <PokeBall v-else class="size-20 opacity-40" />
+            <div class="relative overflow-hidden rounded-xl">
+              <PokeSan :dex="l.dex" :he="l.he" :size="232" :label="l.ten" class="w-full rounded-xl" />
+              <span class="absolute left-3 top-3 rounded-full bg-white/80 px-2 py-1 font-pixel text-[10px] leading-none text-navy-800 dark:bg-navy-950/70 dark:text-navy-100">{{ soDex(l.dex) }}</span>
             </div>
             <p class="mt-3 text-center font-display text-2xl font-extrabold text-highlighted">
               {{ l.ten }}
@@ -84,7 +75,7 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
               <PokeHeBadge v-for="h in l.he" :key="h" :he="h" />
             </div>
             <div v-if="l.anh && l.anhShiny" class="mt-4 flex items-center justify-center gap-3 rounded-xl bg-pikachu-50 p-2 text-sm font-semibold text-pikachu-900 dark:bg-pikachu-950/40 dark:text-pikachu-200">
-              <img :src="l.anhShiny" width="40" height="40" :alt="`${l.ten} shiny`" class="pixelated size-12 rounded-lg bg-screen" loading="lazy">
+              <PokeSan :dex="l.dex" shiny :he="l.he" :size="56" :label="`${l.ten} shiny`" class="w-14 rounded-lg" />
               ✨ Có bản shiny trong game
             </div>
           </div>
@@ -105,7 +96,7 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
               <dt class="text-sm text-muted">
                 Số Pokédex
               </dt>
-              <dd class="num text-lg font-semibold text-highlighted">
+              <dd class="text-lg font-semibold tabular-nums text-highlighted">
                 {{ soDex(l.dex) }}
               </dd>
             </div>
@@ -148,7 +139,7 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
             </div>
           </dl>
           <p class="mt-6 text-sm text-muted">
-            <NuxtLink to="/huong-dan#khac-che" class="text-primary hover:underline">Xem bảng khắc chế đầy đủ</NuxtLink>
+            <NuxtLink to="/cam-nang/he-khac-che" class="text-primary hover:underline">Xem bảng khắc chế đầy đủ</NuxtLink>
             · Chiêu cùng hệ với người dùng được cộng ×{{ (POKEDEX.stabPhanTram / 100).toLocaleString('vi-VN') }} (STAB).
           </p>
         </div>
@@ -196,7 +187,7 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
               :class="b.dex === l.dex ? 'border-primary bg-primary/10' : 'border-default/60'"
               :aria-current="b.dex === l.dex ? 'page' : undefined"
             >
-              <img v-if="b.loai && anhLoaiDex(b.loai)" :src="anhLoaiDex(b.loai)" width="40" height="40" alt="" class="pixelated size-14" loading="lazy">
+              <PokeSan :dex="b.dex" :he="b.loai?.he ?? []" :size="96" class="w-28 rounded-xl" />
               <span class="mt-1 font-semibold text-highlighted">{{ b.loai?.ten ?? soDex(b.dex) }}</span>
               <span class="text-xs text-muted">{{ b.dieuKien }}</span>
             </NuxtLink>
@@ -210,7 +201,7 @@ const fmt = (n: number) => n.toLocaleString('vi-VN')
               :class="b.dex === l.dex ? 'border-primary bg-primary/10' : 'border-default/60'"
               :aria-current="b.dex === l.dex ? 'page' : undefined"
             >
-              <img v-if="b.loai && anhLoaiDex(b.loai)" :src="anhLoaiDex(b.loai)" width="40" height="40" alt="" class="pixelated size-14" loading="lazy">
+              <PokeSan :dex="b.dex" :he="b.loai?.he ?? []" :size="96" class="w-28 rounded-xl" />
               <span class="mt-1 font-semibold text-highlighted">{{ b.loai?.ten }}</span>
               <span class="mt-1 flex gap-1"><PokeHeBadge v-for="h in b.loai?.he ?? []" :key="h" :he="h" size="sm" /></span>
               <span class="mt-1 text-xs text-muted">{{ b.dieuKien }}</span>

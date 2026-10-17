@@ -51,6 +51,71 @@ Trên nhánh này mọi nhân vật người chơi là một Pokémon (kế ho�
   thì sửa tay. Khoá trong app config là `htbb`. Hạ tầng giữ tên cũ: biến môi trường `KPAH_*` (GitHub Secrets/VPS), CSDL `kpah_db`, service `kpah-web`, thư mục `/opt/kpah-web`.
 - **Thuật ngữ** trên giao diện: nhân vật → Pokémon, bang hội → Đội, linh thú → thú cưỡi.
 
+## Trang công khai & cẩm nang (dữ liệu sinh tự động)
+
+| Đường dẫn | Nội dung | Dữ liệu |
+|---|---|---|
+| `/` | Hero, cảnh "trailer" sprite (`SiteCanhPhim`), tính năng, 5 khởi đầu, sự kiện tuần này, tin mới, trạng thái máy chủ (`/api/trang-thai`) | `pokedex.json`, `cam-nang.json`, `shared/utils/news.ts` |
+| `/gioi-thieu` | Thế giới, vùng, điểm độc đáo, cung truyện năm 1 | `cam-nang.json` |
+| `/huong-dan` | Tân thủ: tải/cài, tài khoản, chọn khởi đầu, điều khiển, HUD minh hoạ (`SiteHudMinhHoa`), 30 phút đầu | cả hai JSON |
+| `/cam-nang`, `/cam-nang/<slug>` | Wiki 18 trang có thanh bên, tìm kiếm, trang trước/sau (`WikiShell`). Danh mục trang: `DS_CAM_NANG` trong [shared/utils/camNang.ts](shared/utils/camNang.ts) | cả hai JSON |
+| `/pokedex` | Lọc theo tên/số, hệ, giai đoạn tiến hoá, vai trò, sắp xếp; sprite động (`PokeSan`) | `pokedex.json`, `sprite-anim.json` |
+| `/dieu-khoan`, `/quyen-rieng-tu`, `/ghi-cong` | Pháp lý, tuyên bố fan phi thương mại, ghi công PMDCollab / Kenney / Ninja Adventure | — |
+| `/sitemap.xml`, `/robots.txt` | Sinh động trong `server/routes/` | danh mục trang |
+
+Tìm kiếm toàn site (Ctrl/⌘+K hoặc `/`) chạy hoàn toàn trên trình duyệt (`SiteTimKiem`), không gọi server, không theo dõi.
+
+**Đồng bộ lại dữ liệu từ repo game** (chỉ đọc repo HTBB, ghi vào repo web):
+
+```bash
+HTBB_DIR=../HTBB npm run dong-bo-du-lieu
+#  = sinh-du-lieu-pokemon.mjs  -> shared/data/pokedex.json + public/pokemon/<dex>.png (chân dung)
+#  + sinh-anim-khoi-dau.mjs    -> public/pokemon/anim/<dex>[s]-idle.png (mọi loài), walk/walkR/danhR (5 khởi đầu)
+#                                 + shared/data/sprite-anim.json (khung, thời lượng, điểm chân)
+#  + dong-bo-cam-nang.mjs      -> shared/data/cam-nang.json (bang_cap_do_lau_dai, nhiem_vu_moi, su_kien_nam,
+#                                 thiet_ke_map, bang_vat_pham .csv + ThongSoLauDai.java + mo_phong_tom_tat.txt)
+node scripts/dong-bo-cam-nang.mjs --anh-map   # thêm: chép ảnh xem trước docs/pokemon/map_moi/<id>.png -> public/ban-do/
+npm run sinh-anh-og                           # ảnh chia sẻ public/og/htbb.png (cần google-chrome)
+```
+
+Không sửa tay các file JSON trên — đổi số bên game rồi chạy lại. Hình Pokémon trên thẻ/Pokédex dùng
+**sprite trong suốt** (`PokeSan`/`PokeSprite`, phóng nguyên lần, đặt chân lên bóng theo điểm chân của PMD);
+chân dung 40×40 (có nền vẽ sẵn) chỉ dùng làm ảnh đại diện tròn nhỏ (`PokeAvatar`).
+
+## Khu quản trị nội dung (CMS) & phân quyền
+
+**Cài một lần:** chạy `server/sql/web_cms.sql` (bản sao `HTBB/sql/web_cms.sql`) vào CSDL game `kpah_db`
+(MariaDB hoặc NovaDB — SQL viết để chạy cả hai). Chưa chạy thì website vẫn hiện nội dung mặc định;
+trang admin báo "Chưa có bảng". Bảng: `web_cai_dat` (khối JSON: site/trangChu/menu/taiGame),
+`web_tin_tuc`, `web_trang`, `web_faq`, `web_media`, `web_su_kien_lich`, `web_admin_vai_tro`,
+`web_khoa_tai_khoan`, `web_admin_thay_doi`.
+
+**Admin đầu tiên:** tài khoản game bình thường (đăng ký trên web hoặc trong game), rồi đặt
+`KPAH_ADMIN_ACCOUNTS=ten_tai_khoan` (nhiều tên cách dấu phẩy) và khởi động lại web — người trong
+danh sách này luôn là **Siêu quản trị**. Từ đó cấp vai trò cho người khác ở `/admin/phan-quyen`:
+
+| Vai trò | Được làm |
+|---|---|
+| Siêu quản trị | Mọi thứ (server, cấu hình, giftcode, reset, phân quyền, đồng bộ dữ liệu) |
+| Biên tập | Tin tức/sự kiện, trang cẩm nang, trang chủ, FAQ, menu, ảnh, lịch sự kiện, cài đặt website |
+| Hỗ trợ | Trung tâm người chơi: khoá có hạn/mở, cấm chat (khi offline), gửi thư, đổi mật khẩu |
+| Chỉ xem | Xem mọi trang, không sửa |
+
+Quyền kiểm ở server cho MỌI `/api/admin/**` (`server/utils/vaiTro.ts`, gọi trong `defineAdminHandler`);
+menu chỉ ẩn bớt cho gọn. Token admin đi qua header (không cookie) + chặn khác nguồn + chỉ nhận
+JSON/multipart (`server/middleware/admin-csrf.ts`); đăng nhập có giới hạn gõ sai; Markdown được lọc
+(HTML thô bị escape, link/ảnh chỉ http(s)/đường dẫn nội bộ — `shared/utils/markdown.ts`); ảnh tải
+lên kiểm chữ ký byte (PNG/JPEG/GIF/WebP ≤ 5 MB, không SVG), lưu ở `KPAH_UPLOAD_DIR`
+(mặc định `./uploads`), phục vụ qua `/uploads/<tên>`. Mọi thao tác ghi `web_admin_log`; sửa nội dung
+ghi thêm bản trước/sau ở `web_admin_thay_doi` (xem `/admin/lich-su-thay-doi`).
+
+Trang: `/admin` (tổng quan + nội dung), `/admin/tin-tuc` (soạn Markdown + xem trước, nháp/đăng/hẹn giờ,
+ghim), `/admin/trang` (trang cẩm nang mới hoặc tuỳ chỉnh trang có sẵn), `/admin/trang-chu`,
+`/admin/lich-su-kien`, `/admin/faq`, `/admin/tai-game`, `/admin/menu`, `/admin/media`, `/admin/cai-dat`
+(bảo trì, thanh thông báo, SEO/OG, mạng xã hội, nguồn trạng thái máy chủ), `/admin/nguoi-choi`,
+`/admin/bang-game` (kết quả trong game, chỉ đọc), `/admin/dong-bo` (chạy script đồng bộ dữ liệu game —
+cần `HTBB_DIR` + `KPAH_WEB_SRC_DIR`; số liệu đóng gói cần build lại).
+
 ## Chạy thử trên máy
 
 Cần **Node ≥ 20** và MariaDB (XAMPP được).

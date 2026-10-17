@@ -105,6 +105,7 @@ const cotNhatKy = [
         Tạo giftcode
       </UButton>
     </template>
+    <AdminCmsTongQuan />
 
     <div v-if="dangTai && !data" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <USkeleton v-for="i in 8" :key="i" class="h-28 rounded-xl" />

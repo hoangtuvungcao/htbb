@@ -12,7 +12,7 @@ import type { NhanVatDong } from '../../../utils/nhanVatAdmin'
 export default defineAdminHandler(async (event) => {
   const query = getQuery(event)
   const tim = str(query.q)
-  const trang = Math.max(1, int(query.trang, 1))
+  const trang = Math.min(1_000_000, Math.max(1, int(query.trang, 1)))
   const moi = 30
   let ds: NhanVatDong[] = []
   let conTrangSau = false

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ANIM_KHOI_DAU } from '~/components/poke/Sprite.vue'
 
 /**
  * Sân đấu nhỏ ở hero: 5 Pokémon khởi đầu (sprite PMD động) đứng trên bệ cỏ hình
@@ -16,12 +15,18 @@ const ds = [
 ]
 const dangChay = ref<number | null>(null)
 
+/** Bóng đặt đúng điểm chân (chanY so với tâm khung, nhân hệ số phóng --s). */
+function bong(dex: number) {
+  const a = ANIM[String(dex)]!.idle!
+  return { top: `calc(50% + ${a.chanY}px * var(--s))` }
+}
+
 /** Hộp chứa cố định theo khung lớn nhất (idle/walk) để đổi động tác không làm xô lệch hàng. */
 function hop(dex: number) {
-  const a = ANIM_KHOI_DAU[dex]!
+  const a = ANIM[String(dex)]!
   return {
-    width: `calc(${Math.max(a.idle.w, a.walk.w)}px * var(--s))`,
-    height: `calc(${Math.max(a.idle.h, a.walk.h)}px * var(--s))`,
+    width: `calc(${Math.max(a.idle!.w, a.walk!.w)}px * var(--s))`,
+    height: `calc(${Math.max(a.idle!.h, a.walk!.h)}px * var(--s))`,
   }
 }
 </script>
@@ -48,7 +53,7 @@ function hop(dex: number) {
           @touchstart.passive="dangChay = dangChay === p.dex ? null : p.dex"
         >
           <span class="relative grid place-items-center" :style="hop(p.dex)">
-            <span class="absolute bottom-[8%] h-[14%] w-[70%] rounded-[50%] bg-black/20" aria-hidden="true" />
+            <span class="absolute left-1/2 h-[12%] w-[62%] -translate-x-1/2 -translate-y-1/2 rounded-[50%] bg-black/20" :style="bong(p.dex)" aria-hidden="true" />
             <PokeSprite :dex="p.dex" :dong="dangChay === p.dex ? 'walk' : 'idle'" :scale="3" :delay="p.delay" :label="p.ten" class="relative" />
           </span>
           <span class="pointer-events-none mt-1 hidden rounded-full border-2 border-[var(--poke-outline)] bg-white px-2 font-display text-xs font-bold text-navy-900 opacity-0 transition-opacity group-hover:opacity-100 group-focus:opacity-100 sm:block">

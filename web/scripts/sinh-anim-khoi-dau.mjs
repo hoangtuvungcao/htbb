@@ -1,17 +1,19 @@
 #!/usr/bin/env node
 /**
- * Cắt dải hoạt ảnh (đứng + đi, hướng DOWN) của 5 Pokémon khởi đầu cho hero trang chủ.
+ * Cắt dải hoạt ảnh sprite PMD (nền trong suốt) cho website:
+ *   - MỌI loài đóng gói trong client: động tác đứng (idle) hướng DOWN — dùng ở Pokédex, thẻ, hero...
+ *   - 5 Pokémon khởi đầu: thêm đi (walk, DOWN), đi + đánh hướng RIGHT (walkR, danhR) cho cảnh "trailer".
  *
  *   HTBB_DIR=../HTBB node scripts/sinh-anim-khoi-dau.mjs
  *
  * Đọc (chỉ đọc): ClientUnity/Assets/Resources/poke/<dddd>_anh.bytes (PNG atlas RGBA)
  *               + <dddd>_dl.bytes (dữ liệu khung, định dạng ở KE_HOACH_CHUYEN_DOI.md §7.1).
  * Ghi: public/pokemon/anim/<dex>-<dongTac>.png (một hàng khung nằm ngang)
- *      public/pokemon/anim/<dex>.json        ({ idle|walk: { w, h, khung, thoiLuong[] (1/60 s) } })
+ *      shared/data/sprite-anim.json          ({ "<dex>[s]": { idle[|walk|walkR|danhR]: { w, h, khung, thoiLuong[] (1/60 s), chanX, chanY } } })
  *
  * Không thêm thư viện: tự giải/nén PNG bằng node:zlib (Node 22).
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { deflateSync, inflateSync } from 'node:zlib'
@@ -20,13 +22,15 @@ const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '../HTBB')
 const POKE = join(HTBB, 'ClientUnity/Assets/Resources/poke')
 const OUT = join(WEB, 'public/pokemon/anim')
+const OUT_JSON = join(WEB, 'shared/data/sprite-anim.json')
 
 /** Charmander, Bulbasaur, Eevee, Squirtle, Pichu (DEX_KHOI_DAU). */
 const KHOI_DAU = [4, 1, 133, 7, 172]
-/** Động tác cần lấy: chỉ số trong _dl.bytes (0 dung, 1 chay). */
-const DONG_TAC = { idle: 0, walk: 1 }
-/** Hướng DOWN = hàng 0 trong atlas. */
-const HUONG = 0
+/**
+ * Động tác cần lấy: [chỉ số trong _dl.bytes (0 dung, 1 chay, 2 danh_gan), hàng hướng trong atlas
+ * (thứ tự client: 0 DOWN, 1 UP, 2 LEFT, 3 RIGHT)]. walkR/danhR dùng cho cảnh "trailer" trang chủ.
+ */
+const DONG_TAC = { idle: [0, 0], walk: [1, 0], walkR: [1, 3], danhR: [2, 3] }
 
 if (!existsSync(POKE)) {
   console.error(`Không thấy ${POKE} (đặt HTBB_DIR).`)
@@ -118,37 +122,51 @@ function docDl(buf) {
     const thoiLuong = Array.from({ length: khung }, u8)
     const yAtlas = u16()
     const xAtlas = phienBan >= 2 ? u16() : 0
-    p += 8 // dxChan[4], dyChan[4]
-    ds.push({ w, h, khung, thoiLuong, xAtlas, yAtlas })
+    const i8 = () => { const v = buf.readInt8(p); p += 1; return v }
+    const dxChan = Array.from({ length: 4 }, i8)
+    const dyChan = Array.from({ length: 4 }, i8)
+    ds.push({ w, h, khung, thoiLuong, xAtlas, yAtlas, dxChan, dyChan })
   }
   return ds
 }
 
 // ---------------------------------------------------------------- chạy
 
+/** Khoá thư mục: "0004" -> 4, "0077s" -> "77s" (bản shiny). */
+const khoaWeb = ma => `${Number(ma.slice(0, 4))}${ma.endsWith('s') ? 's' : ''}`
+
+const dsMa = readdirSync(POKE).filter(f => /^\d{4}s?_anh\.bytes$/.test(f)).map(f => f.replace('_anh.bytes', '')).sort()
+const tatCa = {}
 let ghi = 0
-for (const dex of KHOI_DAU) {
-  const ma = String(dex).padStart(4, '0')
-  const atlas = docPng(readFileSync(join(POKE, `${ma}_anh.bytes`)))
-  const dl = docDl(readFileSync(join(POKE, `${ma}_dl.bytes`)))
+let loi = 0
+for (const ma of dsMa) {
+  const khoa = khoaWeb(ma)
+  const laKhoiDau = !ma.endsWith('s') && KHOI_DAU.includes(Number(ma))
+  let atlas, dl
+  try {
+    atlas = docPng(readFileSync(join(POKE, `${ma}_anh.bytes`)))
+    dl = docDl(readFileSync(join(POKE, `${ma}_dl.bytes`)))
+  }
+  catch (e) { console.warn(`Bỏ qua ${ma}: ${e.message}`); loi++; continue }
   const json = {}
-  for (const [ten, i] of Object.entries(DONG_TAC)) {
+  for (const [ten, [i, huong]] of Object.entries(DONG_TAC)) {
+    if (ten !== 'idle' && !laKhoiDau) continue
     const d = dl[i]
     const W = d.w * d.khung, H = d.h
     const px = Buffer.alloc(W * H * 4)
-    const y0 = d.yAtlas + HUONG * d.h
+    const y0 = d.yAtlas + huong * d.h
     for (let y = 0; y < H; y++) {
       const tu = ((y0 + y) * atlas.w + d.xAtlas) * 4
       atlas.px.copy(px, y * W * 4, tu, tu + W * 4)
     }
     const png = ghiPng(W, H, px)
-    const dich = join(OUT, `${dex}-${ten}.png`)
+    const dich = join(OUT, `${khoa}-${ten}.png`)
     if (!existsSync(dich) || !readFileSync(dich).equals(png)) { writeFileSync(dich, png); ghi++ }
-    json[ten] = { w: d.w, h: d.h, khung: d.khung, thoiLuong: d.thoiLuong }
+    // chanX/chanY: điểm chân (tâm bóng) so với TÂM khung, theo hướng của dải — để đặt sprite đứng đúng trên bóng.
+    json[ten] = { w: d.w, h: d.h, khung: d.khung, thoiLuong: d.thoiLuong, chanX: d.dxChan[huong], chanY: d.dyChan[huong] }
   }
-  const dichJson = join(OUT, `${dex}.json`)
-  const noiDung = `${JSON.stringify(json)}\n`
-  if (!existsSync(dichJson) || readFileSync(dichJson, 'utf8') !== noiDung) { writeFileSync(dichJson, noiDung); ghi++ }
-  console.log(`#${dex}: idle ${json.idle.w}×${json.idle.h}×${json.idle.khung}, walk ${json.walk.w}×${json.walk.h}×${json.walk.khung}`)
+  tatCa[khoa] = json
 }
-console.log(`Xong. Ghi ${ghi} file vào ${OUT}`)
+const noiDung = `${JSON.stringify(tatCa)}\n`
+if (!existsSync(OUT_JSON) || readFileSync(OUT_JSON, 'utf8') !== noiDung) { writeFileSync(OUT_JSON, noiDung); ghi++ }
+console.log(`Xong: ${Object.keys(tatCa).length} loài (${loi} lỗi). Ghi ${ghi} file vào ${OUT} + ${OUT_JSON}`)

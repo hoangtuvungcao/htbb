@@ -515,7 +515,6 @@ const thieu = [...kiemKeDex].filter(d => !LOAI.has(d))
 if (thieu.length) console.warn(`Cảnh báo: dex có sprite nhưng không có vai trò: ${thieu.join(', ')}`)
 
 const du = {
-  nguon: 'HTBB (bang_*.csv, LoaiPokemon/HePokemon/DaTienHoa/Pokedex/TenMapPokemon.java, htbb_day_du.sql, map/map<N>)',
   he: TEN_HE.map((ten, id) => ({ id, ten, en: TEN_HE_EN[id] })),
   khacChinhXac: KHAC,
   lamDiu: LAM_DIU,

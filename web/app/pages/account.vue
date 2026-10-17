@@ -210,14 +210,7 @@ const columns = [
               </template>
               <template #class-cell="{ row }">
                 <span class="inline-flex items-center gap-2">
-                  <img
-                    v-if="anhPokemon(dexHienTai(row.original.class, row.original.lastLv, row.original.dex))"
-                    :src="anhPokemon(dexHienTai(row.original.class, row.original.lastLv, row.original.dex))"
-                    width="40"
-                    height="40"
-                    alt=""
-                    class="pixelated size-10 rounded-lg bg-screen"
-                  >
+                  <PokeAvatar :dex="dexHienTai(row.original.class, row.original.lastLv, row.original.dex)" class="size-10" />
                   {{ speciesName(row.original.class, row.original.lastLv, row.original.dex) }}
                 </span>
               </template>

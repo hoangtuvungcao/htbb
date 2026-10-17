@@ -31,6 +31,16 @@ const nguoiVe = (() => {
   return [...dem.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
 })()
 
+const taiNguyen = [
+  { ten: 'PMDCollab SpriteCollab', url: 'https://github.com/PMDCollab/SpriteCollab', dung: 'Sprite động & chân dung Pokémon (game + website)', gp: 'CC BY-NC 4.0 — ghi công từng tác giả bên dưới' },
+  { ten: 'PMDCollab RawAsset', url: 'https://github.com/PMDCollab/RawAsset', dung: 'Hiệu ứng chiêu (particle), icon vật phẩm, vật thể trên bản đồ', gp: 'Không ghi giấy phép; phần lớn trích từ Pokémon Mystery Dungeon (© Nintendo / Chunsoft) — chỉ dùng phi thương mại' },
+  { ten: 'Kenney — Tiny Town', url: 'https://kenney.nl/assets/tiny-town', dung: 'Tile bản đồ: cỏ, đất, cây, nhà, hàng rào, biển', gp: 'CC0 1.0' },
+  { ten: 'Kenney — Tiny Dungeon', url: 'https://kenney.nl/assets/tiny-dungeon', dung: 'Tile hang động, đồ nội thất, rương', gp: 'CC0 1.0' },
+  { ten: 'Ninja Adventure (Pixel-boy & AAA)', url: 'https://pixel-boy.itch.io/ninja-adventure-asset-pack', dung: 'Sàn gỗ, tường và đồ trong nhà', gp: 'CC0 1.0' },
+  { ten: 'Phông Nunito, Baloo 2, Press Start 2P', url: 'https://fonts.google.com', dung: 'Chữ trên website (tự host)', gp: 'SIL Open Font License 1.1' },
+  { ten: 'Lucide Icons', url: 'https://lucide.dev', dung: 'Biểu tượng giao diện website', gp: 'ISC' },
+]
+
 const tim = ref('')
 const loaiLoc = computed(() => {
   const t = tim.value.trim().toLowerCase()
@@ -74,8 +84,37 @@ const loaiLoc = computed(() => {
                 Người vẽ ghi dạng "Discord #số" là tài khoản Discord trên máy chủ PMDCollab (danh sách gốc chỉ lưu mã số).
               </li>
             </ul>
-            <p v-if="ghiCong.loiDan.length" class="mt-6 whitespace-pre-line rounded-2xl bg-screen p-4 font-mono text-xs text-dimmed">
-              {{ ghiCong.loiDan.join('\n') }}
+          </div>
+        </FxReveal>
+
+        <FxReveal :delay="0.03">
+          <div class="mt-10">
+            <h2 class="section-title text-2xl text-highlighted">
+              Tài nguyên khác
+            </h2>
+            <div class="bang-cuon mt-4">
+              <table class="bang-wiki">
+                <thead>
+                  <tr>
+                    <th>Tài nguyên</th><th>Dùng cho</th><th>Giấy phép</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="r in taiNguyen" :key="r.ten">
+                    <td class="font-semibold text-highlighted">
+                      <ULink :to="r.url" target="_blank" rel="noopener" class="hover:text-primary hover:underline">
+                        {{ r.ten }}
+                      </ULink>
+                    </td>
+                    <td>{{ r.dung }}</td>
+                    <td>{{ r.gp }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="mt-3 text-sm text-muted">
+              Âm thanh: client hiện chưa phát nhạc/âm thanh. Khi bổ sung, dự án chỉ dùng nhạc và hiệu ứng âm thanh <strong class="text-highlighted">CC0</strong> có nguồn rõ ràng
+              (sẽ liệt kê tại đây) — không dùng nhạc gốc của dòng game Pokémon.
             </p>
           </div>
         </FxReveal>
@@ -105,7 +144,7 @@ const loaiLoc = computed(() => {
         <div class="mt-6 grid gap-4 md:grid-cols-2">
           <article v-for="l in loaiLoc" :key="l.ma" class="rounded-2xl glass p-5">
             <header class="flex items-center gap-3">
-              <img v-if="l.anh" :src="l.anh" width="40" height="40" alt="" class="pixelated size-12 rounded-lg bg-screen">
+              <PokeAvatar v-if="l.anh" :src="l.anh" class="size-12" />
               <span v-else class="grid size-12 place-items-center rounded-lg bg-screen text-xs text-dimmed" aria-hidden="true">#</span>
               <div>
                 <h3 class="font-semibold text-highlighted">

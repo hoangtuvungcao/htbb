@@ -1,23 +1,40 @@
 <script setup lang="ts">
-/** Chi tiết tin tức /news/<slug>. Slug lạ -> trạng thái 404. */
+/**
+ * Chi tiết tin tức /news/<slug>: bài trong CSDL (Markdown, sửa ở /admin/tin-tuc) hoặc bài tĩnh
+ * (shared/utils/news.ts). Slug lạ -> trạng thái 404.
+ */
 const route = useRoute()
 const slug = computed(() => String(route.params.slug ?? ''))
-const article = computed(() => newsBySlug(slug.value))
+const { data: tin } = await useFetch<TinChiTietWeb | null>(() => `/api/tin-tuc/${encodeURIComponent(slug.value)}`, {
+  key: `tin-${slug.value}`,
+  default: () => null,
+  onResponseError: () => {},
+})
+const { data: tatCa } = await useFetch<TinTomTatWeb[]>('/api/tin-tuc', { key: 'htbb-tin', default: () => [] })
 
-// Trả đúng mã 404 khi render phía server (để máy tìm kiếm không lập chỉ mục link
-// hỏng), nhưng vẫn hiện trang "Không tìm thấy bài viết" trong khung site thay vì trang lỗi.
-if (!article.value && import.meta.server) {
+/** Giữ tên `article` như trang cũ: bài tĩnh lấy nguyên cấu trúc, bài CSDL tự dựng phần đầu. */
+const article = computed(() => tin.value
+  ? (tin.value.tinh ?? { title: tin.value.tieuDe, body: tin.value.tomTat, category: tin.value.loai, date: tin.value.ngay, sections: [], notice: '' })
+  : null)
+
+if (!tin.value && import.meta.server) {
   setResponseStatus(useRequestEvent()!, 404)
 }
 
+const url = useRequestURL()
 const pageIntro = computed(() => article.value ? article.value.body : 'Bài viết này không tồn tại hoặc đường dẫn chưa chính xác.')
 useSeoMeta({
   title: () => article.value ? article.value.title : 'Không tìm thấy bài viết',
   description: () => pageIntro.value,
   robots: () => (article.value ? undefined : 'noindex'),
+  ogImage: () => (tin.value?.anhBia ? new URL(tin.value.anhBia, url.origin).href : undefined),
+  ogType: 'article',
 })
 
-const related = computed(() => newsList().filter(([s]) => s !== slug.value))
+const mucLuc = computed(() => tin.value?.tinh
+  ? tin.value.tinh.sections.map((s, i) => ({ id: `section-${i + 1}`, ten: s.title }))
+  : (tin.value?.muc ?? []))
+const related = computed(() => (tatCa.value ?? []).filter(t => t.slug !== slug.value).slice(0, 4))
 </script>
 
 <template>
@@ -79,8 +96,15 @@ const related = computed(() => newsList().filter(([s]) => s !== slug.value))
 
       <!-- ============ NỘI DUNG ============ -->
       <UContainer class="max-w-5xl py-16">
-        <div class="grid gap-10 lg:grid-cols-[1fr_16rem]">
+        <div class="grid gap-10" :class="mucLuc.length ? 'lg:grid-cols-[1fr_16rem]' : ''">
           <article class="min-w-0 space-y-10">
+            <img v-if="tin?.anhBia" :src="tin.anhBia" :alt="article.title" class="w-full rounded-3xl border border-default object-cover">
+            <div v-if="tin && !tin.tinh" class="noi-dung-md" v-html="tin.html" />
+            <p v-if="tin?.the?.length" class="flex flex-wrap gap-1.5">
+              <UBadge v-for="t in tin.the" :key="t" color="neutral" variant="soft" icon="i-lucide-tag">
+                {{ t }}
+              </UBadge>
+            </p>
             <FxReveal v-for="(section, i) in article.sections" :id="`section-${i + 1}`" :key="i" as="section" class="scroll-mt-24">
               <h2 class="section-title text-2xl text-highlighted">
                 {{ section.title }}
@@ -96,7 +120,7 @@ const related = computed(() => newsList().filter(([s]) => s !== slug.value))
               </ol>
             </FxReveal>
 
-            <FxReveal>
+            <FxReveal v-if="article.notice">
               <UAlert color="warning" variant="subtle" icon="i-lucide-info" title="Lưu ý" :description="article.notice" />
             </FxReveal>
 
@@ -110,14 +134,14 @@ const related = computed(() => newsList().filter(([s]) => s !== slug.value))
             </div>
           </article>
 
-          <aside class="hidden lg:block" aria-label="Mục lục">
+          <aside v-if="mucLuc.length" class="hidden lg:block" aria-label="Mục lục">
             <div class="sticky top-24 rounded-2xl glass ring-gilded p-6">
               <p class="eyebrow">
                 Trong bài viết
               </p>
               <nav aria-label="Mục lục bài viết" class="mt-4 flex flex-col gap-2 text-sm">
-                <a v-for="(section, i) in article.sections" :key="i" :href="`#section-${i + 1}`" class="text-muted transition-colors hover:text-primary">
-                  {{ section.title }}
+                <a v-for="m in mucLuc" :key="m.id" :href="`#${m.id}`" class="text-muted transition-colors hover:text-primary">
+                  {{ m.ten }}
                 </a>
               </nav>
               <USeparator class="my-5" />
@@ -142,15 +166,15 @@ const related = computed(() => newsList().filter(([s]) => s !== slug.value))
             </h2>
           </FxReveal>
           <div class="mt-8 grid gap-6 md:grid-cols-2">
-            <FxReveal v-for="([s, r], i) in related" :key="s" :delay="i * 0.08">
+            <FxReveal v-for="(r, i) in related" :key="r.slug" :delay="i * 0.08">
               <FxTiltCard :max="10" class="group h-full rounded-3xl">
-                <NuxtLink :to="`/news/${s}`" class="flex h-full flex-col rounded-3xl glass ring-gilded p-6 transition-shadow hover:shadow-[0_20px_60px_rgba(10,26,51,.14)]">
-                  <span class="text-xs tracking-[0.2em] text-dimmed">{{ r.category }} · {{ r.date }}</span>
+                <NuxtLink :to="`/news/${r.slug}`" class="flex h-full flex-col rounded-3xl glass ring-gilded p-6 transition-shadow hover:shadow-[0_20px_60px_rgba(10,26,51,.14)]">
+                  <span class="text-xs tracking-[0.2em] text-dimmed">{{ r.loai }} · {{ r.ngay }}</span>
                   <h3 class="mt-3 font-display text-xl font-bold text-highlighted [transform:translateZ(35px)]">
-                    {{ r.title }}
+                    {{ r.tieuDe }}
                   </h3>
                   <p class="mt-2 flex-1 text-muted">
-                    {{ r.body }}
+                    {{ r.tomTat }}
                   </p>
                   <span class="mt-4 inline-flex items-center gap-2 font-semibold text-primary">
                     Đọc bài viết <UIcon name="i-lucide-arrow-up-right" class="size-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />

@@ -65,11 +65,11 @@ const kieuHang: Record<number, { nen: string, chu: string, cao: string, icon: st
         >
           <div class="flex flex-col items-center text-center">
             <span
-              class="relative grid size-24 place-items-center rounded-full border-[3px] border-[var(--poke-outline)] bg-screen"
+              class="relative grid size-24 place-items-center rounded-full border-2 border-[color-mix(in_oklab,var(--poke-outline)_70%,transparent)] bg-[var(--poke-card)]"
               :class="r.hang === 1 ? 'animate-float' : ''"
               aria-hidden="true"
             >
-              <img v-if="r.anh" :src="r.anh" width="40" height="40" alt="" class="pixelated size-20 rounded-full">
+              <PokeAvatar v-if="r.anh" :src="r.anh" class="size-20" />
               <PokeBall v-else class="size-12" />
               <span class="absolute -right-1 -top-1 grid size-9 place-items-center rounded-full border-[3px] border-[var(--poke-outline)]" :class="kieuHang[r.hang]!.huy">
                 <UIcon :name="kieuHang[r.hang]!.icon" class="size-4" />
@@ -119,7 +119,7 @@ const kieuHang: Record<number, { nen: string, chu: string, cao: string, icon: st
                 </td>
                 <td class="px-5 py-3">
                   <span class="inline-flex items-center gap-3 align-middle">
-                    <img v-if="r.anh" :src="r.anh" width="40" height="40" alt="" class="pixelated size-10 shrink-0 rounded-lg bg-screen">
+                    <PokeAvatar v-if="r.anh" :src="r.anh" class="size-10" />
                     <span>
                       <span class="font-bold text-highlighted">{{ r.name }}</span>
                       <span v-if="r.sub" class="ms-2 text-muted">· {{ r.sub }}</span>
