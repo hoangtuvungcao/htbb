@@ -174,3 +174,6 @@ out_tools/
 ### Rac he dieu hanh / trinh quan ly tep - da tung lot vao map/d_effect/desktop.ini ###
 Thumbs.db
 desktop.ini
+
+### Chay server tren NovaDB (tools/pokemon/chay_tren_novadb.sh): pid + log
+/chay_novadb/

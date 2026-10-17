@@ -107,7 +107,7 @@ public final class KiemThuPokemon {
         Kiem.nhom("com.kpah.pokemon.IconPokemon - icon PMD dai 14000+");
         Kiem.dung("14000 thuoc dai", com.kpah.pokemon.IconPokemon.thuocDai(14000));
         Kiem.sai("13999 (skin thu) khong thuoc dai", com.kpah.pokemon.IconPokemon.thuocDai(13999));
-        Kiem.sai("14100 ngoai dai", com.kpah.pokemon.IconPokemon.thuocDai(14100));
+        Kiem.sai("15000 ngoai dai", com.kpah.pokemon.IconPokemon.thuocDai(15000));
         try {
             final List<String> sql = Files.readAllLines(new File("sql/pokemon_icon_vat_pham.sql").toPath(), StandardCharsets.UTF_8);
             int dem = 0;
@@ -122,7 +122,7 @@ public final class KiemThuPokemon {
                 Kiem.dung("co file icon cho " + id, new File(com.kpah.pokemon.IconPokemon.THU_MUC
                         + (id - com.kpah.pokemon.IconPokemon.ID_DAU) + ".png").isFile());
             }
-            Kiem.bang("22 dong UPDATE icon", Integer.valueOf(22), Integer.valueOf(dem));
+            Kiem.dung("co dong UPDATE icon (dem chi tiet o KiemIconPokemon)", dem >= 22);
             final String dg = new String(Files.readAllBytes(new File("src/data/DataGame.java").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("sendByteImg phuc vu dai icon Pokemon", dg.contains("IconPokemon.thuocDai(idImg)"));
             Kiem.dung("nIconItem van la 866 (khong dung dai cu)", dg.contains("nIconItem = 866;"));

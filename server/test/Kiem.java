@@ -71,6 +71,7 @@ public final class Kiem {
         KiemSkinLinhThu.chay();
         KiemPokemon.chay();
         KiemThuPokemon.chay();
+        KiemIconPokemon.chay();
         KiemPetPokemon.chay();
         KiemLoiChoiPokemon.chay();
         KiemPokemonServer.chay();
@@ -79,6 +80,7 @@ public final class Kiem {
         KiemHieuUngPokemon.chay();
         KiemTilePokemon.chay();
         KiemHinhPokemon.chay();
+        KiemNovaDB.chay();
         KiemPhienBan.chay();
         KiemGoi26Test.chay();
         KiemGoi3Test.chay();

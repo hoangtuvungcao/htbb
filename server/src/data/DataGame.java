@@ -937,6 +937,14 @@ public class DataGame {
         
             Message m = new Message(-51);
             m.dos.writeShort(idImg);
+            // Che do Pokemon: anh thuoc/ngoc/thu/vat pham nhiem vu/trai cay (chi so 1 byte, khong
+            // co cot DB de tro sang dai 14000+) tra icon PMD thay cho anh KPAH. Xem IconPokemon.
+            final int iconPmd = com.kpah.pokemon.CheDoPokemon.bat() ? com.kpah.pokemon.IconPokemon.doiAnh(idImg) : -1;
+            if (iconPmd >= 0) {
+                ghiAnh(m, imgIconPokemon, iconPmd, idImg);
+                s.sendMessage(m);
+                return;
+            }
             // ==== DAI 800-806 BI CHIEM: DUNG dat xstart cua vat pham vao day ====
             // Dai nay KHONG doc map/icon/<id>.png ma phuc vu tu mang imgOther
             // (= map/other/0..5.png). Vat pham nao co xstart trong dai nay thi:

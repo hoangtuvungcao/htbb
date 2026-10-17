@@ -86,6 +86,7 @@ public final class ChuPokemon {
         {"bang", "đội"},
         // Vung (lanh tho)
         {"lãnh thổ", "vùng"},
+        {"L.thổ", "Vùng"},
         {"thanh long", "Kanto"},
         {"hắc hổ", "Johto"},
         {"huyền vũ", "Hoenn"},

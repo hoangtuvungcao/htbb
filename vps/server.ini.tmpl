@@ -46,6 +46,10 @@ db.name1=kpah_db
 db.user1=${DB_USER1}
 db.password1=${DB_PASSWORD1}
 db.maxco1=1
+# Tham so them vao cuoi MOI URL JDBC (ca 4 pool + phep thu ket noi luc khoi dong), dang
+# "a=1&b=2". De trong = y nhu truoc (MariaDB tren VPS). Chay tren NovaDB thi dat
+# useSSL=false (cong MySQL cua NovaDB khong co TLS). Xem docs/cau-hinh-server-ini.md.
+db.thamSoJdbc=
 #
 sv.portnap=19153
 sv.server=1

@@ -366,6 +366,58 @@ deploy **sinh lại** `/opt/kpah/server.ini` từ bản mẫu mỗi lần deploy
 thiếu khoá thì mặc định là nghiêm ngặt. Xem `TeamServer.choPhepMatKhauTrong()` và
 [test/KiemMayDevCSDL.java](../test/KiemMayDevCSDL.java).
 
+### `db.thamSoJdbc` — tham số thêm vào mọi URL JDBC
+
+Chuỗi dạng `a=1&b=2` (không có `?` ở đầu) được nối vào **cuối mọi URL JDBC** của game
+server: bốn pool `db.*` (`Database.setLink*`) và phép thử kết nối lúc khởi động
+(`TeamServer.thuKetNoiCSDL`). Để trống hoặc thiếu khoá = URL y như trước (MariaDB trên VPS,
+bản mẫu để trống). Phải khởi động lại.
+
+### Chạy trên NovaDB (cổng MySQL của NovaDB, lưu trên SQLite)
+
+```ini
+db.host=127.0.0.1:3318
+db.thamSoJdbc=useSSL=false
+```
+
+`useSSL=false` là **bắt buộc nên có**: cổng MySQL của NovaDB không có TLS, thiếu dòng này
+Connector/J 5.1 in cảnh báo *Establishing SSL connection without server's identity
+verification…* mỗi lần mở kết nối (ngập log). Mọi câu SQL trong `src/` đã được viết lại để
+chạy **y hệt** trên cả MariaDB 10.4 lẫn NovaDB (ngày 16/10/2026,
+[test/KiemNovaDB.java](../test/KiemNovaDB.java) chặn các cú pháp sau quay lại):
+
+| Cú pháp MySQL NovaDB không chạy | Viết lại thành |
+|---|---|
+| `CREATE TABLE moi LIKE cu` (bảng theo tháng/tuần: `tob_char_thach_dau_*`, `tob_qua_loi_dai_*`, `tob_log_use_luong_*`, `tob_nap_xai_luong_*`) | `Database.createTable` đọc `SHOW CREATE TABLE cu`, đổi tên, bỏ `AUTO_INCREMENT=N`, chạy lại. Bảng đã có thì trả `false`, không in `SQL ERROR` mỗi lần khởi động nữa |
+| `UPDATE a x JOIN b y … SET …` (giftcode_log.userId, id_char của tob_danh_hieu / tob_top_event) | subquery tương quan + `EXISTS` (giữ nghĩa INNER JOIN) |
+| `TIMESTAMPDIFF(SECOND, a, NOW())` (even_online_game) | `UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(a)` |
+| `UPDATE account.team_user …` (AdminPanel đổi mật khẩu) | `Connection.setCatalog("account")` rồi trả catalog cũ |
+
+**Khác biệt còn lại — do NovaDB, mã nguồn không bù được:**
+
+* `NOW()`/`CURDATE()`/`DEFAULT current_timestamp()` của NovaDB trả **giờ UTC** (MariaDB trên
+  VPS trả +07). Mã nguồn **cố ý** giữ `NOW()` của CSDL (lịch hẹn sự kiện so với giờ trang
+  quản trị ghi, xem `test/KiemLichSuKien.java`), nên trên NovaDB mọi mốc thời gian SQL ghi
+  (log, `lastLog`, lịch hẹn `tob_su_kien`, reset tích luỹ online theo `CURDATE()`) lệch 7
+  tiếng so với giờ Java. Cần NovaDB hỗ trợ múi giờ phiên (khi có: thêm
+  `sessionVariables=time_zone='+07:00'` vào `db.thamSoJdbc`, không phải sửa mã).
+* So sánh chuỗi: `=` của NovaDB **phân biệt hoa/thường** (MariaDB `utf8_general_ci` thì
+  không, còn coi `a` = `á`). Server luôn hạ chữ `charname` khi nạp nhân vật và `username`
+  khi đăng nhập, nên: tạo nhân vật / đổi tên giờ **lưu tên chữ thường** và kiểm trùng bằng
+  `LOWER(charname)=LOWER(?)` (chỉ chạy khi tạo/đổi tên, mất chỉ mục trên MariaDB là chấp
+  nhận được). Dữ liệu cũ có tên/username viết hoa chuyển sang NovaDB phải hạ chữ một lần
+  (`UPDATE tob_char SET charname=LOWER(charname)` và các bảng giữ tên), không thì các câu
+  `WHERE charname='…'` trượt. Gộp dấu (`á`=`a`) của MariaDB không giả lập được. Lệnh GM gõ
+  tên người chơi khác (vd `slv Ten 30 0`) trên NovaDB phải gõ đúng chữ thường.
+* `UNIQUE KEY` khai trong `CREATE TABLE` thành ràng buộc SQLite, **không xoá được** bằng
+  `ALTER TABLE … DROP INDEX` (NovaDB im lặng bỏ qua) và mang tên cột thay cho tên khoá
+  (`Index_2` của tob_danh_hieu hiện là `charname`). Hậu quả: trên NovaDB tob_danh_hieu /
+  tob_top_event giữ thêm UNIQUE(charname) bên cạnh khoá mới `idx_id_char` — vô hại vì
+  tên nhân vật vốn duy nhất.
+* Chia số nguyên `7/2` = `3` (MariaDB `3.5000`) — hiện không câu SQL nào chia.
+* Login server `CheckLoginSocket.jar` và lớp chỉ có trong `lib/NQSH_5h.jar` không sửa
+  được (xem báo cáo chuyển đổi).
+
 ## 10. Cạm bẫy
 
 ### Sai một dòng là **bỏ qua mọi dòng bên dưới**

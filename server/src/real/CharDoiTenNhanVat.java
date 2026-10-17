@@ -35,7 +35,10 @@ public final class CharDoiTenNhanVat {
     }
 
     public static void doDoiTen(final Char player, final String tenMoiGoc) {
-        final String tenMoi = tenMoiGoc == null ? "" : tenMoiGoc.trim();
+        // Ha chu thuong: server luon nap charname bang toLowerCase() roi cap nhat
+        // "WHERE charname=<ten>" - NovaDB so sanh phan biet hoa/thuong nen ten luu phai la
+        // chu thuong (giong DatabaseNhanVat.addChar). MariaDB khong doi gi ve so khop.
+        final String tenMoi = tenMoiGoc == null ? "" : tenMoiGoc.trim().toLowerCase();
         final String tenCu = player.charname;
 
         if (tenMoi.length() < MIN_LEN || tenMoi.length() > MAX_LEN) {
@@ -106,7 +109,10 @@ public final class CharDoiTenNhanVat {
         Connection conn = null;
         try {
             conn = Database.instance.getConnection();
-            try (PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM tob_char WHERE charname=? LIMIT 1")) {
+            try (PreparedStatement ps = conn.prepareStatement(
+                    // LOWER()=LOWER(): giu luat "khong phan biet hoa/thuong" cua MariaDB
+                    // (utf8_general_ci) ca tren NovaDB, noi "=" phan biet hoa/thuong.
+                    "SELECT 1 FROM tob_char WHERE LOWER(charname)=LOWER(?) LIMIT 1")) {
                 ps.setString(1, charname);
                 try (ResultSet rs = ps.executeQuery()) {
                     return rs.next();

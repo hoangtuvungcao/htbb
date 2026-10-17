@@ -1155,12 +1155,23 @@ class DatabaseNhanVat {
         if (Database.laTenDanhRieng(charname)) {
             return -1;
         }
+        // Luu ten CHU THUONG. Khi nap nhan vat, server luon ha chu (Database.getChar(Char, int, ..):
+        // p.charname = rs.getString("charname").toLowerCase()) roi dung ten do trong rat
+        // nhieu cau "... WHERE charname='<ten>'". MariaDB (utf8_general_ci) van khop ten
+        // luu "Pika", NovaDB (so sanh phan biet hoa/thuong) thi khong -> luu nhan vat, ban,
+        // bang hoi... am tham khong cap nhat dong nao. Luu chu thuong ngay tu dau thi hai
+        // CSDL nhu nhau. Xem docs/cau-hinh-server-ini.md muc NovaDB.
+        charname = charname.toLowerCase();
         int charId = -1;
         Connection conn = null;
         PreparedStatement pre = null;
         try {
             conn = db.getConnection();
-            String sql = "SELECT * FROM tob_char WHERE charname=?";
+            // LOWER()=LOWER(): MariaDB so charname theo utf8_general_ci (khong phan biet
+            // hoa/thuong) nen "Pika" va "pika" la trung ten. NovaDB (SQLite) so "=" phan biet
+            // hoa/thuong -> phai tu ha chu de giu dung luat do. Mat chi muc tren MariaDB
+            // nhung chi chay khi tao nhan vat (hiem). Xem test/KiemNovaDB.java.
+            String sql = "SELECT * FROM tob_char WHERE LOWER(charname)=LOWER(?)";
             pre = conn.prepareStatement(sql);
             pre.setString(1, charname);
             if (pre.execute()) {

@@ -335,7 +335,8 @@ public class TeamServer {
         final String matKhau = p.getProperty("db.password");
         java.sql.Connection c = null;
         try {
-            c = java.sql.DriverManager.getConnection("jdbc:mysql://" + host + "/" + ten, user, matKhau);
+            c = java.sql.DriverManager.getConnection(
+                    Database.urlJdbc(host, ten, p.getProperty("db.thamSoJdbc")), user, matKhau);
             final java.sql.Statement st = c.createStatement();
             st.executeQuery("select 1").close();
             st.close();
@@ -631,6 +632,8 @@ public class TeamServer {
             UserLogger.PATH = p.getProperty("sv.pathLog");
             TeamServer.ipLogin = p.getProperty("sv.iplogin");
             TeamServer.portLogin = Integer.parseInt(p.getProperty("sv.portlogin"));
+            // db.thamSoJdbc: them vao cuoi moi URL JDBC (vd NovaDB: useSSL=false). Trong = nhu cu.
+            Database.datThamSoJdbc(p.getProperty("db.thamSoJdbc"));
             Database.setLink(p.getProperty("db.host"), p.getProperty("db.name"), p.getProperty("db.user"), p.getProperty("db.password"), p.getProperty("db.maxco"));
             Database.setLinkBoardNap(p.getProperty("db.host"), p.getProperty("db.nameNap"), p.getProperty("db.userNap"), p.getProperty("db.pass"), p.getProperty("db.maxNap"));
             Database.setLinkGiftCode(p.getProperty("db.host"), p.getProperty("db.nameNap"), p.getProperty("db.userNap"), p.getProperty("db.pass"), p.getProperty("db.maxNap"));

@@ -684,7 +684,9 @@ class CharCapNhat {
                 final Monster mt = self.map.getMonster(self.nearMons.get(j), (self.mapID == 225 || self.mapID == 226) ? self.idWedding : self.inCountry, self.region);
                 if (mt != null) {
                     if (mt.isDead || !self.near(mt, self.rangeRemoveMonster[0])) {
-                        if (Map.isNewVersion && !mt.isBoss && mt.getMonsterTemplate().id != Map.idGhost) {
+                        // Kiem j < size: nearMons co the bi luong khac don (doi map/dich chuyen) giua
+                        // vong lap -> remove(j) nem ArrayIndexOutOfBounds (thay khi test tai 50 bot).
+                        if (Map.isNewVersion && !mt.isBoss && mt.getMonsterTemplate().id != Map.idGhost && j < self.nearMons.size()) {
                             self.nearMons.remove(j);
                         }
                     } else if (!mt.isMonsterVantieu()) {

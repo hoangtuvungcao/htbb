@@ -2682,22 +2682,62 @@ public class Database {
         }
     }
 
+    /**
+     * Tham so them vao CUOI MOI URL JDBC (khoa db.thamSoJdbc trong server.ini), dang
+     * "a=1&b=2", khong co dau "?" o dau. Trong (mac dinh) = URL y nhu truoc.
+     * Vd NovaDB: db.thamSoJdbc=useSSL=false (cong MySQL cua NovaDB khong co TLS; thieu
+     * dong nay Connector/J in canh bao SSL moi lan mo ket noi). Phai dat TRUOC setLink*.
+     * Xem docs/cau-hinh-server-ini.md.
+     */
+    private static String thamSoJdbc = "";
+
+    public static void datThamSoJdbc(String thamSo) {
+        Database.thamSoJdbc = chuanHoaThamSoJdbc(thamSo);
+    }
+
+    /** Bo khoang trang va dau "?"/"&" thua o dau; null -> "". */
+    public static String chuanHoaThamSoJdbc(String thamSo) {
+        if (thamSo == null) {
+            return "";
+        }
+        String t = thamSo.trim();
+        while (t.startsWith("?") || t.startsWith("&")) {
+            t = t.substring(1).trim();
+        }
+        return t;
+    }
+
+    /** URL JDBC toi CSDL dbname tren host, kem tham so them (neu co). */
+    public static String urlJdbc(String host, String dbname, String thamSo) {
+        final String t = chuanHoaThamSoJdbc(thamSo);
+        return "jdbc:mysql://" + host + "/" + dbname + (t.isEmpty() ? "" : "?" + t);
+    }
+
+    public static String urlJdbc(String host, String dbname) {
+        return urlJdbc(host, dbname, Database.thamSoJdbc);
+    }
+
+    private static String linkDayDu(String host, String dbname, String user, String pwd) {
+        return "jdbc:mysql://" + host + "/" + dbname + "?user=" + user + "&password=" + pwd
+                + (Database.thamSoJdbc.isEmpty() ? "" : "&" + Database.thamSoJdbc);
+    }
+
     public static void setLink(String host, String dbname, String user, String pwd, String maxCo) {
-        Database.LINK = "jdbc:mysql://" + host + "/" + dbname + "?user=" + user + "&password=" + pwd;
-        Database.connPool = new ConnPool("jdbc:mysql://" + host + "/" + dbname, user, pwd, Integer.parseInt(maxCo));
+        Database.LINK = linkDayDu(host, dbname, user, pwd);
+        Database.connPool = new ConnPool(urlJdbc(host, dbname), user, pwd, Integer.parseInt(maxCo));
     }
 
     public static void setLink1(String host, String dbname, String user, String pwd, String maxCo) {
-        Database.LINK1 = "jdbc:mysql://" + host + "/" + dbname + "?user=" + user + "&password=" + pwd;
-        Database.connPool1 = new ConnPool("jdbc:mysql://" + host + "/" + dbname, user, pwd, Integer.parseInt(maxCo));
+        Database.LINK1 = linkDayDu(host, dbname, user, pwd);
+        Database.connPool1 = new ConnPool(urlJdbc(host, dbname), user, pwd, Integer.parseInt(maxCo));
     }
 
     public static void setLinkBoardNap(String host, String dbname, String user, String pwd, String maxCo) {
-        Database.connPoolNap = new ConnPool("jdbc:mysql://" + host + "/" + dbname, user, pwd, Integer.parseInt(maxCo));
+        Database.connPoolNap = new ConnPool(urlJdbc(host, dbname), user, pwd, Integer.parseInt(maxCo));
     }
 
     public static void setLinkGiftCode(String host, String dbname, String user, String pwd, String maxCo) {
-        Database.connGiftCode = new ConnPool("jdbc:mysql://" + host + "/" + dbname, user, pwd, Integer.parseInt(maxCo));
+        Database.connGiftCode = new ConnPool(urlJdbc(host, dbname), user, pwd, Integer.parseInt(maxCo));
     }
 
     public Connection getConnection() throws SQLException {
@@ -4329,17 +4369,31 @@ public class Database {
         return false;
     }
 
+    /**
+     * Tao bang moi cung cau truc voi bang mau (tuong duong CREATE TABLE moi LIKE mau).
+     *
+     * KHONG dung "CREATE TABLE .. LIKE ..": NovaDB (cong MySQL tren SQLite) khong ho tro
+     * cu phap do. Thay vao do doc DDL bang SHOW CREATE TABLE (ca MariaDB lan NovaDB deu
+     * tra ve DDL dang MySQL), doi ten bang va chay lai. Bo tuy chon AUTO_INCREMENT=N cua
+     * bang mau vi LIKE cung khong chep bo dem do. Bang da ton tai thi tra false va khong
+     * chay gi - giong LIKE (loi "already exists" -> false) nhung khong in "SQL ERROR"
+     * moi lan khoi dong. Xem docs/cau-hinh-server-ini.md muc NovaDB.
+     */
     public boolean createTable(String newTable, String oldTable) {
-        String sql = "CREATE TABLE " + newTable + " LIKE " + oldTable;
+        String sql = "SHOW CREATE TABLE " + oldTable + " -> " + newTable;
         Statement stmt = null;
         Connection conn = null;
         try {
             conn = this.getConnection();
             stmt = conn.createStatement();
+            if (bangTonTai(stmt, newTable)) {
+                return false;
+            }
+            sql = ddlTheoMau(stmt, newTable, oldTable);
             stmt.executeUpdate(sql);
             return true;
         } catch (Exception ex) {
-            System.err.println("SQL ERROR=" + sql);
+            System.err.println("SQL ERROR=" + sql + " : " + ex.getMessage());
         } finally {
             try {
                 stmt.close();
@@ -4348,6 +4402,44 @@ public class Database {
             Database.connPool.free(conn);
         }
         return false;
+    }
+
+    /** true neu bang ten (chinh xac) da co trong CSDL hien tai. Chay duoc tren MariaDB va NovaDB. */
+    static boolean bangTonTai(Statement stmt, String ten) throws SQLException {
+        try (ResultSet rs = stmt.executeQuery("SHOW TABLES LIKE '" + ten.replace("\\", "\\\\").replace("'", "''") + "'")) {
+            while (rs.next()) {
+                if (ten.equalsIgnoreCase(rs.getString(1))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** DDL tao bang moi theo SHOW CREATE TABLE cua bang mau (thay cho CREATE TABLE .. LIKE). */
+    static String ddlTheoMau(Statement stmt, String newTable, String oldTable) throws SQLException {
+        String ddl;
+        try (ResultSet rs = stmt.executeQuery("SHOW CREATE TABLE `" + oldTable + "`")) {
+            if (!rs.next()) {
+                throw new SQLException("khong doc duoc cau truc bang " + oldTable);
+            }
+            ddl = rs.getString(2);
+        }
+        return doiTenTrongDdl(ddl, newTable);
+    }
+
+    /**
+     * Doi ten bang trong cau "CREATE TABLE `cu` (...)" thanh ten moi va bo tuy chon
+     * AUTO_INCREMENT=N cua bang (cot AUTO_INCREMENT giu nguyen). Tach rieng de test duoc.
+     */
+    public static String doiTenTrongDdl(String ddl, String newTable) {
+        int mo = ddl.indexOf('(');
+        if (mo < 0 || !ddl.substring(0, mo).trim().toUpperCase().startsWith("CREATE TABLE")) {
+            throw new IllegalArgumentException("DDL la: " + ddl);
+        }
+        int dong = ddl.lastIndexOf(')');
+        String duoi = ddl.substring(dong + 1).replaceAll("(?i)\\s*AUTO_INCREMENT\\s*=\\s*\\d+", "");
+        return "CREATE TABLE `" + newTable + "` " + ddl.substring(mo, dong + 1) + duoi;
     }
 
     public void check() {
@@ -7667,8 +7759,10 @@ public class Database {
                 System.out.println("[DANH HIEU] da them cot id_char vao tob_danh_hieu");
             }
 
-            st.execute("UPDATE tob_danh_hieu t JOIN tob_char c ON c.charname = t.charname"
-                    + " SET t.id_char = c.id WHERE t.id_char IS NULL");
+            // Subquery tuong quan thay cho "UPDATE .. JOIN .." (NovaDB khong ho tro).
+            st.execute("UPDATE tob_danh_hieu SET id_char = (SELECT c.id FROM tob_char c"
+                    + " WHERE c.charname = tob_danh_hieu.charname LIMIT 1)"
+                    + " WHERE id_char IS NULL AND EXISTS (SELECT 1 FROM tob_char c WHERE c.charname = tob_danh_hieu.charname)");
 
             rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.STATISTICS"
                     + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_danh_hieu' AND INDEX_NAME = 'Index_2'");
@@ -9378,8 +9472,10 @@ public void addCharXaiNapLuong(Char p, int type) {
                 System.out.println("[TOP EVENT] da them cot id_char vao tob_top_event");
             }
 
-            st.execute("UPDATE tob_top_event t JOIN tob_char c ON c.charname = t.charname"
-                    + " SET t.id_char = c.id WHERE t.id_char IS NULL");
+            // Subquery tuong quan thay cho "UPDATE .. JOIN .." (NovaDB khong ho tro).
+            st.execute("UPDATE tob_top_event SET id_char = (SELECT c.id FROM tob_char c"
+                    + " WHERE c.charname = tob_top_event.charname LIMIT 1)"
+                    + " WHERE id_char IS NULL AND EXISTS (SELECT 1 FROM tob_char c WHERE c.charname = tob_top_event.charname)");
 
             rs = st.executeQuery("SELECT COUNT(*) FROM information_schema.STATISTICS"
                     + " WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tob_top_event' AND INDEX_NAME = 'charname'");

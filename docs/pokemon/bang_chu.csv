@@ -713,579 +713,580 @@ ChuPokemon,6,tu_dien,quý bang,quý đội
 ChuPokemon,7,tu_dien,trưởng lão,cố vấn
 ChuPokemon,8,tu_dien,bang,đội
 ChuPokemon,9,tu_dien,lãnh thổ,vùng
-ChuPokemon,10,tu_dien,thanh long,Kanto
-ChuPokemon,11,tu_dien,hắc hổ,Johto
-ChuPokemon,12,tu_dien,huyền vũ,Hoenn
-ChuPokemon,13,tu_dien,linh thú,thú cưỡi
-ChuPokemon,14,tu_dien,cưỡi linh thú,cưỡi thú
-ChuPokemon,15,tu_dien,nhân vật,Pokémon
-ChuPokemon,16,tu_dien,môn phái,dòng Pokémon
-ChuPokemon,17,tu_dien,kiếm khách,dòng Charmander
-ChuPokemon,18,tu_dien,kiếm sĩ,dòng Charmander
-ChuPokemon,19,tu_dien,kiếm sỹ,dòng Charmander
-ChuPokemon,20,tu_dien,chiến binh,dòng Bulbasaur
-ChuPokemon,21,tu_dien,pháp sư,dòng Eevee
-ChuPokemon,22,tu_dien,đấu sĩ,dòng Squirtle
-ChuPokemon,23,tu_dien,cung thủ,dòng Pichu
-ChuPokemon,24,tu_dien,hiệp khách,nhà thám hiểm
-ChuPokemon,25,tu_dien,đại hiệp,nhà huấn luyện
-ChuPokemon,26,tu_dien,thiếu hiệp,nhà huấn luyện trẻ
-ChuPokemon,27,tu_dien,nghĩa sỹ,nhà huấn luyện
-ChuPokemon,28,tu_dien,nghĩa sĩ,nhà huấn luyện
-ChuPokemon,29,tu_dien,làng nghĩa sỹ,làng huấn luyện
-ChuPokemon,30,tu_dien,làng nghĩa sĩ,làng huấn luyện
-ChuPokemon,31,tu_dien,cao thủ,nhà vô địch
-ChuPokemon,32,tu_dien,tiền bối,bậc đàn anh
-ChuPokemon,33,tu_dien,đệ tử,học trò
-ChuPokemon,34,tu_dien,sư phụ,thầy
-ChuPokemon,35,tu_dien,tại hạ,tôi
-ChuPokemon,36,tu_dien,huynh,anh
-ChuPokemon,37,tu_dien,tiểu đệ,em
-ChuPokemon,38,tu_dien,võ lâm chí tôn,nhà vô địch Pokémon
-ChuPokemon,39,tu_dien,giang hồ,thế giới Pokémon
-ChuPokemon,40,tu_dien,võ lâm,thế giới Pokémon
-ChuPokemon,41,tu_dien,kiếm hiệp,Pokémon
-ChuPokemon,42,tu_dien,bôn ba giang hồ,phiêu lưu khắp thế giới Pokémon
-ChuPokemon,43,tu_dien,bôn tẩu,phiêu lưu
-ChuPokemon,44,tu_dien,hành tẩu,phiêu lưu
-ChuPokemon,45,tu_dien,nội công,năng lượng
-ChuPokemon,46,tu_dien,nội lực,năng lượng
-ChuPokemon,47,tu_dien,võ công,chiêu thức
-ChuPokemon,48,tu_dien,bí kíp,đĩa chiêu
-ChuPokemon,49,tu_dien,thần binh,bảo vật
-ChuPokemon,50,tu_dien,hệ ngũ hành,hệ
-ChuPokemon,51,tu_dien,hệ Mộc,hệ Cỏ
-ChuPokemon,52,tu_dien,hệ Hỏa,hệ Lửa
-ChuPokemon,53,tu_dien,hệ Hoả,hệ Lửa
-ChuPokemon,54,tu_dien,hệ Thổ,hệ Đất
-ChuPokemon,55,tu_dien,hệ Kim,hệ Thép
-ChuPokemon,56,tu_dien,hệ Thủy,hệ Nước
-ChuPokemon,57,tu_dien,hệ Thuỷ,hệ Nước
-ChuPokemon,58,tu_dien,ngũ hành,hệ
-ChuPokemon,59,tu_dien,=Kiếm,Than lửa
-ChuPokemon,60,tu_dien,thanh kiếm,lưỡi năng lượng
-ChuPokemon,61,tu_dien,đại đao,hạt giống thần
-ChuPokemon,62,tu_dien,đao,hạt giống thần
-ChuPokemon,63,tu_dien,thần kiếm,thần hỏa
-ChuPokemon,64,tu_dien,xa phu,Pidgeot (Bay)
-ChuPokemon,65,tu_dien,thần hành phù,vé bay Pidgeot
-ChuPokemon,66,tu_dien,kim bài,huy hiệu lập đội
-ChuPokemon,67,tu_dien,lâm tướng quân,Blaziken
-ChuPokemon,68,tu_dien,tướng quân,chỉ huy
-ChuPokemon,69,tu_dien,trần thống lĩnh,Heracross
-ChuPokemon,70,tu_dien,kiếm sư,Farfetch'd
-ChuPokemon,71,tu_dien,dì út hp,Y tá Chansey
-ChuPokemon,72,tu_dien,dì út,Y tá Chansey
-ChuPokemon,73,tu_dien,bà tám tạp hóa,Kecleon tạp hoá
-ChuPokemon,74,tu_dien,bà tám tạp hoá,Kecleon tạp hoá
-ChuPokemon,75,tu_dien,bà tám,Kecleon
-ChuPokemon,76,tu_dien,hắc ngưu,Machamp
-ChuPokemon,77,tu_dien,thiết bì,Bronzong
-ChuPokemon,78,tu_dien,phú ông,Persian
-ChuPokemon,79,tu_dien,phú ồng,Persian
-ChuPokemon,80,tu_dien,anh bảy,Kangaskhan
-ChuPokemon,81,tu_dien,nhật thương nhân,Meowth thương nhân
-ChuPokemon,82,tu_dien,hỏa xích,Torkoal
-ChuPokemon,83,tu_dien,hoả xích,Torkoal
-ChuPokemon,84,tu_dien,ép ngọc,ép ngọc hệ
-ChuPokemon,86,tu_dien,ngươi,cậu
-ChuPokemon,87,tu_dien,giết,hạ
-ChuPokemon,88,tu_dien,yêu ma quỷ quái,Pokémon hung dữ
-ChuPokemon,89,tu_dien,quái vật yêu ma,Pokémon hung dữ
-ChuPokemon,90,tu_dien,yêu ma,Pokémon hung dữ
-ChuPokemon,91,tu_dien,cương thi,Pokémon ma
-ChuPokemon,92,tu_dien,nội thương,vết thương
-ChuPokemon,93,tu_dien,vận nội kình,dồn năng lượng
-ChuPokemon,94,tu_dien,vận kình lực,dồn sức
-ChuPokemon,95,tu_dien,nội kình,năng lượng
-ChuPokemon,96,tu_dien,kình lực,sức mạnh
-ChuPokemon,97,tu_dien,"đấng anh hào, ẩn sỹ",nhà huấn luyện tài ba
-ChuPokemon,98,tu_dien,anh hào,nhà huấn luyện tài ba
-ChuPokemon,99,tu_dien,ẩn sỹ,bậc thầy
-ChuPokemon,100,tu_dien,ẩn sĩ,bậc thầy
-ChuPokemon,101,tu_dien,anh em kết nghĩa,bạn thân
-ChuPokemon,102,tu_dien,hai minh,Xatu
-ChuPokemon,103,tu_dien,anh hùng xuất thiếu niên,tuổi trẻ tài cao
-ChuPokemon,104,tu_dien,phu quân,bạn đời
-ChuPokemon,105,tu_dien,phu nhân,bạn đời
-ChuPokemon,106,tu_dien,cường thân kiện thể,rèn luyện thể lực
-ChuPokemon,107,tu_dien,trừ gian diệt ác,dẹp loạn khu hoang dã
-ChuPokemon,108,tu_dien,hành hiệp trượng nghĩa,giúp đỡ mọi người
-ChuPokemon,109,tu_dien,trừ hại cho dân,bảo vệ dân làng
-ChuPokemon,110,tu_dien,trừ khử yêu ma,đẩy lùi Pokémon hung dữ
-ChuPokemon,111,tu_dien,việc nghĩa hiệp,việc tốt
-ChuPokemon,112,tu_dien,ngựa vận tiêu,Ponyta giao hàng
-ChuPokemon,113,tu_dien,vận tiêu,giao hàng
-ChuPokemon,114,tu_dien,chuyến tiêu,chuyến giao hàng
-ChuPokemon,115,tu_dien,trả tiêu,trả hàng
-ChuPokemon,116,tu_dien,nhận tiêu,nhận hàng
-ChuPokemon,117,tu_dien,đổi tiêu,đổi hàng
-ChuPokemon,118,tu_dien,màu tiêu,màu hàng
-ChuPokemon,119,tu_dien,nhận được tiêu,nhận được hàng
-ChuPokemon,120,tu_dien,đổi được tiêu,đổi được hàng
-ChuPokemon,121,tu_dien,=Tiêu của bạn,Hàng của bạn
-ChuPokemon,122,tu_dien,cướp tiêu,cướp hàng
-ChuPokemon,123,tu_dien,bảo tiêu,giao hàng
-ChuPokemon,124,tu_dien,xa tiêu lệnh,vé xe giao hàng
-ChuPokemon,125,tu_dien,đi tối đa 5 tiêu,giao tối đa 5 chuyến hàng
-ChuPokemon,126,tu_dien,lệnh bài trấn yêu,vé Tháp Pokémon
-ChuPokemon,127,tu_dien,trấn yêu trận,Tháp Pokémon
-ChuPokemon,128,tu_dien,trấn yêu,Tháp Pokémon
-ChuPokemon,129,tu_dien,long lệnh bài,thẻ Rayquaza
-ChuPokemon,130,tu_dien,lân lệnh bài,thẻ Suicune
-ChuPokemon,131,tu_dien,quy lệnh bài,thẻ Kyogre
-ChuPokemon,132,tu_dien,phụng lệnh bài,thẻ Ho-Oh
-ChuPokemon,133,tu_dien,lệnh bài,thẻ
-ChuPokemon,134,tu_dien,thẻ bài,thẻ
-ChuPokemon,135,tu_dien,hộ vệ lệnh,vé gọi Pokémon hỗ trợ
-ChuPokemon,136,tu_dien,lân sư tử hộ vệ,Suicune hỗ trợ
-ChuPokemon,137,tu_dien,hộ vệ,Pokémon hỗ trợ
-ChuPokemon,138,tu_dien,sở hữu thành trấn danh,sở hữu Cao nguyên Indigo
-ChuPokemon,139,tu_dien,thành trấn danh,Cao nguyên Indigo
-ChuPokemon,140,tu_dien,chiếm được thành,chiếm được Gym
-ChuPokemon,141,tu_dien,chiếm thành,chiếm Gym
-ChuPokemon,142,tu_dien,chiến thành,chiến Gym
-ChuPokemon,143,tu_dien,vào thành,vào Gym
-ChuPokemon,144,tu_dien,giữ thành,giữ Gym
-ChuPokemon,145,tu_dien,sở hữu thành,sở hữu Gym
-ChuPokemon,146,tu_dien,thành liên đấu,Gym liên đấu
-ChuPokemon,147,tu_dien,cổng thành,cổng Gym
-ChuPokemon,148,tu_dien,lôi đài,sàn đấu
-ChuPokemon,149,tu_dien,đức vua,nhà vô địch vùng
-ChuPokemon,150,tu_dien,nhà vua,Meowth
-ChuPokemon,151,tu_dien,vua,nhà vô địch vùng
-ChuPokemon,152,tu_dien,đại thần,cố vấn vùng
-ChuPokemon,153,tu_dien,bộ đầu,cảnh sát vùng
-ChuPokemon,154,tu_dien,phế chức,bãi nhiệm
-ChuPokemon,155,tu_dien,=Phế,Bãi nhiệm
-ChuPokemon,156,tu_dien,quốc gia,vùng
-ChuPokemon,157,tu_dien,quốc chiến,chiến vùng
-ChuPokemon,158,tu_dien,chiến trường chính tà,chiến trường liên vùng
-ChuPokemon,159,tu_dien,chính tà,liên vùng
-ChuPokemon,160,tu_dien,chiến trường tống kim,chiến trường liên vùng
-ChuPokemon,161,tu_dien,tống kim,liên vùng
-ChuPokemon,162,tu_dien,cừu nhân,đối thủ
-ChuPokemon,163,tu_dien,liên trảm,chuỗi thắng
-ChuPokemon,164,tu_dien,đồ sát,PK
-ChuPokemon,165,tu_dien,long trụ,trụ năng lượng
-ChuPokemon,166,tu_dien,thống lĩnh,chỉ huy
-ChuPokemon,167,tu_dien,thần khí,bảo vật huyền thoại
-ChuPokemon,168,tu_dien,quạt ba tiêu,Quạt lá Shiftry
-ChuPokemon,169,tu_dien,gậy như ý,Gậy xương Marowak
-ChuPokemon,170,tu_dien,lưỡng nhận đao,Lưỡi liềm Scyther
-ChuPokemon,171,tu_dien,hỏa thạch,nham thạch
-ChuPokemon,172,tu_dien,hoả thạch,nham thạch
-ChuPokemon,173,tu_dien,ngọc huyền minh,ngọc hoàng hôn
-ChuPokemon,174,tu_dien,huyền minh,hoàng hôn
-ChuPokemon,175,tu_dien,ngũ hợp,cầu vồng
-ChuPokemon,176,tu_dien,tiến giai,thăng bậc
-ChuPokemon,177,tu_dien,tụ hồn đan,Kẹo Poké
-ChuPokemon,178,tu_dien,tiên đan,cỏ hồi sinh
-ChuPokemon,179,tu_dien,tiên dược,kẹo kinh nghiệm
-ChuPokemon,180,tu_dien,tiềm năng đan,kẹo tiềm năng
-ChuPokemon,181,tu_dien,kỹ năng đan,kẹo kỹ năng
-ChuPokemon,182,tu_dien,huyết linh thảo,Kẹo hiếm
-ChuPokemon,183,tu_dien,huyết bồ đề,Bạc hà tính cách
-ChuPokemon,184,tu_dien,huyết bổ đề,Bạc hà tính cách
-ChuPokemon,185,tu_dien,nhân sâm,Berry Razz vàng
-ChuPokemon,186,tu_dien,được sâm,được Berry Razz vàng
-ChuPokemon,187,tu_dien,thổ địa phù,vé bay Pidgeot
-ChuPokemon,188,tu_dien,thiên lý mã,Ponyta
-ChuPokemon,189,tu_dien,xích thố,Ponyta lửa
-ChuPokemon,190,tu_dien,hỗn độn,X Phòng thủ
-ChuPokemon,191,tu_dien,hỗn nguyên,X Tấn công
-ChuPokemon,192,tu_dien,hoá công,Thuốc săn trùm
-ChuPokemon,193,tu_dien,hóa công,Thuốc săn trùm
-ChuPokemon,194,tu_dien,đoạn cốt,Ether chiến trường
-ChuPokemon,195,tu_dien,hoả dược,Bom lửa
-ChuPokemon,196,tu_dien,hỏa dược,Bom lửa
-ChuPokemon,197,tu_dien,rương bát bảo,rương kho báu
-ChuPokemon,198,tu_dien,bách niên giai lão,trái tim đồng
-ChuPokemon,199,tu_dien,vĩnh kết đồng tâm,trái tim bạc
-ChuPokemon,200,tu_dien,loan phụng hòa minh,trái tim vàng
-ChuPokemon,201,tu_dien,loan phụng hoà minh,trái tim vàng
-ChuPokemon,202,tu_dien,phù phu thê,Vảy trái tim
-ChuPokemon,203,tu_dien,nguyệt linh trượng,Gậy Ánh Trăng
-ChuPokemon,204,tu_dien,nguyệt ảnh,Ánh Trăng
-ChuPokemon,205,tu_dien,ám khí,đòn đánh lén
-ChuPokemon,206,tu_dien,phi phong khổng tước,phi phong lông công
-ChuPokemon,207,tu_dien,kim cang long,Dialga
-ChuPokemon,208,tu_dien,kim cang bát giới,vòng tay Emboar
-ChuPokemon,209,tu_dien,kim cang sa tăng,vòng tay Swampert
-ChuPokemon,210,tu_dien,kim cang,Thu mình
-ChuPokemon,211,tu_dien,kim cô,vòng đầu
-ChuPokemon,212,tu_dien,bát giới,Emboar
-ChuPokemon,213,tu_dien,sa tăng,Swampert
-ChuPokemon,214,tu_dien,tề thiên đại thánh,Infernape
-ChuPokemon,215,tu_dien,tề thiên,Infernape
-ChuPokemon,216,tu_dien,tứ bình,bộ Berry
-ChuPokemon,217,tu_dien,tứ nhạc,bộ Flute
-ChuPokemon,218,tu_dien,tứ khoái,bộ huy hiệu
-ChuPokemon,219,tu_dien,tứ linh,bộ huyền thoại
-ChuPokemon,220,tu_dien,mảnh mai,mảnh Berry Oran
-ChuPokemon,221,tu_dien,mảnh lan,mảnh Berry Pecha
-ChuPokemon,222,tu_dien,mảnh cúc,mảnh Berry Cheri
-ChuPokemon,223,tu_dien,mảnh trúc,mảnh Berry Rawst
-ChuPokemon,224,tu_dien,mảnh sáo,mảnh Blue Flute
-ChuPokemon,225,tu_dien,mảnh quạt,mảnh Red Flute
-ChuPokemon,226,tu_dien,mảnh sênh,mảnh Yellow Flute
-ChuPokemon,227,tu_dien,mảnh đàn,mảnh White Flute
-ChuPokemon,228,tu_dien,mảnh ngư,mảnh huy hiệu Cascade
-ChuPokemon,229,tu_dien,mảnh tiều,mảnh huy hiệu Rainbow
-ChuPokemon,230,tu_dien,mảnh canh,mảnh huy hiệu Boulder
-ChuPokemon,231,tu_dien,mảnh độc,mảnh huy hiệu Marsh
-ChuPokemon,232,tu_dien,mảnh long,mảnh Rayquaza
-ChuPokemon,233,tu_dien,mảnh lân,mảnh Suicune
-ChuPokemon,234,tu_dien,mảnh quy,mảnh Kyogre
-ChuPokemon,235,tu_dien,mảnh phụng,mảnh Ho-Oh
-ChuPokemon,236,tu_dien,tóc bờm ngựa,bờm Ponyta
-ChuPokemon,237,tu_dien,tóc tiên đồng,lông Clefairy
-ChuPokemon,238,tu_dien,tóc thư sinh,lông gọn gàng
-ChuPokemon,239,tu_dien,đầu đinh,lông đinh
-ChuPokemon,240,tu_dien,tóc,lông
-ChuPokemon,241,tu_dien,xuống ngựa,xuống thú cưỡi
-ChuPokemon,242,tu_dien,cưỡi ngựa,cưỡi thú
-ChuPokemon,243,tu_dien,=Ngựa sẽ bị mất,Thú cưỡi sẽ bị mất
-ChuPokemon,244,tu_dien,ngọc bội,phiến đá hệ
-ChuPokemon,245,tu_dien,dây chuyền,vòng cổ
-ChuPokemon,246,tu_dien,hộ uyển,vòng chân
-ChuPokemon,247,tu_dien,=từ Bút,từ Khăn lụa
-ChuPokemon,248,tu_dien,=từ Búa,từ Nước thần
-ChuPokemon,249,tu_dien,=từ Cung,từ Nam châm
-ChuPokemon,250,tu_dien,=Bút cấp độ,Khăn lụa cấp độ
-ChuPokemon,251,tu_dien,=Búa cấp độ,Nước thần cấp độ
-ChuPokemon,252,tu_dien,=Cung cấp độ,Nam châm cấp độ
-ChuPokemon,253,tu_dien,đũa thần,Khăn lụa
-ChuPokemon,254,tu_dien,đấu sỹ,dòng Squirtle
-ChuPokemon,255,tu_dien,thủ ma pháp,phòng thủ đặc biệt
-ChuPokemon,256,tu_dien,thủ vật lý,phòng thủ
-ChuPokemon,257,tu_dien,thủ ma,phòng thủ đặc biệt
-ChuPokemon,258,tu_dien,thủ vật,phòng thủ
-ChuPokemon,259,tu_dien,ma pháp,đặc biệt
-ChuPokemon,260,tu_dien,st ma,st đặc biệt
-ChuPokemon,261,tu_dien,tc ma,tc đặc biệt
-ChuPokemon,262,tu_dien,pt ma,PT đặc biệt
-ChuPokemon,263,tu_dien,kháng hỏa,kháng Lửa
-ChuPokemon,264,tu_dien,kháng hoả,kháng Lửa
-ChuPokemon,265,tu_dien,kháng thủy,kháng Nước
-ChuPokemon,266,tu_dien,kháng thuỷ,kháng Nước
-ChuPokemon,267,tu_dien,kháng mộc,kháng Cỏ
-ChuPokemon,268,tu_dien,kháng kim,kháng Thép
-ChuPokemon,269,tu_dien,kháng thổ,kháng Đất
-ChuPokemon,270,tu_dien,nhất phẩm,hạng 1
-ChuPokemon,271,tu_dien,nhị phẩm,hạng 2
-ChuPokemon,272,tu_dien,tam phẩm,hạng 3
-ChuPokemon,273,tu_dien,tứ phẩm,hạng 4
-ChuPokemon,274,tu_dien,ngũ phẩm,hạng 5
-ChuPokemon,275,tu_dien,phá triền,Bảo vệ
-ChuPokemon,276,tu_dien,đoạt mệnh,Dồn sức
-ChuPokemon,277,tu_dien,thiên nhãn,Phân thân
-ChuPokemon,278,tu_dien,tiên khí,Màn bảo hộ
-ChuPokemon,279,tu_dien,càn khôn,Màn ánh sáng
-ChuPokemon,280,tu_dien,cường thân,Tĩnh tâm
-ChuPokemon,281,tu_dien,hộ thể,Giáp sắt
-ChuPokemon,282,tu_dien,thuấn ảnh,Hồi năng lượng
-ChuPokemon,283,tu_dien,phí huyết,Rễ bám
-ChuPokemon,284,tu_dien,yểm bùa,nguyền rủa
-ChuPokemon,285,tu_dien,nội tại,đặc tính
-ChuPokemon,286,tu_dien,bạch cốt mã,Spectrier
-ChuPokemon,287,tu_dien,bạch cốt,Spectrier
-ChuPokemon,288,tu_dien,đương khang băng giá,Mamoswine
-ChuPokemon,289,tu_dien,đương khang,Piloswine
-ChuPokemon,290,tu_dien,đường khang,Piloswine
-ChuPokemon,291,tu_dien,đuong khang,Piloswine
-ChuPokemon,292,tu_dien,đại bạch thử,Wooloo
-ChuPokemon,293,tu_dien,bạch thử,Sandshrew
-ChuPokemon,294,tu_dien,mãnh hổ,Arcanine
-ChuPokemon,295,tu_dien,sói xám,Mightyena
-ChuPokemon,296,tu_dien,tiên hạc,Pidgeot
-ChuPokemon,297,tu_dien,bạch mã,Rapidash
-ChuPokemon,298,tu_dien,tuần lộc,Stantler
-ChuPokemon,299,tu_dien,rồng băng,Dragonite
-ChuPokemon,300,tu_dien,sư tử băng,Glastrier
-ChuPokemon,301,tu_dien,nhận được sư tử,nhận được Entei
-ChuPokemon,302,tu_dien,phượng hoàng lửa,Moltres
-ChuPokemon,303,tu_dien,phượng hoàng băng,Articuno
-ChuPokemon,304,tu_dien,phượng hoàng đa sắc,Ho-Oh
-ChuPokemon,305,tu_dien,phượng hoàng mộc,Tropius
-ChuPokemon,306,tu_dien,phượng hoàng kim,Skarmory
-ChuPokemon,307,tu_dien,phượng hoàng thổ,Flygon
-ChuPokemon,308,tu_dien,phượng hoàng,Moltres
-ChuPokemon,309,tu_dien,hoả kỳ lân,Ponyta
-ChuPokemon,310,tu_dien,hỏa kỳ lân,Ponyta
-ChuPokemon,311,tu_dien,hoả kì lân,Ponyta
-ChuPokemon,312,tu_dien,hỏa kì lân,Ponyta
-ChuPokemon,313,tu_dien,hoả kì nhông,Ponyta
-ChuPokemon,314,tu_dien,hắc thỏ,Lopunny
-ChuPokemon,315,tu_dien,hắc thố,Lopunny
-ChuPokemon,316,tu_dien,lồng đèn lân sư tử,Litleo
-ChuPokemon,317,tu_dien,lân sư tử,Suicune
-ChuPokemon,318,tu_dien,lân sư,Suicune
-ChuPokemon,319,tu_dien,pet lân,pet Suicune
-ChuPokemon,320,tu_dien,hình lân,hình Suicune
-ChuPokemon,321,tu_dien,lân cấp,Suicune cấp
-ChuPokemon,322,tu_dien,lồng đèn xếp,Litwick
-ChuPokemon,323,tu_dien,thanh tước,Taillow
-ChuPokemon,324,tu_dien,cánh cam,Ledyba
-ChuPokemon,325,tu_dien,dơi quỷ,Zubat
-ChuPokemon,326,tu_dien,tim bay,Luvdisc
-ChuPokemon,327,tu_dien,lồng đèn hoa sen,Lotad
-ChuPokemon,328,tu_dien,=Lồng đèn ngôi sao,Staryu
-ChuPokemon,329,tu_dien,=lồng đèn ngôi sao,Staryu
-ChuPokemon,330,tu_dien,=Lồng đèn Ngôi sao,Starmie
-ChuPokemon,331,tu_dien,pet hoa tuyết,pet Cryogonal
-ChuPokemon,332,tu_dien,pet giáp ngọ,pet Ponyta
-ChuPokemon,333,tu_dien,pet armadillo băng,pet Sandshrew
-ChuPokemon,334,tu_dien,pet armadillo sét,pet Pachirisu
-ChuPokemon,335,tu_dien,pet armadillo độc,pet Nidoran
-ChuPokemon,336,tu_dien,lồng đèn cá chép,Magikarp
-ChuPokemon,337,tu_dien,chim cánh cụt,Piplup
-ChuPokemon,338,tu_dien,pet ất mùi,pet Mareep
-ChuPokemon,339,tu_dien,ngôi sao băng,Jirachi
-ChuPokemon,340,tu_dien,lồng đèn trăng khuyết,Lunatone
-ChuPokemon,341,tu_dien,lồng đèn rồng xanh,Articuno
-ChuPokemon,342,tu_dien,khỉ vàng,Aipom
-ChuPokemon,343,tu_dien,thỏ bay,Mareep
-ChuPokemon,344,tu_dien,trứng cú,trứng Hoothoot
-ChuPokemon,345,tu_dien,trứng rồng,trứng Dratini
-ChuPokemon,346,tu_dien,trứng yêu tinh,trứng Cleffa
-ChuPokemon,347,tu_dien,trứng dơi,trứng Zubat
-ChuPokemon,348,tu_dien,trứng đại bàng,trứng Rufflet
-ChuPokemon,349,tu_dien,lạc long quân,Rayquaza
-ChuPokemon,350,tu_dien,âu cơ,Ho-Oh
-ChuPokemon,351,tu_dien,thầy đồ,giáo sư
-ChuPokemon,352,tu_dien,tiên nữ,Lunala
-ChuPokemon,353,tu_dien,tinh quân,Solgaleo
-ChuPokemon,354,tu_dien,áo yếm đào,áo Bellossom
-ChuPokemon,355,tu_dien,áo yếm,áo Bellossom
-ChuPokemon,356,tu_dien,yếm đào,Bellossom
-ChuPokemon,357,tu_dien,thạch sanh,Lucario
-ChuPokemon,358,tu_dien,dracula,Darkrai
-ChuPokemon,359,tu_dien,hằng nga,Clefairy
-ChuPokemon,360,tu_dien,chú cuội,Clefable
-ChuPokemon,361,tu_dien,đầu bí ngô,đầu Pumpkaboo
-ChuPokemon,362,tu_dien,mặt nạ bí ngô,mặt nạ Pumpkaboo
-ChuPokemon,363,tu_dien,nón phù thủy,nón Mismagius
-ChuPokemon,364,tu_dien,nón phù thuỷ,nón Mismagius
-ChuPokemon,365,tu_dien,phù thủy dễ thương,Gardevoir
-ChuPokemon,366,tu_dien,phù thuỷ dễ thương,Gardevoir
-ChuPokemon,367,tu_dien,hồng hài nhi,Magby
-ChuPokemon,368,tu_dien,freddy,Banette
-ChuPokemon,369,tu_dien,jason,Dusknoir
-ChuPokemon,370,tu_dien,harry potter,Alakazam
-ChuPokemon,371,tu_dien,chúa tể voldemort,Giratina
-ChuPokemon,372,tu_dien,chúa tể voldermort,Giratina
-ChuPokemon,373,tu_dien,voldemort,Giratina
-ChuPokemon,374,tu_dien,voldermort,Giratina
-ChuPokemon,375,tu_dien,hắc lang,Zoroark
-ChuPokemon,376,tu_dien,bạch mi,Absol
-ChuPokemon,377,tu_dien,thuý vũ hồng sam,Oricorio
-ChuPokemon,378,tu_dien,thúy vũ hồng sam,Oricorio
-ChuPokemon,379,tu_dien,thần nữ,Gardevoir
-ChuPokemon,380,tu_dien,sơn tinh vương,Groudon
-ChuPokemon,381,tu_dien,sơn tinh,Groudon
-ChuPokemon,382,tu_dien,=Thuỷ Tinh,Kyogre
-ChuPokemon,383,tu_dien,=Thủy Tinh,Kyogre
-ChuPokemon,384,tu_dien,mị nương công chúa,Diancie
-ChuPokemon,385,tu_dien,tiểu long nữ,Latias
-ChuPokemon,386,tu_dien,dương quá,Latios
-ChuPokemon,387,tu_dien,ngưu lang,Volbeat
-ChuPokemon,388,tu_dien,chức nữ,Illumise
-ChuPokemon,389,tu_dien,nghê thường,Milotic
-ChuPokemon,390,tu_dien,ngọc nữ,Minun
-ChuPokemon,391,tu_dien,kim đồng,Plusle
-ChuPokemon,392,tu_dien,xích cước,Blaziken
-ChuPokemon,393,tu_dien,lôi công,Zapdos
-ChuPokemon,394,tu_dien,bá thiên hổ,Raikou
-ChuPokemon,395,tu_dien,miêu mắt xanh,Glameow
-ChuPokemon,396,tu_dien,miêu quý tộc,Persian
-ChuPokemon,397,tu_dien,ông địa,Snorlax
-ChuPokemon,398,tu_dien,ngạ quỷ,Haunter
-ChuPokemon,399,tu_dien,ngạ khuyển,Houndoom
-ChuPokemon,400,tu_dien,thi khiển,Yamask
-ChuPokemon,401,tu_dien,dạ xoa,Gengar
-ChuPokemon,402,tu_dien,phúc thú,Copperajah
-ChuPokemon,403,tu_dien,gấu trúc,Pangoro
-ChuPokemon,404,tu_dien,tiên lộc,Xerneas
-ChuPokemon,405,tu_dien,xích dương,Camerupt
-ChuPokemon,406,tu_dien,chiến lang,Lycanroc
-ChuPokemon,407,tu_dien,thần tài,Meowth
-ChuPokemon,408,tu_dien,mẹ hiền,Gardevoir
-ChuPokemon,409,tu_dien,cây thông noel,Abomasnow
-ChuPokemon,410,tu_dien,ông già noel,Delibird
-ChuPokemon,411,tu_dien,cây lì xì,Sudowoodo
-ChuPokemon,412,tu_dien,tả thống lĩnh,Lucario
-ChuPokemon,413,tu_dien,hữu thống lĩnh,Lucario
-ChuPokemon,414,tu_dien,tả phó thống,Lucario
-ChuPokemon,415,tu_dien,nhất giáp,Golem 1
-ChuPokemon,416,tu_dien,nhị giáp,Golem 2
-ChuPokemon,417,tu_dien,tam giáp,Golem 3
-ChuPokemon,418,tu_dien,tứ giáp,Golem 4
-ChuPokemon,419,tu_dien,ngũ giáp,Golem 5
-ChuPokemon,420,tu_dien,nhất ngưu,Tauros 1
-ChuPokemon,421,tu_dien,nhị ngưu,Tauros 2
-ChuPokemon,422,tu_dien,tam ngưu,Tauros 3
-ChuPokemon,423,tu_dien,tứ ngưu,Tauros 4
-ChuPokemon,424,tu_dien,ngũ ngưu,Tauros 5
-ChuPokemon,425,tu_dien,bảo ngọc,Sableye
-ChuPokemon,426,tu_dien,giáp sư,Bronzong
-ChuPokemon,427,tu_dien,bội châu,Persian
-ChuPokemon,428,tu_dien,lộc phát,Meowth
-ChuPokemon,429,tu_dien,kim hoa,Kecleon
-ChuPokemon,430,tu_dien,lính gác,Arcanine gác cổng
-ChuPokemon,431,tu_dien,lão địa chủ,Persian
-ChuPokemon,432,tu_dien,địa chủ,Persian
-ChuPokemon,433,tu_dien,ông nội,ông Snorlax
-ChuPokemon,434,tu_dien,thuồng luồng,Gyarados
-ChuPokemon,435,tu_dien,đại bàng đã xuất hiện,Zapdos đã xuất hiện
-ChuPokemon,436,tu_dien,boss người tuyết,boss Abomasnow
-ChuPokemon,437,tu_dien,duy ngã độc tôn,Tứ Thiên Vương
-ChuPokemon,438,tu_dien,thiên hạ chí tôn,Nhà Vô Địch Mọi Vùng
-ChuPokemon,439,tu_dien,chí tôn,tối thượng
-ChuPokemon,440,tu_dien,hảo hán,người dũng cảm
-ChuPokemon,441,tu_dien,tông sư,bậc thầy Pokémon
-ChuPokemon,442,tu_dien,nhất dương tiễn,Tia Mặt Trời
-ChuPokemon,443,tu_dien,tuyệt thế vô song,có một không hai
-ChuPokemon,444,tu_dien,chiến thần bất diệt,Huyền Thoại Bất Diệt
-ChuPokemon,445,tu_dien,long tiễn chấn thiên,Rayquaza Chấn Thiên
-ChuPokemon,446,tu_dien,nghịch thiên nhi hành,Kẻ Thách Thức Định Mệnh
-ChuPokemon,447,tu_dien,khai thiên thần kiếm,Gươm Aegislash
-ChuPokemon,448,tu_dien,vô địch thiên hạ,Vô Địch Mọi Vùng
-ChuPokemon,449,tu_dien,độc bá nhất phương,Bá Chủ Một Vùng
-ChuPokemon,450,tu_dien,tung hoành thiên hạ,Tung Hoành Mọi Vùng
-ChuPokemon,451,tu_dien,tuyệt đỉnh cao thủ,Tinh Anh Tuyệt Đỉnh
-ChuPokemon,452,tu_dien,nhất tiễn phá thiên,Tia Chớp Phá Trời
-ChuPokemon,453,tu_dien,chân mên thiên tử,Người Được Chọn
-ChuPokemon,454,tu_dien,chân mệnh thiên tử,Người Được Chọn
-ChuPokemon,455,tu_dien,cửu huyền thất tổ,Truyền Nhân Huyền Thoại
-ChuPokemon,456,tu_dien,hủy thiên diệt địa,Sức Mạnh Hủy Diệt
-ChuPokemon,457,tu_dien,quy ân giang hồ,Lão Làng Pokémon
-ChuPokemon,458,tu_dien,thiên hạ đệ nhất,Số Một Mọi Vùng
-ChuPokemon,459,tu_dien,thiên hạ vô song,Vô Song Mọi Vùng
-ChuPokemon,460,tu_dien,quân lâm thiên hạ,Chúa Tể Mọi Vùng
-ChuPokemon,461,tu_dien,thiên hạ,mọi vùng
-ChuPokemon,462,tu_dien,đệ nhất,số một
-ChuPokemon,463,tu_dien,đông sơn lâm,Đông Rừng Viridian
-ChuPokemon,464,tu_dien,đông sơn nam,Đông Pewter
-ChuPokemon,465,tu_dien,sơn lâm,Rừng Viridian
-ChuPokemon,466,tu_dien,đông sơn,Saffron
-ChuPokemon,467,tu_dien,sơn nam,Pewter
-ChuPokemon,468,tu_dien,dao châu,Pallet
-ChuPokemon,469,tu_dien,tiên du,Viridian
-ChuPokemon,470,tu_dien,kỳ bố,Cerulean
-ChuPokemon,471,tu_dien,phù liệt,Vermilion
-ChuPokemon,472,tu_dien,hàm tử,Lavender
-ChuPokemon,473,tu_dien,thạch giang,Celadon
-ChuPokemon,474,tu_dien,tử quan,Fuchsia
-ChuPokemon,475,tu_dien,trường giang,Cinnabar
-ChuPokemon,476,tu_dien,phong châu,Núi Mặt Trăng
-ChuPokemon,477,tu_dien,bình lục,Vùng Safari
-ChuPokemon,478,tu_dien,lộc trĩ,New Bark
-ChuPokemon,479,tu_dien,bảo thái,Cherrygrove
-ChuPokemon,480,tu_dien,hồi hồ,Hồ Phẫn Nộ
-ChuPokemon,481,tu_dien,siêu loại,Violet
-ChuPokemon,482,tu_dien,cẩm khê,Azalea
-ChuPokemon,483,tu_dien,bạch hạc,Goldenrod
-ChuPokemon,484,tu_dien,tế giang,Ecruteak
-ChuPokemon,485,tu_dien,đỗ đông,Olivine
-ChuPokemon,486,tu_dien,bình kiều,Mahogany
-ChuPokemon,487,tu_dien,dương đông,Blackthorn
-ChuPokemon,488,tu_dien,lâm tây,Cianwood
-ChuPokemon,489,tu_dien,chiến hạm,Tàu S.S. Anne
-ChuPokemon,490,tu_dien,hang mãng xà,Hang Serperior
-ChuPokemon,491,tu_dien,hang thằn lằn,Hang Salamence
-ChuPokemon,492,tu_dien,hang đại bàng,Tổ Zapdos
-ChuPokemon,493,tu_dien,cánh rừng đông,Rừng Ilex
-ChuPokemon,494,tu_dien,rừng già,Rừng Cổ
-ChuPokemon,495,tu_dien,linh thú bạch mã,thú cưỡi Rapidash
-ChuPokemon,496,tu_dien,trứng bạch mã,trứng Rapidash
-ChuPokemon,497,tu_dien,linh thú mãnh hổ,thú cưỡi Arcanine
-ChuPokemon,498,tu_dien,trứng mãnh hổ,trứng Arcanine
-ChuPokemon,499,tu_dien,linh thú hắc ngưu,thú cưỡi Tauros
-ChuPokemon,500,tu_dien,trứng hắc ngưu,trứng Tauros
-ChuPokemon,501,tu_dien,linh thú sói xám,thú cưỡi Mightyena
-ChuPokemon,502,tu_dien,trứng sói xám,trứng Mightyena
-ChuPokemon,503,tu_dien,linh thú tiên hạc,thú cưỡi Pidgeot
-ChuPokemon,504,tu_dien,trứng tiên hạc,trứng Pidgeot
-ChuPokemon,505,tu_dien,linh thú phượng hoàng lửa,thú cưỡi Moltres
-ChuPokemon,506,tu_dien,trứng phượng hoàng lửa,trứng Moltres
-ChuPokemon,507,tu_dien,linh thú phượng hoàng băng,thú cưỡi Articuno
-ChuPokemon,508,tu_dien,trứng phượng hoàng băng,trứng Articuno
-ChuPokemon,509,tu_dien,linh thú phượng hoàng đa sắc,thú cưỡi Ho-Oh
-ChuPokemon,510,tu_dien,trứng phượng hoàng đa sắc,trứng Ho-Oh
-ChuPokemon,511,tu_dien,linh thú phượng hoàng mộc,thú cưỡi Tropius
-ChuPokemon,512,tu_dien,trứng phượng hoàng mộc,trứng Tropius
-ChuPokemon,513,tu_dien,linh thú phượng hoàng kim,thú cưỡi Skarmory
-ChuPokemon,514,tu_dien,trứng phượng hoàng kim,trứng Skarmory
-ChuPokemon,515,tu_dien,linh thú phượng hoàng thổ,thú cưỡi Flygon
-ChuPokemon,516,tu_dien,trứng phượng hoàng thổ,trứng Flygon
-ChuPokemon,517,tu_dien,linh thú phượng hoàng,thú cưỡi Moltres
-ChuPokemon,518,tu_dien,trứng phượng hoàng,trứng Moltres
-ChuPokemon,519,tu_dien,linh thú tuần lộc,thú cưỡi Stantler
-ChuPokemon,520,tu_dien,trứng tuần lộc,trứng Stantler
-ChuPokemon,521,tu_dien,linh thú đại bạch thử,thú cưỡi Wooloo
-ChuPokemon,522,tu_dien,trứng đại bạch thử,trứng Wooloo
-ChuPokemon,523,tu_dien,linh thú bạch thử,thú cưỡi Wooloo
-ChuPokemon,524,tu_dien,trứng bạch thử,trứng Wooloo
-ChuPokemon,525,tu_dien,linh thú hắc thỏ,thú cưỡi Lopunny
-ChuPokemon,526,tu_dien,trứng hắc thỏ,trứng Lopunny
-ChuPokemon,527,tu_dien,linh thú lân sư tử,thú cưỡi Suicune
-ChuPokemon,528,tu_dien,trứng lân sư tử,trứng Suicune
-ChuPokemon,529,tu_dien,linh thú lân,thú cưỡi Suicune
-ChuPokemon,530,tu_dien,trứng lân,trứng Suicune
-ChuPokemon,531,tu_dien,linh thú đương khang băng giá,thú cưỡi Mamoswine
-ChuPokemon,532,tu_dien,trứng đương khang băng giá,trứng Mamoswine
-ChuPokemon,533,tu_dien,linh thú đương khang,thú cưỡi Piloswine
-ChuPokemon,534,tu_dien,trứng đương khang,trứng Piloswine
-ChuPokemon,535,tu_dien,linh thú bạch cốt mã,thú cưỡi Spectrier
-ChuPokemon,536,tu_dien,trứng bạch cốt mã,trứng Spectrier
-ChuPokemon,537,tu_dien,linh thú bạch cốt,thú cưỡi Spectrier
-ChuPokemon,538,tu_dien,trứng bạch cốt,trứng Spectrier
-ChuPokemon,539,tu_dien,linh thú rồng băng,thú cưỡi Dragonite
-ChuPokemon,540,tu_dien,trứng rồng băng,trứng Dragonite
-ChuPokemon,541,tu_dien,linh thú sư tử băng,thú cưỡi Glastrier
-ChuPokemon,542,tu_dien,trứng sư tử băng,trứng Glastrier
-ChuPokemon,543,tu_dien,linh thú sư tử,thú cưỡi Entei
-ChuPokemon,544,tu_dien,trứng sư tử,trứng Entei
-ChuPokemon,545,tu_dien,linh thú hoả kỳ lân,thú cưỡi Ponyta
-ChuPokemon,546,tu_dien,trứng hoả kỳ lân,trứng Ponyta
-ChuPokemon,547,tu_dien,linh thú hỏa kỳ lân,thú cưỡi Ponyta
-ChuPokemon,548,tu_dien,trứng hỏa kỳ lân,trứng Ponyta
-ChuPokemon,549,tu_dien,=Dao Châu,Pallet
-ChuPokemon,550,tu_dien,=Tiên Du,Viridian
-ChuPokemon,551,tu_dien,=Sơn Nam,Pewter
-ChuPokemon,552,tu_dien,=Kỳ Bố,Cerulean
-ChuPokemon,553,tu_dien,=Phù Liệt,Vermilion
-ChuPokemon,554,tu_dien,=Hàm Tử,Lavender
-ChuPokemon,555,tu_dien,=Thạch Giang,Celadon
-ChuPokemon,556,tu_dien,=Đông Sơn,Saffron
-ChuPokemon,557,tu_dien,=Tử Quan,Fuchsia
-ChuPokemon,558,tu_dien,=Trường Giang,Cinnabar
-ChuPokemon,559,tu_dien,=Sơn Lâm,Rừng Viridian
-ChuPokemon,560,tu_dien,=Phong Châu,Núi Mặt Trăng
-ChuPokemon,561,tu_dien,=Bình Lục,Vùng Safari
-ChuPokemon,562,tu_dien,=Lộc Trĩ,New Bark
-ChuPokemon,563,tu_dien,=Bảo Thái,Cherrygrove
-ChuPokemon,564,tu_dien,=Hầm Tối,Hang Tối
-ChuPokemon,565,tu_dien,=Hồi Hồ,Hồ Phẫn Nộ
-ChuPokemon,566,tu_dien,=Siêu Loại,Violet
-ChuPokemon,567,tu_dien,=Cẩm Khê,Azalea
-ChuPokemon,568,tu_dien,=Bạch Hạc,Goldenrod
-ChuPokemon,569,tu_dien,=Tế Giang,Ecruteak
-ChuPokemon,570,tu_dien,=Đỗ Đông,Olivine
-ChuPokemon,571,tu_dien,=Thành Trấn Danh,Cao nguyên Indigo
-ChuPokemon,572,tu_dien,=Biên Giới,Đường Victory
-ChuPokemon,573,tu_dien,=Hang Thằn Lằn,Hang Salamence
-ChuPokemon,574,tu_dien,=Hang Đại Bàng,Tổ Zapdos
-ChuPokemon,575,tu_dien,=Hang Dracula,Hang Darkrai
-ChuPokemon,576,tu_dien,=Hang Mãng Xà,Hang Serperior
-ChuPokemon,577,tu_dien,=Cánh Rừng Đông,Rừng Ilex
-ChuPokemon,578,tu_dien,=Rừng Già,Rừng Cổ
-ChuPokemon,579,tu_dien,=Bình Kiều,Mahogany
-ChuPokemon,580,tu_dien,=Dương Đông,Blackthorn
-ChuPokemon,581,tu_dien,=Lâm Tây,Cianwood
-ChuPokemon,582,tu_dien,=Chiến Hạm,Tàu S.S. Anne
-ChuPokemon,583,tu_dien,=Núi kho báu,Núi Silver
-ChuPokemon,584,tu_dien,=Nhà bán HP,Trung tâm Pokémon
-ChuPokemon,585,tu_dien,=Nhà bán MP,Poké Mart
-ChuPokemon,586,tu_dien,=Nhà thợ rèn,Xưởng chế tạo
+ChuPokemon,10,tu_dien,L.thổ,Vùng
+ChuPokemon,11,tu_dien,thanh long,Kanto
+ChuPokemon,12,tu_dien,hắc hổ,Johto
+ChuPokemon,13,tu_dien,huyền vũ,Hoenn
+ChuPokemon,14,tu_dien,linh thú,thú cưỡi
+ChuPokemon,15,tu_dien,cưỡi linh thú,cưỡi thú
+ChuPokemon,16,tu_dien,nhân vật,Pokémon
+ChuPokemon,17,tu_dien,môn phái,dòng Pokémon
+ChuPokemon,18,tu_dien,kiếm khách,dòng Charmander
+ChuPokemon,19,tu_dien,kiếm sĩ,dòng Charmander
+ChuPokemon,20,tu_dien,kiếm sỹ,dòng Charmander
+ChuPokemon,21,tu_dien,chiến binh,dòng Bulbasaur
+ChuPokemon,22,tu_dien,pháp sư,dòng Eevee
+ChuPokemon,23,tu_dien,đấu sĩ,dòng Squirtle
+ChuPokemon,24,tu_dien,cung thủ,dòng Pichu
+ChuPokemon,25,tu_dien,hiệp khách,nhà thám hiểm
+ChuPokemon,26,tu_dien,đại hiệp,nhà huấn luyện
+ChuPokemon,27,tu_dien,thiếu hiệp,nhà huấn luyện trẻ
+ChuPokemon,28,tu_dien,nghĩa sỹ,nhà huấn luyện
+ChuPokemon,29,tu_dien,nghĩa sĩ,nhà huấn luyện
+ChuPokemon,30,tu_dien,làng nghĩa sỹ,làng huấn luyện
+ChuPokemon,31,tu_dien,làng nghĩa sĩ,làng huấn luyện
+ChuPokemon,32,tu_dien,cao thủ,nhà vô địch
+ChuPokemon,33,tu_dien,tiền bối,bậc đàn anh
+ChuPokemon,34,tu_dien,đệ tử,học trò
+ChuPokemon,35,tu_dien,sư phụ,thầy
+ChuPokemon,36,tu_dien,tại hạ,tôi
+ChuPokemon,37,tu_dien,huynh,anh
+ChuPokemon,38,tu_dien,tiểu đệ,em
+ChuPokemon,39,tu_dien,võ lâm chí tôn,nhà vô địch Pokémon
+ChuPokemon,40,tu_dien,giang hồ,thế giới Pokémon
+ChuPokemon,41,tu_dien,võ lâm,thế giới Pokémon
+ChuPokemon,42,tu_dien,kiếm hiệp,Pokémon
+ChuPokemon,43,tu_dien,bôn ba giang hồ,phiêu lưu khắp thế giới Pokémon
+ChuPokemon,44,tu_dien,bôn tẩu,phiêu lưu
+ChuPokemon,45,tu_dien,hành tẩu,phiêu lưu
+ChuPokemon,46,tu_dien,nội công,năng lượng
+ChuPokemon,47,tu_dien,nội lực,năng lượng
+ChuPokemon,48,tu_dien,võ công,chiêu thức
+ChuPokemon,49,tu_dien,bí kíp,đĩa chiêu
+ChuPokemon,50,tu_dien,thần binh,bảo vật
+ChuPokemon,51,tu_dien,hệ ngũ hành,hệ
+ChuPokemon,52,tu_dien,hệ Mộc,hệ Cỏ
+ChuPokemon,53,tu_dien,hệ Hỏa,hệ Lửa
+ChuPokemon,54,tu_dien,hệ Hoả,hệ Lửa
+ChuPokemon,55,tu_dien,hệ Thổ,hệ Đất
+ChuPokemon,56,tu_dien,hệ Kim,hệ Thép
+ChuPokemon,57,tu_dien,hệ Thủy,hệ Nước
+ChuPokemon,58,tu_dien,hệ Thuỷ,hệ Nước
+ChuPokemon,59,tu_dien,ngũ hành,hệ
+ChuPokemon,60,tu_dien,=Kiếm,Than lửa
+ChuPokemon,61,tu_dien,thanh kiếm,lưỡi năng lượng
+ChuPokemon,62,tu_dien,đại đao,hạt giống thần
+ChuPokemon,63,tu_dien,đao,hạt giống thần
+ChuPokemon,64,tu_dien,thần kiếm,thần hỏa
+ChuPokemon,65,tu_dien,xa phu,Pidgeot (Bay)
+ChuPokemon,66,tu_dien,thần hành phù,vé bay Pidgeot
+ChuPokemon,67,tu_dien,kim bài,huy hiệu lập đội
+ChuPokemon,68,tu_dien,lâm tướng quân,Blaziken
+ChuPokemon,69,tu_dien,tướng quân,chỉ huy
+ChuPokemon,70,tu_dien,trần thống lĩnh,Heracross
+ChuPokemon,71,tu_dien,kiếm sư,Farfetch'd
+ChuPokemon,72,tu_dien,dì út hp,Y tá Chansey
+ChuPokemon,73,tu_dien,dì út,Y tá Chansey
+ChuPokemon,74,tu_dien,bà tám tạp hóa,Kecleon tạp hoá
+ChuPokemon,75,tu_dien,bà tám tạp hoá,Kecleon tạp hoá
+ChuPokemon,76,tu_dien,bà tám,Kecleon
+ChuPokemon,77,tu_dien,hắc ngưu,Machamp
+ChuPokemon,78,tu_dien,thiết bì,Bronzong
+ChuPokemon,79,tu_dien,phú ông,Persian
+ChuPokemon,80,tu_dien,phú ồng,Persian
+ChuPokemon,81,tu_dien,anh bảy,Kangaskhan
+ChuPokemon,82,tu_dien,nhật thương nhân,Meowth thương nhân
+ChuPokemon,83,tu_dien,hỏa xích,Torkoal
+ChuPokemon,84,tu_dien,hoả xích,Torkoal
+ChuPokemon,85,tu_dien,ép ngọc,ép ngọc hệ
+ChuPokemon,87,tu_dien,ngươi,cậu
+ChuPokemon,88,tu_dien,giết,hạ
+ChuPokemon,89,tu_dien,yêu ma quỷ quái,Pokémon hung dữ
+ChuPokemon,90,tu_dien,quái vật yêu ma,Pokémon hung dữ
+ChuPokemon,91,tu_dien,yêu ma,Pokémon hung dữ
+ChuPokemon,92,tu_dien,cương thi,Pokémon ma
+ChuPokemon,93,tu_dien,nội thương,vết thương
+ChuPokemon,94,tu_dien,vận nội kình,dồn năng lượng
+ChuPokemon,95,tu_dien,vận kình lực,dồn sức
+ChuPokemon,96,tu_dien,nội kình,năng lượng
+ChuPokemon,97,tu_dien,kình lực,sức mạnh
+ChuPokemon,98,tu_dien,"đấng anh hào, ẩn sỹ",nhà huấn luyện tài ba
+ChuPokemon,99,tu_dien,anh hào,nhà huấn luyện tài ba
+ChuPokemon,100,tu_dien,ẩn sỹ,bậc thầy
+ChuPokemon,101,tu_dien,ẩn sĩ,bậc thầy
+ChuPokemon,102,tu_dien,anh em kết nghĩa,bạn thân
+ChuPokemon,103,tu_dien,hai minh,Xatu
+ChuPokemon,104,tu_dien,anh hùng xuất thiếu niên,tuổi trẻ tài cao
+ChuPokemon,105,tu_dien,phu quân,bạn đời
+ChuPokemon,106,tu_dien,phu nhân,bạn đời
+ChuPokemon,107,tu_dien,cường thân kiện thể,rèn luyện thể lực
+ChuPokemon,108,tu_dien,trừ gian diệt ác,dẹp loạn khu hoang dã
+ChuPokemon,109,tu_dien,hành hiệp trượng nghĩa,giúp đỡ mọi người
+ChuPokemon,110,tu_dien,trừ hại cho dân,bảo vệ dân làng
+ChuPokemon,111,tu_dien,trừ khử yêu ma,đẩy lùi Pokémon hung dữ
+ChuPokemon,112,tu_dien,việc nghĩa hiệp,việc tốt
+ChuPokemon,113,tu_dien,ngựa vận tiêu,Ponyta giao hàng
+ChuPokemon,114,tu_dien,vận tiêu,giao hàng
+ChuPokemon,115,tu_dien,chuyến tiêu,chuyến giao hàng
+ChuPokemon,116,tu_dien,trả tiêu,trả hàng
+ChuPokemon,117,tu_dien,nhận tiêu,nhận hàng
+ChuPokemon,118,tu_dien,đổi tiêu,đổi hàng
+ChuPokemon,119,tu_dien,màu tiêu,màu hàng
+ChuPokemon,120,tu_dien,nhận được tiêu,nhận được hàng
+ChuPokemon,121,tu_dien,đổi được tiêu,đổi được hàng
+ChuPokemon,122,tu_dien,=Tiêu của bạn,Hàng của bạn
+ChuPokemon,123,tu_dien,cướp tiêu,cướp hàng
+ChuPokemon,124,tu_dien,bảo tiêu,giao hàng
+ChuPokemon,125,tu_dien,xa tiêu lệnh,vé xe giao hàng
+ChuPokemon,126,tu_dien,đi tối đa 5 tiêu,giao tối đa 5 chuyến hàng
+ChuPokemon,127,tu_dien,lệnh bài trấn yêu,vé Tháp Pokémon
+ChuPokemon,128,tu_dien,trấn yêu trận,Tháp Pokémon
+ChuPokemon,129,tu_dien,trấn yêu,Tháp Pokémon
+ChuPokemon,130,tu_dien,long lệnh bài,thẻ Rayquaza
+ChuPokemon,131,tu_dien,lân lệnh bài,thẻ Suicune
+ChuPokemon,132,tu_dien,quy lệnh bài,thẻ Kyogre
+ChuPokemon,133,tu_dien,phụng lệnh bài,thẻ Ho-Oh
+ChuPokemon,134,tu_dien,lệnh bài,thẻ
+ChuPokemon,135,tu_dien,thẻ bài,thẻ
+ChuPokemon,136,tu_dien,hộ vệ lệnh,vé gọi Pokémon hỗ trợ
+ChuPokemon,137,tu_dien,lân sư tử hộ vệ,Suicune hỗ trợ
+ChuPokemon,138,tu_dien,hộ vệ,Pokémon hỗ trợ
+ChuPokemon,139,tu_dien,sở hữu thành trấn danh,sở hữu Cao nguyên Indigo
+ChuPokemon,140,tu_dien,thành trấn danh,Cao nguyên Indigo
+ChuPokemon,141,tu_dien,chiếm được thành,chiếm được Gym
+ChuPokemon,142,tu_dien,chiếm thành,chiếm Gym
+ChuPokemon,143,tu_dien,chiến thành,chiến Gym
+ChuPokemon,144,tu_dien,vào thành,vào Gym
+ChuPokemon,145,tu_dien,giữ thành,giữ Gym
+ChuPokemon,146,tu_dien,sở hữu thành,sở hữu Gym
+ChuPokemon,147,tu_dien,thành liên đấu,Gym liên đấu
+ChuPokemon,148,tu_dien,cổng thành,cổng Gym
+ChuPokemon,149,tu_dien,lôi đài,sàn đấu
+ChuPokemon,150,tu_dien,đức vua,nhà vô địch vùng
+ChuPokemon,151,tu_dien,nhà vua,Meowth
+ChuPokemon,152,tu_dien,vua,nhà vô địch vùng
+ChuPokemon,153,tu_dien,đại thần,cố vấn vùng
+ChuPokemon,154,tu_dien,bộ đầu,cảnh sát vùng
+ChuPokemon,155,tu_dien,phế chức,bãi nhiệm
+ChuPokemon,156,tu_dien,=Phế,Bãi nhiệm
+ChuPokemon,157,tu_dien,quốc gia,vùng
+ChuPokemon,158,tu_dien,quốc chiến,chiến vùng
+ChuPokemon,159,tu_dien,chiến trường chính tà,chiến trường liên vùng
+ChuPokemon,160,tu_dien,chính tà,liên vùng
+ChuPokemon,161,tu_dien,chiến trường tống kim,chiến trường liên vùng
+ChuPokemon,162,tu_dien,tống kim,liên vùng
+ChuPokemon,163,tu_dien,cừu nhân,đối thủ
+ChuPokemon,164,tu_dien,liên trảm,chuỗi thắng
+ChuPokemon,165,tu_dien,đồ sát,PK
+ChuPokemon,166,tu_dien,long trụ,trụ năng lượng
+ChuPokemon,167,tu_dien,thống lĩnh,chỉ huy
+ChuPokemon,168,tu_dien,thần khí,bảo vật huyền thoại
+ChuPokemon,169,tu_dien,quạt ba tiêu,Quạt lá Shiftry
+ChuPokemon,170,tu_dien,gậy như ý,Gậy xương Marowak
+ChuPokemon,171,tu_dien,lưỡng nhận đao,Lưỡi liềm Scyther
+ChuPokemon,172,tu_dien,hỏa thạch,nham thạch
+ChuPokemon,173,tu_dien,hoả thạch,nham thạch
+ChuPokemon,174,tu_dien,ngọc huyền minh,ngọc hoàng hôn
+ChuPokemon,175,tu_dien,huyền minh,hoàng hôn
+ChuPokemon,176,tu_dien,ngũ hợp,cầu vồng
+ChuPokemon,177,tu_dien,tiến giai,thăng bậc
+ChuPokemon,178,tu_dien,tụ hồn đan,Kẹo Poké
+ChuPokemon,179,tu_dien,tiên đan,cỏ hồi sinh
+ChuPokemon,180,tu_dien,tiên dược,kẹo kinh nghiệm
+ChuPokemon,181,tu_dien,tiềm năng đan,kẹo tiềm năng
+ChuPokemon,182,tu_dien,kỹ năng đan,kẹo kỹ năng
+ChuPokemon,183,tu_dien,huyết linh thảo,Kẹo hiếm
+ChuPokemon,184,tu_dien,huyết bồ đề,Bạc hà tính cách
+ChuPokemon,185,tu_dien,huyết bổ đề,Bạc hà tính cách
+ChuPokemon,186,tu_dien,nhân sâm,Berry Razz vàng
+ChuPokemon,187,tu_dien,được sâm,được Berry Razz vàng
+ChuPokemon,188,tu_dien,thổ địa phù,vé bay Pidgeot
+ChuPokemon,189,tu_dien,thiên lý mã,Ponyta
+ChuPokemon,190,tu_dien,xích thố,Ponyta lửa
+ChuPokemon,191,tu_dien,hỗn độn,X Phòng thủ
+ChuPokemon,192,tu_dien,hỗn nguyên,X Tấn công
+ChuPokemon,193,tu_dien,hoá công,Thuốc săn trùm
+ChuPokemon,194,tu_dien,hóa công,Thuốc săn trùm
+ChuPokemon,195,tu_dien,đoạn cốt,Ether chiến trường
+ChuPokemon,196,tu_dien,hoả dược,Bom lửa
+ChuPokemon,197,tu_dien,hỏa dược,Bom lửa
+ChuPokemon,198,tu_dien,rương bát bảo,rương kho báu
+ChuPokemon,199,tu_dien,bách niên giai lão,trái tim đồng
+ChuPokemon,200,tu_dien,vĩnh kết đồng tâm,trái tim bạc
+ChuPokemon,201,tu_dien,loan phụng hòa minh,trái tim vàng
+ChuPokemon,202,tu_dien,loan phụng hoà minh,trái tim vàng
+ChuPokemon,203,tu_dien,phù phu thê,Vảy trái tim
+ChuPokemon,204,tu_dien,nguyệt linh trượng,Gậy Ánh Trăng
+ChuPokemon,205,tu_dien,nguyệt ảnh,Ánh Trăng
+ChuPokemon,206,tu_dien,ám khí,đòn đánh lén
+ChuPokemon,207,tu_dien,phi phong khổng tước,phi phong lông công
+ChuPokemon,208,tu_dien,kim cang long,Dialga
+ChuPokemon,209,tu_dien,kim cang bát giới,vòng tay Emboar
+ChuPokemon,210,tu_dien,kim cang sa tăng,vòng tay Swampert
+ChuPokemon,211,tu_dien,kim cang,Thu mình
+ChuPokemon,212,tu_dien,kim cô,vòng đầu
+ChuPokemon,213,tu_dien,bát giới,Emboar
+ChuPokemon,214,tu_dien,sa tăng,Swampert
+ChuPokemon,215,tu_dien,tề thiên đại thánh,Infernape
+ChuPokemon,216,tu_dien,tề thiên,Infernape
+ChuPokemon,217,tu_dien,tứ bình,bộ Berry
+ChuPokemon,218,tu_dien,tứ nhạc,bộ Flute
+ChuPokemon,219,tu_dien,tứ khoái,bộ huy hiệu
+ChuPokemon,220,tu_dien,tứ linh,bộ huyền thoại
+ChuPokemon,221,tu_dien,mảnh mai,mảnh Berry Oran
+ChuPokemon,222,tu_dien,mảnh lan,mảnh Berry Pecha
+ChuPokemon,223,tu_dien,mảnh cúc,mảnh Berry Cheri
+ChuPokemon,224,tu_dien,mảnh trúc,mảnh Berry Rawst
+ChuPokemon,225,tu_dien,mảnh sáo,mảnh Blue Flute
+ChuPokemon,226,tu_dien,mảnh quạt,mảnh Red Flute
+ChuPokemon,227,tu_dien,mảnh sênh,mảnh Yellow Flute
+ChuPokemon,228,tu_dien,mảnh đàn,mảnh White Flute
+ChuPokemon,229,tu_dien,mảnh ngư,mảnh huy hiệu Cascade
+ChuPokemon,230,tu_dien,mảnh tiều,mảnh huy hiệu Rainbow
+ChuPokemon,231,tu_dien,mảnh canh,mảnh huy hiệu Boulder
+ChuPokemon,232,tu_dien,mảnh độc,mảnh huy hiệu Marsh
+ChuPokemon,233,tu_dien,mảnh long,mảnh Rayquaza
+ChuPokemon,234,tu_dien,mảnh lân,mảnh Suicune
+ChuPokemon,235,tu_dien,mảnh quy,mảnh Kyogre
+ChuPokemon,236,tu_dien,mảnh phụng,mảnh Ho-Oh
+ChuPokemon,237,tu_dien,tóc bờm ngựa,bờm Ponyta
+ChuPokemon,238,tu_dien,tóc tiên đồng,lông Clefairy
+ChuPokemon,239,tu_dien,tóc thư sinh,lông gọn gàng
+ChuPokemon,240,tu_dien,đầu đinh,lông đinh
+ChuPokemon,241,tu_dien,tóc,lông
+ChuPokemon,242,tu_dien,xuống ngựa,xuống thú cưỡi
+ChuPokemon,243,tu_dien,cưỡi ngựa,cưỡi thú
+ChuPokemon,244,tu_dien,=Ngựa sẽ bị mất,Thú cưỡi sẽ bị mất
+ChuPokemon,245,tu_dien,ngọc bội,phiến đá hệ
+ChuPokemon,246,tu_dien,dây chuyền,vòng cổ
+ChuPokemon,247,tu_dien,hộ uyển,vòng chân
+ChuPokemon,248,tu_dien,=từ Bút,từ Khăn lụa
+ChuPokemon,249,tu_dien,=từ Búa,từ Nước thần
+ChuPokemon,250,tu_dien,=từ Cung,từ Nam châm
+ChuPokemon,251,tu_dien,=Bút cấp độ,Khăn lụa cấp độ
+ChuPokemon,252,tu_dien,=Búa cấp độ,Nước thần cấp độ
+ChuPokemon,253,tu_dien,=Cung cấp độ,Nam châm cấp độ
+ChuPokemon,254,tu_dien,đũa thần,Khăn lụa
+ChuPokemon,255,tu_dien,đấu sỹ,dòng Squirtle
+ChuPokemon,256,tu_dien,thủ ma pháp,phòng thủ đặc biệt
+ChuPokemon,257,tu_dien,thủ vật lý,phòng thủ
+ChuPokemon,258,tu_dien,thủ ma,phòng thủ đặc biệt
+ChuPokemon,259,tu_dien,thủ vật,phòng thủ
+ChuPokemon,260,tu_dien,ma pháp,đặc biệt
+ChuPokemon,261,tu_dien,st ma,st đặc biệt
+ChuPokemon,262,tu_dien,tc ma,tc đặc biệt
+ChuPokemon,263,tu_dien,pt ma,PT đặc biệt
+ChuPokemon,264,tu_dien,kháng hỏa,kháng Lửa
+ChuPokemon,265,tu_dien,kháng hoả,kháng Lửa
+ChuPokemon,266,tu_dien,kháng thủy,kháng Nước
+ChuPokemon,267,tu_dien,kháng thuỷ,kháng Nước
+ChuPokemon,268,tu_dien,kháng mộc,kháng Cỏ
+ChuPokemon,269,tu_dien,kháng kim,kháng Thép
+ChuPokemon,270,tu_dien,kháng thổ,kháng Đất
+ChuPokemon,271,tu_dien,nhất phẩm,hạng 1
+ChuPokemon,272,tu_dien,nhị phẩm,hạng 2
+ChuPokemon,273,tu_dien,tam phẩm,hạng 3
+ChuPokemon,274,tu_dien,tứ phẩm,hạng 4
+ChuPokemon,275,tu_dien,ngũ phẩm,hạng 5
+ChuPokemon,276,tu_dien,phá triền,Bảo vệ
+ChuPokemon,277,tu_dien,đoạt mệnh,Dồn sức
+ChuPokemon,278,tu_dien,thiên nhãn,Phân thân
+ChuPokemon,279,tu_dien,tiên khí,Màn bảo hộ
+ChuPokemon,280,tu_dien,càn khôn,Màn ánh sáng
+ChuPokemon,281,tu_dien,cường thân,Tĩnh tâm
+ChuPokemon,282,tu_dien,hộ thể,Giáp sắt
+ChuPokemon,283,tu_dien,thuấn ảnh,Hồi năng lượng
+ChuPokemon,284,tu_dien,phí huyết,Rễ bám
+ChuPokemon,285,tu_dien,yểm bùa,nguyền rủa
+ChuPokemon,286,tu_dien,nội tại,đặc tính
+ChuPokemon,287,tu_dien,bạch cốt mã,Spectrier
+ChuPokemon,288,tu_dien,bạch cốt,Spectrier
+ChuPokemon,289,tu_dien,đương khang băng giá,Mamoswine
+ChuPokemon,290,tu_dien,đương khang,Piloswine
+ChuPokemon,291,tu_dien,đường khang,Piloswine
+ChuPokemon,292,tu_dien,đuong khang,Piloswine
+ChuPokemon,293,tu_dien,đại bạch thử,Wooloo
+ChuPokemon,294,tu_dien,bạch thử,Sandshrew
+ChuPokemon,295,tu_dien,mãnh hổ,Arcanine
+ChuPokemon,296,tu_dien,sói xám,Mightyena
+ChuPokemon,297,tu_dien,tiên hạc,Pidgeot
+ChuPokemon,298,tu_dien,bạch mã,Rapidash
+ChuPokemon,299,tu_dien,tuần lộc,Stantler
+ChuPokemon,300,tu_dien,rồng băng,Dragonite
+ChuPokemon,301,tu_dien,sư tử băng,Glastrier
+ChuPokemon,302,tu_dien,nhận được sư tử,nhận được Entei
+ChuPokemon,303,tu_dien,phượng hoàng lửa,Moltres
+ChuPokemon,304,tu_dien,phượng hoàng băng,Articuno
+ChuPokemon,305,tu_dien,phượng hoàng đa sắc,Ho-Oh
+ChuPokemon,306,tu_dien,phượng hoàng mộc,Tropius
+ChuPokemon,307,tu_dien,phượng hoàng kim,Skarmory
+ChuPokemon,308,tu_dien,phượng hoàng thổ,Flygon
+ChuPokemon,309,tu_dien,phượng hoàng,Moltres
+ChuPokemon,310,tu_dien,hoả kỳ lân,Ponyta
+ChuPokemon,311,tu_dien,hỏa kỳ lân,Ponyta
+ChuPokemon,312,tu_dien,hoả kì lân,Ponyta
+ChuPokemon,313,tu_dien,hỏa kì lân,Ponyta
+ChuPokemon,314,tu_dien,hoả kì nhông,Ponyta
+ChuPokemon,315,tu_dien,hắc thỏ,Lopunny
+ChuPokemon,316,tu_dien,hắc thố,Lopunny
+ChuPokemon,317,tu_dien,lồng đèn lân sư tử,Litleo
+ChuPokemon,318,tu_dien,lân sư tử,Suicune
+ChuPokemon,319,tu_dien,lân sư,Suicune
+ChuPokemon,320,tu_dien,pet lân,pet Suicune
+ChuPokemon,321,tu_dien,hình lân,hình Suicune
+ChuPokemon,322,tu_dien,lân cấp,Suicune cấp
+ChuPokemon,323,tu_dien,lồng đèn xếp,Litwick
+ChuPokemon,324,tu_dien,thanh tước,Taillow
+ChuPokemon,325,tu_dien,cánh cam,Ledyba
+ChuPokemon,326,tu_dien,dơi quỷ,Zubat
+ChuPokemon,327,tu_dien,tim bay,Luvdisc
+ChuPokemon,328,tu_dien,lồng đèn hoa sen,Lotad
+ChuPokemon,329,tu_dien,=Lồng đèn ngôi sao,Staryu
+ChuPokemon,330,tu_dien,=lồng đèn ngôi sao,Staryu
+ChuPokemon,331,tu_dien,=Lồng đèn Ngôi sao,Starmie
+ChuPokemon,332,tu_dien,pet hoa tuyết,pet Cryogonal
+ChuPokemon,333,tu_dien,pet giáp ngọ,pet Ponyta
+ChuPokemon,334,tu_dien,pet armadillo băng,pet Sandshrew
+ChuPokemon,335,tu_dien,pet armadillo sét,pet Pachirisu
+ChuPokemon,336,tu_dien,pet armadillo độc,pet Nidoran
+ChuPokemon,337,tu_dien,lồng đèn cá chép,Magikarp
+ChuPokemon,338,tu_dien,chim cánh cụt,Piplup
+ChuPokemon,339,tu_dien,pet ất mùi,pet Mareep
+ChuPokemon,340,tu_dien,ngôi sao băng,Jirachi
+ChuPokemon,341,tu_dien,lồng đèn trăng khuyết,Lunatone
+ChuPokemon,342,tu_dien,lồng đèn rồng xanh,Articuno
+ChuPokemon,343,tu_dien,khỉ vàng,Aipom
+ChuPokemon,344,tu_dien,thỏ bay,Mareep
+ChuPokemon,345,tu_dien,trứng cú,trứng Hoothoot
+ChuPokemon,346,tu_dien,trứng rồng,trứng Dratini
+ChuPokemon,347,tu_dien,trứng yêu tinh,trứng Cleffa
+ChuPokemon,348,tu_dien,trứng dơi,trứng Zubat
+ChuPokemon,349,tu_dien,trứng đại bàng,trứng Rufflet
+ChuPokemon,350,tu_dien,lạc long quân,Rayquaza
+ChuPokemon,351,tu_dien,âu cơ,Ho-Oh
+ChuPokemon,352,tu_dien,thầy đồ,giáo sư
+ChuPokemon,353,tu_dien,tiên nữ,Lunala
+ChuPokemon,354,tu_dien,tinh quân,Solgaleo
+ChuPokemon,355,tu_dien,áo yếm đào,áo Bellossom
+ChuPokemon,356,tu_dien,áo yếm,áo Bellossom
+ChuPokemon,357,tu_dien,yếm đào,Bellossom
+ChuPokemon,358,tu_dien,thạch sanh,Lucario
+ChuPokemon,359,tu_dien,dracula,Darkrai
+ChuPokemon,360,tu_dien,hằng nga,Clefairy
+ChuPokemon,361,tu_dien,chú cuội,Clefable
+ChuPokemon,362,tu_dien,đầu bí ngô,đầu Pumpkaboo
+ChuPokemon,363,tu_dien,mặt nạ bí ngô,mặt nạ Pumpkaboo
+ChuPokemon,364,tu_dien,nón phù thủy,nón Mismagius
+ChuPokemon,365,tu_dien,nón phù thuỷ,nón Mismagius
+ChuPokemon,366,tu_dien,phù thủy dễ thương,Gardevoir
+ChuPokemon,367,tu_dien,phù thuỷ dễ thương,Gardevoir
+ChuPokemon,368,tu_dien,hồng hài nhi,Magby
+ChuPokemon,369,tu_dien,freddy,Banette
+ChuPokemon,370,tu_dien,jason,Dusknoir
+ChuPokemon,371,tu_dien,harry potter,Alakazam
+ChuPokemon,372,tu_dien,chúa tể voldemort,Giratina
+ChuPokemon,373,tu_dien,chúa tể voldermort,Giratina
+ChuPokemon,374,tu_dien,voldemort,Giratina
+ChuPokemon,375,tu_dien,voldermort,Giratina
+ChuPokemon,376,tu_dien,hắc lang,Zoroark
+ChuPokemon,377,tu_dien,bạch mi,Absol
+ChuPokemon,378,tu_dien,thuý vũ hồng sam,Oricorio
+ChuPokemon,379,tu_dien,thúy vũ hồng sam,Oricorio
+ChuPokemon,380,tu_dien,thần nữ,Gardevoir
+ChuPokemon,381,tu_dien,sơn tinh vương,Groudon
+ChuPokemon,382,tu_dien,sơn tinh,Groudon
+ChuPokemon,383,tu_dien,=Thuỷ Tinh,Kyogre
+ChuPokemon,384,tu_dien,=Thủy Tinh,Kyogre
+ChuPokemon,385,tu_dien,mị nương công chúa,Diancie
+ChuPokemon,386,tu_dien,tiểu long nữ,Latias
+ChuPokemon,387,tu_dien,dương quá,Latios
+ChuPokemon,388,tu_dien,ngưu lang,Volbeat
+ChuPokemon,389,tu_dien,chức nữ,Illumise
+ChuPokemon,390,tu_dien,nghê thường,Milotic
+ChuPokemon,391,tu_dien,ngọc nữ,Minun
+ChuPokemon,392,tu_dien,kim đồng,Plusle
+ChuPokemon,393,tu_dien,xích cước,Blaziken
+ChuPokemon,394,tu_dien,lôi công,Zapdos
+ChuPokemon,395,tu_dien,bá thiên hổ,Raikou
+ChuPokemon,396,tu_dien,miêu mắt xanh,Glameow
+ChuPokemon,397,tu_dien,miêu quý tộc,Persian
+ChuPokemon,398,tu_dien,ông địa,Snorlax
+ChuPokemon,399,tu_dien,ngạ quỷ,Haunter
+ChuPokemon,400,tu_dien,ngạ khuyển,Houndoom
+ChuPokemon,401,tu_dien,thi khiển,Yamask
+ChuPokemon,402,tu_dien,dạ xoa,Gengar
+ChuPokemon,403,tu_dien,phúc thú,Copperajah
+ChuPokemon,404,tu_dien,gấu trúc,Pangoro
+ChuPokemon,405,tu_dien,tiên lộc,Xerneas
+ChuPokemon,406,tu_dien,xích dương,Camerupt
+ChuPokemon,407,tu_dien,chiến lang,Lycanroc
+ChuPokemon,408,tu_dien,thần tài,Meowth
+ChuPokemon,409,tu_dien,mẹ hiền,Gardevoir
+ChuPokemon,410,tu_dien,cây thông noel,Abomasnow
+ChuPokemon,411,tu_dien,ông già noel,Delibird
+ChuPokemon,412,tu_dien,cây lì xì,Sudowoodo
+ChuPokemon,413,tu_dien,tả thống lĩnh,Lucario
+ChuPokemon,414,tu_dien,hữu thống lĩnh,Lucario
+ChuPokemon,415,tu_dien,tả phó thống,Lucario
+ChuPokemon,416,tu_dien,nhất giáp,Golem 1
+ChuPokemon,417,tu_dien,nhị giáp,Golem 2
+ChuPokemon,418,tu_dien,tam giáp,Golem 3
+ChuPokemon,419,tu_dien,tứ giáp,Golem 4
+ChuPokemon,420,tu_dien,ngũ giáp,Golem 5
+ChuPokemon,421,tu_dien,nhất ngưu,Tauros 1
+ChuPokemon,422,tu_dien,nhị ngưu,Tauros 2
+ChuPokemon,423,tu_dien,tam ngưu,Tauros 3
+ChuPokemon,424,tu_dien,tứ ngưu,Tauros 4
+ChuPokemon,425,tu_dien,ngũ ngưu,Tauros 5
+ChuPokemon,426,tu_dien,bảo ngọc,Sableye
+ChuPokemon,427,tu_dien,giáp sư,Bronzong
+ChuPokemon,428,tu_dien,bội châu,Persian
+ChuPokemon,429,tu_dien,lộc phát,Meowth
+ChuPokemon,430,tu_dien,kim hoa,Kecleon
+ChuPokemon,431,tu_dien,lính gác,Arcanine gác cổng
+ChuPokemon,432,tu_dien,lão địa chủ,Persian
+ChuPokemon,433,tu_dien,địa chủ,Persian
+ChuPokemon,434,tu_dien,ông nội,ông Snorlax
+ChuPokemon,435,tu_dien,thuồng luồng,Gyarados
+ChuPokemon,436,tu_dien,đại bàng đã xuất hiện,Zapdos đã xuất hiện
+ChuPokemon,437,tu_dien,boss người tuyết,boss Abomasnow
+ChuPokemon,438,tu_dien,duy ngã độc tôn,Tứ Thiên Vương
+ChuPokemon,439,tu_dien,thiên hạ chí tôn,Nhà Vô Địch Mọi Vùng
+ChuPokemon,440,tu_dien,chí tôn,tối thượng
+ChuPokemon,441,tu_dien,hảo hán,người dũng cảm
+ChuPokemon,442,tu_dien,tông sư,bậc thầy Pokémon
+ChuPokemon,443,tu_dien,nhất dương tiễn,Tia Mặt Trời
+ChuPokemon,444,tu_dien,tuyệt thế vô song,có một không hai
+ChuPokemon,445,tu_dien,chiến thần bất diệt,Huyền Thoại Bất Diệt
+ChuPokemon,446,tu_dien,long tiễn chấn thiên,Rayquaza Chấn Thiên
+ChuPokemon,447,tu_dien,nghịch thiên nhi hành,Kẻ Thách Thức Định Mệnh
+ChuPokemon,448,tu_dien,khai thiên thần kiếm,Gươm Aegislash
+ChuPokemon,449,tu_dien,vô địch thiên hạ,Vô Địch Mọi Vùng
+ChuPokemon,450,tu_dien,độc bá nhất phương,Bá Chủ Một Vùng
+ChuPokemon,451,tu_dien,tung hoành thiên hạ,Tung Hoành Mọi Vùng
+ChuPokemon,452,tu_dien,tuyệt đỉnh cao thủ,Tinh Anh Tuyệt Đỉnh
+ChuPokemon,453,tu_dien,nhất tiễn phá thiên,Tia Chớp Phá Trời
+ChuPokemon,454,tu_dien,chân mên thiên tử,Người Được Chọn
+ChuPokemon,455,tu_dien,chân mệnh thiên tử,Người Được Chọn
+ChuPokemon,456,tu_dien,cửu huyền thất tổ,Truyền Nhân Huyền Thoại
+ChuPokemon,457,tu_dien,hủy thiên diệt địa,Sức Mạnh Hủy Diệt
+ChuPokemon,458,tu_dien,quy ân giang hồ,Lão Làng Pokémon
+ChuPokemon,459,tu_dien,thiên hạ đệ nhất,Số Một Mọi Vùng
+ChuPokemon,460,tu_dien,thiên hạ vô song,Vô Song Mọi Vùng
+ChuPokemon,461,tu_dien,quân lâm thiên hạ,Chúa Tể Mọi Vùng
+ChuPokemon,462,tu_dien,thiên hạ,mọi vùng
+ChuPokemon,463,tu_dien,đệ nhất,số một
+ChuPokemon,464,tu_dien,đông sơn lâm,Đông Rừng Viridian
+ChuPokemon,465,tu_dien,đông sơn nam,Đông Pewter
+ChuPokemon,466,tu_dien,sơn lâm,Rừng Viridian
+ChuPokemon,467,tu_dien,đông sơn,Saffron
+ChuPokemon,468,tu_dien,sơn nam,Pewter
+ChuPokemon,469,tu_dien,dao châu,Pallet
+ChuPokemon,470,tu_dien,tiên du,Viridian
+ChuPokemon,471,tu_dien,kỳ bố,Cerulean
+ChuPokemon,472,tu_dien,phù liệt,Vermilion
+ChuPokemon,473,tu_dien,hàm tử,Lavender
+ChuPokemon,474,tu_dien,thạch giang,Celadon
+ChuPokemon,475,tu_dien,tử quan,Fuchsia
+ChuPokemon,476,tu_dien,trường giang,Cinnabar
+ChuPokemon,477,tu_dien,phong châu,Núi Mặt Trăng
+ChuPokemon,478,tu_dien,bình lục,Vùng Safari
+ChuPokemon,479,tu_dien,lộc trĩ,New Bark
+ChuPokemon,480,tu_dien,bảo thái,Cherrygrove
+ChuPokemon,481,tu_dien,hồi hồ,Hồ Phẫn Nộ
+ChuPokemon,482,tu_dien,siêu loại,Violet
+ChuPokemon,483,tu_dien,cẩm khê,Azalea
+ChuPokemon,484,tu_dien,bạch hạc,Goldenrod
+ChuPokemon,485,tu_dien,tế giang,Ecruteak
+ChuPokemon,486,tu_dien,đỗ đông,Olivine
+ChuPokemon,487,tu_dien,bình kiều,Mahogany
+ChuPokemon,488,tu_dien,dương đông,Blackthorn
+ChuPokemon,489,tu_dien,lâm tây,Cianwood
+ChuPokemon,490,tu_dien,chiến hạm,Tàu S.S. Anne
+ChuPokemon,491,tu_dien,hang mãng xà,Hang Serperior
+ChuPokemon,492,tu_dien,hang thằn lằn,Hang Salamence
+ChuPokemon,493,tu_dien,hang đại bàng,Tổ Zapdos
+ChuPokemon,494,tu_dien,cánh rừng đông,Rừng Ilex
+ChuPokemon,495,tu_dien,rừng già,Rừng Cổ
+ChuPokemon,496,tu_dien,linh thú bạch mã,thú cưỡi Rapidash
+ChuPokemon,497,tu_dien,trứng bạch mã,trứng Rapidash
+ChuPokemon,498,tu_dien,linh thú mãnh hổ,thú cưỡi Arcanine
+ChuPokemon,499,tu_dien,trứng mãnh hổ,trứng Arcanine
+ChuPokemon,500,tu_dien,linh thú hắc ngưu,thú cưỡi Tauros
+ChuPokemon,501,tu_dien,trứng hắc ngưu,trứng Tauros
+ChuPokemon,502,tu_dien,linh thú sói xám,thú cưỡi Mightyena
+ChuPokemon,503,tu_dien,trứng sói xám,trứng Mightyena
+ChuPokemon,504,tu_dien,linh thú tiên hạc,thú cưỡi Pidgeot
+ChuPokemon,505,tu_dien,trứng tiên hạc,trứng Pidgeot
+ChuPokemon,506,tu_dien,linh thú phượng hoàng lửa,thú cưỡi Moltres
+ChuPokemon,507,tu_dien,trứng phượng hoàng lửa,trứng Moltres
+ChuPokemon,508,tu_dien,linh thú phượng hoàng băng,thú cưỡi Articuno
+ChuPokemon,509,tu_dien,trứng phượng hoàng băng,trứng Articuno
+ChuPokemon,510,tu_dien,linh thú phượng hoàng đa sắc,thú cưỡi Ho-Oh
+ChuPokemon,511,tu_dien,trứng phượng hoàng đa sắc,trứng Ho-Oh
+ChuPokemon,512,tu_dien,linh thú phượng hoàng mộc,thú cưỡi Tropius
+ChuPokemon,513,tu_dien,trứng phượng hoàng mộc,trứng Tropius
+ChuPokemon,514,tu_dien,linh thú phượng hoàng kim,thú cưỡi Skarmory
+ChuPokemon,515,tu_dien,trứng phượng hoàng kim,trứng Skarmory
+ChuPokemon,516,tu_dien,linh thú phượng hoàng thổ,thú cưỡi Flygon
+ChuPokemon,517,tu_dien,trứng phượng hoàng thổ,trứng Flygon
+ChuPokemon,518,tu_dien,linh thú phượng hoàng,thú cưỡi Moltres
+ChuPokemon,519,tu_dien,trứng phượng hoàng,trứng Moltres
+ChuPokemon,520,tu_dien,linh thú tuần lộc,thú cưỡi Stantler
+ChuPokemon,521,tu_dien,trứng tuần lộc,trứng Stantler
+ChuPokemon,522,tu_dien,linh thú đại bạch thử,thú cưỡi Wooloo
+ChuPokemon,523,tu_dien,trứng đại bạch thử,trứng Wooloo
+ChuPokemon,524,tu_dien,linh thú bạch thử,thú cưỡi Wooloo
+ChuPokemon,525,tu_dien,trứng bạch thử,trứng Wooloo
+ChuPokemon,526,tu_dien,linh thú hắc thỏ,thú cưỡi Lopunny
+ChuPokemon,527,tu_dien,trứng hắc thỏ,trứng Lopunny
+ChuPokemon,528,tu_dien,linh thú lân sư tử,thú cưỡi Suicune
+ChuPokemon,529,tu_dien,trứng lân sư tử,trứng Suicune
+ChuPokemon,530,tu_dien,linh thú lân,thú cưỡi Suicune
+ChuPokemon,531,tu_dien,trứng lân,trứng Suicune
+ChuPokemon,532,tu_dien,linh thú đương khang băng giá,thú cưỡi Mamoswine
+ChuPokemon,533,tu_dien,trứng đương khang băng giá,trứng Mamoswine
+ChuPokemon,534,tu_dien,linh thú đương khang,thú cưỡi Piloswine
+ChuPokemon,535,tu_dien,trứng đương khang,trứng Piloswine
+ChuPokemon,536,tu_dien,linh thú bạch cốt mã,thú cưỡi Spectrier
+ChuPokemon,537,tu_dien,trứng bạch cốt mã,trứng Spectrier
+ChuPokemon,538,tu_dien,linh thú bạch cốt,thú cưỡi Spectrier
+ChuPokemon,539,tu_dien,trứng bạch cốt,trứng Spectrier
+ChuPokemon,540,tu_dien,linh thú rồng băng,thú cưỡi Dragonite
+ChuPokemon,541,tu_dien,trứng rồng băng,trứng Dragonite
+ChuPokemon,542,tu_dien,linh thú sư tử băng,thú cưỡi Glastrier
+ChuPokemon,543,tu_dien,trứng sư tử băng,trứng Glastrier
+ChuPokemon,544,tu_dien,linh thú sư tử,thú cưỡi Entei
+ChuPokemon,545,tu_dien,trứng sư tử,trứng Entei
+ChuPokemon,546,tu_dien,linh thú hoả kỳ lân,thú cưỡi Ponyta
+ChuPokemon,547,tu_dien,trứng hoả kỳ lân,trứng Ponyta
+ChuPokemon,548,tu_dien,linh thú hỏa kỳ lân,thú cưỡi Ponyta
+ChuPokemon,549,tu_dien,trứng hỏa kỳ lân,trứng Ponyta
+ChuPokemon,550,tu_dien,=Dao Châu,Pallet
+ChuPokemon,551,tu_dien,=Tiên Du,Viridian
+ChuPokemon,552,tu_dien,=Sơn Nam,Pewter
+ChuPokemon,553,tu_dien,=Kỳ Bố,Cerulean
+ChuPokemon,554,tu_dien,=Phù Liệt,Vermilion
+ChuPokemon,555,tu_dien,=Hàm Tử,Lavender
+ChuPokemon,556,tu_dien,=Thạch Giang,Celadon
+ChuPokemon,557,tu_dien,=Đông Sơn,Saffron
+ChuPokemon,558,tu_dien,=Tử Quan,Fuchsia
+ChuPokemon,559,tu_dien,=Trường Giang,Cinnabar
+ChuPokemon,560,tu_dien,=Sơn Lâm,Rừng Viridian
+ChuPokemon,561,tu_dien,=Phong Châu,Núi Mặt Trăng
+ChuPokemon,562,tu_dien,=Bình Lục,Vùng Safari
+ChuPokemon,563,tu_dien,=Lộc Trĩ,New Bark
+ChuPokemon,564,tu_dien,=Bảo Thái,Cherrygrove
+ChuPokemon,565,tu_dien,=Hầm Tối,Hang Tối
+ChuPokemon,566,tu_dien,=Hồi Hồ,Hồ Phẫn Nộ
+ChuPokemon,567,tu_dien,=Siêu Loại,Violet
+ChuPokemon,568,tu_dien,=Cẩm Khê,Azalea
+ChuPokemon,569,tu_dien,=Bạch Hạc,Goldenrod
+ChuPokemon,570,tu_dien,=Tế Giang,Ecruteak
+ChuPokemon,571,tu_dien,=Đỗ Đông,Olivine
+ChuPokemon,572,tu_dien,=Thành Trấn Danh,Cao nguyên Indigo
+ChuPokemon,573,tu_dien,=Biên Giới,Đường Victory
+ChuPokemon,574,tu_dien,=Hang Thằn Lằn,Hang Salamence
+ChuPokemon,575,tu_dien,=Hang Đại Bàng,Tổ Zapdos
+ChuPokemon,576,tu_dien,=Hang Dracula,Hang Darkrai
+ChuPokemon,577,tu_dien,=Hang Mãng Xà,Hang Serperior
+ChuPokemon,578,tu_dien,=Cánh Rừng Đông,Rừng Ilex
+ChuPokemon,579,tu_dien,=Rừng Già,Rừng Cổ
+ChuPokemon,580,tu_dien,=Bình Kiều,Mahogany
+ChuPokemon,581,tu_dien,=Dương Đông,Blackthorn
+ChuPokemon,582,tu_dien,=Lâm Tây,Cianwood
+ChuPokemon,583,tu_dien,=Chiến Hạm,Tàu S.S. Anne
+ChuPokemon,584,tu_dien,=Núi kho báu,Núi Silver
+ChuPokemon,585,tu_dien,=Nhà bán HP,Trung tâm Pokémon
+ChuPokemon,586,tu_dien,=Nhà bán MP,Poké Mart
+ChuPokemon,587,tu_dien,=Nhà thợ rèn,Xưởng chế tạo

@@ -15,6 +15,7 @@ public static class ChuPokemonDuLieu
 		new string[] { "trưởng lão", "cố vấn" },
 		new string[] { "bang", "đội" },
 		new string[] { "lãnh thổ", "vùng" },
+		new string[] { "L.thổ", "Vùng" },
 		new string[] { "thanh long", "Kanto" },
 		new string[] { "hắc hổ", "Johto" },
 		new string[] { "huyền vũ", "Hoenn" },

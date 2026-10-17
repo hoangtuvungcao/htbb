@@ -1,0 +1,402 @@
+n,id_anh,nguon,dung_cho
+0,14000,Scarf_Red,type:0 potion:15
+1,14001,Belt_Black,type:1
+2,14002,Band_Brown,type:2
+3,14003,Stone_DarkBrown,type:3
+4,14004,Seed_Green,type:4
+5,14005,Silk_White,type:5
+6,14006,Bottle_LightBlue,type:6
+7,14007,Iron_Ball,type:7
+8,14008,Ring_Target,type:8
+9,14009,Pearl,type:9
+10,14010,Scale_LightBlue,type:10
+11,14011,Claw_Gray,type:11
+12,14012,Slab_Gray,type:12
+13,14013,Bow_Pink,type:19
+14,14014,Stone_Blue,item:960
+15,14015,Stone_Yellow,item:961
+16,14016,Stone_Red,item:962
+17,14017,Stone_Orange,item:963
+18,14018,Stone_Black,item:964
+19,14019,Stone_Green,item:965
+20,14020,Stone_LightBlue,item:966
+21,14021,Bow_Fuschia,item:967
+22,14022,Stick_Brown,item:465 nv:2 gem:21 potion:103
+23,14023,Stick_Yellow,item:466 gem:31
+24,14024,Wand_Orange+sang,xs:521
+25,14025,Wand_Blue+sang,xs:522
+26,14026,Wand_Purple+sang,xs:523
+27,14027,Wand_Blue,xs:526
+28,14028,Wand_Orange,xs:527
+29,14029,Wand_Purple,xs:528
+30,14030,Cape_Brown+so:1,xs:477
+31,14031,Cape_Gray+so:2,xs:478
+32,14032,Cape_Orange+so:3,xs:479
+33,14033,Cape_Red+so:4,xs:480
+34,14034,Band_Tan+so:1,xs:481
+35,14035,Band_Gray+so:2,xs:482
+36,14036,Band_Green+so:3,xs:483
+37,14037,Band_Pink+so:4,xs:484
+38,14038,Crown_Gray+so:1,xs:485
+39,14039,Crown_Gray+mau:5AA0FF+so:2,xs:486
+40,14040,Crown_Yellow+so:3,xs:487
+41,14041,Crown_Yellow+hue:-50+so:4,xs:488
+42,14042,Disc_Black+so:1,xs:473
+43,14043,Disc_Blue+so:2,xs:474
+44,14044,Disc_Yellow+so:3,xs:475
+45,14045,Disc_Yellow+hue:-45+so:4,xs:476
+46,14046,Belt_Brown+so:1,xs:489
+47,14047,Belt_LightBlue+so:2,xs:490
+48,14048,Belt_White+so:3,xs:491
+49,14049,Belt_LightBlue+hue:70+so:4,xs:492
+50,14050,Box_Brown,xs:519
+51,14051,Box_Red,xs:520 potion:212
+52,14052,Tag_Purple+hue:-90+so:4,xs:532 xs:533 xs:534
+53,14053,Tag_Purple+hue:-170+so:5,xs:535 xs:536 xs:537
+54,14054,Tag_Purple+hue:70+so:6,xs:538 xs:539 xs:540
+55,14055,Tag_White,xs:558 potion:13 potion:32 potion:105
+56,14056,Tag_Purple+hue:30+so:2,xs:562
+57,14057,Tag_Purple+hue:30+so:3,xs:563
+58,14058,Key_Brown+so:5,xs:559
+59,14059,Key_White+so:6,xs:560
+60,14060,Key_Brown+mau:FFD040+so:7,xs:561
+61,14061,Machine_Green,xs:580 gem:95
+62,14062,dex:0077,xs:564 potion:27 potion:37 thu:16
+63,14063,dex:0078,xs:565 potion:38 thu:0
+64,14064,dex:0078s,xs:566
+65,14065,dex:0163,"item:689,690 thu:30 thu:37"
+66,14066,dex:0164,"item:691,692 thu:38"
+67,14067,dex:0164s,item:693
+68,14068,dex:0147,"item:694,695 thu:31 thu:36"
+69,14069,dex:0148,"item:696,697 thu:35"
+70,14070,dex:0149,item:698 thu:50
+71,14071,dex:0173,item:699 thu:32 thu:39
+72,14072,dex:0035,"item:700,701 thu:40 potion:79"
+73,14073,dex:0036,item:702 potion:78
+74,14074,dex:0036s,item:703
+75,14075,dex:0041,"item:704,705 thu:8 thu:33 thu:41 potion:84"
+76,14076,dex:0042,"item:706,707 thu:42"
+77,14077,dex:0169,item:708
+78,14078,dex:0627,"item:709,710 thu:34 thu:43"
+79,14079,dex:0628,"item:711,712 thu:44"
+80,14080,dex:0628s,item:713
+81,14081,dex:0417,xs:585 thu:18 thu:46 ds:110>241
+82,14082,dex:0225,xs:586
+83,14083,dex:0100s,xs:698
+84,14084,dex:0667,xs:731
+85,14085,dex:0058,xs:732
+86,14086,dex:0403s,xs:733
+87,14087,dex:0585,xs:750
+88,14088,dex:0399,xs:816
+89,14089,dex:0245,xs:807 xs:808 xs:809 xs:810 xs:817 xs:818 xs:819 xs:827 xs:828 potion:143 thu:47
+90,14090,dex:0879,xs:860
+91,14091,dex:0675,xs:861
+92,14092,dex:0716,xs:862
+93,14093,dex:0323,xs:863
+94,14094,dex:0745,xs:864
+95,14095,dex:0483,xs:865
+96,14096,Egg+hue:-150,xs:572
+97,14097,Egg+hue:110,xs:573
+98,14098,Egg+hue:-110,xs:574
+99,14099,Egg+hue:160,xs:575
+100,14100,Egg+hue:-60,xs:576
+101,14101,Egg+hue:-90,xs:839 potion:227
+102,14102,Egg+hue:-75+sang,xs:840
+103,14103,Egg+hue:90,xs:841 potion:166
+104,14104,Egg+xam,xs:842 potion:146
+105,14105,Egg+hue:140+toi,xs:843 potion:145
+106,14106,Egg+hue:70+sang,potion:24
+107,14107,Egg,potion:89
+108,14108,Gummi_Pink,xs:577 potion:245
+109,14109,Gummi_Royal,xs:578 potion:250
+110,14110,Herb_Green,xs:579 potion:251 potion:172 potion:186
+111,14111,Wand_Red,xs:589
+112,14112,Money_Yellow,xs:590 dp:0>237
+113,14113,Money_Gray,xs:591
+114,14114,Money_Gray+mau:50A0FF,xs:592
+115,14115,Money_Gray+mau:FF5050,xs:594
+116,14116,Money_Gray+mau:60D060,xs:595
+117,14117,Box_Pink,item:735 potion:0 potion:35 potion:144 potion:220
+118,14118,Chest_Red,item:752
+119,14119,Chest_Blue,item:753 potion:68
+120,14120,Chest_Gold,xs:601 potion:67
+121,14121,Medicine_Yellow,xs:604 potion:152
+122,14122,Scale_Pink,xs:627 potion:93
+123,14123,Tag_White+mau:FF4040,xs:705 potion:76
+124,14124,Tag_White+mau:FFD040,xs:706 potion:11 potion:12
+125,14125,Crystal_Yellow,xs:734 potion:230
+126,14126,Silk_Pink,xs:735 gem:33
+127,14127,Ore_White,xs:736 gem:34
+128,14128,Ore_Blue,xs:737 gem:35
+129,14129,Stick_Pink,xs:738 gem:36
+130,14130,Scale_Black,xs:739 gem:37
+131,14131,Rock_Gray,xs:740 gem:19 gem:47
+132,14132,Rock_Blue,xs:741 gem:25 gem:48
+133,14133,Rock_Purple,xs:742 gem:24 gem:49
+134,14134,Stone_White,xs:743 gem:38
+135,14135,Stone_Gold,xs:744
+136,14136,Stick_White,xs:745 gem:65
+137,14137,Orb_Purple,xs:746 gem:11
+138,14138,Stone_Purple,xs:747 gem:76
+139,14139,Rock_Red,xs:748 gem:84
+140,14140,Flower_Pink,xs:766 potion:44 gem:56
+141,14141,Tag_Purple,xs:767 potion:39 potion:106
+142,14142,Cape_Gray+mau:F06030,item:860
+143,14143,Cape_Gray+mau:F06030+toi,item:848
+144,14144,Belt_White+mau:F06030,item:861
+145,14145,Belt_White+mau:F06030+toi,item:849
+146,14146,Band_Gray+mau:F06030,item:862
+147,14147,Band_Gray+mau:F06030+toi,item:850
+148,14148,Crown_Gray+mau:F06030,item:863
+149,14149,Crown_Gray+mau:F06030+toi,item:851
+150,14150,Scarf_2_White+mau:F06030,item:864
+151,14151,Scarf_2_White+mau:F06030+toi,item:852
+152,14152,Claw_White+mau:F06030,item:865
+153,14153,Claw_White+mau:F06030+toi,item:853
+154,14154,Cape_Gray+mau:3C8CFF,item:866
+155,14155,Cape_Gray+mau:3C8CFF+toi,item:854
+156,14156,Belt_White+mau:3C8CFF,item:867
+157,14157,Belt_White+mau:3C8CFF+toi,item:855
+158,14158,Band_Gray+mau:3C8CFF,item:868
+159,14159,Band_Gray+mau:3C8CFF+toi,item:856
+160,14160,Crown_Gray+mau:3C8CFF,item:869
+161,14161,Crown_Gray+mau:3C8CFF+toi,item:857
+162,14162,Scarf_2_White+mau:3C8CFF,item:870
+163,14163,Scarf_2_White+mau:3C8CFF+toi,item:858
+164,14164,Claw_White+mau:3C8CFF,item:871
+165,14165,Claw_White+mau:3C8CFF+toi,item:859
+166,14166,Herb_Blue,xs:834
+167,14167,Herb_White,xs:835
+168,14168,Herb_Red,xs:836 nv:6
+169,14169,Herb_Yellow,xs:837
+170,14170,Herb_Blue+hue:60,xs:838
+171,14171,Medicine_Red,potion:1
+172,14172,Medicine_Orange,potion:2 potion:9
+173,14173,Medicine_Purple,potion:3
+174,14174,Medicine_Red+so:9,potion:10 potion:162
+175,14175,Bottle_DarkBlue,potion:4
+176,14176,Bottle_Purple,potion:5
+177,14177,Bottle_DarkBlue+so:9,potion:6 dp:95>238 dp:96>238 dp:127>239
+178,14178,Medicine_Green,potion:7
+179,14179,Medicine_Green+so:9,potion:8
+180,14180,Scarf_Blue,potion:16
+181,14181,Scarf_Yellow,potion:17
+182,14182,Scarf_Green,potion:18
+183,14183,Scarf_Purple,potion:19
+184,14184,Gummi_Gold,potion:20
+185,14185,Gummi_Magenta,potion:21
+186,14186,Bottle_Gray,potion:22 potion:23
+187,14187,Bottle_Gold,potion:88
+188,14188,Thorn_Yellow,potion:26
+189,14189,Flame_Orb,potion:28 potion:198 potion:200
+190,14190,Flame_Orb+so:2,potion:201
+191,14191,Flame_Orb+so:3,potion:202
+192,14192,Sack_Gray,potion:30 gem:72
+193,14193,Medicine_Purple+so:9,potion:31 potion:163
+194,14194,Ring_Target+mau:FFC040,potion:33
+195,14195,Gummi_Gold_2,potion:36
+196,14196,Gummi_Blue,potion:40
+197,14197,Gummi_Green,potion:62
+198,14198,Fruit_Tan,dp:62>240 potion:207
+199,14199,Box_Yellow,potion:42
+200,14200,Flower_Gold,potion:43 gem:43
+201,14201,Flower_Red,potion:45 potion:181 gem:55
+202,14202,dex:0059,potion:46 thu:1
+203,14203,dex:0128,potion:47 thu:2
+204,14204,dex:0262,potion:48 thu:3
+205,14205,dex:0018,potion:49 thu:4
+206,14206,dex:0146,potion:65 thu:10 thu:25
+207,14207,dex:0234,dp:36>236 thu:14
+208,14208,Bow_Red,potion:50 potion:123
+209,14209,dex:0182,potion:51
+210,14210,Scarf_2_White,potion:52 potion:216 potion:217 potion:167 potion:168
+211,14211,dex:0792,potion:53 potion:165
+212,14212,dex:0448,potion:54
+213,14213,dex:0384,potion:55
+214,14214,Cape_Gray+sang,potion:56
+215,14215,Cape_Red,potion:58 potion:59
+216,14216,Bottle_Purple+so:5,potion:60
+217,14217,Paper_News,potion:63 potion:170 gem:77 nv:4
+218,14218,Sticky_Barb+mau:FFB040,potion:64
+219,14219,Gummi_White,potion:66 potion:99
+220,14220,Heart_Pink+mau:D08040,potion:73
+221,14221,Heart_Pink+mau:E0E0F0,potion:74
+222,14222,Heart_Pink+mau:FFD040,potion:75
+223,14223,Note_Gold,potion:77 gem:51
+224,14224,dex:0491,potion:80 potion:81
+225,14225,dex:0429,potion:82
+226,14226,dex:0710,potion:83
+227,14227,Apple_Red,potion:85
+228,14228,Banana_Yellow,potion:86
+229,14229,Apple_Gold,potion:87
+230,14230,Gummi_Red,potion:91 potion:233 nv:5
+231,14231,Chestnut_Brown,potion:92
+232,14232,dex:0027,potion:94 thu:17
+233,14233,Disc_Blue,potion:95
+234,14234,dex:0029,potion:96 thu:19
+235,14235,Cape_Orange,potion:97
+236,14236,Cape_Gray+mau:F0D020,potion:98
+237,14237,Silk_Gray,potion:100 gem:28
+238,14238,Iron_Ball+sang,potion:101 gem:29
+239,14239,Ore_Purple,potion:102 gem:30
+240,14240,Scale_Black+mau:C08850,potion:104 gem:32
+241,14241,Tag_White+mau:60C0FF,potion:107
+242,14242,Seed_Brown,potion:108
+243,14243,Gummi_Brown,potion:112
+244,14244,Bow_Blue,potion:113
+245,14245,Bow_Brown,potion:114
+246,14246,Bow_Cobalt,potion:115
+247,14247,Bow_Green,potion:116
+248,14248,Bow_Lime,potion:117
+249,14249,Bow_Minty,potion:118
+250,14250,Bow_Orange,potion:119
+251,14251,Bow_Purple,potion:120
+252,14252,Bow_Silver,potion:121
+253,14253,Bow_SkyBlue,potion:122
+254,14254,Bow_Viridian,potion:124
+255,14255,Bow_Yellow,potion:125
+256,14256,Bow_Violet,potion:128 potion:130 potion:132 potion:134 potion:136 potion:138 potion:140
+257,14257,Bow_Cobalt+so:2,potion:131 potion:133 potion:137 potion:139
+258,14258,Sack_LightBlue,potion:141 gem:73
+259,14259,Stick_Pink+mau:FF5050,potion:142
+260,14260,dex:0383,potion:150
+261,14261,dex:0382,potion:151
+262,14262,dex:0380,potion:154
+263,14263,dex:0381,potion:155
+264,14264,dex:0791,potion:164
+265,14265,Medicine_Green+so:2,potion:156
+266,14266,Seed_Red,potion:157
+267,14267,Medicine_Orange+so:2,potion:158
+268,14268,Medicine_Purple+so:2,potion:159
+269,14269,Apricorn_White,ds:180>242 potion:247
+270,14270,Apricorn_Black,ds:181>243
+271,14271,dex:0393,potion:169 thu:22
+272,14272,Box_Tan,potion:171
+273,14273,Flame_Orb+mau:A0A0A0,potion:174
+274,14274,Seed_Green+mau:80C060,potion:175 potion:199
+275,14275,Seed_White,potion:177
+276,14276,Box_Green,potion:180
+277,14277,Paper_News+mau:D0A060,potion:191 gem:93
+278,14278,dex:0240,potion:192
+279,14279,Gummi_Orange,potion:208
+280,14280,Paper_News+mau:D0A060+so:1,potion:213
+281,14281,Paper_News+mau:D0A060+so:2,potion:214
+282,14282,Paper_News+mau:D0A060+so:3,potion:215
+283,14283,Box_Purple,potion:222
+284,14284,Box_LightPurple,potion:223
+285,14285,Cape_Gray+mau:A0E0FF,potion:231 potion:232
+286,14286,Apricorn_Red,potion:246
+287,14287,Apricorn_Yellow,potion:248
+288,14288,dex:0477,potion:252
+289,14289,dex:0354,potion:253
+290,14290,dex:0065,potion:254
+291,14291,dex:0487,potion:255
+292,14292,Fruit_Green,potion:14 gem:79
+293,14293,Orb_White,gem:0
+294,14294,Orb_LightBlue,gem:1
+295,14295,Orb_Blue,gem:2
+296,14296,Piece_Gray,gem:3
+297,14297,Piece_Blue,gem:4
+298,14298,Piece_Yellow,gem:5
+299,14299,Piece_Red,gem:41
+300,14300,Piece_Red+sang,gem:42
+301,14301,Bottle_LightBlue+so:1,gem:6
+302,14302,Bottle_LightBlue+so:2,gem:7
+303,14303,Bottle_LightBlue+so:3,gem:8
+304,14304,Bottle_Gold+so:1,gem:17
+305,14305,Bottle_Gold+so:2,gem:39
+306,14306,Bottle_Gold+so:3,gem:40
+307,14307,Bottle_Gold+so:4,gem:71
+308,14308,Orb_Yellow,gem:9
+309,14309,Orb_Red,gem:10
+310,14310,Orb_LightBlue+hue:-20+sang,gem:12
+311,14311,Orb_Green,gem:13
+312,14312,Fang_LightBlue,gem:14
+313,14313,Orb_Pink,gem:15
+314,14314,Crystal_Blue,gem:16
+315,14315,Silk_White+sang,gem:18
+316,14316,Rock_Green,gem:20
+317,14317,Scale_Black+mau:C08850+toi,gem:22
+318,14318,Silk_LightPurple,gem:23
+319,14319,Stick_Pink+toi,gem:26
+320,14320,Scale_Black+toi,gem:27
+321,14321,Flower_Purple,gem:44
+322,14322,Flower_Brown,gem:45
+323,14323,Herb_Green+toi,gem:46
+324,14324,Rock_Yellow,gem:50
+325,14325,Note_Gold+mau:FF6060,gem:52
+326,14326,Note_Gold+mau:60A0FF,gem:53
+327,14327,Note_Gold+mau:60D060,gem:54
+328,14328,Paper_News+so:1,gem:57
+329,14329,Paper_News+so:2,gem:58
+330,14330,Paper_News+so:3,gem:59
+331,14331,Paper_News+so:4,gem:60
+332,14332,Scale_Green,gem:61 nv:8
+333,14333,Scale_Black+mau:FFC040,gem:62
+334,14334,Scale_LightBlue+toi,gem:63
+335,14335,Herb_Red+sang,gem:64
+336,14336,Rock_Brown,gem:66
+337,14337,Slab_Gold+mau:60D060,gem:67
+338,14338,Slab_Gold,gem:68
+339,14339,Slab_Gold+mau:60A0FF,gem:69
+340,14340,Slab_Gold+mau:FF6050,gem:70
+341,14341,Sack_Red,gem:74
+342,14342,Sack_LightBlue+hue:-80,gem:75
+343,14343,Herb_White+toi,gem:78
+344,14344,Fruit_Purple,gem:80
+345,14345,Fruit_Brown,gem:81
+346,14346,Fruit_Yellow+hue:-25,gem:82
+347,14347,Fruit_Yellow,gem:83
+348,14348,Crystal_Red,gem:85
+349,14349,Orb_Yellow+so:1,gem:86
+350,14350,Orb_Yellow+so:2,gem:87
+351,14351,Orb_Yellow+so:3,gem:88
+352,14352,Orb_Yellow+so:4,gem:89
+353,14353,Orb_Yellow+so:5,gem:90
+354,14354,Orb_Yellow+so:6,gem:91
+355,14355,Orb_Yellow+so:7,gem:92
+356,14356,Bottle_Purple+so:9,gem:94
+357,14357,dex:0428s,thu:13
+358,14358,dex:0144,thu:20 thu:28
+359,14359,dex:0831,thu:45
+360,14360,dex:0221,thu:48
+361,14361,dex:0897,thu:49
+362,14362,dex:0250,thu:51
+363,14363,dex:0357,thu:52
+364,14364,dex:0227,thu:53
+365,14365,dex:0330,thu:54
+366,14366,dex:0473,thu:55
+367,14367,dex:0244,thu:56
+368,14368,dex:0896,thu:57
+369,14369,dex:0607,thu:5
+370,14370,dex:0276,thu:6
+371,14371,dex:0165,thu:7
+372,14372,dex:0370,thu:9
+373,14373,dex:0270,thu:11
+374,14374,dex:0120,thu:12
+375,14375,dex:0615,thu:15
+376,14376,dex:0129,thu:21
+377,14377,dex:0179,thu:23
+378,14378,dex:0385,thu:24
+379,14379,dex:0121,thu:26
+380,14380,dex:0337,thu:27
+381,14381,dex:0190,thu:29
+382,14382,Thorn_Green,nv:0
+383,14383,Scale_Black+mau:70B050,nv:1
+384,14384,Thorn_Brown,nv:3
+385,14385,Claw_White,nv:7
+386,14386,Fang_White,nv:9
+387,14387,Chestnut_Brown+xanh+treo,trai:0
+388,14388,Chestnut_Brown+treo,trai:1
+389,14389,Apple_Gold+xanh+treo,trai:2
+390,14390,Apple_Gold+treo,trai:3
+391,14391,Apricorn_White+treo,trai:4
+392,14392,Berry_Oran+xanh+treo,trai:5
+393,14393,Berry_Oran+treo,trai:6
+394,14394,Berry_Starf+xanh+treo,trai:7
+395,14395,Berry_Starf+treo,trai:8
+396,14396,Berry_Enigma+xanh+treo,trai:9
+397,14397,Berry_Enigma+treo,trai:10
+398,14398,Berry_Petaya+xanh+treo,trai:11
+399,14399,Berry_Petaya+treo,trai:12
+400,14400,Fruit_Brown+xam+toi+treo,trai:13

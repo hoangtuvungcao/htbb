@@ -631,12 +631,26 @@ controlsPanel.add(playerPanel);
             try {
                 String hash = sqlPassword(pass1);
                 Connection conn = Database.instance.getConnection();
-                PreparedStatement pre = conn.prepareStatement("UPDATE account.team_user SET password=? WHERE username=?");
-                pre.setString(1, hash);
-                pre.setString(2, username);
-                int updated = pre.executeUpdate();
-                pre.close();
-                Database.connPool.free(conn);
+                // Doi CSDL hien hanh sang "account" (COM_INIT_DB) roi tra lai, thay cho ten
+                // bang kem CSDL "account.team_user": NovaDB moi ket noi chi thay MOT CSDL nen
+                // khong hieu tien to "account.". Ket noi la cua pool -> PHAI tra catalog cu
+                // truoc khi free, khong thi cau SQL sau dung nham CSDL.
+                final String catalogCu = conn.getCatalog();
+                int updated;
+                try {
+                    conn.setCatalog("account");
+                    PreparedStatement pre = conn.prepareStatement("UPDATE team_user SET password=? WHERE username=?");
+                    pre.setString(1, hash);
+                    pre.setString(2, username);
+                    updated = pre.executeUpdate();
+                    pre.close();
+                } finally {
+                    try {
+                        conn.setCatalog(catalogCu);
+                    } finally {
+                        Database.connPool.free(conn);
+                    }
+                }
                 if (updated > 0) {
                     addLog("Đã đổi mật khẩu cho tài khoản: " + username);
                     JOptionPane.showMessageDialog(this, "Đổi mật khẩu thành công!");

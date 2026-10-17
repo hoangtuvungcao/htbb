@@ -51,8 +51,12 @@ public class DatabaseGiftCode {
                 System.out.println("[GIFTCODE] Da them cot giftcode_log.userId.");
             }
             final int soDong = stmt.executeUpdate(
-                    "UPDATE giftcode_log gl JOIN tob_char tc ON tc.charname = gl.player"
-                    + " SET gl.userId = tc.userId WHERE gl.userId = 0");
+                    // Subquery tuong quan thay cho "UPDATE .. JOIN .." (NovaDB khong ho tro
+                    // UPDATE nhieu bang); EXISTS giu dung nghia INNER JOIN: dong khong co
+                    // nhan vat tuong ung thi khong dong toi.
+                    "UPDATE giftcode_log SET userId = (SELECT tc.userId FROM tob_char tc"
+                    + " WHERE tc.charname = giftcode_log.player LIMIT 1)"
+                    + " WHERE userId = 0 AND EXISTS (SELECT 1 FROM tob_char tc WHERE tc.charname = giftcode_log.player)");
             if (soDong > 0) {
                 System.out.println("[GIFTCODE] Da doi chieu userId cho " + soDong + " dong giftcode_log cu.");
             }

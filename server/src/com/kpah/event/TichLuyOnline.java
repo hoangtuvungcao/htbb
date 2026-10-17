@@ -91,8 +91,11 @@ public class TichLuyOnline {
                     conn = Database.instance.getConnection();
 
                     String query = "UPDATE even_online_game "
-                            + "SET totalOnlineTimeInSeconds = totalOnlineTimeInSeconds + TIMESTAMPDIFF(SECOND, lastLoginTime, NOW())"
-                            + "WHERE playerId = ?";
+                            // Hieu UNIX_TIMESTAMP thay cho TIMESTAMPDIFF(SECOND, ..): NovaDB khong co
+                            // TIMESTAMPDIFF. Hai moc cung mot mui gio nen hieu so giay nhu nhau.
+                            + "SET totalOnlineTimeInSeconds = totalOnlineTimeInSeconds"
+                            + " + (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(lastLoginTime))"
+                            + " WHERE playerId = ?";
 
                     try (PreparedStatement stmt2 = conn.prepareStatement(query)) {
                         stmt2.setInt(1, playerId);
