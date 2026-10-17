@@ -39,7 +39,17 @@ public final class KiemPokemonServer {
 
     private static void kiemCo() {
         Kiem.nhom("com.htbb.pokemon.CheDoPokemon");
-        Kiem.sai("mac dinh TAT (test cu + server.ini cu chay nhu game goc)", CheDoPokemon.bat());
+        // Co doc som tu server.ini (real.Map nap ban do gui client truoc khi TeamServer doc cau hinh):
+        // gia tri ban dau = dong sv.che_do_pokemon trong server.ini, thieu tep/dong -> TAT.
+        boolean trongTep = false;
+        try (java.io.InputStream in = java.nio.file.Files.newInputStream(java.nio.file.Paths.get("server.ini"))) {
+            final java.util.Properties p = new java.util.Properties();
+            p.load(in);
+            trongTep = CheDoPokemon.docGiaTri(p.getProperty(CheDoPokemon.KHOA));
+        } catch (Exception e) {
+            trongTep = false;
+        }
+        Kiem.bang("mac dinh = server.ini (thieu dong -> TAT nhu game goc)", trongTep, CheDoPokemon.bat());
         Kiem.dung("\"1\" -> bat", CheDoPokemon.docGiaTri("1"));
         Kiem.dung("\" 1 \" -> bat", CheDoPokemon.docGiaTri(" 1 "));
         Kiem.sai("\"0\" -> tat", CheDoPokemon.docGiaTri("0"));

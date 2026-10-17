@@ -17,7 +17,21 @@ public final class CheDoPokemon {
     /** Ten khoa trong server.ini. */
     public static final String KHOA = "sv.che_do_pokemon";
 
-    private static volatile boolean bat = false;
+    private static volatile boolean bat = docTuTepCauHinh();
+
+    /**
+     * Doc som tu server.ini ngay khi lop duoc nap: khoi static cua real.Map nap san ban do gui client
+     * TRUOC khi TeamServer doc cau hinh, neu cho TeamServer goi dat() thi Map da lay bo cuc cu.
+     */
+    private static boolean docTuTepCauHinh() {
+        try (java.io.InputStream in = java.nio.file.Files.newInputStream(java.nio.file.Paths.get("server.ini"))) {
+            final java.util.Properties p = new java.util.Properties();
+            p.load(in);
+            return docGiaTri(p.getProperty(KHOA));
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     private CheDoPokemon() {
     }
