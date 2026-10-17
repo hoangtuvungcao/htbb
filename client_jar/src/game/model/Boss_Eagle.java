@@ -22,6 +22,10 @@ public class Boss_Eagle extends Monster {
 
     @Override
     public void paint(Graphics g) {
+        // pokemon: template da la Pokemon (lenh -91) hoac do vat PMD: ve bang PokeBody, bo renderer boss cu
+        if (paintPokemon(g)) {
+            return;
+        }
         if (!this.isFreeze) {
             if (Res.monsterTemplates[this.monster_type].imageObj != null) {
                 g.drawImage(Res.imgShadow, this.x, this.y + 15, 3);

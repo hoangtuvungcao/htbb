@@ -101,6 +101,10 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
         if (AutoGuard.goiGuard(msg)) {
             return;
         }
+        // pokemon: lenh -90..-94 (than, quai, tien hoa, thu cuoi, pet)
+        if (game.pokemon.PokeMang.xuLy(msg)) {
+            return;
+        }
         int i;
         int i2;
         int i3;
@@ -2171,6 +2175,8 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
                 case 26:
                     int nMonster = msg.reader().readUnsignedByte();
                     Res.monsterTemplates = new MonsterTemplate[nMonster];
+                    // pokemon: bang Pokemon cua template gui lai bang -91 ngay sau lenh nay
+                    MonsterTemplate.xoaPoke();
                     byte[] effSh = new byte[msg.reader().readShort()];
                     msg.reader().read(effSh);
                     Res.setEffSh(effSh);

@@ -26,6 +26,10 @@ public class CuongThi extends Monster {
 
     @Override
     public void paint(Graphics g) {
+        // pokemon: template da la Pokemon (lenh -91) hoac do vat PMD: ve bang PokeBody, bo renderer boss cu
+        if (paintPokemon(g)) {
+            return;
+        }
         if (!this.isFreeze) {
             g.drawImage(Res.imgShadow, this.x, this.y, 3);
             if (this.dynamicEffBottom != null) {

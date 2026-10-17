@@ -4,6 +4,8 @@ import game.render.Canvas;
 import game.render.Res;
 import game.render.Util;
 import game.render.screen.GameScr;
+import game.pokemon.PokeBody;
+import game.pokemon.PokeDuLieu;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
@@ -29,7 +31,31 @@ public class NPC extends Actor {
         NPCY = new byte[]{-7, -4, -5, -5, -5, -9, -9, -10, -7, 0, -11, -10, -9, -10, 0, -5, -9, -5};
     }
 
+    /**
+     * pokemon: NPC tinh (type 0..31, cung index voi NPCNAME) -> so Pokedex ve bang PokeBody.
+     * 0 = giu anh NPC cu. Bang day du: KPAH docs/pokemon/bang_npc.csv (ClientUnity NPC.cs).
+     */
+    public static final short[] POKE_DEX_THEO_TYPE = {113, 352, 68, 437, 59, 178, 53, 18, 143, 115, 131, 76, 76, 76, 76, 76, 128, 128, 128, 128, 128, 257, 52, 324, 302, 214, 352, 437, 83, 53, 115, 52};
+
     public NPC() {
+    }
+
+    /** So Pokedex cua NPC nay (0 = khong doi sang Pokemon). */
+    public int getPokeDex() {
+        if (!PokeBody.CHE_DO_POKEMON || this.type < 0 || this.type >= POKE_DEX_THEO_TYPE.length) {
+            return 0;
+        }
+        return POKE_DEX_THEO_TYPE[this.type];
+    }
+
+    /** Ve NPC bang PokeBody, (x, y) la diem chan (anh cu cung ve BOTTOM tai y). */
+    public boolean paintPokemon(Graphics g) {
+        int dex = getPokeDex();
+        if (dex <= 0 || !PokeBody.coSprite(dex, false)) {
+            return false;
+        }
+        g.drawImage(Res.imgShadow, this.x, this.y - 2, 3);
+        return PokeBody.paint(g, dex, false, this.x, this.y, Char.DOWN, PokeDuLieu.DUNG, Canvas.gameTick, 100);
     }
 
     public NPC(int tx, int ty, int type, FilePack file) {
@@ -58,9 +84,11 @@ public class NPC extends Actor {
 
     @Override
     public void paint(Graphics g) {
-        g.drawImage(this.img[1], this.x, this.y, 33);
-        if (this.img[0] != null) {
-            g.drawImage(this.img[0], this.x + NPCX[idImg[this.type]], this.y + NPCY[idImg[this.type]] + (this.fra / 5), 33);
+        if (!paintPokemon(g)) {
+            g.drawImage(this.img[1], this.x, this.y, 33);
+            if (this.img[0] != null) {
+                g.drawImage(this.img[0], this.x + NPCX[idImg[this.type]], this.y + NPCY[idImg[this.type]] + (this.fra / 5), 33);
+            }
         }
         Image tempImg = GameScr.getImgQuest(this.type);
         if (!tempImg.equals(Res.imgSelect)) {
@@ -70,6 +98,10 @@ public class NPC extends Actor {
 
     @Override
     public void paintCorner(Graphics g, int xCorner, int yCorner) {
+        int dex = getPokeDex();
+        if (dex > 0 && PokeBody.paintChanDung(g, dex, false, xCorner, yCorner - 8, 24)) {
+            return;
+        }
         g.setClip(xCorner - 10, (yCorner + 12) - this.height, 20, 22);
         if (this.img[0] != null) {
             g.drawImage(this.img[0], xCorner, (yCorner + 12) - this.height, 17);

@@ -16,6 +16,10 @@ public class BossTL extends Monster {
 
     @Override
     public void paint(Graphics g) {
+        // pokemon: template da la Pokemon (lenh -91) hoac do vat PMD: ve bang PokeBody, bo renderer boss cu
+        if (paintPokemon(g)) {
+            return;
+        }
         if (this.z != 0) {
             this.frame = (byte) (this.frame + 1);
             if (this.frame > 1) {

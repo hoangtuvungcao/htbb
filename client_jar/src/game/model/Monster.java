@@ -8,6 +8,9 @@ import game.render.Canvas;
 import game.render.Res;
 import game.render.screen.GameScr;
 import java.util.Vector;
+import game.pokemon.PokeBody;
+import game.pokemon.PokeDuLieu;
+import game.pokemon.VatThePokemon;
 import javax.microedition.lcdui.Graphics;
 
 public class Monster extends LiveActor {
@@ -111,8 +114,102 @@ public class Monster extends LiveActor {
         return true;
     }
 
+    /**
+     * pokemon: trang thai quai -> dong tac PokeBody. STAND 0, WALK 2 / MOVE_TO_TARGET 6 /
+     * GO_TO_XYFIRST 7 -> chay, ATTACK 3 -> danh gan, INJURE 4 hoac dang nay len/bi day lui ->
+     * trung don, DEAD 1 / DEADFLY 5 -> guc nga.
+     */
+    public int pokeDongTac() {
+        switch (this.state) {
+            case 1:
+            case 5:
+                return PokeDuLieu.GUC_NGA;
+            case 3:
+                return PokeDuLieu.DANH_GAN;
+            case 4:
+                return PokeDuLieu.TRUNG_DON;
+        }
+        if (pokeDangTrungDon()) {
+            return PokeDuLieu.TRUNG_DON;
+        }
+        if (this.state == 2 || this.state == 6 || this.state == 7) {
+            return PokeDuLieu.CHAY;
+        }
+        return PokeDuLieu.DUNG;
+    }
+
+    /**
+     * pokemon: ve quai bang PokeBody neu template co pokeDex (lenh -91). false = lop goi ve kieu
+     * cu. Dung chung cho Monster va cac lop boss con (Boss_*, BossTL, MonsterNew...).
+     */
+    public boolean paintPokemon(Graphics g) {
+        int t = this.monster_type;
+        if (!MonsterTemplate.laPokemon(t)) {
+            return paintVatThe(g);
+        }
+        if (!isPaint() || this.state == 8 || this.hp <= 0) {
+            return true;
+        }
+        paintDataEff_Top(g, this.x, this.y, false);
+        if (!this.isFreeze) {
+            if (this.dynamicEffBottom != null) {
+                for (int ii = 0; ii < this.dynamicEffBottom.size(); ii++) {
+                    ((DynamicEffect) this.dynamicEffBottom.elementAt(ii)).paint(g, this.x, this.y);
+                }
+            }
+            g.drawImage(Res.imgShadow, this.x, this.y, 3);
+            int cao = PokeBody.caoTrenChan(MonsterTemplate.pokeDex[t], MonsterTemplate.pokeShiny[t], MonsterTemplate.pokeTiLe[t]) + 4;
+            if (cao > this.height) {
+                this.height = (short) cao;
+            }
+            int dongTac = pokeDongTac();
+            int tick = pokeTickTrongDongTac(dongTac);
+            PokeBody.paint(g, MonsterTemplate.pokeDex[t], MonsterTemplate.pokeShiny[t], this.x + this.vangx, this.y + this.vangy + this.dy + this.z, this.dir, dongTac, tick, MonsterTemplate.pokeTiLe[t]);
+            for (int i = 0; i < this.buff.size(); i++) {
+                ((CharBuff) this.buff.elementAt(i)).paint(g);
+            }
+            if (this.dynamicEffTop != null) {
+                for (int i2 = 0; i2 < this.dynamicEffTop.size(); i2++) {
+                    ((DynamicEffect) this.dynamicEffTop.elementAt(i2)).paint(g, this.x, this.y);
+                }
+            }
+        }
+        paintDataEff_Bot(g, this.x, this.y, false);
+        super.paint(g);
+        return true;
+    }
+
+    /** pokemon: quai phan_loai vat_the (cong thanh, nguyen lieu, ngoc, ruong, thung) ve do vat PMD. */
+    public boolean paintVatThe(Graphics g) {
+        int t = this.monster_type;
+        if (!VatThePokemon.laVatThe(t)) {
+            return false;
+        }
+        if (!isPaint() || this.state == 8 || this.hp <= 0) {
+            return true;
+        }
+        paintDataEff_Top(g, this.x, this.y, false);
+        if (!this.isFreeze) {
+            int cao = VatThePokemon.caoQuai(t) + 4;
+            if (cao > this.height) {
+                this.height = (short) cao;
+            }
+            g.drawImage(Res.imgShadow, this.x, this.y, 3);
+            VatThePokemon.veQuai(g, t, this.x + this.vangx, this.y + this.vangy + this.dy + this.z, Canvas.gameTick);
+            for (int i = 0; i < this.buff.size(); i++) {
+                ((CharBuff) this.buff.elementAt(i)).paint(g);
+            }
+        }
+        paintDataEff_Bot(g, this.x, this.y, false);
+        super.paint(g);
+        return true;
+    }
+
     @Override
     public void paint(Graphics g) {
+        if (paintPokemon(g)) {
+            return;
+        }
         if (!isPaint() || this.state == 8 || this.hp <= 0) {
             return;
         }
@@ -158,6 +255,17 @@ public class Monster extends LiveActor {
     public void paintCorner(Graphics g, int xCorner, int yCorner) {
         if (this.z != 0) {
             this.frame = (byte) 3;
+        }
+        if (VatThePokemon.veGocQuai(g, this.monster_type, xCorner, yCorner - 8, 24)) {
+            return;
+        }
+        if (MonsterTemplate.laPokemon(this.monster_type)) {
+            int t = this.monster_type;
+            PokeBody.paintChanDung(g, MonsterTemplate.pokeDex[t], MonsterTemplate.pokeShiny[t], xCorner, yCorner - 8, 24);
+            if (this.he >= 0 && this.he < this.nh.length) {
+                g.drawRegion(Res.imgNguHanh, this.nh[this.he] * 16, 0, 16, 16, 0, xCorner - 15, yCorner + 3, 20);
+            }
+            return;
         }
         try {
             g.drawRegion(Res.monsterTemplates[this.monster_type].image, 0, REAL_FRAME[Res.monsterTemplates[this.monster_type].moveType][0][this.frame] * Res.monsterTemplates[this.monster_type].h, Res.monsterTemplates[this.monster_type].w, Res.monsterTemplates[this.monster_type].h, 0, xCorner - Res.monsterTemplates[this.monster_type].xCenter, yCorner - 20, 0);

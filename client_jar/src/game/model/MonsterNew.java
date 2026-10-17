@@ -60,6 +60,10 @@ public class MonsterNew extends Monster {
 
     @Override
     public void paint(Graphics g) {
+        // pokemon: template da la Pokemon (lenh -91) hoac do vat PMD: ve bang PokeBody, bo renderer boss cu
+        if (paintPokemon(g)) {
+            return;
+        }
         DataEffect deff;
         if (this.data.size() != 0 && (deff = (DataEffect) this.data.elementAt(this.huongY)) != null) {
             if (this.dynamicEffBottom != null) {

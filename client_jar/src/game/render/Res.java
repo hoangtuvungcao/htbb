@@ -777,9 +777,39 @@ public class Res {
         return x[0];
     }
 
+    /** pokemon (G7.A): tile PMD /pt/<ten>.png (cung so tile, thu tu voi bo KPAH); thieu thi null. */
+    private static Image tilePokemon(String ten) {
+        if (!game.pokemon.PokeBody.CHE_DO_POKEMON) {
+            return null;
+        }
+        try {
+            return Image.createImage(new StringBuffer("/pt/").append(ten).append(".png").toString());
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
     public static final void loadTileImage(int lv) {
         InputStream is;
         if (imgTile == null) {
+            // pokemon: bo tile PMD neu co (ca t_hang/t_thanh ma ban goc lay tu server qua RMS)
+            String tenPoke = lv > 200 ? "t_thanh" : lv < 110 ? "t" : "t_hang";
+            Image tile = tilePokemon(tenPoke);
+            Image tileNho = tile == null ? null : tilePokemon(lv > 200 ? "t_thanh_s" : lv < 110 ? "t_small" : "t_hang_s");
+            if (tile != null && tileNho != null) {
+                try {
+                    is = "".getClass().getResourceAsStream(new StringBuffer("/").append(tenPoke).append(".type").toString());
+                    Tilemap.typeOfTile = new int[is.available()];
+                    for (int i = 0; i < Tilemap.typeOfTile.length; i++) {
+                        Tilemap.typeOfTile[i] = is.read();
+                    }
+                    imgTile = tile;
+                    imgtileSmall = tileNho;
+                    return;
+                } catch (Throwable e) {
+                    // thieu .type: ve bo KPAH
+                }
+            }
             try {
                 if (lv > 200) {
                     try {

@@ -27,6 +27,24 @@ phat-hanh/   phát hành + tự cập nhật (GitHub Releases kpah-server/nqsh-h
 - `mapping-vNN.txt` của ProGuard (bản jar) giữ riêng, không đưa lên git.
 - Phát hành: `sh phat-hanh/phat-hanh.sh pc|android|jar|tat-ca` hoặc workflow "Phát hành" (xem `phat-hanh/README.md`).
 
+## Nhánh `pokemon/chuyen-doi`: bản jar Huyền Thoại Bảo Bối (Pokémon)
+
+- Code: `j2me/src/game/pokemon/` (bản J2ME của các lớp Pokémon trong `KPAH/ClientUnity/Assets/Scripts/Game/`),
+  hook có chú thích `// pokemon:` trong Char, Monster (+ boss), NPC, Npc_Server, AnimalMove, ThanThu,
+  MessageHandler (-90..-94), Font (từ điển `ChuPokemon`), TField, Res (tile), Create/CharSelectScr, màn tiêu đề.
+- Tài nguyên `j2me/res/pk` (sprite, chân dung, vật thể, từ điển) + `j2me/res/pt` (tile PMD) sinh bằng
+  `KPAH_ASSETS=<KPAH>/ClientUnity/Assets sh j2me/build.sh N` (tool `j2me/tools/DongGoiPokeJ2me.java`).
+- Hiệu ứng chiêu (K3): `PokeHieuUng` (hook `Char.setCurrentSkillByID`, buff trong `GameScr`), dữ liệu
+  `res/pk/hu.bin` + `hu_*.png` đóng gói từ `Resources/poke/hu_*.bytes`.
+- Bản thử nối một server: `MAY_CHU=127.0.0.1:19129 sh j2me/build.sh N` -> `...-vN-thu.jar`
+  (MANIFEST `HTBB-May-Chu` + `HTBB-Ban-Thu`; không tải danh sách server).
+- Server chính cho MỌI bản: `MAY_CHU_CHINH=host:cong sh j2me/build.sh N`.
+- Xác thực -88 (`KiemServer`) mặc định TẮT trên nhánh này (server Pokémon không có lệnh -88);
+  `XAC_THUC=1` bật lại cho server NQSH cũ.
+- Bản nhẹ cho máy thật: `GOI=nhe sh j2me/build.sh N` -> `...-vN-nhe.jar` (ProGuard + `j2me/res_nhe/pk`:
+  ít loài, ít khung, chân dung 24px; loài thiếu vẽ bằng bóng đen `bong`). Xem đầu `DongGoiPokeJ2me.java`.
+- Kiểm thử thuần Java: `j2me/tools/KiemPokeDuLieu.java` (xem chú thích đầu tệp).
+
 ## Code mod nằm ở đâu
 
 - **Hook vào game** viết thẳng trong source game, có chú thích `// mod:`:

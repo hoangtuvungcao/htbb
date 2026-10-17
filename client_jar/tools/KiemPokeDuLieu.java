@@ -1,0 +1,417 @@
+import game.pokemon.ChuPokemon;
+import game.pokemon.PokeDongTac;
+import game.pokemon.PokeDuLieu;
+import game.pokemon.TenMapPokemon;
+
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Kiem thu thuan Java (JDK) cho phan Pokemon cua ban jar:
+ *  1. PokeDuLieu (ban J2ME) doc MOI Resources/poke/*_dl.bytes cua KPAH, doi chieu tung truong voi
+ *     mot bo doc doc lap (DataInputStream) va kiem moi khung nam trong atlas _anh.bytes;
+ *  2. moi res/pk/*.dl doc duoc, anh dong tac ton tai va dung kich thuoc (soKhung*rong x 4*cao);
+ *  3. (tuy chon) ChuPokemon / TenMapPokemon cua jar cho KET QUA GIONG HET ban server
+ *     com.kpah.pokemon.ChuPokemon.doiLuon / TenMapPokemon.doi (regex) tren tap chu kiem.
+ *
+ *   java -cp &lt;lop jar&gt;:&lt;midp.jar&gt;:res[:lop server] KiemPokeDuLieu &lt;KPAH/ClientUnity/Assets&gt; res [nguon java ...]
+ */
+public class KiemPokeDuLieu {
+    static int loi = 0;
+
+    static void sai(String s) {
+        loi++;
+        if (loi < 30) {
+            System.out.println("SAI: " + s);
+        }
+    }
+
+    public static void main(String[] a) throws Exception {
+        File poke = new File(a[0], "Resources/poke");
+        File res = new File(a[1]);
+        int soDl = 0;
+        String[] ten = poke.list();
+        Arrays.sort(ten);
+        for (String t : ten) {
+            if (!t.endsWith("_dl.bytes")) {
+                continue;
+            }
+            soDl++;
+            byte[] b = Files.readAllBytes(new File(poke, t).toPath());
+            PokeDuLieu dl = PokeDuLieu.doc(b);
+            if (dl == null) {
+                sai(t + ": PokeDuLieu.doc tra ve null");
+                continue;
+            }
+            soSanhDocLap(t, b, dl);
+            int[] wh = kichThuocPng(Files.readAllBytes(new File(poke, t.replace("_dl", "_anh")).toPath()));
+            for (int i = 0; i < dl.dongTac.length; i++) {
+                PokeDongTac d = dl.dongTac[i];
+                if (d.xAtlas + d.soKhung * d.rongKhung > wh[0] || d.yHang(3) + d.caoKhung > wh[1]) {
+                    sai(t + " dong tac " + i + " ra ngoai atlas " + wh[0] + "x" + wh[1]);
+                }
+                int f = d.khungTai(PokeDuLieu.doiTick(1000000), PokeDuLieu.laDongTacLap(i));
+                if (f < 0 || f >= d.soKhung || !PokeDuLieu.laDongTacLap(i) && f != d.soKhung - 1) {
+                    sai(t + " khungTai sai");
+                }
+            }
+            // dl hong (cat cut) phai ra null, khong nem ngoai le
+            if (PokeDuLieu.doc(Arrays.copyOf(b, 10)) != null) {
+                sai(t + ": tep cat cut van doc duoc");
+            }
+        }
+        System.out.println("Unity _dl: " + soDl + " tep doc dung");
+
+        File pk = new File(res, "pk");
+        int soJar = 0;
+        for (String t : pk.list()) {
+            if (!t.endsWith(".dl")) {
+                continue;
+            }
+            soJar++;
+            String khoa = t.substring(0, t.length() - 3);
+            PokeDuLieu dl = PokeDuLieu.doc(Files.readAllBytes(new File(pk, t).toPath()));
+            if (dl == null || dl.dongTac.length != 6) {
+                sai(t + " khong doc duoc");
+                continue;
+            }
+            for (int i = 0; i < 6; i++) {
+                PokeDongTac d = dl.dongTac[i];
+                File png = new File(pk, khoa + "_" + dl.anhCua(i) + ".png");
+                if (!png.exists()) {
+                    sai(png + " thieu");
+                    continue;
+                }
+                int[] wh = kichThuocPng(Files.readAllBytes(png.toPath()));
+                if (wh[0] != d.soKhung * d.rongKhung || wh[1] != 4 * d.caoKhung) {
+                    sai(png + " kich thuoc " + wh[0] + "x" + wh[1]);
+                }
+            }
+            if (!new File(pk, khoa + "_c.png").exists()) {
+                sai(khoa + " thieu chan dung");
+            }
+        }
+        System.out.println("jar .dl: " + soJar + " tep, anh dong tac khop kich thuoc");
+        soSanhHinh(poke, pk, DongGoiPokeJ2me.DAY_DU);
+        kiemHieuUng(poke, pk, DongGoiPokeJ2me.DAY_DU.toiDaHu);
+        File nhe = new File(res.getAbsoluteFile().getParentFile(), "res_nhe/pk");
+        if (nhe.isDirectory()) {
+            System.out.println("--- ban nhe " + nhe);
+            soSanhHinh(poke, nhe, DongGoiPokeJ2me.NHE);
+            kiemHieuUng(poke, nhe, DongGoiPokeJ2me.NHE.toiDaHu);
+            if (!new File(nhe, "bong.dl").exists() || !new File(nhe, "bong_c.png").exists()) {
+                sai("ban nhe thieu bong den");
+            }
+        }
+
+        kiemChu(a);
+        System.out.println(loi == 0 ? "OK" : ("HONG: " + loi + " loi"));
+        System.exit(loi == 0 ? 0 : 1);
+    }
+
+    /**
+     * Ve tung khung giu lai cua ban Unity (atlas goc) va ban jar (da cat, bot khung) theo CUNG cong
+     * thuc PokeBody (diem chan tai goc toa do) va so tung pixel: cat/bot khung khong duoc lam lech hinh.
+     */
+    static void soSanhHinh(File poke, File pk, DongGoiPokeJ2me.Cau cau) throws Exception {
+        int soKhung = 0;
+        for (String t : pk.list()) {
+            if (!t.endsWith(".dl")) {
+                continue;
+            }
+            String khoa = t.substring(0, t.length() - 3);
+            if (khoa.equals("bong")) {
+                continue;   // bong den: hinh doi mau, khong so pixel
+            }
+            PokeDuLieu goc = PokeDuLieu.doc(Files.readAllBytes(new File(poke, khoa + "_dl.bytes").toPath()));
+            PokeDuLieu moi = PokeDuLieu.doc(Files.readAllBytes(new File(pk, t).toPath()));
+            int caoGoc = goc.dongTac[0].caoKhung / 2 + goc.dongTac[0].dyChan[0];
+            if (moi.caoTrenGoc != caoGoc) {
+                sai(khoa + " caoTrenGoc " + moi.caoTrenGoc + " != " + caoGoc);
+            }
+            java.awt.image.BufferedImage atlas = javax.imageio.ImageIO.read(new File(poke, khoa + "_anh.bytes"));
+            for (int i = 0; i < 6; i++) {
+                PokeDongTac g = goc.dongTac[i], m = moi.dongTac[i];
+                g = goc.dongTac[cau.nguon[i]];
+                java.awt.image.BufferedImage anh = javax.imageio.ImageIO.read(new File(pk, khoa + "_" + moi.anhCua(i) + ".png"));
+                int[] giu = DongGoiPokeJ2me.chonKhung(g.soKhung, cau.toiDa[i], PokeDuLieu.laDongTacLap(i));
+                if (giu.length != m.soKhung) {
+                    sai(khoa + " so khung");
+                    continue;
+                }
+                for (int d = 0; d < 4; d++) {
+                    for (int k = 0; k < giu.length; k++) {
+                        soKhung++;
+                        // goc: o (x - rong/2 - dx, y - cao/2 - dy), x = y = 0
+                        int gx = -g.rongKhung / 2 - g.dxChan[d], gy = -g.caoKhung / 2 - g.dyChan[d];
+                        int mx = -m.rongKhung / 2 - m.dxChan[d], my = -m.caoKhung / 2 - m.dyChan[d];
+                        int sx = g.xAtlas + giu[k] * g.rongKhung, sy = g.yHang(d);
+                        int dem = 0;
+                        for (int y = 0; y < g.caoKhung; y++) {
+                            for (int x = 0; x < g.rongKhung; x++) {
+                                boolean coG = (atlas.getRGB(sx + x, sy + y) >>> 24) >= 128;
+                                int ux = gx + x - mx, uy = gy + y - my;   // toa do trong khung jar
+                                boolean trong = ux >= 0 && uy >= 0 && ux < m.rongKhung && uy < m.caoKhung;
+                                int cm = trong ? anh.getRGB(k * m.rongKhung + ux, d * m.caoKhung + uy) : 0;
+                                boolean coM = (cm >>> 24) >= 128;
+                                if (coG != coM || coG && (cm & 0xFFFFFF) != (atlas.getRGB(sx + x, sy + y) & 0xFFFFFF)) {
+                                    dem++;
+                                }
+                            }
+                        }
+                        if (dem > 0) {
+                            sai(khoa + " dong tac " + i + " huong " + d + " khung " + k + ": " + dem + " pixel lech");
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println("so hinh Unity <-> jar: " + soKhung + " khung (dong tac x huong), tung pixel");
+    }
+
+    /**
+     * Hieu ung chieu: moi dong (lop, chieu) cua Unity hu_bang.bytes phai co trong hu.bin, anh dung kich
+     * thuoc, va moi khung giu lai ve tai (dx, dy) trung khung Unity ve tai tam (alpha + mau gan dung,
+     * PNG bang mau co the luong tu hoa).
+     */
+    static void kiemHieuUng(File poke, File pk, int toiDa) throws Exception {
+        List<String> dong = Files.readAllLines(new File(poke, "hu_bang.bytes").toPath(), StandardCharsets.UTF_8);
+        game.pokemon.HieuUngBang[] bang = game.pokemon.HieuUngBang.doc(Files.readAllBytes(new File(pk, "hu.bin").toPath()));
+        if (bang == null) {
+            sai("hu.bin khong doc duoc");
+            return;
+        }
+        int soChieu = 0, soKhung = 0, lechMau = 0;
+        long tongPx = 0;
+        for (String d : dong) {
+            d = d.trim();
+            if (d.isEmpty() || d.charAt(0) == '#') {
+                continue;
+            }
+            String[] c = d.split(",");
+            soChieu++;
+            int lop = Integer.parseInt(c[0]), chieu = Integer.parseInt(c[1]);
+            game.pokemon.HieuUngBang h = null;
+            for (game.pokemon.HieuUngBang x : bang) {
+                if (x.lop == lop && x.chieu == chieu) {
+                    h = x;
+                }
+            }
+            if (h == null) {
+                sai("thieu hieu ung lop " + lop + " chieu " + chieu);
+                continue;
+            }
+            if (!h.ten.equals(c[2]) || h.kieuVe != c[8].charAt(0)) {
+                sai("hieu ung " + lop + "," + chieu + " sai ten/kieu");
+            }
+            File png = new File(pk, h.ten + ".png");
+            if (!png.exists()) {
+                sai(png + " thieu");
+                continue;
+            }
+            java.awt.image.BufferedImage anh = javax.imageio.ImageIO.read(png);
+            int[] wh = h.kichThuocAnh();
+            if (anh.getWidth() < wh[0] || anh.getHeight() < wh[1]) {
+                sai(png + " nho hon " + wh[0] + "x" + wh[1]);
+                continue;
+            }
+            int rong = Integer.parseInt(c[3]), cao = Integer.parseInt(c[4]), n = Integer.parseInt(c[5]);
+            int soHuong = Integer.parseInt(c[6]), soCot = Integer.parseInt(c[7]), tick = Integer.parseInt(c[9]);
+            int[] giu = DongGoiPokeJ2me.chonKhung(n, toiDa, false);
+            if (h.soKhung != giu.length || h.soKhung > toiDa) {
+                sai("hieu ung " + h.ten + " so khung " + h.soKhung);
+                continue;
+            }
+            // tong thoi gian giu nguyen (sai so lam tron <= 1 tick moi khung)
+            if (Math.abs(h.soKhung * h.tickMoiKhung - n * tick) > h.soKhung) {
+                sai("hieu ung " + h.ten + " thoi luong " + h.soKhung * h.tickMoiKhung + " != " + n * tick);
+            }
+            java.awt.image.BufferedImage goc = javax.imageio.ImageIO.read(new File(poke, h.ten + ".bytes"));
+            for (int dir = 0; dir < (soHuong >= 4 ? 4 : 1); dir++) {
+                for (int k = 0; k < giu.length; k++) {
+                    soKhung++;
+                    int f = giu[k];
+                    int gx = soHuong >= 4 ? f * rong : f % soCot * rong, gy = soHuong >= 4 ? dir * cao : f / soCot * cao;
+                    int[] ng = h.nguon(k, dir);
+                    for (int y = 0; y < cao; y++) {
+                        for (int x = 0; x < rong; x++) {
+                            int cg = goc.getRGB(gx + x, gy + y);
+                            // toa do trong khung jar: Unity ve goc khung tai -rong/2, jar tai dx
+                            int ux = x - rong / 2 - h.dx, uy = y - cao / 2 - h.dy;
+                            boolean trong = ux >= 0 && uy >= 0 && ux < h.rong && uy < h.cao;
+                            int cm = trong ? anh.getRGB(ng[0] + ux, ng[1] + uy) : 0;
+                            int ag = cg >>> 24, am = cm >>> 24;
+                            if (ag < 8) {
+                                ag = 0;
+                            }
+                            tongPx++;
+                            if (Math.abs(ag - am) > 40 || ag > 0 && DongGoiPokeJ2me.kc(cg | 0xFF000000, cm | 0xFF000000) > 3 * 48 * 48) {
+                                lechMau++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (soChieu != bang.length) {
+            sai("hu.bin co " + bang.length + " dong, Unity " + soChieu);
+        }
+        // luong tu hoa: cho phep it pixel lech mau (<0.5%)
+        if (lechMau * 200L > tongPx) {
+            sai("hieu ung lech mau qua nhieu: " + lechMau + "/" + tongPx);
+        }
+        System.out.println("hieu ung: " + soChieu + " chieu co du trong hu.bin, " + soKhung + " khung so pixel, lech "
+                + lechMau + "/" + tongPx);
+    }
+
+    /** Bo doc doc lap theo dac ta muc 7.1. */
+    static void soSanhDocLap(String t, byte[] b, PokeDuLieu dl) throws Exception {
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(b));
+        int pb = in.readUnsignedByte();
+        int n = in.readUnsignedByte();
+        if (pb != dl.phienBan || n != dl.dongTac.length || n != 6) {
+            sai(t + " dau tep");
+            return;
+        }
+        for (int i = 0; i < n; i++) {
+            PokeDongTac d = dl.dongTac[i];
+            int w = in.readUnsignedShort(), h = in.readUnsignedShort(), k = in.readUnsignedByte();
+            if (w != d.rongKhung || h != d.caoKhung || k != d.soKhung) {
+                sai(t + " dong tac " + i + " kich thuoc");
+            }
+            int tong = 0;
+            for (int j = 0; j < k; j++) {
+                int tl = in.readUnsignedByte();
+                tong += Math.max(1, tl);
+                if (Math.max(1, tl) != d.thoiLuong[j]) {
+                    sai(t + " thoi luong");
+                }
+            }
+            if (tong != d.tongThoiLuong) {
+                sai(t + " tong thoi luong");
+            }
+            int y = in.readUnsignedShort();
+            int x = pb >= 2 ? in.readUnsignedShort() : 0;
+            if (x != d.xAtlas || y != d.yAtlas) {
+                sai(t + " xAtlas/yAtlas");
+            }
+            for (int h2 = 0; h2 < 4; h2++) {
+                if (in.readByte() != d.dxChan[h2]) {
+                    sai(t + " dxChan");
+                }
+            }
+            for (int h2 = 0; h2 < 4; h2++) {
+                if (in.readByte() != d.dyChan[h2]) {
+                    sai(t + " dyChan");
+                }
+            }
+        }
+        for (int i = 0; i < 6; i++) {
+            if ((in.readUnsignedByte() != 0) != dl.coThat[i]) {
+                sai(t + " coThat");
+            }
+        }
+        if (in.available() != 0) {
+            sai(t + " con byte thua");
+        }
+    }
+
+    static int[] kichThuocPng(byte[] b) {
+        return new int[]{((b[16] & 0xFF) << 24) | ((b[17] & 0xFF) << 16) | ((b[18] & 0xFF) << 8) | (b[19] & 0xFF),
+            ((b[20] & 0xFF) << 24) | ((b[21] & 0xFF) << 16) | ((b[22] & 0xFF) << 8) | (b[23] & 0xFF)};
+    }
+
+    /** So ChuPokemon/TenMapPokemon cua jar voi ban server (neu co tren classpath). */
+    static void kiemChu(String[] a) throws Exception {
+        Set<String> tap = new LinkedHashSet<>();
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(
+                Files.readAllBytes(new File(a[1], "pk/chu.bin").toPath())));
+        int n = in.readUnsignedShort();
+        for (int i = 0; i < n; i++) {
+            String k = in.readUTF();
+            in.readUTF();
+            if (k.startsWith("=")) {
+                k = k.substring(1);
+            }
+            tap.add(k);
+            tap.add(k.toUpperCase());
+            tap.add(Character.toUpperCase(k.charAt(0)) + k.substring(1));
+            tap.add("Gặp " + k + " ở " + k + "!");
+            tap.add("x" + k + " " + k + "_ 1" + k + "2 (" + k + ")");
+        }
+        // moi chuoi viet trong nguon game (chu nguoi choi thay)
+        Pattern p = Pattern.compile("\"((?:[^\"\\\\\\n]|\\\\.)*)\"");
+        for (int i = 2; i < a.length; i++) {
+            List<File> ds = new ArrayList<>();
+            liet(new File(a[i]), ds);
+            for (File f : ds) {
+                Matcher m = p.matcher(new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8));
+                while (m.find()) {
+                    tap.add(m.group(1));
+                }
+            }
+        }
+        int soChu = 0;
+        for (String s : tap) {
+            String jar = ChuPokemon.doiLuon(s);
+            if (!ChuPokemon.doiLuon(jar).equals(jar)) {
+                // tu dien khong lap: doi lan hai phai giu nguyen (Font goi D o ca do rong lan ve)
+                if (!s.equals(jar)) {
+                    System.out.println("  (doi 2 lan khac) " + s + " -> " + jar + " -> " + ChuPokemon.doiLuon(jar));
+                }
+            }
+            soChu++;
+        }
+        Class<?> sv;
+        try {
+            sv = Class.forName("com.kpah.pokemon.ChuPokemon");
+        } catch (ClassNotFoundException e) {
+            System.out.println("ChuPokemon: " + soChu + " chuoi chay khong loi (khong co ban server de doi chieu)");
+            return;
+        }
+        Method doi = sv.getMethod("doiLuon", String.class);
+        int khac = 0;
+        for (String s : tap) {
+            String x = (String) doi.invoke(null, s);
+            String y = ChuPokemon.doiLuon(s);
+            if (!x.equals(y)) {
+                khac++;
+                sai("ChuPokemon khac server: [" + s + "] server=[" + x + "] jar=[" + y + "]");
+            }
+        }
+        System.out.println("ChuPokemon: " + soChu + " chuoi, khac ban server: " + khac);
+        Method doiMap = Class.forName("com.kpah.pokemon.TenMapPokemon").getMethod("doi", String.class);
+        int soMap = 0;
+        for (String[] d : TenMapPokemon.BANG) {
+            for (String s : new String[]{d[0], " " + d[0] + " ", d[0].toUpperCase(), "Đông " + d[0], "bắc " + d[0], "Tây  " + d[0], "Nam", d[1]}) {
+                soMap++;
+                String x = (String) doiMap.invoke(null, s);
+                if (!x.equals(TenMapPokemon.doi(s))) {
+                    sai("TenMapPokemon [" + s + "] server=[" + x + "] jar=[" + TenMapPokemon.doi(s) + "]");
+                }
+            }
+        }
+        System.out.println("TenMapPokemon: " + soMap + " chuoi khop ban server");
+    }
+
+    static void liet(File f, List<File> ds) {
+        if (f.isDirectory()) {
+            for (File c : f.listFiles()) {
+                liet(c, ds);
+            }
+        } else if (f.getName().endsWith(".java")) {
+            ds.add(f);
+        }
+    }
+}

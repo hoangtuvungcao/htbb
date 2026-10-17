@@ -6,6 +6,9 @@ import game.model.MainChar;
 import game.networklogic.GameService;
 import game.render.Canvas;
 import game.render.Res;
+import game.pokemon.LoaiPokemonClient;
+import game.pokemon.PokeBody;
+import game.pokemon.PokeDuLieu;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 import network.Session_ME;
@@ -121,6 +124,19 @@ public class CharSelectScr extends Screen {
         }
     }
 
+    /**
+     * pokemon: du doan Pokemon cua nhan vat o man chon (lenh 13 KHONG co class va -90 chi gui sau
+     * khi vao game): suy class tu loai vu khi dang mac, weaponType 3..7 = class 0..4. Khong mac vu
+     * khi thi -1 (ve paper doll cu). Eevee da chon nhanh van hien Eevee.
+     */
+    public static int duDoanDex(MainChar c, int lastLv) {
+        if (!PokeBody.CHE_DO_POKEMON || c == null || c.weaponType < 3 || c.weaponType > 7) {
+            return -1;
+        }
+        int cap = lastLv <= 0 ? (c.lastLv <= 0 ? 1 : c.lastLv) : lastLv;
+        return LoaiPokemonClient.duDoan(c.weaponType - 3, cap);
+    }
+
     @Override
     public void paint(Graphics g) {
         ServerListScr.gI().paintBg(g);
@@ -150,7 +166,10 @@ public class CharSelectScr extends Screen {
             if (i < this.chars.length) {
                 this.chars[i].x = (short) (x + 20);
                 this.chars[i].y = (short) (yStart + 64);
-                this.chars[i].paintAvatar(g, this.chars[i].x, this.chars[i].y);
+                int dexDoan = duDoanDex(this.chars[i], i < this.charInfos.length ? this.charInfos[i].lastLv : 1);
+                if (dexDoan <= 0 || !PokeBody.paint(g, dexDoan, false, this.chars[i].x, this.chars[i].y, 0, PokeDuLieu.DUNG, Canvas.gameTick, 100)) {
+                    this.chars[i].paintAvatar(g, this.chars[i].x, this.chars[i].y);
+                }
             }
             i++;
             x += 40;

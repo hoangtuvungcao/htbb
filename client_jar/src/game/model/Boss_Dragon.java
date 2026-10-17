@@ -121,6 +121,10 @@ public class Boss_Dragon extends Monster {
 
     @Override
     public void paint(Graphics g) {
+        // pokemon: template da la Pokemon (lenh -91) hoac do vat PMD: ve bang PokeBody, bo renderer boss cu
+        if (paintPokemon(g)) {
+            return;
+        }
         g.drawImage(imgShadow, this.xBody[11], this.yBody[11], 3);
         for (int i = 0; i < this.xBody.length - 1; i++) {
             g.drawImage(imgShadow, this.xBody[i], this.yBody[i], 3);

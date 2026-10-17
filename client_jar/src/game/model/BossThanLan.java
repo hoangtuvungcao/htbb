@@ -31,6 +31,10 @@ public class BossThanLan extends Monster {
 
     @Override
     public void paint(Graphics g) {
+        // pokemon: template da la Pokemon (lenh -91) hoac do vat PMD: ve bang PokeBody, bo renderer boss cu
+        if (paintPokemon(g)) {
+            return;
+        }
         this.monster_type = (short) 39;
         if (this.totalExp < 15) {
             if (Res.monsterTemplates[this.monster_type].imageObj != null) {

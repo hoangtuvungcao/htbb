@@ -15,6 +15,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Random;
 import java.util.Vector;
+import game.pokemon.PokeBody;
+import game.pokemon.PokeDuLieu;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
@@ -56,6 +58,20 @@ public class Char extends LiveActor {
     public static final byte LEFT = 2;
     public static final byte RIGHT = 3;
     public static final byte REAL_FRAME_EACH_SIZE = 5;
+    // pokemon: than Pokemon (lenh -90 POKE_THAN), 0 = ve paper doll cu (ClientUnity Char.cs)
+    public short pokeDex;
+    public boolean pokeShiny;
+    /** Tick con lai cua hieu ung tien hoa (lenh -92). */
+    public int pokeTienHoaCon;
+    public short pokeDexTruoc;
+    /** Pokemon thu cuoi (lenh -93 POKE_CUOI), 0 = khong cuoi. */
+    public short pokeThuDex;
+    public boolean pokeThuShiny;
+    /** Pet di theo dang Pokemon (lenh -94 POKE_PET), 0 = pet kieu cu. */
+    public short pokePetDex;
+    public boolean pokePetShiny;
+    /** 1,5 giay o 25 tick/giay (Unity: 75 tick o 50/giay). */
+    public static final int POKE_TICK_TIEN_HOA = 38;
     public int attkPower;
     public int wimg;
     public int himg;
@@ -487,6 +503,9 @@ public class Char extends LiveActor {
 
     @Override
     public void paintCorner(Graphics g, int xCorner, int yCorner) {
+        if (this.pokeDex > 0 && PokeBody.paintChanDung(g, this.pokeDex, this.pokeShiny, xCorner + 2, yCorner - 10, 24)) {
+            return;
+        }
         g.translate((-this.x) + xCorner + 2, ((-this.y) + yCorner) - 10);
         if (this.currentHead != -1) {
             Res.getCharPartInfo(2, this.currentHead).paintStatic(g, this.x, (short) (this.y + (this.hatStyle != -1 ? (short) 5 : (short) 0)), this.dir, this.frame);
@@ -647,6 +666,9 @@ public class Char extends LiveActor {
     @Override
     public void update() {
         int set;
+        if (this.pokeTienHoaCon > 0) {
+            this.pokeTienHoaCon--;
+        }
         if (this.ID == 32001) {
             return;
         }
@@ -1098,7 +1120,8 @@ public class Char extends LiveActor {
             ishorseEff = true;
         }
         try {
-            if (!this.isFreeze) {
+            // pokemon: than Pokemon ve nguyen con, bo qua paper doll, vu khi, ngua, phi phong (Q5)
+            if (!this.isFreeze && !paintPokemon(g)) {
                 byte isHorse = getHorse();
                 if (GameData.imgHorse == null) {
                     isHorse = -1;
@@ -1254,6 +1277,100 @@ public class Char extends LiveActor {
         }
         paintDataEff_Bot(g, this.x, (this.y - (this.anmFly == 0 ? (short) 0 : (short) 6)) + getdyParHorse(), ishorseEff);
         paintListEff(g, 1);
+    }
+
+    /** Trang thai client -> dong tac PokeBody (bang 4.3). Class 2 (Eevee) va 4 (Pichu) danh xa. */
+    public int pokeDongTac() {
+        if (this.state == 3) {
+            return PokeDuLieu.GUC_NGA;
+        }
+        if (this.state == 2) {
+            return (this.clazz == 2 || this.clazz == 4) ? PokeDuLieu.DANH_XA : PokeDuLieu.DANH_GAN;
+        }
+        if (pokeDangTrungDon()) {
+            return PokeDuLieu.TRUNG_DON;
+        }
+        if (this.state == 1) {
+            return PokeDuLieu.CHAY;
+        }
+        return PokeDuLieu.DUNG;
+    }
+
+    /** Bat dau hieu ung tien hoa (lenh -92). */
+    public void batDauTienHoa(short dexCu, short dexMoi) {
+        this.pokeDexTruoc = dexCu;
+        this.pokeTienHoaCon = POKE_TICK_TIEN_HOA;
+        if (dexMoi > 0) {
+            this.pokeDex = dexMoi;
+        }
+    }
+
+    /** Ve than Pokemon thay paper doll; false (ve kieu cu) khi chua co dex hoac thieu sprite. */
+    public boolean paintPokemon(Graphics g) {
+        if (this.pokeDex <= 0 || !PokeBody.coSprite(this.pokeDex, this.pokeShiny)) {
+            return false;
+        }
+        int dexVe = this.pokeDex;
+        int doSang = 0;
+        if (this.pokeTienHoaCon > 0) {
+            if (this.pokeTienHoaCon > 5) {
+                // nhap nhay giua dang cu va dang moi, cang ve cuoi cang nhanh, than sang trang
+                int daQua = POKE_TICK_TIEN_HOA - this.pokeTienHoaCon;
+                int chuKy = 1 + this.pokeTienHoaCon / 10;
+                if (this.pokeDexTruoc > 0 && (daQua / chuKy) % 2 == 0) {
+                    dexVe = this.pokeDexTruoc;
+                }
+                doSang = 100;
+            } else {
+                doSang = this.pokeTienHoaCon * 20;
+            }
+            if (!PokeBody.coSprite(dexVe, this.pokeShiny)) {
+                dexVe = this.pokeDex;
+            }
+        }
+        int dongTac = pokeDongTac();
+        int tick = pokeTickTrongDongTac(dongTac);
+        // ten, icon nhiem vu, bong chat dat tai y - height: nang len theo chieu cao sprite
+        int cao = PokeBody.caoTrenChan(this.pokeDex, this.pokeShiny, 100) + 6;
+        this.height = (short) (cao > 32 ? cao : 32);
+        if (this.effPhap != null) {
+            this.effPhap.x = this.x;
+            this.effPhap.y = this.y;
+            this.effPhap.paint(g);
+        }
+        if (this.state != 3) {
+            paintDataEff_Top(g, this.x, this.y, false);
+            paintListEff(g, 0);
+        }
+        g.drawImage(Res.imgShadow, this.x, this.y - 2, 3);
+        int yNguoi = this.y + this.z + this.dy;
+        if (this.pokeThuDex > 0 && this.state != 3 && PokeBody.coSprite(this.pokeThuDex, this.pokeThuShiny)) {
+            // thu cuoi: ve thu (dung/chay theo nguoi choi) roi nang nguoi choi len ~55% chieu cao thu
+            int dongTacThu = this.state == 1 ? PokeDuLieu.CHAY : PokeDuLieu.DUNG;
+            PokeBody.paint(g, this.pokeThuDex, this.pokeThuShiny, this.x, yNguoi, this.dir, dongTacThu, tick, 100);
+            int caoThu = PokeBody.caoTrenChan(this.pokeThuDex, this.pokeThuShiny, 100);
+            yNguoi -= caoThu * 55 / 100;
+            this.height = (short) (this.height + caoThu * 55 / 100);
+        }
+        PokeBody.paint(g, dexVe, this.pokeShiny, this.x, yNguoi, this.dir, dongTac, tick, 100, doSang);
+        if (this.comeHome) {
+            g.setColor(0);
+            g.fillRect(this.x - 16, this.y - 46, 32, 4);
+            g.setColor(1165236);
+            g.fillRect(this.x - 16, this.y - 46, this.time, 4);
+            g.setColor(3363085);
+            g.drawRect(this.x - 16, this.y - 46, 32, 4);
+        }
+        paintbuff(g);
+        return true;
+    }
+
+    /** Ve Pokemon dang dung yen tai (x, y) = diem chan (man tao/chon nhan vat, bang trang bi). */
+    public boolean paintPokemonTinh(Graphics g, int xp, int yp) {
+        if (this.pokeDex <= 0) {
+            return false;
+        }
+        return PokeBody.paint(g, this.pokeDex, this.pokeShiny, xp, yp, DOWN, PokeDuLieu.DUNG, Canvas.gameTick, 100);
     }
 
     public void paintCharList(Graphics g) {
@@ -1710,6 +1827,9 @@ public class Char extends LiveActor {
     }
 
     public void paintAvatar(Graphics g, short x, short y) {
+        if (paintPokemonTinh(g, x, y)) {
+            return;
+        }
         ImageIcon img;
         ImageIcon img2;
         int leg = this.legStyle;
@@ -1782,6 +1902,11 @@ public class Char extends LiveActor {
             this.currentSkillAnimate = SkillManager.getSkillAnimate(0, this.clazz);
         } else {
             this.currentSkillAnimate = SkillManager.getSkillAnimate(this.currentSkillType, this.clazz);
+        }
+        // pokemon (K3): Pokemon dung particle PMD cua chieu thay hieu ung cu (thieu thi giu cu)
+        SkillAnimate pokeSkill = game.pokemon.PokeHieuUng.layChieu(this, this.isDoing ? 0 : this.currentSkillType);
+        if (pokeSkill != null) {
+            this.currentSkillAnimate = pokeSkill;
         }
         this.coolDownSkill[this.currentSkillType] = SkillManager.getSkillCooldown(this.currentSkillType, this.clazz, skillLevelLearnt[skillID]);
     }

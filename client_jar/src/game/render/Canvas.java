@@ -651,7 +651,9 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                 resetTrans(g);
                 g.setColor(0);
                 g.fillRect(0, 0, getWidth(), getHeight());
-                g.drawImage(imgLogo, getWidth() >> 1, getHeight() >> 1, 3);
+                if (!game.pokemon.ThuongHieu.veTieuDe(g, getWidth() >> 1, (getHeight() >> 1) - 40, getWidth())) {
+                    g.drawImage(imgLogo, getWidth() >> 1, getHeight() >> 1, 3);
+                }
             }
             if (isVirTualKey) {
                 virKey.paint(g);

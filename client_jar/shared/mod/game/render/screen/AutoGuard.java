@@ -471,15 +471,16 @@ public final class AutoGuard {
         if (!Nen.coNutUp() || Canvas.currentScreen != Canvas.gameScr) {
             return;
         }
-        AutoGuard.veNut(graphics, nutY(), "Up", AutoUp.dang);
-        AutoGuard.veNut(graphics, nutY2(), "Tiêu", AutoVanTieu.dang);
-        AutoGuard.veNut(graphics, nutY3(), "PK", AutoPk.danh());
+        // chữ trên nút qua Nen.nhanNut: bản jar Pokémon đổi sang từ ngữ Pokémon, bản khác giữ nguyên
+        AutoGuard.veNut(graphics, nutY(), Nen.nhanNut("Up"), AutoUp.dang);
+        AutoGuard.veNut(graphics, nutY2(), Nen.nhanNut("Tiêu"), AutoVanTieu.dang);
+        AutoGuard.veNut(graphics, nutY3(), Nen.nhanNut("PK"), AutoPk.danh());
         if (AutoPk.hienNut) {
-            AutoGuard.veNut(graphics, nutX2(), nutYPhim(0), "Mã PK", AutoPk.maPk ? "Bật" : "Tắt", AutoPk.maPk);
-            AutoGuard.veNut(graphics, nutX2(), nutYPhim(1), "Nháy", "Map", false);
-            AutoGuard.veNut(graphics, nutX2(), nutYPhim(2), "Bật", "ĐS", false);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(0), Nen.nhanNut("Mã PK"), AutoPk.maPk ? "Bật" : "Tắt", AutoPk.maPk);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(1), Nen.nhanNut("Nháy"), Nen.nhanNut("Map"), false);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(2), "Bật", Nen.nhanNut("ĐS"), false);
             AutoGuard.veNut(graphics, nutX2(), nutYPhim(3), "Dừng", "Hết", false);
-            AutoGuard.veNut(graphics, nutX2(), nutYPhim(4), "Đổi", "Pet", false);
+            AutoGuard.veNut(graphics, nutX2(), nutYPhim(4), "Đổi", Nen.nhanNut("Pet"), false);
         }
     }
 

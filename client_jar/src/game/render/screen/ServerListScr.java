@@ -280,7 +280,10 @@ public class ServerListScr extends Screen {
     public void paint(Graphics g) {
         paintBg(g);
         Canvas.resetTrans(g);
-        g.drawImage(Canvas.getLogo(), Canvas.hw, Canvas.hh - 70, 3);
+        // pokemon: tieu de ThuongHieu (ten game + 5 Pokemon khoi dau) thay logo KPAH
+        if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 120), Canvas.w, Canvas.hh - 32)) {
+            g.drawImage(Canvas.getLogo(), Canvas.hw, Canvas.hh - 70, 3);
+        }
         paintPanel(g);
         super.paint(g);
     }
@@ -296,7 +299,7 @@ public class ServerListScr extends Screen {
             g.fillRect(Canvas.hw - 60, (Canvas.hh - 20) + (index * 16), 120, 16);
         }
         for (int i = 0; i < nameServer.length; i++) {
-            Font.normalFont[0].drawString(g, nameServer[i], Canvas.hw, (Canvas.hh - 19) + (i * 16), 2);
+            Font.normalFont[0].drawString(g, TaiDanhSach.tenHien(nameServer[i], i), Canvas.hw, (Canvas.hh - 19) + (i * 16), 2);   // pokemon: an ten game cu
         }
     }
 

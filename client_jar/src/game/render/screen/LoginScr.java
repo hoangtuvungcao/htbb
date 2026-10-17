@@ -251,7 +251,10 @@ public class LoginScr extends Screen {
     public void paint(Graphics g) {
         ServerListScr.gI().paintBg(g);
         Canvas.resetTrans(g);
-        g.drawImage(Canvas.imgLogo, Canvas.hw, Canvas.hh - 70, 3);
+        // pokemon: tieu de ThuongHieu thay logo KPAH
+        if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 125), Canvas.w, Canvas.hh - 37)) {
+            g.drawImage(Canvas.imgLogo, Canvas.hw, Canvas.hh - 70, 3);
+        }
         paintPanel(g);
     }
 

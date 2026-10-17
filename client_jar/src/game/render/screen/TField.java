@@ -7,6 +7,7 @@ import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
+import game.pokemon.ChuPokemon;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.TextBox;
 import javax.microedition.midlet.MIDlet;
@@ -227,14 +228,14 @@ public class TField extends ObjGame {
         } else {
             this.paintedText = this.text;
         }
-        if (this.offsetX < 0 && Font.arialFont.getWidth(this.paintedText) + this.offsetX < ((this.width - 4) - 13) - typingModeAreaWidth) {
-            this.offsetX = ((this.width - 10) - typingModeAreaWidth) - Font.arialFont.getWidth(this.paintedText);
+        if (this.offsetX < 0 && Font.arialFont.getWidthNguyenVan(this.paintedText) + this.offsetX < ((this.width - 4) - 13) - typingModeAreaWidth) {
+            this.offsetX = ((this.width - 10) - typingModeAreaWidth) - Font.arialFont.getWidthNguyenVan(this.paintedText);
         }
-        if (this.offsetX + Font.arialFont.getWidth(this.paintedText.substring(0, this.caretPos)) <= 0) {
-            this.offsetX = -Font.arialFont.getWidth(this.paintedText.substring(0, this.caretPos));
+        if (this.offsetX + Font.arialFont.getWidthNguyenVan(this.paintedText.substring(0, this.caretPos)) <= 0) {
+            this.offsetX = -Font.arialFont.getWidthNguyenVan(this.paintedText.substring(0, this.caretPos));
             this.offsetX += 40;
-        } else if (this.offsetX + Font.arialFont.getWidth(this.paintedText.substring(0, this.caretPos)) >= (this.width - 12) - typingModeAreaWidth) {
-            this.offsetX = (((this.width - 10) - typingModeAreaWidth) - Font.arialFont.getWidth(this.paintedText.substring(0, this.caretPos))) - 8;
+        } else if (this.offsetX + Font.arialFont.getWidthNguyenVan(this.paintedText.substring(0, this.caretPos)) >= (this.width - 12) - typingModeAreaWidth) {
+            this.offsetX = (((this.width - 10) - typingModeAreaWidth) - Font.arialFont.getWidthNguyenVan(this.paintedText.substring(0, this.caretPos))) - 8;
         }
         if (this.offsetX > 0) {
             this.offsetX = 0;
@@ -469,11 +470,17 @@ public class TField extends ObjGame {
         g.drawRect(this.x + 1, this.y + 1, this.width - 2, this.height - 2);
         g.setClip(this.x + 3, this.y + 1, (this.width - typingModeAreaWidth) - 8, this.height - 4);
         g.setColor(0);
-        Font.arialFont.drawString(g, this.paintedText, 4 + this.offsetX + this.x, this.y + ((this.height - Font.arialFont.getHeight()) / 2), 0);
+        // pokemon (G7.C3): chu nguoi choi dang go giu nguyen (khong qua ChuPokemon)
+        ChuPokemon.KhongDoi = true;
+        try {
+            Font.arialFont.drawString(g, this.paintedText, 4 + this.offsetX + this.x, this.y + ((this.height - Font.arialFont.getHeight()) / 2), 0);
+        } finally {
+            ChuPokemon.KhongDoi = false;
+        }
         if (isFocused() && this.keyInActiveState == 0) {
             if (this.showCaretCounter > 0 || (this.counter / 5) % 2 == 0) {
                 g.setColor(0);
-                g.fillRect((((5 + this.offsetX) + this.x) + Font.arialFont.getWidth(this.paintedText.substring(0, this.caretPos))) - 1, this.y + ((this.height - CARET_HEIGHT) / 2) + 1, 1, CARET_HEIGHT);
+                g.fillRect((((5 + this.offsetX) + this.x) + Font.arialFont.getWidthNguyenVan(this.paintedText.substring(0, this.caretPos))) - 1, this.y + ((this.height - CARET_HEIGHT) / 2) + 1, 1, CARET_HEIGHT);
             }
         }
     }

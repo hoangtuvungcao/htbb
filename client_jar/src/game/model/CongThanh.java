@@ -50,6 +50,10 @@ public class CongThanh extends Monster {
 
     @Override
     public void paint(Graphics g) {
+        // pokemon: template da la Pokemon (lenh -91) hoac do vat PMD: ve bang PokeBody, bo renderer boss cu
+        if (paintPokemon(g)) {
+            return;
+        }
         if (Res.monsterTemplates[this.monster_type] != null && Res.monsterTemplates[this.monster_type].image != null) {
             g.drawRegion(Res.monsterTemplates[this.monster_type].image, 32, 0, 48, 89, 0, (this.x - 48) + this.x0, this.y + this.y0, 36);
             g.drawRegion(Res.monsterTemplates[this.monster_type].image, 32, 0, 48, 89, 2, this.x + this.x0, this.y + this.y0, 36);

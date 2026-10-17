@@ -45,6 +45,28 @@ public abstract class LiveActor extends Actor {
     public Vector Vec_Effect_Skill = new Vector();
     public short totalTime = 36;
 
+    // pokemon: dong tac PokeBody dang ve va tick luc bat dau (ClientUnity LiveActor.cs)
+    public int pokeDongTacCu = -1;
+    public int pokeTickBatDau;
+
+    /** So tick ke tu luc bat dau dong tac hien tai (Canvas.gameTick quay ve 0 sau 10000). */
+    public int pokeTickTrongDongTac(int dongTac) {
+        if (dongTac != this.pokeDongTacCu) {
+            this.pokeDongTacCu = dongTac;
+            this.pokeTickBatDau = game.render.Canvas.gameTick;
+        }
+        int t = game.render.Canvas.gameTick - this.pokeTickBatDau;
+        if (t < 0) {
+            t += 10001;
+        }
+        return t;
+    }
+
+    /** Dang bi danh trung: dang nay len (jump/jumpVang) hoac dang bi day lui. */
+    public boolean pokeDangTrungDon() {
+        return this.z < 0 || this.dvangx != 0 || this.dvangy != 0;
+    }
+
     public int nextInt(int max) {
         return GameScr.abs(r.nextInt(max));
     }

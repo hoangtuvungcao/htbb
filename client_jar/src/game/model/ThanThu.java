@@ -7,6 +7,8 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.util.Hashtable;
 import java.util.Vector;
+import game.pokemon.PokeBody;
+import game.pokemon.PokeDuLieu;
 import javax.microedition.lcdui.Graphics;
 
 public class ThanThu extends Char {
@@ -157,9 +159,52 @@ public class ThanThu extends Char {
         }
     }
 
+    /** pokemon: than thu (Hoa ky lan cap 1..3 = idThanThu 0..2) -> Ponyta, Rapidash, Rapidash shiny. */
+    public static final short[] POKE_DEX_THAN_THU = {77, 78, 78};
+    public static final boolean[] POKE_SHINY_THAN_THU = {false, false, true};
+
+    private boolean paintPokemonThanThu(Graphics g) {
+        if (!PokeBody.CHE_DO_POKEMON || this.idThanThu < 0 || this.idThanThu >= POKE_DEX_THAN_THU.length) {
+            return false;
+        }
+        int dex = POKE_DEX_THAN_THU[this.idThanThu];
+        boolean shiny = POKE_SHINY_THAN_THU[this.idThanThu];
+        if (!PokeBody.coSprite(dex, shiny)) {
+            return false;
+        }
+        int dongTac;
+        switch (this.state) {
+            case DEAD:
+            case DEADFLY:
+                dongTac = PokeDuLieu.GUC_NGA;
+                break;
+            case WALK:
+                dongTac = PokeDuLieu.CHAY;
+                break;
+            case ATTACK:
+                dongTac = PokeDuLieu.DANH_GAN;
+                break;
+            case INJURE:
+                dongTac = PokeDuLieu.TRUNG_DON;
+                break;
+            default:
+                dongTac = PokeDuLieu.DUNG;
+                break;
+        }
+        g.drawImage(Res.imgShadow, this.x, this.y - 2, 3);
+        PokeBody.paint(g, dex, shiny, this.x + this.vangx, this.y + this.vangy, this.dir, dongTac, pokeTickTrongDongTac(dongTac), 100);
+        return true;
+    }
+
     @Override
     public void paint(Graphics g) {
-        if (this.isDie || this.data.size() == 0) {
+        if (this.isDie) {
+            return;
+        }
+        if (paintPokemonThanThu(g)) {
+            return;
+        }
+        if (this.data.size() == 0) {
             return;
         }
         try {

@@ -12,6 +12,32 @@ final class Nen {
     private Nen() {
     }
 
+    /**
+     * pokemon: chữ trên nút mod nổi (AutoGuard) theo từ ngữ Pokémon, khớp từ điển ChuPokemon
+     * ("vận tiêu" -> "giao hàng", "đồ sát" -> "PK", "L.thổ"/map -> "Vùng"). Chức năng giữ nguyên.
+     */
+    static String nhanNut(String s) {
+        if (!game.pokemon.PokeBody.CHE_DO_POKEMON) {
+            return s;
+        }
+        if ("Up".equals(s)) {
+            return "Luyện";      // tự đánh quái lên cấp
+        }
+        if ("Tiêu".equals(s)) {
+            return "Giao";       // tự vận tiêu = giao hàng
+        }
+        if ("Nháy".equals(s)) {
+            return "Nhảy";
+        }
+        if ("Map".equals(s)) {
+            return "Vùng";
+        }
+        if ("ĐS".equals(s)) {
+            return "PK";         // đồ sát -> PK như từ điển
+        }
+        return s;
+    }
+
     /** Cỡ nút mod nổi (px): nhỏ cho màn giả lập J2ME. */
     static final int CO_NUT = 38;
 

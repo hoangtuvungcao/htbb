@@ -22,11 +22,50 @@ final class TaiDanhSach {
     /** Danh sách ghi sẵn: dùng khi không tải được LINK nào - không có thì client không biết vào server nào. */
     private static final String MAC_DINH_HOST = "nqsh-h2.top";
     private static final short MAC_DINH_CONG = 30774;
-    private static final String MAC_DINH = "NQSH-H2|" + MAC_DINH_HOST + "|" + MAC_DINH_CONG;
+    // pokemon: ten hien tren man chon server (khong de lo ten game cu)
+    private static final String MAC_DINH = "Máy chủ 1|" + MAC_DINH_HOST + "|" + MAC_DINH_CONG;
     private static boolean daTai;
     private static boolean dangTai;
 
     private TaiDanhSach() {
+    }
+
+    /**
+     * Thuộc tính MANIFEST "HTBB-May-Chu: host:cong" chỉ định MỘT server Pokémon: build.sh ghi vào mọi bản
+     * khi đặt MAY_CHU_CHINH, hoặc chỉ bản thử ...-thu.jar khi đặt MAY_CHU (thêm "HTBB-Ban-Thu: 1").
+     * Có thì không tải danh sách server cũ và bỏ xác thực -88 (server Pokémon KPAH không có lệnh này).
+     */
+    static String mayChuThu() {
+        try {
+            String s = game.GameMidlet.instance == null ? null : game.GameMidlet.instance.getAppProperty("HTBB-May-Chu");
+            if (s == null) {
+                return null;
+            }
+            s = s.trim();
+            int i = s.lastIndexOf(':');
+            if (i <= 0 || i == s.length() - 1) {
+                return null;
+            }
+            Short.parseShort(s.substring(i + 1).trim());
+            return s;
+        } catch (Throwable e) {
+            return null;
+        }
+    }
+
+    /**
+     * pokemon: tên server hiện trên màn chọn. Danh sách tải về / lưu RMS từ bản cũ có thể mang tên game
+     * cũ (vd "NQSH-H2"): hiện thành "Máy chủ n" để giao diện không lộ tên KPAH/NQSH.
+     */
+    static String tenHien(String ten, int i) {
+        if (ten == null) {
+            return "";
+        }
+        String hoa = ten.toUpperCase();
+        if (hoa.indexOf("NQSH") >= 0 || hoa.indexOf("KPAH") >= 0) {
+            return "Máy chủ " + (i + 1);
+        }
+        return ten;
     }
 
     /** Mở màn chọn server lần đầu: tải ngầm một lần, không hiện gì. */
@@ -35,6 +74,20 @@ final class TaiDanhSach {
             return;
         }
         daTai = true;
+        String thu = mayChuThu();
+        if (thu != null) {
+            int i = thu.lastIndexOf(':');
+            String ten = "Huyền Thoại Bảo Bối";
+            try {
+                if ("1".equals(game.GameMidlet.instance.getAppProperty("HTBB-Ban-Thu"))) {
+                    ten = "Thử nghiệm";
+                }
+            } catch (Throwable e) {
+                // giu ten mac dinh
+            }
+            apDung(ten + "|" + thu.substring(0, i).trim() + "|" + thu.substring(i + 1).trim());
+            return;
+        }
         // có ngay server ghi sẵn, không phải đợi tải (HTTPS trên máy J2ME có thể treo lâu rồi mới hỏng)
         try {
             if (!TaiDanhSach.coMacDinh()) {
@@ -49,6 +102,9 @@ final class TaiDanhSach {
 
     /** Nút "Cập nhật": tải lại, hiện chờ / báo lỗi như bản gốc. */
     static void capNhat() {
+        if (mayChuThu() != null) {
+            return;
+        }
         Canvas.startWaitDlg();
         tai(true);
     }

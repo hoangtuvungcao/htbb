@@ -8,6 +8,8 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Vector;
+import game.pokemon.PokeBody;
+import game.pokemon.VatThePokemon;
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
@@ -35,6 +37,44 @@ public class MonsterTemplate {
     public Vector dataMonsterNew;
     public long timePaint;
     byte[] arrayDataMonsterNew;
+
+    /**
+     * pokemon: Pokemon cua tung template quai, index = idTemplate (lenh 26 dem bang 1 byte).
+     * Nhan qua lenh -91 POKE_QUAI ngay sau lenh 26. pokeDex = 0: ve kieu cu. pokeTiLe: % (100 = 1x).
+     */
+    public static short[] pokeDex = new short[256];
+    public static boolean[] pokeShiny = new boolean[256];
+    public static short[] pokeTiLe = new short[256];
+
+    public static void datPoke(int idTemplate, int dex, boolean shiny, int tiLe) {
+        if (idTemplate < 0 || idTemplate >= pokeDex.length) {
+            return;
+        }
+        pokeDex[idTemplate] = (short) dex;
+        pokeShiny[idTemplate] = shiny;
+        pokeTiLe[idTemplate] = (short) (tiLe <= 0 ? 100 : tiLe);
+    }
+
+    public static void xoaPoke() {
+        for (int i = 0; i < pokeDex.length; i++) {
+            pokeDex[i] = 0;
+            pokeShiny[i] = false;
+            pokeTiLe[i] = 100;
+        }
+    }
+
+    public static int layPokeDex(int idTemplate) {
+        if (idTemplate < 0 || idTemplate >= pokeDex.length) {
+            return 0;
+        }
+        return pokeDex[idTemplate];
+    }
+
+    /** Template nay ve bang PokeBody va co du sprite trong jar. */
+    public static boolean laPokemon(int idTemplate) {
+        int dex = layPokeDex(idTemplate);
+        return dex > 0 && PokeBody.coSprite(dex, pokeShiny[idTemplate]);
+    }
 
     public MonsterTemplate() {
         this.type = -1;
@@ -137,6 +177,10 @@ public class MonsterTemplate {
     }
 
     public void loadImage() {
+        // pokemon: template da la Pokemon (-91) hoac do vat PMD thi khong xin anh quai cu (-47)
+        if (laPokemon(this.type) || VatThePokemon.laVatThe(this.type)) {
+            return;
+        }
         if (!this.isLoad && this.type > -1) {
             GameService.gI().doRequestImageMonster(this.type, this.palate, this.spalate);
             this.isLoad = true;

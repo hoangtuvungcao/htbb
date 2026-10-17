@@ -3517,7 +3517,10 @@ public class GameScr extends Screen {
         }
         Canvas.resetTrans(g);
         g.drawImage(imgInfo, 0, 0, 20);
-        Res.getCharPartInfo(2, this.mainChar.currentHead).paintStatic(g, (short) 20, (short) 18, 0, this.mainChar.frame);
+        // pokemon: chan dung Pokemon thay dau nhan vat o khung thong tin
+        if (this.mainChar.pokeDex <= 0 || !game.pokemon.PokeBody.paintChanDung(g, this.mainChar.pokeDex, this.mainChar.pokeShiny, 17, 17, 22)) {
+            Res.getCharPartInfo(2, this.mainChar.currentHead).paintStatic(g, (short) 20, (short) 18, 0, this.mainChar.frame);
+        }
         Font.borderFont.drawString(g, new StringBuffer("Lv ").append((int) this.mainChar.level).append("+").append(this.mainChar.getPercent()).toString(), 37, imgInfo.getHeight() - 9, 0);
         if (this.mainChar.killer > 0) {
             Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) this.mainChar.killer)).toString(), 5, imgInfo.getHeight() + 2, 0);
@@ -5402,6 +5405,8 @@ public class GameScr extends Screen {
                         this.mainChar.lvBuff[lvid] = (byte) lvSkill;
                         this.mainChar.buffType[lvid] = (byte) buffID;
                         this.mainChar.buff.addElement(cb);
+                        // pokemon (K3): particle chieu bo tro tren nguoi Pokemon
+                        game.pokemon.PokeHieuUng.khiNhanBuff(this.mainChar, buffID);
                         return;
                     }
                     return;
@@ -5416,6 +5421,7 @@ public class GameScr extends Screen {
                             ((Char) ch2).lvBuff[lvid] = (byte) lvSkill;
                             ((Char) ch2).buffType[lvid] = (byte) buffID;
                             ((Char) ch2).buff.addElement(cb2);
+                            game.pokemon.PokeHieuUng.khiNhanBuff(ch2, buffID);
                             return;
                         }
                         return;

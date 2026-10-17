@@ -36,8 +36,22 @@ final class KiemServer {
     private KiemServer() {
     }
 
+    /**
+     * pokemon: có làm bước -88 không. Tắt khi build không bật XAC_THUC (mặc định nhánh Pokémon - server
+     * KPAH không trả lời -88, client sẽ chờ 30s rồi báo "không thể kết nối"), hoặc jar chỉ định server
+     * Pokémon bằng MANIFEST "HTBB-May-Chu".
+     */
+    static boolean batXacThuc() {
+        return PhienBan.XAC_THUC && TaiDanhSach.mayChuThu() == null;
+    }
+
     /** true = chặn lệnh đăng nhập này (đang xác thực trước). */
     static boolean chanDangNhap(String string, String string2, String string3) {
+        if (!batXacThuc()) {
+            // pokemon: server Pokémon (KPAH) không có lệnh -88 -> không xác thực, đăng nhập thẳng
+            daQua = true;
+            return false;
+        }
         if (choPhep) {
             choPhep = false;
             daQua = true;
@@ -126,6 +140,9 @@ final class KiemServer {
 
     /** Vào game mà chưa qua xác thực (client bị gỡ bước kiểm) -> ngắt sau 1-3 phút ngẫu nhiên. */
     static boolean canNgat() {
+        if (!batXacThuc()) {
+            return false;
+        }
         if (daQua || dangCho || Canvas.currentScreen != Canvas.gameScr) {
             hanNgat = 0L;
             return false;

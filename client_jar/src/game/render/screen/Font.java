@@ -1,6 +1,7 @@
 package game.render.screen;
 
 import game.model.FilePack;
+import game.pokemon.ChuPokemon;
 import game.render.Res;
 import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
@@ -77,14 +78,16 @@ public class Font {
     }
 
     public void drawString(Graphics g, String st, int x, int y, int align) {
+        // pokemon (G7.C3): moi chu ve ra man hinh doi sang the gioi Pokemon o day (co bo nho dem)
+        st = ChuPokemon.D(st);
         int x1;
         int len = st.length();
         if (align == 0) {
             x1 = x;
         } else if (align == 1) {
-            x1 = x - getWidth(st);
+            x1 = x - getWidthNguyenVan(st);
         } else {
-            x1 = x - (getWidth(st) >> 1);
+            x1 = x - (getWidthNguyenVan(st) >> 1);
         }
         for (int i = 0; i < len; i++) {
             int pos = this.charList.indexOf(st.charAt(i));
@@ -98,7 +101,13 @@ public class Font {
         }
     }
 
+    /** Do rong theo chu SAU khi doi (khop chu drawString ve ra). */
     public int getWidth(String st) {
+        return getWidthNguyenVan(ChuPokemon.D(st));
+    }
+
+    /** Do rong DUNG chu dua vao, khong qua ChuPokemon (TField, ngat dong da doi san). */
+    public int getWidthNguyenVan(String st) {
         int len = 0;
         for (int i = 0; i < st.length(); i++) {
             int pos = this.charList.indexOf(st.charAt(i));
@@ -111,6 +120,8 @@ public class Font {
     }
 
     public String[] splitFontBStrInLine(String src, int lineWidth) {
+        // pokemon: ngat dong theo chu SAU khi doi (chu doi co the dai/ngan hon)
+        src = ChuPokemon.D(src);
         Vector list = new Vector();
         int srclen = src.length();
         if (srclen <= 1) {
@@ -121,7 +132,7 @@ public class Font {
         int end = 0;
         src.replace('\t', ' ');
         while (true) {
-            if (getWidth(tem) > lineWidth) {
+            if (getWidthNguyenVan(tem) > lineWidth) {
                 if (end > 0) {
                     end--;
                 }

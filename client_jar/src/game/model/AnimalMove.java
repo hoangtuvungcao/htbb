@@ -4,6 +4,8 @@ import game.render.Canvas;
 import game.render.Res;
 import game.render.Util;
 import game.render.screen.GameData;
+import game.pokemon.PokeBody;
+import game.pokemon.PokeDuLieu;
 import javax.microedition.lcdui.Graphics;
 
 public class AnimalMove extends Char {
@@ -195,8 +197,74 @@ public class AnimalMove extends Char {
         return true;
     }
 
+    /** pokemon: ti le ve pet Pokemon di theo (%), nho hon chu nhan. */
+    public static final int TI_LE_POKE_PET = 70;
+    private int pokeXCu = Integer.MIN_VALUE;
+    private int pokeYCu;
+    private int pokeDiCon;
+
+    /**
+     * pokemon: ve pet di theo bang PokeBody khi chu nhan co pokePetDex (lenh -94) hoac pet kieu cu
+     * co trong bang POKE_DEX_PET_CU. false = ve kieu cu (ClientUnity AnimalMove.vePokePet).
+     */
+    protected boolean vePokePet(Graphics g, Char chu) {
+        if (chu == null) {
+            return false;
+        }
+        int dex = chu.pokePetDex;
+        boolean shiny = chu.pokePetShiny;
+        if (dex <= 0) {
+            dex = dexPetCu();
+            shiny = false;
+        }
+        if (dex <= 0 || !PokeBody.coSprite(dex, shiny)) {
+            return false;
+        }
+        if (this.pokeXCu != Integer.MIN_VALUE && (this.x != this.pokeXCu || this.y != this.pokeYCu)) {
+            this.pokeDiCon = 4;
+        } else if (this.pokeDiCon > 0) {
+            this.pokeDiCon--;
+        }
+        this.pokeXCu = this.x;
+        this.pokeYCu = this.y;
+        if (this.timeMagic % 2 != 0) {
+            return true;   // nhap nhay luc pet bien mat, giong duong ve cu
+        }
+        int dongTac = this.pokeDiCon > 0 ? PokeDuLieu.CHAY : PokeDuLieu.DUNG;
+        if (Res.imgShadowPet != null) {
+            g.drawImage(Res.imgShadowPet, this.x, this.y, 3);
+        }
+        PokeBody.paint(g, dex, shiny, this.x, this.y, this.dir, dongTac, Canvas.gameTick, TI_LE_POKE_PET);
+        return true;
+    }
+
+    /** Pet kieu cu (anh map/pet/<imgID> = PetTemplate.idImg 0..20) -> {idImg, dex} (bang_pet_cu.csv). */
+    public static final short[][] POKE_DEX_PET_CU = {{0, 607}, {1, 276}, {2, 165}, {3, 41}, {4, 370}, {5, 270}, {6, 120}, {7, 615}, {8, 77}, {9, 27}, {10, 417}, {11, 29}, {12, 129}, {13, 393}, {14, 179}, {15, 385}, {16, 146}, {17, 144}, {18, 121}, {19, 337}, {20, 190}};
+
+    public static int dexTheoIdImgPetCu(int idImg) {
+        if (!PokeBody.CHE_DO_POKEMON) {
+            return 0;
+        }
+        for (int i = 0; i < POKE_DEX_PET_CU.length; i++) {
+            if (POKE_DEX_PET_CU[i][0] == idImg) {
+                return POKE_DEX_PET_CU[i][1];
+            }
+        }
+        return 0;
+    }
+
+    protected int dexPetCu() {
+        if (this.type == 5) {
+            return 0;
+        }
+        return dexTheoIdImgPetCu(this.imgID);
+    }
+
     @Override
     public void paint(Graphics g) {
+        if (vePokePet(g, this.myOwner)) {
+            return;
+        }
         ImageIcon img = GameData.getImgIcon((short) (this.imgID + 5200));
         if (this.myOwner != null && img != null && !img.isLoad) {
             if (this.hImg == 1) {

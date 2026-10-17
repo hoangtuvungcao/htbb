@@ -7,6 +7,9 @@ import game.model.MainChar;
 import game.networklogic.GameService;
 import game.render.Canvas;
 import game.render.Res;
+import game.pokemon.LoaiPokemonClient;
+import game.pokemon.PokeBody;
+import game.pokemon.PokeDuLieu;
 import javax.microedition.lcdui.Graphics;
 
 public class CreateCharScr extends Screen {
@@ -48,6 +51,10 @@ public class CreateCharScr extends Screen {
         this.tfChat.height = Screen.ITEM_HEIGHT + 2;
         this.tfChat.isFocus = true;
         this.tfChat.setIputType(3);
+        if (PokeBody.CHE_DO_POKEMON) {
+            // pokemon: khong co gioi tinh/kieu toc - luon gui gender = 0, headStyle = 0 (muc 4.2)
+            selectGender = 0;
+        }
         this.ch.state = (byte) 0;
         this.currentClazz = 0;
         this.ch.hatStyle = (short) -1;
@@ -75,7 +82,11 @@ public class CreateCharScr extends Screen {
                 if (CreateCharScr.this.tfChat.getText().length() < 4 || CreateCharScr.this.tfChat.getText().length() > 15) {
                     Canvas.startOKDlg("Tên nhân vật phải từ 4 đến 15 ký tự");
                 } else {
-                    GameService.gI().createChar(CreateCharScr.this.tfChat.getText(), CreateCharScr.this.currentClazz, CreateCharScr.clazz[CreateCharScr.this.currentClazz][CreateCharScr.selectGender].headID, CreateCharScr.selectGender, CreateCharScr.selectNation);
+                    if (PokeBody.CHE_DO_POKEMON) {
+                        GameService.gI().createChar(CreateCharScr.this.tfChat.getText(), CreateCharScr.this.currentClazz, 0, 0, CreateCharScr.selectNation);
+                    } else {
+                        GameService.gI().createChar(CreateCharScr.this.tfChat.getText(), CreateCharScr.this.currentClazz, CreateCharScr.clazz[CreateCharScr.this.currentClazz][CreateCharScr.selectGender].headID, CreateCharScr.selectGender, CreateCharScr.selectNation);
+                    }
                     Canvas.startWaitDlg("Xin chờ", true);
                 }
             }
@@ -101,9 +112,11 @@ public class CreateCharScr extends Screen {
         if (this.selected == 0) {
             this.tfChat.keyPressed(keyCode);
         }
+        // pokemon: chi 3 dong - 0 ten, 1 Pokemon khoi dau (class), 2 lanh tho (dong goc 4)
+        int dongCuoi = PokeBody.CHE_DO_POKEMON ? 2 : 4;
         if (keyCode == -2) {
             this.selected++;
-            if (this.selected > 4) {
+            if (this.selected > dongCuoi) {
                 this.selected = 0;
             }
             if (this.selected == 0) {
@@ -115,7 +128,7 @@ public class CreateCharScr extends Screen {
         if (keyCode == -1) {
             this.selected--;
             if (this.selected < 0) {
-                this.selected = 4;
+                this.selected = dongCuoi;
             }
             if (this.selected == 0) {
                 this.tfChat.isFocus = true;
@@ -123,19 +136,23 @@ public class CreateCharScr extends Screen {
                 this.tfChat.isFocus = false;
             }
         }
+        int selected = this.selected;
+        if (PokeBody.CHE_DO_POKEMON && selected == 2) {
+            selected = 4;
+        }
         if (keyCode == -3) {
-            if (this.selected == 1) {
+            if (selected == 1) {
                 this.currentClazz++;
                 if (this.currentClazz >= 5) {
                     this.currentClazz = 0;
                 }
                 isChangeClass = true;
             }
-            if (this.selected == 2) {
+            if (selected == 2) {
                 selectGender = selectGender == 1 ? 0 : 1;
                 changChar();
             }
-            if (this.selected == 3) {
+            if (selected == 3) {
                 CharClassInfo charClassInfo = clazz[this.currentClazz][selectGender];
                 charClassInfo.headID = (short) (charClassInfo.headID - 2);
                 if (clazz[this.currentClazz][selectGender].headID < 0) {
@@ -143,7 +160,7 @@ public class CreateCharScr extends Screen {
                 }
                 isChangeClass = true;
             }
-            if (this.selected == 4) {
+            if (selected == 4) {
                 selectNation--;
                 if (selectNation < 0) {
                     selectNation = 1;
@@ -151,18 +168,18 @@ public class CreateCharScr extends Screen {
             }
         }
         if (keyCode == -4) {
-            if (this.selected == 1) {
+            if (selected == 1) {
                 this.currentClazz--;
                 if (this.currentClazz < 0) {
                     this.currentClazz = 4;
                 }
                 isChangeClass = true;
             }
-            if (this.selected == 2) {
+            if (selected == 2) {
                 selectGender = selectGender == 0 ? 1 : 0;
                 changChar();
             }
-            if (this.selected == 3) {
+            if (selected == 3) {
                 CharClassInfo charClassInfo2 = clazz[this.currentClazz][selectGender];
                 charClassInfo2.headID = (short) (charClassInfo2.headID + 2);
                 if (clazz[this.currentClazz][selectGender].headID > 5) {
@@ -170,7 +187,7 @@ public class CreateCharScr extends Screen {
                 }
                 isChangeClass = true;
             }
-            if (this.selected == 4) {
+            if (selected == 4) {
                 selectNation++;
                 if (selectNation > 1) {
                     selectNation = 0;
@@ -200,6 +217,13 @@ public class CreateCharScr extends Screen {
             Font.normalFont[0].drawString(g, "*", Canvas.hw + 57, (y + (this.selected * 17)) - 1, 0);
         }
         Font.normalFont[0].drawString(g, "Tên:", x, y, 0);
+        if (PokeBody.CHE_DO_POKEMON) {
+            paintPokemon(g, x, y);
+            this.tfChat.paint(g);
+            g.setClip(0, 0, Canvas.w, Canvas.h);
+            super.paint(g);
+            return;
+        }
         int y2 = y + 17;
         Font.normalFont[0].drawString(g, new StringBuffer("Dòng: ").append(clazz[this.currentClazz][selectGender].name).toString(), x, y2, 0);
         int y3 = y2 + 17;
@@ -217,6 +241,23 @@ public class CreateCharScr extends Screen {
         this.tfChat.paint(g);
         g.setClip(0, 0, Canvas.w, Canvas.h);
         super.paint(g);
+    }
+
+    /** pokemon: man tao nhan vat - 5 Pokemon khoi dau thay 5 class (bang 4.1, ClientUnity CreateCharScr.cs). */
+    private void paintPokemon(Graphics g, int x, int y) {
+        int y2 = y + 17;
+        Font.normalFont[0].drawString(g, new StringBuffer("Pokémon: ").append(LoaiPokemonClient.TEN_KHOI_DAU[this.currentClazz]).toString(), x, y2, 0);
+        int y3 = y2 + 17;
+        Font.normalFont[0].drawString(g, new StringBuffer("L.thổ: ").append(GameScr.nameCountry[selectNation]).toString(), x, y3, 0);
+        int y4 = y3 + 17;
+        Font.normalFont[0].drawString(g, LoaiPokemonClient.HE_KHOI_DAU[this.currentClazz], x, y4, 0);
+        Font.normalFont[0].drawString(g, LoaiPokemonClient.VAI_TRO[this.currentClazz], x, y4 + 17, 0);
+        // chan dung + Pokemon dang dung (Idle); thieu sprite thi ve paper doll cu
+        int dex = LoaiPokemonClient.khoiDau(this.currentClazz);
+        PokeBody.paintChanDung(g, dex, false, Canvas.hw - 40, Canvas.hh - 68, 32);
+        if (!PokeBody.paint(g, dex, false, Canvas.hw + 25, Canvas.hh - 50, 0, PokeDuLieu.DUNG, Canvas.gameTick, 100)) {
+            this.ch.paintAvatar(g, (short) Canvas.hw, (short) (Canvas.hh - 30));
+        }
     }
 
     @Override

@@ -411,6 +411,10 @@ public class Tilemap {
                 mapName = "";
                 break;
         }
+        // pokemon (W2): ten dia danh viet cung -> dia danh Pokemon
+        if (game.pokemon.PokeBody.CHE_DO_POKEMON) {
+            mapName = game.pokemon.TenMapPokemon.doi(mapName);
+        }
     }
 
     public static final void paintTile(Graphics g) {

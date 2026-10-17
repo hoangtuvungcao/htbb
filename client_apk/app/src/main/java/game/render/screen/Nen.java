@@ -11,6 +11,11 @@ final class Nen {
     private Nen() {
     }
 
+    /** Chữ trên nút mod nổi (AutoGuard): bản Android giữ nguyên (bản jar Pokémon đổi từ ngữ). */
+    static String nhanNut(String s) {
+        return s;
+    }
+
     /** Cỡ nút mod nổi (px). */
     static final int CO_NUT = 52;
 
