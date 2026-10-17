@@ -115,9 +115,9 @@ public class ServerListScr : MyScreen
 		base.pointerPress(dx, dy);
 	}
 
-	public static void loadSv(bool isKPAH)
+	public static void loadSv(bool isHTBB)
 	{
-		if (isKPAH)
+		if (isHTBB)
 		{
 			// Giống bản jar (TaiDanhSach): server NQSH-H2, danh sách "Tên|host|port" tải từ linkGetHost
 			nameServer = new string[1] { "NQSH-H2" };
@@ -136,7 +136,7 @@ public class ServerListScr : MyScreen
 			linkGetHost = "http://teamobi.com/srvips/ngude2.txt";
 			GameMidlet.numberSupport = "19001530";
 		}
-		Debug.Log("Ban: " + ((!isKPAH) ? "-- ngu de" : "-- khi phach anh hung"));
+		Debug.Log("Ban: " + ((!isHTBB) ? "-- ngu de" : "-- huyen thoai bao boi"));
 	}
 
 	/// <summary>
@@ -385,7 +385,7 @@ public class ServerListScr : MyScreen
 		}
 		catch (IOException)
 		{
-			loadSv(GameMidlet.isKPAH);
+			loadSv(GameMidlet.isHTBB);
 		}
 	}
 

@@ -1,17 +1,17 @@
 #!/bin/sh
-# Build bản jar J2ME (KPAH 2.7.6 + mod) hoàn toàn từ source:
+# Build bản jar J2ME (client TeaMobi 2.7.6 + mod) hoàn toàn từ source:
 #   src/          code game (decompile từ jar gốc TeaMobi) + phần riêng J2ME của mod (Nen, KiemServer, TaiDanhSach)
 #   ../shared/mod code mod dùng chung với bản Android (AutoGuard, AutoUp, PauseMenu...)
 #   res/          ảnh + dữ liệu game, MANIFEST.MF
 #   api/          khai báo API WMA (SMS) chỉ để biên dịch - máy J2ME có sẵn, không đóng vào jar
 #
-#   sh build.sh 54     -> out/KPAH_276 (1)-automenu-v54.jar + bản phát hành ...-release.jar (ProGuard)
+#   sh build.sh 54     -> out/HTBB-v54.jar + bản phát hành ...-release.jar (ProGuard)
 #   MAY_CHU=127.0.0.1:19129 sh build.sh 54
 #                      -> bản THỬ ...-v54-thu.jar: MANIFEST thêm "HTBB-May-Chu: host:cong" = chỉ một server thử
 #                         (không tải danh sách, bỏ xác thực -88). Không ảnh hưởng bản thường/phát hành.
-#   KPAH_ASSETS=<KPAH>/ClientUnity/Assets sh build.sh 54
+#   HTBB_ASSETS=<HTBB>/ClientUnity/Assets sh build.sh 54
 #                      -> trước khi build, đóng gói lại sprite + hiệu ứng chiêu Pokémon (res/pk, res/pt, và bản
-#                         nhẹ res_nhe/pk) bằng tools/DongGoiPokeJ2me.java (đọc thêm KPAH docs/pokemon/*.csv)
+#                         nhẹ res_nhe/pk) bằng tools/DongGoiPokeJ2me.java (đọc thêm HTBB docs/pokemon/*.csv)
 #   GOI=nhe sh build.sh 54
 #                      -> thêm bản NHẸ cho máy thật ...-v54-nhe.jar (ProGuard + res_nhe/pk: ít loài, ít khung,
 #                         chân dung 24px; loài thiếu vẽ bằng bóng đen, xem DongGoiPokeJ2me)
@@ -19,7 +19,7 @@
 #                      -> MỌI bản (thường/phát hành/nhẹ) chỉ vào server Pokémon này ("HTBB-May-Chu" trong
 #                         MANIFEST), không tải danh sách server cũ.
 #   XAC_THUC=1 sh build.sh 54
-#                      -> bật lại xác thực -88 (chỉ server NQSH cũ có lệnh này; server Pokémon KPAH KHÔNG có:
+#                      -> bật lại xác thực -88 (chỉ server NQSH cũ có lệnh này; server Pokémon HTBB KHÔNG có:
 #                         mặc định TẮT để bản thường/phát hành đăng nhập được server Pokémon)
 #
 # Bước: javac (--release 8) -> Down45 (class 45 + StringBuffer, kiểm API CLDC) -> jar -> ProGuard.
@@ -34,13 +34,13 @@ esac
 J=${JDK_BIN:-$JMD}
 RT_JAR=${RT_JAR:-$RMD}    # rt.jar của JRE 8: thư viện cho ProGuard (không đọc được jmods JDK mới)
 [ -f "$RT_JAR" ] || { echo "Khong thay rt.jar cua JRE 8: $RT_JAR (dat bien RT_JAR)"; exit 1; }
-OUT="out/KPAH_276 (1)-automenu-v$V.jar"
+OUT="out/HTBB-v$V.jar"
 B=out/build
 
 rm -rf "$B" && mkdir -p "$B/tool" "$B/api" "$B/gen/game/render/screen" "$B/cls" "$B/cls45" out
 
 # số bản jar gửi kèm khi đăng nhập (server real.BanMoiNhat báo khi có bản mới hơn)
-# XAC_THUC: lệnh -88 (KiemServer) - mặc định tắt trên nhánh Pokémon (server KPAH không trả lời -88)
+# XAC_THUC: lệnh -88 (KiemServer) - mặc định tắt trên nhánh Pokémon (server HTBB không trả lời -88)
 case "${XAC_THUC:-0}" in 1|bat|true) XT=true ;; *) XT=false ;; esac
 printf 'package game.render.screen;\n\n/** Sinh bởi build.sh - KHÔNG sửa tay. */\nfinal class PhienBan {\n    static final int BAN = %s;\n    static final boolean XAC_THUC = %s;\n}\n' "$V" "$XT" > "$B/gen/game/render/screen/PhienBan.java"
 
@@ -53,13 +53,13 @@ find src ../shared/mod "$B/gen" -name '*.java' > "$B/nguon.txt"
 "$J/java" -cp "$B/tool${S}tools/asm.jar" Down45 d "$B/cls" "$B/cls45"
 
 # Pokémon (Huyền Thoại Bảo Bối): sprite/tile/từ điển đóng gói sẵn trong res/pk, res/pt
-if [ -n "$KPAH_ASSETS" ]; then
+if [ -n "$HTBB_ASSETS" ]; then
     mkdir -p "$B/dg"
     "$J/javac" -nowarn -encoding UTF-8 -d "$B/dg" src/game/pokemon/PokeDuLieu.java src/game/pokemon/PokeDongTac.java src/game/pokemon/HieuUngBang.java tools/DongGoiPokeJ2me.java
-    "$J/java" -Djava.awt.headless=true -cp "$B/dg" DongGoiPokeJ2me "$KPAH_ASSETS" res res_nhe
+    "$J/java" -Djava.awt.headless=true -cp "$B/dg" DongGoiPokeJ2me "$HTBB_ASSETS" res res_nhe
 fi
-[ -f res/pk/chu.bin ] || echo "CANH BAO: thieu res/pk (sprite Pokemon) - chay voi KPAH_ASSETS=... de dong goi"
-[ -f res/pk/hu.bin ] || echo "CANH BAO: thieu res/pk/hu.bin (hieu ung chieu Pokemon) - chay voi KPAH_ASSETS=... de dong goi"
+[ -f res/pk/chu.bin ] || echo "CANH BAO: thieu res/pk (sprite Pokemon) - chay voi HTBB_ASSETS=... de dong goi"
+[ -f res/pk/hu.bin ] || echo "CANH BAO: thieu res/pk/hu.bin (hieu ung chieu Pokemon) - chay voi HTBB_ASSETS=... de dong goi"
 
 # MANIFEST chung: MAY_CHU_CHINH -> "HTBB-May-Chu" cho mọi bản
 sed '/^\r*$/d' MANIFEST.MF > "$B/MANIFEST.MF"   # bỏ dòng trống cuối (hết phần chính)
@@ -74,7 +74,7 @@ rm -f "$OUT"
 echo "OK -> $OUT"
 
 if [ -n "$MAY_CHU" ]; then
-    THU="out/KPAH_276 (1)-automenu-v$V-thu.jar"
+    THU="out/HTBB-v$V-thu.jar"
     grep -v '^HTBB-May-Chu:' "$B/MANIFEST.MF" > "$B/MANIFEST-thu.MF"
     printf 'HTBB-May-Chu: %s\nHTBB-Ban-Thu: 1\n' "$MAY_CHU" >> "$B/MANIFEST-thu.MF"
     rm -f "$THU"
@@ -84,7 +84,7 @@ fi
 
 # Bản phát hành: ProGuard (release.pro) đổi tên toàn bộ class/hàm/biến thành a, b, c...
 # mapping-vNN.txt = bảng tên cũ <-> mới: GIỮ RIÊNG, KHÔNG phát kèm, KHÔNG đưa lên git.
-REL="out/KPAH_276 (1)-automenu-v$V-release.jar"
+REL="out/HTBB-v$V-release.jar"
 rm -f "$REL"
 # ProGuard không chịu tên file có dấu cách -> làm trên tên tạm
 cp "$OUT" out/pg-in.jar && rm -f out/pg-out.jar
@@ -95,8 +95,8 @@ echo "OK -> $REL (mapping: out/mapping-v$V.txt)"
 
 # Bản NHẸ (GOI=nhe): như bản phát hành nhưng res/pk thay bằng res_nhe/pk
 if [ "$GOI" = nhe ]; then
-    [ -f res_nhe/pk/chu.bin ] || { echo "Thieu res_nhe/pk - chay voi KPAH_ASSETS=... de dong goi ban nhe"; exit 1; }
-    NHE="out/KPAH_276 (1)-automenu-v$V-nhe.jar"
+    [ -f res_nhe/pk/chu.bin ] || { echo "Thieu res_nhe/pk - chay voi HTBB_ASSETS=... de dong goi ban nhe"; exit 1; }
+    NHE="out/HTBB-v$V-nhe.jar"
     rm -rf "$B/res_nhe" && mkdir -p "$B/res_nhe"
     for e in res/*; do [ "$(basename "$e")" = pk ] || cp -r "$e" "$B/res_nhe/"; done
     cp -r res_nhe/pk "$B/res_nhe/pk"

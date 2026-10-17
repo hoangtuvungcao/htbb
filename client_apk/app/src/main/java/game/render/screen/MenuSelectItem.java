@@ -3,7 +3,7 @@ package game.render.screen;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.core.j2me.Graphics;
 import game.core.j2me.Image;
 import game.model.Char;

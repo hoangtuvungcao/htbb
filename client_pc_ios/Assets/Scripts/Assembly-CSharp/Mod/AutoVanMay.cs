@@ -1,5 +1,5 @@
 /**
- * Auto thử vận may hộp vàng 20 lượng (NPC -10 Tổng quản, KPAH real/MapDoMenu.java case -10).
+ * Auto thử vận may hộp vàng 20 lượng (NPC -10 Tổng quản, HTBB real/MapDoMenu.java case -10).
  * Mỗi lượt gửi liền (server xử lý tuần tự): menu 0 mục 2 "Thử vận may" -> menu 2 mục 1 "Hộp vàng"
  * (typeBox = 1) -> menu 3 mục 0 "5 hộp 20l" (trừ 20 lượng, mở bảng hộp) -> lệnh -62 kiểu 2 mở hết hộp.
  * Menu NPC -10 và bảng hộp (MiniGame) hiện ra giữa chừng thì tự đóng; câu báo thưởng đọc qua

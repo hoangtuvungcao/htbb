@@ -1,4 +1,4 @@
-package com.teamobi.kpah;
+package com.htbb.client;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -52,7 +52,7 @@ public class GameMidlet extends Activity implements Runnable {
     static HttpURLConnection httpConn = null;
     public static GameMidlet instance = null;
     public static boolean isChaCha = false;
-    public static boolean isKPAH = true;
+    public static boolean isHTBB = true;
     public static boolean isLoadAgentPro = false;
     public static RelativeLayout mainView = null;
     public static String numberSupport = "19001530";
@@ -121,7 +121,7 @@ public class GameMidlet extends Activity implements Runnable {
         subview.setFocusableInTouchMode(true);
         ((KeyguardManager) getSystemService("keyguard")).newKeyguardLock("keyguard").disableKeyguard();
         getDeviceSignal();
-        ServerListScr.loadSv(isKPAH);
+        ServerListScr.loadSv(isHTBB);
         IS_ANDROID_9 = true;
         hideSystemUI();
     }
@@ -154,7 +154,7 @@ public class GameMidlet extends Activity implements Runnable {
         Res.resetImgMonsTemp();
         Tilemap.loadMap(0, null);
         ServerListScr.gI().switchToMe();
-        boolean z = isKPAH;
+        boolean z = isHTBB;
         if (z) {
             client_Provider = "0";
             provider = "-1";
@@ -185,10 +185,10 @@ public class GameMidlet extends Activity implements Runnable {
         } catch (Exception unused) {
         }
         GCanvas.isLoad = false;
-        if (!isKPAH) {
+        if (!isHTBB) {
             url = "http://ngude.go.vn/";
         }
-        System.out.println(version + " thong so: " + (isKPAH ? "KPAH " : "NGU DE ") + (isLoadAgentPro ? "Ban trang " : "Ban thuong: ") + "client_Provider= " + client_Provider + " agent =: " + agent + " pro =:" + provider + (VERSION == 1 ? " BAN THUONG" : " GOOGLE"));
+        System.out.println(version + " thong so: " + (isHTBB ? "HTBB " : "NGU DE ") + (isLoadAgentPro ? "Ban trang " : "Ban thuong: ") + "client_Provider= " + client_Provider + " agent =: " + agent + " pro =:" + provider + (VERSION == 1 ? " BAN THUONG" : " GOOGLE"));
     }
 
     public void getDeviceSignal() {

@@ -12,7 +12,7 @@
  */
 public sealed class AutoUp
 {
-	private const string RMS_TEN = "kpahup";
+	private const string RMS_TEN = "htbbup";
 	private static readonly int[] BINH_HP = new int[] { 94, 93, 22, 21, 3, 2, 1 };
 	private static readonly int[] BINH_MP = new int[] { 96, 95, 24, 23, 6, 5, 4 };
 	/** Loại skill buff theo phái (y BangAuto.isBuffSkillAuto); phái 2 loại 6 là hồi sinh -> bỏ. */

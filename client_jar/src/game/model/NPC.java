@@ -33,7 +33,7 @@ public class NPC extends Actor {
 
     /**
      * pokemon: NPC tinh (type 0..31, cung index voi NPCNAME) -> so Pokedex ve bang PokeBody.
-     * 0 = giu anh NPC cu. Bang day du: KPAH docs/pokemon/bang_npc.csv (ClientUnity NPC.cs).
+     * 0 = giu anh NPC cu. Bang day du: HTBB docs/pokemon/bang_npc.csv (ClientUnity NPC.cs).
      */
     public static final short[] POKE_DEX_THEO_TYPE = {113, 352, 68, 437, 59, 178, 53, 18, 143, 115, 131, 76, 76, 76, 76, 76, 128, 128, 128, 128, 128, 257, 52, 324, 302, 214, 352, 437, 83, 53, 115, 52};
 

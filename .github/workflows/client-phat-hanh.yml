@@ -116,7 +116,7 @@ jobs:
       - name: Build jar
         run: |
           RT_JAR="$JAVA_HOME_8_X64/jre/lib/rt.jar" sh j2me/build.sh ${{ needs.so-ban.outputs.jar }}
-          cp "j2me/out/KPAH_276 (1)-automenu-v${{ needs.so-ban.outputs.jar }}-release.jar" NQSH-H2-v${{ needs.so-ban.outputs.jar }}.jar
+          cp "j2me/out/HTBB-v${{ needs.so-ban.outputs.jar }}-release.jar" NQSH-H2-v${{ needs.so-ban.outputs.jar }}.jar
       - uses: actions/upload-artifact@v7
         with:
           name: jar
@@ -156,11 +156,11 @@ jobs:
           buildName: NQSH-H2
           buildsPath: build
           # số bản qua tham số dòng lệnh: GameCI KHÔNG chuyển biến môi trường vào container Unity
-          customParameters: -kpahBan ${{ needs.so-ban.outputs.pc }} ${{ inputs.pc_kieu != 'il2cpp' && '-kpahMono' || '' }}
+          customParameters: -htbbBan ${{ needs.so-ban.outputs.pc }} ${{ inputs.pc_kieu != 'il2cpp' && '-htbbMono' || '' }}
       - name: Kiểm tra số bản trong bản build
         run: |
           ls build
-          that=$(cat build/kpah-ban.txt 2>/dev/null || echo "?")
+          that=$(cat build/htbb-ban.txt 2>/dev/null || echo "?")
           echo "So ban trong ban build: $that, can: ${{ needs.so-ban.outputs.pc }}"
           if [ "$that" != "${{ needs.so-ban.outputs.pc }}" ]; then
             echo "::error::Ban build mang so $that, khac ${{ needs.so-ban.outputs.pc }} - KHONG phat hanh (client se cap nhat lap lai)"

@@ -1,11 +1,11 @@
 /// <summary>
-/// Đo chi phí vẽ mỗi khung (chỉ bật khi chạy game với tham số -kpahDo): mỗi 10 s ghi một dòng [DOKHUNG] vào
+/// Đo chi phí vẽ mỗi khung (chỉ bật khi chạy game với tham số -htbbDo): mỗi 10 s ghi một dòng [DOKHUNG] vào
 /// Player.log - thời gian vẽ trung bình / lớn nhất (canvas.paint trong OnGUI), số byte bộ nhớ cấp phát trong
 /// lúc vẽ mỗi khung, số lần GC. Dùng để so trước/sau khi tối ưu vẽ.
 /// </summary>
 public static class DoKhungHinh
 {
-	public static readonly bool Bat = System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-kpahDo") >= 0;
+	public static readonly bool Bat = System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-htbbDo") >= 0;
 
 	private static readonly System.Diagnostics.Stopwatch dongHo = new System.Diagnostics.Stopwatch();
 

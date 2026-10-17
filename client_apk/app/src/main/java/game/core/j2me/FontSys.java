@@ -3,7 +3,7 @@ package game.core.j2me;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.render.GCanvas;
 import java.util.Vector;
 

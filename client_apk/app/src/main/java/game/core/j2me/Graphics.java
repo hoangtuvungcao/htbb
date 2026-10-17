@@ -8,7 +8,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.model.Cout;
 import game.render.GCanvas;
 

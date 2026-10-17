@@ -8,7 +8,7 @@ import javax.microedition.lcdui.Image;
 
 /**
  * Ve than Pokemon nguyen con (thay paper doll) - ban J2ME cua ClientUnity PokeBody.cs.
- * Tai nguyen trong jar (sinh boi j2me/tools/DongGoiPokeJ2me.java tu Resources/poke/ cua KPAH):
+ * Tai nguyen trong jar (sinh boi j2me/tools/DongGoiPokeJ2me.java tu Resources/poke/ cua HTBB):
  *   /pk/&lt;khoa&gt;.dl          du lieu khung (PokeDuLieu, dinh dang _dl ban 2 + anhDongTac[6])
  *   /pk/&lt;khoa&gt;_&lt;a&gt;.png       anh dong tac a (4 hang huong x soKhung cot), NAP LUOI tung dong tac
  *   /pk/&lt;khoa&gt;_c.png         chan dung 40x40

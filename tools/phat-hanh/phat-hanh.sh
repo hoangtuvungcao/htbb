@@ -40,10 +40,10 @@ elif [ "$LOAI" = jar ]; then
     TEN=NQSH-H2-v$BAN.jar
     sh j2me/build.sh $BAN | tail -2
     # ban -release (ProGuard); mapping-vNN.txt GIU KIN, khong day len
-    cp "j2me/out/KPAH_276 (1)-automenu-v$BAN-release.jar" $TAM/$TEN
+    cp "j2me/out/HTBB-v$BAN-release.jar" $TAM/$TEN
 else
     TEN=NQSH-H2-PC-$BAN.zip
-    KPAH_VERSION_CODE=$BAN KPAH_OUT="$(cygpath -w "$PWD/$TAM/pc")\\NQSH-H2.exe" "$UNITY" -batchmode -nographics -accept-apiupdate \
+    HTBB_VERSION_CODE=$BAN HTBB_OUT="$(cygpath -w "$PWD/$TAM/pc")\\NQSH-H2.exe" "$UNITY" -batchmode -nographics -accept-apiupdate \
         -projectPath "$(cygpath -w "$PWD/pc")" -executeMethod BuildCli.Win64 \
         -logFile "$(cygpath -w "$PWD/$TAM/unity-build.log")" || true
     grep -q "BUILD RESULT: Succeeded" $TAM/unity-build.log || { grep -E "error CS|BUILD RESULT" $TAM/unity-build.log; echo "Build PC loi"; exit 1; }

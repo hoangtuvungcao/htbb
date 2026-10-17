@@ -36,7 +36,7 @@ final class AutoPk {
     private static final String[] AUTO_PK = new String[]{"Tắt", "Ngầm", "Auto click"};
     private static final String[] NO = new String[]{"Tắt", "Nộ 84", "Nộ 123"};
     private static final int[] ID_NO = new int[]{84, 123};
-    private static final String RMS_TEN = "kpahpk";
+    private static final String RMS_TEN = "htbbpk";
 
     // ---- cài đặt (lưu RMS)
     static int dap;

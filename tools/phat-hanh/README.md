@@ -45,7 +45,7 @@ Link cố định để gửi người chơi mới (luôn là bản mới nhất
   "android": { "ban": 1420, "link": ".../NQSH-H2-1420.apk", "sha256": "...", "kichThuoc": 0, "ghiChu": "...", "ngay": "..." }
 }
 ```
-- PC: `ban` so với `Application.version` (đặt lúc build qua `KPAH_VERSION_CODE`).
+- PC: `ban` so với `Application.version` (đặt lúc build qua `HTBB_VERSION_CODE`).
 - Android: `ban` là versionCode (APK gốc TeaMobi = 1418, bản NQSH-H2 bắt đầu từ 1419).
 - Jar: `ban` là số vNN của `j2me/build.sh`; script lấy số lớn hơn cả bản đã phát hành và bản
   đã build trong `j2me/out`. File `mapping-vNN.txt` của ProGuard giữ kín, không đẩy lên.
@@ -55,7 +55,7 @@ Link cố định để gửi người chơi mới (luôn là bản mới nhất
 
 - APK phải ký bằng **cùng khóa** (`_tmp_build/android-key`), nếu không Android từ chối cài đè.
 - Bản PC/Android đã cài trước khi có tính năng này không tự cập nhật: người chơi cần cài lại một lần.
-- Thử cập nhật PC trên máy: đặt biến môi trường `KPAH_CAPNHAT_URL` trỏ tới một `phienban.json` cục bộ.
+- Thử cập nhật PC trên máy: đặt biến môi trường `HTBB_CAPNHAT_URL` trỏ tới một `phienban.json` cục bộ.
 
 ## GitHub Actions (không cần máy tính)
 

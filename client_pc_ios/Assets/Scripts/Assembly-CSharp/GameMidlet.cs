@@ -34,7 +34,7 @@ public class GameMidlet
 
 	public static bool isLoadAgentPro;
 
-	public static bool isKPAH = true;
+	public static bool isHTBB = true;
 
 	public GameMidlet()
 	{
@@ -44,7 +44,7 @@ public class GameMidlet
 
 	public void load()
 	{
-		ServerListScr.loadSv(isKPAH);
+		ServerListScr.loadSv(isHTBB);
 		Canvas.imgLogo = Canvas.getLogo();
 		RMS.clearRecord("nqshImgPotionNew");
 		Res.loadImgMap();
@@ -60,7 +60,7 @@ public class GameMidlet
 		Tilemap.loadMap(0, null);
 		ServerListScr.gI().switchToMe();
 		Canvas.isLoad = false;
-		if (isKPAH)
+		if (isHTBB)
 		{
 			client_Provider = "0";
 			provider = "-1";
@@ -74,12 +74,12 @@ public class GameMidlet
 			isLoadAgentPro = false;
 		}
 		string text = "/agent";
-		if (!isKPAH)
+		if (!isHTBB)
 		{
 			text = "/vtcagent";
 		}
 		string text2 = "/provider";
-		if (!isKPAH)
+		if (!isHTBB)
 		{
 			text2 = "/vtcprovider";
 		}

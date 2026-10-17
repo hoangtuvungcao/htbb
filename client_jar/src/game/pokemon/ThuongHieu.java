@@ -5,9 +5,9 @@ import javax.microedition.lcdui.Graphics;
 
 /**
  * Ten game va thuong hieu - ban J2ME cua ClientUnity ThuongHieu.cs (viec G7.E1/E2, muc 15).
- * Ban server: KPAH src/com/kpah/pokemon/ThuongHieu.java. Doi ten game: sua ca ba noi.
+ * Ban server: HTBB src/com/htbb/pokemon/ThuongHieu.java. Doi ten game: sua ca ba noi.
  * Man tai / chon may chu / dang nhap: ve tieu de Pokemon (ten game + 5 chan dung khoi dau)
- * thay cho logo KPAH.
+ * thay cho logo cua game goc TeaMobi.
  */
 public final class ThuongHieu {
     public static final String TEN_GAME = "Huyền Thoại Bảo Bối";

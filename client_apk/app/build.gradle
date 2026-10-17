@@ -1,22 +1,22 @@
-// Bản Android (KPAH 2.7.7 TeaMobi + mod NQSH-H2) build hoàn toàn từ source.
-//   gradlew :app:assembleRelease -PkpahBan=1423 [-PkpahTen=NQSH-H2] [-PkpahKeyDir=...]
-// Ký: thư mục KEY_DIR (hoặc -PkpahKeyDir) chứa key.properties (keystore=, alias=, password=) + keystore.
+// Bản Android (client TeaMobi 2.7.7 + mod NQSH-H2) build hoàn toàn từ source.
+//   gradlew :app:assembleRelease -PhtbbBan=1423 [-PhtbbTen=NQSH-H2] [-PhtbbKeyDir=...]
+// Ký: thư mục KEY_DIR (hoặc -PhtbbKeyDir) chứa key.properties (keystore=, alias=, password=) + keystore.
 // Code mod dùng chung với bản J2ME (../../shared/mod) được port-android.py đổi tên lớp rồi đưa vào biên dịch.
 plugins {
     id 'com.android.application'
 }
 
-def ban = (project.findProperty('kpahBan') ?: '1419') as int
-def ten = project.findProperty('kpahTen') ?: 'NQSH-H2'
-def keyDir = project.findProperty('kpahKeyDir') ?: System.getenv('KEY_DIR')
+def ban = (project.findProperty('htbbBan') ?: '1419') as int
+def ten = project.findProperty('htbbTen') ?: 'NQSH-H2'
+def keyDir = project.findProperty('htbbKeyDir') ?: System.getenv('KEY_DIR')
 def khoa = new Properties()
 if (keyDir && file("$keyDir/key.properties").exists()) {
     file("$keyDir/key.properties").withInputStream { khoa.load(it) }
 }
-def modSinh = layout.buildDirectory.dir('generated/kpah-mod/java')
+def modSinh = layout.buildDirectory.dir('generated/htbb-mod/java')
 
 android {
-    namespace 'com.teamobi.kpah'
+    namespace 'com.htbb.client'
     compileSdk 36
 
     buildFeatures {

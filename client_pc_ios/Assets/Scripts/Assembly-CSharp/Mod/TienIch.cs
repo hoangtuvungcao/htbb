@@ -40,7 +40,7 @@ public sealed class TienIch
 		return kq;
 	}
 
-	private const string RMS_TEN = "kpahti";
+	private const string RMS_TEN = "htbbti";
 
 	/** Tắt thông báo: nuốt mọi hộp thoại OK của server khi đang trong game (màn đăng nhập vẫn hiện). */
 	public static bool tatThongBao;

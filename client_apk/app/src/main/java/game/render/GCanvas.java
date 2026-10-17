@@ -10,7 +10,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.core.j2me.Graphics;
 import game.core.j2me.Image;
 import game.model.Command;
@@ -162,7 +162,7 @@ public class GCanvas extends SurfaceView implements SurfaceHolder.Callback {
 
     public static Bitmap getLogo() {
         if (imgLogo == null) {
-            if (GameMidlet.isKPAH) {
+            if (GameMidlet.isHTBB) {
                 imgLogo = Image.loadImageFromAsset("logo.png");
             } else {
                 FilePack.init("/other");

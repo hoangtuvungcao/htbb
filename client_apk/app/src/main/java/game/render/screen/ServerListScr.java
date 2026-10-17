@@ -1,6 +1,6 @@
 package game.render.screen;
 
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.core.j2me.Graphics;
 import game.model.Command;
 import game.model.IAction;
@@ -268,7 +268,7 @@ public class ServerListScr extends Screen {
     public void paint(Graphics graphics) {
         paintBg(graphics);
         GCanvas.resetTrans(graphics);
-        graphics.drawImage(GCanvas.getLogo(), GCanvas.hw, (GCanvas.hh - 80) + (GameMidlet.isKPAH ? 40 : 30), Graphics.BOTTOM | Graphics.HCENTER);
+        graphics.drawImage(GCanvas.getLogo(), GCanvas.hw, (GCanvas.hh - 80) + (GameMidlet.isHTBB ? 40 : 30), Graphics.BOTTOM | Graphics.HCENTER);
         paintPanel(graphics);
         super.paint(graphics);
     }

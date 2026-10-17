@@ -20,7 +20,7 @@ public sealed class AutoPk
 	private static readonly string[] AUTO_PK = new string[]{"Tắt", "Ngầm", "Auto click"};
 	private static readonly string[] NO = new string[]{"Tắt", "Nộ 84", "Nộ 123"};
 	private static readonly int[] ID_NO = new int[]{84, 123};
-	private const string RMS_TEN = "kpahpk";
+	private const string RMS_TEN = "htbbpk";
 
 	// ---- cài đặt (lưu RMS)
 	public static int dap;

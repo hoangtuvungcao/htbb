@@ -1,4 +1,4 @@
-# pc/ - bản PC (Unity, KPAH 2.7.6)
+# pc/ - bản PC (Unity, client TeaMobi 2.7.6)
 
 Client `KPAH_276.exe` gốc (Unity 5.1.2f1) giải nén bằng AssetRipper / ILSpy, đã nâng lên
 Unity **6000.5.9f1** và sửa để build PC / Android / iOS vào server NQSH-H2.
@@ -14,6 +14,6 @@ Cũng build được Android / iOS từ Unity, nhưng bản Android phát hành 
 - `iOSPlugins.cs`: hàm native iOS thay bằng bản C# rỗng (không còn plugin `.mm`)
 
 Build (Unity 6000.5.9f1, batchmode `-executeMethod`):
-- PC: `BuildCli.Win64` (đường ra ở biến `KPAH_OUT`)
-- Android: `BuildCli.Android` (`KPAH_OUT`, `KPAH_KEY_DIR` chứa `key.properties` + keystore - KHÔNG đưa vào git)
+- PC: `BuildCli.Win64` (đường ra ở biến `HTBB_OUT`)
+- Android: `BuildCli.Android` (`HTBB_OUT`, `HTBB_KEY_DIR` chứa `key.properties` + keystore - KHÔNG đưa vào git)
 - iOS: `BuildCli.iOS` - chạy trên GitHub Actions, xem `.github/workflows/ios.yml`

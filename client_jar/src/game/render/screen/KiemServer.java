@@ -6,7 +6,7 @@ import java.util.Random;
 import network.Message;
 
 /**
- * Xác thực hai chiều trước khi đăng nhập (lệnh -88, xem KPAH real/XacThucClient.java).
+ * Xác thực hai chiều trước khi đăng nhập (lệnh -88, xem HTBB real/XacThucClient.java).
  * 1. Gửi host đang kết nối + 16 byte ngẫu nhiên nC; server trả chữ ký RSA-1024 của
  *    (MAGIC, host, nC, nS) + nS. Kiểm bằng khóa công khai N: sai / không trả lời thì không
  *    đăng nhập, báo đúng câu "không thể kết nối" của game (không lộ là bị kiểm).
@@ -38,7 +38,7 @@ final class KiemServer {
 
     /**
      * pokemon: có làm bước -88 không. Tắt khi build không bật XAC_THUC (mặc định nhánh Pokémon - server
-     * KPAH không trả lời -88, client sẽ chờ 30s rồi báo "không thể kết nối"), hoặc jar chỉ định server
+     * HTBB không trả lời -88, client sẽ chờ 30s rồi báo "không thể kết nối"), hoặc jar chỉ định server
      * Pokémon bằng MANIFEST "HTBB-May-Chu".
      */
     static boolean batXacThuc() {
@@ -48,7 +48,7 @@ final class KiemServer {
     /** true = chặn lệnh đăng nhập này (đang xác thực trước). */
     static boolean chanDangNhap(String string, String string2, String string3) {
         if (!batXacThuc()) {
-            // pokemon: server Pokémon (KPAH) không có lệnh -88 -> không xác thực, đăng nhập thẳng
+            // pokemon: server Pokémon (HTBB) không có lệnh -88 -> không xác thực, đăng nhập thẳng
             daQua = true;
             return false;
         }

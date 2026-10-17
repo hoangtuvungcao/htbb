@@ -1,7 +1,7 @@
 package game.model;
 
 import android.graphics.Bitmap;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import effect.DataEffect;
 import game.core.j2me.Graphics;
 import game.networklogic.GameService;

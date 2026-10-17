@@ -14,7 +14,7 @@ import javax.microedition.lcdui.Graphics;
  *   nhỏ dần rồi tắt. Vẽ từ GameScr.paint TRƯỚC khi vẽ nhân vật (veDuoi) nên hạt nằm sau người.
  * - màn hình: hạt rơi trên màn game (hoa đào / tuyết / lá vàng / mưa / đom đóm), vẽ từ AutoGuard.paint.
  * Chỉ dùng số nguyên (máy J2ME), màu chia bậc cố định để bản PC không sinh quá nhiều ảnh màu trong
- * MyGraphics.fillRect. Cài đặt lưu RMS "kpahhu".
+ * MyGraphics.fillRect. Cài đặt lưu RMS "htbbhu".
  */
 public class HieuUng {
     static final String[] DI_CHUYEN = new String[]{"Tắt", "Ngũ sắc", "Vàng kim", "Băng lam", "Tím huyễn", "Lửa"};
@@ -23,7 +23,7 @@ public class HieuUng {
     static int diChuyen = 1;
     static int manHinh = 1;
     static int matDo = 2;
-    private static final String RMS_TEN = "kpahhu";
+    private static final String RMS_TEN = "htbbhu";
     private static boolean daNap;
 
     /** 0..N_DI-1: hạt di chuyển (tọa độ map), N_DI..N-1: hạt màn hình (tọa độ màn hình). Đơn vị 1/16 px. */

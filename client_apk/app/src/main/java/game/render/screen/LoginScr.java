@@ -1,6 +1,6 @@
 package game.render.screen;
 
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.core.j2me.Graphics;
 import game.model.Command;
 import game.model.IAction;

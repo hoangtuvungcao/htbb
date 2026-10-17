@@ -1,6 +1,6 @@
 package game.networklogic;
 
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.model.Char;
 import game.model.IAction;
 import game.model.ItemQuest;

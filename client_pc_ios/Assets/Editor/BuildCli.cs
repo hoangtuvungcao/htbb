@@ -4,10 +4,10 @@ using UnityEditor.Build.Reporting;
 
 public static class BuildCli
 {
-    /// <summary>Đường ra: biến KPAH_OUT (phat-hanh.sh trên máy) hoặc -customBuildPath (GameCI trên GitHub Actions).</summary>
+    /// <summary>Đường ra: biến HTBB_OUT (phat-hanh.sh trên máy) hoặc -customBuildPath (GameCI trên GitHub Actions).</summary>
     private static string duongRa()
     {
-        return thamSo("-customBuildPath") ?? System.Environment.GetEnvironmentVariable("KPAH_OUT");
+        return thamSo("-customBuildPath") ?? System.Environment.GetEnvironmentVariable("HTBB_OUT");
     }
 
     private static string thamSo(string ten)
@@ -23,11 +23,11 @@ public static class BuildCli
         string outPath = duongRa();
         // IL2CPP: C# dịch ra C++ rồi mã máy - chạy nhanh hơn Mono và khó dịch ngược hơn (DLL không còn mã C#).
         // Cần module "Windows Build Support (IL2CPP)" của Unity + Visual Studio C++ (máy GitHub Windows có sẵn).
-        // Máy chưa cài module (hoặc truyền -kpahMono) thì build Mono như trước.
+        // Máy chưa cài module (hoặc truyền -htbbMono) thì build Mono như trước.
         var standalone = UnityEditor.Build.NamedBuildTarget.Standalone;
         bool coIl2cpp = System.IO.Directory.Exists(System.IO.Path.Combine(EditorApplication.applicationContentsPath,
             "PlaybackEngines/windowsstandalonesupport/Variations/win64_player_nondevelopment_il2cpp"));
-        if (coIl2cpp && System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-kpahMono") < 0)
+        if (coIl2cpp && System.Array.IndexOf(System.Environment.GetCommandLineArgs(), "-htbbMono") < 0)
         {
             PlayerSettings.SetScriptingBackend(standalone, ScriptingImplementation.IL2CPP);
             PlayerSettings.SetIl2CppCompilerConfiguration(standalone, Il2CppCompilerConfiguration.Release);
@@ -38,15 +38,15 @@ public static class BuildCli
         {
             PlayerSettings.SetScriptingBackend(standalone, ScriptingImplementation.Mono2x);
         }
-        UnityEngine.Debug.Log("KPAH scripting backend: " + PlayerSettings.GetScriptingBackend(standalone));
-        // số bản (CapNhat.cs so với "pc.ban" trong phienban.json): tham số -kpahBan (GitHub Actions - GameCI
-        // KHÔNG chuyển biến môi trường vào container Unity) hoặc biến KPAH_VERSION_CODE (phat-hanh.sh trên máy)
-        string ban = thamSo("-kpahBan") ?? System.Environment.GetEnvironmentVariable("KPAH_VERSION_CODE");
+        UnityEngine.Debug.Log("HTBB scripting backend: " + PlayerSettings.GetScriptingBackend(standalone));
+        // số bản (CapNhat.cs so với "pc.ban" trong phienban.json): tham số -htbbBan (GitHub Actions - GameCI
+        // KHÔNG chuyển biến môi trường vào container Unity) hoặc biến HTBB_VERSION_CODE (phat-hanh.sh trên máy)
+        string ban = thamSo("-htbbBan") ?? System.Environment.GetEnvironmentVariable("HTBB_VERSION_CODE");
         if (!string.IsNullOrEmpty(ban))
         {
             PlayerSettings.bundleVersion = ban;
         }
-        UnityEngine.Debug.Log("KPAH ban (bundleVersion): " + PlayerSettings.bundleVersion);
+        UnityEngine.Debug.Log("HTBB ban (bundleVersion): " + PlayerSettings.bundleVersion);
         AssetDatabase.ImportAsset("Assets/Icon/app_icon.png");
         UnityEngine.Texture2D icon = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>("Assets/Icon/app_icon.png");
         PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.Unknown, new UnityEngine.Texture2D[] { icon }, IconKind.Any);
@@ -57,16 +57,16 @@ public static class BuildCli
         UnityEngine.Debug.Log("BUILD RESULT: " + r.summary.result + " errors=" + r.summary.totalErrors);
         // số bản thật đã đóng vào bản build, ghi CẠNH thư mục build (không vào zip) để workflow kiểm tra
         string thuMuc = System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(outPath));
-        System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(thuMuc), "kpah-ban.txt"), PlayerSettings.bundleVersion);
+        System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(thuMuc), "htbb-ban.txt"), PlayerSettings.bundleVersion);
         EditorApplication.Exit(r.summary.result == BuildResult.Succeeded ? 0 : 1);
     }
 
-    /// <summary>APK Android: IL2CPP ARM64 + ARMv7, màn hình ngang, ký bằng khóa riêng (KPAH_KEY_DIR/key.properties).</summary>
+    /// <summary>APK Android: IL2CPP ARM64 + ARMv7, màn hình ngang, ký bằng khóa riêng (HTBB_KEY_DIR/key.properties).</summary>
     public static void Android()
     {
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
-        string outPath = System.Environment.GetEnvironmentVariable("KPAH_OUT");
-        string keyDir = System.Environment.GetEnvironmentVariable("KPAH_KEY_DIR");
+        string outPath = System.Environment.GetEnvironmentVariable("HTBB_OUT");
+        string keyDir = System.Environment.GetEnvironmentVariable("HTBB_KEY_DIR");
         var key = System.IO.File.ReadAllLines(System.IO.Path.Combine(keyDir, "key.properties"))
             .Where(l => l.Contains("=")).ToDictionary(l => l.Substring(0, l.IndexOf('=')), l => l.Substring(l.IndexOf('=') + 1));
 
@@ -75,9 +75,9 @@ public static class BuildCli
         PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.Unknown, new UnityEngine.Texture2D[] { icon }, IconKind.Any);
 
         var android = UnityEditor.Build.NamedBuildTarget.Android;
-        PlayerSettings.SetApplicationIdentifier(android, System.Environment.GetEnvironmentVariable("KPAH_APP_ID") ?? "com.nqsh.h2");
-        PlayerSettings.bundleVersion = System.Environment.GetEnvironmentVariable("KPAH_VERSION") ?? "1.0";
-        PlayerSettings.Android.bundleVersionCode = int.Parse(System.Environment.GetEnvironmentVariable("KPAH_VERSION_CODE") ?? "1");
+        PlayerSettings.SetApplicationIdentifier(android, System.Environment.GetEnvironmentVariable("HTBB_APP_ID") ?? "com.nqsh.h2");
+        PlayerSettings.bundleVersion = System.Environment.GetEnvironmentVariable("HTBB_VERSION") ?? "1.0";
+        PlayerSettings.Android.bundleVersionCode = int.Parse(System.Environment.GetEnvironmentVariable("HTBB_VERSION_CODE") ?? "1");
         PlayerSettings.SetScriptingBackend(android, ScriptingImplementation.IL2CPP);
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.ARMv7;
         PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
@@ -107,16 +107,16 @@ public static class BuildCli
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
         string[] args = System.Environment.GetCommandLineArgs();
         int i = System.Array.IndexOf(args, "-customBuildPath");
-        string outPath = i >= 0 && i + 1 < args.Length ? args[i + 1] : System.Environment.GetEnvironmentVariable("KPAH_OUT");
+        string outPath = i >= 0 && i + 1 < args.Length ? args[i + 1] : System.Environment.GetEnvironmentVariable("HTBB_OUT");
 
         AssetDatabase.ImportAsset("Assets/Icon/app_icon.png");
         UnityEngine.Texture2D icon = AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>("Assets/Icon/app_icon.png");
         PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.Unknown, new UnityEngine.Texture2D[] { icon }, IconKind.Any);
 
         var ios = UnityEditor.Build.NamedBuildTarget.iOS;
-        PlayerSettings.SetApplicationIdentifier(ios, System.Environment.GetEnvironmentVariable("KPAH_APP_ID") ?? "com.nqsh.h2");
-        PlayerSettings.bundleVersion = System.Environment.GetEnvironmentVariable("KPAH_VERSION") ?? "1.0";
-        PlayerSettings.iOS.buildNumber = System.Environment.GetEnvironmentVariable("KPAH_VERSION_CODE") ?? "1";
+        PlayerSettings.SetApplicationIdentifier(ios, System.Environment.GetEnvironmentVariable("HTBB_APP_ID") ?? "com.nqsh.h2");
+        PlayerSettings.bundleVersion = System.Environment.GetEnvironmentVariable("HTBB_VERSION") ?? "1.0";
+        PlayerSettings.iOS.buildNumber = System.Environment.GetEnvironmentVariable("HTBB_VERSION_CODE") ?? "1";
         PlayerSettings.SetScriptingBackend(ios, ScriptingImplementation.IL2CPP);
         PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
         PlayerSettings.allowedAutorotateToPortrait = false;

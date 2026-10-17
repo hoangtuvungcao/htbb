@@ -777,7 +777,7 @@ public class Res {
         return x[0];
     }
 
-    /** pokemon (G7.A): tile PMD /pt/<ten>.png (cung so tile, thu tu voi bo KPAH); thieu thi null. */
+    /** pokemon (G7.A): tile PMD /pt/<ten>.png (cung so tile, thu tu voi bo tile goc); thieu thi null. */
     private static Image tilePokemon(String ten) {
         if (!game.pokemon.PokeBody.CHE_DO_POKEMON) {
             return null;
@@ -807,7 +807,7 @@ public class Res {
                     imgtileSmall = tileNho;
                     return;
                 } catch (Throwable e) {
-                    // thieu .type: ve bo KPAH
+                    // thieu .type: ve bo tile goc
                 }
             }
             try {

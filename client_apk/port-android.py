@@ -19,8 +19,8 @@ DOI_TEN = [
     (r"\bgame\.render\.Canvas\b", "game.render.GCanvas"),
     (r"(?<![\w.])Canvas\b", "GCanvas"),                       # lớp Canvas của game (J2ME) = GCanvas (APK)
     (r"\bjavax\.microedition\.lcdui\.Graphics\b", "game.core.j2me.Graphics"),
-    (r"\bimport game\.GameMidlet;", "import com.teamobi.kpah.GameMidlet;"),
-    (r"\bgame\.GameMidlet\b", "com.teamobi.kpah.GameMidlet"),
+    (r"\bimport game\.GameMidlet;", "import com.htbb.client.GameMidlet;"),
+    (r"\bgame\.GameMidlet\b", "com.htbb.client.GameMidlet"),
     (r"\bimport game\.model\.ShopNew;\n", ""),                 # APK: game.render.screen.ShopNew (cùng package)
     (r"\bgame\.model\.ShopNew\b", "game.render.screen.ShopNew"),
     (r"\bFont\.arialFontW\b", "Font.arialFont11"),

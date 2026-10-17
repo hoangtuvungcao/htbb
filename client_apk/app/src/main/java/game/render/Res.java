@@ -2,7 +2,7 @@ package game.render;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.core.j2me.FontSys;
 import game.core.j2me.Graphics;
 import game.core.j2me.Image;

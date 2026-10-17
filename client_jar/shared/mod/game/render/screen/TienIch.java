@@ -44,7 +44,7 @@ final class TienIch {
         return kq;
     }
 
-    private static final String RMS_TEN = "kpahti";
+    private static final String RMS_TEN = "htbbti";
     /** Tắt thông báo: nuốt mọi hộp thoại OK của server khi đang trong game (màn đăng nhập vẫn hiện). */
     static boolean tatThongBao;
     /** Auto login (bật/tắt ở menu Auto up): mất kết nối thì tự đăng nhập lại + chọn đúng nhân vật. */

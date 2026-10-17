@@ -1,6 +1,6 @@
 package game.render.screen;
 
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.networklogic.GameService;
 import game.render.GCanvas;
 import java.math.BigInteger;

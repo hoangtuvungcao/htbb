@@ -7,7 +7,7 @@ using UnityEngine;
 
 /// <summary>
 /// Xác thực hai chiều trước khi đăng nhập (lệnh -88), chuyển từ KiemServer.java của bản jar
-/// (xem KPAH real/XacThucClient.java).
+/// (xem HTBB real/XacThucClient.java).
 /// 1. Gửi host đang kết nối + 16 byte ngẫu nhiên nC; server trả chữ ký RSA-1024 của
 ///    (MAGIC, host, nC, nS) + nS. Kiểm bằng khóa công khai N: sai / không trả lời thì không
 ///    đăng nhập, báo đúng câu "không thể kết nối" của game.

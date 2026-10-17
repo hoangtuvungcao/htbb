@@ -1,6 +1,6 @@
-# kpah-mod-pb — client NQSH-H2 (KPAH) cho PC, Android, J2ME
+# htbb-client — client NQSH-H2 (Huyền Thoại Bảo Bối) cho PC, Android, J2ME
 
-Ba bản client của game KPAH (Khí Phách Anh Hùng, TeaMobi) chạy server **NQSH-H2**, kèm các tính năng mod
+Ba bản client của game Huyền Thoại Bảo Bối (HTBB; trước đây là Khí Phách Anh Hùng / KPAH của TeaMobi) chạy server **NQSH-H2**, kèm các tính năng mod
 (menu Auto, Auto up, Vận tiêu, Vận may, Tiện ích, Lên thành, Xa phu, chế đồ tự động...). Cả ba bản đều là
 **source đầy đủ** — không còn file game nhị phân nào (jar/APK/dex/DLL gốc) trong repo.
 
@@ -17,9 +17,9 @@ phat-hanh/   phát hành + tự cập nhật (GitHub Releases kpah-server/nqsh-h
 
 | Bản | Lệnh | Ra |
 |---|---|---|
-| PC | Unity `-executeMethod BuildCli.Win64 -kpahBan N` trên `pc/` (xem `pc/README.md`) | thư mục game Windows |
-| Android | `BAN=1423 sh android/build.sh` (hoặc `cd android && ./gradlew :app:assembleRelease -PkpahBan=1423`) | `android/out/NQSH-H2-1423.apk` |
-| J2ME | `sh j2me/build.sh 55` | `j2me/out/KPAH_276 (1)-automenu-v55-release.jar` |
+| PC | Unity `-executeMethod BuildCli.Win64 -htbbBan N` trên `pc/` (xem `pc/README.md`) | thư mục game Windows |
+| Android | `BAN=1423 sh android/build.sh` (hoặc `cd android && ./gradlew :app:assembleRelease -PhtbbBan=1423`) | `android/out/NQSH-H2-1423.apk` |
+| J2ME | `sh j2me/build.sh 55` | `j2me/out/HTBB-v55-release.jar` |
 
 - Android ký bằng khóa trong thư mục `KEY_DIR` (`key.properties`: `keystore=`, `alias=`, `password=` + file keystore).
   Khóa **không bao giờ** đưa vào git; trên GitHub Actions lấy từ secrets.
@@ -29,11 +29,11 @@ phat-hanh/   phát hành + tự cập nhật (GitHub Releases kpah-server/nqsh-h
 
 ## Nhánh `pokemon/chuyen-doi`: bản jar Huyền Thoại Bảo Bối (Pokémon)
 
-- Code: `j2me/src/game/pokemon/` (bản J2ME của các lớp Pokémon trong `KPAH/ClientUnity/Assets/Scripts/Game/`),
+- Code: `j2me/src/game/pokemon/` (bản J2ME của các lớp Pokémon trong `HTBB/ClientUnity/Assets/Scripts/Game/`),
   hook có chú thích `// pokemon:` trong Char, Monster (+ boss), NPC, Npc_Server, AnimalMove, ThanThu,
   MessageHandler (-90..-94), Font (từ điển `ChuPokemon`), TField, Res (tile), Create/CharSelectScr, màn tiêu đề.
 - Tài nguyên `j2me/res/pk` (sprite, chân dung, vật thể, từ điển) + `j2me/res/pt` (tile PMD) sinh bằng
-  `KPAH_ASSETS=<KPAH>/ClientUnity/Assets sh j2me/build.sh N` (tool `j2me/tools/DongGoiPokeJ2me.java`).
+  `HTBB_ASSETS=<HTBB>/ClientUnity/Assets sh j2me/build.sh N` (tool `j2me/tools/DongGoiPokeJ2me.java`).
 - Hiệu ứng chiêu (K3): `PokeHieuUng` (hook `Char.setCurrentSkillByID`, buff trong `GameScr`), dữ liệu
   `res/pk/hu.bin` + `hu_*.png` đóng gói từ `Resources/poke/hu_*.bytes`.
 - Bản thử nối một server: `MAY_CHU=127.0.0.1:19129 sh j2me/build.sh N` -> `...-vN-thu.jar`

@@ -8,7 +8,7 @@ import java.io.DataInputStream;
 import network.Message;
 
 /**
- * Lenh mang Pokemon -90 .. -94 (KPAH docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 7.3) - ban J2ME cua
+ * Lenh mang Pokemon -90 .. -94 (HTBB docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 7.3) - ban J2ME cua
  * cac ham onPoke* trong ClientUnity MessageHandler.cs. Goi o DAU MessageHandler.onMessage.
  * Server chi gui cac lenh nay khi sv.che_do_pokemon=1; server cu khong gui gi, game ve kieu cu.
  */

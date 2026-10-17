@@ -19,13 +19,13 @@ import java.util.regex.Pattern;
 
 /**
  * Kiem thu thuan Java (JDK) cho phan Pokemon cua ban jar:
- *  1. PokeDuLieu (ban J2ME) doc MOI Resources/poke/*_dl.bytes cua KPAH, doi chieu tung truong voi
+ *  1. PokeDuLieu (ban J2ME) doc MOI Resources/poke/*_dl.bytes cua HTBB, doi chieu tung truong voi
  *     mot bo doc doc lap (DataInputStream) va kiem moi khung nam trong atlas _anh.bytes;
  *  2. moi res/pk/*.dl doc duoc, anh dong tac ton tai va dung kich thuoc (soKhung*rong x 4*cao);
  *  3. (tuy chon) ChuPokemon / TenMapPokemon cua jar cho KET QUA GIONG HET ban server
- *     com.kpah.pokemon.ChuPokemon.doiLuon / TenMapPokemon.doi (regex) tren tap chu kiem.
+ *     com.htbb.pokemon.ChuPokemon.doiLuon / TenMapPokemon.doi (regex) tren tap chu kiem.
  *
- *   java -cp &lt;lop jar&gt;:&lt;midp.jar&gt;:res[:lop server] KiemPokeDuLieu &lt;KPAH/ClientUnity/Assets&gt; res [nguon java ...]
+ *   java -cp &lt;lop jar&gt;:&lt;midp.jar&gt;:res[:lop server] KiemPokeDuLieu &lt;HTBB/ClientUnity/Assets&gt; res [nguon java ...]
  */
 public class KiemPokeDuLieu {
     static int loi = 0;
@@ -375,7 +375,7 @@ public class KiemPokeDuLieu {
         }
         Class<?> sv;
         try {
-            sv = Class.forName("com.kpah.pokemon.ChuPokemon");
+            sv = Class.forName("com.htbb.pokemon.ChuPokemon");
         } catch (ClassNotFoundException e) {
             System.out.println("ChuPokemon: " + soChu + " chuoi chay khong loi (khong co ban server de doi chieu)");
             return;
@@ -391,7 +391,7 @@ public class KiemPokeDuLieu {
             }
         }
         System.out.println("ChuPokemon: " + soChu + " chuoi, khac ban server: " + khac);
-        Method doiMap = Class.forName("com.kpah.pokemon.TenMapPokemon").getMethod("doi", String.class);
+        Method doiMap = Class.forName("com.htbb.pokemon.TenMapPokemon").getMethod("doi", String.class);
         int soMap = 0;
         for (String[] d : TenMapPokemon.BANG) {
             for (String s : new String[]{d[0], " " + d[0] + " ", d[0].toUpperCase(), "Đông " + d[0], "bắc " + d[0], "Tây  " + d[0], "Nam", d[1]}) {

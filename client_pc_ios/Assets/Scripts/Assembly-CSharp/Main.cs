@@ -159,7 +159,7 @@ public class Main : MonoBehaviour
 				ScaleGUI.BeginGUI();
 				DoKhungHinh.batDau();
 				canvas.paint(g);
-				DoKhungHinh.ketThuc(); // chỉ đo khi chạy với -kpahDo
+				DoKhungHinh.ketThuc(); // chỉ đo khi chạy với -htbbDo
 				ScaleGUI.EndGUI();
 				countPaint++;
 				g.reset();

@@ -1,7 +1,7 @@
 package game.render.screen;
 
 import android.view.inputmethod.InputMethodManager;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.core.j2me.Graphics;
 import game.model.Command;
 import game.model.FrameImage;

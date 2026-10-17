@@ -33,7 +33,7 @@ final class TaiDanhSach {
     /**
      * Thuộc tính MANIFEST "HTBB-May-Chu: host:cong" chỉ định MỘT server Pokémon: build.sh ghi vào mọi bản
      * khi đặt MAY_CHU_CHINH, hoặc chỉ bản thử ...-thu.jar khi đặt MAY_CHU (thêm "HTBB-Ban-Thu: 1").
-     * Có thì không tải danh sách server cũ và bỏ xác thực -88 (server Pokémon KPAH không có lệnh này).
+     * Có thì không tải danh sách server cũ và bỏ xác thực -88 (server Pokémon HTBB không có lệnh này).
      */
     static String mayChuThu() {
         try {
@@ -55,7 +55,7 @@ final class TaiDanhSach {
 
     /**
      * pokemon: tên server hiện trên màn chọn. Danh sách tải về / lưu RMS từ bản cũ có thể mang tên game
-     * cũ (vd "NQSH-H2"): hiện thành "Máy chủ n" để giao diện không lộ tên KPAH/NQSH.
+     * cũ (vd "NQSH-H2"): hiện thành "Máy chủ n" để giao diện không lộ tên cũ KPAH/NQSH (tên server của game gốc).
      */
     static String tenHien(String ten, int i) {
         if (ten == null) {

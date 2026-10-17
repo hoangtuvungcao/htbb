@@ -280,7 +280,7 @@ public class ServerListScr extends Screen {
     public void paint(Graphics g) {
         paintBg(g);
         Canvas.resetTrans(g);
-        // pokemon: tieu de ThuongHieu (ten game + 5 Pokemon khoi dau) thay logo KPAH
+        // pokemon: tieu de ThuongHieu (ten game + 5 Pokemon khoi dau) thay logo game goc
         if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 120), Canvas.w, Canvas.hh - 32)) {
             g.drawImage(Canvas.getLogo(), Canvas.hw, Canvas.hh - 70, 3);
         }

@@ -3,7 +3,7 @@ package game.model;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;

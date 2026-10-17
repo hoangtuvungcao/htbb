@@ -1,7 +1,7 @@
 package game.model;
 
 import android.graphics.Bitmap;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import game.core.j2me.Graphics;
 import game.core.j2me.Image;
 import game.render.Res;

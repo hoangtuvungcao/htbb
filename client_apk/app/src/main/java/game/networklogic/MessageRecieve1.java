@@ -2,7 +2,7 @@ package game.networklogic;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import effect.DataSkillEff;
 import effect.DynamicEffect;
 import effect.PartFrame;

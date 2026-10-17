@@ -2,7 +2,7 @@ package game.render.screen;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import com.teamobi.kpah.GameMidlet;
+import com.htbb.client.GameMidlet;
 import effect.DynamicEffect;
 import game.core.j2me.FontSys;
 import game.core.j2me.Graphics;
@@ -3048,7 +3048,7 @@ public class GameScr extends Screen {
     }
 
     public boolean isVTC() {
-        return !GameMidlet.isKPAH && GameMidlet.agent.endsWith("88");
+        return !GameMidlet.isHTBB && GameMidlet.agent.endsWith("88");
     }
 
     public void doNapXuVTC() {

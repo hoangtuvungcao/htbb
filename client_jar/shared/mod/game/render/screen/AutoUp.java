@@ -42,7 +42,7 @@ import network.Message;
  * server kiểm như người chơi bấm tay (tầm 130px, hồi chiêu, MP, chờ bình 250ms).
  */
 final class AutoUp {
-    private static final String RMS_TEN = "kpahup";
+    private static final String RMS_TEN = "htbbup";
     private static final int[] BINH_HP = new int[]{94, 93, 22, 21, 3, 2, 1};
     private static final int[] BINH_MP = new int[]{96, 95, 24, 23, 6, 5, 4};
     /** Loại skill buff theo phái (y BangAuto.isBuffSkillAuto); phái 2 loại 6 là hồi sinh -> bỏ. */

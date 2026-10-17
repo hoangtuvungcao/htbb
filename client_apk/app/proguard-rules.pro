@@ -3,7 +3,7 @@
 # GIỮ RIÊNG, KHÔNG phát kèm, KHÔNG đưa lên git (cần nó để đọc stack trace lỗi từ máy người chơi).
 
 # Game tra ảnh/tài nguyên theo TÊN qua reflection: Image.getDrawableID -> R.drawable.class.getField(ten)
--keep class com.teamobi.kpah.R$drawable { public static <fields>; }
+-keep class com.htbb.client.R$drawable { public static <fields>; }
 
 # Giữ số dòng trong stack trace (tên tệp ẩn đi), đọc lại bằng mapping
 -keepattributes LineNumberTable

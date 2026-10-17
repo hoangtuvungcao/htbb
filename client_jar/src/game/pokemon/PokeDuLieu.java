@@ -1,7 +1,7 @@
 package game.pokemon;
 
 /**
- * Du lieu khung hinh cua 1 loai Pokemon - ban J2ME cua ClientUnity PokeDuLieu.cs (KPAH,
+ * Du lieu khung hinh cua 1 loai Pokemon - ban J2ME cua ClientUnity PokeDuLieu.cs (HTBB,
  * docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 7.1). Dinh dang (big-endian):
  * <pre>
  *   u8 phienBan = 1 hoac 2, u8 soDongTac = 6
@@ -17,7 +17,7 @@ package game.pokemon;
  * anhDongTac[i] = i, caoTrenGoc = 0 (tinh tu khung).
  *
  * Lop nay CHI dung byte[] (khong lcdui) de kiem thu duoc bang JDK thuong
- * (j2me/tools/KiemPokeDuLieu.java doc het Resources/poke/*_dl.bytes cua KPAH).
+ * (j2me/tools/KiemPokeDuLieu.java doc het Resources/poke/*_dl.bytes cua HTBB).
  */
 public class PokeDuLieu {
     public static final int DUNG = 0;
