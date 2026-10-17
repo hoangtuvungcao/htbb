@@ -613,6 +613,48 @@ Từ điển thuật ngữ cố định (mọi luồng việc dùng chung):
 | `TField` | Con trỏ có thể lệch nhẹ khi gõ đúng một từ trong từ điển |
 | **M1–M5** | Mục 11 |
 
+## 16. Chạy thật trên NovaDB, client jar, test ổn định (2026-10-17)
+
+### 16.1 Chạy toàn bộ server trên NovaDB
+
+```sh
+MYSQL=mysql sh tools/pokemon/chay_tren_novadb.sh          # NovaDB -> nạp sql/htbb_day_du.sql nếu trống -> login -> game
+sh tools/pokemon/chay_tren_novadb.sh dung                 # dừng cả 3
+```
+
+- **NovaDB** (`~/Downloads/github/nova-db/NovaDB`, ≥ 0.3.0, cổng MySQL 3318) cần 2 bổ sung trong repo NovaDB
+  (đã làm, **chưa commit bên đó**): hàm `PASSWORD()` kiểu MySQL 4.1 (login server dùng
+  `WHERE password=PASSWORD(?)`) và chế độ giờ địa phương `NOVADB_MYSQL_TIME_ZONE=SYSTEM` (mặc định của NovaDB là
+  UTC, lịch sự kiện/reset ngày sẽ lệch 7 giờ). Script tự bật chế độ này.
+- SQL của server đã viết lại để chạy **cả MariaDB lẫn NovaDB** (xem `docs/cau-hinh-server-ini.md` §9,
+  `test/KiemNovaDB.java`). Khoá `db.thamSoJdbc=useSSL=false` cho NovaDB.
+- Giới hạn còn lại: NovaDB so sánh chuỗi phân biệt hoa/thường (tên nhân vật đã chuyển về chữ thường khi tạo);
+  không có `SUBSTRING_INDEX`, truy vấn chéo CSDL (server không dùng).
+
+### 16.2 Client jar (J2ME, repo `kpah-mod-pb`)
+
+- Build: `JAVA8_HOME=/usr/lib/jvm/java-8-openjdk-amd64 sh j2me/build.sh <n>`; `KPAH_ASSETS=<KPAH>/ClientUnity/Assets` để
+  đóng gói lại sprite/từ điển; `MAY_CHU=host:cong` tạo bản thử; `MAY_CHU_CHINH=host:cong` gắn server cho mọi bản;
+  `GOI=nhe` bản nhẹ cho điện thoại (~1,94 MB, 99 loài, ít khung).
+- Bước xác thực -88 của server NQSH cũ (chữ ký RSA, khoá riêng không có) **tắt mặc định** (`XAC_THUC=1` bật lại).
+- Kiểm: `j2me/tools/KiemPokeDuLieu.java` — 18.648 + 4.692 khung so từng pixel với Unity, 47 chiêu, từ điển khớp
+  server 4.972 chuỗi.
+- **Chạy thật trong MicroEmulator** (Xvfb) với server NovaDB: màn tiêu đề "HUYỀN THOẠI BẢO BỐI" + 5 chân dung →
+  chọn server → **đăng nhập tài khoản thật** → chọn Eevee cấp 25 → vào game thấy chân dung + sprite Eevee trên map
+  PMD → chat GM `mto` dịch chuyển sang map quái. Chưa bắt được khung hình particle trong trận thật (đã kiểm bằng
+  MIDlet thử).
+
+### 16.3 Test tải / ổn định (`tools/pokemon/kiem_tai/`, NovaDB, máy dev)
+
+| Lần | Cấu hình | Kết quả |
+|---|---|---|
+| 1 | 50 bot × 10 phút | 50/50 vào game, **0 rơi kết nối**, ~10k đòn, RAM server 635–933 MB ổn định, CPU ~47–72 % |
+| 2 | 50 bot × 5 phút, 10 GM lên cấp 25 | Lên cấp + tiến hoá (Charmander→Charmeleon, Pichu→Pikachu…) lưu đúng; 0 exception, 0 lỗi SQL |
+| 3 | 50 bot × 10 phút (10 GM đánh quái thật, 40 đi lại/chat) | 50/50, **0 rơi kết nối, 0 exception, 0 lỗi SQL**; 5.361 đòn, 3.254 lượt thấy quái chết, 1.156 chat; RAM 707–972 MB; Pokédex 23 dòng / 723 lượt hạ / 10 nhân vật đã lưu |
+
+Lỗi tìm ra nhờ test tải và đã sửa: tranh chấp luồng `CharCapNhat.subUpdate` (`nearMons.remove` khi danh sách bị dọn
+giữa vòng lặp). Còn lại chưa làm: test với client thật nhiều máy, test kéo dài nhiều giờ.
+
 ## 14. Lệnh hay dùng
 
 ```bash

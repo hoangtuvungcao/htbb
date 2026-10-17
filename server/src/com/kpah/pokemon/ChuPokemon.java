@@ -87,6 +87,9 @@ public final class ChuPokemon {
         // Vung (lanh tho)
         {"lãnh thổ", "vùng"},
         {"L.thổ", "Vùng"},
+        // So tong dai cua game cu (TeaMobi) gui luc dang nhap, client ve "Hotline: <so>"
+        {"Hotline", "Hỗ trợ"},
+        {"19006610", "trang web game"},
         {"thanh long", "Kanto"},
         {"hắc hổ", "Johto"},
         {"huyền vũ", "Hoenn"},

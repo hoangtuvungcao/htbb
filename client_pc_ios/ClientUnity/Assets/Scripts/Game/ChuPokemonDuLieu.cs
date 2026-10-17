@@ -16,6 +16,8 @@ public static class ChuPokemonDuLieu
 		new string[] { "bang", "đội" },
 		new string[] { "lãnh thổ", "vùng" },
 		new string[] { "L.thổ", "Vùng" },
+		new string[] { "Hotline", "Hỗ trợ" },
+		new string[] { "19006610", "trang web game" },
 		new string[] { "thanh long", "Kanto" },
 		new string[] { "hắc hổ", "Johto" },
 		new string[] { "huyền vũ", "Hoenn" },
