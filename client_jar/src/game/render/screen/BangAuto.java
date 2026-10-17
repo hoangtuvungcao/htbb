@@ -583,8 +583,7 @@ public class BangAuto extends Screen {
         g.setClip(Canvas.hw - 60, Canvas.hh + 35, 125, 26);
         g.translate(-cmx, 0);
         for (int skillType = 0; skillType < Canvas.gameScr.mainChar.getnSkill(); skillType++) {
-            GameData.imgSkillIcon.drawFrame(skillType, (((skillType * 23) + 11) + Canvas.hw) - 60, Canvas.hh + 48, 0, 3, g);
-            g.drawImage(Res.imgKhung, (((skillType * 23) + 11) + Canvas.hw) - 60, Canvas.hh + 48, 3);
+            game.pokemon.BangChieu.icon(g, ((skillType * 23) + 1 + Canvas.hw) - 60, Canvas.hh + 38, 20, skillType);
             Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf((int) Char.skillLevelLearnt[skillType])).toString(), ((((skillType * 23) + 23) - 4) + Canvas.hw) - 60, Canvas.hh + 48 + 5, 1);
         }
         if (this.seleted == 1 && Canvas.gameTick % 10 > 3) {
@@ -596,14 +595,14 @@ public class BangAuto extends Screen {
         if (this.IDSkillAuto != null) {
             for (int i = 0; i < this.IDSkillAuto.length; i++) {
                 if (this.IDSkillAuto[i] != -1) {
-                    GameData.imgSkillIcon.drawFrame(this.IDSkillAuto[i], vitri[i], Canvas.hh - 36, 0, 0, g);
+                    game.pokemon.BangChieu.icon(g, vitri[i], Canvas.hh - 36, 20, this.IDSkillAuto[i]);
                 }
             }
         }
         if (this.IDSkillBuff != null) {
             for (int j = 0; j < this.IDSkillBuff.length; j++) {
                 if (this.IDSkillBuff[j] != -1) {
-                    GameData.imgSkillIcon.drawFrame(this.IDSkillBuff[j], vitri[j], Canvas.hh + 6, 0, 0, g);
+                    game.pokemon.BangChieu.icon(g, vitri[j], Canvas.hh + 6, 20, this.IDSkillBuff[j]);
                 }
             }
         }

@@ -220,6 +220,10 @@ public class ItemInInventory {
                     plus2 = new StringBuffer(String.valueOf(plus2)).append(" ").append(he[this.heItem]).toString();
                 }
                 String s2 = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer(String.valueOf(item.name)).append(plus2).toString(), new StringBuffer().append((int) this.colorName).toString())).toString();
+                // pokemon: dòng loại đồ theo tên Pokémon mới
+                if (game.pokemon.BangTrangBi.tenLoai(item.type) != null) {
+                    s2 = new StringBuffer(String.valueOf(s2)).append("\n0Loại: ").append(game.pokemon.BangTrangBi.tenLoai(item.type)).toString();
+                }
                 if (!this.nameCharSeal.equals("")) {
                     s2 = new StringBuffer(String.valueOf(s2)).append("\n0").append(this.nameCharSeal.toUpperCase()).append(" tạo").toString();
                 }
@@ -307,6 +311,10 @@ public class ItemInInventory {
                     plus2 = new StringBuffer(String.valueOf(plus2)).append(" ").append(he[this.heItem]).toString();
                 }
                 String s2 = new StringBuffer(String.valueOf(s)).append(setTemp(new StringBuffer(String.valueOf(item.name)).append(plus2).toString(), new StringBuffer().append((int) this.colorName).toString())).toString();
+                // pokemon: dòng loại đồ theo tên Pokémon mới
+                if (game.pokemon.BangTrangBi.tenLoai(item.type) != null) {
+                    s2 = new StringBuffer(String.valueOf(s2)).append("\n0Loại: ").append(game.pokemon.BangTrangBi.tenLoai(item.type)).toString();
+                }
                 if (!this.nameCharSeal.equals("")) {
                     s2 = new StringBuffer(String.valueOf(s2)).append("\n0").append(this.nameCharSeal.toLowerCase()).append(this.nameCharSeal.indexOf("-") > -1 ? "" : " tạo").toString();
                 }
@@ -408,6 +416,9 @@ public class ItemInInventory {
                         plus = new StringBuffer(String.valueOf(plus)).append("+").append((int) this.plusTemplate).toString();
                     }
                     String s3 = new StringBuffer(String.valueOf(new StringBuffer(String.valueOf(s2)).append("\n").append(item.name).toString())).append(" ").append(plus).toString();
+                    if (game.pokemon.BangTrangBi.tenLoai(item.type) != null) {
+                        s3 = new StringBuffer(String.valueOf(s3)).append("\n0Loại: ").append(game.pokemon.BangTrangBi.tenLoai(item.type)).toString();
+                    }
                     if ((item.id < 79 || item.id > 137) && item.type != 13 && isAnimalArmor(item.type)) {
                         s3 = new StringBuffer(String.valueOf(s3)).append("\n").append(na2[this.clazz]).toString();
                     }
@@ -615,7 +626,15 @@ public class ItemInInventory {
 
     public void paint(Graphics g, int x, int y) {
         ItemTemplate item = Res.getItem(this.charClazz, this.idTemplate);
+        // pokemon: khung màu độ hiếm + "+N" cường hóa
+        int hiem = game.pokemon.KieuO.mauHiem(this.colorName);
+        if (hiem >= 0) {
+            game.pokemon.KieuO.khungHiem(g, x - 9, y - 9, 18, hiem);
+        }
         GameData.paintIcon(g, item.idIcon, x, y);
+        if (this.plusTemplate > 0) {
+            game.pokemon.KieuO.capCuong(g, x - 9, y - 9, this.plusTemplate);
+        }
         if (this.plusTemplate > 12) {
             Res.paintRectColor(g, x - 9, y - 9, 17, 17, this.count, color[this.plusTemplate - 13], 16516369);
             this.count += 3;

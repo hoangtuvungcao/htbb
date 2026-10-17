@@ -389,6 +389,9 @@ public class WindowInfoScr extends Screen {
         if (index.length > 1) {
             this.firName = this.name;
             this.name = this.title[index[focusTab]];
+        } else if (this.name == null || this.name.length() == 0) {
+            // pokemon: cửa sổ 1 tab chưa có tên -> tên tab mặc định
+            this.name = this.title[index[focusTab]];
         }
         this.countTabMyitem = 0;
         if (index[focusTab] != 0) {
@@ -575,6 +578,10 @@ public class WindowInfoScr extends Screen {
                 break;
             case 22:
             case 23:
+                // pokemon: cửa sổ 1 tab - đặt tên tab (Rương đồ / Gian hàng) thay vì giữ tên cũ
+                if (index.length <= 1) {
+                    this.name = index[focusTab] == 22 ? "Rương đồ" : this.title[23];
+                }
                 this.isPaintMoney = true;
                 this.x0 += 9;
                 this.y0 += 0;
@@ -1131,8 +1138,7 @@ public class WindowInfoScr extends Screen {
                     if (WindowInfoScr.this.sellItem.elementAt(ii) instanceof ItemInInventory) {
                         ItemInInventory item = (ItemInInventory) WindowInfoScr.this.sellItem.elementAt(ii);
                         if (item.isSelling) {
-                            g.setColor(7706352);
-                            g.fillRect(x - 7, y - 7, 14, 14);
+                            game.pokemon.GiaoDien.khoi(g, x - 8, y - 8, 16, 16, 2, 0x3E8A30);
                         }
                         item.paint(g, x, y);
                         return;
@@ -2643,7 +2649,8 @@ public class WindowInfoScr extends Screen {
         g.translate(this.x, this.y);
         Res.paintDlgFull(g, -10, -10);
         if (index[focusTab] == 0) {
-            Font.smallFont.drawString(g, new StringBuffer(String.valueOf(this.countTabMyitem + 1)).append("/").append((int) Canvas.gameScr.mainChar.limItemBag).toString(), 64, 28, 2);
+            // pokemon: chấm trang hành trang (trang đang xem vàng)
+            game.pokemon.KieuO.chamTrang(g, 64, 29, Canvas.gameScr.mainChar.limItemBag, this.countTabMyitem);
         }
         if (this.isPaintMoney) {
             int hMoney = 139;
@@ -2733,7 +2740,9 @@ public class WindowInfoScr extends Screen {
             case 29:
             case 30:
             default:
-                g.setClip(0, 0, (this.numW * this.wSmall) + 1, (5 * this.hSmall) + 1);
+                // pokemon: lưới ô bo góc có khe, sọc xen kẽ, ô trống mờ, ô chọn viền vàng dày
+                game.pokemon.GiaoDien.khoi(g, -2, -2, (this.numW * this.wSmall) + 3, (5 * this.hSmall) + 3, 3, 0x0B1730);
+                g.setClip(-2, -2, (this.numW * this.wSmall) + 3, (5 * this.hSmall) + 3);
                 g.translate(0, -cmy);
                 int xx = cmy / this.hSmall;
                 if (xx < 0) {
@@ -2743,20 +2752,23 @@ public class WindowInfoScr extends Screen {
                 if (index[focusTab] == 0 && yy > 42) {
                     yy = 42;
                 }
-                for (int i = xx; i < yy; i++) {
-                    for (int j = 0; j < this.numW; j++) {
-                        paintGrid(g, j * this.wSmall, i * this.hSmall);
-                    }
+                int soCo = index[focusTab] == 0 ? this.list.size() - (this.countTabMyitem * 42) : this.list.size();
+                if (this.isLoad) {
+                    soCo = 0;
                 }
-                if (!this.isChangeTab) {
-                    g.setColor(10595790);
-                    g.fillRect(((this.selected % this.numW) * this.wSmall) + 1, ((this.selected / this.numW) * this.hSmall) + 1, this.wSmall - 2, this.hSmall - 2);
-                }
+                int soHang = Math.max(this.numH, 5);
+                game.pokemon.KieuO.luoi(g, this.numW, xx, Math.min(yy, soHang), this.wSmall, soCo, this.isChangeTab ? -1 : this.selected);
                 if (index[focusTab] != 0) {
                     paintProduct(g);
                 } else {
                     paintBag(g);
                 }
+                if (!this.isChangeTab) {
+                    game.pokemon.KieuO.chonO(g, (this.selected % this.numW) * this.wSmall, (this.selected / this.numW) * this.hSmall, this.wSmall);
+                }
+                g.translate(0, cmy);
+                g.setClip(-10, -40, 160, 160);
+                game.pokemon.KieuO.thanhCuon(g, (this.numW * this.wSmall) + 2, 0, 5 * this.hSmall, soHang * this.hSmall, cmy, 5 * this.hSmall);
                 break;
             case 21:
             case 25:
@@ -3046,7 +3058,7 @@ public class WindowInfoScr extends Screen {
                 g.fillRect(count * 20, y, 17, 17);
             }
             if (this.numH != 1 && this.selected % this.numW == count && khoaDoThu == 1) {
-                g.setColor(10595790);
+                g.setColor(game.pokemon.GiaoDien.VANG);
                 g.fillRect((this.selected % this.numW) * 20, (5 * this.hSmall) + 1, 17, 16);
             }
             g.drawImage(Res.imgGrid, count * 20, y, 0);
@@ -3069,7 +3081,7 @@ public class WindowInfoScr extends Screen {
         for (int i = 0; i < 5; i++) {
             g.drawImage(Res.imgGrid, this.posEpNgoc[i][0], this.posEpNgoc[i][1], 0);
         }
-        g.setColor(10595790);
+        g.setColor(game.pokemon.GiaoDien.VANG);
         if (this.numH == 1 && this.selected < 5) {
             g.fillRect(this.posEpNgoc[this.selected][0] + 1, this.posEpNgoc[this.selected][1] + 1, 16, 16);
         }
@@ -3135,7 +3147,7 @@ public class WindowInfoScr extends Screen {
         g.setColor(16766498);
         g.fillRect(0, 4 + (this.listCheDo.size() * 13), this.w, 2);
         g.fillRect(0, 4 + (this.hSmall * 3) + (this.listCheDo.size() * 13), this.w, 2);
-        g.setColor(10595790);
+        g.setColor(game.pokemon.GiaoDien.VANG);
         if (this.selected / this.numW < 2) {
             g.translate(-cmx, 0);
             g.fillRect(((this.selected % this.numW) * this.wSmall) + 4, (this.listCheDo.size() * 13) + ((this.selected / this.numW) * this.wSmall) + 13, 17, 17);
@@ -3170,33 +3182,40 @@ public class WindowInfoScr extends Screen {
     }
 
     private void paintSelected(Graphics g, int x, int y) {
-        g.setColor(10595790);
+        g.setColor(game.pokemon.GiaoDien.VANG);
         g.fillRect(x, y, 16, 16);
     }
 
     private void paintKeepAndSellItem(Graphics g) {
+        // pokemon: 2 lưới 3 cột - trái hành trang (xanh), phải rương / đồ bán (nâu); ô bo góc có khe,
+        // ô trống mờ, ô đang chọn viền vàng dày
         Vector li;
-        g.setClip(0, 0, this.w, this.h);
-        if (this.selected % this.numW < 3) {
-            g.translate(0, -cmy);
-            if (!this.isChangeTab) {
-                paintSelected(g, ((this.selected % this.numW) * 18) + 1, ((this.selected / this.numW) * 18) + 1);
-            }
+        if (index[focusTab] == 22) {
+            li = Char.itembag;
         } else {
-            g.translate(0, -this.cmyKeep);
+            li = this.sellItem;
         }
+        g.setClip(-2, -2, this.w + 4, this.h + 4);
+        boolean benTrai = this.selected % this.numW < 3;
+        int nTrai = Char.inventory.size() + MainChar.gemItem.size();
+        int selX = (this.selected % this.numW) * 18;
+        int selY = (this.selected / this.numW) * 18;
+        int dyTrai = benTrai ? cmy : this.cmyKeep;
+        g.translate(0, -dyTrai);
         for (int i = 0; i < this.numH; i++) {
             for (int j = 0; j < 3; j++) {
-                g.drawImage(Res.imgGrid, j * 18, i * 18, 0);
+                game.pokemon.KieuO.oDo(g, j * 18, i * 18, 18, (i * 3) + j < nTrai, ((i + j) & 1) == 1);
             }
+        }
+        if (benTrai && !this.isChangeTab) {
+            game.pokemon.KieuO.nenChon(g, selX, selY, 18);
         }
         for (int i2 = 0; i2 < Char.inventory.size(); i2++) {
             int xx = (i2 % 3) * 18;
             int yy = (i2 / 3) * 18;
             ItemInInventory item = (ItemInInventory) Char.inventory.elementAt(i2);
             if (item.isSelling) {
-                g.setColor(7706352);
-                g.fillRect(xx + 2, yy + 2, 14, 14);
+                game.pokemon.GiaoDien.khoi(g, xx + 1, yy + 1, 15, 15, 2, 0x3E8A30);
             }
             item.paint(g, xx + 9, yy + 9);
         }
@@ -3206,30 +3225,22 @@ public class WindowInfoScr extends Screen {
             int yy2 = (aa / 3) * 18;
             GemTemplate gem = (GemTemplate) MainChar.gemItem.elementAt(i3);
             Res.paintGem(g, Res.getGemByID(gem.id).idImage, xx2 + 9, yy2 + 9);
-            Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(gem.number)).toString(), xx2 + 18, (yy2 + 18) - Font.smallFontColor[3].getHeight(), 1);
+            game.pokemon.KieuO.soLuong(g, xx2 + 17, yy2 + 17, game.pokemon.KieuO.soGon(gem.number));
             aa++;
         }
-        if (this.selected % this.numW > 2) {
-            g.translate(0, this.cmyKeep);
-            g.translate(0, -cmy);
-        } else {
-            g.translate(0, cmy);
-            g.translate(0, -this.cmyKeep);
+        if (benTrai && !this.isChangeTab) {
+            game.pokemon.KieuO.chonO(g, selX, selY, 18);
         }
+        g.translate(0, dyTrai);
+        int dyPhai = benTrai ? this.cmyKeep : cmy;
+        g.translate(0, -dyPhai);
         for (int i4 = 0; i4 < this.numH; i4++) {
             for (int j2 = 0; j2 < 3; j2++) {
-                g.setColor(6568449);
-                g.fillRect((j2 * 18) + 54, i4 * 18, 18, 18);
-                g.drawImage(Res.imgGrid, (j2 * 18) + 54, i4 * 18, 0);
+                game.pokemon.KieuO.oRuong(g, (j2 * 18) + 54, i4 * 18, 18, (i4 * 3) + j2 < li.size(), ((i4 + j2) & 1) == 1);
             }
         }
-        if (this.selected % this.numW > 2 && !this.isChangeTab) {
-            paintSelected(g, ((this.selected % this.numW) * 18) + 1, ((this.selected / this.numW) * 18) + 1);
-        }
-        if (index[focusTab] == 22) {
-            li = Char.itembag;
-        } else {
-            li = this.sellItem;
+        if (!benTrai && !this.isChangeTab) {
+            game.pokemon.KieuO.nenChon(g, selX, selY, 18);
         }
         for (int i5 = 0; i5 < li.size(); i5++) {
             if (li.elementAt(i5) instanceof ItemInInventory) {
@@ -3238,6 +3249,10 @@ public class WindowInfoScr extends Screen {
                 Res.paintGem(g, Res.getGemByID(((RealID) li.elementAt(i5)).ID).idImage, ((i5 % 3) * 18) + 54 + 9, ((i5 / 3) * 18) + 9);
             }
         }
+        if (!benTrai && !this.isChangeTab) {
+            game.pokemon.KieuO.chonO(g, selX, selY, 18);
+        }
+        g.translate(0, dyPhai);
     }
 
     private void paintEpNgoc(Graphics g) {
@@ -3245,7 +3260,7 @@ public class WindowInfoScr extends Screen {
         for (int i = 0; i < 5; i++) {
             g.drawImage(Res.imgGrid, this.posEpNgoc[i][0], this.posEpNgoc[i][1], 0);
         }
-        g.setColor(10595790);
+        g.setColor(game.pokemon.GiaoDien.VANG);
         if (this.numH == 1 && this.selected < 5) {
             g.fillRect(this.posEpNgoc[this.selected][0] + 1, this.posEpNgoc[this.selected][1] + 1, 16, 16);
         }
@@ -3270,15 +3285,15 @@ public class WindowInfoScr extends Screen {
                 g.fillRect((count * 20) + 4, y, 17, 17);
             }
             if (khoaCheDo == 1 && this.selected / this.numW >= 2 && this.selected % this.numW == count) {
-                g.setColor(10595790);
+                g.setColor(game.pokemon.GiaoDien.VANG);
                 g.fillRect(((this.selected % this.numW) * this.wSmall) + 4, this.hSmall * 5, 17, 17);
             }
             if (this.selected / this.numW == 4 && khoaImbue == 1 && index[focusTab] == 21 && this.selected % this.numW == count) {
-                g.setColor(10595790);
+                g.setColor(game.pokemon.GiaoDien.VANG);
                 g.fillRect(((this.selected % this.numW) * this.wSmall) + 4, (4 * this.hSmall) + 1, 17, 17);
             }
             if (this.selected / this.numW == 4 && khoaKham == 1 && index[focusTab] == 25 && this.selected % this.numW == count) {
-                g.setColor(10595790);
+                g.setColor(game.pokemon.GiaoDien.VANG);
                 g.fillRect(((this.selected % this.numW) * this.wSmall) + 4, (4 * this.hSmall) + 1, 17, 17);
             }
             g.drawImage(Res.imgGrid, (count * 20) + 4, y, 0);
@@ -3327,7 +3342,7 @@ public class WindowInfoScr extends Screen {
 
     private void paintDapBG(Graphics g, int x, int y) {
         if (!this.isChangeTab && Canvas.gameTick % 10 > 3 && this.selected / this.numW < 4) {
-            g.setColor(10595790);
+            g.setColor(game.pokemon.GiaoDien.VANG);
             if (this.selected % this.numW == 1 && this.selected / this.numW != 4) {
                 g.fillRect(25, 0, 75, 86);
             } else {
@@ -3337,18 +3352,19 @@ public class WindowInfoScr extends Screen {
         for (int i = 0; i < 8; i++) {
             g.drawImage(Res.imgGrid, ((i / 4) * 5 * this.wSmall) + 4, (i % 4) * this.hSmall, 0);
         }
-        g.setColor(10595790);
+        g.setColor(game.pokemon.GiaoDien.VANG);
         g.drawRect(25, 0, 75, 86);
     }
 
     private void paintGrid(Graphics g) {
+        // pokemon: lưới trao đổi - trái của mình (xanh), phải của đối phương (nâu)
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 6; j++) {
                 if (j > 2) {
-                    g.setColor(6568449);
-                    g.fillRect(j * 18, i * 18, 18, 18);
+                    game.pokemon.KieuO.oRuong(g, j * 18, i * 18, 18, true, ((i + j) & 1) == 1);
+                } else {
+                    game.pokemon.KieuO.oDo(g, j * 18, i * 18, 18, true, ((i + j) & 1) == 1);
                 }
-                g.drawImage(Res.imgGrid, j * 18, i * 18, 0);
             }
         }
     }
@@ -3358,8 +3374,8 @@ public class WindowInfoScr extends Screen {
         paintGrid(g);
         g.translate(-cmx, 0);
         if (!this.isChangeTab) {
-            g.setColor(10595790);
-            g.fillRect(((this.selected % this.numW) * 18) + 1, ((this.selected / this.numW) * 18) + 1, 16, 16);
+            game.pokemon.KieuO.nenChon(g, (this.selected % this.numW) * 18, (this.selected / this.numW) * 18, 18);
+            game.pokemon.KieuO.chonO(g, (this.selected % this.numW) * 18, (this.selected / this.numW) * 18, 18);
         }
         int xx = 0;
         for (int i = 0; i < Char.inventory.size(); i++) {
@@ -3419,8 +3435,7 @@ public class WindowInfoScr extends Screen {
         g.translate(-cmx, 0);
         for (int skillType = 0; skillType < this.numW; skillType++) {
             InfoSkillLearn skillearn = (InfoSkillLearn) ((Vector) GameScr.infoNewSkill.elementAt(Canvas.gameScr.mainChar.clazz)).elementAt(skillType);
-            GameData.imgSkillIcon.drawFrame(skillearn.idSkill, (skillType * 23) + (this.wSmall / 2), this.h / 2, 0, 3, g);
-            g.drawImage(Res.imgKhung, (skillType * 23) + (this.wSmall / 2), this.h / 2, 3);
+            game.pokemon.BangChieu.icon(g, ((skillType * 23) + (this.wSmall / 2)) - 10, (this.h / 2) - 10, 20, skillearn.idSkill);
         }
         if (!this.isChangeTab && Canvas.gameTick % 10 > 3) {
             g.setColor(14139920);
@@ -3578,46 +3593,13 @@ public class WindowInfoScr extends Screen {
     }
 
     private void paintSkill(Graphics g) {
-        Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) Canvas.gameScr.mainChar.skillPointLeft)).toString(), 105, -8, 2);
-        Font.normalFont[0].drawString(g, "Điểm kỹ năng: ", 60, -14, 2);
-        g.setColor(11908533);
-        g.fillRect(-8, 0, 133, 1);
-        g.fillRect(-8, 30, 133, 1);
-        g.setClip(-3, 0, this.w + 6, this.h);
-        g.translate(-cmx, 0);
-        for (int skillType = 0; skillType < this.numW; skillType++) {
-            GameData.imgSkillIcon.drawFrame(skillType, (skillType * 23) + (this.wSmall / 2), this.h / 2, 0, 3, g);
-            g.drawImage(Res.imgKhung, (skillType * 23) + (this.wSmall / 2), this.h / 2, 3);
-            Font.smallFontColor[1].drawString(g, new StringBuffer(String.valueOf((int) Char.skillLevelLearnt[skillType])).toString(), ((skillType * 23) + this.wSmall) - 4, (this.h / 2) + 5, 1);
+        // pokemon: hàng ô chiêu màu hệ + thẻ chiêu (game.pokemon.BangChieu)
+        if (this.selected < 0) {
+            this.selected = 0;
+        } else if (this.selected > this.numW - 1) {
+            this.selected = this.numW - 1;
         }
-        if (!this.isChangeTab && Canvas.gameTick % 10 > 3) {
-            g.setColor(14139920);
-            g.drawRect(this.selected * this.wSmall, 5, this.wSmall - 2, this.hSmall + 1);
-        }
-        if (!this.isChangeTab) {
-            if (this.selected < 0) {
-                this.selected = 0;
-            } else if (this.selected > SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz].length - 1) {
-                this.selected = SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz].length - 1;
-            }
-            g.translate(cmx, 0);
-            g.setClip(-11, 32, 138, 68);
-            String skName = SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz][this.selected];
-            byte skillLevel = Char.skillLevelLearnt[this.selected];
-            if (skillLevel == 9) {
-                skName = new StringBuffer(String.valueOf(skName)).append(" MAX").append((int) skillLevel).toString();
-            } else if (skillLevel >= 1) {
-                skName = new StringBuffer(String.valueOf(skName)).append(" lv ").append((int) skillLevel).toString();
-            }
-            String[] info = Canvas.gameScr.mainChar.getInfoSkill(this.selected);
-            g.translate(0, -cmy);
-            Font.normalFont[0].drawString(g, skName, -5, 29 + (this.isCmyTab3 ? cmy : 0), 0);
-            int yy = 40;
-            for (String str : info) {
-                Font.arialFontW.drawString(g, str, -5, yy + (this.isCmyTab3 ? cmy : 0), 0);
-                yy += 12;
-            }
-        }
+        game.pokemon.BangChieu.ve(g, this.numW, this.selected, this.isChangeTab, cmx, this.isCmyTab3 ? 0 : cmy, this.w);
     }
 
     private void paintFeatures(Graphics g) {
@@ -3639,37 +3621,8 @@ public class WindowInfoScr extends Screen {
         if (this.imgCharWear != null && Canvas.gameTick % 16 >= 8) {
             g.drawImage(this.imgCharWear, this.w / 2, 0, 17);
         }
-        g.drawImage(Res.imgInfoWindow[0], 0, 0, 0);
-        g.drawImage(Res.imgCoatCell, 25, 83, 0);
-        if (!this.isChangeTab && Canvas.gameTick % 10 > 3) {
-            g.setColor(10595790);
-            if (this.selected % 3 != 1 && this.selected != 4) {
-                g.fillRect(3 + (((this.selected % this.numW) - (this.selected % this.numW > 0 ? 1 : 0)) * this.wSmall), 3 + ((this.selected / this.numW) * 21), 16, 16);
-            } else if (this.selected == 4) {
-                g.fillRect(26, 84, 16, 16);
-            } else {
-                g.fillRect(this.wSmall - 23, 84, 16, 16);
-            }
-        }
-        if (charWearing.wearingItems != null) {
-            int size0 = charWearing.wearingItems.size();
-            for (int i = 0; i < size0; i++) {
-                ItemInInventory item = (ItemInInventory) charWearing.wearingItems.elementAt(i);
-                ItemTemplate it = Res.getItem(item.charClazz, item.idTemplate);
-                if (it.type == 8) {
-                    if (item.viTriVe == 1) {
-                        paintItemIcon(g, item, 107, 52);
-                    } else {
-                        paintItemIcon(g, item, 107, 73);
-                    }
-                } else {
-                    paintItemIcon(g, item, posPaintWearingX[it.type], posPaintWearingY[it.type]);
-                }
-            }
-        }
-        if (charWearing.idAnimal > -1 && !Canvas.gameScr.mainChar.isDoing) {
-            GameData.paintIcon(g, (short) (charWearing.idPaintIconAnimal + 7500), 82, 92);
-        }
+        // pokemon: ô trang bị bo góc + tên ô (game.pokemon.BangTrangBi) thay ảnh khung kiếm hiệp
+        game.pokemon.BangTrangBi.ve(g, charWearing, this.selected, this.isChangeTab, posPaintWearingX, posPaintWearingY, this.w);
     }
 
     private void paintAnimalWearing(Graphics g) {
@@ -3677,14 +3630,15 @@ public class WindowInfoScr extends Screen {
         if (charWearing != null && charWearing.imgAnimal != null && (charWearing.useHorse != -1 || charWearing.idhorse > -1)) {
             g.drawRegion(charWearing.imgAnimal, 0, charWearing.himg * this.idFrame, charWearing.wimg, charWearing.himg, 0, Res.imgInfoWindow[0].getWidth() / 2, Res.imgInfoWindow[0].getHeight() / 2, 3);
         }
-        g.drawImage(Res.imgInfoWindow[0], 0, 0, 0);
-        g.setColor(2368548);
+        // pokemon: 10 ô đồ thú cưỡi bo góc, ô chọn viền vàng
         for (int i = 0; i < 10; i++) {
-            g.fillRect(3 + ((i % 2) * this.wSmall), 3 + ((i / 2) * 21), 16, 16);
+            game.pokemon.KieuO.oDo(g, 2 + ((i % 2) * this.wSmall), 2 + ((i / 2) * 21), 18, false, false);
         }
-        if (!this.isChangeTab && Canvas.gameTick % 10 > 3) {
-            g.setColor(10595790);
-            g.fillRect(3 + ((this.selected % this.numW) * this.wSmall), 3 + ((this.selected / this.numW) * 21), 16, 16);
+        if (!this.isChangeTab) {
+            int xc = 2 + ((this.selected % this.numW) * this.wSmall);
+            int yc = 2 + ((this.selected / this.numW) * 21);
+            game.pokemon.KieuO.nenChon(g, xc, yc, 18);
+            game.pokemon.KieuO.chonO(g, xc, yc, 18);
         }
         if (charWearing != null) {
             if (charWearing.wearingAnimal != null && (charWearing.useHorse != -1 || charWearing.idhorse > -1)) {
@@ -3713,10 +3667,15 @@ public class WindowInfoScr extends Screen {
         if (this.yShow < 0) {
             this.yShow = 10;
         }
-        g.setColor(25695);
-        g.fillRect(this.xShow, this.yShow, this.wShow, this.hShow + (this.countPop * 15));
-        g.setColor(16774720);
-        g.drawRect(this.xShow, this.yShow, this.wShow - 1, (this.hShow - 1) + (this.countPop * 15));
+        // pokemon: hộp chi tiết đồ kiểu Pokémon (bảng xanh viền trắng), dải màu độ hiếm trên cùng,
+        // vạch ngăn dưới dòng tên
+        int hHop = this.hShow + (this.countPop * 15);
+        game.pokemon.GiaoDien.bang(g, this.xShow - 3, this.yShow - 3, this.wShow + 6, hHop + 6);
+        int mauTen = -1;
+        if (this.showText != null && this.showText.length > 0 && this.showText[0].length() > 0 && isDegit(this.showText[0].charAt(0))) {
+            mauTen = game.pokemon.KieuO.mauHiem(this.showText[0].charAt(0) - '0');
+        }
+        game.pokemon.GiaoDien.khoi(g, this.xShow + 6, this.yShow - 1, this.wShow - 12, 3, 1, mauTen >= 0 ? mauTen : game.pokemon.GiaoDien.DO);
         int yy = 0;
         g.setClip(this.xShow, this.yShow, this.wShow, (this.hShow + (this.countPop * 15)) - 2);
         g.translate(0, -cmyText);
@@ -3739,6 +3698,11 @@ public class WindowInfoScr extends Screen {
                 }
                 Font.normalFont[color >= 6 ? (byte) 0 : color].drawString(g, this.showText[i].substring(indexsub), this.xShow + 4, this.yShow + 4 + yy, 0);
                 yy += 15;
+                if (i == 0) {
+                    g.setColor(game.pokemon.GiaoDien.XANH_SANG);
+                    g.fillRect(this.xShow + 4, this.yShow + 3 + yy, this.wShow - 8, 1);
+                    yy += 2;
+                }
             }
         }
         if (this.countPop < 0) {
@@ -3812,7 +3776,7 @@ public class WindowInfoScr extends Screen {
                     @Override
                     public void paint(Graphics g, int x, int y) {
                         GameData.paintIcon(g, (short) (Res.getShopByID(shop.id).idImage + 5500), x, y);
-                        Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf((int) (shop.id > 1 ? Res.getShopByID(shop.id).value : (short) 1))).toString(), x + 8, y + 1, 1);
+                        game.pokemon.KieuO.soLuong(g, x + 8, y + 9, game.pokemon.KieuO.soGon((int) (shop.id > 1 ? Res.getShopByID(shop.id).value : (short) 1)));
                     }
                 });
             }
@@ -3834,10 +3798,12 @@ public class WindowInfoScr extends Screen {
             this.showText = Font.borderFont.splitFontBStrInLine(text2, this.wShow - 10);
             this.hShow = (this.showText.length * 15) + 8 + (this.arrayKhamNgoc != null ? 16 : 0);
             this.xShow -= cmx;
-            if (1 + this.xShow + this.wShow > Canvas.w) {
-                this.xShow = (Canvas.w - this.wShow) - 1;
-            } else if (1 + this.xShow < 0) {
-                this.xShow = -1;
+            // pokemon: giữ cả viền hộp (3 px) trong màn hình
+            if (this.xShow + this.wShow + 4 > Canvas.w) {
+                this.xShow = (Canvas.w - this.wShow) - 4;
+            }
+            if (this.xShow < 4) {
+                this.xShow = 4;
             }
             this.yShow -= cmy;
             if (this.countPop == 0) {
@@ -3922,7 +3888,7 @@ public class WindowInfoScr extends Screen {
                     @Override
                     public void paint(Graphics g, int x, int y) {
                         Res.paintPotion(g, MainChar.listPotion[aa].index, x, y, 3);
-                        Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(WindowInfoScr.this.getCountPotion(aa))).toString(), x + 8, y + 1, 1);
+                        game.pokemon.KieuO.soLuong(g, x + 8, y + 9, game.pokemon.KieuO.soGon(WindowInfoScr.this.getCountPotion(aa)));
                     }
                 });
                 count++;
@@ -3941,7 +3907,7 @@ public class WindowInfoScr extends Screen {
                 @Override
                 public void paint(Graphics g, int x, int y) {
                     Res.paintPotion(g, Res.getShopByID(item.id).idImage, x, y, 3);
-                    Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(item.number)).toString(), x + 8, y + 1, 1);
+                    game.pokemon.KieuO.soLuong(g, x + 8, y + 9, game.pokemon.KieuO.soGon(item.number));
                 }
             });
             count++;
@@ -3972,7 +3938,7 @@ public class WindowInfoScr extends Screen {
                                 ge.count = 0;
                             }
                         }
-                        Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(item2.number)).toString(), x + 8, y + 1, 1);
+                        game.pokemon.KieuO.soLuong(g, x + 8, y + 9, game.pokemon.KieuO.soGon(item2.number));
                     }
                 }
             });
@@ -4000,7 +3966,7 @@ public class WindowInfoScr extends Screen {
                                 ge2.count = 0;
                             }
                         }
-                        Font.smallFontColor[3].drawString(g, new StringBuffer(String.valueOf(item3.number)).toString(), x + 8, y + 1, 1);
+                        game.pokemon.KieuO.soLuong(g, x + 8, y + 9, game.pokemon.KieuO.soGon(item3.number));
                     }
                 }
             });
@@ -4043,8 +4009,7 @@ public class WindowInfoScr extends Screen {
                 @Override
                 public void paint(Graphics g, int x, int y) {
                     if (item5.isSelling) {
-                        g.setColor(7706352);
-                        g.fillRect(x - 8, y - 8, 16, 16);
+                        game.pokemon.GiaoDien.khoi(g, x - 8, y - 8, 16, 16, 2, 0x3E8A30);
                     }
                     item5.paint(g, x, y);
                 }
@@ -4068,7 +4033,7 @@ public class WindowInfoScr extends Screen {
                         @Override
                         public void paint(Graphics g, int x, int y) {
                             GameData.paintIcon(g, (short) idImg, x, y);
-                            Font.smallFontColor[3].drawString(g, sl, x + 8, y + 1, 1);
+                            game.pokemon.KieuO.soLuong(g, x + 8, y + 9, sl);
                         }
                     });
                 }

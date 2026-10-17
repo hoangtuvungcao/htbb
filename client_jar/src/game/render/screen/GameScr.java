@@ -547,9 +547,37 @@ public class GameScr extends Screen {
         this.posMiniMap.x = (Canvas.w - wMiniMap) - 1;
         this.posMiniMap.y = (Canvas.h - Screen.deltaY) - hMiniMap;
         // pokemon: màn hẹp - hàng ô phím tắt chạm tới bản đồ nhỏ thì đưa bản đồ lên trên hàng ô
-        if (Res.imgPanel != null && Canvas.hw + Res.imgPanel.getWidth() / 2 > this.posMiniMap.x) {
-            this.posMiniMap.y = (Canvas.h - 16) - Res.imgPanel.getHeight() - hMiniMap - 2;
+        if (Res.imgPanel != null && Canvas.hw + rongThanhO() / 2 > this.posMiniMap.x) {
+            this.posMiniMap.y = (Canvas.h - 16) - caoThanhO() - hMiniMap - 2;
         }
+    }
+
+    /** pokemon: bước ngang 1 ô skill nhanh - lớn hơn trên màn rộng (240 / 320+ px). */
+    public static int buocO() {
+        int b = Res.wKhung;
+        if (Canvas.w >= 320) {
+            return b < 38 ? 38 : b;
+        }
+        if (Canvas.w >= 240) {
+            return b < 30 ? 30 : b;
+        }
+        return b;
+    }
+
+    public static int rongThanhO() {
+        return 5 * buocO();
+    }
+
+    /** chiều cao hàng ô skill nhanh (cùng chỗ ảnh panel cũ, cao hơn trên màn rộng). */
+    public static int caoThanhO() {
+        int h = Res.imgPanel == null ? 24 : Res.imgPanel.getHeight();
+        if (Canvas.w >= 320) {
+            return h < 40 ? 40 : h;
+        }
+        if (Canvas.w >= 240) {
+            return h < 32 ? 32 : h;
+        }
+        return h;
     }
 
     public void loadCamera() {
@@ -2996,7 +3024,7 @@ public class GameScr extends Screen {
         }
         Canvas.resetTrans(g);
         if (this.indexBuff != -1 && timeBuff - (System.currentTimeMillis() / 1000) > 0) {
-            GameData.imgSkillIcon.drawFrame(this.indexBuff, Canvas.w, (Canvas.h - hMiniMap) - Screen.deltaY, 0, 40, g);
+            game.pokemon.BangChieu.icon(g, Canvas.w - 20, ((Canvas.h - hMiniMap) - Screen.deltaY) - 20, 20, this.indexBuff);
             Font.smallFontColor[0].drawString(g, new StringBuffer(String.valueOf((timeBuff - System.currentTimeMillis()) / 1000)).toString(), Canvas.w - 10, ((Canvas.h - hMiniMap) - Screen.deltaY) - 28, 2);
         }
         g.translate(this.posMiniMap.x, this.posMiniMap.y);
@@ -3069,7 +3097,7 @@ public class GameScr extends Screen {
             if (Res.imgPanel != null && this.posMiniMap.y + hMiniMap < Canvas.h - Screen.deltaY - 4) {
                 // màn hẹp (bản đồ nhỏ đã lên trên hàng ô): tên vùng ở góc trái, ngay trên hàng ô phím tắt
                 xTen = 2;
-                yTen = (Canvas.h - 16) - Res.imgPanel.getHeight() - 17;
+                yTen = (Canvas.h - 16) - caoThanhO() - 17;
             }
             game.pokemon.GiaoDien.vien(g, xTen, yTen, wTen, 15, game.pokemon.GiaoDien.XANH, nameMap);
         }
@@ -3604,23 +3632,52 @@ public class GameScr extends Screen {
         if (MainChar.quickSlot == null) {
             this.mainChar.loadQuickSlot();
         }
-        int wSlot = Res.imgPanel.getWidth();
-        int hSlot = Res.imgPanel.getHeight();
-        // pokemon: 5 ô bo góc xanh đậm viền tối (thay khung gỗ); ô giữa viền vàng
+        int buoc = buocO();
+        int wSlot = buoc * 5;
+        int hSlot = caoThanhO();
+        // pokemon: 5 ô chiêu kiểu Pokémon (màu hệ + hình chiêu + nhãn phím + hồi chiêu), cùng vị trí cũ
         int xSlot0 = Canvas.hw - (wSlot / 2);
         int ySlot0 = ((Canvas.h - 16) - hSlot) + xSlot;
+        int wo = buoc - 3;
+        int ho = hSlot - 5;
+        int lop = this.mainChar.clazz;
+        long now = System.currentTimeMillis();
+        int kMoi = -1;
+        long tMoi = 0;
         for (int k = 0; k < 5; k++) {
-            int xo = xSlot0 + (k * Res.wKhung);
-            game.pokemon.GiaoDien.khoi(g, xo + 1, ySlot0 + 1, Res.wKhung - 1, hSlot - 4, 4, k == 2 ? game.pokemon.GiaoDien.VANG : game.pokemon.GiaoDien.VIEN);
-            game.pokemon.GiaoDien.khoiDoc(g, xo + 3, ySlot0 + 3, Res.wKhung - 5, hSlot - 8, 2, game.pokemon.GiaoDien.THAN_TREN, game.pokemon.GiaoDien.THAN_DUOI);
-        }
-        int i = 0;
-        while (i < 5) {
-            if (MainChar.quickSlot[indexTabSlot][i] != null) {
-                MainChar.quickSlot[indexTabSlot][i].paint(g, (((Canvas.hw - (wSlot / 2)) + (i * Res.wKhung)) + (Res.wKhung / 2)) - 8, (((((Canvas.h - 16) - 6) + (Res.wKhung / 2)) - hSlot) + xSlot) - (i == 2 ? 1 : 0));
+            QuickSlot qs = MainChar.quickSlot[indexTabSlot][k];
+            QuickSlot.paintO(g, qs, xSlot0 + (k * buoc) + 2, ySlot0 + 2, wo, ho, String.valueOf(1 + (k * 2)), k == 2);
+            if (qs != null && qs.quickslotType == QuickSlot.TYPE_SKILL) {
+                long t = this.mainChar.timeLastUseSkills[qs.skillType];
+                if (t > tMoi && now - t < 1300) {
+                    tMoi = t;
+                    kMoi = k;
+                }
             }
-            Font.smallFontColor[0].drawString(g, new StringBuffer(String.valueOf(1 + (i * 2))).toString(), xSlot0 + (i * Res.wKhung) + 4, ySlot0 + 3, 0);
-            i++;
+        }
+        // bộ ô đang dùng (phím 0 đổi): 2 chấm bên trái thanh
+        for (int k = 0; k < 2; k++) {
+            int yc = ySlot0 + 3 + (ho / 2) - 5 + (k * 7);
+            g.setColor(game.pokemon.GiaoDien.VIEN);
+            g.fillArc(xSlot0 - 5, yc - 1, 6, 6, 0, 360);
+            g.setColor(k == indexTabSlot ? game.pokemon.GiaoDien.VANG : 0x5E7AA8);
+            g.fillArc(xSlot0 - 4, yc, 4, 4, 0, 360);
+        }
+        // tên chiêu vừa dùng: viên màu hệ ngay trên thanh (không che nhân vật)
+        if (kMoi >= 0) {
+            QuickSlot qs = MainChar.quickSlot[indexTabSlot][kMoi];
+            String ten = game.pokemon.PokeChieu.ten(lop, qs.skillType);
+            if (ten != null) {
+                // trên nhãn tên map (yTen = ySlot0 - 17), căn giữa màn hình
+                Font f = Font.borderFont;
+                int wt = f.getWidth(ten) + 14;
+                int xt = Canvas.hw - (wt / 2);
+                int yt = ySlot0 - 34;
+                int mau = game.pokemon.KieuO.mauHe(game.pokemon.PokeChieu.he(lop, qs.skillType));
+                game.pokemon.GiaoDien.khoi(g, xt, yt, wt, 16, 7, game.pokemon.GiaoDien.VIEN);
+                game.pokemon.GiaoDien.khoiDoc(g, xt + 1, yt + 1, wt - 2, 14, 6, mau, game.pokemon.GiaoDien.pha(mau, 0, 2, 5));
+                f.drawString(g, ten, xt + (wt / 2), yt + 1, Font.CENTER);
+            }
         }
         if (Canvas.currentScreen == this && !this.chatMode) {
             paintSoftIcon(g);
@@ -6812,10 +6869,13 @@ public class GameScr extends Screen {
     private void updatePoint() {
         if (!Canvas.isPointer(Canvas.hw - 40, 0, 80, 20) && Canvas.isPointer(0, 0, Canvas.w, Canvas.h)) {
             if (Canvas.isPointerClick) {
-                int wSlot = Res.imgPanel.getWidth();
-                int hSlot = Res.imgPanel.getHeight();
+                int wSlot = buocO() * 5;
+                int hSlot = caoThanhO();
                 if (Canvas.isPointer(Canvas.hw - (wSlot / 2), (Canvas.h - hSlot) - 20, wSlot, hSlot)) {
-                    int id = (Canvas.px - (Canvas.hw - (wSlot / 2))) / Res.wKhung;
+                    int id = (Canvas.px - (Canvas.hw - (wSlot / 2))) / buocO();
+                    if (id > 4) {
+                        id = 4;
+                    }
                     Canvas.keyPressed[1 + (id * 2)] = true;
                     Canvas.isPointerClick = false;
                     Canvas.isPointerDown = false;

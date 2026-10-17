@@ -161,7 +161,11 @@ public class Res {
         imgEye = FilePack.getImg("eye");
         imgPlus = FilePack.getImg("plus");
         imgShadow = FilePack.getImg("shadow");
-        imgGrid = FilePack.getImg("grid");
+        // pokemon: ô lưới bo góc kiểu Pokémon (vẽ bằng mã, thay ảnh grid kiếm hiệp)
+        imgGrid = game.pokemon.KieuO.anhO(18);
+        if (imgGrid == null) {
+            imgGrid = FilePack.getImg("grid");
+        }
         imgInfoWindow = new Image[2];
         for (int i2 = 0; i2 < imgInfoWindow.length; i2++) {
             imgInfoWindow[i2] = FilePack.getImg(new StringBuffer("inv_").append(i2).toString());
