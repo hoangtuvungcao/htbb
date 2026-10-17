@@ -180,3 +180,7 @@ desktop.ini
 
 ### Chay server tren NovaDB (tools/pokemon/chay_tren_novadb.sh): pid + log
 /chay_novadb/
+
+### Python bytecode
+__pycache__/
+*.pyc
