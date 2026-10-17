@@ -1221,6 +1221,22 @@ public class Res
 				imgtileSmall = Image.createImage(Main.res + "/pngtile/t_hang_s");
 				mauTile = 2;
 			}
+			if (PokeBody.CHE_DO_POKEMON)
+			{
+				// Bo tile moi (tools/pokemon/DungBoTileMoi.java): kieu di duoc + anh nho ban do di cung bo tile
+				// Resources/poke_tile - chi so tile khac han bo goc nen KHONG duoc dung res/t*.type cu.
+				string tenBo = (lv > 200) ? "t_thanh" : ((lv < 110) ? "t" : "t_hang");
+				TextAsset kieuMoi = (TextAsset)Resources.Load(Tilemap.BAN_DO_POKEMON + "kieu_" + tenBo, typeof(TextAsset));
+				if (kieuMoi != null)
+				{
+					dataInputStream = new DataInputStream(ArrayCast.cast(kieuMoi.bytes));
+					Image nhoMoi = PokeTile.napNho((lv > 200) ? "t_thanh_s" : ((lv < 110) ? "t_small" : "t_hang_s"));
+					if (nhoMoi != null)
+					{
+						imgtileSmall = nhoMoi;
+					}
+				}
+			}
 			try
 			{
 				Tilemap.typeOfTile = null;

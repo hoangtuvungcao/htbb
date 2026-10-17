@@ -1,0 +1,722 @@
+ma,id_so,loai,nam,vung,cung,chuong,buoc,ten,npc_giao,ten_npc,dia_danh,cap_toi_thieu,ngay_mo,truoc,kieu_muc_tieu,muc_tieu_id,muc_tieu_ten,so_luong,quai_roi,lap_lai,gioi_han,exp,xu,luong_khoa,luong,vat_pham,huy_hieu,dong_co_tuong_thich,ghi_chu
+HD.01,901,huong_dan,1,Kanto,HD,0,1,Thức giấc ở Pallet,5,Xatu,Pallet,1,0,,noi_chuyen,,,1,,khong,,1292,323,2,0,,,1,"Hướng dẫn: 10 bước ~30 phút, xong ở cấp ~8"
+HD.02,902,huong_dan,1,Kanto,HD,0,2,Chào Kecleon,1,Kecleon,Pallet,1,0,HD.01,noi_chuyen,,,1,,khong,,1292,323,2,0,,,1,"Hướng dẫn: 10 bước ~30 phút, xong ở cấp ~8"
+HD.03,903,huong_dan,1,Kanto,HD,0,3,Bài học tấn công,1,Kecleon,Pallet,2,0,HD.02,giet,2,Caterpie,10,,khong,,1735,353,2,0,,,1,"Hướng dẫn: 10 bước ~30 phút, xong ở cấp ~8"
+HD.04,904,huong_dan,1,Kanto,HD,0,4,Bình thuốc đầu tiên,0,Chansey,Pallet,2,0,HD.03,noi_chuyen,,,1,,khong,,1735,353,2,0,,,1,"Hướng dẫn: 10 bước ~30 phút, xong ở cấp ~8"
+HD.05,905,huong_dan,1,Kanto,HD,0,5,Bài học chiêu thức,2,Machamp,Pallet,3,0,HD.04,giet,4,Torchic,10,,khong,,2370,384,2,0,,,1,"Hướng dẫn: 10 bước ~30 phút, xong ở cấp ~8"
+HD.06,906,huong_dan,1,Kanto,HD,0,6,Gặp Machamp thợ chế tạo,2,Machamp,Pallet,3,0,HD.05,noi_chuyen,,,1,,khong,,2370,384,2,0,,,1,"Hướng dẫn: 10 bước ~30 phút, xong ở cấp ~8"
+HD.07,907,huong_dan,1,Kanto,HD,0,7,Mặc trang bị,2,Machamp,Pallet,4,0,HD.06,nang_cap,,,1,,khong,,3131,383,2,0,2,,0,"Hướng dẫn: 10 bước ~30 phút, xong ở cấp ~8"
+HD.08,908,huong_dan,1,Kanto,HD,0,8,Thử sức ngoài đồng,4,Chansey,Pallet,4,0,HD.07,giet,5,Ekans,10,,khong,,3131,383,2,0,,,1,"Hướng dẫn: 10 bước ~30 phút, xong ở cấp ~8"
+HD.09,909,huong_dan,1,Kanto,HD,0,9,Sổ tay Pokédex,5,Xatu,Pallet,5,0,HD.08,pokedex_gap,5,5 loài,5,,khong,,4269,414,2,0,,,0,"Hướng dẫn: 10 bước ~30 phút, xong ở cấp ~8"
+HD.10,910,huong_dan,1,Kanto,HD,0,10,Lời hứa với Xatu,5,Xatu,Pallet,5,0,HD.09,noi_chuyen,,,1,,khong,,4269,414,2,0,,,1,"Hướng dẫn: 10 bước ~30 phút, xong ở cấp ~8"
+C01.1,1001,chinh,1,Kanto,K1 Khởi hành từ Pallet,1,1,Lời nhờ: Buổi sáng ở Pallet,5,Xatu,Pallet,1,0,HD.10,noi_chuyen,,Xatu,1,,khong,,6461,1615,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C01.2,1002,chinh,1,Kanto,K1 Khởi hành từ Pallet,1,2,Dọn đường Pallet,5,Xatu,Pallet,1,0,C01.1,giet,2,Caterpie,35,,khong,,6461,1615,3,0,,,1,
+C01.3,1003,chinh,1,Kanto,K1 Khởi hành từ Pallet,1,3,Thu thập ở Pallet,5,Xatu,Pallet,1,0,C01.2,thu_thap,7,Móng cá sấu,6,1,khong,,6461,1615,3,0,,,1,
+C01.4,1004,chinh,1,Kanto,K1 Khởi hành từ Pallet,1,4,Thử thách: Buổi sáng ở Pallet,5,Xatu,Pallet,1,0,C01.3,giet_tinh_anh,5,Ekans (cấp 5),20,,khong,,6461,1615,3,0,2,,1,
+C02.1,1005,chinh,1,Kanto,K1 Khởi hành từ Pallet,2,1,Lời nhờ: Đồng cỏ phía bắc,6,Persian,Pallet,3,0,C01.4,dua_thu,4,Lá thư,1,,khong,,11854,1922,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C02.2,1006,chinh,1,Kanto,K1 Khởi hành từ Pallet,2,2,Dọn đường Pallet,6,Persian,Pallet,3,0,C02.1,giet,2,Caterpie,35,,khong,,11854,1922,3,0,,,1,
+C02.3,1007,chinh,1,Kanto,K1 Khởi hành từ Pallet,2,3,Thu thập ở Pallet,6,Persian,Pallet,3,0,C02.2,thu_thap,8,Da ếch,6,4,khong,,11854,1922,3,0,,,1,
+C02.4,1008,chinh,1,Kanto,K1 Khởi hành từ Pallet,2,4,Thử thách: Đồng cỏ phía bắc,6,Persian,Pallet,3,0,C02.3,giet_tinh_anh,6,Litwick (cấp 6),20,,khong,,11854,1922,3,0,27,,1,
+C03.1,1009,chinh,1,Kanto,K1 Khởi hành từ Pallet,3,1,Lời nhờ: Lối mòn Viridian,1,Kecleon,Viridian,5,0,C02.4,noi_chuyen,,Kecleon,1,,khong,,21346,2070,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C03.2,1010,chinh,1,Kanto,K1 Khởi hành từ Pallet,3,2,Dọn đường Viridian,1,Kecleon,Viridian,5,0,C03.1,giet,6,Litwick,35,,khong,,21346,2070,3,0,,,1,
+C03.3,1011,chinh,1,Kanto,K1 Khởi hành từ Pallet,3,3,Thu thập ở Viridian,1,Kecleon,Viridian,5,0,C03.2,thu_thap,9,Cựa gà,6,5,khong,,21346,2070,3,0,,,1,
+C03.4,1012,chinh,1,Kanto,K1 Khởi hành từ Pallet,3,4,Thử thách: Lối mòn Viridian,1,Kecleon,Viridian,5,0,C03.3,giet_tinh_anh,7,Bellsprout (cấp 7),20,,khong,,21346,2070,3,0,30,,1,
+C04.1,1013,chinh,1,Kanto,K1 Khởi hành từ Pallet,4,1,Lời nhờ: Bóng cây Rừng Viridian,21,Blaziken,Rừng Viridian,8,0,C03.4,dua_thu,4,Lá thư,1,,khong,,51659,2362,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C04.2,1014,chinh,1,Kanto,K1 Khởi hành từ Pallet,4,2,Dọn đường Rừng Viridian,21,Blaziken,Rừng Viridian,8,0,C04.1,giet,8,Venonat,35,,khong,,51659,2362,3,0,,,1,
+C04.3,1015,chinh,1,Kanto,K1 Khởi hành từ Pallet,4,3,Thu thập ở Rừng Viridian,21,Blaziken,Rừng Viridian,8,0,C04.2,thu_thap,0,Nọc bọ cạp,6,7,khong,,51659,2362,3,0,,,1,
+C04.4,1016,chinh,1,Kanto,K1 Khởi hành từ Pallet,4,4,Thử thách: Bóng cây Rừng Viridian,21,Blaziken,Rừng Viridian,8,0,C04.3,giet_tinh_anh,12,Vulpix (cấp 12),20,,khong,,51659,2362,3,0,55,,1,
+C05.1,1017,chinh,1,Kanto,K2 Đá xám Pewter,5,1,Lời nhờ: Thị trấn đá xám,5,Xatu,Pewter,10,0,C04.4,noi_chuyen,,Xatu,1,,khong,,93689,2498,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C05.2,1018,chinh,1,Kanto,K2 Đá xám Pewter,5,2,Dọn đường Pewter,5,Xatu,Pewter,10,0,C05.1,giet,9,Rattata,35,,khong,,93689,2498,3,0,,,1,
+C05.3,1019,chinh,1,Kanto,K2 Đá xám Pewter,5,3,Thu thập ở Pewter,5,Xatu,Pewter,10,0,C05.2,thu_thap,2,Khúc gỗ,6,11,khong,,93689,2498,3,0,,,1,
+C05.4,1020,chinh,1,Kanto,K2 Đá xám Pewter,5,4,Thử thách: Thị trấn đá xám,5,Xatu,Pewter,10,0,C05.3,giet_tinh_anh,13,Quagsire (cấp 13),15,,khong,,93689,2498,3,0,58,,1,
+C06.1,1021,chinh,1,Kanto,K2 Đá xám Pewter,6,1,Lời nhờ: Xưởng chế tạo Pewter,2,Machamp,Pewter,12,0,C05.4,dua_thu,4,Lá thư,1,,khong,,115790,2786,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C06.2,1022,chinh,1,Kanto,K2 Đá xám Pewter,6,2,Dọn đường Pewter,2,Machamp,Pewter,12,0,C06.1,giet,13,Quagsire,35,,khong,,115790,2786,3,0,,,1,
+C06.3,1023,chinh,1,Kanto,K2 Đá xám Pewter,6,3,Thu thập ở Pewter,2,Machamp,Pewter,12,0,C06.2,thu_thap,3,Rết đỏ,6,12,khong,,115790,2786,3,0,,,1,
+C06.4,1024,chinh,1,Kanto,K2 Đá xám Pewter,6,4,Thách đấu Gym: Huy hiệu Đá,2,Machamp,Pewter,12,0,C06.3,giet_tinh_anh,21,Venipede (cấp 15),15,,khong,,57895,1548,10,0,115,Huy hiệu Đá (Pewter),1,
+C07.1,1025,chinh,1,Kanto,K2 Đá xám Pewter,7,1,Lời nhờ: Đường lên Núi Mặt Trăng,8,Snorlax,Núi Mặt Trăng,14,0,C06.4,noi_chuyen,,Snorlax,1,,khong,,143434,3077,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C07.2,1026,chinh,1,Kanto,K2 Đá xám Pewter,7,2,Dọn đường Núi Mặt Trăng,8,Snorlax,Núi Mặt Trăng,14,0,C07.1,giet,15,Tepig,35,,khong,,143434,3077,3,0,,,1,
+C07.3,1027,chinh,1,Kanto,K2 Đá xám Pewter,7,3,Thu thập ở Núi Mặt Trăng,8,Snorlax,Núi Mặt Trăng,14,0,C07.2,thu_thap,6,Lông đuôi Hồng Kê,6,13,khong,,143434,3077,3,0,,,1,
+C07.4,1028,chinh,1,Kanto,K2 Đá xám Pewter,7,4,Thử thách: Đường lên Núi Mặt Trăng,8,Snorlax,Núi Mặt Trăng,14,0,C07.3,giet_tinh_anh,19,Paras (cấp 16),15,,khong,,143434,3077,3,0,128,,1,
+C08.1,1029,chinh,1,Kanto,K2 Đá xám Pewter,8,1,Lời nhờ: Mảnh sao băng,21,Blaziken,Núi Mặt Trăng,16,0,C07.4,dua_thu,4,Lá thư,1,,khong,,58986,1118,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C08.2,1030,chinh,1,Kanto,K2 Đá xám Pewter,8,2,Dọn đường Núi Mặt Trăng,21,Blaziken,Núi Mặt Trăng,16,0,C08.1,giet,16,Skorupi,70,,khong,,58986,1118,3,0,,,1,
+C08.3,1031,chinh,1,Kanto,K2 Đá xám Pewter,8,3,Thu thập ở Núi Mặt Trăng,21,Blaziken,Núi Mặt Trăng,16,0,C08.2,thu_thap,7,Móng cá sấu,11,20,khong,,58986,1118,3,0,,,1,
+C08.4,1032,chinh,1,Kanto,K2 Đá xám Pewter,8,4,Thử thách: Mảnh sao băng,21,Blaziken,Núi Mặt Trăng,16,0,C08.3,giet_tinh_anh,14,Combusken (cấp 18),35,,khong,,58986,1118,3,0,140,,1,
+C09.1,1033,chinh,1,Kanto,K3 Dòng nước Cerulean,9,1,Lời nhờ: Cây cầu Cerulean,23,Torkoal,Cerulean,18,0,C08.4,noi_chuyen,,Torkoal,1,,khong,,72994,1213,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C09.2,1034,chinh,1,Kanto,K3 Dòng nước Cerulean,9,2,Dọn đường Cerulean,23,Torkoal,Cerulean,18,0,C09.1,giet,20,Gloom,65,,khong,,72994,1213,3,0,,,1,
+C09.3,1035,chinh,1,Kanto,K3 Dòng nước Cerulean,9,3,Thu thập ở Cerulean,23,Torkoal,Cerulean,18,0,C09.2,thu_thap,8,Da ếch,11,14,khong,,72994,1213,3,0,,,1,
+C09.4,1036,chinh,1,Kanto,K3 Dòng nước Cerulean,9,4,Thử thách: Cây cầu Cerulean,23,Torkoal,Cerulean,18,0,C09.3,giet_tinh_anh,25,Gastly (cấp 22),35,,khong,,72994,1213,3,0,152,,1,
+C10.1,1037,chinh,1,Kanto,K3 Dòng nước Cerulean,10,1,Lời nhờ: Lá thư của Torkoal,23,Torkoal,Cerulean,19,0,C09.4,dua_thu,4,Lá thư,1,,khong,,81003,1256,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C10.2,1038,chinh,1,Kanto,K3 Dòng nước Cerulean,10,2,Dọn đường Cerulean,23,Torkoal,Cerulean,19,0,C10.1,giet,14,Combusken,65,,khong,,81003,1256,3,0,,,1,
+C10.3,1039,chinh,1,Kanto,K3 Dòng nước Cerulean,10,3,Thu thập ở Cerulean,23,Torkoal,Cerulean,19,0,C10.2,thu_thap,9,Cựa gà,11,24,khong,,81003,1256,3,0,,,1,
+C10.4,1040,chinh,1,Kanto,K3 Dòng nước Cerulean,10,4,Thách đấu Gym: Huy hiệu Thác,23,Torkoal,Cerulean,19,0,C10.3,giet_tinh_anh,18,Ariados (cấp 24),35,,khong,,121504,2093,10,0,165,Huy hiệu Thác (Cerulean),1,
+C11.1,1041,chinh,1,Kanto,K3 Dòng nước Cerulean,11,1,Lời nhờ: Bến cảng Vermilion,22,Meowth,Vermilion,21,0,C10.4,noi_chuyen,,Meowth,1,,khong,,97402,1398,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C11.2,1042,chinh,1,Kanto,K3 Dòng nước Cerulean,11,2,Dọn đường Vermilion,22,Meowth,Vermilion,21,0,C11.1,giet,25,Gastly,65,,khong,,97402,1398,3,0,,,1,
+C11.3,1043,chinh,1,Kanto,K3 Dòng nước Cerulean,11,3,Thu thập ở Vermilion,22,Meowth,Vermilion,21,0,C11.2,thu_thap,0,Nọc bọ cạp,11,28,khong,,97402,1398,3,0,,,1,
+C11.4,1044,chinh,1,Kanto,K3 Dòng nước Cerulean,11,4,Thử thách: Bến cảng Vermilion,22,Meowth,Vermilion,21,0,C11.3,giet_tinh_anh,18,Ariados (cấp 24),35,,khong,,97402,1398,3,0,268,,1,
+C12.1,1045,chinh,1,Kanto,K3 Dòng nước Cerulean,12,1,Lời nhờ: Tiếng sấm bên bờ biển,21,Blaziken,Vermilion,23,0,C11.4,dua_thu,4,Lá thư,1,,khong,,113256,1534,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C12.2,1046,chinh,1,Kanto,K3 Dòng nước Cerulean,12,2,Dọn đường Vermilion,21,Blaziken,Vermilion,23,0,C12.1,giet,27,Cubone,65,,khong,,113256,1534,3,0,,,1,
+C12.3,1047,chinh,1,Kanto,K3 Dòng nước Cerulean,12,3,Thu thập ở Vermilion,21,Blaziken,Vermilion,23,0,C12.2,thu_thap,2,Khúc gỗ,11,18,khong,,113256,1534,3,0,,,1,
+C12.4,1048,chinh,1,Kanto,K3 Dòng nước Cerulean,12,4,Thách đấu Gym: Huy hiệu Sấm,21,Blaziken,Vermilion,23,0,C12.3,giet_tinh_anh,30,Croagunk (cấp 27),35,,khong,,169884,2557,10,0,269,Huy hiệu Sấm (Vermilion),1,
+C13.1,1049,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,13,1,Lời nhờ: Tấm vé lên tàu,22,Meowth,Vermilion,25,0,C12.4,noi_chuyen,,Meowth,1,,khong,,132052,1672,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C13.2,1050,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,13,2,Dọn đường Vermilion,22,Meowth,Vermilion,25,0,C13.1,giet,18,Ariados,65,,khong,,132052,1672,3,0,,,1,
+C13.3,1051,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,13,3,Thu thập ở Vermilion,22,Meowth,Vermilion,25,0,C13.2,thu_thap,3,Rết đỏ,11,27,khong,,132052,1672,3,0,,,1,
+C13.4,1052,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,13,4,Thử thách: Tấm vé lên tàu,22,Meowth,Vermilion,25,0,C13.3,giet_tinh_anh,29,Croconaw (cấp 26),35,,khong,,132052,1672,3,0,294,,1,
+C14.1,1053,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,14,1,Lời nhờ: Hành lang tàu S.S. Anne,6,Persian,Tàu S.S. Anne,26,0,C13.4,dua_thu,4,Lá thư,1,,khong,,142103,1760,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C14.2,1054,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,14,2,Dọn đường Tàu S.S. Anne,6,Persian,Tàu S.S. Anne,26,0,C14.1,giet,30,Croagunk,65,,khong,,142103,1760,3,0,,,1,
+C14.3,1055,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,14,3,Thu thập ở Tàu S.S. Anne,6,Persian,Tàu S.S. Anne,26,0,C14.2,thu_thap,6,Lông đuôi Hồng Kê,11,18,khong,,142103,1760,3,0,,,1,
+C14.4,1056,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,14,4,Thử thách: Hành lang tàu S.S. Anne,6,Persian,Tàu S.S. Anne,26,0,C14.3,giet_tinh_anh,22,Dodrio (cấp 30),35,,khong,,142103,1760,3,0,295,,1,
+C15.1,1057,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,15,1,Lời nhờ: Kho hàng dưới boong,9,Kangaskhan,Tàu S.S. Anne,28,0,C14.4,noi_chuyen,,Kangaskhan,1,,khong,,165726,1895,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C15.2,1058,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,15,2,Dọn đường Tàu S.S. Anne,9,Kangaskhan,Tàu S.S. Anne,28,0,C15.1,giet,29,Croconaw,65,,khong,,165726,1895,3,0,,,1,
+C15.3,1059,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,15,3,Thu thập ở Tàu S.S. Anne,9,Kangaskhan,Tàu S.S. Anne,28,0,C15.2,thu_thap,7,Móng cá sấu,11,30,khong,,165726,1895,3,0,,,1,
+C15.4,1060,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,15,4,Thử thách: Kho hàng dưới boong,9,Kangaskhan,Tàu S.S. Anne,28,0,C15.3,giet_tinh_anh,22,Dodrio (cấp 30),30,,khong,,165726,1895,3,0,318,,1,
+C16.1,1061,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,16,1,Lời nhờ: Cơn bão ngoài khơi,21,Blaziken,Tàu S.S. Anne,29,0,C15.4,dua_thu,4,Lá thư,1,,khong,,178420,1980,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C16.2,1062,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,16,2,Dọn đường Tàu S.S. Anne,21,Blaziken,Tàu S.S. Anne,29,0,C16.1,giet,22,Dodrio,65,,khong,,178420,1980,3,0,,,1,
+C16.3,1063,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,16,3,Thu thập ở Tàu S.S. Anne,21,Blaziken,Tàu S.S. Anne,29,0,C16.2,thu_thap,8,Da ếch,11,30,khong,,178420,1980,3,0,,,1,
+C16.4,1064,chinh,1,Kanto,K4 Chuyến tàu S.S. Anne,16,4,Thử thách: Cơn bão ngoài khơi,21,Blaziken,Tàu S.S. Anne,29,0,C16.3,giet_tinh_anh,31,Kricketune (cấp 33),30,,khong,,178420,1980,3,0,66,,1,
+C17.1,1065,chinh,1,Kanto,K5 Sương mù Lavender,17,1,Lời nhờ: Tháp Pokémon,8,Snorlax,Lavender,30,0,C16.4,noi_chuyen,,Snorlax,1,,khong,,192600,2070,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C17.2,1066,chinh,1,Kanto,K5 Sương mù Lavender,17,2,Dọn đường Lavender,8,Snorlax,Lavender,30,0,C17.1,giet,23,Arbok,65,,khong,,192600,2070,3,0,,,1,
+C17.3,1067,chinh,1,Kanto,K5 Sương mù Lavender,17,3,Thu thập ở Lavender,8,Snorlax,Lavender,30,0,C17.2,thu_thap,9,Cựa gà,11,30,khong,,192600,2070,3,0,,,1,
+C17.4,1068,chinh,1,Kanto,K5 Sương mù Lavender,17,4,Thử thách: Tháp Pokémon,8,Snorlax,Lavender,30,0,C17.3,giet_tinh_anh,31,Kricketune (cấp 33),30,,khong,,192600,2070,3,0,366,,1,
+C18.1,1069,chinh,1,Kanto,K5 Sương mù Lavender,18,1,Lời nhờ: Tiếng khóc trong sương,5,Xatu,Lavender,32,0,C17.4,dua_thu,4,Lá thư,1,,khong,,220278,2289,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C18.2,1070,chinh,1,Kanto,K5 Sương mù Lavender,18,2,Dọn đường Lavender,5,Xatu,Lavender,32,0,C18.1,giet,31,Kricketune,65,,khong,,220278,2289,3,0,,,1,
+C18.3,1071,chinh,1,Kanto,K5 Sương mù Lavender,18,3,Thu thập ở Lavender,5,Xatu,Lavender,32,0,C18.2,thu_thap,0,Nọc bọ cạp,11,32,khong,,220278,2289,3,0,,,1,
+C18.4,1072,chinh,1,Kanto,K5 Sương mù Lavender,18,4,Thử thách: Tiếng khóc trong sương,5,Xatu,Lavender,32,0,C18.3,giet_tinh_anh,33,Tauros (cấp 34),30,,khong,,220278,2289,3,0,378,,1,
+C19.1,1073,chinh,1,Kanto,K5 Sương mù Lavender,19,1,Lời nhờ: Khu thương mại Celadon,1,Kecleon,Celadon,33,0,C18.4,noi_chuyen,,Kecleon,1,,khong,,235943,2377,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C19.2,1074,chinh,1,Kanto,K5 Sương mù Lavender,19,2,Dọn đường Celadon,1,Kecleon,Celadon,33,0,C19.1,giet,31,Kricketune,65,,khong,,235943,2377,3,0,,,1,
+C19.3,1075,chinh,1,Kanto,K5 Sương mù Lavender,19,3,Thu thập ở Celadon,1,Kecleon,Celadon,33,0,C19.2,thu_thap,2,Khúc gỗ,11,32,khong,,235943,2377,3,0,,,1,
+C19.4,1076,chinh,1,Kanto,K5 Sương mù Lavender,19,4,Thử thách: Khu thương mại Celadon,1,Kecleon,Celadon,33,0,C19.3,giet_tinh_anh,55,Duskull (cấp 37),30,,khong,,235943,2377,3,0,342,,1,
+C20.1,1077,chinh,1,Kanto,K5 Sương mù Lavender,20,1,Lời nhờ: Vườn hoa Celadon,6,Persian,Celadon,35,0,C19.4,dua_thu,4,Lá thư,1,,khong,,269788,2590,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C20.2,1078,chinh,1,Kanto,K5 Sương mù Lavender,20,2,Dọn đường Celadon,6,Persian,Celadon,35,0,C20.1,giet,33,Tauros,65,,khong,,269788,2590,3,0,,,1,
+C20.3,1079,chinh,1,Kanto,K5 Sương mù Lavender,20,3,Thu thập ở Celadon,6,Persian,Celadon,35,0,C20.2,thu_thap,3,Rết đỏ,10,35,khong,,269788,2590,3,0,,,1,
+C20.4,1080,chinh,1,Kanto,K5 Sương mù Lavender,20,4,Thách đấu Gym: Huy hiệu Cầu Vồng,6,Persian,Celadon,35,0,C20.3,giet_tinh_anh,40,Whirlipede (cấp 38),30,,khong,,404683,4317,10,0,343,Huy hiệu Cầu Vồng (Celadon),1,
+C21.1,1081,chinh,1,Kanto,K6 Saffron và Vùng Safari,21,1,Lời nhờ: Thành phố Saffron,5,Xatu,Saffron,36,0,C20.4,noi_chuyen,,Xatu,1,,khong,,288930,2723,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C21.2,1082,chinh,1,Kanto,K6 Saffron và Vùng Safari,21,2,Dọn đường Saffron,5,Xatu,Saffron,36,0,C21.1,giet,55,Duskull,65,,khong,,288930,2723,3,0,,,1,
+C21.3,1083,chinh,1,Kanto,K6 Saffron và Vùng Safari,21,3,Thu thập ở Saffron,5,Xatu,Saffron,36,0,C21.2,thu_thap,6,Lông đuôi Hồng Kê,10,35,khong,,288930,2723,3,0,,,1,
+C21.4,1084,chinh,1,Kanto,K6 Saffron và Vùng Safari,21,4,Thử thách: Thành phố Saffron,5,Xatu,Saffron,36,0,C21.3,giet_tinh_anh,40,Whirlipede (cấp 38),30,,khong,,288930,2723,3,0,355,,1,
+C22.1,1085,chinh,1,Kanto,K6 Saffron và Vùng Safari,22,1,Lời nhờ: Tòa nhà Silph,2,Machamp,Saffron,38,0,C21.4,dua_thu,4,Lá thư,1,,khong,,331401,2985,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C22.2,1086,chinh,1,Kanto,K6 Saffron và Vùng Safari,22,2,Dọn đường Saffron,2,Machamp,Saffron,38,0,C22.1,giet,40,Whirlipede,60,,khong,,331401,2985,3,0,,,1,
+C22.3,1087,chinh,1,Kanto,K6 Saffron và Vùng Safari,22,3,Thu thập ở Saffron,2,Machamp,Saffron,38,0,C22.2,thu_thap,7,Móng cá sấu,10,45,khong,,331401,2985,3,0,,,1,
+C22.4,1088,chinh,1,Kanto,K6 Saffron và Vùng Safari,22,4,Thách đấu Gym: Huy hiệu Đầm Lầy,2,Machamp,Saffron,38,0,C22.3,giet_tinh_anh,68,Palpitoad (cấp 42),30,,khong,,497102,4976,10,0,391,Huy hiệu Đầm Lầy (Saffron),1,
+C23.1,1089,chinh,1,Kanto,K6 Saffron và Vùng Safari,23,1,Lời nhờ: Cổng Vùng Safari,22,Meowth,Vùng Safari,39,0,C22.4,noi_chuyen,,Meowth,1,,khong,,353743,3105,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C23.2,1090,chinh,1,Kanto,K6 Saffron và Vùng Safari,23,2,Dọn đường Vùng Safari,22,Meowth,Vùng Safari,39,0,C23.1,giet,40,Whirlipede,60,,khong,,353743,3105,3,0,,,1,
+C23.3,1091,chinh,1,Kanto,K6 Saffron và Vùng Safari,23,3,Thu thập ở Vùng Safari,22,Meowth,Vùng Safari,39,0,C23.2,thu_thap,8,Da ếch,10,63,khong,,353743,3105,3,0,,,1,
+C23.4,1092,chinh,1,Kanto,K6 Saffron và Vùng Safari,23,4,Thử thách: Cổng Vùng Safari,22,Meowth,Vùng Safari,39,0,C23.3,giet_tinh_anh,68,Palpitoad (cấp 42),30,,khong,,353743,3105,3,0,18,,1,
+C24.1,1093,chinh,1,Kanto,K6 Saffron và Vùng Safari,24,1,Lời nhờ: Bờ biển Fuchsia,21,Blaziken,Fuchsia,41,0,C23.4,dua_thu,4,Lá thư,1,,khong,,391885,3407,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C24.2,1094,chinh,1,Kanto,K6 Saffron và Vùng Safari,24,2,Dọn đường Fuchsia,21,Blaziken,Fuchsia,41,0,C24.1,giet,68,Palpitoad,60,,khong,,391885,3407,3,0,,,1,
+C24.3,1095,chinh,1,Kanto,K6 Saffron và Vùng Safari,24,3,Thu thập ở Fuchsia,21,Blaziken,Fuchsia,41,0,C24.2,thu_thap,9,Cựa gà,10,71,khong,,391885,3407,3,0,,,1,
+C24.4,1096,chinh,1,Kanto,K6 Saffron và Vùng Safari,24,4,Thách đấu Gym: Huy hiệu Linh Hồn,21,Blaziken,Fuchsia,41,0,C24.3,giet_tinh_anh,42,Whirlipede Shiny (cấp 43),30,,khong,,587828,5679,10,0,276,Huy hiệu Linh Hồn (Fuchsia),1,
+C25.1,1097,chinh,1,Kanto,K7 Đảo lửa Cinnabar,25,1,Lời nhờ: Chuyến đò ra đảo,9,Kangaskhan,Cinnabar,42,0,C24.4,noi_chuyen,,Kangaskhan,1,,khong,,404064,3568,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C25.2,1098,chinh,1,Kanto,K7 Đảo lửa Cinnabar,25,2,Dọn đường Cinnabar,9,Kangaskhan,Cinnabar,42,0,C25.1,giet,68,Palpitoad,60,,khong,,404064,3568,3,0,,,1,
+C25.3,1099,chinh,1,Kanto,K7 Đảo lửa Cinnabar,25,3,Thu thập ở Cinnabar,9,Kangaskhan,Cinnabar,42,0,C25.2,thu_thap,0,Nọc bọ cạp,10,42,khong,,404064,3568,3,0,,,1,
+C25.4,1100,chinh,1,Kanto,K7 Đảo lửa Cinnabar,25,4,Thử thách: Chuyến đò ra đảo,9,Kangaskhan,Cinnabar,42,0,C25.3,giet_tinh_anh,52,Haunter (cấp 46),30,,khong,,404064,3568,3,0,277,,1,
+C26.1,1101,chinh,1,Kanto,K7 Đảo lửa Cinnabar,26,1,Lời nhờ: Phòng thí nghiệm bỏ hoang,3,Bronzong,Cinnabar,44,0,C25.4,dua_thu,4,Lá thư,1,,khong,,432229,3908,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C26.2,1102,chinh,1,Kanto,K7 Đảo lửa Cinnabar,26,2,Dọn đường Cinnabar,3,Bronzong,Cinnabar,44,0,C26.1,giet,42,Whirlipede Shiny,60,,khong,,432229,3908,3,0,,,1,
+C26.3,1103,chinh,1,Kanto,K7 Đảo lửa Cinnabar,26,3,Thu thập ở Cinnabar,3,Bronzong,Cinnabar,44,0,C26.2,thu_thap,2,Khúc gỗ,10,57,khong,,432229,3908,3,0,,,1,
+C26.4,1104,chinh,1,Kanto,K7 Đảo lửa Cinnabar,26,4,Thử thách: Phòng thí nghiệm bỏ hoang,3,Bronzong,Cinnabar,44,0,C26.3,giet_tinh_anh,59,Marowak (cấp 47),30,,khong,,432229,3908,3,0,71,,1,
+C27.1,1105,chinh,1,Kanto,K7 Đảo lửa Cinnabar,27,1,Lời nhờ: Núi lửa thức giấc,21,Blaziken,Cinnabar,46,0,C26.4,noi_chuyen,,Blaziken,1,,khong,,460890,4230,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C27.2,1106,chinh,1,Kanto,K7 Đảo lửa Cinnabar,27,2,Dọn đường Cinnabar,21,Blaziken,Cinnabar,46,0,C27.1,giet,59,Marowak,60,,khong,,460890,4230,3,0,,,1,
+C27.3,1107,chinh,1,Kanto,K7 Đảo lửa Cinnabar,27,3,Thu thập ở Cinnabar,21,Blaziken,Cinnabar,46,0,C27.2,thu_thap,3,Rết đỏ,10,52,khong,,460890,4230,3,0,,,1,
+C27.4,1108,chinh,1,Kanto,K7 Đảo lửa Cinnabar,27,4,Thách đấu Gym: Huy hiệu Núi Lửa,21,Blaziken,Cinnabar,46,0,C27.3,giet_tinh_anh,47,Seviper (cấp 48),30,,khong,,691335,7050,10,0,303,Huy hiệu Núi Lửa (Cinnabar),1,
+C28.1,1109,chinh,1,Kanto,K7 Đảo lửa Cinnabar,28,1,Lời nhờ: Trở về Viridian,5,Xatu,Viridian,48,0,C27.4,dua_thu,4,Lá thư,1,,khong,,493130,4648,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C28.2,1110,chinh,1,Kanto,K7 Đảo lửa Cinnabar,28,2,Dọn đường Viridian,5,Xatu,Viridian,48,0,C28.1,giet,47,Seviper,60,,khong,,493130,4648,3,0,,,1,
+C28.3,1111,chinh,1,Kanto,K7 Đảo lửa Cinnabar,28,3,Thu thập ở Viridian,5,Xatu,Viridian,48,0,C28.2,thu_thap,6,Lông đuôi Hồng Kê,10,41,khong,,493130,4648,3,0,,,1,
+C28.4,1112,chinh,1,Kanto,K7 Đảo lửa Cinnabar,28,4,Thách đấu Gym: Huy hiệu Đất,5,Xatu,Viridian,48,0,C28.3,giet_tinh_anh,80,Breloom (cấp 52),30,,khong,,739695,7748,10,0,326,Huy hiệu Đất (Viridian),1,
+C29.1,1113,chinh,1,Johto,J1 Gió mới New Bark,29,1,Lời nhờ: Thị trấn New Bark,5,Xatu,New Bark,49,0,C28.4,noi_chuyen,,Xatu,1,,khong,,508291,4839,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C29.2,1114,chinh,1,Johto,J1 Gió mới New Bark,29,2,Dọn đường New Bark,5,Xatu,New Bark,49,0,C29.1,giet,47,Seviper,60,,khong,,508291,4839,3,0,,,1,
+C29.3,1115,chinh,1,Johto,J1 Gió mới New Bark,29,3,Thu thập ở New Bark,5,Xatu,New Bark,49,0,C29.2,thu_thap,7,Móng cá sấu,10,62,khong,,508291,4839,3,0,,,1,
+C29.4,1116,chinh,1,Johto,J1 Gió mới New Bark,29,4,Thử thách: Thị trấn New Bark,5,Xatu,New Bark,49,0,C29.3,giet_tinh_anh,80,Breloom (cấp 52),30,,khong,,508291,4839,3,0,135,,1,
+C30.1,1117,chinh,1,Johto,J1 Gió mới New Bark,30,1,Lời nhờ: Hoa anh đào Cherrygrove,6,Persian,Cherrygrove,51,0,C29.4,dua_thu,4,Lá thư,1,,khong,,546134,5292,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C30.2,1118,chinh,1,Johto,J1 Gió mới New Bark,30,2,Dọn đường Cherrygrove,6,Persian,Cherrygrove,51,0,C30.1,giet,80,Breloom,60,,khong,,546134,5292,3,0,,,1,
+C30.3,1119,chinh,1,Johto,J1 Gió mới New Bark,30,3,Thu thập ở Cherrygrove,6,Persian,Cherrygrove,51,0,C30.2,thu_thap,8,Da ếch,10,44,khong,,546134,5292,3,0,,,1,
+C30.4,1120,chinh,1,Johto,J1 Gió mới New Bark,30,4,Thử thách: Hoa anh đào Cherrygrove,6,Persian,Cherrygrove,51,0,C30.3,giet_tinh_anh,76,Magcargo (cấp 56),30,,khong,,546134,5292,3,0,370,,1,
+C31.1,1121,chinh,1,Johto,J1 Gió mới New Bark,31,1,Lời nhờ: Tháp Sprout ở Violet,8,Snorlax,Violet,53,0,C30.4,noi_chuyen,,Snorlax,1,,khong,,587441,5805,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C31.2,1122,chinh,1,Johto,J1 Gió mới New Bark,31,2,Dọn đường Violet,8,Snorlax,Violet,53,0,C31.1,giet,74,Golem,60,,khong,,587441,5805,3,0,,,1,
+C31.3,1123,chinh,1,Johto,J1 Gió mới New Bark,31,3,Thu thập ở Violet,8,Snorlax,Violet,53,0,C31.2,thu_thap,9,Cựa gà,10,80,khong,,587441,5805,3,0,,,1,
+C31.4,1124,chinh,1,Johto,J1 Gió mới New Bark,31,4,Thách đấu Gym: Huy hiệu Gió,8,Snorlax,Violet,53,0,C31.3,giet_tinh_anh,74,Golem (cấp 54),30,,khong,,881162,9675,10,0,382,Huy hiệu Gió (Violet),1,
+C32.1,1125,chinh,1,Johto,J1 Gió mới New Bark,32,1,Lời nhờ: Cánh đồng phía tây,21,Blaziken,Violet,54,0,C31.4,dua_thu,4,Lá thư,1,,khong,,610218,6046,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C32.2,1126,chinh,1,Johto,J1 Gió mới New Bark,32,2,Dọn đường Violet,21,Blaziken,Violet,54,0,C32.1,giet,80,Breloom,60,,khong,,610218,6046,3,0,,,1,
+C32.3,1127,chinh,1,Johto,J1 Gió mới New Bark,32,3,Thu thập ở Violet,21,Blaziken,Violet,54,0,C32.2,thu_thap,0,Nọc bọ cạp,10,44,khong,,610218,6046,3,0,,,1,
+C32.4,1128,chinh,1,Johto,J1 Gió mới New Bark,32,4,Thử thách: Cánh đồng phía tây,21,Blaziken,Violet,54,0,C32.3,giet_tinh_anh,65,Crabrawler (cấp 58),30,,khong,,610218,6046,3,0,172,,1,
+C33.1,1129,chinh,1,Johto,J2 Rừng Ilex và Azalea,33,1,Lời nhờ: Giếng Slowpoke,5,Xatu,Azalea,55,0,C32.4,noi_chuyen,,Xatu,1,,khong,,631756,6307,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C33.2,1130,chinh,1,Johto,J2 Rừng Ilex và Azalea,33,2,Dọn đường Azalea,5,Xatu,Azalea,55,0,C33.1,giet,80,Breloom,60,,khong,,631756,6307,3,0,,,1,
+C33.3,1131,chinh,1,Johto,J2 Rừng Ilex và Azalea,33,3,Thu thập ở Azalea,5,Xatu,Azalea,55,0,C33.2,thu_thap,2,Khúc gỗ,10,74,khong,,631756,6307,3,0,,,1,
+C33.4,1132,chinh,1,Johto,J2 Rừng Ilex và Azalea,33,4,Thách đấu Gym: Huy hiệu Tổ Ong,5,Xatu,Azalea,55,0,C33.3,giet_tinh_anh,48,Arcanine (cấp 60),30,,khong,,947635,10512,10,0,359,Huy hiệu Tổ Ong (Azalea),1,
+C34.1,1133,chinh,1,Johto,J2 Rừng Ilex và Azalea,34,1,Lời nhờ: Lạc trong Rừng Ilex,23,Torkoal,Rừng Ilex,57,0,C33.4,dua_thu,4,Lá thư,1,,khong,,681681,6906,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C34.2,1134,chinh,1,Johto,J2 Rừng Ilex và Azalea,34,2,Dọn đường Rừng Ilex,23,Torkoal,Rừng Ilex,57,0,C34.1,giet,65,Crabrawler,55,,khong,,681681,6906,3,0,,,1,
+C34.3,1135,chinh,1,Johto,J2 Rừng Ilex và Azalea,34,3,Thu thập ở Rừng Ilex,23,Torkoal,Rừng Ilex,57,0,C34.2,thu_thap,3,Rết đỏ,10,76,khong,,681681,6906,3,0,,,1,
+C34.4,1136,chinh,1,Johto,J2 Rừng Ilex và Azalea,34,4,Thử thách: Lạc trong Rừng Ilex,23,Torkoal,Rừng Ilex,57,0,C34.3,giet_tinh_anh,65,Crabrawler (cấp 58),30,,khong,,681681,6906,3,0,395,,1,
+C35.1,1137,chinh,1,Johto,J2 Rừng Ilex và Azalea,35,1,Lời nhờ: Đền thờ trong rừng,8,Snorlax,Rừng Ilex,59,0,C34.4,noi_chuyen,,Snorlax,1,,khong,,733026,7556,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C35.2,1138,chinh,1,Johto,J2 Rừng Ilex và Azalea,35,2,Dọn đường Rừng Ilex,8,Snorlax,Rừng Ilex,59,0,C35.1,giet,65,Crabrawler,55,,khong,,733026,7556,3,0,,,1,
+C35.3,1139,chinh,1,Johto,J2 Rừng Ilex và Azalea,35,3,Thu thập ở Rừng Ilex,8,Snorlax,Rừng Ilex,59,0,C35.2,thu_thap,6,Lông đuôi Hồng Kê,9,76,khong,,733026,7556,3,0,,,1,
+C35.4,1140,chinh,1,Johto,J2 Rừng Ilex và Azalea,35,4,Thử thách: Đền thờ trong rừng,8,Snorlax,Rừng Ilex,59,0,C35.3,giet_tinh_anh,60,Rhydon (cấp 62),30,,khong,,733026,7556,3,0,51,,1,
+C36.1,1141,chinh,1,Johto,J2 Rừng Ilex và Azalea,36,1,Lời nhờ: Phố lớn Goldenrod,22,Meowth,Goldenrod,61,0,C35.4,dua_thu,4,Lá thư,1,,khong,,793010,8261,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C36.2,1142,chinh,1,Johto,J2 Rừng Ilex và Azalea,36,2,Dọn đường Goldenrod,22,Meowth,Goldenrod,61,0,C36.1,giet,65,Crabrawler,55,,khong,,793010,8261,3,0,,,1,
+C36.3,1143,chinh,1,Johto,J2 Rừng Ilex và Azalea,36,3,Thu thập ở Goldenrod,22,Meowth,Goldenrod,61,0,C36.2,thu_thap,7,Móng cá sấu,9,48,khong,,793010,8261,3,0,,,1,
+C36.4,1144,chinh,1,Johto,J2 Rừng Ilex và Azalea,36,4,Thách đấu Gym: Huy hiệu Đồng Bằng,22,Meowth,Goldenrod,61,0,C36.3,giet_tinh_anh,60,Rhydon (cấp 62),30,,khong,,1189515,13769,10,0,284,Huy hiệu Đồng Bằng (Goldenrod),1,
+C37.1,1145,chinh,1,Johto,J3 Tháp chuông Ecruteak,37,1,Lời nhờ: Tháp Chuông,5,Xatu,Ecruteak,62,0,C36.4,noi_chuyen,,Xatu,1,,khong,,822854,8621,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C37.2,1146,chinh,1,Johto,J3 Tháp chuông Ecruteak,37,2,Dọn đường Ecruteak,5,Xatu,Ecruteak,62,0,C37.1,giet,48,Arcanine,55,,khong,,822854,8621,3,0,,,1,
+C37.3,1147,chinh,1,Johto,J3 Tháp chuông Ecruteak,37,3,Thu thập ở Ecruteak,5,Xatu,Ecruteak,62,0,C37.2,thu_thap,8,Da ếch,9,60,khong,,822854,8621,3,0,,,1,
+C37.4,1148,chinh,1,Johto,J3 Tháp chuông Ecruteak,37,4,Thách đấu Gym: Huy hiệu Sương,5,Xatu,Ecruteak,62,0,C37.3,giet_tinh_anh,53,Whiscash (cấp 68),30,,khong,,1234282,14368,10,0,285,Huy hiệu Sương (Ecruteak),1,
+C38.1,1149,chinh,1,Johto,J3 Tháp chuông Ecruteak,38,1,Lời nhờ: Tháp Cháy,8,Snorlax,Ecruteak,64,0,C37.4,dua_thu,4,Lá thư,1,,khong,,892494,9431,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C38.2,1150,chinh,1,Johto,J3 Tháp chuông Ecruteak,38,2,Dọn đường Ecruteak,8,Snorlax,Ecruteak,64,0,C38.1,giet,77,Pinsir,55,,khong,,892494,9431,3,0,,,1,
+C38.3,1151,chinh,1,Johto,J3 Tháp chuông Ecruteak,38,3,Thu thập ở Ecruteak,8,Snorlax,Ecruteak,64,0,C38.2,thu_thap,9,Cựa gà,9,60,khong,,892494,9431,3,0,,,1,
+C38.4,1152,chinh,1,Johto,J3 Tháp chuông Ecruteak,38,4,Thử thách: Tháp Cháy,8,Snorlax,Ecruteak,64,0,C38.3,giet_tinh_anh,53,Whiscash (cấp 68),30,,khong,,892494,9431,3,0,484,,1,
+C39.1,1153,chinh,1,Johto,J3 Tháp chuông Ecruteak,39,1,Lời nhờ: Ngọn hải đăng Olivine,2,Machamp,Olivine,66,0,C38.4,noi_chuyen,,Machamp,1,,khong,,964370,10275,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C39.2,1154,chinh,1,Johto,J3 Tháp chuông Ecruteak,39,2,Dọn đường Olivine,2,Machamp,Olivine,66,0,C39.1,giet,77,Pinsir,55,,khong,,964370,10275,3,0,,,1,
+C39.3,1155,chinh,1,Johto,J3 Tháp chuông Ecruteak,39,3,Thu thập ở Olivine,2,Machamp,Olivine,66,0,C39.2,thu_thap,0,Nọc bọ cạp,9,81,khong,,964370,10275,3,0,,,1,
+C39.4,1156,chinh,1,Johto,J3 Tháp chuông Ecruteak,39,4,Thách đấu Gym: Huy hiệu Khoáng,2,Machamp,Olivine,66,0,C39.3,giet_tinh_anh,54,Kingler (cấp 70),25,,khong,,1446555,17125,10,0,311,Huy hiệu Khoáng (Olivine),1,
+C40.1,1157,chinh,1,Johto,J3 Tháp chuông Ecruteak,40,1,Lời nhờ: Thuốc từ Cianwood,1,Kecleon,Cianwood,68,0,C39.4,dua_thu,4,Lá thư,1,,khong,,1045785,11260,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C40.2,1158,chinh,1,Johto,J3 Tháp chuông Ecruteak,40,2,Dọn đường Cianwood,1,Kecleon,Cianwood,68,0,C40.1,giet,53,Whiscash,55,,khong,,1045785,11260,3,0,,,1,
+C40.3,1159,chinh,1,Johto,J3 Tháp chuông Ecruteak,40,3,Thu thập ở Cianwood,1,Kecleon,Cianwood,68,0,C40.2,thu_thap,2,Khúc gỗ,9,81,khong,,1045785,11260,3,0,,,1,
+C40.4,1160,chinh,1,Johto,J3 Tháp chuông Ecruteak,40,4,Thách đấu Gym: Huy hiệu Bão,1,Kecleon,Cianwood,68,0,C40.3,giet_tinh_anh,51,Trevenant (cấp 74),25,,khong,,1568678,18768,10,0,334,Huy hiệu Bão (Cianwood),1,
+C41.1,1161,chinh,1,Johto,J4 Hồ Phẫn Nộ,41,1,Lời nhờ: Tin đồn ở Mahogany,6,Persian,Mahogany,69,0,C40.4,noi_chuyen,,Persian,1,,khong,,1084995,11745,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C41.2,1162,chinh,1,Johto,J4 Hồ Phẫn Nộ,41,2,Dọn đường Mahogany,6,Persian,Mahogany,69,0,C41.1,giet,54,Kingler,55,,khong,,1084995,11745,3,0,,,1,
+C41.3,1163,chinh,1,Johto,J4 Hồ Phẫn Nộ,41,3,Thu thập ở Mahogany,6,Persian,Mahogany,69,0,C41.2,thu_thap,3,Rết đỏ,9,81,khong,,1084995,11745,3,0,,,1,
+C41.4,1164,chinh,1,Johto,J4 Hồ Phẫn Nộ,41,4,Thử thách: Tin đồn ở Mahogany,6,Persian,Mahogany,69,0,C41.3,giet_tinh_anh,49,Gastrodon (cấp 72),25,,khong,,1084995,11745,3,0,492,,1,
+C42.1,1165,chinh,1,Johto,J4 Hồ Phẫn Nộ,42,1,Lời nhờ: Mặt hồ đỏ rực,21,Blaziken,Hồ Phẫn Nộ,71,0,C41.4,dua_thu,4,Lá thư,1,,khong,,1187910,12823,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C42.2,1166,chinh,1,Johto,J4 Hồ Phẫn Nộ,42,2,Dọn đường Hồ Phẫn Nộ,21,Blaziken,Hồ Phẫn Nộ,71,0,C42.1,giet,53,Whiscash,55,,khong,,1187910,12823,3,0,,,1,
+C42.3,1167,chinh,1,Johto,J4 Hồ Phẫn Nộ,42,3,Thu thập ở Hồ Phẫn Nộ,21,Blaziken,Hồ Phẫn Nộ,71,0,C42.2,thu_thap,6,Lông đuôi Hồng Kê,9,49,khong,,1187910,12823,3,0,,,1,
+C42.4,1168,chinh,1,Johto,J4 Hồ Phẫn Nộ,42,4,Thử thách: Mặt hồ đỏ rực,21,Blaziken,Hồ Phẫn Nộ,71,0,C42.3,giet_tinh_anh,49,Gastrodon (cấp 72),25,,khong,,1187910,12823,3,0,374,,1,
+C43.1,1169,chinh,1,Johto,J4 Hồ Phẫn Nộ,43,1,Lời nhờ: Hang Tối,9,Kangaskhan,Hang Tối,73,0,C42.4,noi_chuyen,,Kangaskhan,1,,khong,,1308331,13992,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C43.2,1170,chinh,1,Johto,J4 Hồ Phẫn Nộ,43,2,Dọn đường Hang Tối,9,Kangaskhan,Hang Tối,73,0,C43.1,giet,49,Gastrodon,55,,khong,,1308331,13992,3,0,,,1,
+C43.3,1171,chinh,1,Johto,J4 Hồ Phẫn Nộ,43,3,Thu thập ở Hang Tối,9,Kangaskhan,Hang Tối,73,0,C43.2,thu_thap,7,Móng cá sấu,9,51,khong,,1308331,13992,3,0,,,1,
+C43.4,1172,chinh,1,Johto,J4 Hồ Phẫn Nộ,43,4,Thử thách: Hang Tối,9,Kangaskhan,Hang Tối,73,0,C43.3,giet_tinh_anh,58,Vileplume (cấp 78),25,,khong,,1308331,13992,3,0,386,,1,
+C44.1,1173,chinh,1,Johto,J4 Hồ Phẫn Nộ,44,1,Lời nhờ: Sóng radio lạ,3,Bronzong,Mahogany,75,0,C43.4,dua_thu,4,Lá thư,1,,khong,,1440738,15248,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C44.2,1174,chinh,1,Johto,J4 Hồ Phẫn Nộ,44,2,Dọn đường Mahogany,3,Bronzong,Mahogany,75,0,C44.1,giet,56,Sharpedo,50,,khong,,1440738,15248,3,0,,,1,
+C44.3,1175,chinh,1,Johto,J4 Hồ Phẫn Nộ,44,3,Thu thập ở Mahogany,3,Bronzong,Mahogany,75,0,C44.2,thu_thap,8,Da ếch,9,49,khong,,1440738,15248,3,0,,,1,
+C44.4,1176,chinh,1,Johto,J4 Hồ Phẫn Nộ,44,4,Thách đấu Gym: Huy hiệu Băng,3,Bronzong,Mahogany,75,0,C44.3,giet_tinh_anh,58,Vileplume (cấp 78),25,,khong,,2161107,25414,10,0,351,Huy hiệu Băng (Mahogany),1,
+C45.1,1177,chinh,1,Johto,J5 Rồng Blackthorn,45,1,Lời nhờ: Ngôi làng của rồng,5,Xatu,Blackthorn,76,0,C44.4,noi_chuyen,,Xatu,1,,khong,,1514713,15973,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C45.2,1178,chinh,1,Johto,J5 Rồng Blackthorn,45,2,Dọn đường Blackthorn,5,Xatu,Blackthorn,76,0,C45.1,giet,51,Trevenant,50,,khong,,1514713,15973,3,0,,,1,
+C45.3,1179,chinh,1,Johto,J5 Rồng Blackthorn,45,3,Thu thập ở Blackthorn,5,Xatu,Blackthorn,76,0,C45.2,thu_thap,9,Cựa gà,9,56,khong,,1514713,15973,3,0,,,1,
+C45.4,1180,chinh,1,Johto,J5 Rồng Blackthorn,45,4,Thử thách: Ngôi làng của rồng,5,Xatu,Blackthorn,76,0,C45.3,giet_tinh_anh,118,Galvantula (cấp 80),25,,khong,,1514713,15973,3,0,363,,1,
+C46.1,1181,chinh,1,Johto,J5 Rồng Blackthorn,46,1,Lời nhờ: Hang Salamence,21,Blaziken,Hang Salamence,78,0,C45.4,dua_thu,4,Lá thư,1,,khong,,1674201,17482,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C46.2,1182,chinh,1,Johto,J5 Rồng Blackthorn,46,2,Dọn đường Hang Salamence,21,Blaziken,Hang Salamence,78,0,C46.1,giet,58,Vileplume,50,,khong,,1674201,17482,3,0,,,1,
+C46.3,1183,chinh,1,Johto,J5 Rồng Blackthorn,46,3,Thu thập ở Hang Salamence,21,Blaziken,Hang Salamence,78,0,C46.2,thu_thap,0,Nọc bọ cạp,9,56,khong,,1674201,17482,3,0,,,1,
+C46.4,1184,chinh,1,Johto,J5 Rồng Blackthorn,46,4,Thử thách: Hang Salamence,21,Blaziken,Hang Salamence,78,0,C46.3,giet_tinh_anh,58,Vileplume (cấp 78),25,,khong,,1674201,17482,3,0,399,,1,
+C47.1,1185,chinh,1,Johto,J5 Rồng Blackthorn,47,1,Lời nhờ: Tổ Zapdos,8,Snorlax,Tổ Zapdos,81,0,C46.4,noi_chuyen,,Snorlax,1,,khong,,1905538,19890,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C47.2,1186,chinh,1,Johto,J5 Rồng Blackthorn,47,2,Dọn đường Tổ Zapdos,8,Snorlax,Tổ Zapdos,81,0,C47.1,giet,136,Liepard Shiny,50,,khong,,1905538,19890,3,0,,,1,
+C47.3,1187,chinh,1,Johto,J5 Rồng Blackthorn,47,3,Thu thập ở Tổ Zapdos,8,Snorlax,Tổ Zapdos,81,0,C47.2,thu_thap,2,Khúc gỗ,8,58,khong,,1905538,19890,3,0,,,1,
+C47.4,1188,chinh,1,Johto,J5 Rồng Blackthorn,47,4,Thử thách: Tổ Zapdos,8,Snorlax,Tổ Zapdos,81,0,C47.3,giet_tinh_anh,137,Luxray (cấp 84),25,,khong,,1905538,19890,3,0,593,,1,
+C48.1,1189,chinh,1,Johto,J5 Rồng Blackthorn,48,1,Lời nhờ: Lời thề ở đền rồng,5,Xatu,Blackthorn,83,0,C47.4,dua_thu,4,Lá thư,1,,khong,,2028574,21697,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C48.2,1190,chinh,1,Johto,J5 Rồng Blackthorn,48,2,Dọn đường Blackthorn,5,Xatu,Blackthorn,83,0,C48.1,giet,118,Galvantula,50,,khong,,2028574,21697,3,0,,,1,
+C48.3,1191,chinh,1,Johto,J5 Rồng Blackthorn,48,3,Thu thập ở Blackthorn,5,Xatu,Blackthorn,83,0,C48.2,thu_thap,3,Rết đỏ,8,136,khong,,2028574,21697,3,0,,,1,
+C48.4,1192,chinh,1,Johto,J5 Rồng Blackthorn,48,4,Thách đấu Gym: Huy hiệu Rồng,5,Xatu,Blackthorn,83,0,C48.3,giet_tinh_anh,138,Entei (cấp 86),25,,khong,,3042862,36162,10,0,639,Huy hiệu Rồng (Blackthorn),1,
+C49.1,1193,chinh,1,Johto,J6 Đường Victory,49,1,Lời nhờ: Cổng Đường Victory,21,Blaziken,Đường Victory,84,0,C48.4,noi_chuyen,,Blaziken,1,,khong,,2097105,22665,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C49.2,1194,chinh,1,Johto,J6 Đường Victory,49,2,Dọn đường Đường Victory,21,Blaziken,Đường Victory,84,0,C49.1,giet,136,Liepard Shiny,50,,khong,,2097105,22665,3,0,,,1,
+C49.3,1195,chinh,1,Johto,J6 Đường Victory,49,3,Thu thập ở Đường Victory,21,Blaziken,Đường Victory,84,0,C49.2,thu_thap,6,Lông đuôi Hồng Kê,8,137,khong,,2097105,22665,3,0,,,1,
+C49.4,1196,chinh,1,Johto,J6 Đường Victory,49,4,Thử thách: Cổng Đường Victory,21,Blaziken,Đường Victory,84,0,C49.3,giet_tinh_anh,137,Luxray (cấp 84),25,,khong,,2097105,22665,3,0,640,,1,
+C50.1,1197,chinh,1,Johto,J6 Đường Victory,50,1,Lời nhờ: Cao nguyên Indigo,5,Xatu,Cao nguyên Indigo,86,0,C49.4,dua_thu,4,Lá thư,1,,khong,,2232000,24700,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C50.2,1198,chinh,1,Johto,J6 Đường Victory,50,2,Dọn đường Cao nguyên Indigo,5,Xatu,Cao nguyên Indigo,86,0,C50.1,giet,138,Entei,50,,khong,,2232000,24700,3,0,,,1,
+C50.3,1199,chinh,1,Johto,J6 Đường Victory,50,3,Thu thập ở Cao nguyên Indigo,5,Xatu,Cao nguyên Indigo,86,0,C50.2,thu_thap,7,Móng cá sấu,8,137,khong,,2232000,24700,3,0,,,1,
+C50.4,1200,chinh,1,Johto,J6 Đường Victory,50,4,Thử thách: Cao nguyên Indigo,5,Xatu,Cao nguyên Indigo,86,0,C50.3,giet_tinh_anh,138,Entei (cấp 86),25,,khong,,2232000,24700,3,0,645,,1,
+C51.1,1201,chinh,1,Johto,J6 Đường Victory,51,1,Lời nhờ: Đỉnh Núi Silver,8,Snorlax,Núi Silver,88,0,C50.4,noi_chuyen,,Snorlax,1,,khong,,2356950,27010,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C51.2,1202,chinh,1,Johto,J6 Đường Victory,51,2,Dọn đường Núi Silver,8,Snorlax,Núi Silver,88,0,C51.1,giet,138,Entei,50,,khong,,2356950,27010,3,0,,,1,
+C51.3,1203,chinh,1,Johto,J6 Đường Victory,51,3,Thu thập ở Núi Silver,8,Snorlax,Núi Silver,88,0,C51.2,thu_thap,8,Da ếch,8,138,khong,,2356950,27010,3,0,,,1,
+C51.4,1204,chinh,1,Johto,J6 Đường Victory,51,4,Thử thách: Đỉnh Núi Silver,8,Snorlax,Núi Silver,88,0,C51.3,giet_tinh_anh,137,Luxray (cấp 84),25,,khong,,2356950,27010,3,0,646,,1,
+C52.1,1205,chinh,1,Johto,J6 Đường Victory,52,1,Lời nhờ: Huyền thoại thức tỉnh,21,Blaziken,Núi Silver,90,0,C51.4,dua_thu,4,Lá thư,1,,khong,,2478600,29415,3,0,,,1,"Cần 1 vé chương (2/tuần, tích tối đa 4)"
+C52.2,1206,chinh,1,Johto,J6 Đường Victory,52,2,Dọn đường Núi Silver,21,Blaziken,Núi Silver,90,0,C52.1,giet,138,Entei,50,,khong,,2478600,29415,3,0,,,1,
+C52.3,1207,chinh,1,Johto,J6 Đường Victory,52,3,Thu thập ở Núi Silver,21,Blaziken,Núi Silver,90,0,C52.2,thu_thap,9,Cựa gà,8,137,khong,,2478600,29415,3,0,,,1,
+C52.4,1208,chinh,1,Johto,J6 Đường Victory,52,4,Thử thách: Huyền thoại thức tỉnh,21,Blaziken,Núi Silver,90,0,C52.3,giet_tinh_anh,136,Liepard Shiny (cấp 82),25,,khong,,2478600,29415,3,0,669,,1,
+C53,1301,chinh,2,Hoenn,H1 Đất liền Hoenn,53,0,Bến Littleroot,,,Littleroot,91,365,C52.4,dan_y,,,,,khong,,10154416,123129,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C54,1302,chinh,2,Hoenn,H1 Đất liền Hoenn,54,0,Rừng Petalburg,,,Petalburg,91,365,C53,dan_y,,,,,khong,,10154416,123129,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C55,1303,chinh,2,Hoenn,H1 Đất liền Hoenn,55,0,Đá Rustboro,,,Rustboro,91,365,C54,dan_y,,,,,khong,,10154416,123129,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C56,1304,chinh,2,Hoenn,H1 Đất liền Hoenn,56,0,Hang Granite,,,Granite,91,365,C55,dan_y,,,,,khong,,10154416,123129,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C57,1305,chinh,2,Hoenn,H2 Biển nóng Slateport,57,0,Chợ cảng Slateport,,,Slateport,92,365,C56,dan_y,,,,,khong,,10356480,128160,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C58,1306,chinh,2,Hoenn,H2 Biển nóng Slateport,58,0,Bảo tàng biển,,,biển,92,365,C57,dan_y,,,,,khong,,10356480,128160,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C59,1307,chinh,2,Hoenn,H2 Biển nóng Slateport,59,0,Đường cát Route 111,,,111,92,365,C58,dan_y,,,,,khong,,10356480,128160,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C60,1308,chinh,2,Hoenn,H2 Biển nóng Slateport,60,0,Thị trấn Mauville,,,Mauville,92,365,C59,dan_y,,,,,khong,,10356480,128160,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C61,1309,chinh,2,Hoenn,H3 Núi lửa Chimney,61,0,Suối nóng Lavaridge,,,Lavaridge,93,365,C60,dan_y,,,,,khong,,10606724,134079,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C62,1310,chinh,2,Hoenn,H3 Núi lửa Chimney,62,0,Miệng núi Chimney,,,Chimney,93,365,C61,dan_y,,,,,khong,,10606724,134079,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C63,1311,chinh,2,Hoenn,H3 Núi lửa Chimney,63,0,Sa mạc gió,,,gió,93,365,C62,dan_y,,,,,khong,,10606724,134079,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C64,1312,chinh,2,Hoenn,H3 Núi lửa Chimney,64,0,Huy hiệu nhiệt,,,nhiệt,93,365,C63,dan_y,,,,,khong,,10606724,134079,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C65,1313,chinh,2,Hoenn,H4 Bầu trời Fortree,65,0,Nhà trên cây Fortree,,,Fortree,94,365,C64,dan_y,,,,,khong,,10862510,140086,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C66,1314,chinh,2,Hoenn,H4 Bầu trời Fortree,66,0,Tháp Weather,,,Weather,94,365,C65,dan_y,,,,,khong,,10862510,140086,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C67,1315,chinh,2,Hoenn,H4 Bầu trời Fortree,67,0,Cánh rừng mưa,,,mưa,94,365,C66,dan_y,,,,,khong,,10862510,140086,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C68,1316,chinh,2,Hoenn,H4 Bầu trời Fortree,68,0,Huy hiệu lông vũ,,,vũ,94,365,C67,dan_y,,,,,khong,,10862510,140086,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C69,1317,chinh,2,Hoenn,H5 Biển sâu Lilycove,69,0,Cửa hàng Lilycove,,,Lilycove,95,365,C68,dan_y,,,,,khong,,11077368,145848,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C70,1318,chinh,2,Hoenn,H5 Biển sâu Lilycove,70,0,Núi Pyre,,,Pyre,95,365,C69,dan_y,,,,,khong,,11077368,145848,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C71,1319,chinh,2,Hoenn,H5 Biển sâu Lilycove,71,0,Đảo Mossdeep,,,Mossdeep,95,365,C70,dan_y,,,,,khong,,11077368,145848,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C72,1320,chinh,2,Hoenn,H5 Biển sâu Lilycove,72,0,Hang dưới biển,,,biển,95,365,C71,dan_y,,,,,khong,,11077368,145848,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C73,1321,chinh,2,Hoenn,H6 Thức tỉnh Kyogre và Groudon,73,0,Thành phố Sootopolis,,,Sootopolis,96,545,C72,dan_y,,,,,khong,,11344014,152562,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C74,1322,chinh,2,Hoenn,H6 Thức tỉnh Kyogre và Groudon,74,0,Hang Cave of Origin,,,Origin,96,545,C73,dan_y,,,,,khong,,11344014,152562,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C75,1323,chinh,2,Hoenn,H6 Thức tỉnh Kyogre và Groudon,75,0,Cơn mưa vô tận,,,tận,96,545,C74,dan_y,,,,,khong,,11344014,152562,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C76,1324,chinh,2,Hoenn,H6 Thức tỉnh Kyogre và Groudon,76,0,Hạn hán vô tận,,,tận,96,545,C75,dan_y,,,,,khong,,11344014,152562,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C77,1325,chinh,2,Hoenn,H7 Tháp trời,77,0,Tháp Sky Pillar,,,Pillar,97,545,C76,dan_y,,,,,khong,,11616976,159494,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C78,1326,chinh,2,Hoenn,H7 Tháp trời,78,0,Rayquaza giáng thế,,,thế,97,545,C77,dan_y,,,,,khong,,11616976,159494,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C79,1327,chinh,2,Hoenn,H7 Tháp trời,79,0,Vùng trời yên bình,,,bình,97,545,C78,dan_y,,,,,khong,,11616976,159494,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C80,1328,chinh,2,Hoenn,H7 Tháp trời,80,0,Ngày hội Hoenn,,,Hoenn,97,545,C79,dan_y,,,,,khong,,11616976,159494,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C81,1329,chinh,2,Hoenn,H8 Liên minh Hoenn,81,0,Đường Victory Hoenn,,,Hoenn,98,545,C80,dan_y,,,,,khong,,11896141,166781,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C82,1330,chinh,2,Hoenn,H8 Liên minh Hoenn,82,0,Tứ thiên vương 1,,,1,98,545,C81,dan_y,,,,,khong,,11896141,166781,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C83,1331,chinh,2,Hoenn,H8 Liên minh Hoenn,83,0,Tứ thiên vương 2,,,2,98,545,C82,dan_y,,,,,khong,,11896141,166781,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C84,1332,chinh,2,Hoenn,H8 Liên minh Hoenn,84,0,Nhà vô địch,,,địch,98,545,C83,dan_y,,,,,khong,,11896141,166781,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C85,1333,chinh,2,Hoenn,H9 Vùng chiến đấu,85,0,Tháp Battle,,,Battle,99,545,C84,dan_y,,,,,khong,,12129163,173527,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C86,1334,chinh,2,Hoenn,H9 Vùng chiến đấu,86,0,Cung điện Battle,,,Battle,99,545,C85,dan_y,,,,,khong,,12129163,173527,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C87,1335,chinh,2,Hoenn,H9 Vùng chiến đấu,87,0,Mái vòm Battle,,,Battle,99,545,C86,dan_y,,,,,khong,,12129163,173527,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C88,1336,chinh,2,Hoenn,H9 Vùng chiến đấu,88,0,Kim tự tháp Battle,,,Battle,99,545,C87,dan_y,,,,,khong,,12129163,173527,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C89,1337,chinh,2,Hoenn,H10 Đảo Navel và Faraway,89,0,Đảo Navel,,,Navel,100,545,C88,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C90,1338,chinh,2,Hoenn,H10 Đảo Navel và Faraway,90,0,Đảo Faraway,,,Faraway,100,545,C89,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C91,1339,chinh,2,Hoenn,H10 Đảo Navel và Faraway,91,0,Đảo Birth,,,Birth,100,545,C90,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C92,1340,chinh,2,Hoenn,H10 Đảo Navel và Faraway,92,0,Đảo Southern,,,Southern,100,545,C91,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C93,1341,chinh,2,Liên vùng,H11 Kết nối ba vùng,93,0,Cầu nối Kanto,,,Kanto,100,545,C92,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C94,1342,chinh,2,Liên vùng,H11 Kết nối ba vùng,94,0,Cầu nối Johto,,,Johto,100,545,C93,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C95,1343,chinh,2,Liên vùng,H11 Kết nối ba vùng,95,0,Cầu nối Hoenn,,,Hoenn,100,545,C94,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C96,1344,chinh,2,Liên vùng,H11 Kết nối ba vùng,96,0,Đại hội ba vùng,,,vùng,100,545,C95,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C97,1345,chinh,2,Liên vùng,H12 Mùa giải huyền thoại,97,0,Mùa giải 1,,,1,100,545,C96,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C98,1346,chinh,2,Liên vùng,H12 Mùa giải huyền thoại,98,0,Mùa giải 2,,,2,100,545,C97,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C99,1347,chinh,2,Liên vùng,H12 Mùa giải huyền thoại,99,0,Mùa giải 3,,,3,100,545,C98,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C100,1348,chinh,2,Liên vùng,H12 Mùa giải huyền thoại,100,0,Chung kết,,,kết,100,545,C99,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C101,1349,chinh,2,Liên vùng,H13 Khúc vĩ thanh,101,0,Lời mời mới,,,mới,100,545,C100,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C102,1350,chinh,2,Liên vùng,H13 Khúc vĩ thanh,102,0,Tấm bản đồ cổ,,,cổ,100,545,C101,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C103,1351,chinh,2,Liên vùng,H13 Khúc vĩ thanh,103,0,Bờ biển lạ,,,lạ,100,545,C102,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+C104,1352,chinh,2,Liên vùng,H13 Khúc vĩ thanh,104,0,Chân trời Sinnoh,,,Sinnoh,100,545,C103,dan_y,,,,,khong,,12420000,181470,12,0,,,0,Dàn ý năm 2: cần map/quái Hoenn + cấp >91 (GĐ3)
+P-01.1,2001,phu,1,Kanto,Thị trấn Pallet,,1,Lời chào Pallet,5,Xatu,Pallet,2,0,,noi_chuyen,,Xatu,1,,khong,,11566,2945,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-01.2,2002,phu,1,Kanto,Thị trấn Pallet,,2,Rắc rối ở Pallet,5,Xatu,Pallet,4,0,P-01.1,giet,5,Ekans,30,,khong,,20874,3195,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-01.3,2003,phu,1,Kanto,Thị trấn Pallet,,3,Món quà từ Pallet,5,Xatu,Pallet,6,0,P-01.2,thu_thap,6,Lông đuôi Hồng Kê,6,6,khong,,38016,3432,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-01.4,2004,phu,1,Kanto,Thị trấn Pallet,,4,Bí mật đồng cỏ Pallet,5,Xatu,Pallet,8,0,P-01.3,giet_lech_cap,,quái ±5 cấp,45,,khong,,68880,3937,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-01.5,2005,phu,1,Kanto,Thị trấn Pallet,,5,Người bảo vệ Pallet,5,Xatu,Pallet,10,0,P-01.4,giet_tinh_anh,13,Quagsire,30,,khong,,124920,4164,3,0,5,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-02.1,2006,phu,1,Kanto,Thị trấn Viridian,,1,Lời chào Viridian,1,Kecleon,Viridian,6,0,,noi_chuyen,,Kecleon,1,,khong,,38016,3432,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-02.2,2007,phu,1,Kanto,Thị trấn Viridian,,2,Rắc rối ở Viridian,1,Kecleon,Viridian,8,0,P-02.1,giet,8,Venonat,30,,khong,,68880,3937,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-02.3,2008,phu,1,Kanto,Thị trấn Viridian,,3,Món quà từ Viridian,1,Kecleon,Viridian,10,0,P-02.2,thu_thap,7,Móng cá sấu,6,9,khong,,124920,4164,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-02.4,2009,phu,1,Kanto,Thị trấn Viridian,,4,Bí mật lối mòn Viridian,1,Kecleon,Viridian,12,0,P-02.3,giet_lech_cap,,quái ±5 cấp,45,,khong,,154387,4644,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-02.5,2010,phu,1,Kanto,Thị trấn Viridian,,5,Người bảo vệ Viridian,1,Kecleon,Viridian,14,0,P-02.4,giet_tinh_anh,19,Paras,30,,khong,,191246,5130,3,0,8,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-03.1,2011,phu,1,Kanto,Thị trấn Pewter,,1,Lời chào Pewter,2,Machamp,Pewter,11,0,,noi_chuyen,,Machamp,1,,khong,,139092,4411,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-03.2,2012,phu,1,Kanto,Thị trấn Pewter,,2,Rắc rối ở Pewter,2,Machamp,Pewter,13,0,P-03.1,giet,17,Torkoal,30,,khong,,171637,4887,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-03.3,2013,phu,1,Kanto,Thị trấn Pewter,,3,Món quà từ Pewter,2,Machamp,Pewter,15,0,P-03.2,thu_thap,8,Da ếch,6,15,khong,,212160,5355,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-03.4,2014,phu,1,Kanto,Thị trấn Pewter,,4,Bí mật đá Pewter,2,Machamp,Pewter,17,0,P-03.3,giet_lech_cap,,quái ±5 cấp,85,,khong,,87474,1943,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-03.5,2015,phu,1,Kanto,Thị trấn Pewter,,5,Người bảo vệ Pewter,2,Machamp,Pewter,19,0,P-03.4,giet_tinh_anh,25,Gastly,55,,khong,,108004,2093,3,0,35,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-04.1,2016,phu,1,Kanto,Thị trấn Cerulean,,1,Lời chào Cerulean,23,Torkoal,Cerulean,18,0,,noi_chuyen,,Torkoal,1,,khong,,97325,2022,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-04.2,2017,phu,1,Kanto,Thị trấn Cerulean,,2,Rắc rối ở Cerulean,23,Torkoal,Cerulean,20,0,P-04.1,giet,14,Combusken,55,,khong,,120240,2254,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-04.3,2018,phu,1,Kanto,Thị trấn Cerulean,,3,Món quà từ Cerulean,23,Torkoal,Cerulean,22,0,P-04.2,thu_thap,9,Cựa gà,11,25,khong,,139814,2399,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-04.4,2019,phu,1,Kanto,Thị trấn Cerulean,,4,Bí mật dòng nước Cerulean,23,Torkoal,Cerulean,24,0,P-04.3,giet_lech_cap,,quái ±5 cấp,80,,khong,,163052,2632,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-04.5,2020,phu,1,Kanto,Thị trấn Cerulean,,5,Người bảo vệ Cerulean,23,Torkoal,Cerulean,26,0,P-04.4,giet_tinh_anh,30,Croagunk,55,,khong,,189471,2934,3,0,295,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-05.1,2021,phu,1,Kanto,Thị trấn Vermilion,,1,Lời chào Vermilion,22,Meowth,Vermilion,22,0,,noi_chuyen,,Meowth,1,,khong,,139814,2399,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-05.2,2022,phu,1,Kanto,Thị trấn Vermilion,,2,Rắc rối ở Vermilion,22,Meowth,Vermilion,24,0,P-05.1,giet,18,Ariados,55,,khong,,163052,2632,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-05.3,2023,phu,1,Kanto,Thị trấn Vermilion,,3,Món quà từ Vermilion,22,Meowth,Vermilion,26,0,P-05.2,thu_thap,0,Nọc bọ cạp,11,30,khong,,189471,2934,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-05.4,2024,phu,1,Kanto,Thị trấn Vermilion,,4,Bí mật bến cảng Vermilion,22,Meowth,Vermilion,28,0,P-05.3,giet_lech_cap,,quái ±5 cấp,80,,khong,,220968,3159,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-05.5,2025,phu,1,Kanto,Thị trấn Vermilion,,5,Người bảo vệ Vermilion,22,Meowth,Vermilion,30,0,P-05.4,giet_tinh_anh,32,Parasect,55,,khong,,256800,3450,3,0,320,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-06.1,2026,phu,1,Kanto,Thị trấn Lavender,,1,Lời chào Lavender,8,Snorlax,Lavender,30,0,,noi_chuyen,,Snorlax,1,,khong,,256800,3450,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-06.2,2027,phu,1,Kanto,Thị trấn Lavender,,2,Rắc rối ở Lavender,8,Snorlax,Lavender,32,0,P-06.1,giet,23,Arbok,55,,khong,,293704,3816,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-06.3,2028,phu,1,Kanto,Thị trấn Lavender,,3,Món quà từ Lavender,8,Snorlax,Lavender,34,0,P-06.2,thu_thap,2,Khúc gỗ,11,34,khong,,336856,4187,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-06.4,2029,phu,1,Kanto,Thị trấn Lavender,,4,Bí mật sương mù Lavender,8,Snorlax,Lavender,36,0,P-06.3,giet_lech_cap,,quái ±5 cấp,80,,khong,,385240,4538,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-06.5,2030,phu,1,Kanto,Thị trấn Lavender,,5,Người bảo vệ Lavender,8,Snorlax,Lavender,38,0,P-06.4,giet_tinh_anh,45,Farfetch'd,50,,khong,,441868,4976,3,0,323,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-07.1,2031,phu,1,Kanto,Thị trấn Celadon,,1,Lời chào Celadon,1,Kecleon,Celadon,33,0,,noi_chuyen,,Kecleon,1,,khong,,314590,3962,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-07.2,2032,phu,1,Kanto,Thị trấn Celadon,,2,Rắc rối ở Celadon,1,Kecleon,Celadon,35,0,P-07.1,giet,35,Crawdaunt,50,,khong,,359718,4317,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-07.3,2033,phu,1,Kanto,Thị trấn Celadon,,3,Món quà từ Celadon,1,Kecleon,Celadon,37,0,P-07.2,thu_thap,3,Rết đỏ,10,55,khong,,412588,4758,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-07.4,2034,phu,1,Kanto,Thị trấn Celadon,,4,Bí mật vườn hoa Celadon,1,Kecleon,Celadon,39,0,P-07.3,giet_lech_cap,,quái ±5 cấp,75,,khong,,471657,5175,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-07.5,2035,phu,1,Kanto,Thị trấn Celadon,,5,Người bảo vệ Celadon,1,Kecleon,Celadon,41,0,P-07.4,giet_tinh_anh,68,Palpitoad,50,,khong,,522514,5679,3,0,368,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-08.1,2036,phu,1,Kanto,Thị trấn Saffron,,1,Lời chào Saffron,5,Xatu,Saffron,37,0,,noi_chuyen,,Xatu,1,,khong,,412588,4758,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-08.2,2037,phu,1,Kanto,Thị trấn Saffron,,2,Rắc rối ở Saffron,5,Xatu,Saffron,39,0,P-08.1,giet,45,Farfetch'd,50,,khong,,471657,5175,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-08.3,2038,phu,1,Kanto,Thị trấn Saffron,,3,Món quà từ Saffron,5,Xatu,Saffron,41,0,P-08.2,thu_thap,6,Lông đuôi Hồng Kê,10,63,khong,,522514,5679,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-08.4,2039,phu,1,Kanto,Thị trấn Saffron,,4,Bí mật thành phố Saffron,5,Xatu,Saffron,43,0,P-08.3,giet_lech_cap,,quái ±5 cấp,75,,khong,,557171,6156,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-08.5,2040,phu,1,Kanto,Thị trấn Saffron,,5,Người bảo vệ Saffron,5,Xatu,Saffron,45,0,P-08.4,giet_tinh_anh,59,Marowak,50,,khong,,596148,6795,3,0,381,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-09.1,2041,phu,1,Kanto,Thị trấn Fuchsia,,1,Lời chào Fuchsia,6,Persian,Fuchsia,40,0,,noi_chuyen,,Persian,1,,khong,,505120,5390,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-09.2,2042,phu,1,Kanto,Thị trấn Fuchsia,,2,Rắc rối ở Fuchsia,6,Persian,Fuchsia,42,0,P-09.1,giet,42,Whirlipede Shiny,50,,khong,,538752,5947,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-09.3,2043,phu,1,Kanto,Thị trấn Fuchsia,,3,Món quà từ Fuchsia,6,Persian,Fuchsia,44,0,P-09.2,thu_thap,7,Móng cá sấu,10,57,khong,,576306,6514,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-09.4,2044,phu,1,Kanto,Thị trấn Fuchsia,,4,Bí mật bờ biển Fuchsia,6,Persian,Fuchsia,46,0,P-09.3,giet_lech_cap,,quái ±5 cấp,75,,khong,,614520,7050,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-09.5,2045,phu,1,Kanto,Thị trấn Fuchsia,,5,Người bảo vệ Fuchsia,6,Persian,Fuchsia,48,0,P-09.4,giet_tinh_anh,41,Scolipede,50,,khong,,657507,7748,3,0,345,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-10.1,2046,phu,1,Kanto,Thị trấn Cinnabar,,1,Lời chào Cinnabar,3,Bronzong,Cinnabar,43,0,,noi_chuyen,,Bronzong,1,,khong,,557171,6156,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-10.2,2047,phu,1,Kanto,Thị trấn Cinnabar,,2,Rắc rối ở Cinnabar,3,Bronzong,Cinnabar,45,0,P-10.1,giet,52,Haunter,50,,khong,,596148,6795,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-10.3,2048,phu,1,Kanto,Thị trấn Cinnabar,,3,Món quà từ Cinnabar,3,Bronzong,Cinnabar,47,0,P-10.2,thu_thap,8,Da ếch,10,59,khong,,635674,7400,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-10.4,2049,phu,1,Kanto,Thị trấn Cinnabar,,4,Bí mật núi lửa Cinnabar,3,Bronzong,Cinnabar,49,0,P-10.3,giet_lech_cap,,quái ±5 cấp,75,,khong,,677721,8066,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-10.5,2050,phu,1,Kanto,Thị trấn Cinnabar,,5,Người bảo vệ Cinnabar,3,Bronzong,Cinnabar,51,0,P-10.4,giet_tinh_anh,44,Blaziken,50,,khong,,728179,8820,3,0,358,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-11.1,2051,phu,1,Johto,Thị trấn New Bark,,1,Lời chào New Bark,5,Xatu,New Bark,49,0,,noi_chuyen,,Xatu,1,,khong,,677721,8066,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-11.2,2052,phu,1,Johto,Thị trấn New Bark,,2,Rắc rối ở New Bark,5,Xatu,New Bark,51,0,P-11.1,giet,44,Blaziken,50,,khong,,728179,8820,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-11.3,2053,phu,1,Johto,Thị trấn New Bark,,3,Món quà từ New Bark,5,Xatu,New Bark,53,0,P-11.2,thu_thap,9,Cựa gà,10,80,khong,,783255,9675,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-11.4,2054,phu,1,Johto,Thị trấn New Bark,,4,Bí mật gió New Bark,5,Xatu,New Bark,55,0,P-11.3,giet_lech_cap,,quái ±5 cấp,70,,khong,,842342,10512,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-11.5,2055,phu,1,Johto,Thị trấn New Bark,,5,Người bảo vệ New Bark,5,Xatu,New Bark,57,0,P-11.4,giet_tinh_anh,48,Arcanine,50,,khong,,908908,11511,3,0,395,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-12.1,2056,phu,1,Johto,Thị trấn Cherrygrove,,1,Lời chào Cherrygrove,6,Persian,Cherrygrove,51,0,,noi_chuyen,,Persian,1,,khong,,728179,8820,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-12.2,2057,phu,1,Johto,Thị trấn Cherrygrove,,2,Rắc rối ở Cherrygrove,6,Persian,Cherrygrove,53,0,P-12.1,giet,80,Breloom,50,,khong,,783255,9675,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-12.3,2058,phu,1,Johto,Thị trấn Cherrygrove,,3,Món quà từ Cherrygrove,6,Persian,Cherrygrove,55,0,P-12.2,thu_thap,0,Nọc bọ cạp,10,80,khong,,842342,10512,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-12.4,2059,phu,1,Johto,Thị trấn Cherrygrove,,4,Bí mật hoa Cherrygrove,6,Persian,Cherrygrove,57,0,P-12.3,giet_lech_cap,,quái ±5 cấp,70,,khong,,908908,11511,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-12.5,2060,phu,1,Johto,Thị trấn Cherrygrove,,5,Người bảo vệ Cherrygrove,6,Persian,Cherrygrove,59,0,P-12.4,giet_tinh_anh,60,Rhydon,45,,khong,,977368,12593,3,0,25,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-13.1,2061,phu,1,Johto,Thị trấn Violet,,1,Lời chào Violet,8,Snorlax,Violet,53,0,,noi_chuyen,,Snorlax,1,,khong,,783255,9675,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-13.2,2062,phu,1,Johto,Thị trấn Violet,,2,Rắc rối ở Violet,8,Snorlax,Violet,55,0,P-13.1,giet,80,Breloom,50,,khong,,842342,10512,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-13.3,2063,phu,1,Johto,Thị trấn Violet,,3,Món quà từ Violet,8,Snorlax,Violet,57,0,P-13.2,thu_thap,2,Khúc gỗ,10,65,khong,,908908,11511,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-13.4,2064,phu,1,Johto,Thị trấn Violet,,4,Bí mật tháp Violet,8,Snorlax,Violet,59,0,P-13.3,giet_lech_cap,,quái ±5 cấp,70,,khong,,977368,12593,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-13.5,2065,phu,1,Johto,Thị trấn Violet,,5,Người bảo vệ Violet,8,Snorlax,Violet,61,0,P-13.4,giet_tinh_anh,48,Arcanine,45,,khong,,1057346,13769,3,0,284,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-14.1,2066,phu,1,Johto,Thị trấn Azalea,,1,Lời chào Azalea,5,Xatu,Azalea,56,0,,noi_chuyen,,Xatu,1,,khong,,875005,11049,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-14.2,2067,phu,1,Johto,Thị trấn Azalea,,2,Rắc rối ở Azalea,5,Xatu,Azalea,58,0,P-14.1,giet,76,Magcargo,50,,khong,,944148,12041,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-14.3,2068,phu,1,Johto,Thị trấn Azalea,,3,Món quà từ Azalea,5,Xatu,Azalea,60,0,P-14.2,thu_thap,3,Rết đỏ,9,48,khong,,1015200,13183,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-14.4,2069,phu,1,Johto,Thị trấn Azalea,,4,Bí mật giếng Azalea,5,Xatu,Azalea,62,0,P-14.3,giet_lech_cap,,quái ±5 cấp,70,,khong,,1097139,14368,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-14.5,2070,phu,1,Johto,Thị trấn Azalea,,5,Người bảo vệ Azalea,5,Xatu,Azalea,64,0,P-14.4,giet_tinh_anh,81,Scyther,45,,khong,,1189992,15719,3,0,475,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-15.1,2071,phu,1,Johto,Thị trấn Goldenrod,,1,Lời chào Goldenrod,22,Meowth,Goldenrod,60,0,,noi_chuyen,,Meowth,1,,khong,,1015200,13183,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-15.2,2072,phu,1,Johto,Thị trấn Goldenrod,,2,Rắc rối ở Goldenrod,22,Meowth,Goldenrod,62,0,P-15.1,giet,60,Rhydon,45,,khong,,1097139,14368,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-15.3,2073,phu,1,Johto,Thị trấn Goldenrod,,3,Món quà từ Goldenrod,22,Meowth,Goldenrod,64,0,P-15.2,thu_thap,6,Lông đuôi Hồng Kê,9,60,khong,,1189992,15719,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-15.4,2074,phu,1,Johto,Thị trấn Goldenrod,,4,Bí mật phố Goldenrod,22,Meowth,Goldenrod,66,0,P-15.3,giet_lech_cap,,quái ±5 cấp,70,,khong,,1285827,17125,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-15.5,2075,phu,1,Johto,Thị trấn Goldenrod,,5,Người bảo vệ Goldenrod,22,Meowth,Goldenrod,68,0,P-15.4,giet_tinh_anh,53,Whiscash,45,,khong,,1394380,18768,3,0,310,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-16.1,2076,phu,1,Johto,Thị trấn Ecruteak,,1,Lời chào Ecruteak,8,Snorlax,Ecruteak,63,0,,noi_chuyen,,Snorlax,1,,khong,,1142691,15012,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-16.2,2077,phu,1,Johto,Thị trấn Ecruteak,,2,Rắc rối ở Ecruteak,8,Snorlax,Ecruteak,65,0,P-16.1,giet,60,Rhydon,45,,khong,,1239240,16422,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-16.3,2078,phu,1,Johto,Thị trấn Ecruteak,,3,Món quà từ Ecruteak,8,Snorlax,Ecruteak,67,0,P-16.2,thu_thap,7,Móng cá sấu,9,53,khong,,1339010,17949,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-16.4,2079,phu,1,Johto,Thị trấn Ecruteak,,4,Bí mật chuông Ecruteak,8,Snorlax,Ecruteak,69,0,P-16.3,giet_lech_cap,,quái ±5 cấp,70,,khong,,1446660,19575,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-16.5,2080,phu,1,Johto,Thị trấn Ecruteak,,5,Người bảo vệ Ecruteak,8,Snorlax,Ecruteak,71,0,P-16.4,giet_tinh_anh,54,Kingler,45,,khong,,1583880,21373,3,0,313,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-17.1,2081,phu,1,Johto,Thị trấn Olivine,,1,Lời chào Olivine,2,Machamp,Olivine,66,0,,noi_chuyen,,Machamp,1,,khong,,1285827,17125,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-17.2,2082,phu,1,Johto,Thị trấn Olivine,,2,Rắc rối ở Olivine,2,Machamp,Olivine,68,0,P-17.1,giet,53,Whiscash,45,,khong,,1394380,18768,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-17.3,2083,phu,1,Johto,Thị trấn Olivine,,3,Món quà từ Olivine,2,Machamp,Olivine,70,0,P-17.2,thu_thap,8,Da ếch,9,53,khong,,1506400,20444,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-17.4,2084,phu,1,Johto,Thị trấn Olivine,,4,Bí mật hải đăng Olivine,2,Machamp,Olivine,72,0,P-17.3,giet_lech_cap,,quái ±5 cấp,65,,khong,,1659201,22277,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-17.5,2085,phu,1,Johto,Thị trấn Olivine,,5,Người bảo vệ Olivine,2,Machamp,Olivine,74,0,P-17.4,giet_tinh_anh,51,Trevenant,45,,khong,,1834060,24420,3,0,488,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-18.1,2086,phu,1,Johto,Thị trấn Cianwood,,1,Lời chào Cianwood,1,Kecleon,Cianwood,68,0,,noi_chuyen,,Kecleon,1,,khong,,1394380,18768,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-18.2,2087,phu,1,Johto,Thị trấn Cianwood,,2,Rắc rối ở Cianwood,1,Kecleon,Cianwood,70,0,P-18.1,giet,53,Whiscash,45,,khong,,1506400,20444,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-18.3,2088,phu,1,Johto,Thị trấn Cianwood,,3,Món quà từ Cianwood,1,Kecleon,Cianwood,72,0,P-18.2,thu_thap,9,Cựa gà,9,49,khong,,1659201,22277,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-18.4,2089,phu,1,Johto,Thị trấn Cianwood,,4,Bí mật thuốc Cianwood,1,Kecleon,Cianwood,74,0,P-18.3,giet_lech_cap,,quái ±5 cấp,65,,khong,,1834060,24420,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-18.5,2090,phu,1,Johto,Thị trấn Cianwood,,5,Người bảo vệ Cianwood,1,Kecleon,Cianwood,76,0,P-18.4,giet_tinh_anh,58,Vileplume,45,,khong,,2019618,26622,3,0,339,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-19.1,2091,phu,1,Johto,Thị trấn Mahogany,,1,Lời chào Mahogany,6,Persian,Mahogany,70,0,,noi_chuyen,,Persian,1,,khong,,1506400,20444,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-19.2,2092,phu,1,Johto,Thị trấn Mahogany,,2,Rắc rối ở Mahogany,6,Persian,Mahogany,72,0,P-19.1,giet,49,Gastrodon,45,,khong,,1659201,22277,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-19.3,2093,phu,1,Johto,Thị trấn Mahogany,,3,Món quà từ Mahogany,6,Persian,Mahogany,74,0,P-19.2,thu_thap,0,Nọc bọ cạp,9,49,khong,,1834060,24420,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-19.4,2094,phu,1,Johto,Thị trấn Mahogany,,4,Bí mật hồ Mahogany,6,Persian,Mahogany,76,0,P-19.3,giet_lech_cap,,quái ±5 cấp,65,,khong,,2019618,26622,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-19.5,2095,phu,1,Johto,Thị trấn Mahogany,,5,Người bảo vệ Mahogany,6,Persian,Mahogany,78,0,P-19.4,giet_tinh_anh,58,Vileplume,45,,khong,,2232269,29137,3,0,375,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-20.1,2096,phu,1,Johto,Thị trấn Blackthorn,,1,Lời chào Blackthorn,5,Xatu,Blackthorn,77,0,,noi_chuyen,,Xatu,1,,khong,,2123368,27820,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-20.2,2097,phu,1,Johto,Thị trấn Blackthorn,,2,Rắc rối ở Blackthorn,5,Xatu,Blackthorn,79,0,P-20.1,giet,58,Vileplume,45,,khong,,2337774,30326,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-20.3,2098,phu,1,Johto,Thị trấn Blackthorn,,3,Món quà từ Blackthorn,5,Xatu,Blackthorn,81,0,P-20.2,thu_thap,2,Khúc gỗ,8,136,khong,,2540718,33150,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-20.4,2099,phu,1,Johto,Thị trấn Blackthorn,,4,Bí mật rồng Blackthorn,5,Xatu,Blackthorn,83,0,P-20.3,giet_lech_cap,,quái ±5 cấp,65,,khong,,2704766,36162,3,0,,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+P-20.5,2100,phu,1,Johto,Thị trấn Blackthorn,,5,Người bảo vệ Blackthorn,5,Xatu,Blackthorn,85,0,P-20.4,giet_tinh_anh,138,Entei,40,,khong,,2890500,39562,3,0,656,,1,Chuỗi 5 bước; bước 5 cho danh hiệu thị trấn
+R-01.1,2501,tuyen,1,Kanto,Tuyến Rừng Viridian,,1,Trinh sát Rừng Viridian,21,Blaziken,Rừng Viridian,8,0,,giet,7,Bellsprout,45,,khong,,86100,4724,4,0,,,1,
+R-01.2,2502,tuyen,1,Kanto,Tuyến Rừng Viridian,,2,Dọn đường Rừng Viridian,21,Blaziken,Rừng Viridian,9,0,R-01.1,giet,10,Oddish,45,,khong,,115884,5011,4,0,,,1,
+R-01.3,2503,tuyen,1,Kanto,Tuyến Rừng Viridian,,3,Kho báu Rừng Viridian,21,Blaziken,Rừng Viridian,10,0,R-01.2,giet,10,Oddish,45,,khong,,156150,4996,4,0,,,1,
+R-02.1,2504,tuyen,1,Kanto,Tuyến Núi Mặt Trăng,,1,Trinh sát Núi Mặt Trăng,21,Blaziken,Núi Mặt Trăng,15,0,,giet,21,Venipede,40,,khong,,265200,6425,4,0,,,1,
+R-02.2,2505,tuyen,1,Kanto,Tuyến Núi Mặt Trăng,,2,Dọn đường Núi Mặt Trăng,21,Blaziken,Núi Mặt Trăng,16,0,R-02.1,giet,20,Gloom,85,,khong,,98310,2237,4,0,,,1,
+R-02.3,2506,tuyen,1,Kanto,Tuyến Núi Mặt Trăng,,3,Kho báu Núi Mặt Trăng,21,Blaziken,Núi Mặt Trăng,17,0,R-02.2,giet,20,Gloom,85,,khong,,109343,2332,4,0,,,1,
+R-03.1,2507,tuyen,1,Kanto,Tuyến Tàu S.S. Anne,,1,Trinh sát Tàu S.S. Anne,21,Blaziken,Tàu S.S. Anne,27,0,,giet,29,Croconaw,80,,khong,,255775,3607,4,0,,,1,
+R-03.2,2508,tuyen,1,Kanto,Tuyến Tàu S.S. Anne,,2,Dọn đường Tàu S.S. Anne,21,Blaziken,Tàu S.S. Anne,28,0,R-03.1,giet,30,Croagunk,80,,khong,,276210,3790,4,0,,,1,
+R-03.3,2509,tuyen,1,Kanto,Tuyến Tàu S.S. Anne,,3,Kho báu Tàu S.S. Anne,21,Blaziken,Tàu S.S. Anne,29,0,R-03.2,giet,22,Dodrio,80,,khong,,297367,3960,4,0,,,1,
+R-04.1,2510,tuyen,1,Kanto,Tuyến Vùng Safari,,1,Trinh sát Vùng Safari,21,Blaziken,Vùng Safari,39,0,,giet,40,Whirlipede,75,,khong,,589572,6210,4,0,,,1,
+R-04.2,2511,tuyen,1,Kanto,Tuyến Vùng Safari,,2,Dọn đường Vùng Safari,21,Blaziken,Vùng Safari,40,0,R-04.1,giet,71,Kricketot,75,,khong,,631400,6468,4,0,,,1,
+R-04.3,2512,tuyen,1,Kanto,Tuyến Vùng Safari,,3,Kho báu Vùng Safari,21,Blaziken,Vùng Safari,41,0,R-04.2,giet,71,Kricketot,75,,khong,,653142,6815,4,0,,,1,
+R-05.1,2513,tuyen,1,Johto,Tuyến Hang Tối,,1,Trinh sát Hang Tối,21,Blaziken,Hang Tối,50,0,,giet,41,Scolipede,75,,khong,,876150,10177,4,0,,,1,
+R-05.2,2514,tuyen,1,Johto,Tuyến Hang Tối,,2,Dọn đường Hang Tối,21,Blaziken,Hang Tối,51,0,R-05.1,giet,80,Breloom,75,,khong,,910224,10584,4,0,,,1,
+R-05.3,2515,tuyen,1,Johto,Tuyến Hang Tối,,3,Kho báu Hang Tối,21,Blaziken,Hang Tối,52,0,R-05.2,giet,80,Breloom,75,,khong,,942430,11037,4,0,,,1,
+R-06.1,2516,tuyen,1,Johto,Tuyến Rừng Ilex,,1,Trinh sát Rừng Ilex,21,Blaziken,Rừng Ilex,58,0,,giet,65,Crabrawler,70,,khong,,1180185,14449,4,0,,,1,
+R-06.2,2517,tuyen,1,Johto,Tuyến Rừng Ilex,,2,Dọn đường Rừng Ilex,21,Blaziken,Rừng Ilex,59,0,R-06.1,giet,76,Magcargo,70,,khong,,1221711,15112,4,0,,,1,
+R-06.3,2518,tuyen,1,Johto,Tuyến Rừng Ilex,,3,Kho báu Rừng Ilex,21,Blaziken,Rừng Ilex,60,0,R-06.2,giet,48,Arcanine,70,,khong,,1269000,15820,4,0,,,1,
+R-07.1,2519,tuyen,1,Johto,Tuyến Rừng Cổ,,1,Trinh sát Rừng Cổ,21,Blaziken,Rừng Cổ,65,0,,giet,81,Scyther,70,,khong,,1549050,19706,4,0,,,1,
+R-07.2,2520,tuyen,1,Johto,Tuyến Rừng Cổ,,2,Dọn đường Rừng Cổ,21,Blaziken,Rừng Cổ,66,0,R-07.1,giet,81,Scyther,70,,khong,,1607284,20550,4,0,,,1,
+R-07.3,2521,tuyen,1,Johto,Tuyến Rừng Cổ,,3,Kho báu Rừng Cổ,21,Blaziken,Rừng Cổ,67,0,R-07.2,giet,53,Whiscash,70,,khong,,1673763,21539,4,0,,,1,
+R-08.1,2522,tuyen,1,Johto,Tuyến Hồ Phẫn Nộ,,1,Trinh sát Hồ Phẫn Nộ,21,Blaziken,Hồ Phẫn Nộ,71,0,,giet,54,Kingler,65,,khong,,1979850,25647,4,0,,,1,
+R-08.2,2523,tuyen,1,Johto,Tuyến Hồ Phẫn Nộ,,2,Dọn đường Hồ Phẫn Nộ,21,Blaziken,Hồ Phẫn Nộ,72,0,R-08.1,giet,54,Kingler,65,,khong,,2074002,26733,4,0,,,1,
+R-08.3,2524,tuyen,1,Johto,Tuyến Hồ Phẫn Nộ,,3,Kho báu Hồ Phẫn Nộ,21,Blaziken,Hồ Phẫn Nộ,73,0,R-08.2,giet,49,Gastrodon,65,,khong,,2180552,27984,4,0,,,1,
+R-09.1,2525,tuyen,1,Johto,Tuyến Hang Salamence,,1,Trinh sát Hang Salamence,21,Blaziken,Hang Salamence,79,0,,giet,118,Galvantula,65,,khong,,2922218,36391,4,0,,,1,
+R-09.2,2526,tuyen,1,Johto,Tuyến Hang Salamence,,2,Dọn đường Hang Salamence,21,Blaziken,Hang Salamence,80,0,R-09.1,giet,118,Galvantula,65,,khong,,3072000,38092,4,0,,,1,
+R-09.3,2527,tuyen,1,Johto,Tuyến Hang Salamence,,3,Kho báu Hang Salamence,21,Blaziken,Hang Salamence,81,0,R-09.2,giet,118,Galvantula,65,,khong,,3175897,39780,4,0,,,1,
+R-10.1,2528,tuyen,1,Johto,Tuyến Đường Victory,,1,Trinh sát Đường Victory,21,Blaziken,Đường Victory,85,0,,giet,138,Entei,60,,khong,,3613125,47475,4,0,,,1,
+R-10.2,2529,tuyen,1,Johto,Tuyến Đường Victory,,2,Dọn đường Đường Victory,21,Blaziken,Đường Victory,86,0,R-10.1,giet,137,Luxray,60,,khong,,3720000,49401,4,0,,,1,
+R-10.3,2530,tuyen,1,Johto,Tuyến Đường Victory,,3,Kho báu Đường Victory,21,Blaziken,Đường Victory,87,0,R-10.2,giet,138,Entei,60,,khong,,3822819,51647,4,0,,,1,
+N-1.01,3001,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Săn bắt buổi sáng,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.02,3002,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Giao hàng cho Kecleon,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.03,3003,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Tuần tra đồng cỏ,21,Blaziken,Trung tâm Pokémon,10,0,,thu_thap,3,Rết đỏ,5,11,ngay,3,10410,277,4,0,,,0,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.04,3004,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thu thập Berry,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.05,3005,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Huấn luyện cùng Blaziken,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.06,3006,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Dọn tổ Rattata,21,Blaziken,Trung tâm Pokémon,10,0,,thu_thap,8,Da ếch,5,11,ngay,3,10410,277,4,0,,,0,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.07,3007,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Gom gỗ sửa nhà,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.08,3008,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Đưa thư liên vùng,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.09,3009,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Bảo vệ ruộng lúa,21,Blaziken,Trung tâm Pokémon,10,0,,thu_thap,2,Khúc gỗ,5,11,ngay,3,10410,277,4,0,,,0,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.10,3010,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thăm Trung tâm Pokémon,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.11,3011,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Kiểm tra bẫy,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.12,3012,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Đánh dấu bản đồ,21,Blaziken,Trung tâm Pokémon,10,0,,thu_thap,7,Móng cá sấu,5,11,ngay,3,10410,277,4,0,,,0,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.13,3013,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thử sức lệch cấp,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.14,3014,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Chợ phiên Goldenrod,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.15,3015,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Hộ tống Chansey,21,Blaziken,Trung tâm Pokémon,10,0,,thu_thap,0,Nọc bọ cạp,5,11,ngay,3,10410,277,4,0,,,0,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.16,3016,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Quan sát Pokédex,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.17,3017,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Tìm trứng thất lạc,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.18,3018,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Luyện tập né đòn,21,Blaziken,Trung tâm Pokémon,10,0,,thu_thap,6,Lông đuôi Hồng Kê,5,11,ngay,3,10410,277,4,0,,,0,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.19,3019,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Săn quái tinh anh,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-1.20,3020,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Giúp đỡ người mới,21,Blaziken,Trung tâm Pokémon,10,0,,giet_lech_cap,,quái ±5 cấp,15,,ngay,3,10410,277,4,0,,,1,Bậc cấp 10-29; tối đa 3 nhiệm vụ ngày/ngày
+N-2.01,3021,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Săn bắt buổi sáng,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.02,3022,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Giao hàng cho Kecleon,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.03,3023,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Tuần tra đồng cỏ,21,Blaziken,Trung tâm Pokémon,30,0,,thu_thap,3,Rết đỏ,5,30,ngay,3,64200,690,4,0,,,0,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.04,3024,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thu thập Berry,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.05,3025,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Huấn luyện cùng Blaziken,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.06,3026,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Dọn tổ Rattata,21,Blaziken,Trung tâm Pokémon,30,0,,thu_thap,8,Da ếch,5,30,ngay,3,64200,690,4,0,,,0,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.07,3027,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Gom gỗ sửa nhà,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.08,3028,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Đưa thư liên vùng,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.09,3029,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Bảo vệ ruộng lúa,21,Blaziken,Trung tâm Pokémon,30,0,,thu_thap,2,Khúc gỗ,5,30,ngay,3,64200,690,4,0,,,0,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.10,3030,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thăm Trung tâm Pokémon,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.11,3031,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Kiểm tra bẫy,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.12,3032,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Đánh dấu bản đồ,21,Blaziken,Trung tâm Pokémon,30,0,,thu_thap,7,Móng cá sấu,5,30,ngay,3,64200,690,4,0,,,0,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.13,3033,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thử sức lệch cấp,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.14,3034,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Chợ phiên Goldenrod,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.15,3035,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Hộ tống Chansey,21,Blaziken,Trung tâm Pokémon,30,0,,thu_thap,0,Nọc bọ cạp,5,30,ngay,3,64200,690,4,0,,,0,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.16,3036,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Quan sát Pokédex,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.17,3037,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Tìm trứng thất lạc,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.18,3038,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Luyện tập né đòn,21,Blaziken,Trung tâm Pokémon,30,0,,thu_thap,6,Lông đuôi Hồng Kê,5,30,ngay,3,64200,690,4,0,,,0,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.19,3039,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Săn quái tinh anh,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-2.20,3040,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Giúp đỡ người mới,21,Blaziken,Trung tâm Pokémon,30,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,64200,690,4,0,,,1,Bậc cấp 30-49; tối đa 3 nhiệm vụ ngày/ngày
+N-3.01,3041,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Săn bắt buổi sáng,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.02,3042,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Giao hàng cho Kecleon,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.03,3043,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Tuần tra đồng cỏ,21,Blaziken,Trung tâm Pokémon,50,0,,thu_thap,3,Rết đỏ,5,44,ngay,3,175230,1696,4,0,,,0,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.04,3044,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thu thập Berry,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.05,3045,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Huấn luyện cùng Blaziken,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.06,3046,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Dọn tổ Rattata,21,Blaziken,Trung tâm Pokémon,50,0,,thu_thap,8,Da ếch,5,44,ngay,3,175230,1696,4,0,,,0,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.07,3047,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Gom gỗ sửa nhà,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.08,3048,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Đưa thư liên vùng,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.09,3049,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Bảo vệ ruộng lúa,21,Blaziken,Trung tâm Pokémon,50,0,,thu_thap,2,Khúc gỗ,5,44,ngay,3,175230,1696,4,0,,,0,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.10,3050,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thăm Trung tâm Pokémon,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.11,3051,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Kiểm tra bẫy,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.12,3052,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Đánh dấu bản đồ,21,Blaziken,Trung tâm Pokémon,50,0,,thu_thap,7,Móng cá sấu,5,44,ngay,3,175230,1696,4,0,,,0,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.13,3053,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thử sức lệch cấp,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.14,3054,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Chợ phiên Goldenrod,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.15,3055,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Hộ tống Chansey,21,Blaziken,Trung tâm Pokémon,50,0,,thu_thap,0,Nọc bọ cạp,5,44,ngay,3,175230,1696,4,0,,,0,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.16,3056,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Quan sát Pokédex,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.17,3057,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Tìm trứng thất lạc,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.18,3058,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Luyện tập né đòn,21,Blaziken,Trung tâm Pokémon,50,0,,thu_thap,6,Lông đuôi Hồng Kê,5,44,ngay,3,175230,1696,4,0,,,0,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.19,3059,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Săn quái tinh anh,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-3.20,3060,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Giúp đỡ người mới,21,Blaziken,Trung tâm Pokémon,50,0,,giet_lech_cap,,quái ±5 cấp,25,,ngay,3,175230,1696,4,0,,,1,Bậc cấp 50-69; tối đa 3 nhiệm vụ ngày/ngày
+N-4.01,3061,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Săn bắt buổi sáng,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.02,3062,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Giao hàng cho Kecleon,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.03,3063,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Tuần tra đồng cỏ,21,Blaziken,Trung tâm Pokémon,70,0,,thu_thap,3,Rết đỏ,5,54,ngay,3,376600,4088,4,0,,,0,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.04,3064,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thu thập Berry,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.05,3065,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Huấn luyện cùng Blaziken,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.06,3066,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Dọn tổ Rattata,21,Blaziken,Trung tâm Pokémon,70,0,,thu_thap,8,Da ếch,5,53,ngay,3,376600,4088,4,0,,,0,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.07,3067,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Gom gỗ sửa nhà,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.08,3068,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Đưa thư liên vùng,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.09,3069,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Bảo vệ ruộng lúa,21,Blaziken,Trung tâm Pokémon,70,0,,thu_thap,2,Khúc gỗ,5,54,ngay,3,376600,4088,4,0,,,0,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.10,3070,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thăm Trung tâm Pokémon,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.11,3071,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Kiểm tra bẫy,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.12,3072,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Đánh dấu bản đồ,21,Blaziken,Trung tâm Pokémon,70,0,,thu_thap,7,Móng cá sấu,5,53,ngay,3,376600,4088,4,0,,,0,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.13,3073,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Thử sức lệch cấp,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.14,3074,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Chợ phiên Goldenrod,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.15,3075,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Hộ tống Chansey,21,Blaziken,Trung tâm Pokémon,70,0,,thu_thap,0,Nọc bọ cạp,5,54,ngay,3,376600,4088,4,0,,,0,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.16,3076,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Quan sát Pokédex,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.17,3077,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Tìm trứng thất lạc,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.18,3078,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Luyện tập né đòn,21,Blaziken,Trung tâm Pokémon,70,0,,thu_thap,6,Lông đuôi Hồng Kê,5,53,ngay,3,376600,4088,4,0,,,0,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.19,3079,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Săn quái tinh anh,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+N-4.20,3080,ngay,1,Mọi vùng,Bảng nhiệm vụ ngày,,,Giúp đỡ người mới,21,Blaziken,Trung tâm Pokémon,70,0,,giet_lech_cap,,quái ±5 cấp,20,,ngay,3,376600,4088,4,0,,,1,Bậc cấp 70-89; tối đa 3 nhiệm vụ ngày/ngày
+T-1.01,3501,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Thử thách tuần: Kanto,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.02,3502,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Thử thách tuần: Johto,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.03,3503,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Đội tuần tra,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.04,3504,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Cúp huấn luyện,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.05,3505,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Đợt săn huyền thoại,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.06,3506,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Nghiên cứu Pokédex tuần,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.07,3507,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Đấu trường tuần,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.08,3508,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Chuyến hàng lớn,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.09,3509,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Bảo vệ ba vùng,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.10,3510,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Mùa thu hoạch,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.11,3511,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Thám hiểm hang động,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-1.12,3512,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Trận đấu đội,5,Xatu,Trung tâm Pokémon,20,,,giet_lech_cap,,quái ±5 cấp,335,,tuan,2,300600,4509,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.01,3513,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Thử thách tuần: Kanto,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.02,3514,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Thử thách tuần: Johto,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.03,3515,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Đội tuần tra,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.04,3516,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Cúp huấn luyện,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.05,3517,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Đợt săn huyền thoại,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.06,3518,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Nghiên cứu Pokédex tuần,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.07,3519,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Đấu trường tuần,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.08,3520,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Chuyến hàng lớn,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.09,3521,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Bảo vệ ba vùng,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.10,3522,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Mùa thu hoạch,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.11,3523,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Thám hiểm hang động,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-2.12,3524,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Trận đấu đội,5,Xatu,Trung tâm Pokémon,50,,,giet_lech_cap,,quái ±5 cấp,295,,tuan,2,1752300,16962,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.01,3525,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Thử thách tuần: Kanto,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.02,3526,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Thử thách tuần: Johto,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.03,3527,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Đội tuần tra,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.04,3528,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Cúp huấn luyện,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.05,3529,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Đợt săn huyền thoại,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.06,3530,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Nghiên cứu Pokédex tuần,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.07,3531,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Đấu trường tuần,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.08,3532,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Chuyến hàng lớn,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.09,3533,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Bảo vệ ba vùng,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.10,3534,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Mùa thu hoạch,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.11,3535,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Thám hiểm hang động,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+T-3.12,3536,tuan,1,Mọi vùng,Bảng nhiệm vụ tuần,,,Trận đấu đội,5,Xatu,Trung tâm Pokémon,80,,,giet_lech_cap,,quái ±5 cấp,255,,tuan,2,6144000,63488,20,0,,,0,Reset thứ Hai 05:00; cần bảng tuần (GĐ2)
+D-001.1,4001,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Sandshrew,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_gap,1,Sandshrew,1,,khong,,897,179,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-001.2,4002,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Sandshrew,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_ha,1,Sandshrew,50,,khong,,1795,359,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-002.1,4003,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Caterpie,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_gap,2,Caterpie,1,,khong,,897,179,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-002.2,4004,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Caterpie,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_ha,2,Caterpie,50,,khong,,1795,359,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-003.1,4005,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Wooper,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_gap,3,Wooper,1,,khong,,897,179,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-003.2,4006,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Wooper,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_ha,3,Wooper,50,,khong,,1795,359,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-003.3,4007,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Wooper,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_shiny,3,Wooper,1,,khong,,3590,718,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-004.1,4008,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Torchic,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_gap,4,Torchic,1,,khong,,897,179,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-004.2,4009,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Torchic,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_ha,4,Torchic,50,,khong,,1795,359,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-005.1,4010,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Ekans,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_gap,5,Ekans,1,,khong,,897,179,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-005.2,4011,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Ekans,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_ha,5,Ekans,50,,khong,,1795,359,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-006.1,4012,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Litwick,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_gap,6,Litwick,1,,khong,,897,179,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-006.2,4013,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Litwick,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_ha,6,Litwick,50,,khong,,1795,359,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-006.3,4014,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Litwick,8,Snorlax,Phòng nghiên cứu,1,,,pokedex_shiny,6,Litwick,1,,khong,,3590,718,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-007.1,4015,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Bellsprout,8,Snorlax,Phòng nghiên cứu,2,,,pokedex_gap,7,Bellsprout,1,,khong,,1204,196,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-007.2,4016,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Bellsprout,8,Snorlax,Phòng nghiên cứu,2,,,pokedex_ha,7,Bellsprout,50,,khong,,2409,392,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-008.1,4017,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Venonat,8,Snorlax,Phòng nghiên cứu,3,,,pokedex_gap,8,Venonat,1,,khong,,1646,213,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-008.2,4018,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Venonat,8,Snorlax,Phòng nghiên cứu,3,,,pokedex_ha,8,Venonat,50,,khong,,3293,427,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-009.1,4019,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Rattata,8,Snorlax,Phòng nghiên cứu,4,,,pokedex_gap,9,Rattata,1,,khong,,2174,213,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-009.2,4020,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Rattata,8,Snorlax,Phòng nghiên cứu,4,,,pokedex_ha,9,Rattata,50,,khong,,4348,426,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-009.3,4021,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Rattata,8,Snorlax,Phòng nghiên cứu,4,,,pokedex_shiny,9,Rattata,1,,khong,,8697,852,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-010.1,4022,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Oddish,8,Snorlax,Phòng nghiên cứu,5,,,pokedex_gap,10,Oddish,1,,khong,,2964,230,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-010.2,4023,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Oddish,8,Snorlax,Phòng nghiên cứu,5,,,pokedex_ha,10,Oddish,50,,khong,,5929,460,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-011.1,4024,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Weedle,8,Snorlax,Phòng nghiên cứu,6,,,pokedex_gap,11,Weedle,1,,khong,,3960,228,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-011.2,4025,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Weedle,8,Snorlax,Phòng nghiên cứu,6,,,pokedex_ha,11,Weedle,50,,khong,,7920,457,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-012.1,4026,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Vulpix,8,Snorlax,Phòng nghiên cứu,7,,,pokedex_gap,12,Vulpix,1,,khong,,5352,245,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-012.2,4027,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Vulpix,8,Snorlax,Phòng nghiên cứu,7,,,pokedex_ha,12,Vulpix,50,,khong,,10705,491,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-012.3,4028,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Vulpix,8,Snorlax,Phòng nghiên cứu,7,,,pokedex_shiny,12,Vulpix,1,,khong,,21411,982,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-013.1,4029,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Quagsire,8,Snorlax,Phòng nghiên cứu,8,,,pokedex_gap,13,Quagsire,1,,khong,,7175,262,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-013.2,4030,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Quagsire,8,Snorlax,Phòng nghiên cứu,8,,,pokedex_ha,13,Quagsire,50,,khong,,14350,525,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-014.1,4031,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Torkoal,8,Snorlax,Phòng nghiên cứu,8,,,pokedex_gap,17,Torkoal,1,,khong,,7175,262,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-014.2,4032,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Torkoal,8,Snorlax,Phòng nghiên cứu,8,,,pokedex_ha,17,Torkoal,50,,khong,,14350,525,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-015.1,4033,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Tepig,8,Snorlax,Phòng nghiên cứu,9,,,pokedex_gap,15,Tepig,1,,khong,,9657,278,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-015.2,4034,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Tepig,8,Snorlax,Phòng nghiên cứu,9,,,pokedex_ha,15,Tepig,50,,khong,,19314,556,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-015.3,4035,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Tepig,8,Snorlax,Phòng nghiên cứu,9,,,pokedex_shiny,15,Tepig,1,,khong,,38628,1113,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-016.1,4036,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Skorupi,8,Snorlax,Phòng nghiên cứu,10,,,pokedex_gap,16,Skorupi,1,,khong,,13012,277,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-016.2,4037,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Skorupi,8,Snorlax,Phòng nghiên cứu,10,,,pokedex_ha,16,Skorupi,50,,khong,,26025,555,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-017.1,4038,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Venipede,8,Snorlax,Phòng nghiên cứu,10,,,pokedex_gap,21,Venipede,1,,khong,,13012,277,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-017.2,4039,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Venipede,8,Snorlax,Phòng nghiên cứu,10,,,pokedex_ha,21,Venipede,50,,khong,,26025,555,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-018.1,4040,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Paras,8,Snorlax,Phòng nghiên cứu,11,,,pokedex_gap,19,Paras,1,,khong,,14488,294,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-018.2,4041,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Paras,8,Snorlax,Phòng nghiên cứu,11,,,pokedex_ha,19,Paras,50,,khong,,28977,588,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-018.3,4042,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Paras,8,Snorlax,Phòng nghiên cứu,11,,,pokedex_shiny,19,Paras,1,,khong,,57955,1176,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-019.1,4043,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Gloom,8,Snorlax,Phòng nghiên cứu,12,,,pokedex_gap,20,Gloom,1,,khong,,16082,309,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-019.2,4044,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Gloom,8,Snorlax,Phòng nghiên cứu,12,,,pokedex_ha,20,Gloom,50,,khong,,32164,619,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-020.1,4045,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Butterfree,8,Snorlax,Phòng nghiên cứu,13,,,pokedex_gap,24,Butterfree,1,,khong,,17878,325,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-020.2,4046,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Butterfree,8,Snorlax,Phòng nghiên cứu,13,,,pokedex_ha,24,Butterfree,50,,khong,,35757,651,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-021.1,4047,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Combusken,8,Snorlax,Phòng nghiên cứu,13,,,pokedex_gap,14,Combusken,1,,khong,,17878,325,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-021.2,4048,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Combusken,8,Snorlax,Phòng nghiên cứu,13,,,pokedex_ha,14,Combusken,50,,khong,,35757,651,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-021.3,4049,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Combusken,8,Snorlax,Phòng nghiên cứu,13,,,pokedex_shiny,14,Combusken,1,,khong,,71515,1303,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-022.1,4050,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Growlithe,8,Snorlax,Phòng nghiên cứu,15,,,pokedex_gap,28,Growlithe,1,,khong,,22100,357,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-022.2,4051,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Growlithe,8,Snorlax,Phòng nghiên cứu,15,,,pokedex_ha,28,Growlithe,50,,khong,,44200,714,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-023.1,4052,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Tentacool,8,Snorlax,Phòng nghiên cứu,16,,,pokedex_gap,26,Tentacool,1,,khong,,24577,372,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-023.2,4053,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Tentacool,8,Snorlax,Phòng nghiên cứu,16,,,pokedex_ha,26,Tentacool,50,,khong,,49155,745,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-024.1,4054,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Gastly,8,Snorlax,Phòng nghiên cứu,17,,,pokedex_gap,25,Gastly,1,,khong,,27335,388,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-024.2,4055,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Gastly,8,Snorlax,Phòng nghiên cứu,17,,,pokedex_ha,25,Gastly,50,,khong,,54671,777,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-024.3,4056,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Gastly,8,Snorlax,Phòng nghiên cứu,17,,,pokedex_shiny,25,Gastly,1,,khong,,109343,1554,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-025.1,4057,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Ariados,8,Snorlax,Phòng nghiên cứu,19,,,pokedex_gap,18,Ariados,1,,khong,,33751,418,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-025.2,4058,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Ariados,8,Snorlax,Phòng nghiên cứu,19,,,pokedex_ha,18,Ariados,50,,khong,,67502,837,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-026.1,4059,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Cubone,8,Snorlax,Phòng nghiên cứu,19,,,pokedex_gap,27,Cubone,1,,khong,,33751,418,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-026.2,4060,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Cubone,8,Snorlax,Phòng nghiên cứu,19,,,pokedex_ha,27,Cubone,50,,khong,,67502,837,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-027.1,4061,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Croconaw,8,Snorlax,Phòng nghiên cứu,21,,,pokedex_gap,29,Croconaw,1,,khong,,40584,466,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-027.2,4062,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Croconaw,8,Snorlax,Phòng nghiên cứu,21,,,pokedex_ha,29,Croconaw,50,,khong,,81168,932,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-027.3,4063,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Croconaw,8,Snorlax,Phòng nghiên cứu,21,,,pokedex_shiny,29,Croconaw,1,,khong,,162337,1864,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-028.1,4064,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Croagunk,8,Snorlax,Phòng nghiên cứu,22,,,pokedex_gap,30,Croagunk,1,,khong,,43692,479,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-028.2,4065,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Croagunk,8,Snorlax,Phòng nghiên cứu,22,,,pokedex_ha,30,Croagunk,50,,khong,,87384,959,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-029.1,4066,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Dodrio,8,Snorlax,Phòng nghiên cứu,25,,,pokedex_gap,22,Dodrio,1,,khong,,55022,557,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-029.2,4067,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Dodrio,8,Snorlax,Phòng nghiên cứu,25,,,pokedex_ha,22,Dodrio,50,,khong,,110044,1115,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-030.1,4068,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Arbok,8,Snorlax,Phòng nghiên cứu,26,,,pokedex_gap,23,Arbok,1,,khong,,59209,586,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-030.2,4069,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Arbok,8,Snorlax,Phòng nghiên cứu,26,,,pokedex_ha,23,Arbok,50,,khong,,118419,1173,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-030.3,4070,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Arbok,8,Snorlax,Phòng nghiên cứu,26,,,pokedex_shiny,23,Arbok,1,,khong,,236839,2347,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-031.1,4071,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Parasect,8,Snorlax,Phòng nghiên cứu,27,,,pokedex_gap,32,Parasect,1,,khong,,63943,601,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-031.2,4072,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Parasect,8,Snorlax,Phòng nghiên cứu,27,,,pokedex_ha,32,Parasect,50,,khong,,127887,1202,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-032.1,4073,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Kricketune,8,Snorlax,Phòng nghiên cứu,28,,,pokedex_gap,31,Kricketune,1,,khong,,69052,631,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-032.2,4074,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Kricketune,8,Snorlax,Phòng nghiên cứu,28,,,pokedex_ha,31,Kricketune,50,,khong,,138105,1263,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-033.1,4075,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Tauros,8,Snorlax,Phòng nghiên cứu,29,,,pokedex_gap,33,Tauros,1,,khong,,74341,660,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-033.2,4076,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Tauros,8,Snorlax,Phòng nghiên cứu,29,,,pokedex_ha,33,Tauros,50,,khong,,148683,1320,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-033.3,4077,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Tauros,8,Snorlax,Phòng nghiên cứu,29,,,pokedex_shiny,33,Tauros,1,,khong,,297367,2640,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-034.1,4078,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Scraggy,8,Snorlax,Phòng nghiên cứu,30,,,pokedex_gap,34,Scraggy,1,,khong,,80250,690,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-034.2,4079,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Scraggy,8,Snorlax,Phòng nghiên cứu,30,,,pokedex_ha,34,Scraggy,50,,khong,,160500,1380,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-035.1,4080,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Crawdaunt,8,Snorlax,Phòng nghiên cứu,31,,,pokedex_gap,35,Crawdaunt,1,,khong,,85960,720,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-035.2,4081,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Crawdaunt,8,Snorlax,Phòng nghiên cứu,31,,,pokedex_ha,35,Crawdaunt,50,,khong,,171920,1440,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-036.1,4082,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Duskull,8,Snorlax,Phòng nghiên cứu,32,,,pokedex_gap,55,Duskull,1,,khong,,91782,763,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-036.2,4083,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Duskull,8,Snorlax,Phòng nghiên cứu,32,,,pokedex_ha,55,Duskull,50,,khong,,183565,1526,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-036.3,4084,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Duskull,8,Snorlax,Phòng nghiên cứu,32,,,pokedex_shiny,55,Duskull,1,,khong,,367131,3052,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-037.1,4085,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Whirlipede,8,Snorlax,Phòng nghiên cứu,33,,,pokedex_gap,40,Whirlipede,1,,khong,,98309,792,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-037.2,4086,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Whirlipede,8,Snorlax,Phòng nghiên cứu,33,,,pokedex_ha,40,Whirlipede,50,,khong,,196619,1585,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-038.1,4087,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Farfetch'd,8,Snorlax,Phòng nghiên cứu,34,,,pokedex_gap,45,Farfetch'd,1,,khong,,105267,837,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-038.2,4088,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Farfetch'd,8,Snorlax,Phòng nghiên cứu,34,,,pokedex_ha,45,Farfetch'd,50,,khong,,210535,1674,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-039.1,4089,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Litleo,8,Snorlax,Phòng nghiên cứu,35,,,pokedex_gap,63,Litleo,1,,khong,,112412,863,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-039.2,4090,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Litleo,8,Snorlax,Phòng nghiên cứu,35,,,pokedex_ha,63,Litleo,50,,khong,,224824,1727,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-039.3,4091,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Litleo,8,Snorlax,Phòng nghiên cứu,35,,,pokedex_shiny,63,Litleo,1,,khong,,449648,3454,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-040.1,4092,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Kricketot,8,Snorlax,Phòng nghiên cứu,36,,,pokedex_gap,71,Kricketot,1,,khong,,120387,907,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-040.2,4093,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Kricketot,8,Snorlax,Phòng nghiên cứu,36,,,pokedex_ha,71,Kricketot,50,,khong,,240775,1815,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-041.1,4094,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Palpitoad,8,Snorlax,Phòng nghiên cứu,37,,,pokedex_gap,68,Palpitoad,1,,khong,,128934,951,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-041.2,4095,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Palpitoad,8,Snorlax,Phòng nghiên cứu,37,,,pokedex_ha,68,Palpitoad,50,,khong,,257868,1903,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-042.1,4096,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Dustox,8,Snorlax,Phòng nghiên cứu,39,,,pokedex_gap,50,Dustox,1,,khong,,147393,1035,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-042.2,4097,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Dustox,8,Snorlax,Phòng nghiên cứu,39,,,pokedex_ha,50,Dustox,50,,khong,,294786,2070,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-042.3,4098,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Dustox,8,Snorlax,Phòng nghiên cứu,39,,,pokedex_shiny,50,Dustox,1,,khong,,589572,4140,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-043.1,4099,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Dusclops,8,Snorlax,Phòng nghiên cứu,40,,,pokedex_gap,57,Dusclops,1,,khong,,157850,1078,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-043.2,4100,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Dusclops,8,Snorlax,Phòng nghiên cứu,40,,,pokedex_ha,57,Dusclops,50,,khong,,315700,2156,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-044.1,4101,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Haunter,8,Snorlax,Phòng nghiên cứu,41,,,pokedex_gap,52,Haunter,1,,khong,,163285,1135,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-044.2,4102,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Haunter,8,Snorlax,Phòng nghiên cứu,41,,,pokedex_ha,52,Haunter,50,,khong,,326571,2271,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-045.1,4103,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Marowak,8,Snorlax,Phòng nghiên cứu,42,,,pokedex_gap,59,Marowak,1,,khong,,168360,1189,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-045.2,4104,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Marowak,8,Snorlax,Phòng nghiên cứu,42,,,pokedex_ha,59,Marowak,50,,khong,,336720,2379,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-045.3,4105,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Marowak,8,Snorlax,Phòng nghiên cứu,42,,,pokedex_shiny,59,Marowak,1,,khong,,673440,4758,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-046.1,4106,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Seviper,8,Snorlax,Phòng nghiên cứu,43,,,pokedex_gap,47,Seviper,1,,khong,,174116,1231,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-046.2,4107,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Seviper,8,Snorlax,Phòng nghiên cứu,43,,,pokedex_ha,47,Seviper,50,,khong,,348232,2462,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-047.1,4108,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Scolipede,8,Snorlax,Phòng nghiên cứu,44,,,pokedex_gap,41,Scolipede,1,,khong,,180095,1302,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-047.2,4109,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Scolipede,8,Snorlax,Phòng nghiên cứu,44,,,pokedex_ha,41,Scolipede,50,,khong,,360191,2605,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-048.1,4110,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Luxio,8,Snorlax,Phòng nghiên cứu,45,,,pokedex_gap,62,Luxio,1,,khong,,186296,1359,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-048.2,4111,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Luxio,8,Snorlax,Phòng nghiên cứu,45,,,pokedex_ha,62,Luxio,50,,khong,,372592,2718,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-048.3,4112,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Luxio,8,Snorlax,Phòng nghiên cứu,45,,,pokedex_shiny,62,Luxio,1,,khong,,745185,5436,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-049.1,4113,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Blaziken,8,Snorlax,Phòng nghiên cứu,46,,,pokedex_gap,44,Blaziken,1,,khong,,192037,1410,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-049.2,4114,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Blaziken,8,Snorlax,Phòng nghiên cứu,46,,,pokedex_ha,44,Blaziken,50,,khong,,384075,2820,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-050.1,4115,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Breloom,8,Snorlax,Phòng nghiên cứu,47,,,pokedex_gap,80,Breloom,1,,khong,,198648,1480,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-050.2,4116,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Breloom,8,Snorlax,Phòng nghiên cứu,47,,,pokedex_ha,80,Breloom,50,,khong,,397296,2960,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-051.1,4117,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Golem,8,Snorlax,Phòng nghiên cứu,49,,,pokedex_gap,74,Golem,1,,khong,,211788,1613,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-051.2,4118,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Golem,8,Snorlax,Phòng nghiên cứu,49,,,pokedex_ha,74,Golem,50,,khong,,423576,3226,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-051.3,4119,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Golem,8,Snorlax,Phòng nghiên cứu,49,,,pokedex_shiny,74,Golem,1,,khong,,847152,6452,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-052.1,4120,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Magcargo,8,Snorlax,Phòng nghiên cứu,51,,,pokedex_gap,76,Magcargo,1,,khong,,227556,1764,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-052.2,4121,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Magcargo,8,Snorlax,Phòng nghiên cứu,51,,,pokedex_ha,76,Magcargo,50,,khong,,455112,3528,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-053.1,4122,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Crabrawler,8,Snorlax,Phòng nghiên cứu,53,,,pokedex_gap,65,Crabrawler,1,,khong,,244767,1935,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-053.2,4123,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Crabrawler,8,Snorlax,Phòng nghiên cứu,53,,,pokedex_ha,65,Crabrawler,50,,khong,,489534,3870,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-054.1,4124,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Arcanine,8,Snorlax,Phòng nghiên cứu,55,,,pokedex_gap,48,Arcanine,1,,khong,,263232,2102,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-054.2,4125,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Arcanine,8,Snorlax,Phòng nghiên cứu,55,,,pokedex_ha,48,Arcanine,50,,khong,,526464,4204,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-054.3,4126,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Arcanine,8,Snorlax,Phòng nghiên cứu,55,,,pokedex_shiny,48,Arcanine,1,,khong,,1052928,8409,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-055.1,4127,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Rhydon,8,Snorlax,Phòng nghiên cứu,57,,,pokedex_gap,60,Rhydon,1,,khong,,284033,2302,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-055.2,4128,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Rhydon,8,Snorlax,Phòng nghiên cứu,57,,,pokedex_ha,60,Rhydon,50,,khong,,568067,4604,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-056.1,4129,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Pinsir,8,Snorlax,Phòng nghiên cứu,59,,,pokedex_gap,77,Pinsir,1,,khong,,305427,2518,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-056.2,4130,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Pinsir,8,Snorlax,Phòng nghiên cứu,59,,,pokedex_ha,77,Pinsir,50,,khong,,610855,5037,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-057.1,4131,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Scyther,8,Snorlax,Phòng nghiên cứu,61,,,pokedex_gap,81,Scyther,1,,khong,,330420,2753,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-057.2,4132,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Scyther,8,Snorlax,Phòng nghiên cứu,61,,,pokedex_ha,81,Scyther,50,,khong,,660841,5507,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-057.3,4133,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Scyther,8,Snorlax,Phòng nghiên cứu,61,,,pokedex_shiny,81,Scyther,1,,khong,,1321683,11015,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-058.1,4134,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Whiscash,8,Snorlax,Phòng nghiên cứu,63,,,pokedex_gap,53,Whiscash,1,,khong,,357091,3002,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-058.2,4135,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Whiscash,8,Snorlax,Phòng nghiên cứu,63,,,pokedex_ha,53,Whiscash,50,,khong,,714182,6004,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-059.1,4136,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Kingler,8,Snorlax,Phòng nghiên cứu,65,,,pokedex_gap,54,Kingler,1,,khong,,387262,3284,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-059.2,4137,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Kingler,8,Snorlax,Phòng nghiên cứu,65,,,pokedex_ha,54,Kingler,50,,khong,,774525,6568,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-060.1,4138,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Gastrodon,8,Snorlax,Phòng nghiên cứu,67,,,pokedex_gap,49,Gastrodon,1,,khong,,418440,3589,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-060.2,4139,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Gastrodon,8,Snorlax,Phòng nghiên cứu,67,,,pokedex_ha,49,Gastrodon,50,,khong,,836881,7179,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-060.3,4140,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Gastrodon,8,Snorlax,Phòng nghiên cứu,67,,,pokedex_shiny,49,Gastrodon,1,,khong,,1673763,14359,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-061.1,4141,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Trevenant,8,Snorlax,Phòng nghiên cứu,69,,,pokedex_gap,51,Trevenant,1,,khong,,452081,3915,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-061.2,4142,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Trevenant,8,Snorlax,Phòng nghiên cứu,69,,,pokedex_ha,51,Trevenant,50,,khong,,904162,7830,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-062.1,4143,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Sharpedo,8,Snorlax,Phòng nghiên cứu,71,,,pokedex_gap,56,Sharpedo,1,,khong,,494962,4274,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-062.2,4144,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Sharpedo,8,Snorlax,Phòng nghiên cứu,71,,,pokedex_ha,56,Sharpedo,50,,khong,,989925,8549,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-063.1,4145,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Vileplume,8,Snorlax,Phòng nghiên cứu,73,,,pokedex_gap,58,Vileplume,1,,khong,,545138,4664,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-063.2,4146,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Vileplume,8,Snorlax,Phòng nghiên cứu,73,,,pokedex_ha,58,Vileplume,50,,khong,,1090276,9328,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-063.3,4147,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Vileplume,8,Snorlax,Phòng nghiên cứu,73,,,pokedex_shiny,58,Vileplume,1,,khong,,2180552,18656,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-064.1,4148,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Galvantula,8,Snorlax,Phòng nghiên cứu,75,,,pokedex_gap,118,Galvantula,1,,khong,,600307,5082,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-064.2,4149,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Galvantula,8,Snorlax,Phòng nghiên cứu,75,,,pokedex_ha,118,Galvantula,50,,khong,,1200615,10165,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-065.1,4150,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Luxray,8,Snorlax,Phòng nghiên cứu,79,,,pokedex_gap,137,Luxray,1,,khong,,730554,6065,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-065.2,4151,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Luxray,8,Snorlax,Phòng nghiên cứu,79,,,pokedex_ha,137,Luxray,50,,khong,,1461109,12130,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-066.1,4152,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Gặp: Entei,8,Snorlax,Phòng nghiên cứu,81,,,pokedex_gap,138,Entei,1,,khong,,793974,6630,5,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-066.2,4153,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Hạ: Entei,8,Snorlax,Phòng nghiên cứu,81,,,pokedex_ha,138,Entei,50,,khong,,1587948,13260,10,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+D-066.3,4154,pokedex,1,Mọi vùng,Nghiên cứu Pokédex,,,Nghiên cứu Thấy shiny: Entei,8,Snorlax,Phòng nghiên cứu,81,,,pokedex_shiny,138,Entei,1,,khong,,3175897,26520,15,0,,,0,Đọc tob_pokedex (so_ha); shiny cần cột mới (GĐ2)
+DOI-01,5001,doi,1,Mọi vùng,Nhiệm vụ đội,,,Đội săn Gyarados,21,Blaziken,Trụ sở đội,38,,,giet_lech_cap,,quái ±5 cấp (cả đội),615,,tuan,1,552336,3980,10,0,,,1,mainsub=2 (đội); cả đội cùng tiến độ
+DOI-02,5002,doi,1,Mọi vùng,Nhiệm vụ đội,,,Đội trinh sát Hang Tối,21,Blaziken,Trụ sở đội,50,,,giet_lech_cap,,quái ±5 cấp (cả đội),585,,tuan,1,876150,6785,10,0,,,1,mainsub=2 (đội); cả đội cùng tiến độ
+DOI-03,5003,doi,1,Mọi vùng,Nhiệm vụ đội,,,Đột kích Tổ Zapdos,21,Blaziken,Trụ sở đội,60,,,giet_lech_cap,,quái ±5 cấp (cả đội),570,,tuan,1,1269000,10546,10,0,,,1,mainsub=2 (đội); cả đội cùng tiến độ
+DOI-04,5004,doi,1,Mọi vùng,Nhiệm vụ đội,,,Đêm Hang Darkrai,21,Blaziken,Trụ sở đội,70,,,giet_lech_cap,,quái ±5 cấp (cả đội),540,,tuan,1,1883000,16355,10,0,,,1,mainsub=2 (đội); cả đội cùng tiến độ
+DOI-05,5005,doi,1,Mọi vùng,Nhiệm vụ đội,,,Bão Rayquaza,21,Blaziken,Trụ sở đội,80,,,giet_lech_cap,,quái ±5 cấp (cả đội),510,,tuan,1,3072000,25395,10,0,,,1,mainsub=2 (đội); cả đội cùng tiến độ
+DOI-06,5006,doi,1,Mọi vùng,Nhiệm vụ đội,,,Liên minh ba vùng,21,Blaziken,Trụ sở đội,90,,,giet_lech_cap,,quái ±5 cấp (cả đội),480,,tuan,1,4131000,39220,10,0,,,1,mainsub=2 (đội); cả đội cùng tiến độ
+DOI-07,5007,doi,1,Mọi vùng,Nhiệm vụ đội,,,Đội hái Berry,21,Blaziken,Trụ sở đội,20,,,giet_lech_cap,,quái ±5 cấp (cả đội),675,,tuan,1,150300,1803,10,0,,,1,mainsub=2 (đội); cả đội cùng tiến độ
+DOI-08,5008,doi,1,Mọi vùng,Nhiệm vụ đội,,,Đội bảo vệ Pallet,21,Blaziken,Trụ sở đội,15,,,giet_lech_cap,,quái ±5 cấp (cả đội),345,,tuan,1,88400,1428,10,0,,,1,mainsub=2 (đội); cả đội cùng tiến độ
+SP-01,5101,su_pham,1,Mọi vùng,Sư phạm,,,Dẫn đường người mới,5,Xatu,Pallet,35,,,kem_cap,,học trò cấp thấp hơn ≥ 20,1,,tuan,1,269788,1727,10,0,,,0,Thầy và trò cùng nhận; trò +20% EXP khi chung đội
+SP-02,5102,su_pham,1,Mọi vùng,Sư phạm,,,Kèm cặp tới cấp 20,5,Xatu,Pallet,40,,,kem_cap,,học trò cấp thấp hơn ≥ 20,1,,tuan,1,378840,2156,10,0,,,0,Thầy và trò cùng nhận; trò +20% EXP khi chung đội
+SP-03,5103,su_pham,1,Mọi vùng,Sư phạm,,,Kèm cặp tới cấp 40,5,Xatu,Pallet,45,,,kem_cap,,học trò cấp thấp hơn ≥ 20,1,,tuan,1,447111,2718,10,0,,,0,Thầy và trò cùng nhận; trò +20% EXP khi chung đội
+SP-04,5104,su_pham,1,Mọi vùng,Sư phạm,,,Cùng nhau tiến hoá,5,Xatu,Pallet,50,,,kem_cap,,học trò cấp thấp hơn ≥ 20,1,,tuan,1,525690,3392,10,0,,,0,Thầy và trò cùng nhận; trò +20% EXP khi chung đội
+SP-05,5105,su_pham,1,Mọi vùng,Sư phạm,,,Người thầy tận tâm,5,Xatu,Pallet,55,,,kem_cap,,học trò cấp thấp hơn ≥ 20,1,,tuan,1,631756,4204,10,0,,,0,Thầy và trò cùng nhận; trò +20% EXP khi chung đội
+HM-01,5201,hang_bi_an,1,Mọi vùng,Hầm ngục bí ẩn,,,Hầm ngục bí ẩn: tầng 1-5,8,Snorlax,Hang động,20,,,tang_hang,,tầng,5,,ngay,1,60120,901,5,0,,,0,"Chế độ mới (GĐ3): tầng ngẫu nhiên, hạt giống theo ngày"
+HM-02,5202,hang_bi_an,1,Mọi vùng,Hầm ngục bí ẩn,,,Hầm ngục bí ẩn: tầng 6-10,8,Snorlax,Hang động,35,,,tang_hang,,tầng,10,,ngay,1,179859,1727,5,0,,,0,"Chế độ mới (GĐ3): tầng ngẫu nhiên, hạt giống theo ngày"
+HM-03,5203,hang_bi_an,1,Mọi vùng,Hầm ngục bí ẩn,,,Hầm ngục bí ẩn: tầng 11-20,8,Snorlax,Hang động,50,,,tang_hang,,tầng,15,,ngay,1,350460,3392,5,0,,,0,"Chế độ mới (GĐ3): tầng ngẫu nhiên, hạt giống theo ngày"
+HM-04,5204,hang_bi_an,1,Mọi vùng,Hầm ngục bí ẩn,,,Hầm ngục bí ẩn: hạt giống ngày,8,Snorlax,Hang động,65,,,tang_hang,,tầng,20,,ngay,1,619620,6568,5,0,,,0,"Chế độ mới (GĐ3): tầng ngẫu nhiên, hạt giống theo ngày"
+HM-05,5205,hang_bi_an,1,Mọi vùng,Hầm ngục bí ẩn,,,Hầm ngục bí ẩn: xếp hạng tuần,8,Snorlax,Hang động,80,,,tang_hang,,tầng,25,,ngay,1,1228800,12697,5,0,,,0,"Chế độ mới (GĐ3): tầng ngẫu nhiên, hạt giống theo ngày"
+QL-01,5301,quay_lai,1,Mọi vùng,Quay lại,,,Chào mừng trở lại,5,Xatu,Pallet,30,,,noi_chuyen,,quái ±5 cấp,1,,khong,,513600,4140,15,0,,,0,Chỉ hiện khi vắng ≥ 14 ngày; EXP theo cấp người nhận (GĐ2)
+QL-02,5302,quay_lai,1,Mọi vùng,Quay lại,,,Ôn lại chiêu thức,5,Xatu,Pallet,30,,,giet_lech_cap,,quái ±5 cấp,100,,khong,,513600,4140,15,0,,,0,Chỉ hiện khi vắng ≥ 14 ngày; EXP theo cấp người nhận (GĐ2)
+QL-03,5303,quay_lai,1,Mọi vùng,Quay lại,,,Bắt kịp bạn bè,5,Xatu,Pallet,30,,,giet_lech_cap,,quái ±5 cấp,100,,khong,,513600,4140,15,0,,,0,Chỉ hiện khi vắng ≥ 14 ngày; EXP theo cấp người nhận (GĐ2)
+A-01,6001,thanh_tuu,1,Mọi vùng,Thành tựu,,,Bước chân đầu tiên,,,,1,,,thanh_tuu_cap,,,10,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-02,6002,thanh_tuu,1,Mọi vùng,Thành tựu,,,Nhà huấn luyện đồng,,,,1,,,thanh_tuu_cap,,,20,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-03,6003,thanh_tuu,1,Mọi vùng,Thành tựu,,,Nhà huấn luyện bạc,,,,1,,,thanh_tuu_cap,,,40,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-04,6004,thanh_tuu,1,Mọi vùng,Thành tựu,,,Nhà huấn luyện vàng,,,,1,,,thanh_tuu_cap,,,60,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-05,6005,thanh_tuu,1,Mọi vùng,Thành tựu,,,Nhà huấn luyện bạch kim,,,,1,,,thanh_tuu_cap,,,80,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-06,6006,thanh_tuu,1,Mọi vùng,Thành tựu,,,Đỉnh cao ba vùng,,,,1,,,thanh_tuu_cap,,,91,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-07,6007,thanh_tuu,1,Mọi vùng,Thành tựu,,,Nhà sưu tầm 10,,,,1,,,thanh_tuu_pokedex,,,10,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-08,6008,thanh_tuu,1,Mọi vùng,Thành tựu,,,Nhà sưu tầm 25,,,,1,,,thanh_tuu_pokedex,,,25,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-09,6009,thanh_tuu,1,Mọi vùng,Thành tựu,,,Nhà sưu tầm 50,,,,1,,,thanh_tuu_pokedex,,,50,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-10,6010,thanh_tuu,1,Mọi vùng,Thành tựu,,,Nhà sưu tầm 75,,,,1,,,thanh_tuu_pokedex,,,75,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-11,6011,thanh_tuu,1,Mọi vùng,Thành tựu,,,Nhà sưu tầm 100,,,,1,,,thanh_tuu_pokedex,,,100,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-12,6012,thanh_tuu,1,Mọi vùng,Thành tựu,,,Kanto toàn tập,,,,1,,,thanh_tuu_chuong,,,28,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-13,6013,thanh_tuu,1,Mọi vùng,Thành tựu,,,Johto toàn tập,,,,1,,,thanh_tuu_chuong,,,52,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-14,6014,thanh_tuu,1,Mọi vùng,Thành tựu,,,Thợ rèn tập sự,,,,1,,,thanh_tuu_nang_cap,,,5,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-15,6015,thanh_tuu,1,Mọi vùng,Thành tựu,,,Thợ rèn lành nghề,,,,1,,,thanh_tuu_nang_cap,,,10,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-16,6016,thanh_tuu,1,Mọi vùng,Thành tựu,,,Thợ rèn bậc thầy,,,,1,,,thanh_tuu_nang_cap,,,15,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-17,6017,thanh_tuu,1,Mọi vùng,Thành tựu,,,Người bạn của mọi nhà,,,,1,,,thanh_tuu_phu,,,50,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-18,6018,thanh_tuu,1,Mọi vùng,Thành tựu,,,Huyền thoại thị trấn,,,,1,,,thanh_tuu_phu,,,100,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-19,6019,thanh_tuu,1,Mọi vùng,Thành tựu,,,Chăm chỉ 30 ngày,,,,1,,,thanh_tuu_ngay,,,30,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-20,6020,thanh_tuu,1,Mọi vùng,Thành tựu,,,Chăm chỉ 100 ngày,,,,1,,,thanh_tuu_ngay,,,100,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-21,6021,thanh_tuu,1,Mọi vùng,Thành tựu,,,Chăm chỉ 365 ngày,,,,1,,,thanh_tuu_ngay,,,365,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-22,6022,thanh_tuu,1,Mọi vùng,Thành tựu,,,Đấu trường: 10 trận thắng,,,,1,,,thanh_tuu_pvp,,,10,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-23,6023,thanh_tuu,1,Mọi vùng,Thành tựu,,,Đấu trường: 100 trận thắng,,,,1,,,thanh_tuu_pvp,,,100,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-24,6024,thanh_tuu,1,Mọi vùng,Thành tựu,,,Săn huyền thoại,,,,1,,,thanh_tuu_boss,,,10,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-25,6025,thanh_tuu,1,Mọi vùng,Thành tựu,,,Thành viên đội,,,,1,,,thanh_tuu_doi,,,1,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-26,6026,thanh_tuu,1,Mọi vùng,Thành tựu,,,Đội mạnh nhất tuần,,,,1,,,thanh_tuu_doi,,,10,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-27,6027,thanh_tuu,1,Mọi vùng,Thành tựu,,,Đủ bộ trang bị,,,,1,,,thanh_tuu_bo,,,1,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-28,6028,thanh_tuu,1,Mọi vùng,Thành tựu,,,Bộ trang bị tinh anh,,,,1,,,thanh_tuu_bo,,,3,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-29,6029,thanh_tuu,1,Mọi vùng,Thành tựu,,,Thánh sự kiện,,,,1,,,thanh_tuu_su_kien,,,20,,khong,,0,0,20,10,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"
+A-30,6030,thanh_tuu,1,Mọi vùng,Thành tựu,,,Người kể chuyện,,,,1,,,thanh_tuu_chuong,,,13,,khong,,0,0,20,0,,,0,"Danh hiệu (DanhHieu, tob_danh_hieu); không cộng chỉ số"

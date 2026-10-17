@@ -40,7 +40,12 @@ GOC = os.path.dirname(os.path.dirname(THU_MUC_TOOL))
 RAW = os.path.join(THU_MUC_TOOL, "pmd_raw_vat_the")
 BANG_QUAI = os.path.join(GOC, "docs", "pokemon", "bang_quai.csv")
 BANG_VT = os.path.join(GOC, "docs", "pokemon", "bang_vat_the.csv")
-RA = os.path.join(GOC, "ClientUnity", "Assets", "Resources", "poke")
+import importlib.util as _iu
+_sd = _iu.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
+dc = _iu.module_from_spec(_sd)
+_sd.loader.exec_module(dc)
+# Client PC chinh: htbb-client/pc/Assets (doi bang HTBB_CLIENT_ASSETS); con HTBB/ClientUnity thi chep sang ca do.
+RA = dc.resources(dc.assets(), "poke")
 GHI_CONG = os.path.join(RA, "GHI_CONG_VAT_THE.txt")
 
 NGUON = "https://raw.githubusercontent.com/PMDCollab/RawAsset/master/"
@@ -206,6 +211,7 @@ def main():
         wr.writerow(["loai", "id", "ten_cu", "nguon_rawasset", "file_client", "rong_khung", "cao", "so_khung", "ti_le", "ghi_chu"])
         wr.writerows(dong)
     ghi_cong(nguon_dung)
+    dc.chep_sang_ban_khac(RA, [d[4] for d in dong] + [os.path.basename(GHI_CONG)], "poke")
     print("Da ghi %d anh, %s; loi: %d" % (len(dong), os.path.relpath(BANG_VT, GOC), loi))
     return 1 if loi else 0
 

@@ -14,49 +14,47 @@ import com.htbb.pokemon.TrangTriPokemon;
 import data.DataGame;
 
 /**
- * Bo tile ban do PMD (G7.A, sinh boi tools/pokemon/DoiTileMap.java).
+ * Bo tile ban do moi (CC0, sinh boi tools/pokemon/DungBoTileMoi.java; thay bo G7.A1 cua DoiTileMap).
  *
- * VI SAO: map chi luu CHI SO tile, kieu di duoc/chan nam o cMap/*.type theo chi so. Bo tile moi
- * lech so tile hay thu tu la ban do ve sai/vang tile ma khong bao loi; lech mat na trong suot
- * thi tile phu (tileTop) che mat nen. Server gui t_hang/t_thanh trong goi dang nhap bang
- * writeShort nen anh > 32767 byte se lam hong goi.
+ * VI SAO: map chi luu CHI SO tile, kieu di duoc/chan nam o .type theo chi so. Anh tile, .type cua
+ * server, ban Unity va ban J2ME lech nhau la ban do ve sai hoac di xuyen tuong ma khong bao loi.
+ * Client Unity to mau ban do nho bang mang co do dai co dinh (232/116/216) - qua so tile la tran
+ * mang. Server gui t_hang/t_thanh trong goi dang nhap bang writeShort nen anh > 32767 byte se hong goi.
  */
 public final class KiemTilePokemon {
 
     private static final String[] BO = {"t", "t_hang", "t_thanh"};
     private static final String[] NHO = {"t_small", "t_hang_s", "t_thanh_s"};
 
+    /** Mang mau ban do nho cua client Unity (Tilemap.mangMau / mangMauHang / mangMauThanh): so tile toi da. */
+    private static final int[] TOI_DA = {232, 116, 216};
+
     public static void chay() {
-        Kiem.nhom("Tile ban do Pokemon (G7.A: map/pokemon_tile, Resources/poke_tile)");
+        Kiem.nhom("Tile ban do Pokemon (bo moi CC0: map/pokemon_tile, Resources/poke_tile, cMap_pokemon/*.type)");
         List<String> csv = null;
         try {
-            csv = Files.readAllLines(new File("docs/pokemon/bang_tile.csv").toPath(), StandardCharsets.UTF_8);
+            csv = Files.readAllLines(new File("docs/pokemon/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8);
         } catch (final IOException e) {
             // bao o duoi
         }
-        Kiem.dung("co docs/pokemon/bang_tile.csv", csv != null);
+        Kiem.dung("co docs/pokemon/bang_tile_moi.csv", csv != null);
         for (int b = 0; b < BO.length; b++) {
             final String ten = BO[b];
             try {
-                final BufferedImage cu = ImageIO.read(new File("map/" + ten + ".png"));
                 final File fMoi = new File(DataGame.THU_MUC_TILE_POKEMON + ten + ".png");
                 final BufferedImage moi = ImageIO.read(fMoi);
-                final byte[] kieu = Files.readAllBytes(new File("cMap/" + ten + ".type").toPath());
+                final byte[] kieu = Files.readAllBytes(new File("cMap_pokemon/" + ten + ".type").toPath());
                 Kiem.bang(ten + ": rong 16", 16, moi.getWidth());
-                Kiem.bang(ten + ": cung chieu cao (so tile) voi ban goc", cu.getHeight(), moi.getHeight());
-                Kiem.bang(ten + ": so tile = so kieu trong cMap", kieu.length, moi.getHeight() / 16);
-                int lechMatNa = 0;
-                for (int y = 0; y < cu.getHeight(); y++) {
-                    for (int x = 0; x < 16; x++) {
-                        if (((cu.getRGB(x, y) >>> 24) >= 128) != ((moi.getRGB(x, y) >>> 24) >= 128)) {
-                            lechMatNa++;
-                        }
-                    }
-                }
-                Kiem.bang(ten + ": mat na trong suot giu nguyen", 0, lechMatNa);
+                Kiem.bang(ten + ": so tile = so kieu trong cMap_pokemon", kieu.length, moi.getHeight() / 16);
+                Kiem.dung(ten + ": so tile <= mang mau ban do nho client (" + TOI_DA[b] + ")", kieu.length <= TOI_DA[b]);
+                Kiem.dung(ten + ": so tile < 254 (254/255 = o trong)", kieu.length < 254);
                 final byte[] client = Files.readAllBytes(
                     new File("ClientUnity/Assets/Resources/poke_tile/" + ten + ".bytes").toPath());
                 Kiem.dung(ten + ": ban client trung ban server", Arrays.equals(client, Files.readAllBytes(fMoi.toPath())));
+                Kiem.dung(ten + ": kieu Unity (poke_map/kieu_*) trung server", Arrays.equals(kieu,
+                    Files.readAllBytes(new File("ClientUnity/Assets/Resources/poke_map/kieu_" + ten + ".bytes").toPath())));
+                Kiem.dung(ten + ": kieu J2ME (tools/pokemon/map_j2me) trung server", Arrays.equals(kieu,
+                    Files.readAllBytes(new File("tools/pokemon/map_j2me/" + ten + ".type").toPath())));
                 if (!ten.equals("t")) {
                     Kiem.dung(ten + ": vua goi dang nhap (<= 32767 byte)", fMoi.length() <= Short.MAX_VALUE);
                 }
@@ -66,23 +64,17 @@ public final class KiemTilePokemon {
                     int dong = 0;
                     int lechKieu = 0;
                     for (final String s : csv) {
-                        final String[] o = s.split(",", -1);
-                        if (o.length >= 7 && o[0].equals(ten)) {
+                        final String[] o = s.split(",", 5);
+                        if (o.length >= 4 && o[0].equals(ten)) {
                             dong++;
                             final int i = Integer.parseInt(o[1]);
-                            if (i >= kieu.length || Integer.parseInt(o[2]) != (kieu[i] & 255)) {
-                                lechKieu++;
-                            }
-                            // Van nuoc PMD chi duoc dung cho o CHAN (o di duoc mau nuoc la "nuoc_nong").
-                            final boolean coNuoc = (o[3].equals("nuoc") && !o[4].equals("doi_mau"))
-                                || o[5].matches("(^|.* \\+ )nuoc=.*");
-                            if (coNuoc && i < kieu.length && (kieu[i] & 255) != 2) {
+                            if (i >= kieu.length || Integer.parseInt(o[3]) != (kieu[i] & 255)) {
                                 lechKieu++;
                             }
                         }
                     }
-                    Kiem.bang(ten + ": bang_tile.csv du dong", kieu.length, dong);
-                    Kiem.bang(ten + ": kieu trong csv khop cMap", 0, lechKieu);
+                    Kiem.bang(ten + ": bang_tile_moi.csv du dong", kieu.length, dong);
+                    Kiem.bang(ten + ": kieu trong csv khop .type", 0, lechKieu);
                 }
             } catch (final Exception e) {
                 Kiem.dung(ten + ": doc duoc anh tile (" + e + ")", false);

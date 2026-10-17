@@ -1242,7 +1242,7 @@ public class Map implements Runnable {
                 try {
                     FileInputStream fis = null;
                     DataInputStream dis = null;
-                    fis = new FileInputStream("cMap/" + id[i]);
+                    fis = new FileInputStream(com.htbb.pokemon.BanDoPokemon.duong("cMap/" + id[i]));
                     dis = new DataInputStream(fis);
                     byte[] byteMap = new byte[dis.available()];
                     dis.read(byteMap, 0, byteMap.length);
@@ -1259,6 +1259,16 @@ public class Map implements Runnable {
 
                     idMapSend2Client.put(id[i], byteMap);
                 } catch (Exception var23) {
+                }
+            }
+            // Che do Pokemon: map 0 va 122 truoc day khong gui (client dung ban dong goi san) - nay bo cuc
+            // da ve lai (cMap_pokemon/) nen server gui ca hai de client khong ve bo cuc cu.
+            for (short them : com.htbb.pokemon.BanDoPokemon.mapGuiThem()) {
+                try {
+                    idMapSend2Client.put(them, java.nio.file.Files.readAllBytes(
+                            new java.io.File(com.htbb.pokemon.BanDoPokemon.duong("cMap/" + them)).toPath()));
+                } catch (Exception loiThem) {
+                    loiThem.printStackTrace();
                 }
             }
         } catch (Exception var25) {
@@ -3298,7 +3308,7 @@ public class Map implements Runnable {
         this.initKhoQuaiVaNguoi();
         this.mapId = id;
         if (this.mapId != -1) {
-            this.loadMap("map/map" + id, 0);
+            this.loadMap(com.htbb.pokemon.BanDoPokemon.duongQuai("map/map" + id), 0);
         }
 
         new Thread(this).start();

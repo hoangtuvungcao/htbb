@@ -35,7 +35,13 @@ _spec.loader.exec_module(cp)
 GOC = cp.GOC
 RA_SQL = os.path.join(GOC, "sql", cp.SQL_CHU)
 RA_CSV = os.path.join(GOC, "docs", "pokemon", "bang_chu.csv")
-RA_CS = os.path.join(GOC, "ClientUnity", "Assets", "Scripts", "Game", "ChuPokemonDuLieu.cs")
+import importlib.util as _iu
+_sd = _iu.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
+dc = _iu.module_from_spec(_sd)
+_sd.loader.exec_module(dc)
+# Client PC chinh: htbb-client/pc (doi bang HTBB_CLIENT_ASSETS); ghi vao MOI ban client con ton tai.
+RA_CS = os.path.join(dc.scripts(dc.assets()), "ChuPokemonDuLieu.cs")
+RA_CS_TAT_CA = [os.path.join(dc.scripts(a), "ChuPokemonDuLieu.cs") for a in dc.cac_assets()]
 F_QUAI = os.path.join(GOC, "sql", "pokemon_du_lieu_quai.sql")
 
 # Do dai toi da cua cot (CREATE TABLE trong gamedb7_clean.sql).
@@ -296,6 +302,10 @@ def ghi_cs(b):
         for k, v in dong:
             f.write('\t\tnew string[] { "%s", "%s" },\n' % (thoat_cs(k), thoat_cs(v)))
         f.write("\t};\n}\n")
+    import shutil
+    for khac in RA_CS_TAT_CA[1:]:
+        if os.path.isdir(os.path.dirname(khac)):
+            shutil.copyfile(RA_CS, khac)
     return len(dong)
 
 

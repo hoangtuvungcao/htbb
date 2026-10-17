@@ -37,6 +37,12 @@ Các tên hạ tầng trên VPS vẫn giữ chữ `kpah` (CSDL `kpah_db`, thư m
 
 ## `ClientUnity/` — client dựng lại được, chạy đa nền tảng
 
+> **Sắp bỏ (nhánh `pokemon/chuyen-doi`).** Client PC chính thức của Huyền Thoại Bảo Bối nay là
+> `htbb-client/pc` (repo `htbb-client`, đặt cạnh `HTBB/`): toàn bộ phần Pokémon ở đây đã gộp sang đó,
+> cùng mod + BuildCli + quy trình phát hành. Tool `tools/pokemon/` (DongGoiSprite, tai_hieu_ung_pmd,
+> tai_vat_the, sinh_sql_chu, ap_ten_chieu) ghi vào `htbb-client/pc/Assets` trước và chép sang
+> `ClientUnity/` nếu thư mục này còn (biến `HTBB_CLIENT_ASSETS`, `HTBB_CLIENT_CU=0`).
+
 > **Đính chính.** Bản README trước ghi rằng `Client/` "không phải dự án Unity" và
 > "không build được". Điều đó **sai**. Kết luận ấy dựa trên việc thiếu `Assets/` và
 > `ProjectSettings/` — nhưng đó chỉ là phần khung Unity tự sinh, không phải bằng chứng.

@@ -51,7 +51,12 @@ GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))
 RAW = os.path.join(GOC, "tools", "pokemon", "pmd_raw_hieu_ung")
 BANG_CHIEU = os.path.join(GOC, "docs", "pokemon", "bang_chieu.csv")
 BANG_HU = os.path.join(GOC, "docs", "pokemon", "bang_hieu_ung.csv")
-RA = os.path.join(GOC, "ClientUnity", "Assets", "Resources", "poke")
+import importlib.util as _iu
+_sd = _iu.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
+dc = _iu.module_from_spec(_sd)
+_sd.loader.exec_module(dc)
+# Client PC chinh: htbb-client/pc/Assets (doi bang HTBB_CLIENT_ASSETS); con HTBB/ClientUnity thi chep sang ca do.
+RA = dc.resources(dc.assets(), "poke")
 GHI_CONG = os.path.join(RA, "GHI_CONG.txt")
 
 NGUON = "https://raw.githubusercontent.com/PMDCollab/RawAsset/master/Particle"
@@ -404,6 +409,7 @@ def main():
         f.write("# lop,chieu,ten,rong,cao,soKhung,soHuong,soCot,kieuVe,tickMoiKhung (sinh boi tai_hieu_ung_pmd.py)\n")
         f.write("\n".join(dong_bang) + "\n")
     ghi_cong(da_goi.keys())
+    dc.chep_sang_ban_khac(RA, [v[0] + ".bytes" for v in da_goi.values()] + ["hu_bang.bytes", os.path.basename(GHI_CONG)], "poke")
     tong = sum(os.path.getsize(os.path.join(RA, v[0] + ".bytes")) for v in da_goi.values())
     print("Da ghi %s: %d chieu, %d particle, %d byte, %d loi"
           % (os.path.relpath(BANG_HU, GOC), len(dong_csv), len(da_goi), tong, loi))

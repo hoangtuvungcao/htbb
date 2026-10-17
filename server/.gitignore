@@ -171,8 +171,10 @@ out_tools/
 # Ngoai le: sprite Pokemon do tools/pokemon/DongGoiSprite.java sinh tu PMDCollab (CC BY-NC).
 # DUOC commit de build client khong can mang/Python (xem docs/pokemon/KE_HOACH_CHUYEN_DOI.md 7.1).
 !/ClientUnity/Assets/Resources/poke/
-# Ngoai le: tile ban do PMD do tools/pokemon/DoiTileMap.java sinh (G7.A), cung ly do nhu poke/.
+# Ngoai le: bo tile ban do moi (CC0) do tools/pokemon/DungBoTileMoi.java sinh, cung ly do nhu poke/.
 !/ClientUnity/Assets/Resources/poke_tile/
+# Ngoai le: kieu tile bo moi + ban do 0 ve lai (tools/pokemon/VeMapMoi.java, docs/pokemon/DINH_DANG_MAP.md).
+!/ClientUnity/Assets/Resources/poke_map/
 
 ### Rac he dieu hanh / trinh quan ly tep - da tung lot vao map/d_effect/desktop.ini ###
 Thumbs.db
@@ -184,3 +186,7 @@ desktop.ini
 ### Python bytecode
 __pycache__/
 *.pyc
+
+# Sinh lai bang tools/pokemon/GiaiMaMap.java va VeMapMoi.java
+docs/pokemon/map_cu/
+docs/pokemon/map_moi/kiem/

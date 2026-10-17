@@ -20,7 +20,13 @@ import sys
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RA = os.path.join(GOC, "docs", "pokemon", "bang_chieu.csv")
 F_SERVER = os.path.join(GOC, "src", "real", "MessageCreator.java")
-F_CLIENT = os.path.join(GOC, "ClientUnity", "Assets", "Scripts", "Game", "SkillManager.cs")
+import importlib.util as _iu
+_sd = _iu.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
+dc = _iu.module_from_spec(_sd)
+_sd.loader.exec_module(dc)
+# Client PC chinh: htbb-client/pc (doi bang HTBB_CLIENT_ASSETS); sua MOI ban client con ton tai.
+F_CLIENTS = [os.path.join(dc.scripts(a), "SkillManager.cs") for a in dc.cac_assets()]
+F_CLIENT = F_CLIENTS[0]
 F_TEXT = os.path.join(GOC, "src", "data", "Text.java")
 
 HE = ["Thường", "Lửa", "Nước", "Điện", "Cỏ", "Băng", "Giác đấu", "Độc", "Đất",
@@ -136,23 +142,24 @@ def main():
                "SKILL_NAME = new String[][]" + java_mang(moi) + ";", "MessageCreator.SKILL_NAME")
     # Client: KHONG thay theo chuoi (ten cu "Chém"/"Húc" lap lai giua cac class -> thay nham).
     # Doc cac chuoi trong khoi THEO THU TU, so voi bang cu/moi, roi sinh lai ca khoi.
-    s = open(F_CLIENT, encoding="utf8").read()
-    a = s.index("SKILL_NAME = new string[5][]")
-    b = s.index("};", a)
-    khoi = s[a:b]
-    chuoi = re.findall(r'"((?:[^"\\]|\\.)*)"', khoi)
-    phang_cu = [x for d in cu for x in d]
-    phang_moi = [x for d in moi for x in d]
-    khoi_moi = "SKILL_NAME = new string[5][]\n\t{\n" + ",\n".join(
-        "\t\tnew string[%d] { %s }" % (len(d), ", ".join('"%s"' % x for x in d)) for d in moi) + "\n\t"
-    if chuoi == phang_moi and khoi == khoi_moi:
-        print("bo qua (da co ten moi): SkillManager.SKILL_NAME")
-    elif chuoi == phang_cu or chuoi == phang_moi:
-        open(F_CLIENT, "w", encoding="utf8").write(s[:a] + khoi_moi + s[b:])
-        print("da thay: SkillManager.SKILL_NAME")
-    else:
-        print("LOI: SkillManager.SKILL_NAME khong khop bang cu lan bang moi - kiem tra tay")
-        ok = False
+    for F_CLIENT in F_CLIENTS:
+        s = open(F_CLIENT, encoding="utf8").read()
+        a = s.index("SKILL_NAME = new string[5][]")
+        b = s.index("};", a)
+        khoi = s[a:b]
+        chuoi = re.findall(r'"((?:[^"\\]|\\.)*)"', khoi)
+        phang_cu = [x for d in cu for x in d]
+        phang_moi = [x for d in moi for x in d]
+        khoi_moi = "SKILL_NAME = new string[5][]\n\t{\n" + ",\n".join(
+            "\t\tnew string[%d] { %s }" % (len(d), ", ".join('"%s"' % x for x in d)) for d in moi) + "\n\t"
+        if chuoi == phang_moi and khoi == khoi_moi:
+            print("bo qua (da co ten moi): SkillManager.SKILL_NAME", F_CLIENT)
+        elif chuoi == phang_cu or chuoi == phang_moi:
+            open(F_CLIENT, "w", encoding="utf8").write(s[:a] + khoi_moi + s[b:])
+            print("da thay: SkillManager.SKILL_NAME", F_CLIENT)
+        else:
+            print("LOI: SkillManager.SKILL_NAME khong khop bang cu lan bang moi - kiem tra tay", F_CLIENT)
+            ok = False
     # Text.nameSkillLearn (ban tieng Viet - dong DAU TIEN): 3 skill cuoi moi class
     hoc_cu = [d[-3:] for d in cu]
     hoc_moi = [d[-3:] for d in moi]

@@ -23,7 +23,9 @@ import org.w3c.dom.NodeList;
 
 /**
  * Dong goi sprite PMD (tools/pokemon/pmd_raw/<khoa>/) thanh tai nguyen client
- * ClientUnity/Assets/Resources/poke/<khoa>_{anh,dl,cd}.bytes.
+ * <Assets>/Resources/poke/<khoa>_{anh,dl,cd}.bytes. Assets chinh la client PC htbb-client/pc/Assets
+ * (repo canh HTBB/; doi bang bien HTBB_CLIENT_ASSETS); con HTBB/ClientUnity/Assets (ban cu, sap xoa) thi
+ * chep sang ca do (bo bang HTBB_CLIENT_CU=0).
  *
  * Dinh dang: docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 7.1 (phien ban 2: them xAtlas). Sau khi ghi, tool DOC LAI
  * tung file .bytes va doi chieu voi AnimData.xml + anh goc (so sanh tung pixel cua
@@ -135,7 +137,8 @@ public final class DongGoiSprite {
     public static void main(final String[] args) throws Exception {
         final File goc = new File(".").getCanonicalFile();
         final File raw = new File(goc, "tools/pokemon/pmd_raw");
-        final File ra = new File(goc, "ClientUnity/Assets/Resources/poke");
+        final List<File> cacRa = thuMucRa(goc);
+        final File ra = cacRa.get(0);
         if (!raw.isDirectory()) {
             System.err.println("Khong co " + raw + " - chay tools/pokemon/tai_sprite_pmd.py truoc");
             System.exit(1);
@@ -188,7 +191,10 @@ public final class DongGoiSprite {
             }
         }
         Files.write(fGhiCong.toPath(), ghiCong.toString().getBytes(StandardCharsets.UTF_8));
-        System.out.println("Da dong goi " + so + " loai -> " + ra + " (atlas cao nhat " + caoMax + " px: " + khoaCaoMax + "), loi: " + loi);
+        for (int i = 1; i < cacRa.size(); i++) {
+            chepSang(ra, cacRa.get(i));
+        }
+        System.out.println("Da dong goi " + so + " loai -> " + cacRa + " (atlas cao nhat " + caoMax + " px: " + khoaCaoMax + "), loi: " + loi);
         System.exit(loi == 0 ? 0 : 1);
     }
 
@@ -365,6 +371,43 @@ public final class DongGoiSprite {
     }
 
     /** Doc lai file vua ghi theo DUNG dac ta 7.1, so voi du lieu goc. */
+    /** Resources/poke cua cac client can ghi: HTBB_CLIENT_ASSETS, hoac htbb-client/pc (+ ClientUnity cu neu con). */
+    static List<File> thuMucRa(final File goc) throws IOException {
+        final List<File> ds = new ArrayList<>();
+        final String rieng = System.getenv("HTBB_CLIENT_ASSETS");
+        if (rieng != null && !rieng.isEmpty()) {
+            ds.add(new File(rieng, "Resources/poke"));
+            return ds;
+        }
+        final File pc = new File(goc, "../htbb-client/pc/Assets").getCanonicalFile();
+        if (pc.isDirectory()) {
+            ds.add(new File(pc, "Resources/poke"));
+        }
+        final File cu = new File(goc, "ClientUnity/Assets");
+        if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
+            ds.add(new File(cu, "Resources/poke"));
+        }
+        if (ds.isEmpty()) {
+            ds.add(new File(cu, "Resources/poke"));
+        }
+        return ds;
+    }
+
+    /** Chep cac tep .bytes + GHI_CONG.txt sang thu muc client khac (giu dong bo trong luc chuyen tiep). */
+    static void chepSang(final File tu, final File den) throws IOException {
+        den.mkdirs();
+        final File[] tep = tu.listFiles();
+        if (tep == null) {
+            return;
+        }
+        for (final File t : tep) {
+            final String ten = t.getName();
+            if (t.isFile() && (ten.endsWith(".bytes") || ten.startsWith("GHI_CONG"))) {
+                Files.copy(t.toPath(), new File(den, ten).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+    }
+
     static void kiemLai(final String k, final File ra, final DongTac[] dt) throws IOException {
         final DataInputStream in = new DataInputStream(new ByteArrayInputStream(
                 Files.readAllBytes(new File(ra, k + "_dl.bytes").toPath())));

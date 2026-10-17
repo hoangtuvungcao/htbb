@@ -1,0 +1,80 @@
+MO PHONG KINH TE - TOM TAT (sinh boi tools/pokemon/MoPhongKinhTe.java, KHONG SUA TAY)
+So ngay 730, he so dan so 1.00, tong nguoi choi 21090, bot bi khoa 1023
+
+MUC TIEU
+  DAT   Nhóm nhẹ: ≤5% xong cốt truyện năm 1 trước tháng 12: 0.0% (n=300)
+  DAT   Nhóm nhẹ: trung vị xong cốt truyện năm 1 ≤ tháng 18: tháng 12.8
+  DAT   Nhóm cày: ≤5% xong cốt truyện năm 1 trước tháng 6: 0.0% (n=300, sớm nhất ngày 287)
+  DAT   Tiến hoá đầu (cấp 16) ≤ 1.2 giờ: trung vị 1.10 giờ
+  DAT   Bot 20 giờ ≤ 1,3 × nhóm cày (giờ hiệu dụng/ngày): bot 5.30, cày 4.36
+  DAT   Xu thực/người hoạt động tăng TB ≤ 5%/tháng (tháng 4→cuối): TB 2.68%/tháng thực (danh nghĩa 8.03%)
+  DAT   Xu TB/người ≤ 20 giờ thu nhập ở cấp trung vị: cao nhất 3.2 giờ
+  DAT   Hố hút/nguồn xu 80–105% (từ tháng 3): 99.4%
+  DAT   Trung vị xu đang giữ ≤ 60 giờ thu nhập: cao nhất 2.4 giờ
+  DAT   Giữ chân D1 ≥ 40% (proxy): 68.1%
+  DAT   Giữ chân D7 ≥ 20% (proxy): 49.0%
+  DAT   Giữ chân D30 ≥ 10% (proxy): 28.9%
+  => 12/12
+
+THEO THANG (tat ca nguoi that, cuoi thang)
+ thang  hoat_dong  cap_tb  p10  p50  p90  tran  xu_tb        xu_giu(gio)  nang_cap  xong_nam1%  xong_nam2%
+     1       1433   45.60   30   47   60    60  64363                2.3      5.06         0.0         0.0
+     2       1902   51.60   36   56   60    60  84138                2.3      6.67         0.0         0.0
+     3       2289   57.93   38   61   70    70  117627               2.3      7.35         0.0         0.0
+     4       2642   60.59   42   66   70    70  135951               2.3      8.10         0.0         0.0
+     5       2972   61.77   43   69   70    70  145800               2.3      8.53         0.0         0.0
+     6       3304   66.01   44   71   80    80  191874               2.3      8.77         0.0         0.0
+     7       3548   68.29   47   73   80    80  240685               2.3      9.04         0.0         0.0
+     8       3782   69.27   48   75   80    80  229053               2.3      9.19         0.0         0.0
+     9       4033   71.83   49   76   86    91  261879               2.3      9.53         0.0         0.0
+    10       4260   73.81   51   78   91    91  308262               2.3      9.77         7.7         0.0
+    11       4382   75.39   53   79   91    91  345702               2.3     10.01        19.2         0.0
+    12       4594   76.05   52   80   91    91  364364               2.3     10.08        21.6         0.0
+    13       4805   77.38   53   81   94    95  378521               2.3      9.80        25.1         0.0
+    14       4955   78.47   54   82   95    95  399128               2.3     10.02        28.0         0.0
+    15       5094   79.33   56   83   95    95  429931               2.3     10.16        30.3         0.0
+    16       5277   79.86   57   84   95    95  444069               2.3     10.26        32.5         0.0
+    17       5463   80.62   58   85   95    95  469030               2.4     10.40        34.2         0.0
+    18       5550   80.88   57   86   95    95  483804               2.4     10.44        35.7         0.0
+    19       5709   81.90   58   86   98   100  513336               2.4     10.32        37.4         0.0
+    20       5903   82.68   58   87  100   100  528871               2.3     10.23        38.7         0.0
+    21       6099   83.53   59   87  100   100  544623               2.4     10.38        40.9         0.0
+    22       6257   84.16   60   88  100   100  558559               2.4     10.51        42.8        12.4
+    23       6421   84.47   60   89  100   100  589141               2.4     10.55        43.8        13.3
+    24       6593   84.77   60   89  100   100  603321               2.4     10.60        44.9        14.8
+
+DAN CHUAN (300/nhom tu khai truong, khong bo choi), cuoi thang: cap_tb | nang_cap_tb | xong_nam1% | xong_nam2%
+  nhe:  T3 65.4|10.6|0%|0%  T6 74.0|12.0|0%|0%  T9 82.2|11.7|0%|0%  T12 88.3|12.0|0%|0%  T15 92.9|12.0|100%|0%  T18 95.0|12.0|100%|0%  T21 98.1|11.2|100%|0%  T24 100.0|12.0|100%|99%
+  vua:  T3 70.0|10.3|0%|0%  T6 77.1|12.4|0%|0%  T9 84.4|12.0|0%|0%  T12 91.0|12.6|100%|0%  T15 95.0|12.2|100%|0%  T18 95.0|12.7|100%|0%  T21 100.0|12.0|100%|0%  T24 100.0|12.6|100%|100%
+  cay:  T3 70.0|10.9|0%|0%  T6 80.0|10.7|0%|0%  T9 86.4|12.2|0%|0%  T12 91.0|12.7|100%|0%  T15 95.0|12.3|100%|0%  T18 95.0|12.8|100%|0%  T21 100.0|12.1|100%|0%  T24 100.0|12.7|100%|100%
+  bot:  T3 70.0|0.0|0%|0%  T6 80.0|0.0|0%|0%  T9 87.0|0.0|0%|0%  T12 91.0|0.0|0%|0%  T15 95.0|0.0|0%|0%  T18 95.0|0.0|0%|0%  T21 100.0|0.0|0%|0%  T24 100.0|0.0|0%|0%
+
+NGUON / HO HUT XU (toan bo, % tong)
+  vao quai             89.2%
+  vao nhiem_vu          9.4%
+  vao su_kien           0.9%
+  vao phan_ra           0.5%
+  ra  nang_cap         65.2%
+  ra  thuoc_sua_do     23.3%
+  ra  mua_do            3.6%
+  ra  ngoc_he           3.6%
+  ra  dich_chuyen       2.8%
+  ra  hoc_chieu         0.9%
+  ra  mua_da_cho        0.5%
+  ra  thue_cho          0.1%
+  ra  khoa_bot          0.0%
+  tong xu ra/vao = 99.4%; luong khoa ra/vao = 95.7%; luong ra/vao = 64.9%
+
+KICH BAN SO SANH (dan so day du)
+  [A] Khong co nang luong huan luyen:
+      DAT   Nhóm cày: ≤5% xong cốt truyện năm 1 trước tháng 6: 0.0% (n=300, sớm nhất ngày 274)
+      KHONG Bot 20 giờ ≤ 1,3 × nhóm cày (giờ hiệu dụng/ngày): bot 20.00, cày 5.86
+      DAT   Xu thực/người hoạt động tăng TB ≤ 5%/tháng (tháng 4→cuối): TB -0.06%/tháng thực (danh nghĩa 5.39%)
+      DAT   Xu TB/người ≤ 20 giờ thu nhập ở cấp trung vị: cao nhất 4.5 giờ
+      DAT   Hố hút/nguồn xu 80–105% (từ tháng 3): 99.5%
+  [B] Nang cap gia co dinh 5.000 xu, khong ngoc he/trang tri (nhu game cu):
+      DAT   Nhóm cày: ≤5% xong cốt truyện năm 1 trước tháng 6: 0.0% (n=300, sớm nhất ngày 286)
+      DAT   Bot 20 giờ ≤ 1,3 × nhóm cày (giờ hiệu dụng/ngày): bot 5.30, cày 4.36
+      KHONG Xu thực/người hoạt động tăng TB ≤ 5%/tháng (tháng 4→cuối): TB 12.12%/tháng thực (danh nghĩa 18.82%)
+      DAT   Xu TB/người ≤ 20 giờ thu nhập ở cấp trung vị: cao nhất 16.7 giờ
+      DAT   Hố hút/nguồn xu 80–105% (từ tháng 3): 96.6%

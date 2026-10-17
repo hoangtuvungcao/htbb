@@ -1,0 +1,104 @@
+# Thiet ke ban do moi (tools/pokemon/VeMapMoi.java). Moi dong = mot ban do cMap/<id>.
+# loai: thi_tran | duong | dong_co | rung | ho | bien | nui | tuyet | sa_mac | hang | trong_nha | thanh | dau_truong | tau
+# ten: dia danh Pokemon (de ghi tren anh xem truoc). hat: hat giong ngau nhien (doi = bo cuc khac, cung dau vao = cung ket qua).
+# moc: diem nhan rieng (ghi chu thiet ke).
+id;loai;ten;hat;moc
+0;thi_tran;Pewter;1001;lang chinh vung 1: quang truong, nha co cua, ao sen
+1;dong_co;Pallet - dong co;1002;dong co rong, bui ram, co cao quanh quai
+2;bien;Viridian - bo bien;1003;bai cat phia bac, duong ven bien
+3;ho;Vermilion - ho lon;1004;ho giua, dao nho
+4;rung;Cerulean - rung;1005;rung day, loi mon
+5;dong_co;Lavender - dong co;1006;dong co, ao nho
+6;rung;Celadon - rung nho;1007;rung nho
+7;ho;Saffron - dam lay;1008;nhieu ao
+8;bien;Fuchsia - bo bien;1009;bien phia dong
+9;dong_co;Cinnabar - dong bang;1010;dong rong, duong lon ve lang
+10;rung;New Bark - rung lon;1011;rung lon nhieu khoang trong
+11;rung;Rung Viridian;1012;rung dai dong-tay
+12;thi_tran;Khu mua ban;1013;cho: quang truong lon
+13;nui;Nui Mat Trang;1014;vach da, bai da
+14;dong_co;Vung Safari;1015;co cao day dac
+15;ho;Cherrygrove - ho;1016;ho va suoi
+17;sa_mac;Khu mo (sa mac);1017;sa mac, vach da, cay dua
+18;duong;Goldenrod - tuyen duong;1018;duong chinh
+19;bien;Ecruteak - ven bien;1019;bien phia nam
+20;rung;Violet - rung;1020;rung
+21;dong_co;Dong co phia tay;1021;dong co
+22;ho;Tau S.S. Anne - dao;1022;dao giua nuoc
+23;duong;Azalea - tuyen duong;1023;duong
+24;nui;Olivine - doi da;1024;doi da
+25;dau_truong;Thap luyen tap;1025;san trong
+26;rung;Rung Co;1026;rung co thu
+28;dong_co;Mahogany - dong co;1027;dong co
+29;rung;Rung Ilex;1028;khoang rung nho
+30;rung;Rung Ilex 2;1029;khoang rung nho
+31;rung;Rung Ilex 3;1030;khoang rung nho
+40;dong_co;Chien truong;1031;ba lan duong TOP/MID/BOT
+41;tuyet;Chan nui Silver (tuyet);1032;tuyet, cay thong tuyet
+42;tuyet;Nui Silver (tuyet);1033;tuyet, vach da
+70;thi_tran;Blackthorn;1034;lang chinh vung 0
+72;trong_nha;Nha (Blackthorn);1035;
+73;trong_nha;Trung tam Pokemon;1036;
+74;trong_nha;Poke Mart;1037;
+78;trong_nha;Nha kho;1038;
+79;trong_nha;Xuong che tao;1039;
+80;thi_tran;Cianwood;1040;lang chinh vung 2
+82;trong_nha;Nha (Cianwood);1041;
+83;trong_nha;Trung tam Pokemon;1042;
+84;trong_nha;Poke Mart;1043;
+88;trong_nha;Nha kho;1044;
+89;trong_nha;Xuong che tao;1045;
+90;trong_nha;Cua hang 1;1046;
+91;trong_nha;Cua hang 2;1047;
+92;trong_nha;Cua hang 3;1048;
+93;trong_nha;Cua hang 4;1049;
+94;trong_nha;Cua hang 5;1050;
+95;trong_nha;Cua hang 6;1051;
+96;trong_nha;Cua hang 7;1052;
+97;trong_nha;Cua hang 8;1053;
+98;trong_nha;Cua hang 9;1054;
+99;trong_nha;Cua hang 10;1055;
+100;trong_nha;Nha (Pewter);1056;
+101;rung;Khoang rung nho;1057;
+102;trong_nha;Nha (Pewter) 2;1058;
+103;trong_nha;Trung tam Pokemon;1059;
+104;trong_nha;Poke Mart;1060;
+105;dong_co;San nha khoi dau;1061;noi nhan vat moi xuat hien
+106;thi_tran;Ben tau;1062;ben cang
+107;tau;Thuyen;1063;
+108;trong_nha;Nha kho;1064;
+109;trong_nha;Xuong che tao;1065;
+110;hang;Hang dong;1066;
+111;hang;Hang Darkrai;1067;
+112;hang;Hang Salamence;1068;
+113;hang;Hang Toi;1069;
+114;hang;Ho Phan No (hang);1070;
+115;hang;Hang nho;1071;
+116;hang;Hang co;1072;
+117;hang;Nguc toi;1073;
+118;hang;Duong Victory;1074;
+122;hang;Hang trong;1075;
+201;thanh;Cao nguyen Indigo;1076;
+202;dau_truong;Dau truong;1077;
+203;dau_truong;Dau truong La Ma;1078;
+204;dau_truong;Dau truong 2;1079;
+205;dau_truong;Dau truong 3;1080;
+206;thanh;Lanh dia doi;1081;
+207;thanh;Lanh dia doi 2;1082;
+208;dau_truong;Thap luyen tap;1083;
+225;dau_truong;Le cuoi 1;1084;
+226;dau_truong;Le cuoi 2;1085;
+227;dau_truong;Loi dai;1086;
+228;dau_truong;Sanh cho;1087;
+260;trong_nha;Nha (Indigo) 1;1088;
+261;trong_nha;Nha (Indigo) 2;1089;
+262;trong_nha;Nha (Indigo) 3;1090;
+263;trong_nha;Nha (Indigo) 4;1091;
+264;trong_nha;Nha (Indigo) 5;1092;
+265;trong_nha;Nha (Indigo) 6;1093;
+266;trong_nha;Nha (Indigo) 7;1094;
+267;trong_nha;Nha (Indigo) 8;1095;
+268;trong_nha;Nha (Indigo) 9;1096;
+269;trong_nha;Nha (Indigo) 10;1097;
+270;trong_nha;Nha (Indigo) 11;1098;
+271;trong_nha;Nha (Indigo) 12;1099;

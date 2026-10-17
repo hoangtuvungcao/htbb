@@ -16,7 +16,9 @@
 # db.thamSoJdbc=useSSL=false). server.ini nam trong .gitignore.
 set -e
 NOVADBD=${NOVADBD:-$HOME/Downloads/github/nova-db/NovaDB/target/release/novadbd}
-NOVA_DATA=${NOVA_DATA:-$(pwd)/../novadb-data}
+# Duong dan TUYET DOI, khong chua ten thu muc repo: NovaDB mo file CSDL theo duong dan nay moi lan
+# co ket noi moi, nen doi ten thu muc repo khi dang chay se lam moi ket noi bao "Unknown database".
+NOVA_DATA=${NOVA_DATA:-$(cd .. && pwd -P)/novadb-data}
 NOVA_PORT=${NOVA_PORT:-3318}
 NOVA_USER=${NOVA_USER:-kpah}
 NOVA_PASS=${NOVA_PASS:-htbb}

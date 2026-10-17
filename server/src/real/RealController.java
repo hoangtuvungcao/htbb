@@ -898,7 +898,7 @@ public class RealController extends ServerController {
                 try {
                     fis = null;
                     DataInputStream dis = null;
-                    fis = new FileInputStream("cMap/" + id[i]);
+                    fis = new FileInputStream(com.htbb.pokemon.BanDoPokemon.duong("cMap/" + id[i]));
                     dis = new DataInputStream(fis);
                     byte[] byteMap = new byte[dis.available()];
                     dis.read(byteMap, 0, byteMap.length);
