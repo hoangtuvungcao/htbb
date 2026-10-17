@@ -3237,11 +3237,12 @@ extends Screen {
         int n3 = (Canvas.w - n) / 2;
         graphics.translate(-graphics.getTranslateX(), -graphics.getTranslateY());
         graphics.setClip(0, 0, Canvas.w, Canvas.h);
+        int y = Nen.yTrangThai(2);   // bản jar: dưới khung HP góc trái trên
         graphics.setColor(0xFF0B2E2E);
-        graphics.fillRect(n3, 2, n, n2);
+        graphics.fillRect(n3, y, n, n2);
         graphics.setColor(0xFFE0B000);
-        graphics.drawRect(n3, 2, n - 1, n2 - 1);
-        font.drawString(graphics, string, Canvas.w / 2, 5, 2);
+        graphics.drawRect(n3, y, n - 1, n2 - 1);
+        font.drawString(graphics, string, Canvas.w / 2, y + 3, 2);
     }
 
     private String autoStatusText() {

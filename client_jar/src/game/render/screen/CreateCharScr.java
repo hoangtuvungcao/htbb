@@ -44,6 +44,44 @@ public class CreateCharScr extends Screen {
     public void init() {
         this.tfChat.x = Canvas.hw - 28;
         this.tfChat.y = Canvas.hh - 24;
+        if (PokeBody.CHE_DO_POKEMON) {
+            // pokemon: ô tên nằm trong bảng chọn Pokémon khởi đầu (xem paintPokemon)
+            this.tfChat.x = xBang() + 44;
+            this.tfChat.y = yBang() + 26 + canhAnh() + 6 + 58 + 4;
+            this.tfChat.width = rongBang() - 54;
+        }
+    }
+
+    private static int rongBang() {
+        int w = Canvas.w - 12;
+        return w > 210 ? 210 : w;
+    }
+
+    private static int xBang() {
+        return Canvas.hw - rongBang() / 2;
+    }
+
+    private static int yBang() {
+        int y = Canvas.hh - 100;
+        int duoi = Canvas.h - Screen.deltaY - 4 - caoBang();
+        if (y > duoi) {
+            y = duoi;
+        }
+        return y < 2 ? 2 : y;
+    }
+
+    private static int caoBang() {
+        return 147 + canhAnh();
+    }
+
+    private static int canhAnh() {
+        int c = (rongBang() - 20) / 5 - 6;
+        return c > 30 ? 30 : c;
+    }
+
+    private static int xAnh(int i) {
+        int k = (rongBang() - 20) / 5;
+        return xBang() + 10 + k * i + k / 2;
     }
 
     public CreateCharScr() {
@@ -209,6 +247,13 @@ public class CreateCharScr extends Screen {
     public void paint(Graphics g) {
         ServerListScr.gI().paintBg(g);
         Canvas.resetTrans(g);
+        if (PokeBody.CHE_DO_POKEMON) {
+            paintPokemon(g);
+            this.tfChat.paint(g);
+            g.setClip(0, 0, Canvas.w, Canvas.h);
+            super.paint(g);
+            return;
+        }
         int x = Canvas.hw - 53;
         int y = Canvas.hh - 20;
         Res.paintDlgFull(g, Canvas.hw - 75, Canvas.hh - 60);
@@ -217,13 +262,6 @@ public class CreateCharScr extends Screen {
             Font.normalFont[0].drawString(g, "*", Canvas.hw + 57, (y + (this.selected * 17)) - 1, 0);
         }
         Font.normalFont[0].drawString(g, "Tên:", x, y, 0);
-        if (PokeBody.CHE_DO_POKEMON) {
-            paintPokemon(g, x, y);
-            this.tfChat.paint(g);
-            g.setClip(0, 0, Canvas.w, Canvas.h);
-            super.paint(g);
-            return;
-        }
         int y2 = y + 17;
         Font.normalFont[0].drawString(g, new StringBuffer("Dòng: ").append(clazz[this.currentClazz][selectGender].name).toString(), x, y2, 0);
         int y3 = y2 + 17;
@@ -243,25 +281,99 @@ public class CreateCharScr extends Screen {
         super.paint(g);
     }
 
-    /** pokemon: man tao nhan vat - 5 Pokemon khoi dau thay 5 class (bang 4.1, ClientUnity CreateCharScr.cs). */
-    private void paintPokemon(Graphics g, int x, int y) {
-        int y2 = y + 17;
-        Font.normalFont[0].drawString(g, new StringBuffer("Pokémon: ").append(LoaiPokemonClient.TEN_KHOI_DAU[this.currentClazz]).toString(), x, y2, 0);
-        int y3 = y2 + 17;
-        Font.normalFont[0].drawString(g, new StringBuffer("L.thổ: ").append(GameScr.nameCountry[selectNation]).toString(), x, y3, 0);
-        int y4 = y3 + 17;
-        Font.normalFont[0].drawString(g, LoaiPokemonClient.HE_KHOI_DAU[this.currentClazz], x, y4, 0);
-        Font.normalFont[0].drawString(g, LoaiPokemonClient.VAI_TRO[this.currentClazz], x, y4 + 17, 0);
-        // chan dung + Pokemon dang dung (Idle); thieu sprite thi ve paper doll cu
+    /**
+     * pokemon: màn tạo nhân vật - 5 Pokémon khởi đầu thay 5 class (bảng 4.1, ClientUnity CreateCharScr.cs).
+     * Bảng xanh, hàng 5 chân dung (chạm để chọn), Pokémon đang chọn đứng trong vòng sáng + tên + huy hiệu
+     * hệ + vai trò, ô tên và lãnh thổ. Dòng đang chọn (phím lên/xuống) có viền vàng.
+     */
+    private void paintPokemon(Graphics g) {
+        int x0 = xBang();
+        int y0 = yBang();
+        int W = rongBang();
+        game.pokemon.GiaoDien.bang(g, x0, y0, W, caoBang());
+        game.pokemon.GiaoDien.dai(g, x0 + 4, y0 + 4, W - 8, 17, "Chọn Pokémon khởi đầu");
+        int c = canhAnh();
+        int yAnh = y0 + 26;
+        for (int i = 0; i < 5; i++) {
+            int dex = LoaiPokemonClient.khoiDau(i);
+            int cx = xAnh(i);
+            boolean dangChon = i == this.currentClazz;
+            game.pokemon.GiaoDien.khoi(g, cx - c / 2 - 2, yAnh - 2, c + 4, c + 4, 4, dangChon ? game.pokemon.GiaoDien.VANG : game.pokemon.GiaoDien.VIEN);
+            game.pokemon.GiaoDien.khoi(g, cx - c / 2, yAnh, c, c, 3, game.pokemon.GiaoDien.mauHe(LoaiPokemonClient.HE_KHOI_DAU[i]));
+            PokeBody.paintChanDung(g, dex, false, cx, yAnh + c / 2, c - 2);
+        }
+        if (this.selected == 1) {
+            g.setColor(game.pokemon.GiaoDien.VANG);
+            g.drawRect(x0 + 6, yAnh - 4, W - 13, c + 7);
+        }
+        // Pokémon đang chọn
+        int yGiua = yAnh + c + 6;
+        game.pokemon.GiaoDien.khoi(g, x0 + 6, yGiua, W - 12, 58, 4, game.pokemon.GiaoDien.TRANG);
         int dex = LoaiPokemonClient.khoiDau(this.currentClazz);
-        PokeBody.paintChanDung(g, dex, false, Canvas.hw - 40, Canvas.hh - 68, 32);
-        if (!PokeBody.paint(g, dex, false, Canvas.hw + 25, Canvas.hh - 50, 0, PokeDuLieu.DUNG, Canvas.gameTick, 100)) {
-            this.ch.paintAvatar(g, (short) Canvas.hw, (short) (Canvas.hh - 30));
+        int xp = x0 + 34;
+        g.setColor(0xBFE0FF);
+        g.fillArc(xp - 22, yGiua + 40, 44, 14, 0, 360);
+        g.setClip(x0 + 8, yGiua + 2, 54, 54);
+        if (!PokeBody.paint(g, dex, false, xp, yGiua + 48, 0, PokeDuLieu.DUNG, Canvas.gameTick, 150)) {
+            this.ch.paintAvatar(g, (short) xp, (short) (yGiua + 48));
+        }
+        Canvas.resetTrans(g);
+        int xc = x0 + 64;
+        Font.blackFont.drawString(g, LoaiPokemonClient.TEN_KHOI_DAU[this.currentClazz], xc, yGiua + 4, 0);
+        game.pokemon.GiaoDien.huyHieuHe(g, xc, yGiua + 21, LoaiPokemonClient.HE_KHOI_DAU[this.currentClazz]);
+        Font.arialFont.drawString(g, LoaiPokemonClient.VAI_TRO[this.currentClazz], xc, yGiua + 40, 0);
+        // mũi tên trái / phải đổi Pokémon
+        g.setColor(game.pokemon.GiaoDien.XANH);
+        g.fillTriangle(x0 + W - 22, yGiua + 10, x0 + W - 22, yGiua + 22, x0 + W - 15, yGiua + 16);
+        // ô tên
+        int yTen = this.tfChat.y;
+        Font.normalFont[0].drawString(g, "Tên:", x0 + 10, yTen + 3, 0);
+        if (this.selected == 0) {
+            game.pokemon.GiaoDien.muiTen(g, x0 + 4, yTen + 5, 8, game.pokemon.GiaoDien.VANG);
+        }
+        // lãnh thổ
+        int yVung = yTen + 26;
+        if (this.selected == 2) {
+            game.pokemon.GiaoDien.chon(g, x0 + 6, yVung - 3, W - 12, 19);
+        }
+        Font.normalFont[0].drawString(g, new StringBuffer("Vùng: ").append(GameScr.nameCountry[selectNation]).toString(), x0 + 12, yVung, 0);
+        g.setColor(game.pokemon.GiaoDien.VANG);
+        g.fillTriangle(x0 + W - 34, yVung + 6, x0 + W - 28, yVung + 1, x0 + W - 28, yVung + 11);
+        g.fillTriangle(x0 + W - 12, yVung + 6, x0 + W - 18, yVung + 1, x0 + W - 18, yVung + 11);
+    }
+
+    /** pokemon: chạm chân dung để chọn Pokémon, chạm dòng vùng để đổi vùng. */
+    private void chamPokemon() {
+        if (!Canvas.isPointerClick || !PokeBody.CHE_DO_POKEMON || Canvas.currentDialog != null) {
+            return;
+        }
+        int c = canhAnh();
+        int yAnh = yBang() + 26;
+        for (int i = 0; i < 5; i++) {
+            if (Canvas.isPointer(xAnh(i) - c / 2 - 2, yAnh - 2, c + 4, c + 4)) {
+                Canvas.isPointerClick = false;
+                if (this.currentClazz != i) {
+                    this.currentClazz = i;
+                    changChar();
+                    loadImg();
+                }
+                this.selected = 1;
+                this.tfChat.isFocus = false;
+                return;
+            }
+        }
+        int yVung = this.tfChat.y + 26;
+        if (Canvas.isPointer(xBang() + 6, yVung - 3, rongBang() - 12, 19)) {
+            Canvas.isPointerClick = false;
+            selectNation = selectNation == 0 ? 1 : 0;
+            this.selected = 2;
+            this.tfChat.isFocus = false;
         }
     }
 
     @Override
     public void update() {
+        chamPokemon();
         this.tfChat.update();
         this.ch.update();
         super.update();

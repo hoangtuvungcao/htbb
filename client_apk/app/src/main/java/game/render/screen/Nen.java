@@ -48,4 +48,21 @@ final class Nen {
     static boolean laManRuong(Screen screen) {
         return screen != null && screen == MoQuaScr.me;
     }
+
+    /** Bản Android giữ cột nút mod cũ (bản jar Pokémon dùng Menu nhanh - xem j2me Nen). */
+    static boolean menuNhanhVe(Object g) {
+        return false;
+    }
+
+    static boolean menuNhanhTick() {
+        return false;
+    }
+
+    static boolean menuNhanhPhim(int keyCode) {
+        return false;
+    }
+
+    static int yTrangThai(int macDinh) {
+        return macDinh;
+    }
 }

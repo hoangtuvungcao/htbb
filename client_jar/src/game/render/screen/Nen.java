@@ -38,6 +38,28 @@ final class Nen {
         return s;
     }
 
+    /**
+     * pokemon: nút mod nổi = MỘT Poké Ball nhỏ sát mép trái mở "Menu nhanh" (MenuNhanh) thay cho cột
+     * nút tròn to đè lên màn chơi. true = đã xử lý (AutoGuard không vẽ / không bắt chạm nút cũ).
+     */
+    static boolean menuNhanhVe(javax.microedition.lcdui.Graphics g) {
+        return MenuNhanh.ve(g);
+    }
+
+    static boolean menuNhanhTick() {
+        return MenuNhanh.tick();
+    }
+
+    /** Phím khi Menu nhanh đang mở: true = đã dùng phím. */
+    static boolean menuNhanhPhim(int keyCode) {
+        return MenuNhanh.phim(keyCode);
+    }
+
+    /** Thanh trạng thái auto (AutoUp/VanTieu...): đặt ngay dưới khung HP góc trái trên, không đè giữa màn. */
+    static int yTrangThai(int macDinh) {
+        return macDinh + 34;
+    }
+
     /** Cỡ nút mod nổi (px): nhỏ cho màn giả lập J2ME. */
     static final int CO_NUT = 38;
 

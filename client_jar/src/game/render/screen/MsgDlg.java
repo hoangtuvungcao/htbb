@@ -35,8 +35,18 @@ public class MsgDlg extends Dialog {
     int dir = 1;
     int x2 = 0;
 
+    /** pokemon: bề ngang chữ hộp thoại theo màn (máy 240/360 px hộp rộng hơn, ít phải cuộn). */
+    static int rongChu() {
+        int w = Canvas.w - 64;
+        return w > 200 ? 200 : (w < 100 ? 100 : w);
+    }
+
+    /** pokemon: kích thước hộp thoại (hộp chờ có Poké Ball giữ 140 x 100). */
+    private int wHop = 140;
+    private int hHop = 100;
+
     public void setInfo(String info, Command left, Command center, Command right) {
-        this.info = Font.arialFontW.splitFontBStrInLine(info, 100);
+        this.info = Font.arialFontW.splitFontBStrInLine(info, rongChu());
         this.left = left;
         this.center = center;
         this.right = right;
@@ -74,7 +84,27 @@ public class MsgDlg extends Dialog {
         this.w = Canvas.w - 40;
         this.h = 20;
         this.dis = 90;
-        this.y = Canvas.hh - 42;
+        this.wHop = 140;
+        if (!this.isIcon && this.info != null) {
+            // pokemon: hộp giãn theo số dòng (tới gần hết màn), rộng theo chữ
+            int can = this.info.length * 13;
+            int toiDa = Canvas.h - 96;
+            if (can > this.dis && toiDa > this.dis) {
+                this.dis = can < toiDa ? can : toiDa;
+            }
+            int rong = 0;
+            for (int i = 0; i < this.info.length; i++) {
+                int r = Font.arialFont.getWidth(this.info[i]);
+                if (r > rong) {
+                    rong = r;
+                }
+            }
+            if (rong + 40 > this.wHop) {
+                this.wHop = rong + 40 < Canvas.w - 16 ? rong + 40 : Canvas.w - 16;
+            }
+        }
+        this.hHop = this.dis + 18;
+        this.y = (Canvas.hh - 42) - ((this.dis - 90) / 2);
         this.ySt = 15;
         if (this.isIcon) {
             this.dis -= 50;
@@ -98,14 +128,16 @@ public class MsgDlg extends Dialog {
         if (ybg0 <= 10) {
             ybg0 = 10;
         }
-        Res.paintDlgDragonFull(g, 20, ybg0, Canvas.w - 40, this.hArr + 20);
+        // pokemon: hộp thoại trắng, chữ tối
+        game.pokemon.GiaoDien.hop(g, 20, ybg0, Canvas.w - 40, this.hArr + 20);
         for (int i = 0; i < this.arr.length; i++) {
-            Font.arialFontW.drawString(g, this.arr[i], Canvas.hw, (i * 20) + 10 + ybg0, 2);
+            Font.arialFont.drawString(g, this.arr[i], Canvas.hw, (i * 20) + 10 + ybg0, 2);
         }
         int ybd = 10 + 32;
         for (int i2 = 0; i2 < this.info.length; i2++) {
-            Font.normalFont[0].drawString(g, this.info[i2], Canvas.hw, ((((i2 * 20) + ((this.arr.length - 1) * 20)) + ybd) + ybg0) - 4, 2);
+            Font.blackFont.drawString(g, this.info[i2], Canvas.hw, ((((i2 * 20) + ((this.arr.length - 1) * 20)) + ybd) + ybg0) - 4, 2);
         }
+        game.pokemon.GiaoDien.muiXuong(g, Canvas.w - 34, ybg0 + this.hArr + 10);
         g.translate(0, this.y);
     }
 
@@ -116,15 +148,18 @@ public class MsgDlg extends Dialog {
         if (this.isUseArr) {
             paintArr(g);
         } else {
-            Res.paintDlgDragonFull(g, Canvas.hw - 70, 12, 140, 100);
+            // pokemon: hộp thoại Pokémon (trắng, viền tối, ▼ nhấp nháy), chờ = Poké Ball lắc
+            game.pokemon.GiaoDien.hop(g, Canvas.hw - (this.wHop / 2), 12, this.wHop, this.hHop);
             if (this.isIcon) {
-                g.drawRegion(Res.imgWaitIcon, 0, 0, 25, 25, translate[this.state], Canvas.hw, 47, 3);
+                game.pokemon.GiaoDien.dangTai(g, Canvas.hw, 45, 13);
+            } else {
+                game.pokemon.GiaoDien.muiXuong(g, Canvas.hw + (this.wHop / 2) - 14, this.hHop + 4);
             }
             g.translate(0, this.ySt);
             g.setClip(0, 0, Canvas.w, this.disLim);
             g.translate(0, -cmy);
             for (int i = 0; i < this.info.length; i++) {
-                Font.arialFontW.drawString(g, this.info[i], Canvas.hw, i * 13, 2);
+                Font.arialFont.drawString(g, this.info[i], Canvas.hw, i * 13, 2);
             }
         }
         super.paint(g);

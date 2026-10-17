@@ -2565,19 +2565,22 @@ public class ShopNew extends Screen {
                 }
             }
         }
-        g.drawImage(Res.imgBar, 6 - countL, 18, 3);
-        g.drawRegion(Res.imgBar, 0, 0, 11, 7, 2, 122 + countR, 19, 3);
+        // pokemon: mũi tên đổi tab vàng viền tối
+        g.setColor(game.pokemon.GiaoDien.VIEN);
+        g.fillTriangle(1 - countL, 19, 10 - countL, 13, 10 - countL, 25);
+        g.fillTriangle(127 + countR, 19, 118 + countR, 13, 118 + countR, 25);
+        g.setColor(game.pokemon.GiaoDien.VANG);
+        g.fillTriangle(3 - countL, 19, 9 - countL, 15, 9 - countL, 23);
+        g.fillTriangle(125 + countR, 19, 119 + countR, 15, 119 + countR, 23);
         if (countL > 0) {
             countL = (byte) (countL - 1);
         }
         if (countR > 0) {
             countR = (byte) (countR - 1);
         }
-        g.setColor(7961465);
-        g.fillRect(21, 11, 88, 16);
-        g.fillRect(20, 12, 90, 14);
-        g.setColor(this.isChangeTab ? 30611 : 2368548);
-        g.fillRect(21, 12, 88, 14);
+        // pokemon: tên tab trên viên đỏ (đang chuyển tab: xanh)
+        game.pokemon.GiaoDien.khoi(g, 19, 10, 92, 18, 6, game.pokemon.GiaoDien.VIEN);
+        game.pokemon.GiaoDien.khoiDoc(g, 20, 11, 90, 16, 5, this.isChangeTab ? game.pokemon.GiaoDien.XANH_SANG : game.pokemon.GiaoDien.DO_SANG, this.isChangeTab ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.DO_TOI);
         g.setClip(21, 11, 88, 16);
         g.translate(-cmxname, 0);
         int wN = Font.normalFont[0].getWidth(this.name);

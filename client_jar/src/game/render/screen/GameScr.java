@@ -291,7 +291,7 @@ public class GameScr extends Screen {
     public static Quest currQuest = null;
     public static int timeDelayTask = 50;
     public static boolean cheat = false;
-    private static int[] colorMini = {6898216, 11897430, 14469298};
+    private static int[] colorMini = {0x1E2A44, 0xFFFFFF, 0x3D7DCA};   // pokemon: viền tối / trắng / xanh
     public static byte CHAT_NORMAL = 0;
     public static byte CHAT_TIM_BAN = 1;
     private static int[] colorSlot = {3158321, 88080384, 2122, 2037000, 256};
@@ -546,6 +546,10 @@ public class GameScr extends Screen {
         }
         this.posMiniMap.x = (Canvas.w - wMiniMap) - 1;
         this.posMiniMap.y = (Canvas.h - Screen.deltaY) - hMiniMap;
+        // pokemon: màn hẹp - hàng ô phím tắt chạm tới bản đồ nhỏ thì đưa bản đồ lên trên hàng ô
+        if (Res.imgPanel != null && Canvas.hw + Res.imgPanel.getWidth() / 2 > this.posMiniMap.x) {
+            this.posMiniMap.y = (Canvas.h - 16) - Res.imgPanel.getHeight() - hMiniMap - 2;
+        }
     }
 
     public void loadCamera() {
@@ -1539,6 +1543,14 @@ public class GameScr extends Screen {
         }
         if (Canvas.isKeyPressed(11)) {
             Vector menu = new Vector();
+            // pokemon: Menu nhanh của mod (Luyện cấp, Giao hàng, PK...) cho máy bấm phím
+            menu.addElement(new Command("Menu nhanh", new IAction() {
+                @Override
+                public void perform() {
+                    Canvas.endDlg();
+                    MenuNhanh.moBang();
+                }
+            }));
             menu.addElement(new Command("Chat", new IAction() {
                 @Override
                 public void perform() {
@@ -3049,10 +3061,21 @@ public class GameScr extends Screen {
             g.fillRect((p.x / 16) + addx, (p.y / 16) + addy, 3, 3);
         }
         Canvas.resetTrans(g);
-        Font.normalFontColor.drawString(g, nameMap, 2, Canvas.h - 30, 0);
+        // pokemon: tên vùng trong viên xanh ngay trên bản đồ nhỏ (không bị ô phím tắt che)
+        if (nameMap != null && nameMap.length() > 0) {
+            int wTen = Font.borderFont.getWidth(nameMap) + 10;
+            int xTen = Canvas.w - wTen - 1;
+            int yTen = this.posMiniMap.y - 16;
+            if (Res.imgPanel != null && this.posMiniMap.y + hMiniMap < Canvas.h - Screen.deltaY - 4) {
+                // màn hẹp (bản đồ nhỏ đã lên trên hàng ô): tên vùng ở góc trái, ngay trên hàng ô phím tắt
+                xTen = 2;
+                yTen = (Canvas.h - 16) - Res.imgPanel.getHeight() - 17;
+            }
+            game.pokemon.GiaoDien.vien(g, xTen, yTen, wTen, 15, game.pokemon.GiaoDien.XANH, nameMap);
+        }
         Font.smallFont.drawString(g, new StringBuffer(String.valueOf(this.mainChar.x / 16)).append(".").append(this.mainChar.y / 16).toString(), Canvas.w - 2, (Canvas.h - Screen.deltaY) - 7, 1);
         if (this.mainChar.nationID > -1) {
-            Font.normalFontColor.drawString(g, nameCountry[this.mainChar.inCountry], 2, Canvas.h - 42, 0);
+            Font.normalFontColor.drawString(g, nameCountry[this.mainChar.inCountry], Canvas.w - 2, this.posMiniMap.y - 31, 1);
         }
         int nsk = 0;
         if (this.skillClan != null) {
@@ -3511,41 +3534,60 @@ public class GameScr extends Screen {
         Font.borderFont.drawString(g, "Xóa", Canvas.w - 5, Canvas.h - Screen.deltaY, 1);
     }
 
+    /** pokemon: bề ngang khung thông tin nhân vật góc trái trên (kiểu khung HP trận đấu Pokémon). */
+    static int rongKhungHp() {
+        if (Canvas.w < 220) {
+            return Canvas.w / 2 - 2;
+        }
+        return 104;
+    }
+
     private void paintMainCharInfo(Graphics g) {
         if (this.hideGUI == 2) {
             return;
         }
         Canvas.resetTrans(g);
-        g.drawImage(imgInfo, 0, 0, 20);
-        // pokemon: chan dung Pokemon thay dau nhan vat o khung thong tin
+        // pokemon: khung trắng viền tối, chân dung trong vòng tròn, Lv + thanh HP (xanh->vàng->đỏ), PP, EXP
+        int W = rongKhungHp();
+        int H = imgInfo != null ? imgInfo.getHeight() : 34;
+        game.pokemon.GiaoDien.khoi(g, 1, 2, W, H - 1, 5, 0x0B1222);
+        game.pokemon.GiaoDien.khoi(g, 0, 0, W, H - 1, 5, game.pokemon.GiaoDien.VIEN);
+        game.pokemon.GiaoDien.khoiDoc(g, 2, 2, W - 4, H - 5, 3, game.pokemon.GiaoDien.TRANG, 0xE6EEF8);
+        g.setColor(game.pokemon.GiaoDien.VIEN);
+        g.fillArc(3, 3, 28, 28, 0, 360);
+        g.setColor(game.pokemon.GiaoDien.XANH_NHAT);
+        g.fillArc(5, 5, 24, 24, 0, 360);
         if (this.mainChar.pokeDex <= 0 || !game.pokemon.PokeBody.paintChanDung(g, this.mainChar.pokeDex, this.mainChar.pokeShiny, 17, 17, 22)) {
             Res.getCharPartInfo(2, this.mainChar.currentHead).paintStatic(g, (short) 20, (short) 18, 0, this.mainChar.frame);
         }
-        Font.borderFont.drawString(g, new StringBuffer("Lv ").append((int) this.mainChar.level).append("+").append(this.mainChar.getPercent()).toString(), 37, imgInfo.getHeight() - 9, 0);
+        Canvas.resetTrans(g);
+        Font.blackFont.drawString(g, new StringBuffer("Lv").append((int) this.mainChar.level).toString(), 35, 2, 0);
+        if (W >= 100) {
+            Font.arialFont.drawString(g, this.mainChar.getPercent(), W - 5, 2, 1);
+        }
+        int xb = 35;
+        int wb = W - xb - 5;
+        game.pokemon.GiaoDien.thanh(g, xb, 16, wb, 6, this.mainChar.hp, this.mainChar.maxhp, 0);
+        game.pokemon.GiaoDien.thanh(g, xb, 22, wb, 5, this.mainChar.mp, this.mainChar.maxmp, 1);
+        game.pokemon.GiaoDien.thanh(g, xb, 27, wb, 4, this.mainChar.lvpercent, 1000, 2);
         if (this.mainChar.killer > 0) {
-            Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) this.mainChar.killer)).toString(), 5, imgInfo.getHeight() + 2, 0);
+            Font.smallFont.drawString(g, new StringBuffer(String.valueOf((int) this.mainChar.killer)).toString(), 5, H + 2, 0);
         }
         if (this.mainChar.delay >= 0) {
             int[] t = this.mainChar.getTime();
-            Font.normalFont[0].drawString(g, new StringBuffer(String.valueOf(t[0])).append(" : ").append(t[1]).toString(), 5, imgInfo.getHeight() + 10, 0);
+            Font.borderFont.drawString(g, new StringBuffer(String.valueOf(t[0])).append(" : ").append(t[1]).toString(), 5, H + 10, 0);
         }
         String tm = this.mainChar.getGoldTime();
         if (!tm.equals("")) {
-            Font.normalFont[0].drawString(g, tm, 5, imgInfo.getHeight() + 20, 0);
-            Font.smallFontColor[0].drawString(g, Char.goldTime, 5, imgInfo.getHeight() + 34, 0);
+            Font.borderFont.drawString(g, tm, 5, H + 20, 0);
+            Font.smallFontColor[0].drawString(g, Char.goldTime, 5, H + 34, 0);
         }
-        int hpw = (this.mainChar.hp * this.HPBARW) / this.mainChar.maxhp;
-        int mpw = (this.mainChar.mp * this.HPBARW) / this.mainChar.maxmp;
-        g.setColor(0);
-        g.fillRect(46 + hpw, 8, (this.HPBARW - hpw) - 1, 3);
-        g.setColor(0);
-        g.fillRect(46 + mpw, 18, (this.HPBARW - mpw) - 1, 3);
         if (Canvas.gameTick % 10 > 3) {
             if (this.mainChar.basePointLeft > 0) {
-                g.drawImage(imgCong[0], Canvas.w - 2, imgInfo.getHeight() + 5, 24);
+                g.drawImage(imgCong[0], W - 2, H + 5, 24);
             }
             if (this.mainChar.skillPointLeft > 0) {
-                g.drawImage(imgCong[1], Canvas.w - 2, imgInfo.getHeight() + 16, 24);
+                g.drawImage(imgCong[1], W - 2, H + 16, 24);
             }
         }
     }
@@ -3564,24 +3606,25 @@ public class GameScr extends Screen {
         }
         int wSlot = Res.imgPanel.getWidth();
         int hSlot = Res.imgPanel.getHeight();
-        g.setColor(colorSlot[this.mainChar.clazz]);
-        g.fillRect((Canvas.hw - (wSlot / 2)) + 3, ((Canvas.h - 12) - hSlot) + xSlot, wSlot - 3, hSlot - 5);
+        // pokemon: 5 ô bo góc xanh đậm viền tối (thay khung gỗ); ô giữa viền vàng
+        int xSlot0 = Canvas.hw - (wSlot / 2);
+        int ySlot0 = ((Canvas.h - 16) - hSlot) + xSlot;
+        for (int k = 0; k < 5; k++) {
+            int xo = xSlot0 + (k * Res.wKhung);
+            game.pokemon.GiaoDien.khoi(g, xo + 1, ySlot0 + 1, Res.wKhung - 1, hSlot - 4, 4, k == 2 ? game.pokemon.GiaoDien.VANG : game.pokemon.GiaoDien.VIEN);
+            game.pokemon.GiaoDien.khoiDoc(g, xo + 3, ySlot0 + 3, Res.wKhung - 5, hSlot - 8, 2, game.pokemon.GiaoDien.THAN_TREN, game.pokemon.GiaoDien.THAN_DUOI);
+        }
         int i = 0;
         while (i < 5) {
             if (MainChar.quickSlot[indexTabSlot][i] != null) {
                 MainChar.quickSlot[indexTabSlot][i].paint(g, (((Canvas.hw - (wSlot / 2)) + (i * Res.wKhung)) + (Res.wKhung / 2)) - 8, (((((Canvas.h - 16) - 6) + (Res.wKhung / 2)) - hSlot) + xSlot) - (i == 2 ? 1 : 0));
             }
-            Font.borderFont.drawString(g, new StringBuffer(String.valueOf(1 + (i * 2))).toString(), ((((Canvas.hw - (wSlot / 2)) + (i * Res.wKhung)) + (Res.wKhung / 2)) + (Res.wKhung / 2)) - 14, ((((Canvas.h - 16) - 10) - hSlot) + xSlot) - (i == 2 ? 2 : 0), 2);
+            Font.smallFontColor[0].drawString(g, new StringBuffer(String.valueOf(1 + (i * 2))).toString(), xSlot0 + (i * Res.wKhung) + 4, ySlot0 + 3, 0);
             i++;
         }
-        g.drawImage(Res.imgPanel, Canvas.hw - (wSlot / 2), ((Canvas.h - 16) - hSlot) + xSlot, 0);
         if (Canvas.currentScreen == this && !this.chatMode) {
             paintSoftIcon(g);
         }
-        g.setColor(9043835);
-        g.fillRect(Canvas.hw - 50, Canvas.h - Screen.deltaY, this.mainChar.lvpercent / 10, 1);
-        g.setColor(1422592);
-        g.fillRect(Canvas.hw - 50, Canvas.h - Screen.deltaY, this.mainChar.lvpercent / 10, 1);
     }
 
     private void paintSoftIcon(Graphics g) {
@@ -3595,24 +3638,55 @@ public class GameScr extends Screen {
         }
         Canvas.resetTrans(g);
         if (!this.isAutoRangeWhenAuto && this.focusedActor != null) {
-            if (this.focusedActor.catagory != 10 && this.focusedActor.catagory != 11 && this.focusedActor.catagory != 12) {
-                Font.normalFontColor.drawString(g, this.focusedActor.getDisplayName(), Canvas.w - 30, 0, 1);
-                this.focusedActor.paintCorner(g, Canvas.w - 15, 20);
-            }
+            // pokemon: khung đối thủ góc phải trên kiểu trận đấu Pokémon - tên, Lv, thanh HP, chân dung
+            boolean coMau = false;
+            LiveActor la = null;
             if (this.focusedActor.catagory == 0 || this.focusedActor.catagory == 1) {
-                LiveActor focusedActor = (LiveActor) this.focusedActor;
-                if (focusedActor.maxhp != 0 && focusedActor.idBoss == -1) {
-                    Canvas.resetTrans(g);
-                    g.drawImage(imgHpMonster, Canvas.w - 80, 14, 20);
-                    long hp = focusedActor.hp;
-                    int hpw = (int) ((hp * ((long) this.HPBARW_MONSTER)) / ((long) focusedActor.maxhp));
-                    if (focusedActor.hp <= 0) {
-                        hpw = 0;
+                la = (LiveActor) this.focusedActor;
+                coMau = la.maxhp != 0 && la.idBoss == -1;
+            }
+            boolean coTen = this.focusedActor.catagory != 10 && this.focusedActor.catagory != 11 && this.focusedActor.catagory != 12;
+            if (!coTen && !coMau) {
+                return;
+            }
+            int W = rongKhungHp();
+            int H = coMau ? 34 : 22;
+            int x0 = Canvas.w - W;
+            game.pokemon.GiaoDien.khoi(g, x0 + 1, 2, W - 1, H - 1, 5, 0x0B1222);
+            game.pokemon.GiaoDien.khoi(g, x0, 0, W, H - 1, 5, game.pokemon.GiaoDien.VIEN);
+            game.pokemon.GiaoDien.khoiDoc(g, x0 + 2, 2, W - 4, H - 5, 3, game.pokemon.GiaoDien.TRANG, 0xF8E8E4);
+            g.setColor(game.pokemon.GiaoDien.VIEN);
+            g.fillArc(Canvas.w - 32, 3, 28, 28, 0, 360);
+            g.setColor(0xF8D8D0);
+            g.fillArc(Canvas.w - 30, 5, 24, 24, 0, 360);
+            if (coTen) {
+                String ten = this.focusedActor.getDisplayName();
+                if (ten == null) {
+                    ten = "";
+                }
+                int wTen = W - 40;
+                if (ten != null && Font.blackFont.getWidth(ten) > wTen) {
+                    while (ten.length() > 2 && Font.blackFont.getWidth(new StringBuffer(ten).append("..").toString()) > wTen) {
+                        ten = ten.substring(0, ten.length() - 1);
                     }
-                    g.setColor(2368805);
-                    g.fillRect(Canvas.w - 79, 15, this.HPBARW_MONSTER - hpw, 3);
-                    Font.smallFont.drawString(g, new StringBuffer(String.valueOf(focusedActor.hp > 0 ? focusedActor.hp : 1)).append("/").append(focusedActor.maxhp).toString(), (Canvas.w - 10) - (this.HPBARW_MONSTER >> 1), 22, 1);
-                    Font.smallFontColor[0].drawString(g, new StringBuffer("lv").append((int) focusedActor.level).toString(), Canvas.w - 2, 22, 1);
+                    ten = new StringBuffer(ten).append("..").toString();
+                }
+                Font.blackFont.drawString(g, ten, x0 + 5, 2, 0);
+                g.setClip(Canvas.w - 30, 5, 25, 25);
+                this.focusedActor.paintCorner(g, Canvas.w - 18, 25);
+                Canvas.resetTrans(g);
+            }
+            if (coMau) {
+                long hp = la.hp <= 0 ? 0 : la.hp;
+                game.pokemon.GiaoDien.thanh(g, x0 + 5, 18, W - 40, 6, hp, la.maxhp, 0);
+                String so = new StringBuffer(String.valueOf(la.hp > 0 ? la.hp : 1)).append("/").append(la.maxhp).toString();
+                int wSo = Font.smallFont.getWidth(so) + 6;
+                game.pokemon.GiaoDien.khoi(g, x0 + 5, 25, wSo, 7, 2, game.pokemon.GiaoDien.VIEN);
+                Font.smallFont.drawString(g, so, x0 + 8, 26, 0);
+                String sLv = new StringBuffer("lv").append((int) la.level).toString();
+                int xLv = x0 + 8 + wSo;
+                if (xLv + Font.smallFontColor[2].getWidth(sLv) <= Canvas.w - 32) {
+                    Font.smallFontColor[2].drawString(g, sLv, xLv, 24, 0);
                 }
             }
         }
@@ -8017,7 +8091,8 @@ public class GameScr extends Screen {
     public static void paint12plus(Graphics g) {
         Canvas.resetTrans(g);
         if (img12plus != null) {
-            int dy = 15;
+            // pokemon: trong game nằm dưới khung HP; màn khác ở góc trái dưới (không đè biển tên / khung HP)
+            int dy = Canvas.h - 20 - img12plus.getHeight();
             if (Canvas.currentScreen == Canvas.gameScr) {
                 dy = 40;
             }

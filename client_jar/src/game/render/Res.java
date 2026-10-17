@@ -224,7 +224,8 @@ public class Res {
         quanao.addElement(new Hashtable());
         treeInfos = new Hashtable();
         potionTemplates = new PotionTemplate[Char.CHAR_POTION];
-        color = new int[]{8346120, 15852810, 14527502, 14595691, 11241794, 4858880, 2181450};
+        // pokemon: 3 màu viền khung đầu (dùng lẻ ở PaintPopup, Mystore...) đổi sang viền tối / trắng / xanh
+        color = new int[]{0x1E2A44, 0xFFFFFF, 0x3D7DCA, 14595691, 11241794, 4858880, 2181450};
         wh = 6;
         stMoney = "xu";
         stVND = "lượng";
@@ -243,12 +244,9 @@ public class Res {
     }
 
     public static void createTab() {
-        int n = (Canvas.w / 2) + 1;
+        // pokemon: thanh phím mềm navy, mép đỏ (thay dải hoa văn kc)
         imgCmdBar = Image.createImage(Canvas.w, imgKc.getHeight());
-        Graphics g = imgCmdBar.getGraphics();
-        for (int i = 0; i < n; i++) {
-            g.drawImage(imgKc, i * 2, 0, 0);
-        }
+        game.pokemon.GiaoDien.thanhPhim(imgCmdBar.getGraphics(), Canvas.w, imgKc.getHeight());
     }
 
     public static void setEffSh(byte[] arr) {
@@ -849,65 +847,19 @@ public class Res {
     }
 
     public static void paintDlgFull(Graphics g, int x, int y) {
-        int x2 = x - 10;
-        int yy = y + 14;
-        g.drawImage(imgInv[2], x2 + 15, yy, 20);
-        g.drawImage(imgInv[2], x2 + 85, yy, 20);
-        g.drawImage(imgInv[2], x2 + 15, yy + 46, 20);
-        g.drawImage(imgInv[2], x2 + 85, yy + 46, 20);
-        if (Canvas.currentScreen == CreateCharScr.gI()) {
-            g.drawImage(imgInv[2], x2 + 15, (yy + 92) - 10, 20);
-            g.drawImage(imgInv[2], x2 + 85, (yy + 92) - 10, 20);
-        } else {
-            g.drawImage(imgInv[2], x2 + 15, yy + 92, 20);
-            g.drawImage(imgInv[2], x2 + 85, yy + 92, 20);
-            g.drawImage(imgInv[2], x2 + 15, yy + 92 + 5, 20);
-            g.drawImage(imgInv[2], x2 + 85, yy + 92 + 5, 20);
-        }
-        int xc = x2 + 12;
-        int yc = y + 11;
+        // pokemon: khung bảng xanh viền trắng thay khung vàng/ngọc kiếm hiệp
         int h = Canvas.currentScreen == CreateCharScr.gI() ? 129 : 144;
-        for (int i = 0; i < 3; i++) {
-            g.setColor(color[i]);
-            g.drawRect(xc + i, yc + i, 144 - (i * 2), (h - (i * 2)) + 5);
-        }
-        g.drawImage(imgInv[0], x2 + 10, y + 9, 20);
-        g.drawRegion(imgInv[0], 0, 0, 18, 19, 2, x2 + 159, y + 9, 24);
-        if (Canvas.currentScreen == CreateCharScr.gI()) {
-            g.drawRegion(imgInv[0], 0, 0, 18, 19, 6, x2 + 10, y + 148, 36);
-            g.drawRegion(imgInv[0], 0, 0, 18, 19, 3, x2 + 159, y + 148, 40);
-        } else {
-            g.drawRegion(imgInv[0], 0, 0, 18, 19, 6, x2 + 10, y + 163, 36);
-            g.drawRegion(imgInv[0], 0, 0, 18, 19, 3, x2 + 159, y + 163, 40);
-        }
+        game.pokemon.GiaoDien.bang(g, x + 2, y + 11, 145, h + 6);
     }
 
     public static void paintSelected(Graphics g, int x, int y, int w, int h) {
-        g.setColor(34949);
-        g.fillRect(x, y, w, h);
-        g.setColor(11908790);
-        g.drawRect(x, y, w, h);
+        // pokemon: ô chọn xanh sáng viền vàng
+        game.pokemon.GiaoDien.chon(g, x, y, w + 1, h + 1);
     }
 
     public static void paintDlgDragonFull(Graphics g, int x, int y, int w, int h) {
-        int nW = (w / 70) + 1;
-        int nH = (h / 47) + 1;
-        g.setClip(x, y, w, h);
-        for (int i = 0; i < nW; i++) {
-            for (int j = 0; j < nH; j++) {
-                g.drawImage(imgInv[2], x + (i * 70), y + (j * 47), 0);
-            }
-        }
-        g.setClip(0, 0, Canvas.w, Canvas.h);
-        for (int i2 = 0; i2 < 3; i2++) {
-            g.setColor(color[i2]);
-            g.drawRect(x + i2, y + i2, w - (i2 * 2), h - (i2 * 2));
-        }
-        g.drawImage(imgInv[0], x - 2, y - 2, 0);
-        g.drawRegion(imgInv[0], 0, 0, 18, 19, 2, (x + w) - 15, y - 2, 0);
-        g.drawRegion(imgInv[0], 0, 0, 18, 19, 6, x - 2, (y + h) - 15, 0);
-        g.drawRegion(imgInv[0], 0, 0, 18, 19, 3, (x + w) - 15, (y + h) - 16, 0);
-        g.drawImage(imgInv[1], x + (w / 2), y - 4, 3);
+        // pokemon: bảng xanh đậm viền trắng + viền tối (chữ trắng của game vẫn đọc rõ)
+        game.pokemon.GiaoDien.bang(g, x, y, w, h);
     }
 
     public static void paintRectColor(Graphics g, int x, int y, int w, int h, int count, int color1, int color2) {
@@ -946,57 +898,26 @@ public class Res {
     }
 
     public static void paintDlgFull(Graphics g, int x, int y, int w, int h) {
-        int aa = (w / 70) + 1;
-        g.setClip(x, y, w, h);
-        for (int i = 0; i < aa; i++) {
-            g.drawImage(imgInv[2], x + (70 * i), y, 0);
-        }
-        g.setColor(277044);
-        g.fillRect(x, y + 25, w, h);
-        g.setClip(0, 0, Canvas.w, Canvas.h);
-        for (int i2 = 0; i2 < 3; i2++) {
-            g.setColor(color[i2]);
-            g.drawRect(x + i2, y + i2, (w - (i2 * 2)) - 1, (h - (i2 * 2)) - 1);
-            g.fillRect(x + 3, y + 25, w - 6, 1);
-        }
-        g.drawImage(imgInv[0], x - 2, y - 2, 0);
-        g.drawRegion(imgInv[0], 0, 0, 18, 19, 2, x + w + 2, y - 2, 24);
-        g.drawRegion(imgInv[0], 0, 0, 18, 19, 6, x - 2, y + h + 2, 36);
-        g.drawRegion(imgInv[0], 0, 0, 18, 19, 3, x + w + 2, y + h + 2, 40);
+        // pokemon: bảng xanh + dải tiêu đề đỏ cao 25 px (vùng tiêu đề của khung gốc)
+        game.pokemon.GiaoDien.bangTieuDe(g, x - 2, y - 2, w + 4, h + 4, 29, null);
     }
 
     public static void paintDlgFull(Graphics g, int x, int y, int w, int h, int y1, String tile, boolean isDD, int h0) {
-        int aa = (w / 70) + 1;
-        g.setClip(x, y, w, h);
-        for (int i = 0; i < aa; i++) {
-            g.drawImage(imgInv[2], x + (70 * i), y, 0);
+        // pokemon: bảng xanh + dải tiêu đề đỏ, vạch ngăn trắng mờ
+        game.pokemon.GiaoDien.bangTieuDe(g, x - 2, y - 2, w + 4, h + 4, 29, tile);
+        g.setColor(game.pokemon.GiaoDien.XANH_SANG);
+        g.fillRect(x + 4, y + 25 + y1 + h0, w - 8, 1);
+        if (isDD) {
+            g.fillRect(x + 4, ((y + y1) + h0) - 2, w - 8, 1);
         }
-        g.setColor(277044);
-        g.fillRect(x, y + 25, w, h);
-        g.setClip(0, 0, Canvas.w, Canvas.h);
-        for (int i2 = 0; i2 < 3; i2++) {
-            g.setColor(color[i2]);
-            g.drawRect(x + i2, y + i2, (w - (i2 * 2)) - 1, (h - (i2 * 2)) - 1);
-        }
-        g.fillRect(x + 3, y + 25, w - 6, 1);
-        if (!isDD) {
-            g.fillRect(x + 3, y + 25 + y1 + h0, w - 6, 1);
-        } else {
-            g.fillRect(x + 3, y + 25 + y1 + h0, w - 6, 1);
-            g.fillRect(x + 3, ((y + y1) + h0) - 2, w - 6, 1);
-        }
-        Font.normalFont[0].drawString(g, tile, x + (w / 2), y + 8, 2);
-        g.drawImage(imgInv[0], x - 2, y - 2, 0);
-        g.drawRegion(imgInv[0], 0, 0, 18, 19, 2, x + w + 2, y - 2, 24);
-        g.drawRegion(imgInv[0], 0, 0, 18, 19, 6, x - 2, y + h + 2, 36);
-        g.drawRegion(imgInv[0], 0, 0, 18, 19, 3, x + w + 2, y + h + 2, 40);
     }
 
     public static void drawRect(Graphics g, int x, int y, int w, int h) {
-        for (int i = 0; i < 3; i++) {
-            g.setColor(color[i]);
-            g.drawRect(x + i, y + i, w - (i * 2), h - (i * 2));
-        }
+        // pokemon: viền tối + viền trắng thay 3 viền vàng
+        g.setColor(game.pokemon.GiaoDien.VIEN);
+        g.drawRect(x, y, w, h);
+        g.setColor(game.pokemon.GiaoDien.TRANG);
+        g.drawRect(x + 1, y + 1, w - 2, h - 2);
     }
 
     public static int[] trimArray(int[] array) {

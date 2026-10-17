@@ -281,7 +281,7 @@ public class ServerListScr extends Screen {
         paintBg(g);
         Canvas.resetTrans(g);
         // pokemon: tieu de ThuongHieu (ten game + 5 Pokemon khoi dau) thay logo game goc
-        if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 120), Canvas.w, Canvas.hh - 32)) {
+        if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 125), Canvas.w, Canvas.hh - 56)) {
             g.drawImage(Canvas.getLogo(), Canvas.hw, Canvas.hh - 70, 3);
         }
         paintPanel(g);
@@ -289,17 +289,27 @@ public class ServerListScr extends Screen {
     }
 
     private void paintPanel(Graphics g) {
-        Res.paintDlgDragonFull(g, Canvas.hw - 70, (Canvas.hh - 50) + 20, 140, 100);
+        // pokemon: hộp thoại trắng + dải đỏ "Chọn máy chủ", máy chủ đang chọn nền vàng + mũi tên
+        int hDs = nameServer == null ? 1 : nameServer.length;
+        if (hDs > 6) {
+            hDs = 6;
+        }
+        if (hDs < 2) {
+            hDs = 2;
+        }
+        game.pokemon.GiaoDien.hop(g, Canvas.hw - 72, Canvas.hh - 52, 144, 36 + hDs * 16);
+        game.pokemon.GiaoDien.dai(g, Canvas.hw - 69, Canvas.hh - 49, 138, 18, "Chọn máy chủ");
         g.setClip(Canvas.hw - 69, Canvas.hh - 28, this.w, this.h);
         g.translate(0, -cmy);
         if (index != -1) {
-            g.setColor(11908790);
-            g.fillRect(Canvas.hw - 61, (Canvas.hh - 21) + (index * 16), 122, 18);
-            g.setColor(34949);
-            g.fillRect(Canvas.hw - 60, (Canvas.hh - 20) + (index * 16), 120, 16);
+            game.pokemon.GiaoDien.chonSang(g, Canvas.hw - 64, (Canvas.hh - 22) + (index * 16), 128, 17);
+            game.pokemon.GiaoDien.muiTen(g, Canvas.hw - 60, (Canvas.hh - 17) + (index * 16), 6, game.pokemon.GiaoDien.VIEN);
         }
         for (int i = 0; i < nameServer.length; i++) {
-            Font.normalFont[0].drawString(g, TaiDanhSach.tenHien(nameServer[i], i), Canvas.hw, (Canvas.hh - 19) + (i * 16), 2);   // pokemon: an ten game cu
+            if (i != index) {
+                game.pokemon.GiaoDien.pokeBall(g, Canvas.hw - 56, (Canvas.hh - 13) + (i * 16), 4, 0);
+            }
+            Font.blackFont.drawString(g, TaiDanhSach.tenHien(nameServer[i], i), Canvas.hw + 4, (Canvas.hh - 20) + (i * 16), 2);   // pokemon: an ten game cu
         }
     }
 

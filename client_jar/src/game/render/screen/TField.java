@@ -456,18 +456,16 @@ public class TField extends ObjGame {
         } else {
             this.paintedText = this.text;
         }
+        // pokemon: ô nhập trắng viền xám; đang gõ: viền xanh dày, nền vàng rất nhạt
         if (isFocus) {
             if (this.paintFocus) {
-                g.setColor(16767892);
-                g.fillRect(this.x + 1, this.y + 1, this.width - 1, this.height - 1);
-                g.setColor(7950336);
+                game.pokemon.GiaoDien.khoi(g, this.x, this.y, this.width + 1, this.height + 1, 3, game.pokemon.GiaoDien.XANH);
+                game.pokemon.GiaoDien.khoi(g, this.x + 2, this.y + 2, this.width - 3, this.height - 3, 2, 0xFFFBE6);
             }
         } else {
-            g.setColor(11768142);
-            g.fillRect(this.x + 1, this.y + 1, this.width - 1, this.height - 1);
-            g.setColor(5979911);
+            game.pokemon.GiaoDien.khoi(g, this.x, this.y, this.width + 1, this.height + 1, 3, game.pokemon.GiaoDien.XAM_TOI);
+            game.pokemon.GiaoDien.khoi(g, this.x + 1, this.y + 1, this.width - 1, this.height - 1, 2, game.pokemon.GiaoDien.KEM);
         }
-        g.drawRect(this.x + 1, this.y + 1, this.width - 2, this.height - 2);
         g.setClip(this.x + 3, this.y + 1, (this.width - typingModeAreaWidth) - 8, this.height - 4);
         g.setColor(0);
         // pokemon (G7.C3): chu nguoi choi dang go giu nguyen (khong qua ChuPokemon)

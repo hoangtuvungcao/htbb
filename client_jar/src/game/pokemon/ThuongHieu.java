@@ -35,48 +35,80 @@ public final class ThuongHieu {
         return veTieuDe(g, xTam, yTam, rongToiDa, 100000);
     }
 
-    /** Nhu tren; dong gioi thieu nao vuot qua yDay (dinh khung ben duoi) thi bo. */
+    /**
+     * Nhu tren; dong gioi thieu nao vuot qua yDay (dinh khung ben duoi) thi bo. Tat ca nam tren mot
+     * "bien ten" trang vien toi, dai do chua ten game (GiaoDien.bienTen) de doc ro tren nen ban do.
+     */
     public static boolean veTieuDe(Graphics g, int xTam, int yTam, int rongToiDa, int yDay) {
         if (!PokeBody.CHE_DO_POKEMON) {
             return false;
         }
-        boolean daVe = false;
         int khoang = 38;
         int canh = 32;
-        if (rongToiDa > 0 && khoang * SO_KHOI_DAU > rongToiDa - 6) {
-            khoang = (rongToiDa - 6) / SO_KHOI_DAU;
+        if (rongToiDa > 0 && khoang * SO_KHOI_DAU > rongToiDa - 18) {
+            khoang = (rongToiDa - 18) / SO_KHOI_DAU;
             canh = khoang - 4;
         }
-        int x0 = xTam - (SO_KHOI_DAU - 1) * khoang / 2;
-        int yChanDung = yTam + 16 + canh / 2;
-        for (int i = 0; i < SO_KHOI_DAU; i++) {
-            int dex = LoaiPokemonClient.khoiDau(i);
-            if (dex > 0 && PokeBody.paintChanDung(g, dex, false, x0 + i * khoang, yChanDung, canh)) {
-                daVe = true;
-            }
+        int yAnh = yTam + 15;
+        if (yAnh + canh + 4 > yDay) {
+            canh = yDay - 4 - yAnh;
         }
+        boolean coAnh = canh >= 14;
+        int yChu = coAnh ? yAnh + canh + 2 : yAnh;
+        int soDong = 0;
+        if (yChu + 14 <= yDay - 2) {
+            soDong = 1;
+        }
+        if (yChu + 27 <= yDay - 2) {
+            soDong = 2;
+        }
+        int day = yChu + soDong * 13 + 3;
+        int wP = SO_KHOI_DAU * khoang + 14;
+        if (rongToiDa > 0 && wP > rongToiDa - 6) {
+            wP = rongToiDa - 6;
+        }
+        boolean daVe = false;
         try {
+            GiaoDien.hop(g, xTam - wP / 2, yTam - 14, wP, day - yTam + 16);
+            GiaoDien.khoiDoc(g, xTam - wP / 2 + 3, yTam - 11, wP - 6, 22, 3, GiaoDien.DO_SANG, GiaoDien.DO_TOI);
+            g.setColor(GiaoDien.VIEN);
+            g.fillRect(xTam - wP / 2 + 3, yTam + 11, wP - 6, 1);
             Font chu = Font.bigFont;
             String ten = TEN_GAME_HOA;
-            if (chu == null || rongToiDa > 0 && chu.getWidth(ten) > rongToiDa - 4) {
+            if (chu == null || rongToiDa > 0 && chu.getWidth(ten) > wP - 30) {
                 chu = Font.borderFont != null ? Font.borderFont : Font.normalFont[0];
                 ten = TEN_GAME;
             }
             if (chu != null) {
-                chu.drawString(g, ten, xTam, yTam - 8, Font.CENTER);
+                chu.drawString(g, ten, xTam, chu == Font.bigFont ? yTam - 9 : yTam - 7, Font.CENTER);
                 daVe = true;
             }
-            if (Font.normalFont[0] != null) {
-                int y = yChanDung + canh / 2 + 2;
-                if (y + 13 <= yDay) {
-                    Font.normalFont[0].drawString(g, GIOI_THIEU, xTam, y, Font.CENTER);
-                }
-                if (y + 27 <= yDay) {
-                    Font.normalFont[0].drawString(g, GIOI_THIEU_2, xTam, y + 14, Font.CENTER);
-                }
+            if (chu != null && chu.getWidth(ten) + 34 < wP) {
+                GiaoDien.pokeBall(g, xTam - wP / 2 + 13, yTam, 6, 0);
+                GiaoDien.pokeBall(g, xTam + wP / 2 - 13, yTam, 6, 0);
             }
         } catch (Throwable e) {
             // font chua nap (man tai dau tien): chi co chan dung cung du
+        }
+        if (coAnh) {
+            int x0 = xTam - (SO_KHOI_DAU - 1) * khoang / 2;
+            for (int i = 0; i < SO_KHOI_DAU; i++) {
+                int dex = LoaiPokemonClient.khoiDau(i);
+                if (dex > 0 && PokeBody.paintChanDung(g, dex, false, x0 + i * khoang, yAnh + canh / 2, canh)) {
+                    daVe = true;
+                }
+            }
+        }
+        try {
+            Font f = Font.arialFont != null ? Font.arialFont : Font.normalFont[0];
+            if (soDong >= 1) {
+                f.drawString(g, GIOI_THIEU, xTam, yChu, Font.CENTER);
+            }
+            if (soDong >= 2) {
+                f.drawString(g, GIOI_THIEU_2, xTam, yChu + 13, Font.CENTER);
+            }
+        } catch (Throwable e) {
+            // font chua nap
         }
         return daVe;
     }

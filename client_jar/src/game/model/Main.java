@@ -33,14 +33,31 @@ public abstract class Main {
         if (MessageScr.nMSG > 0) {
             g.drawImage(Res.imgMSG, Canvas.w - 7, 7, 3);
         }
-        if (GameScr.msgWorld.size() <= 0 && ImgBpa != null) {
-            g.drawImage(ImgBpa, Canvas.hw, 0, 17);
+        if (GameScr.msgWorld.size() <= 0 && ImgBpa != null && (Canvas.currentScreen == Canvas.gameScr || Canvas.isVirTualKey)) {
+            // pokemon: ngoài màn chơi đặt nút bàn phím ở góc phải trên (không đè biển tên game)
+            g.drawImage(ImgBpa, xBanPhim(), yBanPhim(), 17);
         }
+    }
+
+    /** Tâm ngang nút bàn phím ảo: giữa màn trong game, góc phải trên ở màn tiêu đề / đăng nhập. */
+    static int xBanPhim() {
+        if (ImgBpa == null || Canvas.currentScreen == Canvas.gameScr && Canvas.w >= 220) {
+            return Canvas.hw;
+        }
+        return Canvas.w - (ImgBpa.getWidth() >> 1) - 2;
+    }
+
+    /** Màn chơi hẹp (khung HP + khung đối thủ chiếm hết mép trên): nút bàn phím xuống dưới khung đối thủ. */
+    static int yBanPhim() {
+        if (Canvas.currentScreen == Canvas.gameScr && Canvas.w < 220) {
+            return 36;
+        }
+        return 0;
     }
 
     public void updateKey() {
         if (Canvas.isPointerClick) {
-            if (ImgBpa != null && Canvas.isPointer(Canvas.hw - 40, 0, 80, 20)) {
+            if (ImgBpa != null && (Canvas.currentScreen == Canvas.gameScr || Canvas.isVirTualKey) && Canvas.isPointer(xBanPhim() - 40, yBanPhim(), 80, 20)) {
                 if (Canvas.currentScreen == Canvas.gameScr) {
                     if (!Canvas.isVirTualKey) {
                         Vector menu = new Vector();

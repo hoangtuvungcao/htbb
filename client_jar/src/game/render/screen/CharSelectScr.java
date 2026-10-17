@@ -137,52 +137,106 @@ public class CharSelectScr extends Screen {
         return LoaiPokemonClient.duDoan(c.weaponType - 3, cap);
     }
 
+    /** pokemon: bề ngang một thẻ Pokédex (3 thẻ vừa màn). */
+    private static int rongThe() {
+        int w = (Canvas.w - 20) / 3 - 4;
+        return w > 72 ? 72 : w;
+    }
+
+    private static int xThe(int i) {
+        int cw = rongThe();
+        return Canvas.hw - (3 * cw + 8) / 2 + i * (cw + 4);
+    }
+
+    private static int yThe() {
+        return Canvas.hh - 62;
+    }
+
+    private static final int CAO_THE = 104;
+
     @Override
     public void paint(Graphics g) {
         ServerListScr.gI().paintBg(g);
         Canvas.resetTrans(g);
-        Font.borderFont.drawString(g, "Chọn nhân vật:", Canvas.hw, Canvas.hh - 65, 2);
-        int xStart = Canvas.hw - 60;
-        int yStart = Canvas.hh - 30;
-        int i = 0;
-        int x = xStart;
-        while (i < 3) {
-            if (i == this.selected) {
-                g.setColor(15769344);
-                if (i < this.charInfos.length) {
-                    int i2 = (this.charInfos.length <= 0 || this.charInfos[i].using == 1) ? 15769344 : 2205861;
-                    g.setColor(i2);
-                }
-            } else {
-                g.setColor(10644224);
-                if (i < this.charInfos.length) {
-                    int i3 = (this.charInfos.length <= 0 || this.charInfos[i].using == 1) ? 10644224 : 34949;
-                    g.setColor(i3);
-                }
+        // pokemon: 3 thẻ kiểu Pokédex - dải đỏ số thứ tự, Pokémon trong vòng sáng, tên, Lv, huy hiệu hệ
+        int cw = rongThe();
+        int xKhung = xThe(0) - 8;
+        int wKhung = 3 * cw + 8 + 16;
+        game.pokemon.GiaoDien.bang(g, xKhung, yThe() - 30, wKhung, CAO_THE + 76);
+        game.pokemon.GiaoDien.dai(g, xKhung + 4, yThe() - 26, wKhung - 8, 18, "Chọn nhân vật");
+        for (int i = 0; i < 3; i++) {
+            int x = xThe(i);
+            int y = yThe();
+            boolean chon = i == this.selected;
+            boolean co = this.charInfos != null && i < this.charInfos.length && this.chars != null && i < this.chars.length;
+            if (chon) {
+                game.pokemon.GiaoDien.khoi(g, x - 2, y - 2, cw + 4, CAO_THE + 4, 7, game.pokemon.GiaoDien.VANG);
             }
-            g.fillRect(x + 3, yStart - 10, 34, 84);
-            g.setColor(1379840);
-            g.drawRect(x + 3, yStart - 10, 34, 84);
-            if (i < this.chars.length) {
-                this.chars[i].x = (short) (x + 20);
-                this.chars[i].y = (short) (yStart + 64);
-                int dexDoan = duDoanDex(this.chars[i], i < this.charInfos.length ? this.charInfos[i].lastLv : 1);
-                if (dexDoan <= 0 || !PokeBody.paint(g, dexDoan, false, this.chars[i].x, this.chars[i].y, 0, PokeDuLieu.DUNG, Canvas.gameTick, 100)) {
-                    this.chars[i].paintAvatar(g, this.chars[i].x, this.chars[i].y);
-                }
+            game.pokemon.GiaoDien.khoi(g, x, y, cw, CAO_THE, 5, game.pokemon.GiaoDien.VIEN);
+            if (!co) {
+                game.pokemon.GiaoDien.khoi(g, x + 2, y + 2, cw - 4, CAO_THE - 4, 4, chon ? 0xDCE8F6 : 0xB9C6D8);
+                int cx = x + cw / 2;
+                int cy = y + 42;
+                g.setColor(chon ? game.pokemon.GiaoDien.XANH : game.pokemon.GiaoDien.XAM_TOI);
+                g.fillRect(cx - 9, cy - 2, 18, 5);
+                g.fillRect(cx - 2, cy - 9, 5, 18);
+                Font.blackFont.drawString(g, "Tạo mới", cx, y + CAO_THE - 26, 2);
+                continue;
             }
-            i++;
-            x += 40;
+            MainChar c = this.chars[i];
+            int lv = this.charInfos[i].lastLv > 0 ? this.charInfos[i].lastLv : 1;
+            game.pokemon.GiaoDien.khoiDoc(g, x + 2, y + 2, cw - 4, CAO_THE - 4, 4, game.pokemon.GiaoDien.TRANG, 0xE4ECF7);
+            game.pokemon.GiaoDien.khoiDoc(g, x + 2, y + 2, cw - 4, 14, 3, game.pokemon.GiaoDien.DO_SANG, game.pokemon.GiaoDien.DO_TOI);
+            Font.smallFontColor[0].drawString(g, new StringBuffer("no").append(i + 1).toString(), x + 5, y + 5, 0);
+            if (this.charInfos[i].using != 1) {
+                Font.smallFontColor[1].drawString(g, "khoa", x + cw - 4, y + 5, 1);
+            }
+            // vòng sáng sau Pokémon
+            int cx = x + cw / 2;
+            g.setColor(chon ? 0xBFE0FF : game.pokemon.GiaoDien.XANH_NHAT);
+            g.fillArc(cx - 22, y + 46, 44, 14, 0, 360);
+            c.x = (short) cx;
+            c.y = (short) (y + 54);
+            int dexDoan = duDoanDex(c, lv);
+            g.setClip(x + 2, y + 16, cw - 4, 44);
+            if (dexDoan <= 0 || !PokeBody.paint(g, dexDoan, false, c.x, c.y, 0, PokeDuLieu.DUNG, Canvas.gameTick, 150)) {
+                c.paintAvatar(g, c.x, c.y);
+            }
+            Canvas.resetTrans(g);
+            String ten = this.charInfos[i].name == null ? "" : this.charInfos[i].name;
+            while (ten.length() > 2 && Font.blackFont.getWidth(ten) > cw - 6) {
+                ten = ten.substring(0, ten.length() - 1);
+            }
+            Font.blackFont.drawString(g, ten, cx, y + 61, 2);
+            Font.arialFont.drawString(g, new StringBuffer("Lv ").append(lv).toString(), cx, y + 74, 2);
+            if (c.weaponType >= 3 && c.weaponType <= 7) {
+                String he = LoaiPokemonClient.HE_KHOI_DAU[c.weaponType - 3];
+                String chu = he.startsWith("Hệ ") ? he.substring(3) : he;
+                int wb = Font.borderFont.getWidth(chu) + 10;
+                if (wb > cw - 6) {
+                    wb = cw - 6;
+                }
+                game.pokemon.GiaoDien.vien(g, cx - wb / 2, y + CAO_THE - 17, wb, 14, game.pokemon.GiaoDien.mauHe(he), chu);
+            }
         }
-        if (this.selected < this.chars.length) {
-            Font.borderFont.drawString(g, new StringBuffer(String.valueOf(this.charInfos[this.selected].name)).append(" lv: ").append((int) (this.charInfos[this.selected].lastLv > 0 ? this.charInfos[this.selected].lastLv : (short) 1)).toString(), Canvas.hw, Canvas.hh + 45, 2);
-            if (this.charInfos[this.selected].using == 0) {
-                Font.borderFont.drawString(g, new StringBuffer("Còn lại: ").append((int) this.charInfos[this.selected].day).append(" ngày").toString(), Canvas.hw, Canvas.hh + 58, 2);
+        int yDuoi = yThe() + CAO_THE + 8;
+        if (this.charInfos != null && this.selected < this.charInfos.length && this.chars != null && this.selected < this.chars.length) {
+            MainChar ci = this.charInfos[this.selected];
+            String dong = new StringBuffer(String.valueOf(ci.name)).append(" - Lv ").append((int) (ci.lastLv > 0 ? ci.lastLv : (short) 1)).toString();
+            int dex = duDoanDex(this.chars[this.selected], ci.lastLv);
+            if (dex > 0) {
+                dong = new StringBuffer(dong).append(" - ").append(LoaiPokemonClient.ten(dex)).toString();
             }
-            if (this.charInfos[this.selected].nationID != -1) {
-                int ww = Font.borderFont.getWidth(new StringBuffer(String.valueOf(this.charInfos[this.selected].name)).append(" lv: ").append((int) (this.charInfos[this.selected].lastLv > 0 ? this.charInfos[this.selected].lastLv : (short) 1)).toString());
-                g.drawRegion(Res.imgNation, 0, this.charInfos[this.selected].nationID * 11, 11, 11, 0, (Canvas.hw - (ww / 2)) - 15, Canvas.hh + 48, 20);
+            Font.borderFont.drawString(g, dong, Canvas.hw, yDuoi, 2);
+            if (ci.using == 0) {
+                Font.borderFont.drawString(g, new StringBuffer("Còn lại: ").append((int) ci.day).append(" ngày").toString(), Canvas.hw, yDuoi + 14, 2);
             }
+            if (ci.nationID != -1) {
+                int ww = Font.borderFont.getWidth(dong);
+                g.drawRegion(Res.imgNation, 0, ci.nationID * 11, 11, 11, 0, (Canvas.hw - (ww / 2)) - 15, yDuoi + 2, 20);
+            }
+        } else {
+            Font.borderFont.drawString(g, "Ô trống: bấm để tạo nhân vật", Canvas.hw, yDuoi, 2);
         }
         super.paint(g);
     }
@@ -230,8 +284,12 @@ public class CharSelectScr extends Screen {
             }
         }
         int pa = -1;
-        if (Canvas.isPointerClick && Canvas.isPointer(Canvas.hw - 58, Canvas.hh - 40, 115, 84)) {
-            pa = (Canvas.px - (Canvas.hw - 58)) / 38;
+        // pokemon: chạm vào thẻ Pokédex (vị trí theo rongThe / xThe)
+        if (Canvas.isPointerClick && Canvas.isPointer(xThe(0), yThe(), 3 * rongThe() + 8, CAO_THE)) {
+            pa = (Canvas.px - xThe(0)) / (rongThe() + 4);
+            if (pa > 2) {
+                pa = 2;
+            }
             isChangeFocus = true;
         }
         if (isChangeFocus) {

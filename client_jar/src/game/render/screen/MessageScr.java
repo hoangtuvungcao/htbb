@@ -255,70 +255,33 @@ public class MessageScr extends Screen {
     }
 
     private void paintTab(Graphics g, int x, int y, int w, int h) {
-        g.setColor(277044);
-        g.fillRect(x, y + this.hTab, w, h - this.hTab);
-        for (int i = 0; i < 3; i++) {
-            g.setColor(Res.color[i]);
-            g.drawRect(x + i, y + i + this.hTab, (w - (i * 2)) - 1, ((h - (i * 2)) - this.hTab) - 1);
+        // pokemon: thân bảng xanh viền trắng; thẻ (tab) bo góc - đang xem: đỏ, khác: xanh đậm, có tin mới: vàng nhấp nháy
+        game.pokemon.GiaoDien.bang(g, x, y + this.hTab, w, h - this.hTab);
+        for (int a = this.list.size() - 1; a >= 0; a--) {
+            if (a == this.focusTab) {
+                continue;
+            }
+            paintMotTab(g, x + (a * this.du), y, (ChatTab) this.list.elementAt(a), false);
         }
-        for (int a = this.list.size() - 1; a > this.focusTab; a--) {
-            ChatTab tab = (ChatTab) this.list.elementAt(a);
-            for (int i2 = 0; i2 < 3; i2++) {
-                g.setColor(Res.color[i2]);
-                g.drawRect(x + i2 + (a * this.du), y + i2, this.wTab - (i2 * 2), this.hTab - (i2 * 2));
-            }
-            tab.count++;
-            if (tab.count > 10) {
-                tab.count = 0;
-            }
-            if (tab.isOpen && tab.count >= 5) {
-                g.setColor(573098);
-                g.fillRect(x + 3 + (this.du * a), y + 3, this.wTab - 5, this.hTab - 3);
-            } else {
-                g.setClip(((x + (this.du * a)) + this.wTab) - this.du, y, this.du - 2, this.hTab);
-                g.drawImage(Res.imgInv[2], (((x + (this.du * a)) + 3) + this.wTab) - 70, y + 3, 0);
-                g.setClip(x, y, w, h);
-            }
-        }
-        int a2 = 0;
-        while (a2 <= this.focusTab) {
-            for (int i3 = 0; i3 < 3; i3++) {
-                g.setColor(Res.color[i3]);
-                g.drawRect(x + i3 + (a2 * this.du), y + i3, this.wTab - (i3 * 2), this.hTab - (i3 * 2));
-            }
-            ChatTab tab2 = (ChatTab) this.list.elementAt(a2);
-            tab2.count++;
-            if (tab2.count > 10) {
-                tab2.count = 0;
-            }
-            if (tab2.isOpen && tab2.count >= 5) {
-                g.setColor(573098);
-                g.fillRect(x + 3 + (this.du * a2), y + 3, this.wTab - 5, (this.hTab - 3) + (a2 == this.focusTab ? 4 : 0));
-            } else if (a2 == this.focusTab) {
-                g.setClip(x + (this.du * a2) + 3, y, this.wTab - 5, this.hTab + 3);
-                for (int b = 0; b < (this.wTab / 70) + 1; b++) {
-                    g.drawImage(Res.imgInv[2], x + 3 + (this.du * a2) + (70 * b), y + 3, 0);
-                }
-            } else {
-                g.setClip(x + (this.du * a2), y, this.du, this.hTab);
-                g.drawImage(Res.imgInv[2], x + (this.du * a2) + 3, y + 3, 0);
-            }
-            g.setClip(x - 4, y - 4, w + 8, h + 9);
-            a2++;
-        }
-        g.drawImage(Res.imgInv[0], (x - 2) + (this.du * this.focusTab), y - 2, 0);
-        g.drawRegion(Res.imgInv[0], 0, 0, 18, 19, 2, x + 3 + this.wTab + (this.du * this.focusTab), y - 2, 24);
-        int a3 = 0;
-        while (a3 < 2) {
-            for (int i4 = 0; i4 < 2; i4++) {
-                g.setColor(Res.color[a3 == 0 ? 1 + i4 : 2 - i4]);
-                g.fillRect(x + (this.focusTab * this.du) + i4 + 1 + ((this.wTab - 3) * a3), ((y + this.hTab) - 8) + 6 + (a3 == 0 ? i4 : 1 - i4), 1, 3);
-            }
-            a3++;
+        if (this.focusTab >= 0 && this.focusTab < this.list.size()) {
+            paintMotTab(g, x + (this.focusTab * this.du), y, (ChatTab) this.list.elementAt(this.focusTab), true);
         }
         g.setClip(0, 0, Canvas.w, Canvas.h);
-        g.drawRegion(Res.imgInv[0], 0, 0, 18, 19, 6, x - 2, y + h + 2, 36);
-        g.drawRegion(Res.imgInv[0], 0, 0, 18, 19, 3, x + w + 2, y + h + 2, 40);
+    }
+
+    private void paintMotTab(Graphics g, int xt, int y, ChatTab tab, boolean dangXem) {
+        tab.count++;
+        if (tab.count > 10) {
+            tab.count = 0;
+        }
+        boolean nhay = tab.isOpen && tab.count >= 5;
+        int tren = nhay ? game.pokemon.GiaoDien.VANG : (dangXem ? game.pokemon.GiaoDien.DO_SANG : game.pokemon.GiaoDien.THAN_TREN);
+        int duoi = nhay ? game.pokemon.GiaoDien.VANG_TOI : (dangXem ? game.pokemon.GiaoDien.DO_TOI : game.pokemon.GiaoDien.THAN_DUOI);
+        g.setClip(xt - 1, y - 1, this.wTab + 3, this.hTab + (dangXem ? 5 : 2));
+        game.pokemon.GiaoDien.khoi(g, xt, y, this.wTab + 1, this.hTab + 8, 4, game.pokemon.GiaoDien.VIEN);
+        game.pokemon.GiaoDien.khoi(g, xt + 2, y + 2, this.wTab - 3, this.hTab + 6, 3, game.pokemon.GiaoDien.TRANG);
+        game.pokemon.GiaoDien.khoiDoc(g, xt + 3, y + 3, this.wTab - 5, this.hTab + 4, 2, tren, duoi);
+        g.setClip(0, 0, Canvas.w, Canvas.h);
     }
 
     @Override

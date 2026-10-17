@@ -649,9 +649,21 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
             }
             if (isLoad) {
                 resetTrans(g);
-                g.setColor(0);
-                g.fillRect(0, 0, getWidth(), getHeight());
-                if (!game.pokemon.ThuongHieu.veTieuDe(g, getWidth() >> 1, (getHeight() >> 1) - 40, getWidth())) {
+                // pokemon: màn tải = trời xanh + đồi cỏ, biển tên game, Poké Ball lắc chờ
+                if (game.pokemon.PokeBody.CHE_DO_POKEMON) {
+                    w = getWidth();
+                    h = getHeight();
+                    game.pokemon.GiaoDien.nenTroi(g, w, h);
+                    game.pokemon.ThuongHieu.veTieuDe(g, w >> 1, (h >> 1) - 60, w);
+                    game.pokemon.GiaoDien.dangTai(g, w >> 1, h - 52, 12);
+                    try {
+                        game.render.screen.Font.borderFont.drawString(g, "Đang tải...", w >> 1, h - 34, 2);
+                    } catch (Throwable th) {
+                        // font chưa nạp
+                    }
+                } else {
+                    g.setColor(0);
+                    g.fillRect(0, 0, getWidth(), getHeight());
                     g.drawImage(imgLogo, getWidth() >> 1, getHeight() >> 1, 3);
                 }
             }

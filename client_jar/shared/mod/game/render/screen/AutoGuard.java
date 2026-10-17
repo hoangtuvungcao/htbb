@@ -229,6 +229,9 @@ public final class AutoGuard {
     /** Chèn ở đầu xử lý phím của Canvas: phím tắt PK (AutoPk.phim). true = đã dùng phím này. */
     public static boolean phimPk(int n) {
         try {
+            if (Nen.menuNhanhPhim(n)) {
+                return true;
+            }
             return AutoPk.phim(n);
         }
         catch (Throwable throwable) {
@@ -406,6 +409,9 @@ public final class AutoGuard {
      * chạm - nhân vật không chạy tới chỗ đó, AutoUp.nguoiBam không coi là người chơi chạm để dừng.
      */
     static void nutUpTick() {
+        if (Nen.menuNhanhTick()) {
+            return;   // bản jar: Poké Ball + Menu nhanh thay cột nút
+        }
         if (!Nen.coNutUp() || Canvas.currentScreen != Canvas.gameScr || Canvas.menu.showMenu || Canvas.currentDialog != null) {
             return;
         }
@@ -468,6 +474,9 @@ public final class AutoGuard {
 
     /** Nút tròn: viền vàng nhấp nháy + nền xanh khi đang bật, viền bạc + nền xám khi tắt; chữ UP và BẬT/TẮT. */
     static void veNutUp(Graphics graphics) {
+        if (Nen.menuNhanhVe(graphics)) {
+            return;   // bản jar: Poké Ball nhỏ sát mép, không đè màn chơi
+        }
         if (!Nen.coNutUp() || Canvas.currentScreen != Canvas.gameScr) {
             return;
         }
@@ -522,10 +531,11 @@ public final class AutoGuard {
             // nút UP lỗi thì bỏ qua
         }
         try {
-            AutoUp.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);
-            AutoVanTieu.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);
-            AutoVanMay.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);
-            LenThanh.ve(graphics, on ? 4 + AutoUp.caoThanh() : 2);
+            int yThanh = Nen.yTrangThai(on ? 4 + AutoUp.caoThanh() : 2);
+            AutoUp.ve(graphics, yThanh);
+            AutoVanTieu.ve(graphics, yThanh);
+            AutoVanMay.ve(graphics, yThanh);
+            LenThanh.ve(graphics, yThanh);
         }
         catch (Throwable throwable) {
             // thanh trạng thái auto up lỗi thì bỏ qua

@@ -81,9 +81,12 @@ public class Menu extends Main {
             }
             this.menuH += Screen.ITEM_HEIGHT;
         }
-        this.menuW += 10;
+        this.menuW += 20;   // pokemon: chỗ cho mũi tên chọn
         if (this.menuW < 100) {
             this.menuW = 100;
+        }
+        if (this.menuW > Canvas.w - 14) {
+            this.menuW = Canvas.w - 14;
         }
         if (this.menuH > Screen.ITEM_HEIGHT * 4) {
             this.menuH = Screen.ITEM_HEIGHT * 4;
@@ -91,9 +94,9 @@ public class Menu extends Main {
         this.menuH += 4;
         this.menuY = (Canvas.h - 27) - this.menuH;
         if (pos == 0) {
-            this.menuX = 2;
+            this.menuX = 7;
         } else if (pos == 1) {
-            this.menuX = (Canvas.w - this.menuW) - 2;
+            this.menuX = (Canvas.w - this.menuW) - 7;
         } else if (pos == 2) {
             this.menuX = (Canvas.w >> 1) - (this.menuW >> 1);
             this.menuY = (Canvas.h - this.menuH) >> 1;
@@ -201,24 +204,38 @@ public class Menu extends Main {
                 this.cyBag = 0;
             }
         }
-        g.setColor(11908533);
-        g.fillRect(this.menuX - 2, this.menuY - 2, this.menuW + 4, this.menuH + 5);
-        g.setColor(2181450);
-        g.fillRect(this.menuX, this.menuTemY, this.menuW, this.menuH);
-        g.setClip(this.menuX - 2, this.menuY, this.menuW + 5, this.menuH + 3);
+        // pokemon: hộp thoại trắng viền tối, mục đang chọn nền vàng + mũi tên ▶, chữ tối
+        game.pokemon.GiaoDien.hop(g, this.menuX - 4, this.menuY - 4, this.menuW + 8, this.menuH + 8);
+        g.setClip(this.menuX, this.menuY, this.menuW, this.menuH);
         g.translate(this.menuX + 5, this.menuTemY + 2);
         for (int i = 0; i < this.menuItems.size(); i++) {
-            Font font = Font.arialFontW;
+            int yy = (i * Screen.ITEM_HEIGHT) - this.cyBag;
             if (this.selected != -1 && i == this.selected) {
-                g.setColor(11495168);
-                g.fillRect(-3, (i * Screen.ITEM_HEIGHT) - this.cyBag, this.menuW - 4, Screen.ITEM_HEIGHT);
-                font = Font.normalFont[0];
+                game.pokemon.GiaoDien.chonSang(g, -3, yy, this.menuW - 4, Screen.ITEM_HEIGHT);
+                game.pokemon.GiaoDien.muiTen(g, 0, yy + (Screen.ITEM_HEIGHT >> 1) - 3, 6, game.pokemon.GiaoDien.VIEN);
+            } else if (i > 0) {
+                g.setColor(game.pokemon.GiaoDien.XANH_NHAT);
+                g.fillRect(0, yy, this.menuW - 10, 1);
             }
             if (Canvas.isBB) {
-                Font.borderFont.drawString(g, ((Command) this.menuItems.elementAt(i)).caption, Canvas.hw, (3 + (i * Screen.ITEM_HEIGHT)) - this.cyBag, 2);
+                Font.blackFont.drawString(g, ((Command) this.menuItems.elementAt(i)).caption, Canvas.hw, 3 + yy, 2);
             } else {
-                font.drawString(g, ((Command) this.menuItems.elementAt(i)).caption, 0, (3 + (i * Screen.ITEM_HEIGHT)) - this.cyBag, 0);
+                Font.blackFont.drawString(g, ((Command) this.menuItems.elementAt(i)).caption, 7, 3 + yy, 0);
             }
+        }
+        // thanh cuộn nhỏ khi danh sách dài hơn khung
+        if (this.cylim > 0) {
+            Canvas.resetTrans(g);
+            int hThanh = this.menuH - 6;
+            int hNut = hThanh * 4 / this.menuItems.size();
+            if (hNut < 8) {
+                hNut = 8;
+            }
+            int yNut = this.menuY + 3 + (hThanh - hNut) * this.cyBag / this.cylim;
+            g.setColor(game.pokemon.GiaoDien.XANH_NHAT);
+            g.fillRect(this.menuX + this.menuW - 4, this.menuY + 3, 3, hThanh);
+            g.setColor(game.pokemon.GiaoDien.XANH);
+            g.fillRect(this.menuX + this.menuW - 4, yNut, 3, hNut);
         }
         super.paint(g);
     }

@@ -252,26 +252,34 @@ public class LoginScr extends Screen {
         ServerListScr.gI().paintBg(g);
         Canvas.resetTrans(g);
         // pokemon: tieu de ThuongHieu thay logo game goc
-        if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 125), Canvas.w, Canvas.hh - 37)) {
+        if (!game.pokemon.ThuongHieu.veTieuDe(g, Canvas.hw, Math.max(14, Canvas.hh - 125), Canvas.w, Canvas.hh - 54)) {
             g.drawImage(Canvas.imgLogo, Canvas.hw, Canvas.hh - 70, 3);
         }
         paintPanel(g);
     }
 
     void paintPanel(Graphics g) {
-        Res.paintDlgDragonFull(g, Canvas.hw - 70, (Canvas.hh - 50) + 15, 140, 100);
-        Font.normalFont[0].drawString(g, "Game ID:", this.xC + 5, Canvas.hh - 26, 0);
-        Font.normalFont[0].drawString(g, "Password:", this.xC + 5, Canvas.hh + 10, 0);
+        // pokemon: hộp thoại trắng viền tối, dải tiêu đề đỏ, chữ tối
+        game.pokemon.GiaoDien.hop(g, Canvas.hw - 72, Canvas.hh - 50, 144, 116);
+        game.pokemon.GiaoDien.dai(g, Canvas.hw - 69, Canvas.hh - 47, 138, 16, "Đăng nhập");
+        Font.blackFont.drawString(g, "Tài khoản:", this.xC + 1, Canvas.hh - 27, 0);
+        Font.blackFont.drawString(g, "Mật khẩu:", this.xC + 1, Canvas.hh + 9, 0);
         this.tfUser.paint(g);
         g.setClip(0, 0, Canvas.w, Canvas.h);
         this.tfPass.paint(g);
         g.setClip(0, 0, Canvas.w, Canvas.h);
-        Res.imgCheck.drawFrame(this.focus == 2 ? 1 : 0, this.xC + 12, Canvas.hh + 54, 0, 3, g);
+        // ô "nhớ mật khẩu" vẽ tay: ô trắng viền tối, dấu tick xanh lá
+        int xo = this.xC + 2;
+        int yo = Canvas.hh + 49;
+        game.pokemon.GiaoDien.khoi(g, xo, yo, 11, 11, 2, this.focus == 2 ? game.pokemon.GiaoDien.DO : game.pokemon.GiaoDien.VIEN);
+        game.pokemon.GiaoDien.khoi(g, xo + 2, yo + 2, 7, 7, 1, game.pokemon.GiaoDien.TRANG);
         if (this.isRememPass) {
-            Res.imgCheck.drawFrame(2, this.xC + 12, Canvas.hh + 54, 0, 3, g);
+            game.pokemon.GiaoDien.khoi(g, xo + 3, yo + 3, 5, 5, 1, game.pokemon.GiaoDien.LA_TOI);
         }
-        Font.normalFont[0].drawString(g, "Nhớ mật khẩu", this.xC + 23, Canvas.hh + 47, 0);
-        Font.borderFont.drawString(g, new StringBuffer("Hotline: ").append(numberSupport).toString(), this.xC + 5, Canvas.hh + 70, 0);
+        Font.blackFont.drawString(g, "Nhớ mật khẩu", this.xC + 18, Canvas.hh + 47, 0);
+        if (Canvas.hh + 84 + 14 < Canvas.h - Screen.deltaY) {
+            Font.borderFont.drawString(g, new StringBuffer("Hotline: ").append(numberSupport).toString(), Canvas.hw, Canvas.hh + 84, 2);
+        }
         super.paint(g);
     }
 

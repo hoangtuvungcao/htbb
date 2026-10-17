@@ -72,18 +72,8 @@ public class ChatPopup {
     }
 
     public static void paintRoundRect(Graphics g, int x, int y, int w, int h, int color1, int color2) {
-        g.drawRegion(imgPopup, 0, 0, 8, 8, 0, x, y, 0);
-        g.drawRegion(imgPopup, 0, 8, 8, 8, 0, (x + w) - 8, y, 0);
-        g.drawRegion(imgPopup, 0, 24, 8, 8, 0, x, (y + h) - 8, 0);
-        g.drawRegion(imgPopup, 0, 16, 8, 8, 0, (x + w) - 8, (y + h) - 8, 0);
-        g.setColor(color1);
-        g.fillRect(x + 8, y, w - 16, 8);
-        g.fillRect(x + 8, (y + h) - 8, w - 16, 7);
-        g.fillRect(x, y + 8, w, h - 16);
-        g.setColor(color2);
-        g.fillRect(x + 8, y, w - 16, 1);
-        g.fillRect(x + 8, (y + h) - 1, w - 16, 1);
-        g.fillRect(x, y + 8, 1, h - 16);
-        g.fillRect((x + w) - 1, y + 8, 1, h - 16);
+        // pokemon: bong bóng thoại bo tròn viền tối (cùng kiểu hộp thoại Pokémon)
+        game.pokemon.GiaoDien.khoi(g, x, y, w, h, 5, game.pokemon.GiaoDien.VIEN);
+        game.pokemon.GiaoDien.khoi(g, x + 1, y + 1, w - 2, h - 2, 4, color1);
     }
 }
