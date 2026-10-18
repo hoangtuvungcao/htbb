@@ -41,7 +41,11 @@ const links = computed<NavigationMenuItem[]>(() => {
     :title="`${tenSite} — Trang chủ`"
     :ui="{
       root: 'bg-default/95 backdrop-blur border-b-4 border-pokered-500 shadow-[0_3px_0_var(--poke-outline)]',
-      container: 'max-w-7xl',
+      container: 'max-w-[96rem]',
+      // Logo + nút bên phải giữ nguyên kích thước; menu giữa co lại trong phần còn lại (không đè logo).
+      left: 'shrink-0 lg:flex-none',
+      center: 'min-w-0 flex-1 justify-center',
+      right: 'shrink-0 lg:flex-none',
     }"
   >
     <!-- UHeader đã tự bọc phần tiêu đề trong một liên kết về `to` (mặc định "/"):
