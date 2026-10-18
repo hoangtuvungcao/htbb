@@ -10,7 +10,7 @@ import data.Database;
 
 /**
  * Noi vat pham TANG TOC (com.htbb.pokemon.TangToc) vao game - chi khi sv.lau_dai=1. Thiet ke:
- * docs/pokemon/THIET_KE_LAU_DAI.md muc 1.8.
+ * docs/thiet-ke-game.md.
  *
  *   - dung: VatPhamDungLauDai.dung re nhanh cho id 1250..1257 (ve x1,5 / x2, bua the luc, uy thac; ban cao cap va
  *     ban khoa). Tru vat pham SAU khi kiem tran, TRUOC khi ap hieu ung (CODING_CONVENTION muc 5).

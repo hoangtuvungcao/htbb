@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 16 thu linh Gym (GD2b, NOI_DUNG_DAY_DU.md muc 6; data_noi_dung_gym + data_noi_dung_roi nguon
+ * 16 thu linh Gym (GD2b, docs/thiet-ke-game.md; data_noi_dung_gym + data_noi_dung_roi nguon
  * gym / gym_tuan). Vao tu So tay huan luyen -> "Thách đấu Gym": trieu hoi boss tai cho, 1 dau 1 (chi
  * nguoi thach dau gay duoc sat thuong), no sau no_sau_phut phut (GiaiDoanBoss), het 10 phut chua ha
  * thi thua. Lan dau: huy hieu (bit trong ho so) + 1 vu khi Hoan my dung dong. Danh lai: 1 lan / tuan,

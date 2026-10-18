@@ -1,7 +1,7 @@
 """Sinh tệp ghi công người chơi đọc được (GHI_CONG.txt) cho cả 3 client từ ghi công gốc của HTBB.
 
     python3 -I client_jar/tools/sinh_ghi_cong.py <thu muc poke cua HTBB Unity> [ra1 ra2 ...]
-    vd: python3 -I client_jar/tools/sinh_ghi_cong.py ../HTBB/ClientUnity/Assets/Resources/poke \
+    vd: python3 -I client_jar/tools/sinh_ghi_cong.py client_pc_ios/Assets/Resources/poke \
             client_jar/res/GHI_CONG.txt client_pc_ios/Assets/Resources/ghicong/GHI_CONG.txt
 
 Đọc (trong thư mục poke): GHI_CONG.txt (PMDCollab SpriteCollab: người vẽ theo từng loài, sinh bởi DongGoiSprite),

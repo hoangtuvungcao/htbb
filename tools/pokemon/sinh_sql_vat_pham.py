@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-I1: doi ten trang bi theo bang 6.4 cua docs/pokemon/KE_HOACH_CHUYEN_DOI.md.
+I1: doi ten trang bi theo bang 6.4 cua docs/kien-truc.md.
 
-Ra: sql/pokemon_doi_ten_vat_pham.sql (KHONG sua tay) + docs/pokemon/bang_vat_pham.csv.
+Ra: sql/pokemon_doi_ten_vat_pham.sql (KHONG sua tay) + du_lieu/bang_vat_pham.csv.
 
 - CHI doi `name` va dat `gender=0` (dung chung). KHONG doi atb/price/type/level/xstart
   -> can bang va icon giu nguyen (icon PMD: viec rieng, xem ke hoach).
@@ -21,7 +21,7 @@ import sys
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SQL = os.path.join(GOC, "sql", "gamedb7_clean.sql")
 RA_SQL = os.path.join(GOC, "sql", "pokemon_doi_ten_vat_pham.sql")
-RA_CSV = os.path.join(GOC, "docs", "pokemon", "bang_vat_pham.csv")
+RA_CSV = os.path.join(GOC, "du_lieu", "bang_vat_pham.csv")
 
 # type -> ten loai moi (bang 6.4). Type khong co o day: giu nguyen.
 TEN_LOAI = {
@@ -43,7 +43,7 @@ TEN_LOAI = {
 
 # Do thoi trang / cai trang / skin / than khi: KHONG doi thanh "<loai> <bac>" (mat ten va mo ta
 # cong dung). Chi dat gender=0; ten doi o sinh_sql_chu.py (tu dien ChuPokemon + bang rieng) de
-# moi o doi deu nam trong docs/pokemon/bang_chu.csv. Danh sach duyet tay: docs/pokemon/DUYET_CHU.md.
+# moi o doi deu nam trong du_lieu/bang_chu.csv. Danh sach duyet tay: docs/thiet-ke-game.md.
 GIU_TEN = {
     264, 265, 266, 267, 507, 508, 573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583,
     608, 609, 610, 616, 620, 621, 622, 623, 624, 625, 626, 627, 628, 629, 671, 672, 673, 674,

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * MO PHONG CHI SO / TTK (docs/pokemon/CHI_SO_TRANG_BI.md muc 4). TAT DINH (khong ngau nhien: ky vong).
+ * MO PHONG CHI SO / TTK (docs/thiet-ke-game.md). TAT DINH (khong ngau nhien: ky vong).
  *
  * Mo hinh = mo hinh noi dung (tools/pokemon/sinh_sql_lau_dai.py quai_de_xuat + sinh_noi_dung.py Gym/boss):
  *   tan cong nguoi  = (30 + 12L) x (1 + 0,6 x he so nang cap(+p)) x he so dong
@@ -24,12 +24,12 @@ import java.util.Locale;
  * giam ST 85%, ne 60%, % cong +150%), TOI DA SAU TRAN (cung so lieu qua GioiHanChiSo).
  *
  * Chay o HTBB/: javac -encoding UTF-8 -cp &lt;lop src&gt; -d &lt;ra&gt; tools/pokemon/MoPhongChiSo.java
- *              java -cp &lt;ra&gt;:&lt;lop src&gt; MoPhongChiSo        -> docs/pokemon/mo_phong_chi_so.txt
+ *              java -cp &lt;ra&gt;:&lt;lop src&gt; MoPhongChiSo        -> du_lieu/mo_phong_chi_so.txt
  * test/KiemChiSo goi chayKiem(".") qua phan chieu.
  */
 public final class MoPhongChiSo {
 
-    static final String RA = "docs/pokemon/mo_phong_chi_so.txt";
+    static final String RA = "du_lieu/mo_phong_chi_so.txt";
     /** {ten, HP, tan cong, thu} tuong doi (THIET_KE 4.4). */
     static final String[] DONG = {"Charmander", "Bulbasaur", "Eevee", "Squirtle", "Pichu"};
     static final int[][] HE_DONG = {{100, 105, 90}, {115, 90, 115}, {90, 100, 95}, {120, 85, 125}, {85, 110, 85}};
@@ -395,7 +395,7 @@ public final class MoPhongChiSo {
 
     /** THIET_KE 3.6 tren danh muc (don vi thiet ke): (goc + do bac b) / (goc + 1,55 x do bac b-1) lon nhat. */
     static double bacMoiTrenCuThietKe(final String goc, final Kq k) {
-        final String csv = SinhSqlChiSo.doc(new File(goc, "docs/pokemon/noi_dung_trang_bi.csv").getPath());
+        final String csv = SinhSqlChiSo.doc(new File(goc, "du_lieu/noi_dung_trang_bi.csv").getPath());
         if (csv.isEmpty()) {
             return 0;
         }

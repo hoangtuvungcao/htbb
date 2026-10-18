@@ -478,7 +478,7 @@ public class AnimalMove : Char
 
 	/// <summary>
 	/// Pet kieu cu (AnimalMove khong phai pet-tool, anh map/pet/&lt;imgID&gt; = PetTemplate.idImg
-	/// cua server, 0..20) -&gt; {idImg, dex}. Bang day du: docs/pokemon/bang_pet_cu.csv (sua 2 noi
+	/// cua server, 0..20) -&gt; {idImg, dex}. Bang day du: du_lieu/bang_pet_cu.csv (sua 2 noi
 	/// cung luc - test/KiemHinhPokemon so khop). Pet-tool (type 5, lop Pet) KHONG dung bang nay:
 	/// imgID cua no la id hieu ung (hoa hinh...), co dex rieng qua lenh -94.
 	/// </summary>
@@ -509,10 +509,6 @@ public class AnimalMove : Char
 
 	public static int dexTheoIdImgPetCu(int idImg)
 	{
-		if (!PokeBody.CHE_DO_POKEMON)
-		{
-			return 0;
-		}
 		for (int i = 0; i < POKE_DEX_PET_CU.Length; i++)
 		{
 			if (POKE_DEX_PET_CU[i][0] == idImg)

@@ -4,7 +4,7 @@ import game.render.screen.Font;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * Ten game va thuong hieu - ban J2ME cua ClientUnity ThuongHieu.cs (viec G7.E1/E2, muc 15).
+ * Ten game va thuong hieu - ban J2ME cua Unity ThuongHieu.cs (viec G7.E1/E2, muc 15).
  * Ban server: HTBB src/com/htbb/pokemon/ThuongHieu.java. Doi ten game: sua ca ba noi.
  * Man tai / chon may chu / dang nhap: ve tieu de Pokemon (ten game + 5 chan dung khoi dau)
  * thay cho logo cua game goc TeaMobi.
@@ -14,7 +14,6 @@ public final class ThuongHieu {
     /** Ten game viet hoa cho bigFont (font nay chi co chu hoa, ke ca chu hoa co dau). */
     public static final String TEN_GAME_HOA = "HUYỀN THOẠI BẢO BỐI";
     public static final String TEN_VIET_TAT = "HTBB";
-    public static final String TEN_GAME_CU = "Khí Phách Anh Hùng";
     public static final String GIOI_THIEU = "Game fan Pokémon phi thương mại";
     public static final String GIOI_THIEU_2 = "Pokémon (c) Nintendo / Game Freak";
     /** Ban ngan cho man hep (176 px: hai dong tren ~173/178 px tran khung). */
@@ -26,7 +25,7 @@ public final class ThuongHieu {
     }
 
     public static String tenGame() {
-        return PokeBody.CHE_DO_POKEMON ? TEN_GAME : TEN_GAME_CU;
+        return TEN_GAME;
     }
 
     /**
@@ -113,9 +112,6 @@ public final class ThuongHieu {
      * "bien ten" trang vien toi, dai do chua ten game (GiaoDien.bienTen) de doc ro tren nen ban do.
      */
     public static boolean veTieuDe(Graphics g, int xTam, int yTam, int rongToiDa, int yDay) {
-        if (!PokeBody.CHE_DO_POKEMON) {
-            return false;
-        }
         int khoang = 38;
         int canh = 32;
         if (rongToiDa > 0 && khoang * SO_KHOI_DAU > rongToiDa - 18) {

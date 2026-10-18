@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Nang cap +1..+15 theo thiet ke dai han (THIET_KE_LAU_DAI.md muc 3.2). Lop THUAN.
+ * Nang cap +1..+15 theo thiet ke dai han (docs/thiet-ke-game.md). Lop THUAN.
  * Dung chung cho CA HAI duong nang cap (MapEpNgoc.doFinishImbue - tay, CharCapNhat.doAutoImbue
  * - tu dong) qua real.NangCapLauDaiGame.
  */

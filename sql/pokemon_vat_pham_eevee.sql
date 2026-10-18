@@ -1,10 +1,10 @@
 -- ==================================================================================
---  CHE DO POKEMON - 8 DA TIEN HOA EEVEE  (viec I2, docs/pokemon/KE_HOACH_CHUYEN_DOI.md)
+--  CHE DO POKEMON - 8 DA TIEN HOA EEVEE  (viec I2, docs/kien-truc.md)
 -- ==================================================================================
 --
 --      mysql -u root -p <ten_db> < sql/pokemon_vat_pham_eevee.sql
 --
---  Id 960..967: da grep src/, sql/ va docs/danh_muc_item.md ngay 16/10/2026 - id lon nhat
+--  Id 960..967: da grep src/, sql/ va du_lieu/danh_muc_item.md ngay 16/10/2026 - id lon nhat
 --  dang dung la 954, khong cho nao nhac toi 955..967. PHAI khop
 --  src/com/htbb/pokemon/DaTienHoa.ID_ITEM (test/KiemPokemonServer.java doi chieu).
 --

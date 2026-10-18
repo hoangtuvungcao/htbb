@@ -23,9 +23,9 @@ public final class KiemLoiChoiPokemon {
     }
 
     private static void kiemBangChieuKhopCsv() {
-        Kiem.nhom("com.htbb.pokemon.ChieuPokemon - khop docs/pokemon/bang_chieu.csv (cot so_he)");
+        Kiem.nhom("com.htbb.pokemon.ChieuPokemon - khop du_lieu/bang_chieu.csv (cot so_he)");
         try {
-            final List<String> dong = Files.readAllLines(new File("../docs/pokemon/bang_chieu.csv").toPath(), StandardCharsets.UTF_8);
+            final List<String> dong = Files.readAllLines(new File("../du_lieu/bang_chieu.csv").toPath(), StandardCharsets.UTF_8);
             final int[] demTheoClass = new int[5];
             int dem = 0;
             for (int i = 1; i < dong.size(); i++) {

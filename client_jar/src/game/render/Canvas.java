@@ -671,7 +671,7 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
             if (isLoad) {
                 resetTrans(g);
                 // pokemon: màn tải = trời xanh + đồi cỏ, biển tên game, Poké Ball lắc chờ
-                if (game.pokemon.PokeBody.CHE_DO_POKEMON) {
+                {
                     w = getWidth();
                     h = getHeight();
                     if (game.pokemon.Banner.ve(g, -1, true)) {
@@ -691,10 +691,6 @@ public class Canvas extends javax.microedition.lcdui.Canvas implements Runnable,
                     } catch (Throwable th) {
                         // font chưa nạp
                     }
-                } else {
-                    g.setColor(0);
-                    g.fillRect(0, 0, getWidth(), getHeight());
-                    g.drawImage(imgLogo, getWidth() >> 1, getHeight() >> 1, 3);
                 }
             }
             if (isVirTualKey) {

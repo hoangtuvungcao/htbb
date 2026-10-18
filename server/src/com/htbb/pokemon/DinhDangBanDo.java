@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Doc/ghi DUNG TUNG BYTE dinh dang ban do cMap/&lt;id&gt; (xem docs/pokemon/DINH_DANG_MAP.md).
+ * Doc/ghi DUNG TUNG BYTE dinh dang ban do cMap/&lt;id&gt; (xem docs/kien-truc.md).
  * Ba noi doc dinh dang nay phai khop voi lop nay: server MapNapTaiNguyen.loadTileMap (+ khoi doc
  * tile trong Map/MapKhoiTao/Map*.java), client Unity Tilemap.loadMap, client J2ME
  * game/model/Tilemap.loadMap.

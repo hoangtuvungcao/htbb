@@ -6,40 +6,25 @@
 #
 # HTBB (mặc định): REPO BẮT BUỘC (repo phát hành riêng của HTBB), tên cố định HTBB-PC.zip / HTBB.apk / HTBB.jar /
 #   HTBB-nhe.jar. PHIEN_BAN (tools/phat-hanh/phien_ban.conf) ghi vào phienban.json.
-# NQSH-H2 cũ: NQSH=1 (REPO mặc định kpah-server/nqsh-h2-tai, tên NQSH-H2*); bị từ chối trên nhánh pokemon/* trừ khi
-#   CHO_PHEP_NQSH=1 (client NQSH-H2 của người chơi cũ sẽ tự tải bản Pokémon).
 set -e
 cd "$(dirname "$0")/../.."
 LOAI=$1
 BAN=$2
 FILE=$3
 GHI_CHU=${4:-}
-if [ "${NQSH:-0}" = 1 ]; then
-    REPO=${REPO:-kpah-server/nqsh-h2-tai}
-fi
-[ -n "$REPO" ] || { echo "LOI: chua dat REPO=<chu>/<repo phat hanh HTBB> (kieu cu NQSH-H2: NQSH=1)"; exit 1; }
+[ -n "$REPO" ] || { echo "LOI: chua dat REPO=<chu>/<repo phat hanh HTBB>"; exit 1; }
 export REPO
-case "$REPO" in *nqsh-h2*) KIEU_CU=1 ;; *) KIEU_CU= ;; esac
-if [ -n "$KIEU_CU" ] && [ "${CHO_PHEP_NQSH:-0}" != 1 ] \
-    && { echo "${GITHUB_REF_NAME:-}"; git rev-parse --abbrev-ref HEAD 2>/dev/null; } | grep -q '^pokemon/'; then
-    echo "TU CHOI: nhanh pokemon/* dang day vao repo NQSH-H2 ($REPO). Dat REPO=... (repo HTBB) hoac CHO_PHEP_NQSH=1."
-    exit 1
-fi
-if [ -n "$KIEU_CU" ] && [ "${NQSH:-0}" != 1 ]; then
-    echo "TU CHOI: REPO=$REPO la kenh NQSH-H2 - dat NQSH=1 neu that su phat hanh NQSH-H2"
-    exit 1
-fi
 case "$(uname -s)" in
     MINGW*|MSYS*|CYGWIN*) PY=python; GH=${GH:-"/c/Program Files/GitHub CLI/gh.exe"} ;;
     *) PY=python3; GH=${GH:-gh} ;;
 esac
-if [ -n "$KIEU_CU" ]; then TEN_GAME=NQSH-H2; else TEN_GAME=HTBB; fi
+TEN_GAME=HTBB
 export TEN_GAME
 case "$LOAI" in
     pc) ON_DINH=$TEN_GAME-PC.zip ;;
     android) ON_DINH=$TEN_GAME.apk ;;
     jar) ON_DINH=$TEN_GAME.jar ;;
-    jar-nhe) [ -z "$KIEU_CU" ] || { echo "jar-nhe chi co o ban HTBB"; exit 1; }; ON_DINH=HTBB-nhe.jar ;;
+    jar-nhe) ON_DINH=HTBB-nhe.jar ;;
     *) echo "dung: sh tools/phat-hanh/day-len.sh pc|android|jar|jar-nhe <ban> <file> [ghi chu]"; exit 1 ;;
 esac
 [ -f "$FILE" ] || { echo "Khong thay file: $FILE"; exit 1; }

@@ -109,7 +109,7 @@ CUNG_NAM1 = [
     ]),
 ]
 
-# Nam 2: dan y. Cap > 91 can mo rong LevelDetail + quai moi (giai doan 3, KE_HOACH_LAU_DAI_GD2.md).
+# Nam 2: dan y. Cap > 91 can mo rong LevelDetail + quai moi (giai doan 3, docs/thiet-ke-game.md).
 CUNG_NAM2 = [
     ("H1", "Đất liền Hoenn", "Hoenn", ["Bến Littleroot", "Rừng Petalburg", "Đá Rustboro", "Hang Granite"], 91),
     ("H2", "Biển nóng Slateport", "Hoenn", ["Chợ cảng Slateport", "Bảo tàng biển", "Đường cát Route 111", "Thị trấn Mauville"], 92),

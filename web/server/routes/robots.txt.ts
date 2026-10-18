@@ -7,7 +7,7 @@ export default defineEventHandler((event) => {
   setHeader(event, 'Content-Type', 'text/plain; charset=utf-8')
   if (!choIndex) {
     return [
-      '# Chưa cấu hình tên miền (HTBB_SITE_URL) -> không cho lập chỉ mục.',
+      '# Chưa mở lập chỉ mục.',
       'User-agent: *',
       'Disallow: /',
       '',

@@ -71,6 +71,22 @@ Cổng 3306 trên VPS vẫn **đóng** với internet — đường hầm chạy
 > HeidiSQL có sẵn mục "SSH tunnel" trong tab Settings, dùng cũng được và không cần
 > chạy file .bat. Nhưng nó cần `plink.exe`; cách dùng .bat ở trên đơn giản hơn.
 
+## Khai báo máy VPS (một lần)
+
+Địa chỉ IP gốc của VPS **không** ghi trong Git (website/game đi qua WAF, lộ IP gốc là mất lớp bảo vệ).
+Các file .bat gọi `ssh %HTBB_VPS%`, mặc định `root@htbb-vps`. Khai tên `htbb-vps` trong
+`%USERPROFILE%\.ssh\config`:
+
+```
+Host htbb-vps
+    HostName <IP gốc của VPS>
+    User root
+```
+
+Hoặc đặt biến môi trường: `setx HTBB_VPS root@<IP gốc của VPS>` (mở lại cửa sổ dòng lệnh sau đó).
+Log trên VPS nằm ở `/opt/htbb/logs/` (`game.out`, `login.out`), mã nguồn ở `/opt/htbb` — xem
+[../README.md](../README.md).
+
 ## Đỡ phải nhập mật khẩu SSH mỗi lần
 
 Tạo khoá SSH trên Windows rồi đưa lên VPS — sau đó mọi file .bat chạy không cần mật khẩu:
@@ -84,7 +100,7 @@ $key = (Get-Content $env:USERPROFILE\.ssh\id_ed25519.pub -Raw).Trim()
 ```
 
 ```powershell
-ssh root@180.93.57.30 "mkdir -p ~/.ssh && printf '%s\n' '$key' >> ~/.ssh/authorized_keys && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys && echo DA_THEM_XONG"
+ssh htbb-vps "mkdir -p ~/.ssh && printf '%s\n' '$key' >> ~/.ssh/authorized_keys && chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys && echo DA_THEM_XONG"
 ```
 
 > **ĐỪNG dùng kiểu `type file.pub | ssh root@... "cat >> ..."`.** Pipe chiếm stdin nên
@@ -98,10 +114,10 @@ ssh root@180.93.57.30 "mkdir -p ~/.ssh && printf '%s\n' '$key' >> ~/.ssh/authori
 Ký tự `\r` của Windows lọt vào `authorized_keys` là OpenSSH coi khoá không hợp lệ và vẫn
 hỏi mật khẩu, dù file trông đúng. Vì vậy phải có `.Trim()` và `printf '%s\n'`.
 
-Thử lại: `ssh root@180.93.57.30 "echo OK"` — không hỏi mật khẩu là xong.
+Thử lại: `ssh htbb-vps "echo OK"` — không hỏi mật khẩu là xong.
 
 ## Lưu ý
 
 - Các file này **không chứa mật khẩu** nào (SSH dùng khoá hoặc hỏi tay, `mysql -u root`
   trên VPS dùng unix_socket nên không cần mật khẩu). An toàn khi để trong Git.
-- Sửa IP `180.93.57.30` trong cả 5 file nếu đổi VPS.
+- Đổi VPS: sửa `HostName` trong `~/.ssh/config` (hoặc biến `HTBB_VPS`), không cần sửa file .bat nào.

@@ -63,11 +63,6 @@ public static class BannerParallax
 	/// <summary>Pokémon khởi đầu đang chọn (0..4) - màn tạo / chọn Pokémon đặt; -1 = không.</summary>
 	public static int chon = -1;
 
-	public static bool bat()
-	{
-		return PokeBody.CHE_DO_POKEMON;
-	}
-
 	private static Image napAnh(string ten)
 	{
 		try

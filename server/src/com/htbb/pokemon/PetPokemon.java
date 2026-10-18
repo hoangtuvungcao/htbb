@@ -4,7 +4,7 @@ package com.htbb.pokemon;
  * Pet di theo (data.Pet) -> Pokemon di theo, tra theo ID ITEM PET (template cua Pet.itemPet,
  * data_item type 25/26/27). Gui xuong client bang lenh -94 POKE_PET (GoiPokemon.ghiPet).
  *
- * Nguon: cac dong loai=pet_item cua docs/pokemon/bang_thu.csv (sinh boi
+ * Nguon: cac dong loai=pet_item cua du_lieu/bang_thu.csv (sinh boi
  * tools/pokemon/sinh_bang_thu.py). test/KiemPetPokemon doi chieu TUNG dong CSV voi bang nay.
  *
  * "Cap" cua pet nuoi (Cu/Rong/Yeu tinh/Doi/Dai bang cap 1..5) KHONG phai mot truong rieng:

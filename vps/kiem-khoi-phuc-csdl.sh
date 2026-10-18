@@ -9,26 +9,26 @@
 #  CSDL that (chi SELECT COUNT).
 #
 #  Cai vao cron cua root, mot tuan mot lan, sau backup:
-#      30 4 * * 1 /opt/htbb/vps/kiem-khoi-phuc-csdl.sh >> /opt/htbb/log/backup.log 2>&1
+#      30 4 * * 1 /opt/htbb/vps/kiem-khoi-phuc-csdl.sh >> /var/log/htbb-backup.log 2>&1
 #
 #  Bien moi truong (co mac dinh cho VPS):
-#      OUT=/opt/htbb/backup     thu muc chua .sql.gz
+#      OUT=/opt/htbb/backups    thu muc chua .sql.gz
 #      DB=htbb_db               CSDL can kiem (chay them lan nua voi DB=account)
-#      MYSQL="mysql"            lenh mysql (mat khau trong /root/.my.cnf)
+#      MYSQL="mysql"            lenh mysql (chay bang root: MariaDB root dung unix_socket)
 #      BANG="tob_char tob_pet tob_clan tob_pokedex data_item"   bang so so dong
 #  Ma thoat: 0 = khoi phuc duoc va so lieu hop ly; 1 = loi (cron gui mail neu co MAILTO).
 #
 #  KHOI PHUC THAT (khi su co) - lam tay, theo thu tu:
 #      sudo systemctl stop htbb-game htbb-login
-#      zcat /opt/htbb/backup/htbb_db_<NGAY>.sql.gz | mysql htbb_db
-#      zcat /opt/htbb/backup/account_<NGAY>.sql.gz | mysql account
+#      zcat /opt/htbb/backups/htbb_db_<NGAY>.sql.gz | mysql htbb_db
+#      zcat /opt/htbb/backups/account_<NGAY>.sql.gz | mysql account
 #      sudo systemctl start htbb-login htbb-game
 #  (mysqldump khong co --databases nen file KHONG tu tao/xoa CSDL: nap de len CSDL dang co,
 #   tung bang DROP TABLE IF EXISTS + CREATE lai.)
 # ============================================================
 set -euo pipefail
 
-OUT=${OUT:-/opt/htbb/backup}
+OUT=${OUT:-/opt/htbb/backups}
 DB=${DB:-htbb_db}
 MYSQL=${MYSQL:-mysql}
 BANG=${BANG:-"tob_char tob_pet tob_clan tob_pokedex data_item"}

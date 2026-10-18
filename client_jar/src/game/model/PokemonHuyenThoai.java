@@ -164,7 +164,7 @@ public class PokemonHuyenThoai extends Char {
     public static final boolean[] POKE_SHINY_THAN_THU = {false, false, true};
 
     private boolean paintPokemonThanThu(Graphics g) {
-        if (!PokeBody.CHE_DO_POKEMON || this.idThanThu < 0 || this.idThanThu >= POKE_DEX_THAN_THU.length) {
+        if (this.idThanThu < 0 || this.idThanThu >= POKE_DEX_THAN_THU.length) {
             return false;
         }
         int dex = POKE_DEX_THAN_THU[this.idThanThu];

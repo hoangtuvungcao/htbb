@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Suu tam (docs/pokemon/HE_SINH_THAI.md muc 5, 7). Lop THUAN.
+ * Suu tam (docs/thiet-ke-game.md, 7). Lop THUAN.
  *
  *   - Nghien cuu Pokedex theo loai: moi loai co cac nhiem vu (bit) gan voi hoat dong khac nhau
  *     - cau ca, ap trung, thoi tiet, ban dem, quai hiem / bung phat, shiny tu trung - de nguoi suu tam

@@ -16,15 +16,23 @@
 #    4. Kiem tra jar vua keo ve co hong khong
 #    5. Bat lai + bao trang thai
 #
-#  KHONG bao gio de len: server.ini, loginServer/server.ini, log/, backup/
-#  (deu nam trong .gitignore).
+#  KHONG bao gio de len: server/server.ini, server/loginServer/server.ini, logs/, backups/,
+#  downloads/, web/uploads/ (deu nam trong .gitignore).
 # ============================================================
 set -u
 
 DIR=/opt/htbb
-USER_SV=htbb; id -u htbb >/dev/null 2>&1 || USER_SV=kpah  # TUONG-THICH-TEN-CU: bo sau 1 ban
-SV_GAME=htbb-game; systemctl cat htbb-game >/dev/null 2>&1 || SV_GAME=kpah-game  # TUONG-THICH-TEN-CU: bo sau 1 ban
-SV_LOGIN=htbb-login; systemctl cat htbb-login >/dev/null 2>&1 || SV_LOGIN=kpah-login  # TUONG-THICH-TEN-CU: bo sau 1 ban
+USER_SV=htbb
+SV_GAME=htbb-game
+SV_LOGIN=htbb-login
+
+# Tra quyen ban checkout cho $USER_SV (htbb-game.service chay User=htbb). KHONG dung vao
+# backups/ (root:root 0750 - ban sao luu CSDL) va web/releases/ (root:htbb - ban build web do
+# htbb-deploy-web.sh quan ly).
+chown_repo() {
+    find "$DIR" \( -path "$DIR/backups" -o -path "$DIR/web/releases" \) -prune \
+        -o -exec chown -h "$USER_SV":"$USER_SV" {} +
+}
 
 cd "$DIR" || { echo "[LOI] Khong vao duoc $DIR"; exit 1; }
 
@@ -41,7 +49,7 @@ if [ -n "$DIRTY" ]; then
     echo "  - Neu muon lay het theo git, BO moi thay doi tren VPS:"
     echo "      sudo -u $USER_SV git -C $DIR fetch origin"
     echo "      sudo -u $USER_SV git -C $DIR reset --hard origin/main"
-    echo "    (server.ini va log/ khong bi anh huong vi nam trong .gitignore)"
+    echo "    (server.ini va logs/ khong bi anh huong vi nam trong .gitignore)"
     exit 1
 fi
 
@@ -74,7 +82,7 @@ else
 fi
 echo "   jar OK: $(sudo -u "$USER_SV" git -C "$DIR" log -1 --format='%h %s')"
 
-chown -R "$USER_SV":"$USER_SV" "$DIR"
+chown_repo
 chmod +x "$DIR"/vps/*.sh 2>/dev/null
 
 echo "== Bat lai"
@@ -86,4 +94,4 @@ systemctl --no-pager --lines=12 status "$SV_GAME"
 
 echo
 echo "== Cong 19129 phai dang LISTEN:"
-ss -lntp | grep 19129 || echo "   [CANH BAO] chua thay cong 19129 - xem log: tail -f $DIR/log/game.out"
+ss -lntp | grep 19129 || echo "   [CANH BAO] chua thay cong 19129 - xem log: tail -f $DIR/logs/game.out"

@@ -229,7 +229,7 @@ public class MenuWindows : MyScreen
 
 	private static sbyte[] idWearChar = new sbyte[10] { 12, -1, 0, 9, 2, 8, 1, 8, 10, 11 };
 
-	private static sbyte[] idWearAnimal = new sbyte[10] { 18, 19, 14, 20, 15, 21, 16, 22, 17, 23 };
+	private static sbyte[] idWearAnimal = new sbyte[10] { 18, 30, 14, 31, 15, 32, 16, 33, 17, 34 };
 
 	private static sbyte[][] posWearChar = new sbyte[10][]
 	{
@@ -963,7 +963,7 @@ public class MenuWindows : MyScreen
 		}
 		int id = num;
 		// vùng Hoenn (năm 2): tiêu đề + bản đồ riêng
-		bool hoenn = PokeBody.CHE_DO_POKEMON && BanDoVung.chiSoHoenn(Canvas.gameScr.map) >= 0;
+		bool hoenn = BanDoVung.chiSoHoenn(Canvas.gameScr.map) >= 0;
 		PageScr.gI().setInfo(Canvas.hw - 94, Canvas.hh - 84 - MyScreen.deltaY, 197, 168, hoenn ? "Vùng Hoenn" : Res.nameBigMap[id], null);
 		PageScr.gI().indexFont = 1;
 		PageScr.gI().isBigMap = true;
@@ -976,19 +976,14 @@ public class MenuWindows : MyScreen
 		PageScr.gI().layer = new Layer();
 		ActionPaintCmd isPaint = (MyGraphics g, int x, int y) =>
 		{
-			if (PokeBody.CHE_DO_POKEMON)
+			// pokemon: bản đồ vùng vẽ bằng code (BanDoVung) thay ảnh bản đồ kiếm hiệp
+			if (hoenn)
 			{
-				// pokemon: bản đồ vùng vẽ bằng code (BanDoVung) thay ảnh bản đồ kiếm hiệp
-				if (hoenn)
-				{
-					BanDoVung.veHoenn(g, Canvas.gameScr.map, 197, 168);
-					return;
-				}
-				BanDoVung.ve(g, location, id, 197, 168);
+				BanDoVung.veHoenn(g, Canvas.gameScr.map, 197, 168);
 				return;
 			}
-			GameData.paintIconCayThan(g, 800, 98, 95);
-			Res.getCharPartInfo(2, Canvas.gameScr.mainChar.currentHead).paint(g, location[id][0], location[id][1], 0, 1);
+			BanDoVung.ve(g, location, id, 197, 168);
+			return;
 		};
 		ActionPerform isUpdate = () =>
 		{
@@ -1323,50 +1318,19 @@ public class MenuWindows : MyScreen
 		g.setClip(x, y - 12, w, hTab + 12);
 		g.translate(-cmxTab, 0);
 		sbyte b = (sbyte)tabName.Length;
-		if (UiPokemon.bat())
+		// pokemon: giao diện - viên tab (đang chọn đỏ + vạch vàng, rê chuột xanh sáng)
+		for (sbyte bt = 0; bt < b; bt++)
 		{
-			// pokemon: giao diện - viên tab (đang chọn đỏ + vạch vàng, rê chuột xanh sáng)
-			for (sbyte bt = 0; bt < b; bt++)
-			{
-				int xt = x + (wTab - 1) * bt + 2;
-				bool re = UiPokemon.chuotTrong(xt - cmxTab, y - 9, wTab - 4, hTab + 2);
-				UiPokemon.tab(g, xt, y - 9, wTab - 4, hTab + 2, tabName[bt], bt == focusTabChinh, re);
-			}
-			g.translate(cmxTab, 0);
-			g.setClip(0, 0, Canvas.w, Canvas.h);
-			g.setColor(GiaoDien.VANG);
-			g.fillRect(x + 4, y + hTab - 1, w - 8, 1);
-			g.setColor(GiaoDien.VIEN);
-			g.fillRect(x + 4, y + hTab, w - 8, 1);
-			g.translate(x0, y0);
-			paintTabNoiDung(g, x, y, w, h);
-			return;
-		}
-		for (sbyte b2 = 0; b2 < b; b2++)
-		{
-			if (b2 == focusTabChinh)
-			{
-				MFont.normalFont[0].drawString(g, tabName[b2], x + wTab / 2 + (wTab - 1) * b2, y - 2, 2);
-			}
-			else
-			{
-				MFont.arialFontW.drawString(g, tabName[b2], x + wTab / 2 + (wTab - 1) * b2, y - 2, 2);
-			}
-		}
-		g.setColor(9755120, 0.5f);
-		g.fillRect(x + (wTab - 1) * (focusTabChinh + 1) - wTab + 1, y - 7, 69, hTab + 4);
-		g.setColor(10591392);
-		for (sbyte b3 = 0; b3 < b; b3++)
-		{
-			g.drawImage(Res.imgK0, x + wTab + (wTab - 1) * b3 - 70, y - 7, 0);
+			int xt = x + (wTab - 1) * bt + 2;
+			bool re = UiPokemon.chuotTrong(xt - cmxTab, y - 9, wTab - 4, hTab + 2);
+			UiPokemon.tab(g, xt, y - 9, wTab - 4, hTab + 2, tabName[bt], bt == focusTabChinh, re);
 		}
 		g.translate(cmxTab, 0);
 		g.setClip(0, 0, Canvas.w, Canvas.h);
-		for (int i = 0; i < 3; i++)
-		{
-			g.setColor(Res.color[i]);
-			g.fillRect(x + i - 1, y + (hTab - i), w - i * 2 + 2, 1);
-		}
+		g.setColor(GiaoDien.VANG);
+		g.fillRect(x + 4, y + hTab - 1, w - 8, 1);
+		g.setColor(GiaoDien.VIEN);
+		g.fillRect(x + 4, y + hTab, w - 8, 1);
 		g.translate(x0, y0);
 		paintTabNoiDung(g, x, y, w, h);
 	}
@@ -3966,9 +3930,48 @@ public class MenuWindows : MyScreen
 				itemTemplate = Res.getItem(itemInInventory.charClazz, itemInInventory.idTemplate);
 				if (itemTemplate != null)
 				{
-					paintItemIcon(g, itemInInventory, posPaintWearingX[itemTemplate.type], posPaintWearingY[itemTemplate.type]);
+					paintIconTrangBiThu(g, itemInInventory, itemTemplate.type);
 				}
 			}
+		}
+	}
+
+	// Toa do icon cua 10 o bang "Trang bi thu", xep dung theo idWearAnimal: o chan la cot
+	// trai (x 15), o le la cot phai (x 165), hang = chi so / 2. Nam moc y duoi day chinh
+	// la gia tri posPaintWearing dang dung cho type 18/14/15/16/17, nen nam o cot trai ve
+	// y het nhu truoc.
+	private static readonly int[] Y_O_TRANG_BI_THU = new int[5] { 16, 56, 96, 140, 180 };
+
+	/// <summary>
+	/// Ve icon mot mon trang bi thu vao DUNG o cua no trong bang "Trang bi thu".
+	///
+	/// KHONG dung posPaintWearingX/Y[type]. Mang do la cua bang NHAN VAT, chi dai 20 phan
+	/// tu, trong khi cot phai bang thu mang type 30..34 - tra thang vao mang la vuot bien,
+	/// nem IndexOutOfRange giua vong ve, ma vong ve khong co try/catch nen hong ca bang.
+	///
+	/// Ban JAR khong vuong loi nay vi mang cua no dai 36 va co san o 30..34
+	/// (build/c276/game/render/screen/WindowInfoScr.java:168-169). Ban Unity duoc port tu
+	/// mot ban jar CU HON, luc do cot phai con danh so 19..23 va mang moi dai 20; port giu
+	/// nguyen cai cu nen hai ban lech nhau. Da dua idWearAnimal ve dung cach danh so cua
+	/// ban JAR, con toa do thi lay thang tu idWearAnimal de khoi phai noi dai mang.
+	///
+	/// Vi sao khong dung lai 19: type 19 la PHI PHONG cua nhan vat (real.Map.isPhiPhong),
+	/// va posPaintWearing[19] chinh la o phi phong o bang nhan vat - dung chung mot so cho
+	/// hai thu khac nhau la nguon goc cua ca lo bug nay.
+	/// </summary>
+	private void paintIconTrangBiThu(MyGraphics g, ItemInInventory item, int type)
+	{
+		for (int i = 0; i < idWearAnimal.Length; i++)
+		{
+			if (idWearAnimal[i] == type)
+			{
+				paintItemIcon(g, item, ((i % 2 == 0) ? 15 : 165) + xTr, Y_O_TRANG_BI_THU[i / 2] + yTr);
+				return;
+			}
+		}
+		if (type >= 0 && type < posPaintWearingX.Length)
+		{
+			paintItemIcon(g, item, posPaintWearingX[type], posPaintWearingY[type]);
 		}
 	}
 

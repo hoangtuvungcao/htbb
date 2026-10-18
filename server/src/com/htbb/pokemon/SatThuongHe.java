@@ -2,8 +2,7 @@ package com.htbb.pokemon;
 
 /**
  * Nhan khac he Pokemon vao sat thuong - thay khoi ngu hanh "(he + 2) % 5" cu
- * (CharChiSo.attackDam, LiveActor.attackDam va cac Boss*.attackDam) khi bat
- * CheDoPokemon. Lop THUAN, kiem thu o test/KiemPokemonServer.java.
+ * (CharChiSo.attackDam, LiveActor.attackDam va cac Boss*.attackDam). Lop THUAN, kiem thu o test/KiemPokemonServer.java.
  *
  * Giai doan 2 (S4): he tan cong = he 1 cua ke danh. Giai doan 3 (K2) se doi
  * thanh he cua chieu - chi can doi tham so goi vao, ham nay giu nguyen.

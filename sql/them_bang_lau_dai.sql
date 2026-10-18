@@ -1,4 +1,4 @@
--- Thiet ke dai han - giai doan 2 (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md): BANG MOI cho game
+-- Thiet ke dai han - giai doan 2 (docs/thiet-ke-game.md): BANG MOI cho game
 -- dang chay. Chay SAU sql/pokemon_lau_dai.sql. Server cung tu tao (CREATE TABLE IF NOT EXISTS)
 -- luc khoi dong khi sv.lau_dai=1 (data.DatabaseLauDai.taoBang), file nay de dung CSDL moi va
 -- de tools/pokemon/xuat_sql_day_du.sh gom vao sql/htbb_day_du.sql.
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `tob_su_pham` (
   PRIMARY KEY (`id_tro`)
 ) DEFAULT CHARSET=utf8;
 
--- Sao luu EXP cu truoc khi doi sang bang EXP moi (mot lan, xem docs/pokemon/KE_HOACH_CHUYEN_DOI.md
+-- Sao luu EXP cu truoc khi doi sang bang EXP moi (mot lan, xem docs/kien-truc.md
 -- muc "Giai doan 2"). id = tob_char.id.
 CREATE TABLE IF NOT EXISTS `tob_char_xp_cu` (
   `id` int NOT NULL,

@@ -1,6 +1,5 @@
 package real;
 
-import com.htbb.pokemon.CheDoPokemon;
 
 
 import data.Animal;
@@ -1260,7 +1259,7 @@ public class Map implements Runnable {
                 try {
                     FileInputStream fis = null;
                     DataInputStream dis = null;
-                    fis = new FileInputStream(com.htbb.pokemon.BanDoPokemon.duong("cMap/" + id[i]));
+                    fis = new FileInputStream("cMap/" + id[i]);
                     dis = new DataInputStream(fis);
                     byte[] byteMap = new byte[dis.available()];
                     dis.read(byteMap, 0, byteMap.length);
@@ -1279,12 +1278,12 @@ public class Map implements Runnable {
                 } catch (Exception var23) {
                 }
             }
-            // Che do Pokemon: map 0 va 122 truoc day khong gui (client dung ban dong goi san) - nay bo cuc
-            // da ve lai (cMap_pokemon/) nen server gui ca hai de client khong ve bo cuc cu.
+            // Pokemon: map 0 va 122 truoc day khong gui (client dung ban dong goi san) - nay bo cuc
+            // da ve lai (cMap/) nen server gui ca hai de client khong ve bo cuc cu.
             for (short them : com.htbb.pokemon.BanDoPokemon.mapGuiThem()) {
                 try {
                     idMapSend2Client.put(them, java.nio.file.Files.readAllBytes(
-                            new java.io.File(com.htbb.pokemon.BanDoPokemon.duong("cMap/" + them)).toPath()));
+                            new java.io.File("cMap/" + them).toPath()));
                 } catch (Exception loiThem) {
                     loiThem.printStackTrace();
                 }
@@ -1327,7 +1326,7 @@ public class Map implements Runnable {
                 DataInputStream dis = null;
 
                 for (byte i = 0; i < url.length; i++) {
-                    fis = new FileInputStream(com.htbb.pokemon.TrangTriPokemon.duong(url[i]));
+                    fis = new FileInputStream(url[i]);
                     dis = new DataInputStream(fis);
                     imgDynamic[i] = new byte[dis.available()];
                     int byteRead = 0;
@@ -3329,7 +3328,7 @@ public class Map implements Runnable {
         this.initKhoQuaiVaNguoi();
         this.mapId = id;
         if (this.mapId != -1) {
-            this.loadMap(com.htbb.pokemon.BanDoPokemon.duongQuai("map/map" + id), 0);
+            this.loadMap("map/map" + id, 0);
         }
 
         new Thread(this).start();
@@ -15124,7 +15123,7 @@ public class Map implements Runnable {
                 m.dos.writeByte(ch.pk);
                 m.dos.writeShort(Char.clampShort(ch.defend_physic + ch.percentBuff[0]));
                 m.dos.writeByte(ch.lvDetail.lv);
-                m.dos.writeByte(CheDoPokemon.heGuiClient(ch.he));
+                m.dos.writeByte(com.htbb.pokemon.HePokemon.heGuiClient(ch.he));
                 m.dos.writeByte(ch.rideHorse);
                 byte fly = 0;
                 if (ch.animalRide != null) {
@@ -15133,7 +15132,7 @@ public class Map implements Runnable {
 
                 m.dos.writeByte(fly);
                 m.dos.writeByte(ch.speed + ch.getThanKhiSpeedBonus());
-                // Che do Pokemon: goi 5 tu dung tay o day cung kem -90 (null khi tat co).
+                // Pokemon: goi 5 tu dung tay o day cung kem -90 (null khi tat co).
                 m.kemTheo = TienHoaPokemon.taoPokeThan(ch);
                 player.sendMessage(m);
                 m.cleanup();
@@ -15934,7 +15933,7 @@ public class Map implements Runnable {
             // tro lai hinh thu that duoc, nen truoc day phai lam mot lenh chat rieng.
             //
             // Nay client co gui goi 29 voi id cua mon dang mac (xem paintAnimalWearing
-            // ben ClientUnity), va cho nay xu ly. Dung cho MOI trang bi thu chu khong
+            // ben client_pc_ios), va cho nay xu ly. Dung cho MOI trang bi thu chu khong
             // rieng skin - lo hong nay von co san cho ca nam loai kia.
             if (thaoTrangBiThu(player, itemID)) {
                 return;
@@ -15960,7 +15959,7 @@ public class Map implements Runnable {
                         return;
                     }
 
-                    // Che do Pokemon (viec I2): 8 da tien hoa Eevee. Tat co -> tra false,
+                    // Pokemon (viec I2): 8 da tien hoa Eevee. Tat co -> tra false,
                     // vat pham di tiep duong cu.
                     if (TienHoaPokemon.dungDaTienHoa(player, item)) {
                         return;
@@ -17112,7 +17111,7 @@ public class Map implements Runnable {
     }
 
     /**
-     * Che do Pokemon: ban do da ve lai (cMap_pokemon) nhung vung chu nhat ALL_LOCALTION_MAP
+     * Che do Pokemon: ban do da ve lai (cMap) nhung vung chu nhat ALL_LOCALTION_MAP
      * (MapNapTaiNguyen.loadAllLocaltionMap) van la toa do ban do GOC, nhieu o cong moi nam ngoai
      * vung (map 4/7/9/70/201...) -> nguoi choi buoc vao cong tu o ke ben bi kick "hack chuyen map"
      * (BotChucNang cong_tat_ca bat duoc 18/10/2026). Kiem tra thay the CHAT hon: nguoi choi dung

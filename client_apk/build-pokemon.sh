@@ -5,7 +5,6 @@
 #   KIEU=release [BAN=900] [MAY_CHU=host:cong] [KEY_DIR=...] sh build-pokemon.sh -> out/HTBB-android-900.apk
 #       release BẮT BUỘC có máy chủ: MAY_CHU / MAY_CHU_CHINH hoặc MAY_CHU_CHINH= trong ../tools/phat-hanh/may_chu.conf
 #       (thiếu là dừng). BAN mặc định = BAN= trong ../tools/phat-hanh/phien_ban.conf (versionName = PHIEN_BAN=).
-#   XAC_THUC=1 ...                              -> bật lại xác thực -88 (server NQSH cũ)
 # Cần: JDK 17/21 (JAVA_HOME), Android SDK (ANDROID_HOME, mặc định ~/Android/Sdk), python3.
 # Khóa ký release (KEY_DIR/key.properties) KHÔNG đưa vào git; không có khóa thì APK release chưa ký.
 set -e
@@ -21,7 +20,6 @@ if [ -z "$JAVA_HOME" ]; then
 fi
 THAM="-PhtbbBan=$BAN"
 [ -n "$MAY_CHU" ] && THAM="$THAM -PmayChu=$MAY_CHU"
-[ -n "$XAC_THUC" ] && THAM="$THAM -PxacThuc=$XAC_THUC"
 [ -n "$KEY_DIR" ] && THAM="$THAM -PhtbbKeyDir=$KEY_DIR"
 mkdir -p out
 if [ "$KIEU" = release ]; then

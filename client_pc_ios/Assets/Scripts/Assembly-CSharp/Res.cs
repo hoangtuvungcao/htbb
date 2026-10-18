@@ -1116,43 +1116,19 @@ public class Res
 
 	public static void loadImgMap()
 	{
-		Image image = null;
-		Image image2 = null;
-		Image image3 = null;
-		int num = 0;
-		int num2 = 0;
-		int num3 = 0;
-		// Che do Pokemon (G7.A): bo tile PMD cung so tile/thu tu, sinh boi tools/pokemon/DoiTileMap.java.
-		// Thieu tep (Resources/poke_tile/) thi quay ve bo goc.
-		bool tilePokemon = false;
-		if (PokeBody.CHE_DO_POKEMON)
+		// Bo tile Pokemon (Resources/poke_tile/, sinh boi tools/pokemon/DungBoTileMoi.java) - bo tile goc
+		// res/pngtile da bo. Thieu tep la loi dong goi: bao loi, khong ve ban do.
+		Image image = PokeTile.napAnh("t_thanh");
+		Image image2 = PokeTile.napAnh("t");
+		Image image3 = PokeTile.napAnh("t_hang");
+		if (image == null || image2 == null || image3 == null)
 		{
-			image = PokeTile.napAnh("t_thanh");
-			image2 = PokeTile.napAnh("t");
-			image3 = PokeTile.napAnh("t_hang");
-			tilePokemon = image != null && image2 != null && image3 != null;
-			if (!tilePokemon)
-			{
-				image = null;
-				image2 = null;
-				image3 = null;
-			}
+			Out.LogError("Thieu bo tile Resources/" + PokeTile.THU_MUC + " (t, t_hang, t_thanh)");
+			return;
 		}
-		if (image == null)
-		{
-			image = Image.createImage(Main.res + "/pngtile/t_thanh");
-		}
-		if (image2 == null)
-		{
-			image2 = Image.createImage(Main.res + "/pngtile/t");
-		}
-		if (image3 == null)
-		{
-			image3 = Image.createImage(Main.res + "/pngtile/t_hang");
-		}
-		num = image.getHeight() / 16;
-		num2 = image2.getHeight() / 16;
-		num3 = image3.getHeight() / 16;
+		int num = image.getHeight() / 16;
+		int num2 = image2.getHeight() / 16;
+		int num3 = image3.getHeight() / 16;
 		Tilemap.img[0] = new Image[num];
 		Tilemap.img[1] = new Image[num2];
 		Tilemap.img[2] = new Image[num3];
@@ -1168,78 +1144,61 @@ public class Res
 		{
 			Tilemap.img[2][k] = Image.createImage(image3, 0, k * 16, 16, 16, 0);
 		}
-		if (tilePokemon)
-		{
-			// Ban do nho to theo mau trung binh cua tile moi (mang mau cu viet cung cho tile goc).
-			PokeTile.tinhMauBanDoNho(image, Tilemap.mangMauThanh);
-			PokeTile.tinhMauBanDoNho(image2, Tilemap.mangMau);
-			PokeTile.tinhMauBanDoNho(image3, Tilemap.mangMauHang);
-		}
+		// Ban do nho to theo mau trung binh cua tile moi.
+		PokeTile.tinhMauBanDoNho(image, Tilemap.mangMauThanh);
+		PokeTile.tinhMauBanDoNho(image2, Tilemap.mangMau);
+		PokeTile.tinhMauBanDoNho(image3, Tilemap.mangMauHang);
 		image.texture = null;
-		image = null;
 		image2.texture = null;
-		image2 = null;
 		image3.texture = null;
-		image3 = null;
 		Resources.UnloadUnusedAssets();
 		GC.Collect();
 	}
 
 	public static void loadTileImage(int lv)
 	{
-		Tilemap.typeTile = 0;
 		try
 		{
-			DataInputStream dataInputStream = null;
+			// Bo tile moi: kieu di duoc (Resources/poke_map/kieu_*) + anh nho ban do (Resources/poke_tile/*_s).
+			string tenBo;
+			string tenNho;
 			if (lv > 200)
 			{
 				Tilemap.typeTile = 0;
-				dataInputStream = DataInputStream.getResourceAsStream(Main.res + "/t_thanh");
 				mauTile = 0;
-				imgtileSmall = Image.createImage(Main.res + "/pngtile/t_thanh_s");
+				tenBo = "t_thanh";
+				tenNho = "t_thanh_s";
 			}
 			else if (lv < 110)
 			{
 				Tilemap.typeTile = 1;
-				dataInputStream = DataInputStream.getResourceAsStream(Main.res + "/t");
-				imgtileSmall = Image.createImage(Main.res + "/pngtile/t_small");
 				mauTile = 1;
+				tenBo = "t";
+				tenNho = "t_small";
 			}
 			else
 			{
 				Tilemap.typeTile = 2;
-				dataInputStream = DataInputStream.getResourceAsStream(Main.res + "/t_hang");
-				imgtileSmall = Image.createImage(Main.res + "/pngtile/t_hang_s");
 				mauTile = 2;
+				tenBo = "t_hang";
+				tenNho = "t_hang_s";
 			}
-			if (PokeBody.CHE_DO_POKEMON)
+			Image nhoMoi = PokeTile.napNho(tenNho);
+			if (nhoMoi != null)
 			{
-				// Bo tile moi (tools/pokemon/DungBoTileMoi.java): kieu di duoc + anh nho ban do di cung bo tile
-				// Resources/poke_tile - chi so tile khac han bo goc nen KHONG duoc dung res/t*.type cu.
-				string tenBo = (lv > 200) ? "t_thanh" : ((lv < 110) ? "t" : "t_hang");
-				TextAsset kieuMoi = (TextAsset)Resources.Load(Tilemap.BAN_DO_POKEMON + "kieu_" + tenBo, typeof(TextAsset));
-				if (kieuMoi != null)
-				{
-					dataInputStream = new DataInputStream(ArrayCast.cast(kieuMoi.bytes));
-					Image nhoMoi = PokeTile.napNho((lv > 200) ? "t_thanh_s" : ((lv < 110) ? "t_small" : "t_hang_s"));
-					if (nhoMoi != null)
-					{
-						imgtileSmall = nhoMoi;
-					}
-				}
+				imgtileSmall = nhoMoi;
 			}
-			try
+			TextAsset kieuMoi = (TextAsset)Resources.Load(Tilemap.BAN_DO_POKEMON + "kieu_" + tenBo, typeof(TextAsset));
+			if (kieuMoi == null)
 			{
-				Tilemap.typeOfTile = null;
-				Tilemap.typeOfTile = new int[dataInputStream.available()];
-				for (int i = 0; i < Tilemap.typeOfTile.Length; i++)
-				{
-					Tilemap.typeOfTile[i] = dataInputStream.readUnsignedByte();
-				}
+				Out.LogError("Thieu kieu tile Resources/" + Tilemap.BAN_DO_POKEMON + "kieu_" + tenBo);
+				return;
 			}
-			catch (Exception)
+			sbyte[] kieu = ArrayCast.cast(kieuMoi.bytes);
+			Tilemap.typeOfTile = new int[kieu.Length];
+			for (int i = 0; i < kieu.Length; i++)
 			{
-				Out.LogWarning("Error Load Back Tile");
+				Tilemap.typeOfTile[i] = kieu[i] & 0xFF;
 			}
 		}
 		catch (Exception ex2)
@@ -1250,77 +1209,19 @@ public class Res
 
 	public static void paintDlgFull(MyGraphics g, int x, int y)
 	{
-		if (UiPokemon.bat())
-		{
-			UiPokemon.bangKinh(g, x - 8, y + 11, 145, 145); // pokemon: giao diện
-			return;
-		}
-		x -= 10;
-		int num = y + 14;
-		g.drawImage(imgInv[2], x + 15, num, 20);
-		g.drawImage(imgInv[2], x + 85, num, 20);
-		g.drawImage(imgInv[2], x + 15, num + 46, 20);
-		g.drawImage(imgInv[2], x + 85, num + 46, 20);
-		g.drawImage(imgInv[2], x + 15, num + 92, 20);
-		g.drawImage(imgInv[2], x + 85, num + 92, 20);
-		int num2 = x + 12;
-		int num3 = y + 11;
-		int num4 = 144;
-		int num5 = 144;
-		for (int i = 0; i < 3; i++)
-		{
-			g.setColor(color[i]);
-			g.drawRect(num2 + i, num3 + i, num4 - i * 2, num5 - i * 2);
-		}
-		g.drawImage(imgInv[0], x + 10, y + 9, 20);
-		g.drawRegion(imgInv[0], 0, 0, 18, 19, 2, x + 159, y + 9, 24);
-		g.drawRegion(imgInv3, 0, 0, 18, 19, 2, x + 10, y + 158, 36);
-		g.drawImage(imgInv3, x + 159, y + 158, 40);
+		UiPokemon.bangKinh(g, x - 8, y + 11, 145, 145); // pokemon: giao diện
 	}
 
 	public static void paintSelected(MyGraphics g, int x, int y, int w, int h)
 	{
-		if (UiPokemon.bat())
-		{
-			UiPokemon.hangChon(g, x, y, w + 1, h + 1, true); // pokemon: giao diện
-			return;
-		}
-		g.setColor(34949);
-		g.fillRect(x, y, w, h);
-		g.setColor(11908790);
-		g.drawRect(x, y, w, h);
+		UiPokemon.hangChon(g, x, y, w + 1, h + 1, true); // pokemon: giao diện
 	}
 
 	public static void paintDlgDragonFull(MyGraphics g, int x, int y, int w, int h)
 	{
-		if (UiPokemon.bat())
-		{
-			// pokemon: giao diện - bảng kính navy + Poké Ball giữa mép trên (thay khung rồng)
-			UiPokemon.bangKinh(g, x, y, w, h);
-			GiaoDien.pokeBall(g, x + w / 2, y, 7, 0);
-			return;
-		}
-		int num = w / 70 + 1;
-		int num2 = h / 47 + 1;
-		g.setClip(x, y, w, h);
-		for (int i = 0; i < num; i++)
-		{
-			for (int j = 0; j < num2; j++)
-			{
-				g.drawImage(imgInv[2], x + i * 70, y + j * 47, 0);
-			}
-		}
-		g.setClip(0, 0, Canvas.w, Canvas.h);
-		for (int k = 0; k < 3; k++)
-		{
-			g.setColor(color[k]);
-			g.drawRect(x + k, y + k, w - k * 2, h - k * 2);
-		}
-		g.drawImage(imgInv[0], x - 2, y - 2, 0);
-		g.drawRegion(imgInv[0], 0, 0, 18, 19, 2, x + w - 15, y - 2, 0);
-		g.drawRegion(imgInv3, 0, 0, 18, 19, 2, x - 2, y + h - 15, 0);
-		g.drawImage(imgInv3, x + w - 15, y + h - 16, 0);
-		g.drawImage(imgInv[1], x + w / 2, y - 4, 3);
+		// pokemon: giao diện - bảng kính navy + Poké Ball giữa mép trên (thay khung rồng)
+		UiPokemon.bangKinh(g, x, y, w, h);
+		GiaoDien.pokeBall(g, x + w / 2, y, 7, 0);
 	}
 
 	public static void paintRectColor(MyGraphics g, int x, int y, int w, int h, int count, int color1, int color2)
@@ -1373,95 +1274,30 @@ public class Res
 
 	public static void paintDlgFull(MyGraphics g, int x, int y, int w, int h)
 	{
-		if (UiPokemon.bat())
-		{
-			UiPokemon.bangKinh(g, x, y, w, h); // pokemon: giao diện - bảng kính + dải đỏ đầu
-			UiPokemon.thanhDo(g, x + 3, y + 3, w - 6, 20, null);
-			return;
-		}
-		int num = w / 70 + 1;
-		g.setClip(x, y, w, h);
-		for (int i = 0; i < num; i++)
-		{
-			g.drawImage(imgInv[2], x + 70 * i, y, 0);
-		}
-		g.setColor(277044);
-		g.fillRect(x, y + 25, w, h);
-		g.setClip(0, 0, Canvas.w, Canvas.h);
-		for (int j = 0; j < 3; j++)
-		{
-			g.setColor(color[j]);
-			g.drawRect(x + j, y + j, w - j * 2 - 1, h - j * 2 - 1);
-			g.fillRect(x + 3, y + 25, w - 6, 1);
-		}
-		g.drawImage(imgInv[0], x - 2, y - 2, 0);
-		g.drawRegion(imgInv[0], 0, 0, 18, 19, 2, x + w + 2, y - 2, MyGraphics.TOP | MyGraphics.RIGHT);
-		g.drawRegion(imgInv3, 0, 0, 18, 19, 2, x - 2, y + h + 2, MyGraphics.BOTTOM | MyGraphics.LEFT);
-		g.drawImage(imgInv3, x + w + 2, y + h + 2, MyGraphics.BOTTOM | MyGraphics.RIGHT);
+		UiPokemon.bangKinh(g, x, y, w, h); // pokemon: giao diện - bảng kính + dải đỏ đầu
+		UiPokemon.thanhDo(g, x + 3, y + 3, w - 6, 20, null);
 	}
 
 	public static void paintDlgFull(MyGraphics g, int x, int y, int w, int h, int y1, string tile, bool isDD, int h0)
 	{
-		if (UiPokemon.bat())
+		// pokemon: giao diện - bảng kính + dải tiêu đề đỏ + vạch vàng ngăn mục
+		UiPokemon.bangKinh(g, x, y, w, h);
+		UiPokemon.thanhDo(g, x + 3, y + 3, w - 6, 20, tile);
+		g.setColor(GiaoDien.VANG, 0.7f);
+		g.fillRect(x + 8, y + 25 + y1 + h0, w - 16, 1);
+		if (isDD)
 		{
-			// pokemon: giao diện - bảng kính + dải tiêu đề đỏ + vạch vàng ngăn mục
-			UiPokemon.bangKinh(g, x, y, w, h);
-			UiPokemon.thanhDo(g, x + 3, y + 3, w - 6, 20, tile);
-			g.setColor(GiaoDien.VANG, 0.7f);
-			g.fillRect(x + 8, y + 25 + y1 + h0, w - 16, 1);
-			if (isDD)
-			{
-				g.fillRect(x + 8, y + y1 + h0 - 2, w - 16, 1);
-			}
-			return;
+			g.fillRect(x + 8, y + y1 + h0 - 2, w - 16, 1);
 		}
-		int num = w / 70 + 1;
-		g.setClip(x, y, w, h);
-		for (int i = 0; i < num; i++)
-		{
-			g.drawImage(imgInv[2], x + 70 * i, y, 0);
-		}
-		g.setColor(277044);
-		g.fillRect(x, y + 25, w, h);
-		g.setClip(0, 0, Canvas.w, Canvas.h);
-		for (int j = 0; j < 3; j++)
-		{
-			g.setColor(color[j]);
-			g.drawRect(x + j, y + j, w - j * 2 - 1, h - j * 2 - 1);
-		}
-		g.fillRect(x + 3, y + 25, w - 6, 1);
-		if (!isDD)
-		{
-			g.fillRect(x + 3, y + 25 + y1 + h0, w - 6, 1);
-		}
-		else
-		{
-			g.fillRect(x + 3, y + 25 + y1 + h0, w - 6, 1);
-			g.fillRect(x + 3, y + y1 + h0 - 2, w - 6, 1);
-		}
-		MFont.normalFont[0].drawString(g, tile, x + w / 2, y + 8, 2);
-		g.drawImage(imgInv[0], x - 2, y - 2, 0);
-		g.drawRegion(imgInv[0], 0, 0, 18, 19, 2, x + w + 2, y - 2, MyGraphics.TOP | MyGraphics.RIGHT);
-		g.drawRegion(imgInv[0], 0, 0, 18, 19, 6, x - 2, y + h + 2, MyGraphics.BOTTOM | MyGraphics.LEFT);
-		g.drawRegion(imgInv[0], 0, 0, 18, 19, 3, x + w + 2, y + h + 2, MyGraphics.BOTTOM | MyGraphics.RIGHT);
 	}
 
 	public static void drawRect(MyGraphics g, int x, int y, int w, int h)
 	{
-		if (UiPokemon.bat())
-		{
-			// pokemon: giao diện - viền navy + viền trong vàng
-			g.setColor(GiaoDien.VIEN);
-			g.drawRect(x, y, w, h);
-			g.setColor(GiaoDien.VANG);
-			g.drawRect(x + 1, y + 1, w - 2, h - 2);
-			return;
-		}
-		for (int i = 0; i < 3; i++)
-		{
-			g.setColor(color[i]);
-			g.drawRect(x + i, y + i, w - i * 2, h - i * 2);
-		}
+		// pokemon: giao diện - viền navy + viền trong vàng
+		g.setColor(GiaoDien.VIEN);
+		g.drawRect(x, y, w, h);
+		g.setColor(GiaoDien.VANG);
+		g.drawRect(x + 1, y + 1, w - 2, h - 2);
 	}
 
 	public static int[] trimArray(int[] array)

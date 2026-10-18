@@ -45,7 +45,7 @@ public class MessageHandler : Cmd_message, IMessageHandler
 		return Canvas.gameScr.findCharByID(id) as Char;
 	}
 
-	/// <summary>-90 POKE_THAN: i16 charId, i16 dex, u8 shiny (KE_HOACH_CHUYEN_DOI.md muc 7.3).</summary>
+	/// <summary>-90 POKE_THAN: i16 charId, i16 dex, u8 shiny (docs/kien-truc.md).</summary>
 	private void onPokeThan(Message msg)
 	{
 		short id = msg.reader().readShort();
@@ -150,10 +150,6 @@ public class MessageHandler : Cmd_message, IMessageHandler
 
 	public void onMessage(Message msg)
 	{
-		if (KiemServer.nhan(msg))
-		{
-			return;
-		}
 		// Tự động đánh chính thức: gói -100 của máy chủ (như AutoGuard.goiGuard bản jar)
 		if (TuDong.nhan(msg))
 		{

@@ -17,7 +17,7 @@ import java.util.List;
  * Vi sao an toan khi chuoi moi khac do dai: constant pool duoc doc TUAN TU
  * ([tag][u2 do dai][bytes] voi Utf8), khong co gi trong tep .class tro theo offset tuyet
  * doi vao constant pool, nen chi can ghi lai dung u2 do dai. Moi noi khac (ldc, Code...) tro
- * theo CHI SO muc trong pool, khong doi. Xem docs/client-test-276.md.
+ * theo CHI SO muc trong pool, khong doi. Xem docs/kien-truc.md.
  *
  * Tep bi ghi de tai cho - chay tren BAN SAO. Thoat ma 1 neu co chuoi <cu> khong tim thay
  * (khong ghi gi ca), de khong lam nua chung.

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Nạp tiền (HTBB/docs/pokemon/NAP_TIEN.md): chọn nhân vật nhận + gói (lượng / Thẻ tháng / Vé mùa)
+ * Nạp tiền (docs/van-hanh.md): chọn nhân vật nhận + gói (lượng / Thẻ tháng / Vé mùa)
  * -> tạo đơn -> QR VietQR. Trang tự hỏi lại trạng thái; cổng thanh toán báo tiền vào (hoặc admin
  * xác nhận) thì server game tự cộng vào nhân vật trong ~15 giây khi nhân vật online.
  * Không bán sức mạnh: lượng chỉ mua trang trí + tiện ích + tăng tốc (chỉ EXP, chung trần với bản khoá) trong game.

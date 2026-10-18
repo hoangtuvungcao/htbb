@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Hieu ung chieu kieu Pokemon (viec K3, docs/pokemon/KE_HOACH_CHUYEN_DOI.md) tu particle
+/// Hieu ung chieu kieu Pokemon (viec K3, docs/kien-truc.md) tu particle
 /// PMDCollab RawAsset dong goi boi tools/pokemon/tai_hieu_ung_pmd.py:
 ///   Resources/poke/hu_bang.bytes  bang van ban, moi dong
 ///       lop,chieu,ten,rong,cao,soKhung,soHuong,soCot,kieuVe,tickMoiKhung
@@ -182,7 +182,7 @@ public class PokeHieuUng
 	/// <summary>Cho Char.setCurrentSkillByID: SkillAnimate kieu Pokemon, hoac null de giu cach cu.</summary>
 	public static SkillAnimate layChieu(Char c, int chieu)
 	{
-		if (c == null || c.pokeDex <= 0 || !PokeBody.CHE_DO_POKEMON)
+		if (c == null || c.pokeDex <= 0)
 		{
 			return null;
 		}
@@ -212,7 +212,7 @@ public class PokeHieuUng
 		try
 		{
 			Char c = actor as Char;
-			if (c == null || c.pokeDex <= 0 || !PokeBody.CHE_DO_POKEMON)
+			if (c == null || c.pokeDex <= 0)
 			{
 				return;
 			}

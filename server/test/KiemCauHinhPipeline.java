@@ -55,7 +55,7 @@ public final class KiemCauHinhPipeline {
         // them vao ban mau thi phep kiem nay hong ngay, khong cho toi luc deploy.
         final List<String> batBuoc = khoaParseX(sv);
         // Nguong 15 (khong phai 20): tu 11/09/2026 con dung 20 khoa bat buoc (giam tu 23,
-        // xem docs/cau-hinh-server-ini.md muc 10) sau khi chuyen sv.expvantieu/sv.Luckyexp/
+        // xem docs/cau-hinh.md) sau khi chuyen sv.expvantieu/sv.Luckyexp/
         // sv.ExpQua sang CauHinh - day van la mot san sang chan hong regex ve 0, khong phai
         // yeu cau phai co dung 23 khoa mai mai.
         Kiem.dung("tim duoc cac khoa parseX trong TeamServer (tren 15)", batBuoc.size() > 15);
@@ -78,9 +78,13 @@ public final class KiemCauHinhPipeline {
             Kiem.dung("ban mau co khoa " + k + " (khong thi van phai sua tay tren VPS)",
                     banMau.containsKey(k));
         }
+        // Khoa cua danh muc cau hinh trung tam (tools/cauhinh/danh_muc.json: tu_dong.*, hoi_sinh.*...)
+        // cung la khoa that: CauHinhTrungTam doc server.ini (CSDL > server.ini > mac dinh).
+        final String danhMuc = doc("../tools/cauhinh/danh_muc.json");
         for (final String k : banMau.keySet()) {
             Kiem.dung("khoa " + k + " trong ban mau that su duoc ma nguon doc",
-                    maNguonDoc.contains(k));
+                    maNguonDoc.contains(k) || danhMuc.contains("\"khoa\": \"" + k + "\"")
+                            || doc("src/com/htbb/cauhinh/CauHinhTrungTam.java").contains("\"" + k + "\""));
         }
 
         // ---- 2. Cho trong ${...} phai co du o ca workflow lan danh sach cho phep ----

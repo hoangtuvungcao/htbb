@@ -6,19 +6,19 @@
  *   HTBB_DIR=.. node scripts/dong-bo-cam-nang.mjs --anh-map  # + chép ảnh xem trước bản đồ
  *
  * Đọc (chỉ đọc, không sửa gì bên HTBB):
- *   docs/pokemon/bang_cap_do_lau_dai.csv   bảng EXP 1..100 + giờ mục tiêu
- *   docs/pokemon/nhiem_vu_moi.csv          nhiệm vụ (chính tuyến, phụ, ngày, tuần, Pokédex, đội...)
- *   docs/pokemon/su_kien_nam.csv           lịch 52 tuần (năm 1 + năm 2)
- *   docs/pokemon/thiet_ke_map.csv          danh sách bản đồ (dấu ";")
- *   docs/pokemon/bang_vat_pham.csv         đếm trang bị theo loại
- *   docs/pokemon/THIET_KE_LAU_DAI.md       (nếu có) chỉ để ghi nhận đã có tài liệu thiết kế
- *   docs/pokemon/map_moi/<id>.png          (chỉ khi --anh-map) ảnh xem trước bản đồ mới
+ *   du_lieu/bang_cap_do_lau_dai.csv   bảng EXP 1..100 + giờ mục tiêu
+ *   du_lieu/nhiem_vu_moi.csv          nhiệm vụ (chính tuyến, phụ, ngày, tuần, Pokédex, đội...)
+ *   du_lieu/su_kien_nam.csv           lịch 52 tuần (năm 1 + năm 2)
+ *   du_lieu/thiet_ke_map.csv          danh sách bản đồ (dấu ";")
+ *   du_lieu/bang_vat_pham.csv         đếm trang bị theo loại
+ *   docs/thiet-ke-game.md       (nếu có) chỉ để ghi nhận đã có tài liệu thiết kế
+ *   du_lieu/map_moi/<id>.png          (chỉ khi --anh-map) ảnh xem trước bản đồ mới
  *   src/com/htbb/pokemon/ThongSoLauDai.java  hằng số thiết kế dài hạn (sinh từ sinh_sql_lau_dai.py)
  *
  * Ghi:
  *   shared/data/cam-nang.json   (sắp xếp cố định, không dấu thời gian -> chạy lại ra y hệt)
  *   shared/data/cam-nang-noi-dung.json  (vật phẩm, cửa hàng, Gym, boss, PvP, sổ tay, hầm ngục, hệ sinh thái,
- *                               câu cá, cốt truyện — từ docs/pokemon/web/*, diem_cau_ca.csv + hằng Java)
+ *                               câu cá, cốt truyện — từ du_lieu/web/*, diem_cau_ca.csv + hằng Java)
  *   public/ban-do/<id>.webp     (chỉ khi --anh-map; thu nhỏ ≤ 640×480 bằng ImageMagick nếu có)
  *
  * Mọi con số trên các trang /cam-nang/* đọc từ JSON này — muốn đổi số thì đổi bên game
@@ -32,7 +32,7 @@ import { fileURLToPath } from 'node:url'
 
 const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '..')
-const DOCS = join(HTBB, 'docs/pokemon')
+const DOCS = join(HTBB, 'du_lieu')
 const OUT_JSON = join(WEB, 'shared/data/cam-nang.json')
 const OUT_MAP = join(WEB, 'public/ban-do')
 const ANH_MAP = process.argv.includes('--anh-map')
@@ -84,7 +84,7 @@ const n = s => (s === '' || s == null ? null : Number(s))
 
 // ---------------------------------------------------------------- ThongSoLauDai.java
 
-const JAVA = doc('src/com/htbb/pokemon/ThongSoLauDai.java')
+const JAVA = doc('server/src/com/htbb/pokemon/ThongSoLauDai.java')
 function hang(ten) {
   const m = JAVA.match(new RegExp(`\\b${ten}\\s*=\\s*(-?\\d+)L?;`))
   if (!m) throw new Error(`ThongSoLauDai: thiếu ${ten}`)
@@ -101,7 +101,7 @@ const mangChuoi = ten => [...mang(ten).matchAll(/"([^"]*)"/g)].map(x => x[1])
 
 // ---------------------------------------------------------------- cấp độ
 
-const bangCap = docCsv('docs/pokemon/bang_cap_do_lau_dai.csv').map(r => ({
+const bangCap = docCsv('du_lieu/bang_cap_do_lau_dai.csv').map(r => ({
   cap: n(r.cap),
   expLenCap: n(r.exp_len_cap),
   gioTichLuy: n(r.gio_tich_luy),
@@ -146,7 +146,7 @@ const bua = mang1('BUA_BAO_HO_LUONG_KHOA')
 const chiSo = mang1('CHI_SO_NC_PHAN_TRAM')
 const chiPhi = mang2('CHI_PHI_NC').map(r => r.slice(1))
 
-/** Ô trang bị: type trong data_item -> tên Pokémon (KE_HOACH_CHUYEN_DOI.md §6.4). */
+/** Ô trang bị: type trong data_item -> tên Pokémon (docs/kien-truc.md §6.4). */
 const O_TRANG_BI = [
   { type: [0], ten: 'Khăn quàng', vai: 'Thân (HP, phòng thủ)' },
   { type: [1], ten: 'Đai', vai: 'Thân (HP, phòng thủ)' },
@@ -159,7 +159,7 @@ const O_TRANG_BI = [
   { type: [12], ten: 'Phiến đá hệ', vai: 'Tăng sức mạnh theo hệ' },
   { type: [19], ten: 'Ruy băng', vai: 'Ô trang trí có chỉ số nhỏ (không vẽ lên thân)' },
 ]
-const vatPham = docCsv('docs/pokemon/bang_vat_pham.csv')
+const vatPham = docCsv('du_lieu/bang_vat_pham.csv')
 const demType = {}
 for (const r of vatPham) {
   if (!r.ten_moi || r.ten_moi.startsWith('(')) continue
@@ -210,7 +210,7 @@ const kinhTe = {
 
 // ---------------------------------------------------------------- nhiệm vụ
 
-const nv = docCsv('docs/pokemon/nhiem_vu_moi.csv')
+const nv = docCsv('du_lieu/nhiem_vu_moi.csv')
 const demLoai = {}
 for (const r of nv) demLoai[r.loai] = (demLoai[r.loai] ?? 0) + 1
 
@@ -282,7 +282,7 @@ const nhiemVu = {
 
 // ---------------------------------------------------------------- sự kiện năm
 
-const suKien = docCsv('docs/pokemon/su_kien_nam.csv').map(r => ({
+const suKien = docCsv('du_lieu/su_kien_nam.csv').map(r => ({
   tuan: n(r.tuan),
   thang: n(r.thang),
   ten1: r.ten_nam1.replace(/\s*\(tuần \d\/\d\)$/, '').replace(/\s*\(theo âm lịch: tuần [\d-]+\)/, ''),
@@ -337,12 +337,12 @@ for (const r of nv) if (r.dia_danh && ['Kanto', 'Johto', 'Hoenn'].includes(r.vun
 vungDiaDanh.set('Pewter', 'Kanto').set('Blackthorn', 'Johto').set('Cianwood', 'Johto')
 
 /** Bản đồ Hoenn (năm 2): tên có dấu lấy từ nguồn duy nhất BanDoHoenn.java. */
-const TEN_HOENN = new Map([...doc('src/com/htbb/pokemon/BanDoHoenn.java').matchAll(/them\((\d+),\s*"\w+",\s*"([^"]+)"/g)].map(m => [Number(m[1]), m[2]]))
-const banDoRaw = docCsv('docs/pokemon/thiet_ke_map.csv', ';')
+const TEN_HOENN = new Map([...doc('server/src/com/htbb/pokemon/BanDoHoenn.java').matchAll(/them\((\d+),\s*"\w+",\s*"([^"]+)"/g)].map(m => [Number(m[1]), m[2]]))
+const banDoRaw = docCsv('du_lieu/thiet_ke_map.csv', ';')
 if (ANH_MAP) mkdirSync(OUT_MAP, { recursive: true })
 let anhGhi = 0
 /**
- * Ảnh xem trước gốc (docs/pokemon/map_moi/<id>.png) tới 2000×2000 px, cả thư mục ~22 MB — quá nặng
+ * Ảnh xem trước gốc (du_lieu/map_moi/<id>.png) tới 2000×2000 px, cả thư mục ~22 MB — quá nặng
  * cho web. Có ImageMagick (`convert`) thì thu về ảnh WebP tối đa 640×480 (~20–60 KB); không có thì
  * chép PNG gốc (cảnh báo). Kích thước ghi vào JSON để trang đặt width/height (không nhảy bố cục).
  */
@@ -382,8 +382,8 @@ const tenBanDo = id => banDo.find(b => b.id === id)?.ten
 // ---------------------------------------------------------------- nội dung chi tiết (cam-nang-noi-dung.json)
 //
 // File riêng, chỉ các trang cần mới import (vật phẩm, cửa hàng, Gym, boss, hệ sinh thái, sổ tay,
-// cốt truyện...). Nguồn: docs/pokemon/web/*.csv + nhiem_vu_tom_tat.json (bản "cho web" do nhóm
-// game xuất), docs/pokemon/diem_cau_ca.csv, và hằng số Java (ưu tiên code hơn tài liệu thiết kế).
+// cốt truyện...). Nguồn: du_lieu/web/*.csv + nhiem_vu_tom_tat.json (bản "cho web" do nhóm
+// game xuất), du_lieu/diem_cau_ca.csv, và hằng số Java (ưu tiên code hơn tài liệu thiết kế).
 
 const javaSrc = p => doc(p)
 const hangJ = (src, ten, tenFile) => {
@@ -400,7 +400,7 @@ const mangJ = (src, ten, tenFile) => {
 }
 const soJ = s => [...s.matchAll(/-?\d+/g)].map(x => Number(x[0]))
 const chuoiJ = s => [...s.matchAll(/"([^"]*)"/g)].map(x => x[1])
-const web = f => docCsv(`docs/pokemon/web/${f}`)
+const web = f => docCsv(`du_lieu/web/${f}`)
 const soHoac = v => (v === '' || v == null || Number.isNaN(Number(v)) ? null : Number(v))
 
 // --- vật phẩm tiêu hao & nguyên liệu (web/vat_pham.csv)
@@ -420,9 +420,9 @@ for (const r of web('cua_hang.csv')) {
 }
 
 // --- Gym (web/gym.csv + noi_dung_gym.csv cho chỉ số + GymLauDai.java cho luật)
-const gymJava = javaSrc('src/real/GymLauDai.java')
-const boss2 = javaSrc('src/com/htbb/pokemon/GiaiDoanBoss.java')
-const gymNd = docCsv('docs/pokemon/noi_dung_gym.csv')
+const gymJava = javaSrc('server/src/real/GymLauDai.java')
+const boss2 = javaSrc('server/src/com/htbb/pokemon/GiaiDoanBoss.java')
+const gymNd = docCsv('du_lieu/noi_dung_gym.csv')
 const TEN_BAC_TB = bacTen
 const gym = web('gym.csv').map((r) => {
   const nd = gymNd.find(x => Number(x.stt) === Number(r.Gym)) ?? {}
@@ -449,7 +449,7 @@ const trangTri = web('trang_tri.csv').map(r => ({ mua: r['Mùa'], loai: r['Loạ
 const suKienVatPham = web('su_kien.csv').map(r => ({ tuan: n(r['Tuần']), ten: r['Sự kiện'], ten2: r['Năm 2'], vatPham: r['Vật phẩm'], toiDaTuan: soHoac(r['Tối đa/tuần']), doiLay: r['Đổi lấy'] }))
 
 // --- boss thế giới (web/boss_the_gioi.csv + LauDaiJob.java)
-const jobJava = javaSrc('src/real/LauDaiJob.java')
+const jobJava = javaSrc('server/src/real/LauDaiJob.java')
 const bossTheGioi = {
   lich: web('boss_the_gioi.csv').map(r => ({ tuan: n(r['Tuần']), nam1: r['Boss năm 1'], nam2: r['Boss năm 2'], he: r['Hệ'], luotNgay: n(r['Lượt/ngày']) })),
   // "thu Bay 20:00; tuan dot kich them 12:30" — kiểm chuỗi để biết code còn đúng giờ này.
@@ -459,7 +459,7 @@ const bossTheGioi = {
 }
 
 // --- PvP mùa (ThangPvp.java). LUONG_BAC chưa được code nào dùng -> KHÔNG đưa lên web.
-const pvpJava = javaSrc('src/com/htbb/pokemon/ThangPvp.java')
+const pvpJava = javaSrc('server/src/com/htbb/pokemon/ThangPvp.java')
 const tenBac = chuoiJ(mangJ(pvpJava, 'TEN_BAC', 'ThangPvp.java'))
 const nguongBac = soJ(mangJ(pvpJava, 'NGUONG_BAC', 'ThangPvp.java'))
 const pvp = {
@@ -468,14 +468,14 @@ const pvp = {
   tuanMoiMua: hangJ(pvpJava, 'TUAN_MOI_MUA', 'ThangPvp.java'),
   bac: tenBac.map((ten, i) => ({ ten, tuElo: i === 0 ? 0 : nguongBac[i - 1] })),
   daiCap: 10,
-  phutCungCap: Number(/CHAN_LAP_MS = (\d+)L \* 60L \* 1000L/.exec(javaSrc('src/real/ThangPvpGame.java'))?.[1] ?? NaN),
+  phutCungCap: Number(/CHAN_LAP_MS = (\d+)L \* 60L \* 1000L/.exec(javaSrc('server/src/real/ThangPvpGame.java'))?.[1] ?? NaN),
 }
 
 // --- Sổ tay huấn luyện, Hầm ngục, quà hoạt động
-const soTayJava = javaSrc('src/real/SoTayLauDai.java')
-const cuonHut = javaSrc('src/com/htbb/pokemon/CuonHut.java')
-const quaHd = javaSrc('src/com/htbb/pokemon/QuaHoatDongLogic.java')
-const hnJava = javaSrc('src/real/HamNgucGame.java')
+const soTayJava = javaSrc('server/src/real/SoTayLauDai.java')
+const cuonHut = javaSrc('server/src/com/htbb/pokemon/CuonHut.java')
+const quaHd = javaSrc('server/src/com/htbb/pokemon/QuaHoatDongLogic.java')
+const hnJava = javaSrc('server/src/real/HamNgucGame.java')
 const hnExp = /expMoiGio\([^)]*\)\) \* (\d+)L \/ 100L \* Math\.min\((\d+), tang\)/.exec(hnJava)
 const hnLk = /tang >= (\d+) \? (\d+) : 0/.exec(hnJava)
 if (!hnExp || !hnLk) throw new Error('HamNgucGame.java: đổi công thức thưởng, sửa script')
@@ -508,9 +508,9 @@ const hamNguc = {
 }
 
 // --- Hệ sinh thái (HeSinhThai.java, KyNangSong.java, VatLieuSinhThai.java, diem_cau_ca.csv)
-const hst = javaSrc('src/com/htbb/pokemon/HeSinhThai.java')
-const kns = javaSrc('src/com/htbb/pokemon/KyNangSong.java')
-const vlst = javaSrc('src/com/htbb/pokemon/VatLieuSinhThai.java')
+const hst = javaSrc('server/src/com/htbb/pokemon/HeSinhThai.java')
+const kns = javaSrc('server/src/com/htbb/pokemon/KyNangSong.java')
+const vlst = javaSrc('server/src/com/htbb/pokemon/VatLieuSinhThai.java')
 const H = t => hangJ(hst, t, 'HeSinhThai.java')
 const tenVl = Object.fromEntries([...vlst.matchAll(/dn\((\d+),\s*"([^"]+)",\s*\w+,\s*(\d+)\)/g)].map(m => [Number(m[1]), { ten: m[2], gia: Number(m[3]) }]))
 const cauCaBang = [...mangJ(kns, 'BANG_CAU_CA', 'KyNangSong.java').matchAll(/\{([^{}]*)\}/g)].map((m) => {
@@ -524,7 +524,7 @@ const congThuc = [...mangJ(kns, 'CONG_THUC', 'KyNangSong.java').matchAll(/new Co
   nguyenLieu: [...m[4].matchAll(/\{(\d+),\s*(\d+)\}/g)].map(x => `${x[2]} ${tenVl[Number(x[1])]?.ten ?? '?'}`),
 }))
 if (congThuc.length < 20) throw new Error('KyNangSong.CONG_THUC: không đọc được công thức')
-const diemCau = docCsv('docs/pokemon/diem_cau_ca.csv')
+const diemCau = docCsv('du_lieu/diem_cau_ca.csv')
 const cauCaMap = []
 for (const r of diemCau) {
   const id = Number(r.map_id)
@@ -549,7 +549,7 @@ const heSinhThai = {
   vung: { luongKhoa: H('THUONG_VUNG_LUONG_KHOA'), phanNghin: H('CHI_SO_VUNG_PHAN_NGHIN'), tranPhanNghin: H('CHI_SO_VUNG_TRAN_PHAN_NGHIN') },
   meThuocNgay: hangJ(kns, 'ME_THUOC_TOI_DA_NGAY', 'KyNangSong.java'),
   album: (() => {
-    const st = javaSrc('src/com/htbb/pokemon/SuuTamSinhThai.java')
+    const st = javaSrc('server/src/com/htbb/pokemon/SuuTamSinhThai.java')
     const moc = soJ(mangJ(st, 'MOC_ALBUM', 'SuuTamSinhThai.java'))
     const thuong = soJ(mangJ(st, 'THUONG_MOC_ALBUM', 'SuuTamSinhThai.java'))
     const danhHieu = chuoiJ(mangJ(st, 'DANH_HIEU_ALBUM', 'SuuTamSinhThai.java'))
@@ -564,7 +564,7 @@ const heSinhThai = {
 }
 
 // --- cốt truyện & tóm tắt nhiệm vụ (web/nhiem_vu_tom_tat.json)
-const nvTT = JSON.parse(doc('docs/pokemon/web/nhiem_vu_tom_tat.json'))
+const nvTT = JSON.parse(doc('du_lieu/web/nhiem_vu_tom_tat.json'))
 const cotTruyen = {
   tong: nvTT.tong,
   theoLoai: nvTT.theo_loai,

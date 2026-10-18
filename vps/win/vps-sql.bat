@@ -1,4 +1,6 @@
 @echo off
+REM May VPS: dat bien HTBB_VPS (vd. setx HTBB_VPS root@ten-may) hoac khai Host htbb-vps trong %USERPROFILE%\.ssh\config
+if not defined HTBB_VPS set "HTBB_VPS=root@htbb-vps"
 REM ============================================================
 REM  Chay mot cau SQL tren DB cua VPS, khong can mo cong 3306
 REM
@@ -14,5 +16,5 @@ if "%~1"=="" (
     echo Cach dung: vps-sql "SELECT id,charname FROM htbb_db.tob_char;"
     exit /b 1
 )
-echo %~1 | ssh root@180.93.57.30 "mysql -u root --default-character-set=utf8 -t"
+echo %~1 | ssh %HTBB_VPS% "mysql -u root --default-character-set=utf8 -t"
 endlocal

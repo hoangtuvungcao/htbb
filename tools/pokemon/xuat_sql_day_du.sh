@@ -24,39 +24,43 @@ sua_type_skin_linh_thu xoa_su_kien_trung_lap"
 # Pokemon: PHAI dung thu tu nay (pokemon_doi_chu cuoi cung).
 POKEMON="them_cot_pokemon them_bang_pokedex pokemon_du_lieu_quai pokemon_doi_ten_vat_pham
 pokemon_doi_ten_thu pokemon_vat_pham_eevee pokemon_icon_vat_pham pokemon_doi_chu"
-# Thiet ke dai han - giai doan 2 (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md): bang so lieu (staging)
+# Thiet ke dai han - giai doan 2 (docs/thiet-ke-game.md): bang so lieu (staging)
 # + bang moi cua game + vo hieu giftcode tt (GD2 1.10). Chay SAU POKEMON.
 # pokemon_nhiem_vu: noi dung nhiem vu (hoi thoai, goi y, nhanh, an) - tools/pokemon/sinh_nhiem_vu.py.
 LAU_DAI="pokemon_lau_dai pokemon_nhiem_vu them_bang_lau_dai vo_hieu_giftcode_tt"
-# Noi dung day du 1-2 nam (docs/pokemon/NOI_DUNG_DAY_DU.md, sinh boi tools/pokemon/sinh_noi_dung.py):
+# Noi dung day du 1-2 nam (docs/thiet-ke-game.md, sinh boi tools/pokemon/sinh_noi_dung.py):
 # bang staging data_noi_dung_* + data_item id 1001..1199. Chay SAU LAU_DAI.
 NOI_DUNG="pokemon_noi_dung"
-# Nap tien (docs/pokemon/NAP_TIEN.md): bang nap_* (don, so cai, vi, cua hang, the thang, ve mua...).
+# Nap tien (docs/van-hanh.md): bang nap_* (don, so cai, vi, cua hang, the thang, ve mua...).
 # Tao bang KHONG bat gi (sv.nap_tien=0, HTBB_NAP_BAT=false mac dinh). Chay SAU NOI_DUNG.
 NAP_TIEN="pokemon_nap_tien pokemon_thanh_vien"  # thanh_vien SAU nap_tien (dung nap_goi)
-# He sinh thai game (docs/pokemon/HE_SINH_THAI.md, sinh boi tools/pokemon/sinh_sql_he_sinh_thai.py):
+# He sinh thai game (docs/thiet-ke-game.md, sinh boi tools/pokemon/sinh_sql_he_sinh_thai.py):
 # bang the gioi data_hst_* + bang nguoi choi tob_hst_* (khong bat gi: sv.he_sinh_thai=0 mac dinh).
 HE_SINH_THAI="pokemon_he_sinh_thai"
 # GD2b vat pham dung / do giu / bua bao ho (sinh boi tools/pokemon/sinh_vat_pham_lau_dai.py):
 # data_item type 28 id 1201..1260 + data_vat_pham_lau_dai. Chi co tac dung khi sv.lau_dai=1.
 VAT_PHAM_LAU_DAI="pokemon_vat_pham_lau_dai"
-# Cau hinh trung tam (docs/cau-hinh-trung-tam.md, sinh boi tools/cauhinh/sinh_cau_hinh.py): bang phien ban /
+# Cau hinh trung tam (docs/cau-hinh.md, sinh boi tools/cauhinh/sinh_cau_hinh.py): bang phien ban /
 # lich su / xac nhan / hieu luc / yeu cau khoi dong lai + danh muc khoa. KHONG ghi gia tri nao vao cau_hinh.
 CAU_HINH_TT="pokemon_cau_hinh_trung_tam"
-# Chi so trang bi (docs/pokemon/CHI_SO_TRANG_BI.md, sinh boi tools/pokemon/SinhSqlChiSo.java): ten / don vi / mo ta
+# Chi so trang bi (docs/thiet-ke-game.md, sinh boi tools/pokemon/SinhSqlChiSo.java): ten / don vi / mo ta
 # 198 dong data_attribute (giu id) + kep ngan sach data_item (LEAST, chi giam). Chay SAU noi dung + vat pham (moi
 # dong data_item da co) va SAU pokemon_doi_chu (ten moi thang). Idempotent.
 CHI_SO="pokemon_chi_so"
-# Thuat ngu chuan (docs/pokemon/THUAT_NGU.md, sinh boi tools/pokemon/sinh_sql_thuat_ngu.py): UPDATE doi thuat
+# Thuat ngu chuan (docs/thiet-ke-game.md, sinh boi tools/pokemon/sinh_sql_thuat_ngu.py): UPDATE doi thuat
 # ngu cu con sot trong du lieu goc. Chay CUOI CUNG. BO_THUAT_NGU=1 bo buoc nay (de sinh lai chinh file do).
 THUAT_NGU="pokemon_thuat_ngu"
 [ "${BO_THUAT_NGU:-0}" = "1" ] && THUAT_NGU=""
 
 $MYSQL -e "DROP DATABASE IF EXISTS account; CREATE DATABASE account CHARACTER SET utf8;
 DROP DATABASE IF EXISTS htbb_db; CREATE DATABASE htbb_db CHARACTER SET utf8;"
-$MYSQL --default-character-set=utf8 account < loginServer/account.sql > /dev/null
+$MYSQL --default-character-set=utf8 account < server/loginServer/account.sql > /dev/null
 $MYSQL --default-character-set=utf8 htbb_db < sql/gamedb7_clean.sql
-$MYSQL --default-character-set=utf8 htbb_db < vps/db_new_server.sql > /dev/null
+# Admin trong ban dump co mat khau NGAU NHIEN (khong ai biet): sau khi nap, dat lai mat khau admin
+# (docs/trien-khai.md). Khong bao gio commit mat khau that vao repo.
+MK_NGAU_NHIEN=$(od -An -N12 -tx1 /dev/urandom | tr -d ' \n')
+sed "s/^SET @admin_pass = .*/SET @admin_pass = '$MK_NGAU_NHIEN';/" vps/db_new_server.sql \
+    | $MYSQL --default-character-set=utf8 htbb_db > /dev/null
 for f in $MIGRATION; do
     $MYSQL -f --default-character-set=utf8 htbb_db < sql/$f.sql 2>&1 | grep -v "ERROR 106[02]" || true
 done

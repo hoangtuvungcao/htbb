@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Boss theo pha (THIET_KE_LAU_DAI.md muc 4.6). Lop THUAN: chi tinh pha / su kien, khong gui goi.
+ * Boss theo pha (docs/thiet-ke-game.md). Lop THUAN: chi tinh pha / su kien, khong gui goi.
  *
  *   pha 1: 100-70% HP danh thuong + 1 chieu lon (bao truoc -96)
  *   pha 2: 70-40%  them chieu vung, goi de (adds) luc vao pha

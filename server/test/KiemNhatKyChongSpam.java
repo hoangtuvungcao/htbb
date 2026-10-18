@@ -453,7 +453,7 @@ public final class KiemNhatKyChongSpam {
 
     /** Moi khoa sv.log / sv.spam / sv.thongBao ma nguon doc deu co trong tai lieu + ban mau. */
     private static void cauHinhCoTaiLieu() {
-        final String tl = doc("../docs/cau-hinh-server-ini.md");
+        final String tl = doc("../docs/cau-hinh.md");
         final String tmpl = doc("../vps/server.ini.tmpl");
         final String ma = doc("src/com/htbb/log/Nhat.java") + doc("src/com/htbb/chongspam/ChongSpam.java")
                 + doc("src/com/htbb/chongspam/ThongBaoGop.java");

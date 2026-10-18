@@ -23,11 +23,10 @@ import org.w3c.dom.NodeList;
 
 /**
  * Dong goi sprite PMD (tools/pokemon/pmd_raw/<khoa>/) thanh tai nguyen client
- * <Assets>/Resources/poke/<khoa>_{anh,dl,cd}.bytes. Assets chinh la client PC htbb-client/pc/Assets
- * (repo canh HTBB/; doi bang bien HTBB_CLIENT_ASSETS); con HTBB/ClientUnity/Assets (ban cu, sap xoa) thi
- * chep sang ca do (bo bang HTBB_CLIENT_CU=0).
+ * <Assets>/Resources/poke/<khoa>_{anh,dl,cd}.bytes. Assets = client_pc_ios/Assets (doi bang bien
+ * HTBB_CLIENT_ASSETS).
  *
- * Dinh dang: docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 7.1 (phien ban 2: them xAtlas). Sau khi ghi, tool DOC LAI
+ * Dinh dang: docs/kien-truc.md (phien ban 2: them xAtlas). Sau khi ghi, tool DOC LAI
  * tung file .bytes va doi chieu voi AnimData.xml + anh goc (so sanh tung pixel cua
  * khung dau va khung cuoi moi huong) - lech la thoat ma 1.
  *
@@ -371,25 +370,11 @@ public final class DongGoiSprite {
     }
 
     /** Doc lai file vua ghi theo DUNG dac ta 7.1, so voi du lieu goc. */
-    /** Resources/poke cua cac client can ghi: HTBB_CLIENT_ASSETS, hoac htbb-client/pc (+ ClientUnity cu neu con). */
+    /** Resources/poke cua client Unity: HTBB_CLIENT_ASSETS, mac dinh client_pc_ios/Assets. */
     static List<File> thuMucRa(final File goc) throws IOException {
         final List<File> ds = new ArrayList<>();
         final String rieng = System.getenv("HTBB_CLIENT_ASSETS");
-        if (rieng != null && !rieng.isEmpty()) {
-            ds.add(new File(rieng, "Resources/poke"));
-            return ds;
-        }
-        final File pc = new File(goc, "../htbb-client/pc/Assets").getCanonicalFile();
-        if (pc.isDirectory()) {
-            ds.add(new File(pc, "Resources/poke"));
-        }
-        final File cu = new File(goc, "client_pc_ios/ClientUnity/Assets");
-        if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
-            ds.add(new File(cu, "Resources/poke"));
-        }
-        if (ds.isEmpty()) {
-            ds.add(new File(cu, "Resources/poke"));
-        }
+        ds.add(new File(rieng != null && !rieng.isEmpty() ? new File(rieng) : new File(goc, "client_pc_ios/Assets"), "Resources/poke"));
         return ds;
     }
 

@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Thuat ngu chuan (docs/pokemon/THUAT_NGU.md): KHONG con thuat ngu kiem hiep cu (ChuPokemon.TU_CAM) trong
+ * Thuat ngu chuan (docs/thiet-ke-game.md): KHONG con thuat ngu kiem hiep cu (ChuPokemon.TU_CAM) trong
  * chu nguoi choi / admin thay - quet THO (truoc tu dien luc chay), phai 0.
  *
  * VI SAO: tu 18/10/2026 ma nguon da mang thuat ngu moi (tools/pokemon/ap_thuat_ngu.py, ap_thuat_ngu_web.py,
@@ -21,11 +21,11 @@ import java.util.regex.Pattern;
  *
  * Quet:
  *   - chuoi "..." trong src/**.java (bo chu thich, dong log, bang tu dien ChuPokemon/TenMapPokemon);
- *   - client canh HTBB/ (../htbb-client): J2ME, Android (.java), PC (.cs) + ban cu ClientUnity;
- *   - web canh HTBB/ (../HTBB-Web: .vue/.ts/.js/.mjs/.sql) (web PHP cu web/ da bo - docs/pokemon/BO_WEB_PHP.md);
+ *   - client: J2ME, Android (.java), PC/iOS Unity client_pc_ios/Assets (.cs);
+ *   - web canh HTBB/ (../HTBB-Web: .vue/.ts/.js/.mjs/.sql) (web PHP cu web/ da bo - docs/kien-truc.md);
  *   - chuoi '...' trong sql/pokemon_*.sql (tru pokemon_thuat_ngu.sql chi xet gia tri SET) va sql/htbb_day_du.sql.
  * Khong co thu muc client/web (vd may chu chi co repo game) thi bo qua phan do, in ra.
- * "bang" trong chu KHONG dau (bảng/băng/khoa 'bang') khong tinh - xem THUAT_NGU.md muc 2.
+ * "bang" trong chu KHONG dau (bảng/băng/khoa 'bang') khong tinh - xem docs/thiet-ke-game.md.
  */
 public final class KiemThuatNgu {
 
@@ -40,7 +40,7 @@ public final class KiemThuatNgu {
     private static int soChuoi;
 
     public static void chay() {
-        Kiem.nhom("Thuat ngu chuan (docs/pokemon/THUAT_NGU.md): khong con tu kiem hiep THO trong chu nguoi choi/admin");
+        Kiem.nhom("Thuat ngu chuan (docs/thiet-ke-game.md): khong con tu kiem hiep THO trong chu nguoi choi/admin");
         Kiem.dung("bo bat duoc tu cu (tu kiem tra)", !conTu("Giờ chiếm thành").isEmpty()
                 && !conTu("Phi phong lông thú").isEmpty() && !conTu("Bang hội của bạn").isEmpty()
                 && !conTu("Thành liên đấu 1").isEmpty() && !conTu("cưỡi linh thú").isEmpty());
@@ -50,12 +50,12 @@ public final class KiemThuatNgu {
 
         quet("src", "server Java", ".java", false);
         quet("../client_jar/src", "client J2ME", ".java", true);
-        quet("../client_apk/app/src", "client Android", ".java", true);
-        quet("../client_apk/pokemon/src", "client Android (pokemon)", ".java", true);
+        quet("../client_jar/shared/mod", "client J2ME (mod dung chung)", ".java", true);
+        quet("../client_apk/pokemon/src", "client Android", ".java", true);
+        quet("../client_pc/src", "client PC Java", ".java", true);
         quet("../client_pc_ios/Assets/Scripts", "client PC", ".cs", true);
-        quet("../client_pc_ios/ClientUnity/Assets/Scripts", "client PC cu (ClientUnity)", ".cs", true);
         for (final String g : new String[]{"app", "server", "shared", "scripts"}) {
-            quet("../HTBB-Web/" + g, "web HTBB-Web/" + g, "web", true);
+            quet("../web/" + g, "web/" + g, "web", true);
         }
         quetSql();
 
@@ -158,10 +158,31 @@ public final class KiemThuatNgu {
 
     private static String doc(final File f) {
         try {
-            return new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8);
+            final String s = new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8);
+            // Ma .java hay viet chu Viet bang escape unicode: giai truoc khi quet, khong thi lot tu cam.
+            return f.getName().endsWith(".java") ? giaiEscape(s) : s;
         } catch (final Exception e) {
             return "";
         }
+    }
+
+    /** Giai escape unicode kieu Java (dau gach nguoc + u + 4 so hex). */
+    static String giaiEscape(final String s) {
+        final StringBuilder b = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            final char c = s.charAt(i);
+            if (c == '\\' && i + 5 < s.length() && s.charAt(i + 1) == 'u') {
+                try {
+                    b.append((char) Integer.parseInt(s.substring(i + 2, i + 6), 16));
+                    i += 5;
+                    continue;
+                } catch (final NumberFormatException e) {
+                    // khong phai escape
+                }
+            }
+            b.append(c);
+        }
+        return b.toString();
     }
 
     private static int dong(final String s, final int i) {

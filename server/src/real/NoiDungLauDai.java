@@ -1,6 +1,5 @@
 package real;
 
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.HePokemon;
 import com.htbb.pokemon.LauDai;
 import data.Database;
@@ -13,7 +12,7 @@ import java.util.WeakHashMap;
 
 /**
  * Noi bang noi dung cua doi noi dung (sql/pokemon_noi_dung.sql, data_noi_dung_*) vao game (GD2b,
- * NOI_DUNG_DAY_DU.md muc 6, 7, 9.5-9.6). Nap luc khoi dong (TeamServer, bat co, sau template).
+ * docs/thiet-ke-game.md, 7, 9.5-9.6). Nap luc khoi dong (TeamServer, bat co, sau template).
  *
  *   - Bang roi (data_noi_dung_roi): nguon dai_cap / alpha (theo dai cap quai), vat pham type 28
  *     (item:id) va ngoc (ngoc:id); do co chi so trong bang KHONG tao o day (Item tao thang tu template
@@ -156,10 +155,8 @@ public final class NoiDungLauDai {
         m.dodge = t.dodge;
         m.dmove = t.dmove;
         m.hePokemon = t.he;
-        if (CheDoPokemon.bat()) {
-            m.he = (byte) HePokemon.nguHanhCu(t.he);
-            m.he2 = t.he2;
-        }
+        m.he = (byte) HePokemon.nguHanhCu(t.he);
+        m.he2 = t.he2;
     }
 
     public static boolean laAlpha(final Monster m) {

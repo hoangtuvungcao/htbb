@@ -13,18 +13,18 @@ import java.util.regex.Pattern;
 
 /**
  * G7.C: doi chu nguoi choi nhin thay tu kiem hiep sang the gioi Pokemon (tu dien thuat ngu
- * o muc 15 cua docs/pokemon/KE_HOACH_CHUYEN_DOI.md).
+ * o muc 15 cua docs/kien-truc.md).
  *
  * Cach lam: KHONG sua hang tram chuoi trong src/ (bo test characterization cu doc chu ma
  * nguon, sua chuoi la vo test). Thay vao do:
  *  - {@link #ap()} goi MOT lan luc bat may (TeamServer, sau khi nap template) doi cac bang
  *    chu dung chung: data.Text, ten vung, ten dong Pokemon (NAME_CLASS), ten thuoc...
  *  - {@link #doi(String)} doi chu o cac cua ngo gui chu xuong client (MessageCreator: thong
- *    bao, menu, hop thoai, NPC, nhiem vu...). Tat che do Pokemon thi tra nguyen chuoi.
+ *    bao, menu, hop thoai, NPC, nhiem vu...).
  *
  * MOT NGUON cho ca 3 noi: tools/pokemon/sinh_sql_chu.py doc DOI/TEN_THU_CUOI/CHO_PHEP/TU_CAM
  * ngay trong file nay (regex tren ma nguon) de doi chu trong CSDL va sinh ban C# cho client
- * (ClientUnity/.../ChuPokemonDuLieu.cs). Sua bang o day roi chay lai tool, khong sua tay
+ * (client_pc_ios/.../ChuPokemonDuLieu.cs). Sua bang o day roi chay lai tool, khong sua tay
  * hai file sinh ra. test/KiemChuPokemon doi chieu ban C# voi ban Java.
  *
  * Quy uoc bang: khoa viet thuong, so khop khong phan biet hoa thuong, nguyen tu (khong
@@ -47,7 +47,7 @@ public final class ChuPokemon {
         "kiếm sỹ", "thanh kiếm", "=Kiếm", "đao", "nhân vật", "ngũ hành", "huynh", "đệ tử",
         "sư phụ", "tại hạ", "nghĩa sỹ", "nghĩa sĩ", "tướng quân", "chiến binh", "pháp sư",
         "đấu sĩ", "cung thủ", "bôn tẩu", "hành tẩu",
-        // Dot ra soat chu (docs/pokemon/DUYET_CHU.md): khong phai tu cam goc nhung van la
+        // Dot ra soat chu (docs/thiet-ke-game.md): khong phai tu cam goc nhung van la
         // chat kiem hiep / co trang - con sot tuc la tu dien chua phu.
         "ngươi", "giết", "yêu ma", "cương thi", "nội thương", "nội kình", "kình lực", "anh hào",
         "ẩn sỹ", "ẩn sĩ", "kết nghĩa", "phu quân", "phu nhân", "nghĩa hiệp",
@@ -66,7 +66,7 @@ public final class ChuPokemon {
         "ngưu lang", "chức nữ", "sơn tinh", "mị nương", "ông địa", "ngạ quỷ", "dạ xoa",
         "phúc thú", "thần tài", "chí tôn", "tông sư", "hảo hán", "thiên hạ", "trừ gian",
         "trượng nghĩa", "cường thân",
-        // Thuat ngu chuan (docs/pokemon/THUAT_NGU.md): moi tu cu con lai trong chu nguoi choi/admin thay.
+        // Thuat ngu chuan (docs/thiet-ke-game.md): moi tu cu con lai trong chu nguoi choi/admin thay.
         "phi phong", "liên đấu", "công thành", "thành chủ", "thần thú", "ngựa", "vũ khí", "giáp trụ",
         "trưởng lão", "thần hành phù", "tiềm năng đan", "kỹ năng đan", "linh đan", "nội đan",
         "công lực", "luyện công", "chân khí", "tâm pháp", "kinh mạch", "khinh công", "chưởng môn",
@@ -183,7 +183,7 @@ public final class ChuPokemon {
         {"đại đao", "hạt giống thần"},
         {"đao", "hạt giống thần"},
         {"thần kiếm", "thần hỏa"},
-        // NPC (bang docs/pokemon/bang_npc.csv)
+        // NPC (bang du_lieu/bang_npc.csv)
         {"xa phu", "Pidgeot (Bay)"},
         {"thần hành phù", "vé bay Pidgeot"},
         {"kim bài", "huy hiệu lập đội"},
@@ -208,7 +208,7 @@ public final class ChuPokemon {
         {"ép ngọc", "ép ngọc hệ"},
         {"ép ngọc hệ", "ép ngọc hệ"}, // giu nguyen - de doi 2 lan khong thanh "ép ngọc hệ hệ"
 
-        // ======== DOT RA SOAT CHU (docs/pokemon/DUYET_CHU.md) ========
+        // ======== DOT RA SOAT CHU (docs/thiet-ke-game.md) ========
         // Cach xung ho / loi thoai kieu kiem hiep
         {"ngươi", "cậu"},
         {"giết", "hạ"},
@@ -462,7 +462,7 @@ public final class ChuPokemon {
         {"pet lân", "pet Suicune"},
         {"hình lân", "hình Suicune"},
         {"lân cấp", "Suicune cấp"},
-        // Pet kieu cu (docs/pokemon/bang_pet_cu.csv)
+        // Pet kieu cu (du_lieu/bang_pet_cu.csv)
         {"lồng đèn xếp", "Litwick"},
         {"thanh tước", "Taillow"},
         {"cánh cam", "Ledyba"},
@@ -607,7 +607,7 @@ public final class ChuPokemon {
         {"quân lâm thiên hạ", "Chúa Tể Mọi Vùng"},
         {"thiên hạ", "mọi vùng"},
         {"đệ nhất", "số một"},
-        // ======== THUAT NGU CHUAN (docs/pokemon/THUAT_NGU.md, 18/10/2026) ========
+        // ======== THUAT NGU CHUAN (docs/thiet-ke-game.md, 18/10/2026) ========
         // Phu kien o 19 (BangTrangBi "Ruy băng"), vu khi = do cam tay theo dong
         {"phi phong", "ruy băng"},
         // "ma"/"vật" sau ten phi phong = ma phap / vat ly (dac biet / vat ly)
@@ -711,7 +711,7 @@ public final class ChuPokemon {
         {"rừng già", "Rừng Cổ"},
     };
 
-    /** Ten thu cuoi cu -> Pokemon (docs/pokemon/bang_thu.csv). Dung sau "linh thú "/"trứng ". */
+    /** Ten thu cuoi cu -> Pokemon (du_lieu/bang_thu.csv). Dung sau "linh thú "/"trứng ". */
     public static final String[][] TEN_THU_CUOI = {
         {"bạch mã", "Rapidash"},
         {"mãnh hổ", "Arcanine"},
@@ -753,15 +753,15 @@ public final class ChuPokemon {
         "Kangaskhan", "Meowth",
     };
 
-    /** CharManager.NAME_CLASS khi bat che do (class 0..4, bang 4.1). */
+    /** CharManager.NAME_CLASS (class 0..4, bang 4.1). */
     public static final String[] TEN_DONG = {
         "Dòng Charmander", "Dòng Bulbasaur", "Dòng Eevee", "Dòng Squirtle", "Dòng Pichu",
     };
 
-    /** Map.nameCountry / NpcReceiveCard.nameCountry khi bat che do. */
+    /** Map.nameCountry / NpcReceiveCard.nameCountry (ban Pokemon). */
     public static final String[] TEN_VUNG = {"Kanto", "Johto", "Hoenn"};
 
-    /** Text.help khi bat che do (giu 21 dong nhu ban cu). */
+    /** Text.help ban Pokemon (giu 21 dong nhu ban cu). */
     public static final String[] HUONG_DAN = {
         "Phím mũi tên hoặc 2,4,6,8: Di chuyển Pokémon của bạn",
         "Phím 5 hoặc phím chọn giữa: Đánh thường. Phím 1,3: Dùng chiêu khác nếu đã học",
@@ -1001,9 +1001,9 @@ public final class ChuPokemon {
         return sb.toString();
     }
 
-    /** Doi chu khi bat che do Pokemon; tat thi tra nguyen (hanh vi goc cu). */
+    /** Doi chu kiem hiep cu sang chu Pokemon. */
     public static String doi(final String s) {
-        return CheDoPokemon.bat() ? doiLuon(s) : s;
+        return doiLuon(s);
     }
 
     /** Cac tu cam con trong {@code s} (rong = sach). */
@@ -1028,9 +1028,9 @@ public final class ChuPokemon {
         return kq;
     }
 
-    /** Mo ta chieu hoc o NPC (goi dang nhap); tat che do hoac ngoai bang thi tra {@code cu}. */
+    /** Mo ta chieu hoc o NPC (goi dang nhap); ngoai bang thi doi {@code cu} theo tu dien. */
     public static String moTaChieuHoc(final int dong, final int k, final String cu) {
-        if (!CheDoPokemon.bat() || dong < 0 || dong >= MO_TA_CHIEU_HOC.length
+        if (dong < 0 || dong >= MO_TA_CHIEU_HOC.length
                 || k < 0 || k >= MO_TA_CHIEU_HOC[dong].length) {
             return doi(cu);
         }
@@ -1040,10 +1040,10 @@ public final class ChuPokemon {
     /**
      * Ten thu cuoi dung MOT MINH (Animal.name: "Hắc ngưu", "Sư tử Băng"...) -> ten Pokemon.
      * Phai tra rieng vi trong tu dien "hắc ngưu" dung mot minh la NPC Machamp; chi khi co
-     * "linh thú " dang truoc moi la thu cuoi. Tat che do thi tra nguyen.
+     * "linh thú " dang truoc moi la thu cuoi.
      */
     public static String tenThuCuoi(final String ten) {
-        if (!CheDoPokemon.bat() || ten == null) {
+        if (ten == null) {
             return ten;
         }
         final String t = ten.trim().toLowerCase(Locale.ROOT);
@@ -1057,9 +1057,6 @@ public final class ChuPokemon {
 
     /** Ten NPC tinh moi theo type; ngoai bang thi doi theo tu dien. */
     public static String tenNpc(final int type, final String cu) {
-        if (!CheDoPokemon.bat()) {
-            return cu;
-        }
         return type >= 0 && type < TEN_NPC.length ? TEN_NPC[type] : doiLuon(cu);
     }
 
@@ -1071,10 +1068,10 @@ public final class ChuPokemon {
     /**
      * Doi cac bang chu dung chung. Goi MOT lan trong TeamServer, SAU Database.startSaveChar()
      * (luc do Map.gemTemplate, Map.potionTemplates2 da nap) va truoc khi nhan nguoi choi.
-     * Tat che do thi khong lam gi. Goi lai lan 2 khong doi them (co daAp).
+     * Goi lai lan 2 khong doi them (co daAp).
      */
     public static synchronized void ap() {
-        if (!CheDoPokemon.bat() || daAp) {
+        if (daAp) {
             return;
         }
         daAp = true;

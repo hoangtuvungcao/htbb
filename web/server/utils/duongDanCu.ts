@@ -1,5 +1,5 @@
 /**
- * ĐƯỜNG DẪN CỦA WEBSITE PHP CŨ (HTBB/web, đã bỏ 19/10/2026 — HTBB/docs/pokemon/BO_WEB_PHP.md).
+ * ĐƯỜNG DẪN CỦA WEBSITE PHP CŨ (HTBB/web, đã bỏ 19/10/2026 — docs/kien-truc.md).
  * File THUẦN (không import) để npm test kiểm trực tiếp; middleware duong-dan-cu.ts dùng nó.
  *
  * Website PHP được phục vụ ở CẢ gốc (DocumentRoot /opt/htbb/web) lẫn /kpah/ (symlink

@@ -1,5 +1,5 @@
 -- ==================================================================================
---  CHE DO POKEMON - cot loai/shiny/he2  (viec S1, docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 8)
+--  CHE DO POKEMON - cot loai/shiny/he2  (viec S1, docs/kien-truc.md)
 -- ==================================================================================
 --
 --  Chay TRUOC sql/pokemon_du_lieu_quai.sql (file do UPDATE cac cot nay).

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Thành viên HTBB (khu quản trị) — HTBB/docs/pokemon/THANH_VIEN.md. Bắt buộc / bán (hai công tắc riêng),
+ * Thành viên HTBB (khu quản trị) — docs/van-hanh.md. Bắt buộc / bán (hai công tắc riêng),
  * giá, thời hạn, tính năng bị khoá, miễn cấp, thông báo; cấp / gia hạn / thu hồi (1 hoặc nhiều tài khoản);
  * danh sách + thống kê; nhật ký; tín hiệu nhiều tài khoản theo mã máy. Ghi: chỉ Siêu quản trị (quyenAdmin.ts).
  */

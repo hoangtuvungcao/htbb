@@ -12,7 +12,7 @@ import data.PetTemplate;
 /**
  * Doi chieu HTBB-Web/shared/data/danh-muc-thu.json (tools/SinhDanhMucThu sinh; web doc qua
  * server/utils/giftcodeThu.gen.ts) voi mang real.Map.petTemplate. Truoc day la tep PHP
- * web/admin/inc/danh_muc_thu.php - website PHP da bo (docs/pokemon/BO_WEB_PHP.md).
+ * web/admin/inc/danh_muc_thu.php - website PHP da bo (docs/kien-truc.md).
  *
  * Cung ly do voi KiemDanhMucNgoc: ten 30 con thu khong co trong CSDL, chi so
  * trong tep sinh KHONG PHAI id vat pham ma la chi so mang Map.petTemplate[] -

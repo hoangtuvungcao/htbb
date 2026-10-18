@@ -32,7 +32,6 @@ public class ServerListScr extends Screen {
     public static String[] address = {"112.213.84.163", "27.0.12.112", "103.77.167.209", "103.77.167.209", "112.213.94.124", "112.213.94.124", "112.213.94.124", "112.213.94.124", "112.213.94.124"};
     public static short[] port = {19129, 19130, 19129, 19129, 19129, 19129, 19129, 19129, 19129};
     public static byte[] index_server = {0, 0, 0, 0, 0, 3, 4, 1, 2};
-    public static final String linkGetHost = "http://teamobi.com/srvips/NQSH2.txt";
     boolean trans;
     int pa;
 
@@ -47,7 +46,7 @@ public class ServerListScr extends Screen {
 
     @Override
     public void switchToMe() {
-        // mod: danh sách server từ GitHub (TaiDanhSach) khi mở màn chọn server
+        // mod: danh sách server = máy chủ gắn lúc build (TaiDanhSach) khi mở màn chọn server
         if (AutoGuard.dsGuard()) {
             return;
         }
@@ -97,30 +96,7 @@ public class ServerListScr extends Screen {
 
     public void doUpdateServer() {
         // mod: nút "Cập nhật" danh sách server
-        if (AutoGuard.capNhatGuard()) {
-            return;
-        }
-        Canvas.startWaitDlg();
-        String aa = GameMidlet.connectHTTP("http://teamobi.com/srvips/NQSH2.txt");
-        if (aa == null) {
-            Canvas.startOKDlg("Không thể kết nối, xin kiểm tra lại GPRS/3G/Wifi.");
-            return;
-        }
-        String[] temp = Font.splitString(aa, ",");
-        nameServer = new String[temp.length];
-        address = new String[temp.length];
-        port = new short[temp.length];
-        index_server = new byte[temp.length];
-        for (int i = 0; i < temp.length; i++) {
-            String[] sub = Font.splitString(temp[i], ":");
-            nameServer[i] = sub[0];
-            address[i] = sub[1];
-            port[i] = Short.parseShort(sub[2].trim());
-            index_server[i] = Byte.parseByte(sub[3].trim());
-        }
-        saveIP();
-        init();
-        Canvas.endDlg();
+        AutoGuard.capNhatGuard();
     }
 
     public static void saveIP() {
@@ -277,7 +253,7 @@ public class ServerListScr extends Screen {
     /** pokemon: nền banner nhiều lớp (game.pokemon.Banner) thay bản đồ game; thiếu ảnh thì vẽ bản đồ như cũ. */
     public void paintBg(Graphics g, int chonKhoiDau, boolean veKhoiDau) {
         Canvas.resetTrans(g);
-        if (game.pokemon.PokeBody.CHE_DO_POKEMON && game.pokemon.Banner.ve(g, chonKhoiDau, veKhoiDau)) {
+        if (game.pokemon.Banner.ve(g, chonKhoiDau, veKhoiDau)) {
             Canvas.resetTrans(g);
             return;
         }

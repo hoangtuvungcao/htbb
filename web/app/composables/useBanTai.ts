@@ -20,7 +20,7 @@ export function useBanTai() {
       const href = ban.trangThai === 'san-sang' ? hrefCaiDat(ban) : ''
       return { ...ban, href, sanSang: !!href, sapRaMat: ban.trangThai === 'sap-ra-mat', icon: n?.icon ?? 'i-lucide-box', chiTiet: n?.chiTiet ?? [], buoc: buocCaiDat(ban) }
     }))
-  /** "Android, PC Windows và Java (.jar)" — chỉ các bản đã/đang phát hành (không tính "sắp ra mắt"). */
+  /** "Android, PC Windows, … và Điện thoại Java (J2ME)" — chỉ các bản đã/đang phát hành (không tính "sắp ra mắt"). */
   const tenDangCo = computed(() => noiDanhSach(ds.value.filter(b => !b.sapRaMat).map(b => b.ten)))
   const tenSapRaMat = computed(() => noiDanhSach(ds.value.filter(b => b.sapRaMat).map(b => b.ten)))
   return { ds, tenDangCo, tenSapRaMat }

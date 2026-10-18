@@ -7,9 +7,9 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Co {@code sv.lau_dai} (giai doan 2 - docs/pokemon/KE_HOACH_LAU_DAI_GD2.md). MOI thay doi
- * cua thiet ke dai han (THIET_KE_LAU_DAI.md) re nhanh qua {@link #bat()} - giong
- * {@link CheDoPokemon}. Tat co (mac dinh, thieu dong) = game y nhu truoc.
+ * Co {@code sv.lau_dai} (giai doan 2 - docs/thiet-ke-game.md). MOI thay doi
+ * cua thiet ke dai han (docs/thiet-ke-game.md) re nhanh qua {@link #bat()}.
+ * Tat co (mac dinh, thieu dong) = game y nhu truoc.
  *
  * So lieu goc nam o {@link ThongSoLauDai} (file sinh, khong sua tay). Lop nay chi:
  *   - giu co bat/tat (doc 1 lan luc khoi dong, TeamServer);

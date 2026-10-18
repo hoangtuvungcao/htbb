@@ -15,7 +15,7 @@
 #
 #  Cai dat (mot lan):
 #      sudo crontab -e
-#      * * * * * /opt/htbb/vps/dieu-khien-server.sh >>/opt/htbb/log/dieu-khien-server.log 2>&1
+#      * * * * * /opt/htbb/vps/dieu-khien-server.sh >>/opt/htbb/logs/dieu-khien-server.log 2>&1
 #
 #  Chay thu bang tay de kiem tra:
 #      sudo /opt/htbb/vps/dieu-khien-server.sh
@@ -29,7 +29,7 @@ set -u
 
 DIR=/opt/htbb
 INI=$DIR/server/server.ini
-SERVICE=htbb-game; systemctl cat htbb-game >/dev/null 2>&1 || SERVICE=kpah-game  # TUONG-THICH-TEN-CU: bo sau 1 ban
+SERVICE=htbb-game
 
 # Khong cho hai lan chay chong nhau (cron moi phut, phong khi mot lan bi treo).
 exec 9>/tmp/htbb-dieu-khien-server.lock

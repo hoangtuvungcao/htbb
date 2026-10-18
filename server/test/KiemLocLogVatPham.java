@@ -28,7 +28,7 @@ public final class KiemLocLogVatPham {
 
     private static final String F_DATABASE = "src/data/Database.java";
     private static final String F_DON_LOG = "../vps/don-log.sh";
-    /** HTBB-Web (thay web/admin/chandoan.php da bo - docs/pokemon/BO_WEB_PHP.md). */
+    /** HTBB-Web (thay web/admin/chandoan.php da bo - docs/kien-truc.md). */
     private static final String F_CHAN_DOAN = "server/utils/chanDoan.ts";
 
     public static void chay() {

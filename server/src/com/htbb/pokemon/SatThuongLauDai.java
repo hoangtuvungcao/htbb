@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Cong thuc sat thuong moi (THIET_KE_LAU_DAI.md muc 4.1). Lop THUAN.
+ * Cong thuc sat thuong moi (docs/thiet-ke-game.md). Lop THUAN.
  *
  * <pre>
  * co ban  = max(5% atk, atk - def)

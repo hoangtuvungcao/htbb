@@ -17,9 +17,9 @@ export default defineAdminHandler(async (event) => {
   const htbb = resolve(web, process.env.HTBB_DIR ?? '..')
   const ketQua: { buoc: string, ok: boolean, log: string }[] = []
   if (!existsSync(join(web, 'scripts/dong-bo-cam-nang.mjs'))) {
-    throw apiLoi(409, `Không thấy thư mục mã nguồn website (${web}/scripts). Đặt HTBB_WEB_SRC_DIR trỏ tới thư mục HTBB-Web.`)
+    throw apiLoi(409, `Không thấy thư mục mã nguồn website (${web}/scripts). Đặt HTBB_WEB_SRC_DIR trỏ tới thư mục web/ của mã nguồn.`)
   }
-  if (!existsSync(join(htbb, 'docs/pokemon'))) {
+  if (!existsSync(join(htbb, 'du_lieu'))) {
     throw apiLoi(409, `Không thấy repo game ở ${htbb} (đặt HTBB_DIR).`)
   }
   for (const s of ['sinh-du-lieu-pokemon.mjs', 'sinh-anim-khoi-dau.mjs', 'dong-bo-cam-nang.mjs']) {

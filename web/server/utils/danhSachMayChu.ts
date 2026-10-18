@@ -5,7 +5,7 @@
  *
  * Client Unity (ServerListScr.linkGetHost = "http://" + SERVER_HOST + "/server.txt") tải tệp
  * này lúc mở game. Trước 19/10/2026 nó là tệp tĩnh HTBB/web/server.txt của website PHP cũ
- * (đã bỏ — HTBB/docs/pokemon/BO_WEB_PHP.md); nay Nuxt phục vụ từ biến môi trường, để không
+ * (đã bỏ — docs/kien-truc.md); nay Nuxt phục vụ từ biến môi trường, để không
  * ghi cứng IP/tên miền nào trong mã nguồn.
  *
  *   HTBB_SERVER_LIST (dự phòng: KPAH_SERVER_LIST) — mỗi máy chủ một dòng "Tên:host:cổng:loại",  // TUONG-THICH-TEN-CU

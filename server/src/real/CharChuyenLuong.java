@@ -44,7 +44,7 @@ public final class CharChuyenLuong {
 
     /**
      * nap tien: khi bat, luong (tien cao cap mua bang tien that) KHONG chuyen truc tiep giua
-     * nguoi choi - mua ban hang cao cap chi qua Cho trang tri co thue (docs/pokemon/NAP_TIEN.md).
+     * nguoi choi - mua ban hang cao cap chi qua Cho trang tri co thue (docs/van-hanh.md).
      */
     static boolean chanViNapTien(final Char player) {
         // thanh vien: chuyen luong can Thanh vien HTBB (tat he thong = khong chan).

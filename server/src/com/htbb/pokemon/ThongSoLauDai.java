@@ -1,10 +1,10 @@
 package com.htbb.pokemon;
 
 /**
- * THONG SO THIET KE DAI HAN (docs/pokemon/THIET_KE_LAU_DAI.md).
+ * THONG SO THIET KE DAI HAN (docs/thiet-ke-game.md).
  *
  * FILE SINH RA boi tools/pokemon/sinh_sql_lau_dai.py - KHONG SUA TAY.
- * CHUA NOI vao game (giai doan 2: docs/pokemon/KE_HOACH_LAU_DAI_GD2.md). Hien chi
+ * CHUA NOI vao game (giai doan 2: docs/thiet-ke-game.md). Hien chi
  * tools/pokemon/MoPhongKinhTe.java va test/KiemLauDai.java doc.
  * KHONG nham voi real.LevelDetail (bang EXP DANG chay).
  */

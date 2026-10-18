@@ -18,50 +18,10 @@ public abstract class MainJ2ME
 	{
 		int num = GameMidlet.hDrawStringCmd - 2;
 		Canvas.resetTrans(g);
-		if (UiPokemon.bat())
-		{
-			// pokemon: giao diện PC / điện thoại - nút lệnh nằm TRONG khung (không còn thanh lệnh kiểu J2ME):
-			// lệnh chính (center) góc phải dưới, lệnh phụ cạnh nó, "Đóng / Thoát / Hủy" = nút X góc phải trên,
-			// "Trở lại" = nút góc trái trên. Phím mềm (F1 / F2 / Enter) vẫn ánh xạ như cũ (updateKey).
-			veNutTrongKhung(g);
-			return;
-		}
-		if (left != null && left.caption != string.Empty)
-		{
-			if (Canvas.pointCmdBar() != 1)
-			{
-				g.drawImage(Res.imgButtonBar, 4, Canvas.h - hTab + (hTab - Res.imgButtonBar.getHeight()) / 2 + 2, 0);
-			}
-			else
-			{
-				g.drawImage(Res.imgButtonBar1, 4, Canvas.h - hTab + (hTab - Res.imgButtonBar1.getHeight()) / 2 + 2, 0);
-			}
-			MFont.borderFont.drawString(g, left.caption, 4 + Res.imgButtonBar.getWidth() / 2, num + 2, 2);
-		}
-		if (center != null && center.caption != string.Empty)
-		{
-			if (Canvas.pointCmdBar() != 2)
-			{
-				g.drawImage(Res.imgButtonBar, Canvas.w / 2 - Res.imgButtonBar.getWidth() / 2, Canvas.h - hTab + (hTab - Res.imgButtonBar.getHeight()) / 2 + 2, 0);
-			}
-			else
-			{
-				g.drawImage(Res.imgButtonBar1, Canvas.w / 2 - Res.imgButtonBar1.getWidth() / 2, Canvas.h - hTab + (hTab - Res.imgButtonBar.getHeight()) / 2 + 2, 0);
-			}
-			MFont.borderFont.drawString(g, center.caption, Canvas.hw, num + 2, 2);
-		}
-		if (right != null && right.caption != string.Empty)
-		{
-			if (Canvas.pointCmdBar() != 3)
-			{
-				g.drawImage(Res.imgButtonBar, Canvas.w - Res.imgButtonBar.getWidth() - 4, Canvas.h - hTab + (hTab - Res.imgButtonBar.getHeight()) / 2 + 2, 0);
-			}
-			else
-			{
-				g.drawImage(Res.imgButtonBar1, Canvas.w - Res.imgButtonBar1.getWidth() - 4, Canvas.h - hTab + (hTab - Res.imgButtonBar.getHeight()) / 2 + 2, 0);
-			}
-			MFont.borderFont.drawString(g, right.caption, Canvas.w - Res.imgButtonBar.getWidth() / 2 - 4, num + 2, 2);
-		}
+		// pokemon: giao diện PC / điện thoại - nút lệnh nằm TRONG khung (không còn thanh lệnh kiểu J2ME):
+		// lệnh chính (center) góc phải dưới, lệnh phụ cạnh nó, "Đóng / Thoát / Hủy" = nút X góc phải trên,
+		// "Trở lại" = nút góc trái trên. Phím mềm (F1 / F2 / Enter) vẫn ánh xạ như cũ (updateKey).
+		veNutTrongKhung(g);
 	}
 
 	// ------------------------------------------------------------------ pokemon: nút lệnh trong khung
@@ -248,39 +208,8 @@ public abstract class MainJ2ME
 
 	public virtual void updateKey()
 	{
-		if (UiPokemon.bat())
-		{
-			// pokemon: chuột / chạm vào nút trong khung thay cho thanh lệnh đáy
-			bamNutTrongKhung();
-		}
-		else if (Canvas.isPointerClick && Math.abs(Canvas.pyLast - Canvas.py) <= 10 && Math.abs(Canvas.pxLast - Canvas.px) <= 10)
-		{
-			switch (Canvas.collisionCmdBar())
-			{
-			case 0:
-				if (left != null && left.action != null)
-				{
-					left.perform();
-					Canvas.isPointerClick = false;
-				}
-				break;
-			case 1:
-				if (center != null && center.action != null)
-				{
-					Canvas.endDlg();
-					center.perform();
-					Canvas.isPointerClick = false;
-				}
-				break;
-			case 2:
-				if (right != null && right.action != null)
-				{
-					right.perform();
-					Canvas.isPointerClick = false;
-				}
-				break;
-			}
-		}
+		// pokemon: chuột / chạm vào nút trong khung thay cho thanh lệnh đáy
+		bamNutTrongKhung();
 		if (Canvas.keyPressed[5])
 		{
 			if (center != null && center.action != null)

@@ -16,7 +16,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 /**
- * Hieu ung chieu kieu Pokemon (viec K3) - ban J2ME cua ClientUnity PokeHieuUng.cs.
+ * Hieu ung chieu kieu Pokemon (viec K3) - ban J2ME cua Unity PokeHieuUng.cs.
  * Bang /pk/hu.bin (HieuUngBang) + anh /pk/hu_&lt;ten&gt;.png, dong goi boi client_jar/tools/DongGoiPokeJ2me.java
  * tu Resources/poke/hu_bang.bytes + hu_*.bytes (khung cat sat hinh, bot khung, PNG bang mau).
  *
@@ -81,7 +81,7 @@ public final class PokeHieuUng {
     /** Cho Char.setCurrentSkillByID: SkillAnimate kieu Pokemon, hoac null de giu cach cu. */
     public static SkillAnimate layChieu(Char c, int chieu) {
         try {
-            if (c == null || c.pokeDex <= 0 || !PokeBody.CHE_DO_POKEMON) {
+            if (c == null || c.pokeDex <= 0) {
                 return null;
             }
             Integer k = khoa(c.clazz, chieu);
@@ -112,7 +112,7 @@ public final class PokeHieuUng {
                 return;
             }
             Char c = (Char) actor;
-            if (c.pokeDex <= 0 || !PokeBody.CHE_DO_POKEMON) {
+            if (c.pokeDex <= 0) {
                 return;
             }
             byte[][] eff = SkillManager.EFF_BUFF_SKILL;

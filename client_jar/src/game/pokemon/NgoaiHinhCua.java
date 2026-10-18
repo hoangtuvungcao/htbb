@@ -6,7 +6,7 @@ import java.io.IOException;
 /**
  * Ngoai hinh trang bi cua MOT nhan vat (lenh -102 POKE_NGOAI_HINH, server com.htbb.pokemon.NgoaiHinh):
  * phu kien tung o (kieu, do hiem, bac, +N) + bac tot nhat, +N cao nhat, so mon cung bac (bo), trang phuc, mat
- * na an. Ve bang NgoaiHinhVe. HTBB docs/pokemon/NGOAI_HINH_TRANG_BI.md.
+ * na an. Ve bang NgoaiHinhVe. HTBB docs/thiet-ke-game.md.
  */
 public final class NgoaiHinhCua {
     public static final int MU = 0, KHAN = 1, VONG = 2, TAY = 3, LUNG = 4, DA = 5, KINH = 6, SO_O = 7;

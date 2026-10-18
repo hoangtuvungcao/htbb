@@ -55,7 +55,7 @@ import java.util.regex.Pattern;
  *   - Chan System.out/System.err cu ({@link #caiDat()}): moi println cu cung di qua cac lop
  *     tren, phan loai theo tien to dong (xem {@link #phanLoai(String, boolean)}).
  *
- * Xem docs/cau-hinh-server-ini.md muc "Nhat ky + chong spam".
+ * Xem docs/cau-hinh.md muc "Nhat ky + chong spam".
  */
 public final class Nhat {
 

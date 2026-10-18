@@ -2,7 +2,7 @@
 /**
  * He Pokemon phia client cho HIEU UNG / AM THANH (khong anh huong sat thuong - server tinh).
  * Server chi gui ngu hanh cu cho quai, nen client tu tra he theo so Pokedex:
- *  - DEX/HE/HE2: moi loai trong HTBB docs/pokemon/bang_quai.csv (he1, he2) + 5 dong khoi dau va
+ *  - DEX/HE/HE2: moi loai trong HTBB du_lieu/bang_quai.csv (he1, he2) + 5 dong khoi dau va
  *    nhanh tien hoa Eevee (LoaiPokemonClient). he = ky tu 'a' + so he (0 Thuong .. 17 Tien), '-' = khong co.
  *  - KHAC: bang khac he chuan (com.htbb.pokemon.HePokemon): '2' x2, '1' x1, 'h' x0.5, '0' x0.
  *    heSo() = he so DUNG TRONG GAME (HePokemon.heSoTrongGame: 200 150 100 70 50 30).

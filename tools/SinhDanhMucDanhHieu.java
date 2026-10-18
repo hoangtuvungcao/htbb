@@ -131,7 +131,7 @@ public final class SinhDanhMucDanhHieu {
     /**
      * Thu muc HTBB-Web: -Dhtbb.web=..., bien HTBB_WEB_DIR, ../HTBB-Web (ba repo dat canh
      * nhau) hoac ../web (monorepo). Phai co nuxt.config.ts. Website PHP cu (web/ cua repo
-     * game) da bo - xem docs/pokemon/BO_WEB_PHP.md.
+     * game) da bo - xem docs/kien-truc.md.
      */
     private static java.io.File thuMucWeb() {
         final String[] ung = {System.getProperty("htbb.web"), System.getenv("HTBB_WEB_DIR"), "../HTBB-Web", "../web"};

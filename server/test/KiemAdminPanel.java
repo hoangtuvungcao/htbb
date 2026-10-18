@@ -78,8 +78,8 @@ public final class KiemAdminPanel {
         final BufferedImage pb = server.quantri.AnhPokemon.chanDung(9999);
         Kiem.dung("thieu anh Pokemon -> Poke Ball ve san", pb != null && pb.getWidth() == 40);
         Kiem.dung("icon vat pham thieu -> khong null", server.quantri.AnhPokemon.vatPham("Khong_Co_Tep") != null);
-        Kiem.bang("co tinh nang hien ten tieng Viet (khong lo khoa ky thuat)", "Chế độ Pokémon",
-                server.quantri.ThaoTacMayChu.tenCo("che_do_pokemon"));
+        Kiem.bang("co tinh nang hien ten tieng Viet (khong lo khoa ky thuat)", "Thiết kế dài hạn",
+                server.quantri.ThaoTacMayChu.tenCo("lau_dai"));
         // kinh te truc tiep: chot ngay uu tien, hom nay = so do song cho tong xu nhung giu xu vao/ra cua ngay
         final java.util.List<Object[]> ngay = new java.util.ArrayList<Object[]>();
         final String homNay = new java.text.SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());

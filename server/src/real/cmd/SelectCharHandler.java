@@ -75,7 +75,10 @@ public class SelectCharHandler implements ICommandHandler {
                 session.disconnect(20);
                 return;
             }
-            final InfoClientConnect infoSelect = TeamServer.ALL_IPCONNECT.get(session.ip);
+            // Cho 2s neu cung IP chon nhan vat 2 lan trong 5s - gioi han THEO IP, bo qua proxy
+            // tin cay (sv.proxyTinCay: sau WAF ca server chung IP).
+            final InfoClientConnect infoSelect = com.htbb.mang.GioiHanIp.apDung(session.ip)
+                    ? TeamServer.ALL_IPCONNECT.get(session.ip) : null;
             if (infoSelect != null && !infoSelect.canSelectChar()) {
                 try {
                     Thread.sleep(2000L);

@@ -341,10 +341,7 @@ public class MyGraphics
 
 	public void setColor(int rgb)
 	{
-		if (PokeBody.CHE_DO_POKEMON)
-		{
-			rgb = BangMauPoke.doi(rgb); // pokemon: giao diện - màu khung / nền cũ -> bảng màu thương hiệu
-		}
+		rgb = BangMauPoke.doi(rgb); // pokemon: giao diện - màu khung / nền cũ -> bảng màu thương hiệu
 		int num = rgb & 0xFF;
 		int num2 = (rgb >> 8) & 0xFF;
 		int num3 = (rgb >> 16) & 0xFF;
@@ -412,10 +409,7 @@ public class MyGraphics
 
 	public void setColor(int rgb, float alpha)
 	{
-		if (PokeBody.CHE_DO_POKEMON)
-		{
-			rgb = BangMauPoke.doi(rgb);
-		}
+		rgb = BangMauPoke.doi(rgb);
 		int num = rgb & 0xFF;
 		int num2 = (rgb >> 8) & 0xFF;
 		int num3 = (rgb >> 16) & 0xFF;

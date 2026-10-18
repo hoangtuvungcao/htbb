@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-/** Kiem com.htbb.pokemon.NgoaiHinh (ngoai hinh trang bi, goi -102) - docs/pokemon/NGOAI_HINH_TRANG_BI.md. */
+/** Kiem com.htbb.pokemon.NgoaiHinh (ngoai hinh trang bi, goi -102) - docs/thiet-ke-game.md. */
 public final class KiemNgoaiHinh {
 
     private KiemNgoaiHinh() {

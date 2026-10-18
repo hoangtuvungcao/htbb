@@ -9,7 +9,7 @@ import java.util.Locale;
  * Luat nap tien - HAM THUAN (khong CSDL, khong Char), test/KiemNapTien.java goi truc tiep.
  * Nguon so lieu DUY NHAT phia server; web (HTBB-Web server/utils/napTienThuan.ts) giu ban sao
  * cac hang so can thiet va sql/pokemon_nap_tien.sql giu ban sao danh muc - test doi chieu ca ba.
- * Thiet ke: docs/pokemon/NAP_TIEN.md.
+ * Thiet ke: docs/van-hanh.md.
  *
  * Nguyen tac (N-NAP):
  *   1. Ban tiet kiem thoi gian / tien ich / trang tri, KHONG ban suc manh. Thoi gian = nhom "tang_toc"

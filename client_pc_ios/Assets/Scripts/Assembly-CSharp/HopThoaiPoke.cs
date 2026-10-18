@@ -28,7 +28,7 @@ public static class HopThoaiPoke
 	/// <summary>NPC đang nói (đang chọn + có lời thoại) khi menu NPC mở; null nếu không.</summary>
 	public static NPC npcDangNoi()
 	{
-		if (!UiPokemon.bat() || Canvas.gameScr == null || !Canvas.menu.showMenu)
+		if (Canvas.gameScr == null || !Canvas.menu.showMenu)
 		{
 			return null;
 		}

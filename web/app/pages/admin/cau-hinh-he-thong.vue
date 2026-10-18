@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * CẤU HÌNH HỆ THỐNG — mọi công tắc & tham số máy chủ ở MỘT chỗ (HTBB/docs/cau-hinh-trung-tam.md).
+ * CẤU HÌNH HỆ THỐNG — mọi công tắc & tham số máy chủ ở MỘT chỗ (docs/cau-hinh.md).
  * Form sinh từ danh mục (HTBB/tools/cauhinh/danh_muc.json -> shared/utils/cauHinhTrungTam.gen.ts), kiểm ngay khi gõ,
  * xem trước thay đổi trước khi lưu, badge "áp dụng ngay" / "cần khởi động lại", nút khởi động lại an toàn
  * (đếm ngược + lý do), lịch sử + hoàn tác, tìm kiếm. Máy chủ game xác nhận phiên bản đã áp dụng (cau_hinh_ap_dung).

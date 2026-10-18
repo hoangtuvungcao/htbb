@@ -104,7 +104,7 @@ public final class KiemChiemGymDoiDiemGiaoHang {
      * Bug SAU hon, khong lien quan gi den mau tieu: Char.doAddItemVanTieu goi
      * Map.dropItemAnimalByLvChar(lvOpen, 4) TRUOC KHI xet mau - ham nay chi tim mau
      * trong khoang [lvChar-4, lvChar+1]. Trang bi thu THAP NHAT trong game la lv30
-     * (Giap/Non/Yen cuong/Ban dap/Ho uyen Vu Dung, xem docs/danh_muc_item.md), nen
+     * (Giap/Non/Yen cuong/Ban dap/Ho uyen Vu Dung, xem du_lieu/danh_muc_item.md), nen
      * nhan vat duoi ~lv29 luon roi vao khoang RONG va truoc day return null - VAN
      * TIEU MAT TRANG TAY DU LA MAU TIM (hiem nhat), vi day la buoc LOC MAU truoc khi
      * doAddItemVanTieu kip re theo mau. Yeu cau nguoi dung 16/09/2026: phai chac chan
@@ -147,7 +147,7 @@ public final class KiemChiemGymDoiDiemGiaoHang {
         // Doi chieu voi danh muc item: trang bi thu THAP NHAT that su la lv30 (tien de
         // cho ca bug tren) - neu ai do them mau thap hon 30 thi ham van an toan, nhung
         // neu con so nay tang len (vd xoa het mau lv30) thi khoang trong con rong hon.
-        final String danhMuc = doc("../docs/danh_muc_item.md");
+        final String danhMuc = doc("../du_lieu/danh_muc_item.md");
         Kiem.dung("(tien de) trang bi thu thap nhat trong danh muc la lv30 (Giap/Non/Yen cuong/Ban dap/Ho uyen Vu Dung)",
                 danhMuc.contains("| 521 | Giáp Vủ dũng | 14 | 30 |")
                 && !Pattern.compile("\\| \\d+ \\|[^|]*\\| (14|15|16|17|18) \\| ([12]?\\d) \\|").matcher(danhMuc).find());
@@ -341,7 +341,7 @@ public final class KiemChiemGymDoiDiemGiaoHang {
                 Integer.valueOf(2), Integer.valueOf(demSoLan(charJava, "final int ran = Map.r.nextInt(100000);")));
         // 14/09/2026: 5 nguong doInitMonter chuyen tu literal hardcode sang truong static
         // Char.TIEU_NGUONG_MAU de quan ly duoc qua SQL (server.CauHinh) - xem
-        // docs/cau-hinh-server-ini.md muc 5c. Gia tri GIU NGUYEN, chi doi CHO O.
+        // docs/cau-hinh.md. Gia tri GIU NGUYEN, chi doi CHO O.
         Kiem.dung("Char khai bao TIEU_NGUONG_MAU giu nguyen 5 nguong cu (60189,89389,99689,99989,99999)",
                 charJava.contains("public static int[] TIEU_NGUONG_MAU = {60189, 89389, 99689, 99989, 99999};"));
         Kiem.dung("doInitMonter: doc nguong tu Char.TIEU_NGUONG_MAU (khong con hardcode) - Vang la nguong[4]",
@@ -351,7 +351,7 @@ public final class KiemChiemGymDoiDiemGiaoHang {
 
         // 15/09/2026: doChangeTieu (doi tieu tra phi) cung chuyen tu literal hardcode
         // sang 2 truong static rieng (xu/luong), quan ly qua SQL giong TIEU_NGUONG_MAU -
-        // xem docs/cau-hinh-server-ini.md muc 5c. Gia tri GIU NGUYEN, chi doi CHO O.
+        // xem docs/cau-hinh.md. Gia tri GIU NGUYEN, chi doi CHO O.
         Kiem.dung("Char khai bao DOI_TIEU_NGUONG_MAU_XU giu nguyen 5 nguong cu (50545,85545,98945,99945,99995)",
                 charJava.contains("public static int[] DOI_TIEU_NGUONG_MAU_XU = {50545, 85545, 98945, 99945, 99995};"));
         Kiem.dung("Char khai bao DOI_TIEU_NGUONG_MAU_LUONG giu nguyen 5 nguong cu (22890,52890,96890,99890,99990)",
@@ -376,7 +376,7 @@ public final class KiemChiemGymDoiDiemGiaoHang {
         // 14/09/2026: PERMILLE_TIEU_CAO_CAP, pcExpAdd va "* 2" (TangExpVanTieu) chuyen tu
         // bien LOCAL trong CharSuKien.doResponseTieu() sang truong static
         // Char.TIEU_PERMILLE_CAO_CAP / TIEU_PC_EXP_THEO_MAU / TIEU_HE_SO_EXP de quan ly
-        // duoc qua SQL (server.CauHinh) - xem docs/cau-hinh-server-ini.md muc 5c. Gia tri
+        // duoc qua SQL (server.CauHinh) - xem docs/cau-hinh.md. Gia tri
         // GIU NGUYEN, chi doi CHO O: mang 2 chieu {{50,70,90},{35,55,75},{5,25,45}} gop
         // phang thanh 1 chieu {50,70,90,35,55,75,5,25,45}, chi so tra = khung*3 + (mau-3).
         Kiem.dung("Char khai bao TIEU_PERMILLE_CAO_CAP gop phang dung 9 gia tri cu (5.0/7.0/9.0, 3.5/5.5/7.5, 0.5/2.5/4.5%)",

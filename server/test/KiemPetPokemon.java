@@ -5,14 +5,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.GoiPokemon;
 import com.htbb.pokemon.PetPokemon;
 
 /**
  * Kiem thu pet di theo Pokemon (com.htbb.pokemon.PetPokemon) + goi -94 POKE_PET.
  *
- * Bang PetPokemon.BANG duoc chep tay tu cac dong loai=pet_item cua docs/pokemon/bang_thu.csv -
+ * Bang PetPokemon.BANG duoc chep tay tu cac dong loai=pet_item cua du_lieu/bang_thu.csv -
  * test doi chieu TUNG dong CSV voi bang Java (va nguoc lai qua so dong). Kem kiem client co
  * case -94 va ve pet bang PokeBody.
  */
@@ -29,7 +28,7 @@ public final class KiemPetPokemon {
         Kiem.bang("Golbat cap 3 (706)", Integer.valueOf(42), Integer.valueOf(PetPokemon.dex(706)));
         Kiem.bang("Crobat cap 5 (708)", Integer.valueOf(169), Integer.valueOf(PetPokemon.dex(708)));
         try {
-            final List<String> dong = Files.readAllLines(new File("../docs/pokemon/bang_thu.csv").toPath(), StandardCharsets.UTF_8);
+            final List<String> dong = Files.readAllLines(new File("../du_lieu/bang_thu.csv").toPath(), StandardCharsets.UTF_8);
             int dem = 0;
             for (final String d : dong) {
                 final String[] c = d.split(",");
@@ -43,7 +42,7 @@ public final class KiemPetPokemon {
                 Kiem.bang("item " + id + " (" + c[5] + ") dex", Integer.valueOf(dex), Integer.valueOf(PetPokemon.dex(id)));
                 Kiem.bang("item " + id + " shiny", Boolean.valueOf(shiny), Boolean.valueOf(PetPokemon.shiny(id)));
                 Kiem.dung("co sprite da dong goi: " + dex + (shiny ? "s" : ""), new File(String.format(
-                        "../client_pc_ios/ClientUnity/Assets/Resources/poke/%04d%s_dl.bytes", dex, shiny ? "s" : "")).isFile());
+                        "../client_pc_ios/Assets/Resources/poke/%04d%s_dl.bytes", dex, shiny ? "s" : "")).isFile());
             }
             Kiem.bang("CSV va bang Java cung so dong pet_item", Integer.valueOf(PetPokemon.soDong()), Integer.valueOf(dem));
         } catch (final Exception e) {
@@ -69,7 +68,7 @@ public final class KiemPetPokemon {
             Kiem.dung("ghiPet: " + e, false);
         }
         try {
-            final String g = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/";
+            final String g = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/";
             final String mh = new String(Files.readAllBytes(new File(g + "MessageHandler.cs").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("client xu ly case -94", mh.contains("case -94:"));
             Kiem.dung("client doc i16,i16,u8 cho -94", mh.contains("c.pokePetDex = dexPet;"));
@@ -85,9 +84,7 @@ public final class KiemPetPokemon {
     /** taoPokeThan phai tra ve chuoi -90 -> -93 -> -94, va -94 mang dex cua item pet dang dung. */
     private static void kiemChuoiGoi() {
         Kiem.nhom("TienHoaPokemon - chuoi -90 -> -93 -> -94");
-        final boolean cu = CheDoPokemon.bat();
         try {
-            CheDoPokemon.dat(true);
             final real.Char c = new real.Char(null);
             c.id = 321;
             c.pokeDex = 25;
@@ -102,13 +99,8 @@ public final class KiemPetPokemon {
             pet.idHoaHinhPet = 67;
             pet.timeEndHoaHinhPet = System.currentTimeMillis() + 60000L;
             Kiem.bang("pet dang hoa hinh Lan -> dex 0 (giu hinh Lan)", Integer.valueOf(0), Integer.valueOf(dexTrongChuoi(c)));
-
-            CheDoPokemon.dat(false);
-            Kiem.dung("tat che do -> khong co -94", real.TienHoaPokemon.taoPokePet(c) == null);
         } catch (final Throwable e) {
             Kiem.dung("chuoi goi: " + e, false);
-        } finally {
-            CheDoPokemon.dat(cu);
         }
     }
 

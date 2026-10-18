@@ -18,9 +18,9 @@
 #  TU_KHOI_DONG_LAI=1 (chi root): game TREO 2 lan lien tiep (tang 1 hoac 2) -> systemctl restart
 #  htbb-game (shutdown hook van luu nhan vat; TimeoutStopSec=180). Mac dinh TAT: chi bao.
 #
-#  Cai (root):  * * * * * TU_KHOI_DONG_LAI=1 /opt/htbb/vps/kiem-suc-khoe.sh >> /opt/htbb/log/suc-khoe.log 2>&1
+#  Cai (root):  * * * * * TU_KHOI_DONG_LAI=1 /opt/htbb/vps/kiem-suc-khoe.sh >> /opt/htbb/logs/suc-khoe.log 2>&1
 #  Bien: HOST=127.0.0.1 CONG_GAME=19129 CONG_LOGIN=8023 THU_MUC=/opt/htbb NGUONG_TREO=120
-#        WEB_URL=http://127.0.0.1:3000 MYSQL="mysql" (mat khau trong /root/.my.cnf)
+#        WEB_URL=http://127.0.0.1:3000 MYSQL="mysql" (chay bang root: unix_socket)
 # ============================================================
 set -u
 HOST=${HOST:-127.0.0.1}

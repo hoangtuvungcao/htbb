@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** Bảng kết quả trong game (chỉ đọc): chiếm thành, chiến trường, quà online, giftcode... */
+/** Bảng kết quả trong game (chỉ đọc): chiếm Gym, chiến trường, quà online, giftcode... */
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 const api = useAdminApi()
 const route = useRoute()

@@ -18,7 +18,7 @@ watch(error, (e: any) => {
 })
 const { data: site } = await useSite()
 // Thành viên HTBB khác với kích hoạt: kích hoạt = được đăng nhập (5h_active, admin cấp); Thành viên = mở các
-// tính năng cộng đồng khi máy chủ bắt buộc (mua trên web). HTBB/docs/pokemon/THANH_VIEN.md.
+// tính năng cộng đồng khi máy chủ bắt buộc (mua trên web). docs/van-hanh.md.
 const { data: tv } = useAsyncData<{ coBang: boolean, trangThai: { laThanhVien: boolean, hetHanMs: number | null } | null }>(
   'htbb-tv-kichhoat', () => api('/api/thanh-vien/cua-toi'), { server: false })
 // Chưa kích hoạt VẪN chơi được (trừ khi admin bật kich_hoat.chan_dang_nhap); chỉ khoá vài tính năng.

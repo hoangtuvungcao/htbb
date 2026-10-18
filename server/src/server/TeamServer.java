@@ -58,7 +58,6 @@ public class TeamServer {
     public static boolean haveMsgAdmin;
     public static boolean changRange;
     public static byte MAX_SNAKE;
-    private static String url_run;
     private static int timeStart;
     public static boolean isStart;
     private static int minute;
@@ -144,10 +143,18 @@ public class TeamServer {
                 || ip.startsWith("192.168.") || ip.startsWith("10.") || ip.startsWith("172.16.");
     }
 
+    /**
+     * Miễn mọi giới hạn theo IP (maxConnPerIp, connRate, ban dosBanSec, chặn IP): IP nội bộ/LAN
+     * hoặc proxy tin cậy sv.proxyTinCay (WAF / Nova agent - sau WAF cả server chung vài IP).
+     */
+    public static boolean mienGioiHanIp(String ip) {
+        return isLocalIp(ip) || com.htbb.mang.ProxyTinCay.tinCay(ip);
+    }
+
     /** Gọi trong vòng accept: trả về true nếu cho phép kết nối, false nếu phải chặn. */
     public static boolean dosAccept(String ip) {
         try {
-            if (isLocalIp(ip)) {
+            if (mienGioiHanIp(ip)) {
                 return true;
             }
             long now = System.currentTimeMillis();
@@ -184,14 +191,16 @@ public class TeamServer {
     }
 
     public static void dosOnOpen(String ip) {
-        if (isLocalIp(ip)) {
+        if (mienGioiHanIp(ip)) {
             return;
         }
         IP_OPEN.computeIfAbsent(ip, k -> new AtomicInteger(0)).incrementAndGet();
     }
 
     public static void dosOnClose(String ip) {
-        if (isLocalIp(ip)) {
+        // Khong hoi mienGioiHanIp: sv.proxyTinCay doi nong giua luc mo va dong thi van phai tru
+        // bo dem da cong (khong co muc = khong lam gi).
+        if (ip == null) {
             return;
         }
         AtomicInteger open = IP_OPEN.get(ip);
@@ -681,7 +690,6 @@ public class TeamServer {
             // khoi dong da theo cau hinh that.
             com.htbb.log.Nhat.docCauHinh(p, p.getProperty("sv.pathLog"));
             BaoTriDaily.Server = Integer.parseInt(p.getProperty("api.sv"));
-            BaoTriDaily.domain = p.getProperty("api.url");
             TeamServer.PORT = Integer.parseInt(p.getProperty("sv.port"));
             TeamServer.LIMIT_CCU = Short.parseShort(p.getProperty("limit.ccu"));
             TeamServer.server = Integer.parseInt(p.getProperty("sv.server"));
@@ -697,14 +705,13 @@ public class TeamServer {
             Database.setLinkBoardNap(p.getProperty("db.host"), p.getProperty("db.nameNap"), p.getProperty("db.userNap"), p.getProperty("db.pass"), p.getProperty("db.maxNap"));
             Database.setLinkGiftCode(p.getProperty("db.host"), p.getProperty("db.nameNap"), p.getProperty("db.userNap"), p.getProperty("db.pass"), p.getProperty("db.maxNap"));
             Database.setLink1(p.getProperty("db.host1"), p.getProperty("db.name1"), p.getProperty("db.user1"), p.getProperty("db.password1"), p.getProperty("db.maxco1"));
-            // CAU HINH TRUNG TAM (com.htbb.cauhinh, docs/cau-hinh-trung-tam.md): doc bang cau_hinh NGAY BAY GIO va
+            // CAU HINH TRUNG TAM (com.htbb.cauhinh, docs/cau-hinh.md): doc bang cau_hinh NGAY BAY GIO va
             // ghi de vao p cac khoa co trong CSDL -> moi p.getProperty(...) ben duoi (co che do, dai han, nap tien,
             // DoS, dang ky...) theo thu tu CSDL > server.ini > mac dinh. Cong / CSDL o tren chi doc tu server.ini.
             com.htbb.cauhinh.CauHinhTrungTam.khoiTao(p);
             Database.tableRace = p.getProperty("sv.tablerace");
             Database.createRace = Byte.parseByte(p.getProperty("sv.createRace"));
             Database.dayCreateRace = p.getProperty("sv.dayrace");
-            TeamServer.url_run = p.getProperty("db.run");
             TeamServer.timeStart = Integer.parseInt(p.getProperty("db.hour"));
             TeamServer.minute = Integer.parseInt(p.getProperty("db.minute"));
             TeamServer.language = Byte.parseByte(p.getProperty("sv.lang"));
@@ -800,6 +807,11 @@ public class TeamServer {
             TeamServer.CONN_RATE_MAX       = parseIntDefault(p.getProperty("sv.connRateMax"), 60);
             TeamServer.CONN_RATE_WINDOW_MS = parseIntDefault(p.getProperty("sv.connRateWindow"), 30) * 1000;
             TeamServer.DOS_BAN_MS          = (long) parseIntDefault(p.getProperty("sv.dosBanSec"), 300) * 1000L;
+            // Proxy tin cay (WAF / Nova agent): mien gioi han theo IP. Cau hinh trung tam doi nong.
+            final String proxyTinCay = p.getProperty("sv.proxyTinCay");
+            System.out.println("PROXY TIN CAY -> " + com.htbb.mang.ProxyTinCay.dat(
+                    proxyTinCay == null ? com.htbb.mang.ProxyTinCay.MAC_DINH : proxyTinCay));
+            com.htbb.mang.GioiHanIp.datDangNhap(p.getProperty("sv.dangNhapIpNguong"), p.getProperty("sv.dangNhapIpChoMs"));
             // Nguong NGAP GOI TIN. Canh theo do tre Internet, nen may nha chay qua loopback
             // (khong co do tre) phai nang len khong thi client cache rong bi cat oan. Xem
             // io/BoDemGoiTin. Doc kieu co default: thieu khoa thi giu so cu, KHONG nem loi
@@ -815,7 +827,7 @@ public class TeamServer {
                 com.htbb.log.Nhat.canhBao("NGAP_GOI", "sv.tranGoiMienIp=" + io.BoDemGoiTin.MIEN_IP
                         + " - cac IP nay KHONG bi dem ngap goi (chi dung cho may chay bot tai)");
             }
-            // Chong spam chat / thao tac + gop thong bao toan server (docs/cau-hinh-server-ini.md muc 13).
+            // Chong spam chat / thao tac + gop thong bao toan server (docs/cau-hinh.md).
             com.htbb.chongspam.ChongSpam.docCauHinh(p);
             com.htbb.chongspam.ThongBaoGop.docCauHinh(p);
             System.out.println(com.htbb.chongspam.ChongSpam.moTa());
@@ -835,27 +847,24 @@ public class TeamServer {
             TeamServer.isSuKienGioTo2016 = Byte.parseByte(p.getProperty("sv.isSuKienGioTo2016")) == 1;
             TeamServer.isSuKienNoel2023 = Byte.parseByte(p.getProperty("sv.isSuKienNoel2023")) == 1;
             TeamServer.isSuKienTetduonglich2024 = Byte.parseByte(p.getProperty("sv.isSuKienTetduonglich2024")) == 1;
-            // Che do Pokemon (quyet dinh Q8, docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Khong qua
-            // parseX: thieu dong = TAT (hanh vi goc cu), khong nem loi. Moi cho re nhanh doc
-            // qua com.htbb.pokemon.CheDoPokemon.bat(). Doi gia tri phai khoi dong lai.
-            com.htbb.pokemon.CheDoPokemon.dat(com.htbb.pokemon.CheDoPokemon.docGiaTri(p.getProperty("sv.che_do_pokemon")));
-            System.out.println("CHE DO POKEMON -> " + (com.htbb.pokemon.CheDoPokemon.bat() ? "BAT" : "TAT") + " - " + com.htbb.pokemon.ThuongHieu.tenGame());
-            // Thiet ke dai han - giai doan 2 (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md). Khong qua
+            // Game luon la Pokemon: khoa cu sv.che_do_pokemon (neu con trong server.ini / CSDL) bi bo qua.
+            System.out.println("GAME -> " + com.htbb.pokemon.ThuongHieu.tenGame());
+            // Thiet ke dai han - giai doan 2 (docs/thiet-ke-game.md). Khong qua
             // parseX: thieu dong = TAT (hanh vi cu). Moi cho re nhanh doc qua
             // com.htbb.pokemon.LauDai.bat(). Doi gia tri phai khoi dong lai.
             com.htbb.pokemon.LauDai.dat(com.htbb.pokemon.LauDai.docGiaTri(p.getProperty("sv.lau_dai")));
             com.htbb.pokemon.LauDai.datNgayKhaiTruong(p.getProperty("sv.ngay_khai_truong"));
-            // Tran cap theo mua: mac dinh TAT (thieu dong = 0) - docs/pokemon/THIET_KE_LAU_DAI.md muc 1.4.
+            // Tran cap theo mua: mac dinh TAT (thieu dong = 0) - docs/thiet-ke-game.md.
             com.htbb.pokemon.LauDai.datTranTheoMua(com.htbb.pokemon.LauDai.docGiaTri(p.getProperty("sv.tran_cap_theo_mua")));
             // Gio bao tri hang ngay (HH:MM | tat | trong = ngau nhien 4:30-5:30 nhu cu).
             real.BaoTriDaily.datGio(p.getProperty("sv.gioBaoTri"));
             System.out.println("LAU DAI -> " + (com.htbb.pokemon.LauDai.bat() ? "BAT" : "TAT")
                     + ", khai truong ngay thu " + com.htbb.pokemon.LauDai.ngayHienTai()
                     + ", tran cap theo mua " + (com.htbb.pokemon.LauDai.tranTheoMua() ? "BAT" : "TAT"));
-            // nap tien: co sv.nap_tien (docs/pokemon/NAP_TIEN.md). Chi BAT khi ca sv.lau_dai=1.
+            // nap tien: co sv.nap_tien (docs/van-hanh.md). Chi BAT khi ca sv.lau_dai=1.
             com.htbb.pokemon.NapTien.dat(com.htbb.pokemon.NapTien.docGiaTri(p.getProperty("sv.nap_tien")));
             System.out.println(com.htbb.pokemon.NapTien.moTaTrangThai());
-            // he sinh thai: co sv.he_sinh_thai (docs/pokemon/HE_SINH_THAI.md). Da doc som khi lop nap
+            // he sinh thai: co sv.he_sinh_thai (docs/thiet-ke-game.md). Da doc som khi lop nap
             // (HeSinhThai.docTuTepCauHinh); doc lai o day de dong bo voi tep cau hinh that cua TeamServer.
             com.htbb.pokemon.HeSinhThai.dat(com.htbb.pokemon.HeSinhThai.docGiaTri(p.getProperty("sv.he_sinh_thai")));
             System.out.println("HE SINH THAI -> " + (com.htbb.pokemon.HeSinhThai.bat() ? "BAT" : "TAT"));
@@ -914,16 +923,14 @@ public class TeamServer {
             System.out.println("[KHO] LOI kiem tra cot tob_char.kho_xu/kho_luong/kho_luong_khoa: " + exKho);
             exKho.printStackTrace();
         }
-        // Che do Pokemon: cot tob_char.dex/shiny + data_monster.dex/shiny/he2. PHAI truoc
+        // Cot Pokemon tob_char.dex/shiny + data_monster.dex/shiny/he2. PHAI truoc
         // Database.startSaveChar() (nap template quai) va truoc khi nhan nguoi choi (saveChar
-        // ghi cot dex). Tat co thi khong dong vao schema. Xem Database.themCotPokemon().
-        if (com.htbb.pokemon.CheDoPokemon.bat()) {
-            try {
-                Database.instance.themCotPokemon();
-            } catch (Exception exPoke) {
-                System.out.println("[POKEMON] LOI kiem tra cot dex/shiny/he2: " + exPoke);
-                exPoke.printStackTrace();
-            }
+        // ghi cot dex). Xem Database.themCotPokemon().
+        try {
+            Database.instance.themCotPokemon();
+        } catch (Exception exPoke) {
+            System.out.println("[POKEMON] LOI kiem tra cot dex/shiny/he2: " + exPoke);
+            exPoke.printStackTrace();
         }
         // GD2 thiet ke dai han: bang moi + doi bang EXP + chuyen EXP nhan vat cu (MOT lan, co sao
         // luu tob_char_xp_cu). PHAI truoc khi nhan nguoi choi. Tat co: khong dong vao gi.
@@ -954,7 +961,7 @@ public class TeamServer {
         }
         // G7.C: doi chu kiem hiep -> Pokemon (Text, ten vung, ten dong, ten thuoc, ngoc). PHAI
         // SAU startSaveChar (Map.gemTemplate/potionTemplates2 da nap), TRUOC khi nhan nguoi
-        // choi. Tat che do Pokemon thi khong lam gi. Xem com.htbb.pokemon.ChuPokemon.
+        // choi. Xem com.htbb.pokemon.ChuPokemon.
         com.htbb.pokemon.ChuPokemon.ap();
         TeamServer.timeRemovePool = System.currentTimeMillis();
         System.out.println("Starting server...");
@@ -1243,7 +1250,7 @@ public class TeamServer {
                     try {
                         InetAddress inet = clientSocket.getInetAddress();
                         ipconnect = inet.getHostAddress();
-                        if (TeamServer.ALL_IPCONNECT_BLOCK.get(ipconnect) != null) {
+                        if (TeamServer.ALL_IPCONNECT_BLOCK.get(ipconnect) != null && !TeamServer.mienGioiHanIp(ipconnect)) {
                             System.out.println("IP BLOCK " + ipconnect);
                             clientSocket.close();
                             continue;

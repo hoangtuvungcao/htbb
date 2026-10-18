@@ -14,7 +14,7 @@ import java.util.Vector;
  *
  * Moi gioi han dat o DIEM CUOI (cho roll chi mang, ne, hut HP, giam sat thuong...) chu khong o tung nguon,
  * nen pet / thu cuoi / skin / thoi trang / bao vat / do giu / buff deu di qua cung mot tran: khong nguon nao
- * "lach" duoc tran (docs/pokemon/CHI_SO_TRANG_BI.md muc 3).
+ * "lach" duoc tran (docs/thiet-ke-game.md).
  */
 public final class ChiSoTrangBiGame {
 

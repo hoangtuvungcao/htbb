@@ -3,10 +3,10 @@ package com.htbb.pokemon;
 /**
  * W2: doi ten dia danh goc sang dia danh the gioi Pokemon (Kanto/Johto).
  *
- * Ap dung khi gui ten (MessageCreator.createMessageLocation, lenh 105) neu che do Pokemon
- * bat. Giu tien to huong "Đông/Tây/Nam/Bắc " ("Đông Dao Châu" -> "Đông Pallet"); ten chung
+ * Ap dung khi gui ten (MessageCreator.createMessageLocation, lenh 105).
+ * Giu tien to huong "Đông/Tây/Nam/Bắc " ("Đông Dao Châu" -> "Đông Pallet"); ten chung
  * (Bến tàu, Khu mua bán, Hang phía đông...) giu nguyen. Client co ban sao bang nay o
- * ClientUnity/Assets/Scripts/Game/TenMapPokemon.cs (ten viet cung trong Tilemap.cs) -
+ * client_pc_ios/Assets/Scripts/Assembly-CSharp/TenMapPokemon.cs (ten viet cung trong Tilemap.cs) -
  * test/KiemThuPokemon doi chieu hai bang phai giong het.
  */
 public final class TenMapPokemon {

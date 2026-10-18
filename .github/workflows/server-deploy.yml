@@ -32,15 +32,22 @@ concurrency:
 
 jobs:
   deploy:
-    # Chi bat sau khi VPS da la ban checkout monorepo (vps/CHUYEN_TEN_HTBB.md): Settings > Variables HTBB_VPS_MONOREPO=1
+    # Chi bat sau khi VPS da dung xong (/opt/htbb = ban checkout monorepo, xem vps/README.md):
+    # Settings > Variables HTBB_VPS_MONOREPO=1 va HTBB_VPS_HOST=<dia chi SSH cua VPS> (KHONG ghi IP vao git).
     if: ${{ vars.HTBB_VPS_MONOREPO == '1' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      VPS_HOST: ${{ vars.HTBB_VPS_HOST }}
     steps:
       - name: Cai khoa SSH
         env:
           KHOA: ${{ secrets.VPS_SSH_KEY }}
         run: |
+          if [ -z "$VPS_HOST" ]; then
+            echo "::error::Chua co bien HTBB_VPS_HOST. Vao Settings > Secrets and variables > Actions > Variables de them."
+            exit 1
+          fi
           if [ -z "$KHOA" ]; then
             echo "::error::Chua co secret VPS_SSH_KEY. Vao Settings > Secrets and variables > Actions de them."
             exit 1
@@ -48,7 +55,7 @@ jobs:
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "$KHOA" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H 180.93.57.30 >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
 
           # Kiem tra khoa doc duoc TRUOC khi thu ssh that, de loi hien ro rang
           # o day thay vi "Permission denied (publickey,password)" kho hieu o
@@ -103,4 +110,4 @@ jobs:
             goi="${goi}DEPLOY_NOW=1"$'\n'
           fi
           printf '%s' "$goi" | ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o ConnectTimeout=20 \
-              -o StrictHostKeyChecking=yes root@180.93.57.30 deploy
+              -o StrictHostKeyChecking=yes root@"$VPS_HOST" deploy

@@ -3,14 +3,14 @@
     python -I phienban.py tai-ve <phienban.json>
         -> tải phienban.json hiện có trên repo (không có thì ghi {}); tạo README nếu repo còn trống
     python -I phienban.py ban-ke-tiep <phienban.json> <pc|android|jar|jar-nhe>
-        -> in số bản kế tiếp (bản hiện có + 1; NQSH-H2: android tối thiểu 1419 vì APK gốc TeaMobi là 1418)
+        -> in số bản kế tiếp (bản hiện có + 1)
     python -I phienban.py ghi <phienban.json> <pc|android|jar|jar-nhe> <ban> <link> <file> [ghi chú]
         -> cập nhật mục pc/android/jar (sha256 + kích thước tính từ <file>), giữ nguyên mục còn lại
     python -I phienban.py day-len <phienban.json> <commit message>
         -> ghi phienban.json lên nhánh main của repo
 
-Biến môi trường: GH_EXE (đường dẫn Windows tới gh.exe), REPO (BẮT BUỘC; repo phát hành HTBB - kiểu cũ
-NQSH-H2: kpah-server/nqsh-h2-tai), TEN_GAME (HTBB / NQSH-H2, day-len.sh đặt), PHIEN_BAN (tên phiên bản HTBB, ghi
+Biến môi trường: GH_EXE (đường dẫn Windows tới gh.exe), REPO (BẮT BUỘC; repo phát hành HTBB),
+TEN_GAME (mặc định HTBB), PHIEN_BAN (tên phiên bản HTBB, ghi
 thêm vào mục "phienBan").
 
 Mục HTBB: {"ban", "phienBan", "link", "sha256", "kichThuoc", "ghiChu", "ngay"} - client PC (CapNhat.cs) đọc "pc".
@@ -27,21 +27,10 @@ GH_WIN = r"C:\Program Files\GitHub CLI\gh.exe"
 GH = os.environ.get("GH_EXE") or (GH_WIN if os.path.exists(GH_WIN) else "gh")
 REPO = os.environ.get("REPO") or ""
 if not REPO:
-    raise SystemExit("phienban.py: chua dat REPO=<chu>/<repo phat hanh> (HTBB: repo rieng; NQSH-H2 cu: kpah-server/nqsh-h2-tai)")
-NQSH = "nqsh-h2" in REPO.lower()
-TEN_GAME = os.environ.get("TEN_GAME") or ("NQSH-H2" if NQSH else "HTBB")
-TOI_THIEU = {"pc": 1, "android": 1419 if NQSH else 1, "jar": 1, "jar-nhe": 1}
-if NQSH:
-    README = """# NQSH-H2 - bản phát hành
-
-Chỉ chứa bản build để tải (không có mã nguồn). Game PC / Android tự đọc `phienban.json` để cập nhật.
-
-- PC: https://github.com/%(r)s/releases/download/pc/NQSH-H2-PC.zip
-- Android: https://github.com/%(r)s/releases/download/android/NQSH-H2.apk
-- Jar (J2ME): https://github.com/%(r)s/releases/download/jar/NQSH-H2.jar
-""" % {"r": REPO}
-else:
-    README = """# Huyền Thoại Bảo Bối (HTBB) - bản phát hành
+    raise SystemExit("phienban.py: chua dat REPO=<chu>/<repo phat hanh>")
+TEN_GAME = os.environ.get("TEN_GAME") or "HTBB"
+TOI_THIEU = {"pc": 1, "android": 1, "jar": 1, "jar-nhe": 1}
+README = """# Huyền Thoại Bảo Bối (HTBB) - bản phát hành
 
 Chỉ chứa bản build để tải (không có mã nguồn). Game fan phi thương mại; Pokémon (c) Nintendo / Creatures /
 GAME FREAK / The Pokémon Company. Hình Pokémon: PMDCollab SpriteCollab (CC BY-NC 4.0) - ghi công trong
@@ -75,7 +64,7 @@ def doc_tep(ten):
         return base64.b64decode(d["content"]), d["sha"]
     if "404" in loi or "Not Found" in loi or "empty" in loi.lower():
         return None, None
-    raise SystemExit("Khong doc duoc %s tren %s (token GH_TOKEN / HTBB_TAI_TOKEN / NQSH_TAI_TOKEN sai hoac khong co quyen?): %s"
+    raise SystemExit("Khong doc duoc %s tren %s (token GH_TOKEN / HTBB_TAI_TOKEN sai hoac khong co quyen?): %s"
                      % (ten, REPO, loi))
 
 

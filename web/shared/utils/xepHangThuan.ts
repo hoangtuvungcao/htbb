@@ -149,7 +149,7 @@ export const XH_DANH_MUC: readonly XhBangDinhNghia[] = [
   },
   {
     ma: 'ung-ho', ten: 'Top ủng hộ', icon: 'i-lucide-gem', nhom: 'Ủng hộ', trongGame: false, gioiHanGame: 0,
-    moTa: 'Tổng lượng đã ủng hộ. Chỉ hiện khi máy chủ BẬT nạp (HTBB_NAP_BAT) VÀ admin bật "Hiện bảng ủng hộ".',
+    moTa: 'Tổng lượng đã ủng hộ. Bảng chỉ hiện khi máy chủ mở ủng hộ.',
     nguon: 'board_created ORDER BY luong DESC (hiện tên Pokémon cấp cao nhất của tài khoản, không bao giờ hiện tên đăng nhập).',
     bang: ['board_created'], macDinhHien: false, boLoc: [],
   },

@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Sinh docs/danh_muc_item.md tu bang data_item trong sql/gamedb7_clean.sql
+ * Sinh du_lieu/danh_muc_item.md tu bang data_item trong sql/gamedb7_clean.sql
  * (BAN MOI, khong phai htbb_db.sql da cu - xem README.md).
  *
  * VI SAO SINH CHU KHONG GO TAY: ~900 vat pham, go tay chac chan sot/sai id.
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public final class SinhDanhMucItem {
 
     private static final String NGUON = "sql/gamedb7_clean.sql";
-    private static final String DICH = "docs/danh_muc_item.md";
+    private static final String DICH = "du_lieu/danh_muc_item.md";
 
     private static final Pattern INSERT = Pattern.compile(
             "INSERT INTO `data_item`[^V]*VALUES\\s*([\\s\\S]*?);");

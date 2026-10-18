@@ -548,16 +548,8 @@ public class ServerListScr : MyScreen
 
 	public void paintBg(MyGraphics g)
 	{
-		if (BannerParallax.bat())
-		{
-			// pokemon: nền banner parallax riêng cho màn chọn máy chủ / đăng nhập / tạo - chọn Pokémon
-			BannerParallax.ve(g);
-			return;
-		}
-		Canvas.resetTrans(g);
-		g.translate(-GameScr.cmx, -GameScr.cmy);
-		Tilemap.paintTile(g);
-		Tilemap.paintTileTop(g);
+		// pokemon: nền banner parallax riêng cho màn chọn máy chủ / đăng nhập / tạo - chọn Pokémon
+		BannerParallax.ve(g);
 	}
 
 	public override void paint(MyGraphics g)

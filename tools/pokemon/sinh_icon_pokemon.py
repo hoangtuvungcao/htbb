@@ -13,8 +13,8 @@ Ra (KHONG sua tay, chay lai tool):
                                          (thuoc 5500+, ngoc 6500+, thu 7500+, vat pham nhiem vu
                                          8000+, trai cay 8200+) -> n. DataGame.sendByteImg dung
                                          bang nay khi bat sv.che_do_pokemon.
-  docs/pokemon/bang_icon.csv             bang doi chieu n -> nguon -> dung cho
-  docs/pokemon/xem_truoc_icon.png        anh xem truoc: cu | moi cho moi cho dung (--xem-truoc)
+  du_lieu/bang_icon.csv             bang doi chieu n -> nguon -> dung cho
+  du_lieu/xem_truoc_icon.png        anh xem truoc: cu | moi cho moi cho dung (--xem-truoc)
 
 Vi sao dai rieng ma khong ghi de map/icon/<id>.png: icon cu dung chung giua nhieu vat pham,
 nIconItem = 866 bi test cu (KiemSkinThuCuoi) khoa cung, va khi tat che do Pokemon thi cac dai
@@ -34,7 +34,7 @@ Moi dong ICON = (nguon, [dung cho...]).
             xanh             trai chua chin (pha xanh nhat)
             treo             trai treo tren cay: dem 16x26, ve cuong (anh trai cay 8200+)
   dung cho:
-          "type:N"           moi trang bi type N trong docs/pokemon/bang_vat_pham.csv
+          "type:N"           moi trang bi type N trong du_lieu/bang_vat_pham.csv
           "item:A,B-C"       data_item id (chay TRUOC cac luat xs:)
           "xs:N"             moi data_item dang co xstart = N (icon goc cu N)
           "potion:K" "gem:K" "thu:K" "nv:K" "trai:K"
@@ -63,9 +63,9 @@ GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))
 RA_ANH = os.path.join(GOC, "server", "map", "icon_pokemon")
 RA_SQL = os.path.join(GOC, "sql", "pokemon_icon_vat_pham.sql")
 RA_JAVA = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "IconPokemonBang.java")
-RA_CSV = os.path.join(GOC, "docs", "pokemon", "bang_icon.csv")
-RA_XEM = os.path.join(GOC, "docs", "pokemon", "xem_truoc_icon.png")
-BANG_VP = os.path.join(GOC, "docs", "pokemon", "bang_vat_pham.csv")
+RA_CSV = os.path.join(GOC, "du_lieu", "bang_icon.csv")
+RA_XEM = os.path.join(GOC, "du_lieu", "xem_truoc_icon.png")
+BANG_VP = os.path.join(GOC, "du_lieu", "bang_vat_pham.csv")
 TAI = os.path.join(GOC, "tools", "pokemon", "pmd_raw_icon")
 NGUON_ITEM = "https://raw.githubusercontent.com/PMDCollab/RawAsset/master/Item/%s.None.png"
 NGUON_CHAN_DUNG = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/portrait/%s/Normal.png"
@@ -428,7 +428,7 @@ ICON = [
     ("Berry_Petaya+xanh+treo", ["trai:11"]), ("Berry_Petaya+treo", ["trai:12"]),     # Qua cau vong
     ("Fruit_Brown+xam+toi+treo", ["trai:13"]),                                       # Trai heo
 
-    # ---- noi dung moi (tools/pokemon/sinh_noi_dung.py, docs/pokemon/NOI_DUNG_DAY_DU.md) ----
+    # ---- noi dung moi (tools/pokemon/sinh_noi_dung.py, docs/thiet-ke-game.md) ----
     # nguyen lieu nang cap, Huy chuong Gym, hop dot kich, vat pham su kien (data_item 1034..1061)
     ("Piece_Yellow", ["nd:bui_sao"]), ("Piece_Red", ["nd:manh_sao"]), ("Ore_Purple", ["nd:manh_thien_thach"]),
     ("Scale_Green", ["nd:vay_rong"]), ("Crystal_Yellow", ["nd:manh_tinh_hoa"]), ("Crown_Yellow", ["nd:huy_chuong_gym"]),

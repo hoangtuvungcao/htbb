@@ -29,8 +29,6 @@ final class DanhMucSinh {
 
     static DinhNghiaKhoa[] tatCa() {
         return new DinhNghiaKhoa[]{
-            new DinhNghiaKhoa("sv.che_do_pokemon", "che_do", "co", "0", false, "cau_hinh")
-                    .nhan("Chế độ Pokémon", "1 = Huyền Thoại Bảo Bối (người chơi là Pokémon). Đổi schema/chữ lúc khởi động."),
             new DinhNghiaKhoa("sv.lau_dai", "che_do", "co", "0", false, "cau_hinh")
                     .nhan("Thiết kế dài hạn", "1 = bật GD2 (bảng EXP mới, chuyển EXP Pokémon một lần có sao lưu). Bật/tắt chạy chuyển đổi EXP lúc khởi động."),
             new DinhNghiaKhoa("sv.he_sinh_thai", "che_do", "co", "0", false, "cau_hinh")
@@ -108,10 +106,10 @@ final class DanhMucSinh {
             new DinhNghiaKhoa("roi.da_nang_cap.phan_nghin", "kinh_te", "so", "15", true, "cau_hinh")
                     .nhan("Tỉ lệ rơi đá nâng cấp (‰)", "Phần nghìn mỗi quái khi lệch cấp ≤ 5.")
                     .khoang(0L, 200L),
-            new DinhNghiaKhoa("exp.nang_luong_phut", "kinh_te", "so", "180", true, "cau_hinh")
+            new DinhNghiaKhoa("exp.nang_luong_phut", "kinh_te", "so", "90", true, "cau_hinh")
                     .nhan("Phút năng lượng 100% / ngày", "Số phút EXP/rơi đầy đủ mỗi ngày.")
                     .khoang(0L, 1440L),
-            new DinhNghiaKhoa("exp.nang_luong_tich_phut", "kinh_te", "so", "360", true, "cau_hinh")
+            new DinhNghiaKhoa("exp.nang_luong_tich_phut", "kinh_te", "so", "180", true, "cau_hinh")
                     .nhan("Năng lượng tích luỹ tối đa (phút)", "Phút năng lượng dồn tối đa khi không chơi.")
                     .khoang(0L, 4320L),
             new DinhNghiaKhoa("thue.cho", "kinh_te", "so", "6", true, "cau_hinh")
@@ -311,6 +309,16 @@ final class DanhMucSinh {
             new DinhNghiaKhoa("sv.reloginWaitSec", "chong_spam", "so", "0", true, "cau_hinh")
                     .nhan("Chờ đăng nhập lại (giây)", "")
                     .khoang(0L, 600L),
+            new DinhNghiaKhoa("sv.proxyTinCay", "chong_spam", "ds_chuoi", "127.0.0.1,::1", true, "cau_hinh")
+                    .nhan("Proxy tin cậy (miễn giới hạn theo IP)", "IP hoặc dải CIDR (IPv4/IPv6) của WAF / Nova agent, cách nhau dấu phẩy. Kết nối từ đây không bị tính sv.maxConnPerIp, sv.connRate*, chặn sv.dosBanSec, chờ đăng nhập theo IP, hạn mức đăng ký theo IP. Giới hạn theo tài khoản / kết nối / thiết bị vẫn giữ.")
+                    .mau("^[0-9A-Fa-f:.]{2,45}(/[0-9]{1,3})?$")
+                    .doDai(255),
+            new DinhNghiaKhoa("sv.dangNhapIpNguong", "chong_spam", "so", "10", true, "cau_hinh")
+                    .nhan("Ngưỡng đăng nhập dồn dập / IP", "Số lần đăng nhập trong ~1 giây từ một IP (không phải proxy tin cậy) thì bắt đầu chờ + ghi nghi vấn. 0 = tắt.")
+                    .khoang(0L, 100000L),
+            new DinhNghiaKhoa("sv.dangNhapIpChoMs", "chong_spam", "so", "3000", true, "cau_hinh")
+                    .nhan("Chờ khi đăng nhập dồn dập (ms)", "Thời gian chờ mỗi lần đăng nhập khi vượt sv.dangNhapIpNguong. 0 = không chờ.")
+                    .khoang(0L, 10000L),
             new DinhNghiaKhoa("sv.tranGoiThuong", "chong_spam", "so", "300", true, "cau_hinh")
                     .nhan("Trần gói tin thường / cửa sổ", "")
                     .khoang(10L, 100000L),

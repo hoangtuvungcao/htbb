@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * "Thành viên Huyền Thoại Bảo Bối" — luật THUẦN (docs/pokemon/THANH_VIEN.md). Không CSDL, không Char:
+ * "Thành viên Huyền Thoại Bảo Bối" — luật THUẦN (docs/van-hanh.md). Không CSDL, không Char:
  * test/KiemThanhVien.java gọi thẳng. Phần nối game ở {@link ThanhVien}, web ở HTBB-Web
  * server/utils/thanhVienThuan.ts (bản sao các hằng số — test đối chiếu).
  *

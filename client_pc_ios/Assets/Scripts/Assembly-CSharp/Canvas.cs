@@ -898,12 +898,9 @@ public class Canvas
 				resetTrans(g);
 				g.setColor(0);
 				g.fillRect(0, 0, w, h);
-				if (BannerParallax.bat())
-				{
-					// màn tải: cùng key art (không có 5 khởi đầu), logo giữa
-					BannerParallax.ve(g, false);
-					resetTrans(g);
-				}
+				// màn tải: cùng key art (không có 5 khởi đầu), logo giữa
+				BannerParallax.ve(g, false);
+				resetTrans(g);
 				if (!ThuongHieu.veTieuDe(g, w / 2, h / 2 - 30))
 				{
 					g.drawImage(imgLogo, w / 2, h / 2, 3);

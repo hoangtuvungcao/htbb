@@ -1,6 +1,5 @@
 package real;
 
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.DaTienHoa;
 import com.htbb.pokemon.GoiPokemon;
 import com.htbb.pokemon.PetPokemon;
@@ -15,11 +14,8 @@ import java.util.Vector;
 
 /**
  * Phan "Char/Message" cua che do Pokemon (viec S2, S3, S5, I2 va lenh -90/-91/-92
- * trong docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Logic thuan (bang loai, khac he, ghi
+ * trong docs/kien-truc.md). Logic thuan (bang loai, khac he, ghi
  * byte) nam o com.htbb.pokemon va co test; lop nay chi noi chung vao Char/Session.
- *
- * MOI ham o day KHONG lam gi khi CheDoPokemon.bat() == false - tat co la dung hanh
- * vi goc cu.
  */
 public final class TienHoaPokemon {
 
@@ -35,7 +31,7 @@ public final class TienHoaPokemon {
      * ra dung dang. Nhanh Eevee do nguoi choi chon nen dangTheoCap giu nguyen.
      */
     public static void napLoai(final Char p) {
-        if (!CheDoPokemon.bat() || p == null) {
+        if (p == null) {
             return;
         }
         final int cap = p.lvDetail != null ? p.lvDetail.lv : 1;
@@ -51,7 +47,7 @@ public final class TienHoaPokemon {
 
     /** he/he2 cua nhan vat = he cua loai dang mang. */
     public static void ganHeTheoLoai(final Char p) {
-        if (!CheDoPokemon.bat() || p == null || p.pokeDex <= 0) {
+        if (p == null || p.pokeDex <= 0) {
             return;
         }
         p.he = (byte) LoaiPokemon.he1(p.pokeDex);
@@ -65,7 +61,7 @@ public final class TienHoaPokemon {
      * moi du moc (bang 5 ke hoach). Tra ve true neu da tien hoa.
      */
     public static boolean kiemTienHoaTheoCap(final Char p) {
-        if (!CheDoPokemon.bat() || p == null || p.pokeDex <= 0 || p.lvDetail == null) {
+        if (p == null || p.pokeDex <= 0 || p.lvDetail == null) {
             return false;
         }
         if (VatPhamDungLauDai.chanTienHoa(p)) {
@@ -85,7 +81,7 @@ public final class TienHoaPokemon {
      * kem cau chat "... da tien hoa thanh ...". Luu xuong CSDL o lan saveChar ke tiep.
      */
     public static void tienHoa(final Char p, final int dexMoi) {
-        if (!CheDoPokemon.bat() || p == null || dexMoi <= 0 || dexMoi == p.pokeDex) {
+        if (p == null || dexMoi <= 0 || dexMoi == p.pokeDex) {
             return;
         }
         final int dexCu = p.pokeDex;
@@ -116,10 +112,10 @@ public final class TienHoaPokemon {
     /**
      * Map.doUseItem: dung 1 trong 8 da tien hoa Eevee (viec I2). Tra ve true neu
      * {@code item} la da va da xu ly (ke ca bao loi) - noi goi phai return ngay.
-     * Tat che do -> false, de vat pham di tiep duong cu nhu moi item type 28 khac.
+     *
      */
     public static boolean dungDaTienHoa(final Char p, final Item item) {
-        if (!CheDoPokemon.bat() || p == null || item == null || item.getTemplate() == null) {
+        if (p == null || item == null || item.getTemplate() == null) {
             return false;
         }
         final int idItem = item.getTemplate().id;
@@ -154,7 +150,7 @@ public final class TienHoaPokemon {
      * de goi 5 cua bot cung kem -90.
      */
     public static void ganLoaiBot(final Vector<Char> bots) {
-        if (!CheDoPokemon.bat() || bots == null) {
+        if (bots == null) {
             return;
         }
         for (int i = 0; i < bots.size(); i++) {
@@ -167,9 +163,9 @@ public final class TienHoaPokemon {
 
     // ------------------------------------------------------------------ goi tin
 
-    /** -90 POKE_THAN cho nhan vat {@code ch}; null neu tat che do hoac chua co loai. */
+    /** -90 POKE_THAN cho nhan vat {@code ch}; null neu chua co loai. */
     public static Message taoPokeThan(final Char ch) {
-        if (!CheDoPokemon.bat() || ch == null || ch.pokeDex <= 0) {
+        if (ch == null || ch.pokeDex <= 0) {
             return null;
         }
         final Message m = taoPokeThan(ch.id, ch.pokeDex, ch.pokeShiny);
@@ -218,7 +214,7 @@ public final class TienHoaPokemon {
      * nen moi duong doi pet da gui lai lenh 3 (deo/doi pet, het han, het hoa hinh) tu cap nhat.
      */
     public static Message taoPokePet(final Char ch) {
-        if (!CheDoPokemon.bat() || ch == null) {
+        if (ch == null) {
             return null;
         }
         final int id = idItemPet(ch);
@@ -238,7 +234,7 @@ public final class TienHoaPokemon {
      * kemTheo cua lenh 3, nguoi xung quanh thi chua.
      */
     public static void guiPokePetChoNguoiGan(final Char p) {
-        if (!CheDoPokemon.bat() || p == null) {
+        if (p == null) {
             return;
         }
         final Message m = taoPokePet(p);
@@ -253,7 +249,7 @@ public final class TienHoaPokemon {
      * tu cap nhat ma khong can them cho goi.
      */
     public static Message taoPokeCuoi(final Char ch) {
-        if (!CheDoPokemon.bat() || ch == null) {
+        if (ch == null) {
             return null;
         }
         final data.Animal a = ch.animalRide;
@@ -273,7 +269,7 @@ public final class TienHoaPokemon {
      * on dinh (cung bot luon ra cung Pokemon).
      */
     public static Message taoPokeThanNpc(final Char ch) {
-        if (!CheDoPokemon.bat() || ch == null) {
+        if (ch == null) {
             return null;
         }
         final int dex = ch.pokeDex > 0 ? ch.pokeDex : GoiPokemon.dexBot(ch.id);
@@ -291,7 +287,7 @@ public final class TienHoaPokemon {
     }
 
     public static Message taoPokeTienHoa(final Char ch, final int dexCu, final int dexMoi) {
-        if (!CheDoPokemon.bat() || ch == null) {
+        if (ch == null) {
             return null;
         }
         final Message m = new Message(GoiPokemon.POKE_TIEN_HOA);
@@ -305,7 +301,7 @@ public final class TienHoaPokemon {
 
     /** -91 POKE_QUAI tu Map.monsterTemplates (chi template co dex > 0); null neu tat. */
     public static Message taoPokeQuai() {
-        if (!CheDoPokemon.bat() || Map.monsterTemplates == null) {
+        if (Map.monsterTemplates == null) {
             return null;
         }
         final List<MonsterTemplate> ds = new ArrayList<>();

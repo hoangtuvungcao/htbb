@@ -10,7 +10,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 /**
- * Móc client cho hệ sinh thái server (HTBB docs/pokemon/HE_SINH_THAI.md mục 11). Mọi thứ chỉ làm
+ * Móc client cho hệ sinh thái server (HTBB docs/thiet-ke-game.md). Mọi thứ chỉ làm
  * đẹp; server không gửi gì mới thì client chạy y như cũ.
  *  - Ngày / đêm: lớp phủ xanh đêm theo giờ máy (cùng múi giờ server VN; 19:00–05:59 là đêm, chạng
  *    vạng 18h và rạng sáng 6h phủ nhạt). Ảnh phủ là ô 32x32 alpha lát kín màn (vài KB). Tắt ở bản NHẸ.

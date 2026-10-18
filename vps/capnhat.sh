@@ -20,12 +20,12 @@ DIR=/opt/htbb
 NEW="$DIR/server/HTBB_NEW.jar"
 CUR="$DIR/server/htbb-server.jar"
 BAK="$DIR/server/htbb-server_backup_truoc_capnhat.jar"
-SV=htbb-game; systemctl cat htbb-game >/dev/null 2>&1 || SV=kpah-game  # TUONG-THICH-TEN-CU: bo sau 1 ban
+SV=htbb-game
 
 if [ ! -f "$NEW" ]; then
     echo "[LOI] Khong thay $NEW"
     echo "      Upload jar moi tu may nha truoc:"
-    echo "      scp HTBB_NEW.jar htbb@180.93.57.30:/opt/htbb/"
+    echo "      scp HTBB_NEW.jar root@<VPS>:/opt/htbb/server/"
     exit 1
 fi
 
@@ -65,4 +65,4 @@ systemctl --no-pager --lines=15 status "$SV"
 
 echo
 echo "== Cong 19129 phai dang LISTEN:"
-ss -lntp | grep 19129 || echo "   [CANH BAO] chua thay cong 19129 - xem log: tail -f /opt/htbb/log/game.out"
+ss -lntp | grep 19129 || echo "   [CANH BAO] chua thay cong 19129 - xem log: tail -f /opt/htbb/logs/game.out"

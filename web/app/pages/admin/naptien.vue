@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Nạp tiền (khu quản trị) — HTBB/docs/pokemon/NAP_TIEN.md. Đơn (xác nhận tay theo mã giao dịch,
+ * Nạp tiền (khu quản trị) — docs/van-hanh.md. Đơn (xác nhận tay theo mã giao dịch,
  * hoàn tiền / chargeback, cộng tay), đối soát, danh mục gói (CMS), cửa hàng lượng trong game,
  * nhật ký kiểm toán + webhook, đơn mốc cũ (chỉ xem). Ghi chỉ dành cho Siêu quản trị (vaiTro.ts).
  * Mọi thao tác ghi cả nap_nhat_ky lẫn nhật ký admin.
@@ -222,7 +222,7 @@ onMounted(() => {
       variant="solid"
       icon="i-lucide-octagon-alert"
       title="NẠP TIỀN ĐANG BẬT NHƯNG CHƯA XÁC NHẬN GIẤY PHÉP"
-      description="Asset PMDCollab là CC BY-NC 4.0 và Pokémon là IP của Nintendo/The Pokémon Company. Thu tiền khi chưa có giấy phép là vi phạm. Tắt HTBB_NAP_BAT ngay, hoặc khi đã có giấy phép bằng văn bản thì đặt NAP_DA_CO_GIAY_PHEP=1 (HTBB/docs/pokemon/NAP_TIEN.md mục 9)."
+      description="Asset PMDCollab là CC BY-NC 4.0 và Pokémon là IP của Nintendo/The Pokémon Company. Thu tiền khi chưa có giấy phép là vi phạm. Tắt HTBB_NAP_BAT ngay, hoặc khi đã có giấy phép bằng văn bản thì đặt NAP_DA_CO_GIAY_PHEP=1 (docs/van-hanh.md)."
     />
     <UAlert
       v-if="tq?.canhBao.yeuCauBat && tq.canhBao.lyDoTat.length"

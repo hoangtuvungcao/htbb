@@ -3,18 +3,19 @@ name: Build va deploy website
 # Moi push/PR: cai dat, build Nuxt.
 # Push len main: them buoc deploy len VPS:
 #   1. Gui BI MAT (GitHub Secrets) + BIEN (GitHub Variables) qua STDIN cua ssh ->
-#      VPS ghi thanh /etc/htbb-web.env (systemd nap bang EnvironmentFile).
+#      VPS gop vao /etc/htbb/htbb.env (systemd nap bang EnvironmentFile).
 #   2. Gui ban build (.output nen tar.gz) qua STDIN -> VPS giai nen vao
-#      /opt/htbb-web/releases/<sha>, tro "current" sang do, restart htbb-web.
+#      /opt/htbb/web/releases/<sha>, tro symlink /opt/htbb/web/.output sang do, restart htbb-web.
 #
-# Repo nay CHI deploy len VPS 180.93.127.26 (VPS cu 180.93.57.30 khong con nhan web tu day).
+# Dia chi VPS lay tu bien repo HTBB_VPS_HOST (Settings > Variables) - KHONG ghi IP vao git.
 # Moi bien moi truong HTBB_* deu lay tu GitHub Secrets/Variables va day sang VPS nay.
 #   - Secret/Variable DE TRONG thi VPS GIU NGUYEN gia tri dang co (khong xoa).
 #   - HTBB_DB_*: de TRONG neu muon web tu doc ket noi CSDL tu server.ini cua game
 #     (HTBB_SERVER_DIR) - dat sai (vd. gia tri cua VPS cu) la web dung sai CSDL.
 #
 # Khoa SSH rieng cho web (secret VPS_SSH_KEY_WEB_2), bi ep chay DUNG MOT lenh
-# (command="/opt/htbb-web/deploy/deploy-web.sh" trong authorized_keys). Lenh ssh
+# (command="/usr/local/sbin/htbb-deploy-web.sh" trong authorized_keys, cai bang
+# web/deploy/cai-dat-vps.sh). Lenh ssh
 # chi chon "viec" (nhan-env / nhan-build) qua SSH_ORIGINAL_COMMAND, script tren VPS
 # chi nhan dung hai tu do. Xem deploy/deploy-web.sh.
 #
@@ -73,13 +74,13 @@ jobs:
       matrix:
         include:
           - ten: vps-moi
-            host: 180.93.127.26
+            host_var: HTBB_VPS_HOST
             khoa: VPS_SSH_KEY_WEB_2
             gui_env: true
             bat_buoc: true
     name: deploy (${{ matrix.ten }})
     env:
-      VPS_HOST: ${{ matrix.host }}
+      VPS_HOST: ${{ vars[matrix.host_var] }}
     steps:
       - name: Cai khoa SSH
         id: khoa
@@ -88,6 +89,10 @@ jobs:
           TEN_KHOA: ${{ matrix.khoa }}
           BAT_BUOC: ${{ matrix.bat_buoc }}
         run: |
+          if [ -z "$VPS_HOST" ]; then
+            echo "::error::Chua co bien repo HTBB_VPS_HOST (Settings > Secrets and variables > Actions > Variables)."
+            exit 1
+          fi
           if [ -z "$KHOA" ]; then
             if [ "$BAT_BUOC" = "true" ]; then
               echo "::error::Chua co secret $TEN_KHOA. Xem README muc 'Deploy len VPS'."

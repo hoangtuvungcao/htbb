@@ -1,6 +1,6 @@
 /**
  * Đọc file ghi công sprite (public/pokemon/GHI_CONG.txt, chép từ
- * HTBB/ClientUnity/Assets/Resources/poke/GHI_CONG.txt — do DongGoiSprite sinh ra).
+ * client_pc_ios/Assets/Resources/poke/GHI_CONG.txt — do DongGoiSprite sinh ra).
  *
  * Định dạng:
  *   vài dòng đầu = lời dẫn

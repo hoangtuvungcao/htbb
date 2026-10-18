@@ -29,7 +29,7 @@ const capHoenn = Math.min(...CAM_NANG_ND.cotTruyen.chuong.filter(c => c.vung ===
 const VUNG = [
   { ten: 'Kanto', mo: `Vùng khởi đầu: đồng cỏ Pallet, Rừng Viridian, Núi Mặt Trăng, tàu S.S. Anne và đảo lửa Cinnabar. ${capVung('Kanto')}` },
   { ten: 'Johto', mo: `Vùng cổ kính: tháp chuông Ecruteak, Rừng Ilex, Hồ Phẫn Nộ, làng rồng Blackthorn và Đường Victory dẫn tới Núi Silver. ${capVung('Johto')}` },
-  { ten: 'Hoenn', mo: `Vùng biển nhiệt đới mở trong năm thứ hai (${POKEDEX.hoenn.soBanDo} bản đồ): rừng Petalburg, núi lửa Chimney, Thác Meteor, Tháp Trời. Vào qua cổng bắc Cinnabar (cần cấp ${POKEDEX.hoenn.capVao}+); cốt truyện Hoenn từ cấp ${capHoenn}.` },
+  { ten: 'Hoenn', mo: `Vùng biển nhiệt đới mở sau cốt truyện năm 1 (${POKEDEX.hoenn.soBanDo} bản đồ): rừng Petalburg, núi lửa Chimney, Thác Meteor, Tháp Trời. Vào qua cổng bắc Cinnabar (cần cấp ${POKEDEX.hoenn.capVao}+); cốt truyện Hoenn từ cấp ${capHoenn}.` },
 ]
 const thiTran = CAM_NANG.nhiemVu.phu
 const luyenCap = [...POKEDEX.map].sort((a, b) => a.capThap - b.capThap || a.id - b.id)

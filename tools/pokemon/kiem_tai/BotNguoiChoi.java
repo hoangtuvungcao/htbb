@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.*;
  *
  *   java -cp /tmp/bot -Ddb=htbb_db_xs -Dnoi=. -Dlog=<log server> -Dphut=60 -Dso=100 -Dra=bao_cao.md \
  *        BotNguoiChoi 127.0.0.1 19179 pb dieuphoi
- * Bao cao: docs/pokemon/BAO_CAO_CO_CHE_BOT.md (sinh tu -Dra + phan tich CSDL o cuoi).
+ * Bao cao: docs/kien-truc.md (sinh tu -Dra + phan tich CSDL o cuoi).
  */
 public class BotNguoiChoi {
 

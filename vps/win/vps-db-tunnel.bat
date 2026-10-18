@@ -1,4 +1,6 @@
 @echo off
+REM May VPS: dat bien HTBB_VPS (vd. setx HTBB_VPS root@ten-may) hoac khai Host htbb-vps trong %USERPROFILE%\.ssh\config
+if not defined HTBB_VPS set "HTBB_VPS=root@htbb-vps"
 REM ============================================================
 REM  Mo duong ham SSH de xem DB cua VPS bang cong cu tren Windows
 REM  (HeidiSQL / MySQL Workbench / DBeaver / mysql.exe cua XAMPP)
@@ -26,5 +28,5 @@ echo Ket noi bang: host 127.0.0.1 / port 3307 / user htbb
 echo.
 echo GIU CUA SO NAY MO. Ctrl+C de dong duong ham.
 echo.
-ssh -N -L 3307:127.0.0.1:3306 root@180.93.57.30
+ssh -N -L 3307:127.0.0.1:3306 %HTBB_VPS%
 pause

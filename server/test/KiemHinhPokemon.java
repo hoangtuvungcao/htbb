@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 import com.htbb.pokemon.ThuongHieu;
 
 /**
- * Hinh con sot + thuong hieu (viec G7.B va G7.E trong docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 15).
+ * Hinh con sot + thuong hieu (viec G7.B va G7.E trong docs/kien-truc.md).
  * Doi chieu bang CSV (nguon cho nguoi doc + tools/pokemon/tai_sprite_pmd.py) voi bang viet cung
  * trong client va voi file da dong goi trong Resources/poke/:
  *  - B1 bang_vat_the.csv  <-> VatThePokemon.cs (QUAI, NPC) <-> vt_*.bytes; du 16 vat_the cua bang_quai.csv
@@ -29,8 +29,8 @@ import com.htbb.pokemon.ThuongHieu;
  */
 public final class KiemHinhPokemon {
 
-    private static final String POKE = "../client_pc_ios/ClientUnity/Assets/Resources/poke/";
-    private static final String GAME = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/";
+    private static final String POKE = "../client_pc_ios/Assets/Resources/poke/";
+    private static final String GAME = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/";
 
     public static void chay() {
         Kiem.nhom("Hinh con sot + thuong hieu (G7.B/E: vat_the, NPC su kien, pet cu, ten game)");
@@ -43,8 +43,8 @@ public final class KiemHinhPokemon {
     // ------------------------------------------------------------------ B1
 
     private static void kiemVatThe() {
-        final List<String[]> quai = csv("../docs/pokemon/bang_quai.csv");
-        final List<String[]> vt = csv("../docs/pokemon/bang_vat_the.csv");
+        final List<String[]> quai = csv("../du_lieu/bang_quai.csv");
+        final List<String[]> vt = csv("../du_lieu/bang_vat_the.csv");
         Kiem.dung("co bang_quai.csv va bang_vat_the.csv", quai != null && vt != null);
         if (quai == null || vt == null) {
             return;
@@ -87,8 +87,8 @@ public final class KiemHinhPokemon {
     // ------------------------------------------------------------------ B2
 
     private static void kiemNpcSuKien() {
-        final List<String[]> bang = csv("../docs/pokemon/bang_npc_su_kien.csv");
-        final List<String[]> vt = csv("../docs/pokemon/bang_vat_the.csv");
+        final List<String[]> bang = csv("../du_lieu/bang_npc_su_kien.csv");
+        final List<String[]> vt = csv("../du_lieu/bang_vat_the.csv");
         final String cs = docChuoi(GAME + "Npc_Server.cs");
         Kiem.dung("co bang_npc_su_kien.csv va Npc_Server.cs", bang != null && cs != null && vt != null);
         if (bang == null || cs == null || vt == null) {
@@ -153,7 +153,7 @@ public final class KiemHinhPokemon {
     // ------------------------------------------------------------------ B3
 
     private static void kiemPetCu() {
-        final List<String[]> bang = csv("../docs/pokemon/bang_pet_cu.csv");
+        final List<String[]> bang = csv("../du_lieu/bang_pet_cu.csv");
         final String cs = docChuoi(GAME + "AnimalMove.cs");
         final String map = docChuoi("src/real/Map.java");
         Kiem.dung("co bang_pet_cu.csv, AnimalMove.cs, Map.java", bang != null && cs != null && map != null);
@@ -188,16 +188,14 @@ public final class KiemHinhPokemon {
             final Matcher m = Pattern.compile("const string TEN_GAME = \"([^\"]*)\"").matcher(cs);
             Kiem.bang("TEN_GAME client = server", ThuongHieu.TEN_GAME, m.find() ? m.group(1) : null);
         }
-        Kiem.bang("tenGame(true)", ThuongHieu.TEN_GAME, ThuongHieu.tenGame(true));
-        Kiem.bang("tenGame(false)", ThuongHieu.TEN_GAME_CU, ThuongHieu.tenGame(false));
-        Kiem.dung("ten game moi khong rong va khac ten cu", !ThuongHieu.TEN_GAME.trim().isEmpty()
-                && !ThuongHieu.TEN_GAME.equals(ThuongHieu.TEN_GAME_CU));
+        Kiem.bang("tenGame()", ThuongHieu.TEN_GAME, ThuongHieu.tenGame());
+        Kiem.dung("ten game khong rong", !ThuongHieu.TEN_GAME.trim().isEmpty());
         for (final String f : new String[] {"ServerListScr.cs", "LoginScr.cs", "Canvas.cs"}) {
             final String s = docChuoi(GAME + f);
             Kiem.dung(f + " ve tieu de ThuongHieu", s != null && s.contains("ThuongHieu.veTieuDe("));
         }
-        final String xd = docChuoi("../client_pc_ios/ClientUnity/Assets/Editor/XayDung.cs");
-        Kiem.dung("XayDung.cs lay productName tu ThuongHieu", xd != null && xd.contains("ThuongHieu.tenSanPham()"));
+        final String xd = docChuoi("../client_pc_ios/Assets/Editor/BuildCli.cs");
+        Kiem.dung("BuildCli.cs lay productName tu ThuongHieu", xd != null && xd.contains("ThuongHieu.tenSanPham()"));
     }
 
     // ------------------------------------------------------------------ tien ich

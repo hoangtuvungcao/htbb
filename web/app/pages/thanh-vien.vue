@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Thành viên Huyền Thoại Bảo Bối (HTBB/docs/pokemon/THANH_VIEN.md). Danh sách quyền lợi sinh từ cấu hình
+ * Thành viên Huyền Thoại Bảo Bối (docs/van-hanh.md). Danh sách quyền lợi sinh từ cấu hình
  * admin (/api/thanh-vien/thong-tin). Mua: đơn THANH_VIEN qua luồng nạp chung (VietQR + SePay), cấp ngay khi
  * tiền vào, theo TÀI KHOẢN (mọi nhân vật). Không tăng sức mạnh, không cho tiền tệ trong game.
  */

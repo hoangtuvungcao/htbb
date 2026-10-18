@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Sinh danh muc cau hinh trung tam tu tools/cauhinh/danh_muc.json (NGUON DUY NHAT).
 
-Ra 3 tep (KHONG sua tay, chay lai script nay sau khi sua danh_muc.json):
-  1. src/com/htbb/cauhinh/DanhMucSinh.java          - may chu game (kiem kieu/khoang, ap dung ngay/khoi dong lai)
-  2. sql/pokemon_cau_hinh_trung_tam.sql              - bang + danh muc (idempotent, chay lai bao nhieu lan cung duoc)
-  3. ../HTBB-Web/shared/utils/cauHinhTrungTam.gen.ts - ban sao cho web (neu co thu muc HTBB-Web canh HTBB)
+Ra 4 tep (KHONG sua tay, chay lai script nay sau khi sua danh_muc.json):
+  1. server/src/com/htbb/cauhinh/DanhMucSinh.java - may chu game (kiem kieu/khoang, ap dung ngay/khoi dong lai)
+  2. sql/pokemon_cau_hinh_trung_tam.sql            - bang + danh muc (idempotent, chay lai bao nhieu lan cung duoc)
+  3. web/shared/utils/cauHinhTrungTam.gen.ts       - ban sao cho web
+  4. docs/cau-hinh.md                              - CHI phan bang giua hai dong danh dau MOC_DAU / MOC_CUOI;
+                                                     phan con lai cua tai lieu viet tay, script khong dung toi
 
-Chay o thu muc HTBB/:  python3 tools/cauhinh/sinh_cau_hinh.py
+Chay o goc monorepo:     python3 tools/cauhinh/sinh_cau_hinh.py
 Kiem dong bo (CI/test):  python3 tools/cauhinh/sinh_cau_hinh.py --kiem   (ma thoat 1 neu tep sinh lech)
 """
 import json
@@ -16,9 +18,12 @@ import sys
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 NGUON = os.path.join(GOC, 'tools', 'cauhinh', 'danh_muc.json')
-RA_JAVA = os.path.join(GOC, 'src', 'com', 'htbb', 'cauhinh', 'DanhMucSinh.java')
+RA_JAVA = os.path.join(GOC, 'server', 'src', 'com', 'htbb', 'cauhinh', 'DanhMucSinh.java')
 RA_SQL = os.path.join(GOC, 'sql', 'pokemon_cau_hinh_trung_tam.sql')
-RA_TS = os.path.join(os.path.dirname(GOC), 'HTBB-Web', 'shared', 'utils', 'cauHinhTrungTam.gen.ts')
+RA_TS = os.path.join(GOC, 'web', 'shared', 'utils', 'cauHinhTrungTam.gen.ts')
+RA_MD = os.path.join(GOC, 'docs', 'cau-hinh.md')
+MOC_DAU = '<!-- SINH TU tools/cauhinh/danh_muc.json: BAT DAU (khong sua tay, chay python3 tools/cauhinh/sinh_cau_hinh.py) -->'
+MOC_CUOI = '<!-- SINH TU tools/cauhinh/danh_muc.json: KET THUC -->'
 
 KIEU = {'co', 'so', 'chon', 'chuoi', 'ds_chuoi', 'ds_so', 'ngay', 'ngay_gio', 'nhip'}
 AP_DUNG = {'ngay', 'khoi_dong_lai'}
@@ -128,7 +133,7 @@ def sq(s):
 
 def sinh_sql(d):
     o = []
-    o.append('-- CAU HINH TRUNG TAM (docs/cau-hinh-trung-tam.md) - SINH TU tools/cauhinh/danh_muc.json boi')
+    o.append('-- CAU HINH TRUNG TAM (docs/cau-hinh.md) - SINH TU tools/cauhinh/danh_muc.json boi')
     o.append('-- tools/cauhinh/sinh_cau_hinh.py, KHONG SUA TAY. Idempotent: chay lai bao nhieu lan cung duoc.')
     o.append('-- KHONG ghi gia tri vao cau_hinh: thieu dong = may chu dung server.ini roi mac dinh (CSDL > ini > mac dinh).')
     o.append('-- May chu game cung tu tao cac bang nay luc khoi dong (com.htbb.cauhinh.CauHinhTrungTam).')
@@ -259,11 +264,87 @@ def sinh_ts(d):
     return '\n'.join(o) + '\n'
 
 
+TEN_KIEU = {'co': 'cờ 0/1', 'so': 'số', 'chon': 'lựa chọn', 'chuoi': 'chuỗi', 'ds_chuoi': 'danh sách chuỗi',
+            'ds_so': 'danh sách số', 'ngay': 'ngày', 'ngay_gio': 'ngày giờ', 'nhip': 'nhịp số/giây'}
+
+
+def o_md(s):
+    """Mot o bang markdown: bo xuong dong, thoat dau |."""
+    return ' '.join(str(s).split()).replace('|', '\\|')
+
+
+def sinh_md_bang(d):
+    """Phan bang cua docs/cau-hinh.md (giua MOC_DAU va MOC_CUOI)."""
+    o = [MOC_DAU, '']
+    o.append('Tổng cộng **%d khoá** trong **%d nhóm**. Cột *Áp dụng*: **ngay** = máy chủ nhận trong vài giây; '
+             '**khởi động lại** = chỉ đổi khi máy chủ khởi động lại. Cột *Ở*: máy chủ game, web hay cả hai.'
+             % (len(d['khoa']), len(d['nhom'])))
+    o.append('')
+    for n in d['nhom']:
+        ds = [k for k in d['khoa'] if k['nhom'] == n['ma']]
+        if not ds:
+            continue
+        o.append('### %s (`%s`)' % (n['ten'], n['ma']))
+        o.append('')
+        if n.get('moTa'):
+            o.append(o_md(n['moTa']))
+            o.append('')
+        o.append('| Khoá | Tên | Kiểu | Mặc định | Giới hạn | Áp dụng | Ở | Mô tả |')
+        o.append('|---|---|---|---|---|---|---|---|')
+        for k in ds:
+            gioi = []
+            if 'min' in k or 'max' in k:
+                gioi.append('%s..%s' % (k.get('min', ''), k.get('max', '')))
+            if k.get('soPhanTu'):
+                gioi.append('%d phần tử' % k['soPhanTu'])
+            if k.get('luaChon'):
+                gioi.append(', '.join('`%s`' % x[0] for x in k['luaChon']))
+            if k.get('doDai'):
+                gioi.append('≤ %d ký tự' % k['doDai'])
+            ghi = []
+            if k.get('bang', 'cau_hinh') != 'cau_hinh':
+                ghi.append('bảng `%s`' % k['bang'])
+            if k.get('khoaProd'):
+                ghi.append('máy thật chỉ nhận mặc định')
+            if k.get('chiDoc'):
+                ghi.append('chỉ đọc')
+            mo_ta = o_md(k.get('moTa', ''))
+            if ghi:
+                mo_ta = (mo_ta + ' (' + '; '.join(ghi) + ')').strip()
+            mac_dinh = k.get('macDinh', '')
+            o.append('| `%s` | %s | %s | %s | %s | %s | %s | %s |' % (
+                k['khoa'], o_md(k['ten']), TEN_KIEU.get(k['kieu'], k['kieu']),
+                ('`%s`' % o_md(mac_dinh)) if mac_dinh != '' else '*(trống)*',
+                o_md('; '.join(gioi)), 'ngay' if k.get('apDung', 'ngay') == 'ngay' else 'khởi động lại',
+                {'server': 'game', 'web': 'web', 'ca_hai': 'cả hai'}[k.get('dungO', 'server')], mo_ta))
+        o.append('')
+    o.append(MOC_CUOI)
+    return '\n'.join(o)
+
+
+def ghep_md(cu, d):
+    """Thay phan giua hai moc trong tai lieu viet tay. Thieu moc -> None."""
+    a = cu.find(MOC_DAU)
+    b = cu.find(MOC_CUOI)
+    if a < 0 or b < a:
+        return None
+    return cu[:a] + sinh_md_bang(d) + cu[b + len(MOC_CUOI):]
+
+
 def main():
+    if '-h' in sys.argv or '--help' in sys.argv:
+        print(__doc__)
+        return
     d = doc()
     ra = [(RA_JAVA, sinh_java(d)), (RA_SQL, sinh_sql(d))]
     if os.path.isdir(os.path.dirname(RA_TS)):
         ra.append((RA_TS, sinh_ts(d)))
+    if os.path.exists(RA_MD):
+        with open(RA_MD, encoding='utf-8') as f:
+            md = ghep_md(f.read(), d)
+        if md is None:
+            sys.exit('docs/cau-hinh.md thieu dong moc:\n  %s\n  %s' % (MOC_DAU, MOC_CUOI))
+        ra.append((RA_MD, md))
     kiem = '--kiem' in sys.argv
     lech = []
     for duong, nd in ra:
@@ -279,7 +360,7 @@ def main():
             os.makedirs(os.path.dirname(duong), exist_ok=True)
             with open(duong, 'w', encoding='utf-8') as f:
                 f.write(nd)
-            print('da ghi', os.path.relpath(duong, os.path.dirname(GOC)))
+            print('da ghi', os.path.relpath(duong, GOC))
     if lech:
         print('TEP SINH LECH voi danh_muc.json (chay python3 tools/cauhinh/sinh_cau_hinh.py):')
         for x in lech:

@@ -4,11 +4,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * Noi dung 3 lenh mang moi cua che do Pokemon (muc 7.3 KE_HOACH_CHUYEN_DOI.md).
+ * Noi dung 3 lenh mang moi cua che do Pokemon (muc 7.3 docs/kien-truc.md).
  * Big-endian bang DataOutputStream nhu moi goi khac cua game goc; client doc o
- * ClientUnity MessageHandler.onPokeThan/onPokeQuai/onPokeTienHoa.
+ * client_pc_ios MessageHandler.onPokeThan/onPokeQuai/onPokeTienHoa.
  *
- * So lenh -90/-91/-92: da grep src/ va ClientUnity/ - chua lenh nao dung lam so
+ * So lenh -90/-91/-92: da grep src/ va client Unity - chua lenh nao dung lam so
  * lenh. Cho nao trong src/ co -90/-91/-92 la id NPC (vd bot "doi thuong" -90),
  * khong cung khong gian so voi Message.command.
  *
@@ -29,7 +29,7 @@ public final class GoiPokemon {
 
     /**
      * -94 POKE_PET: i16 charId, i16 dexPet (0 = khong co pet / pet khong phai Pokemon), u8 shiny.
-     * Gui ngay sau moi -93 (chuoi -90 -> -93 -> -94). -94 da grep src/ va ClientUnity/: chua
+     * Gui ngay sau moi -93 (chuoi -90 -> -93 -> -94). -94 da grep src/ va client Unity: chua
      * dung lam so lenh (chi co -99 la id NPC o gan).
      */
     public static final int POKE_PET = -94;

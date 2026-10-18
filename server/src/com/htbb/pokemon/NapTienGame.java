@@ -14,7 +14,7 @@ import real.MessageCreator;
 import server.TeamServer;
 
 /**
- * Phan GAME cua nap tien (docs/pokemon/NAP_TIEN.md muc 5): vong quet cong don, thu hoi, tra xu cho,
+ * Phan GAME cua nap tien (docs/van-hanh.md): vong quet cong don, thu hoi, tra xu cho,
  * diem ve mua; menu "Cửa hàng & Nạp" o NPC Tong Quan (-10); cac moc noi (hook) cho file game.
  * Luat thuan o {@link NapTienLogic}, CSDL o {@link NapTienDb}. Moi thu chi chay khi {@link NapTien#bat()}.
  *

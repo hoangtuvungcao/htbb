@@ -1,5 +1,5 @@
 -- SINH RA boi tools/pokemon/sinh_noi_dung.py - KHONG SUA TAY.
--- Noi dung day du 1-2 nam (docs/pokemon/NOI_DUNG_DAY_DU.md). SQL portable (MySQL/MariaDB/NovaDB):
+-- Noi dung day du 1-2 nam (docs/thiet-ke-game.md). SQL portable (MySQL/MariaDB/NovaDB):
 -- chay lai nhieu lan van cho cung ket qua. Gom vao tools/pokemon/xuat_sql_day_du.sh (sau LAU_DAI).
 -- PHAN A: bang staging data_noi_dung_* (so lieu thiet ke; giai doan 2/3 doc). Khong doi bang dang chay.
 -- PHAN B: data_item id 1001..1199 (trang bi bac than thoai/toi thuong, ruy bang bac thap,
@@ -2257,7 +2257,7 @@ INSERT INTO `data_item` (`id`, `name`, `type`, `style`, `he`, `gender`, `level`,
 
 -- ====================== PHAN C: data_monster moi (nam 2) ======================
 -- Id lien tiep 139.. (client cap mang template theo so luong). 139..174 moc tren ban do
--- vung Hoenn (BanDoHoenn, map/pokemon_spawn/map43..282); 175..178 = boss dot kich nam 2.
+-- vung Hoenn (BanDoHoenn, map/map43..282); 175..178 = boss dot kich nam 2.
 DELETE FROM `data_monster` WHERE `id` >= 139 AND `id` <= 199;
 INSERT INTO `data_monster` (`id`, `name`, `style`, `he`, `level`, `maxhp`, `attack`, `defent`, `accurate`, `dodge`, `rcvxp`, `rcvgold`, `active`, `palate`, `spalate`, `isuse`, `move`, `speed`, `h`, `w`, `xcenter`, `ycenter`, `height`, `isnew`, `dex`, `shiny`, `he2`) VALUES
 (139, 'Poochyena', 118, 15, 80, 15960, 1712, 592, 690, 20, 24000, 1653, 1, 93, 0, 1, 1, 1, 20, 20, 8, 8, 20, 0, 261, 0, -1),

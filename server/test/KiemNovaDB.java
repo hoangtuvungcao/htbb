@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 /**
  * SQL trong src/ phai chay duoc tren CA MariaDB/MySQL (VPS) LAN NovaDB (cong MySQL tren
- * SQLite, xem docs/cau-hinh-server-ini.md muc 9 "Chay tren NovaDB").
+ * SQLite, xem docs/cau-hinh.md "Chay tren NovaDB").
  *
  * Soi chuoi SQL trong ma nguon de cac cu phap NovaDB khong ho tro - da go bo ngay
  * 16/10/2026 - khong quay lai:
@@ -94,7 +94,7 @@ public final class KiemNovaDB {
         Kiem.sai("Database khong tu ghep \"jdbc:mysql://\" cho ConnPool nua",
                 db.contains("new ConnPool(\"jdbc:mysql://"));
         Kiem.dung("docs ghi db.thamSoJdbc=useSSL=false cho NovaDB",
-                doc("../docs/cau-hinh-server-ini.md").contains("db.thamSoJdbc=useSSL=false"));
+                doc("../docs/cau-hinh.md").contains("db.thamSoJdbc=useSSL=false"));
 
         // ---- Phan biet hoa/thuong: NovaDB "=" phan biet, MariaDB utf8_general_ci thi khong ----
         final String nv = doc("src/data/DatabaseNhanVat.java");

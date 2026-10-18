@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Thư mục FileProvider chia sẻ file APK tự cập nhật (NqshCapNhat) cho trình cài đặt -->
-<paths>
-    <cache-path name="capnhat" path="capnhat/"/>
-</paths>

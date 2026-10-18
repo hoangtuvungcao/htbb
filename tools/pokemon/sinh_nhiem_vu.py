@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 """
-SINH NHIEM VU (docs/pokemon/NHIEM_VU_THIET_KE.md). Goi tu tools/pokemon/sinh_sql_lau_dai.py
+SINH NHIEM VU (du_lieu/NHIEM_VU_THIET_KE.md). Goi tu tools/pokemon/sinh_sql_lau_dai.py
 (ham sinh(s)), nen chay MOT lenh la ra het:
 
   python3 -I tools/pokemon/sinh_nhiem_vu.py      (= chay sinh_sql_lau_dai.py roi ghi them file rieng)
 
 Doc noi dung tu nv_chung.py, nv_cot_truyen.py, nv_phu.py, nv_lap_lai.py (chi la bang chu) va
-so lieu tu sinh_sql_lau_dai.py (ngan sach, EXP/xu moi gio) + docs/pokemon/noi_dung_*.csv
+so lieu tu sinh_sql_lau_dai.py (ngan sach, EXP/xu moi gio) + du_lieu/noi_dung_*.csv
 (trang bi, alpha, Gym, vat pham moi, su kien) + thiet_ke_map.csv / diem_co_dinh.csv.
 
 Ra (KHONG sua tay):
-  docs/pokemon/nhiem_vu_moi.csv          (qua sinh_sql_lau_dai: 30 cot cu + cot moi)
+  du_lieu/nhiem_vu_moi.csv          (qua sinh_sql_lau_dai: 30 cot cu + cot moi)
   sql/pokemon_lau_dai.sql                (qua sinh_sql_lau_dai: data_quest_lau_dai + data_quest_moi)
   sql/pokemon_nhiem_vu.sql               data_nhiem_vu_noi_dung (hoi thoai, goi y, nhanh, an...),
                                          data_nhiem_vu_kieu, data_vat_pham_nhiem_vu
-  docs/pokemon/nhiem_vu_nhip_do.csv      nhip do theo cap (so lua chon, gio noi dung)
-  docs/pokemon/web/nhiem_vu_tom_tat.json tom tat cho website (khong id, khong ngan sach, khong dap an)
-  docs/pokemon/NHIEM_VU_THIET_KE.md      cac bang giua <!-- SINH:... --> (phan con lai viet tay)
+  du_lieu/nhiem_vu_nhip_do.csv      nhip do theo cap (so lua chon, gio noi dung)
+  du_lieu/web/nhiem_vu_tom_tat.json tom tat cho website (khong id, khong ngan sach, khong dap an)
+  du_lieu/NHIEM_VU_THIET_KE.md      cac bang giua <!-- SINH:... --> (phan con lai viet tay)
 
 NGAN SACH: tong thuong moi nhom bang tong cu (721 dong truoc day) - them nhiem vu thi thuong
 moi dong nho lai; nhiem vu moi (su kien, huyen thoai, an) thuong bang danh hieu / trang tri /
@@ -41,7 +41,7 @@ import nv_phu as NP  # noqa: E402
 import nv_hoenn as NH  # noqa: E402
 import nv_lap_lai as NL  # noqa: E402
 
-D = os.path.join(GOC, "docs", "pokemon")
+D = os.path.join(GOC, "du_lieu")
 RA_SQL = os.path.join(GOC, "sql", "pokemon_nhiem_vu.sql")
 RA_NHIP = os.path.join(D, "nhiem_vu_nhip_do.csv")
 RA_WEB = os.path.join(D, "web", "nhiem_vu_tom_tat.json")
@@ -75,9 +75,9 @@ class Kho:
         for r in doc_csv("thiet_ke_map.csv", ";"):
             self.map_ids.add(int(r["id"]))
             self.map_loai[int(r["id"])] = r["loai"]
-        # id template quai -> so dex (docs/pokemon/bang_quai.csv = data_monster.dex)
+        # id template quai -> so dex (du_lieu/bang_quai.csv = data_monster.dex)
         self.dex = {int(r["id_quai"]): int(r["dex"]) for r in doc_csv("bang_quai.csv") if (r.get("dex") or "").isdigit()}
-        # Ho cau ca (docs/pokemon/diem_cau_ca.csv, he sinh thai): CHI cau o ho/ao.
+        # Ho cau ca (du_lieu/diem_cau_ca.csv, he sinh thai): CHI cau o ho/ao.
         self.ho = {}
         for r in doc_csv("diem_cau_ca.csv"):
             self.ho.setdefault(int(r["map_id"]), []).append((int(r["x"]), int(r["y"]), r["loai_ho"]))
@@ -107,12 +107,12 @@ class Kho:
         self.trang_tri = doc_csv("noi_dung_trang_tri.csv")
 
     def luoi_di_duoc(self, map_id):
-        """(w, h, [bool]) o di duoc - giong BanDoSinhThai.luoiDiDuoc (cMap_pokemon/<id> + <bo tile>.type)."""
+        """(w, h, [bool]) o di duoc - giong BanDoSinhThai.luoiDiDuoc (cMap/<id> + <bo tile>.type)."""
         if not hasattr(self, "_luoi"):
             self._luoi = {}
         if map_id in self._luoi:
             return self._luoi[map_id]
-        f = os.path.join(GOC, "server", "cMap_pokemon", str(map_id))
+        f = os.path.join(GOC, "server", "cMap", str(map_id))
         if not os.path.isfile(f):
             self._luoi[map_id] = None
             return None
@@ -120,7 +120,7 @@ class Kho:
         w, h = b[0], b[1]
         tile = b[2:2 + w * h]
         bo = "t" if map_id < 110 else ("t_thanh" if map_id > 200 else "t_hang")
-        ft = os.path.join(GOC, "server", "cMap_pokemon", bo + ".type")
+        ft = os.path.join(GOC, "server", "cMap", bo + ".type")
         kieu = open(ft, "rb").read() if os.path.isfile(ft) else None
         di = [t >= 254 or (kieu is not None and t < len(kieu) and (kieu[t] & 2) == 0) for t in tile]
         self._luoi[map_id] = (w, h, di)
@@ -358,7 +358,7 @@ class Sinh:
             dk = "thanh_vien_duoi_cap=20"
         if kieu == "dung_toa_do":
             dk = "ban_kinh_o=3"
-        # khop he sinh thai (docs/pokemon/HE_SINH_THAI.md)
+        # khop he sinh thai (docs/thiet-ke-game.md)
         if kieu == "quan_sat":
             dk = "dieu_kien_quan_sat=" + NC.DK_QUAN_SAT[ts.get("dk", "")]
         if kieu in ("cau_ca", "lam_vuon", "nau_an"):
@@ -1087,7 +1087,7 @@ LOP_DONG = ["Charmander", "Bulbasaur", "Eevee", "Squirtle", "Pichu"]   # charCla
 def item_gift(vat):
     """data_quest.itemgift = "id lop0,..,id lop4,cong" (InfoQuestTemplate.addGift doc idItemgift[charClass] va
     idItemgift[5]). Mot id -> cung id cho moi lop; vu khi (type 3..7, theo dong) -> vu khi cung bac cua tung
-    dong (docs/pokemon/noi_dung_trang_bi.csv). Truoc day ghi 1 so: lop > 0 loi AIOOBE, lop 0 mat cong."""
+    dong (du_lieu/noi_dung_trang_bi.csv). Truoc day ghi 1 so: lop > 0 loi AIOOBE, lop 0 mat cong."""
     global _VK_THEO_LOP
     if not vat or not str(vat).strip().isdigit():
         return "32000"
@@ -1155,7 +1155,7 @@ COT_SQL_ND = ["ma", "loai", "nhom", "nhan_vat", "map_id", "toa_do", "dieu_kien",
 def ghi_sql(dong):
     o = ["-- SINH RA boi tools/pokemon/sinh_nhiem_vu.py - KHONG SUA TAY.\n",
          "-- Noi dung nhiem vu (hoi thoai, goi y, nhanh lua chon, an, tham so muc tieu moi). Bang staging:\n",
-         "-- engine GD2 doc theo ma (= data_quest_lau_dai.ma). Xem docs/pokemon/NHIEM_VU_THIET_KE.md.\n",
+         "-- engine GD2 doc theo ma (= data_quest_lau_dai.ma). Xem du_lieu/NHIEM_VU_THIET_KE.md.\n",
          "SET NAMES utf8;\n\n", "DROP TABLE IF EXISTS `data_nhiem_vu_noi_dung`;\n",
          "CREATE TABLE `data_nhiem_vu_noi_dung` (\n"]
     for c in COT_SQL_ND:

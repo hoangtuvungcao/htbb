@@ -42,14 +42,14 @@ TOI_DA_LOT=${TOI_DA_LOT:-600}
 
 DIR=/opt/htbb
 INI=$DIR/server/server.ini
-LOG=$DIR/log/don-log.log
+LOG=$DIR/logs/don-log.log
 
 THU=0
 [ "${1:-}" = "--thu" ] && THU=1
 
 # ---------- Chuan bi ----------
 
-mkdir -p "$DIR/log"
+mkdir -p "$DIR/logs"
 exec > >(tee -a "$LOG") 2>&1
 
 echo
@@ -281,16 +281,17 @@ else
 fi
 
 # ---------- 5. Ban sao luu database qua han ----------
-# vps/backup_db.sh da tu xoa ban cu hon 7 ngay, nhung no chi lam duoc khi
+# vps/backup_db.sh da tu xoa ban cu hon 14 ngay, nhung no chi lam duoc khi
 # chinh no chay. Neu cron cua no bi go ra thi thu muc backup nam do mai.
+# PHAI cung so ngay voi GIU_NGAY trong backup_db.sh (14).
 
-if [ -d "$DIR/backup" ]; then
-    SO_BK=$(find "$DIR/backup" -name '*.sql.gz' -mtime +7 2>/dev/null | wc -l)
+if [ -d "$DIR/backups" ]; then
+    SO_BK=$(find "$DIR/backups" -maxdepth 1 -name '*.sql.gz' -mtime +14 2>/dev/null | wc -l)
     if [ "$SO_BK" -gt 0 ]; then
         if [ $THU = 1 ]; then
-            echo "  - SE XOA $SO_BK ban sao luu cu hon 7 ngay"
+            echo "  - SE XOA $SO_BK ban sao luu cu hon 14 ngay"
         else
-            find "$DIR/backup" -name '*.sql.gz' -mtime +7 -delete
+            find "$DIR/backups" -maxdepth 1 -name '*.sql.gz' -mtime +14 -delete
             echo "  - da xoa $SO_BK ban sao luu cu"
         fi
     fi

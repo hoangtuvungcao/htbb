@@ -265,7 +265,7 @@ public static class BuildCli
         PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.Unknown, new UnityEngine.Texture2D[] { icon }, IconKind.Any);
 
         var android = UnityEditor.Build.NamedBuildTarget.Android;
-        PlayerSettings.SetApplicationIdentifier(android, System.Environment.GetEnvironmentVariable("HTBB_APP_ID") ?? "com.nqsh.h2");
+        PlayerSettings.SetApplicationIdentifier(android, System.Environment.GetEnvironmentVariable("HTBB_APP_ID") ?? ThuongHieu.maUngDung());
         PlayerSettings.bundleVersion = System.Environment.GetEnvironmentVariable("HTBB_VERSION") ?? "1.0";
         PlayerSettings.Android.bundleVersionCode = int.Parse(System.Environment.GetEnvironmentVariable("HTBB_VERSION_CODE") ?? "1");
         PlayerSettings.SetScriptingBackend(android, ScriptingImplementation.IL2CPP);
@@ -305,7 +305,7 @@ public static class BuildCli
         PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.Unknown, new UnityEngine.Texture2D[] { icon }, IconKind.Any);
 
         var ios = UnityEditor.Build.NamedBuildTarget.iOS;
-        PlayerSettings.SetApplicationIdentifier(ios, System.Environment.GetEnvironmentVariable("HTBB_APP_ID") ?? "com.nqsh.h2");
+        PlayerSettings.SetApplicationIdentifier(ios, System.Environment.GetEnvironmentVariable("HTBB_APP_ID") ?? ThuongHieu.maUngDung());
         PlayerSettings.bundleVersion = System.Environment.GetEnvironmentVariable("HTBB_VERSION") ?? "1.0";
         PlayerSettings.iOS.buildNumber = System.Environment.GetEnvironmentVariable("HTBB_VERSION_CODE") ?? "1";
         PlayerSettings.SetScriptingBackend(ios, ScriptingImplementation.IL2CPP);

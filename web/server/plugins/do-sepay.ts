@@ -1,5 +1,5 @@
 /**
- * Job dò giao dịch bị LỠ webhook (SePay user API) — HTBB/docs/pokemon/NAP_TIEN.md mục SePay.
+ * Job dò giao dịch bị LỠ webhook (SePay user API) — docs/van-hanh.md.
  * Chỉ chạy khi nạp đang bật VÀ có HTBB_SEPAY_API_TOKEN. Mỗi HTBB_SEPAY_DO_PHUT phút (2–5, mặc định 3)
  * lấy giao dịch tiền vào HTBB_SEPAY_DO_GIO giờ gần nhất (mặc định 6) của đúng tài khoản cấu hình,
  * đưa từng cái qua napXuLyGiaoDich — cùng khoá UNIQUE(sepay, id) với webhook nên giao dịch đã nhận

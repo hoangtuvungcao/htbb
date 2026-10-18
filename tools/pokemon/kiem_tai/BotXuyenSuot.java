@@ -19,7 +19,7 @@ import java.util.regex.*;
  *   javac -encoding UTF-8 -d /tmp/bot tools/pokemon/kiem_tai/BotChucNang.java tools/pokemon/kiem_tai/KichBanDS*.java tools/pokemon/kiem_tai/BotXuyenSuot.java
  *   java -cp /tmp/bot -Ddb=htbb_db_xs -Dnoi=. -Dlog=<thu muc log server> -Dphut=120 -Ddong=0,1,2,3,4 \
  *        BotXuyenSuot 127.0.0.1 19179 xs [dieuphoi]
- * Ket qua: docs/pokemon/KIEM_THU_XUYEN_SUOT.md (-Dra=<tep markdown>).
+ * Ket qua: docs/kien-truc.md (-Dra=<tep markdown>).
  */
 public class BotXuyenSuot {
 
@@ -65,7 +65,7 @@ public class BotXuyenSuot {
     static Set<Integer> luoiQuai(int load) {
         Set<Integer> s = new TreeSet<>();
         try {
-            File f = new File(NOI, "server/map/pokemon_spawn/map" + load);
+            File f = new File(NOI, "server/map/map" + load);
             if (!f.isFile()) f = new File(NOI, "server/map/map" + load);
             if (!f.isFile()) return s;
             byte[] b = Files.readAllBytes(f.toPath());
@@ -86,7 +86,7 @@ public class BotXuyenSuot {
         return O_QUAI.computeIfAbsent(load, l -> {
             List<int[]> r = new ArrayList<>();
             try {
-                File f = new File(NOI, "server/map/pokemon_spawn/map" + l);
+                File f = new File(NOI, "server/map/map" + l);
                 if (!f.isFile()) f = new File(NOI, "server/map/map" + l);
                 if (!f.isFile()) return r;
                 byte[] b = Files.readAllBytes(f.toPath());

@@ -67,7 +67,7 @@ const LOAI_THUONG: Record<string, LoaiThuongDong> = {
   VKTBLV: [4, "VKTBLV:level:tinhLuyen:soNgay", "Bảo vật cầm tay CHỌN ĐÚNG BẬC — level PHẢI đúng 60, 70 hoặc 80 (giá trị khác thì server lặng lẽ không tạo gì cả); tinhLuyen 0-99 (0 = không); LUÔN max chỉ số (isMax cố định true). Đây là cách duy nhất tạo \"bảo vật cầm tay 8x max chỉ số\": level=80", "VKTBLV:80:0:0"],
   NLT: [4, "NLT:_:_:thoiHan", "Gậy Ánh Trăng", "NLT:_:_:0"],
   NLTMAX: [4, "NLTMAX:_:_:thoiHan", "Gậy Ánh Trăng max", "NLTMAX:_:_:0"],
-  TK: [4, "TK:id:_:thoiHan", "Bảo vật huyền thoại — id là id đồ cầm tay RIÊNG của từng lớp Pokémon, mã dùng chung nhiều lớp sẽ lỗi giữa chừng và mất phần thưởng phía sau (xem vps/sql-giftcode.md)", "TK:890:_:0"],
+  TK: [4, "TK:id:_:thoiHan", "Bảo vật huyền thoại — id là id đồ cầm tay RIÊNG của từng lớp Pokémon, mã dùng chung nhiều lớp sẽ lỗi giữa chừng và mất phần thưởng phía sau (xem docs/van-hanh.md, mục Giftcode)", "TK:890:_:0"],
   TKMAX: [4, "TKMAX:id:_:thoiHan", "Bảo vật huyền thoại max — cùng lưu ý id theo lớp như TK", "TKMAX:890:_:0"],
   TKF: [5, "TKF:id:soLuong:mau:khoa", "Bảo vật huyền thoại full — id 890/891/892", "TKF:890:1:0:0"],
   TKMAXF: [6, "TKMAXF:id:soLuong:soDong:he:khoa", "Bảo vật huyền thoại max full, số dòng 1–29, hệ -1..4", "TKMAXF:890:1:9:-1:0"],

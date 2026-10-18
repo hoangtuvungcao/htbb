@@ -97,7 +97,7 @@ public class MessageHandler extends Cmd_message implements IMessageHandler {
 
     @Override
     public void onMessage(Message msg) {
-        // mod: gói -88: server ký xác thực (KiemServer)
+        // mod: gói -100 Tự động đánh (TuDong)
         if (AutoGuard.goiGuard(msg)) {
             return;
         }

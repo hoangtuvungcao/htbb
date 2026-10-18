@@ -6,7 +6,7 @@ import io.Message;
 
 /**
  * Tao io.Message cho 5 goi -95..-99 (noi dung byte o com.htbb.pokemon.GoiLauDai, dac ta o
- * THIET_KE_LAU_DAI.md muc 4.6). NOI DUY NHAT trong src/ tao Message(-95..-99) (test kiem).
+ * docs/thiet-ke-game.md). NOI DUY NHAT trong src/ tao Message(-95..-99) (test kiem).
  * Chi goi khi LauDai.bat().
  */
 public final class GoiLauDaiGame {

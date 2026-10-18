@@ -22,9 +22,9 @@ import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 /**
- * Dong goi tai nguyen Pokemon cua ClientUnity (HTBB) thanh ban nhe cho jar J2ME (chay tren JDK).
+ * Dong goi tai nguyen Pokemon cua Unity (HTBB) thanh ban nhe cho jar J2ME (chay tren JDK).
  *
- *   java -cp out/tool DongGoiPokeJ2me &lt;client_pc_ios/Assets&gt; &lt;client_jar/res&gt;   (hoac client_pc_ios/ClientUnity/Assets cu)
+ *   java -cp out/tool DongGoiPokeJ2me &lt;client_pc_ios/Assets&gt; &lt;client_jar/res&gt;  
  *
  * Doc  Resources/poke/&lt;khoa&gt;_anh.bytes + _dl.bytes (atlas PNG + du lieu khung ban 2, muc 7.1),
  *      Resources/poke/&lt;khoa&gt;_cd.bytes, vt_*.bytes, Resources/poke_tile/*.bytes,
@@ -51,7 +51,7 @@ import javax.imageio.ImageIO;
  *    (alpha trong tRNS; qua 256 mau thi luong tu hoa median-cut).
  *
  * Ban NHE (doi so thu 3 = thu muc res nhe, vd client_jar/res_nhe; build.sh GOI=nhe dung no) cho may that:
- *  - chi cac loai can thiet (docs/pokemon cua HTBB): dong nguoi choi, NPC (+ su kien), pet cu,
+ *  - chi cac loai can thiet (du_lieu cua HTBB): dong nguoi choi, NPC (+ su kien), pet cu,
  *    pet_item (bang_thu), quai thuong cap &lt;= CAP_QUAI_NHE = 15 (cac map dau); bo shiny (tu dung ban
  *    thuong), bo thu cuoi / boss / quai cap cao (ve bang bong den);
  *  - bot khung: dung 2, chay 2, danh 3 (danh xa dung chung anh danh gan), trung don 1 (guc nga dung
@@ -124,27 +124,23 @@ public class DongGoiPokeJ2me {
         }
     }
 
-    /**
-     * Tu dien C#: client PC htbb-client/pc dat ma game o Scripts/Assembly-CSharp, ban cu HTBB/ClientUnity
-     * o Scripts/Game.
-     */
+    /** Tu dien C# cua client Unity (Scripts/Assembly-CSharp; Scripts/Game o ban rat cu). */
     static File tepTuDien(File assets) {
         File pc = new File(assets, "Scripts/Assembly-CSharp/ChuPokemonDuLieu.cs");
         return pc.isFile() ? pc : new File(assets, "Scripts/Game/ChuPokemonDuLieu.cs");
     }
 
     /**
-     * docs/pokemon cua HTBB (bang loai cho ban nhe): bien HTBB_DOCS, hoac &lt;assets&gt;/../../docs/pokemon
-     * (assets = client_pc_ios/ClientUnity/Assets), hoac &lt;assets&gt;/../../../docs/pokemon (assets = client_pc_ios/Assets
-     * voi HTBB nam canh htbb-client).
+     * du_lieu cua repo (bang loai cho ban nhe): bien HTBB_DOCS, hoac &lt;assets&gt;/../../du_lieu
+     * (assets = client_pc_ios/Assets).
      */
     static File thuMucDocs(File assets) {
         String rieng = System.getenv("HTBB_DOCS");
         if (rieng != null && rieng.length() > 0) {
             return new File(rieng);
         }
-        File cu = new File(assets, "../../docs/pokemon");
-        return cu.isDirectory() ? cu : new File(assets, "../../../docs/pokemon");
+        File cu = new File(assets, "../../du_lieu");
+        return cu.isDirectory() ? cu : new File(assets, "../../../du_lieu");
     }
 
     static void datLai() {
@@ -612,7 +608,7 @@ public class DongGoiPokeJ2me {
 
     // ------------------------------------------------------------------ ban nhe, bong den
 
-    /** Cac khoa loai cho ban nhe, doc tu docs/pokemon/*.csv cua HTBB. */
+    /** Cac khoa loai cho ban nhe, doc tu du_lieu/*.csv cua HTBB. */
     /** Loai nhin gan (giu du khung o ban day du): dong nguoi choi, NPC (+ su kien), pet, pet_item / thu cuoi. */
     static java.util.Set<String> loaiGan(File docs) throws IOException {
         java.util.Set<String> kq = new java.util.TreeSet<>();

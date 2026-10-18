@@ -336,7 +336,6 @@ public class LoginScr : MyScreen
 		{
 			string text = userAuto.ToLower().Trim();
 			string text2 = passAuTo;
-			Out.println("user : " + text + "  pass " + text2);
 			if (!text.Equals(string.Empty) && !text2.Equals(string.Empty))
 			{
 				Canvas.startWaitDlg("Đang kết nối", true);

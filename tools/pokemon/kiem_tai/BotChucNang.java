@@ -15,10 +15,10 @@ import java.util.function.Predicate;
  *     -Ddb      CSDL nhan vat de doi chieu (bo trong = khong kiem CSDL)
  *     -Dtu=N    so thu tu tai khoan dau tien (mac dinh 1); moi kich ban lay tai khoan rieng
  *     -Dgm=0    server khong cho bot quyen GM (vd server that): bo qua kich ban can GM
- *     -Dnoi=... thu muc HTBB (doc cMap_pokemon/ de kiem o di duoc)
+ *     -Dnoi=... thu muc HTBB (doc cMap/ de kiem o di duoc)
  * Ket qua tong: in cuoi + ghi file -Dra=<tep> (mac dinh khong ghi).
  *
- * Xem tools/pokemon/kiem_tai/README.md va docs/pokemon/KIEM_THU_TU_DONG.md.
+ * Xem tools/README.md (muc kiem_tai) va docs/kien-truc.md.
  */
 public class BotChucNang {
 
@@ -831,10 +831,10 @@ public class BotChucNang {
             if (CACHE.containsKey(load)) return CACHE.get(load);
             BanDo m = null;
             try {
-                File f = new File(NOI, "server/cMap_pokemon/" + load);
+                File f = new File(NOI, "server/cMap/" + load);
                 if (!f.isFile()) f = new File(NOI, "server/cMap/" + load);
                 String bo = load < 110 ? "t" : (load > 200 ? "t_thanh" : "t_hang");
-                File ft = new File(NOI, "server/cMap_pokemon/" + bo + ".type");
+                File ft = new File(NOI, "server/cMap/" + bo + ".type");
                 if (!ft.isFile()) ft = new File(NOI, "server/cMap/" + bo + ".type");
                 byte[] tt = java.nio.file.Files.readAllBytes(ft.toPath());
                 byte[] b = java.nio.file.Files.readAllBytes(f.toPath());

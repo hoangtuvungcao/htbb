@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Vong lap chung (com.htbb.runtime.VongLapChung) thay "mot thread cho moi khu/ban do"
- * (docs/pokemon/TOI_UU_HIEU_NANG.md): tick chay dung chu ky, khu ranh giam nhip nhung hen gio van
+ * (docs/kien-truc.md): tick chay dung chu ky, khu ranh giam nhip nhung hen gio van
  * chay, nguoi vao thi chay ngay, tam dung khi dang luu, dung han khi tat server / go khu, vong goi
  * tin khong bao gio chay song song va khong mat goi, va Region/Map khong con tao thread rieng.
  */

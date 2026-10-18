@@ -22,7 +22,7 @@ import real.Monster;
 import real.MonsterTemplate;
 
 /**
- * NOI he sinh thai vao game (docs/pokemon/HE_SINH_THAI.md). Logic thuan nam o cac lop
+ * NOI he sinh thai vao game (docs/thiet-ke-game.md). Logic thuan nam o cac lop
  * SinhThaiTheGioi / KyNangSong / NhaTre / ChoSinhThai / MiniGameSinhThai / SuuTamSinhThai; CSDL o
  * DuLieuHeSinhThai; menu o HeSinhThaiMenu. Lop nay giu trang thai chay (ho so trong bo nho, thay loai
  * quai, bung phat, do vui, dua) va cac DIEM MOC (moi diem moc trong src/real danh dau "// he sinh thai:"):
@@ -394,7 +394,7 @@ public final class HeSinhThaiGame {
     /** Quai dang la loai hiem (1) / bung phat (2). */
     static final Map<Monster, Integer> DAC_BIET = Collections.synchronizedMap(new IdentityHashMap<Monster, Integer>());
     static final Map<Integer, Long> LAN_BAO_HIEM = new ConcurrentHashMap<Integer, Long>();
-    /** Ban do khong dong vao (vi tri quai gan logic thap/lane - DINH_DANG_MAP.md muc 3). */
+    /** Ban do khong dong vao (vi tri quai gan logic thap/lane - docs/kien-truc.md). */
     static final int[] MAP_KHONG_DONG = {40, 42};
 
     /** Thong ke chay (in log moi 5 phut): lan hoi sinh xet, lan doi loai, quai hiem, bung phat. */
@@ -485,10 +485,8 @@ public final class HeSinhThaiGame {
         m.dodge = t.dodge;
         m.dmove = t.dmove;
         m.hePokemon = t.he;
-        if (CheDoPokemon.bat()) {
-            m.he = (byte) HePokemon.nguHanhCu(t.he);
-            m.he2 = t.he2;
-        }
+        m.he = (byte) HePokemon.nguHanhCu(t.he);
+        m.he2 = t.he2;
     }
 
     static void baoQuaiHiem(final Monster m, final int mapId) {
@@ -654,7 +652,7 @@ public final class HeSinhThaiGame {
 
     // he sinh thai: goi tu CharChiSo.attackDam sau khi nhan % chieu - nguoi danh (quai / nguoi).
     public static int satThuongThoiTiet(final Char self, final int idSkill, final int dam) {
-        if (!bat() || !CheDoPokemon.bat() || self == null || dam <= 0) {
+        if (!bat() || self == null || dam <= 0) {
             return dam;
         }
         try {
@@ -1253,14 +1251,14 @@ public final class HeSinhThaiGame {
 
     // ================================================================== kieu tile (.type)
 
-    /** Nap tep .type cua bo tile (cMap_pokemon/ khi bat che do Pokemon) - cache. */
+    /** Nap tep .type cua bo tile (cMap/) - cache. */
     static final class KieuTile {
         static final Map<String, byte[]> CACHE = new ConcurrentHashMap<String, byte[]>();
 
         static byte[] lay(final String bo) {
             return CACHE.computeIfAbsent(bo, (k) -> {
                 try {
-                    return java.nio.file.Files.readAllBytes(new java.io.File(BanDoPokemon.duong("cMap/" + k + ".type")).toPath());
+                    return java.nio.file.Files.readAllBytes(new java.io.File("cMap/" + k + ".type").toPath());
                 } catch (final Exception e) {
                     return new byte[0];
                 }
@@ -1298,7 +1296,7 @@ public final class HeSinhThaiGame {
             try {
                 byte[] b = real.Map.idMapSend2Client.get((short) (int) k);
                 if (b == null) {
-                    b = java.nio.file.Files.readAllBytes(new java.io.File(BanDoPokemon.duong("cMap/" + k)).toPath());
+                    b = java.nio.file.Files.readAllBytes(new java.io.File("cMap/" + k).toPath());
                 }
                 final DinhDangBanDo bd = DinhDangBanDo.doc(b);
                 final String bo = DinhDangBanDo.boTile(k);

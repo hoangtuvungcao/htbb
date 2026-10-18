@@ -5,7 +5,7 @@ G7.C: quet tu cam (kiem hiep) con sot trong chu nguoi choi thay.
 Quet 3 nguon:
   java  chuoi "..." trong src/**/*.java (bo chu thich, bo dong log System.out/err,
         printStackTrace, saveOrtherLog; bo tool admin src/server/AdminPanel.java, src/server/Panel/)
-  cs    chuoi "..." trong <client PC>/Assets/Scripts/**/*.cs (htbb-client/pc; bo Debug.Log)
+  cs    chuoi "..." trong <client PC>/Assets/Scripts/**/*.cs (client_pc_ios; bo Debug.Log)
   sql   CSDL SAU KHI chay dump + cac file sql/pokemon_*.sql (ca sql/pokemon_doi_chu.sql)
 
 Chi tinh chuoi "giong chu" (co ky tu ngoai ASCII hoac bat dau bang chu hoa) - chuoi khoa/SQL/log
@@ -18,10 +18,10 @@ ChuPokemon). "Sau doi" la cai nguoi choi thay khi bat che do Pokemon, vi:
   - client doi MOI chu ve ra man hinh (MFont._drawString -> ChuPokemon.D()).
 Chuoi CSDL tinh nguyen van (CSDL phai sach tu goc).
 
-Ra: docs/pokemon/tu_cam_con_lai.csv - moi o CON tu cam SAU doi (cot gio_dau = 1 neu thuoc
+Ra: du_lieu/tu_cam_con_lai.csv - moi o CON tu cam SAU doi (cot gio_dau = 1 neu thuoc
 nhom "gio choi dau tien", cot chu_so_huu = viec khac dang giu file do).
 
-Tu 18/10/2026 (docs/pokemon/THUAT_NGU.md) nguon phai sach ca TRUOC khi doi: tu cam = ChuPokemon.TU_CAM
+Tu 18/10/2026 (docs/thiet-ke-game.md) nguon phai sach ca TRUOC khi doi: tu cam = ChuPokemon.TU_CAM
 (mo rong: phi phong, liên đấu, vũ khí, ngựa, công thành, thần thú...), ngoai le = ChuPokemon.CHO_PHEP +
 "bang" trong chu khong dau (bảng/băng). Them client J2ME/Android vao bao cao. Test test/KiemThuatNgu.java quet
 them web (HTBB-Web)/SQL dump (THO, phai 0).
@@ -42,25 +42,24 @@ cp = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(cp)
 
 GOC = cp.GOC
-RA = os.path.join(GOC, "docs", "pokemon", "tu_cam_con_lai.csv")
+RA = os.path.join(GOC, "du_lieu", "tu_cam_con_lai.csv")
 SRC = os.path.join(GOC, "server", "src")
 _sd = importlib.util.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
 dc = importlib.util.module_from_spec(_sd)
 _sd.loader.exec_module(dc)
-# Ma C# client: client PC chinh htbb-client/pc (doi bang HTBB_CLIENT_ASSETS), ban cu ClientUnity neu chi con no.
-# Nhan file trong bao cao giu dang cu "client_pc_ios/ClientUnity/Assets/Scripts/Game/<ten>" (BO_QUA / GIO_DAU / CSV cu khop).
+# Ma C# client Unity (client_pc_ios/Assets, doi bang HTBB_CLIENT_ASSETS).
 CS = dc.scripts(dc.assets())
-NHAN_CS = "client_pc_ios/ClientUnity/Assets/Scripts/Game/"
-# Client J2ME / Android (repo htbb-client canh HTBB/): chu ve ra qua chu.bin, nguon cung phai sach.
-CLIENT = os.path.normpath(os.path.join(GOC, "..", "htbb-client"))
-JAVA_CLIENT = [("j2me", os.path.join(CLIENT, "j2me", "src")), ("android", os.path.join(CLIENT, "android", "app", "src"))]
+NHAN_CS = "client_pc_ios/Assets/Scripts/Assembly-CSharp/"
+# Client J2ME / Android: chu ve ra qua chu.bin, nguon cung phai sach.
+CLIENT = GOC
+JAVA_CLIENT = [("client_jar", os.path.join(GOC, "client_jar", "src")), ("client_apk", os.path.join(GOC, "client_apk", "pokemon", "src"))]
 
 # Khong quet: bang du lieu tu dien (chua tu cam co chu dich) va tool admin (khong phai nguoi choi).
 BO_QUA = {
     "server/src/com/htbb/pokemon/ChuPokemon.java",
     "server/src/server/AdminPanel.java",
-    "client_pc_ios/ClientUnity/Assets/Scripts/Game/ChuPokemonDuLieu.cs",
-    "client_pc_ios/ClientUnity/Assets/Scripts/Game/ChuPokemon.cs",
+    "client_pc_ios/Assets/Scripts/Assembly-CSharp/ChuPokemonDuLieu.cs",
+    "client_pc_ios/Assets/Scripts/Assembly-CSharp/ChuPokemon.cs",
 }
 BO_QUA_THU_MUC = ("server/src/server/Panel/",)
 # Bang tu dien / dia danh o moi ban (server, J2ME, Android, PC) - chua tu cu co chu dich.
@@ -75,9 +74,9 @@ GIO_DAU = {
     "server/src/real/cmd/SelectCharHandler.java", "server/src/real/cmd/RequestNPCInfoHandler.java",
     "server/src/real/MapMenuNpc.java", "server/src/real/MessageCreator.java", "server/src/real/MapDoi.java",
     "server/src/real/CharVongLap.java", "server/src/real/plugins/addNPC.java", "server/src/real/NpcReceiveCard.java",
-    "client_pc_ios/ClientUnity/Assets/Scripts/Game/CreateCharScr.cs", "client_pc_ios/ClientUnity/Assets/Scripts/Game/CharSelectScr.cs",
-    "client_pc_ios/ClientUnity/Assets/Scripts/Game/GameScr.cs", "client_pc_ios/ClientUnity/Assets/Scripts/Game/MenuWindows.cs",
-    "client_pc_ios/ClientUnity/Assets/Scripts/Game/PauseMenu.cs", "client_pc_ios/ClientUnity/Assets/Scripts/Game/Res.cs",
+    "client_pc_ios/Assets/Scripts/Assembly-CSharp/CreateCharScr.cs", "client_pc_ios/Assets/Scripts/Assembly-CSharp/CharSelectScr.cs",
+    "client_pc_ios/Assets/Scripts/Assembly-CSharp/GameScr.cs", "client_pc_ios/Assets/Scripts/Assembly-CSharp/MenuWindows.cs",
+    "client_pc_ios/Assets/Scripts/Assembly-CSharp/PauseMenu.cs", "client_pc_ios/Assets/Scripts/Assembly-CSharp/Res.cs",
     "sql:data_potion", "sql:data_shop",
 }
 QUEST_GIO_DAU = range(1, 14)
@@ -87,10 +86,10 @@ CHU_SO_HUU = {
     "server/src/real/MapDoMenu.java": "G7 khac (menu NPC)",
     "server/src/real/CharChiSo.java": "G7 khac", "server/src/real/LiveActor.java": "G7 khac",
     "server/src/real/Monster.java": "G7 khac", "server/src/real/TienHoaPokemon.java": "G7 khac",
-    "client_pc_ios/ClientUnity/Assets/Scripts/Game/Tilemap.cs": "G7 khac", "client_pc_ios/ClientUnity/Assets/Scripts/Game/NPC.cs": "G7 khac",
-    "client_pc_ios/ClientUnity/Assets/Scripts/Game/Npc_Server.cs": "G7 khac", "client_pc_ios/ClientUnity/Assets/Scripts/Game/Monster.cs": "G7 khac",
-    "client_pc_ios/ClientUnity/Assets/Scripts/Game/Pet.cs": "G7 khac", "client_pc_ios/ClientUnity/Assets/Scripts/Game/AnimalMove.cs": "G7 khac",
-    "client_pc_ios/ClientUnity/Assets/Scripts/Game/MessageHandler.cs": "G7 khac (lenh -9x)",
+    "client_pc_ios/Assets/Scripts/Assembly-CSharp/Tilemap.cs": "G7 khac", "client_pc_ios/Assets/Scripts/Assembly-CSharp/NPC.cs": "G7 khac",
+    "client_pc_ios/Assets/Scripts/Assembly-CSharp/Npc_Server.cs": "G7 khac", "client_pc_ios/Assets/Scripts/Assembly-CSharp/Monster.cs": "G7 khac",
+    "client_pc_ios/Assets/Scripts/Assembly-CSharp/Pet.cs": "G7 khac", "client_pc_ios/Assets/Scripts/Assembly-CSharp/AnimalMove.cs": "G7 khac",
+    "client_pc_ios/Assets/Scripts/Assembly-CSharp/MessageHandler.cs": "G7 khac (lenh -9x)",
 }
 
 _LIT = re.compile(r'"((?:[^"\\\n]|\\.)*)"')
@@ -132,7 +131,7 @@ def bo_chu_thich(s):
 
 
 class CamTho:
-    """Tu dien cam + ngoai le "bang" trong chu khong dau (THUAT_NGU.md muc 2)."""
+    """Tu dien cam + ngoai le "bang" trong chu khong dau (docs/thiet-ke-game.md)."""
 
     def __init__(self, cam):
         self.cam = cam
@@ -169,7 +168,7 @@ def quet_ma(goc_quet, duoi, nguon, td, cam, ra, dem):
             if nguon == "cs":
                 rel = NHAN_CS + os.path.relpath(p, CS).replace(os.sep, "/")
             elif nguon in ("j2me", "android"):
-                rel = "htbb-client/" + os.path.relpath(p, CLIENT).replace(os.sep, "/")
+                rel = os.path.relpath(p, CLIENT).replace(os.sep, "/")
             else:
                 rel = os.path.relpath(p, GOC).replace(os.sep, "/")
             if rel in BO_QUA or rel.startswith(BO_QUA_THU_MUC) or f in BO_QUA_TEN:
@@ -244,7 +243,7 @@ def main():
     if "--kiem" in sys.argv and gio_dau:
         return 1
     tho = sum(v[0] for k, v in dem.items() if k != "sql")
-    print("Tu cam THO (truoc doi) trong chuoi ma nguon: %d (phai 0, THUAT_NGU.md)" % tho)
+    print("Tu cam THO (truoc doi) trong chuoi ma nguon: %d (phai 0, docs/thiet-ke-game.md)" % tho)
     if "--tho" in sys.argv and (tho or dem["sql"][0]):
         return 1
     return 0

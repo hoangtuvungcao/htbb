@@ -53,8 +53,6 @@ public class FilePack
 
 	public static string eff = Main.res + "/eff";
 
-	public static string tree = "/tree/";
-
 	public static string type = "/type.sh";
 
 	public static string wps = Main.res + "/wpsplash/";

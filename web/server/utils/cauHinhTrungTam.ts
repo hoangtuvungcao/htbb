@@ -1,5 +1,5 @@
 /**
- * CẤU HÌNH TRUNG TÂM — phần chạm CSDL của web (HTBB/docs/cau-hinh-trung-tam.md).
+ * CẤU HÌNH TRUNG TÂM — phần chạm CSDL của web (docs/cau-hinh.md).
  *
  * Web và máy chủ game đọc/ghi CÙNG các khoá (bảng cau_hinh; hai khoá trần nạp nằm ở nap_cau_hinh của hệ nạp).
  * Mỗi lần lưu: kiểm (shared/utils/cauHinhTrungTam.ts) -> ghi trong MỘT transaction -> cau_hinh_lich_su (ai/khi

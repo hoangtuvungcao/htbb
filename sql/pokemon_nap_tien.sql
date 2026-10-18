@@ -1,4 +1,4 @@
--- NAP TIEN khong lam phat, khong tra tien de manh hon (docs/pokemon/NAP_TIEN.md).
+-- NAP TIEN khong lam phat, khong tra tien de manh hon (docs/van-hanh.md).
 -- Bang dung CHUNG giua website (HTBB-Web: server/utils/napTien.ts) va server game
 -- (com.htbb.pokemon.NapTienGame / NapTienDb). Chi co tac dung khi sv.nap_tien=1 + sv.lau_dai=1
 -- (server) va HTBB_NAP_BAT=true (web). Tao bang khong bat gi ca.

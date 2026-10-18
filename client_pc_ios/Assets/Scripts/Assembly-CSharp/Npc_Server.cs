@@ -21,8 +21,8 @@ public class Npc_Server : NPC
 	/// NPC su kien (lenh -50) theo idImg (anh icon idImg + 4200) -&gt; {idImg, dex} ve bang
 	/// PokeBody (viec G7.B2). type cua Npc_Server la ID server, KHONG phai type NPC tinh nen
 	/// khong dung POKE_DEX_THEO_TYPE. idImg la do vat (cong, bang khu, noi) thi ve do vat PMD
-	/// qua VatThePokemon.NPC. Bang day du: docs/pokemon/bang_npc_su_kien.csv (sua 2 noi cung
-	/// luc - test/KiemHinhPokemon so khop). Chi khi PokeBody.CHE_DO_POKEMON.
+	/// qua VatThePokemon.NPC. Bang day du: du_lieu/bang_npc_su_kien.csv (sua 2 noi cung
+	/// luc - test/KiemHinhPokemon so khop).
 	/// </summary>
 	public static readonly short[][] POKE_DEX_THEO_IDIMG = new short[][]
 	{
@@ -39,10 +39,6 @@ public class Npc_Server : NPC
 
 	public static int dexTheoIdImg(int idImg)
 	{
-		if (!PokeBody.CHE_DO_POKEMON)
-		{
-			return 0;
-		}
 		for (int i = 0; i < POKE_DEX_THEO_IDIMG.Length; i++)
 		{
 			if (POKE_DEX_THEO_IDIMG[i][0] == idImg)

@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Moi lien ket trong tai lieu .md phai tro toi mot file CO THAT.
+ * Moi lien ket trong tai lieu .md (docs/, README goc va README tung thanh phan) phai tro toi mot file CO THAT.
  *
  * VI SAO CAN. Lien ket markdown hong KHONG bao gio bao loi - no chi im lang dan nguoi doc
  * vao hu khong. Da xay ra that: doi thu muc Client/ -> ClientUnity/ hoi truoc lam chet 7
@@ -36,10 +36,24 @@ public final class KiemLienKetTaiLieu {
         final List<Path> tep = new ArrayList<Path>();
         themTep(tep, Paths.get("README.md"));
         themThuMuc(tep, Paths.get("../docs"));
-        themTep(tep, Paths.get("../sql/README.md"));
-        themTep(tep, Paths.get("../vps/win/README.md"));
+        // README goc va README tung thanh phan - bat buoc phai co (xoa / doi ten la bao).
+        final String[] readme = {
+            "../README.md", "../sql/README.md", "../tools/README.md", "../du_lieu/README.md",
+            "../vps/README.md", "../vps/win/README.md", "../web/README.md", "../client_jar/README.md",
+            "../client_apk/README.md", "../client_pc/README.md", "../client_pc_ios/README.md",
+            "../tools/phat-hanh/README.md",
+        };
+        for (final String r : readme) {
+            Kiem.dung("co tai lieu " + r, Files.isRegularFile(Paths.get(r)));
+            themTep(tep, Paths.get(r));
+        }
+        // Bo tai lieu docs/ chuan (README goc tro vao tung tep).
+        for (final String d : new String[]{"kien-truc", "build", "trien-khai", "van-hanh", "cau-hinh",
+                "thiet-ke-game", "giay-phep"}) {
+            Kiem.dung("co docs/" + d + ".md", Files.isRegularFile(Paths.get("../docs/" + d + ".md")));
+        }
 
-        Kiem.dung("tim thay tai lieu de kiem (tren 5 tep)", tep.size() > 5);
+        Kiem.dung("tim thay tai lieu de kiem (tren 15 tep)", tep.size() > 15);
 
         int tongLienKet = 0;
         final List<String> hong = new ArrayList<String>();

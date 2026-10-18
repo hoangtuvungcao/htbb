@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Tai hinh vat the PMDCollab/RawAsset (Object/, Item/) cho cac quai phan_loai=vat_the trong
-docs/pokemon/bang_quai.csv va cac NPC su kien ve bang do vat (viec G7.B1/B2 trong
-docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 15).
+du_lieu/bang_quai.csv va cac NPC su kien ve bang do vat (viec G7.B1/B2 trong
+docs/kien-truc.md).
 
 Dinh dang RawAsset (giong Particle, xem tai_hieu_ung_pmd.py): <Ten>.<Kieu>.png
   None / Flip : 1 hang khung VUONG canh H, so khung = W/H
@@ -14,8 +14,8 @@ Ra (client Unity, Resources/poke/):
   vt_<id>.bytes      PNG RGBA cho quai template <id> (vd vt_83.bytes = cong thanh)
   vt_npc<idImg>.bytes PNG cho NPC su kien (lenh -50) ve bang do vat
   GHI_CONG_VAT_THE.txt ghi cong (file rieng: DongGoiSprite ghi lai GHI_CONG.txt tu dau)
-  docs/pokemon/bang_vat_the.csv  bang doi chieu (commit). test/KiemHinhPokemon so bang nay
-                                 voi bang C# trong ClientUnity/Assets/Scripts/Game/VatThePokemon.cs
+  du_lieu/bang_vat_the.csv  bang doi chieu (commit). test/KiemHinhPokemon so bang nay
+                                 voi bang C# trong client_pc_ios/Assets/Scripts/Assembly-CSharp/VatThePokemon.cs
 
 Chay (o thu muc HTBB/):
     python3 -I tools/pokemon/tai_vat_the.py            # tai + dong goi
@@ -38,13 +38,13 @@ from tai_hieu_ung_pmd import doc_png, ghi_png  # noqa: E402  (PNG chi dung stdli
 
 GOC = os.path.dirname(os.path.dirname(THU_MUC_TOOL))
 RAW = os.path.join(THU_MUC_TOOL, "pmd_raw_vat_the")
-BANG_QUAI = os.path.join(GOC, "docs", "pokemon", "bang_quai.csv")
-BANG_VT = os.path.join(GOC, "docs", "pokemon", "bang_vat_the.csv")
+BANG_QUAI = os.path.join(GOC, "du_lieu", "bang_quai.csv")
+BANG_VT = os.path.join(GOC, "du_lieu", "bang_vat_the.csv")
 import importlib.util as _iu
 _sd = _iu.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
 dc = _iu.module_from_spec(_sd)
 _sd.loader.exec_module(dc)
-# Client PC chinh: htbb-client/pc/Assets (doi bang HTBB_CLIENT_ASSETS); con HTBB/ClientUnity thi chep sang ca do.
+# Client Unity: client_pc_ios/Assets (doi bang HTBB_CLIENT_ASSETS).
 RA = dc.resources(dc.assets(), "poke")
 GHI_CONG = os.path.join(RA, "GHI_CONG_VAT_THE.txt")
 

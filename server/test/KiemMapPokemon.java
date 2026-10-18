@@ -11,11 +11,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.htbb.pokemon.BanDoPokemon;
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.DinhDangBanDo;
 
 /**
- * Ban do ve lai cho che do Pokemon (tools/pokemon/VeMapMoi.java, docs/pokemon/DINH_DANG_MAP.md).
+ * Ban do ve lai cho che do Pokemon (tools/pokemon/VeMapMoi.java, docs/kien-truc.md).
  *
  * VI SAO: bo cuc moi di qua 3 bo doc (server + Unity + J2ME) va hang chuc toa do viet cung tren
  * server. Lech mot o cong / NPC / diem den la nguoi choi ket trong tuong hoac khong qua map duoc,
@@ -25,7 +24,7 @@ import com.htbb.pokemon.DinhDangBanDo;
 public final class KiemMapPokemon {
 
     public static void chay() {
-        Kiem.nhom("Ban do ve lai Pokemon (cMap_pokemon, map/pokemon_spawn)");
+        Kiem.nhom("Ban do ve lai Pokemon (cMap, map/map<N>)");
         try {
             chayThat();
         } catch (final Exception e) {
@@ -43,38 +42,14 @@ public final class KiemMapPokemon {
         java.util.Collections.sort(ids);
         final Map<Integer, List<int[]>> den = docDen();
         final Map<Integer, List<int[]>> coDinh = docCoDinh();
-        int docGhiLech = 0, thieu = 0, lechKichThuoc = 0, lechCong = 0, lechNpc = 0, tileLa = 0;
-        int quaiChan = 0, quaiLechSo = 0, khongToi = 0, ro = 0, conVatCu = 0;
+        int docGhiLech = 0, tileLa = 0;
+        int quaiChan = 0, khongToi = 0, ro = 0, conVatCu = 0;
         final List<String> loi = new ArrayList<String>();
         for (final int id : ids) {
-            final byte[] bGoc = Files.readAllBytes(new File("cMap/" + id).toPath());
-            final DinhDangBanDo goc = DinhDangBanDo.doc(bGoc);
-            if (!Arrays.equals(bGoc, goc.ghi())) {
-                docGhiLech++;
-            }
-            final File fMoi = new File(BanDoPokemon.THU_MUC_CMAP + id);
-            if (!fMoi.isFile()) {
-                thieu++;
-                loi.add(id + ": thieu ban moi");
-                continue;
-            }
-            final byte[] bMoi = Files.readAllBytes(fMoi.toPath());
+            final byte[] bMoi = Files.readAllBytes(new File(BanDoPokemon.THU_MUC_CMAP + id).toPath());
             final DinhDangBanDo m = DinhDangBanDo.doc(bMoi);
             if (!Arrays.equals(bMoi, m.ghi())) {
                 docGhiLech++;
-            }
-            if (m.w != goc.w || m.h != goc.h || m.offline != goc.offline) {
-                lechKichThuoc++;
-                loi.add(id + ": lech kich thuoc/offline");
-                continue;
-            }
-            if (!giongCong(goc, m)) {
-                lechCong++;
-                loi.add(id + ": lech o cong");
-            }
-            if (!giongNpc(goc, m)) {
-                lechNpc++;
-                loi.add(id + ": lech NPC");
             }
             final String bo = DinhDangBanDo.boTile(id);
             final byte[] kieuB = Files.readAllBytes(new File(BanDoPokemon.THU_MUC_CMAP + bo + ".type").toPath());
@@ -116,15 +91,9 @@ public final class KiemMapPokemon {
                 }
             }
             // luoi quai: ban moi (neu co) phai giu dung so luong tung mau quai va nam tren o di duoc
-            final File fqGoc = new File("map/map" + id);
-            if (fqGoc.isFile()) {
-                final DinhDangBanDo.LuoiQuai qg = DinhDangBanDo.LuoiQuai.doc(Files.readAllBytes(fqGoc.toPath()));
-                final File fqMoi = new File(BanDoPokemon.THU_MUC_QUAI + "map" + id);
-                final DinhDangBanDo.LuoiQuai q = fqMoi.isFile() ? DinhDangBanDo.LuoiQuai.doc(Files.readAllBytes(fqMoi.toPath())) : qg;
-                if (!demQuai(qg).equals(demQuai(q)) || q.w != qg.w || q.h != qg.h) {
-                    quaiLechSo++;
-                    loi.add(id + ": luoi quai moi lech so luong/kich thuoc");
-                }
+            final File fq = new File("map/map" + id);
+            if (fq.isFile()) {
+                final DinhDangBanDo.LuoiQuai q = DinhDangBanDo.LuoiQuai.doc(Files.readAllBytes(fq.toPath()));
                 if (q.w == m.w && q.h == m.h) {
                     for (int y = 0; y < q.h; y++) {
                         for (int x = 0; x < q.w; x++) {
@@ -185,79 +154,23 @@ public final class KiemMapPokemon {
                 }
             }
         }
-        Kiem.bang("doc -> ghi lai trung tung byte (cMap goc + ban moi)", 0, docGhiLech);
-        Kiem.bang("moi ban do goc co ban ve lai", 0, thieu);
-        Kiem.bang("cung kich thuoc + co offline", 0, lechKichThuoc);
-        Kiem.bang("o cong giu nguyen (x, y, toM, xOut, yOut)", 0, lechCong);
-        Kiem.bang("NPC client giu nguyen", 0, lechNpc);
+        Kiem.dung("co ban do Pokemon (> 100)", ids.size() > 100);
+        Kiem.bang("doc -> ghi lai trung tung byte", 0, docGhiLech);
         Kiem.bang("chi so tile nam trong bo tile moi", 0, tileLa);
         Kiem.bang("khong dung cay/tileTop cua game goc (lenh -48)", 0, conVatCu);
-        Kiem.bang("luoi quai: giu so luong tung mau quai", 0, quaiLechSo);
         Kiem.bang("moi o quai nam tren o di duoc", 0, quaiChan);
         Kiem.bang("cong/NPC/diem den/diem co dinh/quai deu toi duoc", 0, khongToi);
         Kiem.bang("khong co vuc (o trong) ke o toi duoc", 0, ro);
         if (!loi.isEmpty()) {
             System.out.println("    vi du: " + loi.subList(0, Math.min(8, loi.size())));
         }
-        // duong tep theo co che do
-        final boolean cu = CheDoPokemon.bat();
-        try {
-            CheDoPokemon.dat(false);
-            Kiem.bang("tat che do: cMap goc", "cMap/3", BanDoPokemon.duong("cMap/3"));
-            Kiem.bang("tat che do: luoi quai goc", "map/map3", BanDoPokemon.duongQuai("map/map3"));
-            Kiem.bang("tat che do: khong gui them map", 0, BanDoPokemon.mapGuiThem().length);
-            CheDoPokemon.dat(true);
-            Kiem.bang("bat che do: cMap_pokemon", "cMap_pokemon/3", BanDoPokemon.duong("cMap/3"));
-            Kiem.bang("bat che do: kieu tile bo moi", "cMap_pokemon/t.type", BanDoPokemon.duong("cMap/t.type"));
-            CheDoPokemon.dat(false);
-            Kiem.bang("tat che do: kieu tile goc", "cMap/t_hang.type", BanDoPokemon.duong("cMap/t_hang.type"));
-            CheDoPokemon.dat(true);
-            Kiem.bang("bat che do: map khong co ban moi -> goc", "cMap/9999", BanDoPokemon.duong("cMap/9999"));
-            Kiem.dung("bat che do: gui them map 0 cho client", Arrays.toString(BanDoPokemon.mapGuiThem()).contains("0"));
-        } finally {
-            CheDoPokemon.dat(cu);
-        }
+        Kiem.dung("gui them map 0 cho client", Arrays.toString(BanDoPokemon.mapGuiThem()).contains("0"));
+        Kiem.sai("khong con thu muc ban do cu cMap_pokemon (cMap la ban Pokemon duy nhat)", new File("cMap_pokemon").exists());
         final byte[] m0 = Files.readAllBytes(new File(BanDoPokemon.THU_MUC_CMAP + "0").toPath());
-        Kiem.dung("Unity Resources/poke_map/0.bytes = cMap_pokemon/0",
-                Arrays.equals(m0, Files.readAllBytes(new File("../client_pc_ios/ClientUnity/Assets/Resources/poke_map/0.bytes").toPath())));
-        Kiem.dung("tools/pokemon/map_j2me/0 = cMap_pokemon/0",
-                Arrays.equals(m0, Files.readAllBytes(new File("../tools/pokemon/map_j2me/0").toPath())));
-    }
-
-    private static boolean giongCong(final DinhDangBanDo a, final DinhDangBanDo b) {
-        if (a.cong.size() != b.cong.size()) {
-            return false;
-        }
-        for (int i = 0; i < a.cong.size(); i++) {
-            final DinhDangBanDo.Cong x = a.cong.get(i), y = b.cong.get(i);
-            if (x.x != y.x || x.y != y.y || x.toM != y.toM || x.xOut != y.xOut || x.yOut != y.yOut) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean giongNpc(final DinhDangBanDo a, final DinhDangBanDo b) {
-        if (a.npc.size() != b.npc.size() || a.coNpc != b.coNpc) {
-            return false;
-        }
-        for (int i = 0; i < a.npc.size(); i++) {
-            final DinhDangBanDo.Diem x = a.npc.get(i), y = b.npc.get(i);
-            if (x.x != y.x || x.y != y.y || x.v != y.v) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static Map<Integer, Integer> demQuai(final DinhDangBanDo.LuoiQuai q) {
-        final Map<Integer, Integer> d = new HashMap<Integer, Integer>();
-        for (final int v : q.o) {
-            if (v > 0 && v != 255) {
-                d.merge(v, 1, Integer::sum);
-            }
-        }
-        return d;
+        Kiem.dung("Unity Resources/poke_map/0.bytes = cMap/0",
+                Arrays.equals(m0, Files.readAllBytes(new File("../client_pc_ios/Assets/Resources/poke_map/0.bytes").toPath())));
+        Kiem.dung("client_jar/res/0 = cMap/0",
+                Arrays.equals(m0, Files.readAllBytes(new File("../client_jar/res/0").toPath())));
     }
 
     private static void loang(final int w, final int h, final boolean[] di, final int tu, final int[] nhan, final int so) {
@@ -278,12 +191,12 @@ public final class KiemMapPokemon {
         }
     }
 
-    /** docs/pokemon/map_cu/bang_den.json (GiaiMaMap): diem den qua cong + bay. */
+    /** du_lieu/bang_den.json (GiaiMaMap): diem den qua cong + bay. */
     private static Map<Integer, List<int[]>> docDen() throws Exception {
         final Map<Integer, List<int[]>> m = new HashMap<Integer, List<int[]>>();
         final Pattern ten = Pattern.compile("^\\s*\"(\\d+)\"\\s*:");
         final Pattern cap = Pattern.compile("\\[(\\d+),(\\d+)\\]");
-        for (final String l : Files.readAllLines(new File("../docs/pokemon/map_cu/bang_den.json").toPath(), StandardCharsets.UTF_8)) {
+        for (final String l : Files.readAllLines(new File("../du_lieu/bang_den.json").toPath(), StandardCharsets.UTF_8)) {
             final Matcher mt = ten.matcher(l);
             if (!mt.find()) {
                 continue;
@@ -298,10 +211,10 @@ public final class KiemMapPokemon {
         return m;
     }
 
-    /** docs/pokemon/diem_co_dinh.csv: map;x0;y0;x1;y1;noi;ghi_chu. */
+    /** du_lieu/diem_co_dinh.csv: map;x0;y0;x1;y1;noi;ghi_chu. */
     private static Map<Integer, List<int[]>> docCoDinh() throws Exception {
         final Map<Integer, List<int[]>> m = new HashMap<Integer, List<int[]>>();
-        for (final String l : Files.readAllLines(new File("../docs/pokemon/diem_co_dinh.csv").toPath(), StandardCharsets.UTF_8)) {
+        for (final String l : Files.readAllLines(new File("../du_lieu/diem_co_dinh.csv").toPath(), StandardCharsets.UTF_8)) {
             final String t = l.trim();
             if (t.isEmpty() || t.startsWith("#")) {
                 continue;

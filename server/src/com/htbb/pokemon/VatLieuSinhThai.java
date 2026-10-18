@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Danh muc vat lieu cua he sinh thai (docs/pokemon/HE_SINH_THAI.md muc 2-4). Lop THUAN.
+ * Danh muc vat lieu cua he sinh thai (docs/thiet-ke-game.md-4). Lop THUAN.
  *
  * Vat lieu nam trong "Tui sinh thai" cua nhan vat (luu o tob_hst_nhan_vat, KHONG phai item
  * data_item) - vi vay khong can them template item / goi tin moi cho client, va KHONG dung dai

@@ -10,7 +10,7 @@ import real.CharManager;
  * (vung/region roi break/continue - ca hai la loi that nhung khong phai loi dang gay ra trieu
  * chung nay).
  *
- * CHUOI SU KIEN. Goi vi tri Map.writeActorPos chi mang cat/type/id/x/y. Client (ClientUnity
+ * CHUOI SU KIEN. Goi vi tri Map.writeActorPos chi mang cat/type/id/x/y. Client (client_pc_ios
  * Char.cs) thay actor chua ve duoc thi cu 10 giay goi requestCharInfo(id). Server tra loi trong
  * Map.doSendWearingInfo bang CharManager.instance.getByCharID(id) - null thi return, KHONG gui gi.
  * Ma CharManager.put() cu tu choi CA CUM khi charName da ton tai: 14 bot cung ten "hoa tieu"

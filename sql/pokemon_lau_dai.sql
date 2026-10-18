@@ -1,7 +1,7 @@
 -- SINH RA boi tools/pokemon/sinh_sql_lau_dai.py - KHONG SUA TAY.
--- Thiet ke dai han (docs/pokemon/THIET_KE_LAU_DAI.md). CHI tao TABLE tam (staging):
+-- Thiet ke dai han (docs/thiet-ke-game.md). CHI tao TABLE tam (staging):
 -- KHONG doi table dang chay (data_quest, data_shop, data_monster...). Giai doan 2 moi
--- ap dung (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md). Da gom vao xuat_sql_day_du.sh (GD2, sau POKEMON).
+-- ap dung (docs/thiet-ke-game.md). Da gom vao xuat_sql_day_du.sh (GD2, sau POKEMON).
 SET NAMES utf8;
 
 DROP TABLE IF EXISTS `data_cap_do_lau_dai`;

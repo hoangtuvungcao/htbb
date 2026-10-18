@@ -15,7 +15,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Dung BO TILE MOI HOAN TOAN cho ban do che do Pokemon (thay bo tile cu cua game goc - KHONG dung
- * pixel nao cua tile/cay/nha game goc). Nguon (CC0, xem docs/pokemon/NGUON_ASSET_MAP.md):
+ * pixel nao cua tile/cay/nha game goc). Nguon (CC0, xem docs/giay-phep.md):
  *   - Ninja Adventure / Pixel-boy & AAA (CC0): co (4 bien the + co sang), dat, cat, nuoc, co cao, hoa,
  *     cay 2x2 (3 loai), bui, da, mat vach (TilesetRelief), nha (TilesetHouse), hang rao, bien go, cau go,
  *     san + do trong nha
@@ -29,13 +29,13 @@ import javax.imageio.ImageIO;
  * Ra (cung ten tep/so luong toi da nhu bo cu de client khong phai doi):
  *   map/pokemon_tile/{t,t_hang,t_thanh}.png + {t_small,t_hang_s,t_thanh_s}.png   (server gui t_hang/t_thanh)
  *   <client>/Assets/Resources/poke_tile/*.bytes                                   (Unity + goi J2ME res/pt)
- *   cMap_pokemon/{t,t_hang,t_thanh}.type, Resources/poke_map/kieu_*.bytes, tools/pokemon/map_j2me/*.type
- *   docs/pokemon/bang_tile_moi.csv (ten tung tile - VeMapMoi tra theo ten), docs/pokemon/xem_truoc_tile_moi.png
+ *   cMap/{t,t_hang,t_thanh}.type, Resources/poke_map/kieu_*.bytes, client_jar/res/*.type
+ *   du_lieu/bang_tile_moi.csv (ten tung tile - VeMapMoi tra theo ten), du_lieu/xem_truoc_tile_moi.png
  * Gioi han: so tile &lt;= mang mau ban do nho cua client (t 232, t_hang 116, t_thanh 216); PNG
  * t_hang/t_thanh &lt;= 32767 byte (goi dang nhap ghi do dai bang short).
  *
  * Chay (o HTBB/): javac -d build/tools tools/pokemon/DungBoTileMoi.java &amp;&amp; java -cp build/tools DungBoTileMoi
- * Can tools/pokemon/pmd_raw_tile_moi/ (tai theo docs/pokemon/NGUON_ASSET_MAP.md).
+ * Can tools/pokemon/pmd_raw_tile_moi/ (tai theo docs/giay-phep.md).
  */
 public final class DungBoTileMoi {
 
@@ -670,8 +670,8 @@ public final class DungBoTileMoi {
         final Bo[] bo = {boNgoai("t"), boHang(), boThanh()};
         final String[] nho = {"t_small", "t_hang_s", "t_thanh_s"};
         new File("server/map/pokemon_tile").mkdirs();
-        new File("server/cMap_pokemon").mkdirs();
-        new File("tools/pokemon/map_j2me").mkdirs();
+        new File("server/cMap").mkdirs();
+        new File("client_jar/res").mkdirs();
         final StringBuilder csv = new StringBuilder("bo_tile,chi_so,ten,kieu,nguon\n");
         final Map<String, BufferedImage> xem = new LinkedHashMap<String, BufferedImage>();
         for (int i = 0; i < bo.length; i++) {
@@ -708,13 +708,13 @@ public final class DungBoTileMoi {
             Files.write(new File("server/map/pokemon_tile/" + nho[i] + ".png").toPath(), pngNho);
             ghiClient("poke_tile", b.ten + ".bytes", png);
             ghiClient("poke_tile", nho[i] + ".bytes", pngNho);
-            Files.write(new File("server/cMap_pokemon/" + b.ten + ".type").toPath(), kieu);
+            Files.write(new File("server/cMap/" + b.ten + ".type").toPath(), kieu);
             ghiClient("poke_map", "kieu_" + b.ten + ".bytes", kieu);
-            Files.write(new File("tools/pokemon/map_j2me/" + b.ten + ".type").toPath(), kieu);
+            Files.write(new File("client_jar/res/" + b.ten + ".type").toPath(), kieu);
             xem.put(b.ten, dai);
             System.out.println(b.ten + ": " + b.anh.size() + " tile, png " + png.length + " byte");
         }
-        Files.write(new File("docs/pokemon/bang_tile_moi.csv").toPath(), csv.toString().getBytes(StandardCharsets.UTF_8));
+        Files.write(new File("du_lieu/bang_tile_moi.csv").toPath(), csv.toString().getBytes(StandardCharsets.UTF_8));
         veXemTruoc(xem, bo);
     }
 
@@ -772,32 +772,14 @@ public final class DungBoTileMoi {
             y0 += ((n + cot - 1) / cot + 1) * o;
         }
         g.dispose();
-        ImageIO.write(a, "png", new File("docs/pokemon/xem_truoc_tile_moi.png"));
+        ImageIO.write(a, "png", new File("du_lieu/xem_truoc_tile_moi.png"));
     }
 
-    /**
-     * Thu muc Resources/&lt;con&gt; cua MOI client can ghi: bien HTBB_CLIENT_ASSETS (chi thu muc do), hoac
-     * client PC chinh ../htbb-client/pc/Assets (canh HTBB/) + ban cu ClientUnity/Assets neu con
-     * (bo bang HTBB_CLIENT_CU=0). Giong tools/pokemon/duong_client.py.
-     */
+    /** Thu muc Resources/&lt;con&gt; cua client Unity: HTBB_CLIENT_ASSETS, mac dinh client_pc_ios/Assets. */
     static java.util.List<File> thuMucClient(final String con) {
         final java.util.List<File> ds = new java.util.ArrayList<File>();
         final String rieng = System.getenv("HTBB_CLIENT_ASSETS");
-        if (rieng != null && !rieng.isEmpty()) {
-            ds.add(new File(rieng, "Resources/" + con));
-            return ds;
-        }
-        final File pc = new File("../htbb-client/pc/Assets");
-        if (pc.isDirectory()) {
-            ds.add(new File(pc, "Resources/" + con));
-        }
-        final File cu = new File("client_pc_ios/ClientUnity/Assets");
-        if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
-            ds.add(new File(cu, "Resources/" + con));
-        }
-        if (ds.isEmpty()) {
-            ds.add(new File(cu, "Resources/" + con));
-        }
+        ds.add(new File(rieng != null && !rieng.isEmpty() ? new File(rieng) : new File("client_pc_ios/Assets"), "Resources/" + con));
         return ds;
     }
 

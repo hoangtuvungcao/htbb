@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Sinh sql/pokemon_thuat_ngu.sql: migration UPDATE doi THUAT NGU CU con sot trong du lieu goc (chu nguoi
-choi/admin thay) sang thuat ngu chuan (docs/pokemon/THUAT_NGU.md, tu dien ChuPokemon.DOI).
+choi/admin thay) sang thuat ngu chuan (docs/thiet-ke-game.md, tu dien ChuPokemon.DOI).
 
 Quet MOI cot chu (varchar/char/text) cua MOI bang co khoa chinh trong htbb_db + account cua mot CSDL
 dung tu dau BANG xuat_sql_day_du.sh nhung CHUA chay migration nay (BO_THUAT_NGU=1). O nao con tu cam
@@ -147,7 +147,7 @@ def main():
                 if d.startswith("-- nang cap: ") and i + 1 < len(cu_txt):
                     nang_cap.append(d + "\n" + cu_txt[i + 1])
     with open(RA, "w", encoding="utf8", newline="\n") as f:
-        f.write("-- Thuat ngu chuan (docs/pokemon/THUAT_NGU.md): doi thuat ngu cu con sot trong DU LIEU GOC.\n")
+        f.write("-- Thuat ngu chuan (docs/thiet-ke-game.md): doi thuat ngu cu con sot trong DU LIEU GOC.\n")
         f.write("-- SINH TU tools/pokemon/sinh_sql_thuat_ngu.py - KHONG SUA TAY (sua tu dien ChuPokemon.DOI roi sinh lai).\n")
         f.write("-- Chay SAU moi file sql/pokemon_* khac (xuat_sql_day_du.sh: buoc THUAT_NGU, cuoi cung).\n")
         f.write("-- Chay lai an toan: moi cau chi khop o con dung chu cu (WHERE ... AND cot=<chu cu>).\n")

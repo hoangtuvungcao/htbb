@@ -18,7 +18,7 @@ export default defineNuxtConfig({
             'MMORPG nơi chính bạn là một Pokémon: chọn 1 trong 5 Pokémon khởi đầu, lên cấp, tiến hoá và phiêu lưu cùng bạn bè. Tải game và đăng ký tài khoản.',
         },
       ],
-      // biểu tượng chung với game (htbb-client/j2me/tools/tao_logo.py --web)
+      // biểu tượng chung với game (client_jar/tools/tao_logo.py --web)
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/logo-mark.svg' },
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },

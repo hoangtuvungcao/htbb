@@ -15,7 +15,8 @@ export default defineEventHandler((event) => {
   const noiDung = docDanhSachMayChu(tho)
   if (noiDung === null) {
     setResponseStatus(event, 503)
-    return 'Chua cau hinh danh sach may chu (HTBB_SERVER_LIST).\n'
+    console.error('[server-list] chua cau hinh HTBB_SERVER_LIST')
+    return 'Danh sach may chu dang cap nhat.\n'
   }
   return noiDung
 })

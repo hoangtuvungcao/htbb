@@ -7,8 +7,8 @@ import java.util.List;
  * Doc bo cuc ban do (cMap, DinhDangBanDo) de biet MEP NUOC (cau ca) va DIEM DAO (khao co). Lop THUAN.
  *
  * O nuoc = tile co ten bat dau "W" (nuoc, nuoc sau, mep nuoc) hoac "sen", kieu 2 (chan), trong bo tile moi
- * (docs/pokemon/bang_tile_moi.csv, cot ten). test/KiemHeSinhThai doi chieu bang duoi voi CSV.
- * O di duoc = bit 2 cua tep .type bang 0 (DINH_DANG_MAP.md muc 1), o trong (254/255) = di duoc.
+ * (du_lieu/bang_tile_moi.csv, cot ten). test/KiemHeSinhThai doi chieu bang duoi voi CSV.
+ * O di duoc = bit 2 cua tep .type bang 0 (docs/kien-truc.md), o trong (254/255) = di duoc.
  */
 public final class BanDoSinhThai {
 

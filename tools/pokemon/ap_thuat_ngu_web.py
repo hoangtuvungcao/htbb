@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Ap thuat ngu chuan (docs/pokemon/THUAT_NGU.md) vao CHU NGUOI CHOI/ADMIN THAY cua website HTBB-Web
+Ap thuat ngu chuan (docs/thiet-ke-game.md, muc Thuat ngu) vao CHU NGUOI CHOI/ADMIN THAY cua website web/
 (repo canh HTBB/). Ban web cua tools/pokemon/ap_thuat_ngu.py: web khong co tu dien luc chay nen chu
 phai sach ngay trong nguon.
 
@@ -29,7 +29,7 @@ _sp = importlib.util.spec_from_file_location("chu_pokemon", os.path.join(_D, "ch
 cp = importlib.util.module_from_spec(_sp)
 _sp.loader.exec_module(cp)
 
-WEB = os.path.normpath(os.path.join(cp.GOC, "..", "HTBB-Web"))
+WEB = os.path.join(cp.GOC, "web")
 THU_MUC = ("app", "server", "shared", "scripts", "tests")
 DUOI = (".vue", ".ts", ".js", ".mjs", ".sql")
 BO_THU_MUC = {"node_modules", ".nuxt", ".output", "dist", ".data"}

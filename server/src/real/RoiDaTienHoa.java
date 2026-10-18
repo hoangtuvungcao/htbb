@@ -1,13 +1,11 @@
 package real;
 
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.DaTienHoa;
 
 /**
  * Nguon phat da tien hoa Eevee (item 960-967): roi khi Eevee cap >= 25 ha quai.
  * Goi tu dau Monster.onDropItem (moi lan quai chet co nguoi nhan do). Ti le, dieu
  * kien: com.htbb.pokemon.DaTienHoa.daRoiKhiHaQuai (ham thuan, co test).
- * Tat che do Pokemon -> khong lam gi.
  */
 public final class RoiDaTienHoa {
 
@@ -15,7 +13,7 @@ public final class RoiDaTienHoa {
     }
 
     public static void khiHaQuai(final Char p, final Monster quai) {
-        if (!CheDoPokemon.bat() || p == null || quai == null || p.lvDetail == null) {
+        if (p == null || quai == null || p.lvDetail == null) {
             return;
         }
         try {

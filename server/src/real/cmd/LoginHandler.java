@@ -121,7 +121,7 @@ public class LoginHandler implements ICommandHandler {
                 for (int k = 0; k < Map.idSkill[j].length; ++k) {
                     msgLoginSuccess.dos.writeByte(Map.idSkill[j][k]);
                     msgLoginSuccess.dos.writeUTF(Text.nameSkillLearn[j][k]);
-                    // G7.C: mo ta chieu hoc theo dong Pokemon khi bat che do (ChuPokemon).
+                    // G7.C: mo ta chieu hoc theo dong Pokemon (ChuPokemon).
                     msgLoginSuccess.dos.writeUTF(com.htbb.pokemon.ChuPokemon.moTaChieuHoc(j, k, decript[j][k]));
                     msgLoginSuccess.dos.writeInt(Map.priceLearnSkill[j][k]);
                 }
@@ -308,14 +308,20 @@ public class LoginHandler implements ICommandHandler {
         uname = uname.replace('\'', ' ');
         pwd = pwd.replace('\'', ' ');
         final InfoClientConnect info = TeamServer.ALL_IPCONNECT.get(session.ip);
-        if (info != null) {
+        // Dem dang nhap THEO IP (cu: viet cung >=10 lan/giay -> cho 3s). Sau WAF ca server chung
+        // vai IP nen proxy tin cay (sv.proxyTinCay) duoc bo qua han; nguong/thoi gian cho:
+        // sv.dangNhapIpNguong / sv.dangNhapIpChoMs (com.htbb.mang.GioiHanIp).
+        if (info != null && com.htbb.mang.GioiHanIp.apDung(session.ip)) {
             info.countLogin();
-            if (info.maxLogin >= 10) {
+            if (com.htbb.mang.GioiHanIp.vuotNguongDangNhap(session.ip, info.maxLogin)) {
                 info.addUser(uname);
                 info.writeLog();
-                try {
-                    Thread.sleep(3000L);
-                } catch (final Exception ex4) {
+                final long cho = com.htbb.mang.GioiHanIp.choDangNhapMs(session.ip, info.maxLogin);
+                if (cho > 0L) {
+                    try {
+                        Thread.sleep(cho);
+                    } catch (final Exception ex4) {
+                    }
                 }
             }
         }

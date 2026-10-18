@@ -3,7 +3,7 @@ package com.htbb.pokemon;
 import java.util.Random;
 
 /**
- * Ky nang song (docs/pokemon/HE_SINH_THAI.md muc 2). Lop THUAN.
+ * Ky nang song (docs/thiet-ke-game.md). Lop THUAN.
  *
  *   0 Cau ca      : CHI o ho (BanDoSinhThai.nhanHo: vung nuoc kin, khong cham mep ban do) -> ca Pokemon
  *                   (gap + vay), ngoc trai, rong, berry troi. Ao nho: chi ca thuong; ho lon: them ca hiem.

@@ -5,7 +5,7 @@ package com.htbb.pokemon;
  *
  * Lop THUAN: khong dung Char/Map/CSDL, de kiem thu o test/KiemPokemon.java.
  * Chua noi vao cong thuc sat thuong - viec do lam o giai doan 2 cua
- * docs/pokemon/KE_HOACH_CHUYEN_DOI.md (thay khoi ngu hanh CharChiSo.attackDam
+ * docs/kien-truc.md (thay khoi ngu hanh CharChiSo.attackDam
  * va LiveActor.attackDam).
  *
  * Gia tri he la so 0..17 theo dung thu tu hang so ben duoi. KHONG doi thu tu:
@@ -214,5 +214,14 @@ public final class HePokemon {
     /** Ngu hanh cu 0..4 cua he Pokemon {@code he}; he khong hop le -> Tho (3). */
     public static int nguHanhCu(final int he) {
         return hopLe(he) ? NGU_HANH_CU[he] : 3;
+    }
+
+    /**
+     * Gia tri {@code he} ghi xuong client trong goi 3/5 cua NHAN VAT. Giao thuc client chi hieu
+     * ngu hanh 0..4 (icon nh[he] mang 5 o, Char so (he + 2) % 5), con Char.he la he Pokemon 0..17
+     * nen phai doi truoc khi gui. He Pokemon that di bang dex (lenh -90).
+     */
+    public static byte heGuiClient(final byte he) {
+        return (byte) nguHanhCu(he);
     }
 }

@@ -1,4 +1,4 @@
-# Nuxt
+# Nuxt / build
 .output
 .data
 .nuxt
@@ -6,12 +6,19 @@
 .cache
 dist
 node_modules
+*.tsbuildinfo
+coverage
 logs
 *.log
 .DS_Store
 .idea
 .vscode/*
 !.vscode/extensions.json
+
+# Dữ liệu chạy: ảnh / tệp game admin tải lên (HTBB_UPLOAD_DIR mặc định ./uploads)
+/uploads/
+# VPS: cac ban build GitHub Actions gui len (deploy/deploy-web.sh), .output la symlink toi mot ban
+/releases/
 
 # Bí mật riêng của từng máy (DB pass, số TK ngân hàng, API key, HTBB_SECRET...)
 .env

@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  *  3. (tuy chon) ChuPokemon / TenMapPokemon cua jar cho KET QUA GIONG HET ban server
  *     com.htbb.pokemon.ChuPokemon.doiLuon / TenMapPokemon.doi (regex) tren tap chu kiem.
  *
- *   java -cp &lt;lop jar&gt;:&lt;midp.jar&gt;:res[:lop server] KiemPokeDuLieu &lt;client_pc_ios/Assets (hoac client_pc_ios/ClientUnity/Assets cu)&gt; res [nguon java ...]
+ *   java -cp &lt;lop jar&gt;:&lt;midp.jar&gt;:res[:lop server] KiemPokeDuLieu &lt;client_pc_ios/Assets&gt; res [nguon java ...]
  */
 public class KiemPokeDuLieu {
     static int loi = 0;
@@ -205,7 +205,7 @@ public class KiemPokeDuLieu {
      */
     /**
      * Ho cau ca: client (game.pokemon.SinhThai.nhanHo / diemCau) phai tim DUNG cac diem cua server
-     * (HTBB docs/pokemon/diem_cau_ca.csv, sinh tu BanDoSinhThai) tren moi ban do HTBB/cMap_pokemon.
+     * (HTBB du_lieu/diem_cau_ca.csv, sinh tu BanDoSinhThai) tren moi ban do HTBB/cMap.
      */
     /**
      * FilePack nhieu luong (loi cu: luong nap Res.LoadData va luong ve dung chung FilePack.instance ->
@@ -265,7 +265,10 @@ public class KiemPokeDuLieu {
     static void kiemHoCau(File assets) throws Exception {
         File docs = DongGoiPokeJ2me.thuMucDocs(assets);
         File csv = new File(docs, "diem_cau_ca.csv");
-        File cmap = new File(docs, "../../server/cMap_pokemon");
+        File cmap = new File(docs, "../server/cMap");    // du_lieu/ o goc repo, canh server/
+        if (!cmap.isDirectory()) {
+            cmap = new File(docs, "../../server/cMap");
+        }
         if (!csv.isFile() || !cmap.isDirectory()) {
             System.out.println("ho cau ca: bo qua (khong thay " + csv + " / " + cmap + ")");
             return;

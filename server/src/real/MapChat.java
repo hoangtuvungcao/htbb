@@ -879,7 +879,7 @@ class MapChat {
                                             long xeppc = LevelDetail.getPCExp(Integer.parseInt(info[2]), Integer.parseInt(info[1]));
                                             p.lvDetail.setExpNew(exp + xeppc);
                                             p.lastLV = (short) p.lvDetail.lv;
-                                            // Che do Pokemon: GM dat cap thi tien hoa theo cap moi luon.
+                                            // Pokemon: GM dat cap thi tien hoa theo cap moi luon.
                                             TienHoaPokemon.kiemTienHoaTheoCap(p);
                                             p.sendMessage(MessageCreator.createMainCharInfoMessage(p));
                                             p.sendToNearPlayer(MessageCreator.createCharInfo(p));

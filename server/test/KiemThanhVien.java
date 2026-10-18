@@ -8,7 +8,7 @@ import java.util.Properties;
 import real.Char;
 
 /**
- * Thành viên HTBB (docs/pokemon/THANH_VIEN.md): cấu hình cau_hinh, quyết định coQuyen, hạn / gia hạn /
+ * Thành viên HTBB (docs/van-hanh.md): cấu hình cau_hinh, quyết định coQuyen, hạn / gia hạn /
  * thu hồi, cổng ThanhVien.chan (tắt = không chặn), mọi móc nối có mặt ở đúng file game, SQL mặc định TẮT,
  * hằng số khớp web (thanhVienThuan.ts).
  */

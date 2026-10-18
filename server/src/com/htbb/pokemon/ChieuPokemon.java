@@ -2,7 +2,7 @@ package com.htbb.pokemon;
 
 /**
  * He cua tung chieu (viec G7.D1) + STAB. Bang HE chep tay tu cot so_he cua
- * docs/pokemon/bang_chieu.csv (class x so_hieu_skill) - test/KiemLoiChoiPokemon.java doi
+ * du_lieu/bang_chieu.csv (class x so_hieu_skill) - test/KiemLoiChoiPokemon.java doi
  * chieu TUNG dong CSV voi bang nay. Sua CSV (tools/pokemon/ap_ten_chieu.py) thi sua ca o day.
  *
  * Chi so skill = idSkill ma CharChiSo.attackDam nhan (cung chi so voi

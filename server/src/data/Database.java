@@ -1,6 +1,5 @@
 package data;
 
-import com.htbb.pokemon.CheDoPokemon;
 
 import io.Session;
 
@@ -2708,7 +2707,7 @@ public class Database {
      * "a=1&b=2", khong co dau "?" o dau. Trong (mac dinh) = URL y nhu truoc.
      * Vd NovaDB: db.thamSoJdbc=useSSL=false (cong MySQL cua NovaDB khong co TLS; thieu
      * dong nay Connector/J in canh bao SSL moi lan mo ket noi). Phai dat TRUOC setLink*.
-     * Xem docs/cau-hinh-server-ini.md.
+     * Xem docs/cau-hinh.md.
      */
     private static String thamSoJdbc = "";
 
@@ -4398,7 +4397,7 @@ public class Database {
      * tra ve DDL dang MySQL), doi ten bang va chay lai. Bo tuy chon AUTO_INCREMENT=N cua
      * bang mau vi LIKE cung khong chep bo dem do. Bang da ton tai thi tra false va khong
      * chay gi - giong LIKE (loi "already exists" -> false) nhung khong in "SQL ERROR"
-     * moi lan khoi dong. Xem docs/cau-hinh-server-ini.md muc NovaDB.
+     * moi lan khoi dong. Xem docs/cau-hinh.md muc NovaDB.
      */
     public boolean createTable(String newTable, String oldTable) {
         String sql = "SHOW CREATE TABLE " + oldTable + " -> " + newTable;
@@ -8002,7 +8001,7 @@ public class Database {
 
                 p.setLuong(rs.getInt("luong"));
                 p.dbInfo = rs.getString("pInfo");
-                // Che do Pokemon: loai + shiny (cot moi, doc trong try rieng).
+                // Pokemon: loai + shiny (cot moi, doc trong try rieng).
                 Database.docCotPokemon(rs, p);
                 p.using = rs.getByte("del");
                 p.charname = rs.getString("charname").toLowerCase();
@@ -10828,7 +10827,7 @@ public void addCharXaiNapLuong(Char p, int type) {
         if (p == null) {
             return false;
         }
-        real.PokedexPokemon.luu(p); // G7.D2: xa lo Pokedex (tat che do Pokemon: khong lam gi). Bang rieng, khong can KHOA_LUU.
+        real.PokedexPokemon.luu(p); // G7.D2: xa lo Pokedex . Bang rieng, khong can KHOA_LUU.
         real.LauDaiNhanVat.luu(p); // GD2: ho so dai han (tat co sv.lau_dai: khong lam gi).
         synchronized (p.KHOA_LUU) {
             return DatabaseNhanVat.saveChar(this, p, admindExit);
@@ -12350,9 +12349,9 @@ public void addCharXaiNapLuong(Char p, int type) {
 
     /**
      * Cot cua che do Pokemon (sql/them_cot_pokemon.sql): tob_char.dex/shiny va
-     * data_monster.dex/shiny/he2. Chi goi khi bat com.htbb.pokemon.CheDoPokemon, va
+     * data_monster.dex/shiny/he2. Goi luc khoi dong,
      * PHAI TRUOC khi nap template quai (Map.loadAllTemplate) va nhan nguoi choi - cung
-     * ly do voi themCotKhoXuLuong(). Tat co thi khong dong vao schema (dung hanh vi cu).
+     * ly do voi themCotKhoXuLuong().
      * Chay sql/them_cot_pokemon.sql bang tay truoc van la cach chinh; ham nay chi la
      * luoi an toan, co cot roi thi khong lam gi.
      */
@@ -12386,7 +12385,7 @@ public void addCharXaiNapLuong(Char p, int type) {
                 stmt = conn.createStatement();
                 stmt.execute("ALTER TABLE " + bang + " ADD COLUMN " + tenCot
                         + " " + kieuCot + " NOT NULL DEFAULT " + macDinh);
-                System.out.println("[DB] Da them cot " + bang + "." + tenCot + " (che do Pokemon).");
+                System.out.println("[DB] Da them cot " + bang + "." + tenCot + ".");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -12435,11 +12434,11 @@ public void addCharXaiNapLuong(Char p, int type) {
      * Ghi tob_char.dex/shiny (viec S2). Mot cau UPDATE RIENG chay sau cau UPDATE chinh
      * cua saveChar/saveCharAuto/saveCharLienDau va addChar, KHONG nhet vao cau chinh:
      * cau chinh loi la nhan vat bi KHOA (xem nhanh catch cua saveChar), con thieu cot
-     * dex chi nen mat dex. Chi chay khi bat che do Pokemon - tat co thi khong co cau
+     * dex chi nen mat dex. Khong co cau
      * SQL nao them. Dung chung connection cua noi goi, khong tra connection.
      */
     public static void luuCotPokemon(final Connection conn, final int idChar, final int dex, final int shiny) {
-        if (!CheDoPokemon.bat() || conn == null || idChar <= 0) {
+        if (conn == null || idChar <= 0) {
             return;
         }
         PreparedStatement pre = null;

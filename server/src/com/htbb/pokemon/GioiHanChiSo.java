@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * GIOI HAN CHI SO chong lam phat (docs/pokemon/CHI_SO_TRANG_BI.md muc 3). Lop THUAN: khong dung
+ * GIOI HAN CHI SO chong lam phat (docs/thiet-ke-game.md). Lop THUAN: khong dung
  * Char/Map/CSDL, de kiem o test/KiemChiSo.java va dung chung voi tools/pokemon/MoPhongChiSo.java.
  *
  * Chi co tac dung khi bat co sv.lau_dai (noi goi kiem LauDai.bat()). Moi gioi han la TRAN CUNG +

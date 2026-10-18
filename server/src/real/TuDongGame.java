@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Noi TU DONG DANH chinh thuc (com.htbb.pokemon.TuDong) vao game. Thiet ke: docs/pokemon/TU_DONG_DANH.md.
+ * Noi TU DONG DANH chinh thuc (com.htbb.pokemon.TuDong) vao game. Thiet ke: docs/thiet-ke-game.md.
  *
  *   - Lenh -100 (client -> server, luong ban do qua MapXuLyLenh): byte loai 0 xin trang thai / 1 bat (+ short ban
  *     kinh xin, px) / 2 tat / 3 nhip (client gui ~20 giay mot lan de may chu cong gio va phat hien het gio).
@@ -332,7 +332,7 @@ public final class TuDongGame {
     // ------------------------------------------------------------------ hook cho he thong guc / hoi sinh
 
     /**
-     * HOOK cho he thong guc / hoi sinh (docs/pokemon/TU_DONG_DANH.md muc "Guc va hoi sinh"): goi khi Pokemon cua
+     * HOOK cho he thong guc / hoi sinh (docs/thiet-ke-game.md muc "Guc va hoi sinh"): goi khi Pokemon cua
      * {@code p} GUC. @return true = dang tu dong VA nguoi choi da bat "Tu hoi sinh" VA con luot (tu_dong.hoi_sinh_moi_gio
      * lan / 60 phut) - he thong hoi sinh duoc dung NGAY mot vat pham hoi sinh tai cho (theo luat thuong cua no) va
      * tu dong chay tiep; da ghi nhan mot luot. false = goi {@link #dungKhiChet} roi ve Trung tam Pokemon nhu thuong.

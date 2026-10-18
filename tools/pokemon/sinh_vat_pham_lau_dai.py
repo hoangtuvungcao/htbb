@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Sinh sql/pokemon_vat_pham_lau_dai.sql: vat pham tieu hao/do giu MOI (kieu item type 28) cho GD2b.
 
-Doc docs/pokemon/noi_dung_vat_pham.csv (do sinh_noi_dung.py cua doi noi dung sinh - KHONG sua o
+Doc du_lieu/noi_dung_vat_pham.csv (do sinh_noi_dung.py cua doi noi dung sinh - KHONG sua o
 day): moi dong trang_thai = can_code thanh mot data_item id 1201.. (dai cua GD2b; 1001..1199 la
 cua doi noi dung) va mot dong data_vat_pham_lau_dai (id_item -> ma, nhom, hieu_ung, gioi_han)
 cho real.VatPhamDungLauDai doc luc khoi dong. Them 2 bua bao ho that (thay cach "dat ngoc bao
@@ -20,7 +20,7 @@ import os
 import re
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-VAO = os.path.join(GOC, "docs", "pokemon", "noi_dung_vat_pham.csv")
+VAO = os.path.join(GOC, "du_lieu", "noi_dung_vat_pham.csv")
 RA = os.path.join(GOC, "sql", "pokemon_vat_pham_lau_dai.sql")
 ID_DAU = 1201
 ID_CUOI = 1260
@@ -31,7 +31,7 @@ BUA = [
     (1259, "bua_bao_ho_2", "Bùa bảo hộ cao cấp", "Giữ cấp khi nâng cấp +11..+15 thất bại", 11, 15, 14460),
 ]
 
-# Vat pham TANG TOC luyen cap (18/10/2026, com.htbb.pokemon.TangToc / real.TangTocGame; THIET_KE_LAU_DAI.md muc
+# Vat pham TANG TOC luyen cap (18/10/2026, com.htbb.pokemon.TangToc / real.TangTocGame; docs/thiet-ke-game.md muc
 # 1.8): ban CAO CAP (ban bang luong o Cua hang & Nap, nap_cua_hang trao tang_toc) va ban KHOA (kiem bang choi:
 # nhiem vu tuan, lich dang nhap, ve mua, Kecleon bang luong khoa). Ca hai khoa (khong giao dich), cung tran diem.
 # id 1250..1257 (sat dai bua 1258, xa dai noi dung 1201.. dang tang dan). Icon tam: bo icon cu (bang_icon.csv).
@@ -50,7 +50,7 @@ TANG_TOC = [
 TANG_TOC_KECLEON = [(1251, 15, 2), (1257, 10, 2)]
 
 
-DOC = os.path.join(GOC, "docs", "pokemon")
+DOC = os.path.join(GOC, "du_lieu")
 # Hop dot kich: mo -> bang roi nguon 'mo_hop' (khoa_nguon = item:<id>) cua data_noi_dung_roi.
 HOP = [(1050, "hop_tham_gia", "Hộp tham gia đột kích"), (1051, "hop_vang", "Hộp vàng đột kích")]
 ID_CUA_HANG_TUAN = 10000  # tob_mua_tuan.id_shop = 10000 + id dong (khong trung data_shop 0..255)
@@ -105,7 +105,7 @@ def q(s):
 
 def main():
     dong = [d for d in csv.DictReader(open(VAO, encoding="utf-8")) if d["trang_thai"] == "can_code"]
-    o = ["-- SINH RA boi tools/pokemon/sinh_vat_pham_lau_dai.py - KHONG SUA TAY. GD2b (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md).\n",
+    o = ["-- SINH RA boi tools/pokemon/sinh_vat_pham_lau_dai.py - KHONG SUA TAY. GD2b (docs/thiet-ke-game.md).\n",
          "-- Vat pham tieu hao / do giu moi = data_item type 28 id %d..%d + bang anh xa hieu ung.\n" % (ID_DAU, ID_CUOI),
          "-- Chi co tac dung khi sv.lau_dai=1 (real.VatPhamDungLauDai). SQL portable, chay lai nhieu lan nhu nhau.\n",
          "SET NAMES utf8;\n\n",

@@ -3,7 +3,7 @@
 #  DEPLOY TU DONG - GitHub Actions ssh vao goi file nay sau moi push len main
 #
 #  Chay tay cung duoc:  sudo /opt/htbb/vps/deploy-auto.sh
-#  Log rieng:           /opt/htbb/log/autodeploy.log
+#  Log rieng:           /opt/htbb/logs/autodeploy.log
 #
 #  Khac vps/update.sh o hai diem:
 #    1. KHONG restart neu commit moi chi doi file khong anh huong server dang chay
@@ -11,7 +11,7 @@
 #    2. Neu PHAI restart va KHONG co DEPLOY_NOW: KHONG tu tat may. Xem "GIO RESTART"
 #       ben duoi - day la thay doi 12/09/2026, doc ky truoc khi sua tiep file nay.
 #
-#  CAU HINH: /opt/htbb/server.ini duoc SINH RA tu vps/server.ini.tmpl (co trong git)
+#  CAU HINH: /opt/htbb/server/server.ini duoc SINH RA tu vps/server.ini.tmpl (co trong git)
 #  cong voi bi mat GitHub gui qua stdin. Xem vps/sinh-server-ini.sh. Cau hinh doi
 #  cung tinh la "phai restart", giong nhu file thuoc CAN_RESTART_REGEX.
 #
@@ -43,16 +43,24 @@
 set -u
 
 DIR=/opt/htbb
-USER_SV=htbb; id -u htbb >/dev/null 2>&1 || USER_SV=kpah  # TUONG-THICH-TEN-CU: bo sau 1 ban
-SV_GAME=htbb-game; systemctl cat htbb-game >/dev/null 2>&1 || SV_GAME=kpah-game  # TUONG-THICH-TEN-CU: bo sau 1 ban
-SV_LOGIN=htbb-login; systemctl cat htbb-login >/dev/null 2>&1 || SV_LOGIN=kpah-login  # TUONG-THICH-TEN-CU: bo sau 1 ban
-LOG=$DIR/log/autodeploy.log
+USER_SV=htbb
+SV_GAME=htbb-game
+SV_LOGIN=htbb-login
+LOG=$DIR/logs/autodeploy.log
 GIAY_BAO_TRUOC=60
+
+# Tra quyen ban checkout cho $USER_SV (htbb-game.service chay User=htbb). KHONG dung vao
+# backups/ (root:root 0750 - ban sao luu CSDL) va web/releases/ (root:htbb - ban build web do
+# htbb-deploy-web.sh quan ly).
+chown_repo() {
+    find "$DIR" \( -path "$DIR/backups" -o -path "$DIR/web/releases" \) -prune \
+        -o -exec chown -h "$USER_SV":"$USER_SV" {} +
+}
 
 # Nhung duong dan ma khi doi thi BUOC phai restart moi co tac dung.
 # src/*.java KHONG nam trong day: server chay jar, sua .java ma chua build lai thi
 # restart cung vo nghia.
-CAN_RESTART_REGEX='^(server/htbb-server\.jar|server/lib/|server/map/|server/cMap/|server/cMap_pokemon/|server/loginServer/|vps/server\.ini\.tmpl|vps/sinh-server-ini\.sh)'
+CAN_RESTART_REGEX='^(server/htbb-server\.jar|server/lib/|server/map/|server/cMap/|server/loginServer/|vps/server\.ini\.tmpl|vps/sinh-server-ini\.sh)'
 
 # ---- Bi mat tu GitHub, gui qua STDIN ----
 # Khoa SSH cua Actions bi ep chay dung lenh nay (command="..." trong authorized_keys)
@@ -74,7 +82,7 @@ doc_bi_mat() {
 }
 doc_bi_mat
 
-mkdir -p "$DIR/log"
+mkdir -p "$DIR/logs"
 # Vua ghi log tren VPS vua tra ve stdout, de xem duoc ngay trong log cua GitHub Actions.
 exec > >(tee -a "$LOG") 2>&1
 echo
@@ -140,13 +148,13 @@ restart_ngay() {
         fi
     done
 
-    echo "[CANH BAO] sau 60s chua thay cong 19129. Xem log:  tail -n 100 $DIR/log/game.out"
+    echo "[CANH BAO] sau 60s chua thay cong 19129. Xem log:  tail -n 100 $DIR/logs/game.out"
     exit 1
 }
 
 echo "== Kiem tra repo co bi sua tay khong"
 # Bo qua file tam CHUA DUOC THEO DOI cua trinh soan thao (nano/vim). Mot phien nano
-# dang mo /opt/htbb/server.ini de lai .server.ini.swp, va the la ca deploy dung lai
+# dang mo /opt/htbb/server/server.ini de lai .server.ini.swp, va the la ca deploy dung lai
 # du khong ai sua gi that. Da vap 29/08 (web PHP cu, config.local.php) va 30/08/2026
 # (server.ini). Dong nay chi bo qua dong "??" - file da theo doi ma bi sua van chan.
 DIRTY=$(sudo -u "$USER_SV" git -C "$DIR" status --porcelain \
@@ -197,7 +205,7 @@ if [ "$CO_COMMIT_MOI" = 1 ]; then
             echo "      (chua he dung toi) - phuc hoi ngay de khong ai lo phai bao tri xong roi moi vo"
             echo "      chay ban hong."
             sudo -u "$USER_SV" git -C "$DIR" checkout "$CU" -- server/htbb-server.jar
-            chown -R "$USER_SV":"$USER_SV" "$DIR"
+            chown_repo
             exit 1
         fi
     fi
@@ -210,7 +218,7 @@ sinh_cau_hinh
 RC=$?
 if la_loi_sinh "$RC"; then
     echo "[LOI] sinh cau hinh that bai (ma thoat $RC). KHONG dong toi server."
-    chown -R "$USER_SV":"$USER_SV" "$DIR"
+    chown_repo
     exit 1
 fi
 [ "$RC" = 3 ] && CAN_RESTART=1
@@ -218,7 +226,7 @@ fi
 # MOT LAN sau ca hai buoc tren, bat ke co commit moi va/hoac cau hinh doi hay khong -
 # server.ini vua sinh lai (thuong tren) va file vua pull (neu co) deu phai thuoc ve
 # $USER_SV, khong thi htbb-game.service (User=htbb) khong doc/ghi duoc lan sau.
-chown -R "$USER_SV":"$USER_SV" "$DIR"
+chown_repo
 chmod +x "$DIR"/vps/*.sh 2>/dev/null
 
 # DEPLOY_NOW=1 la lenh "restart NGAY", doc lap voi CAN_RESTART: mot lan chay TRUOC co
@@ -247,7 +255,7 @@ fi
 # Doc gio bao tri ngau nhien gan nhat ma BaoTriDaily da tu random va in ra luc JVM
 # hien tai khoi dong (xem src/real/BaoTriDaily.java). Chi de tham khao trong log -
 # khong dung de dieu khien logic, BaoTriDaily tu lo lay gio no da chon.
-GIO_DU_KIEN=$(grep -o 'Thời gian bảo trì được set: [0-9]*:[0-9]*' "$DIR/log/game.out" 2>/dev/null \
+GIO_DU_KIEN=$(grep -o 'Thời gian bảo trì được set: [0-9]*:[0-9]*' "$DIR/logs/game.out" 2>/dev/null \
               | tail -1 | sed 's/^.*: //')
 echo "== Code moi da san sang tren dia (commit $(sudo -u "$USER_SV" git -C "$DIR" log -1 --format='%h %s'))."
 if [ -n "$GIO_DU_KIEN" ]; then

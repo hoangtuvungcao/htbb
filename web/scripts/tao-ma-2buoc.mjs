@@ -8,7 +8,7 @@
  *  ĐÚNG biến môi trường của dịch vụ web (để chắc chắn đọc được cùng cấu hình —
  *  nếu lệnh này chạy được mà trang lại báo lỗi kết nối thì vấn đề nằm ở chỗ khác):
  *
- *      cd <thư mục HTBB-Web>
+ *      cd <thư mục web>
  *      sudo -u <người chạy web> node --env-file=<file EnvironmentFile của systemd> scripts/tao-ma-2buoc.mjs <tên>
  *
  *  Khi dev: `node scripts/tao-ma-2buoc.mjs <tên>` (tự đọc .env nếu có).

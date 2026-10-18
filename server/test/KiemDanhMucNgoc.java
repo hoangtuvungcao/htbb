@@ -13,7 +13,7 @@ import real.GemTemplate;
 /**
  * Doi chieu HTBB-Web/shared/data/danh-muc-ngoc.json (tools/SinhDanhMucNgoc sinh; web doc qua
  * server/utils/giftcodeNgoc.gen.ts) voi mang real.Map.gemTemplate. Truoc day la tep PHP
- * web/admin/inc/danh_muc_ngoc.php - website PHP da bo (docs/pokemon/BO_WEB_PHP.md).
+ * web/admin/inc/danh_muc_ngoc.php - website PHP da bo (docs/kien-truc.md).
  *
  * VI SAO CAN BO KIEM NAY. Ten 270 vien ngoc khong co trong CSDL - chung ghi cung trong
  * src/real/MapNapTaiNguyen.java, va mot nua lay tu hang so data.Text.*. Trang quan tri

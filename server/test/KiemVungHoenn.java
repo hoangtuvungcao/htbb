@@ -16,7 +16,7 @@ import com.htbb.pokemon.DinhDangBanDo;
 import com.htbb.pokemon.TenMapPokemon;
 
 /**
- * Vung Hoenn (nam 2): 29 ban do MOI chi co o cMap_pokemon (khung o com.htbb.pokemon.BanDoHoenn, ve bang
+ * Vung Hoenn (nam 2): 29 ban do MOI chi co o cMap (khung o com.htbb.pokemon.BanDoHoenn, ve bang
  * tools/pokemon/VeMapMoi.java). KiemMapPokemon chi duyet cMap goc nen khong thay cac map nay.
  *
  * VI SAO: cong Hoenn do server tu dung bang locationMap tu BanDoHoenn (real.VungHoenn) - lech mot o giua
@@ -25,7 +25,7 @@ import com.htbb.pokemon.TenMapPokemon;
 public final class KiemVungHoenn {
 
     public static void chay() {
-        Kiem.nhom("Vung Hoenn (BanDoHoenn, cMap_pokemon 43..62/160..165/280..282)");
+        Kiem.nhom("Vung Hoenn (BanDoHoenn, cMap 43..62/160..165/280..282)");
         try {
             chayThat();
         } catch (final Exception e) {
@@ -45,21 +45,20 @@ public final class KiemVungHoenn {
 
     private static void chayThat() throws Exception {
         final Map<String, String[]> tk = new HashMap<String, String[]>();
-        for (final String l : Files.readAllLines(new File("../docs/pokemon/thiet_ke_map.csv").toPath(), StandardCharsets.UTF_8)) {
+        for (final String l : Files.readAllLines(new File("../du_lieu/thiet_ke_map.csv").toPath(), StandardCharsets.UTF_8)) {
             if (!l.isEmpty() && Character.isDigit(l.charAt(0))) {
                 final String[] p = l.split(";", -1);
                 tk.put(p[0].trim(), p);
             }
         }
         final Map<Integer, List<int[]>> coDinh = new HashMap<Integer, List<int[]>>();
-        for (final String l : Files.readAllLines(new File("../docs/pokemon/diem_co_dinh.csv").toPath(), StandardCharsets.UTF_8)) {
+        for (final String l : Files.readAllLines(new File("../du_lieu/diem_co_dinh.csv").toPath(), StandardCharsets.UTF_8)) {
             if (!l.isEmpty() && Character.isDigit(l.charAt(0))) {
                 final String[] p = l.split(";", -1);
                 coDinh.computeIfAbsent(Integer.parseInt(p[0].trim()), z -> new ArrayList<int[]>())
                         .add(new int[]{Integer.parseInt(p[1].trim()), Integer.parseInt(p[2].trim())});
             }
         }
-        final Set<String> goc = new HashSet<String>(Arrays.asList(new File("cMap").list()));
         int sai = 0, thieu = 0, lechKhung = 0, tileLa = 0, khongToi = 0, ro = 0, quaiSai = 0, congSai = 0, denChan = 0, boSai = 0, tkSai = 0;
         final List<String> loi = new ArrayList<String>();
         final Map<Integer, boolean[]> diMap = new HashMap<Integer, boolean[]>();
@@ -69,7 +68,7 @@ public final class KiemVungHoenn {
             final boolean boDung = bo.equals(b.boTile())
                     && (("t".equals(bo) && (b.loai.equals("thi_tran") || !b.loai.equals("hang") && !b.loai.equals("dau_truong")))
                     || ("t_hang".equals(bo) && b.loai.equals("hang")) || ("t_thanh".equals(bo) && (b.loai.equals("dau_truong") || b.loai.equals("thanh"))));
-            if (!boDung || goc.contains("" + b.id) || b.id >= 200 && b.id <= 271) {
+            if (!boDung || b.id >= 200 && b.id <= 271) {
                 boSai++;
                 loi.add(b.id + ": id/bo tile khong hop loai");
             }
@@ -81,7 +80,7 @@ public final class KiemVungHoenn {
             final File f = new File(BanDoPokemon.THU_MUC_CMAP + b.id);
             if (!f.isFile()) {
                 thieu++;
-                loi.add(b.id + ": thieu cMap_pokemon");
+                loi.add(b.id + ": thieu cMap");
                 continue;
             }
             final byte[] by = Files.readAllBytes(f.toPath());
@@ -139,7 +138,7 @@ public final class KiemVungHoenn {
             for (final int[] d : coDinh.containsKey(b.id) ? coDinh.get(b.id) : new ArrayList<int[]>()) {
                 can.add(d[1] * m.w + d[0]);
             }
-            final File fq = new File(BanDoPokemon.THU_MUC_QUAI + "map" + b.id);
+            final File fq = new File("map/map" + b.id);
             if (!fq.isFile()) {
                 quaiSai++;
                 loi.add(b.id + ": thieu luoi quai");
@@ -236,8 +235,8 @@ public final class KiemVungHoenn {
             }
         }
         Kiem.bang("doc -> ghi lai trung tung byte", 0, sai);
-        Kiem.bang("moi ban do Hoenn co cMap_pokemon", 0, thieu);
-        Kiem.bang("id ngoai cMap goc, bo tile hop loai, ngoai khoang 200..271", 0, boSai);
+        Kiem.bang("moi ban do Hoenn co cMap", 0, thieu);
+        Kiem.bang("bo tile hop loai, id ngoai khoang 200..271", 0, boSai);
         Kiem.bang("thiet_ke_map.csv khop BanDoHoenn (loai, moc)", 0, tkSai);
         Kiem.bang("kich thuoc/cong/NPC khop khung BanDoHoenn, khong cay cu", 0, lechKhung);
         Kiem.bang("chi so tile nam trong bo tile moi", 0, tileLa);
@@ -276,7 +275,7 @@ public final class KiemVungHoenn {
         }
         Kiem.bang("TenMapPokemon.HOENN_ID = BanDoHoenn", idBd, idTm);
         Kiem.bang("TenMapPokemon.HOENN_TEN = BanDoHoenn", tenBd, Arrays.asList(TenMapPokemon.HOENN_TEN));
-        for (final String cs : new String[]{"../client_pc_ios/ClientUnity/Assets/Scripts/Game/TenMapPokemon.cs", "../client_pc_ios/Assets/Scripts/Assembly-CSharp/TenMapPokemon.cs"}) {
+        for (final String cs : new String[]{"../client_pc_ios/Assets/Scripts/Assembly-CSharp/TenMapPokemon.cs"}) {
             final File f = new File(cs);
             if (!f.isFile()) {
                 continue;

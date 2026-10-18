@@ -1,7 +1,7 @@
 /**
  * Khoá toàn bộ API nạp tiền khi HTBB_NAP_BAT tắt (mặc định trên nhánh pokemon/chuyen-doi).
  *
- * Quyết định Q10 (HTBB/docs/pokemon/KE_HOACH_CHUYEN_DOI.md): không thu tiền khi còn dùng
+ * Quyết định Q10 (docs/kien-truc.md): không thu tiền khi còn dùng
  * asset PMDCollab (CC BY-NC 4.0) hoặc tên Pokémon thật. Code nạp KHÔNG bị xoá, chỉ bị chặn
  * ở một chỗ này: tạo đơn, xem đơn, hỏi trạng thái, webhook SePay và trang xác nhận nạp.
  * Khu quản trị (/api/admin/naptien) vẫn mở để admin xem lại đơn cũ.

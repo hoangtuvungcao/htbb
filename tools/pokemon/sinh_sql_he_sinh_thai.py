@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Sinh sql/pokemon_he_sinh_thai.sql - du lieu the gioi cua he sinh thai (docs/pokemon/HE_SINH_THAI.md).
+"""Sinh sql/pokemon_he_sinh_thai.sql - du lieu the gioi cua he sinh thai (docs/thiet-ke-game.md).
 
 Chi thu vien chuan, TAT DINH (cung dau vao -> cung tep). Chay o thu muc HTBB/:
     python3 -I tools/pokemon/sinh_sql_he_sinh_thai.py
 
 Dau vao:
-  docs/pokemon/thiet_ke_map.csv   : loai (vung sinh thai) cua moi ban do
-  docs/pokemon/bang_quai.csv      : template quai (cap, phan loai, dex, he)
-  map/pokemon_spawn/map<N>, map/map<N> : luoi sinh quai (u8 w, u8 h, w*h u8 id mau)
+  du_lieu/thiet_ke_map.csv   : loai (vung sinh thai) cua moi ban do
+  du_lieu/bang_quai.csv      : template quai (cap, phan loai, dex, he)
+  map/map<N>, map/map<N> : luoi sinh quai (u8 w, u8 h, w*h u8 id mau)
 
 Ra (bang PORTABLE, chay duoc tren MariaDB va NovaDB - giong sql/pokemon_lau_dai.sql):
   data_hst_vung      (map_id, vung, ten)              : vung sinh thai cua ban do
@@ -15,7 +15,7 @@ Ra (bang PORTABLE, chay duoc tren MariaDB va NovaDB - giong sql/pokemon_lau_dai.
                      : ung vien thay loai khi quai hoi sinh (cung dai cap +-4, quai hiem +3..+8)
   data_hst_bung_phat (map_id, id_quai)                : cap du dieu kien bung phat (loai cua chinh tuyen)
   data_hst_ho_cau    (map_id, ho_id, so_o, x, y)      : DIEM CAU CA - chi cau o ho (vung nuoc kin khong cham mep
-                     ban do, 6..40% dien tich; giong BanDoSinhThai.nhanHo/diemCau). Kem docs/pokemon/diem_cau_ca.csv.
+                     ban do, 6..40% dien tich; giong BanDoSinhThai.nhanHo/diemCau). Kem du_lieu/diem_cau_ca.csv.
   data_hst_vung_loai (vung, dex)                      : loai quai cua moi vung (muc tieu "hoan thanh vung";
                      loai ca them luc chay tu KyNangSong.BANG_CAU_CA - mot nguon)
 Bang tob_hst_* (du lieu nguoi choi) tao o cuoi tep va server cung tu tao neu thieu.
@@ -37,7 +37,7 @@ VUNG_TUYEN = {"duong", "dong_co", "rung", "ho", "bien", "nui", "tuyet", "sa_mac"
 HOP_THOI_TIET = {1: {1, 4}, 2: {2, 3}, 3: {5}, 4: {12, 8, 16}, 5: {13, 10}}
 HE_DEM = {13, 15, 7}
 
-# Map 40 (MOBA) va 42 (nui kho bau): vi tri quai gan logic thap/lane (DINH_DANG_MAP.md muc 3) - khong dong vao.
+# Map 40 (MOBA) va 42 (nui kho bau): vi tri quai gan logic thap/lane (docs/kien-truc.md) - khong dong vao.
 MAP_KHONG_DONG = {40, 42}
 SO_UNG_VIEN = 6
 SO_HIEM = 2
@@ -55,7 +55,7 @@ def bam(x):
 
 def doc_map():
     ra = []
-    with open(os.path.join(GOC, "docs/pokemon/thiet_ke_map.csv"), encoding="utf-8") as f:
+    with open(os.path.join(GOC, "du_lieu/thiet_ke_map.csv"), encoding="utf-8") as f:
         for dong in f:
             dong = dong.strip()
             if not dong or dong.startswith("#") or dong.startswith("id;"):
@@ -69,7 +69,7 @@ def doc_map():
 
 def doc_quai():
     q = {}
-    with open(os.path.join(GOC, "docs/pokemon/bang_quai.csv"), encoding="utf-8") as f:
+    with open(os.path.join(GOC, "du_lieu/bang_quai.csv"), encoding="utf-8") as f:
         for r in csv.DictReader(f):
             if r["phan_loai"] != "quai" or not r["dex"]:
                 continue
@@ -81,7 +81,7 @@ def doc_quai():
 
 
 def doc_luoi(map_id):
-    for duong in ("server/map/pokemon_spawn/map%d" % map_id, "server/map/map%d" % map_id):
+    for duong in ("server/map/map%d" % map_id,):
         p = os.path.join(GOC, duong)
         if os.path.isfile(p):
             b = open(p, "rb").read()
@@ -110,7 +110,7 @@ DIEM_MOI_HO = 4
 def tile_nuoc():
     """bo tile -> tap chi so tile NUOC THAT (ten W*/sen, kieu 2) - giong BanDoSinhThai.tileNuoc."""
     d = {}
-    with open(os.path.join(GOC, "docs/pokemon/bang_tile_moi.csv"), encoding="utf-8") as f:
+    with open(os.path.join(GOC, "du_lieu/bang_tile_moi.csv"), encoding="utf-8") as f:
         for r in csv.DictReader(f):
             if (r["ten"].startswith("W") or r["ten"] == "sen") and r["kieu"] == "2":
                 d.setdefault(r["bo_tile"], set()).add(int(r["chi_so"]))
@@ -123,14 +123,14 @@ def bo_tile(map_id):
 
 def ho_cua_map(map_id, nuoc_bo):
     """[(ho_id, so_o, [(x,y) diem cau]...)] cua map; [] neu thieu tep."""
-    p = os.path.join(GOC, "server", "cMap_pokemon", str(map_id))
+    p = os.path.join(GOC, "server", "cMap", str(map_id))
     if not os.path.isfile(p):
         return []
     b = open(p, "rb").read()
     w, h = b[0], b[1]
     tile = b[2:2 + w * h]
     bo = bo_tile(map_id)
-    kieu = open(os.path.join(GOC, "server", "cMap_pokemon", bo + ".type"), "rb").read()
+    kieu = open(os.path.join(GOC, "server", "cMap", bo + ".type"), "rb").read()
     tn = nuoc_bo.get(bo, set())
     nuoc = [t < 254 and t in tn for t in tile]
     di = [True if t >= 254 else ((kieu[t] & 2) == 0 if t < len(kieu) else not nuoc[i]) for i, t in enumerate(tile)]
@@ -241,8 +241,8 @@ def main():
         for ho, so_o, diem in ho_cua_map(m, nuoc_bo):
             for (x, y) in diem:
                 ho_cau.append((m, ho, so_o, x, y))
-    with open(os.path.join(GOC, "docs/pokemon/diem_cau_ca.csv"), "w", encoding="utf-8", newline="\n") as f:
-        f.write("# SINH RA boi tools/pokemon/sinh_sql_he_sinh_thai.py - KHONG SUA TAY. Chi cau ca o ho (HE_SINH_THAI.md muc 3).\n")
+    with open(os.path.join(GOC, "du_lieu/diem_cau_ca.csv"), "w", encoding="utf-8", newline="\n") as f:
+        f.write("# SINH RA boi tools/pokemon/sinh_sql_he_sinh_thai.py - KHONG SUA TAY. Chi cau ca o ho (docs/thiet-ke-game.md).\n")
         f.write("# loai_ho: ho_lon (>= %d o, co ca hiem) | ao (chi ca thuong). x,y = o dung cau (don vi o 16 px).\n" % HO_LON)
         f.write("map_id,ten_map,vung,ho_id,so_o,loai_ho,x,y\n")
         ten_map = {m: (loai, ten) for m, loai, ten in maps}
@@ -261,7 +261,7 @@ def main():
     out = []
     w = out.append
     w("-- SINH RA boi tools/pokemon/sinh_sql_he_sinh_thai.py - KHONG SUA TAY.")
-    w("-- He sinh thai game (docs/pokemon/HE_SINH_THAI.md). Chi doc khi sv.he_sinh_thai=1.")
+    w("-- He sinh thai game (docs/thiet-ke-game.md). Chi doc khi sv.he_sinh_thai=1.")
     w("-- Bang data_hst_* : du lieu the gioi (vung, thay loai, bung phat). Bang tob_hst_* : du lieu nguoi choi")
     w("-- (server cung tu tao neu thieu - com.htbb.pokemon.DuLieuHeSinhThai.taoBang).")
     w("SET NAMES utf8;")

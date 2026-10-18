@@ -1,6 +1,6 @@
 -- ============================================================================
 --  WIPE DU LIEU NGUOI CHOI SAU OPEN TEST (Huyen Thoai Bao Boi) - htbb_db
---  San sang production 17/10/2026 - xem docs/pokemon/SAN_SANG_PRODUCTION.md muc 7.
+--  San sang production 17/10/2026 - xem docs/trien-khai.md.
 --
 --  VI SAO KHONG DUNG sql/wipe_player_data.sql NUA:
 --    File cu giu DANH SACH CO DINH 16 bang roi TRUNCATE MOI BANG CON LAI. Tu khi chuyen sang
@@ -13,7 +13,7 @@
 --  lai, de BAN DOC LAI truoc khi chay.
 --
 --  THU TU (KHONG HOAN TAC DUOC):
---    1. Thong bao truoc >= 7 ngay (mau o SAN_SANG_PRODUCTION.md muc 7).
+--    1. Thong bao truoc >= 7 ngay (mau o docs/trien-khai.md).
 --    2. sudo systemctl stop htbb-game htbb-login      (server giu nhan vat trong RAM, con chay la ghi de lai)
 --    3. sudo /opt/htbb/vps/backup_db.sh               (+ cat rieng 1 ban: cp /opt/htbb/backup/htbb_db_<ngay>.sql.gz ~/truoc-wipe/)
 --    4. mysql -N -r htbb_db < sql/wipe_sau_open_test.sql > lenh_wipe.sql   (CHI in lenh, khong xoa gi;

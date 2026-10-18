@@ -275,7 +275,7 @@ public final class KiemLichSuKien {
         // Bang co the chua co hai cot lich (tao truoc 30/08/2026) - trang van phai dung duoc.
         Kiem.dung("trang web chiu duoc bang thieu cot lich", ds.contains("coCotLich"));
         // (Phep kiem lop CSS .lich-form/.lich-o cua admin.css PHP da bo: giao dien Nuxt dung
-        // Nuxt UI, khong co tep CSS rieng cho trang nay - xem docs/pokemon/BO_WEB_PHP.md.)
+        // Nuxt UI, khong co tep CSS rieng cho trang nay - xem docs/kien-truc.md.)
     }
 
     private static String doc(final String duong) {

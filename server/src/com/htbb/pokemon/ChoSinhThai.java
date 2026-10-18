@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Cho sinh thai (docs/pokemon/HE_SINH_THAI.md muc 4). Lop THUAN: chi tinh tien, khong cham CSDL.
+ * Cho sinh thai (docs/thiet-ke-game.md). Lop THUAN: chi tinh tien, khong cham CSDL.
  *
  *   - Rao ban theo LOAI (ca / berry / khoang / hoa thach / mon an / thuoc / trung / trang tri).
  *   - Phi dang 1% (khong hoan) + thue 6% khi ban (dot) - khop thue cho cua THIET_KE_LAU_DAI 2.4.

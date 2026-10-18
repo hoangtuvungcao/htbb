@@ -210,7 +210,7 @@ public class PokemonHuyenThoai : Char
 
 	/// <summary>
 	/// Che do Pokemon: than thu (Hoa ky lan cap 1..3 = idThanThu 0..2, item 681..683) ve thanh
-	/// Pokemon theo docs/pokemon/bang_thu.csv: Ponyta, Rapidash, Rapidash shiny.
+	/// Pokemon theo du_lieu/bang_thu.csv: Ponyta, Rapidash, Rapidash shiny.
 	/// </summary>
 	public static readonly short[] POKE_DEX_THAN_THU = new short[] { 77, 78, 78 };
 
@@ -218,7 +218,7 @@ public class PokemonHuyenThoai : Char
 
 	private bool paintPokemonThanThu(MyGraphics g)
 	{
-		if (!PokeBody.CHE_DO_POKEMON || idThanThu < 0 || idThanThu >= POKE_DEX_THAN_THU.Length)
+		if (idThanThu < 0 || idThanThu >= POKE_DEX_THAN_THU.Length)
 		{
 			return false;
 		}

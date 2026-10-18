@@ -1,6 +1,6 @@
 """Sinh code game cho bản PC Java (pc-java) Huyền Thoại Bảo Bối từ code bản jar J2ME.
 
-    python3 -I port-j2me.py <client_jar/src> <client_jar/shared/mod> <thư mục ra> <BAN> <XAC_THUC 0|1>
+    python3 -I port-j2me.py <client_jar/src> <client_jar/shared/mod> <thư mục ra> <BAN>
 
 Giống client_apk/port-j2me.py: bản jar (client_jar/src + client_jar/shared/mod) là NGUỒN DUY NHẤT của game; bản PC biên dịch lại
 đúng code đó trên lớp tương thích MIDP cho Java SE (client_pc/src/javax/microedition/...) và chỉ vá vài chỗ
@@ -11,7 +11,7 @@ mà máy tính buộc phải khác:
   bàn phím ảo VirTualKeyB của bản jar; ô đang gõ báo cho lớp nền (phím chữ vào ô nhập thay vì điều khiển).
 - Font (font ảnh của game): vẽ + đo chữ qua htbb.pc.ChuHD = font thật (Noto Sans, đủ tiếng Việt) nét HD ở độ
   phân giải thật của cửa sổ; tắt bằng --chu-anh (giữ font ảnh gốc).
-- PhienBan (build.sh của jar sinh): số bản + XAC_THUC (-88).
+- PhienBan (build.sh của jar sinh): số bản.
 
 Mỗi chỗ vá phải khớp đúng số lần mong đợi, lệch là DỪNG build (code jar đổi -> sửa lại mẫu ở đây).
 """
@@ -227,8 +227,7 @@ def ap_dau(tuong_doi, s):
 
 
 def main():
-    src, mod, out, ban, xac_thuc = sys.argv[1:6]
-    xt = "true" if xac_thuc in ("1", "bat", "true") else "false"
+    src, mod, out, ban = sys.argv[1:5]
     va_rieng = {}
     for f, a, b, n in VA_RIENG:
         va_rieng.setdefault(f, []).append((a, b, n))
@@ -276,9 +275,9 @@ def main():
     os.makedirs(os.path.dirname(pb), exist_ok=True)
     open(pb, "w", encoding="utf-8").write(
         "package game.render.screen;\n\n/** Sinh bởi client_pc/port-j2me.py - KHÔNG sửa tay. */\n"
-        "final class PhienBan {\n    static final int BAN = %d;\n    static final boolean XAC_THUC = %s;\n}\n"
-        % (int(ban), xt))
-    print("port-j2me (pc): %d file -> %s (XAC_THUC=%s)" % (dem + 1, out, xt))
+        "final class PhienBan {\n    static final int BAN = %d;\n}\n"
+        % int(ban))
+    print("port-j2me (pc): %d file -> %s" % (dem + 1, out))
 
 
 main()

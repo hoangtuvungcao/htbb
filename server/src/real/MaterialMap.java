@@ -49,14 +49,14 @@ public class MaterialMap extends Map {
         }
         this.idXaphu = (byte) idXaphu;
         if (this.mapId != -1) {
-            this.loadMap(com.htbb.pokemon.BanDoPokemon.duongQuai("map/map" + loadmap), magic_physic);
+            this.loadMap("map/map" + loadmap, magic_physic);
         }
         FileInputStream fis = null;
         DataInputStream dis = null;
         FileInputStream fisMap = null;
         DataInputStream disMap = null;
         try {
-            fis = new FileInputStream(com.htbb.pokemon.BanDoPokemon.duong(loadmap < 110 ? "cMap/t.type" : (loadmap > 200 ? "cMap/t_thanh.type" : "cMap/t_hang.type")));
+            fis = new FileInputStream(loadmap < 110 ? "cMap/t.type" : (loadmap > 200 ? "cMap/t_thanh.type" : "cMap/t_hang.type"));
             dis = new DataInputStream(fis);
             this.typeOfTile = new int[dis.available()];
             int i = 0;
@@ -64,7 +64,7 @@ public class MaterialMap extends Map {
                 this.typeOfTile[i] = dis.read();
                 ++i;
             }
-            fisMap = new FileInputStream(com.htbb.pokemon.BanDoPokemon.duong("cMap/" + loadmap));
+            fisMap = new FileInputStream("cMap/" + loadmap);
             disMap = new DataInputStream(fisMap);
             this.w = disMap.read();
             this.h = disMap.read();

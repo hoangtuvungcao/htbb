@@ -1,12 +1,23 @@
+# Unity tự sinh lại khi mở dự án - không commit
 /Library/
 /Temp/
 /Logs/
 /UserSettings/
+/obj/
+/MemoryCaptures/
+/Recordings/
 /Build/
 /Builds/
-/obj/
 *.csproj
 *.sln
 *.slnx
+*.user
+*.pidb
+.vsconfig
+# IDE cá nhân
+/.vs/
+/.vscode/
+/.idea/
+# BuildCli ghi lúc build bản phát hành (máy chủ / kênh cập nhật)
 /Assets/Resources/htbb_phat_hanh.txt
 /Assets/Resources/htbb_phat_hanh.txt.meta

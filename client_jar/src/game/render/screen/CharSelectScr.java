@@ -130,7 +130,7 @@ public class CharSelectScr extends Screen {
      * khi thi -1 (ve paper doll cu). Eevee da chon nhanh van hien Eevee.
      */
     public static int duDoanDex(MainChar c, int lastLv) {
-        if (!PokeBody.CHE_DO_POKEMON || c == null || c.weaponType < 3 || c.weaponType > 7) {
+        if (c == null || c.weaponType < 3 || c.weaponType > 7) {
             return -1;
         }
         int cap = lastLv <= 0 ? (c.lastLv <= 0 ? 1 : c.lastLv) : lastLv;

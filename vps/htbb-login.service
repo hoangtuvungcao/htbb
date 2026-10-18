@@ -1,21 +1,26 @@
+# /etc/systemd/system/htbb-login.service - HTBB login server (CheckLoginSocket, TCP 8023).
+# Chi lang nghe noi bo: ufw KHONG mo 8023 (server.ini: sv.iplogin=127.0.0.1).
 [Unit]
-Description=HTBB login server (CheckLoginSocket)
+Description=HTBB login server (CheckLoginSocket, 127.0.0.1-only via ufw, TCP 8023)
 After=network.target mariadb.service
-Wants=mariadb.service
+Requires=mariadb.service
+StartLimitIntervalSec=300
+StartLimitBurst=10
 
 [Service]
 Type=simple
 User=htbb
 Group=htbb
+# Doc ./server.ini (db.url, db.user, db.password, port=8023) - xem vps/loginServer.server.ini.example
 WorkingDirectory=/opt/htbb/server/loginServer
 Environment=LANG=en_US.UTF-8
-ExecStart=/usr/bin/java -Xms32m -Xmx96m -Dfile.encoding=UTF-8 -jar CheckLoginSocket.jar
+UMask=0027
+MemoryMax=256M
+ExecStart=/usr/bin/java -Xms32m -Xmx128m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -jar CheckLoginSocket.jar
 Restart=always
 RestartSec=5
-StandardOutput=append:/opt/htbb/log/login.out
-StandardError=append:/opt/htbb/log/login.out
+StandardOutput=append:/opt/htbb/logs/login.out
+StandardError=append:/opt/htbb/logs/login.out
 
 [Install]
 WantedBy=multi-user.target
-# TUONG-THICH-TEN-CU-DONG-SAU: `systemctl ... kpah-login` cu van chay sau khi `systemctl enable` (bo sau 1 ban)
-Alias=kpah-login.service

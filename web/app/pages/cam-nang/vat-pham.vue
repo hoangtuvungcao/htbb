@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Vật phẩm — nhóm theo KE_HOACH_CHUYEN_DOI.md §6.4; đá Eevee + mốc Pokédex từ pokedex.json;
- * bảng chi tiết (công dụng, cấp, giá, nguồn, giới hạn) từ docs/pokemon/web/vat_pham.csv (cam-nang-noi-dung.json).
+ * Vật phẩm — nhóm theo docs/kien-truc.md §6.4; đá Eevee + mốc Pokédex từ pokedex.json;
+ * bảng chi tiết (công dụng, cấp, giá, nguồn, giới hạn) từ du_lieu/web/vat_pham.csv (cam-nang-noi-dung.json).
  */
 const T = CAM_NANG.trangBi
 const NHOM = [

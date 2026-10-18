@@ -1,5 +1,5 @@
 #!/bin/sh
-# Kiem hoi quy sau mot lan chay BotTai (docs/pokemon/TOI_UU_HIEU_NANG.md muc 5).
+# Kiem hoi quy sau mot lan chay BotTai (docs/kien-truc.md).
 #
 #   sh tools/pokemon/kiem_tai/kiem_hoi_quy.sh <bot.log> <game.log> <pid server> [quai ha toi thieu=1] [thread nen]
 #

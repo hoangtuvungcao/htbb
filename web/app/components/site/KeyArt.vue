@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Key art "Huyền Thoại Bảo Bối" - cùng cảnh với màn đăng nhập trong game (J2ME / Android / PC), do
- * htbb-client/j2me/tools/tao_banner.py --web sinh vào public/keyart/ (khung gốc 880x400; màn dọc 360x640 ở doc/).
+ * client_jar/tools/tao_banner.py --web sinh vào public/keyart/ (khung gốc 880x400; màn dọc 360x640 ở doc/).
  *
  * Hai tầng, cùng MỘT hình học "cover, neo đáy giữa" (giống object-fit: cover; object-position: 50% 100%):
  *  1. Ảnh tĩnh ghép sẵn (nen_ngang.jpg / nen_doc.jpg) - có ngay từ HTML server (SSR), không cần JS / CSS

@@ -103,7 +103,7 @@ public final class ThaoTacMayChu {
         }
     }
 
-    /** Ten loai Pokemon cua nhan vat (che do Pokemon), rong neu khong co. */
+    /** Ten loai Pokemon cua nhan vat, rong neu khong co. */
     public static String tenLoai(final Char c) {
         try {
             final String t = com.htbb.pokemon.LoaiPokemon.ten(c.pokeDex);
@@ -1180,7 +1180,6 @@ public final class ThaoTacMayChu {
     /** Ten co -> bat? (thu tu hien thi). Thanh vien doc qua phan chieu (lop co the chua co). */
     public static LinkedHashMap<String, Boolean> coTinhNang() {
         final LinkedHashMap<String, Boolean> m = new LinkedHashMap<String, Boolean>();
-        m.put("che_do_pokemon", an(() -> com.htbb.pokemon.CheDoPokemon.bat()));
         m.put("lau_dai", an(() -> com.htbb.pokemon.LauDai.bat()));
         m.put("he_sinh_thai", an(() -> com.htbb.pokemon.HeSinhThai.bat()));
         m.put("nap_tien", an(() -> com.htbb.pokemon.NapTien.bat()));
@@ -1198,8 +1197,6 @@ public final class ThaoTacMayChu {
     /** Nhan tieng Viet cho co tinh nang (khong hien ten khoa ky thuat). */
     public static String tenCo(final String ma) {
         switch (ma) {
-            case "che_do_pokemon":
-                return "Chế độ Pokémon";
             case "lau_dai":
                 return "Thiết kế dài hạn";
             case "he_sinh_thai":

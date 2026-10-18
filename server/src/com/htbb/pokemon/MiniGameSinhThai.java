@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tro choi giai tri (docs/pokemon/HE_SINH_THAI.md muc 5). Lop THUAN.
+ * Tro choi giai tri (docs/thiet-ke-game.md). Lop THUAN.
  *
  *   - "Ai la Pokemon?": cau do theo bong (he, so chu, chu cai dau) tren kenh the gioi, tra loi bang chat.
  *   - Dua Pokemon: chuoi diem moc tren 1 ban do duong; di qua theo thu tu, xep hang theo thoi gian.

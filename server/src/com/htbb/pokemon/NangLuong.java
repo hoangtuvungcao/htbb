@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Nang luong huan luyen (THIET_KE_LAU_DAI.md muc 1.3). Lop THUAN.
+ * Nang luong huan luyen (docs/thiet-ke-game.md). Lop THUAN.
  *
  *   180 phut dau (+ tich luy tu hom truoc, toi da them 180) -> 100%
  *   180 phut tiep -> 50%, 240 phut tiep -> 20%, sau do 0% (EXP, xu, da tu quai).

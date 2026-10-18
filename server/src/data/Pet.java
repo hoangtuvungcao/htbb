@@ -690,7 +690,7 @@ public class Pet extends Actor {
                 this.itemPet.level = 2;
                 newItem.dateCreate = Char.getDayTime(0L);
                 p.sendMessage(MessageCreator.createCharWearingMessage(p, p));
-                // Che do Pokemon: item pet doi -> loai Pokemon co the doi; nguoi o gan cung can -94.
+                // Pokemon: item pet doi -> loai Pokemon co the doi; nguoi o gan cung can -94.
                 real.TienHoaPokemon.guiPokePetChoNguoiGan(p);
             }
         } catch (Exception e) {
@@ -760,7 +760,7 @@ public class Pet extends Actor {
             this.itemPet = newItem;
             newItem.dateCreate = Char.getDayTime(0L);
             p.sendMessage(MessageCreator.createCharWearingMessage(p, p));
-            // Che do Pokemon: nang cap doi item pet (vd Zubat cap 2 -> Golbat cap 3); lenh 3 o tren chi
+            // Pokemon: nang cap doi item pet (vd Zubat cap 2 -> Golbat cap 3); lenh 3 o tren chi
             // gui cho minh (kem -94), nguoi o gan nhan -94 rieng.
             real.TienHoaPokemon.guiPokePetChoNguoiGan(p);
             p.sendMessage(MessageCreator.createServerAlertMessage("Nâng cấp thành công lên " + this.getName(), ""));

@@ -1,7 +1,7 @@
 /**
  * Nội dung chi tiết cho cẩm nang (vật phẩm, cửa hàng, Gym, boss thế giới, PvP mùa, Sổ tay huấn luyện,
  * Hầm ngục, hệ sinh thái, câu cá, cốt truyện). Sinh bởi `node scripts/dong-bo-cam-nang.mjs` từ
- * HTBB/docs/pokemon/web/*.csv, nhiem_vu_tom_tat.json, diem_cau_ca.csv và hằng số Java. KHÔNG sửa tay.
+ * HTBB/du_lieu/web/*.csv, nhiem_vu_tom_tat.json, diem_cau_ca.csv và hằng số Java. KHÔNG sửa tay.
  *
  * Tách riêng khỏi camNang.ts để chỉ trang nào dùng mới tải (Vite gom JSON này thành chunk riêng).
  */

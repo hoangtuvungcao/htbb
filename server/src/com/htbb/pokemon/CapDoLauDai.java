@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * EXP va cap theo thiet ke dai han (THIET_KE_LAU_DAI.md muc 1). Lop THUAN, khong cham
+ * EXP va cap theo thiet ke dai han (docs/thiet-ke-game.md). Lop THUAN, khong cham
  * real.* - real.LevelDetail / real.ExpLauDai goi vao day khi {@link LauDai#bat()}.
  *
  * KHONG nham voi real.LevelDetail.expMain (bang DANG chay khi tat co).
@@ -99,7 +99,7 @@ public final class CapDoLauDai {
     }
 
     /**
-     * CHUYEN DOI nhan vat cu sang bang moi (mot lan, xem docs/pokemon/KE_HOACH_CHUYEN_DOI.md
+     * CHUYEN DOI nhan vat cu sang bang moi (mot lan, xem docs/kien-truc.md
      * muc "Giai doan 2"): GIU CAP, giu ti le % trong cap (ti le tuyen tinh).
      *   exp moi = mainMoi[L-1] + (exp cu - mainCu[L-1]) / reqCu[L] * reqMoi[L]
      * Cap cu vuot cap cao nhat cua bang moi thi ve cap cao nhat (0% trong cap).

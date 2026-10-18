@@ -1,5 +1,5 @@
 -- ==================================================================================
---  CHE DO POKEMON - Pokedex (viec G7.D2/D3, docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 15)
+--  CHE DO POKEMON - Pokedex (viec G7.D2/D3, docs/kien-truc.md)
 -- ==================================================================================
 --
 --      mysql -u root -p <ten_db> < sql/them_bang_pokedex.sql

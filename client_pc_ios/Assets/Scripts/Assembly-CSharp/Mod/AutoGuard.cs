@@ -11,9 +11,6 @@ using System;
 /// </summary>
 public sealed class AutoGuard
 {
-	/** Bảng màu nền thanh trạng thái (KiemServer dùng làm muối xác thực -88 - không đổi). */
-	public static readonly int[] MAU_NEN = new int[8] { 0x69436c, 0x45957f, 0xd11674, 0xb24394, 0xf69a31, 0x8c9b09, 0xbcdeeb, 0x8f48ec };
-
 	/** Canvas.startOKDlg: true = nuốt hộp thoại (Tiện ích "Thông báo: tắt"). */
 	public static bool autoEatDlg(string @string)
 	{

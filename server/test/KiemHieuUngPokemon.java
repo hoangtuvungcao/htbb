@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Doi chieu hieu ung chieu Pokemon (viec K3) giua docs/pokemon/bang_chieu.csv,
- * docs/pokemon/bang_hieu_ung.csv, bang client Resources/poke/hu_bang.bytes va cac anh
+ * Doi chieu hieu ung chieu Pokemon (viec K3) giua du_lieu/bang_chieu.csv,
+ * du_lieu/bang_hieu_ung.csv, bang client Resources/poke/hu_bang.bytes va cac anh
  * hu_*.bytes (deu sinh boi tools/pokemon/tai_hieu_ung_pmd.py).
  *
  * VI SAO: client tra (lop, chieu) trong hu_bang.bytes roi cat khung theo rong/cao/soCot;
@@ -20,11 +20,11 @@ import java.util.Map;
  */
 public final class KiemHieuUngPokemon {
 
-    private static final String F_CHIEU = "../docs/pokemon/bang_chieu.csv";
-    private static final String F_HU = "../docs/pokemon/bang_hieu_ung.csv";
-    private static final String THU_MUC = "../client_pc_ios/ClientUnity/Assets/Resources/poke/";
+    private static final String F_CHIEU = "../du_lieu/bang_chieu.csv";
+    private static final String F_HU = "../du_lieu/bang_hieu_ung.csv";
+    private static final String THU_MUC = "../client_pc_ios/Assets/Resources/poke/";
     private static final String F_BANG_CLIENT = THU_MUC + "hu_bang.bytes";
-    private static final String F_CHAR = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/Char.cs";
+    private static final String F_CHAR = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/Char.cs";
 
     public static void chay() {
         Kiem.nhom("Hieu ung chieu Pokemon (K3: bang_hieu_ung.csv, hu_*.bytes)");

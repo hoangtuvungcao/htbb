@@ -12,16 +12,16 @@ import java.util.regex.Pattern;
  *
  * VI SAO: client tu suy ra Pokemon o man chon nhan vat (LoaiPokemonClient.cs, ban C#
  * cua LoaiPokemon.java) va giu bang NPC type -> dex (NPC.cs) song song voi
- * docs/pokemon/bang_npc.csv. Hai ban sao viet tay khong co gi bat lech nhau, sua
+ * du_lieu/bang_npc.csv. Hai ban sao viet tay khong co gi bat lech nhau, sua
  * mot ben quen ben kia thi man chon nhan vat hien sai loai ma khong bao loi.
  * Kiem bang cach doc chu ma nguon C# (khong chay duoc Unity trong bo test Java).
  */
 public final class KiemPokemonClient {
 
-    private static final String F_LOAI = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/LoaiPokemonClient.cs";
-    private static final String F_NPC = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/NPC.cs";
-    private static final String F_BANG_NPC = "../docs/pokemon/bang_npc.csv";
-    private static final String F_LENH = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/MessageHandler.cs";
+    private static final String F_LOAI = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/LoaiPokemonClient.cs";
+    private static final String F_NPC = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/NPC.cs";
+    private static final String F_BANG_NPC = "../du_lieu/bang_npc.csv";
+    private static final String F_LENH = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/MessageHandler.cs";
 
     public static void chay() {
         Kiem.nhom("Client Unity - Pokemon (LoaiPokemonClient, NPC, lenh -90..-92)");

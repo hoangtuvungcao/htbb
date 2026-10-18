@@ -21,9 +21,6 @@ final class Nen {
 
     /** pokemon: "Bản đồ lớn" vẽ bằng code (game.pokemon.BanDoVung) thay ảnh bản đồ kiếm hiệp. true = đã vẽ. */
     static boolean veBanDoLon(Object g, short[][] diem, int hienTai, int w, int h) {
-        if (!game.pokemon.PokeBody.CHE_DO_POKEMON) {
-            return false;
-        }
         final int map = game.render.Canvas.gameScr != null ? game.render.Canvas.gameScr.map : -1;
         if (game.pokemon.BanDoVung.chiSoHoenn(map) >= 0) {
             game.pokemon.BanDoVung.veHoenn((javax.microedition.lcdui.Graphics) g, map, w, h);
@@ -129,7 +126,7 @@ final class Nen {
 
     /** Tiêu đề "Bản đồ lớn": vùng Hoenn (năm 2) có tiêu đề riêng. */
     static String tieuDeBanDoLon(String macDinh) {
-        return game.pokemon.PokeBody.CHE_DO_POKEMON && game.render.Canvas.gameScr != null
+        return game.render.Canvas.gameScr != null
                 && game.pokemon.BanDoVung.chiSoHoenn(game.render.Canvas.gameScr.map) >= 0 ? "Vùng Hoenn" : macDinh;
     }
 }

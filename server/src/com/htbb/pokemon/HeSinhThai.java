@@ -1,17 +1,17 @@
 package com.htbb.pokemon;
 
 /**
- * Co {@code sv.he_sinh_thai} va SO LIEU GOC cua he sinh thai game (docs/pokemon/HE_SINH_THAI.md).
+ * Co {@code sv.he_sinh_thai} va SO LIEU GOC cua he sinh thai game (docs/thiet-ke-game.md).
  * Lop THUAN: test/KiemHeSinhThai va tools/pokemon/MoPhongKinhTe doc thang cac hang so o day,
  * nen doi so thi sua O DAY, chay lai mo phong + test.
  *
  * Tat co (mac dinh, thieu dong) = game y nhu truoc: moi diem moc "// he sinh thai:" tra ve ngay.
  *
- * Doc som tu server.ini ngay khi lop duoc nap (giong CheDoPokemon, commit 915af4e): diem moc
+ * Doc som tu server.ini ngay khi lop duoc nap : diem moc
  * Monster.update chay tu luong ban do co the truoc khi TeamServer doc xong cau hinh.
  *
  * Don vi tien: "phan nghin gio thu nhap" (‰H) o cap tham chieu cua bac vat lieu
- * (THIET_KE_LAU_DAI.md N1: moi gia tinh theo gio choi, khong theo so co dinh).
+ * (docs/thiet-ke-game.md N1: moi gia tinh theo gio choi, khong theo so co dinh).
  */
 public final class HeSinhThai {
 

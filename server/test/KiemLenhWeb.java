@@ -23,7 +23,7 @@ import real.LevelDetail;
  */
 public final class KiemLenhWeb {
 
-    /** HTBB-Web (thay website PHP da bo - docs/pokemon/BO_WEB_PHP.md). */
+    /** HTBB-Web (thay website PHP da bo - docs/kien-truc.md). */
     private static final String TS_LENH = "server/utils/lenhNhanVat.ts";
     private static final String TS_CAP_DO = "server/api/admin/nhanvat/[id]/cap-do.post.ts";
     private static final String TS_XOA_VP = "server/api/admin/nhanvat/[id]/xoa-vat-pham.post.ts";

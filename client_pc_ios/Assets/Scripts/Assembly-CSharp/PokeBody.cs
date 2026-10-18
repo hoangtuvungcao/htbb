@@ -6,7 +6,7 @@ using UnityEngine;
 /// Resources/poke/&lt;khoa&gt;_anh.bytes (atlas PNG), &lt;khoa&gt;_dl.bytes (du lieu khung,
 /// xem PokeDuLieu), &lt;khoa&gt;_cd.bytes (chan dung 40x40). khoa = dex 4 chu so, them
 /// "s" neu la ban shiny ("0004", "0077s"). Quyet dinh Q5/Q6 trong
-/// docs/pokemon/KE_HOACH_CHUYEN_DOI.md.
+/// docs/kien-truc.md.
 ///
 /// Thieu file thi moi ham ve tra ve false de noi goi quay ve cach ve cu. Ket qua nap
 /// (ke ca that bai) duoc nho lai, nen thieu file khong gay Resources.Load moi khung hinh.
@@ -14,13 +14,6 @@ using UnityEngine;
 public class PokeBody
 {
 	public const string THU_MUC = "poke/";
-
-	/// <summary>
-	/// Cong tac phia client cua co che_do_pokemon (Q8). Chi dung cho cac man TRUOC khi vao
-	/// game (tao/chon nhan vat) vi luc do server chua gui gi. Trong game, moi cho ve Pokemon
-	/// deu do server dieu khien: server tat co thi khong gui -90/-91, dex = 0, ve kieu cu.
-	/// </summary>
-	public static bool CHE_DO_POKEMON = true;
 
 	private static Dictionary<int, PokeBody> cache = new Dictionary<int, PokeBody>();
 

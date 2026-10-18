@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Cac co che cuon hut nho (THIET_KE_LAU_DAI.md muc 7): shiny + pity, Ham nguc bi an
+ * Cac co che cuon hut nho (docs/thiet-ke-game.md): shiny + pity, Ham nguc bi an
  * (hat giong theo ngay), su pham, lich dang nhap, thoi tiet. Lop THUAN.
  */
 public final class CuonHut {

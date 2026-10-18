@@ -54,11 +54,6 @@ i=0; until m -e "select 1" > /dev/null 2>&1; do i=$((i+1)); [ $i -gt 60 ] && { e
 echo "NovaDB san sang (cong $NOVA_PORT, $(m -N -e 'select version()'))"
 
 # 2. Nap CSDL day du neu chua co htbb_db.
-# Doi ten kpah_db -> htbb_db: may chua chay tools/doi_ten/chuyen_csdl.sh thi DUNG LAI - nap sql day du  # TUONG-THICH-TEN-CU
-# ben duoi se ghi de ca bang cua CSDL account dang co.  # TUONG-THICH-TEN-CU
-if m -N -e "show databases" | grep -qx kpah_db && ! m -N -e "show databases" | grep -qx htbb_db; then  # TUONG-THICH-TEN-CU
-    echo "Con CSDL ten cu kpah_db - chay truoc: sh tools/doi_ten/chuyen_csdl.sh --apply"; dung; exit 1  # TUONG-THICH-TEN-CU
-fi
 if ! m -N -e "show databases" | grep -qx htbb_db; then
     echo "Nap ../sql/htbb_day_du.sql ..."
     m < ../sql/htbb_day_du.sql

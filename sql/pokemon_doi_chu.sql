@@ -1,6 +1,6 @@
 -- SINH TU tools/pokemon/sinh_sql_chu.py - KHONG SUA TAY.
 -- G7.C: chi doi CHU (ten/mo ta/hoi thoai). id, so, gia giu nguyen. Chay SAU cac file
--- pokemon_* khac (muc 14 ke hoach). Doi chieu tung o: docs/pokemon/bang_chu.csv
+-- pokemon_* khac (muc 14 ke hoach). Doi chieu tung o: du_lieu/bang_chu.csv
 SET NAMES utf8;
 UPDATE data_potion SET name='Thuốc hồi máu' WHERE id=1;
 UPDATE data_potion SET name2='thuochoimau' WHERE id=1;

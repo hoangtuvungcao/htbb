@@ -6,7 +6,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 /**
- * G7.C3: doi chu kiem hiep -&gt; the gioi Pokemon tren client - ban J2ME cua ClientUnity ChuPokemon.cs.
+ * G7.C3: doi chu kiem hiep -&gt; the gioi Pokemon tren client - ban J2ME cua Unity ChuPokemon.cs.
  * Tu dien /pk/chu.bin (u16 n, n x (writeUTF khoa, writeUTF chu moi)) sinh tu ChuPokemonDuLieu.cs
  * boi client_jar/tools/DongGoiPokeJ2me.java. Khoa bat dau bang "=" la so khop phan biet hoa thuong.
  *
@@ -35,7 +35,7 @@ public final class ChuPokemon {
     }
 
     public static String D(String s) {
-        if (!PokeBody.CHE_DO_POKEMON || KhongDoi || s == null || s.length() == 0) {
+        if (KhongDoi || s == null || s.length() == 0) {
             return s;
         }
         Object o = boNho.get(s);

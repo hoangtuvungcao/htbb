@@ -3969,23 +3969,12 @@ public class WindowInfoScr : MyScreen
 				{
 					countR--;
 				}
-				if (UiPokemon.bat())
+				// pokemon: giao diện - viên tên tab (đỏ = nội dung, xanh = đang đổi tab) + mũi tên vàng
+				GiaoDien.khung(g, 18, 9, 94, 20, 9, GiaoDien.VIEN, isChangeTab ? GiaoDien.XANH_SANG : GiaoDien.DO_SANG, isChangeTab ? GiaoDien.XANH : GiaoDien.DO_TOI, false);
+				if (isChangeTab && Canvas.gameTick % 10 < 7)
 				{
-					// pokemon: giao diện - viên tên tab (đỏ = nội dung, xanh = đang đổi tab) + mũi tên vàng
-					GiaoDien.khung(g, 18, 9, 94, 20, 9, GiaoDien.VIEN, isChangeTab ? GiaoDien.XANH_SANG : GiaoDien.DO_SANG, isChangeTab ? GiaoDien.XANH : GiaoDien.DO_TOI, false);
-					if (isChangeTab && Canvas.gameTick % 10 < 7)
-					{
-						GiaoDien.muiNgang(g, 6, 19, 10, -1, GiaoDien.VANG);
-						GiaoDien.muiNgang(g, 117, 19, 10, 1, GiaoDien.VANG);
-					}
-				}
-				else
-				{
-					g.setColor(7961465);
-					g.fillRect(21, 11, 88, 16);
-					g.fillRect(20, 12, 90, 14);
-					g.setColor((!isChangeTab) ? 2368548 : 30611);
-					g.fillRect(21, 12, 88, 14);
+					GiaoDien.muiNgang(g, 6, 19, 10, -1, GiaoDien.VANG);
+					GiaoDien.muiNgang(g, 117, 19, 10, 1, GiaoDien.VANG);
 				}
 				g.setClip(21, 11, 88, 16);
 				g.translate(-cmxname, 0);
@@ -4713,16 +4702,8 @@ public class WindowInfoScr : MyScreen
 	private void paintGrid(MyGraphics g, int x, int y)
 	{
 		int num = ((!isDefault) ? 34 : 44);
-		if (PokeBody.CHE_DO_POKEMON)
-		{
-			// pokemon: ô lưới bo góc có khe, sọc xen kẽ (KieuO)
-			KieuO.oDo(g, x, y, num + 1, true, ((x / num + y / num) & 1) == 1);
-			return;
-		}
-		g.setColor(6513507);
-		g.drawRect(x, y, num, num);
-		g.setColor(8684162);
-		g.drawRect(x + 1, y + 1, num - 2, num - 2);
+		// pokemon: ô lưới bo góc có khe, sọc xen kẽ (KieuO)
+		KieuO.oDo(g, x, y, num + 1, true, ((x / num + y / num) & 1) == 1);
 	}
 
 	private void paintGrid29(MyGraphics g, int x, int y)
@@ -4778,15 +4759,9 @@ public class WindowInfoScr : MyScreen
 
 	private void paintSelected(MyGraphics g, int x, int y)
 	{
-		if (PokeBody.CHE_DO_POKEMON)
-		{
-			// pokemon: ô chọn nền xanh sáng + viền vàng nhấp nháy (KieuO)
-			KieuO.nenChon(g, x - 1, y - 1, 33);
-			KieuO.chonO(g, x - 1, y - 1, 33);
-			return;
-		}
-		g.setColor(10595790);
-		g.fillRect(x, y, 32, 32);
+		// pokemon: ô chọn nền xanh sáng + viền vàng nhấp nháy (KieuO)
+		KieuO.nenChon(g, x - 1, y - 1, 33);
+		KieuO.chonO(g, x - 1, y - 1, 33);
 	}
 
 	private void paintKeepItem(MyGraphics g)
@@ -5600,99 +5575,26 @@ public class WindowInfoScr : MyScreen
 
 	private void paintSkill(MyGraphics g)
 	{
-		if (PokeBody.CHE_DO_POKEMON)
+		// pokemon: hàng ô chiêu màu hệ + thẻ chiêu (BangChieu)
+		if (selected < 0)
 		{
-			// pokemon: hàng ô chiêu màu hệ + thẻ chiêu (BangChieu)
-			if (selected < 0)
-			{
-				selected = 0;
-			}
-			else if (selected > numW - 1)
-			{
-				selected = numW - 1;
-			}
-			BangChieu.ve(g, numW, selected, isChangeTab, cmx, cmy, w);
-			return;
+			selected = 0;
 		}
-		MFont.smallFont.drawString(g, Canvas.gameScr.mainChar.skillPointLeft + string.Empty, 105, -16, MFont.CENTER);
-		MFont.normalFont[0].drawString(g, "Điểm kỹ năng: ", 60, -22, MFont.CENTER);
-		g.setColor(11908533);
-		g.fillRect(-8, -8, 133, 1);
-		g.fillRect(-8, 26, 133, 1);
-		g.setClip(-8, -8, w + 20, h + 8);
-		g.translate(-cmx, 0);
-		if (!isChangeTab && Canvas.gameTick % 10 > 3)
+		else if (selected > numW - 1)
 		{
-			g.setColor(589295);
-			g.fillRect(selected * wSmall + 3, 5 - h / 4, wSmall - 6, hSmall + h / 4 - 3);
+			selected = numW - 1;
 		}
-		for (int i = 0; i < numW; i++)
-		{
-			GameData.imgSkillIcon.drawFrame(i, i * wSkill + wSmall / 2, h / 2 - h / 4 + 2, 0, 3, g);
-			g.drawImage(Res.imgKhung, i * wSkill + wSmall / 2, h / 2 - h / 4 + 2, 3);
-			MFont.smallFontColor[1].drawString(g, Char.skillLevelLearnt[i] + string.Empty, i * wSkill + wSmall - 4, h / 2 - 1, MFont.RIGHT);
-		}
-		if (!isChangeTab)
-		{
-			if (selected < 0)
-			{
-				selected = 0;
-			}
-			else if (selected > SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz].Length - 1)
-			{
-				selected = SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz].Length - 1;
-			}
-			g.translate(cmx, 0);
-			g.setClip(-11, 28, 138, 72);
-			string text = SkillManager.SKILL_NAME[Canvas.gameScr.mainChar.clazz][selected];
-			sbyte b = Char.skillLevelLearnt[selected];
-			if (b == 9)
-			{
-				text = text + " MAX" + b;
-			}
-			else if (b >= 1)
-			{
-				text = text + " lv " + b;
-			}
-			string[] infoSkill = Canvas.gameScr.mainChar.getInfoSkill(selected);
-			MFont.normalFont[0].drawString(g, text, -5, 30, 0);
-			int num = 40;
-			for (int j = 0; j < infoSkill.Length; j++)
-			{
-				MFont.arialFontW.drawString(g, infoSkill[j], -5, num, 0);
-				num += 12;
-			}
-		}
+		BangChieu.ve(g, numW, selected, isChangeTab, cmx, cmy, w);
 	}
 
 	private void paintFeatures(MyGraphics g)
 	{
-		if (PokeBody.CHE_DO_POKEMON)
+		// pokemon: hàng chỉ số bo góc + biểu tượng màu hệ (BangTiemNang) thay ảnh inv_1
+		if (selected > 4)
 		{
-			// pokemon: hàng chỉ số bo góc + biểu tượng màu hệ (BangTiemNang) thay ảnh inv_1
-			if (selected > 4)
-			{
-				selected = 4;
-			}
-			BangTiemNang.ve(g, Canvas.gameScr.mainChar, selected, isChangeTab, w);
-			return;
+			selected = 4;
 		}
-		if (!isChangeTab)
-		{
-			if (selected > 4)
-			{
-				selected = 4;
-			}
-			g.setColor(7278866);
-			g.fillRect(3, selected * 19, 121, 18);
-		}
-		g.drawImage(Res.imgBGTiemNang, 0, -20, 0);
-		MFont.smallFont.drawString(g, Canvas.gameScr.mainChar.basePointLeft + string.Empty, 107, -11, MFont.CENTER);
-		MFont.smallFont.drawString(g, Canvas.gameScr.mainChar.strength + string.Empty, 107, 8, MFont.CENTER);
-		MFont.smallFont.drawString(g, Canvas.gameScr.mainChar.agility + string.Empty, 107, 27, MFont.CENTER);
-		MFont.smallFont.drawString(g, Canvas.gameScr.mainChar.spirit + string.Empty, 107, 46, MFont.CENTER);
-		MFont.smallFont.drawString(g, Canvas.gameScr.mainChar.health + string.Empty, 107, 65, MFont.CENTER);
-		MFont.smallFont.drawString(g, Canvas.gameScr.mainChar.luck + string.Empty, 107, 84, MFont.CENTER);
+		BangTiemNang.ve(g, Canvas.gameScr.mainChar, selected, isChangeTab, w);
 	}
 
 	private void paintCharWearing(MyGraphics g)
@@ -5722,52 +5624,8 @@ public class WindowInfoScr : MyScreen
 		{
 			g.drawImage(imgCharWear, w / 2 + 5 + xTr, -5 + yTr, MyGraphics.TOP | MyGraphics.HCENTER);
 		}
-		if (PokeBody.CHE_DO_POKEMON)
-		{
-			// pokemon: ô trang bị bo góc kiểu Pokémon + ô chọn viền vàng + tên ô (BangTrangBi)
-			BangTrangBi.vePc(g, xTr, yTr, selected, numW, isPaintFc, charWearing.clazz);
-		}
-		else
-		{
-			g.setColor(14605278);
-			g.drawRect(39 + xTr, -10 + yTr, 104, 208);
-			g.fillRect(43 + xTr, -10 + yTr + 175, 30, 30);
-			g.fillRect(110 + xTr, -10 + yTr + 175, 30, 30);
-			for (int i = 0; i < 5; i++)
-			{
-				g.fillRect(-3 + xTr, -10 + i * 42 + yTr, 40, 40);
-				g.fillRect(147 + xTr, -10 + i * 42 + yTr, 40, 40);
-			}
-			g.setColor(4802889);
-			g.fillRect(44 + xTr, -10 + yTr + 176, 28, 28);
-			g.fillRect(111 + xTr, -10 + yTr + 176, 28, 28);
-			for (int j = 0; j < 5; j++)
-			{
-				g.fillRect(-2 + xTr, -9 + j * 42 + yTr, 38, 38);
-				g.fillRect(148 + xTr, -9 + j * 42 + yTr, 38, 38);
-			}
-			if (Canvas.gameTick % 10 > 3 && isPaintFc)
-			{
-				g.setColor(10595790, 0.5f);
-				if (selected % 3 != 1)
-				{
-					int num = 0;
-					if (selected == 2 || selected == 5 || selected == 8 || selected == 11 || selected == 14)
-					{
-						num = 1;
-					}
-					g.fillRect(-2 + num * 150 + xTr, selected / numW * 42 - 9 + yTr, 38, 38);
-				}
-				else if (selected != 4)
-				{
-					g.fillRect(111 + xTr, -10 + yTr + 176, 28, 28);
-				}
-				else
-				{
-					g.fillRect(44 + xTr, -10 + yTr + 176, 28, 28);
-				}
-			}
-		}
+		// pokemon: ô trang bị bo góc kiểu Pokémon + ô chọn viền vàng + tên ô (BangTrangBi)
+		BangTrangBi.vePc(g, xTr, yTr, selected, numW, isPaintFc, charWearing.clazz);
 		int num2 = 0;
 		if (charWearing.wearingItems != null)
 		{
@@ -5848,9 +5706,48 @@ public class WindowInfoScr : MyScreen
 				itemTemplate = Res.getItem(itemInInventory.charClazz, itemInInventory.idTemplate);
 				if (itemTemplate != null)
 				{
-					paintItemIcon(g, itemInInventory, posPaintWearingX[itemTemplate.type], posPaintWearingY[itemTemplate.type]);
+					paintIconTrangBiThu(g, itemInInventory, itemTemplate.type);
 				}
 			}
+		}
+	}
+
+	// Toa do icon cua 10 o bang "Trang bi thu", xep dung theo idWearAnimal: o chan la cot
+	// trai (x 15), o le la cot phai (x 165), hang = chi so / 2. Nam moc y duoi day chinh
+	// la gia tri posPaintWearing dang dung cho type 18/14/15/16/17, nen nam o cot trai ve
+	// y het nhu truoc.
+	private static readonly int[] Y_O_TRANG_BI_THU = new int[5] { 11, 51, 91, 135, 175 };
+
+	/// <summary>
+	/// Ve icon mot mon trang bi thu vao DUNG o cua no trong bang "Trang bi thu".
+	///
+	/// KHONG dung posPaintWearingX/Y[type]. Mang do la cua bang NHAN VAT, chi dai 20 phan
+	/// tu, trong khi cot phai bang thu mang type 30..34 - tra thang vao mang la vuot bien,
+	/// nem IndexOutOfRange giua vong ve, ma vong ve khong co try/catch nen hong ca bang.
+	///
+	/// Ban JAR khong vuong loi nay vi mang cua no dai 36 va co san o 30..34
+	/// (build/c276/game/render/screen/WindowInfoScr.java:168-169). Ban Unity duoc port tu
+	/// mot ban jar CU HON, luc do cot phai con danh so 19..23 va mang moi dai 20; port giu
+	/// nguyen cai cu nen hai ban lech nhau. Da dua idWearAnimal ve dung cach danh so cua
+	/// ban JAR, con toa do thi lay thang tu idWearAnimal de khoi phai noi dai mang.
+	///
+	/// Vi sao khong dung lai 19: type 19 la PHI PHONG cua nhan vat (real.Map.isPhiPhong),
+	/// va posPaintWearing[19] chinh la o phi phong o bang nhan vat - dung chung mot so cho
+	/// hai thu khac nhau la nguon goc cua ca lo bug nay.
+	/// </summary>
+	private void paintIconTrangBiThu(MyGraphics g, ItemInInventory item, int type)
+	{
+		for (int i = 0; i < idWearAnimal.Length; i++)
+		{
+			if (idWearAnimal[i] == type)
+			{
+				paintItemIcon(g, item, ((i % 2 == 0) ? 15 : 165) + xTr, Y_O_TRANG_BI_THU[i / 2] + yTr);
+				return;
+			}
+		}
+		if (type >= 0 && type < posPaintWearingX.Length)
+		{
+			paintItemIcon(g, item, posPaintWearingX[type], posPaintWearingY[type]);
 		}
 	}
 

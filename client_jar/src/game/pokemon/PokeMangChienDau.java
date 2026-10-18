@@ -8,7 +8,7 @@ import game.render.screen.GameScr;
 import java.io.DataInputStream;
 
 /**
- * Goi chien dau Pokemon -95..-99 (HTBB docs/pokemon/THIET_KE_LAU_DAI.md muc 4.6, giai doan 2 cua
+ * Goi chien dau Pokemon -95..-99 (HTBB docs/thiet-ke-game.md, giai doan 2 cua
  * server). Moi goi la goi KEM (Message.kemTheo) di sau goi cu: server chua gui thi client van chay
  * nhu cu (hieu ung tu doan), server gui thi hieu ung theo dung so lieu server.
  * Goi tu PokeMang.xuLy (dau MessageHandler.onMessage). -95..-99 da grep: chua lenh nao dung.

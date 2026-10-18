@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * GUC / HOI SINH (18/10/2026, docs/pokemon/HOI_SINH.md). Truoc day hoi sinh gan nhu mien phi: duoi cap 50 tu hoi
+ * GUC / HOI SINH (18/10/2026, docs/thiet-ke-game.md). Truoc day hoi sinh gan nhu mien phi: duoi cap 50 tu hoi
  * sinh tai cho sau vai giay o moi bai luyen, "Auto ve Map Up" dua ve lang roi tu bay lai cho cu, phi xu tai cho = 5%
  * gio thu nhap - treo may danh mai khong dung. Nay khi Pokemon guc, nguoi choi CHON:
  * <ol>
@@ -568,12 +568,12 @@ public final class HoiSinh {
         return BanDoHoenn.laHoenn(idNap) ? VUNG_HOENN : VUNG_CU;
     }
 
-    /** Kiem o di duoc (toa do o) - game: Map.canMove, test: tep cMap_pokemon. */
+    /** Kiem o di duoc (toa do o) - game: Map.canMove, test: tep cMap. */
     public interface DiDuoc {
         boolean o(int map, int x, int y);
     }
 
-    /** NPC loai 0 = Chansey (ban HP, docs/pokemon/bang_npc.csv) = Trung tam Pokemon cua thi tran. */
+    /** NPC loai 0 = Chansey (ban HP, du_lieu/bang_npc.csv) = Trung tam Pokemon cua thi tran. */
     public static final int NPC_TRUNG_TAM = 0;
 
     /** Ban do Hoenn co Trung tam Pokemon (thi tran co NPC loai 0). */

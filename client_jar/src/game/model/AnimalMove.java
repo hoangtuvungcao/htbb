@@ -205,7 +205,7 @@ public class AnimalMove extends Char {
 
     /**
      * pokemon: ve pet di theo bang PokeBody khi chu nhan co pokePetDex (lenh -94) hoac pet kieu cu
-     * co trong bang POKE_DEX_PET_CU. false = ve kieu cu (ClientUnity AnimalMove.vePokePet).
+     * co trong bang POKE_DEX_PET_CU. false = ve kieu cu (Unity AnimalMove.vePokePet).
      */
     protected boolean vePokePet(Graphics g, Char chu) {
         if (chu == null) {
@@ -242,9 +242,6 @@ public class AnimalMove extends Char {
     public static final short[][] POKE_DEX_PET_CU = {{0, 607}, {1, 276}, {2, 165}, {3, 41}, {4, 370}, {5, 270}, {6, 120}, {7, 615}, {8, 77}, {9, 27}, {10, 417}, {11, 29}, {12, 129}, {13, 393}, {14, 179}, {15, 385}, {16, 146}, {17, 144}, {18, 121}, {19, 337}, {20, 190}};
 
     public static int dexTheoIdImgPetCu(int idImg) {
-        if (!PokeBody.CHE_DO_POKEMON) {
-            return 0;
-        }
         for (int i = 0; i < POKE_DEX_PET_CU.length; i++) {
             if (POKE_DEX_PET_CU[i][0] == idImg) {
                 return POKE_DEX_PET_CU[i][1];

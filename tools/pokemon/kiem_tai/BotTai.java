@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.*;
  *   javac -d build/kiem_tai tools/pokemon/kiem_tai/BotTai.java
  *   java -cp build/kiem_tai -Dgm=10 -Dtu=1 BotTai 127.0.0.1 19129 50 600 tai
  *     args: host cong soBot giay [tienTo=tai] [lop=-1 ngau nhien]; -Dtu = so thu tu bot dau tien
- * Tao tai khoan: xem tools/pokemon/kiem_tai/README.md.
+ * Tao tai khoan: xem tools/README.md (muc kiem_tai).
  */
 public class BotTai {
     static final AtomicLong goiNhan = new AtomicLong(), byteNhan = new AtomicLong(), goiGui = new AtomicLong();

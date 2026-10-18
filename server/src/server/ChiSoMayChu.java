@@ -83,7 +83,7 @@ public final class ChiSoMayChu implements Runnable {
         }
         daChay = true;
         // Ket noi CSDL ranh it nhat trong 30 s (lay mau 100 ms) -> dinh dung that = toi da - ranh it nhat.
-        // Dung de chinh db.maxco (docs/pokemon/TOI_UU_HIEU_NANG.md muc 4).
+        // Dung de chinh db.maxco (docs/kien-truc.md).
         com.htbb.runtime.VongLapChung.henGio(new Runnable() {
             @Override
             public void run() {

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Sinh docs/pokemon/bang_quai.csv: MOI dong data_monster (138 dong) -> Pokemon thay the,
+Sinh du_lieu/bang_quai.csv: MOI dong data_monster (138 dong) -> Pokemon thay the,
 va sql/pokemon_du_lieu_quai.sql (UPDATE data_monster SET dex/shiny/he/he2 - chay SAU
 sql/them_cot_pokemon.sql). Vat_the giu dex=0 -> client ve bang anh cu.
 
@@ -24,7 +24,7 @@ import urllib.request
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SQL = os.path.join(GOC, "sql", "gamedb7_clean.sql")
-RA = os.path.join(GOC, "docs", "pokemon", "bang_quai.csv")
+RA = os.path.join(GOC, "du_lieu", "bang_quai.csv")
 RA_SQL = os.path.join(GOC, "sql", "pokemon_du_lieu_quai.sql")
 BO_NHO = os.path.join(GOC, "tools", "pokemon", ".cache")
 
@@ -242,7 +242,7 @@ def main():
         w.writerows(dong)
         # Quai nam 2 (id 139+) do tools/pokemon/sinh_noi_dung.py them (data_monster nam trong
         # sql/pokemon_noi_dung.sql): noi lai nguyen van de chay lai script nay khong lam mat.
-        them = os.path.join(GOC, "docs", "pokemon", "noi_dung_quai_moi_bang.csv")
+        them = os.path.join(GOC, "du_lieu", "noi_dung_quai_moi_bang.csv")
         if os.path.exists(them):
             with open(them, encoding="utf8", newline="") as g:
                 w.writerows(list(csv.reader(g))[1:])

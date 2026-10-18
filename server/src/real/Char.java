@@ -167,7 +167,6 @@ public class Char extends LiveActor {
     public byte charClass;
     // Loai Pokemon (so Pokedex) va ban shiny - cot tob_char.dex/shiny (viec S2).
     // 0 = chua co, suy ra tu class + cap luc nap (real.TienHoaPokemon.napLoai).
-    // Chi dung khi bat com.htbb.pokemon.CheDoPokemon.
     public int pokeDex = 0;
     public byte pokeShiny = 0;
     public byte[] skill;
@@ -1051,7 +1050,7 @@ public class Char extends LiveActor {
         //     o -10 than nguoi van "dau tren yen", ca yen do lo nguyen ben duoi (huong len
         //     client ve thu TRUOC nguoi nen yen khong the che nguoi, chi co cach ha than
         //     xuong che phan tren yen); o 0 con lai mep sau yen, giong huong ngang.
-        //     Xem SkinThuCuoi.INDEX_DXY va docs/skin-thu-cuoi.md muc 9.
+        //     Xem SkinThuCuoi.INDEX_DXY va docs/thiet-ke-game.md.
         //     paintName cua client dat ten theo DONG 0 (Char.cs: num = dy_horse[0][dir]):
         //     dong moi CAO hon dong 0 qua ~10px la ten de dau (anh chup o -23 con cach ~14px,
         //     -28 con ~9px); THAP hon dong 0 thi vo hai, chi lam ten cach dau xa them (huong
@@ -1062,7 +1061,7 @@ public class Char extends LiveActor {
         //     rieng hai huong xuong/len (-20->-9, -15->-7, do bang tools/ThuChoNgoiSkinThu roi
         //     chon muc nguoi lot vao giua cum sung/canh, khop bo cuc cua 4 skin thu bon chan
         //     con lai); ngang giu nguyen -15/dx 7 nhu dong 0 vi huong do von da on (khong noi).
-        //     Xem SkinThuCuoi.INDEX_DXY va docs/skin-thu-cuoi.md muc 9.
+        //     Xem SkinThuCuoi.INDEX_DXY va docs/thiet-ke-game.md.
         Char.dx_horse_tool = new byte[][]{{0, 0, 7, -7}, {0, 0, 5, -5}, {0, 0, 8, -8}, new byte[4], new byte[4],
             {0, 0, 1, -1}, {0, 0, 7, -7}};
         Char.dy_horse_tool = new byte[][]{{-20, -15, -15, -15}, {-25, -15, -15, -15}, {-20, -15, -15, -15}, {-22, -15, -16, -16}, {-22, -15, -17, -16},
@@ -14880,7 +14879,7 @@ public int applyRongLonReleaseTo(int baseDamage) {
             Database.instance.saveOrtherLog("", this.charname, "tru " + l + " luong khi khong du", "truthieu");
         }
         // nap tien: moi luong tieu la ho hut (dot) - KHONG doi ra diem xai VIP / xu / ve su kien
-        // (docs/pokemon/NAP_TIEN.md muc 2). Tat co: y nhu cu.
+        // (docs/van-hanh.md). Tat co: y nhu cu.
         if (com.htbb.pokemon.NapTien.bat()) {
             com.htbb.pokemon.NapTien.ghiTieu(l);
             return;

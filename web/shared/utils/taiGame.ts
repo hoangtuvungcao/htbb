@@ -5,7 +5,13 @@
  * /admin/tai-game, /download, tests/tai-game.test.ts.
  */
 
-export type MaNenTang = 'android' | 'pc' | 'pc-linux' | 'macos' | 'jar' | 'ios'
+/**
+ * Đúng 6 nền tảng, theo các client có thật trong monorepo:
+ *   android  client_apk (APK)            pc       client_pc_ios (Unity, Windows .zip)
+ *   pc-java  client_pc gói Windows (.exe + Java đi kèm)   pc-jar  client_pc HTBB-PC.jar (Windows/macOS/Linux)
+ *   jar      client_jar (J2ME)            ios      client_pc_ios (Unity iOS) — sắp ra mắt
+ */
+export type MaNenTang = 'android' | 'pc' | 'pc-java' | 'pc-jar' | 'jar' | 'ios'
 
 /**
  * Kiểu link:
@@ -30,7 +36,7 @@ export interface BanTai {
   nhatKy: string
   /** SHA-256 hex (64 ký tự) của tệp — người chơi tự kiểm được tệp không bị sửa. */
   sha256: string
-  /** Hệ điều hành tối thiểu, vd. "Android 5.0", "Windows 10 (64-bit)", "iOS 15". */
+  /** Hệ điều hành tối thiểu, vd. "Android 8.0", "Windows 10 (64-bit)", "iOS 15". */
   heDieuHanh: string
   trangThai: TrangThaiBanTai
   hien: boolean
@@ -54,11 +60,11 @@ export interface NenTang {
 }
 
 export const DS_NEN_TANG: readonly NenTang[] = [
-  { ma: 'android', ten: 'Android', moTa: 'Bản cài đặt APK — đồ hoạ đầy đủ, điều khiển cảm ứng', icon: 'i-lucide-smartphone', kieu: ['tep'], heDieuHanh: 'Android 5.0 trở lên', chiTiet: ['File .apk', 'Cài ngoài CH Play', 'Cảm ứng + bàn phím'], buoc: ['Mở trang Tải game trên điện thoại, bấm tải bản Android.', 'Khi được hỏi, cho phép "Cài ứng dụng không rõ nguồn" cho trình duyệt.', 'Mở file .apk vừa tải và bấm Cài đặt.', 'Mở game, chọn máy chủ và đăng nhập.'], hien: true, trangThai: 'san-sang' },
-  { ma: 'pc', ten: 'PC Windows', moTa: 'Chơi trên máy tính bằng bàn phím — giải nén rồi chạy HTBB.exe', icon: 'i-lucide-monitor', kieu: ['tep'], heDieuHanh: 'Windows 10 / 11 (64-bit)', chiTiet: ['File nén .zip', 'Giải nén rồi chạy .exe', 'Màn hình lớn'], buoc: ['Tải bản PC Windows (file nén .zip).', 'Giải nén ra một thư mục (không chạy trực tiếp trong file nén).', 'Chạy HTBB.exe trong thư mục. Nếu Windows SmartScreen cảnh báo: "Thông tin thêm" → "Vẫn chạy".', 'Chọn máy chủ, đăng nhập và chơi bằng bàn phím.'], hien: true, trangThai: 'san-sang' },
-  { ma: 'pc-linux', ten: 'PC Linux', moTa: 'Bản cho Linux 64-bit', icon: 'i-lucide-terminal', kieu: ['tep'], heDieuHanh: 'Linux 64-bit (glibc 2.31+)', chiTiet: ['File nén .tar.gz / .zip', 'Bàn phím'], buoc: ['Tải bản PC Linux (file nén).', 'Giải nén ra một thư mục.', 'Chạy tệp khởi động trong thư mục (bản PC chạy bằng Java; nếu máy báo thiếu Java thì cài Java từ kho phần mềm của bản Linux).', 'Đăng nhập bằng cùng tài khoản như các bản khác.'], hien: false, trangThai: 'sap-ra-mat' },
-  { ma: 'macos', ten: 'macOS', moTa: 'Bản cho máy Mac', icon: 'i-lucide-laptop', kieu: ['tep'], heDieuHanh: 'macOS 12 trở lên', chiTiet: ['File nén .zip'], buoc: ['Tải bản macOS (file nén .zip).', 'Giải nén rồi kéo ứng dụng vào thư mục Applications.', 'Lần đầu mở: chuột phải → Mở (macOS chặn ứng dụng chưa ký qua App Store).', 'Đăng nhập bằng cùng tài khoản như các bản khác.'], hien: false, trangThai: 'sap-ra-mat' },
-  { ma: 'jar', ten: 'Java (.jar)', moTa: 'Điện thoại phím Java hoặc giả lập J2ME', icon: 'i-lucide-cpu', kieu: ['tep'], heDieuHanh: 'Java MIDP 2.0, hoặc J2ME Loader trên Android', chiTiet: ['Bản thường & bản nhẹ', 'Máy yếu chơi mượt', 'Phím số'], buoc: ['Dành cho điện thoại hỗ trợ Java (J2ME) hoặc giả lập (J2ME Loader trên Android).', 'Tải file .jar (bản thường) hoặc bản nhẹ cho máy yếu.', 'Mở file .jar bằng điện thoại/giả lập để cài.', 'Đăng nhập bằng cùng tài khoản như các bản khác.'], hien: true, trangThai: 'san-sang' },
+  { ma: 'android', ten: 'Android', moTa: 'Bản cài đặt APK — đồ hoạ đầy đủ, điều khiển cảm ứng', icon: 'i-lucide-smartphone', kieu: ['tep'], heDieuHanh: 'Android 8.0 trở lên', chiTiet: ['File .apk', 'Cài ngoài CH Play', 'Cảm ứng + bàn phím'], buoc: ['Mở trang Tải game trên điện thoại, bấm tải bản Android.', 'Khi được hỏi, cho phép "Cài ứng dụng không rõ nguồn" cho trình duyệt.', 'Mở file .apk vừa tải và bấm Cài đặt.', 'Mở game, chọn máy chủ và đăng nhập.'], hien: true, trangThai: 'san-sang' },
+  { ma: 'pc', ten: 'PC Windows', moTa: 'Bản PC đồ hoạ đầy đủ — giải nén rồi chạy HuyenThoaiBaoBoi.exe', icon: 'i-lucide-monitor', kieu: ['tep'], heDieuHanh: 'Windows 10 / 11 (64-bit)', chiTiet: ['File nén .zip', 'Giải nén rồi chạy .exe', 'Màn hình lớn'], buoc: ['Tải bản PC Windows (file nén .zip).', 'Giải nén ra một thư mục (không chạy trực tiếp trong file nén).', 'Chạy HuyenThoaiBaoBoi.exe trong thư mục. Nếu Windows SmartScreen cảnh báo: "Thông tin thêm" → "Vẫn chạy".', 'Chọn máy chủ, đăng nhập và chơi bằng bàn phím.'], hien: true, trangThai: 'san-sang' },
+  { ma: 'pc-java', ten: 'PC Windows (bản Java)', moTa: 'Bản PC chạy cùng lõi với bản Java — có sẵn Java đi kèm, không phải cài thêm gì', icon: 'i-lucide-laptop', kieu: ['tep'], heDieuHanh: 'Windows 10 / 11 (64-bit)', chiTiet: ['File .zip hoặc bộ cài .exe', 'Không cần cài Java', 'Bàn phím + chuột'], buoc: ['Tải bản PC Windows (bản Java): file nén .zip hoặc bộ cài .exe.', 'Bộ cài: chạy và bấm Tiếp cho tới khi xong. File nén: giải nén ra một thư mục.', 'Chạy HTBB.exe (hoặc lối tắt Huyền Thoại Bảo Bối). Nếu Windows SmartScreen cảnh báo: "Thông tin thêm" → "Vẫn chạy".', 'Đăng nhập bằng cùng tài khoản như các bản khác.'], hien: true, trangThai: 'san-sang' },
+  { ma: 'pc-jar', ten: 'PC Java (.jar)', moTa: 'Một file chạy trên Windows, macOS và Linux đã cài Java', icon: 'i-lucide-coffee', kieu: ['tep'], heDieuHanh: 'Windows / macOS / Linux có Java 8 trở lên', chiTiet: ['File .jar', 'Windows · macOS · Linux', 'Bàn phím + chuột'], buoc: ['Cài Java 8 trở lên nếu máy chưa có (ví dụ Eclipse Temurin, miễn phí).', 'Tải bản PC Java (file .jar) và để trong một thư mục riêng.', 'Bấm đúp file .jar, hoặc chạy lệnh: java -jar HTBB-PC.jar', 'Đăng nhập bằng cùng tài khoản như các bản khác.'], hien: true, trangThai: 'san-sang' },
+  { ma: 'jar', ten: 'Điện thoại Java (J2ME)', moTa: 'Điện thoại phím Java hoặc giả lập J2ME', icon: 'i-lucide-cpu', kieu: ['tep'], heDieuHanh: 'Java MIDP 2.0, hoặc J2ME Loader trên Android', chiTiet: ['Bản thường & bản nhẹ', 'Máy yếu chơi mượt', 'Phím số'], buoc: ['Dành cho điện thoại hỗ trợ Java (J2ME) hoặc giả lập (J2ME Loader trên Android).', 'Tải file .jar (bản thường) hoặc bản nhẹ cho máy yếu.', 'Mở file .jar bằng điện thoại/giả lập để cài.', 'Đăng nhập bằng cùng tài khoản như các bản khác.'], hien: true, trangThai: 'san-sang' },
   { ma: 'ios', ten: 'iOS', moTa: 'iPhone / iPad', icon: 'i-lucide-tablet-smartphone', kieu: ['testflight', 'app-store', 'ipa-manifest'], heDieuHanh: 'iOS 15 trở lên', chiTiet: ['TestFlight / App Store'], buoc: [], hien: true, trangThai: 'sap-ra-mat' },
 ]
 
@@ -190,8 +196,7 @@ export function nenTangTheoUa(ua: string): MaNenTang | null {
   if (s.includes('android')) return 'android'
   if (/j2me|midp|cldc/.test(s)) return 'jar'
   if (s.includes('windows')) return 'pc'
-  if (s.includes('mac os x') || s.includes('macintosh')) return 'macos'
-  if (s.includes('linux') || s.includes('x11')) return 'pc-linux'
+  if (s.includes('mac os x') || s.includes('macintosh') || s.includes('linux') || s.includes('x11')) return 'pc-jar'
   return null
 }
 

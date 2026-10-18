@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Thiet ke LAU DAI (docs/pokemon/THIET_KE_LAU_DAI.md) -> du lieu.
+Thiet ke LAU DAI (docs/thiet-ke-game.md) -> du lieu.
 
 MOT NGUON cho moi con so cua thiet ke dai han. Sua so o day roi chay lai; KHONG sua tay
 cac file sinh ra:
 
-  docs/pokemon/nhiem_vu_moi.csv          danh sach nhiem vu (chinh nam 1 + dan y nam 2, phu,
+  du_lieu/nhiem_vu_moi.csv          danh sach nhiem vu (chinh nam 1 + dan y nam 2, phu,
                                          ngay, tuan, Pokedex, doi, thanh tuu...)
-  docs/pokemon/su_kien_nam.csv           lich 52 tuan (nam 1 + xoay vong nam 2)
-  docs/pokemon/bang_cap_do_lau_dai.csv   bang EXP de xuat 1..100 + gio muc tieu
+  du_lieu/su_kien_nam.csv           lich 52 tuan (nam 1 + xoay vong nam 2)
+  du_lieu/bang_cap_do_lau_dai.csv   bang EXP de xuat 1..100 + gio muc tieu
   src/com/htbb/pokemon/ThongSoLauDai.java  hang so cho mo phong + giai doan 2 (CHUA noi day)
   sql/pokemon_lau_dai.sql                bang tam (staging) - gom vao xuat_sql_day_du.sh (GD2)
 
@@ -29,15 +29,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import lau_dai_cot_truyen as CT  # noqa: E402
 
 DUMP = os.path.join(GOC, "sql", "htbb_day_du.sql")
-RA_CSV_NV = os.path.join(GOC, "docs", "pokemon", "nhiem_vu_moi.csv")
-RA_CSV_SK = os.path.join(GOC, "docs", "pokemon", "su_kien_nam.csv")
-RA_CSV_CAP = os.path.join(GOC, "docs", "pokemon", "bang_cap_do_lau_dai.csv")
+RA_CSV_NV = os.path.join(GOC, "du_lieu", "nhiem_vu_moi.csv")
+RA_CSV_SK = os.path.join(GOC, "du_lieu", "su_kien_nam.csv")
+RA_CSV_CAP = os.path.join(GOC, "du_lieu", "bang_cap_do_lau_dai.csv")
 RA_JAVA = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "ThongSoLauDai.java")
 RA_SQL = os.path.join(GOC, "sql", "pokemon_lau_dai.sql")
-BANG_VP = os.path.join(GOC, "docs", "pokemon", "bang_vat_pham.csv")
+BANG_VP = os.path.join(GOC, "du_lieu", "bang_vat_pham.csv")
 
 # =====================================================================================
-# 1. THAM SO THIET KE (moi so trong THIET_KE_LAU_DAI.md lay tu day)
+# 1. THAM SO THIET KE (moi so trong docs/thiet-ke-game.md lay tu day)
 # =====================================================================================
 
 CAP_TOI_DA = 100
@@ -745,9 +745,9 @@ def mang_java(ten, kieu, gt, moi_dong=10):
 def ghi_java():
     j = []
     j.append("package com.htbb.pokemon;\n\n")
-    j.append("/**\n * THONG SO THIET KE DAI HAN (docs/pokemon/THIET_KE_LAU_DAI.md).\n *\n"
+    j.append("/**\n * THONG SO THIET KE DAI HAN (docs/thiet-ke-game.md).\n *\n"
              " * FILE SINH RA boi tools/pokemon/sinh_sql_lau_dai.py - KHONG SUA TAY.\n"
-             " * CHUA NOI vao game (giai doan 2: docs/pokemon/KE_HOACH_LAU_DAI_GD2.md). Hien chi\n"
+             " * CHUA NOI vao game (giai doan 2: docs/thiet-ke-game.md). Hien chi\n"
              " * tools/pokemon/MoPhongKinhTe.java va test/KiemLauDai.java doc.\n"
              " * KHONG nham voi real.LevelDetail (bang EXP DANG chay).\n */\n")
     j.append("public final class ThongSoLauDai {\n\n    private ThongSoLauDai() {\n    }\n\n")
@@ -887,9 +887,9 @@ def dong_data_quest(d, mainsub):
 def ghi_sql(nv, sk, quai):
     o = []
     o.append("-- SINH RA boi tools/pokemon/sinh_sql_lau_dai.py - KHONG SUA TAY.\n")
-    o.append("-- Thiet ke dai han (docs/pokemon/THIET_KE_LAU_DAI.md). CHI tao TABLE tam (staging):\n")
+    o.append("-- Thiet ke dai han (docs/thiet-ke-game.md). CHI tao TABLE tam (staging):\n")
     o.append("-- KHONG doi table dang chay (data_quest, data_shop, data_monster...). Giai doan 2 moi\n")
-    o.append("-- ap dung (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md). Da gom vao xuat_sql_day_du.sh (GD2, sau POKEMON).\n")
+    o.append("-- ap dung (docs/thiet-ke-game.md). Da gom vao xuat_sql_day_du.sh (GD2, sau POKEMON).\n")
     o.append("SET NAMES utf8;\n\n")
     # 1. Cap do
     o.append("DROP TABLE IF EXISTS `data_cap_do_lau_dai`;\n")

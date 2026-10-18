@@ -1,32 +1,39 @@
-# /etc/systemd/system/htbb-web.service
-# Website HTBB (Nuxt). Bien moi truong do GitHub Actions ghi vao /etc/htbb-web.env
-# (xem deploy/deploy-web.sh). Apache dung truoc, chuyen tiep ve 127.0.0.1:3000.
+# /etc/systemd/system/htbb-web.service - website HTBB (Nuxt 4 / Nitro tren 127.0.0.1:3000).
+# nginx (vps/htbb-nginx.conf) dung truoc, chuyen tiep ve 127.0.0.1:3000.
+# Ban build: /opt/htbb/web/.output (symlink -> releases/<sha>/.output, xem deploy/deploy-web.sh).
+# Bien moi truong: /etc/htbb/htbb.env (root:root 0600, dung chung voi htbb-game) - CSDL MariaDB
+# 127.0.0.1:3306, HTBB_SECRET, HTBB_SERVER_DIR=/opt/htbb/server...
 [Unit]
-Description=Website HTBB (Nuxt)
-After=network.target novadb.service
+Description=HTBB website (Nuxt 4 / Nitro on 127.0.0.1:3000)
+After=network.target mariadb.service
+Wants=mariadb.service
 
 [Service]
 Type=simple
-User=htbb-web
-# Nhom htbb: de doc duoc /opt/htbb/server.ini (chmod 640 htbb:htbb) va file log cua game.
-Group=htbb-web
-SupplementaryGroups=htbb
-# TUONG-THICH-TEN-CU-DONG-SAU: may chua chuyen van con /etc/kpah-web.env; file moi (doc sau) de len.
-EnvironmentFile=-/etc/kpah-web.env
-EnvironmentFile=-/etc/htbb-web.env
-WorkingDirectory=/opt/htbb-web/current
-ExecStart=/usr/bin/node /opt/htbb-web/current/.output/server/index.mjs
+User=htbb
+Group=htbb
+EnvironmentFile=/etc/htbb/htbb.env
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=3000
+Environment=NITRO_HOST=127.0.0.1
+Environment=NITRO_PORT=3000
+Environment=NODE_OPTIONS=--max-old-space-size=384
+WorkingDirectory=/opt/htbb/web
+ExecStart=/usr/bin/node /opt/htbb/web/.output/server/index.mjs
 Restart=always
 RestartSec=3
+MemoryMax=640M
+UMask=0027
 
-# Cung hoa: web chi can doc /opt/htbb, khong can ghi o dau tren dia.
+# Cung hoa. Web doc server.ini / log, ghi anh CMS + ban tai game, va tep co bao tri (bao_tri.txt)
+# trong thu muc server.
 NoNewPrivileges=true
 ProtectSystem=strict
 ProtectHome=true
 PrivateTmp=true
-ReadOnlyPaths=/opt/htbb
+ReadWritePaths=/opt/htbb/web/uploads /opt/htbb/downloads /opt/htbb/server
+ReadOnlyPaths=/opt/htbb/logs
 
 [Install]
 WantedBy=multi-user.target
-# TUONG-THICH-TEN-CU-DONG-SAU: `systemctl ... kpah-web` cu van chay sau khi `systemctl enable` (bo sau 1 ban)
-Alias=kpah-web.service

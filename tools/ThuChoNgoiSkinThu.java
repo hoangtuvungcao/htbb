@@ -18,7 +18,7 @@ import javax.imageio.ImageIO;
  *   - xuong / trai / phai : THAN nguoi ve truoc -> con thu (tren0 roi tren1) -> DAU nguoi sau
  *   - len                 : con thu -> than -> dau
  * Nen o ba huong dau, bat cu manh thu nao nam trong cot nguoi la ve DE LEN nguoi (do la ly
- * do phai doi soi duoi cua Kim Cang Long ra mep than, xem docs/skin-thu-cuoi.md muc 9).
+ * do phai doi soi duoi cua Kim Cang Long ra mep than, xem docs/thiet-ke-game.md).
  *
  * Huong PHAI: client lat guong khung trai (DataSkillEff.paintTopHorse voi rotale = 2 lam
  * dx' = -(dx + w) va dao co lat), o day lam y het. Nguoi: chan tai (x + DX, y + DY) lay tu

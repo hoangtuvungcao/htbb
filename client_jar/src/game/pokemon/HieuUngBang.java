@@ -3,7 +3,7 @@ package game.pokemon;
 /**
  * Bang hieu ung chieu kieu Pokemon (particle PMD, viec K3) cua ban jar - doc tu /pk/hu.bin.
  * Sinh boi client_jar/tools/DongGoiPokeJ2me.java tu Resources/poke/hu_bang.bytes + hu_*.bytes cua
- * ClientUnity (HTBB). Dinh dang (big-endian):
+ * Unity (HTBB). Dinh dang (big-endian):
  * <pre>
  *   u8 phienBan = 1, u8 n
  *   n lan: u8 lop, u8 chieu, UTF ten (anh /pk/&lt;ten&gt;.png), u16 rong, u16 cao (khung DA CAT sat hinh),

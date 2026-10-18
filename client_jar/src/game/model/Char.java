@@ -58,7 +58,7 @@ public class Char extends LiveActor {
     public static final byte LEFT = 2;
     public static final byte RIGHT = 3;
     public static final byte REAL_FRAME_EACH_SIZE = 5;
-    // pokemon: than Pokemon (lenh -90 POKE_THAN), 0 = ve paper doll cu (ClientUnity Char.cs)
+    // pokemon: than Pokemon (lenh -90 POKE_THAN), 0 = ve paper doll cu (Unity Char.cs)
     public short pokeDex;
     public boolean pokeShiny;
     /** Tick con lai cua hieu ung tien hoa (lenh -92). */

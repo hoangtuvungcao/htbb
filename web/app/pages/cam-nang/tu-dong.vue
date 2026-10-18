@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Tự động đánh chính thức (máy chủ điều khiển) — HTBB docs/pokemon/TU_DONG_DANH.md,
+ * Tự động đánh chính thức (máy chủ điều khiển) — docs/thiet-ke-game.md,
  * com.htbb.pokemon.TuDong / real.TuDongGame. Số mặc định theo tools/cauhinh/danh_muc.json (nhóm tu_dong);
  * admin đổi được ở trang Cấu hình hệ thống.
  */

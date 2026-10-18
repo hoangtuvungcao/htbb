@@ -491,7 +491,7 @@ public class Session extends Thread {
                 if (Session.this.socket != null) {
                     OutputStream os = Session.this.socket.getOutputStream();
                     os.write(data);
-                    // Goi kem (che do Pokemon, xem Message.kemTheo) - ghi ngay sau.
+                    // Goi kem (xem Message.kemTheo) - ghi ngay sau.
                     for (Message kem = m.kemTheo; kem != null; kem = kem.kemTheo) {
                         os.write(kem.toByteArray());
                     }
@@ -510,7 +510,7 @@ public class Session extends Thread {
                     if (data != null) {
                         this.xepHang(data);
                         server.ChiSoMayChu.GOI_RA.increment();
-                        // Goi kem (che do Pokemon, xem Message.kemTheo): xep NGAY SAU goi
+                        // Goi kem (xem Message.kemTheo): xep NGAY SAU goi
                         // chinh trong cung hang doi, client nhan dung thu tu.
                         for (Message kem = m.kemTheo; kem != null; kem = kem.kemTheo) {
                             byte[] dataKem = kem.toByteArray();

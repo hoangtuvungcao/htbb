@@ -188,7 +188,7 @@ public final class KiemCauHinhTrungTam {
         final String ts = doc("src/server/TeamServer.java");
         final int iLink = ts.indexOf("Database.setLink1(");
         final int iKhoi = ts.indexOf("CauHinhTrungTam.khoiTao(p)");
-        final int iCo = ts.indexOf("CheDoPokemon.dat(");
+        final int iCo = ts.indexOf("LauDai.dat(");
         Kiem.dung("TeamServer: khoiTao sau setLink1, truoc khi doc co che do", iLink > 0 && iKhoi > iLink && iCo > iKhoi);
         final String ch = doc("src/server/CauHinh.java");
         Kiem.dung("CauHinh.napLai uy quyen cho trung tam", ch.contains("CauHinhTrungTam.napLaiNgay("));

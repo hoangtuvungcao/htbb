@@ -6,8 +6,8 @@
  *
  *   HTBB_DIR=.. node scripts/sinh-anim-khoi-dau.mjs
  *
- * Đọc (chỉ đọc): ClientUnity/Assets/Resources/poke/<dddd>_anh.bytes (PNG atlas RGBA)
- *               + <dddd>_dl.bytes (dữ liệu khung, định dạng ở KE_HOACH_CHUYEN_DOI.md §7.1).
+ * Đọc (chỉ đọc): client_pc_ios/Assets/Resources/poke/<dddd>_anh.bytes (PNG atlas RGBA)
+ *               + <dddd>_dl.bytes (dữ liệu khung, định dạng ở docs/kien-truc.md §7.1).
  * Ghi: public/pokemon/anim/<dex>-<dongTac>.png (một hàng khung nằm ngang)
  *      shared/data/sprite-anim.json          ({ "<dex>[s]": { idle[|walk|walkR|danhR]: { w, h, khung, thoiLuong[] (1/60 s), chanX, chanY } } })
  *
@@ -20,7 +20,7 @@ import { deflateSync, inflateSync } from 'node:zlib'
 
 const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '..')
-const POKE = join(HTBB, 'client_pc_ios/ClientUnity/Assets/Resources/poke')
+const POKE = join(HTBB, 'client_pc_ios/Assets/Resources/poke')
 const OUT = join(WEB, 'public/pokemon/anim')
 const OUT_JSON = join(WEB, 'shared/data/sprite-anim.json')
 

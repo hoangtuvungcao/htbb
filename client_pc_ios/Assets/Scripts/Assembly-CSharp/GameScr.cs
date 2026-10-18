@@ -785,7 +785,7 @@ public class GameScr : MyScreen
 		{
 			// pokemon: so sat thuong / chi mang / hieu qua cao / truot / hoi mau (PhanHoiChienDau)
 			int kieu = PhanHoiChienDau.KIEU_GOC;
-			if (PokeBody.CHE_DO_POKEMON && flyTextKieu != null)
+			if (flyTextKieu != null)
 			{
 				kieu = PhanHoiChienDau.phanLoai(this, ref flyString, x, y);
 				flyTextKieu[num2] = kieu;

@@ -1,5 +1,5 @@
 -- SINH RA boi tools/pokemon/sinh_sql_he_sinh_thai.py - KHONG SUA TAY.
--- He sinh thai game (docs/pokemon/HE_SINH_THAI.md). Chi doc khi sv.he_sinh_thai=1.
+-- He sinh thai game (docs/thiet-ke-game.md). Chi doc khi sv.he_sinh_thai=1.
 -- Bang data_hst_* : du lieu the gioi (vung, thay loai, bung phat). Bang tob_hst_* : du lieu nguoi choi
 -- (server cung tu tao neu thieu - com.htbb.pokemon.DuLieuHeSinhThai.taoBang).
 SET NAMES utf8;

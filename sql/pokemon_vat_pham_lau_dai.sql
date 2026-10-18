@@ -1,4 +1,4 @@
--- SINH RA boi tools/pokemon/sinh_vat_pham_lau_dai.py - KHONG SUA TAY. GD2b (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md).
+-- SINH RA boi tools/pokemon/sinh_vat_pham_lau_dai.py - KHONG SUA TAY. GD2b (docs/thiet-ke-game.md).
 -- Vat pham tieu hao / do giu moi = data_item type 28 id 1201..1260 + bang anh xa hieu ung.
 -- Chi co tac dung khi sv.lau_dai=1 (real.VatPhamDungLauDai). SQL portable, chay lai nhieu lan nhu nhau.
 SET NAMES utf8;

@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Nap tien khong lam phat / khong tra tien de manh hon (docs/pokemon/NAP_TIEN.md):
+ * Nap tien khong lam phat / khong tra tien de manh hon (docs/van-hanh.md):
  *   - co sv.nap_tien: tat = hanh vi cu, chi bat khi ca sv.lau_dai;
  *   - goi ty gia co dinh, khong khuyen mai %; danh muc SQL khop Java (+ web);
  *   - cong don idempotent (goi lap, 16 luong song song), so cai UNIQUE;

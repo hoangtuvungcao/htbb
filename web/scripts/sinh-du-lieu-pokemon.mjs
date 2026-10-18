@@ -5,13 +5,13 @@
  *   HTBB_DIR=.. node scripts/sinh-du-lieu-pokemon.mjs
  *
  * Đọc (chỉ đọc, không sửa gì bên HTBB):
- *   docs/pokemon/bang_quai.csv, bang_chieu.csv, bang_thu.csv, bang_npc.csv,
+ *   du_lieu/bang_quai.csv, bang_chieu.csv, bang_thu.csv, bang_npc.csv,
  *   bang_npc_su_kien.csv, bang_pet_cu.csv, kiem_ke_sprite.csv
  *   src/com/htbb/pokemon/{HePokemon,LoaiPokemon,DaTienHoa,Pokedex,TenMapPokemon,ChuPokemon}.java
- *   src/real/Map.java (bảng tên map), ClientUnity/.../Tilemap.cs (tên map client)
+ *   src/real/Map.java (bảng tên map), client_pc_ios/Assets/.../Tilemap.cs (tên map client)
  *   sql/htbb_day_du.sql (data_monster: cấp, HP, exp; data_potion: tên thuốc thưởng)
  *   map/map<N> (lưới quái: 2 byte rộng/cao + rộng×cao byte id template; 0/255 = trống)
- *   ClientUnity/Assets/Resources/poke/<dddd>[s]_cd.bytes (chân dung PNG 40×40)
+ *   client_pc_ios/Assets/Resources/poke/<dddd>[s]_cd.bytes (chân dung PNG 40×40)
  *
  * Ghi:
  *   shared/data/pokedex.json      (sắp xếp cố định, không có dấu thời gian -> chạy lại ra y hệt)
@@ -28,7 +28,7 @@ const HTBB = resolve(WEB, process.env.HTBB_DIR ?? '..')
 const OUT_JSON = join(WEB, 'shared/data/pokedex.json')
 const OUT_ANH = join(WEB, 'public/pokemon')
 
-if (!existsSync(join(HTBB, 'docs/pokemon/bang_quai.csv'))) {
+if (!existsSync(join(HTBB, 'du_lieu/bang_quai.csv'))) {
   console.error(`Không thấy repo HTBB ở ${HTBB} (đặt HTBB_DIR).`)
   process.exit(1)
 }
@@ -82,7 +82,7 @@ const dongCon = s => [...s.matchAll(/\{([^{}]*)\}/g)].map(m => m[1])
 
 // ---------------------------------------------------------------- Hệ + bảng khắc
 
-const heJava = doc('src/com/htbb/pokemon/HePokemon.java')
+const heJava = doc('server/src/com/htbb/pokemon/HePokemon.java')
 const TEN_HE = chuoi(khoi(heJava, 'String[] TEN ='))
 const TEN_HE_EN = chuoi(khoi(heJava, 'String[] TEN_EN ='))
 const HANG_HE = Object.fromEntries([...heJava.matchAll(/static final byte (\w+) = (-?\d+);/g)].map(m => [m[1], Number(m[2])]))
@@ -99,7 +99,7 @@ LAM_DIU['100'] = Number(/default:\s*return (\d+);/.exec(khoi(heJava, 'int heSoTr
 
 // ---------------------------------------------------------------- Người chơi (5 dòng)
 
-const loaiJava = doc('src/com/htbb/pokemon/LoaiPokemon.java')
+const loaiJava = doc('server/src/com/htbb/pokemon/LoaiPokemon.java')
 const HE_K = { K: -1 }
 const giaTri = (t) => {
   t = t.trim()
@@ -125,7 +125,7 @@ const PT_GD = {
 
 // ---------------------------------------------------------------- Đá tiến hoá, Pokédex mốc
 
-const daJava = doc('src/com/htbb/pokemon/DaTienHoa.java')
+const daJava = doc('server/src/com/htbb/pokemon/DaTienHoa.java')
 const DA_ID = so(khoi(daJava, 'int[] ID_ITEM ='))
 const DA_DEX = so(khoi(daJava, 'int[] DEX ='))
 const DA_TEN = chuoi(khoi(daJava, 'String[] TEN ='))
@@ -160,7 +160,7 @@ function sqlDong(bang) {
 }
 const THUOC = Object.fromEntries(sqlDong('data_potion').map(r => [Number(r[0]), r[4].split(/[:.\n]/)[0].trim()]))
 
-const pokedexJava = doc('src/com/htbb/pokemon/Pokedex.java')
+const pokedexJava = doc('server/src/com/htbb/pokemon/Pokedex.java')
 const MOC = so(khoi(pokedexJava, 'int[] MOC ='))
 const MOC_THUONG = MOC.map((moc) => {
   const m = new RegExp(`case ${moc}:\\s*return ([^;]+);`).exec(pokedexJava)
@@ -176,7 +176,7 @@ const MOC_THUONG = MOC.map((moc) => {
 
 // ---------------------------------------------------------------- Chiêu (bang_chieu.csv)
 
-const CHIEU = docCsv('docs/pokemon/bang_chieu.csv')
+const CHIEU = docCsv('du_lieu/bang_chieu.csv')
 const chieuTheoClass = {}
 for (const r of CHIEU) {
   (chieuTheoClass[r.class] ??= []).push({ so: Number(r.so_hieu_skill), ten: r.ten_moi, he: Number(r.so_he) })
@@ -184,7 +184,7 @@ for (const r of CHIEU) {
 
 // ---------------------------------------------------------------- Tên map
 
-const tenMapJava = doc('src/com/htbb/pokemon/TenMapPokemon.java')
+const tenMapJava = doc('server/src/com/htbb/pokemon/TenMapPokemon.java')
 const BANG_TEN_MAP = dongCon(khoi(tenMapJava, 'String[][] BANG =')).map(r => chuoi(r))
 const HUONG = chuoi(khoi(tenMapJava, 'String[] HUONG ='))
 const lower = s => s.toLocaleLowerCase('vi')
@@ -201,7 +201,7 @@ function doiTenMap(ten) {
   }
   return ten
 }
-const mapJava = doc('src/real/Map.java')
+const mapJava = doc('server/src/real/Map.java')
 const NAM_MAP = dongCon(khoi(mapJava, 'String[][] namMap =')).map(r => chuoi(r)[0])
 const MAP_ID = dongCon(khoi(mapJava, 'short[][] mapID =')).map(r => so(r)[0])
 const ID_ARR_MAP = so(khoi(mapJava, 'short[] idArrMap ='))
@@ -211,7 +211,7 @@ MAP_ID.forEach((id, i) => {
   if (t) tenMapServer[id] = t
 })
 const tenMapClient = {}
-const tilemap = join(HTBB, 'client_pc_ios/ClientUnity/Assets/Scripts/Game/Tilemap.cs')
+const tilemap = join(HTBB, 'client_pc_ios/Assets/Scripts/Assembly-CSharp/Tilemap.cs')
 if (existsSync(tilemap)) {
   const src = khoi(readFileSync(tilemap, 'utf8'), 'void setNameMap(')
   for (const m of src.matchAll(/case (\d+):\s*mapName = "([^"]*)";/g)) tenMapClient[m[1]] = m[2]
@@ -252,7 +252,7 @@ for (const f of readdirSync(join(HTBB, 'server/map')).filter(f => /^map\d+$/.tes
  */
 const BAN_DO_HOENN = {}
 {
-  const src = doc('src/com/htbb/pokemon/BanDoHoenn.java')
+  const src = doc('server/src/com/htbb/pokemon/BanDoHoenn.java')
   for (const m of src.matchAll(/them\((\d+),\s*"(\w+)",\s*"([^"]+)",\s*(\d+),\s*(\d+),[^;]*;/g)) {
     const [, id, loaiMap, ten, w, h] = m
     BAN_DO_HOENN[id] = { ten, loai: loaiMap }
@@ -268,7 +268,7 @@ const BAN_DO_HOENN = {}
   if (Object.keys(BAN_DO_HOENN).length < 20) throw new Error('BanDoHoenn.java: không đọc được danh sách bản đồ')
 }
 /** Cấp nhân vật tối thiểu để qua cổng vào Hoenn (BanDoHoenn.CAP_VAO). */
-const CAP_VAO_HOENN = Number(/CAP_VAO\s*=\s*(\d+)/.exec(doc('src/com/htbb/pokemon/BanDoHoenn.java'))?.[1] ?? 0)
+const CAP_VAO_HOENN = Number(/CAP_VAO\s*=\s*(\d+)/.exec(doc('server/src/com/htbb/pokemon/BanDoHoenn.java'))?.[1] ?? 0)
 
 /** Boss không nằm trong lưới: nơi xuất hiện theo tên hang (TenMapPokemon) hoặc sự kiện. */
 const NOI_BOSS = {
@@ -278,19 +278,19 @@ const NOI_BOSS = {
 
 // ---------------------------------------------------------------- Template quái (CSV + SQL)
 
-const QUAI_CSV = docCsv('docs/pokemon/bang_quai.csv')
+const QUAI_CSV = docCsv('du_lieu/bang_quai.csv')
 const QUAI_SQL = Object.fromEntries(sqlDong('data_monster').map(r => [Number(r[0]), {
   ten: r[1], he: Number(r[3]), cap: Number(r[4]), hp: Number(r[5]), exp: Number(r[10]), dex: Number(r[24]), shiny: Number(r[25]), he2: Number(r[26]),
 }]))
 
 // ---------------------------------------------------------------- Các bảng phụ
 
-const THU = docCsv('docs/pokemon/bang_thu.csv')
-const NPC = docCsv('docs/pokemon/bang_npc.csv')
-const NPC_SK = docCsv('docs/pokemon/bang_npc_su_kien.csv')
-const PET_CU = docCsv('docs/pokemon/bang_pet_cu.csv')
-const KIEM_KE = docCsv('docs/pokemon/kiem_ke_sprite.csv')
-const chuJava = doc('src/com/htbb/pokemon/ChuPokemon.java')
+const THU = docCsv('du_lieu/bang_thu.csv')
+const NPC = docCsv('du_lieu/bang_npc.csv')
+const NPC_SK = docCsv('du_lieu/bang_npc_su_kien.csv')
+const PET_CU = docCsv('du_lieu/bang_pet_cu.csv')
+const KIEM_KE = docCsv('du_lieu/kiem_ke_sprite.csv')
+const chuJava = doc('server/src/com/htbb/pokemon/ChuPokemon.java')
 const TEN_NPC = chuoi(khoi(chuJava, 'String[] TEN_NPC ='))
 const TEN_VUNG = chuoi(khoi(chuJava, 'String[] TEN_VUNG ='))
 const TEN_DONG = chuoi(khoi(chuJava, 'String[] TEN_DONG ='))
@@ -441,7 +441,7 @@ for (const l of LOAI.values()) {
 
 // ---------------------------------------------------------------- Chân dung
 
-const THU_MUC_ANH = join(HTBB, 'client_pc_ios/ClientUnity/Assets/Resources/poke')
+const THU_MUC_ANH = join(HTBB, 'client_pc_ios/Assets/Resources/poke')
 const anhCo = new Set(readdirSync(THU_MUC_ANH).filter(f => /^\d{4}s?_cd\.bytes$/.test(f)).map(f => f.slice(0, -'_cd.bytes'.length)))
 mkdirSync(OUT_ANH, { recursive: true })
 let soAnhGhi = 0
@@ -545,7 +545,7 @@ const du = {
   he: TEN_HE.map((ten, id) => ({ id, ten, en: TEN_HE_EN[id] })),
   khacChinhXac: KHAC,
   lamDiu: LAM_DIU,
-  stabPhanTram: Number(/PT_STAB = (\d+)/.exec(doc('src/com/htbb/pokemon/ChieuPokemon.java'))[1]),
+  stabPhanTram: Number(/PT_STAB = (\d+)/.exec(doc('server/src/com/htbb/pokemon/ChieuPokemon.java'))[1]),
   khoiDau: KHOI_DAU_THEO_CLASS.map((dex, cls) => ({ class: cls, dex, dong: TEN_DONG[cls] ?? '' })),
   capNhanhEevee: CAP_NHANH_EEVEE,
   phanTramGiaiDoan: PT_GD,

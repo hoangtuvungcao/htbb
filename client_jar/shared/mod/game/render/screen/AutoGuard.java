@@ -7,25 +7,18 @@ import java.util.Vector;
 import javax.microedition.lcdui.Graphics;
 
 /**
- * Cổng hook của code mod dùng chung (jar / APK / bản Android NQSH cũ). Sau khi bỏ mod NQSH (Auto up, PK, Vận may,
+ * Cổng hook của code mod dùng chung (jar / APK / PC). Sau khi bỏ mod NQSH (Auto up, PK, Vận may,
  * Lên thành, Giao hàng tự động, Chế đồ nhanh, Dòng ẩn, Xa phu từ xa...) chỉ còn:
  *  - Tự động đánh CHÍNH THỨC (TuDong): gói -100 của máy chủ, vòng mỗi khung hình, thanh trạng thái;
  *  - Menu nhanh / nút nổi (Nen), hiệu ứng (HieuUng), Tiện ích (đăng xuất, tắt popup);
- *  - đăng nhập kèm mã máy + số bản, xác thực -88 (KiemServer), danh sách server (TaiDanhSach);
+ *  - đăng nhập kèm mã máy + số bản, máy chủ gắn lúc build (TaiDanhSach);
  *  - hai sửa lỗi hiển thị của game gốc (NPC mất khi vào lại cùng map, xe giao hàng biến mất khi đổi màu).
- * Các hàm cũ mà bản Android NQSH (client_apk/app) còn gọi được giữ lại dạng KHÔNG LÀM GÌ (hành vi gốc của game).
  */
 public final class AutoGuard {
     /** Luôn false: không còn auto nào ẩn giao diện / nuốt thông báo của game. */
     public static boolean on;
-    /** Bảng màu nền thanh trạng thái (KiemServer dùng làm muối xác thực -88 - không đổi). */
-    static final int[] MAU_NEN = {0x69436c, 0x45957f, 0xd11674, 0xb24394, 0xf69a31, 0x8c9b09, 0xbcdeeb, 0x8f48ec};
 
     private AutoGuard() {
-    }
-
-    public static boolean autoHideUi() {
-        return false;
     }
 
     /** Canvas.startOKDlg: true = nuốt hộp thoại (Tiện ích "Thông báo: tắt"). */
@@ -38,56 +31,10 @@ public final class AutoGuard {
         }
     }
 
-    // ---------------------------------------------------------------- tương thích (bản Android NQSH cũ)
-
-    public static void startAtDapDo(Menu menu, Vector vector, int n) {
-        menu.startAt(vector, n);
-    }
-
-    public static void themDong(GameService gameService, short s, int n, int n2, int n3, int n4, int n5) {
-        gameService.doRequestThemThuocTinh(s, n, n2, n3, n4, n5);
-    }
-
-    public static boolean dapGuard() {
-        return false;
-    }
-
-    public static boolean menuGuard(int n, byte by, String[] stringArray) {
-        return false;
-    }
-
-    public static boolean nhomGuard(network.Message message) {
-        return false;
-    }
-
-    public static boolean cuaSoGuard(int n, boolean bl, byte[] byArray) {
-        return false;
-    }
-
-    public static boolean chanXinQuai(short s) {
-        return false;
-    }
-
     // ---------------------------------------------------------------- đăng nhập
 
-    /** Tài khoản của lần đăng nhập gần nhất (chỉ trong bộ nhớ; bản Android NQSH cũ còn đọc). */
-    public static String tkDangNhap;
-    public static String mkDangNhap;
-
-    /** Chèn ở ĐẦU GameService.login: chặn tới khi server chứng minh là server thật (KiemServer); gửi kèm mã máy. */
+    /** Chèn ở ĐẦU GameService.login: gửi kèm mã máy. */
     public static boolean loginGuard(String string, String string2, String string3) {
-        if (string != null && string.length() > 0 && string2 != null && string2.length() > 0) {
-            tkDangNhap = string;
-            mkDangNhap = string2;
-        }
-        try {
-            if (KiemServer.chanDangNhap(string, string2, string3)) {
-                return true;
-            }
-        }
-        catch (Throwable throwable) {
-            return true;
-        }
         // Tự gửi gói đăng nhập, y hệt GameService.login nhưng thêm MÃ MÁY ở trường cuối
         // (server đọc ở LoginHandler -> CamTheoMay). Gửi được thì bỏ qua bản gốc.
         return AutoGuard.guiDangNhap(string, string2, string3);
@@ -147,13 +94,10 @@ public final class AutoGuard {
         }
     }
 
-    /** Chèn ở ĐẦU MessageHandler.onMessage: -100 Tự động đánh, -88 xác thực server. true = đã xử lý. */
+    /** Chèn ở ĐẦU MessageHandler.onMessage: -100 Tự động đánh. true = đã xử lý. */
     public static boolean goiGuard(network.Message message) {
         try {
-            if (TuDong.nhan(message)) {
-                return true;
-            }
-            return KiemServer.nhan(message);
+            return TuDong.nhan(message);
         }
         catch (Throwable throwable) {
             return false;
@@ -210,7 +154,7 @@ public final class AutoGuard {
 
     // ---------------------------------------------------------------- danh sách server
 
-    /** Chèn ở ĐẦU ServerListScr.switchToMe: lần đầu mở màn chọn server thì tải danh sách. */
+    /** Chèn ở ĐẦU ServerListScr.switchToMe: lần đầu mở màn chọn server thì đặt danh sách = máy chủ gắn lúc build. */
     public static boolean dsGuard() {
         try {
             TaiDanhSach.taiNgam();
@@ -221,7 +165,7 @@ public final class AutoGuard {
         return false;
     }
 
-    /** Chèn ở ĐẦU ServerListScr.doUpdateServer: nút "Cập nhật" tải danh sách. */
+    /** Chèn ở ĐẦU ServerListScr.doUpdateServer: nút "Cập nhật" (không tải gì). */
     public static boolean capNhatGuard() {
         try {
             TaiDanhSach.capNhat();
@@ -254,10 +198,6 @@ public final class AutoGuard {
         }
         catch (Throwable throwable) {
             // tự động lỗi không được làm hỏng khung hình của game
-        }
-        if (KiemServer.canNgat()) {
-            KiemServer.daQua = true;
-            Canvas.cmdNgatKetNoi.action.perform();
         }
     }
 

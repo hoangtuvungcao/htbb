@@ -27,7 +27,7 @@ import com.htbb.pokemon.ThongSoLauDai;
 import com.htbb.pokemon.VatLieuSinhThai;
 
 /**
- * He sinh thai game (docs/pokemon/HE_SINH_THAI.md): co sv.he_sinh_thai, the gioi (thoi tiet / ngay
+ * He sinh thai game (docs/thiet-ke-game.md): co sv.he_sinh_thai, the gioi (thoi tiet / ngay
  * dem / mua / thay loai / bung phat), ky nang song, nha tre, cho, mini game, suu tam, ho so, ban do,
  * du lieu SQL sinh ra, diem moc trong src/real va ngan sach kinh te.
  */
@@ -74,7 +74,7 @@ public final class KiemHeSinhThai {
         HeSinhThai.dat(cu);
         try {
             final String tmpl = new String(Files.readAllBytes(new File("../vps/server.ini.tmpl").toPath()), StandardCharsets.UTF_8);
-            Kiem.dung("vps/server.ini.tmpl co sv.he_sinh_thai=0", tmpl.contains("\nsv.he_sinh_thai=0"));
+            Kiem.dung("vps/server.ini.tmpl co sv.he_sinh_thai=1 (production)", tmpl.contains("\nsv.he_sinh_thai=1\n"));
         } catch (final Exception e) {
             Kiem.dung("doc server.ini.tmpl: " + e, false);
         }
@@ -493,7 +493,7 @@ public final class KiemHeSinhThai {
         Kiem.nhom("He sinh thai - mep nuoc / diem dao (bo tile moi)");
         try {
             final Map<String, Set<Integer>> nuoc = new HashMap<String, Set<Integer>>();
-            for (final String d : Files.readAllLines(new File("../docs/pokemon/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8)) {
+            for (final String d : Files.readAllLines(new File("../du_lieu/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8)) {
                 final String[] c = d.split(",");
                 if (c.length < 4 || "bo_tile".equals(c[0])) {
                     continue;
@@ -513,11 +513,11 @@ public final class KiemHeSinhThai {
             Kiem.dung("doc bang_tile_moi.csv: " + e, false);
         }
         try {
-            final File f = new File("cMap_pokemon/3");
+            final File f = new File("cMap/3");
             final DinhDangBanDo bd = DinhDangBanDo.doc(Files.readAllBytes(f.toPath()));
             final boolean[] n = BanDoSinhThai.luoiNuoc(bd, DinhDangBanDo.boTile(3));
             Kiem.dung("map 3 (Vermilion - ho lon) co nhieu o nuoc (" + BanDoSinhThai.demNuoc(n) + ")", BanDoSinhThai.demNuoc(n) > 50);
-            final byte[] kieu = Files.readAllBytes(new File("cMap_pokemon/t.type").toPath());
+            final byte[] kieu = Files.readAllBytes(new File("cMap/t.type").toPath());
             final boolean[] di = BanDoSinhThai.luoiDiDuoc(bd, kieu, n);
             int x = -1, y = -1;
             for (int i = 0; i < n.length && x < 0; i++) {
@@ -543,7 +543,7 @@ public final class KiemHeSinhThai {
             Kiem.bang("dung tren diem -> tim thay", Integer.valueOf(0), Integer.valueOf(BanDoSinhThai.diemTaiCho(dd, dd[0][0], dd[0][1], 1)));
             Kiem.dung("goi y huong", BanDoSinhThai.goiYDiemGanNhat(dd, null, dd[0][0] + 5, dd[0][1]).contains("Tây"));
         } catch (final Exception e) {
-            Kiem.dung("doc cMap_pokemon/3: " + e, false);
+            Kiem.dung("doc cMap/3: " + e, false);
         }
     }
 
@@ -587,7 +587,7 @@ public final class KiemHeSinhThai {
         try {
             final Map<String, List<String>> csvHo = new HashMap<String, List<String>>();
             final Set<String> mapCsv = new HashSet<String>();
-            for (final String d : Files.readAllLines(new File("../docs/pokemon/diem_cau_ca.csv").toPath(), StandardCharsets.UTF_8)) {
+            for (final String d : Files.readAllLines(new File("../du_lieu/diem_cau_ca.csv").toPath(), StandardCharsets.UTF_8)) {
                 if (d.startsWith("#") || d.startsWith("map_id")) {
                     continue;
                 }
@@ -597,13 +597,13 @@ public final class KiemHeSinhThai {
             }
             Kiem.dung("diem_cau_ca.csv co ho (" + mapCsv.size() + " map)", mapCsv.size() >= 10);
             int lech = 0, soMap = 0;
-            for (final String d : Files.readAllLines(new File("../docs/pokemon/thiet_ke_map.csv").toPath(), StandardCharsets.UTF_8)) {
+            for (final String d : Files.readAllLines(new File("../du_lieu/thiet_ke_map.csv").toPath(), StandardCharsets.UTF_8)) {
                 final String[] c = d.split(";");
                 if (c.length < 3 || !c[0].matches("\\d+") || "40".equals(c[0]) || "42".equals(c[0])) {
                     continue;
                 }
                 final int id = Integer.parseInt(c[0]);
-                final File f = new File("cMap_pokemon/" + id);
+                final File f = new File("cMap/" + id);
                 if (!f.isFile()) {
                     continue;
                 }
@@ -611,7 +611,7 @@ public final class KiemHeSinhThai {
                 final DinhDangBanDo bd = DinhDangBanDo.doc(Files.readAllBytes(f.toPath()));
                 final String bo = DinhDangBanDo.boTile(id);
                 final boolean[] nuoc = BanDoSinhThai.luoiNuoc(bd, bo);
-                final boolean[] dd = BanDoSinhThai.luoiDiDuoc(bd, Files.readAllBytes(new File("cMap_pokemon/" + bo + ".type").toPath()), nuoc);
+                final boolean[] dd = BanDoSinhThai.luoiDiDuoc(bd, Files.readAllBytes(new File("cMap/" + bo + ".type").toPath()), nuoc);
                 final int[] nhan = BanDoSinhThai.nhanHo(nuoc, bd.w, bd.h);
                 final int[] kt = BanDoSinhThai.kichThuocHo(nhan);
                 final List<String> java = new ArrayList<String>();
@@ -654,7 +654,7 @@ public final class KiemHeSinhThai {
             Kiem.sai("bang nguoi choi khong bi DROP", sql.contains("DROP TABLE IF EXISTS `tob_hst"));
             // Quai: id -> cap, phan loai
             final Map<Integer, int[]> quai = new HashMap<Integer, int[]>();
-            for (final String d : Files.readAllLines(new File("../docs/pokemon/bang_quai.csv").toPath(), StandardCharsets.UTF_8)) {
+            for (final String d : Files.readAllLines(new File("../du_lieu/bang_quai.csv").toPath(), StandardCharsets.UTF_8)) {
                 final String[] c = d.split(",");
                 if (c.length > 5 && c[0].matches("\\d+")) {
                     quai.put(Integer.parseInt(c[0]), new int[]{Integer.parseInt(c[2]), "quai".equals(c[4]) ? 1 : 0});

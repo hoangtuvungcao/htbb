@@ -52,7 +52,7 @@ public class OfflineMap extends Map {
             int[] typeOfTile = (int[])null;
             int[] type = (int[])null;
             short[] map = (short[])null;
-            fis = new FileInputStream(com.htbb.pokemon.BanDoPokemon.duong(loadmap < 110 ? "cMap/t.type" : (loadmap > 200 ? "cMap/t_thanh.type" : "cMap/t_hang.type")));
+            fis = new FileInputStream(loadmap < 110 ? "cMap/t.type" : (loadmap > 200 ? "cMap/t_thanh.type" : "cMap/t_hang.type"));
             dis = new DataInputStream(fis);
             typeOfTile = new int[dis.available()];
 
@@ -60,7 +60,7 @@ public class OfflineMap extends Map {
                typeOfTile[i] = dis.read();
             }
 
-            fisMap = new FileInputStream(com.htbb.pokemon.BanDoPokemon.duong("cMap/" + loadmap));
+            fisMap = new FileInputStream("cMap/" + loadmap);
             disMap = new DataInputStream(fisMap);
             is = disMap;
             int w = disMap.read();

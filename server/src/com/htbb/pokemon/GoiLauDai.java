@@ -4,7 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * Noi dung 5 goi chien dau -95..-99 (THIET_KE_LAU_DAI.md muc 4.6 - BAN CHOT, client J2ME
+ * Noi dung 5 goi chien dau -95..-99 (docs/thiet-ke-game.md - BAN CHOT, client J2ME
  * doc o game.pokemon.PokeMangChienDau). Lop THUAN chi ghi byte, big-endian. Moi goi la goi
  * KEM (io.Message.kemTheo) hoac goi doc lap moi; client cu bo qua.
  *

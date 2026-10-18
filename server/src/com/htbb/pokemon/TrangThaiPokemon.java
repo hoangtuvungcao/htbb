@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Trang thai (status) do server tinh, client chi ve (THIET_KE_LAU_DAI.md muc 4.6). Lop THUAN.
+ * Trang thai (status) do server tinh, client chi ve (docs/thiet-ke-game.md). Lop THUAN.
  *
  * | Trang thai | Hieu ung                                  | Thoi gian | Khang                        |
  * | 1 Bong     | 3% HP toi da / 2 giay, -10% tan cong      | 6 s       | he Lua mien                  |

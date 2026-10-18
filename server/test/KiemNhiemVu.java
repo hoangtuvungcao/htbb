@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Bang nhiem vu moi (docs/pokemon/NHIEM_VU_THIET_KE.md, sinh boi tools/pokemon/sinh_nhiem_vu.py).
+ * Bang nhiem vu moi (du_lieu/NHIEM_VU_THIET_KE.md, sinh boi tools/pokemon/sinh_nhiem_vu.py).
  *
  * VI SAO: nguoi choi phan nan "nhiem vu it, don dieu" -> bang mo rong ~1.860 dong, 45 kieu muc tieu.
  * Test giu: du so luong tung nhom, moi NPC/ban do/quai/vat pham tro toi deu ton tai, chuoi
@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 public final class KiemNhiemVu {
 
-    private static final String D = "../docs/pokemon/";
+    private static final String D = "../du_lieu/";
 
     private KiemNhiemVu() {
     }
@@ -343,14 +343,12 @@ public final class KiemNhiemVu {
     }
 
     static int[] kichThuoc(final String map) throws Exception {
-        final File f = new File(D + "map_cu/" + map + ".json");
-        if (!f.exists()) {
+        final File f = new File("cMap/" + map);
+        if (!f.isFile()) {
             return null;
         }
-        final String s = new String(Files.readAllBytes(f.toPath()), StandardCharsets.UTF_8);
-        final Matcher w = Pattern.compile("\"w\":\\s*(\\d+)").matcher(s);
-        final Matcher h = Pattern.compile("\"h\":\\s*(\\d+)").matcher(s);
-        return w.find() && h.find() ? new int[]{Integer.parseInt(w.group(1)), Integer.parseInt(h.group(1))} : null;
+        final com.htbb.pokemon.DinhDangBanDo m = com.htbb.pokemon.DinhDangBanDo.doc(Files.readAllBytes(f.toPath()));
+        return new int[]{m.w, m.h};
     }
 
     // ------------------------------------------------------------------ DAG
@@ -499,7 +497,7 @@ public final class KiemNhiemVu {
     }
 
     // ------------------------------------------------------------------ he sinh thai
-    /** Muc tieu he sinh thai phai khop docs/pokemon/HE_SINH_THAI.md + cac lop sv.he_sinh_thai. */
+    /** Muc tieu he sinh thai phai khop docs/thiet-ke-game.md + cac lop sv.he_sinh_thai. */
     private static void kiemHeSinhThai(final List<Map<String, String>> nv) throws Exception {
         final String vl = new String(Files.readAllBytes(Paths.get("src/com/htbb/pokemon/VatLieuSinhThai.java")),
                 StandardCharsets.UTF_8);
@@ -548,7 +546,7 @@ public final class KiemNhiemVu {
                 }
             }
         }
-        // Cau ca CHI o ho (docs/pokemon/diem_cau_ca.csv, xuat boi he sinh thai): ban do + o dung cau phai co trong bang.
+        // Cau ca CHI o ho (du_lieu/diem_cau_ca.csv, xuat boi he sinh thai): ban do + o dung cau phai co trong bang.
         final Set<String> ho = new HashSet<String>();
         final Set<String> oHo = new HashSet<String>();
         for (final String l : Files.readAllLines(Paths.get(D + "diem_cau_ca.csv"), StandardCharsets.UTF_8)) {
@@ -577,7 +575,7 @@ public final class KiemNhiemVu {
     // ------------------------------------------------------------------ toa do
     /**
      * Toa do: generator ghi dang chuan "x;y"; engine (NhiemVuMau.docToaDo) doc ca "x;y" lan "x,y". Moi
-     * muc tieu co toa do phai doc duoc, nam trong ban do va la O DI DUOC (cMap_pokemon + .type nhu
+     * muc tieu co toa do phai doc duoc, nam trong ban do va la O DI DUOC (cMap + .type nhu
      * BanDoSinhThai); cau ca con phai gan nuoc (<= 2 o). Truoc day DatabaseLauDai chi tach "," nen buoc
      * "dung tai diem" chap nhan moi vi tri.
      */
@@ -615,15 +613,15 @@ public final class KiemNhiemVu {
             final String mp = d.get("map_id");
             boolean[][] l = cache.get(mp);
             if (l == null) {
-                final File f = new File("cMap_pokemon/" + mp);
+                final File f = new File("cMap/" + mp);
                 if (!f.isFile()) {
-                    loi.add(d.get("ma") + " thieu ban do cMap_pokemon/" + mp);
+                    loi.add(d.get("ma") + " thieu ban do cMap/" + mp);
                     continue;
                 }
                 final com.htbb.pokemon.DinhDangBanDo bd = com.htbb.pokemon.DinhDangBanDo.doc(Files.readAllBytes(f.toPath()));
                 final String bo = com.htbb.pokemon.DinhDangBanDo.boTile(Integer.parseInt(mp));
                 final boolean[] nuoc = com.htbb.pokemon.BanDoSinhThai.luoiNuoc(bd, bo);
-                final File ft = new File("cMap_pokemon/" + bo + ".type");
+                final File ft = new File("cMap/" + bo + ".type");
                 final boolean[] di = com.htbb.pokemon.BanDoSinhThai.luoiDiDuoc(bd, ft.isFile() ? Files.readAllBytes(ft.toPath()) : null, nuoc);
                 l = new boolean[][]{di, nuoc, {true}};
                 cache.put(mp, l);

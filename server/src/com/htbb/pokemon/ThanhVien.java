@@ -6,7 +6,7 @@ import real.Char;
 import real.MessageCreator;
 
 /**
- * Cổng "Thành viên HTBB" trong game (docs/pokemon/THANH_VIEN.md). MỘT hàm {@link #chan} dùng ở mọi chỗ
+ * Cổng "Thành viên HTBB" trong game (docs/van-hanh.md). MỘT hàm {@link #chan} dùng ở mọi chỗ
  * khoá tính năng. Cấu hình đọc lại từ bảng cau_hinh mỗi 10 giây (CauHinh.napLai -> {@link #apDungCauHinh});
  * trạng thái thành viên đọc bảng tv_thanh_vien, nhớ 30 giây / tài khoản. Lỗi CSDL = cho qua (không khoá
  * nhầm người chơi vì CSDL chập chờn). Tắt (thanh_vien.bat=0, mặc định) = không khoá gì, không đọc CSDL.

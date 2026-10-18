@@ -89,7 +89,7 @@ public class doCuoiThu {
                 // KHONG gui createAnimalWearingMessage cho nguoi xung quanh - client hieu
                 // goi nay la "mo cua so Trang bi thu" (GameScr.onAnimalWearingInfo), charID
                 // khac nguoi nhan se hat man hinh ho sang xem trang bi thu cua nguoi vua len
-                // thu, cat ngang viec ho dang lam (xem docs/skin-thu-cuoi.md muc 10). Ho cung
+                // thu, cat ngang viec ho dang lam (xem docs/thiet-ke-game.md). Ho cung
                 // khong can goi do: du lieu duy nhat no mang la imgAnimal, chi dung ve trong
                 // cua so thong tin, khong dung ve con thu tren ban do (hinh tren ban do di
                 // bang createCharInfo, da gui vo dieu kien o dong tren).

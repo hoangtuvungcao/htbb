@@ -11,7 +11,7 @@ import com.htbb.pokemon.ThuPokemon;
 /**
  * Kiem thu thu cuoi Pokemon (com.htbb.pokemon.ThuPokemon) + goi -93 POKE_CUOI.
  *
- * Mang ThuPokemon.DEX duoc chep tay tu docs/pokemon/bang_thu.csv - test nay doi chieu
+ * Mang ThuPokemon.DEX duoc chep tay tu du_lieu/bang_thu.csv - test nay doi chieu
  * TUNG dong "thu_cuoi" trong CSV voi mang Java, va so luong voi so hang so trong
  * data.Animal (BACH_MA..SU_TU_BANG = 21). Sua mot ben ma quen ben kia la do ngay.
  */
@@ -23,7 +23,7 @@ public final class KiemThuPokemon {
         Kiem.bang("ngoai bang -> 0", Integer.valueOf(0), Integer.valueOf(ThuPokemon.dex(21)));
         Kiem.bang("am -> 0", Integer.valueOf(0), Integer.valueOf(ThuPokemon.dex(-1)));
         try {
-            final List<String> dong = Files.readAllLines(new File("../docs/pokemon/bang_thu.csv").toPath(), StandardCharsets.UTF_8);
+            final List<String> dong = Files.readAllLines(new File("../du_lieu/bang_thu.csv").toPath(), StandardCharsets.UTF_8);
             int dem = 0;
             for (final String d : dong) {
                 final String[] c = d.split(",");
@@ -37,7 +37,7 @@ public final class KiemThuPokemon {
                 Kiem.bang("Animal " + c[2] + " shiny", Boolean.valueOf("1".equals(c[4])),
                         Boolean.valueOf(ThuPokemon.shiny(id)));
                 Kiem.dung("co sprite da dong goi: " + c[3], new File(String.format(
-                        "../client_pc_ios/ClientUnity/Assets/Resources/poke/%04d%s_dl.bytes", Integer.parseInt(c[3]), "1".equals(c[4]) ? "s" : "")).isFile());
+                        "../client_pc_ios/Assets/Resources/poke/%04d%s_dl.bytes", Integer.parseInt(c[3]), "1".equals(c[4]) ? "s" : "")).isFile());
             }
             Kiem.bang("CSV co du 21 dong thu_cuoi", Integer.valueOf(21), Integer.valueOf(dem));
         } catch (final Exception e) {
@@ -46,9 +46,9 @@ public final class KiemThuPokemon {
 
         Kiem.nhom("Ten chieu Pokemon - server, client va bang_chieu.csv phai khop");
         try {
-            final List<String> dong = Files.readAllLines(new File("../docs/pokemon/bang_chieu.csv").toPath(), StandardCharsets.UTF_8);
+            final List<String> dong = Files.readAllLines(new File("../du_lieu/bang_chieu.csv").toPath(), StandardCharsets.UTF_8);
             final String client = new String(Files.readAllBytes(
-                    new File("../client_pc_ios/ClientUnity/Assets/Scripts/Game/SkillManager.cs").toPath()), StandardCharsets.UTF_8);
+                    new File("../client_pc_ios/Assets/Scripts/Assembly-CSharp/SkillManager.cs").toPath()), StandardCharsets.UTF_8);
             int dem = 0;
             for (final String d : dong.subList(1, dong.size())) {
                 final String[] c = d.split(",");
@@ -140,7 +140,7 @@ public final class KiemThuPokemon {
         Kiem.bang("ten chung giu nguyen", "Bến tàu", com.htbb.pokemon.TenMapPokemon.doi("Bến tàu"));
         Kiem.bang("rong giu nguyen", "", com.htbb.pokemon.TenMapPokemon.doi(""));
         try {
-            final String cs = new String(Files.readAllBytes(new File("../client_pc_ios/ClientUnity/Assets/Scripts/Game/TenMapPokemon.cs").toPath()), StandardCharsets.UTF_8);
+            final String cs = new String(Files.readAllBytes(new File("../client_pc_ios/Assets/Scripts/Assembly-CSharp/TenMapPokemon.cs").toPath()), StandardCharsets.UTF_8);
             for (final String[] d : com.htbb.pokemon.TenMapPokemon.BANG) {
                 Kiem.dung("client co dong " + d[0], cs.contains("{ \"" + d[0] + "\", \"" + d[1] + "\" }"));
             }
@@ -185,7 +185,7 @@ public final class KiemThuPokemon {
             Kiem.dung("ghiCuoi: " + e, false);
         }
         try {
-            final String mh = new String(Files.readAllBytes(new File("../client_pc_ios/ClientUnity/Assets/Scripts/Game/MessageHandler.cs").toPath()), StandardCharsets.UTF_8);
+            final String mh = new String(Files.readAllBytes(new File("../client_pc_ios/Assets/Scripts/Assembly-CSharp/MessageHandler.cs").toPath()), StandardCharsets.UTF_8);
             Kiem.dung("client xu ly case -93", mh.contains("case -93:"));
             Kiem.dung("client doc i16,i16,u8 cho -93", mh.contains("c.pokeThuDex = dexThu;"));
         } catch (final Exception e) {

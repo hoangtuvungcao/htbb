@@ -1373,7 +1373,7 @@ public class Char : LiveActor
 	}
 
 	/// <summary>
-	/// Trang thai client -&gt; dong tac PokeBody (bang 4.3 KE_HOACH_CHUYEN_DOI.md).
+	/// Trang thai client -&gt; dong tac PokeBody (bang 4.3 docs/kien-truc.md).
 	/// state: 0 dung, 1 chay, 2 danh (startAttack), 3 chet. Trung don = dang nay len/bi day lui.
 	/// Class 2 (Phap su/Eevee) va 4 (Cung thu/Pichu) danh xa -&gt; DANH_XA.
 	/// </summary>

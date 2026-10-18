@@ -5,7 +5,8 @@
  * link nhỏ ở chân trang (không nằm trong menu, cẩm nang, trang chủ).
  *
  * Nguồn: public/pokemon/GHI_CONG.txt — chép lại từ
- * HTBB/ClientUnity/Assets/Resources/poke/GHI_CONG.txt mỗi khi client đóng gói lại sprite.
+ * client_pc_ios/Assets/Resources/poke/GHI_CONG.txt mỗi khi client đóng gói lại sprite.
+ * Giấy phép từng thành phần: docs/giay-phep.md.
  * Đọc lúc build (?raw) nên không phụ thuộc file tĩnh khi chạy.
  */
 import ghiCongTho from '~~/public/pokemon/GHI_CONG.txt?raw'
@@ -13,7 +14,7 @@ import ghiCongTho from '~~/public/pokemon/GHI_CONG.txt?raw'
 const tenSite = useAppConfig().htbb.tenSite
 useSeoMeta({
   title: 'Giấy phép & nguồn tài nguyên',
-  description: `Giấy phép và ghi công tài nguyên dùng trong ${tenSite}: sprite PMDCollab (CC BY-NC 4.0), tile Kenney / Ninja Adventure (CC0), phông chữ, biểu tượng.`,
+  description: `Giấy phép và ghi công tài nguyên dùng trong ${tenSite}: sprite PMDCollab (CC BY-NC 4.0), tile và âm thanh Kenney / Ninja Adventure (CC0), phông chữ OFL, bộ âm thanh MIDI TimGM6mb (GPL-2), biểu tượng.`,
 })
 
 const ghiCong = docGhiCong(ghiCongTho)
@@ -37,7 +38,11 @@ const taiNguyen = [
   { ten: 'Kenney — Tiny Town', url: 'https://kenney.nl/assets/tiny-town', dung: 'Tile bản đồ: cỏ, đất, cây, nhà, hàng rào, biển', gp: 'CC0 1.0' },
   { ten: 'Kenney — Tiny Dungeon', url: 'https://kenney.nl/assets/tiny-dungeon', dung: 'Tile hang động, đồ nội thất, rương', gp: 'CC0 1.0' },
   { ten: 'Ninja Adventure (Pixel-boy & AAA)', url: 'https://pixel-boy.itch.io/ninja-adventure-asset-pack', dung: 'Sàn gỗ, tường và đồ trong nhà', gp: 'CC0 1.0' },
-  { ten: 'Phông Nunito, Baloo 2, Press Start 2P', url: 'https://fonts.google.com', dung: 'Chữ trên website (tự host)', gp: 'SIL Open Font License 1.1' },
+  { ten: 'Kenney — Interface / Impact / RPG / Digital Audio, Music Jingles', url: 'https://kenney.nl/assets', dung: 'Tiếng hiệu ứng trong game', gp: 'CC0 1.0' },
+  { ten: 'Nhạc nền chiptune', url: 'https://creativecommons.org/publicdomain/zero/1.0/', dung: 'Nhạc nền trong game (sáng tác riêng cho dự án, không dùng nhạc Pokémon)', gp: 'CC0 1.0' },
+  { ten: 'TimGM6mb (Tim Brechbill, David Bolton)', url: 'https://github.com/musescore/musescore-old', dung: 'Bộ âm thanh MIDI của bản PC Java (tệp riêng, đi kèm nguyên vẹn)', gp: 'GNU GPL v2' },
+  { ten: 'Phông Nunito, Baloo 2, Press Start 2P, Noto Sans', url: 'https://fonts.google.com', dung: 'Chữ trên website (tự host) và trong bản PC', gp: 'SIL Open Font License 1.1' },
+  { ten: 'Eclipse Temurin JRE', url: 'https://adoptium.net', dung: 'Java đi kèm bản PC Windows (bản Java)', gp: 'GPL v2 + Classpath Exception' },
   { ten: 'Lucide Icons', url: 'https://lucide.dev', dung: 'Biểu tượng giao diện website', gp: 'ISC' },
 ]
 
@@ -89,7 +94,7 @@ const loaiLoc = computed(() => {
       </table>
     </div>
     <p class="mt-2 text-xs text-dimmed">
-      Âm thanh: client chưa phát nhạc/âm thanh; khi bổ sung chỉ dùng tài nguyên CC0 có nguồn rõ ràng (sẽ liệt kê tại đây).
+      Mỗi bản game có kèm tệp ghi công và giấy phép đầy đủ (GHI_CONG.txt, giấy phép phông chữ và bộ âm thanh MIDI).
     </p>
 
     <h2 class="mt-10 font-display text-xl font-bold text-highlighted">Người vẽ sprite ({{ nguoiVe.length }})</h2>

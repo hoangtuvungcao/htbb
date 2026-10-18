@@ -1,1 +1,3 @@
 out/
+# bản sao map cũ do tools/pokemon/cai_map_j2me.sh tạo
+.truoc_map_moi/

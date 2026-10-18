@@ -645,7 +645,7 @@ public class BossNguoiTuyet extends Boss {
     }
 
     public Vector<Actor> onDropItem(Map m, Char p) {
-        // Che do Pokemon: lop nay KHONG goi super.onDropItem, nen goi thang 2 hook cua
+        // Pokemon: lop nay KHONG goi super.onDropItem, nen goi thang 2 hook cua
         // Monster.onDropItem (roi da Eevee + Pokedex "da ha"). Tat co -> khong lam gi.
         RoiDaTienHoa.khiHaQuai(p, this);
         PokedexPokemon.khiHaQuai(p, this);

@@ -41,7 +41,7 @@ public final class KiemMauPetCoAnh {
 
     /**
      * Chi so khung LON NHAT ma bang arrFrameStand/arrFrameMove cua client (AnimalMove.cs) co the
-     * yeu cau theo type_move, tinh CA BON HUONG. Chep tu ClientUnity/Assets/Scripts/Game/AnimalMove.cs
+     * yeu cau theo type_move, tinh CA BON HUONG. Chep tu client_pc_ios/Assets/Scripts/Assembly-CSharp/AnimalMove.cs
      * (ban port trung khop client J2ME). Chi so khung >= nFrame la ve ngoai bien anh.
      */
     private static final int[] KHUNG_TOI_DA_THEO_TYPE = {

@@ -6878,12 +6878,12 @@
       {
        "map": 44,
        "ten": "Rừng Petalburg",
-       "soLuong": 21
+       "soLuong": 42
       },
       {
        "map": 46,
        "ten": "Bờ biển Dewford",
-       "soLuong": 19
+       "soLuong": 39
       }
      ],
      "ghiChuNoi": ""
@@ -7024,12 +7024,12 @@
       {
        "map": 48,
        "ten": "Route 110",
-       "soLuong": 21
+       "soLuong": 43
       },
       {
        "map": 46,
        "ten": "Bờ biển Dewford",
-       "soLuong": 19
+       "soLuong": 38
       }
      ],
      "ghiChuNoi": ""
@@ -7130,7 +7130,7 @@
       {
        "map": 44,
        "ten": "Rừng Petalburg",
-       "soLuong": 21
+       "soLuong": 42
       }
      ],
      "ghiChuNoi": ""
@@ -7200,12 +7200,12 @@
       {
        "map": 57,
        "ten": "Núi Pyre",
-       "soLuong": 21
+       "soLuong": 42
       },
       {
        "map": 160,
        "ten": "Hang Granite",
-       "soLuong": 14
+       "soLuong": 28
       }
      ],
      "ghiChuNoi": ""
@@ -7248,7 +7248,7 @@
       {
        "map": 160,
        "ten": "Hang Granite",
-       "soLuong": 14
+       "soLuong": 28
       }
      ],
      "ghiChuNoi": ""
@@ -7286,12 +7286,12 @@
       {
        "map": 50,
        "ten": "Sa mạc Route 111",
-       "soLuong": 24
+       "soLuong": 49
       },
       {
        "map": 52,
        "ten": "Núi Chimney",
-       "soLuong": 23
+       "soLuong": 46
       }
      ],
      "ghiChuNoi": ""
@@ -7329,12 +7329,12 @@
       {
        "map": 163,
        "ten": "Hang Khởi Nguyên",
-       "soLuong": 17
+       "soLuong": 35
       },
       {
        "map": 165,
        "ten": "Đường Victory Hoenn",
-       "soLuong": 17
+       "soLuong": 33
       }
      ],
      "ghiChuNoi": ""
@@ -7402,7 +7402,7 @@
       {
        "map": 48,
        "ten": "Route 110",
-       "soLuong": 21
+       "soLuong": 44
       }
      ],
      "ghiChuNoi": ""
@@ -7440,7 +7440,7 @@
       {
        "map": 46,
        "ten": "Bờ biển Dewford",
-       "soLuong": 19
+       "soLuong": 37
       }
      ],
      "ghiChuNoi": ""
@@ -7515,12 +7515,12 @@
       {
        "map": 58,
        "ten": "Biển Route 124",
-       "soLuong": 23
+       "soLuong": 45
       },
       {
        "map": 162,
        "ten": "Hang dưới biển",
-       "soLuong": 17
+       "soLuong": 35
       }
      ],
      "ghiChuNoi": ""
@@ -7588,14 +7588,14 @@
      "boss": false,
      "noi": [
       {
-       "map": 50,
-       "ten": "Sa mạc Route 111",
-       "soLuong": 24
-      },
-      {
        "map": 52,
        "ten": "Núi Chimney",
-       "soLuong": 23
+       "soLuong": 47
+      },
+      {
+       "map": 50,
+       "ten": "Sa mạc Route 111",
+       "soLuong": 46
       }
      ],
      "ghiChuNoi": ""
@@ -7675,12 +7675,12 @@
       {
        "map": 53,
        "ten": "Rừng mưa Route 119",
-       "soLuong": 27
+       "soLuong": 54
       },
       {
        "map": 55,
        "ten": "Route 120 - Viện Thời tiết",
-       "soLuong": 24
+       "soLuong": 47
       }
      ],
      "ghiChuNoi": ""
@@ -7719,17 +7719,17 @@
       {
        "map": 164,
        "ten": "Tháp Trời",
-       "soLuong": 18
+       "soLuong": 38
       },
       {
        "map": 165,
        "ten": "Đường Victory Hoenn",
-       "soLuong": 17
+       "soLuong": 32
       },
       {
        "map": 280,
        "ten": "Đỉnh Tháp Trời",
-       "soLuong": 10
+       "soLuong": 21
       }
      ],
      "ghiChuNoi": ""
@@ -7774,7 +7774,7 @@
       {
        "map": 44,
        "ten": "Rừng Petalburg",
-       "soLuong": 21
+       "soLuong": 43
       }
      ],
      "ghiChuNoi": ""
@@ -7812,17 +7812,17 @@
       {
        "map": 55,
        "ten": "Route 120 - Viện Thời tiết",
-       "soLuong": 24
+       "soLuong": 50
       },
       {
        "map": 58,
        "ten": "Biển Route 124",
-       "soLuong": 23
+       "soLuong": 45
       },
       {
        "map": 61,
        "ten": "Biển Route 131",
-       "soLuong": 21
+       "soLuong": 43
       }
      ],
      "ghiChuNoi": ""
@@ -7859,17 +7859,17 @@
       {
        "map": 53,
        "ten": "Rừng mưa Route 119",
-       "soLuong": 27
+       "soLuong": 53
       },
       {
        "map": 55,
        "ten": "Route 120 - Viện Thời tiết",
-       "soLuong": 24
+       "soLuong": 47
       },
       {
        "map": 52,
        "ten": "Núi Chimney",
-       "soLuong": 23
+       "soLuong": 46
       }
      ],
      "ghiChuNoi": ""
@@ -7955,7 +7955,7 @@
       {
        "map": 161,
        "ten": "Thác Meteor",
-       "soLuong": 19
+       "soLuong": 40
       }
      ],
      "ghiChuNoi": ""
@@ -8077,17 +8077,17 @@
       {
        "map": 50,
        "ten": "Sa mạc Route 111",
-       "soLuong": 24
+       "soLuong": 49
       },
       {
        "map": 48,
        "ten": "Route 110",
-       "soLuong": 21
+       "soLuong": 40
       },
       {
        "map": 160,
        "ten": "Hang Granite",
-       "soLuong": 14
+       "soLuong": 28
       }
      ],
      "ghiChuNoi": ""
@@ -8125,7 +8125,7 @@
       {
        "map": 57,
        "ten": "Núi Pyre",
-       "soLuong": 21
+       "soLuong": 43
       }
      ],
      "ghiChuNoi": ""
@@ -8163,7 +8163,7 @@
       {
        "map": 61,
        "ten": "Biển Route 131",
-       "soLuong": 21
+       "soLuong": 42
       }
      ],
      "ghiChuNoi": ""
@@ -8199,14 +8199,14 @@
      "boss": false,
      "noi": [
       {
-       "map": 164,
-       "ten": "Tháp Trời",
-       "soLuong": 18
-      },
-      {
        "map": 165,
        "ten": "Đường Victory Hoenn",
-       "soLuong": 17
+       "soLuong": 36
+      },
+      {
+       "map": 164,
+       "ten": "Tháp Trời",
+       "soLuong": 35
       }
      ],
      "ghiChuNoi": ""
@@ -8303,7 +8303,7 @@
       {
        "map": 57,
        "ten": "Núi Pyre",
-       "soLuong": 21
+       "soLuong": 42
       }
      ],
      "ghiChuNoi": ""
@@ -8450,7 +8450,7 @@
       {
        "map": 53,
        "ten": "Rừng mưa Route 119",
-       "soLuong": 27
+       "soLuong": 54
       }
      ],
      "ghiChuNoi": ""
@@ -8494,7 +8494,7 @@
       {
        "map": 163,
        "ten": "Hang Khởi Nguyên",
-       "soLuong": 17
+       "soLuong": 31
       }
      ],
      "ghiChuNoi": ""
@@ -8562,7 +8562,7 @@
       {
        "map": 162,
        "ten": "Hang dưới biển",
-       "soLuong": 17
+       "soLuong": 31
       }
      ],
      "ghiChuNoi": ""
@@ -8600,12 +8600,12 @@
       {
        "map": 58,
        "ten": "Biển Route 124",
-       "soLuong": 23
+       "soLuong": 46
       },
       {
        "map": 161,
        "ten": "Thác Meteor",
-       "soLuong": 19
+       "soLuong": 36
       }
      ],
      "ghiChuNoi": ""
@@ -8643,7 +8643,7 @@
       {
        "map": 61,
        "ten": "Biển Route 131",
-       "soLuong": 21
+       "soLuong": 41
       }
      ],
      "ghiChuNoi": ""
@@ -8708,7 +8708,7 @@
       {
        "map": 161,
        "ten": "Thác Meteor",
-       "soLuong": 19
+       "soLuong": 37
       }
      ],
      "ghiChuNoi": ""
@@ -8745,7 +8745,7 @@
       {
        "map": 162,
        "ten": "Hang dưới biển",
-       "soLuong": 17
+       "soLuong": 36
       }
      ],
      "ghiChuNoi": ""
@@ -8813,14 +8813,14 @@
      "boss": false,
      "noi": [
       {
-       "map": 164,
-       "ten": "Tháp Trời",
-       "soLuong": 18
-      },
-      {
        "map": 163,
        "ten": "Hang Khởi Nguyên",
-       "soLuong": 17
+       "soLuong": 36
+      },
+      {
+       "map": 164,
+       "ten": "Tháp Trời",
+       "soLuong": 34
       }
      ],
      "ghiChuNoi": ""
@@ -8858,12 +8858,12 @@
       {
        "map": 165,
        "ten": "Đường Victory Hoenn",
-       "soLuong": 17
+       "soLuong": 35
       },
       {
        "map": 280,
        "ten": "Đỉnh Tháp Trời",
-       "soLuong": 10
+       "soLuong": 18
       }
      ],
      "ghiChuNoi": ""

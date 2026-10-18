@@ -1,6 +1,6 @@
 -- ============================================================================
 -- Chi muc cho bang NONG truoc open test (san sang production, 17/10/2026).
--- Xem docs/pokemon/SAN_SANG_PRODUCTION.md muc 2.
+-- Xem docs/trien-khai.md.
 --
 -- Chay NHIEU LAN DUOC (IF NOT EXISTS, MariaDB >= 10.1.4). Chay khi server dang tat hoac luc it nguoi:
 --     mysql htbb_db < sql/them_chi_muc_production.sql

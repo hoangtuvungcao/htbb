@@ -5,9 +5,9 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 /**
- * Do vat phong cach PMD thay hinh cu cua game goc - ban J2ME cua ClientUnity VatThePokemon.cs (G7.B1/B2):
+ * Do vat phong cach PMD thay hinh cu cua game goc - ban J2ME cua Unity VatThePokemon.cs (G7.B1/B2):
  * 16 quai phan_loai vat_the (theo id template) va NPC su kien la do vat (theo idImg).
- * Anh /pk/vt_&lt;id&gt;.png, /pk/vt_npc&lt;idImg&gt;.png. Chi ve khi PokeBody.CHE_DO_POKEMON;
+ * Anh /pk/vt_&lt;id&gt;.png, /pk/vt_npc&lt;idImg&gt;.png.;
  * thieu tep thi tra ve false de noi goi ve kieu cu.
  */
 public final class VatThePokemon {
@@ -47,7 +47,7 @@ public final class VatThePokemon {
     }
 
     private static Anh lay(String khoa, short[] dong) {
-        if (dong == null || !PokeBody.CHE_DO_POKEMON) {
+        if (dong == null) {
             return null;
         }
         Object o = cache.get(khoa);

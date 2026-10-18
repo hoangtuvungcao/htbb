@@ -1,252 +1,201 @@
-#Tien Len TeaM Server  —  BAN MAU SINH TU PIPELINE
-#
 # ============================================================================
-#  DAY LA NGUON DUY NHAT CUA CAU HINH SERVER.
+#  HUYỀN THOẠI BẢO BỐI — BẢN MẪU server.ini CHO MÁY CHỦ THẬT (VPS)
 #
-#  Sua file nay tren GitHub roi commit -> deploy tu dong sinh lai
-#  /opt/htbb/server.ini tren VPS va khoi dong lai server neu cau hinh doi.
-#  KHONG sua tay /opt/htbb/server.ini nua: lan deploy sau se ghi de.
+#  Nguồn DUY NHẤT của /opt/htbb/server/server.ini. vps/sinh-server-ini.sh (deploy-auto.sh gọi
+#  sau mỗi lần kéo code) sinh lại tệp đó từ bản mẫu này, thử kết nối CSDL rồi mới cài.
+#  KHÔNG sửa tay /opt/htbb/server/server.ini: lần deploy sau ghi đè. Xem docs/trien-khai.md.
 #
-#  Hai loai gia tri dac biet:
-#    ${TEN_BIEN}    lay tu GitHub Secrets (mat khau - khong bao gio nam trong git).
-#                   Neu chua dat secret thi giu nguyen gia tri dang chay tren VPS,
-#                   nen them file nay vao khong lam sap server.
-#    @GIU_NGUYEN@   khong dung toi, giu nguyen gia tri dang chay tren VPS. Dung cho
-#                   cac khoa ma trong game sua duoc (vd gio chiem thanh bang lenh
-#                   stown) - de deploy khong nuot mat thay doi vua dat trong game.
+#  Giá trị đặc biệt:
+#    ${TEN_BIEN}   lấy từ biến môi trường của bộ sinh; thiếu thì đọc khoá cùng tên trong
+#                  /etc/htbb/htbb.env (DB_USER, DB_PASSWORD, DB_USER_NAP, DB_PASS_NAP — tạo lúc
+#                  dựng VPS); vẫn thiếu thì giữ giá trị đang chạy. Mật khẩu không bao giờ nằm trong Git.
+#    @GIU_NGUYEN@  giữ nguyên giá trị đang chạy trên VPS.
 #
-#  Khoa nao co gia tri thang o day thi GITHUB THANG: sua trong game bang bang
-#  "setting" van an ngay, nhung lan deploy ke tiep se dat lai theo file nay.
-#  Muon trong game thang han thi doi gia tri thanh @GIU_NGUYEN@.
+#  Phần lớn khoá game còn chỉnh được ở /admin → Cấu hình hệ thống (bảng cau_hinh). Thứ tự ưu
+#  tiên: CSDL > server.ini > mặc định trong danh mục (docs/cau-hinh.md).
 # ============================================================================
 
+# ==== MẠNG ====
 sv.port=19129
 limit.ccu=20000
+sv.server=1
+# Cổng nhận lệnh nạp nội bộ (nạp tiền đang TẮT, khoá vẫn phải có).
+sv.portnap=19153
+# Login server (CheckLoginSocket) chạy nội bộ — KHÔNG mở cổng 8023 ra internet.
+sv.iplogin=127.0.0.1
+sv.portlogin=8023
 
-# ==== DATABASE (MariaDB tren cung VPS) ====
-# CHU Y: phai la MariaDB hoac MySQL 5.7. MySQL 8 da bo ham PASSWORD() ->
-# login server (CheckLoginSocket.jar) khong xac thuc duoc mat khau.
-db.host=localhost:3306
+# ==== CƠ SỞ DỮ LIỆU (MariaDB trên cùng VPS) ====
+# Phải là MariaDB hoặc MySQL 5.7: MySQL 8 bỏ PASSWORD() nên login server không xác thực được.
+db.host=127.0.0.1:3306
 db.name=htbb_db
 db.user=${DB_USER}
 db.password=${DB_PASSWORD}
-# Cho phep db.password de trong. TREN VPS PHAI LUON LA 0.
-# Chi may nha (XAMPP, root khong mat khau) moi dat 1, va dat trong server.ini cua may do
-# chu KHONG phai o day. De 1 o ban mau nay la go mat mot lop chan cua su co 30/08/2026.
-# vps/sinh-server-ini.sh tu choi cai neu gia tri khac 0. Xem TeamServer.choPhepMatKhauTrong().
+# Cho phép db.password trống — chỉ máy nhà. Trên VPS LUÔN là 0 (sinh-server-ini.sh từ chối giá trị khác).
 db.choPhepMatKhauTrong=0
 db.maxco=100
 db.nameNap=htbb_db
 db.userNap=${DB_USER_NAP}
 db.pass=${DB_PASS_NAP}
 db.maxNap=30
-#
-db.host1=localhost:3306
+db.host1=127.0.0.1:3306
 db.name1=htbb_db
-db.user1=${DB_USER1}
-db.password1=${DB_PASSWORD1}
+db.user1=${DB_USER}
+db.password1=${DB_PASSWORD}
 db.maxco1=1
-# Tham so them vao cuoi MOI URL JDBC (ca 4 pool + phep thu ket noi luc khoi dong), dang
-# "a=1&b=2". De trong = y nhu truoc (MariaDB tren VPS). Chay tren NovaDB thi dat
-# useSSL=false (cong MySQL cua NovaDB khong co TLS). Xem docs/cau-hinh-server-ini.md.
+# Tham số thêm vào cuối mọi URL JDBC ("a=1&b=2"). Trống trên MariaDB.
 db.thamSoJdbc=
-#
-sv.portnap=19153
-sv.server=1
+
+# ==== ĐƯỜNG DẪN ====
+# Phải có dấu / ở cuối, user htbb ghi được.
+sv.pathLog=/opt/htbb/logs/
+
+# ==== KHOÁ HỆ THỐNG CŨ (mã nguồn còn đọc bằng parseInt — thiếu là hỏng cả khối cấu hình) ====
+# Giữ nguyên các giá trị này (cờ của mã gốc, không có giao diện): sv.lang=0 tiếng Việt,
+# sv.me=0 chế độ máy chủ chính thức, api.sv mã máy chủ trong lịch bảo trì, sv.CodeTest=0 tắt mã thử.
 sv.LG=3
 sv.range=0
-
-# ==== DUONG DAN LINUX ====
-# PHAI co dau / o cuoi. Thu muc phai ton tai va user htbb ghi duoc.
-sv.pathLog=/opt/htbb/log/
-db.run=/opt/htbb/vps/update.sh
-
+sv.lang=0
+sv.me=0
+api.sv=1
+db.hour=-1
+db.minute=2
+sv.CodeTest=0
+# Bảng giải đua Pokémon (bảng tob_race_*, ngày gốc tạo bảng).
 sv.createRace=2
 sv.tablerace=tob_race_257
 sv.dayrace=2013-07-11
-db.hour=-1
-db.minute=2
-sv.lang=0
-sv.me=0
+# Danh sách tên loại khỏi vòng quay (cách nhau dấu phẩy) / tên được miễn thu hồi đồ đua top cũ.
 sv.ph=
-sv.choi=snduca
+sv.choi=
 
-# Login server chay noi bo tren cung VPS - KHONG mo cong 8023 ra internet
-sv.iplogin=127.0.0.1
-sv.portlogin=8023
+# ==== CHẾ ĐỘ GAME (đổi phải khởi động lại) ====
+# Lâu dài: kinh tế dài hạn, nhiệm vụ, Chiếm Gym, đồ giữ (docs/thiet-ke-game.md).
+sv.lau_dai=1
+# Ngày khai trương (yyyy-MM-dd) — đặt trước khi mở cửa; trống = ngày máy chủ chạy lần đầu.
+sv.ngay_khai_truong=
+# Hệ sinh thái: quái/vùng đổi theo thời gian, chợ sinh thái.
+sv.he_sinh_thai=1
+# KHÔNG giới hạn cấp theo mùa (quyết định 18/10/2026).
+sv.tran_cap_theo_mua=0
+# Nạp tiền TẮT cho tới khi có giấy phép (docs/giay-phep.md). Fail-closed.
+sv.nap_tien=0
+# Khoá thử nghiệm (đồng hồ ảo, giá trị khoaProd) — máy thật LUÔN 0.
+sv.cho_phep_thu_nghiem=0
+# Bảng chỉ số máy chủ + trang_thai.json mỗi 30 giây (kiem-suc-khoe.sh, /admin) và tệp bao_tri.txt.
+sv.chiSoMayChu=1
+# Bảo trì hằng ngày: trống = ngẫu nhiên 4:30–5:30, "HH:MM" = cố định, "tat" = không tự bảo trì.
+sv.gioBaoTri=
 
-api.sv=1
-api.url=https://domain.com
-sv.expvantieu=1
-sv.Luckyexp=1
-sv.ExpQua=1
-sv.CodeTest=0
+# ==== TÍNH NĂNG POKÉMON (bảng cau_hinh, áp dụng ngay) ====
+# Tự động đánh chính thức (thay mọi mod auto cũ), giới hạn giờ/ngày.
+tu_dong.bat=1
+tu_dong.gio_moi_ngay=5
+tu_dong.chi_map_da_mo=1
+tu_dong.tat_khi_pvp=1
+# Hồi sinh mất phí (xu theo giờ chơi, khoá ở PvP / Gym / boss / mê cung).
+hoi_sinh.bat=1
+# Trần chỉ số trang bị.
+chi_so.bat=1
+chi_so.kep_trang_bi=1
+# Chiếm Gym, hầm ngục, điểm PvP.
+gym.bat=1
+ham_nguc.bat=1
+pvp.tinh_diem.bat=1
+# Thành viên trả phí: TẮT (bật sau khi có nạp tiền).
+thanh_vien.bat=0
+thanh_vien.ban_bat=0
+# Kích hoạt tài khoản: chưa kích hoạt vẫn đăng nhập và chơi, chỉ khoá vài tính năng.
+kich_hoat.chan_dang_nhap=0
+kich_hoat.chuc_nang=giao_dich,chat_the_gioi,cho,chuyen_luong,nhan_tang,giftcode
+# Bảo trì đăng nhập thủ công (bật từ /admin khi cần).
+bao_tri.bat=0
+
+# ==== TÀI KHOẢN + ĐĂNG KÝ ====
+# 1 = bật cơ chế kích hoạt tài khoản (cổng kich_hoat.* ở trên); 0 = coi mọi tài khoản đã kích hoạt.
 sv.EnableAvtiveCheck=1
-# ==== DANG KY TAI KHOAN TRONG GAME (lenh 39, real.cmd.DangKyTrongGame) ====
-# 1 = cho dang ky ngay trong game (jar/Android/PC), 0 = chi tren web.
-# Quy tac + han muc (3/gio, 10/ngay moi IP, gop voi web) o HTBB-Web/shared/data/quy-tac-dang-ky.json.
+# Đăng ký ngay trong game (jar / Android / PC); quy tắc + hạn mức chung với web.
 sv.dangKyTrongGame=1
-# Kich hoat 5h_active 30 ngay sau khi dang ky trong game:
-#   web = theo HTBB_AUTO_ACTIVATE cua web (web tu ghi cau_hinh 'web.autoActivate'), 1 = luon, 0 = khong.
+# Tự kích hoạt sau khi đăng ký trong game: web = theo cấu hình web, 1 = luôn, 0 = không.
 sv.dangKyTuKichHoat=web
-# CSDL chua bang team_user (giong HTBB_DB_ACCOUNT cua web) va do tre tra loi chong bot (ms).
 sv.dangKyCsdlTaiKhoan=account
+# Độ trễ trả lời đăng ký (ms) chống bot.
 sv.dangKyTreMs=800
-# So nhan vat toi da moi tai khoan (1..3, client chi ve duoc 3 slot).
+# Số Pokémon (nhân vật) tối đa mỗi tài khoản, 1..3.
 sv.maxCharPerAccount=3
 
-# ==== TI LE DROP KHI TRAIN QUAI ====
-# Cac so la PHAN TRAM so voi ti le goc: 100 = nhu ban goc, 10 = con 1/10, 0 = tat han.
-# Tu 09/09/2026: CHI la gia tri KHOI TAO LAN DAU, chep 1 lan vao bang SQL cau_hinh
-# luc server khoi dong (INSERT IGNORE, khong ghi de). Sau do sua o day KHONG con
-# tac dung nua - sua qua trang /admin/cauhinh hoac bang "setting" trong game.
-# Xem docs/cau-hinh-server-ini.md muc 3-4, src/server/CauHinh.java.
+# ==== TỈ LỆ RƠI / EXP (GIÁ TRỊ KHỞI TẠO LẦN ĐẦU — sau đó sửa ở /admin) ====
+# Phần trăm so với gốc: 100 = như gốc, 0 = tắt.
 sv.tileXu=4
 sv.tileLuong=10
 sv.tileItemSuKien=10
 sv.tilePotion=14
 sv.tileNgoc=14
 sv.tileItem=10
-# So chia SO LUONG xu moi lan rot. 10 = nhu ban goc, 30 = chi con 1/3.
+# Số chia số lượng xu mỗi lần rơi (10 = gốc).
 sv.chiaXuRoi=30
-
-# ==== TI LE EXP QUAI THUONG (khong dung Boss) ====
-# Cung la GIA TRI KHOI TAO LAN DAU nhu khoi tren, sau do sua qua
-# /admin/cauhinh hoac bang "setting". 100 = nhu ban goc.
-# Xem Monster.rcvXpSauGiam(), src/server/CauHinh.java.
 sv.tileExpLv50=10
 sv.tileExpDuoiLv50=50
+# Thưởng EXP: giao hàng (x2), may mắn, quà — 1 = bật.
+sv.expvantieu=1
+sv.Luckyexp=1
+sv.ExpQua=1
 
-# ==== TI LE MAU + HE SO EXP VAN TIEU ====
-# Cung la GIA TRI KHOI TAO LAN DAU, sua qua /admin/cauhinh sau do.
-# sv.tieuNguongMau: 5 nguong CONG DON (Trang/Xanh/Do/Hoan My/Vang) tren thang
-#   100000, PHAI tang dan; phan con lai la Tim. Xem Char.TIEU_NGUONG_MAU,
-#   Char.doInitMonter().
-# sv.tieuHeSoExp: % nhan truoc khi ap ti le theo mau, 200 = x2 (gia tri cu).
-# sv.tieuPcExpTheoMau: 7 % EXP theo mau (Trang/Xanh/Do/HoanMy/Vang/Tim/_),
-#   dung khi lvOpen<50 hoac mau Trang/Xanh/Do. Xem CharSuKien.doResponseTieu().
-# sv.tieuPermilleCaoCap: 9 phan nghin EXP can len cap, rieng Hoan My/Vang/Tim
-#   tu lv50, gop 3 khung cap (50-59/60-69/70+) x 3 mau.
-# sv.doiTieuNguongMauXu / sv.doiTieuNguongMauLuong: 5 nguong CONG DON rieng cho
-#   DOI tieu (reroll tra phi), doc lap voi sv.tieuNguongMau. Xem Char.doChangeTieu().
+# ==== GIAO HÀNG (tên khoá cũ "tieu" — vẫn được mã nguồn đọc) ====
+# 5 ngưỡng CỘNG DỒN (Trắng/Xanh/Đỏ/Hoàn Mỹ/Vàng) trên 100000, tăng dần; còn lại là Tím.
 sv.tieuNguongMau=60189,89389,99689,99989,99999
+# % EXP nhân trước khi áp tỉ lệ theo màu (200 = x2).
 sv.tieuHeSoExp=200
 sv.tieuPcExpTheoMau=50,100,150,250,250,500,0
 sv.tieuPermilleCaoCap=50,70,90,35,55,75,5,25,45
+# Ngưỡng màu khi ĐỔI hàng (trả xu / lượng).
 sv.doiTieuNguongMauXu=50545,85545,98945,99945,99995
 sv.doiTieuNguongMauLuong=22890,52890,96890,99890,99990
 
-# Su kien Vu Lan (NPC Dau Truong, npcType -31): gia xu doi "50 hoa hong vang -> 1 bo hoa
-# do". Moi server tu dat rieng - Van Xuan dat thap hon cac server khac. Mac dinh 150000
-# neu khong co dong nay.
-sv.giaXuBoHoaDoVuLan=150000
-
-# Trang chu + link tai game gui xuong client sau khi dang nhap.
-sv.website=http://180.93.57.30/
-sv.linkTaiGame=http://180.93.57.30/
-
-# ==== CHE DO POKEMON (nhanh pokemon/chuyen-doi) ====
-# 1 = bat: he 18 loai thay ngu hanh trong sat thuong, tien hoa theo cap, quai lay he tu
-#     data_monster (khong random), gui lenh -90/-91/-92 cho ClientUnity. Can chay
-#     sql/them_cot_pokemon.sql (server cung tu them cot neu thieu) va
-#     sql/pokemon_du_lieu_quai.sql truoc.
-# 0 = game goc, y nhu truoc. Thieu dong = 0. Doi gia tri phai khoi dong lai server.
-# Xem docs/cau-hinh-server-ini.md muc 7b, docs/pokemon/KE_HOACH_CHUYEN_DOI.md (Q8).
-sv.che_do_pokemon=1
-
-# ==== THIET KE DAI HAN (giai doan 2) ====
-# 1 = bat: kinh te moi (bo luong roi tu quai, xu roi theo cap, nang luong huan luyen, gia nang
-#     cap theo bac + pity, thue cho 6%+1%, phi theo thu nhap), bang EXP moi (len cap cham, nang luong
-#     90 phut/ngay, vat pham tang toc) + tinh thong, nhiem vu loc theo cap + ve chuong tuan, cong thuc sat thuong moi, boss theo
-#     pha, goi -95..-99. Can chay sql/pokemon_lau_dai.sql + sql/them_bang_lau_dai.sql truoc.
-# 0 = y nhu truoc. Thieu dong = 0. Doi gia tri phai khoi dong lai server.
-# Xem docs/cau-hinh-server-ini.md muc 7c, docs/pokemon/KE_HOACH_LAU_DAI_GD2.md.
-sv.lau_dai=0
-# Bat/tat TU DONG: khoi dong lai la server tu chuyen EXP nhan vat sang bang dung voi co (ca chieu tat).
-# Ngay khai truong (yyyy-MM-dd, khong bat buoc): ngay 0 cua lich su kien / mua PvP / ve mua (va cua tran cap
-# theo mua neu bat). De trong = lan bat dau tien tu ghi hom nay vao cau_hinh lau_dai.ngay_khai_truong va dung lai.
-sv.ngay_khai_truong=
-# Tran cap theo mua 60 -> 70 -> 80 -> 91 -> 95 -> 100 (thiet ke cu). 0 / thieu dong = TAT (18/10/2026: khong tran,
-# noi dung mo theo cap + cot truyen, docs/pokemon/THIET_KE_LAU_DAI.md muc 1.4). 1 = bat lai. Khoi dong lai.
-sv.tran_cap_theo_mua=0
-
-# Gio bao tri tu dong hang ngay: HH:MM (vd 04:45), "tat" = khong tu tat may, de trong = ngau nhien
-# 4:30-5:30 nhu cu. Server tu thoat luc bao tri; vps/htbb-game.service (Restart=always) bat lai.
-sv.gioBaoTri=
-
-# ==== NAP TIEN (docs/pokemon/NAP_TIEN.md) ====
-# 1 = bat: cong luong / the thang / ve mua tu don nap da thanh toan tren web (bang nap_*),
-#     menu "Cửa hàng & Nạp" o NPC Tong Quan (cua hang trang tri + tien ich, tu do, cho trang
-#     tri co thue), tieu luong = dot (khong doi ra xu/diem VIP/ve su kien), chan chuyen luong
-#     truc tiep, bo he so TileNap. CHI BAT KHI sv.lau_dai=1 (fail closed). Can chay
-#     sql/pokemon_nap_tien.sql truoc, va web dat HTBB_NAP_BAT=true.
-# CHI BAT SAU KHI CO GIAY PHEP hinh anh / IP (xem docs/pokemon/NAP_TIEN.md muc 9).
-# 0 = y nhu truoc. Thieu dong = 0. Doi gia tri phai khoi dong lai server.
-sv.nap_tien=0
-
-# ==== HE SINH THAI GAME (docs/pokemon/HE_SINH_THAI.md) ====
-# 1 = bat: thoi tiet theo vung + ngay/dem + mua doi loai quai khi hoi sinh (khong doi so luong /
-#     vi tri), bung phat, quai hiem; cau ca, khao co, vuon berry, nau an / che thuoc; nha tre + trung;
-#     cho sinh thai + don dat hang; do vui, dua Pokemon; album, nghien cuu, hoan thanh vung.
-#     Menu: muc "He sinh thai" o NPC doi thuong (-90) hoac go "hst" trong chat.
-#     Can chay sql/pokemon_he_sinh_thai.sql truoc (bang tob_hst_* server tu tao neu thieu).
-# 0 = y nhu truoc. Thieu dong = 0. Doi gia tri phai khoi dong lai server.
-sv.he_sinh_thai=0
-
-# ==== TEST FLAGS ====
+# ==== QUẢN TRỊ ====
+sv.website=https://huyenthoaibaoboi.fun/
+sv.linkTaiGame=https://huyenthoaibaoboi.fun/
+# Chế độ thử: máy thật LUÔN 0, mã thử trống.
 sv.testMode=0
 sv.testCode=
-# sv.adminAccounts so sanh voi TEN NHAN VAT (charname), khong phai ten tai khoan.
-sv.adminAccounts=admin,admin2,chienthan
-# Moi ten CO CHUA chu "admin" deu bi chan khi tao nhan vat (chong mao danh GM).
-# Muon tao nhan vat ten "admin": dat =1, trong game go "setting" roi lenh 8, tao
-# nhan vat, roi dat lai =0. Nho commit lai =0, khong thi deploy sau van mo.
+# Tài khoản GM (tên Pokémon, cách nhau dấu phẩy).
+sv.adminAccounts=admin
+# Cho tạo tên chứa "admin" (chỉ bật tạm khi tạo GM, xong đặt lại 0).
 sv.choPhepTaoTenGM=0
-sv.reloginWaitSec=0
-
-# ==== SAN SANG PRODUCTION (docs/pokemon/SAN_SANG_PRODUCTION.md) ====
-# sv.gmCanCoPInfo=1: quyen GM can CA ten nhan vat trong sv.adminAccounts LAN pInfo[16]=1 trong
-#   tob_char (0 = chi can ten, nhu cu). Bat sau khi da dat pInfo[16]=1 cho nhan vat GM that.
+# 1 = quyền GM cần thêm pInfo[16]=1 trong tob_char (bật sau khi đã đặt cho GM thật).
 sv.gmCanCoPInfo=0
-# sv.banToiThieu=N: tu choi jar/APK co so ban build < N (truong int cuoi goi dang nhap). PC Unity
-#   khong gui so ban nen luon qua. 0 = tat. Dung de ep cap nhat khi ban cu co loi nghiem trong.
-#   So ban = BAN= trong htbb-client/phat-hanh/phien_ban.conf (major*10000 + minor*100 + patch; jar
-#   MANIFEST HTBB-Ban, Android versionCode, PC bundleVersion). Open test 0.9.0-opentest = 900: dat
-#   sv.banToiThieu=900 khi mo cua de chan moi jar/APK thu/dev cu (v54, v98, v99...).
+# Từ chối client có số bản < N (0 = tắt). Số bản = BAN= trong phat-hanh/phien_ban.conf.
 sv.banToiThieu=0
-# sv.chiSoMayChu=1: ghi bang tob_chi_so_may_chu + trang_thai.json moi 30s (vps/kiem-suc-khoe.sh doc)
-#   va bat che do bao tri bang tep bao_tri.txt canh server.ini. 0 = tat ca hai.
-sv.chiSoMayChu=1
+# Chờ (giây) trước khi vào lại game sau khi thoát (theo nhân vật). 0 = vào lại ngay.
+sv.reloginWaitSec=0
+# Bật log chẩn đoán hình thú cưỡi cho đúng MỘT tên Pokémon; trống = tắt.
+sv.thuNghiemThuCuoi=
 
-# ==== CHONG DoS ====
-# socketTimeout=0 va connRateWindow=0 nghia la TAT han hai lop bao ve do.
-# Mac dinh trong ma nguon neu thieu dong: socketTimeout=180, connRateWindow=30.
-sv.socketTimeout=0
+# ==== CHỐNG DoS (giới hạn theo IP) ====
+# Ngắt kết nối im lặng quá 180 giây; tối đa 60 kết nối mới / 30 giây / IP, quá thì chặn 300 giây.
+sv.socketTimeout=180
 sv.maxConnPerIp=50
 sv.connRateMax=60
-sv.connRateWindow=0
+sv.connRateWindow=30
 sv.dosBanSec=300
+# Proxy tin cậy (IP/CIDR, IPv4/IPv6): miễn mọi giới hạn theo IP. Mặc định chỉ loopback (Nova agent
+# cùng máy). CHỈ thêm IP proxy nếu IP thật của người chơi không tới được máy chủ — thêm ở /admin
+# (áp dụng ngay), không ghi IP WAF vào Git.
+sv.proxyTinCay=127.0.0.1,::1
+# Đăng nhập dồn dập từ MỘT IP thường: >= ngưỡng lần/giây thì chờ + ghi nghi vấn. 0 = tắt.
+sv.dangNhapIpNguong=10
+sv.dangNhapIpChoMs=3000
 
-# Nguong NGAP GOI TIN moi 5 giay cho MOT ket noi (io/BoDemGoiTin): lenh thuong va lenh tai
-# nguyen (-47/-48/-49/-51, tuc tai anh) dem rieng. Hai so nay la dung gia tri da chay tu
-# truoc, DUNG ha xuong va DUNG dat 0 o day.
-# 0 = TAT han phep dem do (giong quy uoc sv.socketTimeout / sv.connRateWindow). Chi may nha
-# moi nen tat: qua loopback khong co do tre mang nen client cache rong cham tran mot cach
-# luong thien, va tat o VPS la mo cua cho spam lenh -51 (doc anh tu dia).
+# ==== NGẬP GÓI TIN (mỗi kết nối, cửa sổ 5 giây) ====
+# Lệnh thường / tải tài nguyên (-47/-48/-49/-51) / tra cứu (7) đếm riêng. KHÔNG hạ, KHÔNG đặt 0 trên VPS.
 sv.tranGoiThuong=300
 sv.tranGoiTaiNguyen=600
-# Lenh TRA CUU chi doc (7 = hoi mau quai) dem rieng: client that chi hoi quai dang thay,
-# bot quet id moi cham tran 300 lenh thuong. Xem docs/cau-hinh-server-ini.md muc 12e.
 sv.tranGoiTraCuu=600
-# IP KHONG bi dem ngap goi - CHI cho may chay bot tai (tools/pokemon/kiem_tai). VPS de trong.
+# IP không bị đếm ngập gói — CHỈ cho máy chạy bot tải. VPS để trống (dòng chú thích).
 #sv.tranGoiMienIp=
 
-# ==== NHAT KY (LOG) + CHONG SPAM (docs/cau-hinh-server-ini.md muc 12) ====
-# Moi dong duoi day la GIA TRI MAC DINH trong ma nguon (thieu dong = dung so nay). Muon doi
-# thi bo dau # roi sua. Chi doc luc khoi dong.
-#
-# -- Nhat ky: muc LOI / CANH_BAO / THONG_TIN / GO_LOI. Tep o <sv.pathLog>/nhat_ky/
-#    (may_chu-yyyyMMdd.log + kiem_toan-yyyyMMdd.log), KHONG de chung /opt/htbb/log/*.log.
+# ==== NHẬT KÝ + CHỐNG SPAM (mặc định trong mã nguồn; bỏ dấu # để đổi) ====
+# Nhật ký: tệp ở <sv.pathLog>/nhat_ky/ (may_chu-*.log, kiem_toan-*.log).
 #sv.log.muc=THONG_TIN
 #sv.log.mucTep=THONG_TIN
 #sv.log.tat=GOI3,GOI5,GOI26,VKTT,SQL,LUU_CHAR
@@ -263,7 +212,7 @@ sv.tranGoiTraCuu=600
 #sv.log.giuNgay=14
 #sv.log.giuNgayKiemToan=90
 #
-# -- Chong spam chat: nhip "so/giay" (cua so truot), admin mien.
+# Chống spam chat: nhịp "số/giây", admin miễn.
 #sv.spam.bat=1
 #sv.spam.chat.gan=5/10
 #sv.spam.chat.rieng=6/10
@@ -280,7 +229,7 @@ sv.tranGoiTraCuu=600
 #sv.spam.bacQuenGio=24
 #sv.spam.baoCachGiay=5
 #
-# -- Chong spam thao tac (vuot nhip = bo thao tac, khong cat ket noi).
+# Chống spam thao tác (vượt nhịp = bỏ thao tác, không cắt kết nối).
 #sv.spam.hd.moiDoi=4/10
 #sv.spam.hd.moiBang=4/10
 #sv.spam.hd.ketBan=4/10
@@ -290,7 +239,7 @@ sv.tranGoiTraCuu=600
 #sv.spam.hd.muaBan=25/5
 #sv.spam.hd.dangKy=5/60
 #
-# -- Thong bao toan may chu (chuc mung nhan qua, bung phat sinh thai, boss): gioi han + gop.
+# Thông báo toàn máy chủ: giới hạn + gộp.
 #sv.thongBao.bat=1
 #sv.thongBao.toiDa=6
 #sv.thongBao.cuaSoGiay=60
@@ -298,74 +247,30 @@ sv.tranGoiTraCuu=600
 #sv.thongBao.trungLapGiay=120
 #sv.thongBao.gopGiay=15
 
-# ==== SU KIEN ====
-# Tu 30/08/2026 cho bat/tat su kien la TRANG QUAN TRI /admin/sukien (bang
-# tob_su_kien trong CSDL), khong phai file nay. Moi su kien deu bat duoc, khong con
-# moc ngay ghi cung nao trong ma nguon nua - xem src/real/SuKien.java.
-#
-# Nam dong duoi day chi con la GIA TRI MAC DINH: chung quyet dinh trang thai cua nam
-# su kien do khi bang tob_su_kien chua co dong tuong ung (may chu chay lan dau sau khi
-# cap nhat). Sau lan khoi dong dau tien, bang CSDL la nguon duy nhat va sua o day
-# khong con tac dung.
-#
-# sv.isSuKien83 DA BO khoi ban mau: no khong duoc doc o dau trong ma nguon, de lai chi
-# lam nguoi ta tuong chinh duoc cai gi do. Xem docs/cau-hinh-server-ini.md muc 10.
-sv.isSuKienTrungThul2016=1
+# ==== SỰ KIỆN ====
+# Bật/tắt sự kiện ở /admin/sukien (bảng tob_su_kien). Năm dòng dưới chỉ là giá trị khi bảng chưa
+# có dòng tương ứng (máy chủ chạy lần đầu): sự kiện mùa cũ (Trung thu, Tết, Giỗ Tổ, Noel, Tết
+# dương lịch) đều TẮT.
+sv.isSuKienTrungThul2016=0
 sv.isSuKienTet2017=0
 sv.isSuKienGioTo2016=0
 sv.isSuKienNoel2023=0
 sv.isSuKienTetduonglich2024=0
-
-# ==== LICH HEN SU KIEN + TU KHOI DONG LAI ====
-# Doi mot su kien chi co hieu luc sau khi khoi dong lai may chu (bang shop, Map.isSale,
-# danh sach NPC deu duoc dung MOT LAN luc bat may theo trang thai su kien). Mac dinh may
-# chu tu lo viec do; xem src/real/LichSuKien.java.
-#
-# sv.suKienTuKhoiDongLai : 1 = tu khoi dong lai khi thiet lap doi (mac dinh), 0 = tat han
-#                          - luc do lich hen VAN chay, chi la nguoi van hanh phai tu
-#                          chay `systemctl restart htbb-game`.
-# sv.suKienGomGiay       : doi bao lau khong con thay doi nao nua moi khoi dong lai.
-#                          Kep trong 30..3600. DUNG HA XUONG THAP: htbb-game.service dat
-#                          StartLimitBurst=5 / 300s, bat vai su kien lien tay ma moi lan
-#                          mot lan khoi dong lai la unit vao trang thai "failed" va server
-#                          NAM HAN cho toi khi co nguoi ssh vao.
-# sv.suKienBaoTruocGiay  : bao trong game bao lau truoc khi tat. Kep trong 10..600.
-#                          Duoi 10 giay thi tin bao khong kip troi het hang doi cua client
-#                          (moi tin mat 15-20 giay) - nguoi choi bi da ma khong thay chu nao.
+# Đổi sự kiện cần khởi động lại: máy chủ tự gom thay đổi rồi khởi động lại (báo trước 60 giây).
+# Đừng hạ sv.suKienGomGiay quá thấp: htbb-game.service chỉ cho 5 lần khởi động / 300 giây.
 sv.suKienTuKhoiDongLai=1
 sv.suKienGomGiay=120
 sv.suKienBaoTruocGiay=60
-
-# ==== GIO CHIEM THANH ====
-#   -1 = lich chuan 21h thu 3 + thu 7.
-#   sv.ngayChiemThanh: trong = moi ngay; "2026-07-28" = dung ngay; "Tue"/"Sat" = thu.
-#
-# Lenh chat "stown" trong game van dat duoc ngay lap tuc, nhung lan deploy ke tiep se
-# dat lai theo ba dong duoi day. Muon trong game thang han thi doi gia tri thanh
-# @GIU_NGUYEN@ - luc do bo sinh khong dung toi, giu nguyen cai dang chay tren VPS.
-sv.gioChiemThanh=-1
-sv.phutChiemThanh=-1
-sv.ngayChiemThanh=
-
-# Bat log chan doan thu cuoi cho DUNG MOT nhan vat (so theo ten, khong phan biet
-# hoa/thuong). De trong = tat. Dung khi soi loi hinh thu cuoi / skin linh thu ma
-# khong muon ngap log ca server.
-sv.thuNghiemThuCuoi=
-
-# ==== LENH CHAT ADMIN ====
-# setting : bang setting. Trong o nhap: 8 = nap lai server.ini (17 khoa, xem
-#           docs/cau-hinh-server-ini.md muc 4).
-# stown 1 <gio> <phut> [2026-07-28] : set gio chiem thanh
-# stown 0 hoac ktct : tra ve lich chuan
-# tgct : xem gio chiem thanh dang dat
-
-# ==== SU KIEN WORLD CUP (binh chon Messi / Ronaldo) ====
-# CACH BAT CHINH THUC gio la trang quan tri /admin/sukien (hai dong "World Cup").
-# Ba dong duoi day chi con la GIA TRI MAC DINH cho hai cong do khi bang tob_su_kien
-# chua co dong tuong ung. Dinh dang "yyyy-MM-dd HH:mm:ss", thu tu batDau < ketThuc <=
-# hanNhanQua; de trong bat ky dong nao = mac dinh TAT.
-#   batDau..ketThuc      : dang binh chon - quai roi bong vang, doi phieu duoc
-#   ketThuc..hanNhanQua  : het binh chon, ben thang vao NPC nhan qua
+# Sự kiện bình chọn bóng đá (giá trị khi bảng chưa có dòng; trống = TẮT). "yyyy-MM-dd HH:mm:ss".
 sv.worldCupBatDau=
 sv.worldCupKetThuc=
 sv.worldCupHanNhanQua=
+# Giá xu đổi bó hoa sự kiện Vu Lan (NPC Đấu trường).
+sv.giaXuBoHoaDoVuLan=150000
+
+# ==== GIỜ CHIẾM GYM ====
+# -1 = lịch chuẩn 21h thứ 3 + thứ 7. sv.ngayChiemThanh: trống = mỗi ngày, "2026-07-28" hoặc "Tue"/"Sat".
+# Lệnh chat "stown" đổi ngay trong game, nhưng deploy sau đặt lại theo đây (muốn giữ: @GIU_NGUYEN@).
+sv.gioChiemThanh=-1
+sv.phutChiemThanh=-1
+sv.ngayChiemThanh=

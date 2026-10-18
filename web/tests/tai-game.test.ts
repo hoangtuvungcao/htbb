@@ -6,7 +6,7 @@ import {
   nenTangTheoUa, tenTepGameAnToan, urlTaiHopLe,
 } from '../shared/utils/taiGame.ts'
 
-test('chuẩn hoá: dữ liệu cũ (4 nền tảng, không trangThai) -> đủ 6 nền tảng, giữ thứ tự đã lưu', () => {
+test('chuẩn hoá: dữ liệu cũ (không trangThai) -> đủ 6 nền tảng, giữ thứ tự đã lưu', () => {
   const cu = [
     { ma: 'jar', ten: 'Java', url: 'https://x.vn/a.jar', hien: true },
     { ma: 'android', ten: 'Android', url: '', hien: true },
@@ -20,7 +20,18 @@ test('chuẩn hoá: dữ liệu cũ (4 nền tảng, không trangThai) -> đủ 
   assert.equal(ds[1]!.trangThai, 'san-sang') // mặc định của Android
   assert.equal(ds[2]!.url, '')
   assert.equal(ds[2]!.kieu, 'testflight')
-  assert.ok(ds.some(b => b.ma === 'pc-linux' && !b.hien))
+  assert.ok(ds.some(b => b.ma === 'pc-jar' && b.hien))
+})
+
+test('đúng 6 nền tảng theo các client có thật, chỉ iOS "Sắp ra mắt"', () => {
+  assert.deepEqual(DS_NEN_TANG.map(n => n.ma), ['android', 'pc', 'pc-java', 'pc-jar', 'jar', 'ios'])
+  assert.ok(DS_NEN_TANG.every(n => n.hien))
+  assert.deepEqual(DS_NEN_TANG.filter(n => n.trangThai === 'sap-ra-mat').map(n => n.ma), ['ios'])
+  assert.equal(nenTang('android')!.heDieuHanh, 'Android 8.0 trở lên') // client_apk/pokemon minSdk 26
+  // Mã cũ (pc-linux, macos) đã lưu trong CMS bị bỏ, không thành thẻ thứ 7.
+  const ds = chuanHoaBanTai([{ ma: 'pc-linux', hien: true }, { ma: 'macos', hien: true }])
+  assert.equal(ds.length, 6)
+  assert.ok(!ds.some(b => (b.ma as string) === 'pc-linux' || (b.ma as string) === 'macos'))
 })
 
 test('mặc định có thẻ iOS "Sắp ra mắt" đang hiện', () => {
@@ -51,8 +62,8 @@ test('nhận diện thiết bị', () => {
   assert.equal(nenTangTheoUa('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)'), 'ios')
   assert.equal(nenTangTheoUa('Mozilla/5.0 (Linux; Android 13; SM-A505F)'), 'android')
   assert.equal(nenTangTheoUa('Mozilla/5.0 (Windows NT 10.0; Win64; x64)'), 'pc')
-  assert.equal(nenTangTheoUa('Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0)'), 'macos')
-  assert.equal(nenTangTheoUa('Mozilla/5.0 (X11; Linux x86_64)'), 'pc-linux')
+  assert.equal(nenTangTheoUa('Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0)'), 'pc-jar')
+  assert.equal(nenTangTheoUa('Mozilla/5.0 (X11; Linux x86_64)'), 'pc-jar')
   assert.equal(nenTangTheoUa('Nokia6300/2.0 Profile/MIDP-2.0'), 'jar')
 })
 

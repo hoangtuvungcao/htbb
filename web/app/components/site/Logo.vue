@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Logo website = wordmark chung của game (htbb-client/j2me/tools/tao_logo.py -> public/logo-gon.svg: chữ vàng
+ * Logo website = wordmark chung của game (client_jar/tools/tao_logo.py -> public/logo-gon.svg: chữ vàng
  * -> cam viền navy/xanh, Poké Ball thay chữ O). Không dùng logo / font Pokémon chính thức.
  */
 withDefaults(defineProps<{ size?: 'sm' | 'md' }>(), { size: 'md' })

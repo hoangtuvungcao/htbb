@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Câu cá — luật "chỉ câu ở hồ" (HeSinhThaiMenu / BanDoSinhThai.nhanHo), bảng câu từ
- * KyNangSong.BANG_CAU_CA, điểm câu theo bản đồ từ docs/pokemon/diem_cau_ca.csv.
+ * KyNangSong.BANG_CAU_CA, điểm câu theo bản đồ từ du_lieu/diem_cau_ca.csv.
  */
 const H = CAM_NANG_ND.heSinhThai
 const C = H.cauCa
@@ -111,7 +111,7 @@ const soMapHoLon = C.ban.filter(b => b.hoLon > 0).length
         </ul>
       </div>
       <p class="mt-4 text-sm text-muted">
-        Vùng Hoenn mở trong năm thứ hai, cần cấp {{ POKEDEX.hoenn.capVao }} trở lên.
+        Vùng Hoenn mở khi xong cốt truyện năm 1 (chương 52) và đạt cấp {{ POKEDEX.hoenn.capVao }} trở lên.
       </p>
     </WikiSection>
   </WikiShell>

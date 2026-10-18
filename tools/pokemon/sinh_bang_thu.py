@@ -3,7 +3,7 @@
 T1/T3: bang thu cuoi (linh thu, src/data/Animal.java) + pet (item type 25/26/27) -> Pokemon.
 
 Ra:
-  docs/pokemon/bang_thu.csv               (KHONG sua tay - sua bang ben duoi roi chay lai)
+  du_lieu/bang_thu.csv               (KHONG sua tay - sua bang ben duoi roi chay lai)
   sql/pokemon_doi_ten_thu.sql             doi ten item pet/trung/ky lan (chi `name`)
 
 Bao loi (ma thoat 1) neu loai chon khong co sprite PMD (tracker.json),
@@ -20,7 +20,7 @@ import sys
 import urllib.request
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-RA = os.path.join(GOC, "docs", "pokemon", "bang_thu.csv")
+RA = os.path.join(GOC, "du_lieu", "bang_thu.csv")
 RA_SQL = os.path.join(GOC, "sql", "pokemon_doi_ten_thu.sql")
 ANIMAL_JAVA = os.path.join(GOC, "server", "src", "data", "Animal.java")
 BO_NHO = os.path.join(GOC, "tools", "pokemon", ".cache")

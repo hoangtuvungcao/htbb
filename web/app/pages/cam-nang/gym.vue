@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Gym & huy hiệu — 16 Gym từ docs/pokemon/web/gym.csv + noi_dung_gym.csv, luật trận từ
+ * Gym & huy hiệu — 16 Gym từ du_lieu/web/gym.csv + noi_dung_gym.csv, luật trận từ
  * GymLauDai.java / GiaiDoanBoss.java (qua cam-nang-noi-dung.json).
  */
 const G = CAM_NANG_ND.gym

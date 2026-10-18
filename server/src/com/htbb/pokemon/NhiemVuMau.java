@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Mau nhiem vu cho ENGINE nhiem vu tong quat (GD2b, docs/pokemon/NHIEM_VU_THIET_KE.md muc 5). Lop
+ * Mau nhiem vu cho ENGINE nhiem vu tong quat (GD2b, du_lieu/NHIEM_VU_THIET_KE.md muc 5). Lop
  * THUAN: du lieu mot dong (data_quest_lau_dai + data_nhiem_vu_noi_dung) va cac luat chung (gating,
  * bang ngay, gioi han tuan, khop su kien, hoi thoai). Engine choi o real.NhiemVuEngine.
  *

@@ -1,7 +1,7 @@
 /// <summary>
 /// Du lieu khung hinh cua 1 loai Pokemon, doc tu file Resources/poke/&lt;khoa&gt;_dl.bytes.
 ///
-/// Dinh dang (big-endian, xem docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 7.1):
+/// Dinh dang (big-endian, xem docs/kien-truc.md):
 ///   u8 phienBan = 1 hoac 2, u8 soDongTac = 6
 ///   lap soDongTac lan: u16 rongKhung, u16 caoKhung, u8 soKhung, u8 thoiLuong[soKhung],
 ///                      u16 yAtlas, [phien ban 2: u16 xAtlas], i8 dxChan[4], i8 dyChan[4]

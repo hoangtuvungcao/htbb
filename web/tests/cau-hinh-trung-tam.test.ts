@@ -1,6 +1,6 @@
 /**
- * Cấu hình trung tâm (web): danh mục sinh khớp HTBB/tools/cauhinh/danh_muc.json, luật kiểm khớp máy chủ game
- * (bộ ví dụ dùng chung HTBB/tools/cauhinh/vi_du_kiem.tsv — HTBB/test/KiemCauHinhTrungTam.java chạy cùng bộ),
+ * Cấu hình trung tâm (web): danh mục sinh khớp tools/cauhinh/danh_muc.json, luật kiểm khớp máy chủ game
+ * (bộ ví dụ dùng chung tools/cauhinh/vi_du_kiem.tsv — server/test/KiemCauHinhTrungTam.java chạy cùng bộ),
  * so sánh trước khi lưu, khoá env / thử nghiệm, tìm kiếm, phân quyền. Chạy: npm test.
  */
 import { test } from 'node:test'
@@ -13,7 +13,8 @@ import {
 } from '../shared/utils/cauHinhTrungTam.ts'
 import { kiemQuyenAdmin, timQuyTacQuyen } from '../shared/utils/quyenAdmin.ts'
 
-const HTBB = fileURLToPath(new URL('../../HTBB/', import.meta.url))
+/** Gốc monorepo (web/ nằm ngay dưới). */
+const HTBB = fileURLToPath(new URL('../../', import.meta.url))
 const k = (khoa: string) => {
   const r = khoaTT(khoa)
   assert.ok(r, `thiếu khoá ${khoa}`)
@@ -34,13 +35,13 @@ test('danh mục: khoá duy nhất, nhóm hợp lệ, mặc định hợp lệ t
     if (x.bang !== 'env') assert.ok(kiemGiaTriTT(x, x.macDinh).ok, `${x.khoa}: mặc định "${x.macDinh}" sai luật`)
     assert.ok(!x.khoa.startsWith('db.'), `${x.khoa}: khoá CSDL không được vào danh mục`)
   }
-  for (const bat of ['sv.che_do_pokemon', 'sv.lau_dai', 'sv.he_sinh_thai', 'sv.nap_tien']) assert.equal(k(bat).apDung, 'khoi_dong_lai', bat)
+  for (const bat of ['sv.lau_dai', 'sv.he_sinh_thai', 'sv.nap_tien']) assert.equal(k(bat).apDung, 'khoi_dong_lai', bat)
   for (const ngay of ['sv.tileXu', 'thue.cho', 'nap.luong.bat', 'bao_tri.bat', 'thanh_vien.bat', 'sv.dangKyTrongGame']) assert.equal(k(ngay).apDung, 'ngay', ngay)
   assert.ok(k('sv.tua_nhanh_ngay').khoaProd && k('sv.testMode').khoaProd)
   assert.ok(k('sv.testCode').nhay)
 })
 
-test('bản sinh khớp HTBB/tools/cauhinh/danh_muc.json', { skip: !existsSync(`${HTBB}tools/cauhinh/danh_muc.json`) }, () => {
+test('bản sinh khớp tools/cauhinh/danh_muc.json', { skip: !existsSync(`${HTBB}tools/cauhinh/danh_muc.json`) }, () => {
   const j = JSON.parse(readFileSync(`${HTBB}tools/cauhinh/danh_muc.json`, 'utf8')) as { nhom: { ma: string }[], khoa: Record<string, any>[] }
   assert.deepEqual(DANH_MUC_TT.map(x => x.khoa), j.khoa.map(x => x.khoa), 'chạy python3 tools/cauhinh/sinh_cau_hinh.py')
   assert.deepEqual(NHOM_TT.map(x => x.ma), j.nhom.map(x => x.ma))

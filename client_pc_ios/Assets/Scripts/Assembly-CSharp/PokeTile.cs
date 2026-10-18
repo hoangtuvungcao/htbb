@@ -2,9 +2,9 @@ using UnityEngine;
 
 /// <summary>
 /// Bo tile ban do MOI (CC0 Kenney + ve bang code, tools/pokemon/DungBoTileMoi.java,
-/// docs/pokemon/NGUON_ASSET_MAP.md). Resources/poke_tile/{t,t_hang,t_thanh}.bytes: anh doc 16 x (16*n),
+/// docs/giay-phep.md). Resources/poke_tile/{t,t_hang,t_thanh}.bytes: anh doc 16 x (16*n),
 /// chi so tile KHAC bo goc - di cung ban do ve lai (server gui qua goi 12) va kieu
-/// Resources/poke_map/kieu_*.bytes (Res.loadTileImage). Res.loadImgMap dung bo nay khi PokeBody.CHE_DO_POKEMON.
+/// Resources/poke_map/kieu_*.bytes (Res.loadTileImage). Res.loadImgMap dung bo nay.
 /// </summary>
 public class PokeTile
 {

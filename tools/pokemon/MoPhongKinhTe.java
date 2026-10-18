@@ -22,11 +22,11 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * MO PHONG KINH TE + TIEN TRINH 730 NGAY (docs/pokemon/THIET_KE_LAU_DAI.md muc 9).
+ * MO PHONG KINH TE + TIEN TRINH 730 NGAY (docs/thiet-ke-game.md).
  *
  * TAT DINH: cung hat giong -> cung ket qua tung so (RNG SplitMix64 rieng, khong dung
  * Math.random / thoi gian). Doc so tu com.htbb.pokemon.ThongSoLauDai (sinh boi
- * tools/pokemon/sinh_sql_lau_dai.py) + docs/pokemon/nhiem_vu_moi.csv + su_kien_nam.csv.
+ * tools/pokemon/sinh_sql_lau_dai.py) + du_lieu/nhiem_vu_moi.csv + su_kien_nam.csv.
  *
  * Mo hinh (rut gon co chu dich - muc tieu la SO SANH tham so, khong phai du doan tuyet doi):
  *   - 4 nhom nguoi choi: NHE 1-2 gio/ngay, VUA ~3 gio, CAY 5-7 gio, BOT 20 gio (treo may).
@@ -46,8 +46,8 @@ import java.util.Map;
  *   javac -encoding UTF-8 -cp build/src -d build/tools tools/pokemon/MoPhongKinhTe.java
  *   java -cp build/tools:build/src MoPhongKinhTe            (730 ngay, 100% dan so)
  *   java -cp build/tools:build/src MoPhongKinhTe 365 50     (365 ngay, 50% dan so)
- * Ra: docs/pokemon/mo_phong_kinh_te.csv, docs/pokemon/mo_phong_tom_tat.txt,
- *     docs/pokemon/mo_phong_*.png. test/KiemLauDai goi chayKiem(...) qua phan chieu.
+ * Ra: du_lieu/mo_phong_kinh_te.csv, du_lieu/mo_phong_tom_tat.txt,
+ *     du_lieu/mo_phong_*.png. test/KiemLauDai goi chayKiem(...) qua phan chieu.
  */
 public final class MoPhongKinhTe {
 
@@ -372,8 +372,8 @@ public final class MoPhongKinhTe {
         this.soNgay = soNgay;
         this.heSoDanSo = heSoDanSo;
         this.trangThaiRng = hat;
-        napNhiemVu(new File(goc, "docs/pokemon/nhiem_vu_moi.csv"));
-        napSuKien(new File(goc, "docs/pokemon/su_kien_nam.csv"));
+        napNhiemVu(new File(goc, "du_lieu/nhiem_vu_moi.csv"));
+        napSuKien(new File(goc, "du_lieu/su_kien_nam.csv"));
         xuTb = new double[soNgay][5];
         capTb = new double[soNgay][5];
         xongNam1 = new double[soNgay][5];
@@ -1262,7 +1262,7 @@ public final class MoPhongKinhTe {
     }
 
     /**
-     * Muc tieu tang toc (THIET_KE_LAU_DAI.md muc 1.8 / 10): {@code chuan} = dan chuan hon hop (ban khoa + nguoi nap
+     * Muc tieu tang toc (docs/thiet-ke-game.md / 10): {@code chuan} = dan chuan hon hop (ban khoa + nguoi nap
      * theo nhom nap), {@code khong} = cung dan, khong ai dung tang toc, {@code toiDa} = moi nguoi mua toi tran.
      */
     static List<String[]> kiemTangToc(final MoPhongKinhTe chuan, final MoPhongKinhTe khong, final MoPhongKinhTe toiDa) {
@@ -1358,7 +1358,7 @@ public final class MoPhongKinhTe {
     MoPhongKinhTe chuanDi;
 
     void ghi(final File goc) throws Exception {
-        final File d = new File(goc, "docs/pokemon");
+        final File d = new File(goc, "du_lieu");
         try (PrintWriter w = new PrintWriter(new OutputStreamWriter(new FileOutputStream(new File(d, "mo_phong_kinh_te.csv")),
                 StandardCharsets.UTF_8))) {
             w.print(String.join(",", COT) + "\n");
@@ -1560,13 +1560,13 @@ public final class MoPhongKinhTe {
         b.append(HeSinhThaiMoPhong.tomTat(m)); // he sinh thai
         System.out.print(b);
         try (PrintWriter w = new PrintWriter(new OutputStreamWriter(new FileOutputStream(
-                new File("docs/pokemon/mo_phong_tom_tat.txt"), true), StandardCharsets.UTF_8))) {
+                new File("du_lieu/mo_phong_tom_tat.txt"), true), StandardCharsets.UTF_8))) {
             w.print(b);
         }
         System.out.printf(Locale.ROOT, "(%.1f giay)%n", (System.nanoTime() - t0) / 1e9);
     }
 
-    // ============================ NAP TIEN (docs/pokemon/NAP_TIEN.md muc 7) ============================
+    // ============================ NAP TIEN (docs/van-hanh.md) ============================
     // Mo-dun ROI: 3 nhom nguoi tra tien (khong nap 85%, nap nhe 12%, ca voi 3%), goi luong ty gia co
     // dinh, the thang, ve mua (free + cao cap), cua hang trang tri (luong bi dot), cho trang tri (xu
     // chuyen tay, thue 7% dot). RNG RIENG (khong doi chuoi so cua mo phong goc). Kiem: chayKiemNapTien.
@@ -1898,7 +1898,7 @@ public final class MoPhongKinhTe {
     }
 
     /**
-     * Muc tieu nap tien (docs/pokemon/NAP_TIEN.md muc 7): {ten, "1"/"0", chi tiet}.
+     * Muc tieu nap tien (docs/van-hanh.md): {ten, "1"/"0", chi tiet}.
      * chuan = dan chuan hon hop (1.000/nhom), danSo = dan so hon hop, tat = dan so KHONG co nap.
      */
     static List<String[]> kiemNapTien(final MoPhongKinhTe chuan, final MoPhongKinhTe danSo, final MoPhongKinhTe tat) {
@@ -1970,7 +1970,7 @@ public final class MoPhongKinhTe {
         final List<String[]> kq = kiemNapTien(chuan, danSo, tat);
         final NapMoPhong n = danSo.nap();
         final StringBuilder b = new StringBuilder();
-        b.append("\nNAP TIEN (docs/pokemon/NAP_TIEN.md muc 7) - dan so hon hop 85/12/3, so voi khong co nap\n");
+        b.append("\nNAP TIEN (docs/van-hanh.md) - dan so hon hop 85/12/3, so voi khong co nap\n");
         int dat = 0;
         for (final String[] r : kq) {
             b.append(r[1].equals("1") ? "  DAT   " : "  KHONG ").append(r[0]).append(": ").append(r[2]).append('\n');
@@ -1993,7 +1993,7 @@ public final class MoPhongKinhTe {
 
     static String lastNapTomTat = "";
 
-    // ============================ HE SINH THAI (docs/pokemon/HE_SINH_THAI.md muc 8) ============================
+    // ============================ HE SINH THAI (docs/thiet-ke-game.md) ============================
     // Mo-dun ROI cua he sinh thai: ky nang song (cau ca la dai dien - gia tri ky vong lay thang tu
     // com.htbb.pokemon.KyNangSong), phi nguyen lieu bat buoc, NPC mua lai co tran, giao dich giua nguoi
     // choi (thue 7% dot), phi nha tre, luong khoa tu nghien cuu / do vui. RNG RIENG (khong doi chuoi so
@@ -2122,7 +2122,7 @@ public final class MoPhongKinhTe {
                 tf += v;
             }
             final double raHst = x.raPhi + x.raThue + x.raNhaTre;
-            final StringBuilder b = new StringBuilder("\nHE SINH THAI (docs/pokemon/HE_SINH_THAI.md muc 8) - dan so day du\n");
+            final StringBuilder b = new StringBuilder("\nHE SINH THAI (docs/thiet-ke-game.md) - dan so day du\n");
             b.append(String.format(Locale.ROOT, "  luot sinh hoat %d, gio sinh hoat TB %.2f/luot, moc ky nang (5 cap) %d\n",
                     x.soLuot, x.soLuot == 0 ? 0 : x.gioDung / x.soLuot, x.soLenMoc));
             b.append(String.format(Locale.ROOT, "  gia tri hang lam ra %.3g xu; NPC mua lai (nguon) %.3g xu = %.2f%% tong nguon xu\n",
@@ -2136,7 +2136,7 @@ public final class MoPhongKinhTe {
         }
     }
 
-    // ============================ TANG TOC (THIET_KE_LAU_DAI.md muc 1.8, NAP_TIEN.md muc 3b) ============================
+    // ============================ TANG TOC (docs/thiet-ke-game.md, docs/van-hanh.md) ============================
     // Mo-dun ROI (them 18/10/2026, quyet dinh "khong tran cap theo mua, len cap cham + vat pham tang toc"): ve
     // nhan EXP x1,5 / x2, bua the luc, uy thac luyen tap (offline 20%). Ban KHOA kiem bang choi (nhiem vu tuan,
     // lich dang nhap, ve mua, Kecleon bang luong khoa) + ban CAO CAP mua bang luong (bi dot), CHUNG tran diem
@@ -2358,7 +2358,7 @@ public final class MoPhongKinhTe {
         }
     }
 
-    // ============================ GUC / HOI SINH (com.htbb.pokemon.HoiSinh, docs/pokemon/HOI_SINH.md) ============================
+    // ============================ GUC / HOI SINH (com.htbb.pokemon.HoiSinh, docs/thiet-ke-game.md) ============================
     // Them 18/10/2026, KHONG sua cac mo-dun khac. GIA TRI KY VONG (khong rut RNG - khong doi chuoi so cua mo phong goc):
     // moi gio danh quai that guc TI_LE_GUC[nhom] lan; nguoi choi chon theo CHON_*: Thuoc hoi sinh (mua o Chansey, gia
     // HoiSinh.giaThuoc theo cap), tra xu tai cho (HoiSinh.phiXu, he so lap TB HE_SO_TB), luong khoa (HoiSinh.phiLuongKhoa), ve Trung

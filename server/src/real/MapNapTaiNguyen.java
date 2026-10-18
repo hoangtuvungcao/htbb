@@ -1175,7 +1175,7 @@ class MapNapTaiNguyen {
 //        Map.npcVilage.add(bot);
 //        CharManager.instance.put(bot);
 
-        // Che do Pokemon: gan loai cho tung bot NPC trong lang theo chi so (Chansey,
+        // Pokemon: gan loai cho tung bot NPC trong lang theo chi so (Chansey,
         // Kecleon, Xatu...) de goi 5 cua bot kem -90. Tat co thi khong lam gi.
         TienHoaPokemon.ganLoaiBot(Map.npcVilage);
     }

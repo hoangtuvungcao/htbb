@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * GEM:id:n / PT:id:n, ngăn ','). Thưởng KHÔNG BAO GIỜ là tiền tệ (sinh_vat_pham_lau_dai chặn).
  *
  * Vì sao có lớp này: luật "không vật phẩm mồ côi" (tools/pokemon/kiem_item_mo_coi.py,
- * docs/pokemon/KIEM_ITEM.md) - thuốc / quả mọng / đồ giữ / bùa mới (1201..) chưa có nguồn,
+ * du_lieu/KIEM_ITEM.md) - thuốc / quả mọng / đồ giữ / bùa mới (1201..) chưa có nguồn,
  * huy chương / tín vật sự kiện (1039..1061) chưa có công dụng, trang bị năm 2 chưa có nơi bán / chế tạo.
  *
  * Trừ và kiểm trong MỘT khối Char.truNeuDu (KHOA_TIEN): thiếu một thứ thì không trừ gì. Chỗ trống hành

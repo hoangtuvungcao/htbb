@@ -5,7 +5,7 @@
  *
  * Bản sao phía web của HTBB/src/com/htbb/pokemon/NapTienLogic.java — test
  * HTBB/test/KiemNapTien.java đối chiếu các hằng số dưới đây (sửa một bên phải sửa cả bên kia).
- * Thiết kế: HTBB/docs/pokemon/NAP_TIEN.md.
+ * Thiết kế: docs/van-hanh.md.
  */
 import { createHash, createHmac, randomInt, timingSafeEqual } from 'node:crypto'
 
@@ -245,7 +245,7 @@ export function sapKhoa(v: unknown): unknown {
 
 /**
  * Casso webhook v2: `X-Casso-Signature: t=<ts>,v1=<hex HMAC-SHA512(secret, ts + "." + JSON đã sắp khoá của data)>`.
- * PHẢI đối chiếu lại với tài liệu Casso hiện hành trước khi bật thật (NAP_TIEN.md mục 6).
+ * PHẢI đối chiếu lại với tài liệu Casso hiện hành trước khi bật thật (docs/van-hanh.md).
  * Chênh giờ > 5 phút = từ chối (chống phát lại).
  */
 export function xacThucCasso(header: string | null | undefined, data: unknown, secret: string, bayGioGiay = Math.floor(Date.now() / 1000)): boolean {

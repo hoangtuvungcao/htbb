@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Ap thuat ngu chuan (docs/pokemon/THUAT_NGU.md) vao CHUOI nguoi choi/admin thay trong ma nguon.
+Ap thuat ngu chuan (docs/thiet-ke-game.md, muc Thuat ngu) vao CHUOI nguoi choi/admin thay trong ma nguon.
 
 Truoc day chu kiem hiep chi duoc doi LUC CHAY (server ChuPokemon.doi o cua gui chu, client ve chu qua
 ChuPokemon.D / chu.bin). Tool nay "nuong" ket qua do vao thang chuoi "..." trong ma nguon de khong con
@@ -36,15 +36,12 @@ def _nap(ten):
 cp = _nap("chu_pokemon")
 dc = _nap("duong_client")
 GOC = cp.GOC
-CLIENT = os.path.normpath(os.path.join(GOC, "..", "htbb-client"))
 
 KHU = {
     "sv": [(os.path.join(GOC, "server", "src"), ".java")],
-    "j2me": [(os.path.join(CLIENT, "j2me", "src"), ".java")],
-    "pc": [(dc.scripts(os.path.join(CLIENT, "pc", "Assets")), ".cs")],
-    "android": [(os.path.join(CLIENT, "android", "app", "src"), ".java"),
-                (os.path.join(CLIENT, "android", "pokemon", "src"), ".java")],
-    "cu": [(os.path.join(GOC, "client_pc_ios", "ClientUnity", "Assets", "Scripts"), ".cs")],
+    "j2me": [(os.path.join(GOC, "client_jar", "src"), ".java"), (os.path.join(GOC, "client_jar", "shared"), ".java")],
+    "pc": [(dc.scripts(dc.assets()), ".cs"), (os.path.join(GOC, "client_pc", "src"), ".java")],
+    "android": [(os.path.join(GOC, "client_apk", "pokemon", "src"), ".java")],
 }
 
 # Bang tu dien / bang dia danh (chua tu cu CO CHU DICH) - khong dung vao.

@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
  * Tan thu (nhan vat cap 1, khong GM) phai co quai de danh ngay canh lang va danh duoc.
  *
  * Bao loi 18-19/10/2026 (client Android/PC tren server that): tai khoan cap 1 "khong thay Pokemon hoang
- * nao". Ket qua dieu tra (BotChucNang / BotXuyenSuot, docs/pokemon/KIEM_THU_TU_DONG.md):
- *   - SERVER co quai: moi lang (0/70/80 va ban sao) noi thang toi map 1 va 2 (luoi map/pokemon_spawn,
+ * nao". Ket qua dieu tra (BotChucNang / BotXuyenSuot, docs/kien-truc.md):
+ *   - SERVER co quai: moi lang (0/70/80 va ban sao) noi thang toi map 1 va 2 (luoi map/map<N>,
  *     quai cap 1..5), bot khong GM di bo ra cong va thay 8-18 quai trong tam goi 7.
  *   - Client J2ME: goi 4 (vi tri actor) bi loi dich nguoc (break trong try truoc onActorMove) -> khong ve
  *     quai; da sua o client.
@@ -26,7 +26,7 @@ public final class KiemTanThu {
         try {
             final String map = new String(Files.readAllBytes(new File("src/real/Map.java").toPath()), StandardCharsets.UTF_8);
             final Map<Integer, Integer> cap = capQuai();
-            Kiem.dung("doc duoc cap quai (docs/pokemon/bang_quai.csv)", cap.size() > 50);
+            Kiem.dung("doc duoc cap quai (du_lieu/bang_quai.csv)", cap.size() > 50);
             for (final int lang : new int[]{0, 70, 80}) {
                 final Matcher m = Pattern.compile("mapChange\\.put\\(\\(short\\) " + lang + ", new short\\[\\]\\{([\\d, ]+)\\}\\)").matcher(map);
                 Kiem.dung("lang " + lang + " co trong Map.mapChange", m.find());
@@ -53,9 +53,9 @@ public final class KiemTanThu {
         }
     }
 
-    /** {so quai, cap thap nhat} cua luoi map/pokemon_spawn/map&lt;load&gt; (hoac map/map&lt;load&gt;). */
+    /** {so quai, cap thap nhat} cua luoi map/map&lt;load&gt; (hoac map/map&lt;load&gt;). */
     static int[] luoi(final int load, final Map<Integer, Integer> cap) throws Exception {
-        File f = new File("map/pokemon_spawn/map" + load);
+        File f = new File("map/map" + load);
         if (!f.isFile()) {
             f = new File("map/map" + load);
         }
@@ -80,7 +80,7 @@ public final class KiemTanThu {
 
     static Map<Integer, Integer> capQuai() throws Exception {
         final Map<Integer, Integer> m = new HashMap<Integer, Integer>();
-        final List<String> l = Files.readAllLines(new File("../docs/pokemon/bang_quai.csv").toPath(), StandardCharsets.UTF_8);
+        final List<String> l = Files.readAllLines(new File("../du_lieu/bang_quai.csv").toPath(), StandardCharsets.UTF_8);
         for (int i = 1; i < l.size(); i++) {
             final String[] f = l.get(i).split(",");
             try {

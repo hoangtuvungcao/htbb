@@ -16,7 +16,7 @@
  * KHÔNG BAO GIỜ ghi token (refresh/access) hay client secret ra log — chỉ ghi mã lỗi
  * và trạng thái Google trả về.
  *
- * Cấu hình: HTBB_GMAIL_* (xem server/utils/config.ts và README mục "Gửi email (Gmail API)").
+ * Cấu hình: HTBB_GMAIL_* (xem server/utils/config.ts và docs/van-hanh.md).
  */
 import { randomBytes } from 'node:crypto'
 

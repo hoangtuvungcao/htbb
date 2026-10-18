@@ -7,7 +7,7 @@ import java.io.IOException;
  * NGOAI HINH TRANG BI: trang bi dang mac -> phu kien VE TREN than Pokemon (mu/no o dinh dau, khan va vong
  * o co, do cam o tay, ruy bang / ao choang sau than, da he bay quanh than, kinh) + vang sang theo bac,
  * hat lap lanh theo cap cuong hoa, vong bo trang bi, trang phuc doi mau. Chi la HINH: khong doi chi so.
- * Thiet ke: docs/pokemon/NGOAI_HINH_TRANG_BI.md.
+ * Thiet ke: docs/thiet-ke-game.md.
  *
  * Lop THUAN (chi tinh + ghi byte), kiem thu o test/KiemNgoaiHinh.java. Doc trang bi tu Char va gui goi
  * nam o real.NgoaiHinhGame.
@@ -60,7 +60,7 @@ public final class NgoaiHinh {
     /** Do hiem hien thi (bang mau phu kien): 0 thuong, 1 hiem, 2 su thi, 3 huyen thoai, 4 hoan my. */
     public static final String[] TEN_HIEM = {"Thường", "Hiếm", "Sử thi", "Huyền thoại", "Hoàn mỹ"};
 
-    /** Ten bac (THIET_KE_LAU_DAI.md 3.1). */
+    /** Ten bac (docs/thiet-ke-game.md 3.1). */
     public static final String[] TEN_BAC = {"Sơ cấp", "Đồng", "Bạc", "Vàng", "Bạch kim", "Kim cương", "Chuyên gia",
         "Tinh anh", "Huyền thoại", "Thần thoại", "Tối thượng"};
 

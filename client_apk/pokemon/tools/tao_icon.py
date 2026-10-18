@@ -1,6 +1,6 @@
 """Vẽ icon launcher của APK Huyền Thoại Bảo Bối (adaptive icon Android 8+).
 
-    python3 tao_icon.py <client_pc_ios/ClientUnity/Assets/Resources/poke/0025_cd.bytes> <client_apk/pokemon/src/main/res>
+    python3 tao_icon.py <client_pc_ios/Assets/Resources/poke/0025_cd.bytes> <client_apk/pokemon/src/main/res>
 
 Nền: Poké Ball vẽ bằng code (đỏ / trắng / đai đen). Lớp trước: chân dung Pikachu 40x40 của PMDCollab
 (SpriteCollab, CC BY-NC 4.0 - ghi công trong assets GHI_CONG.txt) phóng nguyên lần láng giềng gần nhất,

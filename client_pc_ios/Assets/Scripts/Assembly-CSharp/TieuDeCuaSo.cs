@@ -24,7 +24,7 @@ public static class TieuDeCuaSo
 			IntPtr h = GetActiveWindow();
 			if (h != IntPtr.Zero)
 			{
-				SetWindowTextW(h, PokeBody.CHE_DO_POKEMON ? ThuongHieu.TEN_GAME : ThuongHieu.TEN_GAME_CU);
+				SetWindowTextW(h, ThuongHieu.TEN_GAME);
 			}
 		}
 		catch (Exception)

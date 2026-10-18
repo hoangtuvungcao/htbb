@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Gia, phi, thue va tien roi theo thiet ke dai han (THIET_KE_LAU_DAI.md muc 2). Lop THUAN.
+ * Gia, phi, thue va tien roi theo thiet ke dai han (docs/thiet-ke-game.md). Lop THUAN.
  * Moi so doc qua {@link LauDai#so} nen chinh duoc bang bang cau_hinh khong can build.
  */
 public final class KinhTeLauDai {

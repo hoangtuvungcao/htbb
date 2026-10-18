@@ -14,7 +14,7 @@ import javax.imageio.ImageIO;
  * Tinh DIEM NEO phu kien (dau / dinh dau / tay / tam than) cho tung khung, tung huong cua moi loai
  * Pokemon, tu anh *-Offsets.png cua PMDCollab (moi khung co toi da 4 diem mau: DEN = dau, XANH LA = tam
  * than, DO / XANH DUONG = hai tay). Dung de ve trang bi len than Pokemon (mu/no o dinh dau, khan o co,
- * do cam tay o tay, ao choang sau than) - xem docs/pokemon/NGOAI_HINH_TRANG_BI.md.
+ * do cam tay o tay, ao choang sau than) - xem docs/thiet-ke-game.md.
  *
  * Ra: &lt;Assets&gt;/Resources/poke/&lt;khoa&gt;_neo.bytes (cung thu muc ra voi DongGoiSprite). Dinh dang (big-endian):
  * <pre>

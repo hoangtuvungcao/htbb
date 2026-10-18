@@ -2,21 +2,21 @@
 """
 Tai sprite PMDCollab/SpriteCollab cho MOI loai can dung + kiem ke thieu dong tac.
 
-Danh sach loai = dex trong docs/pokemon/bang_quai.csv, bang_thu.csv, bang_npc.csv,
+Danh sach loai = dex trong du_lieu/bang_quai.csv, bang_thu.csv, bang_npc.csv,
 bang_npc_su_kien.csv, bang_pet_cu.csv
 + moi dex trong src/com/htbb/pokemon/LoaiPokemon.java (DU_LIEU). Khong co danh sach tay nao khac.
 
 Ra:
   tools/pokemon/pmd_raw/<dex>[s]/   AnimData.xml, <Anim>-Anim.png, <Anim>-Shadow.png,
                                     portrait.png, credits.txt  (KHONG commit, xem .gitignore)
-  docs/pokemon/kiem_ke_sprite.csv   bang kiem ke (commit) - nguoi lam asset doc file nay
+  du_lieu/kiem_ke_sprite.csv   bang kiem ke (commit) - nguoi lam asset doc file nay
 
 Chay (o thu muc HTBB/):
     python3 -I tools/pokemon/tai_sprite_pmd.py           # tai + kiem ke
     python3 -I tools/pokemon/tai_sprite_pmd.py --chi-kiem # chi kiem ke tu file da tai
 
 GIAY PHEP: sprite PMDCollab la CC BY-NC 4.0 - KHONG thuong mai, PHAI ghi cong
-(credits.txt cua tung loai). Xem muc "Giay phep" trong KE_HOACH_CHUYEN_DOI.md.
+(credits.txt cua tung loai). Xem muc "Giay phep" trong docs/kien-truc.md.
 
 Ma thoat 1 neu co loai thieu dong tac BAT BUOC ma khong co dong tac thay the.
 """
@@ -30,9 +30,9 @@ import xml.etree.ElementTree as ET
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RAW = os.path.join(GOC, "tools", "pokemon", "pmd_raw")
-BANG_QUAI = os.path.join(GOC, "docs", "pokemon", "bang_quai.csv")
+BANG_QUAI = os.path.join(GOC, "du_lieu", "bang_quai.csv")
 LOAI_JAVA = os.path.join(GOC, "server", "src", "com", "htbb", "pokemon", "LoaiPokemon.java")
-KIEM_KE = os.path.join(GOC, "docs", "pokemon", "kiem_ke_sprite.csv")
+KIEM_KE = os.path.join(GOC, "du_lieu", "kiem_ke_sprite.csv")
 
 NGUON = "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master"
 
@@ -59,7 +59,7 @@ def dex_can_dung():
     # theo idImg PetTemplate): viec G7.B2/B3; dong la do vat (cot dex trong) thi bo qua.
     for ten, nguon in (("bang_thu.csv", "thu"), ("bang_npc.csv", "npc"),
                        ("bang_npc_su_kien.csv", "npc_su_kien"), ("bang_pet_cu.csv", "pet_cu")):
-        p = os.path.join(GOC, "docs", "pokemon", ten)
+        p = os.path.join(GOC, "du_lieu", ten)
         if os.path.exists(p):
             with open(p, encoding="utf8") as f:
                 for r in csv.DictReader(f):

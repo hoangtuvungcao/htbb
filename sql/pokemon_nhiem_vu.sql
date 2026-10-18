@@ -1,6 +1,6 @@
 -- SINH RA boi tools/pokemon/sinh_nhiem_vu.py - KHONG SUA TAY.
 -- Noi dung nhiem vu (hoi thoai, goi y, nhanh lua chon, an, tham so muc tieu moi). Bang staging:
--- engine GD2 doc theo ma (= data_quest_lau_dai.ma). Xem docs/pokemon/NHIEM_VU_THIET_KE.md.
+-- engine GD2 doc theo ma (= data_quest_lau_dai.ma). Xem du_lieu/NHIEM_VU_THIET_KE.md.
 SET NAMES utf8;
 
 DROP TABLE IF EXISTS `data_nhiem_vu_noi_dung`;
@@ -2023,7 +2023,7 @@ INSERT INTO `data_nhiem_vu_kieu` VALUES
 ('ap_trung','Trứng nở','NhaTre + HeSinhThaiMenu.hanhDongTrung (trứng nở sau 250–800 quái hạ)','','he_sinh_thai',12),
 ('bo_trang_bi','Bộ trang bị','Char.calculateAttrib / checkKickAtt5 (đếm món cùng bậc)','','gd2',5),
 ('boss_the_gioi','Boss thế giới','BossLauDai.satThuongVaoBoss + khiChet (bảng đóng góp)','','gd2',20),
-('cau_ca','Câu cá','HeSinhThaiMenu.cauCa (lệnh chat "cauca"): CHỈ ở hồ, đứng cách hồ ≤ 2 ô (docs/pokemon/diem_cau_ca.csv)','2','he_sinh_thai',29),
+('cau_ca','Câu cá','HeSinhThaiMenu.cauCa (lệnh chat "cauca"): CHỈ ở hồ, đứng cách hồ ≤ 2 ô (du_lieu/diem_cau_ca.csv)','2','he_sinh_thai',29),
 ('cau_do','Câu đố','MapChat.doChat (cạnh HeSinhThaiGame.khiChat; so đáp án trước khi phát kênh)','','gd2',65),
 ('che_tao','Chế tạo','MapCheTao.doUserCreateItem','','gd2',13),
 ('cho_ban','Chợ','HeSinhThaiMenu.rao + mua/traTienNguoiBan (Chợ sinh thái) hoặc banNpc','','he_sinh_thai',12),

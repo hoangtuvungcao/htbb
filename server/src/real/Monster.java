@@ -3,7 +3,6 @@
 // 
 package real;
 
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.HePokemon;
 
 import data.ItemQuest;
@@ -77,15 +76,13 @@ public class Monster extends LiveActor {
         this.map = mapLiveIn;
         this.setType(template.type);
         this.he = template.he;
-        // Che do Pokemon: data_monster.he/he2 la he Pokemon 0..17. Giu rieng o
+        // Pokemon: data_monster.he/he2 la he Pokemon 0..17. Giu rieng o
         // hePokemon/he2 (dung tinh khac he), con truong he doi ve ngu hanh 0..4 vi client
         // cu va cac lop trong lib/htbb-core.jar (Dun, MapVanTienTran...) gui/dung no nhu
         // ngu hanh. Tat co thi khong dong vao gi.
         this.hePokemon = template.he;
-        if (CheDoPokemon.bat()) {
-            this.he = (byte) HePokemon.nguHanhCu(template.he);
-            this.he2 = template.he2;
-        }
+        this.he = (byte) HePokemon.nguHanhCu(template.he);
+        this.he2 = template.he2;
         final int maxhp = template.maxhp;
         this.maxhp = maxhp;
         this.hp = maxhp;
@@ -124,11 +121,11 @@ public class Monster extends LiveActor {
 
     @Override
     public int hePokemon1() {
-        return CheDoPokemon.bat() ? this.hePokemon : this.he;
+        return this.hePokemon;
     }
 
     /**
-     * Q9: bat che do Pokemon thi he cua quai lay tu template, KHONG random. Tra ve
+     * Q9: he cua quai lay tu template, KHONG random. Tra ve
      * ngu hanh 0..4 tuong ung (truong he van la ngu hanh, xem constructor).
      * Dung hePokemon da chep tu CHINH template truyen vao constructor - KHONG tra lai
      * getMonsterTemplate(): quai Van Tien Tran lay template tu MapVanTienTran.monsterTemplates,
@@ -136,9 +133,6 @@ public class Monster extends LiveActor {
      */
     @Override
     public byte heKhiSinh(final byte heNgauNhien) {
-        if (!CheDoPokemon.bat()) {
-            return heNgauNhien;
-        }
         return (byte) HePokemon.nguHanhCu(this.hePokemon);
     }
 
@@ -866,7 +860,7 @@ public class Monster extends LiveActor {
             }
         } catch (final Exception ex) {
         }
-        // Che do Pokemon: nguon phat da tien hoa Eevee (tat che do -> khong lam gi).
+        // Pokemon: nguon phat da tien hoa Eevee.
         RoiDaTienHoa.khiHaQuai(p, this);
         PokedexPokemon.khiHaQuai(p, this); // G7.D2 Pokedex "da ha" (tat co: khong lam gi)
         com.htbb.pokemon.HeSinhThaiGame.khiHaQuai(p, this); // he sinh thai: trung/nha tre, nghien cuu, album

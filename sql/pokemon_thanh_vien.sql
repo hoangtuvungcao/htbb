@@ -1,4 +1,4 @@
--- THÀNH VIÊN HUYỀN THOẠI BẢO BỐI (docs/pokemon/THANH_VIEN.md). Thành viên theo TÀI KHOẢN, chỉ để mở các
+-- THÀNH VIÊN HUYỀN THOẠI BẢO BỐI (docs/van-hanh.md). Thành viên theo TÀI KHOẢN, chỉ để mở các
 -- tính năng admin chọn khoá (chống tài khoản phụ / clone) — không cho sức mạnh, không cho tiền tệ.
 -- Chạy SAU sql/pokemon_nap_tien.sql (dùng chung nap_goi / nap_don / sổ cái / SePay). Chạy lại an toàn.
 -- MẶC ĐỊNH TẮT: thanh_vien.bat=0 (không khoá gì), thanh_vien.ban_bat=0 (không bán).

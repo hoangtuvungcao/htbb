@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Hệ sinh thái — viết cho người chơi từ HTBB/docs/pokemon/HE_SINH_THAI.md, số liệu đối chiếu với
+ * Hệ sinh thái — viết cho người chơi từ docs/thiet-ke-game.md, số liệu đối chiếu với
  * HeSinhThai.java / KyNangSong.java / SuuTamSinhThai.java (cam-nang-noi-dung.json).
  * Cách các kiểu thời tiết ưu ái hệ (SinhThaiTheGioi.java) là mô tả, không phải số nên viết ở đây.
  */

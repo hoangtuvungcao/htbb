@@ -1,40 +1,53 @@
 # ============================================================
-#  Cau hinh MariaDB cho HTBB (san sang production, 17/10/2026)
+#  Cau hinh MariaDB cho HTBB - VPS 4 GB (game JVM heap 1.5 GB dung chung may)
 #
-#      sudo cp /opt/htbb/vps/htbb-mariadb.cnf /etc/mysql/mariadb.conf.d/90-htbb.cnf
+#      sudo install -m 644 /opt/htbb/vps/htbb-mariadb.cnf /etc/mysql/mariadb.conf.d/99-htbb.cnf
 #      sudo systemctl restart mariadb
 #
-#  Ly do tung dong (do tren may chu thu, docs/pokemon/SAN_SANG_PRODUCTION.md muc 2/4):
+#  lower_case_table_names PHAI dat TRUOC khi nap schema lan dau (doi sau khi da co bang
+#  la hong CSDL). Ly do tung dong: docs/trien-khai.md, docs/trien-khai.md.
 # ============================================================
 [mysqld]
 # Chi nghe noi bo: game, login, web deu tren cung VPS. KHONG mo 3306 ra internet.
-bind-address = 127.0.0.1
+bind-address            = 127.0.0.1
+# Khong tra DNS nguoc moi ket noi (cham + phu thuoc DNS). User CSDL khai theo IP / localhost.
+skip-name-resolve
+# CSDL dev tren Windows khong phan biet hoa/thuong ten bang; ma nguon dung lan lon.
+lower_case_table_names  = 1
+
+# Bang ma: utf8 (utf8mb3), KHONG utf8mb4. CheckLoginSocket.jar (login server) dong goi
+# Connector/J 5.0.8: gap collation utf8mb4 (id 45 / 224) trong handshake la "Unknown initial
+# character set index" va KHONG ai dang nhap duoc. Bang nao can utf8mb4 tu khai ro trong DDL.
+character-set-server    = utf8
+collation-server        = utf8_general_ci
+
+# Tiet kiem ~200-400 MB RAM tren VPS nho; khong dung toi.
+performance_schema      = OFF
 
 # Game server MO SAN ~137 ket noi luc khoi dong (db.maxco=100 + 2 x db.maxNap=30 + db.maxco1 +
-# vai pool phu), cong login server, web (Nuxt pool), backup, cron dieu-khien-server.sh.
-# Mac dinh cua MariaDB la 151 -> lan restart game ma ket noi cu chua dong kip la "Too many
-# connections". 300 du cho ca mot instance thu thu hai.
-max_connections = 300
+# vai pool phu), cong login server, web (Nuxt pool), backup. Mac dinh 151 -> "Too many connections".
+max_connections         = 300
 
-# Bang ma: CSDL dung utf8 (utf8mb3). Login server (CheckLoginSocket.jar, Connector/J cu) KHONG
-# hieu collation utf8mb4_unicode_ci (index 224) -> "Unknown initial character set index '224'"
-# va KHONG ai dang nhap duoc. Giu mac dinh may chu la utf8 (hoac them
-# characterEncoding=UTF-8 vao db.url cua loginServer/server.ini - xem vps/loginServer.server.ini.example).
-character-set-server = utf8
-collation-server = utf8_general_ci
+# Bo dem InnoDB: VPS 4 GB, JVM 1.5 GB + web ~400 MB -> 768M.
+innodb_buffer_pool_size = 768M
+innodb_log_file_size    = 128M
+# Mat toi da ~1s du lieu neu MAT DIEN; doi lai ghi nhanh hon nhieu.
+innodb_flush_log_at_trx_commit = 2
+innodb_flush_method     = O_DIRECT
+innodb_file_per_table   = 1
+tmp_table_size          = 32M
+max_heap_table_size     = 32M
+table_open_cache        = 2000
+thread_cache_size       = 32
+query_cache_type        = 0
+query_cache_size        = 0
+max_allowed_packet      = 64M
+wait_timeout            = 28800
 
-# Che do SQL: GIU STRICT_TRANS_TABLES mac dinh cua MariaDB >= 10.2. Ma server da chay duoc o che do
-# nay (test tai). Neu mot file sql/*.sql bao "Incorrect integer value: ''" thi sua FILE SQL do,
-# dung tat strict.
-
-# Bo dem InnoDB: ~25-40% RAM VPS (CSDL HTBB nho, vai tram MB khi dong nguoi).
-#   VPS 4 GB -> 512M ; VPS 8 GB -> 1G
-innodb_buffer_pool_size = 512M
-innodb_flush_log_at_trx_commit = 2   # mat toi da ~1s du lieu neu MAT DIEN; doi lai ghi nhanh hon nhieu
-max_allowed_packet = 64M
-wait_timeout = 28800
+# Che do SQL: GIU STRICT_TRANS_TABLES mac dinh cua MariaDB >= 10.2. Neu mot file sql/*.sql bao
+# "Incorrect integer value: ''" thi sua FILE SQL do, dung tat strict.
 
 # Nhat ky truy van cham: tim truy van can chi muc.
-slow_query_log = 1
-slow_query_log_file = /var/log/mysql/mariadb-slow.log
-long_query_time = 1
+slow_query_log          = 1
+slow_query_log_file     = /var/log/mysql/mariadb-slow.log
+long_query_time         = 1

@@ -1,7 +1,7 @@
 /**
  * THÀNH VIÊN HTBB — hàm THUẦN (không database, không auto-import). Bản sao phía web của
  * HTBB/src/com/htbb/pokemon/ThanhVienLogic.java — test HTBB/test/KiemThanhVien.java đối chiếu mã,
- * khoá cau_hinh và danh sách mặc định. Thiết kế: HTBB/docs/pokemon/THANH_VIEN.md.
+ * khoá cau_hinh và danh sách mặc định. Thiết kế: docs/van-hanh.md.
  */
 
 export const TV_K_BAT = 'thanh_vien.bat'

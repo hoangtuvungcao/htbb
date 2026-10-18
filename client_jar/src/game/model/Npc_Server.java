@@ -15,16 +15,13 @@ public class Npc_Server extends NPC {
     public byte index;
 
     /**
-     * pokemon: NPC su kien (lenh -50) theo idImg -> {idImg, dex} (G7.B2, ClientUnity Npc_Server.cs).
+     * pokemon: NPC su kien (lenh -50) theo idImg -> {idImg, dex} (G7.B2, Unity Npc_Server.cs).
      * type cua Npc_Server la ID server, KHONG phai type NPC tinh. Do vat (cong, bang, noi) ve qua
-     * VatThePokemon.NPC. Bang day du: HTBB docs/pokemon/bang_npc_su_kien.csv.
+     * VatThePokemon.NPC. Bang day du: HTBB du_lieu/bang_npc_su_kien.csv.
      */
     public static final short[][] POKE_DEX_THEO_IDIMG = {{14, 52}, {20, 282}, {21, 667}, {23, 460}, {24, 225}, {27, 448}, {28, 214}, {29, 185}, {30, 185}};
 
     public static int dexTheoIdImg(int idImg) {
-        if (!PokeBody.CHE_DO_POKEMON) {
-            return 0;
-        }
         for (int i = 0; i < POKE_DEX_THEO_IDIMG.length; i++) {
             if (POKE_DEX_THEO_IDIMG[i][0] == idImg) {
                 return POKE_DEX_THEO_IDIMG[i][1];

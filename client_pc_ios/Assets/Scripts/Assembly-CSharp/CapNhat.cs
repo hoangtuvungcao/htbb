@@ -113,7 +113,7 @@ public class CapNhat : MonoBehaviour
 		}
 		UnityEngine.Debug.Log("CapNhat: dang cai " + dangCai + ", moi nhat " + (moi == null ? "?" : moi.ban.ToString()));
 		// link tải cũng không được trỏ về kênh NQSH-H2 (phienban.json bị ghi nhầm)
-		if (moi != null && !string.IsNullOrEmpty(moi.link) && PokeBody.CHE_DO_POKEMON && ThuongHieu.laKenhNqsh(moi.link))
+		if (moi != null && !string.IsNullOrEmpty(moi.link) && ThuongHieu.laKenhNqsh(moi.link))
 		{
 			UnityEngine.Debug.LogWarning("CapNhat: link tai thuoc kenh NQSH-H2 - bo qua");
 			yield break;

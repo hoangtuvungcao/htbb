@@ -125,7 +125,7 @@ export const DS_DU_LIEU_GAME: BoDuLieu[] = [
   },
   // ------------------------------------------------------------------ Bản đồ
   {
-    ma: 'ban-do', tab: 'ban_do', ten: 'Bản đồ', moTa: 'Danh sách bản đồ (docs/pokemon/thiet_ke_map.csv, đồng bộ vào cẩm nang) + số nhiệm vụ đặt ở map + số Pokémon đang lưu vị trí ở map.', loai: 'ban_do',
+    ma: 'ban-do', tab: 'ban_do', ten: 'Bản đồ', moTa: 'Danh sách bản đồ (du_lieu/thiet_ke_map.csv, đồng bộ vào cẩm nang) + số nhiệm vụ đặt ở map + số Pokémon đang lưu vị trí ở map.', loai: 'ban_do',
     cot: [n('id', 'ID map'), c('ten', 'Tên'), c('loai', 'Loại'), c('vung', 'Vùng'), n('soNhiemVu', 'Nhiệm vụ đặt ở đây'), n('soNhanVat', 'Pokémon đang ở'), c('anh', 'Có ảnh xem trước', { ma: { true: 'Có', false: 'Không' }, anMobile: true })],
   },
   // ------------------------------------------------------------------ Nhiệm vụ

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Lich su kien 52 tuan (THIET_KE_LAU_DAI.md muc 6, docs/pokemon/su_kien_nam.csv). Lop THUAN.
+ * Lich su kien 52 tuan (docs/thiet-ke-game.md, du_lieu/su_kien_nam.csv). Lop THUAN.
  *
  * Tuan theo LICH (tuan ISO cua nam: tuan 1 = Tet duong lich), mo luc thu Hai 05:00 cua tuan,
  * dong sau {@code so_ngay}. tob_su_kien chi co MOT cap mo_luc/dong_luc moi ma, nen moi ma chi

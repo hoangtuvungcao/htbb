@@ -1,4 +1,3 @@
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.ChuPokemon;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -21,12 +20,12 @@ import java.util.regex.Pattern;
  */
 public final class KiemChuPokemon {
 
-    private static final String F_CS = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/ChuPokemonDuLieu.cs";
-    private static final String F_MFONT = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/MFont.cs";
+    private static final String F_CS = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/ChuPokemonDuLieu.cs";
+    private static final String F_MFONT = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/MFont.cs";
     private static final String F_SQL = "../sql/pokemon_doi_chu.sql";
-    private static final String F_CON_LAI = "../docs/pokemon/tu_cam_con_lai.csv";
-    private static final String F_CSV = "../docs/pokemon/bang_chu.csv";
-    private static final String F_TFIELD = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/TField.cs";
+    private static final String F_CON_LAI = "../du_lieu/tu_cam_con_lai.csv";
+    private static final String F_CSV = "../du_lieu/bang_chu.csv";
+    private static final String F_TFIELD = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/TField.cs";
 
     /** Nhom "gio choi dau tien" - phai sach tu cam SAU khi doi (giong GIO_DAU cua quet_tu_cam.py). */
     private static final String[] GIO_DAU = {
@@ -34,9 +33,9 @@ public final class KiemChuPokemon {
         "src/real/cmd/SelectCharHandler.java", "src/real/cmd/RequestNPCInfoHandler.java",
         "src/real/MapMenuNpc.java", "src/real/MessageCreator.java", "src/real/MapDoi.java",
         "src/real/CharVongLap.java", "src/real/plugins/addNPC.java", "src/real/NpcReceiveCard.java",
-        "../client_pc_ios/ClientUnity/Assets/Scripts/Game/CreateCharScr.cs", "../client_pc_ios/ClientUnity/Assets/Scripts/Game/CharSelectScr.cs",
-        "../client_pc_ios/ClientUnity/Assets/Scripts/Game/GameScr.cs", "../client_pc_ios/ClientUnity/Assets/Scripts/Game/MenuWindows.cs",
-        "../client_pc_ios/ClientUnity/Assets/Scripts/Game/PauseMenu.cs", "../client_pc_ios/ClientUnity/Assets/Scripts/Game/Res.cs",
+        "../client_pc_ios/Assets/Scripts/Assembly-CSharp/CreateCharScr.cs", "../client_pc_ios/Assets/Scripts/Assembly-CSharp/CharSelectScr.cs",
+        "../client_pc_ios/Assets/Scripts/Assembly-CSharp/GameScr.cs", "../client_pc_ios/Assets/Scripts/Assembly-CSharp/MenuWindows.cs",
+        "../client_pc_ios/Assets/Scripts/Assembly-CSharp/PauseMenu.cs", "../client_pc_ios/Assets/Scripts/Assembly-CSharp/Res.cs",
     };
 
     public static void chay() {
@@ -44,7 +43,6 @@ public final class KiemChuPokemon {
         kiemTuDien();
         kiemRaSoatChu();
         kiemChuHoaCoDau();
-        kiemTatCo();
         kiemBatCo();
         kiemBanCs();
         kiemQuetGioDau();
@@ -108,7 +106,7 @@ public final class KiemChuPokemon {
         Kiem.bang("TEXT_RIENG chi tro toi truong co that", Integer.valueOf(0), Integer.valueOf(truongSai));
     }
 
-    /** Dot ra soat chu (docs/pokemon/DUYET_CHU.md): cac tu moi doi dung y, khong pha tu thuong. */
+    /** Dot ra soat chu (docs/thiet-ke-game.md): cac tu moi doi dung y, khong pha tu thuong. */
     private static void kiemRaSoatChu() {
         Kiem.bang("hoi thoai NPC: so dung truoc tu (1Giang hồ)", "1Thế giới Pokémon hiểm ác",
                 ChuPokemon.doiLuon("1Giang hồ hiểm ác"));
@@ -218,26 +216,8 @@ public final class KiemChuPokemon {
         Kiem.bang("pokemon_doi_chu.sql: khong chu HOA co dau", Integer.valueOf(0), Integer.valueOf(saiSql));
     }
 
-    private static void kiemTatCo() {
-        final boolean cu = CheDoPokemon.bat();
-        CheDoPokemon.dat(false);
-        try {
-            Kiem.bang("tat co: doi() tra nguyen", "bang hội", ChuPokemon.doi("bang hội"));
-            ChuPokemon.ap();
-            // Tu 18/10/2026 ma nguon da mang thuat ngu chuan (tools/pokemon/ap_thuat_ngu.py): tat co cung
-            // khong con chu kiem hiep, ap() khong doi gi them.
-            Kiem.bang("tat co: ap() khong doi NAME_CLASS (nguon da la ten dong)", "Dòng Charmander", real.CharManager.NAME_CLASS[0]);
-            Kiem.bang("tat co: ap() khong doi nameCountry (nguon da la vung)", "Kanto", real.Map.nameCountry[0]);
-            Kiem.bang("tat co: mo ta chieu giu nguyen", "abc", ChuPokemon.moTaChieuHoc(0, 0, "abc"));
-        } finally {
-            CheDoPokemon.dat(cu);
-        }
-    }
-
     private static void kiemBatCo() {
-        final boolean cu = CheDoPokemon.bat();
         final String help0 = data.Text.help[0];
-        CheDoPokemon.dat(true);
         try {
             ChuPokemon.ap();
             Kiem.bang("bat co: NAME_CLASS", Arrays.asList(ChuPokemon.TEN_DONG).toString(),
@@ -284,7 +264,6 @@ public final class KiemChuPokemon {
             Kiem.bang("ap() goi 2 lan van vay", ChuPokemon.TEN_DONG[0], real.CharManager.NAME_CLASS[0]);
         } finally {
             ChuPokemon.hoanTac();
-            CheDoPokemon.dat(cu);
         }
         Kiem.bang("hoanTac: NAME_CLASS ve gia tri nguon", "Dòng Charmander", real.CharManager.NAME_CLASS[0]);
         Kiem.bang("hoanTac: Text.help ve cu", help0, data.Text.help[0]);

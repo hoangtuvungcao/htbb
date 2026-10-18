@@ -3,7 +3,7 @@ package com.htbb.pokemon;
 import java.util.Random;
 
 /**
- * Nha tre Pokemon + trung (docs/pokemon/HE_SINH_THAI.md muc 3). Lop THUAN.
+ * Nha tre Pokemon + trung (docs/thiet-ke-game.md). Lop THUAN.
  *
  *   - Gui 1-2 pet DANG SO HUU (Char.pet, nhan dang qua PetPokemon.dex) vao nha tre, tra phi
  *     {@link HeSinhThai#PHI_NHA_TRE_NGAY_PHAN_NGHIN}‰ gio moi ngay (ho hut xu).

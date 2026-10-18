@@ -1,461 +1,74 @@
-# .gitignore GOC monorepo htbb - sinh boi tools/doi_ten/sua_sau_gop.py tu .gitignore cua 3 repo cu.
-# web/.gitignore (Nuxt) va .gitignore trong tung thanh phan van co hieu luc.
+# .gitignore gốc của monorepo htbb. web/.gitignore và .gitignore trong từng client vẫn có hiệu lực.
 
-# ---- VPS: /opt/htbb la ban checkout monorepo, log + sao luu nam o goc ----
-/log/
+# ---- VPS: /opt/htbb là bản checkout repo này; log, sao lưu, bản tải nằm ở gốc ----
+/log
+/logs/
 /backup/
+/backups/
+/downloads/
 
-# ---- may dev ----
-/doi_ten_sao_luu/
+# ---- máy dev / IDE / hệ điều hành ----
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+.apt_generated/
+.sts4-cache/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+__pycache__/
+*.pyc
 
-# ======== tu HTBB/.gitignore ========
-### IntelliJ IDEA ###
-/server/**/out/
-/docs/**/out/
-/sql/**/out/
-/tools/**/out/
-/vps/**/out/
-/client_pc_ios/ClientUnity/**/out/
-!/server/**/src/main/**/out/
-!/docs/**/src/main/**/out/
-!/sql/**/src/main/**/out/
-!/tools/**/src/main/**/out/
-!/vps/**/src/main/**/out/
-!/client_pc_ios/ClientUnity/**/src/main/**/out/
-!/server/**/src/test/**/out/
-!/docs/**/src/test/**/out/
-!/sql/**/src/test/**/out/
-!/tools/**/src/test/**/out/
-!/vps/**/src/test/**/out/
-!/client_pc_ios/ClientUnity/**/src/test/**/out/
+# ---- khoá ký và bí mật (không bao giờ commit) ----
+*.jks
+*.keystore
+key.properties
+.env
+.env.*
+!.env.example
 
-### Eclipse ###
-/server/**/.apt_generated
-/docs/**/.apt_generated
-/sql/**/.apt_generated
-/tools/**/.apt_generated
-/vps/**/.apt_generated
-/client_pc_ios/ClientUnity/**/.apt_generated
-/server/**/.classpath
-/docs/**/.classpath
-/sql/**/.classpath
-/tools/**/.classpath
-/vps/**/.classpath
-/client_pc_ios/ClientUnity/**/.classpath
-/server/**/.factorypath
-/docs/**/.factorypath
-/sql/**/.factorypath
-/tools/**/.factorypath
-/vps/**/.factorypath
-/client_pc_ios/ClientUnity/**/.factorypath
-/server/**/.project
-/docs/**/.project
-/sql/**/.project
-/tools/**/.project
-/vps/**/.project
-/client_pc_ios/ClientUnity/**/.project
-/server/**/.settings
-/docs/**/.settings
-/sql/**/.settings
-/tools/**/.settings
-/vps/**/.settings
-/client_pc_ios/ClientUnity/**/.settings
-/server/**/.springBeans
-/docs/**/.springBeans
-/sql/**/.springBeans
-/tools/**/.springBeans
-/vps/**/.springBeans
-/client_pc_ios/ClientUnity/**/.springBeans
-/server/**/.sts4-cache
-/docs/**/.sts4-cache
-/sql/**/.sts4-cache
-/tools/**/.sts4-cache
-/vps/**/.sts4-cache
-/client_pc_ios/ClientUnity/**/.sts4-cache
-/server/**/bin/
-/docs/**/bin/
-/sql/**/bin/
-/tools/**/bin/
-/vps/**/bin/
-/client_pc_ios/ClientUnity/**/bin/
-!/server/**/src/main/**/bin/
-!/docs/**/src/main/**/bin/
-!/sql/**/src/main/**/bin/
-!/tools/**/src/main/**/bin/
-!/vps/**/src/main/**/bin/
-!/client_pc_ios/ClientUnity/**/src/main/**/bin/
-!/server/**/src/test/**/bin/
-!/docs/**/src/test/**/bin/
-!/sql/**/src/test/**/bin/
-!/tools/**/src/test/**/bin/
-!/vps/**/src/test/**/bin/
-!/client_pc_ios/ClientUnity/**/src/test/**/bin/
-
-### NetBeans ###
-/server/nbproject/private/
-/server/nbbuild/
-/server/dist/
-/server/nbdist/
-/server/.nb-gradle/
-
-### VS Code ###
-/server/**/.vscode/
-/docs/**/.vscode/
-/sql/**/.vscode/
-/tools/**/.vscode/
-/vps/**/.vscode/
-/client_pc_ios/ClientUnity/**/.vscode/
-
-### Mac OS ###
-/server/**/.DS_Store
-/docs/**/.DS_Store
-/sql/**/.DS_Store
-/tools/**/.DS_Store
-/vps/**/.DS_Store
-/client_pc_ios/ClientUnity/**/.DS_Store
-
-### Others ###
-/server/**/.svn
-/docs/**/.svn
-/sql/**/.svn
-/tools/**/.svn
-/vps/**/.svn
-/client_pc_ios/ClientUnity/**/.svn
+# ---- server: tệp chạy (cấu hình thật, log, trạng thái) và bản build ----
 /server/build/
-/server/**/server.ini
-/docs/**/server.ini
-/sql/**/server.ini
-/tools/**/server.ini
-/vps/**/server.ini
-/client_pc_ios/ClientUnity/**/server.ini
-/server/**/server.ini.bak
-/docs/**/server.ini.bak
-/sql/**/server.ini.bak
-/tools/**/server.ini.bak
-/vps/**/server.ini.bak
-/client_pc_ios/ClientUnity/**/server.ini.bak
-/server/**/server.ini.tmp
-/docs/**/server.ini.tmp
-/sql/**/server.ini.tmp
-/tools/**/server.ini.tmp
-/vps/**/server.ini.tmp
-/client_pc_ios/ClientUnity/**/server.ini.tmp
-/server/loginServer/server.ini
-/server/**/errorlog.txt
-/docs/**/errorlog.txt
-/sql/**/errorlog.txt
-/tools/**/errorlog.txt
-/vps/**/errorlog.txt
-/client_pc_ios/ClientUnity/**/errorlog.txt
-/server/**/cuoptieu.txt
-/docs/**/cuoptieu.txt
-/sql/**/cuoptieu.txt
-/tools/**/cuoptieu.txt
-/vps/**/cuoptieu.txt
-/client_pc_ios/ClientUnity/**/cuoptieu.txt
-/server/**/doitieu.txt
-/docs/**/doitieu.txt
-/sql/**/doitieu.txt
-/tools/**/doitieu.txt
-/vps/**/doitieu.txt
-/client_pc_ios/ClientUnity/**/doitieu.txt
-/server/**/matketinfo.txt
-/docs/**/matketinfo.txt
-/sql/**/matketinfo.txt
-/tools/**/matketinfo.txt
-/vps/**/matketinfo.txt
-/client_pc_ios/ClientUnity/**/matketinfo.txt
-/server/**/nhantieu.txt
-/docs/**/nhantieu.txt
-/sql/**/nhantieu.txt
-/tools/**/nhantieu.txt
-/vps/**/nhantieu.txt
-/client_pc_ios/ClientUnity/**/nhantieu.txt
-/server/**/thetieu.txt
-/docs/**/thetieu.txt
-/sql/**/thetieu.txt
-/tools/**/thetieu.txt
-/vps/**/thetieu.txt
-/client_pc_ios/ClientUnity/**/thetieu.txt
-/server/**/tratieu.txt
-/docs/**/tratieu.txt
-/sql/**/tratieu.txt
-/tools/**/tratieu.txt
-/vps/**/tratieu.txt
-/client_pc_ios/ClientUnity/**/tratieu.txt
-/server/**/rUpdateleaf.txt
-/docs/**/rUpdateleaf.txt
-/sql/**/rUpdateleaf.txt
-/tools/**/rUpdateleaf.txt
-/vps/**/rUpdateleaf.txt
-/client_pc_ios/ClientUnity/**/rUpdateleaf.txt
-
-### Ban dump DB thuc te - KHONG commit ###
-# Chua toan bo du lieu nguoi choi + hash mat khau tai khoan, va rat nang
-# (htbb_db.sql ~140 MB). Commit vao la nam vinh vien trong lich su git.
-/server/htbb_db.sql
-# TUONG-THICH-TEN-CU-DONG-SAU: mau ten cu, bo sau 1 ban
-/server/kpah_db.sql
-/server/account.sql
-/server/*.sql.gz
-
-### Chi co tren VPS Linux (khong dua vao git) ###
-/log/
-/backup/
-/server/.ssh/
-/server/**/*.out
-/docs/**/*.out
-/sql/**/*.out
-/tools/**/*.out
-/vps/**/*.out
-/client_pc_ios/ClientUnity/**/*.out
-# AdminChat.txt truoc day duoc theo doi (co dong "!AdminChat.txt" mien tru). Da bo:
-# server GHI TIEP vao file nay moi khi admin chat, nen no lam "git status" tren VPS
-# dirty va deploy-auto.sh TU CHOI git pull. Ban cu con o /root/htbb-backup tren VPS.
-/server/**/AdminChat*.txt
-/docs/**/AdminChat*.txt
-/sql/**/AdminChat*.txt
-/tools/**/AdminChat*.txt
-/vps/**/AdminChat*.txt
-/client_pc_ios/ClientUnity/**/AdminChat*.txt
-# File server tu sinh, dat ten theo IP ket noi (vd 42.119.73.152.txt) - khong phai
-# code, lam "git status" tren VPS bi dirty va chan deploy-auto.sh neu khong bo qua.
-# IP luon bat dau bang chu so nen loc theo dau ten file, chi ap dung o thu muc goc.
-/server/[0-9]*.txt
-
-### Web PHP cu (web/) - DA BO 19/10/2026, website la HTBB-Web (Nuxt, repo rieng) ###
-# Ban checkout tren VPS (/opt/htbb) van con sot tep KHONG theo doi cua web cu
-# (web/config.local.php chua mat khau DB/ngan hang, .bak, .swp...). Khong bo qua
-# thi "git status --porcelain" hien "?? web/" va deploy-auto.sh TU CHOI git pull.
-# Xoa tay thu muc do tren VPS khi chac khong can nua (xem vps/CHUYEN_TEN_HTBB.md).
-/server/web/
-# Chan CHUNG cho moi file tam cua trinh soan thao, o bat ky dau trong repo. Hai dong
-# tren chi chan dung mot duong dan, nen ngay 30/08/2026 lai vap tiep: nano mo
-# /opt/htbb/server.ini sinh ra /opt/htbb/.server.ini.swp va deploy dung lai.
-/server/**/*.swp
-/docs/**/*.swp
-/sql/**/*.swp
-/tools/**/*.swp
-/vps/**/*.swp
-/client_pc_ios/ClientUnity/**/*.swp
-/server/**/*.swo
-/docs/**/*.swo
-/sql/**/*.swo
-/tools/**/*.swo
-/vps/**/*.swo
-/client_pc_ios/ClientUnity/**/*.swo
-/server/**/*~
-/docs/**/*~
-/sql/**/*~
-/tools/**/*~
-/vps/**/*~
-/client_pc_ios/ClientUnity/**/*~
-/server/**/.*.sw?
-/docs/**/.*.sw?
-/sql/**/.*.sw?
-/tools/**/.*.sw?
-/vps/**/.*.sw?
-/client_pc_ios/ClientUnity/**/.*.sw?
-
-### Tool build tam (tools/*.java bien dich ra day)
-/server/**/out_tools/
-/docs/**/out_tools/
-/sql/**/out_tools/
-/tools/**/out_tools/
-/vps/**/out_tools/
-/client_pc_ios/ClientUnity/**/out_tools/
-
-### San pham build trung gian ###
-# build.bat tao ra, capnhat.bat tieu thu - deu sinh ra tu htbb-server.jar + src/,
-# khong phai ma nguon. Truoc day bi commit nham, lam repo phinh ~4.5 MB jar trung lap.
-/server/HTBB_NEW.jar
-# Ten cu cua HTBB_NEW.jar: may dev / VPS co the con file nay; con bo qua de
-# git status --porcelain (deploy-auto.sh) khong coi la "file bi sua tay".
-/server/HTBB_NEW.jar
-# TUONG-THICH-TEN-CU-DONG-SAU: mau ten cu, bo sau 1 ban
-/server/KPAH2_NEW.jar
-/server/htbb-server_backup_truoc_capnhat.jar
-# TUONG-THICH-TEN-CU-DONG-SAU: mau ten cu, bo sau 1 ban
-/server/KPAH2_patched_backup_truoc_capnhat.jar
-# Jar TRUOC commit 2480c47, trich tu git (b87782e) de thu phan doi loi nhay 05/09/2026.
-# Da co san trong lich su git, khong can commit lai.
-/server/htbb-server_TRUOC_2480c47_de_thu.jar
-# TUONG-THICH-TEN-CU-DONG-SAU: mau ten cu, bo sau 1 ban
-/server/KPAH2_TRUOC_2480c47_de_thu.jar
-
-### Co bat/tat chan doan tren server dang chay ###
-# io.DemGoiTin doc tep nay moi 5 giay; chi ton tai luc dang chan doan, khong phai cau hinh.
-/server/debug_goi_tin.txt
-
-### Cache cua Unity - thu muc rong, khong lien quan server Java ###
-/server/Library/
-
-### File runtime server tu ghi ra thu muc goc khi chay ###
-/server/errorAnima.txt
-/server/hack.txt
-/server/hackdo.txt
-/server/errorSellITem.txt
-/server/errorquayso.txt
-/server/savechar.txt
-/server/saitenchar4.txt
-/server/offline.txt
-/server/top.txt
-/server/trangan.txt
-/server/longden.txt
-/server/longdenchar.txt
-/server/longdendaylog.txt
-/server/logtopluong.txt
-/server/update.txt
-/server/updateleaf.txt
-/server/check_gem.txt
-/server/errorlogPet.txt
-/server/datra4.txt
-/server/charWedding.txt
-# Luu nhan vat that bai o duong luu chinh -> DatabaseNhanVat.java:770 tao mot file
-# mang DUNG TEN NHAN VAT tai thu muc goc. Ten la du lieu chay nen khong liet ke
-# truoc duoc; vps/don-log.sh quet chung theo tuoi, con day chi lo phan git.
-# Khong dat "/*.txt" vi con map/help.txt, docs/*.txt... deu la file that su cua repo.
-
-# vps/htbb-logrotate.conf xoay vong nhom .txt goc tren day (muc 3 trong file do):
-# sinh them <ten>.txt.1.gz (so tang dan neu rotate > 1). KHONG liet ke tung ten
-# xoay vong o day - da tung thieu 3 file (errorlogPet.txt, datra4.txt,
-# charWedding.txt vua them o tren) vi logrotate.conf co file moi ma .gitignore
-# khong cap nhat theo. Hau qua: file .gz do hien untracked tren VPS, khien
-# vps/deploy-auto.sh tuong bi sua tay va tu choi deploy moi lan logrotate chay -
-# xem chu thich "Kiem tra repo co bi sua tay khong" trong file do. Dung mot mau
-# chung khong can dong bo hai danh sach tay nua.
-/server/*.txt.[0-9]*
-
-### Thu muc bien dich tam cua test.bat ###
-/server/build/test-classes/
-/server/build/test-classes-src/
-
-### Nguon giai ma tu htbb-core.jar (tools/giai-ma-core.bat sinh ra, chi de doc) ###
-/server/build/core-src/
-# TUONG-THICH-TEN-CU-DONG-SAU: mau ten cu, bo sau 1 ban
-/server/build/nqsh-src/
-/server/build/cfr.jar
-
-### Du an Unity (ClientUnity/) ###
-# Unity tu sinh lai toan bo nhung thu muc nay khi mo du an. Library/ mot minh da
-# nang hang tram MB nen tuyet doi khong commit.
-/client_pc_ios/ClientUnity/Library/
-/client_pc_ios/ClientUnity/Temp/
-/client_pc_ios/ClientUnity/Obj/
-/client_pc_ios/ClientUnity/Logs/
-/client_pc_ios/ClientUnity/UserSettings/
-/client_pc_ios/ClientUnity/Build/
-/client_pc_ios/ClientUnity/*.csproj
-/client_pc_ios/ClientUnity/*.sln
-/client_pc_ios/ClientUnity/*.slnx
-/client_pc_ios/ClientUnity/.vsconfig
-
-# Tai nguyen game do tools/ChuyenTaiNguyen.java sinh ra tu ban client J2ME.
-# La san pham dan xuat, khong phai ma nguon: tao lai bang mot lenh (xem README).
-# Khong commit de repo khoi phinh them vai nghin tep nhi phan.
-/client_pc_ios/ClientUnity/Assets/Resources/*
-/client_pc_ios/ClientUnity/Assets/Resources.meta
-# Ngoai le: sprite Pokemon do tools/pokemon/DongGoiSprite.java sinh tu PMDCollab (CC BY-NC).
-# DUOC commit de build client khong can mang/Python (xem docs/pokemon/KE_HOACH_CHUYEN_DOI.md 7.1).
-!/client_pc_ios/ClientUnity/Assets/Resources/poke/
-# Ngoai le: bo tile ban do moi (CC0) do tools/pokemon/DungBoTileMoi.java sinh, cung ly do nhu poke/.
-!/client_pc_ios/ClientUnity/Assets/Resources/poke_tile/
-# Ngoai le: kieu tile bo moi + ban do 0 ve lai (tools/pokemon/VeMapMoi.java, docs/pokemon/DINH_DANG_MAP.md).
-!/client_pc_ios/ClientUnity/Assets/Resources/poke_map/
-
-### Rac he dieu hanh / trinh quan ly tep - da tung lot vao map/d_effect/desktop.ini ###
-/server/**/Thumbs.db
-/docs/**/Thumbs.db
-/sql/**/Thumbs.db
-/tools/**/Thumbs.db
-/vps/**/Thumbs.db
-/client_pc_ios/ClientUnity/**/Thumbs.db
-/server/**/desktop.ini
-/docs/**/desktop.ini
-/sql/**/desktop.ini
-/tools/**/desktop.ini
-/vps/**/desktop.ini
-/client_pc_ios/ClientUnity/**/desktop.ini
-
-### Chay server tren NovaDB (tools/pokemon/chay_tren_novadb.sh): pid + log
+/server/dist/
+/server/out/
 /server/chay_novadb/
-
-### Python bytecode
-/server/**/__pycache__/
-/docs/**/__pycache__/
-/sql/**/__pycache__/
-/tools/**/__pycache__/
-/vps/**/__pycache__/
-/client_pc_ios/ClientUnity/**/__pycache__/
-/server/**/*.pyc
-/docs/**/*.pyc
-/sql/**/*.pyc
-/tools/**/*.pyc
-/vps/**/*.pyc
-/client_pc_ios/ClientUnity/**/*.pyc
-
-# Sinh lai bang tools/pokemon/GiaiMaMap.java va VeMapMoi.java
-/docs/pokemon/map_cu/
-/docs/pokemon/map_moi/kiem/
-
-### Sinh boi server/ChiSoMayChu (san sang production): nhip tim cho vps/kiem-suc-khoe.sh + co bao tri
+/server/**/server.ini
+/server/**/server.ini.bak
+/server/**/server.ini.tmp
+/server/*.txt
+/server/*.txt.[0-9]*
+/server/*.out
+/server/*.sql
+/server/*.sql.gz
 /server/trang_thai.json
 /server/trang_thai.json.tmp
 /server/bao_tri.txt
+/server/*_backup*.jar
+/server/*_NEW.jar
+/server/*_TRUOC_*.jar
+/server/web/
 
-# ======== tu htbb-client/.gitignore ========
-# máy build / IDE
-/client_jar/**/.vscode/
-/client_apk/**/.vscode/
-/client_pc/**/.vscode/
-/client_pc_ios/**/.vscode/
-/tools/phat-hanh/**/.vscode/
-/docs/client/**/.vscode/
-/client_jar/**/.idea/
-/client_apk/**/.idea/
-/client_pc/**/.idea/
-/client_pc_ios/**/.idea/
-/tools/phat-hanh/**/.idea/
-/docs/client/**/.idea/
-/client_jar/**/*.iml
-/client_apk/**/*.iml
-/client_pc/**/*.iml
-/client_pc_ios/**/*.iml
-/tools/phat-hanh/**/*.iml
-/docs/client/**/*.iml
-# khóa ký, bảng tên ProGuard: KHÔNG đưa lên git
-/client_jar/**/*.keystore
-/client_apk/**/*.keystore
-/client_pc/**/*.keystore
-/client_pc_ios/**/*.keystore
-/tools/phat-hanh/**/*.keystore
-/docs/client/**/*.keystore
-/client_jar/**/*.jks
-/client_apk/**/*.jks
-/client_pc/**/*.jks
-/client_pc_ios/**/*.jks
-/tools/phat-hanh/**/*.jks
-/docs/client/**/*.jks
-/client_jar/**/key.properties
-/client_apk/**/key.properties
-/client_pc/**/key.properties
-/client_pc_ios/**/key.properties
-/tools/phat-hanh/**/key.properties
-/docs/client/**/key.properties
+# ---- client: bản build ----
+/client_jar/out/
+/client_jar/.truoc_map_moi/
 /client_jar/**/mapping-*.txt
 /client_apk/**/mapping-*.txt
-/client_pc/**/mapping-*.txt
-/client_pc_ios/**/mapping-*.txt
-/tools/phat-hanh/**/mapping-*.txt
-/docs/client/**/mapping-*.txt
-# thư mục cũ còn sót trên máy (Library Unity bị khóa lúc chuyển sang pc/) - xóa tay được
-/client_jar/**/Decompiled/
-/client_apk/**/Decompiled/
-/client_pc/**/Decompiled/
-/client_pc_ios/**/Decompiled/
-/tools/phat-hanh/**/Decompiled/
-/docs/client/**/Decompiled/
-# máy chủ production thật của bản phát hành (mẫu: phat-hanh/may_chu.conf.example)
+/client_pc/out/
+
+# ---- dữ liệu / công cụ: tệp tải về và kết quả tạm (sinh lại được) ----
+/du_lieu/map_giai/
+/du_lieu/map_moi/kiem/
+/du_lieu/mo_phong_*.png
+/du_lieu/xem_truoc_*.png
+/tools/pokemon/pmd_raw/
+/tools/pokemon/pmd_raw_icon/
+/tools/pokemon/pmd_raw_tile_moi/
 /tools/phat-hanh/may_chu.conf
 /tools/phat-hanh/tam/
-

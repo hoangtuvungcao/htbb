@@ -21,7 +21,7 @@ import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * CAU HINH TRUNG TAM (docs/cau-hinh-trung-tam.md) - MOT dich vu cho moi khoa cau hinh chinh duoc luc chay.
+ * CAU HINH TRUNG TAM (docs/cau-hinh.md) - MOT dich vu cho moi khoa cau hinh chinh duoc luc chay.
  *
  * NGUON: bang {@code cau_hinh} (CSDL) > server.ini > mac dinh trong danh muc (tools/cauhinh/danh_muc.json ->
  * {@link DanhMucSinh}). Kiem kieu / khoang / lua chon ({@link KiemGiaTri}); gia tri sai bi TU CHOI, giu gia
@@ -33,7 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * (gia tri dang chay tung khoa + gia tri cho khoi dong lai). Khong doi gi van doc lai ca bang moi
  * {@link #CHU_KY_DAY_DU_MS} (bat thay doi cua ben ghi cu khong tang phien ban).
  *
- * KHOA KHOI DONG LAI (sv.lau_dai, sv.che_do_pokemon, cong, CSDL...): ap dung MOT lan luc khoi dong
+ * KHOA KHOI DONG LAI (sv.lau_dai, sv.he_sinh_thai, cong, CSDL...): ap dung MOT lan luc khoi dong
  * ({@link #khoiTao(Properties)} ghi de Properties cua server.ini TRUOC khi TeamServer doc cac co), sau do dong
  * bang. Cong / CSDL KHONG nam trong danh muc (con ga - quả trung), chi doc tu server.ini.
  *
@@ -253,8 +253,8 @@ public final class CauHinhTrungTam {
     // =================================================================== KHOI TAO (TeamServer)
 
     /**
-     * Goi MOT lan trong TeamServer NGAY SAU Database.setLink*(...) va TRUOC khi doc cac co (che do Pokemon,
-     * dai han, nap tien...). Doc bang cau_hinh bang ket noi JDBC rieng co han gio (khong qua pool), tinh cau
+     * Goi MOT lan trong TeamServer NGAY SAU Database.setLink*(...) va TRUOC khi doc cac co
+     * (dai han, nap tien...). Doc bang cau_hinh bang ket noi JDBC rieng co han gio (khong qua pool), tinh cau
      * hinh hieu luc va GHI DE vao {@code p} cac khoa lay tu CSDL - nhu vay moi dong {@code p.getProperty(...)}
      * cu ben duoi tu dong theo thu tu CSDL > ini > mac dinh. Loi CSDL -> chi dung server.ini (kiemTraCSDL ben
      * duoi se dung server neu CSDL hong that).

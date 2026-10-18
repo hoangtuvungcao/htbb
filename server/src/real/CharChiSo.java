@@ -1,6 +1,5 @@
 package real;
 
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.ChieuPokemon;
 
 
@@ -152,7 +151,7 @@ class CharChiSo {
         // (fullset, pet, noi luc chien truong, cai tao) va TRUOC hai dong chan hp/mp.
         // Dat truoc cac khoi phan tram thi 2000 mau se bi nhan len theo, thanh nhieu hon
         // con so ghi trong mo ta; dat sau hai dong chan thi hp co the vuot maxhp.
-        // Che do Pokemon (B1): cong % HP theo giai doan tien hoa (LoaiPokemon.phanTramGiaiDoan).
+        // Pokemon (B1): cong % HP theo giai doan tien hoa (LoaiPokemon.phanTramGiaiDoan).
         // Gioi han chi so (sv.lau_dai): tong % cong them HP/PP (bo, pet, thu cuoi, thoi trang, cai tao, tu binh...)
         // <= +50% goc; tinh thong + he sinh thai (<= 14%, da co tran rieng) duoc cong ngoai. Tat co: khong doi.
         if (ChiSoTrangBiGame.bat()) {
@@ -160,7 +159,7 @@ class CharChiSo {
             self.maxhp = ChiSoTrangBiGame.kepPhanTram(self.maxhp, hpGoc * them / 1000L);
             self.maxmp = ChiSoTrangBiGame.kepPhanTram(self.maxmp, mpGoc);
         }
-        if (com.htbb.pokemon.CheDoPokemon.bat() && self.pokeDex > 0) {
+        if (self.pokeDex > 0) {
             self.maxhp += (int) ((long) self.maxhp * com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex) / 100L);
         }
         self.maxhp += SkinThuCuoi.congHp(self);
@@ -769,27 +768,17 @@ class CharChiSo {
                     if (def < 0) {
                         def = 5 + Map.r.nextInt(10);
                     }
-                    // Che do Pokemon (G7.D2): danh trung quai -> Pokedex "da gap" (tat co: khong lam gi).
+                    // Pokemon (G7.D2): danh trung quai -> Pokedex "da gap" (tat co: khong lam gi).
                     PokedexPokemon.khiDanh(self, actor);
                     if (!self.map.isMapChienTruongMoba() || (self.map.isMapChienTruongMoba() && !actor.isCharMonster())) {
-                        if (CheDoPokemon.bat() && com.htbb.pokemon.LauDai.bat()) {
+                        if (com.htbb.pokemon.LauDai.bat()) {
                             // GD2 6.1: he AP SAU khi tru thu (xem SatThuongLauDai o duoi), khong o day.
-                        } else if (CheDoPokemon.bat()) {
-                            // Che do Pokemon: khac he 18 he thay ngu hanh. G7.D1: he tan cong =
-                            // he cua CHIEU idSkill (docs/pokemon/bang_chieu.csv) + STAB x1.2;
+                        } else {
+                            // Khac he 18 he Pokemon. G7.D1: he tan cong =
+                            // he cua CHIEU idSkill (du_lieu/bang_chieu.csv) + STAB x1.2;
                             // skill ngoai bang -> he 1 cua nguoi danh, khong STAB (nhu S4).
                             att = ChieuPokemon.apDung(att, self.charClass, idSkill, self.hePokemon1(), self.hePokemon2(),
                                     actor.hePokemon1(), actor.hePokemon2());
-                        } else if ((self.he + 2) % 5 == actor.he) {
-                            def -= def * 5 / 100;
-                            att += att * 10 / 100;
-                        } else if ((self.he + 3) % 5 == actor.he) {
-                            if (actor.cat == 0) {
-                                def += def * 7 / 100;
-                            } else if (actor.cat == 1) {
-                                def += def * 10 / 100;
-                            }
-                            att -= att * ((actor.cat == 1) ? 2 : 5) / 100;
                         }
                     }
                     if (self.idNgtuyet == 1 && actor.cat == 1 && !((Monster) actor).isBoss) {
@@ -842,8 +831,8 @@ class CharChiSo {
                     if (com.htbb.pokemon.LauDai.bat()) {
                         // GD2 6.1: co ban = max(5% atk, atk - def); he + STAB SAU thu; dao 95..105%.
                         // Chi mang x1,5 do noi goi ap (Region...). Ghi co/he cho goi -95.
-                        final int heC = CheDoPokemon.bat() ? com.htbb.pokemon.ChieuPokemon.heChieu(self.charClass, idSkill) : -1;
-                        final int heDung = heC >= 0 ? heC : (CheDoPokemon.bat() ? self.hePokemon1() : -1);
+                        final int heC = com.htbb.pokemon.ChieuPokemon.heChieu(self.charClass, idSkill);
+                        final int heDung = heC >= 0 ? heC : self.hePokemon1();
                         final int[] kqLd = com.htbb.pokemon.SatThuongLauDai.tinh(att, def, 100, heDung,
                                 self.hePokemon1(), self.hePokemon2(), actor.hePokemon1(), actor.hePokemon2(),
                                 ChiSoTrangBiGame.doHePhanTram(self, heDung), false, // ST he + phien da (<= 20%)
@@ -1460,8 +1449,8 @@ class CharChiSo {
             self.attack = ChiSoTrangBiGame.kepPhanTram(self.attack, gocTc);
             self.attackPlayer = ChiSoTrangBiGame.kepPhanTram(self.attackPlayer, gocTc);
         }
-        // Che do Pokemon (B1): cong % tan cong theo giai doan tien hoa, truoc diem Than Khi.
-        if (com.htbb.pokemon.CheDoPokemon.bat() && self.pokeDex > 0) {
+        // Pokemon (B1): cong % tan cong theo giai doan tien hoa, truoc diem Than Khi.
+        if (self.pokeDex > 0) {
             final int ptGd = com.htbb.pokemon.LoaiPokemon.phanTramGiaiDoan(self.pokeDex);
             self.attack += (int) ((long) self.attack * ptGd / 100L);
             self.attackPlayer += (int) ((long) self.attackPlayer * ptGd / 100L);

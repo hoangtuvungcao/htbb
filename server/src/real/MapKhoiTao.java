@@ -47,7 +47,7 @@ class MapKhoiTao {
 
         map.idXaphu = (byte) idXaphu;
         if (map.mapId != -1) {
-            map.loadMap(com.htbb.pokemon.BanDoPokemon.duongQuai("map/map" + loadmap), magic_physic);
+            map.loadMap("map/map" + loadmap, magic_physic);
         }
 
         FileInputStream fis = null;
@@ -56,7 +56,7 @@ class MapKhoiTao {
         DataInputStream disMap = null;
 
         try {
-            fis = new FileInputStream(com.htbb.pokemon.BanDoPokemon.duong(loadmap < 110 ? "cMap/t.type" : (loadmap > 200 ? "cMap/t_thanh.type" : "cMap/t_hang.type")));
+            fis = new FileInputStream(loadmap < 110 ? "cMap/t.type" : (loadmap > 200 ? "cMap/t_thanh.type" : "cMap/t_hang.type"));
             dis = new DataInputStream(fis);
             map.typeOfTile = new int[dis.available()];
 
@@ -64,7 +64,7 @@ class MapKhoiTao {
                 map.typeOfTile[i] = dis.read();
             }
 
-            fisMap = new FileInputStream(com.htbb.pokemon.BanDoPokemon.duong("cMap/" + loadmap));
+            fisMap = new FileInputStream("cMap/" + loadmap);
             disMap = new DataInputStream(fisMap);
             map.w = disMap.read();
             map.h = disMap.read();

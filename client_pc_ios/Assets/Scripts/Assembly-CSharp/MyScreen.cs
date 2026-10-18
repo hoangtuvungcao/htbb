@@ -32,14 +32,7 @@ public abstract class MyScreen : MainJ2ME
 	public override void paint(MyGraphics g)
 	{
 		Canvas.resetTrans(g);
-		if (UiPokemon.bat())
-		{
-			// pokemon: giao diện - không vẽ thanh lệnh đáy; nút lệnh nằm trong khung (MainJ2ME.veNutTrongKhung)
-		}
-		else if (Res.imgCmdBar != null)
-		{
-			g.drawImage(Res.imgCmdBar, 0, Canvas.h + 3, MyGraphics.LEFT | MyGraphics.BOTTOM);
-		}
+		// pokemon: giao diện - không vẽ thanh lệnh đáy; nút lệnh nằm trong khung (MainJ2ME.veNutTrongKhung)
 		if (Canvas.currentScreen == this && Canvas.currentDialog == null && !Canvas.menu.showMenu)
 		{
 			base.paint(g);

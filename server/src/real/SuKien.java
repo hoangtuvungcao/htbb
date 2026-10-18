@@ -199,7 +199,7 @@ public final class SuKien {
         new Muc(WORLD_CUP_2017, "World Cup 2017 (bản cũ)", "World Cup",
                 "Bản cũ: quái rơi Quả bóng bạc, NPC đổi nguyên liệu."),
 
-        // ---- GD2 buoc 5.1: ma moi cua lich 52 tuan (docs/pokemon/su_kien_nam.csv). Chi co hieu
+        // ---- GD2 buoc 5.1: ma moi cua lich 52 tuan (du_lieu/su_kien_nam.csv). Chi co hieu
         // ung khi sv.lau_dai=1 (SuKienLauDaiGame); tat co thi bat cung khong lam gi. ----
         new Muc("moi:congdong", "Ngày cộng đồng", "Pokémon",
                 "3 giờ: dòng khởi đầu xuất hiện dày, shiny x5 (cần sv.lau_dai=1)."),

@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-NOI DUNG DAY DU cho 1-2 nam choi (docs/pokemon/NOI_DUNG_DAY_DU.md): trang bi 11 bac, nguyen
+NOI DUNG DAY DU cho 1-2 nam choi (docs/thiet-ke-game.md): trang bi 11 bac, nguyen
 lieu nang cap, ngoc he, phan ra, vat pham tieu hao, chieu theo dong/giai doan, quai theo dai
 cap, quai tinh anh (alpha), 16 Gym, boss the gioi hang tuan, bang roi, vat pham su kien 52
 tuan, do trang tri theo mua, cua hang, che tao.
 
 MOT NGUON: moi con so lay tu tools/pokemon/sinh_sql_lau_dai.py (ngan sach kinh te, gia bac,
-tran cap theo mua, chi phi nang cap) + bang da co (sql/htbb_day_du.sql, docs/pokemon/*.csv).
+tran cap theo mua, chi phi nang cap) + bang da co (sql/htbb_day_du.sql, du_lieu/*.csv).
 Sua so O DAY roi chay lai; KHONG sua tay cac file sinh ra:
 
   sql/pokemon_noi_dung.sql            bang staging data_noi_dung_* (DROP/CREATE/INSERT) + phan
                                       NAP DUOC NGAY: data_item id 1001..1199 (DELETE + INSERT,
                                       chay lai nhieu lan van dung). Gom vao xuat_sql_day_du.sh.
-  docs/pokemon/noi_dung_*.csv         ban noi bo (co id, cong thuc, nguon)
-  docs/pokemon/web/*.csv              ban cho website: chi cot nguoi choi can (khong id/cong thuc)
+  du_lieu/noi_dung_*.csv         ban noi bo (co id, cong thuc, nguon)
+  du_lieu/web/*.csv              ban cho website: chi cot nguoi choi can (khong id/cong thuc)
 
 Chay (o thu muc HTBB/):  python3 -I tools/pokemon/sinh_noi_dung.py
 Kiem:                     test/KiemNoiDung.java (trong test/Kiem.java)
@@ -43,12 +43,12 @@ sys.path.insert(0, DIR)
 import sinh_sql_lau_dai as LD  # noqa: E402
 
 RA_SQL = os.path.join(GOC, "sql", "pokemon_noi_dung.sql")
-RA_DOC = os.path.join(GOC, "docs", "pokemon")
-RA_WEB = os.path.join(GOC, "docs", "pokemon", "web")
-F_CHIEU = os.path.join(GOC, "docs", "pokemon", "bang_chieu.csv")
-F_QUAI = os.path.join(GOC, "docs", "pokemon", "bang_quai.csv")
-F_SK = os.path.join(GOC, "docs", "pokemon", "su_kien_nam.csv")
-F_NV = os.path.join(GOC, "docs", "pokemon", "nhiem_vu_moi.csv")
+RA_DOC = os.path.join(GOC, "du_lieu")
+RA_WEB = os.path.join(GOC, "du_lieu", "web")
+F_CHIEU = os.path.join(GOC, "du_lieu", "bang_chieu.csv")
+F_QUAI = os.path.join(GOC, "du_lieu", "bang_quai.csv")
+F_SK = os.path.join(GOC, "du_lieu", "su_kien_nam.csv")
+F_NV = os.path.join(GOC, "du_lieu", "nhiem_vu_moi.csv")
 
 # =====================================================================================
 # 0. THAM SO CHUNG
@@ -64,12 +64,12 @@ BAC = LD.BAC_TB                        # (bac, ten, cap, ngay mo)
 SO_BAC = len(BAC)
 
 
-F_ICON = os.path.join(GOC, "docs", "pokemon", "bang_icon.csv")
+F_ICON = os.path.join(GOC, "du_lieu", "bang_icon.csv")
 _ICON_ND = None
 
 
 def icon_nd(khoa, mac_dinh=0):
-    """Id anh 14000+n cua icon 'nd:<khoa>' trong docs/pokemon/bang_icon.csv (tools/pokemon/
+    """Id anh 14000+n cua icon 'nd:<khoa>' trong du_lieu/bang_icon.csv (tools/pokemon/
     sinh_icon_pokemon.py, anh map/icon_pokemon/<n>.png); chua co -> mac_dinh (icon cu dung lai)."""
     global _ICON_ND
     if _ICON_ND is None:
@@ -929,9 +929,9 @@ COT_QUAI = ["id", "name", "style", "he", "level", "maxhp", "attack", "defent", "
 
 
 def ghi_bang_quai(moi):
-    """docs/pokemon/bang_quai.csv: giu nguyen dong cua sinh_bang_quai.py (id <= 138), thay dong
+    """du_lieu/bang_quai.csv: giu nguyen dong cua sinh_bang_quai.py (id <= 138), thay dong
     noi dung (id ID_QUAI_MOI_TU..ID_QUAI_MOI_DEN). Cung ghi noi_dung_quai_moi_bang.csv de sinh_bang_quai.py noi lai khi chay
-    lai. pmd_sprite: lay tu docs/pokemon/kiem_ke_sprite.csv (2 = du dong tac, 1 = thieu, '' = chua tai)."""
+    lai. pmd_sprite: lay tu du_lieu/kiem_ke_sprite.csv (2 = du dong tac, 1 = thieu, '' = chua tai)."""
     kk = {}
     p_kk = os.path.join(RA_DOC, "kiem_ke_sprite.csv")
     if os.path.exists(p_kk):
@@ -1279,7 +1279,7 @@ def main():
 
     # ---- SQL
     o = ["-- SINH RA boi tools/pokemon/sinh_noi_dung.py - KHONG SUA TAY.\n",
-         "-- Noi dung day du 1-2 nam (docs/pokemon/NOI_DUNG_DAY_DU.md). SQL portable (MySQL/MariaDB/NovaDB):\n",
+         "-- Noi dung day du 1-2 nam (docs/thiet-ke-game.md). SQL portable (MySQL/MariaDB/NovaDB):\n",
          "-- chay lai nhieu lan van cho cung ket qua. Gom vao tools/pokemon/xuat_sql_day_du.sh (sau LAU_DAI).\n",
          "-- PHAN A: bang staging data_noi_dung_* (so lieu thiet ke; giai doan 2/3 doc). Khong doi bang dang chay.\n",
          "-- PHAN B: data_item id %d..%d (trang bi bac than thoai/toi thuong, ruy bang bac thap,\n" % (ID_MOI_TU, ID_MOI_DEN),
@@ -1296,7 +1296,7 @@ def main():
         ",\n".join("(" + ", ".join(sql_gt(d[c]) for c in COT_ITEM) + ")" for d in item_moi)))
     o.append("\n-- ====================== PHAN C: data_monster moi (nam 2) ======================\n"
              "-- Id lien tiep %d.. (client cap mang template theo so luong). 139..174 moc tren ban do\n"
-             "-- vung Hoenn (BanDoHoenn, map/pokemon_spawn/map43..282); 175..178 = boss dot kich nam 2.\n" % ID_QUAI_MOI_TU)
+             "-- vung Hoenn (BanDoHoenn, map/map43..282); 175..178 = boss dot kich nam 2.\n" % ID_QUAI_MOI_TU)
     o.append("DELETE FROM `data_monster` WHERE `id` >= %d AND `id` <= %d;\n" % (ID_QUAI_MOI_TU, ID_QUAI_MOI_DEN))
     o.append("INSERT INTO `data_monster` (%s) VALUES\n%s;\n" % (
         ", ".join("`%s`" % c for c in COT_QUAI),

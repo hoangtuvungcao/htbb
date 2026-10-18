@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * workList, time - cac lop trong jar va src van goi {@code ThreadPool.instant.workList.add(...)}).
  *
  * Ban jar: Executors.newFixedThreadPool(350) khong ten. Viec trong hang doi gan nhu toan la LUU CSDL
- * (saveCharAuto/saveChar). Do 18/10/2026 (docs/pokemon/TOI_UU_HIEU_NANG.md muc 4): khi nhieu nhan vat
+ * (saveCharAuto/saveChar). Do 18/10/2026 (docs/kien-truc.md): khi nhieu nhan vat
  * den han tu luu cung luc, toi 350 luong cung lay ket noi -> pool CSDL 100 ket noi CAN SACH moi ~60 s,
  * ConnPool.getConFromPool goi initPool() mo them 100 ket noi moi (roi addConToPool dong bot phan
  * thua) - mot con bao tao/dong ket noi lien tuc. Nay: pool co tran, co ten "HTBB-VIEC-n" (mac dinh 32,

@@ -8,7 +8,6 @@ import java.util.Vector;
 
 import com.htbb.pokemon.BanDoHoenn;
 import com.htbb.pokemon.CapDoLauDai;
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.LauDai;
 
 /**
@@ -18,7 +17,7 @@ import com.htbb.pokemon.LauDai;
  *    idArrMap / namMap / nameMap / locationMap (goi 105), mapChange, ALL_LOCALTION_MAP, danh sach gui
  *    bo cuc (goi 12) va lua chon "Littleroot (Hoenn)" o cong bac map 9;
  *  - MapXuLyLenh.doChangeMap: {@link #chanVao} - chan qua cong vao Hoenn khi chua toi nam 2.
- * Chi bat khi che do Pokemon bat va du tep cMap_pokemon/&lt;id&gt; (ban do Hoenn khong co ban goc).
+ * Chi bat khi du tep cMap/&lt;id&gt; (ban do Hoenn khong co ban goc).
  */
 public final class VungHoenn {
 
@@ -27,11 +26,8 @@ public final class VungHoenn {
     private VungHoenn() {
     }
 
-    /** Che do Pokemon bat va moi ban do Hoenn co bo cuc. */
+    /** Moi ban do Hoenn co bo cuc. */
     public static boolean coVung() {
-        if (!CheDoPokemon.bat()) {
-            return false;
-        }
         for (final BanDoHoenn.BanDo b : BanDoHoenn.ds()) {
             if (!new File(com.htbb.pokemon.BanDoPokemon.THU_MUC_CMAP + b.id).isFile()) {
                 return false;
@@ -42,7 +38,7 @@ public final class VungHoenn {
 
     public static void taoMap(final Hashtable<Integer, Map> mapList) {
         if (!coVung()) {
-            System.out.println("[HOENN] khong bat (che do Pokemon tat hoac thieu cMap_pokemon) - bo qua vung Hoenn");
+            System.out.println("[HOENN] khong bat (thieu cMap) - bo qua vung Hoenn");
             return;
         }
         for (final BanDoHoenn.BanDo b : BanDoHoenn.ds()) {
@@ -133,7 +129,7 @@ public final class VungHoenn {
             Map.mapChange.put((short) b.id, cho);
             try {
                 Map.idMapSend2Client.put((short) b.id,
-                        Files.readAllBytes(new File(com.htbb.pokemon.BanDoPokemon.duong("cMap/" + b.id)).toPath()));
+                        Files.readAllBytes(new File("cMap/" + b.id).toPath()));
             } catch (final Exception e) {
                 e.printStackTrace();
             }

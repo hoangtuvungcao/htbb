@@ -472,65 +472,43 @@ public class Menu : MainJ2ME
 	public void paintMenu(MyGraphics g)
 	{
 		Canvas.resetTrans(g);
-		if (UiPokemon.bat())
+		// pokemon: giao diện - bảng kính, hàng chọn viên vàng-cam + con trỏ ▶, rê chuột viên xanh.
+		// Đang nói với NPC: hộp thoại đáy màn + menu lựa chọn đặt trên hộp, sát phải (không đè).
+		NPC npc = HopThoaiPoke.npcDangNoi();
+		if (npc != null)
 		{
-			// pokemon: giao diện - bảng kính, hàng chọn viên vàng-cam + con trỏ ▶, rê chuột viên xanh.
-			// Đang nói với NPC: hộp thoại đáy màn + menu lựa chọn đặt trên hộp, sát phải (không đè).
-			NPC npc = HopThoaiPoke.npcDangNoi();
-			if (npc != null)
+			HopThoaiPoke.ve(g, npc.getDisplayName(), npc.chat.dong(), npc.getPokeDex());
+			menuX = HopThoaiPoke.hopX() + HopThoaiPoke.rong() - menuW - 12;
+			int yMoi = HopThoaiPoke.hopY() - 18 - menuH;
+			if (yMoi < 8)
 			{
-				HopThoaiPoke.ve(g, npc.getDisplayName(), npc.chat.dong(), npc.getPokeDex());
-				menuX = HopThoaiPoke.hopX() + HopThoaiPoke.rong() - menuW - 12;
-				int yMoi = HopThoaiPoke.hopY() - 18 - menuH;
-				if (yMoi < 8)
-				{
-					yMoi = 8;
-				}
-				menuY = yMoi;
-				menuTemY = yMoi;
-				g.translate(-g.getTranslateX(), -g.getTranslateY());
+				yMoi = 8;
 			}
-			UiPokemon.bangKinh(g, menuX - 4, menuY - 4, menuW + 8, menuH + 9);
-			g.setClip(menuX - 2, menuY, menuW + 5, menuH);
-			g.translate(menuX + 2, menuTemY);
-			int xm = UiPokemon.xChuot() - (menuX + 2);
-			int ym = UiPokemon.yChuot() - menuTemY;
-			for (int i = 0; i < menuItems.size(); i++)
-			{
-				int yh = i * MainJ2ME.ITEM_HEIGHT - cyBag + 1;
-				bool chon = selected != -1 && i == selected && isPaintFc;
-				bool re = xm >= -2 && xm < menuW - 2 && ym >= yh && ym < yh + MainJ2ME.ITEM_HEIGHT;
-				if (chon || re)
-				{
-					UiPokemon.hangChon(g, -2, yh, menuW - 2, MainJ2ME.ITEM_HEIGHT - 1, chon);
-				}
-				if (chon && Canvas.gameTick % 10 < 8)
-				{
-					GiaoDien.muiTen(g, 6, yh + MainJ2ME.ITEM_HEIGHT / 2 - 6, 12, GiaoDien.DO); // con trỏ ▶
-				}
-				MFont f = chon ? MFont.borderFont : MFont.normalFont[0];
-				string chu = GiaoDien.catVua(f, ((Command)menuItems.elementAt(i)).caption, menuW - 30);
-				f.drawString(g, chu, 20, 10 + i * MainJ2ME.ITEM_HEIGHT - cyBag + 4, 0);
-			}
-			base.paint(g);
-			return;
+			menuY = yMoi;
+			menuTemY = yMoi;
+			g.translate(-g.getTranslateX(), -g.getTranslateY());
 		}
-		g.setColor(11908533);
-		g.fillRect(menuX - 2, menuY - 2, menuW + 4, menuH + 5);
-		g.setColor(2181450);
-		g.fillRect(menuX, menuTemY, menuW, menuH);
+		UiPokemon.bangKinh(g, menuX - 4, menuY - 4, menuW + 8, menuH + 9);
 		g.setClip(menuX - 2, menuY, menuW + 5, menuH);
 		g.translate(menuX + 2, menuTemY);
+		int xm = UiPokemon.xChuot() - (menuX + 2);
+		int ym = UiPokemon.yChuot() - menuTemY;
 		for (int i = 0; i < menuItems.size(); i++)
 		{
-			MFont mFont = MFont.normalFont[0];
-			if (selected != -1 && i == selected && isPaintFc)
+			int yh = i * MainJ2ME.ITEM_HEIGHT - cyBag + 1;
+			bool chon = selected != -1 && i == selected && isPaintFc;
+			bool re = xm >= -2 && xm < menuW - 2 && ym >= yh && ym < yh + MainJ2ME.ITEM_HEIGHT;
+			if (chon || re)
 			{
-				g.setColor(11495168);
-				g.fillRect(-2, i * MainJ2ME.ITEM_HEIGHT - cyBag + 1, menuW, MainJ2ME.ITEM_HEIGHT);
-				mFont = MFont.normalFont[0];
+				UiPokemon.hangChon(g, -2, yh, menuW - 2, MainJ2ME.ITEM_HEIGHT - 1, chon);
 			}
-			mFont.drawString(g, ((Command)menuItems.elementAt(i)).caption, 5, 10 + i * MainJ2ME.ITEM_HEIGHT - cyBag + 4, 0);
+			if (chon && Canvas.gameTick % 10 < 8)
+			{
+				GiaoDien.muiTen(g, 6, yh + MainJ2ME.ITEM_HEIGHT / 2 - 6, 12, GiaoDien.DO); // con trỏ ▶
+			}
+			MFont f = chon ? MFont.borderFont : MFont.normalFont[0];
+			string chu = GiaoDien.catVua(f, ((Command)menuItems.elementAt(i)).caption, menuW - 30);
+			f.drawString(g, chu, 20, 10 + i * MainJ2ME.ITEM_HEIGHT - cyBag + 4, 0);
 		}
 		base.paint(g);
 	}

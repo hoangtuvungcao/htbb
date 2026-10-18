@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Sinh thai the gioi (docs/pokemon/HE_SINH_THAI.md muc 1). Lop THUAN, tat dinh theo ngay.
+ * Sinh thai the gioi (docs/thiet-ke-game.md). Lop THUAN, tat dinh theo ngay.
  *
  *   - Ngay / dem theo gio may chu (19:00-05:59 la dem).
- *   - Thoi tiet theo NGAY cho moi VUNG SINH THAI (loai ban do trong docs/pokemon/thiet_ke_map.csv):
+ *   - Thoi tiet theo NGAY cho moi VUNG SINH THAI (loai ban do trong du_lieu/thiet_ke_map.csv):
  *     cung ngay + cung vung = cung thoi tiet tren moi may, khong can luu.
  *   - Mua (xuan/ha/thu/dong) doi trong so thoi tiet; loai "di cu" chi co mat mot so thang (mat na
  *     thang trong data_hst_thay_quai).

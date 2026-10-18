@@ -22,7 +22,7 @@ import javax.microedition.lcdui.Graphics;
 public class PauseMenu
 extends Screen {
     public static PauseMenu me;
-    private String[][] name = new String[][]{{"", "T\u1ef1 \u0111\u1ed9ng \u0111\u00e1nh", "Hi\u1ec7u \u1ee9ng", "Ti\u1ec7n \u00edch", "Ngo\u1ea1i h\u00ecnh"}, {"C\u00e0i \u0111\u1eb7t", "C\u1ea5u h\u00ecnh", "B\u1ea3n \u0111\u1ed3 l\u1edbn", "B\u1eadt/t\u1eaft giao di\u1ec7n", "H\u01b0\u1edbng d\u1eabn", "\u00e2m thanh", "B\u1eadt/t\u1eaft l\u1eddi m\u1eddi", "B\u1eadt/t\u1eaft auto \u0111\u00e1nh", "Ch\u1ebf \u0111\u1ed9 focus", "Gi\u1ea5y ph\u00e9p"}, {"B\u1ea3n th\u00e2n", "H\u00e0nh trang", "K\u1ef9 n\u0103ng", "Ti\u1ec1m n\u0103ng", "Trang b\u1ecb", "Th\u00f4ng tin", "Trang b\u1ecb th\u00fa", "C\u00e2y th\u1ea7n", "C\u1ed5 v\u1eadt", "Kh\u00e1c", "T\u00fai sinh th\u00e1i"}, {"Nap Xu"}, {"Nhi\u1ec7m v\u1ee5"}, {"\u0110\u1ed3 s\u00e1t"}, {"Kh\u00e1c", "Tin nh\u1eafn", "Nh\u00f3m", "B\u1ea1n b\u00e8", "Top cao th\u1ee7", "Top \u0111\u1ea1i gia", "B\u1ea3ng Top", "K\u00eanh th\u1ebf gi\u1edbi", "Di\u1ec5n \u0111\u00e0n", "R\u1eddi bang"}, {""}, {"C\u1eeda h\u00e0ng"}, {""}};
+    private String[][] name = new String[][]{{"", "T\u1ef1 \u0111\u1ed9ng \u0111\u00e1nh", "Hi\u1ec7u \u1ee9ng", "Ti\u1ec7n \u00edch", "Ngo\u1ea1i h\u00ecnh"}, {"C\u00e0i \u0111\u1eb7t", "C\u1ea5u h\u00ecnh", "B\u1ea3n \u0111\u1ed3 l\u1edbn", "B\u1eadt/t\u1eaft giao di\u1ec7n", "H\u01b0\u1edbng d\u1eabn", "\u00e2m thanh", "B\u1eadt/t\u1eaft l\u1eddi m\u1eddi", "B\u1eadt/t\u1eaft auto \u0111\u00e1nh", "Ch\u1ebf \u0111\u1ed9 focus", "Gi\u1ea5y ph\u00e9p"}, {"B\u1ea3n th\u00e2n", "H\u00e0nh trang", "K\u1ef9 n\u0103ng", "Ti\u1ec1m n\u0103ng", "Trang b\u1ecb", "Th\u00f4ng tin", "Trang b\u1ecb th\u00fa", "C\u00e2y th\u1ea7n", "C\u1ed5 v\u1eadt", "Kh\u00e1c", "T\u00fai sinh th\u00e1i"}, {"Nap Xu"}, {"Nhi\u1ec7m v\u1ee5"}, {"PK"}, {"Kh\u00e1c", "Tin nh\u1eafn", "Nh\u00f3m", "B\u1ea1n b\u00e8", "Top nh\u00e0 v\u00f4 \u0111\u1ecbch", "Top \u0111\u1ea1i gia", "B\u1ea3ng Top", "K\u00eanh th\u1ebf gi\u1edbi", "Di\u1ec5n \u0111\u00e0n", "R\u1eddi \u0111\u1ed9i"}, {""}, {"C\u1eeda h\u00e0ng"}, {""}};
     int selected = 0;
     int index = -1;
     int Limit;
@@ -49,14 +49,14 @@ extends Screen {
 
     public void initName() {
         if (Canvas.gameScr.mainChar.idClan == -1) {
-            this.name[7] = new String[]{"Bang h\u1ed9i", "Top bang h\u1ed9i", "\u0110\u0103ng k\u00fd bang h\u1ed9i"};
+            this.name[7] = new String[]{"\u0110\u1ed9i", "Top \u0111\u1ed9i", "\u0110\u0103ng k\u00fd \u0111\u1ed9i"};
         } else if (Canvas.gameScr.mainChar.isMaster == 0) {
-            this.name[7] = new String[]{"Bang h\u1ed9i", "Top bang h\u1ed9i", "Nhi\u1ec7m v\u1ee5", "Th\u00e0nh vi\u00ean bang h\u1ed9i", "Th\u00f4ng tin bang h\u1ed9i", "Tin nh\u1eafn bang h\u1ed9i", "K\u1ef9 n\u0103ng", "Chat to\u00e0n bang", "Quy\u00ean g\u00f3p", "Gi\u1ea3i t\u00e1n bang h\u1ed9i"};
+            this.name[7] = new String[]{"\u0110\u1ed9i", "Top \u0111\u1ed9i", "Nhi\u1ec7m v\u1ee5", "Th\u00e0nh vi\u00ean \u0111\u1ed9i", "Th\u00f4ng tin \u0111\u1ed9i", "Tin nh\u1eafn \u0111\u1ed9i", "K\u1ef9 n\u0103ng", "Chat to\u00e0n \u0111\u1ed9i", "Quy\u00ean g\u00f3p", "Gi\u1ea3i t\u00e1n \u0111\u1ed9i"};
             if (Char.dissolved) {
-                this.name[7][9] = "Ph\u1ee5c h\u1ed3i bang h\u1ed9i";
+                this.name[7][9] = "Ph\u1ee5c h\u1ed3i \u0111\u1ed9i";
             }
         } else {
-            this.name[7] = new String[]{"Bang h\u1ed9i", "Top bang h\u1ed9i", "Nhi\u1ec7m v\u1ee5", "Th\u00e0nh vi\u00ean bang h\u1ed9i", "Th\u00f4ng tin bang h\u1ed9i", "Tin nh\u1eafn bang h\u1ed9i", "K\u1ef9 n\u0103ng", "Chat to\u00e0n bang", "Quy\u00ean g\u00f3p", "R\u1eddi bang"};
+            this.name[7] = new String[]{"\u0110\u1ed9i", "Top \u0111\u1ed9i", "Nhi\u1ec7m v\u1ee5", "Th\u00e0nh vi\u00ean \u0111\u1ed9i", "Th\u00f4ng tin \u0111\u1ed9i", "Tin nh\u1eafn \u0111\u1ed9i", "K\u1ef9 n\u0103ng", "Chat to\u00e0n \u0111\u1ed9i", "Quy\u00ean g\u00f3p", "R\u1eddi \u0111\u1ed9i"};
         }
     }
 
@@ -148,11 +148,6 @@ extends Screen {
             }
         }));
         PauseMenu.moMenuGiuChon(vector, 3, 0);
-    }
-
-    /** Giữ tên cũ cho bản Android NQSH (client_apk/app): mỗi khung hình của GameScr. */
-    public static void autoCheDoTick() {
-        AutoGuard.tick();
     }
 
     private PauseMenu() {
@@ -500,8 +495,8 @@ extends Screen {
                 case 6: {
                     if (this.index == 7) {
                         Canvas.gameScr.switchToMe();
-                        MessageScr.gI().addTab("", "Bang h\u1ed9i", 1);
-                        MessageScr.gI().setFocusTab("Bang h\u1ed9i");
+                        MessageScr.gI().addTab("", "\u0110\u1ed9i", 1);
+                        MessageScr.gI().setFocusTab("\u0110\u1ed9i");
                         MessageScr.gI().switchToMe();
                         break;
                     }
@@ -581,30 +576,30 @@ extends Screen {
                         return;
                     }
                     if (Canvas.gameScr.mainChar.idClan == -1) {
-                        Canvas.startOKDlg("B\u1ea1n ch\u01b0a c\u00f3 bang");
+                        Canvas.startOKDlg("B\u1ea1n ch\u01b0a c\u00f3 \u0111\u1ed9i");
                         break;
                     }
                     if (Canvas.gameScr.mainChar.isMaster == 0) {
-                        Canvas.startYesNoDlg(Char.dissolved ? "B\u1ea1n c\u00f3 ch\u1eafc mu\u1ed1n ph\u1ee5c h\u1ed3i l\u1ea1i bang h\u1ed9i kh\u00f4ng ?" : "B\u1ea1n c\u00f3 ch\u1eafc mu\u1ed1n gi\u1ea3i t\u00e1n bang h\u1ed9i kh\u00f4ng ?", new IAction(){
+                        Canvas.startYesNoDlg(Char.dissolved ? "B\u1ea1n c\u00f3 ch\u1eafc mu\u1ed1n ph\u1ee5c h\u1ed3i l\u1ea1i \u0111\u1ed9i kh\u00f4ng ?" : "B\u1ea1n c\u00f3 ch\u1eafc mu\u1ed1n gi\u1ea3i t\u00e1n \u0111\u1ed9i kh\u00f4ng ?", new IAction(){
 
                             public void perform() {
                                 Canvas.gameScr.switchToMe();
                                 GameService.gI().dissolveCLan();
-                                Canvas.startOKDlg(Char.dissolved ? "\u0110\u00e3 kh\u00f4i ph\u1ee5c l\u1ea1i bang h\u1ed9i" : "\u0110\u00e3 gi\u1ea3i t\u00e1n bang h\u1ed9i");
+                                Canvas.startOKDlg(Char.dissolved ? "\u0110\u00e3 kh\u00f4i ph\u1ee5c l\u1ea1i \u0111\u1ed9i" : "\u0110\u00e3 gi\u1ea3i t\u00e1n \u0111\u1ed9i");
                                 Char.dissolved = !Char.dissolved;
                                 PauseMenu.this.initName();
                             }
                         });
                         break;
                     }
-                    Canvas.startYesNoDlg("B\u1ea1n c\u00f3 ch\u1eafc mu\u1ed1n r\u1eddi bang kh\u00f4ng ?", new IAction(){
+                    Canvas.startYesNoDlg("B\u1ea1n c\u00f3 ch\u1eafc mu\u1ed1n r\u1eddi \u0111\u1ed9i kh\u00f4ng ?", new IAction(){
 
                         public void perform() {
                             GameService.gI().outClan();
                             Canvas.gameScr.mainChar.idClan = (short)-1;
                             Canvas.gameScr.switchToMe();
                             PauseMenu.this.initName();
-                            Canvas.startOKDlg("R\u1eddi bang th\u00e0nh c\u00f4ng");
+                            Canvas.startOKDlg("R\u1eddi \u0111\u1ed9i th\u00e0nh c\u00f4ng");
                         }
                     });
                     break;

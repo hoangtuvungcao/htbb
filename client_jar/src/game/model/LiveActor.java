@@ -45,7 +45,7 @@ public abstract class LiveActor extends Actor {
     public Vector Vec_Effect_Skill = new Vector();
     public short totalTime = 36;
 
-    // pokemon: dong tac PokeBody dang ve va tick luc bat dau (ClientUnity LiveActor.cs)
+    // pokemon: dong tac PokeBody dang ve va tick luc bat dau (Unity LiveActor.cs)
     public int pokeDongTacCu = -1;
     public int pokeTickBatDau;
     // pokemon: phan hoi chien dau (game.pokemon.HieuUngDanh): tick bi trung (chop trang + lac),

@@ -130,7 +130,7 @@ public final class KiemSkinThuCuoi {
         Kiem.nhom("Skin linh thu - vi tri icon trong bang Trang bi thu");
 
         for (final String ten : new String[] { "MenuWindows", "WindowInfoScr", "ShopNew" }) {
-            final String tep = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/" + ten + ".cs";
+            final String tep = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/" + ten + ".cs";
             final String ma = doc(tep);
             Kiem.dung("doc duoc " + ten + ".cs", ma.length() > 0);
             Kiem.dung(ten + " co ham dat icon theo o trang bi thu",
@@ -1555,7 +1555,7 @@ public final class KiemSkinThuCuoi {
 
         // Ba man hinh Unity phai dung cach danh so cua ban JAR.
         for (final String ten : new String[] { "MenuWindows", "WindowInfoScr", "ShopNew" }) {
-            final String ma = doc("../client_pc_ios/ClientUnity/Assets/Scripts/Game/" + ten + ".cs");
+            final String ma = doc("../client_pc_ios/Assets/Scripts/Assembly-CSharp/" + ten + ".cs");
             Kiem.dung(ten + ".cs dung idWearAnimal theo ban JAR",
                     ma.contains("idWearAnimal = new sbyte[10] " + MANG));
             Kiem.sai(ten + ".cs khong con cach danh so cu 19..23",
@@ -1672,14 +1672,14 @@ public final class KiemSkinThuCuoi {
     private static void kiemChoNgoiSkin() {
         Kiem.nhom("Skin linh thu - cho nguoi ngoi");
 
-        final String ma = doc("../client_pc_ios/ClientUnity/Assets/Scripts/Game/Char.cs");
+        final String ma = doc("../client_pc_ios/Assets/Scripts/Assembly-CSharp/Char.cs");
         Kiem.dung("doc duoc Char.cs", ma.length() > 0);
         Kiem.dung("nhac nguoi lay THANG tu dy_horse, khong cong them gi",
                 ma.contains("return dy_horse[typehorse][dir];"));
         Kiem.sai("KHONG con mang bu cho ngoi rieng cho ban Unity",
                 ma.contains("int[] BU_NGOI_SKIN"));
 
-        final String gs = doc("../client_pc_ios/ClientUnity/Assets/Scripts/Game/GameScr.cs");
+        final String gs = doc("../client_pc_ios/Assets/Scripts/Assembly-CSharp/GameScr.cs");
         Kiem.dung("doc duoc GameScr.cs", gs.length() > 0);
         Kiem.sai("KHONG con phim do cho ngoi trong ban phat hanh",
                 gs.contains("doChinhChoNgoiSkin"));
@@ -1752,7 +1752,7 @@ public final class KiemSkinThuCuoi {
      *      muon dời lai thi hoi nguoi choi truoc, dung tu y.
      *
      * Do bang tools/ThuChoNgoiSkinThu (ve dung thu tu ve cua client + hinh que nguoi ngoi),
-     * xem docs/skin-thu-cuoi.md muc 9.
+     * xem docs/thiet-ke-game.md.
      */
     private static void kiemChoNgoiKimCangLong() {
         Kiem.nhom("Skin linh thu - cho ngoi Kim Cang Long (dong bang rieng + du lieu khoi xuong)");
@@ -1855,7 +1855,7 @@ public final class KiemSkinThuCuoi {
      * dy -15) vi huong do von da khop. Do bang tools/ThuChoNgoiSkinThu (ve dung thu tu ve cua
      * client, hinh que nguoi ngoi), chon muc nguoi long vao giua cum sung/canh - khop bo cuc
      * cua Gau Truc/Phuc Thu/Xich Duong/Chien Lang o cung dong 0. Xem chu thich o
-     * Char.java (dy_horse_tool dong 6) va docs/skin-thu-cuoi.md muc 9.
+     * Char.java (dy_horse_tool dong 6) va docs/thiet-ke-game.md.
      */
     private static void kiemChoNgoiTienLoc() {
         Kiem.nhom("Skin linh thu - cho ngoi Tien Loc (dong bang rieng so 6)");

@@ -14,9 +14,9 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const WEB = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-// Ảnh OG chuẩn = key art chung của game (htbb-client/j2me/tools/tao_banner.py --web ghi thẳng public/og/htbb.png).
+// Ảnh OG chuẩn = key art chung của game (client_jar/tools/tao_banner.py --web ghi thẳng public/og/htbb.png).
 // Có sẵn bản đó thì chỉ chép lại; không có repo client mới vẽ bằng HTML như cũ.
-const OG_KEYART = resolve(WEB, '../htbb-client/shared/banner/og_1200x630.png')
+const OG_KEYART = resolve(WEB, '../client_jar/shared/banner/og_1200x630.png')
 if (existsSync(OG_KEYART)) {
   copyFileSync(OG_KEYART, join(WEB, 'public/og/htbb.png'))
   console.log(`Đã chép ${OG_KEYART} -> public/og/htbb.png`)

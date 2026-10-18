@@ -1,11 +1,12 @@
 # Cau hinh login server tren VPS Linux.
-# loginServer/server.ini cung bi .gitignore chan -> tao tay MOT LAN:
+# loginServer/server.ini cung bi .gitignore chan -> tao tay MOT LAN (db.password = DB_PASSWORD
+# trong /etc/htbb/htbb.env; doi mat khau CSDL thi sua ca tep nay):
 #     cp /opt/htbb/vps/loginServer.server.ini.example /opt/htbb/server/loginServer/server.ini
 #     nano /opt/htbb/server/loginServer/server.ini
 #     chown htbb:htbb /opt/htbb/server/loginServer/server.ini && chmod 640 /opt/htbb/server/loginServer/server.ini
 # characterEncoding=UTF-8: Connector/J trong jar rat cu, gap may chu mac dinh utf8mb4_unicode_ci
 # (index 224) se nem "Unknown initial character set index" va KHONG ai dang nhap duoc.
-db.url=jdbc:mysql://localhost:3306/account?characterEncoding=UTF-8
+db.url=jdbc:mysql://127.0.0.1:3306/account?characterEncoding=UTF-8
 db.user=htbb
 db.password=DOI_MAT_KHAU_DB
 port=8023

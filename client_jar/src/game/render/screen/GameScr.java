@@ -1185,7 +1185,7 @@ public class GameScr extends Screen {
 
     public static void addChat(Actor ac, String str, int time) {
         // pokemon: lời NPC (và lời người chơi đáp lại khi đang trò chuyện) -> hộp thoại đáy màn kiểu GBA
-        if (game.pokemon.PokeBody.CHE_DO_POKEMON && ac != null && (ac instanceof NPC || game.pokemon.HopThoaiDuoi.dangBat() && Canvas.gameScr != null && ac == Canvas.gameScr.mainChar)) {
+        if (ac != null && (ac instanceof NPC || game.pokemon.HopThoaiDuoi.dangBat() && Canvas.gameScr != null && ac == Canvas.gameScr.mainChar)) {
             String ten = ac instanceof NPC ? ((NPC) ac).name : ((Char) ac).name;
             game.pokemon.HopThoaiDuoi.dat(ten, str, time);
             ac.chat = null;
@@ -1796,13 +1796,13 @@ public class GameScr extends Screen {
                     for (int i = 0; i < name.length; i++) {
                         final int k = i;
                         if (!name[i].equals("")) {
-                            menuItem.addElement(new Command(game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(name[i]) : name[i], new IAction() {
+                            menuItem.addElement(new Command(game.pokemon.TenMapPokemon.doiHien(name[i]), new IAction() {
                                 @Override
                                 public void perform() {
                                     GameService.gI().changeMap(local[k * 3], local[(k * 3) + 1], local[(k * 3) + 2]);
                                     ChangScr.gI().switchToMe();
                                     Res.removeMonsterTemplet();
-                                    GameScr.nameMap = game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(name[k]) : name[k];
+                                    GameScr.nameMap = game.pokemon.TenMapPokemon.doiHien(name[k]);
                                 }
                             }));
                         }
@@ -2869,7 +2869,7 @@ public class GameScr extends Screen {
                 for (int i = 0; i < xp.mapID.length; i++) {
                     final int aa = i;
                     final int idm = xp.mapID[aa];
-                    Command cmd = new Command(game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(Res.nameBigMap[xp.mapID[aa]]) : Res.nameBigMap[xp.mapID[aa]], new IAction() {
+                    Command cmd = new Command(game.pokemon.TenMapPokemon.doiHien(Res.nameBigMap[xp.mapID[aa]]), new IAction() {
                         @Override
                         public void perform() {
                             if (xp.price[aa] <= GameScr.this.mainChar.charXu) {
@@ -2894,14 +2894,14 @@ public class GameScr extends Screen {
         Vector menuItem = new Vector();
         for (int i = 0; i < name.length; i++) {
             final int k = i;
-            menuItem.addElement(new Command(game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(name[i]) : name[i], new IAction() {
+            menuItem.addElement(new Command(game.pokemon.TenMapPokemon.doiHien(name[i]), new IAction() {
                 @Override
                 public void perform() {
                     GameScr.this.gameService.doMove2Map((byte) idXphu, local[k * 3]);
                     ChangScr.gI().switchToMe();
                     ChangScr.gI().setMap(GameScr.this.map, 0, 0);
                     Res.removeMonsterTemplet();
-                    GameScr.nameMap = game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(name[k]) : name[k];
+                    GameScr.nameMap = game.pokemon.TenMapPokemon.doiHien(name[k]);
                 }
             }));
         }
@@ -4738,7 +4738,7 @@ public class GameScr extends Screen {
             Canvas.clearKeyPressed();
             Tilemap.setNameMap(loadMap);
             // pokemon: tên server gửi đã đổi phần lớn; còn sót (vd "Bạch hạc_1") đổi nốt khi hiện
-            nameMap = game.pokemon.PokeBody.CHE_DO_POKEMON ? game.pokemon.TenMapPokemon.doiHien(mapName) : mapName;
+            nameMap = game.pokemon.TenMapPokemon.doiHien(mapName);
             if (isSame == 0) {
                 Canvas.gameScr.switchToMe();
                 setAutoTask();

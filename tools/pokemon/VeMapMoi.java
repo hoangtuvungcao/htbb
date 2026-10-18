@@ -24,9 +24,9 @@ import com.htbb.pokemon.DinhDangBanDo;
 
 /**
  * Ve LAI HOAN TOAN moi ban do cho che do Pokemon bang BO TILE MOI (tools/pokemon/DungBoTileMoi.java,
- * nguon CC0 - docs/pokemon/NGUON_ASSET_MAP.md). Khong dung tile, cay, nha hay vat trang tri nao cua
+ * nguon CC0 - docs/giay-phep.md). Khong dung tile, cay, nha hay vat trang tri nao cua
  * game goc: ban moi khong co "cay" (lenh -48) - cay, nha, hang rao deu la tile.
- * Dinh dang + rang buoc: docs/pokemon/DINH_DANG_MAP.md. Thiet ke tung map: docs/pokemon/thiet_ke_map.csv.
+ * Dinh dang + rang buoc: docs/kien-truc.md. Thiet ke tung map: du_lieu/thiet_ke_map.csv.
  *
  * Hai tang:
  *  1. KE HOACH vat lieu tung o (bo cuc moi) theo loai ban do + hat giong + diem co dinh:
@@ -39,8 +39,8 @@ import com.htbb.pokemon.DinhDangBanDo;
  *     la A -> mep tron, khop nhau (bo tile sinh dung 15 kieu goc cho moi cap). Rung = 9 manh theo 4 huong.
  *
  * Giu rang buoc: cung kich thuoc, o cong (toM, xOut, yOut), NPC client, diem den (bang_den.json),
- * diem server viet cung (diem_co_dinh.csv), luoi quai (doi cho chi o bien/ho, ghi map/pokemon_spawn).
- * Kiem bang tile THAT (kieu trong cMap_pokemon/&lt;bo&gt;.type): moi diem phai toi duoc tu cong; sua lap.
+ * diem server viet cung (diem_co_dinh.csv), luoi quai (doi cho chi o bien/ho, ghi map/map<N>).
+ * Kiem bang tile THAT (kieu trong cMap/&lt;bo&gt;.type): moi diem phai toi duoc tu cong; sua lap.
  *
  * Chay (o HTBB/, sau GiaiMaMap va DungBoTileMoi):
  *   javac -encoding UTF-8 -sourcepath src -d build/tools tools/pokemon/GiaiMaMap.java tools/pokemon/VeMapMoi.java
@@ -49,11 +49,11 @@ import com.htbb.pokemon.DinhDangBanDo;
 public final class VeMapMoi {
 
     static final String VAO_CMAP = "server/cMap";
-    static final String RA_CMAP = "server/cMap_pokemon";
-    static final String RA_ANH = "docs/pokemon/map_moi";
-    static final String RA_QUAI = "server/map/pokemon_spawn/";
-    /** Ban do 0 cho client Unity: Resources/poke_map/ cua moi client (thuMucClient - htbb-client/pc + ClientUnity cu). */
-    static final String RA_J2ME = "tools/pokemon/map_j2me/";
+    static final String RA_CMAP = "server/cMap";
+    static final String RA_ANH = "du_lieu/map_moi";
+    static final String RA_QUAI = "server/map/";
+    /** Ban do 0 cho client Unity: Resources/poke_map/ cua moi client (thuMucClient - client_pc_ios/Assets). */
+    static final String RA_J2ME = "client_jar/res/";
     static final String THU_MUC_TILE = "server/map/pokemon_tile/";
     static final int O = 13;
     /** Chi so vat lieu san lat da "K" cua bo t (quang truong) - duong khong ve de len. */
@@ -88,7 +88,7 @@ public final class VeMapMoi {
         int id(final String t) {
             final Integer i = id.get(t);
             if (i == null) {
-                throw new IllegalStateException(bo + ": khong co tile '" + t + "' trong docs/pokemon/bang_tile_moi.csv");
+                throw new IllegalStateException(bo + ": khong co tile '" + t + "' trong du_lieu/bang_tile_moi.csv");
             }
             return i;
         }
@@ -112,7 +112,7 @@ public final class VeMapMoi {
     }
 
     static void napBoTile() throws Exception {
-        for (final String l : Files.readAllLines(new File("docs/pokemon/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8)) {
+        for (final String l : Files.readAllLines(new File("du_lieu/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8)) {
             final String[] p = l.split(",", 5);
             if (p.length < 4 || p[0].equals("bo_tile")) {
                 continue;
@@ -1172,7 +1172,7 @@ public final class VeMapMoi {
 
     /**
      * Bien/ho: o quai roi vao nuoc (hoac sat nuoc) duoc doi sang o dat gan nhat con trong - cung so
-     * luong, cung mau quai. Luoi moi ghi ra map/pokemon_spawn/map&lt;N&gt; (server doc khi bat che do).
+     * luong, cung mau quai. Luoi moi ghi ra map/map&lt;N&gt; (server doc khi bat che do).
      */
     static int doiChoQuai(final KeHoach k, final DauVao v, final int W) {
         if (v.quai == null || v.quai.w != k.w || v.quai.h != k.h) {
@@ -1927,7 +1927,7 @@ public final class VeMapMoi {
 
     /**
      * Bai co cao thiet ke: 5-30 o moi bai, uu tien doc duong (cach duong 2-7 o) va gan cum quai cu, roi xep
-     * tung con quai cu vao o co cao trong gan cho cu nhat (giu phan bo khu vuc/cap do). Luoi moi -> map/pokemon_spawn.
+     * tung con quai cu vao o co cao trong gan cho cu nhat (giu phan bo khu vuc/cap do). Luoi moi -> map/map<N>.
      */
     static void baiCoVaQuai(final KeHoach k, final DauVao v, final List<int[]> quaiCu, final long hat, final Random rd, final int T, final int G,
                             final int D) {
@@ -3229,7 +3229,7 @@ public final class VeMapMoi {
             }
             final Spec s = spec.get(id);
             if (s == null) {
-                throw new IllegalStateException("thieu thiet ke cho map " + id + " trong docs/pokemon/thiet_ke_map.csv");
+                throw new IllegalStateException("thieu thiet ke cho map " + id + " trong du_lieu/thiet_ke_map.csv");
             }
             final com.htbb.pokemon.BanDoHoenn.BanDo bd = com.htbb.pokemon.BanDoHoenn.lay(id);
             if (bd != null) {
@@ -3429,7 +3429,7 @@ public final class VeMapMoi {
 
     static Map<Integer, Spec> docSpec() throws Exception {
         final Map<Integer, Spec> m = new LinkedHashMap<Integer, Spec>();
-        for (final String l : dong("docs/pokemon/thiet_ke_map.csv")) {
+        for (final String l : dong("du_lieu/thiet_ke_map.csv")) {
             if (l.startsWith("id;")) {
                 continue;
             }
@@ -3447,7 +3447,7 @@ public final class VeMapMoi {
 
     static Map<Integer, List<Moc>> docMoc() throws Exception {
         final Map<Integer, List<Moc>> m = new HashMap<Integer, List<Moc>>();
-        for (final String l : dong("docs/pokemon/diem_co_dinh.csv")) {
+        for (final String l : dong("du_lieu/diem_co_dinh.csv")) {
             final String[] p = l.split(";", -1);
             final Moc c = new Moc();
             final int id = Integer.parseInt(p[0].trim());
@@ -3467,10 +3467,10 @@ public final class VeMapMoi {
         return m;
     }
 
-    /** docs/pokemon/map_cu/bang_den.json: {"id": [[x,y],...], ...} (GiaiMaMap sinh). */
+    /** du_lieu/bang_den.json: {"id": [[x,y],...], ...} (GiaiMaMap sinh). */
     static Map<Integer, List<int[]>> docDen() throws Exception {
         final Map<Integer, List<int[]>> m = new HashMap<Integer, List<int[]>>();
-        final File f = new File("docs/pokemon/map_cu/bang_den.json");
+        final File f = new File("du_lieu/bang_den.json");
         if (!f.isFile()) {
             System.out.println("CANH BAO: thieu " + f + " - chay GiaiMaMap truoc (can lop server)");
             return m;
@@ -3492,29 +3492,11 @@ public final class VeMapMoi {
         return m;
     }
 
-    /**
-     * Thu muc Resources/&lt;con&gt; cua MOI client can ghi: bien HTBB_CLIENT_ASSETS (chi thu muc do), hoac
-     * client PC chinh ../htbb-client/pc/Assets (canh HTBB/) + ban cu ClientUnity/Assets neu con
-     * (bo bang HTBB_CLIENT_CU=0). Giong tools/pokemon/duong_client.py.
-     */
+    /** Thu muc Resources/&lt;con&gt; cua client Unity: HTBB_CLIENT_ASSETS, mac dinh client_pc_ios/Assets. */
     static java.util.List<File> thuMucClient(final String con) {
         final java.util.List<File> ds = new java.util.ArrayList<File>();
         final String rieng = System.getenv("HTBB_CLIENT_ASSETS");
-        if (rieng != null && !rieng.isEmpty()) {
-            ds.add(new File(rieng, "Resources/" + con));
-            return ds;
-        }
-        final File pc = new File("../htbb-client/pc/Assets");
-        if (pc.isDirectory()) {
-            ds.add(new File(pc, "Resources/" + con));
-        }
-        final File cu = new File("client_pc_ios/ClientUnity/Assets");
-        if (cu.isDirectory() && !"0".equals(System.getenv("HTBB_CLIENT_CU"))) {
-            ds.add(new File(cu, "Resources/" + con));
-        }
-        if (ds.isEmpty()) {
-            ds.add(new File(cu, "Resources/" + con));
-        }
+        ds.add(new File(rieng != null && !rieng.isEmpty() ? new File(rieng) : new File("client_pc_ios/Assets"), "Resources/" + con));
         return ds;
     }
 

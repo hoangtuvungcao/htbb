@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Cot truyen nam 2 tren BAN DO HOENN (src/com/htbb/pokemon/BanDoHoenn.java, cMap_pokemon 43..62/160..165/280..282).
+"""Cot truyen nam 2 tren BAN DO HOENN (src/com/htbb/pokemon/BanDoHoenn.java, cMap 43..62/160..165/280..282).
 
 - DIA_DANH: ten dia danh Hoenn -> id ban do (noi them vao nv_chung.DIA_DANH_MAP).
 - CHUONG: chuong nam 2 (stt 53..104) -> (dia danh, chi so diem nhiem vu, ban do lay quai, {buoc: diem rieng}).
-  Diem = thu tu dong cua ban do trong docs/pokemon/diem_co_dinh.csv (phan "Vung Hoenn").
+  Diem = thu tu dong cua ban do trong du_lieu/diem_co_dinh.csv (phan "Vung Hoenn").
 - NAM2_THEM: chuong 81..104 (truoc la dan y) viet day du - cung dang nv_cot_truyen.NAM2.
 - chuan_buoc(): gan map=/diem= cho moi buoc (tru cau_ca: o cau lay tu diem_cau_ca.csv) va doi quai muc tieu
-  "q=+k" sang quai Hoenn THAT SU MOC tren ban do (map/pokemon_spawn/map<N>) gan cap L+k nhat.
+  "q=+k" sang quai Hoenn THAT SU MOC tren ban do (map/map<N>) gan cap L+k nhat.
 """
 import os
 
@@ -51,7 +51,7 @@ CHUONG = {
     103: ("Bờ biển Dewford", 0, {}), 104: ("Đỉnh Tháp Trời", 0, {}),
 }
 
-# Boss the gioi nam 2 (docs/pokemon/noi_dung_boss_the_gioi.csv template_nam2): tuan 48 = 129 (Kyogre &
+# Boss the gioi nam 2 (du_lieu/noi_dung_boss_the_gioi.csv template_nam2): tuan 48 = 129 (Kyogre &
 # Groudon). C74 nhan dung boss nam 2; C78 (Rayquaza 120 khong co trong vong nam 2) nhan boss bat ky.
 DOI_Q = {(74, "#130"): "#129", (78, "#120"): ""}
 
@@ -59,8 +59,8 @@ KIEU_CAN_QUAI = ("giet", "giet_tinh_anh", "thu_thap", "quan_sat", "thu_thach_gio
 
 
 def quai_tren_map(map_id):
-    """Cac id mau quai moc tren ban do (luoi map/pokemon_spawn/map<N>)."""
-    f = os.path.join(GOC, "server", "map", "pokemon_spawn", "map%d" % map_id)
+    """Cac id mau quai moc tren ban do (luoi map/map<N>)."""
+    f = os.path.join(GOC, "server", "map", "map%d" % map_id)
     if not os.path.isfile(f):
         return []
     b = open(f, "rb").read()

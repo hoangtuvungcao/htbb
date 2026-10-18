@@ -105,6 +105,8 @@ public final class Kiem {
         KiemBanDoOffline.chay();
         KiemCamTheoMay.chay();
         KiemDangKyTrongGame.chay();
+        KiemProxyTinCay.chay();
+        KiemBanMauVps.chay();
         KiemClientUnity.chay();
         KiemTatCaiTrang.chay();
         KiemTaiLieuCauHinh.chay();
@@ -172,11 +174,11 @@ public final class Kiem {
         KiemTangToc.chay();
         KiemTuDong.chay();
         KiemHoiSinh.chay(); // guc / hoi sinh (com.htbb.pokemon.HoiSinh)
-        KiemNgoaiHinh.chay(); // ngoai hinh trang bi tren than Pokemon (NGOAI_HINH_TRANG_BI.md)
+        KiemNgoaiHinh.chay(); // ngoai hinh trang bi tren than Pokemon (docs/thiet-ke-game.md)
         KiemThanhVien.chay();
-        KiemVongLapChung.chay(); // vong lap chung thay thread-moi-khu (TOI_UU_HIEU_NANG.md)
+        KiemVongLapChung.chay(); // vong lap chung thay thread-moi-khu (docs/kien-truc.md)
 
-        KiemChiSo.chay(); // chi so trang bi + chong lam phat (CHI_SO_TRANG_BI.md)
+        KiemChiSo.chay(); // chi so trang bi + chong lam phat (docs/thiet-ke-game.md)
         KiemAdminPanel.chay();
         final int ma = tongKet();
         // Khoi static cua Map tao thread nen JVM khong tu thoat - phai ep thoat.

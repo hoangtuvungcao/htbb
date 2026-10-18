@@ -14,18 +14,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Noi dung day du 1-2 nam (docs/pokemon/NOI_DUNG_DAY_DU.md): trang bi 11 bac, vat pham,
+ * Noi dung day du 1-2 nam (docs/thiet-ke-game.md): trang bi 11 bac, vat pham,
  * chieu, quai/Gym/boss, bang roi, su kien, trang tri, cua hang, che tao.
  *
  * VI SAO: tat ca sinh tu tools/pokemon/sinh_noi_dung.py (doc so tu sinh_sql_lau_dai.py) ra
- * sql/pokemon_noi_dung.sql + docs/pokemon/noi_dung_*.csv + docs/pokemon/web/*.csv. Sua so
+ * sql/pokemon_noi_dung.sql + du_lieu/noi_dung_*.csv + du_lieu/web/*.csv. Sua so
  * trong script ma quen chay lai, hoac chinh so pha ngan sach (bac moi manh hon 1,1 x bac cu
  * +15, gia ngoai tam thu nhap, do Hoan my roi tu quai thuong, chieu lech TTK...) -> test do.
  * Chi doc file, khong can CSDL.
  */
 public final class KiemNoiDung {
 
-    private static final String D = "../docs/pokemon/";
+    private static final String D = "../du_lieu/";
     private static final String F_SQL = "../sql/pokemon_noi_dung.sql";
     private static final String F_DUMP = "../sql/htbb_day_du.sql";
     private static final int ID_TU = 1001;
@@ -840,7 +840,7 @@ public final class KiemNoiDung {
                 loi.add(t + " rong");
             }
         }
-        Kiem.bang("docs/pokemon/web/*.csv chi cot nguoi choi (khong id/cong thuc)", "[]", loi.toString());
+        Kiem.bang("du_lieu/web/*.csv chi cot nguoi choi (khong id/cong thuc)", "[]", loi.toString());
     }
 
     // ------------------------------------------------------------------ sql

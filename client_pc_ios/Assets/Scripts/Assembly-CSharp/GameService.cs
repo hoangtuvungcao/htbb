@@ -378,10 +378,6 @@ public class GameService : Cmd_message
 
 	public void login(string username, string pass, string version)
 	{
-		if (KiemServer.chanDangNhap(username, pass, version))
-		{
-			return;
-		}
 		Message message = init(1);
 		try
 		{

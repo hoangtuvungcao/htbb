@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** Điều khoản thanh toán — BẢN NHÁP (HTBB/docs/pokemon/NAP_TIEN.md mục 9). Cần luật sư rà soát trước khi bật nạp. */
+/** Điều khoản thanh toán — BẢN NHÁP (docs/van-hanh.md). Cần luật sư rà soát trước khi bật nạp. */
 const tenSite = useAppConfig().htbb.tenSite
 const { data: site } = await useSite()
 useSeoMeta({ title: 'Điều khoản thanh toán', description: `Điều khoản thanh toán (bản nháp) của ${tenSite}.`, robots: 'noindex' })

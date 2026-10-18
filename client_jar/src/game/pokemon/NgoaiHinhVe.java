@@ -4,7 +4,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 /**
- * Ve NGOAI HINH TRANG BI quanh than Pokemon (HTBB docs/pokemon/NGOAI_HINH_TRANG_BI.md), ban 2 "it ma dep":
+ * Ve NGOAI HINH TRANG BI quanh than Pokemon (HTBB docs/thiet-ke-game.md), ban 2 "it ma dep":
  *  - TOI DA 2 phu kien: do doi dau (mu / no / vuong mien) + MOT mon "noi bat" nhat trong khan / vong / do cam /
  *    sau lung (do hiem roi bac cao nhat). Cac mon con lai chi gop vao vong sang duoi chan.
  *  - KHONG BAO GIO ve len mat: mu dat tren dinh dau (chong 1 px); do o co dat giua diem dau va tam than (gan

@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * bac; con thieu o cuoi thi goi dang nhap cmd 25 gui it dong hon so client can, client tra
  * key khong co roi CHET GIUA LUC VE.
  *
- * Trieu chung that da gap (xem PHAN J trong docs/HUONG_DAN_BUILD_VPS.md): bam vao Than Khi
+ * Trieu chung that da gap (xem PHAN J trong docs/trien-khai.md): bam vao Than Khi
  * la DO CLIENT, ma server KHONG GHI MOT DONG LOG NAO. Nguyen nhan cach trieu chung rat xa
  * nen truoc day mat rat lau moi lan ra: ban seed chi co 141 dong (id 0..140) trong khi
  * module Than Khi dung toi id 186.
@@ -89,7 +89,7 @@ public final class KiemBangThuocTinh {
 
         // Tai lieu phai con noi ro cai bay nay - go tai lieu di thi nguoi sau khong hieu
         // vi sao phep kiem nay ton tai.
-        final String tl = doc("../docs/HUONG_DAN_BUILD_VPS.md");
+        final String tl = doc("../docs/trien-khai.md");
         Kiem.dung("tai lieu con canh bao ve data_attribute", tl.contains("data_attribute"));
     }
 

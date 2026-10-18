@@ -58,8 +58,8 @@ public final class KiemIconPokemon {
 
         try {
             final String dg = doc("src/data/DataGame.java");
-            Kiem.dung("sendByteImg chi doi anh khi bat che do Pokemon",
-                    dg.contains("com.htbb.pokemon.CheDoPokemon.bat() ? com.htbb.pokemon.IconPokemon.doiAnh(idImg) : -1"));
+            Kiem.dung("sendByteImg doi anh Pokemon",
+                    dg.contains("final int iconPmd = com.htbb.pokemon.IconPokemon.doiAnh(idImg);"));
             Kiem.dung("nIconItem van la 866", dg.contains("nIconItem = 866;"));
 
             // So dong SQL sinh ra.
@@ -82,7 +82,7 @@ public final class KiemIconPokemon {
             }
             Kiem.bang("so dong UPDATE = SO_DONG dau file", Integer.valueOf(khai), Integer.valueOf(dong));
             Kiem.bang("so dong bang_icon.csv = so file icon", Integer.valueOf(soFile),
-                    Integer.valueOf(Files.readAllLines(new File("../docs/pokemon/bang_icon.csv").toPath(), StandardCharsets.UTF_8).size() - 1));
+                    Integer.valueOf(Files.readAllLines(new File("../du_lieu/bang_icon.csv").toPath(), StandardCharsets.UTF_8).size() - 1));
 
             // CSDL day du sau migration.
             final String db = doc("../sql/htbb_day_du.sql");
@@ -104,7 +104,7 @@ public final class KiemIconPokemon {
                 }
             }
             Kiem.bang("htbb_day_du co 924 data_item (ngoai dai noi dung 1001..1199 va 1201..1260)", Integer.valueOf(924), Integer.valueOf(goc));
-            final int soNoiDung = Files.readAllLines(new File("../docs/pokemon/noi_dung_item_moi.csv").toPath(),
+            final int soNoiDung = Files.readAllLines(new File("../du_lieu/noi_dung_item_moi.csv").toPath(),
                     StandardCharsets.UTF_8).size() - 1;
             Kiem.dung("dai noi dung 1001..1199 trong dump: 0 hoac du " + soNoiDung + " dong (co " + noiDung + ")",
                     noiDung == 0 || noiDung == soNoiDung);

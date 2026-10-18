@@ -2997,7 +2997,7 @@ public class Item extends Actor {
      * Nhu getCharSeal() nhung biet CHU SO HUU: Hoa Ky Lan (type 25) trong tui cua nguoi dang
      * "Ao hoa Hoa Ky Lan" co them dong dau "Đã ảo hóa - còn N ngày" (yeu cau 02/09/2026, di
      * cung so da cong o getInfoAtbItem(Char)). Chuoi nay la truong nameCharSeal ben client
-     * (ClientUnity ItemInInventory.cs): client ve moi dong "\n" rieng, va TU NOI chu " tạo" vao
+     * (client_pc_ios ItemInInventory.cs): client ve moi dong "\n" rieng, va TU NOI chu " tạo" vao
      * CUOI chuoi (hai cho khong kiem, hai cho bo qua neu chuoi co dau "-"), nen:
      *   - dat dong ao hoa o DAU, phan seal goc (ten nguoi tao...) giu o cuoi de " tạo" van dung
      *     cho no - cung ly do Than Khi dat "Không thể nâng cấp thêm" o dau (xem getCharSeal);

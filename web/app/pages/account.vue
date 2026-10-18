@@ -12,7 +12,7 @@ interface AccountInfo {
 const api = useApi()
 const auth = useAuth()
 const { data, error, refresh } = useAsyncData<AccountInfo>('htbb-account', () => api('/api/account'), { server: false })
-// Thành viên HTBB (theo tài khoản) — HTBB/docs/pokemon/THANH_VIEN.md.
+// Thành viên HTBB (theo tài khoản) — docs/van-hanh.md.
 const { data: tv } = useAsyncData<{ coBang: boolean, trangThai: { laThanhVien: boolean, hetHanMs: number | null } | null }>(
   'htbb-tv-cua-toi', () => api('/api/thanh-vien/cua-toi'), { server: false })
 const hanTv = computed(() => {

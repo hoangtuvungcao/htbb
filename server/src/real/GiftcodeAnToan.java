@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * He giftcode AN TOAN (yeu cau 17/10/2026; bat khi sv.lau_dai=1). Bang tob_giftcode (admin/web tao
  * ma) + tob_giftcode_log (moi tai khoan 1 lan / ma, PRIMARY KEY (ma, user_id)). Schema va cach web
- * dung: docs/pokemon/KE_HOACH_LAU_DAI_GD2.md muc "Giftcode an toan".
+ * dung: docs/thiet-ke-game.md muc "Giftcode an toan".
  *
  * Kiem o CHINH noi phat (muc 11), thu tu:
  *  1. chong do ma: tai khoan nhap sai 5 lan -> khoa 10 phut (cung voi gian cach Char.GIFTCODE_COOLDOWN_MS);

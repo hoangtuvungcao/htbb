@@ -12,8 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Vat pham tang toc + bo tran cap theo mua (18/10/2026, docs/pokemon/THIET_KE_LAU_DAI.md muc 1.4 / 1.8,
- * NAP_TIEN.md muc 3b): tran diem ngay/tuan chung ban cao cap + ban khoa, hieu ung ve / bua / uy thac, cap
+ * Vat pham tang toc + bo tran cap theo mua (18/10/2026, docs/thiet-ke-game.md / 1.8,
+ * docs/van-hanh.md): tran diem ngay/tuan chung ban cao cap + ban khoa, hieu ung ve / bua / uy thac, cap
  * toi da, whitelist cua hang luong, khoa noi dung theo cap + cot truyen thay vi theo ngay.
  */
 public final class KiemTangToc {
@@ -210,7 +210,7 @@ public final class KiemTangToc {
     }
 
     static void duLieu() throws Exception {
-        final String nv = new String(Files.readAllBytes(Paths.get("../docs/pokemon/nhiem_vu_moi.csv")), StandardCharsets.UTF_8);
+        final String nv = new String(Files.readAllBytes(Paths.get("../du_lieu/nhiem_vu_moi.csv")), StandardCharsets.UTF_8);
         Kiem.sai("nhiem vu: het khoa 'cach buoc truoc 7 ngay' (thay bang cap)", nv.contains("cach_buoc_truoc_ngay"));
         Kiem.sai("nhiem vu: khong con chu 'chờ tới ngày thứ'", nv.contains("chờ tới ngày thứ") || nv.contains("Mở vào ngày thứ"));
         Kiem.dung("huyen thoai: buoc sau can cap cao hon (HT-ZAP.2 cap 42)", nv.contains("HT-ZAP.2,5502,huyen_thoai,1,Mọi vùng,Huyền thoại: Zapdos,,2,")

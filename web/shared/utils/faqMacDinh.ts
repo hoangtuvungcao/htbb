@@ -6,7 +6,7 @@
 import { TEN_SITE } from './tenSite'
 import raw from '../data/cam-nang.json'
 
-const C = raw as { capDo: { capToiDa: number, tranCap: { cap: number }[], nangLuong: { phutNgay: number } } }
+const C = raw as { capDo: { capToiDa: number, nangLuong: { phutNgay: number } } }
 
 export const FAQ_MAC_DINH: { ten: string, hoi: { label: string, content: string }[] }[] = [
   {
@@ -27,7 +27,7 @@ export const FAQ_MAC_DINH: { ten: string, hoi: { label: string, content: string 
       { label: 'Nên chọn Pokémon khởi đầu nào?', content: 'Charmander cân bằng, Bulbasaur trâu và tấn công cao khi dồn điểm, Squirtle thủ chắc, Pichu đánh xa cơ động, Eevee linh hoạt với 8 nhánh tiến hoá. Không có lựa chọn sai — hãy chọn con bạn thích.' },
       { label: 'Có đổi được dòng Pokémon sau khi tạo không?', content: 'Không. Nhưng một tài khoản có thể tạo nhiều Pokémon để thử các dòng khác.' },
       { label: 'Vì sao tôi nhận ít EXP hơn sau vài giờ chơi?', content: `Đó là năng lượng huấn luyện: ${C.capDo.nangLuong.phutNgay / 60} giờ đầu mỗi ngày đủ 100%, sau đó giảm dần. Phần chưa dùng được tích lại cho hôm sau.` },
-      { label: 'Trần cấp là gì?', content: `Cấp tối đa ${C.capDo.capToiDa} mở dần theo mùa (khai trương: ${C.capDo.tranCap[0]?.cap}). Chạm trần thì EXP chuyển thành điểm tinh thông.` },
+      { label: 'Có giới hạn cấp không?', content: `Cấp tối đa là ${C.capDo.capToiDa}, mở cho mọi người ngay từ đầu — không có trần cấp theo mùa. Lên cấp chậm dần; đạt cấp ${C.capDo.capToiDa} thì EXP chuyển thành điểm tinh thông.` },
       { label: 'Khắc hệ có giống bản gốc không?', content: 'Cùng 18 hệ và cùng quan hệ khắc hệ, nhưng hệ số được làm dịu (tối đa ×2, không miễn nhiễm) vì bạn không đổi được Pokémon giữa trận.' },
     ],
   },

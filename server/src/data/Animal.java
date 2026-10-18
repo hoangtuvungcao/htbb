@@ -1385,7 +1385,7 @@ static byte[] addMoreBasic = new byte[]{0, 0, 0, 0, 0, 4, 3, 0, 6, 6, 6, 6, 6, 6
             // lo #2 loi.xlsx: KHONG gui createAnimalWearingMessage cho nguoi xung
             // quanh - client hieu goi nay la "mo cua so Trang bi thu", charID khac
             // nguoi nhan se hat man hinh ho sang xem trang bi cua nguoi hoa hinh (xem
-            // docs/skin-thu-cuoi.md muc 10). Day la loi da biet, bi copy nham tu
+            // docs/thiet-ke-game.md). Day la loi da biet, bi copy nham tu
             // doCuoiThu.java khi viet tinh nang hoa hinh - KHONG sua doCuoiThu.java
             // cung luc, do la bug rieng chua duoc yeu cau.
             MessageCreator.createMsgCharMonster(p, p);

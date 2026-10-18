@@ -5,7 +5,6 @@
 
 package real;
 
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.SatThuongHe;
 
 import data.Database;
@@ -73,14 +72,8 @@ public class BossSkelontonMoba extends Boss {
         dam *= cbatk.dam;
         dam -= def;
         dam = dam * (30 + UtilHTBB.random(80)) / 100;
-        if (CheDoPokemon.bat()) {
-            // Che do Pokemon (viec S4): khac he 18 he thay ngu hanh.
-            dam = SatThuongHe.apDung(dam, this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
-        } else if ((this.he + 2) % 5 == actor.he) {
-            dam += dam * 5 / 100;
-        } else if ((this.he + 3) % 5 == actor.he) {
-            dam -= dam * 5 / 100;
-        }
+        // Khac he: 18 he Pokemon.
+        dam = SatThuongHe.apDung(dam, this.hePokemon1(), actor.hePokemon1(), actor.hePokemon2());
 
         CharChienTruong c = MapChienTruongMoba.getCharChienTruong(actor.getName());
         if (this.map.isMapChienTruongMoba()) {

@@ -207,7 +207,7 @@ public final class NangCapLauDaiGame {
             long moi = Math.round(goc * (100 + pcDen) / 100.0);
             // Ban cu ep "+1 moi cap" (do cap thap van thay tang): goc doan lai tu so da ep nen troi dan - chi mang 10
             // len +15 thanh ~25 (x2,5) thay vi 16 (x1,55), thu 7 thanh 22. Bat gioi han chi so: KHONG ep, chi giu
-            // khong giam khi len cap (docs/pokemon/CHI_SO_TRANG_BI.md muc 1.5).
+            // khong giam khi len cap (docs/thiet-ke-game.md).
             if (den > tu && moi <= hien) {
                 moi = ChiSoTrangBiGame.bat() ? hien : hien + 1;
             }

@@ -1,7 +1,7 @@
 package game.pokemon;
 
 /**
- * Doi ten dia danh game goc sang dia danh Pokemon - ban J2ME cua ClientUnity TenMapPokemon.cs
+ * Doi ten dia danh game goc sang dia danh Pokemon - ban J2ME cua Unity TenMapPokemon.cs
  * (ban goc: HTBB src/com/htbb/pokemon/TenMapPokemon.java). Dung cho ten viet cung o client
  * (Tilemap); ten server gui (lenh 105) da duoc server doi san.
  */

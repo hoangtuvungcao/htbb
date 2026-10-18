@@ -1,6 +1,6 @@
 """Sinh code game cho bản APK Huyền Thoại Bảo Bối (client_apk/pokemon) từ code bản jar J2ME.
 
-    python -I port-j2me.py <client_jar/src> <client_jar/shared/mod> <thư mục ra> <BAN> <XAC_THUC 0|1>
+    python -I port-j2me.py <client_jar/src> <client_jar/shared/mod> <thư mục ra> <BAN>
 
 Bản jar (client_jar/src + client_jar/shared/mod) là NGUỒN DUY NHẤT của game Pokémon: APK biên dịch lại đúng code đó trên lớp
 tương thích MIDP (client_apk/pokemon/src/main/java/javax/microedition/...). Script này chỉ chép và vá vài chỗ
@@ -10,7 +10,7 @@ mà Android buộc phải khác:
   loader nên không thấy APK) -> MIDlet.moTaiNguyen (đọc assets = client_jar/res).
 - TField: chạm ô nhập mở bàn phím hệ thống Android (TextBox -> hộp nhập, gõ tiếng Việt) thay bàn phím ảo
   VirTualKeyB của bản jar.
-- PhienBan (build.sh của jar sinh): số bản + XAC_THUC (-88).
+- PhienBan (build.sh của jar sinh): số bản.
 
 Mỗi chỗ vá phải khớp đúng số lần mong đợi, lệch là dừng build (code jar đổi -> sửa lại mẫu ở đây).
 
@@ -269,8 +269,7 @@ def va_hd(tuong_doi, s, bao):
 
 
 def main():
-    src, mod, out, ban, xac_thuc = sys.argv[1:6]
-    xt = "true" if xac_thuc in ("1", "bat", "true") else "false"
+    src, mod, out, ban = sys.argv[1:5]
     va_rieng = {f: (a, b, n) for f, a, b, n in VA_RIENG}
     dem = 0
     da_va = set()
@@ -318,11 +317,11 @@ def main():
     os.makedirs(os.path.dirname(pb), exist_ok=True)
     open(pb, "w", encoding="utf-8").write(
         "package game.render.screen;\n\n/** Sinh bởi port-j2me.py (Gradle) - KHÔNG sửa tay. */\n"
-        "final class PhienBan {\n    static final int BAN = %d;\n    static final boolean XAC_THUC = %s;\n}\n"
-        % (int(ban), xt))
+        "final class PhienBan {\n    static final int BAN = %d;\n}\n"
+        % int(ban))
     for b in bao_hd:
         print("port-j2me: CANH BAO vá HD bỏ qua - " + b)
-    print("port-j2me: %d file -> %s (XAC_THUC=%s, vá HD %d/%d)" % (dem + 1, out, xt,
+    print("port-j2me: %d file -> %s (vá HD %d/%d)" % (dem + 1, out,
           len(VA_HD) - len(bao_hd), len(VA_HD)))
 
 

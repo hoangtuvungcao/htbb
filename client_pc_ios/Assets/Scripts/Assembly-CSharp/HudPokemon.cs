@@ -27,7 +27,7 @@ public static class HudPokemon
 
 	public static bool bat()
 	{
-		return PokeBody.CHE_DO_POKEMON && Main.isPC;
+		return Main.isPC;
 	}
 
 	// ------------------------------------------------------------------ chuột

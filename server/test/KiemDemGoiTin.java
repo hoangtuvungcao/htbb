@@ -126,8 +126,8 @@ public final class KiemDemGoiTin {
 
         // Tep co va jar thu khong duoc commit.
         final String gi = doc("../.gitignore");
-        Kiem.dung(".gitignore bo qua debug_goi_tin.txt", gi.contains("debug_goi_tin.txt"));
-        Kiem.dung(".gitignore bo qua jar thu htbb-server_TRUOC_2480c47_de_thu.jar", gi.contains("htbb-server_TRUOC_2480c47_de_thu.jar"));
+        Kiem.dung(".gitignore bo qua server/debug_goi_tin.txt (mau /server/*.txt)", gi.contains("\n/server/*.txt\n"));
+        Kiem.dung(".gitignore bo qua jar thu server/*_TRUOC_*.jar", gi.contains("\n/server/*_TRUOC_*.jar\n"));
     }
 
     private static int dem(final String s, final String mau) {

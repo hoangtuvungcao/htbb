@@ -1,8 +1,8 @@
 package game.pokemon;
 
 /**
- * Du lieu khung hinh cua 1 loai Pokemon - ban J2ME cua ClientUnity PokeDuLieu.cs (HTBB,
- * docs/pokemon/KE_HOACH_CHUYEN_DOI.md muc 7.1). Dinh dang (big-endian):
+ * Du lieu khung hinh cua 1 loai Pokemon - ban J2ME cua Unity PokeDuLieu.cs (HTBB,
+ * docs/kien-truc.md). Dinh dang (big-endian):
  * <pre>
  *   u8 phienBan = 1 hoac 2, u8 soDongTac = 6
  *   lap soDongTac lan: u16 rongKhung, u16 caoKhung, u8 soKhung, u8 thoiLuong[soKhung],

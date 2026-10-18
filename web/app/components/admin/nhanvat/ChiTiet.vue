@@ -244,7 +244,7 @@ const trangThai = computed(() => {
                 Nếu bạn không phải người khoá nó thì rất có thể server tự khoá: khi lưu Pokémon
                 thất bại (ví dụ hành trang quá dài so với sức chứa của cột <code>inven</code>),
                 khối bắt lỗi trong <code>Database.java</code> tự đặt <code>ban = 1</code>.
-                Xem <code>vps/sql-giftcode.md</code>, mục “CẠM BẪY ĐÃ NỔ MỘT LẦN”.
+                Xem <code>docs/van-hanh.md</code>, mục “Sự cố thường gặp” (Pokémon “biến mất”).
               </p>
               <p class="mt-1">
                 Mở khoá lấy lại được Pokémon, nhưng <em>không</em> lấy lại phần dữ liệu đã mất giữa lúc lưu hỏng.

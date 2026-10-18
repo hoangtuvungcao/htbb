@@ -1,6 +1,6 @@
 /**
  * THÀNH VIÊN HTBB — phần chạm database (bảng tv_thanh_vien, tv_nhat_ky của HTBB/sql/pokemon_thanh_vien.sql
- * + cau_hinh thanh_vien.* + nap_goi THANH_VIEN). Thiết kế: HTBB/docs/pokemon/THANH_VIEN.md.
+ * + cau_hinh thanh_vien.* + nap_goi THANH_VIEN). Thiết kế: docs/van-hanh.md.
  *
  * Thành viên theo TÀI KHOẢN. Cấp / gia hạn / thu hồi CHỈ qua tvCap / tvThuHoi (mua, hoàn tiền, admin,
  * hàng loạt) — mỗi lần một dòng tv_nhat_ky. Server game đọc tv_thanh_vien (nhớ 30 giây) và cau_hinh

@@ -6,7 +6,7 @@ import java.nio.file.Files;
 /**
  * Tim va doc ma nguon website HTBB-Web (Nuxt 4) tu bo kiem cua repo game.
  *
- * Website PHP cu (thu muc web/ cua repo nay) DA BO HAN (xem docs/pokemon/BO_WEB_PHP.md):
+ * Website PHP cu (thu muc web/ cua repo nay) DA BO HAN (xem docs/kien-truc.md):
  * khu quan tri, hang doi lenh web_lenh_nhan_vat, danh muc giftcode... gio nam o HTBB-Web.
  * Cac phep kiem "hop dong giua Java va web" vi vay doc tep cua HTBB-Web.
  *

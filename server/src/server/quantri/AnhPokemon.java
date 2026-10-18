@@ -23,11 +23,10 @@ import javax.imageio.ImageIO;
  * san (Poke Ball), khong bao gio nem loi. Co bo nho dem (moi anh doc dia mot lan).
  *
  * Thu tu tim chan dung theo so Pokedex:
- *   1. ClientUnity/Assets/Resources/poke/NNNN_cd.bytes (PNG 40x40 - chan dung client dung)
- *   2. ../htbb-client/pc/Assets/Resources/poke/NNNN_cd.bytes
- *   3. tools/pokemon/pmd_raw_icon/Portrait/NNNN.png
- *   4. khung dau cua tools/pokemon/pmd_raw/NNNN/Idle-Anim.png (kich thuoc khung doc tu AnimData.xml)
- *   5. Poke Ball ve bang Java2D.
+ *   1. client_pc_ios/Assets/Resources/poke/NNNN_cd.bytes (PNG 40x40 - chan dung client dung)
+ *   2. tools/pokemon/pmd_raw_icon/Portrait/NNNN.png
+ *   3. khung dau cua tools/pokemon/pmd_raw/NNNN/Idle-Anim.png (kich thuoc khung doc tu AnimData.xml)
+ *   4. Poke Ball ve bang Java2D.
  * Icon vat pham (thanh ben): tools/pokemon/pmd_raw_icon/Item/&lt;Ten&gt;.None.png, roi map/icon_pokemon/N.png.
  *
  * Thu muc goc: thu muc lam viec cua server (canh server.ini), hoac -Dhtbb.goc=...
@@ -102,10 +101,7 @@ public final class AnhPokemon {
             return null;
         }
         final String so = String.format("%04d", dex);
-        BufferedImage a = doc(tim("ClientUnity/Assets/Resources/poke/" + so + "_cd.bytes"));
-        if (a == null) {
-            a = doc(tim("htbb-client/pc/Assets/Resources/poke/" + so + "_cd.bytes"));
-        }
+        BufferedImage a = doc(tim("client_pc_ios/Assets/Resources/poke/" + so + "_cd.bytes"));
         if (a == null) {
             a = doc(tim("tools/pokemon/pmd_raw_icon/Portrait/" + so + ".png"));
         }

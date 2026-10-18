@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Thiet ke dai han (docs/pokemon/THIET_KE_LAU_DAI.md): du lieu sinh ra NHAT QUAN va mo
+ * Thiet ke dai han (docs/thiet-ke-game.md): du lieu sinh ra NHAT QUAN va mo
  * phong kinh te DAT muc tieu.
  *
  * VI SAO: bang nhiem vu (nhiem_vu_moi.csv), lich su kien, ThongSoLauDai.java va
@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
  */
 public final class KiemLauDai {
 
-    private static final String F_NV = "../docs/pokemon/nhiem_vu_moi.csv";
-    private static final String F_SK = "../docs/pokemon/su_kien_nam.csv";
+    private static final String F_NV = "../du_lieu/nhiem_vu_moi.csv";
+    private static final String F_SK = "../du_lieu/su_kien_nam.csv";
     private static final String F_SQL = "../sql/pokemon_lau_dai.sql";
     private static final String F_DUMP = "../sql/htbb_day_du.sql";
     private static final String F_XUAT = "../tools/pokemon/xuat_sql_day_du.sh";

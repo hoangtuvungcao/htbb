@@ -16,8 +16,8 @@
  * Biến môi trường:
  *   HTBB_CSP  = enforce (mặc định khi chạy thật) | report-only | off
  *   HTBB_HSTS = 1 bắt buộc gửi HSTS | 0 không bao giờ | (trống) tự động: chỉ khi chạy thật VÀ
- *               request đến qua HTTPS (X-Forwarded-Proto: https từ proxy tin cậy — Apache trong
- *               deploy/apache-htbb-web.conf đặt header này khi env HTTPS).
+ *               request đến qua HTTPS (X-Forwarded-Proto: https từ proxy tin cậy — nginx trong
+ *               vps/htbb-nginx.conf chuyển tiếp header của WAF).
  *   HTBB_SITE_URL chưa phải tên miền thật (trống / localhost / IP) -> mọi phản hồi có
  *               X-Robots-Tag: noindex, nofollow (cùng với robots.txt chặn hết và thẻ meta robots).
  * Header x-powered-by do Nuxt tự gắn bị gỡ ở server/plugins/bo-x-powered-by.ts.

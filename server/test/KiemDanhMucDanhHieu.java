@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 /**
  * Doi chieu HTBB-Web/shared/data/danh-muc-danh-hieu.json (tools/SinhDanhMucDanhHieu sinh; web doc
  * qua server/utils/giftcodeDanhHieu.gen.ts - truoc day la web/admin/inc/danh_muc_danh_hieu.php,
- * website PHP da bo, xem docs/pokemon/BO_WEB_PHP.md) voi data.DanhHieu.getName() VA
+ * website PHP da bo, xem docs/kien-truc.md) voi data.DanhHieu.getName() VA
  * voi mang availableTitles ghi cung trong src/data/DatabaseGiftCode.java.
  *
  * Hai dieu phai dung dong thoi:

@@ -1,4 +1,6 @@
 @echo off
+REM May VPS: dat bien HTBB_VPS (vd. setx HTBB_VPS root@ten-may) hoac khai Host htbb-vps trong %USERPROFILE%\.ssh\config
+if not defined HTBB_VPS set "HTBB_VPS=root@htbb-vps"
 setlocal enabledelayedexpansion
 title Tai DB tu VPS ve may nay
 cd /d "%~dp0"
@@ -21,7 +23,7 @@ REM  phep kiem doc lap: ma thoat cua ssh, VA dong "Dump completed"
 REM  o cuoi file. Thieu mot trong hai la coi nhu that bai.
 REM ============================================================
 
-set "VPS=root@180.93.57.30"
+set "VPS=%HTBB_VPS%"
 set "DICH=%USERPROFILE%\Desktop\htbb-db-backup"
 
 REM Dat NGOAI thu muc git: ban dump nang ~600MB va chua du lieu nguoi

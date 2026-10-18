@@ -3,7 +3,7 @@
  *
  * DỮ LIỆU: shared/data/bang-cap-do.json — SINH TỰ ĐỘNG, ĐỪNG SỬA TAY.
  *   Nguồn : real.LevelDetail.expMain / expRequire (src/real/LevelDetail.java, repo game HTBB).
- *   Công cụ: tools/SinhBangCapDo.java trong repo game, GHI THẲNG tệp JSON trên vào HTBB-Web.
+ *   Công cụ: tools/SinhBangCapDo.java (monorepo), GHI THẲNG tệp JSON trên vào web/.
  *   test/KiemBangCapDo.java bên repo game đối chiếu từng số với mảng Java (lệch một số là
  *   lệch cấp của người chơi) và ghim CAPDO_TOI_DA với data.LenhWeb.CAP_TOI_DA.
  *

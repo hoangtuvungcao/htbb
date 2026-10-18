@@ -17,7 +17,7 @@ import { join } from 'node:path'
  *
  * Đường dẫn tương đối so với HTBB_SERVER_DIR là đúng: util.Logger ghi bằng
  * `new FileWriter(tên, true)` với đường dẫn tương đối, nên nó rơi vào thư mục
- * làm việc của JVM — `WorkingDirectory=/opt/htbb` trong htbb-game.service.
+ * làm việc của JVM — `WorkingDirectory=/opt/htbb/server` trong htbb-game.service.
  *
  * ĐÃ BỎ khỏi danh sách vì đối chiếu với src/ thì chúng KHÔNG BAO GIỜ sinh ra:
  *   offline.txt     là file ĐẦU VÀO gõ tay (Database.java:11715), không liên quan
@@ -56,9 +56,19 @@ export const DOC_LOG_FILE: Readonly<Record<string, string>> = Object.freeze({
 /** Ba file server ĐỌC ngược lại như dữ liệu đầu vào, không phải log. */
 const DOC_LOG_KHONG_PHAI_LOG = ['trangan.txt', 'offline.txt', 'top.txt']
 
-/** Ghép thư mục server với một tên ĐÃ ĐƯỢC KIỂM (không bao giờ gọi với tên thô từ request). */
-export function docLogDuongDan(serverDir: string, ten: string): string {
-  return join(serverDir.replace(/[\\/]+$/, ''), ten)
+/**
+ * Ghép thư mục server với một tên ĐÃ ĐƯỢC KIỂM (không bao giờ gọi với tên thô từ request).
+ *
+ * Tên `log/...` (stdout systemd, log script VPS) KHÔNG nằm trong thư mục server: trên VPS chúng ở
+ * `/opt/htbb/logs` (cạnh `/opt/htbb/server`). Thư mục log = `HTBB_LOG_DIR`, mặc định `<serverDir>/../logs`.
+ */
+export function docLogDuongDan(serverDir: string, ten: string, logDir?: string): string {
+  const goc = serverDir.replace(/[\\/]+$/, '')
+  if (ten.startsWith('log/')) {
+    const thuMucLog = logDir || process.env.HTBB_LOG_DIR || join(goc, '..', 'logs')
+    return join(thuMucLog, ten.slice('log/'.length))
+  }
+  return join(goc, ten)
 }
 
 /**

@@ -116,7 +116,7 @@ class MapXuLyLenh {
                     p.sendMessage(m);
                     p.sendToNearPlayer(m);
                     m.cleanup();
-                    // Che do Pokemon (viec S5): tien hoa neu cap moi du moc. Dat TRUOC goi 3
+                    // Pokemon (viec S5): tien hoa neu cap moi du moc. Dat TRUOC goi 3
                     // ben duoi de goi 3 kem -90 da mang loai moi.
                     TienHoaPokemon.kiemTienHoaTheoCap(p);
                     SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
@@ -251,7 +251,7 @@ class MapXuLyLenh {
                 p.sendMessage(m);
                 p.sendToNearPlayer(m);
                 m.cleanup();
-                // Che do Pokemon (viec S5): ban sao thu hai cua khoi len cap - xem tren.
+                // Pokemon (viec S5): ban sao thu hai cua khoi len cap - xem tren.
                 TienHoaPokemon.kiemTienHoaTheoCap(p);
                     SoTayLauDai.khiLenCap(p, currentLevel, newlevel); // GD2 7.5 moc su pham (tat co: khong lam gi)
                 if (newlevel > p.lastLV) {
@@ -2054,7 +2054,7 @@ class MapXuLyLenh {
                             }
                         }
 
-                        if (!onPos && contentMap && com.htbb.pokemon.CheDoPokemon.bat()
+                        if (!onPos && contentMap
                                 && map.dungCanhCong(player, toMapID, toTX, toTY)) {
                             onPos = true; // vung chu nhat goc lech voi ban do Pokemon: xem Map.dungCanhCong
                         }

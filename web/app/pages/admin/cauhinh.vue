@@ -213,7 +213,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
         </form>
       </UCard>
 
-      <!-- ============ Vận Tiêu ============ -->
+      <!-- ============ Giao hàng ============ -->
       <UCard>
         <template #header>
           <h3 class="font-semibold text-highlighted">
@@ -257,7 +257,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
             </h4>
             <p class="text-sm text-muted">
               Hệ số dạng "x lần" — 1 = giữ nguyên gốc, 2 = gấp đôi. Hai hệ số NHÂN VỚI
-              NHAU: EXP cuối = EXP gốc × hệ số chung × hệ số theo màu. Chỉ áp dụng khi cấp mở tiêu dưới 50,
+              NHAU: EXP cuối = EXP gốc × hệ số chung × hệ số theo màu. Chỉ áp dụng khi cấp nhận hàng dưới 50,
               hoặc màu Trắng/Xanh/Đỏ (Hoàn Mỹ/Vàng/Tím từ cấp 50 dùng công thức riêng ở phần 3).
             </p>
             <UFormField label="Hệ số chung (x...)" class="max-w-52">
@@ -356,7 +356,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
         </form>
       </UCard>
 
-      <!-- ============ Chiếm thành ============ -->
+      <!-- ============ Chiếm Gym ============ -->
       <UCard>
         <template #header>
           <h3 class="font-semibold text-highlighted">
@@ -443,7 +443,7 @@ function doiThu(ma: string, bat: boolean | 'indeterminate') {
         </template>
         <form class="space-y-4" @submit.prevent="luu('luu_exp_phu', f.expPhu)">
           <div class="flex flex-wrap gap-x-8 gap-y-3">
-            <USwitch v-model="f.expPhu.expVantieu" label="EXP giao tiêu cá nhân" />
+            <USwitch v-model="f.expPhu.expVantieu" label="EXP giao hàng cá nhân" />
             <USwitch v-model="f.expPhu.luckyExp" label="EXP trong Rương May Mắn (Bạc & Vàng)" />
             <USwitch v-model="f.expPhu.expQua" label="EXP cây ăn quả" />
           </div>

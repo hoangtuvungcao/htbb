@@ -15,7 +15,7 @@ import java.util.TreeMap;
  *   1. vao o vat the ke ben (16 px)               -> server phai TRA vi tri cu (CharCapNhat.doPlayerMove: canMove)
  *   2. NHAY qua tuong 1 o toi o di duoc phia sau  -> phai bi tra ve (Char.checkToPoint, buoc &lt;= 50 px)
  *   3. buoc hop le sang o di duoc ke ben          -> phai duoc nhan (khong bi tra ve)
- * Kieu o lay tu cMap_pokemon/&lt;id&gt; + &lt;bo&gt;.type (cung tep server doc). Ten tile tu docs/pokemon/bang_tile_moi.csv.
+ * Kieu o lay tu cMap/&lt;id&gt; + &lt;bo&gt;.type (cung tep server doc). Ten tile tu du_lieu/bang_tile_moi.csv.
  *
  * Chay (o HTBB/, server thu co sv.server=0 hoac tai khoan GM):
  *   javac -d build/kiem_tai tools/pokemon/kiem_tai/BotTai.java tools/pokemon/kiem_tai/BotVaCham.java
@@ -58,7 +58,7 @@ public class BotVaCham extends BotTai {
 
     static String[] ten(final String bo) throws Exception {
         final List<String> d = new ArrayList<>();
-        for (final String l : Files.readAllLines(new File("docs/pokemon/bang_tile_moi.csv").toPath())) {
+        for (final String l : Files.readAllLines(new File("du_lieu/bang_tile_moi.csv").toPath())) {
             final String[] p = l.split(",", 5);
             if (p[0].equals(bo)) {
                 d.add(p[2]);
@@ -162,8 +162,8 @@ public class BotVaCham extends BotTai {
     void kiemMap(final int id, final int soMau) throws Exception {
         final String bo = id > 200 ? "t_thanh" : id < 110 ? "t" : "t_hang";
         final String[] tn = ten(bo);
-        final byte[] k = Files.readAllBytes(new File("server/cMap_pokemon/" + bo + ".type").toPath());
-        final byte[] b = Files.readAllBytes(new File("server/cMap_pokemon/" + id).toPath());
+        final byte[] k = Files.readAllBytes(new File("server/cMap/" + bo + ".type").toPath());
+        final byte[] b = Files.readAllBytes(new File("server/cMap/" + id).toPath());
         final int w = b[0] & 255, h = b[1] & 255;
         final int[] t = new int[w * h];
         for (int i = 0; i < w * h; i++) {

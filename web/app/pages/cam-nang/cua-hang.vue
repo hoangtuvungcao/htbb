@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** Cửa hàng & chế tạo — docs/pokemon/web/cua_hang.csv, che_tao.csv (cam-nang-noi-dung.json). */
+/** Cửa hàng & chế tạo — du_lieu/web/cua_hang.csv, che_tao.csv (cam-nang-noi-dung.json). */
 const CH = CAM_NANG_ND.cuaHang
 const MO_TA: Record<string, string> = {
   'Chansey (thuốc)': 'Ở Trung tâm Pokémon mỗi thị trấn. Bán thuốc hồi máu, Ether, thuốc chữa trạng thái, thuốc tăng cường X.',

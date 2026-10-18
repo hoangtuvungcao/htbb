@@ -20,7 +20,7 @@ public final class KiemCamTheoMay {
 
     private static final String F_LOGIN = "src/real/cmd/LoginHandler.java";
     private static final String F_CAM = "src/data/CamTheoMay.java";
-    private static final String F_CLIENT = "../client_pc_ios/ClientUnity/Assets/Scripts/Game/GameService.cs";
+    private static final String F_CLIENT = "../client_pc_ios/Assets/Scripts/Assembly-CSharp/GameService.cs";
 
     public static void chay() {
         kiemLamSach();
@@ -161,10 +161,14 @@ public final class KiemCamTheoMay {
         }
         final String than = client.substring(mo, dong);
 
+        // Client that (client_pc_ios) gui KiemServer.maMay(): ma ngau nhien luu PlayerPrefs, KHONG BAO GIO null.
         Kiem.dung("client CO gui ma may trong goi dang nhap",
-                than.contains("writeUTF(Canvas.IMEI"));
-        Kiem.dung("co chan null (writeUTF(null) se lam hong ca goi dang nhap)",
-                than.contains("Canvas.IMEI ?? \"\""));
+                than.contains("writeUTF(KiemServer.maMay())"));
+        final String ks = doc(F_CLIENT.replace("GameService.cs", "KiemServer.cs"));
+        final int moMa = ks.indexOf("public static string maMay()");
+        final String thanMa = moMa < 0 ? "" : ks.substring(moMa, Math.min(ks.length(), moMa + 900));
+        Kiem.dung("co chan null (writeUTF(null) se lam hong ca goi dang nhap): maMay luon tra chuoi",
+                moMa >= 0 && !thanMa.contains("return null") && thanMa.contains("PlayerPrefs.GetString(\"kpahmay\", string.Empty)"));
 
         // Ma may phai la lenh ghi CUOI CUNG.
         // Lay lenh ghi cuoi cung roi xem no ghi gi — KHONG so vi tri cua
@@ -173,7 +177,7 @@ public final class KiemCamTheoMay {
         final int viTriGhiCuoi = than.lastIndexOf("writer().write");
         final String ghiCuoi = (viTriGhiCuoi < 0) ? ""
                 : than.substring(viTriGhiCuoi, Math.min(than.length(), viTriGhiCuoi + 60));
-        Kiem.dung("ma may la lenh ghi CUOI CUNG cua goi", ghiCuoi.contains("Canvas.IMEI"));
+        Kiem.dung("ma may la lenh ghi CUOI CUNG cua goi", ghiCuoi.contains("KiemServer.maMay()"));
 
         // Dem so lenh ghi ben client va so lenh doc ben server — phai bang nhau.
         final String server = boChuThich(doc(F_LOGIN));

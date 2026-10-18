@@ -1,7 +1,7 @@
 package com.htbb.pokemon;
 
 /**
- * Thang PvP mua (THIET_KE_LAU_DAI.md muc 7.4): Elo, bac Poke -> Great -> Ultra -> Master,
+ * Thang PvP mua (docs/thiet-ke-game.md): Elo, bac Poke -> Great -> Ultra -> Master,
  * ghep tran theo dai 10 cap, reset mem moi 13 tuan (giu 50% phan tren muc goc). Lop THUAN.
  */
 public final class ThangPvp {

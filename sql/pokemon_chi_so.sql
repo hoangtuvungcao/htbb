@@ -1,4 +1,4 @@
--- MO HINH CHI SO POKEMON + NGAN SACH TRANG BI (docs/pokemon/CHI_SO_TRANG_BI.md).
+-- MO HINH CHI SO POKEMON + NGAN SACH TRANG BI (docs/thiet-ke-game.md).
 -- SINH BOI tools/pokemon/SinhSqlChiSo.java tu com.htbb.pokemon.ChiSoTrangBi + NganSachTrangBi - KHONG SUA TAY.
 -- IDEMPOTENT: chay lai bao nhieu lan cung ra cung ket qua. Chi THEM/DOI nghia, khong xoa dong nao.
 -- Phan 1: data_attribute - ten nguoi choi doc, don vi (ispercent), mau, mo ta; xoa namein (tieng Indonesia).

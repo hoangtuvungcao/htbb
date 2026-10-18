@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Co {@code sv.nap_tien} - he thong nap tien KHONG lam phat, KHONG tra tien de manh hon
- * (docs/pokemon/NAP_TIEN.md). MOI cho re nhanh cua nap tien doc qua {@link #bat()}.
+ * (docs/van-hanh.md). MOI cho re nhanh cua nap tien doc qua {@link #bat()}.
  *
  * FAIL CLOSED: nap tien chi BAT khi {@code sv.nap_tien=1} VA {@code sv.lau_dai=1}. Ly do:
  * khi tat thiet ke dai han thi game cu van ban do co chi so bang luong (shop dac biet), van
@@ -56,7 +56,7 @@ public final class NapTien {
         }
         if (!LauDai.bat()) {
             return "NAP TIEN -> TAT (CANH BAO: sv.nap_tien=1 nhung sv.lau_dai=0 - nap chi chay khi bat ca"
-                    + " thiet ke dai han, xem docs/pokemon/NAP_TIEN.md muc 1)";
+                    + " thiet ke dai han, xem docs/van-hanh.md)";
         }
         return "NAP TIEN -> BAT (sql/pokemon_nap_tien.sql phai da chay; web HTBB_NAP_BAT=true)";
     }

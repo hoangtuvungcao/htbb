@@ -21,11 +21,6 @@ public static class UiPokemon
 
 	private const int K = 2;
 
-	public static bool bat()
-	{
-		return PokeBody.CHE_DO_POKEMON;
-	}
-
 	// ------------------------------------------------------------------ vẽ thô ở cỡ K lần
 
 	private static int thut(int r, int i)

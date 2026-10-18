@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `web_media` (
   UNIQUE KEY `uk_ten_file` (`ten_file`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Lich su kien 52 tuan (hat giong: HTBB/docs/pokemon/su_kien_nam.csv, nut "Nhap tu CSV").
+-- Lich su kien 52 tuan (hat giong: HTBB/du_lieu/su_kien_nam.csv, nut "Nhap tu CSV").
 CREATE TABLE IF NOT EXISTS `web_su_kien_lich` (
   `tuan`        int(11)       NOT NULL,
   `thang`       int(11)       NOT NULL DEFAULT 1,

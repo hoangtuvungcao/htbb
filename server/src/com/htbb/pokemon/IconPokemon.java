@@ -8,7 +8,7 @@ package com.htbb.pokemon;
  *  - Cot DB (data_item.xstart): sql/pokemon_icon_vat_pham.sql dat thang 14000+n.
  *  - Dai anh KHONG co cot DB (client tu cong 5500/6500/7500/8000/8200 vao chi so 1 byte):
  *    {@link #doiAnh} doi chi so cu -> n theo bang sinh IconPokemonBang, DataGame.sendByteImg
- *    goi khi bat che do Pokemon. Tat che do thi van ra hinh goc cu.
+ *    goi.
  *
  * Dai rieng vi nIconItem = 866 bi khoa (test KiemSkinThuCuoi) va icon cu dung chung giua
  * nhieu vat pham. Truoc 14000 la dai skin linh thu (13000..13005), sendByteImg khong co dai

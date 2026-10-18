@@ -1,7 +1,7 @@
 /**
  * Webhook Casso (https://casso.vn) v2 — ký HMAC-SHA512 ở header X-Casso-Signature (t=..,v1=..)
  * bằng HTBB_CASSO_WEBHOOK_SECRET (biến môi trường máy chủ). Sai chữ ký / lệch giờ > 5 phút = 401.
- * ĐỐI CHIẾU tài liệu Casso hiện hành trước khi bật (HTBB/docs/pokemon/NAP_TIEN.md mục 6).
+ * ĐỐI CHIẾU tài liệu Casso hiện hành trước khi bật (docs/van-hanh.md).
  * Thân gồm một (v2) hoặc nhiều (v1) giao dịch — xử lý từng cái qua napXuLyGiaoDich.
  */
 export default defineEventHandler(async (event) => {

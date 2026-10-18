@@ -1,6 +1,5 @@
 package real;
 
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.HoSoLauDai;
 import com.htbb.pokemon.NgoaiHinh;
 import io.Message;
@@ -8,7 +7,7 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Noi NGOAI HINH TRANG BI (com.htbb.pokemon.NgoaiHinh) vao game. Thiet ke: docs/pokemon/NGOAI_HINH_TRANG_BI.md.
+ * Noi NGOAI HINH TRANG BI (com.htbb.pokemon.NgoaiHinh) vao game. Thiet ke: docs/thiet-ke-game.md.
  *
  *   - {@link #tao}: goi -102 cua mot nhan vat; TienHoaPokemon.taoPokeThan treo no cuoi chuoi -90 -> -93 -> -94,
  *     nen moi lan server gui thong tin nhan vat (vao tam nhin, mac/thao do, goi 3 cua chinh minh) la co.
@@ -92,9 +91,9 @@ public final class NgoaiHinhGame {
         return NgoaiHinh.tinh(type, cap, mau, plus, thoiTrang, mu, matNa, canh, an(ch));
     }
 
-    /** -102 cua {@code ch}; null khi tat che do Pokemon hoac loi. */
+    /** -102 cua {@code ch}; null khi loi. */
     public static Message tao(final Char ch) {
-        if (!CheDoPokemon.bat() || ch == null) {
+        if (ch == null) {
             return null;
         }
         try {
@@ -110,7 +109,7 @@ public final class NgoaiHinhGame {
 
     /** Gui -102 cho chinh minh + nguoi o gan neu ngoai hinh doi so voi lan gui truoc (vd vua nang cap +N). */
     public static void guiNeuDoi(final Char p) {
-        if (!CheDoPokemon.bat() || p == null || p.isBot != -1) {
+        if (p == null || p.isBot != -1) {
             return;
         }
         try {
@@ -157,10 +156,10 @@ public final class NgoaiHinhGame {
 
     /**
      * Khoi ngoai hinh cuoi goi 13 (man chon Pokemon): dex, shiny, giai doan tien hoa + ngoai hinh tung nhan vat
-     * (doc lai tob_char: dex, shiny, class, lastLv, equip, pInfo). Tat che do Pokemon / loi: khong ghi gi.
+     * (doc lai tob_char: dex, shiny, class, lastLv, equip, pInfo). Loi: khong ghi gi.
      */
     public static void ghiKhoiDanhSach(final java.io.DataOutputStream dos, final java.util.List<data.CharData> ds) {
-        if (!CheDoPokemon.bat() || ds == null || ds.isEmpty()) {
+        if (ds == null || ds.isEmpty()) {
             return;
         }
         try {

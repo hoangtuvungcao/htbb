@@ -112,7 +112,7 @@ public final class ChuyenDoiLauDai {
             DatabaseLauDai.ghiKhoa(K_DANG, lan + ":" + huong);
         }
         // Bang moi 1..100 (cap > 91 chi co khi da qua ngay 365). Doi NGUOC ve bang cu: cap > 91 ve 91
-        // (bang cu dung o 91) - xem KE_HOACH_LAU_DAI_GD2.md "Bat / tat co".
+        // (bang cu dung o 91) - xem docs/thiet-ke-game.md "Bat / tat co".
         // Chieu cu -> moi: bang moi phien hien tai. Chieu moi -> cu: bang moi PHIEN nhan vat dang o (co the la phien cu).
         final int phienMoi = MOI.equals(huong) ? CapDoLauDai.PHIEN_BANG : phien();
         final long[] mainMoi = CapDoLauDai.expMain(CapDoLauDai.CAP_BANG, phienMoi);

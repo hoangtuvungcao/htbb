@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 public final class KiemXoaVinhVien {
 
     private static final String F_LENHWEB = "src/data/LenhWeb.java";
-    /** HTBB-Web (thay website PHP da bo - docs/pokemon/BO_WEB_PHP.md). */
+    /** HTBB-Web (thay website PHP da bo - docs/kien-truc.md). */
     private static final String F_LENH_TS = "server/utils/lenhNhanVat.ts";
     private static final String F_NHANVAT = "server/api/admin/nhanvat/[id]/xoa.post.ts";
     private static final String F_TAIKHOAN = "server/api/admin/taikhoan/[id].post.ts";

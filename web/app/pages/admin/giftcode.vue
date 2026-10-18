@@ -506,7 +506,7 @@ const cotLog: TableColumn<DongLog>[] = [
                 <li>· Cột <code>expire</code> trong bảng không có tác dụng gì cả; muốn hết hạn thì tự bấm “Tắt”.</li>
                 <li>
                   · Mã cho quá nhiều món một lúc dễ làm hành trang phình to; trước đây từng có Pokémon
-                  bị server tự khoá vì lưu hỏng. Xem <code>vps/sql-giftcode.md</code>.
+                  bị server tự khoá vì lưu hỏng. Xem <code>docs/van-hanh.md</code> (mục Giftcode).
                 </li>
               </ul>
             </template>

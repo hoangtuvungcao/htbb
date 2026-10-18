@@ -1,6 +1,6 @@
 
 /// <summary>
-/// Ve NGOAI HINH TRANG BI quanh than Pokemon (HTBB docs/pokemon/NGOAI_HINH_TRANG_BI.md), ban PC cua
+/// Ve NGOAI HINH TRANG BI quanh than Pokemon (HTBB docs/thiet-ke-game.md), ban PC cua
 /// game.pokemon.NgoaiHinhVe (jar):
 /// ban 2 "it ma dep":
 ///  - TOI DA 2 phu kien: do doi dau (mu / no / vuong mien) + MOT mon "noi bat" nhat trong khan / vong / do cam /

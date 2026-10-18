@@ -1,4 +1,3 @@
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.DaTienHoa;
 import com.htbb.pokemon.GoiPokemon;
 import com.htbb.pokemon.HePokemon;
@@ -15,14 +14,13 @@ import java.nio.file.Paths;
 
 /**
  * Kiem thu phan SERVER cua che do Pokemon (giai doan 2 + I2 trong
- * docs/pokemon/KE_HOACH_CHUYEN_DOI.md): co che_do_pokemon, he so khac he trong sat
- * thuong, doi he ve ngu hanh cu khi gui client, ghi byte lenh -90/-91/-92, da tien
- * hoa Eevee. Them vai phep doi chieu ma nguon de chot "tat co = y nhu cu".
+ * docs/kien-truc.md): game luon la Pokemon (khoa cu sv.che_do_pokemon bi bo qua), he so khac
+ * he trong sat thuong, doi he ve ngu hanh cu khi gui client, ghi byte lenh -90/-91/-92, da tien
+ * hoa Eevee.
  */
 public final class KiemPokemonServer {
 
     public static void chay() {
-        final boolean coCu = CheDoPokemon.bat();
         try {
             kiemCo();
             kiemSatThuong();
@@ -32,45 +30,17 @@ public final class KiemPokemonServer {
             kiemMaNguon();
         } catch (final Exception e) {
             Kiem.dung("khong nem loi: " + e, false);
-        } finally {
-            CheDoPokemon.dat(coCu);
         }
     }
 
     private static void kiemCo() {
-        Kiem.nhom("com.htbb.pokemon.CheDoPokemon");
-        // Co doc som tu server.ini (real.Map nap ban do gui client truoc khi TeamServer doc cau hinh):
-        // gia tri ban dau = dong sv.che_do_pokemon trong server.ini, thieu tep/dong -> TAT.
-        boolean trongTep = false;
-        try (java.io.InputStream in = java.nio.file.Files.newInputStream(java.nio.file.Paths.get("server.ini"))) {
-            final java.util.Properties p = new java.util.Properties();
-            p.load(in);
-            trongTep = CheDoPokemon.docGiaTri(p.getProperty(CheDoPokemon.KHOA));
-        } catch (Exception e) {
-            trongTep = false;
-        }
-        Kiem.bang("mac dinh = server.ini (thieu dong -> TAT nhu game goc)", trongTep, CheDoPokemon.bat());
-        Kiem.dung("\"1\" -> bat", CheDoPokemon.docGiaTri("1"));
-        Kiem.dung("\" 1 \" -> bat", CheDoPokemon.docGiaTri(" 1 "));
-        Kiem.sai("\"0\" -> tat", CheDoPokemon.docGiaTri("0"));
-        Kiem.sai("thieu dong (null) -> tat", CheDoPokemon.docGiaTri(null));
-        Kiem.sai("rac -> tat", CheDoPokemon.docGiaTri("yes"));
-        Kiem.bang("ten khoa", "sv.che_do_pokemon", CheDoPokemon.KHOA);
-
-        CheDoPokemon.dat(false);
+        Kiem.nhom("Game luon Pokemon - doi he gui client (HePokemon.heGuiClient)");
+        Kiem.bang("heGuiClient(Lua) = Hoa(2)", Byte.valueOf((byte) 2), Byte.valueOf(HePokemon.heGuiClient(HePokemon.LUA)));
         for (int he = -1; he <= 17; he++) {
-            Kiem.bang("tat co: heGuiClient(" + he + ") giu nguyen", Byte.valueOf((byte) he),
-                    Byte.valueOf(CheDoPokemon.heGuiClient((byte) he)));
+            final int g = HePokemon.heGuiClient((byte) he);
+            Kiem.dung("heGuiClient(" + he + ") trong 0..4", g >= 0 && g <= 4);
         }
-        CheDoPokemon.dat(true);
-        Kiem.dung("dat(true) -> bat", CheDoPokemon.bat());
-        Kiem.bang("bat co: heGuiClient(Lua) = Hoa(2)", Byte.valueOf((byte) 2),
-                Byte.valueOf(CheDoPokemon.heGuiClient(HePokemon.LUA)));
-        for (int he = -1; he <= 17; he++) {
-            final int g = CheDoPokemon.heGuiClient((byte) he);
-            Kiem.dung("bat co: heGuiClient(" + he + ") trong 0..4", g >= 0 && g <= 4);
-        }
-        CheDoPokemon.dat(false);
+        Kiem.sai("khong con lop CheDoPokemon", new java.io.File("src/com/htbb/pokemon/CheDoPokemon.java").exists());
     }
 
     private static void kiemSatThuong() {
@@ -212,18 +182,18 @@ public final class KiemPokemonServer {
     }
 
     private static void kiemMaNguon() {
-        Kiem.nhom("Che do Pokemon - tat co giu nguyen ma cu");
+        Kiem.nhom("Chi con nhanh Pokemon trong ma nguon");
         final String chiSo = doc("src/real/CharChiSo.java");
         final String live = doc("src/real/LiveActor.java");
-        Kiem.dung("CharChiSo con khoi ngu hanh cu (nhanh tat co)", chiSo.contains("} else if ((self.he + 2) % 5 == actor.he) {"));
-        Kiem.dung("CharChiSo re nhanh qua CheDoPokemon.bat()", chiSo.contains("if (CheDoPokemon.bat()) {"));
-        Kiem.dung("LiveActor con khoi ngu hanh cu (nhanh tat co)", live.contains("} else if ((this.he + 2) % 5 == actor.he) {"));
+        Kiem.sai("CharChiSo khong con khoi ngu hanh cu", chiSo.contains("(self.he + 2) % 5 == actor.he"));
+        Kiem.sai("LiveActor khong con khoi ngu hanh cu", live.contains("(this.he + 2) % 5 == actor.he"));
         Kiem.dung("LiveActor co truong he2 mac dinh -1", live.contains("public byte he2 = -1;"));
 
         final String sv = doc("src/server/TeamServer.java");
-        Kiem.dung("TeamServer doc sv.che_do_pokemon", sv.contains("p.getProperty(\"sv.che_do_pokemon\")"));
+        Kiem.sai("TeamServer khong doc sv.che_do_pokemon (dong cu trong server.ini/CSDL bi bo qua)",
+                sv.contains("p.getProperty(\"sv.che_do_pokemon\")"));
         final String tmpl = doc("../vps/server.ini.tmpl");
-        Kiem.dung("ban mau dat sv.che_do_pokemon=1", tmpl.contains("\nsv.che_do_pokemon=1\n"));
+        Kiem.sai("ban mau khong con sv.che_do_pokemon", tmpl.contains("sv.che_do_pokemon"));
 
         final String mig = doc("../sql/them_cot_pokemon.sql");
         Kiem.dung("migration: tob_char.dex SMALLINT DEFAULT 0", mig.contains("`dex`   SMALLINT NOT NULL DEFAULT 0"));

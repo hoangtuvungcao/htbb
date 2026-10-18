@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * SINH sql/pokemon_chi_so.sql + docs/pokemon/chi_so_trang_bi.csv (docs/pokemon/CHI_SO_TRANG_BI.md).
+ * SINH sql/pokemon_chi_so.sql + du_lieu/chi_so_trang_bi.csv (docs/thiet-ke-game.md).
  *
  * NGUON: com.htbb.pokemon.ChiSoTrangBi (ten / don vi / mo ta 198 dong chi so) + com.htbb.pokemon.NganSachTrangBi
  * (ngan sach o / cap) + bang data_item trong sql/htbb_day_du.sql (chi lay type + level cua dong, KHONG lay chi so,
@@ -31,7 +31,7 @@ public final class SinhSqlChiSo {
     static final String DUMP = "sql/htbb_day_du.sql";
     static final String SEED = "sql/gamedb7_clean.sql";
     static final String RA_SQL = "sql/pokemon_chi_so.sql";
-    static final String RA_CSV = "docs/pokemon/chi_so_trang_bi.csv";
+    static final String RA_CSV = "du_lieu/chi_so_trang_bi.csv";
 
     public static void main(final String[] args) throws Exception {
         final boolean kiem = args.length > 0 && "--kiem".equals(args[0]);
@@ -52,7 +52,7 @@ public final class SinhSqlChiSo {
     /** Dong data_item: {id, type, level, atb0..9}. */
     public static String sinhSql(final List<int[]> items) {
         final StringBuilder b = new StringBuilder();
-        b.append("-- MO HINH CHI SO POKEMON + NGAN SACH TRANG BI (docs/pokemon/CHI_SO_TRANG_BI.md).\n");
+        b.append("-- MO HINH CHI SO POKEMON + NGAN SACH TRANG BI (docs/thiet-ke-game.md).\n");
         b.append("-- SINH BOI tools/pokemon/SinhSqlChiSo.java tu com.htbb.pokemon.ChiSoTrangBi + NganSachTrangBi - KHONG SUA TAY.\n");
         b.append("-- IDEMPOTENT: chay lai bao nhieu lan cung ra cung ket qua. Chi THEM/DOI nghia, khong xoa dong nao.\n");
         b.append("-- Phan 1: data_attribute - ten nguoi choi doc, don vi (ispercent), mau, mo ta; xoa namein (tieng Indonesia).\n");

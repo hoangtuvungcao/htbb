@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Vung Hoenn (noi dung nam 2): 29 ban do MOI, chi co o che do Pokemon (cMap_pokemon/&lt;id&gt;, khong co
+ * Vung Hoenn (noi dung nam 2): 29 ban do MOI (cMap/&lt;id&gt;, khong co
  * cMap/&lt;id&gt; goc). DAY LA NGUON DUY NHAT cua bo cuc khung (kich thuoc, cong, NPC client, quai):
  *  - tools/pokemon/VeMapMoi.java dung lop nay de dung "ban goc ao" roi ve nhu moi ban do khac;
  *  - real.VungHoenn (server) dung lop nay de dang ky Map, bang locationMap/nameMap/mapID/mapChange,
@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * Cap id (bo tile chon theo id nap, DinhDangBanDo.boTile): 43..62 ngoai troi (t), 160..165 hang
  * (t_hang), 280..282 dau truong (t_thanh). Cac id nay khong co trong cMap goc, khong nam trong
- * offMapID cua client, khong roi vao khoang 200..271 (luat thanh/cong thanh) - xem DINH_DANG_MAP.md.
+ * offMapID cua client, khong roi vao khoang 200..271 (luat thanh/cong thanh) - xem docs/kien-truc.md.
  *
  * Loi vao duy nhat tu the gioi cu: cong bac cua map 9 (Cinnabar, cum cong toM=1 -> Cao nguyen Indigo /
  * Duong Victory) them lua chon thu 3 "Littleroot (Hoenn)". Server chan qua cong khi nhan vat duoi cap

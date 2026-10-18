@@ -153,7 +153,8 @@ public final class DangKyTrongGame implements ICommandHandler {
             }
             // Chong spam goi dang ky theo IP (sv.spam.hd.dangKy, mac dinh 5/60s) - TRUOC moi viec
             // ton kem (cau do, CSDL, tre 800ms). Han muc 3/gio 10/ngay ben duoi van ap.
-            if (!com.htbb.chongspam.ChongSpam.choHanhDong(com.htbb.chongspam.ChongSpam.cua("dk:" + session.ip),
+            // Sau proxy tin cay (sv.proxyTinCay, WAF) moi nguoi chung IP: dem theo KET NOI thay vi IP.
+            if (!com.htbb.chongspam.ChongSpam.choHanhDong(com.htbb.chongspam.ChongSpam.cua(khoaSpam(session.ip, session)),
                     com.htbb.chongspam.ChongSpam.HanhDong.DANG_KY, System.currentTimeMillis())) {
                 server.ChiSoMayChu.THAO_TAC_CHAN.incrementAndGet();
                 guiLoi(session, mot("chung", "Thao tác quá nhanh, vui lòng chờ một phút rồi thử lại."), "");
@@ -320,11 +321,27 @@ public final class DangKyTrongGame implements ICommandHandler {
 
     // ------------------------------------------------------------------ han muc
 
+    /**
+     * Khoa chong spam goi dang ky (sv.spam.hd.dangKy): theo IP; rieng proxy tin cay
+     * (sv.proxyTinCay - sau WAF moi nguoi chung IP) thi theo KET NOI {@code phien}.
+     */
+    public static String khoaSpam(final String ip, final Object phien) {
+        return demTheoIp(ip) ? "dk:" + ip : "dk:s:" + System.identityHashCode(phien);
+    }
+
+    /** Han muc dang ky / gio, / ngay co dem theo IP nay khong (false = proxy tin cay: chi dem theo may). */
+    public static boolean demTheoIp(final String ip) {
+        return com.htbb.mang.GioiHanIp.apDung(ip);
+    }
+
     /** "quaGio" | "quaNgay" | null. Lay MAX cua dem CSDL (gop web+game) va dem RAM. */
     private static String kiemHanMuc(final String ip, final String maMay, final long bay) {
-        final int[] demIp = demCsdl(ip, "'dang_ky','" + HANH_DONG_IP + "'");
-        final int[] ramIp = demRam("ip|" + ip, bay);
-        String kq = QuyTacDangKy.vuotHanMuc(Math.max(demIp[0], ramIp[0]), Math.max(demIp[1], ramIp[1]), 0);
+        String kq = null;
+        if (demTheoIp(ip)) {
+            final int[] demIp = demCsdl(ip, "'dang_ky','" + HANH_DONG_IP + "'");
+            final int[] ramIp = demRam("ip|" + ip, bay);
+            kq = QuyTacDangKy.vuotHanMuc(Math.max(demIp[0], ramIp[0]), Math.max(demIp[1], ramIp[1]), 0);
+        }
         if (kq != null || maMay.isEmpty()) {
             return kq;
         }
@@ -410,7 +427,9 @@ public final class DangKyTrongGame implements ICommandHandler {
     }
 
     private static void ghiLuot(final String ip, final String maMay, final long bay) {
-        ghiRam("ip|" + ip, bay);
+        if (demTheoIp(ip)) {
+            ghiRam("ip|" + ip, bay);
+        }
         if (!maMay.isEmpty()) {
             ghiRam("may|" + maMay, bay);
         }

@@ -1,54 +1,35 @@
-# pc/ - bản PC Huyền Thoại Bảo Bối (Unity, gốc client TeaMobi 2.7.6)
+# client_pc_ios – Huyền Thoại Bảo Bối (Unity)
 
-Client `KPAH_276.exe` gốc (Unity 5.1.2f1) giải nén bằng AssetRipper / ILSpy, đã nâng lên
-Unity **6000.5.9f1** và sửa để build PC / Android / iOS vào server NQSH-H2.
-Cũng build được Android / iOS từ Unity, nhưng bản Android phát hành là `client_apk/` (Gradle, bản TeaMobi 2.7.7).
+Client PC Windows và iOS của Huyền Thoại Bảo Bối, một game MMORPG 2D Pokémon (fan game phi thương mại).
+Nền là client Unity gốc của TeaMobi, đã chuyển hẳn sang Pokémon: sprite PMDCollab, tile và bản đồ mới,
+giao diện Pokémon. Không còn chế độ kiếm hiệp.
 
-Đã sửa so với bản giải nén:
-- Server `nqsh-h2.top:17949`, nút "Cập nhật" đọc `https://nqsh-h2.top/robots.txt` (dòng `Tên|host|port`)
-- `KiemServer.cs`: xác thực -88 trước khi đăng nhập (giống KiemServer.java của bản jar) + mã máy
-- `ScaleGUI.cs`: phóng khung 800x600 theo cửa sổ (PC), lấp màn hình ngang (điện thoại)
-- `TouchScreenKeyboard.cs`: bàn phím ảo thật trên điện thoại
-- Bỏ `PlayerPrefs.DeleteAll()` lúc khởi động (mất mật khẩu đã lưu)
-- Font `normalFont0/1/2/4` dựng lại từ `normalFont3.ttf`; lỗi giải nén ở `MenuWindows.cs`
-- `iOSPlugins.cs`: hàm native iOS thay bằng bản C# rỗng (không còn plugin `.mm`)
+- **Unity:** 6000.5.9f1 (`ProjectSettings/ProjectVersion.txt`), chỉ dùng module có sẵn trong bản cài.
+- **Mã game:** `Assets/Scripts/Assembly-CSharp/`; kịch bản build: `Assets/Editor/BuildCli.cs`.
+- **Tài nguyên:** `Assets/Resources/poke` (sprite Pokémon), `poke_tile` (tile), `poke_map` (kiểu tile và bản đồ 0),
+  `res` (giao diện, hiệu ứng gốc). Sinh lại bằng tool trong `tools/pokemon/`.
+- **Ghi công:** `Assets/Resources/poke/GHI_CONG*.txt` và `Assets/Resources/ghicong/GHI_CONG.txt`
+  (PMDCollab, CC BY-NC 4.0). Bắt buộc giữ lại khi phát hành.
 
-Build (Unity 6000.5.9f1, batchmode `-executeMethod`):
-- PC: `BuildCli.Win64` (đường ra ở biến `HTBB_OUT`)
-- Android: `BuildCli.Android` (`HTBB_OUT`, `HTBB_KEY_DIR` chứa `key.properties` + keystore - KHÔNG đưa vào git)
-- iOS: `BuildCli.iOS` - chạy trên GitHub Actions, xem `.github/workflows/ios.yml`
+## Mở dự án
 
-## Pokémon (nhánh `pokemon/chuyen-doi`)
+Mở thư mục `client_pc_ios/` bằng Unity Hub (đúng bản 6000.5.9f1). Bản Development (Editor) tự vào máy chủ
+`127.0.0.1:19129`; muốn chọn máy chủ khác thì chạy với tham số `-htbbMayChu host:cong`.
 
-Đây là client PC **chính thức** của Huyền Thoại Bảo Bối: phần Pokémon của `HTBB/ClientUnity` (bản cũ) đã gộp vào
-đây, giữ nguyên mod (`Mod/`), `CapNhat`, `KiemServer`, `BuildCli`.
-- Mã Pokémon: `ChuPokemon(DuLieu)`, `LoaiPokemonClient`, `PokeBody`, `PokeDuLieu`, `PokeHieuUng`, `PokeTile`,
-  `TenMapPokemon`, `ThuongHieu`, `VatThePokemon` + hook trong Char, Monster/boss, NPC, Npc_Server, MessageHandler
-  (-90..-94), MFont (`ChuPokemon.D`), TField, Res, Tilemap, Create/CharSelectScr...
-- Tài nguyên: `Resources/poke` (sprite PMDCollab, CC BY-NC), `Resources/poke_tile` (tile), `Resources/poke_map`
-  (bản đồ vẽ lại). Sinh bằng tool trong `HTBB/tools/pokemon/` (ghi thẳng vào đây; biến `HTBB_CLIENT_ASSETS`).
-- Phản hồi chiến đấu (`PhanHoiChienDau.cs`, hook duy nhất ở `GameScr.startFlyText`): số sát thương viền tối,
-  chí mạng vàng chữ to, "Hiệu quả cao!" cam (server gửi effect 5 = `AttackResult.EFF_HIEU_QUA_CAO`), "Trượt" xám,
-  hồi máu "+N" xanh, "Lên cấp!"; Pokémon trúng đòn nháy trắng (`LiveActor.pokeNhayDen`).
-- Âm thanh (`AmThanh.cs`): `Resources/am_thanh/<tên>.ogg|.wav`, thiếu tệp thì im lặng. Tên trùng bản jar
-  (`client_jar/res/am`, sinh bởi `client_jar/tools/lam_am_thanh.py` từ gói Kenney CC0): SFX `s_danh`, `s_bidanh`, `s_chimang`,
-  `s_hieuqua`, `s_truot`, `s_hoimau`, `s_lencap`, `s_tienhoa`, `s_click` (chép thẳng `.wav`); nhạc nền `n_tieude`,
-  `n_thitran` (map < 110), `n_hang` (110..200), `n_dauchien` (> 200) - bản jar là MIDI, Unity không đọc MIDI nên
-  cần xuất ra `.ogg` cùng tên. Âm lượng PlayerPrefs `htbb_am_sfx` / `htbb_am_nhac`; tắt bằng tham số `-htbbIm`.
-- Tên hiển thị: `ThuongHieu.cs` (BuildCli đặt companyName/productName từ đây); tiêu đề cửa sổ có dấu do
-  `TieuDeCuaSo.cs` đặt trên Windows. Tên file build (`NQSH-H2.exe`), applicationIdentifier giữ nguyên (tự cập nhật).
-- Kiểm biên dịch không cần Unity: project dotnet `netstandard2.1` gom `Assets/Scripts/**/*.cs` + tham chiếu
-  `UnityEngine*.dll` (bất kỳ bản Unity/game Unity nào có thư mục `Managed/`), `LangVersion 9`.
-- Giao diện Pokémon (bản C# của `client_jar/src/game/pokemon/*` + `MenuNhanh`): `BucVe` (lệnh vẽ kiểu J2ME vào ảnh,
-  lọc Point - sắc nét khi phóng), `GiaoDien`, `KieuO`, `PokeChieu`, `HePoke`, `BangChieu` (tab Kỹ năng),
-  `BangTiemNang` (tab Tiềm năng), `BangTrangBi` (tab Trang bị, bố cục PC), lưới đồ (`WindowInfoScr.paintGrid`),
-  `BanDoVung` (Bản đồ lớn), `HudPokemon` (khung HP nhân vật / đối thủ, thanh 5 chiêu: phím 1-5, chuột rê = thẻ
-  chiêu, bấm = dùng chiêu), `MenuNhanh` (một Poké Ball mép trái thay hai cột nút mod; F3 / Esc / mũi tên + Enter),
-  `ChanDungPoke` (huy hiệu tròn màu hệ + hình cắt sát; chân dung lớn che tròn sẵn cho hộp thoại).
-- Màn ngoài game (tải / chọn máy chủ / đăng nhập / tạo - chọn Pokémon): `BannerParallax` - key art chung (J2ME / Android /
-  web): lớp ảnh `Resources/banner/*.bytes` (BuildCli tự chép từ `../shared/banner/lop/` + logo `../shared/brand/logo_512.png`;
-  `lop.txt`: `ten,toc_do,do_sau,kieu`), 5 Pokémon khởi đầu vẽ sống bằng PokeBody; sinh lại ảnh: `client_jar/tools/tao_banner.py`.
-- Màn hình: luôn nằm ngang; cửa sổ PC mặc định 1280x720, đổi cỡ được; màn logic cao 600, rộng 800..1400 theo tỉ lệ
-  (4:3 .. 21:9), HUD neo theo mép.
-- Máy chủ cố định: `-htbbMayChu host:cong` hoặc `ThuongHieu.MAY_CHU_CHINH`; bản Development dùng `127.0.0.1:19129`;
-  khi có máy chủ cố định thì không tải danh sách robots.txt.
+## Build
+
+Chạy ở batchmode: `Unity -batchmode -quit -projectPath client_pc_ios -executeMethod <hàm>`
+
+- **PC Windows:** `BuildCli.Win64`. Đường ra lấy từ biến `HTBB_OUT`. Bản phát hành bắt buộc phải có máy chủ
+  (`-htbbMayChu`, biến `MAY_CHU_CHINH` hoặc `tools/phat-hanh/may_chu.conf`); CI chạy `.github/workflows/client-phat-hanh-htbb.yml`.
+- **iOS:** `BuildCli.iOS` xuất project Xcode, rồi `xcodebuild` tạo IPA chưa ký. Chạy trên GitHub Actions bằng
+  `.github/workflows/client-ios.yml`, cần các secret `UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`.
+- Bản Android phát hành nằm ở `client_apk/`, không build từ đây.
+
+Trạng thái iOS: **Sắp ra mắt**.
+
+## Kiểm tra
+
+Test server (`server/test`, ví dụ `KiemClientUnity`, `KiemMapPokemon`, `KiemTilePokemon`, `KiemChuPokemon`) đọc thẳng
+mã và tài nguyên trong thư mục này. Muốn kiểm biên dịch mà không cần Unity: tạo một project dotnet gom
+`Assets/Scripts/**/*.cs`, tham chiếu `UnityEngine*.dll` lấy từ thư mục `Managed/` của bất kỳ bản Unity 6 nào.

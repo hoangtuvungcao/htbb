@@ -18,8 +18,8 @@ const { ds: dsBanTai } = useBanTai()
 const MAU: Record<string, { mau: string, anh: string }> = {
   'android': { mau: 'from-grass-400/25 to-grass-900/5', anh: 'shadow-grass-500/30' },
   'pc': { mau: 'from-pikachu-400/25 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
-  'pc-linux': { mau: 'from-pikachu-400/20 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
-  'macos': { mau: 'from-pokeblue-400/20 to-pokeblue-900/5', anh: 'shadow-pokeblue-500/30' },
+  'pc-java': { mau: 'from-pikachu-400/20 to-pikachu-900/5', anh: 'shadow-pikachu-500/30' },
+  'pc-jar': { mau: 'from-pokeblue-400/20 to-pokeblue-900/5', anh: 'shadow-pokeblue-500/30' },
   'jar': { mau: 'from-pokeblue-400/25 to-pokeblue-900/5', anh: 'shadow-pokeblue-500/30' },
   'ios': { mau: 'from-pokered-400/25 to-pokered-900/5', anh: 'shadow-pokered-500/30' },
 }
@@ -38,12 +38,13 @@ const steps = computed(() => [
   { so: '03.', tieuDe: 'Chọn Pokémon khởi đầu', mo: 'Đăng nhập game, chọn Pokémon của bạn và tìm những người bạn đồng hành.', link: 'Cộng đồng & hỗ trợ', to: hoTro.value },
 ])
 
+/** Cột: Android · PC (Windows / Java) · điện thoại Java (J2ME). iOS chưa phát hành nên chưa có cột. */
 const cauHinh = [
-  ['Hệ điều hành', 'Android 5.0 trở lên', 'Windows 7 / 10 / 11 (64-bit)', 'Điện thoại hỗ trợ Java MIDP 2.0, hoặc J2ME Loader trên Android'],
+  ['Hệ điều hành', 'Android 8.0 trở lên', 'Windows 10 / 11 (64-bit); bản .jar: Windows, macOS, Linux có Java 8+', 'Điện thoại hỗ trợ Java MIDP 2.0, hoặc J2ME Loader trên Android'],
   ['Bộ nhớ (RAM)', '2 GB', '2 GB', 'Bản nhẹ cho máy ít bộ nhớ'],
   ['Dung lượng trống', '200 MB', '300 MB', 'Vài MB'],
   ['Kết nối', 'Wi-Fi hoặc 3G/4G ổn định', 'Internet ổn định', 'GPRS/3G trở lên'],
-  ['Điều khiển', 'Cảm ứng', 'Bàn phím', 'Phím số'],
+  ['Điều khiển', 'Cảm ứng', 'Bàn phím + chuột', 'Phím số'],
 ]
 
 const faq = [
@@ -172,7 +173,7 @@ const faq = [
           <table class="bang-wiki">
             <thead>
               <tr>
-                <th /><th>Android</th><th>PC / Windows</th><th>Java (.jar)</th>
+                <th /><th>Android</th><th>PC</th><th>Điện thoại Java (J2ME)</th>
               </tr>
             </thead>
             <tbody>

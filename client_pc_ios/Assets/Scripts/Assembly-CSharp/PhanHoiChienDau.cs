@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Phan hoi chien dau kieu Pokemon cho ban PC (chu bay len tren dau khi danh / trung don).
 ///
-/// Mot cho duy nhat: GameScr.startFlyText goi phanLoai() (khi PokeBody.CHE_DO_POKEMON), nen ca
+/// Mot cho duy nhat: GameScr.startFlyText goi phanLoai(), nen ca
 /// ~60 cho trong code goc dang goi startFlyText("-" + dam ...) / EFF_NAME[...] deu doi kieu ma khong
 /// phai sua tung file. Kieu chu:
 ///   so sat thuong   "-123"          trang vien toi

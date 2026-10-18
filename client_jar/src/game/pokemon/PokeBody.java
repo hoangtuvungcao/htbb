@@ -7,7 +7,7 @@ import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
 
 /**
- * Ve than Pokemon nguyen con (thay paper doll) - ban J2ME cua ClientUnity PokeBody.cs.
+ * Ve than Pokemon nguyen con (thay paper doll) - ban J2ME cua Unity PokeBody.cs.
  * Tai nguyen trong jar (sinh boi client_jar/tools/DongGoiPokeJ2me.java tu Resources/poke/ cua HTBB):
  *   /pk/&lt;khoa&gt;.dl          du lieu khung (PokeDuLieu, dinh dang _dl ban 2 + anhDongTac[6])
  *   /pk/&lt;khoa&gt;_&lt;a&gt;.png       anh dong tac a (4 hang huong x soKhung cot), NAP LUOI tung dong tac
@@ -21,13 +21,6 @@ import javax.microedition.lcdui.Image;
  */
 public class PokeBody {
     public static final String THU_MUC = "/pk/";
-
-    /**
-     * Cong tac phia client cua co che_do_pokemon (Q8). Giong Unity: chi dung cho cac man TRUOC
-     * khi vao game (tao/chon nhan vat, tieu de) va bang tinh phia client (NPC, pet cu, than thu,
-     * vat the, tile). Trong game, Char/quai do server dieu khien qua -90/-91 (dex = 0: kieu cu).
-     */
-    public static boolean CHE_DO_POKEMON = true;
 
     /** Gioi han tong pixel anh dang giu (LRU). */
     public static int ToiDaPixel = 700000;

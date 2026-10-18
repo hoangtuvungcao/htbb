@@ -30,7 +30,7 @@ public class NPC : Actor
 
 	/// <summary>
 	/// NPC tinh (type 0..31, cung index voi NPCNAME) -&gt; so Pokedex ve bang PokeBody.
-	/// 0 = giu anh NPC cu. Bang day du kem vai tro: docs/pokemon/bang_npc.csv (sua 2 noi cung luc).
+	/// 0 = giu anh NPC cu. Bang day du kem vai tro: du_lieu/bang_npc.csv (sua 2 noi cung luc).
 	/// Thieu sprite trong Resources/poke/ thi tu quay ve anh cu.
 	/// </summary>
 	public static readonly short[] POKE_DEX_THEO_TYPE = new short[32]

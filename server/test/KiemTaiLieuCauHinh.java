@@ -4,7 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Chot lai cac khang dinh trong docs/cau-hinh-server-ini.md voi ma nguon.
+ * Chot lai cac khang dinh trong docs/cau-hinh.md voi ma nguon.
  *
  * VI SAO MOT TAI LIEU LAI CAN TEST: tai lieu nay noi cho nguoi van hanh biet khoa nao doi
  * duoc khi may chu DANG CHAY va khoa nao bat buoc khoi dong lai. Sai mot dong o day khong
@@ -23,7 +23,7 @@ import java.nio.file.Paths;
  */
 public final class KiemTaiLieuCauHinh {
 
-    private static final String F_TAI_LIEU = "../docs/cau-hinh-server-ini.md";
+    private static final String F_TAI_LIEU = "../docs/cau-hinh.md";
     private static final String F_CAU_HINH = "src/server/CauHinh.java";
     private static final String F_SERVER = "src/server/TeamServer.java";
 
@@ -102,9 +102,9 @@ public final class KiemTaiLieuCauHinh {
 
         // ---- Duong dan va cai bay chinh phai con dung ----
         Kiem.dung("tai lieu chi dung thu muc chay tren VPS",
-                tl.contains("/opt/htbb/server.ini"));
+                tl.contains("/opt/htbb/server/server.ini"));
         Kiem.dung("thu muc do khop voi htbb-game.service",
-                doc("../vps/htbb-game.service").contains("WorkingDirectory=/opt/htbb"));
+                doc("../vps/htbb-game.service").contains("WorkingDirectory=/opt/htbb/server\n"));
         Kiem.dung("tai lieu neu dong log bao loi doc cau hinh",
                 tl.contains("Load configuration file error!"));
         Kiem.dung("dong log do van con trong ma nguon",

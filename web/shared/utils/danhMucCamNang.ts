@@ -47,9 +47,9 @@ export const DS_CAM_NANG: TrangCamNang[] = [
     tuKhoa: 'gym huy hieu badge truong gym leader golem gyarados luxray huy chuong ao choang hoan my',
   },
   {
-    slug: 'cap-do', ten: 'Cấp độ & trần cấp mùa', nhom: 'Phát triển', icon: 'i-lucide-trending-up',
-    moTa: 'Cấp tối đa, trần cấp mở theo mùa, năng lượng huấn luyện, bắt kịp, tinh thông và bảng EXP.',
-    muc: [{ id: 'tran-cap', ten: 'Trần cấp theo mùa' }, { id: 'nang-luong', ten: 'Năng lượng huấn luyện' }, { id: 'bat-kip', ten: 'Bắt kịp & tân thủ' }, { id: 'tinh-thong', ten: 'Tinh thông' }, { id: 'bang-exp', ten: 'Bảng EXP' }],
+    slug: 'cap-do', ten: 'Cấp độ & EXP', nhom: 'Phát triển', icon: 'i-lucide-trending-up',
+    moTa: 'Cấp tối đa (không trần cấp theo mùa), năng lượng huấn luyện, bắt kịp, tinh thông và bảng EXP.',
+    muc: [{ id: 'tran-cap', ten: 'Không trần cấp theo mùa' }, { id: 'nang-luong', ten: 'Năng lượng huấn luyện' }, { id: 'bat-kip', ten: 'Bắt kịp & tân thủ' }, { id: 'tinh-thong', ten: 'Tinh thông' }, { id: 'bang-exp', ten: 'Bảng EXP' }],
     tuKhoa: 'level exp kinh nghiem len cap tran cap mua met moi nang luong',
   },
   {
@@ -138,7 +138,7 @@ export const DS_CAM_NANG: TrangCamNang[] = [
   },
   {
     slug: 'nhiem-vu', ten: 'Nhiệm vụ', nhom: 'Nội dung', icon: 'i-lucide-scroll-text',
-    moTa: 'Hướng dẫn tân thủ, chính tuyến 52 chương, phụ tuyến, nhiệm vụ ngày/tuần và thành tựu.',
+    moTa: 'Hướng dẫn tân thủ, chính tuyến 104 chương (2 năm × 52), phụ tuyến, nhiệm vụ ngày/tuần và thành tựu.',
     muc: [{ id: 'tong-quan', ten: 'Tổng quan' }, { id: 'chinh-tuyen', ten: 'Chính tuyến' }, { id: 'phu-tuyen', ten: 'Phụ tuyến' }, { id: 'ngay-tuan', ten: 'Ngày & tuần' }, { id: 'thanh-tuu', ten: 'Thành tựu' }],
     tuKhoa: 'quest nhiem vu chinh tuyen phu tuyen hang ngay hang tuan ve chuong thanh tuu danh hieu',
   },

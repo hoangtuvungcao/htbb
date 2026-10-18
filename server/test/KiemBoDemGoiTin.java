@@ -60,7 +60,7 @@ public final class KiemBoDemGoiTin {
 
         // Doc kieu co default (parseIntDefault) chu KHONG phai Integer.parseInt: thieu khoa
         // ma nem loi la bo qua MOI DONG ben duoi trong cung khoi try - dung cai bay
-        // 30/08/2026. Xem docs/cau-hinh-server-ini.md muc 10.
+        // 30/08/2026. Xem docs/cau-hinh.md.
         Kiem.sai("KHONG doc bang Integer.parseInt (thieu khoa se nem loi)",
                 sv.contains("Integer.parseInt(p.getProperty(\"sv.tranGoiTaiNguyen\"))")
                         || sv.contains("Integer.parseInt(p.getProperty(\"sv.tranGoiThuong\"))"));

@@ -5,5 +5,5 @@ Bo tile ban do che do Pokemon:
   (TilesetFloor, TilesetNature, TilesetWater, TilesetHouse, TilesetRelief, TilesetElement,
    TilesetFloorDetail, TilesetField, tileset_interior_floor)
 - Mep chuyen tiep (autotile), nen/vach hang, bien hieu: ve bang code trong du an HTBB (CC0)
-Chi tiet tung tile: docs/pokemon/bang_tile_moi.csv; nguon + cach tai: docs/pokemon/NGUON_ASSET_MAP.md
+Chi tiet tung tile: du_lieu/bang_tile_moi.csv; nguon + cach tai: docs/giay-phep.md
 === KET THUC GHI CONG BAN DO ===

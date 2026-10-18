@@ -24,7 +24,7 @@ import java.util.Properties;
  * - dungBoLucKhoiDong() chi INSERT IGNORE tu file vao SQL khi bang con thieu dong, roi
  * KHONG DUNG TOI FILE NUA. Giu nguyen ten hang so K_* va gia tri chuoi cua chung de hai
  * bai kiem tra test/KiemCauHinhPipeline.java va test/KiemTaiLieuCauHinh.java (doi chieu
- * server.ini.tmpl <-> ma nguon <-> docs/cau-hinh-server-ini.md) khong bi vo.
+ * server.ini.tmpl <-> ma nguon <-> docs/cau-hinh.md) khong bi vo.
  */
 public final class CauHinh {
 

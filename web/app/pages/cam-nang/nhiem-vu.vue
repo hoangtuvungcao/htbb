@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Nhiệm vụ — danh sách từ nhiem_vu_moi.csv (cam-nang.json); tóm tắt chương (một câu, không lộ kết)
- * và số bước từ docs/pokemon/web/nhiem_vu_tom_tat.json (cam-nang-noi-dung.json).
+ * và số bước từ du_lieu/web/nhiem_vu_tom_tat.json (cam-nang-noi-dung.json).
  */
 const N = CAM_NANG.nhiemVu
 const cungNam1 = N.cung.filter(c => c.nam === 1)

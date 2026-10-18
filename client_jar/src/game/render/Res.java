@@ -822,11 +822,8 @@ public class Res {
         return x[0];
     }
 
-    /** pokemon (G7.A): tile PMD /pt/<ten>.png (cung so tile, thu tu voi bo tile goc); thieu thi null. */
+    /** pokemon (G7.A): tile PMD /pt/<ten>.png; thieu thi null. */
     private static Image tilePokemon(String ten) {
-        if (!game.pokemon.PokeBody.CHE_DO_POKEMON) {
-            return null;
-        }
         try {
             return Image.createImage(new StringBuffer("/pt/").append(ten).append(".png").toString());
         } catch (Throwable e) {
@@ -835,61 +832,27 @@ public class Res {
     }
 
     public static final void loadTileImage(int lv) {
-        InputStream is;
-        if (imgTile == null) {
-            // pokemon: bo tile PMD neu co (ca t_hang/t_thanh ma ban goc lay tu server qua RMS)
-            String tenPoke = lv > 200 ? "t_thanh" : lv < 110 ? "t" : "t_hang";
-            Image tile = tilePokemon(tenPoke);
-            Image tileNho = tile == null ? null : tilePokemon(lv > 200 ? "t_thanh_s" : lv < 110 ? "t_small" : "t_hang_s");
-            if (tile != null && tileNho != null) {
-                try {
-                    is = "".getClass().getResourceAsStream(new StringBuffer("/").append(tenPoke).append(".type").toString());
-                    Tilemap.typeOfTile = new int[is.available()];
-                    for (int i = 0; i < Tilemap.typeOfTile.length; i++) {
-                        Tilemap.typeOfTile[i] = is.read();
-                    }
-                    imgTile = tile;
-                    imgtileSmall = tileNho;
-                    return;
-                } catch (Throwable e) {
-                    // thieu .type: ve bo tile goc
-                }
+        if (imgTile != null) {
+            return;
+        }
+        // pokemon: bo tile PMD trong jar /pt/<bo>.png + ban nho, kieu di duoc /<bo>.type (cung so tile voi server)
+        String bo = lv > 200 ? "t_thanh" : lv < 110 ? "t" : "t_hang";
+        Image tile = tilePokemon(bo);
+        Image tileNho = tile == null ? null : tilePokemon(lv > 200 ? "t_thanh_s" : lv < 110 ? "t_small" : "t_hang_s");
+        if (tile == null || tileNho == null) {
+            Cout.println("Error Load Back Tile");
+            return;
+        }
+        try {
+            InputStream is = "".getClass().getResourceAsStream(new StringBuffer("/").append(bo).append(".type").toString());
+            Tilemap.typeOfTile = new int[is.available()];
+            for (int i = 0; i < Tilemap.typeOfTile.length; i++) {
+                Tilemap.typeOfTile[i] = is.read();
             }
-            try {
-                if (lv > 200) {
-                    try {
-                        imgTile = Image.createImage("/t_thanh.png");
-                    } catch (Exception e) {
-                        byte[] data = RMS.loadRMS(Canvas.nameTile[1]);
-                        imgTile = Image.createImage(data, 0, data.length);
-                    }
-                    is = "".getClass().getResourceAsStream("/t_thanh.type");
-                    imgtileSmall = Image.createImage("/t_thanh_s.png");
-                } else if (lv < 110) {
-                    imgTile = Image.createImage("/t.png");
-                    is = "".getClass().getResourceAsStream("/t.type");
-                    imgtileSmall = Image.createImage("/t_small.png");
-                } else {
-                    try {
-                        imgTile = Image.createImage("/t_hang.png");
-                    } catch (Exception e2) {
-                        byte[] data2 = RMS.loadRMS(Canvas.nameTile[0]);
-                        imgTile = Image.createImage(data2, 0, data2.length);
-                    }
-                    is = "".getClass().getResourceAsStream("/t_hang.type");
-                    imgtileSmall = Image.createImage("/t_hang_s.png");
-                }
-                try {
-                    Tilemap.typeOfTile = null;
-                    Tilemap.typeOfTile = new int[is.available()];
-                    for (int i = 0; i < Tilemap.typeOfTile.length; i++) {
-                        Tilemap.typeOfTile[i] = is.read();
-                    }
-                } catch (Exception e3) {
-                    Cout.println("Error Load Back Tile");
-                }
-            } catch (Exception e4) {
-            }
+            imgTile = tile;
+            imgtileSmall = tileNho;
+        } catch (Throwable e) {
+            Cout.println("Error Load Back Tile");
         }
     }
 

@@ -897,10 +897,10 @@ public class RequestNPCInfoHandler implements ICommandHandler {
                     menu = new String[]{
                             "Điểm hiện tại: " + p.diemDoiThuong + " điểm - Xem đổi thưởng"
                     };
-                    // Che do Pokemon (G7.D3): noi muc "Pokédex" vao CUOI menu, dung vi tri ma
+                    // Pokemon (G7.D3): noi muc "Pokédex" vao CUOI menu, dung vi tri ma
                     // MapDoMenu cho (PokedexPokemon.VI_TRI_MUC_NPC_DOI_THUONG). Menu doi so muc
                     // thi phai doi hang so do - khong khop thi khong hien, tranh chon nham muc.
-                    if (com.htbb.pokemon.CheDoPokemon.bat() && menu.length == real.PokedexPokemon.VI_TRI_MUC_NPC_DOI_THUONG) {
+                    if (menu.length == real.PokedexPokemon.VI_TRI_MUC_NPC_DOI_THUONG) {
                         final String[] menuPokedex = java.util.Arrays.copyOf(menu, menu.length + 1);
                         menuPokedex[menu.length] = real.PokedexPokemon.TEN_MUC;
                         menu = menuPokedex;

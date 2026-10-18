@@ -12,14 +12,14 @@ const DIEM = [
   { icon: 'i-lucide-flame', t: '18 hệ, khắc hệ dịu hơn', m: `Đủ 18 hệ như bản gốc, hệ số tối đa ×2 và không miễn nhiễm — luôn có cách đánh, luôn có lợi thế.` },
   { icon: 'i-lucide-heart-handshake', t: 'Công bằng tuyệt đối', m: 'Phi thương mại: không nạp tiền, không bán sức mạnh. Ai chăm chơi, chơi giỏi thì mạnh.' },
   { icon: 'i-lucide-calendar-heart', t: '52 tuần sự kiện', m: 'Tết, Trung Thu, Ngày cộng đồng, Tuần Shiny, đột kích huyền thoại — mỗi tuần một điều mới.' },
-  { icon: 'i-lucide-hourglass', t: 'Trần cấp theo mùa', m: `Cấp tối đa ${CAM_NANG.capDo.capToiDa} mở dần; người chơi ít giờ không bị bỏ lại, cốt truyện trải đều cả năm.` },
+  { icon: 'i-lucide-hourglass', t: 'Không trần cấp theo mùa', m: `Cấp ${CAM_NANG.capDo.capToiDa} mở cho mọi người ngay từ đầu; lên cấp chậm, năng lượng huấn luyện và bắt kịp giúp người chơi ít giờ không bị bỏ lại.` },
   { icon: 'i-lucide-palette', t: 'Phong cách Mystery Dungeon', m: 'Sprite PMD động 4 hướng từ cộng đồng PMDCollab, bản đồ vẽ lại tông màu tươi sáng.' },
   { icon: 'i-lucide-users', t: 'Đội, vùng & thầy trò', m: 'Lập đội, tranh cờ giữa ba vùng, kèm người mới để cùng nhận thưởng.' },
 ]
 const VUNG = [
   { ten: 'Kanto', dex: 4, mo: 'Nơi mọi hành trình bắt đầu. Đồng cỏ Pallet, Rừng Viridian rậm rạp, Núi Mặt Trăng đầy sao băng, con tàu S.S. Anne và đảo lửa Cinnabar.' },
   { ten: 'Johto', dex: 133, mo: 'Vùng đất cổ kính của những ngọn tháp: tháp chuông Ecruteak, Rừng Ilex linh thiêng, Hồ Phẫn Nộ đỏ rực và làng rồng Blackthorn.' },
-  { ten: 'Hoenn', dex: 7, mo: 'Biển nhiệt đới và núi lửa, nơi Kyogre và Groudon đang ngủ say. Mở ra trong năm thứ hai.' },
+  { ten: 'Hoenn', dex: 7, mo: `Biển nhiệt đới và núi lửa, nơi Kyogre và Groudon đang ngủ say. Mở ra khi bạn hoàn thành cốt truyện năm 1 và đạt cấp ${POKEDEX.hoenn.capVao}.` },
 ]
 </script>
 

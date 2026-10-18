@@ -1,40 +1,19 @@
 package game.render.screen;
 
-import game.render.Canvas;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.util.Vector;
-import javax.microedition.io.Connector;
-import javax.microedition.io.HttpConnection;
 
 /**
- * Danh sách server lấy từ GitHub (mỗi dòng "Tên|host|port", dòng trống / # bỏ qua), thay
- * cho danh sách ghi cứng trong jar: đổi IP / tên miền server chỉ cần sửa file trên GitHub.
- * Tải xong thì ghi vào RMS "ipnqsh" như nút "Cập nhật" gốc, lần sau mở game không có mạng
- * vẫn dùng danh sách đã lưu.
+ * Máy chủ của bản build: thuộc tính MANIFEST / htbb-app.properties "HTBB-May-Chu: host:cong" (build.sh của jar,
+ * client_pc/build.sh, client_apk/pokemon/build.gradle luôn ghi). Mở màn chọn server thì danh sách = đúng một server
+ * này (ghi vào RMS "ipnqsh" như nút "Cập nhật" gốc). Không còn tải danh sách server của game cũ.
  */
 final class TaiDanhSach {
-    /**
-     * Thử lần lượt: http trước (máy J2ME / giả lập như CoffeeCat không nói được TLS đời mới nên
-     * HTTPS hay hỏng), không được thì https (giả lập trên PC đọc được).
-     */
-    private static final String[] LINK = {"http://nqsh-h2.top/robots.txt", "https://nqsh-h2.top/robots.txt"};
-    /** Danh sách ghi sẵn: dùng khi không tải được LINK nào - không có thì client không biết vào server nào. */
-    private static final String MAC_DINH_HOST = "nqsh-h2.top";
-    private static final short MAC_DINH_CONG = 30774;
-    // pokemon: ten hien tren man chon server (khong de lo ten game cu)
-    private static final String MAC_DINH = "Máy chủ 1|" + MAC_DINH_HOST + "|" + MAC_DINH_CONG;
     private static boolean daTai;
-    private static boolean dangTai;
 
     private TaiDanhSach() {
     }
 
-    /**
-     * Thuộc tính MANIFEST "HTBB-May-Chu: host:cong" chỉ định MỘT server Pokémon: build.sh ghi vào mọi bản
-     * khi đặt MAY_CHU_CHINH, hoặc chỉ bản thử ...-thu.jar khi đặt MAY_CHU (thêm "HTBB-Ban-Thu: 1").
-     * Có thì không tải danh sách server cũ và bỏ xác thực -88 (server Pokémon HTBB không có lệnh này).
-     */
+    /** "host:cong" gắn lúc build; null nếu thiếu / sai dạng. */
     static String mayChuThu() {
         try {
             String s = game.GameMidlet.instance == null ? null : game.GameMidlet.instance.getAppProperty("HTBB-May-Chu");
@@ -54,7 +33,7 @@ final class TaiDanhSach {
     }
 
     /**
-     * pokemon: tên server hiện trên màn chọn. Danh sách tải về / lưu RMS từ bản cũ có thể mang tên game
+     * pokemon: tên server hiện trên màn chọn. Danh sách lưu RMS từ bản cũ có thể mang tên game
      * cũ (vd "NQSH-H2"): hiện thành "Máy chủ n" để giao diện không lộ tên cũ KPAH/NQSH (tên server của game gốc).
      */
     static String tenHien(String ten, int i) {
@@ -68,132 +47,30 @@ final class TaiDanhSach {
         return ten;
     }
 
-    /** Mở màn chọn server lần đầu: tải ngầm một lần, không hiện gì. */
+    /** Mở màn chọn server lần đầu: đặt danh sách = server gắn lúc build. */
     static void taiNgam() {
         if (daTai) {
             return;
         }
         daTai = true;
         String thu = mayChuThu();
-        if (thu != null) {
-            int i = thu.lastIndexOf(':');
-            String ten = "Huyền Thoại Bảo Bối";
-            try {
-                if ("1".equals(game.GameMidlet.instance.getAppProperty("HTBB-Ban-Thu"))) {
-                    ten = "Thử nghiệm";
-                }
-            } catch (Throwable e) {
-                // giu ten mac dinh
-            }
-            apDung(ten + "|" + thu.substring(0, i).trim() + "|" + thu.substring(i + 1).trim());
+        if (thu == null) {
             return;
         }
-        // có ngay server ghi sẵn, không phải đợi tải (HTTPS trên máy J2ME có thể treo lâu rồi mới hỏng)
+        int i = thu.lastIndexOf(':');
+        String ten = "Huyền Thoại Bảo Bối";
         try {
-            if (!TaiDanhSach.coMacDinh()) {
-                apDung(MAC_DINH);
+            if ("1".equals(game.GameMidlet.instance.getAppProperty("HTBB-Ban-Thu"))) {
+                ten = "Thử nghiệm";
             }
+        } catch (Throwable e) {
+            // giu ten mac dinh
         }
-        catch (Throwable throwable) {
-            // empty catch block
-        }
-        tai(false);
+        apDung(ten + "|" + thu.substring(0, i).trim() + "|" + thu.substring(i + 1).trim());
     }
 
-    /** Nút "Cập nhật": tải lại, hiện chờ / báo lỗi như bản gốc. */
+    /** Nút "Cập nhật": danh sách cố định theo bản build - không tải gì. */
     static void capNhat() {
-        if (mayChuThu() != null) {
-            return;
-        }
-        Canvas.startWaitDlg();
-        tai(true);
-    }
-
-    private static void tai(final boolean bl) {
-        if (dangTai) {
-            return;
-        }
-        dangTai = true;
-        new Thread(){
-
-            public void run() {
-                boolean bl2 = false;
-                for (int i = 0; i < LINK.length && !bl2; ++i) {
-                    try {
-                        bl2 = apDung(doc(LINK[i]));
-                    }
-                    catch (Throwable throwable) {
-                        // link này hỏng (TLS / mạng / WAF): thử link kế, hết thì giữ danh sách cũ
-                    }
-                }
-                if (!bl2) {
-                    try {
-                        bl2 = TaiDanhSach.coMacDinh() || apDung(MAC_DINH);
-                    }
-                    catch (Throwable throwable) {
-                        // empty catch block
-                    }
-                }
-                dangTai = false;
-                if (bl) {
-                    if (bl2) {
-                        Canvas.endDlg();
-                    } else {
-                        Canvas.startOKDlg("Không thể kết nối, xin kiểm tra lại GPRS/3G/Wifi.");
-                    }
-                }
-            }
-        }.start();
-    }
-
-    /**
-     * Danh sách đang dùng đã có server ghi sẵn (đúng host VÀ cổng) chưa - thì giữ nguyên, kể cả server
-     * khác đã lưu. So cả cổng: danh sách cũ đã lưu "nqsh-h2.top|17949" phải được thay bằng cổng mới.
-     */
-    private static boolean coMacDinh() {
-        String[] stringArray = ServerListScr.address;
-        short[] sArray = ServerListScr.port;
-        if (stringArray == null || sArray == null) {
-            return false;
-        }
-        for (int i = 0; i < stringArray.length && i < sArray.length; ++i) {
-            if (MAC_DINH_HOST.equals(stringArray[i]) && sArray[i] == MAC_DINH_CONG) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static String doc(String link) throws Exception {
-        HttpConnection httpConnection = null;
-        InputStream inputStream = null;
-        try {
-            httpConnection = (HttpConnection)Connector.open(link);
-            if (httpConnection.getResponseCode() != 200) {
-                return null;
-            }
-            inputStream = httpConnection.openInputStream();
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            byte[] byArray = new byte[512];
-            int n;
-            while ((n = inputStream.read(byArray)) > 0 && byteArrayOutputStream.size() < 16384) {
-                byteArrayOutputStream.write(byArray, 0, n);
-            }
-            return new String(byteArrayOutputStream.toByteArray(), "UTF-8");
-        }
-        finally {
-            try {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-                if (httpConnection != null) {
-                    httpConnection.close();
-                }
-            }
-            catch (Throwable throwable) {
-                // empty catch block
-            }
-        }
     }
 
     private static boolean apDung(String string) {

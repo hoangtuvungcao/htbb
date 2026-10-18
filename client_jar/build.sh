@@ -1,6 +1,6 @@
 #!/bin/sh
 # Build bản jar J2ME (client TeaMobi 2.7.6 + mod) hoàn toàn từ source:
-#   src/          code game (decompile từ jar gốc TeaMobi) + phần riêng J2ME của mod (Nen, KiemServer, TaiDanhSach)
+#   src/          code game (decompile từ jar gốc TeaMobi) + phần riêng J2ME của mod (Nen, TaiDanhSach)
 #   shared/mod code dùng chung với bản Android (AutoGuard, TuDong = Tự động đánh chính thức, PauseMenu...)
 #   res/          ảnh + dữ liệu game, MANIFEST.MF
 #   api/          khai báo API WMA (SMS) chỉ để biên dịch - máy J2ME có sẵn, không đóng vào jar
@@ -8,11 +8,11 @@
 #   sh build.sh 54     -> out/HTBB-v54.jar + bản phát hành ...-release.jar (ProGuard)
 #   MAY_CHU=127.0.0.1:19129 sh build.sh 54
 #                      -> bản THỬ ...-v54-thu.jar: MANIFEST thêm "HTBB-May-Chu: host:cong" = chỉ một server thử
-#                         (không tải danh sách, bỏ xác thực -88). Không ảnh hưởng bản thường/phát hành.
-#   HTBB_ASSETS=../client_pc_ios/Assets sh build.sh 54        (Assets client PC; bản cũ <HTBB>/ClientUnity/Assets vẫn dùng được)
+#                         Không ảnh hưởng bản thường/phát hành.
+#   HTBB_ASSETS=../client_pc_ios/Assets sh build.sh 54        (Assets client PC)
 #   HTBB_ASSETS=pc sh build.sh 54                  (viết tắt của ../client_pc_ios/Assets)
 #                      -> trước khi build, đóng gói lại sprite + hiệu ứng chiêu Pokémon (res/pk, res/pt, và bản
-#                         nhẹ res_nhe/pk) bằng tools/DongGoiPokeJ2me.java (đọc thêm HTBB docs/pokemon/*.csv)
+#                         nhẹ res_nhe/pk) bằng tools/DongGoiPokeJ2me.java (đọc thêm HTBB du_lieu/*.csv)
 #   GOI=nhe sh build.sh 54
 #                      -> thêm bản NHẸ cho máy thật ...-v54-nhe.jar (ProGuard + res_nhe/pk: ít loài, ít khung,
 #                         chân dung 24px; loài thiếu vẽ bằng bóng đen, xem DongGoiPokeJ2me; âm thanh res_nhe/am:
@@ -22,15 +22,11 @@
 #                      -> MỌI bản (thường/phát hành/nhẹ) chỉ vào server Pokémon này ("HTBB-May-Chu" trong
 #                         MANIFEST), không tải danh sách server cũ. BẮT BUỘC: không có biến này thì đọc
 #                         MAY_CHU_CHINH= trong ../tools/phat-hanh/may_chu.conf (mẫu may_chu.conf.example); thiếu cả hai
-#                         là DỪNG (trước đây bản phát hành rơi về danh sách server nqsh-h2.top). Thử trên máy:
-#                         MAY_CHU_CHINH=127.0.0.1:19129. NQSH=1 = bản cũ tải danh sách server (chỉ khi cố ý).
+#                         là DỪNG. Thử trên máy: MAY_CHU_CHINH=127.0.0.1:19129.
 #                         Bản DEV: chỉ đặt MAY_CHU (không MAY_CHU_CHINH, không may_chu.conf) thì vẫn build đủ
 #                         (thường/thử/phát hành/nhẹ) nhưng MỌI jar vào server MAY_CHU + "HTBB-Ban-Thu: 1" - không phát hành.
 #   sh build.sh        -> số bản lấy BAN= trong ../tools/phat-hanh/phien_ban.conf; MANIFEST MIDlet-Version / HTBB-Phien-Ban
 #                         / HTBB-Ban theo PHIEN_BAN= của tệp đó. Ghi công (CC BY-NC 4.0) res/GHI_CONG.txt bắt buộc có.
-#   XAC_THUC=1 sh build.sh 54
-#                      -> bật lại xác thực -88 (chỉ server NQSH cũ có lệnh này; server Pokémon HTBB KHÔNG có:
-#                         mặc định TẮT để bản thường/phát hành đăng nhập được server Pokémon)
 #
 # Bước: javac (--release 8) -> Down45 (class 45 + StringBuffer, kiểm API CLDC) -> jar -> ProGuard.
 set -e
@@ -42,22 +38,18 @@ V=${1:-$(doc_conf phien_ban.conf BAN)}
 case "$V" in ''|*[!0-9]*) echo "LOI: so ban '$V' khong hop le (sh build.sh <so> hoac BAN= trong tools/phat-hanh/phien_ban.conf)"; exit 1 ;; esac
 [ -n "$MAY_CHU_CHINH" ] || MAY_CHU_CHINH=$(doc_conf may_chu.conf MAY_CHU_CHINH)
 BAN_DEV=0
-if [ -z "$MAY_CHU_CHINH" ] && [ -n "$MAY_CHU" ] && [ "${NQSH:-0}" != 1 ]; then
+if [ -z "$MAY_CHU_CHINH" ] && [ -n "$MAY_CHU" ]; then
     # bản DEV/THỬ (chỉ MAY_CHU): mọi jar vào server thử MAY_CHU và mang dấu HTBB-Ban-Thu - KHÔNG phát hành
     BAN_DEV=1
     echo "CANH BAO: ban DEV - khong co MAY_CHU_CHINH: moi jar vao server thu $MAY_CHU (HTBB-Ban-Thu: 1), KHONG phat hanh"
 elif [ -z "$MAY_CHU_CHINH" ]; then
-    if [ "${NQSH:-0}" = 1 ]; then
-        echo "CANH BAO: NQSH=1 - ban thuong/phat hanh KHONG gan may chu, tai danh sach server cu (nqsh-h2.top)"
-    else
-        echo "LOI: ban phat hanh can may chu production. Dat MAY_CHU_CHINH=host:cong, hoac MAY_CHU_CHINH= trong"
-        echo "     tools/phat-hanh/may_chu.conf (cp tools/phat-hanh/may_chu.conf.example tools/phat-hanh/may_chu.conf)."
-        echo "     Thu tren may: MAY_CHU_CHINH=127.0.0.1:19129 sh client_jar/build.sh $V"
-        exit 1
-    fi
+    echo "LOI: ban phat hanh can may chu production. Dat MAY_CHU_CHINH=host:cong, hoac MAY_CHU_CHINH= trong"
+    echo "     tools/phat-hanh/may_chu.conf (cp tools/phat-hanh/may_chu.conf.example tools/phat-hanh/may_chu.conf)."
+    echo "     Thu tren may: MAY_CHU_CHINH=127.0.0.1:19129 sh client_jar/build.sh $V"
+    exit 1
 else
     case "$MAY_CHU_CHINH" in
-        *nqsh-h2*) [ "${NQSH:-0}" = 1 ] || { echo "LOI: MAY_CHU_CHINH=$MAY_CHU_CHINH la server NQSH-H2 (dat NQSH=1 neu co y)"; exit 1; } ;;
+        *nqsh-h2*) echo "LOI: MAY_CHU_CHINH=$MAY_CHU_CHINH la server NQSH-H2 cu"; exit 1 ;;
     esac
     case "$MAY_CHU_CHINH" in
         ?*:[0-9]*) ;;
@@ -79,9 +71,7 @@ B=out/build
 rm -rf "$B" && mkdir -p "$B/tool" "$B/api" "$B/gen/game/render/screen" "$B/cls" "$B/cls45" out
 
 # số bản jar gửi kèm khi đăng nhập (server real.BanMoiNhat báo khi có bản mới hơn)
-# XAC_THUC: lệnh -88 (KiemServer) - mặc định tắt trên nhánh Pokémon (server HTBB không trả lời -88)
-case "${XAC_THUC:-0}" in 1|bat|true) XT=true ;; *) XT=false ;; esac
-printf 'package game.render.screen;\n\n/** Sinh bởi build.sh - KHÔNG sửa tay. */\nfinal class PhienBan {\n    static final int BAN = %s;\n    static final boolean XAC_THUC = %s;\n}\n' "$V" "$XT" > "$B/gen/game/render/screen/PhienBan.java"
+printf 'package game.render.screen;\n\n/** Sinh bởi build.sh - KHÔNG sửa tay. */\nfinal class PhienBan {\n    static final int BAN = %s;\n}\n' "$V" > "$B/gen/game/render/screen/PhienBan.java"
 
 "$J/javac" -nowarn -XDsuppressNotes -encoding UTF-8 -d "$B/tool" -cp tools/asm.jar tools/Down45.java
 "$J/javac" -nowarn -XDsuppressNotes --release 8 -encoding UTF-8 -d "$B/api" -cp "tools/midp.jar${S}tools/microemulator.jar" $(find api -name '*.java')
@@ -107,10 +97,10 @@ SO_PB=$(printf '%s' "$PHIEN_BAN" | sed -n 's/^\([0-9]*\.[0-9]*\(\.[0-9]*\)\{0,1\
 sed '/^\r*$/d' MANIFEST.MF | { if [ -n "$SO_PB" ]; then sed "s/^MIDlet-Version:.*/MIDlet-Version: $SO_PB/"; else cat; fi; } > "$B/MANIFEST.MF"
 [ -n "$PHIEN_BAN" ] && printf 'HTBB-Phien-Ban: %s\n' "$PHIEN_BAN" >> "$B/MANIFEST.MF"
 printf 'HTBB-Ban: %s\n' "$V" >> "$B/MANIFEST.MF"
-if [ -n "$MAY_CHU_CHINH" ]; then
-    printf 'HTBB-May-Chu: %s\n' "$MAY_CHU_CHINH" >> "$B/MANIFEST.MF"
-elif [ "$BAN_DEV" = 1 ]; then
+if [ "$BAN_DEV" = 1 ]; then
     printf 'HTBB-May-Chu: %s\nHTBB-Ban-Thu: 1\n' "$MAY_CHU" >> "$B/MANIFEST.MF"
+else
+    printf 'HTBB-May-Chu: %s\n' "$MAY_CHU_CHINH" >> "$B/MANIFEST.MF"
 fi
 
 rm -f "$OUT"

@@ -146,7 +146,7 @@ const cotNhatKy = [
             và nó không liên quan gì tới việc đường dẫn <code>/admin</code> có bí mật hay không.
           </p>
           <p class="mt-2">
-            Sửa: bật HTTPS trên máy chủ — <code>sudo /opt/htbb/vps/bat-https.sh</code>.
+            Sửa: vào trang qua tên miền HTTPS (WAF lo chứng chỉ), không vào thẳng bằng IP máy chủ; nginx chuyển <code>X-Forwarded-Proto</code> của WAF cho website (<code>vps/htbb-nginx.conf</code>).
             Xem <NuxtLink to="/admin/chandoan" class="text-primary hover:underline">Chẩn đoán</NuxtLink> để biết máy chủ đang mở những cổng nào.
           </p>
         </template>
@@ -159,7 +159,7 @@ const cotNhatKy = [
             Bật bằng lệnh chạy trên máy chủ (khoá bí mật không đi qua web, cố ý như vậy):
           </p>
           <p class="mt-1">
-            <code>cd &lt;thư mục HTBB-Web&gt; &amp;&amp; node scripts/tao-ma-2buoc.mjs {{ data.baoMat.admin }}</code>
+            <code>cd &lt;thư mục web&gt; &amp;&amp; node scripts/tao-ma-2buoc.mjs {{ data.baoMat.admin }}</code>
           </p>
           <p v-if="!data.baoMat.batBuoc2fa" class="mt-2">
             Ghi danh xong cho tất cả người trong <code>HTBB_ADMIN_ACCOUNTS</code> thì đặt

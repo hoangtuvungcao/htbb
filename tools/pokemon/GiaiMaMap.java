@@ -23,24 +23,24 @@ import com.htbb.pokemon.DinhDangBanDo;
 
 /**
  * Giai ma MOI ban do cMap/&lt;id&gt; + luoi quai map/map&lt;id&gt; -> JSON + anh xem truoc ve bang tile PMD
- * hien tai. Dinh dang: docs/pokemon/DINH_DANG_MAP.md; bo doc/ghi dung chung:
+ * hien tai. Dinh dang: docs/kien-truc.md; bo doc/ghi dung chung:
  * src/com/htbb/pokemon/DinhDangBanDo.java (tool kiem doc -> ghi lai trung tung byte).
  *
  * Chay (o thu muc HTBB/; can ban build server de doc bang cong/den - neu thieu thi bo qua phan do):
  *   javac -encoding UTF-8 -cp &lt;lop server&gt; -sourcepath src -d build/tools tools/pokemon/GiaiMaMap.java
  *   java -cp build/tools:&lt;lop server&gt;:lib/htbb-core.jar GiaiMaMap [thuMucCMap] [thuMucRa]
- *     mac dinh: cMap -> docs/pokemon/map_cu  (anh &lt;id&gt;.png + &lt;id&gt;.json + bang_den.json)
+ *     mac dinh: server/cMap -> du_lieu/map_giai (anh &lt;id&gt;.png + &lt;id&gt;.json, khong commit) + du_lieu/bang_den.json
  */
 public final class GiaiMaMap {
 
     /** Ban do GOC ve bang tile goc (map/t*.png); ban moi (VeMapMoi) ve bang map/pokemon_tile/. */
     static final String THU_MUC_TILE = "server/map/";
-    static final String THU_MUC_CAY = "server/map/pokemon_trang_tri/tree/";
+    static final String THU_MUC_CAY = "server/map/tree/";
     static final String THU_MUC_CAY_GOC = "server/map/tree/";
 
     public static void main(final String[] a) throws Exception {
         final String vao = a.length > 0 ? a[0] : "server/cMap";
-        final String ra = a.length > 1 ? a[1] : "docs/pokemon/map_cu";
+        final String ra = a.length > 1 ? a[1] : "du_lieu/map_giai";
         new File(ra).mkdirs();
         final List<Integer> ids = danhSachMap(vao);
         final BangDen den = BangDen.doc();
@@ -58,7 +58,7 @@ public final class GiaiMaMap {
             ImageIO.write(ve(id, m, q, den, true), "png", new File(ra, id + ".png"));
         }
         if (den.co) {
-            Files.write(new File(ra, "bang_den.json").toPath(), den.json().getBytes(StandardCharsets.UTF_8));
+            Files.write(new File("du_lieu/bang_den.json").toPath(), den.json().getBytes(StandardCharsets.UTF_8));
         }
         System.out.println("da giai ma " + ids.size() + " ban do -> " + ra + (loi > 0 ? (", LOI " + loi) : ", doc->ghi trung tung byte")
                 + (den.co ? "" : " (KHONG doc duoc bang cong/den cua server - thieu lop real.*)"));

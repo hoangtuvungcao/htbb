@@ -12,7 +12,7 @@ import java.util.List;
  *   tob_pokedex        (id_char, dex, so_ha, lan_dau)  : moi loai da gap / da ha
  *   tob_pokedex_thuong (id_char, moc, thoi_gian)       : moc thuong da nhan (chan nhan 2 lan)
  *
- * Tao bang (CREATE TABLE IF NOT EXISTS) luc khoi dong khi bat che do Pokemon - goi tu
+ * Tao bang (CREATE TABLE IF NOT EXISTS) luc khoi dong - goi tu
  * Database.themCotPokemon(). Ghi theo lo: real.PokedexPokemon gom trong bo nho, Database.saveChar
  * / saveCharAuto goi {@link #luu} chi ghi cac dong da doi. Moi SQL dung PreparedStatement.
  */

@@ -6,7 +6,7 @@ public class Tilemap
 {
 	public const int T_BLOCK = 2;
 
-	/// <summary>Resources/poke_map/&lt;id&gt;.bytes: bo cuc ve lai (che do Pokemon), xem docs/pokemon/DINH_DANG_MAP.md.</summary>
+	/// <summary>Resources/poke_map/&lt;id&gt;.bytes: bo cuc ve lai (che do Pokemon), xem docs/kien-truc.md.</summary>
 	public const string BAN_DO_POKEMON = "poke_map/";
 
 	public static int w;
@@ -174,17 +174,18 @@ public class Tilemap
 			trees.removeAllElements();
 			lv = (short)level;
 			DataInputStream dataInputStream = null;
-			if (byteMap == null && PokeBody.CHE_DO_POKEMON)
+			if (byteMap == null)
 			{
 				// Ban do ve lai (tools/pokemon/VeMapMoi.java) dong goi san cho luc server khong gui bo cuc
-				// (map 0 khi khoi dong / lui ve khi loi). Thieu tep thi dung ban goc nhu truoc.
+				// (map 0 khi khoi dong / lui ve khi loi). Ban do kiem hiep goc res/<level> da bo.
 				TextAsset banMoi = (TextAsset)Resources.Load(BAN_DO_POKEMON + level, typeof(TextAsset));
-				if (banMoi != null)
+				if (banMoi == null)
 				{
-					byteMap = ArrayCast.cast(banMoi.bytes);
+					throw new Exception("khong co bo cuc ban do " + level + " (server chua gui, khong co Resources/" + BAN_DO_POKEMON + level + ")");
 				}
+				byteMap = ArrayCast.cast(banMoi.bytes);
 			}
-			dataInputStream = ((byteMap != null) ? new DataInputStream(byteMap) : DataInputStream.getResourceAsStream(Main.res + "/" + level));
+			dataInputStream = new DataInputStream(byteMap);
 			w = dataInputStream.read();
 			h = dataInputStream.read();
 			pxw = w << 4;
@@ -497,12 +498,17 @@ public class Tilemap
 			}
 			imgMap.texture.Apply();
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
-			Out.println("LOAD TILE ERR " + level);
+			// Giữ nội dung ngoại lệ (trước đây bị vứt, bản đồ hỏng mà Player.log sạch trơn).
+			Out.LogError("LOAD TILE ERR " + level + ": " + ex.Message + "\n" + ex.StackTrace);
 			Canvas.instance.init();
 			Session_ME.gI().close();
-			loadMap(0, null);
+			// Chỉ lùi về bản đồ 0 khi đang ở bản đồ khác: bản đồ 0 hỏng mà gọi lại là tự gọi mãi -> StackOverflow.
+			if (level != 0)
+			{
+				loadMap(0, null);
+			}
 			ServerListScr.gI().switchToMe();
 		}
 		if (Canvas.gameScr != null)
@@ -634,10 +640,7 @@ public class Tilemap
 			mapName = TenMapPokemon.tenHoenn(idmap);
 			break;
 		}
-		if (PokeBody.CHE_DO_POKEMON)
-		{
-			mapName = TenMapPokemon.doi(mapName);
-		}
+		mapName = TenMapPokemon.doi(mapName);
 	}
 
 	public static void paintTile(MyGraphics g)

@@ -15,7 +15,7 @@ import java.util.Date;
  * khong bat duoc): GM go "tua <so><d|h|m>" (vd "tua 7d", "tua 3h", "tua 0" = ve gio that) de tua dong ho
  * ao; cong them sv.tua_nhanh_ngay (CongTac.tuaNhanhNgay). Do lech ghi vao tep dong_ho_thu.txt (thu muc chay)
  * de con sau khi server tu khoi dong lai (bao tri / su kien). Moi lan tua ghi nhat ky.
- * Dung cho BotXuyenSuot / bot persona (tools/pokemon/kiem_tai) - xem docs/pokemon/KIEM_THU_XUYEN_SUOT.md.
+ * Dung cho BotXuyenSuot / bot persona (tools/pokemon/kiem_tai) - xem docs/kien-truc.md.
  *
  * Chi doi thoi gian "lich": khoang cho ngan (hoi chieu, chong spam, timeout ket noi) van dung gio that
  * o noi khac; trong cac tep da noi vao dong ho nay, moi moc deu lay tu day nen hieu so van nhat quan.

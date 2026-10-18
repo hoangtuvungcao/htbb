@@ -5,7 +5,7 @@ import com.htbb.cauhinh.CauHinhTrungTam;
 /**
  * TU DONG DANH chinh thuc (quyet dinh 18/10/2026: bo mod NQSH phia client - AutoPk, Van may, Len thanh, Giao
  * hang tu dong - thay bang MOT tinh nang "Tu dong danh" do MAY CHU dieu khien). Lop THUAN: test/KiemTuDong.java
- * goi truc tiep; game goi qua real.TuDongGame. Tai lieu: docs/pokemon/TU_DONG_DANH.md.
+ * goi truc tiep; game goi qua real.TuDongGame. Tai lieu: docs/thiet-ke-game.md.
  *
  * Nguyen tac:
  *   1. Chi chay khi DANG ONLINE. Treo offline van la "Phieu uy thac luyen tap" (TangToc.UY_THAC) - tach rieng,

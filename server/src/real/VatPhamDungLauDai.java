@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Vat pham tieu hao / do giu moi (GD2b, NOI_DUNG_DAY_DU.md muc 4 + 9.1): data_item type 28 id
+ * Vat pham tieu hao / do giu moi (GD2b, docs/thiet-ke-game.md + 9.1): data_item type 28 id
  * 1201..1260 (sql/pokemon_vat_pham_lau_dai.sql) + bang data_vat_pham_lau_dai (id -> hieu_ung lay
  * NGUYEN chuoi cua doi noi dung, vd "tc:20,giay:90"). Bo doc hieu ung la DU LIEU: them vat pham moi
  * chi can them dong, khong sua code, mien la dung cac khoa da ho tro duoi day. Chi chay khi LauDai.bat().
@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * (qua mong: dung tay hoac TU DUNG khi du dieu kien, LauDaiJob); o:phien_da (do giu: bam dung = mang/thao,
  * hieu ung exp / chi_mang / hut / hoi_hp_3s / don_thuong / song_sot / chan_tien_hoa); bua:<k1-k2>
  * (bua bao ho that, NangCapLauDaiGame); nhom 'hop' + mo_hop:<id> (hop dot kich 1050/1051 -> NoiDungLauDai.moHop). toc_danh / chinh_xac / toc_danh_ngau_nhien: CHUA noi vao
- * cong thuc (ghi nhan buff, chua co tac dung) - xem KE_HOACH_LAU_DAI_GD2.md "Con lai".
+ * cong thuc (ghi nhan buff, chua co tac dung) - xem docs/thiet-ke-game.md "Con lai".
  */
 public final class VatPhamDungLauDai {
 

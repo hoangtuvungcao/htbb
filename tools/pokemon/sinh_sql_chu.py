@@ -5,13 +5,13 @@ G7.C1/C4: doi chu nguoi choi thay trong CSDL tu kiem hiep sang the gioi Pokemon.
 Ra (file sinh ra, KHONG sua tay - sua bang ben duoi hoac tu dien trong ChuPokemon.java roi
 chay lai):
   sql/pokemon_doi_chu.sql                                 UPDATE chi doi chu (id/so/gia giu nguyen)
-  docs/pokemon/bang_chu.csv                               moi o doi: bang,id,cot,cu,moi (+ moi cap
+  du_lieu/bang_chu.csv                               moi o doi: bang,id,cot,cu,moi (+ moi cap
                                                           cua tu dien, bang=ChuPokemon cot=tu_dien)
-  ClientUnity/Assets/Scripts/Game/ChuPokemonDuLieu.cs     tu dien cho client (ban sao bangDayDu)
+  client_pc_ios/Assets/Scripts/Assembly-CSharp/ChuPokemonDuLieu.cs    tu dien cho client (ban sao bangDayDu)
 
 Nguon chu:
   1. Bang rieng o duoi (TEN_THUOC, SHOP, QUEST, BO_CUOI, DAU_ITEM/DAU_SHOP...) - viet tay cho cho
-     can hay. Cac lua chon moi can chu du an duyet: docs/pokemon/DUYET_CHU.md.
+     can hay. Cac lua chon moi can chu du an duyet: docs/thiet-ke-game.md.
   2. Tu dien chung ChuPokemon.DOI (+ dia danh TenMapPokemon) cho moi o con lai.
   3. Ten quai trong nhiem vu ("20 con nhím" -> "20 con Sandshrew") lay tu
      sql/pokemon_du_lieu_quai.sql (chu thich "-- Cu -> Moi").
@@ -34,12 +34,12 @@ _spec.loader.exec_module(cp)
 
 GOC = cp.GOC
 RA_SQL = os.path.join(GOC, "sql", cp.SQL_CHU)
-RA_CSV = os.path.join(GOC, "docs", "pokemon", "bang_chu.csv")
+RA_CSV = os.path.join(GOC, "du_lieu", "bang_chu.csv")
 import importlib.util as _iu
 _sd = _iu.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
 dc = _iu.module_from_spec(_sd)
 _sd.loader.exec_module(dc)
-# Client PC chinh: htbb-client/pc (doi bang HTBB_CLIENT_ASSETS); ghi vao MOI ban client con ton tai.
+# Client Unity: client_pc_ios/Assets (doi bang HTBB_CLIENT_ASSETS).
 RA_CS = os.path.join(dc.scripts(dc.assets()), "ChuPokemonDuLieu.cs")
 RA_CS_TAT_CA = [os.path.join(dc.scripts(a), "ChuPokemonDuLieu.cs") for a in dc.cac_assets()]
 F_QUAI = os.path.join(GOC, "sql", "pokemon_du_lieu_quai.sql")
@@ -144,7 +144,7 @@ TEN_ITEM = {
 }
 # Dau ten (truoc dong mo ta) doi rieng theo id: {id: (dau cu, dau moi)}. Phan con lai van qua tu
 # dien chung. Dung cho do thoi trang ten ngan (vd "Freddy") de ro la "Áo ..." chu khong phai
-# ten mot Pokemon. Danh sach cho chu du an duyet: docs/pokemon/DUYET_CHU.md.
+# ten mot Pokemon. Danh sach cho chu du an duyet: docs/thiet-ke-game.md.
 DAU_ITEM = {
     622: ("Hồng hài nhi nam", "Áo Magby nam"), 623: ("Hồng hài nhi nữ", "Áo Magby nữ"),
     671: ("Freddy", "Áo Banette"), 672: ("Jason", "Áo Dusknoir"), 673: ("Harry potter", "Áo Alakazam"),
@@ -379,7 +379,7 @@ def main():
     with open(RA_SQL, "w", encoding="utf8", newline="\n") as f:
         f.write("-- SINH TU tools/pokemon/sinh_sql_chu.py - KHONG SUA TAY.\n")
         f.write("-- G7.C: chi doi CHU (ten/mo ta/hoi thoai). id, so, gia giu nguyen. Chay SAU cac file\n")
-        f.write("-- pokemon_* khac (muc 14 ke hoach). Doi chieu tung o: docs/pokemon/bang_chu.csv\n")
+        f.write("-- pokemon_* khac (muc 14 ke hoach). Doi chieu tung o: du_lieu/bang_chu.csv\n")
         f.write("SET NAMES utf8;\n")
         for bang, id_, cot, cu, moi in doi:
             f.write("UPDATE %s SET %s='%s' WHERE id=%d;\n" % (bang, cot, cp.thoat_sql(moi), id_))

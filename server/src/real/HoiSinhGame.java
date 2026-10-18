@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Noi GUC / HOI SINH (com.htbb.pokemon.HoiSinh, docs/pokemon/HOI_SINH.md) vao game. Cho goi:
+ * Noi GUC / HOI SINH (com.htbb.pokemon.HoiSinh, docs/thiet-ke-game.md) vao game. Cho goi:
  * <ul>
  *   <li>Char.actorDie -&gt; {@link #khiGuc} (ghi lan guc, tu dong danh: tu dung vat pham hoac dung + ve Trung tam);</li>
  *   <li>CharVongLap (1 giay sau guc) -&gt; {@link #sauMotGiay} (mo hop thoai thay popup cu), moi nhip -&gt; {@link #nhip};</li>
@@ -86,9 +86,9 @@ public final class HoiSinhGame {
         return c;
     }
 
-    /** Co che moi dang bat (che do Pokemon + hoi_sinh.bat). */
+    /** Co che hoi sinh moi dang bat (hoi_sinh.bat). */
     public static boolean bat() {
-        return com.htbb.pokemon.CheDoPokemon.bat() && ch().bat;
+        return ch().bat;
     }
 
     // ------------------------------------------------------------------ trang thai theo nhan vat

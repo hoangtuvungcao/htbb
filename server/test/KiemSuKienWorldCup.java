@@ -27,7 +27,7 @@ import java.nio.file.Paths;
  *
  * 4. idMenu KHONG PHAI idOptionMenu. Client tra lai DUNG idMenu no nhan duoc
  *    (menu goc luon la 0) va gui dong duoc chon trong idOptionMenu - xem
- *    GameService.doMenuOption ben ClientUnity. Bat nham truong la muc menu chet im.
+ *    GameService.doMenuOption ben client_pc_ios. Bat nham truong la muc menu chet im.
  */
 public final class KiemSuKienWorldCup {
 

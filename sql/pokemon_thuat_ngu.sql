@@ -1,4 +1,4 @@
--- Thuat ngu chuan (docs/pokemon/THUAT_NGU.md): doi thuat ngu cu con sot trong DU LIEU GOC.
+-- Thuat ngu chuan (docs/thiet-ke-game.md): doi thuat ngu cu con sot trong DU LIEU GOC.
 -- SINH TU tools/pokemon/sinh_sql_thuat_ngu.py - KHONG SUA TAY (sua tu dien ChuPokemon.DOI roi sinh lai).
 -- Chay SAU moi file sql/pokemon_* khac (xuat_sql_day_du.sh: buoc THUAT_NGU, cuoi cung).
 -- Chay lai an toan: moi cau chi khop o con dung chu cu (WHERE ... AND cot=<chu cu>).

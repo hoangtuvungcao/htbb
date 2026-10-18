@@ -299,7 +299,7 @@ class DatabaseNhanVat {
                 p.tichluy_tuan = rs.getInt("tichluy_tuan");
                 p.tichluy_bosung = rs.getInt("tichluy_bosung");
                 p.dbInfo = rs.getString("pInfo");
-                // Che do Pokemon: loai + shiny (cot moi, doc trong try rieng).
+                // Pokemon: loai + shiny (cot moi, doc trong try rieng).
                 Database.docCotPokemon(rs, p);
                 p.using = rs.getByte("del");
                 p.dbPotion = rs.getString("potion");
@@ -768,7 +768,7 @@ class DatabaseNhanVat {
             pre.setInt(33, p.charDBID);
             try {
                 pre.execute();
-                // Che do Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
+                // Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
                 Database.luuCotPokemon(conn, p.charDBID, p.pokeDex, p.pokeShiny);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1009,7 +1009,7 @@ class DatabaseNhanVat {
             pre.setInt(27, p.charDBID);
             try {
                 pre.execute();
-                // Che do Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
+                // Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
                 Database.luuCotPokemon(conn, p.charDBID, p.pokeDex, p.pokeShiny);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1160,7 +1160,7 @@ class DatabaseNhanVat {
         // nhieu cau "... WHERE charname='<ten>'". MariaDB (utf8_general_ci) van khop ten
         // luu "Pika", NovaDB (so sanh phan biet hoa/thuong) thi khong -> luu nhan vat, ban,
         // bang hoi... am tham khong cap nhat dong nao. Luu chu thuong ngay tu dau thi hai
-        // CSDL nhu nhau. Xem docs/cau-hinh-server-ini.md muc NovaDB.
+        // CSDL nhu nhau. Xem docs/cau-hinh.md muc NovaDB.
         charname = charname.toLowerCase();
         int charId = -1;
         Connection conn = null;
@@ -1370,7 +1370,7 @@ class DatabaseNhanVat {
                 ResultSet rs3 = pre.getResultSet();
                 if (rs3.next()) {
                     charId = rs3.getInt("id");
-                    // Che do Pokemon (viec S2): nhan vat moi mang Pokemon khoi dau cua class.
+                    // Pokemon (viec S2): nhan vat moi mang Pokemon khoi dau cua class.
                     Database.luuCotPokemon(conn, charId, LoaiPokemon.khoiDau(classID), 0);
                 }
                 try {
@@ -1503,7 +1503,7 @@ class DatabaseNhanVat {
             pre.setInt(24, charid);
             try {
                 pre.execute();
-                // Che do Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
+                // Pokemon: dex/shiny bang cau UPDATE rieng (xem Database.luuCotPokemon).
                 Database.luuCotPokemon(conn, charid, p.pokeDex, p.pokeShiny);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1775,7 +1775,7 @@ class DatabaseNhanVat {
                 ResultSet rs3 = pre.getResultSet();
                 if (rs3.next()) {
                     charId = rs3.getInt("id");
-                    // Che do Pokemon (viec S2): nhan vat moi mang Pokemon khoi dau cua class.
+                    // Pokemon (viec S2): nhan vat moi mang Pokemon khoi dau cua class.
                     Database.luuCotPokemon(conn, charId, LoaiPokemon.khoiDau(classID), 0);
                     System.out.println("CHAR DANG KY THANH CONG: " + charId);
                 }

@@ -98,7 +98,7 @@ public class CharSelectScr : MyScreen
 	/// </summary>
 	public static int duDoanDex(MainChar c)
 	{
-		if (!PokeBody.CHE_DO_POKEMON || c == null || c.weaponType < 3 || c.weaponType > 7)
+		if (c == null || c.weaponType < 3 || c.weaponType > 7)
 		{
 			return -1;
 		}

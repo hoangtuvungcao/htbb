@@ -2,7 +2,7 @@
  * Loài Pokémon của nhân vật người chơi (nhánh pokemon/chuyen-doi).
  *
  * Bản TS thuần của quy tắc trong game server `src/com/htbb/pokemon/LoaiPokemon.java`
- * (repo HTBB) — sửa bên đó thì sửa cả ở đây. Kế hoạch: HTBB/docs/pokemon/KE_HOACH_CHUYEN_DOI.md
+ * (repo HTBB) — sửa bên đó thì sửa cả ở đây. Kế hoạch: docs/kien-truc.md
  * mục 4.1.
  *
  * - `tob_char.class` (0..4) = dòng khởi đầu: 0 Charmander, 1 Bulbasaur, 2 Eevee, 3 Squirtle, 4 Pichu.

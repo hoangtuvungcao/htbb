@@ -95,7 +95,7 @@ public class ChatPopup
 
 	public static void paintRoundRect(MyGraphics g, int x, int y, int w, int h, int color1, int color2)
 	{
-		if (UiPokemon.bat() && color1 == 16777215)
+		if (color1 == 16777215)
 		{
 			UiPokemon.theKinh(g, x, y, w, h); // pokemon: giao diện - bóng thoại kính trắng viền navy
 			return;

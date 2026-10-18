@@ -8,7 +8,7 @@ Ca hai ben chay CUNG bo ca "thuNghiem" (HTBB-Web: npm test; HTBB: test/KiemItemM
 
 Quy tac (yeu cau 18/10/2026, luat "khong item mo coi" - tools/pokemon/kiem_item_mo_coi.py):
   - Giftcode chi phat vat pham KHOA, khong cao cap: tieu hao / nguyen lieu / tin vat su kien (dai VAT_PHAM),
-    trang bi trong catalog (docs/pokemon/noi_dung_trang_bi.csv) voi cap mon <= cap nguoi nhan (web: <= cap_toi_thieu
+    trang bi trong catalog (du_lieu/noi_dung_trang_bi.csv) voi cap mon <= cap nguoi nhan (web: <= cap_toi_thieu
     cua ma; server: <= cap nhan vat luc nhap). Khong do ban bang luong (thoi trang, thu cuoi, pet, skin, canh, thoi
     trang su kien...), khong vat pham "doi" cao cap (dong xu, ruong may man...).
   - Ngoc: moi ngoc co that (0..NGOC_TOI_DA) tru ngoc ban bang luong o cua hang ngoc (sell=1, typeMoney=1,
@@ -53,7 +53,7 @@ def ngoc_ban_luong():
 
 def trang_bi():
     ra = set()
-    for r in csv.DictReader(open(os.path.join(GOC, "docs", "pokemon", "noi_dung_trang_bi.csv"), encoding="utf-8")):
+    for r in csv.DictReader(open(os.path.join(GOC, "du_lieu", "noi_dung_trang_bi.csv"), encoding="utf-8")):
         if (r.get("id_item") or "").isdigit():
             ra.add(int(r["id_item"]))
     return sorted(ra)

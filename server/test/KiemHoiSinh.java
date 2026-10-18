@@ -16,7 +16,7 @@ import java.util.Map;
  * Guc / hoi sinh (com.htbb.pokemon.HoiSinh + real.HoiSinhGame, 18/10/2026): phi theo cap + he so guc lap, luong khoa
  * co tran, phat ve Trung tam (KHONG BAO GIO tut cap, do ben, met moi), tan thu, han che PvP / Gym / boss / Me cung,
  * cho + hoi chieu, dong doi, tu dong danh (dung tu dong, tu dung vat pham chi khi bat), vung Hoenn hoi sinh O HOENN
- * (o di duoc that tren cMap_pokemon), cau hinh trung tam va cac cho noi vao game.
+ * (o di duoc that tren cMap), cau hinh trung tam va cac cho noi vao game.
  */
 public final class KiemHoiSinh {
 
@@ -275,7 +275,7 @@ public final class KiemHoiSinh {
         Kiem.bang("thi tran co Trung tam: chinh no", 59, HoiSinh.trungTamHoennGanNhat(59));
         final boolean coFile = new File(BanDoPokemon.THU_MUC_CMAP + "43").isFile();
         if (!coFile) {
-            System.out.println("   (bo qua kiem o di duoc: khong co cMap_pokemon)");
+            System.out.println("   (bo qua kiem o di duoc: khong co cMap)");
         }
         final Map<Integer, boolean[]> di = new HashMap<Integer, boolean[]>();
         int sai = 0, ngoai = 0;
@@ -304,7 +304,7 @@ public final class KiemHoiSinh {
             }
         }
         Kiem.bang("guc o MOI ban do Hoenn (29) -> hoi sinh o thi tran HOENN co Trung tam", 0, ngoai);
-        Kiem.bang("diem hoi sinh Hoenn la o di duoc (cMap_pokemon)", 0, sai);
+        Kiem.bang("diem hoi sinh Hoenn la o di duoc (cMap)", 0, sai);
     }
 
     static void cauHinh() throws Exception {

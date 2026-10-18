@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Sinh PHU KIEN TRANG BI pixel-art (ve tay = 0 byte anh ban quyen: moi hinh la mat na ASCII duoi day, to bong
- * + vien TU DONG) cho he ngoai hinh trang bi (docs/pokemon/NGOAI_HINH_TRANG_BI.md, server
+ * + vien TU DONG) cho he ngoai hinh trang bi (docs/thiet-ke-game.md, server
  * com.htbb.pokemon.NgoaiHinh). Moi client (jar / Android / PC Java / Unity) doc CHUNG mot tep:
  *   &lt;Assets&gt;/Resources/poke/phukien.bytes   (DongGoiPokeJ2me chep sang j2me/res/pk/phukien.bin)
  * va ve theo cung mot quy tac (diem neo + lop truoc/sau than), nen bon ban giong nhau.

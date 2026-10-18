@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 /// Doi o MOT cho: MFont (moi chu ve ra man hinh, do rong chu, ngat dong) goi D(). Nho vay
 /// khong phai sua tung chuoi trong GameScr/MenuWindows/PauseMenu... va chu server gui xuong
 /// cung qua day (server da doi roi thi doi lai van ra y het - tu dien khong lap).
-/// Tat PokeBody.CHE_DO_POKEMON thi tra nguyen chuoi. O nhap chu (TField) tat tam qua
+/// O nhap chu (TField) tat tam qua
 /// KhongDoi de nguoi choi thay dung chu minh go.
 /// </summary>
 public static class ChuPokemon
@@ -30,7 +30,7 @@ public static class ChuPokemon
 
 	public static string D(string s)
 	{
-		if (!PokeBody.CHE_DO_POKEMON || KhongDoi || string.IsNullOrEmpty(s))
+		if (KhongDoi || string.IsNullOrEmpty(s))
 		{
 			return s;
 		}

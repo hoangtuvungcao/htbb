@@ -184,7 +184,7 @@ public abstract class Actor
 	public virtual void paintName(MyGraphics g)
 	{
 		// pokemon: lời NPC đang nói hiện ở hộp thoại đáy màn (HopThoaiPoke) - không vẽ trùng bóng thoại
-		if (chat != null && !(UiPokemon.bat() && HopThoaiPoke.npcDangNoi() == this))
+		if (chat != null && HopThoaiPoke.npcDangNoi() != this)
 		{
 			chat.paintAnimal(g);
 		}

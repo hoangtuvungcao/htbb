@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Giai doan 2 cua thiet ke dai han (docs/pokemon/KE_HOACH_LAU_DAI_GD2.md): ham thuan cua tung
+ * Giai doan 2 cua thiet ke dai han (docs/thiet-ke-game.md): ham thuan cua tung
  * buoc + cac sua loi buoc 1. Co sv.lau_dai TAT trong moi test cu (mac dinh) - test nay tu bat/tat
  * va tra lai trang thai cu.
  */
@@ -63,7 +63,7 @@ public final class KiemLauDaiGd2 {
         Kiem.sai("\"0\" = tat", LauDai.docGiaTri("0"));
         Kiem.sai("mac dinh tat khi chay ngoai server", LauDai.bat());
         final String tmpl = doc("../vps/server.ini.tmpl");
-        Kiem.dung("ban mau co sv.lau_dai=0", tmpl.contains("\nsv.lau_dai=0"));
+        Kiem.dung("ban mau co sv.lau_dai=1 (production)", tmpl.contains("\nsv.lau_dai=1\n"));
         Kiem.dung("ban mau co sv.ngay_khai_truong", tmpl.contains("\nsv.ngay_khai_truong="));
         final String sv = doc("src/server/TeamServer.java");
         Kiem.dung("TeamServer doc sv.lau_dai", sv.contains("p.getProperty(\"sv.lau_dai\")"));
@@ -557,7 +557,7 @@ public final class KiemLauDaiGd2 {
 
     static void buoc5() {
         Kiem.nhom("GD2 buoc 5 - su kien: ma moi + lich 52 tuan");
-        final String csv = doc("../docs/pokemon/su_kien_nam.csv");
+        final String csv = doc("../du_lieu/su_kien_nam.csv");
         final List<String[]> dong = docCsv(csv);
         Kiem.bang("CSV 52 tuan", Integer.valueOf(52), Integer.valueOf(dong.size()));
         Kiem.bang("bang Java 52 tuan", Integer.valueOf(52), Integer.valueOf(SuKienLauDai.LICH.length));
@@ -667,8 +667,8 @@ public final class KiemLauDaiGd2 {
             Kiem.bang("Message(" + lenh + ") chi tao o GoiLauDaiGame", Integer.valueOf(0),
                     Integer.valueOf(dem(src.replace(doc("src/real/GoiLauDaiGame.java"), ""), "new Message(" + lenh + ")")));
         }
-        final String tl = doc("../docs/pokemon/THIET_KE_LAU_DAI.md");
-        Kiem.dung("muc 4.6 ghi ro -95..-99 da chot", tl.contains("-95") && tl.contains("POKE_DONG_GOP"));
+        final String tl = doc("../docs/thiet-ke-game.md");
+        Kiem.dung("thiet-ke-game.md ghi ro -95..-99 da chot", tl.contains("-95") && tl.contains("POKE_DONG_GOP"));
     }
 
     static int doDai(final int loai) {

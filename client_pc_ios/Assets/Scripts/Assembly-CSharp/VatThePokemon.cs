@@ -8,8 +8,8 @@ using UnityEngine;
 ///  - NPC su kien (lenh -50) la do vat (cong dich chuyen, bang khu, noi banh): Npc_Server
 ///    goi veNpc theo idImg (viec G7.B2).
 /// Anh: Resources/poke/vt_&lt;id&gt;.bytes va vt_npc&lt;idImg&gt;.bytes (PNG), sinh boi
-/// tools/pokemon/tai_vat_the.py; bang doi chieu docs/pokemon/bang_vat_the.csv (sua 2 noi cung
-/// luc - test/KiemHinhPokemon so khop). Chi ve khi PokeBody.CHE_DO_POKEMON; thieu file thi
+/// tools/pokemon/tai_vat_the.py; bang doi chieu du_lieu/bang_vat_the.csv (sua 2 noi cung
+/// luc - test/KiemHinhPokemon so khop). Thieu file thi
 /// moi ham tra ve false de noi goi ve kieu cu.
 /// </summary>
 public static class VatThePokemon
@@ -69,7 +69,7 @@ public static class VatThePokemon
 
 	private static Anh lay(string khoa, short[] dong)
 	{
-		if (dong == null || !PokeBody.CHE_DO_POKEMON)
+		if (dong == null)
 		{
 			return null;
 		}

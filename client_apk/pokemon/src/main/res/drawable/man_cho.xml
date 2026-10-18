@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Màn chờ lúc mở app (trước khi game vẽ khung đầu): nền trời đêm của key art + logo chung
-     (htbb-client/shared/brand/logo_512.png - j2me/tools/tao_logo.py). -->
+     (client_jar/shared/brand/logo_512.png - client_jar/tools/tao_logo.py). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">

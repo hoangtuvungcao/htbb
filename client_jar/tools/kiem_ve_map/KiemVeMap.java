@@ -24,9 +24,9 @@ import javax.microedition.lcdui.Image;
  * cua game/model/Tilemap.loadMap + paintTile + TileTop.paint + Tree.paint + NPC.paint (vi tri chan
  * (tx*16+8, ty*16+8), Pokedex theo NPC.POKE_DEX_THEO_TYPE doc thang tu NPC.java).
  *
- * Moi ban do HTBB/cMap_pokemon/&lt;id&gt;:
+ * Moi ban do HTBB/cMap/&lt;id&gt;:
  *   1. lop tile ve bang bo tile cua JAR (res/pt) so tung pixel voi anh xem truoc cua generator
- *      (docs/pokemon/map_moi/&lt;id&gt;.png) - lech = jar/server/anh xem truoc khong cung bo.
+ *      (du_lieu/map_moi/&lt;id&gt;.png) - lech = jar/server/anh xem truoc khong cung bo.
  *   2. chi so tile ngoai bo (drawRegion nem loi -> client bo ca lop tile), tileTop/cay (ban moi phai rong).
  *   3. vat the bi CAT: pixel vat the cham mep o ma o ben canh la nen tron (vd tuong quang truong lay sai o).
  *   4. "lo nen": vat the ve tren nen khac nen xung quanh (vd den co nen co dat giua san lat da).
@@ -61,6 +61,12 @@ public final class KiemVeMap {
     static final StringBuilder bao = new StringBuilder();
     static int loi, canhBao;
 
+    /** Tep cua thu muc server (cMap, map/...) hoac cua goc repo (du_lieu/, tools/) - thu server truoc. */
+    static File tim(final String rel) {
+        final File f = new File(htbb, rel);
+        return f.exists() ? f : new File(htbb.getAbsoluteFile().getParentFile(), rel);
+    }
+
     public static void main(final String[] a) throws Exception {
         htbb = new File(a[0]);
         res = new File(a[1]);
@@ -74,7 +80,7 @@ public final class KiemVeMap {
         }
         kiemVatThe();
         final TreeMap<Integer, File> ds = new TreeMap<Integer, File>();
-        for (final File f : new File(htbb, "cMap_pokemon").listFiles()) {
+        for (final File f : tim("cMap").listFiles()) {
             if (f.getName().matches("\\d+")) {
                 ds.put(Integer.parseInt(f.getName()), f);
             }
@@ -103,7 +109,7 @@ public final class KiemVeMap {
 
     static void docBangTile() throws Exception {
         final Map<String, List<String>> ten = new HashMap<String, List<String>>();
-        for (final String l : Files.readAllLines(new File(htbb, "docs/pokemon/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8)) {
+        for (final String l : Files.readAllLines(tim("du_lieu/bang_tile_moi.csv").toPath(), StandardCharsets.UTF_8)) {
             final String[] p = l.split(",", 5);
             if (p.length < 4 || p[0].equals("bo_tile")) {
                 continue;
@@ -170,15 +176,15 @@ public final class KiemVeMap {
     /** Bo tile cua jar (res/pt) so voi server (map/pokemon_tile), .type jar so voi server; tim nen + mat na tung tile. */
     static void kiemBo(final String bo) throws Exception {
         final BufferedImage jar = ImageIO.read(new File(res, "pt/" + bo + ".png"));
-        final BufferedImage sv = ImageIO.read(new File(htbb, "map/pokemon_tile/" + bo + ".png"));
+        final BufferedImage sv = ImageIO.read(tim("map/pokemon_tile/" + bo + ".png"));
         if (!java.util.Arrays.equals(Files.readAllBytes(new File(res, "pt/" + bo + ".png").toPath()),
-                Files.readAllBytes(new File(htbb, "map/pokemon_tile/" + bo + ".png").toPath()))) {
+                Files.readAllBytes(tim("map/pokemon_tile/" + bo + ".png").toPath()))) {
             loi("bo " + bo + ": res/pt/" + bo + ".png cua jar khac map/pokemon_tile/" + bo + ".png cua server (chay cai_map_j2me.sh)");
         }
         final byte[] tj = Files.readAllBytes(new File(res, bo + ".type").toPath());
-        final byte[] ts = Files.readAllBytes(new File(htbb, "cMap_pokemon/" + bo + ".type").toPath());
+        final byte[] ts = Files.readAllBytes(tim("cMap/" + bo + ".type").toPath());
         if (!java.util.Arrays.equals(tj, ts)) {
-            loi("bo " + bo + ": res/" + bo + ".type cua jar khac cMap_pokemon/" + bo + ".type cua server (va cham client != server)");
+            loi("bo " + bo + ": res/" + bo + ".type cua jar khac cMap/" + bo + ".type cua server (va cham client != server)");
         }
         final BufferedImage anh = new BufferedImage(16, jar.getHeight(), BufferedImage.TYPE_INT_ARGB);
         anh.createGraphics().drawImage(jar, 0, 0, null);
@@ -404,7 +410,7 @@ public final class KiemVeMap {
             loi("chi so tile ngoai bo " + bo + " o " + ngoaiBo + " o -> paintTile nem loi, client khong ve lop tile");
         }
         // ---- so lop tile voi anh xem truoc cua generator
-        final File xt = new File(htbb, "docs/pokemon/map_moi/" + id + ".png");
+        final File xt = tim("du_lieu/map_moi/" + id + ".png");
         int lech = 0;
         if (!xt.isFile()) {
             loi("thieu anh xem truoc " + xt);
@@ -627,7 +633,7 @@ public final class KiemVeMap {
         BufferedImage b = BANG.get(ten);
         if (b == null) {
             try {
-                b = ImageIO.read(new File(htbb, "tools/pokemon/pmd_raw_tile_moi/ninja_full/" + ten + ".png"));
+                b = ImageIO.read(tim("tools/pokemon/pmd_raw_tile_moi/ninja_full/" + ten + ".png"));
             } catch (final java.io.IOException e) {
                 throw new IllegalStateException(e);
             }

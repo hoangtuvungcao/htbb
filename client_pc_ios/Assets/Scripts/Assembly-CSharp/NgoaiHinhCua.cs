@@ -2,7 +2,7 @@
 /// Ngoai hinh trang bi cua MOT nhan vat (lenh -102 POKE_NGOAI_HINH, server com.htbb.pokemon.NgoaiHinh):
 /// phu kien tung o (kieu, do hiem, bac, +N) + bac tot nhat, +N cao nhat, so mon cung bac (bo), trang phuc,
 /// mat na an. Ve bang NgoaiHinhVe. Ban PC cua game.pokemon.NgoaiHinhCua (jar).
-/// HTBB docs/pokemon/NGOAI_HINH_TRANG_BI.md.
+/// HTBB docs/thiet-ke-game.md.
 /// </summary>
 public sealed class NgoaiHinhCua
 {

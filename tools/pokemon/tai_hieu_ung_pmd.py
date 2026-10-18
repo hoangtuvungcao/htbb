@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Tai hieu ung chieu (particle) PMDCollab/RawAsset cho MOI chieu trong docs/pokemon/bang_chieu.csv
-va dong goi cho client (viec K3 trong docs/pokemon/KE_HOACH_CHUYEN_DOI.md).
+Tai hieu ung chieu (particle) PMDCollab/RawAsset cho MOI chieu trong du_lieu/bang_chieu.csv
+va dong goi cho client (viec K3 trong docs/kien-truc.md).
 
 Dinh dang file RawAsset/Particle (doc tu RogueEssence/Content/DirSheet.cs, ham Import):
   Ten file = <Ten>.<Kieu>.png, <Kieu> quyet dinh cach cat khung:
@@ -28,7 +28,7 @@ Dong goi (client Unity, Resources/poke/):
                   lop,chieu,ten,rong,cao,soKhung,soHuong,soCot,kieuVe,tickMoiKhung
                   kieuVe: D = no tai muc tieu, B = bay tu nguoi danh toi muc tieu,
                           T = tren nguoi dung chieu (chieu bo tro).
-  docs/pokemon/bang_hieu_ung.csv  bang doi chieu (commit).
+  du_lieu/bang_hieu_ung.csv  bang doi chieu (commit).
 
 Chay (o thu muc HTBB/):
     python3 -I tools/pokemon/tai_hieu_ung_pmd.py            # tai + dong goi
@@ -49,13 +49,13 @@ import zlib
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 RAW = os.path.join(GOC, "tools", "pokemon", "pmd_raw_hieu_ung")
-BANG_CHIEU = os.path.join(GOC, "docs", "pokemon", "bang_chieu.csv")
-BANG_HU = os.path.join(GOC, "docs", "pokemon", "bang_hieu_ung.csv")
+BANG_CHIEU = os.path.join(GOC, "du_lieu", "bang_chieu.csv")
+BANG_HU = os.path.join(GOC, "du_lieu", "bang_hieu_ung.csv")
 import importlib.util as _iu
 _sd = _iu.spec_from_file_location("duong_client", os.path.join(os.path.dirname(os.path.abspath(__file__)), "duong_client.py"))
 dc = _iu.module_from_spec(_sd)
 _sd.loader.exec_module(dc)
-# Client PC chinh: htbb-client/pc/Assets (doi bang HTBB_CLIENT_ASSETS); con HTBB/ClientUnity thi chep sang ca do.
+# Client Unity: client_pc_ios/Assets (doi bang HTBB_CLIENT_ASSETS).
 RA = dc.resources(dc.assets(), "poke")
 GHI_CONG = os.path.join(RA, "GHI_CONG.txt")
 

@@ -44,7 +44,7 @@ public final class SoTayLauDai {
 
     /** Vi tri muc trong menu NPC -90: sau "Xem doi thuong" (0) va "Pokédex" (1, neu co). */
     public static int viTri() {
-        return com.htbb.pokemon.CheDoPokemon.bat() ? 2 : 1;
+        return 2;
     }
 
     public static void moMenu(final Char p) {

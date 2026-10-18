@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 /**
  * Luat "cac item khong bi mo coi, deu su dung vao 1 viec nao do" (tools/pokemon/kiem_item_mo_coi.py ->
- * docs/pokemon/KIEM_ITEM.md + kiem_item.csv). Voi co da giao (sv.lau_dai=1, sv.he_sinh_thai=0 va =1):
+ * du_lieu/KIEM_ITEM.md + kiem_item.csv). Voi co da giao (sv.lau_dai=1, sv.he_sinh_thai=0 va =1):
  * 0 vat pham mo coi (co nguon, khong cong dung), 0 chi-ban-NPC, 0 khong lay duoc, 0 tham chieu treo, 0 trung ten,
  * 0 ten kiem hiep con lay duoc, 0 quy tac viet tay loi thoi.
  *
@@ -26,15 +26,15 @@ import java.util.regex.Pattern;
  */
 public final class KiemItemMoCoi {
 
-    private static final String F_MD = "../docs/pokemon/KIEM_ITEM.md";
-    private static final String F_CSV = "../docs/pokemon/kiem_item.csv";
+    private static final String F_MD = "../du_lieu/KIEM_ITEM.md";
+    private static final String F_CSV = "../du_lieu/kiem_item.csv";
     private static final String F_VP = "../sql/pokemon_vat_pham_lau_dai.sql";
     private static final String F_ND = "../sql/pokemon_noi_dung.sql";
     private static final String F_LD = "../sql/pokemon_lau_dai.sql";
     private static final String F_GC_JSON = "../web/shared/data/giftcode-an-toan.json";
     private static final String[] DAU_VAO = {"sql/htbb_day_du.sql", "sql/pokemon_noi_dung.sql", "sql/pokemon_vat_pham_lau_dai.sql",
-        "sql/pokemon_lau_dai.sql", "sql/pokemon_doi_chu.sql", "sql/pokemon_nhiem_vu.sql", "docs/pokemon/noi_dung_roi.csv",
-        "docs/pokemon/nhiem_vu_moi.csv"};
+        "sql/pokemon_lau_dai.sql", "sql/pokemon_doi_chu.sql", "sql/pokemon_nhiem_vu.sql", "du_lieu/noi_dung_roi.csv",
+        "du_lieu/nhiem_vu_moi.csv"};
 
     private KiemItemMoCoi() {
     }

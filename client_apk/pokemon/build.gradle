@@ -1,5 +1,5 @@
 // APK Huyền Thoại Bảo Bối (Pokémon) = CODE BẢN JAR J2ME chạy trên lớp tương thích MIDP cho Android.
-//   gradlew :pokemon:assembleDebug   [-PmayChu=host:cong] [-PhtbbBan=N] [-PxacThuc=1]
+//   gradlew :pokemon:assembleDebug   [-PmayChu=host:cong] [-PhtbbBan=N]
 //   gradlew :pokemon:assembleRelease [-PmayChu=host:cong] [-PhtbbKeyDir=...]
 //
 // - Code game: ../../client_jar/src + ../../client_jar/shared/mod, chép + vá tối thiểu bởi ../port-j2me.py lúc build (một nguồn
@@ -8,11 +8,9 @@
 // - Tài nguyên: ../../client_jar/res (bản ĐẦY ĐỦ, không phải res_nhe) làm assets.
 // - Server: bản debug mặc định nối server thử 10.0.2.2:19129 (máy chủ của máy ảo Android = 127.0.0.1 máy
 //   dev), tên "Thử nghiệm". -PmayChu=host:cong (hoặc biến MAY_CHU) đổi server (cả release). Release BẮT BUỘC có
-//   máy chủ: -PmayChu / MAY_CHU / MAY_CHU_CHINH / MAY_CHU_CHINH= trong ../tools/phat-hanh/may_chu.conf - thiếu là DỪNG
-//   (trước đây release tải danh sách server nqsh-h2.top). -Pnqsh=1 = bỏ kiểm (chỉ khi cố ý build kiểu cũ).
+//   máy chủ: -PmayChu / MAY_CHU / MAY_CHU_CHINH / MAY_CHU_CHINH= trong ../tools/phat-hanh/may_chu.conf - thiếu là DỪNG.
 // - Phiên bản: versionCode = -PhtbbBan hoặc BAN=, versionName = PHIEN_BAN= trong ../tools/phat-hanh/phien_ban.conf.
 // - Ghi công: client_jar/res/GHI_CONG.txt (vào assets cùng res; màn "Ghi công" trong game, sinh bởi client_jar/tools/sinh_ghi_cong.py).
-// - Xác thực -88 tắt (server Pokémon không có lệnh này); -PxacThuc=1 bật lại như XAC_THUC=1 của bản jar.
 plugins {
     id 'com.android.application'
 }
@@ -33,8 +31,6 @@ def ban = (project.findProperty('htbbBan') ?: docConf('phien_ban.conf', 'BAN') ?
 def phienBan = docConf('phien_ban.conf', 'PHIEN_BAN') ?: "1.$ban"
 def mayChu = project.findProperty('mayChu') ?: System.getenv('MAY_CHU')
 def mayChuRelease = mayChu ?: System.getenv('MAY_CHU_CHINH') ?: docConf('may_chu.conf', 'MAY_CHU_CHINH')
-def choPhepNqsh = (project.findProperty('nqsh') ?: System.getenv('NQSH') ?: '0').toString() == '1'
-def xacThuc = (project.findProperty('xacThuc') ?: '0').toString()
 def keyDir = project.findProperty('htbbKeyDir') ?: System.getenv('KEY_DIR')
 def khoa = new Properties()
 if (keyDir && file("$keyDir/key.properties").exists()) {
@@ -122,14 +118,13 @@ def portJ2me = tasks.register('portJ2me') {
     inputs.dir(vaoMod)
     inputs.file(script)
     inputs.property('ban', ban)
-    inputs.property('xacThuc', xacThuc)
     outputs.dir(codeSinh)
     doLast {
         def ra = codeSinh.get().asFile
         ra.mkdirs()
         def py = System.getenv('PYTHON') ?: (org.gradle.internal.os.OperatingSystem.current().isWindows() ? 'python' : 'python3')
         def kq = providers.exec {
-            commandLine py, '-I', script.absolutePath, vaoSrc.absolutePath, vaoMod.absolutePath, ra.absolutePath, "$ban", xacThuc
+            commandLine py, '-I', script.absolutePath, vaoSrc.absolutePath, vaoMod.absolutePath, ra.absolutePath, "$ban"
         }
         println kq.standardOutput.asText.get().trim()
     }
@@ -171,21 +166,17 @@ def thuocTinhRelease = tasks.register('thuocTinhRelease') {
 }
 tasks.named('preBuild') { dependsOn portJ2me, thuocTinhDebug, thuocTinhRelease }
 
-// Bản phát hành phải gắn máy chủ production (không còn rơi về danh sách server NQSH-H2 cũ)
+// Bản phát hành phải gắn máy chủ production
 def kiemMayChuRelease = tasks.register('kiemMayChuRelease') {
     doLast {
         def mc = (mayChuRelease ?: '').toString()
-        if (choPhepNqsh) {
-            if (!mc) logger.warn('CANH BAO: -Pnqsh=1 - APK release KHONG gan may chu, tai danh sach server cu')
-            return
-        }
         if (!(mc ==~ /^[^:\s]+:\d+$/)) {
             throw new GradleException("APK release can may chu production host:cong (hien tai: '$mc'). Dat -PmayChu=host:cong " +
                 "(build-pokemon.sh: MAY_CHU=host:cong), bien MAY_CHU_CHINH, hoac MAY_CHU_CHINH= trong tools/phat-hanh/may_chu.conf " +
                 "(cp tools/phat-hanh/may_chu.conf.example tools/phat-hanh/may_chu.conf).")
         }
         if (mc.contains('nqsh-h2')) {
-            throw new GradleException("May chu '$mc' la server NQSH-H2 - khong build APK HTBB (dat -Pnqsh=1 neu co y)")
+            throw new GradleException("May chu '$mc' la server NQSH-H2 cu - khong build APK HTBB")
         }
         println "HTBB release: may chu $mc, phien ban $phienBan ($ban)"
     }

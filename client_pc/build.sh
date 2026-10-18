@@ -6,7 +6,6 @@
 #   KIEU=phat-hanh sh client_pc/build.sh        -> bản phát hành: BẮT BUỘC có máy chủ MAY_CHU_CHINH=host:cong hoặc
 #                                                MAY_CHU_CHINH= trong ../tools/phat-hanh/may_chu.conf (thiếu là DỪNG)
 #   BAN=901 / PHIEN_BAN=0.9.1 ...             -> mặc định đọc ../tools/phat-hanh/phien_ban.conf
-#   XAC_THUC=1                                -> bật lại xác thực -88 (server NQSH cũ)
 #   APP_IMAGE=0                               -> bỏ bước jpackage (app-image Linux/macOS)
 #
 # Ra (client_pc/out/):
@@ -60,8 +59,7 @@ B=$OUT/build
 rm -rf "$B/cls" "$B/res" && mkdir -p "$B/gen" "$B/cls" "$B/res" "$OUT"
 
 # ---- 1. code game từ bản jar ----
-case "${XAC_THUC:-0}" in 1|bat|true) XT=1 ;; *) XT=0 ;; esac
-"$PY" -I port-j2me.py "$J2ME/src" ../client_jar/shared/mod "$B/gen" "$BAN" "$XT"
+"$PY" -I port-j2me.py "$J2ME/src" ../client_jar/shared/mod "$B/gen" "$BAN"
 
 # ---- 2. biên dịch (Java 8) ----
 find src "$B/gen" -name '*.java' > "$B/nguon.txt"

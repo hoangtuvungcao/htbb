@@ -3,7 +3,6 @@
 // 
 package real;
 
-import com.htbb.pokemon.CheDoPokemon;
 
 import Constant.Checker;
 import data.FruitTemplate;
@@ -588,7 +587,7 @@ public class MessageCreator {
                 KiemGoi26.kiem(msgMons.toByteArray(), clientVersion);
             } catch (final Exception ex) {
             }
-            // Che do Pokemon: kem -91 POKE_QUAI ngay sau goi 26 (null khi tat co).
+            // Pokemon: kem -91 POKE_QUAI ngay sau goi 26 (null khi tat co).
             msgMons.kemTheo = TienHoaPokemon.taoPokeQuai();
         }
         return msgMons;
@@ -752,7 +751,7 @@ public class MessageCreator {
                 m.dos.writeByte(charData.nFrameVK);
             }
             m.dos.writeByte(DataGame.version);
-            // Che do Pokemon: khoi ngoai hinh (dex, shiny, phu kien) cho man chon Pokemon - sau byte version,
+            // Pokemon: khoi ngoai hinh (dex, shiny, phu kien) cho man chon Pokemon - sau byte version,
             // client cu khong doc toi nen tuong thich nguoc (NgoaiHinhGame.ghiKhoiDanhSach)
             NgoaiHinhGame.ghiKhoiDanhSach(m.dos, chars);
             chars.removeAll(chars);
@@ -1734,7 +1733,7 @@ public class MessageCreator {
             m.dos.writeShort(Char.clampShort(ch.defend_physic + ch.percentBuff[0]));
             m.dos.writeShort(Char.clampShort(ch.defend_magic + ch.getBuffDefCB(1, true)));
             m.dos.writeByte(ch.lvDetail.lv);
-            m.dos.writeByte(CheDoPokemon.heGuiClient(ch.he));
+            m.dos.writeByte(com.htbb.pokemon.HePokemon.heGuiClient(ch.he));
             int userHorse = ch.rideHorse;
 
             // Kiểm tra isHoaHinh trước
@@ -1905,7 +1904,7 @@ public class MessageCreator {
             } catch (final Exception ex) {
             }
         }
-        // Che do Pokemon: kem -90 POKE_THAN ngay sau goi 5 (null khi tat co).
+        // Pokemon: kem -90 POKE_THAN ngay sau goi 5 (null khi tat co).
         m.kemTheo = TienHoaPokemon.taoPokeThan(ch);
         return m;
     }
@@ -1938,7 +1937,7 @@ public class MessageCreator {
             m.dos.writeShort(Char.clampShort(ch.defend_physic + ch.percentBuff[0]));
             m.dos.writeShort(Char.clampShort(ch.defend_magic + ch.getBuffDefCB(1, true)));
             m.dos.writeByte(ch.lvDetail.lv);
-            m.dos.writeByte(CheDoPokemon.heGuiClient(ch.he));
+            m.dos.writeByte(com.htbb.pokemon.HePokemon.heGuiClient(ch.he));
             m.dos.writeByte(ch.rideHorse);
             byte idImgHorse = ch.idImgHorse;
             byte fly = 0;
@@ -1977,7 +1976,7 @@ public class MessageCreator {
             Logger.logError(e);
             m.cleanup();
         }
-        // Che do Pokemon: bot/NPC cung kem -90 (xem TienHoaPokemon.taoPokeThanNpc).
+        // Pokemon: bot/NPC cung kem -90 (xem TienHoaPokemon.taoPokeThanNpc).
         m.kemTheo = TienHoaPokemon.taoPokeThanNpc(ch);
         return m;
     }
@@ -1999,7 +1998,7 @@ public class MessageCreator {
         m.dos.writeShort(p.accurate);
         m.dos.writeShort(p.dodge);
         m.dos.writeShort(p.critical);
-        m.dos.writeByte(CheDoPokemon.heGuiClient(p.he));
+        m.dos.writeByte(com.htbb.pokemon.HePokemon.heGuiClient(p.he));
         m.dos.writeByte(p.lvDetail.lv);
         m.dos.writeShort(p.lvDetail.percent);
         // SKIN LINH THU (Tien Loc): bon dong nay la bang diem tiem nang nguoi choi NHIN
@@ -2247,7 +2246,7 @@ public class MessageCreator {
             KiemGoi3.kiem(m.toByteArray(), p.charname, idThutoolDaGui, indexdxyDaGui);
         } catch (final Exception ex) {
         }
-        // Che do Pokemon: -90 cua chinh minh ngay sau goi 3.
+        // Pokemon: -90 cua chinh minh ngay sau goi 3.
         m.kemTheo = TienHoaPokemon.taoPokeThan(p);
         return m;
     }
@@ -2633,9 +2632,7 @@ public class MessageCreator {
                     for (int k = 0; k < MessageCreator.nclone * 3; ++k) {
                         m.dos.writeShort(locationMap[i][j][k]);
                         if (k % 3 == 0) {
-                            m.dos.writeUTF(com.htbb.pokemon.CheDoPokemon.bat()
-                                    ? com.htbb.pokemon.TenMapPokemon.doi(nameMap[i][j][k / 3])
-                                    : nameMap[i][j][k / 3]);
+                            m.dos.writeUTF(com.htbb.pokemon.TenMapPokemon.doi(nameMap[i][j][k / 3]));
                         }
                     }
                 }
@@ -2652,9 +2649,7 @@ public class MessageCreator {
                 for (int j = 0; j < MessageCreator.nclone * 3; ++j) {
                     m.dos.writeShort(Map.localXaphu[i][j]);
                     if (j % 3 == 0) {
-                        m.dos.writeUTF(com.htbb.pokemon.CheDoPokemon.bat()
-                                ? com.htbb.pokemon.TenMapPokemon.doi(Map.namMap[i][j / 3])
-                                : Map.namMap[i][j / 3]);
+                        m.dos.writeUTF(com.htbb.pokemon.TenMapPokemon.doi(Map.namMap[i][j / 3]));
                     }
                 }
             }

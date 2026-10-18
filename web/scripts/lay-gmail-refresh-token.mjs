@@ -17,14 +17,23 @@
  *       Nâng cao -> Đi tới ... — ứng dụng của chính bạn nên an toàn).
  *    3. Google chuyển trình duyệt về http://127.0.0.1:<cổng>/?code=... ; script nhận
  *       mã đó, đổi lấy token ở https://oauth2.googleapis.com/token.
- *    4. In ra HTBB_GMAIL_REFRESH_TOKEN. Chép vào GitHub Secrets (VPS cũ) và vào
- *       /etc/htbb-web.env trên VPS mới 180.93.127.26, rồi khởi động lại htbb-web.
+ *    4. In ra HTBB_GMAIL_REFRESH_TOKEN. Chép vào GitHub Secrets (deploy bằng Actions) hoặc
+ *       /etc/htbb/htbb.env trên VPS, rồi khởi động lại htbb-web.
+ *
+ *  Chuẩn bị trên Google Cloud Console (một lần, đăng nhập đúng tài khoản Gmail gửi thư):
+ *    a. Tạo project, APIs & Services -> Library -> Gmail API -> Enable.
+ *    b. OAuth consent screen: External; scope https://www.googleapis.com/auth/gmail.send;
+ *       Audience -> Publish app ("In production"; để "Testing" thì refresh token hết hạn sau 7 ngày).
+ *    c. Credentials -> OAuth client ID loại "Desktop app" -> lấy Client ID + Client secret.
+ *  Bốn biến bắt buộc: HTBB_GMAIL_CLIENT_ID, HTBB_GMAIL_CLIENT_SECRET, HTBB_GMAIL_REFRESH_TOKEN,
+ *  HTBB_GMAIL_SENDER (thiếu một = tắt gửi mail). Lỗi invalid_grant trong log: gỡ quyền ứng dụng ở
+ *  https://myaccount.google.com/permissions rồi chạy lại script này.
  *
  *  OAuth client loại "Desktop app": Google nhận mọi cổng 127.0.0.1, không cần khai.
  *  Loại "Web application": phải khai đúng redirect URI http://127.0.0.1:<cổng>/ .
  *
  *  Refresh token là BÍ MẬT (ai có nó + client secret là gửi thư được dưới tên bạn):
- *  không dán vào chat, không commit. Xem README mục "Gửi email (Gmail API)".
+ *  không dán vào chat, không commit. Xem docs/van-hanh.md.
  *
  *  Không cần cài thêm gì: chỉ dùng thư viện có sẵn của Node (>= 20).
  *  Chữ in ra không dấu để đọc được trên mọi terminal.
@@ -140,7 +149,7 @@ const server = createServer(async (req, res) => {
       console.log('HTBB_GMAIL_REFRESH_TOKEN=' + tk.refresh_token)
       console.log('HTBB_GMAIL_SENDER=<dia chi Gmail ban vua dang nhap>')
       console.log('=========================================')
-      console.log('Chep 4 dong tren vao GitHub Secrets (VPS cu) va /etc/htbb-web.env (VPS moi),')
+      console.log('Chep 4 dong tren vao GitHub Secrets (deploy gop vao env) hoac /etc/htbb/htbb.env tren VPS,')
       console.log('roi: systemctl restart htbb-web. KHONG dan cac gia tri nay vao chat / commit.')
     }
   } catch (e) {

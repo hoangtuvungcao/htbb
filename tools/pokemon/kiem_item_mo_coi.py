@@ -12,19 +12,19 @@ Doc (khong ket noi CSDL):
   sql/pokemon_doi_chu.sql        UPDATE ten (data_item/data_potion)
   sql/pokemon_lau_dai.sql        data_quest_moi (chuoi chinh, engine cu), data_shop_gia_lau_dai
   sql/pokemon_nhiem_vu.sql       data_vat_pham_nhiem_vu (vat pham nhiem vu 10..50)
-  docs/pokemon/noi_dung_roi.csv, nhiem_vu_moi.csv
+  du_lieu/noi_dung_roi.csv, nhiem_vu_moi.csv
   src/**.java                    ngoc (MapNapTaiNguyen), vat lieu he sinh thai (VatLieuSinhThai/KyNangSong/
                                  NhaTre), cong thuc, Pokedex + QUET so lieu cung trong code (nguon/cong dung)
 Moi co che viet tay o bang QUY_TAC co "mau" (chuoi phai con trong file nguon) - code doi ma quy tac
 khong doi thi script bao "QUY TAC LOI THOI" va test fail, de bang khong noi doi.
 
-Ra: docs/pokemon/KIEM_ITEM.md (ma tran vat pham -> nguon -> cong dung + danh sach loi theo lop) va
-    docs/pokemon/kiem_item.csv (ma tran day du). Ma thoat = so loi (0 = sach) khi chay voi --kiem.
+Ra: du_lieu/KIEM_ITEM.md (ma tran vat pham -> nguon -> cong dung + danh sach loi theo lop) va
+    du_lieu/kiem_item.csv (ma tran day du). Ma thoat = so loi (0 = sach) khi chay voi --kiem.
 
 Cau hinh danh gia (co server.ini):
   A: sv.lau_dai=1, sv.he_sinh_thai=0   B: sv.lau_dai=1, sv.he_sinh_thai=1   (KIEM - phai 0 loi)
   C: sv.lau_dai=0 (game cu - chi bao cao, khong kiem)
-  Ca 3: sv.che_do_pokemon=1, sv.nap_tien=0, su kien theo lich (SK=1).
+  Ca 3: game Pokemon (CDP=1, luon bat), sv.nap_tien=0, su kien theo lich (SK=1).
 
 Chay o thu muc HTBB/:  python3 -I tools/pokemon/kiem_item_mo_coi.py [--kiem]
 """
@@ -38,7 +38,7 @@ import unicodedata
 
 GOC = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SQL = os.path.join(GOC, "sql")
-DOC = os.path.join(GOC, "docs", "pokemon")
+DOC = os.path.join(GOC, "du_lieu")
 SRC = os.path.join(GOC, "server", "src")
 RA_MD = os.path.join(DOC, "KIEM_ITEM.md")
 RA_CSV = os.path.join(DOC, "kiem_item.csv")
@@ -695,7 +695,7 @@ def ap_quy_tac(d):
 
 
 def nguon_roi(d):
-    """docs/pokemon/noi_dung_roi.csv (= data_noi_dung_roi). Chi cac nguon doc luc chay moi tinh."""
+    """du_lieu/noi_dung_roi.csv (= data_noi_dung_roi). Chi cac nguon doc luc chay moi tinh."""
     p = os.path.join(DOC, "noi_dung_roi.csv")
     nd = d.java_doc("server/src/real/NoiDungLauDai.java")
     boss_doc = "roiBossTheGioi" in nd and "NoiDungLauDai.roiBossTheGioi" in d.java_doc("server/src/real/BossLauDai.java")
@@ -1098,8 +1098,8 @@ def tu_cam(d, kq, cam):
 # File du lieu dau vao: dau van tay ghi vao KIEM_ITEM.md, test/KiemItemMoCoi.java tinh lai -> bao "chay lai script"
 # khi SQL/CSV doi ma bao cao cu. (Khong gom .java: doi nhom khac sua code lien tuc.)
 DAU_VAO = ["sql/htbb_day_du.sql", "sql/pokemon_noi_dung.sql", "sql/pokemon_vat_pham_lau_dai.sql", "sql/pokemon_lau_dai.sql",
-           "sql/pokemon_doi_chu.sql", "sql/pokemon_nhiem_vu.sql", "docs/pokemon/noi_dung_roi.csv",
-           "docs/pokemon/nhiem_vu_moi.csv"]
+           "sql/pokemon_doi_chu.sql", "sql/pokemon_nhiem_vu.sql", "du_lieu/noi_dung_roi.csv",
+           "du_lieu/nhiem_vu_moi.csv"]
 
 
 def dau_van_tay():
@@ -1204,13 +1204,13 @@ def ghi(d, ket_qua, loi_dem):
     o.append("- **Công dụng** = mặc theo type, dùng (`doUsePotion`, `VatPhamDungLauDai`, đá tiến hoá, rương…), "
              "nguyên liệu nâng cấp / chế tạo / ngọc theo kiểu `GemTemplate.TYPE_*`, nộp nhiệm vụ, đổi ở "
              "`data_cua_hang_lau_dai`, công thức hệ sinh thái, trang trí. Bán NPC = “chỉ bán”.\n")
-    o.append("- Cổng: `LD` = `sv.lau_dai`, `HST` = `sv.he_sinh_thai`, `CDP` = `sv.che_do_pokemon`, `SK` = sự kiện theo lịch "
+    o.append("- Cổng: `LD` = `sv.lau_dai`, `HST` = `sv.he_sinh_thai`, `CDP` = luôn 1 (game luôn là Pokémon), `SK` = sự kiện theo lịch "
              "(lịch 52 tuần của dài hạn bật lại các sự kiện cũ), `NAP` = `sv.nap_tien`. Hàm không ai gọi (`HAM_CHET`) "
              "không tính.\n")
     o.append("- Lớp cũ (thuốc / ngọc sự kiện kiếm hiệp) đọc qua mảng id nên phần quét là **xấp xỉ**: vật phẩm cũ "
              "không tìm thấy nguồn được xếp “không tồn tại”, không phải lỗi.\n")
     o.append("\n## 10. Ma trận (vật phẩm có nguồn ở cấu hình A hoặc B)\n\n")
-    o.append("Đầy đủ: `docs/pokemon/kiem_item.csv`.\n\n| Vật phẩm | Tên | A | B | Nguồn | Công dụng |\n|---|---|---|---|---|---|\n")
+    o.append("Đầy đủ: `du_lieu/kiem_item.csv`.\n\n| Vật phẩm | Tên | A | B | Nguồn | Công dụng |\n|---|---|---|---|---|---|\n")
     for k in sorted(d.vp, key=khoa_sx):
         a, b = ket_qua["A"][k], ket_qua["B"][k]
         if a[0] == "ngu" and b[0] == "ngu":

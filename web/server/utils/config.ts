@@ -141,7 +141,7 @@ export interface HtbbConfig {
     /**
      * Bật tính năng nạp tiền (HTBB_NAP_BAT). Mặc định TẮT trên nhánh pokemon/chuyen-doi:
      * asset PMDCollab là CC BY-NC 4.0 và Pokémon là IP của Nintendo — không được thu tiền
-     * (quyết định Q10, HTBB/docs/pokemon/KE_HOACH_CHUYEN_DOI.md). Tắt thì /api/nap/** và
+     * (quyết định Q10, docs/kien-truc.md). Tắt thì /api/nap/** và
      * /api/xac-nhan-nap/** trả 403 (server/middleware/tat-nap.ts) và web ẩn trang Nạp.
      */
     bat: boolean
@@ -150,7 +150,7 @@ export interface HtbbConfig {
     accountName: string
     sepayApiKey: string
     adminNaptienPassword: string
-    /** Nạp tiền (HTBB/docs/pokemon/NAP_TIEN.md): khoá ký webhook Casso v2 (HTBB_CASSO_WEBHOOK_SECRET). */
+    /** Nạp tiền (docs/van-hanh.md): khoá ký webhook Casso v2 (HTBB_CASSO_WEBHOOK_SECRET). */
     cassoSecret: string
     /** Chế độ thử: bật /api/nap/webhook-mock + nút "Giả lập thanh toán" (HTBB_NAP_SANDBOX=1, KHÔNG bật trên máy thật). */
     sandbox: boolean
@@ -187,7 +187,7 @@ export interface HtbbConfig {
   /**
    * Gửi email qua Gmail API (OAuth2 refresh token) — dùng cho Quên mật khẩu và
    * thông báo đổi mật khẩu. Thiếu một trong bốn giá trị đầu = chưa bật gửi mail.
-   * Cách lấy: scripts/lay-gmail-refresh-token.mjs, README mục "Gửi email (Gmail API)".
+   * Cách lấy: scripts/lay-gmail-refresh-token.mjs, docs/van-hanh.md.
    */
   mail: {
     gmailClientId: string
@@ -210,8 +210,9 @@ let cache: HtbbConfig | null = null
 export function useHtbbConfig(): HtbbConfig {
   if (cache) return cache
 
-  // Mặc định: thư mục cha của thư mục chạy web (web nằm ngay trong thư mục game server).
-  const serverDir = resolve(env('HTBB_SERVER_DIR') || resolve(process.cwd(), '..'))
+  // HTBB_SERVER_DIR = thư mục CHỨA server.ini (VPS: /opt/htbb/server). Mặc định theo bố cục monorepo:
+  // web chạy trong <repo>/web -> game server ở <repo>/server.
+  const serverDir = resolve(env('HTBB_SERVER_DIR') || resolve(process.cwd(), '..', 'server'))
   const ini = htbbCauHinhDb(serverDir)
 
   const userTuEnv = env('HTBB_DB_USER') !== undefined
@@ -348,7 +349,7 @@ export function useHtbbConfig(): HtbbConfig {
     } else if (loi.length && !import.meta.dev) {
       cache.nap.bat = false
       cache.nap.lyDoTat = loi
-      console.error(`[htbb] NAP TIEN BI TAT (fail closed) - cau hinh chua an toan:\n  - ${loi.join('\n  - ')}\n  Sua bien moi truong roi khoi dong lai. Xem HTBB/docs/pokemon/NAP_TIEN.md muc SePay.`)
+      console.error(`[htbb] NAP TIEN BI TAT (fail closed) - cau hinh chua an toan:\n  - ${loi.join('\n  - ')}\n  Sua bien moi truong roi khoi dong lai. Xem docs/van-hanh.md.`)
     } else if (loi.length) {
       console.warn(`[htbb] (dev) cau hinh nap chua dat cho may that:\n  - ${loi.join('\n  - ')}`)
     }

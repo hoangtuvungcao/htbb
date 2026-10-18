@@ -4,7 +4,7 @@ package com.htbb.pokemon;
  * VAT PHAM TANG TOC luyen cap (quyet dinh 18/10/2026: KHONG tran cap theo mua; len cap CHAM, nguoi choi
  * dung vat pham de cay / treo nhanh hon). Lop THUAN - test/KiemTangToc.java goi truc tiep; game goi qua
  * real.TangTocGame; mo phong tools/pokemon/MoPhongKinhTe.java (mo-dun TANG TOC) doc chung hang so.
- * Thiet ke: docs/pokemon/THIET_KE_LAU_DAI.md muc 1.8, docs/pokemon/NAP_TIEN.md muc 3b.
+ * Thiet ke: docs/thiet-ke-game.md, docs/van-hanh.md.
  *
  * Nguyen tac:
  *   1. CHI mua THOI GIAN (EXP). Khong xu, khong vat pham, khong da, khong ti le roi, khong chi so.

@@ -76,6 +76,15 @@ final class ApDungMacDinh {
             }
         }, "TeamServer (DoS / goi tin / GM)");
 
+        CauHinhTrungTam.dangKyNghe(new String[]{"sv.proxyTinCay", "sv.dangNhapIpNguong", "sv.dangNhapIpChoMs"}, new NgheThayDoi() {
+            public void khiDoi(final Set<String> k, final CauHinhTrungTam.AnhChup m) {
+                final com.htbb.mang.ProxyTinCay p = com.htbb.mang.ProxyTinCay.dat(m.chuoi("sv.proxyTinCay"));
+                com.htbb.mang.GioiHanIp.datDangNhap(m.chuoi("sv.dangNhapIpNguong"), m.chuoi("sv.dangNhapIpChoMs"));
+                System.out.println("[CAU HINH] proxy tin cay = " + p + ", dang nhap/IP nguong="
+                        + com.htbb.mang.GioiHanIp.dangNhapNguong + " cho=" + com.htbb.mang.GioiHanIp.dangNhapChoMs + "ms");
+            }
+        }, "ProxyTinCay / GioiHanIp");
+
         CauHinhTrungTam.dangKyNghe(new String[]{"sv.gioBaoTri"}, new NgheThayDoi() {
             public void khiDoi(final Set<String> k, final CauHinhTrungTam.AnhChup m) {
                 real.BaoTriDaily.datGio(m.chuoi("sv.gioBaoTri"));

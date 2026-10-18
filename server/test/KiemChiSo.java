@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Chi so trang bi + chong lam phat (docs/pokemon/CHI_SO_TRANG_BI.md): tran / giam dan, san sat thuong, PvP,
+ * Chi so trang bi + chong lam phat (docs/thiet-ke-game.md): tran / giam dan, san sat thuong, PvP,
  * ngan sach mon, bang 198 dong chi so, SQL sinh dong bo, mo phong TTK (tools/pokemon/MoPhongChiSo.java).
  */
 public final class KiemChiSo {
@@ -262,9 +262,9 @@ public final class KiemChiSo {
         }
         Kiem.dung("SQL co quy tac kep data_item theo (o, cap)", n > 100);
         Kiem.dung("pokemon_chi_so nam trong xuat_sql_day_du.sh", doc("../tools/pokemon/xuat_sql_day_du.sh").contains("pokemon_chi_so"));
-        final String csv = doc("../docs/pokemon/chi_so_trang_bi.csv");
+        final String csv = doc("../du_lieu/chi_so_trang_bi.csv");
         Kiem.dung("CSV 198 dong + tieu de", csv.split("\n").length == 199);
-        Kiem.dung("tai lieu CHI_SO_TRANG_BI.md co", doc("../docs/pokemon/CHI_SO_TRANG_BI.md").contains("GioiHanChiSo"));
+        Kiem.dung("tai lieu thiet-ke-game.md co GioiHanChiSo", doc("../docs/thiet-ke-game.md").contains("GioiHanChiSo"));
         // code goi dung cho
         final String ch = doc("src/real/Char.java");
         Kiem.dung("Char.havecrit qua gioi han", ch.contains("ChiSoTrangBiGame.quayChiMang(this)"));

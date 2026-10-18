@@ -467,7 +467,7 @@ public class RealController extends ServerController {
         }
 
         System.out.println("TONG MAP TRAIN ROI NGOC RONG: " + all_map_train.size());
-        // Vung Hoenn (nam 2) - chi che do Pokemon. Bang locationMap/mapID noi them o add_more_idMapSend2Client.
+        // Vung Hoenn (nam 2). Bang locationMap/mapID noi them o add_more_idMapSend2Client.
         VungHoenn.taoMap(mapList);
     }
 
@@ -900,7 +900,7 @@ public class RealController extends ServerController {
                 try {
                     fis = null;
                     DataInputStream dis = null;
-                    fis = new FileInputStream(com.htbb.pokemon.BanDoPokemon.duong("cMap/" + id[i]));
+                    fis = new FileInputStream("cMap/" + id[i]);
                     dis = new DataInputStream(fis);
                     byte[] byteMap = new byte[dis.available()];
                     dis.read(byteMap, 0, byteMap.length);

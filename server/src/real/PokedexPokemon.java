@@ -1,6 +1,5 @@
 package real;
 
-import com.htbb.pokemon.CheDoPokemon;
 import com.htbb.pokemon.DaTienHoa;
 import com.htbb.pokemon.LoaiPokemon;
 import com.htbb.pokemon.Pokedex;
@@ -22,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *   - NPC "doi thuong" (-90) muc 1 "Pokédex" -> {@link #moMenu}; npc ao {@link #NPC_ID}
  *     xu ly trong MapDoMenu -> {@link #doMenu}.
  *
- * Tat che do Pokemon: moi ham khong lam gi.
  */
 public final class PokedexPokemon {
 
@@ -47,9 +45,9 @@ public final class PokedexPokemon {
     private PokedexPokemon() {
     }
 
-    /** Pokedex cua nhan vat (nap tu CSDL lan dau), null neu tat che do / bot / loi CSDL. */
+    /** Pokedex cua nhan vat (nap tu CSDL lan dau), null neu bot / loi CSDL. */
     static Pokedex lay(final Char p) {
-        if (!CheDoPokemon.bat() || p == null || p.charDBID <= 0) {
+        if (p == null || p.charDBID <= 0) {
             return null;
         }
         final Integer k = Integer.valueOf(p.charDBID);
@@ -79,9 +77,6 @@ public final class PokedexPokemon {
 
     /** Nhan vat danh trung mot quai: ghi "da gap". */
     public static void khiDanh(final Char p, final LiveActor actor) {
-        if (!CheDoPokemon.bat()) {
-            return;
-        }
         try {
             final int dex = dexQuai(actor);
             if (dex <= 0) {
@@ -99,9 +94,6 @@ public final class PokedexPokemon {
 
     /** Quai chet, {@code p} nhan do: ghi "da ha". */
     public static void khiHaQuai(final Char p, final Monster quai) {
-        if (!CheDoPokemon.bat()) {
-            return;
-        }
         try {
             final int dex = dexQuai(quai);
             if (dex <= 0) {
@@ -118,7 +110,7 @@ public final class PokedexPokemon {
 
     /** Goi tu Database.saveChar/saveCharAuto: xa cac dong da doi (khong nap neu chua co). */
     public static void luu(final Char p) {
-        if (!CheDoPokemon.bat() || p == null || p.charDBID <= 0) {
+        if (p == null || p.charDBID <= 0) {
             return;
         }
         final Pokedex d = CACHE.get(Integer.valueOf(p.charDBID));
@@ -161,7 +153,7 @@ public final class PokedexPokemon {
 
     /** NPC doi thuong (-90), muc "Pokédex": mo menu goc. */
     public static void moMenu(final Char p) {
-        if (!CheDoPokemon.bat() || p == null) {
+        if (p == null) {
             return;
         }
         p.sendMessage(MessageCreator.createMsgMenu(
@@ -170,7 +162,7 @@ public final class PokedexPokemon {
 
     /** MapDoMenu: idNpc == NPC_ID. */
     public static void doMenu(final Char p, final int idMenu, final int idOption) {
-        if (!CheDoPokemon.bat() || p == null) {
+        if (p == null) {
             return;
         }
         if (idMenu == MENU_GOC) {

@@ -3,7 +3,7 @@ package com.htbb.pokemon;
 import java.util.Arrays;
 
 /**
- * Chi so kinh te hang dem (THIET_KE_LAU_DAI.md muc 2.5) - ghi vao tob_kinh_te_ngay. Lop THUAN:
+ * Chi so kinh te hang dem (docs/thiet-ke-game.md) - ghi vao tob_kinh_te_ngay. Lop THUAN:
  * data.DatabaseKinhTe doc tob_char (nguoi hoat dong 7 ngay) roi goi {@link #tinh}.
  */
 public final class ChiSoKinhTe {

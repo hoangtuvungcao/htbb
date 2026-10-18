@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * Doi chieu HTBB-Web/shared/data/bang-cap-do.json (tools/SinhBangCapDo sinh; web doc qua
  * server/utils/capDo.ts) voi mang real.LevelDetail.expMain / expRequire. Truoc day la tep PHP
- * web/admin/inc/capdo.php - website PHP da bo (docs/pokemon/BO_WEB_PHP.md).
+ * web/admin/inc/capdo.php - website PHP da bo (docs/kien-truc.md).
  *
  * Mang co 91 phan tu, nhieu so dai toi 14 chu so - loi go nham MOT chu so o day
  * khong ai nhin ra bang mat. Bo kiem nay doc lai tung so trong tep JSON va so

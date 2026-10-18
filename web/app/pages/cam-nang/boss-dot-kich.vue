@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Boss & đột kích — boss từ pokedex.json (bang_quai.csv), lịch đột kích từ su_kien_nam.csv,
- * boss thế giới theo tuần từ docs/pokemon/web/boss_the_gioi.csv + giờ triệu hồi trong LauDaiJob.java.
+ * boss thế giới theo tuần từ du_lieu/web/boss_the_gioi.csv + giờ triệu hồi trong LauDaiJob.java.
  */
 const boss = POKEDEX.loai.filter(l => l.vaiTro.includes('boss')).map((l) => {
   const q = l.quai.find(x => x.boss) ?? l.quai[0]

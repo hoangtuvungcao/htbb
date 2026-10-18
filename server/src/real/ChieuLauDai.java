@@ -5,7 +5,7 @@ import data.DatabaseLauDai;
 import java.util.List;
 
 /**
- * Nap so lieu chieu moi (data_noi_dung_chieu, NOI_DUNG_DAY_DU.md muc 5) vao CharManager khi bat co
+ * Nap so lieu chieu moi (data_noi_dung_chieu, docs/thiet-ke-game.md) vao CharManager khi bat co
  * (GD2 6.3 / 9.4): % sat thuong cap 1..10 (noi suy tuyen tinh cap1 -> cap10), so don
  * (UP_DAMGE_SKILL) va hoi chieu (SKILL_COOLDOWN, don vi 0,1 giay nhu bang cu). Chi ghi vao o DA CO
  * (khong doi do dai mang, client doc theo o). Tat co: bang cu nguyen ven.

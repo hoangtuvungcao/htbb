@@ -1,7 +1,7 @@
 
 /**
  * Chiêu Pokémon của 5 dòng người chơi (index = class cũ, so hiệu skill như server) - khớp
- * HTBB docs/pokemon/bang_chieu.csv (ten_moi, so_he). Dùng cho thanh skill nhanh, bảng kỹ năng:
+ * HTBB du_lieu/bang_chieu.csv (ten_moi, so_he). Dùng cho thanh skill nhanh, bảng kỹ năng:
  * tên chiêu Pokémon (SkillManager.SKILL_NAME của client vẫn là tên kiếm hiệp cũ), hệ (màu ô) và
  * hình biểu tượng (KieuO.HINH_*). Lớp chỉ chứa dữ liệu, không dùng lcdui.
  */

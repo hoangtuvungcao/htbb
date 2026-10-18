@@ -10,7 +10,7 @@
  *     LauDaiNhanVat.java, GiftcodeLauDai.java.
  *   - lau_dai.* do chính game ghi (trạng thái chuyển đổi dài hạn) — chỉ xem.
  *
- * `suaLe`: được sửa lẻ bằng POST /api/admin/cauhinh/khoa (whitelist). Khoá phức tạp (ngưỡng màu tiêu,
+ * `suaLe`: được sửa lẻ bằng POST /api/admin/cauhinh/khoa (whitelist). Khoá phức tạp (ngưỡng màu hàng,
  * giờ chiếm thành, danh sách GM...) chỉ sửa qua thẻ riêng trên trang (POST /api/admin/cauhinh/luu)
  * vì cần kiểm chéo nhiều khoá một lúc.
  *
@@ -55,11 +55,11 @@ export const DANH_MUC_CAU_HINH: Record<string, MucCauHinh> = {
   'sv.expvantieu': { ten: 'EXP giao hàng', moTa: '1 = bật (TeamServer.ExpVantieu).', nhom: 'EXP', kieu: 'co', macDinh: '0', suaLe: true, the: 'EXP phụ', nguon: CH },
   'sv.Luckyexp': { ten: 'EXP may mắn', moTa: '1 = bật (TeamServer.LuckyExp).', nhom: 'EXP', kieu: 'co', macDinh: '0', suaLe: true, the: 'EXP phụ', nguon: CH },
   'sv.ExpQua': { ten: 'EXP quà', moTa: '1 = bật (TeamServer.ExpQua).', nhom: 'EXP', kieu: 'co', macDinh: '0', suaLe: true, the: 'EXP phụ', nguon: CH },
-  // ---- Vận tiêu (CSV kiểm chéo) ----
+  // ---- Giao hàng (CSV kiểm chéo) ----
   'sv.tieuNguongMau': { ten: 'Ngưỡng màu hàng (nhận mới)', moTa: '5 ngưỡng cộng dồn trên thang 100000 (Trắng..Vàng, còn lại Tím).', nhom: 'Giao hàng', kieu: 'csv', suaLe: false, the: 'Giao Hàng', nguon: CH },
-  'sv.tieuHeSoExp': { ten: 'Hệ số EXP tiêu chung', moTa: '% nhân, 200 = ×2.', nhom: 'Giao hàng', kieu: 'so', suaLe: false, the: 'Giao Hàng', nguon: CH },
+  'sv.tieuHeSoExp': { ten: 'Hệ số EXP giao hàng chung', moTa: '% nhân, 200 = ×2.', nhom: 'Giao hàng', kieu: 'so', suaLe: false, the: 'Giao Hàng', nguon: CH },
   'sv.tieuPcExpTheoMau': { ten: 'Hệ số EXP theo màu', moTa: '7 số ×100.', nhom: 'Giao hàng', kieu: 'csv', suaLe: false, the: 'Giao Hàng', nguon: CH },
-  'sv.tieuPermilleCaoCap': { ten: 'Tỉ lệ tiêu cao cấp', moTa: '9 số phần nghìn (3 khung cấp × 3 màu).', nhom: 'Giao hàng', kieu: 'csv', suaLe: false, the: 'Giao Hàng', nguon: CH },
+  'sv.tieuPermilleCaoCap': { ten: 'Tỉ lệ hàng cao cấp', moTa: '9 số phần nghìn (3 khung cấp × 3 màu).', nhom: 'Giao hàng', kieu: 'csv', suaLe: false, the: 'Giao Hàng', nguon: CH },
   'sv.doiTieuNguongMauXu': { ten: 'Ngưỡng màu đổi hàng (xu)', moTa: '5 ngưỡng cộng dồn.', nhom: 'Giao hàng', kieu: 'csv', suaLe: false, the: 'Giao Hàng', nguon: CH },
   'sv.doiTieuNguongMauLuong': { ten: 'Ngưỡng màu đổi hàng (lượng)', moTa: '5 ngưỡng cộng dồn.', nhom: 'Giao hàng', kieu: 'csv', suaLe: false, the: 'Giao Hàng', nguon: CH },
   // ---- Chiếm thành ----
@@ -85,8 +85,8 @@ export const DANH_MUC_CAU_HINH: Record<string, MucCauHinh> = {
   // ---- Kinh tế dài hạn (LauDai.so, đè ThongSoLauDai) ----
   'roi.xu.phan_tram': { ten: 'Tỉ lệ một con quái rơi xu (%)', moTa: 'Xác suất rơi xu; số xu mỗi lần rơi tự chia ngược để kỳ vọng xu/quái không đổi. Java kẹp 0–100.', nhom: 'Kinh tế dài hạn', kieu: 'so', min: 0, max: 100, macDinh: '30', suaLe: true, nguon: KT },
   'roi.da_nang_cap.phan_nghin': { ten: 'Tỉ lệ rơi đá nâng cấp (‰)', moTa: 'Phần nghìn mỗi quái khi |lệch cấp| ≤ 5.', nhom: 'Kinh tế dài hạn', kieu: 'so', min: 0, max: 200, macDinh: '15', suaLe: true, nguon: KT },
-  'exp.nang_luong_phut': { ten: 'Phút năng lượng 100% / ngày', moTa: 'LauDaiNhanVat: số phút EXP/rơi đầy đủ mỗi ngày.', nhom: 'Kinh tế dài hạn', kieu: 'so', min: 0, max: 1440, macDinh: '180', suaLe: true, nguon: 'LauDaiNhanVat.java' },
-  'exp.nang_luong_tich_phut': { ten: 'Năng lượng tích luỹ tối đa (phút)', moTa: 'Phút năng lượng dồn tối đa khi không chơi.', nhom: 'Kinh tế dài hạn', kieu: 'so', min: 0, max: 4320, macDinh: '360', suaLe: true, nguon: 'LauDaiNhanVat.java' },
+  'exp.nang_luong_phut': { ten: 'Phút năng lượng 100% / ngày', moTa: 'LauDaiNhanVat: số phút EXP/rơi đầy đủ mỗi ngày.', nhom: 'Kinh tế dài hạn', kieu: 'so', min: 0, max: 1440, macDinh: '90', suaLe: true, nguon: 'LauDaiNhanVat.java' },
+  'exp.nang_luong_tich_phut': { ten: 'Năng lượng tích luỹ tối đa (phút)', moTa: 'Phút năng lượng dồn tối đa khi không chơi.', nhom: 'Kinh tế dài hạn', kieu: 'so', min: 0, max: 4320, macDinh: '180', suaLe: true, nguon: 'LauDaiNhanVat.java' },
   'thue.cho': { ten: 'Thuế chợ ký gửi (%)', moTa: 'Đốt khỏi nền kinh tế khi bán được.', nhom: 'Kinh tế dài hạn', kieu: 'so', min: 0, max: 50, macDinh: '6', suaLe: true, nguon: KT },
   'thue.dang_ban': { ten: 'Phí đăng bán (%)', moTa: 'Đốt, không hoàn; tối thiểu 1 xu.', nhom: 'Kinh tế dài hạn', kieu: 'so', min: 0, max: 20, macDinh: '1', suaLe: true, nguon: KT },
   'thue.chuyen_luong': { ten: 'Phí chuyển lượng qua NPC (%)', moTa: 'Làm tròn lên, tối thiểu 1 khi > 0.', nhom: 'Kinh tế dài hạn', kieu: 'so', min: 0, max: 50, macDinh: '5', suaLe: true, nguon: KT },
@@ -98,7 +98,7 @@ export const DANH_MUC_CAU_HINH: Record<string, MucCauHinh> = {
   'giftcode.toi_da_thang': { ten: 'Giftcode tối đa / tháng', moTa: 'Số giftcode dài hạn một Pokémon nhập được mỗi tháng.', nhom: 'Kinh tế dài hạn', kieu: 'so', min: 0, max: 20, macDinh: '2', suaLe: true, nguon: 'GiftcodeLauDai.java' },
 
   // ---- Trạng thái do game ghi ----
-  'lau_dai.ngay_khai_truong': { ten: 'Ngày khai trương', moTa: 'Ngày 0 của trần cấp theo mùa. Game tự ghi.', nhom: 'Trạng thái game', kieu: 'ngay', suaLe: false, nguon: 'LauDai.java' },
+  'lau_dai.ngay_khai_truong': { ten: 'Ngày khai trương', moTa: 'Ngày 0 của lịch mùa PvP và lịch sự kiện (và của trần cấp theo mùa nếu bật sv.tran_cap_theo_mua). Game tự ghi.', nhom: 'Trạng thái game', kieu: 'ngay', suaLe: false, nguon: 'LauDai.java' },
   'lau_dai.dang_chuyen': { ten: 'Đang chuyển đổi dài hạn', moTa: 'Game tự ghi.', nhom: 'Trạng thái game', kieu: 'chuoi', suaLe: false, nguon: 'LauDai.java' },
   'lau_dai.thang_exp': { ten: 'Thang EXP đang dùng', moTa: 'moi / cu. Game tự ghi.', nhom: 'Trạng thái game', kieu: 'chuoi', suaLe: false, nguon: 'LauDai.java' },
   'lau_dai.lan_chuyen': { ten: 'Số lần chuyển đổi', moTa: 'Game tự ghi.', nhom: 'Trạng thái game', kieu: 'so', suaLe: false, nguon: 'LauDai.java' },

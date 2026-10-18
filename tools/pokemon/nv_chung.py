@@ -2,8 +2,8 @@
 """
 DU LIEU CHUNG cho bo sinh nhiem vu (tools/pokemon/sinh_nhiem_vu.py). Chi la bang, khong logic.
 
-  NPC          : NPC tinh (type trong docs/pokemon/bang_npc.csv) -> ten Pokemon + giong noi.
-  DIA_DANH_MAP : dia danh -> id ban do (docs/pokemon/thiet_ke_map.csv, docs/pokemon/map_cu/<id>.json).
+  NPC          : NPC tinh (type trong du_lieu/bang_npc.csv) -> ten Pokemon + giong noi.
+  DIA_DANH_MAP : dia danh -> id ban do (du_lieu/thiet_ke_map.csv, server/cMap/<id>).
   KIEU         : moi kieu muc tieu: ten, co che server phat hien, kieu du phong cho engine cu
                  (data_quest type 0..4), trang thai engine, mau chu (muc tieu / goi y / dang lam).
   VAT_NV       : vat pham nhiem vu MOI (ItemQuest hien chi co 10 ten, GD2 4.5 mo rong).
@@ -133,7 +133,7 @@ KIEU = {
     "dao_dat": ("Khảo cổ", "HeSinhThaiMenu.dao (lệnh chat \"dao\" qua HeSinhThaiGame.khiChat); chỉ hang/núi/sa mạc/tuyết, 6 điểm/ngày", 2, "he_sinh_thai",
                 "Đào {so} lần ở {map}", "Gõ lệnh dao vào kênh trò chuyện (hoặc mở menu Hệ sinh thái). Máy dò chỉ hướng điểm đào. Mỗi lần đào tốn 4 thể lực và tiền xẻng.",
                 "Mới đào {da}/{so} lần."),
-    "cau_ca": ("Câu cá", "HeSinhThaiMenu.cauCa (lệnh chat \"cauca\"): CHỈ ở hồ, đứng cách hồ ≤ 2 ô (docs/pokemon/diem_cau_ca.csv)", 2, "he_sinh_thai",
+    "cau_ca": ("Câu cá", "HeSinhThaiMenu.cauCa (lệnh chat \"cauca\"): CHỈ ở hồ, đứng cách hồ ≤ 2 ô (du_lieu/diem_cau_ca.csv)", 2, "he_sinh_thai",
                "Câu được {so} {vat}", "Chỉ câu được ở hồ: đứng cách bờ hồ ở {noi} tối đa 2 ô rồi gõ lệnh cauca. Hồ lớn mới có cá hiếm. Mỗi lần câu tốn 2 thể lực và mồi câu.",
                "Có {da}/{so} rồi. Kiên nhẫn nhé, {goi}."),
     "lam_vuon": ("Làm vườn", "Char.doHarvest → HeSinhThaiGame.khiThuHoach (vườn berry trên bản đồ cá nhân)", 2, "he_sinh_thai",
@@ -255,7 +255,7 @@ THANH_TUU_CO_CHE = {
 }
 
 # --------------------------------------------------------------------------------------------
-# Khop HE_SINH_THAI.md / VatLieuSinhThai: ten hien thi trong truyen -> vat lieu that ma engine dem.
+# Khop docs/thiet-ke-game.md / VatLieuSinhThai: ten hien thi trong truyen -> vat lieu that ma engine dem.
 # --------------------------------------------------------------------------------------------
 VAT_SINH_THAI = {
     # cau ca

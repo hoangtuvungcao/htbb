@@ -676,7 +676,7 @@ public final class SkinThuCuoi {
             // cho moi ban, nen KHONG ghi dai ngau nhien vao day: mon da roll roi ma tooltip
             // van ghi "Ngau nhien 2 hoac 3 trong..." la gay hieu nham (nguoi choi bao
             // 12/09/2026, kem anh chup) - dai ngau nhien la dac ta de server roll, chi con
-            // trong chu thich ma nguon va docs/skin-thu-cuoi.md.
+            // trong chu thich ma nguon va docs/thiet-ke-game.md.
             s.append("\n- Khi trang bị Chổi Sét: 5% tỉ lệ mỗi lần Sét Lan phát động sẽ triệu hồi Sét đánh, tăng thêm 3 giây choáng");
             return s.toString();
         }

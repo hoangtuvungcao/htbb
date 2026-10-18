@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** Chính sách hoàn tiền — BẢN NHÁP (HTBB/docs/pokemon/NAP_TIEN.md mục 8). */
+/** Chính sách hoàn tiền — BẢN NHÁP (docs/van-hanh.md). */
 const tenSite = useAppConfig().htbb.tenSite
 const { data: site } = await useSite()
 useSeoMeta({ title: 'Chính sách hoàn tiền', description: `Chính sách hoàn tiền (bản nháp) của ${tenSite}.`, robots: 'noindex' })
