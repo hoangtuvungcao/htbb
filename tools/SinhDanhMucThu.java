@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
  *
  * Cach dung (sau khi da bien dich src/ vao build/classes):
  *   java -cp "server/build/classes;server/lib/htbb-core.jar;server/lib/mysql-connector-java-5.1.49.jar" SinhDanhMucThu
- *   -> ghi HTBB-Web/shared/data/danh-muc-thu.json (tim ../HTBB-Web, ../web, hoac -Dhtbb.web=<thu muc>).
+ *   -> ghi web/shared/data/danh-muc-thu.json (tim ../web hoac web trong monorepo, hoac -Dhtbb.web=<thu muc>).
  *   Web doc thang tep JSON do (server/utils/), khong chep tay nua.
  *
  * Chay lai moi khi them/doi thu trong Map.loadPetTemplate(). test/KiemDanhMucThu
@@ -76,18 +76,18 @@ public final class SinhDanhMucThu {
     // ------------------------------------------------------------------ ghi JSON vao HTBB-Web
 
     /**
-     * Thu muc HTBB-Web: -Dhtbb.web=..., bien HTBB_WEB_DIR, ../HTBB-Web (ba repo dat canh
+     * Thu muc HTBB-Web: -Dhtbb.web=..., bien HTBB_WEB_DIR, ../web (monorepo htbb
      * nhau) hoac ../web (monorepo). Phai co nuxt.config.ts. Website PHP cu (web/ cua repo
      * game) da bo - xem docs/kien-truc.md.
      */
     private static java.io.File thuMucWeb() {
-        final String[] ung = {System.getProperty("htbb.web"), System.getenv("HTBB_WEB_DIR"), "../HTBB-Web", "../web"};
+        final String[] ung = {System.getProperty("htbb.web"), System.getenv("HTBB_WEB_DIR"), "../web", "web"};
         for (final String u : ung) {
             if (u != null && !u.isEmpty() && new java.io.File(u, "nuxt.config.ts").isFile()) {
                 return new java.io.File(u);
             }
         }
-        System.out.println("[LOI] Khong thay HTBB-Web (../HTBB-Web hoac ../web, hay -Dhtbb.web=<thu muc>).");
+        System.out.println("[LOI] Khong thay thu muc web (../web hoac web, hay -Dhtbb.web=<thu muc>).");
         System.exit(1);
         return null;
     }

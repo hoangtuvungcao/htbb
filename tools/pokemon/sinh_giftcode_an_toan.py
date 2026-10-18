@@ -2,7 +2,7 @@
 """Sinh danh sach TRANG (whitelist) vat pham cho giftcode an toan - dung CHUNG cho web va server game.
 
 Ra:
-  ../HTBB-Web/shared/data/giftcode-an-toan.json     nguon chung (web: server/utils/giftcodeAnToan.ts doc truc tiep)
+  web/shared/data/giftcode-an-toan.json     nguon chung (web: server/utils/giftcodeAnToan.ts doc truc tiep)
   src/com/htbb/pokemon/GiftcodeAnToanDuLieu.java    ban Java (server khong co thu vien JSON), kem SHA-256 cua JSON
 Ca hai ben chay CUNG bo ca "thuNghiem" (HTBB-Web: npm test; HTBB: test/KiemItemMoCoi.java).
 

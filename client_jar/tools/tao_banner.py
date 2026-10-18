@@ -2,7 +2,7 @@
 """Key art "Huyền Thoại Bảo Bối" - cảnh hoàng hôn nhiều lớp dùng chung cho MỌI bản (J2ME, Android, PC, web).
 
     python3 client_jar/tools/tao_banner.py [--ninja <ninja_full>] [--pmd <pmd_raw>] [--web <HTBB-Web>] [--xem <thư mục xem trước>]
-      <ninja_full> mặc định ../HTBB/tools/pokemon/pmd_raw_tile_moi/ninja_full (tile Ninja Adventure, CC0)
+      <ninja_full> mặc định tools/pokemon/pmd_raw_tile_moi/ninja_full (trong monorepo) (tile Ninja Adventure, CC0)
       <pmd_raw>    mặc định ../HTBB/tools/pokemon/pmd_raw (sprite PMDCollab SpriteCollab, CC BY-NC 4.0)
       cần: Pillow, numpy. Chạy tao_logo.py TRƯỚC (logo ghép vào ảnh poster / OG).
 
@@ -32,9 +32,10 @@ import numpy as np
 from PIL import Image, ImageFilter
 
 GOC = os.path.dirname(os.path.abspath(__file__))
-REPO = os.path.abspath(os.path.join(GOC, '..', '..'))
-NINJA = os.path.abspath(os.path.join(REPO, '..', 'HTBB', 'tools', 'pokemon', 'pmd_raw_tile_moi', 'ninja_full'))
-PMD = os.path.abspath(os.path.join(REPO, '..', 'HTBB', 'tools', 'pokemon', 'pmd_raw'))
+REPO = os.path.abspath(os.path.join(GOC, '..'))          # client_jar/
+MONO = os.path.abspath(os.path.join(REPO, '..'))         # monorepo htbb/
+NINJA = os.path.join(MONO, 'tools', 'pokemon', 'pmd_raw_tile_moi', 'ninja_full')
+PMD = os.path.join(MONO, 'tools', 'pokemon', 'pmd_raw')
 BANNER = os.path.join(REPO, 'shared', 'banner')
 BRAND = os.path.join(REPO, 'shared', 'brand')
 
